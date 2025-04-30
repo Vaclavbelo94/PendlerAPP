@@ -1,12 +1,12 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Car, Language, Calendar, ArrowRight } from "lucide-react";
+import { Car, Languages, Calendar, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
 const features = [
   {
-    icon: Language,
+    icon: Languages,
     title: "Výuka němčiny",
     description: "Základní fráze, odborná slovní zásoba a praktická gramatika pro každodenní komunikaci v práci i mimo ni.",
     link: "/language"

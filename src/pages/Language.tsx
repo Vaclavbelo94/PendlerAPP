@@ -4,7 +4,7 @@ import Footer from "@/components/layouts/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Language, ArrowRight } from "lucide-react";
+import { Languages, ArrowRight } from "lucide-react";
 
 const LanguagePage = () => {
   return (
@@ -14,7 +14,7 @@ const LanguagePage = () => {
         {/* Header section */}
         <section className="bg-gradient-to-br from-primary-50 to-secondary-50 py-12">
           <div className="container mx-auto px-4 text-center">
-            <Language className="w-12 h-12 text-primary mx-auto mb-4" />
+            <Languages className="w-12 h-12 text-primary mx-auto mb-4" />
             <h1 className="text-4xl font-bold mb-4">Výuka němčiny</h1>
             <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-8">
               Zlepšete své znalosti němčiny pomocí praktických frází, odborné slovní zásoby
