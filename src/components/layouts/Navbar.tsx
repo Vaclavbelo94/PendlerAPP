@@ -1,11 +1,12 @@
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Calendar, Car, Languages } from "lucide-react";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur">
@@ -34,7 +35,7 @@ const Navbar = () => {
           <Link to="/shifts" className="text-foreground font-medium text-sm hover:text-primary transition-colors">
             Plánování směn
           </Link>
-          <Button variant="default" size="sm">
+          <Button variant="default" size="sm" onClick={() => navigate("/login")}>
             Přihlásit se
           </Button>
         </nav>
@@ -111,7 +112,15 @@ const Navbar = () => {
               >
                 Plánování směn
               </Link>
-              <Button variant="default" size="sm" className="w-full">
+              <Button 
+                variant="default" 
+                size="sm" 
+                className="w-full"
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  navigate("/login");
+                }}
+              >
                 Přihlásit se
               </Button>
             </nav>
