@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -18,6 +19,10 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				roboto: ['Roboto', 'sans-serif'],
+				opensans: ['Open Sans', 'sans-serif']
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
@@ -26,11 +31,31 @@ export default {
 				foreground: 'hsl(var(--foreground))',
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
+					foreground: 'hsl(var(--primary-foreground))',
+					50: '#E6F7FF',
+					100: '#BAECFF',
+					200: '#8FE0FF',
+					300: '#63D4FF', 
+					400: '#38CAFF',
+					500: '#1EAEDB', 
+					600: '#0191C8',
+					700: '#007BB1',
+					800: '#005B8C',
+					900: '#003B66'
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
-					foreground: 'hsl(var(--secondary-foreground))'
+					foreground: 'hsl(var(--secondary-foreground))',
+					50: '#E0F7FF',
+					100: '#B3EBFF',
+					200: '#85DEFF',
+					300: '#57D1FF',
+					400: '#33C3F0',
+					500: '#0FA0CE',
+					600: '#0080AB',
+					700: '#006088',
+					800: '#004065',
+					900: '#002042'
 				},
 				destructive: {
 					DEFAULT: 'hsl(var(--destructive))',
@@ -51,6 +76,11 @@ export default {
 				card: {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
+				},
+				dark: {
+					DEFAULT: '#403E43',
+					500: '#2D2B30', 
+					600: '#1A181F'
 				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
@@ -84,11 +114,31 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'fade-in': {
+					'0%': {
+						opacity: '0',
+						transform: 'translateY(10px)'
+					},
+					'100%': {
+						opacity: '1',
+						transform: 'translateY(0)'
+					}
+				},
+				'bounce-subtle': {
+					'0%, 100%': { 
+						transform: 'translateY(0)' 
+					},
+					'50%': { 
+						transform: 'translateY(-5px)' 
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'fade-in': 'fade-in 0.5s ease-out',
+				'bounce-subtle': 'bounce-subtle 2s ease-in-out infinite'
 			}
 		}
 	},

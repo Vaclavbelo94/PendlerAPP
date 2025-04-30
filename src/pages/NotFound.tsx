@@ -1,5 +1,10 @@
+
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import Navbar from "@/components/layouts/Navbar";
+import Footer from "@/components/layouts/Footer";
 
 const NotFound = () => {
   const location = useLocation();
@@ -12,14 +17,25 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">404</h1>
-        <p className="text-xl text-gray-600 mb-4">Oops! Page not found</p>
-        <a href="/" className="text-blue-500 hover:text-blue-700 underline">
-          Return to Home
-        </a>
-      </div>
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+      <main className="flex-grow flex items-center justify-center py-16 bg-slate-50">
+        <div className="container mx-auto px-4">
+          <div className="max-w-md mx-auto text-center">
+            <h1 className="text-6xl font-bold text-primary mb-4">404</h1>
+            <p className="text-2xl font-semibold mb-2">Stránka nenalezena</p>
+            <p className="text-muted-foreground mb-8">
+              Omlouváme se, ale stránka, kterou hledáte, neexistuje nebo byla přesunuta.
+            </p>
+            <Button asChild size="lg">
+              <Link to="/">
+                Zpět na hlavní stránku
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </main>
+      <Footer />
     </div>
   );
 };
