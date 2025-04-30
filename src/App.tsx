@@ -10,6 +10,7 @@ import Language from "./pages/Language";
 import Laws from "./pages/Laws";
 import Vehicle from "./pages/Vehicle";
 import Shifts from "./pages/Shifts";
+import TranslatorPage from "./pages/Translator";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/laws" element={<Laws />} />
           <Route path="/vehicle" element={<Vehicle />} />
           <Route path="/shifts" element={<Shifts />} />
+          <Route path="/translator" element={<TranslatorPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -28,6 +28,12 @@ const features = [
     title: "Přehled zákonů",
     description: "Srozumitelné informace o německém pracovním právu, daních, pojištění a všem, co český pendler potřebuje znát.",
     link: "/laws"
+  },
+  {
+    icon: Languages,
+    title: "Překladač",
+    description: "Přeložte si jednoduše text z češtiny do němčiny pro snazší komunikaci v práci i běžném životě.",
+    link: "/translator"
   }
 ];
 
@@ -43,7 +49,7 @@ const Features = () => {
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((feature, index) => (
             <Card key={index} className="h-full feature-card hover-scale">
               <CardHeader>

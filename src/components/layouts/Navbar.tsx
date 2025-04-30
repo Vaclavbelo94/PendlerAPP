@@ -22,6 +22,9 @@ const Navbar = () => {
           <Link to="/language" className="text-foreground font-medium text-sm hover:text-primary transition-colors">
             Výuka němčiny
           </Link>
+          <Link to="/translator" className="text-foreground font-medium text-sm hover:text-primary transition-colors">
+            Překladač
+          </Link>
           <Link to="/laws" className="text-foreground font-medium text-sm hover:text-primary transition-colors">
             Přehled zákonů
           </Link>
@@ -79,6 +82,13 @@ const Navbar = () => {
                 onClick={() => setIsMenuOpen(false)}
               >
                 Výuka němčiny
+              </Link>
+              <Link 
+                to="/translator" 
+                className="text-foreground font-medium text-sm hover:text-primary transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Překladač
               </Link>
               <Link 
                 to="/laws" 
