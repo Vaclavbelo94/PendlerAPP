@@ -2,7 +2,7 @@
 import Navbar from "@/components/layouts/Navbar";
 import Footer from "@/components/layouts/Footer";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Help } from "lucide-react";
+import { HelpCircle } from "lucide-react";
 
 const FAQ = () => {
   const faqItems = [
@@ -46,7 +46,7 @@ const FAQ = () => {
       <main className="flex-grow py-12 bg-slate-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <Help className="w-12 h-12 text-primary mx-auto mb-4" />
+            <HelpCircle className="w-12 h-12 text-primary mx-auto mb-4" />
             <h1 className="text-4xl font-bold mb-4">Časté otázky (FAQ)</h1>
             <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
               Odpovědi na nejčastější dotazy českých pendlerů pracujících v Německu.
