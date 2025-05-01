@@ -70,7 +70,7 @@ const Footer = () => {
               Email: info@pendlerhelper.cz
             </p>
             <p className="text-gray-300 mb-4">
-              Telefon: +420 123 456 789
+              Telefon: +420 725 458 395
             </p>
             <div className="flex space-x-4">
               <a href="#" aria-label="Facebook" className="text-gray-300 hover:text-white transition-colors">
