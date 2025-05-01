@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { UserRound, KeyRound, LogIn } from "lucide-react";
@@ -18,27 +18,46 @@ const Login = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Load remembered email if it exists
+  useEffect(() => {
+    const rememberedEmail = localStorage.getItem("rememberedEmail");
+    if (rememberedEmail) {
+      setEmail(rememberedEmail);
+      setRememberMe(true);
+    }
+  }, []);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Mock login functionality
     try {
       // Simulate API call delay
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      if (email && password) {
+      // Get users from local storage
+      const users = JSON.parse(localStorage.getItem("users") || "[]");
+      const user = users.find((u: any) => u.email === email && u.password === password);
+      
+      if (user) {
+        // Store user session
         localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("currentUser", JSON.stringify({ name: user.name, email: user.email }));
+        
         if (rememberMe) {
           localStorage.setItem("rememberedEmail", email);
+        } else {
+          localStorage.removeItem("rememberedEmail");
         }
+        
         toast.success("Přihlášení úspěšné");
         navigate("/");
       } else {
-        toast.error("Prosím vyplňte všechna pole");
+        toast.error("Neplatný email nebo heslo");
       }
     } catch (error) {
       toast.error("Chyba při přihlašování");
+      console.error(error);
     } finally {
       setIsLoading(false);
     }
@@ -82,6 +101,7 @@ const Login = () => {
                     variant="link"
                     className="text-sm text-primary p-0 h-auto"
                     type="button"
+                    onClick={() => toast.info("Funkce pro obnovení hesla není v této verzi dostupná.")}
                   >
                     Zapomenuté heslo?
                   </Button>

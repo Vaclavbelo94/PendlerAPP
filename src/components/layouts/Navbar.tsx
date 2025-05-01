@@ -1,12 +1,42 @@
 
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Calendar, Car, Languages } from "lucide-react";
+import { Calendar, LogOut, UserRound } from "lucide-react";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Check login status when the component mounts or route changes
+  useEffect(() => {
+    const checkLoginStatus = () => {
+      const loggedIn = localStorage.getItem("isLoggedIn") === "true";
+      setIsLoggedIn(loggedIn);
+      
+      if (loggedIn) {
+        try {
+          const currentUser = JSON.parse(localStorage.getItem("currentUser") || "{}");
+          setUserName(currentUser.name || "");
+        } catch (error) {
+          console.error("Error parsing user data:", error);
+        }
+      }
+    };
+
+    checkLoginStatus();
+  }, [location]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("currentUser");
+    setIsLoggedIn(false);
+    setUserName("");
+    navigate("/");
+  };
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur">
@@ -35,9 +65,23 @@ const Navbar = () => {
           <Link to="/shifts" className="text-foreground font-medium text-sm hover:text-primary transition-colors">
             Plánování směn
           </Link>
-          <Button variant="default" size="sm" onClick={() => navigate("/login")}>
-            Přihlásit se
-          </Button>
+          
+          {isLoggedIn ? (
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <UserRound className="h-4 w-4 text-primary" />
+                <span className="text-sm font-medium">{userName}</span>
+              </div>
+              <Button variant="outline" size="sm" onClick={handleLogout}>
+                <LogOut className="mr-2 h-4 w-4" />
+                Odhlásit se
+              </Button>
+            </div>
+          ) : (
+            <Button variant="default" size="sm" onClick={() => navigate("/login")}>
+              Přihlásit se
+            </Button>
+          )}
         </nav>
         
         {/* Mobile menu button */}
@@ -112,17 +156,39 @@ const Navbar = () => {
               >
                 Plánování směn
               </Link>
-              <Button 
-                variant="default" 
-                size="sm" 
-                className="w-full"
-                onClick={() => {
-                  setIsMenuOpen(false);
-                  navigate("/login");
-                }}
-              >
-                Přihlásit se
-              </Button>
+              
+              {isLoggedIn ? (
+                <>
+                  <div className="flex items-center gap-2 py-2">
+                    <UserRound className="h-4 w-4 text-primary" />
+                    <span className="text-sm font-medium">{userName}</span>
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="w-full"
+                    onClick={() => {
+                      handleLogout();
+                      setIsMenuOpen(false);
+                    }}
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Odhlásit se
+                  </Button>
+                </>
+              ) : (
+                <Button 
+                  variant="default" 
+                  size="sm" 
+                  className="w-full"
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    navigate("/login");
+                  }}
+                >
+                  Přihlásit se
+                </Button>
+              )}
             </nav>
           </div>
         )}
