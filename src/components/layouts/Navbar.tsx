@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -12,7 +11,7 @@ import {
   X,
   CarFrontIcon,
   CalendarClockIcon,
-  TranslateIcon
+  Languages
 } from "lucide-react";
 
 const Navbar = () => {
@@ -75,7 +74,7 @@ const Navbar = () => {
     {
       title: "Překladač",
       path: "/translator",
-      icon: <TranslateIcon className="w-4 h-4" />
+      icon: <Languages className="w-4 h-4" />
     },
     {
       title: "Přehled zákonů",

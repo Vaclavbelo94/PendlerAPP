@@ -28,7 +28,7 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
-      <Sonner position="top-right" closeButton expandOnHover />
+      <Sonner position="top-right" closeButton />
       <BrowserRouter>
         <AnimatePresence mode="wait">
           <Routes>
