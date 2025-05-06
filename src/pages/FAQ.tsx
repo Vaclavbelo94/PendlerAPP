@@ -1,6 +1,4 @@
 
-import Navbar from "@/components/layouts/Navbar";
-import Footer from "@/components/layouts/Footer";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { HelpCircle } from "lucide-react";
 
@@ -41,39 +39,35 @@ const FAQ = () => {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar />
-      <main className="flex-grow py-12 bg-slate-50">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <HelpCircle className="w-12 h-12 text-primary mx-auto mb-4" />
-            <h1 className="text-4xl font-bold mb-4">Časté otázky (FAQ)</h1>
-            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-              Odpovědi na nejčastější dotazy českých pendlerů pracujících v Německu.
-            </p>
-          </div>
-
-          <div className="max-w-3xl mx-auto">
-            <Accordion type="single" collapsible className="w-full">
-              {faqItems.map((item, index) => (
-                <AccordionItem key={index} value={`item-${index}`}>
-                  <AccordionTrigger className="text-left">{item.question}</AccordionTrigger>
-                  <AccordionContent>
-                    <p className="text-muted-foreground">{item.answer}</p>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </div>
-          
-          <div className="mt-12 text-center">
-            <p className="text-muted-foreground">
-              Nenašli jste odpověď na svou otázku? <a href="/contact" className="text-primary hover:underline">Kontaktujte nás</a>.
-            </p>
-          </div>
+    <div className="py-12 bg-slate-50">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-12">
+          <HelpCircle className="w-12 h-12 text-primary mx-auto mb-4" />
+          <h1 className="text-4xl font-bold mb-4">Časté otázky (FAQ)</h1>
+          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+            Odpovědi na nejčastější dotazy českých pendlerů pracujících v Německu.
+          </p>
         </div>
-      </main>
-      <Footer />
+
+        <div className="max-w-3xl mx-auto">
+          <Accordion type="single" collapsible className="w-full">
+            {faqItems.map((item, index) => (
+              <AccordionItem key={index} value={`item-${index}`}>
+                <AccordionTrigger className="text-left">{item.question}</AccordionTrigger>
+                <AccordionContent>
+                  <p className="text-muted-foreground">{item.answer}</p>
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
+        
+        <div className="mt-12 text-center">
+          <p className="text-muted-foreground">
+            Nenašli jste odpověď na svou otázku? <a href="/contact" className="text-primary hover:underline">Kontaktujte nás</a>.
+          </p>
+        </div>
+      </div>
     </div>
   );
 };
