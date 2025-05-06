@@ -5,7 +5,7 @@ import { ArrowRightIcon } from "lucide-react";
 const CTA = () => {
   return (
     <section className="py-20 md:py-28 overflow-hidden relative">
-      <div className="absolute inset-0 bg-gradient-to-br from-primary-600 to-primary-800 z-0"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-primary-600 to-secondary-600 z-0"></div>
       
       {/* Decorative elements */}
       <div className="absolute top-0 left-0 w-full h-24 bg-white" style={{ 

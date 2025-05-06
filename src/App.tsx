@@ -4,7 +4,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AnimatePresence } from "framer-motion";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Language from "./pages/Language";
@@ -31,26 +30,24 @@ const App = () => (
       <Toaster />
       <Sonner position="top-right" closeButton />
       <BrowserRouter>
-        <AnimatePresence mode="wait">
-          <Routes>
-            <Route path="/" element={<Layout><Index /></Layout>} />
-            <Route path="/language" element={<Layout><Language /></Layout>} />
-            <Route path="/laws" element={<Layout><Laws /></Layout>} />
-            <Route path="/vehicle" element={<Layout><Vehicle /></Layout>} />
-            <Route path="/shifts" element={<Layout><Shifts /></Layout>} />
-            <Route path="/translator" element={<Layout><TranslatorPage /></Layout>} />
-            <Route path="/login" element={<Layout><Login /></Layout>} />
-            <Route path="/register" element={<Layout><Register /></Layout>} />
-            <Route path="/about" element={<Layout><About /></Layout>} />
-            <Route path="/contact" element={<Layout><Contact /></Layout>} />
-            <Route path="/faq" element={<Layout><FAQ /></Layout>} />
-            <Route path="/terms" element={<Layout><Terms /></Layout>} />
-            <Route path="/privacy" element={<Layout><Privacy /></Layout>} />
-            <Route path="/cookies" element={<Layout><Cookies /></Layout>} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<Layout><NotFound /></Layout>} />
-          </Routes>
-        </AnimatePresence>
+        <Routes>
+          <Route path="/" element={<Layout><Index /></Layout>} />
+          <Route path="/language" element={<Layout><Language /></Layout>} />
+          <Route path="/laws" element={<Layout><Laws /></Layout>} />
+          <Route path="/vehicle" element={<Layout><Vehicle /></Layout>} />
+          <Route path="/shifts" element={<Layout><Shifts /></Layout>} />
+          <Route path="/translator" element={<Layout><TranslatorPage /></Layout>} />
+          <Route path="/login" element={<Layout><Login /></Layout>} />
+          <Route path="/register" element={<Layout><Register /></Layout>} />
+          <Route path="/about" element={<Layout><About /></Layout>} />
+          <Route path="/contact" element={<Layout><Contact /></Layout>} />
+          <Route path="/faq" element={<Layout><FAQ /></Layout>} />
+          <Route path="/terms" element={<Layout><Terms /></Layout>} />
+          <Route path="/privacy" element={<Layout><Privacy /></Layout>} />
+          <Route path="/cookies" element={<Layout><Cookies /></Layout>} />
+          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="*" element={<Layout><NotFound /></Layout>} />
+        </Routes>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
