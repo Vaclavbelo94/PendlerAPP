@@ -1,4 +1,3 @@
-
 import Navbar from "@/components/layouts/Navbar";
 import Footer from "@/components/layouts/Footer";
 import { Button } from "@/components/ui/button";
@@ -160,7 +159,7 @@ const LanguagePage = () => {
                   <Card>
                     <CardHeader>
                       <CardTitle>Pracovní rozhovor</CardTitle>
-                      <CardDescription>Klíčové fráze pro pohovor v němčině</CardDescription>
+                      <CardDescription>Klíčové fráze pro pohovor v němčině</CardHeader>
                     </CardHeader>
                     <CardContent>
                       <ul className="list-disc pl-5 space-y-3">

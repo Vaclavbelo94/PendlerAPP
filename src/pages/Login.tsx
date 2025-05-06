@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "sonner";
@@ -8,8 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import Navbar from "@/components/layouts/Navbar";
-import Footer from "@/components/layouts/Footer";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -66,7 +63,6 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <Navbar />
       <main className="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <Card className="w-full max-w-md shadow-lg border-0">
           <CardHeader className="space-y-1 text-center">
@@ -216,7 +212,6 @@ const Login = () => {
           </CardFooter>
         </Card>
       </main>
-      <Footer />
     </div>
   );
 };
