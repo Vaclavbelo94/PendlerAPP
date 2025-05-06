@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 
 const Hero = () => {
   return (
-    <div className="relative overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-50 pt-20 pb-16 md:pt-28 md:pb-24">
+    <div className="relative overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-50 pt-16 pb-16 md:pt-20 md:pb-24">
       <div className="container-custom mx-auto relative z-10">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-16">
           <div className="lg:w-1/2 text-center lg:text-left">

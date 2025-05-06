@@ -20,6 +20,7 @@ import FAQ from "./pages/FAQ";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Cookies from "./pages/Cookies";
+import Layout from "./components/layouts/Layout";
 import "./index.css";
 
 const queryClient = new QueryClient();
@@ -32,22 +33,22 @@ const App = () => (
       <BrowserRouter>
         <AnimatePresence mode="wait">
           <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/language" element={<Language />} />
-            <Route path="/laws" element={<Laws />} />
-            <Route path="/vehicle" element={<Vehicle />} />
-            <Route path="/shifts" element={<Shifts />} />
-            <Route path="/translator" element={<TranslatorPage />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/faq" element={<FAQ />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/privacy" element={<Privacy />} />
-            <Route path="/cookies" element={<Cookies />} />
+            <Route path="/" element={<Layout><Index /></Layout>} />
+            <Route path="/language" element={<Layout><Language /></Layout>} />
+            <Route path="/laws" element={<Layout><Laws /></Layout>} />
+            <Route path="/vehicle" element={<Layout><Vehicle /></Layout>} />
+            <Route path="/shifts" element={<Layout><Shifts /></Layout>} />
+            <Route path="/translator" element={<Layout><TranslatorPage /></Layout>} />
+            <Route path="/login" element={<Layout><Login /></Layout>} />
+            <Route path="/register" element={<Layout><Register /></Layout>} />
+            <Route path="/about" element={<Layout><About /></Layout>} />
+            <Route path="/contact" element={<Layout><Contact /></Layout>} />
+            <Route path="/faq" element={<Layout><FAQ /></Layout>} />
+            <Route path="/terms" element={<Layout><Terms /></Layout>} />
+            <Route path="/privacy" element={<Layout><Privacy /></Layout>} />
+            <Route path="/cookies" element={<Layout><Cookies /></Layout>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
+            <Route path="*" element={<Layout><NotFound /></Layout>} />
           </Routes>
         </AnimatePresence>
       </BrowserRouter>
