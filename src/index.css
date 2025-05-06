@@ -1,5 +1,5 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Roboto:wght@400;500;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -7,7 +7,7 @@
 
 @layer base {
   :root {
-    --background: 195 100% 98%;
+    --background: 210 40% 98%;
     --foreground: 222 84% 4.9%;
 
     --card: 0 0% 100%;
@@ -16,16 +16,16 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 196 78% 49%;
+    --primary: 221 83% 53%;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 199 94% 57%;
+    --secondary: 217 91% 60%;
     --secondary-foreground: 222.2 47.4% 11.2%;
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 199 94% 57%;
+    --accent: 213 94% 68%;
     --accent-foreground: 222.2 47.4% 11.2%;
 
     --destructive: 0 84.2% 60.2%;
@@ -33,13 +33,13 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 196 78% 49%;
+    --ring: 221 83% 53%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 98%;
+    --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 196 78% 49%;
+    --sidebar-primary: 221 83% 53%;
     --sidebar-primary-foreground: 0 0% 98%;
     --sidebar-accent: 240 4.8% 95.9%;
     --sidebar-accent-foreground: 240 5.9% 10%;
@@ -54,7 +54,7 @@
     --card-foreground: 210 40% 98%;
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-    --primary: 199 94% 57%;
+    --primary: 217.2 91.2% 59.8%;
     --primary-foreground: 222.2 47.4% 11.2%;
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
@@ -83,16 +83,16 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-opensans;
+    @apply bg-background text-foreground font-inter;
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-roboto font-bold;
+    @apply font-poppins font-bold;
   }
 }
 
 @layer components {
   .feature-card {
-    @apply flex flex-col bg-white rounded-lg shadow-md p-6 transition-all hover:shadow-lg;
+    @apply flex flex-col bg-white rounded-xl shadow-md p-6 transition-all hover:shadow-lg border border-border;
   }
   
   .feature-icon {
@@ -106,4 +106,25 @@
   .gradient-bg {
     @apply bg-gradient-to-br from-primary to-secondary;
   }
+  
+  .btn-primary {
+    @apply px-6 py-3 bg-primary hover:bg-primary/90 text-white rounded-xl font-medium transition-colors flex items-center justify-center gap-2;
+  }
+  
+  .btn-outline {
+    @apply px-6 py-3 border border-primary text-primary hover:bg-primary/10 rounded-xl font-medium transition-colors flex items-center justify-center gap-2;
+  }
+  
+  .card-hover {
+    @apply transition-all hover:shadow-lg hover:translate-y-[-4px];
+  }
+  
+  .section-padding {
+    @apply py-16 md:py-24;
+  }
+  
+  .container-custom {
+    @apply container mx-auto px-4 sm:px-6 lg:px-8;
+  }
 }
+

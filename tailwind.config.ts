@@ -20,8 +20,8 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				roboto: ['Roboto', 'sans-serif'],
-				opensans: ['Open Sans', 'sans-serif']
+				inter: ['Inter', 'sans-serif'],
+				poppins: ['Poppins', 'sans-serif']
 			},
 			colors: {
 				border: 'hsl(var(--border))',
@@ -32,30 +32,30 @@ export default {
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
 					foreground: 'hsl(var(--primary-foreground))',
-					50: '#E6F7FF',
-					100: '#BAECFF',
-					200: '#8FE0FF',
-					300: '#63D4FF', 
-					400: '#38CAFF',
-					500: '#1EAEDB', 
-					600: '#0191C8',
-					700: '#007BB1',
-					800: '#005B8C',
-					900: '#003B66'
+					50: '#EFF6FF',
+					100: '#DBEAFE',
+					200: '#BFDBFE',
+					300: '#93C5FD',
+					400: '#60A5FA',
+					500: '#3B82F6', 
+					600: '#2563EB',
+					700: '#1D4ED8',
+					800: '#1E40AF',
+					900: '#1E3A8A'
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
 					foreground: 'hsl(var(--secondary-foreground))',
-					50: '#E0F7FF',
-					100: '#B3EBFF',
-					200: '#85DEFF',
-					300: '#57D1FF',
-					400: '#33C3F0',
-					500: '#0FA0CE',
-					600: '#0080AB',
-					700: '#006088',
-					800: '#004065',
-					900: '#002042'
+					50: '#EFF6FF',
+					100: '#DBEAFE',
+					200: '#BFDBFE',
+					300: '#93C5FD',
+					400: '#60A5FA',
+					500: '#3B82F6',
+					600: '#2563EB',
+					700: '#1D4ED8',
+					800: '#1E40AF',
+					900: '#1E3A8A'
 				},
 				destructive: {
 					DEFAULT: 'hsl(var(--destructive))',
@@ -78,9 +78,9 @@ export default {
 					foreground: 'hsl(var(--card-foreground))'
 				},
 				dark: {
-					DEFAULT: '#403E43',
-					500: '#2D2B30', 
-					600: '#1A181F'
+					DEFAULT: '#1F2937',
+					500: '#111827', 
+					600: '#0F172A'
 				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',

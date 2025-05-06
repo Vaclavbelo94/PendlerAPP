@@ -1,33 +1,55 @@
 
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRightIcon } from "lucide-react";
 
 const CTA = () => {
   return (
-    <section className="py-16 md:py-24 gradient-bg text-white relative overflow-hidden">
-      <div className="container mx-auto px-4 relative z-10">
+    <section className="py-20 md:py-28 overflow-hidden relative">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary-600 to-primary-800 z-0"></div>
+      
+      {/* Decorative elements */}
+      <div className="absolute top-0 left-0 w-full h-24 bg-white" style={{ 
+        clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 0)',
+        opacity: 0.1 
+      }}></div>
+      <div className="absolute bottom-0 right-0 w-full h-24 bg-white" style={{ 
+        clipPath: 'polygon(0 100%, 100% 0, 100% 100%, 0 100%)',
+        opacity: 0.1 
+      }}></div>
+      
+      <div className="container-custom relative z-10">
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-white">
             Připraveni zjednodušit si život českého pendlera?
           </h2>
-          <p className="text-lg md:text-xl mb-8 text-white/90">
+          <p className="text-lg md:text-xl mb-10 text-white/90">
             Získejte přístup ke všem nástrojům, které vám pomohou s plánováním směn, výukou němčiny, 
             správou vozidla a porozuměním německým zákonům.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button variant="secondary" size="lg" className="font-semibold">
+            <Button 
+              variant="secondary" 
+              size="lg" 
+              className="font-semibold text-base px-8 py-6 rounded-xl bg-white text-primary-700 hover:bg-white/90"
+            >
               Začít zdarma
             </Button>
-            <Button variant="outline" size="lg" className="font-semibold border-white text-white hover:bg-white hover:text-primary transition-all">
-              Zjistit více <ArrowRight className="ml-2 h-4 w-4" />
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="font-semibold text-base px-8 py-6 rounded-xl border-white text-white hover:bg-white/10 transition-all"
+            >
+              Zjistit více <ArrowRightIcon className="ml-2 h-5 w-5" />
             </Button>
           </div>
         </div>
       </div>
       
-      {/* Decorative elements */}
+      {/* Shapes */}
       <div className="absolute -top-24 -left-24 w-64 h-64 bg-white/10 rounded-full"></div>
-      <div className="absolute -bottom-16 -right-16 w-48 h-48 bg-white/10 rounded-full"></div>
+      <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-white/10 rounded-full"></div>
+      <div className="absolute top-1/3 right-10 w-16 h-16 bg-white/10 rounded-full"></div>
+      <div className="absolute bottom-1/3 left-10 w-24 h-24 bg-white/10 rounded-full"></div>
     </section>
   );
 };
