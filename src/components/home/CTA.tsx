@@ -20,11 +20,11 @@ const CTA = () => {
       <div className="container-custom relative z-10">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-white">
-            Připraveni zjednodušit si život českého pendlera?
+            Váš průvodce světem práce v Německu
           </h2>
           <p className="text-lg md:text-xl mb-10 text-white/90">
-            Získejte přístup ke všem nástrojům, které vám pomohou s plánováním směn, výukou němčiny, 
-            správou vozidla a porozuměním německým zákonům.
+            Objevte výhody našeho komplexního nástroje pro české pendlery. 
+            Usnadníme vám komunikaci, orientaci v zákonech a pomohou vám ušetřit čas i peníze.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
@@ -32,14 +32,14 @@ const CTA = () => {
               size="lg" 
               className="font-semibold text-base px-8 py-6 rounded-xl bg-white text-primary-700 hover:bg-white/90"
             >
-              Začít zdarma
+              Vyzkoušet zdarma
             </Button>
             <Button 
               variant="outline" 
               size="lg" 
               className="font-semibold text-base px-8 py-6 rounded-xl border-white text-white hover:bg-white/10 transition-all"
             >
-              Zjistit více <ArrowRightIcon className="ml-2 h-5 w-5" />
+              Zobrazit funkce <ArrowRightIcon className="ml-2 h-5 w-5" />
             </Button>
           </div>
         </div>
