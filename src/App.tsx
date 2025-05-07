@@ -20,6 +20,17 @@ import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Cookies from "./pages/Cookies";
 import Layout from "./components/layouts/Layout";
+
+// Law detail pages
+import MinimumWage from "./pages/laws/MinimumWage";
+import TaxClasses from "./pages/laws/TaxClasses";
+import HealthInsurance from "./pages/laws/HealthInsurance";
+import WorkContract from "./pages/laws/WorkContract";
+import TaxReturn from "./pages/laws/TaxReturn";
+import PensionInsurance from "./pages/laws/PensionInsurance";
+import EmployeeProtection from "./pages/laws/EmployeeProtection";
+import ChildBenefits from "./pages/laws/ChildBenefits";
+
 import "./index.css";
 
 const queryClient = new QueryClient();
@@ -45,6 +56,17 @@ const App = () => (
           <Route path="/terms" element={<Layout><Terms /></Layout>} />
           <Route path="/privacy" element={<Layout><Privacy /></Layout>} />
           <Route path="/cookies" element={<Layout><Cookies /></Layout>} />
+          
+          {/* Law detail pages */}
+          <Route path="/laws/minimum-wage" element={<Layout><MinimumWage /></Layout>} />
+          <Route path="/laws/tax-classes" element={<Layout><TaxClasses /></Layout>} />
+          <Route path="/laws/health-insurance" element={<Layout><HealthInsurance /></Layout>} />
+          <Route path="/laws/work-contract" element={<Layout><WorkContract /></Layout>} />
+          <Route path="/laws/tax-return" element={<Layout><TaxReturn /></Layout>} />
+          <Route path="/laws/pension-insurance" element={<Layout><PensionInsurance /></Layout>} />
+          <Route path="/laws/employee-protection" element={<Layout><EmployeeProtection /></Layout>} />
+          <Route path="/laws/child-benefits" element={<Layout><ChildBenefits /></Layout>} />
+          
           <Route path="*" element={<Layout><NotFound /></Layout>} />
         </Routes>
       </BrowserRouter>

@@ -1,6 +1,6 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Table,
@@ -13,6 +13,9 @@ import {
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
 
 const Laws = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -24,6 +27,7 @@ const Laws = () => {
       title: "Minimální mzda",
       description: "Aktuální výše minimální mzdy v Německu.",
       link: "https://www.example.com/minimalni-mzda",
+      detailPath: "/laws/minimum-wage"
     },
     {
       id: 2,
@@ -31,6 +35,7 @@ const Laws = () => {
       title: "Daňové třídy",
       description: "Přehled daňových tříd a jejich vliv na zdanění.",
       link: "https://www.example.com/danove-tridy",
+      detailPath: "/laws/tax-classes"
     },
     {
       id: 3,
@@ -38,6 +43,7 @@ const Laws = () => {
       title: "Zdravotní pojištění",
       description: "Informace o zdravotním pojištění v Německu.",
       link: "https://www.example.com/zdravotni-pojisteni",
+      detailPath: "/laws/health-insurance"
     },
     {
       id: 4,
@@ -45,6 +51,7 @@ const Laws = () => {
       title: "Pracovní smlouva",
       description: "Co by měla obsahovat pracovní smlouva v Německu.",
       link: "https://www.example.com/pracovni-smlouva",
+      detailPath: "/laws/work-contract"
     },
     {
       id: 5,
@@ -52,6 +59,7 @@ const Laws = () => {
       title: "Daňové přiznání",
       description: "Jak podat daňové přiznání v Německu.",
       link: "https://www.example.com/danove-priznani",
+      detailPath: "/laws/tax-return"
     },
     {
       id: 6,
@@ -59,6 +67,7 @@ const Laws = () => {
       title: "Důchodové pojištění",
       description: "Informace o důchodovém pojištění v Německu.",
       link: "https://www.example.com/duchodove-pojisteni",
+      detailPath: "/laws/pension-insurance"
     },
     {
       id: 7,
@@ -66,6 +75,7 @@ const Laws = () => {
       title: "Ochrana zaměstnanců",
       description: "Práva a povinnosti zaměstnanců v Německu.",
       link: "https://www.example.com/ochrana-zamestnancu",
+      detailPath: "/laws/employee-protection"
     },
     {
       id: 8,
@@ -73,6 +83,7 @@ const Laws = () => {
       title: "Přídavky na děti",
       description: "Podmínky pro získání přídavků na děti v Německu.",
       link: "https://www.example.com/pridavky-na-deti",
+      detailPath: "/laws/child-benefits"
     },
   ];
 
@@ -127,6 +138,7 @@ const Laws = () => {
                         <TableHead>Název</TableHead>
                         <TableHead>Popis</TableHead>
                         <TableHead className="text-right">Odkaz</TableHead>
+                        <TableHead className="text-right">Více informací</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -138,7 +150,15 @@ const Laws = () => {
                           <TableCell>{law.title}</TableCell>
                           <TableCell>{law.description}</TableCell>
                           <TableCell className="text-right">
-                            <a href={law.link} target="_blank" rel="noopener noreferrer" className="underline">Více informací</a>
+                            <a href={law.link} target="_blank" rel="noopener noreferrer" className="underline">Externí zdroj</a>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Link to={law.detailPath}>
+                              <Button variant="outline" size="sm" className="flex items-center gap-1">
+                                Více informací
+                                <ArrowRight className="h-4 w-4" />
+                              </Button>
+                            </Link>
                           </TableCell>
                         </TableRow>
                       ))}
