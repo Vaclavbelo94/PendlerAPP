@@ -177,7 +177,7 @@ const Register = () => {
                   name="agreeTerms"
                   checked={formData.agreeTerms}
                   onCheckedChange={(checked) => 
-                    setFormData({...formData, agreeTerms: checked})
+                    setFormData({...formData, agreeTerms: checked === true})
                   }
                   disabled={loading}
                 />
