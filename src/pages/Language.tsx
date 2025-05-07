@@ -2,9 +2,14 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Languages, ArrowRight } from "lucide-react";
+import { Languages, ArrowRight, Book, BookOpen } from "lucide-react";
+import GrammarExercise from "@/components/language/GrammarExercise";
+import { grammarExercises } from "@/data/germanExercises";
+import { useState } from "react";
 
 const LanguagePage = () => {
+  const [categoryFilter, setCategoryFilter] = useState<string | undefined>(undefined);
+  
   return (
     <div className="flex flex-col">
       {/* Header section */}
@@ -416,10 +421,55 @@ const LanguagePage = () => {
                     </div>
                   </div>
                   
-                  <div className="mt-8 text-center">
-                    <Button size="lg">
-                      Interaktivní gramatická cvičení
-                    </Button>
+                  {/* Interactive Grammar Exercises */}
+                  <div className="mt-12">
+                    <div className="flex items-center justify-center mb-8 gap-3">
+                      <BookOpen className="h-6 w-6 text-primary" />
+                      <h2 className="text-2xl font-bold text-center">Interaktivní gramatická cvičení</h2>
+                    </div>
+                    
+                    <div className="mb-8">
+                      <div className="flex flex-wrap gap-2 justify-center mb-6">
+                        <Button 
+                          variant={categoryFilter === undefined ? "default" : "outline"} 
+                          onClick={() => setCategoryFilter(undefined)}
+                        >
+                          Všechna cvičení
+                        </Button>
+                        <Button 
+                          variant={categoryFilter === 'articles' ? "default" : "outline"} 
+                          onClick={() => setCategoryFilter('articles')}
+                        >
+                          Členy
+                        </Button>
+                        <Button 
+                          variant={categoryFilter === 'present-tense' ? "default" : "outline"} 
+                          onClick={() => setCategoryFilter('present-tense')}
+                        >
+                          Přítomný čas
+                        </Button>
+                        <Button 
+                          variant={categoryFilter === 'cases' ? "default" : "outline"} 
+                          onClick={() => setCategoryFilter('cases')}
+                        >
+                          Pády
+                        </Button>
+                        <Button 
+                          variant={categoryFilter === 'modal-verbs' ? "default" : "outline"} 
+                          onClick={() => setCategoryFilter('modal-verbs')}
+                        >
+                          Modální slovesa
+                        </Button>
+                        <Button 
+                          variant={categoryFilter === 'word-order' ? "default" : "outline"} 
+                          onClick={() => setCategoryFilter('word-order')}
+                        >
+                          Slovosled
+                        </Button>
+                      </div>
+                      
+                      <GrammarExercise exercises={grammarExercises} category={categoryFilter} />
+                    </div>
                   </div>
                 </CardContent>
               </Card>
