@@ -12,8 +12,10 @@ import {
   InfoIcon, 
   HelpCircleIcon, 
   PhoneIcon, 
-  X
+  X,
+  Shield
 } from "lucide-react";
+import { useState, useEffect } from "react";
 
 interface SidebarProps {
   closeSidebar: () => void;
@@ -21,6 +23,21 @@ interface SidebarProps {
 
 const Sidebar = ({ closeSidebar }: SidebarProps) => {
   const location = useLocation();
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+  
+  useEffect(() => {
+    const checkAdminLogin = () => {
+      const adminLoggedIn = localStorage.getItem("adminLoggedIn") === "true";
+      setIsAdminLoggedIn(adminLoggedIn);
+    };
+    
+    checkAdminLogin();
+    window.addEventListener("storage", checkAdminLogin);
+    
+    return () => {
+      window.removeEventListener("storage", checkAdminLogin);
+    };
+  }, []);
   
   const navItems = [
     { title: "Domů", path: "/", icon: HomeIcon },
@@ -98,7 +115,22 @@ const Sidebar = ({ closeSidebar }: SidebarProps) => {
       </ScrollArea>
       <Separator />
       <div className="p-4">
-        <div className="bg-slate-50 rounded-lg p-3">
+        {/* Admin tlačítko v levém dolním rohu */}
+        <Link to="/admin" className="mb-4 block">
+          <Button 
+            variant={location.pathname === "/admin" ? "secondary" : "outline"}
+            size="sm"
+            className="w-full justify-start gap-3"
+          >
+            <Shield className="h-4 w-4" />
+            <span className="font-medium">Admin</span>
+            {isAdminLoggedIn && (
+              <span className="ml-auto h-2 w-2 rounded-full bg-green-500" />
+            )}
+          </Button>
+        </Link>
+        
+        <div className="bg-slate-50 rounded-lg p-3 mt-2">
           <p className="text-sm font-medium">Přihlášení</p>
           <p className="text-xs text-muted-foreground mb-2">Přihlašte se pro více možností</p>
           <div className="grid gap-2">

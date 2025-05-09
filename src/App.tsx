@@ -20,6 +20,7 @@ import FAQ from "./pages/FAQ";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Cookies from "./pages/Cookies";
+import Admin from "./pages/Admin";
 import Layout from "./components/layouts/Layout";
 
 // Law detail pages
@@ -58,6 +59,7 @@ const App = () => (
           <Route path="/terms" element={<Layout><Terms /></Layout>} />
           <Route path="/privacy" element={<Layout><Privacy /></Layout>} />
           <Route path="/cookies" element={<Layout><Cookies /></Layout>} />
+          <Route path="/admin" element={<Layout><Admin /></Layout>} />
           
           {/* Law detail pages */}
           <Route path="/laws/minimum-wage" element={<Layout><MinimumWage /></Layout>} />
