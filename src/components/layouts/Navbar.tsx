@@ -7,7 +7,8 @@ import {
   UserIcon, 
   LogOutIcon, 
   BellIcon,
-  SearchIcon
+  SearchIcon,
+  CalculatorIcon
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -92,6 +93,18 @@ const Navbar = ({ toggleSidebar }: NavbarProps) => {
         </div>
         
         <div className="flex items-center gap-3">
+          {/* Calculator Link - only visible when logged in */}
+          {isLoggedIn && (
+            <Button 
+              variant="ghost" 
+              className="text-sm font-medium flex items-center gap-2 hidden md:flex" 
+              onClick={() => navigate("/calculator")}
+            >
+              <CalculatorIcon className="h-4 w-4" />
+              <span>Kalkulačky</span>
+            </Button>
+          )}
+          
           {/* Notifications */}
           <Button variant="ghost" size="icon" className="relative">
             <BellIcon className="h-5 w-5" />
@@ -114,6 +127,11 @@ const Navbar = ({ toggleSidebar }: NavbarProps) => {
                 <DropdownMenuItem onClick={() => navigate("/profile")}>
                   <UserIcon className="mr-2 h-4 w-4" />
                   <span>Profil</span>
+                </DropdownMenuItem>
+                {/* Calculator dropdown item - only visible when logged in on mobile */}
+                <DropdownMenuItem onClick={() => navigate("/calculator")} className="md:hidden">
+                  <CalculatorIcon className="mr-2 h-4 w-4" />
+                  <span>Kalkulačky</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout}>

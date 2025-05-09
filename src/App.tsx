@@ -10,6 +10,7 @@ import Language from "./pages/Language";
 import Laws from "./pages/Laws";
 import Vehicle from "./pages/Vehicle";
 import Shifts from "./pages/Shifts";
+import Calculator from "./pages/Calculator";
 import TranslatorPage from "./pages/Translator";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -47,6 +48,7 @@ const App = () => (
           <Route path="/laws" element={<Layout><Laws /></Layout>} />
           <Route path="/vehicle" element={<Layout><Vehicle /></Layout>} />
           <Route path="/shifts" element={<Layout><Shifts /></Layout>} />
+          <Route path="/calculator" element={<Layout><Calculator /></Layout>} />
           <Route path="/translator" element={<Layout><TranslatorPage /></Layout>} />
           <Route path="/login" element={<Layout><Login /></Layout>} />
           <Route path="/register" element={<Layout><Register /></Layout>} />
