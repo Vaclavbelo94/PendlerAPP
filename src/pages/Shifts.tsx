@@ -21,10 +21,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 // Sample data for the employee shifts
 const employeeShifts = [
-  { id: 1, name: "Jan Novák", shifts: [3, 5, 7, 9, 11, 15, 17, 19, 21, 23, 25, 27, 29] },
-  { id: 2, name: "Marie Svobodová", shifts: [2, 4, 6, 8, 10, 14, 16, 18, 20, 22, 24, 26, 28] },
-  { id: 3, name: "Petr Černý", shifts: [1, 3, 5, 7, 9, 13, 15, 17, 19, 21, 25, 27, 29] },
-  { id: 4, name: "Jana Dvořáková", shifts: [2, 4, 6, 8, 12, 14, 16, 18, 20, 24, 26, 28, 30] },
+  { id: 1, name: "Jan Novák", userId: "user1", shifts: [3, 5, 7, 9, 11, 15, 17, 19, 21, 23, 25, 27, 29] },
+  { id: 2, name: "Marie Svobodová", userId: "user2", shifts: [2, 4, 6, 8, 10, 14, 16, 18, 20, 22, 24, 26, 28] },
+  { id: 3, name: "Petr Černý", userId: "user3", shifts: [1, 3, 5, 7, 9, 13, 15, 17, 19, 21, 25, 27, 29] },
+  { id: 4, name: "Jana Dvořáková", userId: "user4", shifts: [2, 4, 6, 8, 12, 14, 16, 18, 20, 24, 26, 28, 30] },
 ];
 
 const Shifts = () => {
@@ -33,6 +33,13 @@ const Shifts = () => {
   const [route, setRoute] = useState({ from: "", to: "", time: "" });
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
   const [shiftType, setShiftType] = useState("day");
+  
+  // In a real application, this would be retrieved from authentication context
+  // For now, we'll simulate a logged-in user
+  const currentUserId = "user1";
+  
+  // Filter the shifts data to only show the current user's data
+  const currentUserData = employeeShifts.find(employee => employee.userId === currentUserId) || employeeShifts[0];
   
   // Handler for saving route
   const handleSaveRoute = () => {
@@ -47,11 +54,11 @@ const Shifts = () => {
   
   return (
     <div className="flex flex-col">
-      {/* Header section */}
-      <section className="bg-gradient-to-br from-primary-50 to-secondary-50 py-12">
+      {/* Header section with DHL colors */}
+      <section className="bg-gradient-to-br from-dhl-yellow to-dhl-red py-12">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl font-bold mb-4">Plánování směn</h1>
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-8">
+          <h1 className="text-4xl font-bold mb-4 text-dhl-black">Plánování směn</h1>
+          <p className="text-lg text-dhl-black max-w-3xl mx-auto mb-8">
             Efektivní plánování pracovních směn a spolujízdy pro pendlery.
           </p>
         </div>
@@ -61,19 +68,19 @@ const Shifts = () => {
       <section className="py-12">
         <div className="container mx-auto px-4">
           <Tabs defaultValue="calendar" className="mb-8">
-            <TabsList className="mb-4">
-              <TabsTrigger value="calendar">Kalendář směn</TabsTrigger>
-              <TabsTrigger value="planning">Plánování tras</TabsTrigger>
-              <TabsTrigger value="reports">Reporty</TabsTrigger>
+            <TabsList className="mb-4 bg-dhl-yellow text-dhl-black">
+              <TabsTrigger value="calendar" className="data-[state=active]:bg-dhl-red data-[state=active]:text-white">Kalendář směn</TabsTrigger>
+              <TabsTrigger value="planning" className="data-[state=active]:bg-dhl-red data-[state=active]:text-white">Plánování tras</TabsTrigger>
+              <TabsTrigger value="reports" className="data-[state=active]:bg-dhl-red data-[state=active]:text-white">Reporty</TabsTrigger>
             </TabsList>
             
             <TabsContent value="calendar" className="space-y-6">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Calendar Section */}
-                <Card className="lg:col-span-2">
-                  <CardHeader>
+                <Card className="lg:col-span-2 border-dhl-yellow">
+                  <CardHeader className="border-b border-dhl-yellow">
                     <CardTitle>Můj kalendář</CardTitle>
-                    <CardDescription>Přehled plánovaných směn</CardDescription>
+                    <CardDescription>Přehled plánovaných směn pro {currentUserData.name}</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="flex justify-center p-4 bg-white rounded-lg shadow-sm">
@@ -85,14 +92,14 @@ const Shifts = () => {
                         locale={cs}
                         showOutsideDays
                         modifiers={{
-                          booked: employeeShifts[0].shifts.map(
+                          booked: currentUserData.shifts.map(
                             (day) => new Date(selectedDate ? selectedDate.getFullYear() : new Date().getFullYear(), 
                                              selectedDate ? selectedDate.getMonth() : new Date().getMonth(), 
                                              day)
                           ),
                         }}
                         modifiersStyles={{
-                          booked: { backgroundColor: "#dcfce7", color: "#166534", fontWeight: "bold" }
+                          booked: { backgroundColor: "#FFCC00", color: "#000000", fontWeight: "bold" }
                         }}
                       />
                     </div>
@@ -103,9 +110,9 @@ const Shifts = () => {
                           <p className="font-medium">
                             {format(selectedDate, "EEEE, d. MMMM yyyy", { locale: cs })}
                           </p>
-                          {employeeShifts[0].shifts.includes(selectedDate.getDate()) ? (
+                          {currentUserData.shifts.includes(selectedDate.getDate()) ? (
                             <div className="mt-2">
-                              <Badge className="bg-green-100 text-green-800 hover:bg-green-200">Naplánovaná směna</Badge>
+                              <Badge className="bg-dhl-yellow text-dhl-black hover:bg-dhl-yellow/80">Naplánovaná směna</Badge>
                               <p className="mt-2">Směna: {shiftType === "day" ? "Denní (6:00 - 14:00)" : "Noční (22:00 - 6:00)"}</p>
                               <div className="mt-3">
                                 <RadioGroup defaultValue={shiftType} onValueChange={setShiftType} className="flex space-x-4">
@@ -134,7 +141,7 @@ const Shifts = () => {
                     <div className="mt-6">
                       <Dialog>
                         <DialogTrigger asChild>
-                          <Button variant="outline" className="w-full">
+                          <Button variant="outline" className="w-full border-dhl-red text-dhl-red hover:bg-dhl-red/10">
                             <FileDown className="mr-2" />
                             Exportovat přehled směn do PDF
                           </Button>
@@ -183,7 +190,7 @@ const Shifts = () => {
                             </div>
                           </div>
                           <DialogFooter>
-                            <Button type="submit" onClick={handleExportPDF}>
+                            <Button type="submit" onClick={handleExportPDF} className="bg-dhl-red hover:bg-dhl-red/90">
                               <Download className="mr-2 h-4 w-4" />
                               Exportovat
                             </Button>
@@ -195,8 +202,8 @@ const Shifts = () => {
                 </Card>
 
                 {/* Monthly Report Preview */}
-                <Card>
-                  <CardHeader>
+                <Card className="border-dhl-yellow">
+                  <CardHeader className="border-b border-dhl-yellow">
                     <CardTitle>Měsíční přehled</CardTitle>
                     <CardDescription>
                       {selectedMonth && format(selectedMonth, "MMMM yyyy", { locale: cs })}
@@ -205,20 +212,18 @@ const Shifts = () => {
                   <CardContent>
                     <ScrollArea className="h-[400px]">
                       <Table>
-                        <TableCaption>Přehled směn zaměstnanců</TableCaption>
+                        <TableCaption>Přehled směn</TableCaption>
                         <TableHeader>
                           <TableRow>
-                            <TableHead>Zaměstnanec</TableHead>
+                            <TableHead>Jméno</TableHead>
                             <TableHead className="text-right">Počet směn</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {employeeShifts.map((employee) => (
-                            <TableRow key={employee.id}>
-                              <TableCell>{employee.name}</TableCell>
-                              <TableCell className="text-right">{employee.shifts.length}</TableCell>
-                            </TableRow>
-                          ))}
+                          <TableRow key={currentUserData.id}>
+                            <TableCell>{currentUserData.name}</TableCell>
+                            <TableCell className="text-right">{currentUserData.shifts.length}</TableCell>
+                          </TableRow>
                         </TableBody>
                       </Table>
                     </ScrollArea>
@@ -230,8 +235,8 @@ const Shifts = () => {
             <TabsContent value="planning" className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Route Planning Section */}
-                <Card>
-                  <CardHeader>
+                <Card className="border-dhl-yellow">
+                  <CardHeader className="border-b border-dhl-yellow">
                     <CardTitle>Plánování trasy</CardTitle>
                     <CardDescription>Zadejte svou trasu a časy cesty</CardDescription>
                   </CardHeader>
@@ -243,6 +248,7 @@ const Shifts = () => {
                         placeholder="Místo odjezdu" 
                         value={route.from} 
                         onChange={(e) => setRoute({...route, from: e.target.value})} 
+                        className="border-dhl-black focus-visible:ring-dhl-yellow"
                       />
                     </div>
                     <div>
@@ -252,6 +258,7 @@ const Shifts = () => {
                         placeholder="Cílová destinace" 
                         value={route.to}
                         onChange={(e) => setRoute({...route, to: e.target.value})}
+                        className="border-dhl-black focus-visible:ring-dhl-yellow"
                       />
                     </div>
                     <div>
@@ -261,15 +268,18 @@ const Shifts = () => {
                         type="time" 
                         value={route.time}
                         onChange={(e) => setRoute({...route, time: e.target.value})}
+                        className="border-dhl-black focus-visible:ring-dhl-yellow"
                       />
                     </div>
-                    <Button className="w-full" onClick={handleSaveRoute}>Uložit trasu</Button>
+                    <Button className="w-full bg-dhl-yellow text-dhl-black hover:bg-dhl-yellow/90" onClick={handleSaveRoute}>
+                      Uložit trasu
+                    </Button>
                   </CardContent>
                 </Card>
 
                 {/* Ride Sharing Section */}
-                <Card>
-                  <CardHeader>
+                <Card className="border-dhl-yellow">
+                  <CardHeader className="border-b border-dhl-yellow">
                     <CardTitle>Spolujízda</CardTitle>
                     <CardDescription>Najděte nebo nabídněte spolujízdu</CardDescription>
                   </CardHeader>
@@ -277,38 +287,40 @@ const Shifts = () => {
                     <div className="bg-muted rounded-md p-3">
                       <p className="font-medium mb-2">Dostupné spolujízdy:</p>
                       <ul className="space-y-2">
-                        <li className="p-2 bg-background rounded border">
+                        <li className="p-2 bg-background rounded border border-dhl-yellow">
                           <p className="font-medium">Praha → Mladá Boleslav</p>
                           <p className="text-sm text-muted-foreground">Odjezd: 5:30, Volná místa: 3</p>
                         </li>
-                        <li className="p-2 bg-background rounded border">
+                        <li className="p-2 bg-background rounded border border-dhl-yellow">
                           <p className="font-medium">Kladno → Praha</p>
                           <p className="text-sm text-muted-foreground">Odjezd: 6:00, Volná místa: 2</p>
                         </li>
-                        <li className="p-2 bg-background rounded border">
+                        <li className="p-2 bg-background rounded border border-dhl-yellow">
                           <p className="font-medium">Beroun → Praha</p>
                           <p className="text-sm text-muted-foreground">Odjezd: 6:15, Volná místa: 1</p>
                         </li>
                       </ul>
                     </div>
-                    <Button className="w-full">Hledat spolujízdu</Button>
+                    <Button className="w-full bg-dhl-red text-white hover:bg-dhl-red/90">
+                      Hledat spolujízdu
+                    </Button>
                   </CardContent>
                 </Card>
               </div>
             </TabsContent>
             
             <TabsContent value="reports" className="space-y-6">
-              <Card>
-                <CardHeader>
+              <Card className="border-dhl-yellow">
+                <CardHeader className="border-b border-dhl-yellow">
                   <CardTitle>Přehled směn - {format(new Date(), "MMMM yyyy", { locale: cs })}</CardTitle>
-                  <CardDescription>Podrobný výpis směn všech zaměstnanců</CardDescription>
+                  <CardDescription>Podrobný výpis směn</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ScrollArea className="h-[500px]">
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>Zaměstnanec</TableHead>
+                          <TableHead>Jméno</TableHead>
                           <TableHead>Počet směn</TableHead>
                           <TableHead>Denní směny</TableHead>
                           <TableHead>Noční směny</TableHead>
@@ -316,20 +328,18 @@ const Shifts = () => {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {employeeShifts.map((employee) => (
-                          <TableRow key={employee.id}>
-                            <TableCell className="font-medium">{employee.name}</TableCell>
-                            <TableCell>{employee.shifts.length}</TableCell>
-                            <TableCell>{Math.round(employee.shifts.length / 2)}</TableCell>
-                            <TableCell>{Math.floor(employee.shifts.length / 2)}</TableCell>
-                            <TableCell className="text-right">{employee.shifts.length * 8}</TableCell>
-                          </TableRow>
-                        ))}
+                        <TableRow>
+                          <TableCell className="font-medium">{currentUserData.name}</TableCell>
+                          <TableCell>{currentUserData.shifts.length}</TableCell>
+                          <TableCell>{Math.round(currentUserData.shifts.length / 2)}</TableCell>
+                          <TableCell>{Math.floor(currentUserData.shifts.length / 2)}</TableCell>
+                          <TableCell className="text-right">{currentUserData.shifts.length * 8}</TableCell>
+                        </TableRow>
                       </TableBody>
                     </Table>
                   </ScrollArea>
                   <div className="mt-6 flex justify-end">
-                    <Button onClick={handleExportPDF}>
+                    <Button onClick={handleExportPDF} className="bg-dhl-red text-white hover:bg-dhl-red/90">
                       <Download className="mr-2 h-4 w-4" />
                       Exportovat do PDF
                     </Button>
@@ -343,8 +353,8 @@ const Shifts = () => {
           <section className="mt-12">
             <h2 className="text-2xl font-bold mb-4">Tipy pro efektivní plánování</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
+              <Card className="border-dhl-yellow">
+                <CardHeader className="border-b border-dhl-yellow">
                   <CardTitle>Optimalizace trasy</CardTitle>
                   <CardDescription>Jak ušetřit čas a peníze na cestě</CardDescription>
                 </CardHeader>
@@ -357,8 +367,8 @@ const Shifts = () => {
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader>
+              <Card className="border-dhl-yellow">
+                <CardHeader className="border-b border-dhl-yellow">
                   <CardTitle>Bezpečnost na cestách</CardTitle>
                   <CardDescription>Důležité rady pro bezpečnou jízdu</CardDescription>
                 </CardHeader>

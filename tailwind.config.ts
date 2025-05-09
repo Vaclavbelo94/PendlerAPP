@@ -29,33 +29,38 @@ export default {
 				ring: 'hsl(var(--ring))',
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
+				dhl: {
+					yellow: '#FFCC00', // DHL Yellow
+					red: '#D40511',    // DHL Red
+					black: '#000000'   // DHL Black
+				},
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
 					foreground: 'hsl(var(--primary-foreground))',
-					50: '#F5F3FF',
-					100: '#EDE9FE',
-					200: '#DDD6FE',
-					300: '#C4B5FD',
-					400: '#A78BFA',
-					500: '#8B5CF6', 
-					600: '#7C3AED',
-					700: '#6D28D9',
-					800: '#5B21B6',
-					900: '#4C1D95'
+					50: '#FFFDE7',
+					100: '#FFF9C4',
+					200: '#FFF59D',
+					300: '#FFF176',
+					400: '#FFEE58',
+					500: '#FFEB3B', // Closest to DHL yellow
+					600: '#FDD835',
+					700: '#FBC02D',
+					800: '#F9A825',
+					900: '#F57F17'
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
 					foreground: 'hsl(var(--secondary-foreground))',
-					50: '#FDF2F8',
-					100: '#FCE7F3',
-					200: '#FBCFE8',
-					300: '#F9A8D4',
-					400: '#F472B6',
-					500: '#EC4899',
-					600: '#DB2777',
-					700: '#BE185D',
-					800: '#9D174D',
-					900: '#831843'
+					50: '#FFEBEE',
+					100: '#FFCDD2',
+					200: '#EF9A9A',
+					300: '#E57373',
+					400: '#EF5350',
+					500: '#F44336', // Closest to DHL red
+					600: '#E53935',
+					700: '#D32F2F',
+					800: '#C62828',
+					900: '#B71C1C'
 				},
 				destructive: {
 					DEFAULT: 'hsl(var(--destructive))',
@@ -78,9 +83,9 @@ export default {
 					foreground: 'hsl(var(--card-foreground))'
 				},
 				dark: {
-					DEFAULT: '#1F2937',
-					500: '#111827', 
-					600: '#0F172A'
+					DEFAULT: '#000000', // Changed to DHL black
+					500: '#000000',
+					600: '#000000'
 				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
