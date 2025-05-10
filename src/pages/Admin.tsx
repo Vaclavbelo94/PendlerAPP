@@ -18,6 +18,7 @@ import {
 import { UserAdminPanel } from "@/components/admin/UserAdminPanel";
 import { PromoCodesPanel } from "@/components/admin/PromoCodesPanel";
 import { PasswordResetPanel } from "@/components/admin/PasswordResetPanel";
+import { PremiumFeaturesPanel } from "@/components/admin/PremiumFeaturesPanel";
 import AdminLoginDialog from "@/components/admin/AdminLoginDialog";
 
 const Admin = () => {
@@ -73,6 +74,7 @@ const Admin = () => {
           <Tabs defaultValue="users" className="space-y-6">
             <TabsList>
               <TabsTrigger value="users">Uživatelé</TabsTrigger>
+              <TabsTrigger value="premium">Premium funkce</TabsTrigger>
               <TabsTrigger value="promo">Promo kódy</TabsTrigger>
               <TabsTrigger value="reset">Reset hesla</TabsTrigger>
             </TabsList>
@@ -87,6 +89,20 @@ const Admin = () => {
                 </CardHeader>
                 <CardContent>
                   <UserAdminPanel />
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            <TabsContent value="premium" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Správa premium funkcí</CardTitle>
+                  <CardDescription>
+                    Nastavte, které funkce aplikace budou dostupné pouze premium uživatelům.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <PremiumFeaturesPanel />
                 </CardContent>
               </Card>
             </TabsContent>

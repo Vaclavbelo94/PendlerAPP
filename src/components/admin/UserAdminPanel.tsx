@@ -18,8 +18,10 @@ interface User {
   id: string;
   name: string;
   email: string;
+  password: string; // Přidáno pro kompletnost
   isPremium: boolean;
   registeredAt: string;
+  premiumUntil: string | null; // Datum, do kdy platí premium
 }
 
 export const UserAdminPanel = () => {
@@ -31,7 +33,7 @@ export const UserAdminPanel = () => {
     const loadUsers = () => {
       setIsLoading(true);
       try {
-        const storedUsers = JSON.parse(localStorage.getItem("users") || "[]");
+        let storedUsers = JSON.parse(localStorage.getItem("users") || "[]");
         
         // Přidáme vlastnost isPremium, pokud neexistuje
         const enhancedUsers = storedUsers.map((user: any) => ({
@@ -39,7 +41,29 @@ export const UserAdminPanel = () => {
           id: user.id || Math.random().toString(36).substr(2, 9),
           isPremium: user.isPremium || false,
           registeredAt: user.registeredAt || new Date().toISOString(),
+          premiumUntil: user.premiumUntil || null,
+          password: user.password || "heslo123" // Výchozí heslo pro existující uživatele bez hesla
         }));
+        
+        // Přidáme testovacího uživatele s premium, pokud neexistuje
+        const testUserExists = enhancedUsers.some((user: User) => user.email === "vaclav@pendlerapp.com");
+        
+        if (!testUserExists) {
+          const threeMonthsLater = new Date();
+          threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
+          
+          enhancedUsers.push({
+            id: Math.random().toString(36).substr(2, 9),
+            name: "Václav",
+            email: "vaclav@pendlerapp.com",
+            password: "Vaclav711",
+            isPremium: true,
+            registeredAt: new Date().toISOString(),
+            premiumUntil: threeMonthsLater.toISOString()
+          });
+          
+          toast.success("Vytvořen testovací uživatelský účet s premium funkcemi");
+        }
         
         setUsers(enhancedUsers);
         
@@ -59,7 +83,17 @@ export const UserAdminPanel = () => {
   const togglePremium = (userId: string) => {
     const updatedUsers = users.map(user => {
       if (user.id === userId) {
-        return { ...user, isPremium: !user.isPremium };
+        // Pokud zapínáme premium, nastavíme datum konce za 3 měsíce
+        // Pokud vypínáme premium, nastavíme datum konce na null
+        const premiumUntil = !user.isPremium ? 
+          new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString() :
+          null;
+        
+        return { 
+          ...user, 
+          isPremium: !user.isPremium,
+          premiumUntil
+        };
       }
       return user;
     });
@@ -95,6 +129,7 @@ export const UserAdminPanel = () => {
               <TableHead>Jméno</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>Datum registrace</TableHead>
+              <TableHead>Premium do</TableHead>
               <TableHead>Premium status</TableHead>
               <TableHead className="text-right">Akce</TableHead>
             </TableRow>
@@ -105,6 +140,9 @@ export const UserAdminPanel = () => {
                 <TableCell className="font-medium">{user.name}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{new Date(user.registeredAt).toLocaleDateString()}</TableCell>
+                <TableCell>
+                  {user.premiumUntil ? new Date(user.premiumUntil).toLocaleDateString() : "-"}
+                </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
                     <Switch
