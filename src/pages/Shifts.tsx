@@ -264,9 +264,13 @@ const Shifts = () => {
 
   // Aktuální směna pro vybraný den
   const currentShift = getShiftForSelectedDate();
-  if (currentShift) {
-    setShiftType(currentShift.type);
-  }
+  // Nastavení typu směny podle aktuální směny, ale pouze při změně selectedDate nebo userShifts
+  useEffect(() => {
+    const shift = getShiftForSelectedDate();
+    if (shift) {
+      setShiftType(shift.type);
+    }
+  }, [selectedDate, userShifts]);
   
   return (
     <div className="flex flex-col">
