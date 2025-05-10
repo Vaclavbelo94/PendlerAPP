@@ -21,6 +21,8 @@ import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Cookies from "./pages/Cookies";
 import Admin from "./pages/Admin";
+import Profile from "./pages/Profile";
+import Premium from "./pages/Premium";
 import Layout from "./components/layouts/Layout";
 
 // Law detail pages
@@ -53,6 +55,8 @@ const App = () => (
           <Route path="/translator" element={<Layout><TranslatorPage /></Layout>} />
           <Route path="/login" element={<Layout><Login /></Layout>} />
           <Route path="/register" element={<Layout><Register /></Layout>} />
+          <Route path="/profile" element={<Layout><Profile /></Layout>} />
+          <Route path="/premium" element={<Layout><Premium /></Layout>} />
           <Route path="/about" element={<Layout><About /></Layout>} />
           <Route path="/contact" element={<Layout><Contact /></Layout>} />
           <Route path="/faq" element={<Layout><FAQ /></Layout>} />
