@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "sonner";
@@ -15,6 +16,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [loginError, setLoginError] = useState("");
 
   // Load remembered email if it exists
   useEffect(() => {
@@ -28,14 +30,27 @@ const Login = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-
+    setLoginError("");
+    
+    // Očistit email a heslo od mezer
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
+    
     try {
+      // Vývojářské pomůcky - zobrazit údaje v konzoli (pouze pro vývoj)
+      console.log("Přihlašovací údaje - email:", trimmedEmail);
+      console.log("Přihlašovací údaje - heslo:", trimmedPassword);
+      
       // Simulate API call delay
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       // Get users from local storage
       const users = JSON.parse(localStorage.getItem("users") || "[]");
-      const user = users.find((u: any) => u.email === email && u.password === password);
+      
+      // Logování pro ladění
+      console.log("Nalezení uživatelé:", users.length);
+      
+      const user = users.find((u: any) => u.email === trimmedEmail && u.password === trimmedPassword);
       
       if (user) {
         // Store user session
@@ -43,7 +58,7 @@ const Login = () => {
         localStorage.setItem("currentUser", JSON.stringify({ name: user.name, email: user.email }));
         
         if (rememberMe) {
-          localStorage.setItem("rememberedEmail", email);
+          localStorage.setItem("rememberedEmail", trimmedEmail);
         } else {
           localStorage.removeItem("rememberedEmail");
         }
@@ -51,14 +66,22 @@ const Login = () => {
         toast.success("Přihlášení úspěšné");
         navigate("/");
       } else {
+        setLoginError("Neplatný email nebo heslo. Zkontrolujte správnost údajů.");
         toast.error("Neplatný email nebo heslo");
       }
     } catch (error) {
       toast.error("Chyba při přihlašování");
+      setLoginError("Nastala chyba při přihlášení. Zkuste to prosím znovu.");
       console.error(error);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Funkce pro rychlé naplnění testovacími údaji
+  const fillTestCredentials = () => {
+    setEmail("vaclav@pendlerapp.com");
+    setPassword("Vaclav711");
   };
 
   return (
@@ -78,6 +101,12 @@ const Login = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
+              {loginError && (
+                <div className="p-3 bg-red-50 border border-red-200 text-red-600 text-sm rounded-md">
+                  {loginError}
+                </div>
+              )}
+              
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-gray-700">Email</Label>
                 <div className="relative">
@@ -161,6 +190,19 @@ const Login = () => {
                   "Přihlásit se"
                 )}
               </Button>
+              
+              {/* Testovací tlačítko pro vyplnění přihlašovacích údajů */}
+              <div className="text-center">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={fillTestCredentials}
+                  className="text-xs"
+                >
+                  Vyplnit testovací údaje
+                </Button>
+              </div>
               
               <div className="relative my-6">
                 <div className="absolute inset-0 flex items-center">

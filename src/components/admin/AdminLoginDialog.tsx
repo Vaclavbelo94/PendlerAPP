@@ -25,22 +25,40 @@ export const AdminLoginDialog = ({ isOpen, onClose, onSuccess }: AdminLoginDialo
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [loginError, setLoginError] = useState("");
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setLoginError("");
+    
+    // Očistit uživatelské jméno a heslo od mezer
+    const trimmedUsername = username.trim();
+    const trimmedPassword = password.trim();
+
+    // Debug informace
+    console.log("Admin přihlášení - uživatel:", trimmedUsername);
+    console.log("Admin přihlášení - heslo:", trimmedPassword);
 
     // Simulace ověření (v produkci by toto bylo na backendu)
     setTimeout(() => {
-      if (username === "vbelo" && password === "Vaclav711") {
+      if (trimmedUsername === "vbelo" && trimmedPassword === "Vaclav711") {
         localStorage.setItem("adminLoggedIn", "true");
         toast.success("Přihlášení do administrace úspěšné");
+        setLoginError("");
         onSuccess();
       } else {
+        setLoginError("Nesprávné přihlašovací údaje. Zkontrolujte správnost údajů.");
         toast.error("Nesprávné přihlašovací údaje");
       }
       setIsLoading(false);
     }, 800);
+  };
+
+  // Funkce pro rychlé naplnění testovacími údaji
+  const fillTestCredentials = () => {
+    setUsername("vbelo");
+    setPassword("Vaclav711");
   };
 
   return (
@@ -61,6 +79,12 @@ export const AdminLoginDialog = ({ isOpen, onClose, onSuccess }: AdminLoginDialo
         </DialogHeader>
         
         <form onSubmit={handleLogin} className="space-y-4">
+          {loginError && (
+            <div className="p-3 bg-red-50 border border-red-200 text-red-600 text-sm rounded-md">
+              {loginError}
+            </div>
+          )}
+          
           <div className="space-y-2">
             <Label htmlFor="username">Uživatelské jméno</Label>
             <div className="relative">
@@ -105,6 +129,19 @@ export const AdminLoginDialog = ({ isOpen, onClose, onSuccess }: AdminLoginDialo
                 )}
               </button>
             </div>
+          </div>
+          
+          {/* Testovací tlačítko pro vyplnění přihlašovacích údajů */}
+          <div className="text-center">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={fillTestCredentials}
+              className="text-xs"
+            >
+              Vyplnit testovací údaje
+            </Button>
           </div>
           
           <DialogFooter className="pt-4">
