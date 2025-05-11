@@ -8,6 +8,26 @@ import { Label } from "@/components/ui/label";
 import { grammarExercises } from "@/data/germanExercises";
 import EnhancedGrammarExercise from "@/components/language/EnhancedGrammarExercise";
 
+// Define the proper types to match the data structure
+interface Example {
+  id: string;
+  german: string;
+  czech: string;
+}
+
+interface GrammarRule {
+  id: string;
+  name: string;
+  description: string;
+  examples: Example[];
+}
+
+interface GrammarCategory {
+  id: string;
+  name: string;
+  rules: GrammarRule[];
+}
+
 const Language = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
@@ -25,7 +45,8 @@ const Language = () => {
     // Prohledávání všech kategorií a pravidel
     const results: any[] = [];
     
-    grammarExercises.forEach(category => {
+    // Treat grammarExercises as GrammarCategory[]
+    (grammarExercises as unknown as GrammarCategory[]).forEach(category => {
       category.rules.forEach(rule => {
         if (
           rule.name.toLowerCase().includes(term) || 
@@ -145,7 +166,7 @@ const Language = () => {
         </TabsList>
         
         <TabsContent value="grammar" className="space-y-8">
-          {germanExercises.map((category) => (
+          {(grammarExercises as unknown as GrammarCategory[]).map((category) => (
             <section key={category.id} id={`category-${category.id}`}>
               <EnhancedGrammarExercise category={category} />
             </section>
