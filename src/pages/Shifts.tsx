@@ -1,6 +1,5 @@
-
 import { useState, useEffect } from "react";
-import { Calendar as CalendarIcon, Calendar as CalendarLucide, FileDown, Download, Lock, LogIn, UserPlus } from "lucide-react";
+import { Calendar as CalendarIcon, Calendar as CalendarLucide, FileDown, Download, Lock, LogIn, UserPlus, Pencil, Note } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -33,11 +32,12 @@ interface User {
   premiumExpiry?: Date;
 }
 
-// Struktura směny
+// Struktura směny - rozšířená o poznámky
 interface Shift {
   date: Date;
   type: ShiftType;
   userId: string;
+  notes?: string;  // Přidané pole pro poznámky
 }
 
 // Sample data for the employee shifts
@@ -69,6 +69,8 @@ const Shifts = () => {
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [userShifts, setUserShifts] = useState<Shift[]>([]);
+  const [shiftNotes, setShiftNotes] = useState<string>("");
+  const [editNoteDialogOpen, setEditNoteDialogOpen] = useState(false);
   
   // Načtení stavu přihlášení při načtení stránky
   useEffect(() => {
@@ -142,7 +144,8 @@ const Shifts = () => {
     const newShift: Shift = {
       date: selectedDate,
       type: shiftType,
-      userId: currentUser.id
+      userId: currentUser.id,
+      notes: shiftNotes
     };
 
     if (shiftIndex >= 0) {
@@ -264,13 +267,47 @@ const Shifts = () => {
 
   // Aktuální směna pro vybraný den
   const currentShift = getShiftForSelectedDate();
-  // Nastavení typu směny podle aktuální směny, ale pouze při změně selectedDate nebo userShifts
+  
+  // Nastavení typu směny a poznámek podle aktuální směny
   useEffect(() => {
     const shift = getShiftForSelectedDate();
     if (shift) {
       setShiftType(shift.type);
+      setShiftNotes(shift.notes || "");
+    } else {
+      setShiftNotes("");
     }
   }, [selectedDate, userShifts]);
+  
+  // Otevření dialogu pro editaci poznámky
+  const handleOpenNoteDialog = () => {
+    setEditNoteDialogOpen(true);
+  };
+
+  // Uložení poznámky
+  const handleSaveNote = () => {
+    if (!selectedDate || !currentUser) return;
+    
+    const shiftIndex = userShifts.findIndex(shift => 
+      shift.date.getDate() === selectedDate.getDate() && 
+      shift.date.getMonth() === selectedDate.getMonth() && 
+      shift.date.getFullYear() === selectedDate.getFullYear()
+    );
+
+    if (shiftIndex >= 0) {
+      const updatedShifts = [...userShifts];
+      updatedShifts[shiftIndex] = {
+        ...updatedShifts[shiftIndex],
+        notes: shiftNotes
+      };
+      
+      setUserShifts(updatedShifts);
+      localStorage.setItem(`shifts_${currentUser.id}`, JSON.stringify(updatedShifts));
+      toast.success("Poznámka ke směně byla uložena");
+    }
+    
+    setEditNoteDialogOpen(false);
+  };
   
   return (
     <div className="flex flex-col">
@@ -402,10 +439,35 @@ const Shifts = () => {
                           </p>
                           {currentShift ? (
                             <div className="mt-2">
-                              <Badge className={`${getShiftColor(currentShift.type)} text-white hover:opacity-90`}>
-                                Naplánovaná směna
-                              </Badge>
+                              <div className="flex justify-between items-start">
+                                <Badge className={`${getShiftColor(currentShift.type)} text-white hover:opacity-90`}>
+                                  Naplánovaná směna
+                                </Badge>
+                                
+                                {isLoggedIn && (
+                                  <Button 
+                                    size="icon" 
+                                    variant="ghost" 
+                                    className="h-8 w-8" 
+                                    onClick={handleOpenNoteDialog}
+                                    title="Upravit poznámku"
+                                  >
+                                    <Pencil className="h-4 w-4" />
+                                  </Button>
+                                )}
+                              </div>
                               <p className="mt-2">Směna: {getShiftTimeByType(currentShift.type)}</p>
+                              
+                              {/* Zobrazení poznámky ke směně */}
+                              {currentShift.notes && (
+                                <div className="mt-3 bg-white p-3 rounded-md border border-muted">
+                                  <div className="flex items-center gap-2 mb-1 text-sm text-muted-foreground">
+                                    <Note className="h-3 w-3" />
+                                    <span>Poznámka:</span>
+                                  </div>
+                                  <p className="text-sm whitespace-pre-wrap">{currentShift.notes}</p>
+                                </div>
+                              )}
                               
                               {isLoggedIn && (
                                 <div className="mt-3">
@@ -464,6 +526,17 @@ const Shifts = () => {
                                         <SelectItem value="night">Noční (22:00 - 6:00)</SelectItem>
                                       </SelectContent>
                                     </Select>
+                                    
+                                    <div className="mt-3">
+                                      <Label htmlFor="shift-notes">Poznámka ke směně (volitelné)</Label>
+                                      <Textarea
+                                        id="shift-notes"
+                                        placeholder="Zadejte poznámku ke směně..."
+                                        value={shiftNotes}
+                                        onChange={(e) => setShiftNotes(e.target.value)}
+                                        className="mt-1"
+                                      />
+                                    </div>
                                     
                                     <Button 
                                       onClick={handleSaveShift} 
@@ -608,12 +681,14 @@ const Shifts = () => {
                               <TableRow>
                                 <TableHead>Datum</TableHead>
                                 <TableHead>Typ směny</TableHead>
+                                <TableHead>Poznámka</TableHead>
+                                <TableHead className="text-right">Akce</TableHead>
                               </TableRow>
                             </TableHeader>
                             <TableBody>
                               {userShifts.length === 0 ? (
                                 <TableRow>
-                                  <TableCell colSpan={2} className="text-center py-4">
+                                  <TableCell colSpan={4} className="text-center py-4">
                                     Zatím nemáte naplánované žádné směny
                                   </TableCell>
                                 </TableRow>
@@ -625,6 +700,27 @@ const Shifts = () => {
                                       <Badge className={`${getShiftColor(shift.type)} text-white`}>
                                         {getShiftTimeByType(shift.type)}
                                       </Badge>
+                                    </TableCell>
+                                    <TableCell>
+                                      {shift.notes ? (
+                                        <div className="truncate max-w-[200px]" title={shift.notes}>
+                                          {shift.notes}
+                                        </div>
+                                      ) : (
+                                        <span className="text-muted-foreground text-sm">-</span>
+                                      )}
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => {
+                                          setSelectedDate(shift.date);
+                                          setActiveTab("calendar");
+                                        }}
+                                      >
+                                        Zobrazit
+                                      </Button>
                                     </TableCell>
                                   </TableRow>
                                 ))
@@ -835,6 +931,38 @@ const Shifts = () => {
           </section>
         </div>
       </section>
+      
+      {/* Dialog pro úpravu poznámky */}
+      <Dialog open={editNoteDialogOpen} onOpenChange={setEditNoteDialogOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Upravit poznámku ke směně</DialogTitle>
+            <DialogDescription>
+              {selectedDate && format(selectedDate, "EEEE, d. MMMM yyyy", { locale: cs })}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="note-text">Poznámka</Label>
+              <Textarea
+                id="note-text"
+                value={shiftNotes}
+                onChange={(e) => setShiftNotes(e.target.value)}
+                placeholder="Zadejte poznámku ke směně..."
+                className="min-h-[150px]"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditNoteDialogOpen(false)}>
+              Zrušit
+            </Button>
+            <Button onClick={handleSaveNote}>
+              Uložit poznámku
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
