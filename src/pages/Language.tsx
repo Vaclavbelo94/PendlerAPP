@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { germanExercises } from "@/data/germanExercises";
+import { grammarExercises } from "@/data/germanExercises";
 import EnhancedGrammarExercise from "@/components/language/EnhancedGrammarExercise";
 
 const Language = () => {
@@ -25,7 +25,7 @@ const Language = () => {
     // Prohledávání všech kategorií a pravidel
     const results: any[] = [];
     
-    germanExercises.forEach(category => {
+    grammarExercises.forEach(category => {
       category.rules.forEach(rule => {
         if (
           rule.name.toLowerCase().includes(term) || 

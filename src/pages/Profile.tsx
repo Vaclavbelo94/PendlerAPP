@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { UserIcon, KeyIcon, ShieldIcon, LogOutIcon, SettingsIcon, BellIcon, LanguageIcon, CarIcon, ClockIcon } from "lucide-react";
+import { UserIcon, KeyIcon, ShieldIcon, LogOutIcon, SettingsIcon, BellIcon, LanguagesIcon, CarIcon, ClockIcon } from "lucide-react";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -214,7 +213,7 @@ const Profile = () => {
     localStorage.removeItem("isLoggedIn");
     localStorage.removeItem("currentUser");
     navigate("/");
-    toast.success("Byli jste úspěšně odhlášeni");
+    toast.success("Byli jste ��spěšně odhlášeni");
   };
   
   const formatDate = (dateString: string | null) => {
@@ -604,7 +603,7 @@ const Profile = () => {
                   id="notifyLanguage" 
                   title="Upozornění na lekce"
                   description="Připomenutí jazykové lekce"
-                  icon={<LanguageIcon className="h-5 w-5" />}
+                  icon={<LanguagesIcon className="h-5 w-5" />}
                   disabled={!notificationsEnabled}
                 />
               </div>
