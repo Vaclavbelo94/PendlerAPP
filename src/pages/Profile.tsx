@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -28,7 +29,7 @@ const Profile = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [address, setAddress] = useState("");
-  const [defaultVehicle, setDefaultVehicle] = useState("");
+  const [defaultVehicle, setDefaultVehicle] = useState("none");  // Changed from empty string to "none"
   const [currency, setCurrency] = useState("EUR");
   const [dateFormat, setDateFormat] = useState("dd.MM.yyyy");
   const [timeFormat, setTimeFormat] = useState("24h");
@@ -67,7 +68,7 @@ const Profile = () => {
         setDarkMode(currentUser.darkMode || false);
         setPhoneNumber(currentUser.phoneNumber || "");
         setAddress(currentUser.address || "");
-        setDefaultVehicle(currentUser.defaultVehicle || "");
+        setDefaultVehicle(currentUser.defaultVehicle || "none");  // Changed from empty string to "none"
         setCurrency(currentUser.currency || "EUR");
         setDateFormat(currentUser.dateFormat || "dd.MM.yyyy");
         setTimeFormat(currentUser.timeFormat || "24h");
@@ -502,7 +503,7 @@ const Profile = () => {
                       <SelectValue placeholder="Vyberte vozidlo" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Žádné</SelectItem>
+                      <SelectItem value="none">Žádné</SelectItem>
                       <SelectItem value="car1">Osobní automobil</SelectItem>
                       <SelectItem value="car2">Služební vozidlo</SelectItem>
                     </SelectContent>
@@ -767,3 +768,4 @@ const PremiumFeatureItem = ({ name, isActive }: { name: string; isActive: boolea
 );
 
 export default Profile;
+
