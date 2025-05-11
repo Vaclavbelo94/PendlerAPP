@@ -23,7 +23,8 @@ import Cookies from "./pages/Cookies";
 import Admin from "./pages/Admin";
 import Profile from "./pages/Profile";
 import Premium from "./pages/Premium";
-import Layout from "./components/layouts/Layout";
+import LayoutWrapper from "./components/layouts/LayoutWrapper";
+import { ShiftNotifications } from "./components/notifications/ShiftNotifications";
 
 // Law detail pages
 import MinimumWage from "./pages/laws/MinimumWage";
@@ -45,37 +46,38 @@ const App = () => (
       <Toaster />
       <Sonner position="top-right" closeButton />
       <BrowserRouter>
+        <ShiftNotifications />
         <Routes>
-          <Route path="/" element={<Layout><Index /></Layout>} />
-          <Route path="/language" element={<Layout><Language /></Layout>} />
-          <Route path="/laws" element={<Layout><Laws /></Layout>} />
-          <Route path="/vehicle" element={<Layout><Vehicle /></Layout>} />
-          <Route path="/shifts" element={<Layout><Shifts /></Layout>} />
-          <Route path="/calculator" element={<Layout><Calculator /></Layout>} />
-          <Route path="/translator" element={<Layout><TranslatorPage /></Layout>} />
-          <Route path="/login" element={<Layout><Login /></Layout>} />
-          <Route path="/register" element={<Layout><Register /></Layout>} />
-          <Route path="/profile" element={<Layout><Profile /></Layout>} />
-          <Route path="/premium" element={<Layout><Premium /></Layout>} />
-          <Route path="/about" element={<Layout><About /></Layout>} />
-          <Route path="/contact" element={<Layout><Contact /></Layout>} />
-          <Route path="/faq" element={<Layout><FAQ /></Layout>} />
-          <Route path="/terms" element={<Layout><Terms /></Layout>} />
-          <Route path="/privacy" element={<Layout><Privacy /></Layout>} />
-          <Route path="/cookies" element={<Layout><Cookies /></Layout>} />
-          <Route path="/admin" element={<Layout><Admin /></Layout>} />
+          <Route path="/" element={<LayoutWrapper><Index /></LayoutWrapper>} />
+          <Route path="/language" element={<LayoutWrapper><Language /></LayoutWrapper>} />
+          <Route path="/laws" element={<LayoutWrapper><Laws /></LayoutWrapper>} />
+          <Route path="/vehicle" element={<LayoutWrapper><Vehicle /></LayoutWrapper>} />
+          <Route path="/shifts" element={<LayoutWrapper><Shifts /></LayoutWrapper>} />
+          <Route path="/calculator" element={<LayoutWrapper><Calculator /></LayoutWrapper>} />
+          <Route path="/translator" element={<LayoutWrapper><TranslatorPage /></LayoutWrapper>} />
+          <Route path="/login" element={<LayoutWrapper><Login /></LayoutWrapper>} />
+          <Route path="/register" element={<LayoutWrapper><Register /></LayoutWrapper>} />
+          <Route path="/profile" element={<LayoutWrapper><Profile /></LayoutWrapper>} />
+          <Route path="/premium" element={<LayoutWrapper><Premium /></LayoutWrapper>} />
+          <Route path="/about" element={<LayoutWrapper><About /></LayoutWrapper>} />
+          <Route path="/contact" element={<LayoutWrapper><Contact /></LayoutWrapper>} />
+          <Route path="/faq" element={<LayoutWrapper><FAQ /></LayoutWrapper>} />
+          <Route path="/terms" element={<LayoutWrapper><Terms /></LayoutWrapper>} />
+          <Route path="/privacy" element={<LayoutWrapper><Privacy /></LayoutWrapper>} />
+          <Route path="/cookies" element={<LayoutWrapper><Cookies /></LayoutWrapper>} />
+          <Route path="/admin" element={<LayoutWrapper><Admin /></LayoutWrapper>} />
           
           {/* Law detail pages */}
-          <Route path="/laws/minimum-wage" element={<Layout><MinimumWage /></Layout>} />
-          <Route path="/laws/tax-classes" element={<Layout><TaxClasses /></Layout>} />
-          <Route path="/laws/health-insurance" element={<Layout><HealthInsurance /></Layout>} />
-          <Route path="/laws/work-contract" element={<Layout><WorkContract /></Layout>} />
-          <Route path="/laws/tax-return" element={<Layout><TaxReturn /></Layout>} />
-          <Route path="/laws/pension-insurance" element={<Layout><PensionInsurance /></Layout>} />
-          <Route path="/laws/employee-protection" element={<Layout><EmployeeProtection /></Layout>} />
-          <Route path="/laws/child-benefits" element={<Layout><ChildBenefits /></Layout>} />
+          <Route path="/laws/minimum-wage" element={<LayoutWrapper><MinimumWage /></LayoutWrapper>} />
+          <Route path="/laws/tax-classes" element={<LayoutWrapper><TaxClasses /></LayoutWrapper>} />
+          <Route path="/laws/health-insurance" element={<LayoutWrapper><HealthInsurance /></LayoutWrapper>} />
+          <Route path="/laws/work-contract" element={<LayoutWrapper><WorkContract /></LayoutWrapper>} />
+          <Route path="/laws/tax-return" element={<LayoutWrapper><TaxReturn /></LayoutWrapper>} />
+          <Route path="/laws/pension-insurance" element={<LayoutWrapper><PensionInsurance /></LayoutWrapper>} />
+          <Route path="/laws/employee-protection" element={<LayoutWrapper><EmployeeProtection /></LayoutWrapper>} />
+          <Route path="/laws/child-benefits" element={<LayoutWrapper><ChildBenefits /></LayoutWrapper>} />
           
-          <Route path="*" element={<Layout><NotFound /></Layout>} />
+          <Route path="*" element={<LayoutWrapper><NotFound /></LayoutWrapper>} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
