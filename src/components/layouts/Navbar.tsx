@@ -6,7 +6,6 @@ import {
   Menu,
   UserIcon, 
   LogOutIcon, 
-  BellIcon,
   SearchIcon,
   CalculatorIcon
 } from "lucide-react";
@@ -22,9 +21,10 @@ import { Input } from "@/components/ui/input";
 
 interface NavbarProps {
   toggleSidebar: () => void;
+  rightContent?: React.ReactNode;
 }
 
-const Navbar = ({ toggleSidebar }: NavbarProps) => {
+const Navbar = ({ toggleSidebar, rightContent }: NavbarProps) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState("");
   const [isScrolled, setIsScrolled] = useState(false);
@@ -105,11 +105,8 @@ const Navbar = ({ toggleSidebar }: NavbarProps) => {
             </Button>
           )}
           
-          {/* Notifications */}
-          <Button variant="ghost" size="icon" className="relative">
-            <BellIcon className="h-5 w-5" />
-            <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full"></span>
-          </Button>
+          {/* Right Content (e.g. notifications) */}
+          {rightContent}
           
           {isLoggedIn ? (
             <DropdownMenu>

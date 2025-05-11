@@ -8,9 +8,10 @@ import { useState, useEffect } from "react";
 
 interface LayoutProps {
   children: ReactNode;
+  navbarRightContent?: ReactNode;
 }
 
-const Layout = ({ children }: LayoutProps) => {
+const Layout = ({ children, navbarRightContent }: LayoutProps) => {
   const [isMobile, setIsMobile] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -37,7 +38,7 @@ const Layout = ({ children }: LayoutProps) => {
       {/* Main content */}
       <div className="flex-1 flex flex-col">
         {/* Navbar */}
-        <Navbar toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+        <Navbar toggleSidebar={() => setSidebarOpen(!sidebarOpen)} rightContent={navbarRightContent} />
         
         {/* Overlay for mobile sidebar */}
         {isMobile && sidebarOpen && (
