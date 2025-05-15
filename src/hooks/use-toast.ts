@@ -135,9 +135,14 @@ function dispatch(action: Action) {
   })
 }
 
-type Toast = Omit<ToasterToastProps, "id">
+interface ToastProps {
+  title?: React.ReactNode
+  description?: React.ReactNode
+  variant?: "default" | "destructive"
+  [key: string]: any
+}
 
-function toast({ ...props }: Toast) {
+function toast(props: ToastProps) {
   const id = generateId()
 
   const update = (props: ToasterToastProps) =>

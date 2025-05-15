@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createContext, useContext, ReactNode } from 'react';
+import * as React from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Session } from '@supabase/supabase-js';
 import { toast } from '@/components/ui/use-toast';
@@ -16,16 +16,16 @@ interface AuthContextType {
   refreshPremiumStatus: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = React.createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [isPremium, setIsPremium] = useState(false);
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [user, setUser] = React.useState<User | null>(null);
+  const [session, setSession] = React.useState<Session | null>(null);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [isAdmin, setIsAdmin] = React.useState(false);
+  const [isPremium, setIsPremium] = React.useState(false);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const initialize = async () => {
       setIsLoading(true);
       
@@ -131,14 +131,25 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       });
       
       if (error) {
-        toast.error(error.message);
+        toast({
+          title: "Přihlášení selhalo",
+          description: error.message,
+          variant: "destructive",
+        });
         return { error };
       }
       
-      toast.success("Úspěšně přihlášeno!");
+      toast({
+        title: "Úspěšně přihlášeno!",
+        variant: "default",
+      });
       return { error: null };
     } catch (err: any) {
-      toast.error("Přihlášení selhalo: " + err.message);
+      toast({
+        title: "Přihlášení selhalo",
+        description: err.message,
+        variant: "destructive",
+      });
       return { error: err };
     }
   };
@@ -156,14 +167,26 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       });
       
       if (error) {
-        toast.error("Registrace selhala: " + error.message);
+        toast({
+          title: "Registrace selhala",
+          description: error.message,
+          variant: "destructive",
+        });
         return { error };
       }
       
-      toast.success("Účet byl vytvořen! Zkontrolujte svůj email pro potvrzení.");
+      toast({
+        title: "Účet byl vytvořen!",
+        description: "Zkontrolujte svůj email pro potvrzení.",
+        variant: "default",
+      });
       return { error: null };
     } catch (err: any) {
-      toast.error("Registrace selhala: " + err.message);
+      toast({
+        title: "Registrace selhala",
+        description: err.message,
+        variant: "destructive",
+      });
       return { error: err };
     }
   };
@@ -175,9 +198,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       localStorage.removeItem('adminLoggedIn');
       localStorage.removeItem('currentUser');
       localStorage.removeItem('isLoggedIn');
-      toast.info("Byli jste odhlášeni");
+      toast({
+        title: "Byli jste odhlášeni",
+        variant: "default",
+      });
     } catch (error: any) {
-      toast.error("Odhlášení selhalo: " + error.message);
+      toast({
+        title: "Odhlášení selhalo",
+        description: error.message,
+        variant: "destructive",
+      });
     }
   };
 
@@ -198,7 +228,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 };
 
 export const useAuth = () => {
-  const context = useContext(AuthContext);
+  const context = React.useContext(AuthContext);
   if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
