@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { grammarExercises } from "@/data/germanExercises";
 import EnhancedGrammarExercise from "@/components/language/EnhancedGrammarExercise";
+import VocabularySection from "@/components/language/VocabularySection";
+import InteractiveQuiz from "@/components/language/InteractiveQuiz";
 
 // Define the proper types to match the data structure
 interface Example {
@@ -163,6 +165,7 @@ const Language = () => {
           <TabsTrigger value="grammar">Gramatika</TabsTrigger>
           <TabsTrigger value="vocabulary">Slovní zásoba</TabsTrigger>
           <TabsTrigger value="phrases">Fráze</TabsTrigger>
+          <TabsTrigger value="interactive">Interaktivní cvičení</TabsTrigger>
         </TabsList>
         
         <TabsContent value="grammar" className="space-y-8">
@@ -174,17 +177,7 @@ const Language = () => {
         </TabsContent>
         
         <TabsContent value="vocabulary">
-          <Card>
-            <CardHeader>
-              <CardTitle>Slovní zásoba</CardTitle>
-              <CardDescription>
-                Tematicky rozdělená slovní zásoba
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p>Sekce pro slovní zásobu je ve vývoji.</p>
-            </CardContent>
-          </Card>
+          <VocabularySection />
         </TabsContent>
         
         <TabsContent value="phrases">
@@ -196,9 +189,60 @@ const Language = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p>Sekce s frázemi je ve vývoji.</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-4">
+                  <h3 className="font-medium">V práci</h3>
+                  <ul className="space-y-2">
+                    <li className="p-2 bg-slate-50 rounded-md">
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="font-medium">Können Sie mir bitte helfen?</div>
+                        <div>Můžete mi prosím pomoci?</div>
+                      </div>
+                    </li>
+                    <li className="p-2 bg-slate-50 rounded-md">
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="font-medium">Ich verstehe nicht.</div>
+                        <div>Nerozumím.</div>
+                      </div>
+                    </li>
+                    <li className="p-2 bg-slate-50 rounded-md">
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="font-medium">Können Sie das wiederholen?</div>
+                        <div>Můžete to zopakovat?</div>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+                <div className="space-y-4">
+                  <h3 className="font-medium">Na úřadě</h3>
+                  <ul className="space-y-2">
+                    <li className="p-2 bg-slate-50 rounded-md">
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="font-medium">Ich habe einen Termin.</div>
+                        <div>Mám termín schůzky.</div>
+                      </div>
+                    </li>
+                    <li className="p-2 bg-slate-50 rounded-md">
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="font-medium">Ich brauche ein Formular.</div>
+                        <div>Potřebuji formulář.</div>
+                      </div>
+                    </li>
+                    <li className="p-2 bg-slate-50 rounded-md">
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="font-medium">Wie lange dauert das?</div>
+                        <div>Jak dlouho to bude trvat?</div>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
             </CardContent>
           </Card>
+        </TabsContent>
+        
+        <TabsContent value="interactive">
+          <InteractiveQuiz />
         </TabsContent>
       </Tabs>
     </div>
