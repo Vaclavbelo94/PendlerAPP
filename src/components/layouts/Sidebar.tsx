@@ -102,8 +102,8 @@ const Sidebar = ({ closeSidebar }: SidebarProps) => {
       </ScrollArea>
       <Separator />
       <div className="p-4">
-        {/* Admin tlačítko v levém dolním rohu - pouze pro administrátory */}
-        {isAdmin && (
+        {/* Admin tlačítko v levém dolním rohu - pouze pro administrátory, když jsou přihlášeni */}
+        {user && isAdmin && (
           <Link to="/admin" className="mb-4 block">
             <Button 
               variant={location.pathname === "/admin" ? "secondary" : "outline"}
@@ -155,7 +155,7 @@ const Sidebar = ({ closeSidebar }: SidebarProps) => {
                   <Button size="sm" variant="outline" className="w-full">Registrovat</Button>
                 </Link>
               </div>
-            </>
+            </div>
           )}
         </div>
       </div>
