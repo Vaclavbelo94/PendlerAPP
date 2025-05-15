@@ -1,3 +1,4 @@
+
 import * as React from "react"
 
 import type {
@@ -8,11 +9,14 @@ import type {
 const TOAST_LIMIT = 20
 const TOAST_REMOVE_DELAY = 1000000
 
-type ToasterToastProps = Omit<ShadcnToastProps, "id"> & {
+type ToasterToastProps = {
   id: string
   title?: React.ReactNode
   description?: React.ReactNode
   action?: ToastActionElement
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
+  variant?: "default" | "destructive"
 }
 
 const actionTypes = {
