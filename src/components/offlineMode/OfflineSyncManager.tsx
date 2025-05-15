@@ -1,5 +1,5 @@
 
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useOfflineStatus } from '@/hooks/useOfflineStatus';
 import { syncWithLocalStorage, loadFromLocalStorage } from '@/utils/offlineStorage';
 import { toast } from '@/components/ui/use-toast';
