@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
 
 interface UseOfflineStatusResult {
   isOffline: boolean;
@@ -7,12 +7,12 @@ interface UseOfflineStatusResult {
 }
 
 export const useOfflineStatus = (): UseOfflineStatusResult => {
-  const [isOffline, setIsOffline] = useState<boolean>(!navigator.onLine);
-  const [lastOnlineAt, setLastOnlineAt] = useState<Date | null>(
+  const [isOffline, setIsOffline] = React.useState<boolean>(!navigator.onLine);
+  const [lastOnlineAt, setLastOnlineAt] = React.useState<Date | null>(
     navigator.onLine ? new Date() : null
   );
 
-  useEffect(() => {
+  React.useEffect(() => {
     const handleOnline = () => {
       setIsOffline(false);
       setLastOnlineAt(new Date());

@@ -1,5 +1,5 @@
 
-import React from 'react';
+import * as React from 'react';
 import { useOfflineStatus } from '@/hooks/useOfflineStatus';
 import { WifiOff } from 'lucide-react';
 import { cn } from '@/lib/utils';

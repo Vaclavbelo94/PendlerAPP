@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import * as React from 'react';
 import { useOfflineStatus } from '@/hooks/useOfflineStatus';
 import { syncWithLocalStorage, loadFromLocalStorage } from '@/utils/offlineStorage';
 import { toast } from '@/components/ui/use-toast';
@@ -12,7 +12,7 @@ export const OfflineSyncManager = () => {
   const { canAccess, isPremiumFeature } = usePremiumCheck('offline-sync');
 
   // Load data to IndexedDB when app starts or when going offline
-  useEffect(() => {
+  React.useEffect(() => {
     if (isOffline && user) {
       if (isPremiumFeature && !canAccess) {
         toast({
@@ -41,7 +41,7 @@ export const OfflineSyncManager = () => {
   }, [isOffline, user, canAccess, isPremiumFeature]);
 
   // Sync data back to server when coming online
-  useEffect(() => {
+  React.useEffect(() => {
     if (!isOffline && user) {
       if (isPremiumFeature && !canAccess) {
         toast({

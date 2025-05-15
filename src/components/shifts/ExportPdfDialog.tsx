@@ -31,7 +31,11 @@ export const ExportPdfDialog = ({
   setSelectedMonth 
 }: ExportPdfDialogProps) => {
   const handleExportPDF = () => {
-    toast.success("Export do PDF byl zahájen. Soubor bude brzy ke stažení.");
+    toast({
+      title: "Export do PDF byl zahájen",
+      description: "Soubor bude brzy ke stažení.",
+      variant: "default"
+    });
   };
 
   return (

@@ -17,7 +17,11 @@ export const PlanningTab = ({ user }: { user: any }) => {
       navigate("/login");
       return;
     }
-    toast.success(`Trasa uložena: ${route.from} → ${route.to} v ${route.time}`);
+    toast({
+      title: `Trasa uložena`,
+      description: `${route.from} → ${route.to} v ${route.time}`,
+      variant: "default"
+    });
   };
 
   return (
