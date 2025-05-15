@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,7 +16,7 @@ const Login = () => {
   const { signIn, user } = useAuth();
   
   useEffect(() => {
-    // Pokud je uživatel již přihlášen, přesměrujeme ho na hlavní stránku
+    // Redirect user to homepage if already logged in
     if (user) {
       navigate("/");
     }
