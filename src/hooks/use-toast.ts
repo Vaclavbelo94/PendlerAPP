@@ -1,14 +1,15 @@
 
 import * as React from "react"
-import {
-  type ToastActionElement,
-  ToastProps as ToastPrimitiveProps,
+
+import type {
+  ToastActionElement,
+  ToastProps,
 } from "@/components/ui/toast"
 
 const TOAST_LIMIT = 20
 const TOAST_REMOVE_DELAY = 1000000
 
-type ToasterToastProps = ToastPrimitiveProps & {
+type ToasterToastProps = Omit<ToastProps, "id"> & {
   id: string
   title?: React.ReactNode
   description?: React.ReactNode
@@ -24,9 +25,8 @@ const actionTypes = {
 
 let count = 0
 
-function genId() {
-  count = (count + 1) % Number.MAX_VALUE
-  return count.toString()
+function generateId() {
+  return (++count).toString()
 }
 
 type ActionType = typeof actionTypes
@@ -42,11 +42,11 @@ type Action =
     }
   | {
       type: ActionType["DISMISS_TOAST"]
-      toastId?: ToasterToastProps["id"]
+      toastId?: string
     }
   | {
       type: ActionType["REMOVE_TOAST"]
-      toastId?: ToasterToastProps["id"]
+      toastId?: string
     }
 
 interface State {
@@ -135,12 +135,10 @@ function dispatch(action: Action) {
   })
 }
 
-interface ToastOptions extends Omit<ToasterToastProps, "id"> {
-  variant?: "default" | "destructive",
-}
+type Toast = Omit<ToasterToastProps, "id">
 
-function toast(opts: ToastOptions) {
-  const id = genId()
+function toast({ ...props }: Toast) {
+  const id = generateId()
 
   const update = (props: ToasterToastProps) =>
     dispatch({
@@ -152,7 +150,7 @@ function toast(opts: ToastOptions) {
   dispatch({
     type: "ADD_TOAST",
     toast: {
-      ...opts,
+      ...props,
       id,
       open: true,
       onOpenChange: (open) => {
@@ -168,22 +166,23 @@ function toast(opts: ToastOptions) {
   }
 }
 
-// Add convenience methods for toast
-toast.success = (message: string) => {
-  return toast({ 
-    title: "Success", 
-    description: message,
-    variant: "default" 
-  });
-};
+// Add convenience methods
+toast.success = (title: string, description?: string) => toast({
+  title,
+  description,
+  variant: "default",
+})
 
-toast.error = (message: string) => {
-  return toast({ 
-    title: "Error", 
-    description: message,
-    variant: "destructive" 
-  });
-};
+toast.error = (title: string, description?: string) => toast({
+  title,
+  description,
+  variant: "destructive",
+})
+
+toast.info = (title: string, description?: string) => toast({
+  title,
+  description,
+})
 
 function useToast() {
   const [state, setState] = React.useState<State>(memoryState)
