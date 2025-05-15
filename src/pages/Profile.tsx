@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,7 +10,17 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { UserIcon, KeyIcon, ShieldIcon, LogOutIcon, SettingsIcon, BellIcon, LanguagesIcon, CarIcon, ClockIcon } from "lucide-react";
+import { 
+  UserIcon, KeyIcon, ShieldIcon, LogOutIcon, SettingsIcon, 
+  BellIcon, LanguagesIcon, CarIcon, ClockIcon, LayoutIcon,
+  Activity, PieChart
+} from "lucide-react";
+
+// Import the new components
+import UserActivityChart from "@/components/profile/UserActivityChart";
+import LanguageSkillsChart from "@/components/profile/LanguageSkillsChart";
+import ProfileAppearance from "@/components/profile/ProfileAppearance";
+import { formatDateByPreference } from "@/utils/chartData";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -29,12 +38,17 @@ const Profile = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [address, setAddress] = useState("");
-  const [defaultVehicle, setDefaultVehicle] = useState("none");  // Changed from empty string to "none"
+  const [defaultVehicle, setDefaultVehicle] = useState("none");
   const [currency, setCurrency] = useState("EUR");
   const [dateFormat, setDateFormat] = useState("dd.MM.yyyy");
   const [timeFormat, setTimeFormat] = useState("24h");
   const [shiftReminderHours, setShiftReminderHours] = useState("12");
   const [avatar, setAvatar] = useState("");
+  const [colorScheme, setColorScheme] = useState("purple");
+  const [compactMode, setCompactMode] = useState(false);
+  
+  // For data visualization
+  const [showStats, setShowStats] = useState(true);
   
   useEffect(() => {
     // Check if user is logged in
@@ -68,12 +82,15 @@ const Profile = () => {
         setDarkMode(currentUser.darkMode || false);
         setPhoneNumber(currentUser.phoneNumber || "");
         setAddress(currentUser.address || "");
-        setDefaultVehicle(currentUser.defaultVehicle || "none");  // Changed from empty string to "none"
+        setDefaultVehicle(currentUser.defaultVehicle || "none");
         setCurrency(currentUser.currency || "EUR");
         setDateFormat(currentUser.dateFormat || "dd.MM.yyyy");
         setTimeFormat(currentUser.timeFormat || "24h");
         setShiftReminderHours(currentUser.shiftReminderHours || "12");
         setAvatar(currentUser.avatar || "");
+        setColorScheme(currentUser.colorScheme || "purple");
+        setCompactMode(currentUser.compactMode || false);
+        setShowStats(currentUser.showStats !== false);
       }
     } catch (error) {
       console.error("Error loading user data:", error);
@@ -93,7 +110,8 @@ const Profile = () => {
             ...u, 
             name,
             phoneNumber,
-            address 
+            address,
+            avatar
           };
         }
         return u;
@@ -102,7 +120,7 @@ const Profile = () => {
       localStorage.setItem("users", JSON.stringify(updatedUsers));
       
       // Update current user
-      const updatedUser = { ...user, name, phoneNumber, address };
+      const updatedUser = { ...user, name, phoneNumber, address, avatar };
       localStorage.setItem("currentUser", JSON.stringify(updatedUser));
       setUser(updatedUser);
       
@@ -172,7 +190,10 @@ const Profile = () => {
             currency,
             dateFormat,
             timeFormat,
-            shiftReminderHours
+            shiftReminderHours,
+            colorScheme,
+            compactMode,
+            showStats
           };
         }
         return u;
@@ -190,7 +211,10 @@ const Profile = () => {
         currency,
         dateFormat,
         timeFormat,
-        shiftReminderHours
+        shiftReminderHours,
+        colorScheme,
+        compactMode,
+        showStats
       };
       localStorage.setItem("currentUser", JSON.stringify(updatedUser));
       setUser(updatedUser);
@@ -214,12 +238,31 @@ const Profile = () => {
     localStorage.removeItem("isLoggedIn");
     localStorage.removeItem("currentUser");
     navigate("/");
-    toast.success("Byli jste ��spěšně odhlášeni");
+    toast.success("Byli jste úspěšně odhlášeni");
   };
   
   const formatDate = (dateString: string | null) => {
     if (!dateString) return "N/A";
-    return new Date(dateString).toLocaleDateString("cs-CZ");
+    return formatDateByPreference(dateString, dateFormat);
+  };
+  
+  const handleAppearanceUpdate = (settings: {
+    darkMode: boolean;
+    colorScheme: string;
+    compactMode: boolean;
+  }) => {
+    setDarkMode(settings.darkMode);
+    setColorScheme(settings.colorScheme);
+    setCompactMode(settings.compactMode);
+    
+    // Apply settings immediately for preview
+    if (settings.darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    
+    // This will be saved when the user clicks "Save Preferences" in the preferences tab
   };
   
   if (loading) {
@@ -270,8 +313,45 @@ const Profile = () => {
         </div>
       )}
       
+      {/* Data Visualization Section */}
+      {showStats && (
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-2xl font-bold flex items-center gap-2">
+              <Activity className="h-6 w-6" />
+              Statistiky a aktivita
+            </h2>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => setShowStats(false)}
+            >
+              Skrýt statistiky
+            </Button>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <UserActivityChart />
+            <LanguageSkillsChart />
+          </div>
+        </div>
+      )}
+      
+      {!showStats && (
+        <div className="mb-8">
+          <Button 
+            variant="outline" 
+            onClick={() => setShowStats(true)}
+            className="flex items-center gap-2"
+          >
+            <PieChart className="h-4 w-4" />
+            Zobrazit statistiky
+          </Button>
+        </div>
+      )}
+      
       <Tabs defaultValue="account" className="space-y-6">
-        <TabsList className="grid grid-cols-5 max-w-3xl">
+        <TabsList className="grid grid-cols-3 md:grid-cols-6 max-w-3xl">
           <TabsTrigger value="account">
             <UserIcon className="mr-2 h-4 w-4" /> Účet
           </TabsTrigger>
@@ -280,6 +360,9 @@ const Profile = () => {
           </TabsTrigger>
           <TabsTrigger value="preferences">
             <SettingsIcon className="mr-2 h-4 w-4" /> Předvolby
+          </TabsTrigger>
+          <TabsTrigger value="appearance">
+            <LayoutIcon className="mr-2 h-4 w-4" /> Vzhled
           </TabsTrigger>
           <TabsTrigger value="subscription">
             <ShieldIcon className="mr-2 h-4 w-4" /> Předplatné
@@ -532,15 +615,15 @@ const Profile = () => {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <Label htmlFor="darkMode" className="text-base">Tmavý režim</Label>
+                    <Label htmlFor="showStats" className="text-base">Zobrazit statistiky</Label>
                     <p className="text-sm text-muted-foreground">
-                      Přepne vzhled aplikace na tmavý režim
+                      Zobrazí grafy a statistiky na profilu
                     </p>
                   </div>
                   <Switch 
-                    id="darkMode" 
-                    checked={darkMode}
-                    onCheckedChange={setDarkMode}
+                    id="showStats" 
+                    checked={showStats}
+                    onCheckedChange={setShowStats}
                   />
                 </div>
               </div>
@@ -554,6 +637,15 @@ const Profile = () => {
               </Button>
             </CardFooter>
           </Card>
+        </TabsContent>
+        
+        <TabsContent value="appearance">
+          <ProfileAppearance 
+            initialDarkMode={darkMode}
+            initialColorScheme={colorScheme}
+            initialCompactMode={compactMode}
+            onSave={handleAppearanceUpdate}
+          />
         </TabsContent>
         
         <TabsContent value="notifications">
@@ -768,4 +860,3 @@ const PremiumFeatureItem = ({ name, isActive }: { name: string; isActive: boolea
 );
 
 export default Profile;
-
