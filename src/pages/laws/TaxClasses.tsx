@@ -1,16 +1,19 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, BookOpen, Calculator } from "lucide-react";
+import { ArrowLeft, BookOpen, Calculator, BadgeEuroIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
+import { Input } from "@/components/ui/input";
 
 const TaxClasses = () => {
   const [income, setIncome] = useState<string>("0");
   const [taxClass, setTaxClass] = useState<string>("1");
   const [calculatedTax, setCalculatedTax] = useState<number | null>(null);
+  const [netIncome, setNetIncome] = useState<number | null>(null);
+  const [showDetails, setShowDetails] = useState<boolean>(false);
+  const [taxDetails, setTaxDetails] = useState<any>(null);
   const { toast } = useToast();
 
   const calculateTax = () => {
@@ -25,8 +28,13 @@ const TaxClasses = () => {
       return;
     }
     
-    // Simplified German tax calculation (this is just an approximation)
+    // Tax calculation with more details
     let taxRate: number;
+    let solidaritySurcharge: number = 0;
+    let churchTax: number = 0;
+    let socialSecurityRate: number = 0.185; // 18.5% total social security
+    
+    // Base tax rate based on tax class
     switch (taxClass) {
       case "1":
         taxRate = 0.35; // Class I - approximately 35%
@@ -50,12 +58,38 @@ const TaxClasses = () => {
         taxRate = 0.35;
     }
     
-    const calculatedAmount = incomeValue * taxRate;
-    setCalculatedTax(calculatedAmount);
+    // Apply solidarity surcharge for high incomes
+    if (incomeValue > 62000) {
+      solidaritySurcharge = 0.055; // 5.5% of income tax
+    }
+    
+    // Calculate components
+    const baseTaxAmount = incomeValue * taxRate;
+    const solidarityAmount = baseTaxAmount * solidaritySurcharge;
+    const churchTaxAmount = baseTaxAmount * churchTax;
+    const socialSecurityAmount = incomeValue * socialSecurityRate;
+    
+    // Total deductions
+    const totalTaxes = baseTaxAmount + solidarityAmount + churchTaxAmount;
+    const totalDeductions = totalTaxes + socialSecurityAmount;
+    const netIncomeAmount = incomeValue - totalDeductions;
+    
+    setCalculatedTax(totalTaxes);
+    setNetIncome(netIncomeAmount);
+    setTaxDetails({
+      baseTax: baseTaxAmount,
+      solidarity: solidarityAmount,
+      church: churchTaxAmount,
+      socialSecurity: socialSecurityAmount,
+      healthInsurance: incomeValue * 0.075, // 7.5% of gross income
+      pensionInsurance: incomeValue * 0.093, // 9.3% of gross income
+      unemploymentInsurance: incomeValue * 0.012, // 1.2% of gross income
+      nursingCareInsurance: incomeValue * 0.015, // 1.5% of gross income
+    });
     
     toast({
       title: "Výpočet dokončen",
-      description: `Odhadovaná daň pro daňovou třídu ${taxClass}: ${calculatedAmount.toFixed(2)} €`,
+      description: `Odhadovaná daň pro daňovou třídu ${taxClass}: ${totalTaxes.toFixed(2)} €`,
     });
   };
 
@@ -131,7 +165,7 @@ const TaxClasses = () => {
             </CardContent>
           </Card>
           
-          {/* New Tax Calculator Section */}
+          {/* Enhanced Tax Calculator Section */}
           <Card className="mb-8">
             <CardHeader>
               <div className="flex items-center gap-2">
@@ -150,7 +184,7 @@ const TaxClasses = () => {
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
                     <Label htmlFor="income">Roční hrubý příjem (€)</Label>
-                    <input
+                    <Input
                       id="income"
                       type="number"
                       value={income}
@@ -178,9 +212,12 @@ const TaxClasses = () => {
                   </div>
                 </div>
                 
-                <Button onClick={calculateTax} className="w-full">Vypočítat daň</Button>
+                <Button onClick={calculateTax} className="w-full">
+                  <Calculator className="mr-2 h-4 w-4" />
+                  Vypočítat daň
+                </Button>
                 
-                {calculatedTax !== null && (
+                {calculatedTax !== null && netIncome !== null && (
                   <div className="mt-4 p-4 bg-primary-50 rounded-md">
                     <p className="text-lg font-semibold">Výsledek výpočtu:</p>
                     <div className="flex justify-between items-center mt-2">
@@ -193,11 +230,80 @@ const TaxClasses = () => {
                     </div>
                     <div className="flex justify-between items-center mt-2">
                       <span>Čistý příjem po zdanění (přibližně):</span>
-                      <span className="font-semibold">{(parseInt(income) - calculatedTax).toFixed(2).toLocaleString()} €</span>
+                      <span className="font-semibold">{netIncome.toFixed(2).toLocaleString()} €</span>
                     </div>
+                    
+                    <div className="mt-4">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => setShowDetails(!showDetails)}
+                        className="w-full"
+                      >
+                        {showDetails ? "Skrýt detaily" : "Zobrazit detaily výpočtu"}
+                      </Button>
+                      
+                      {showDetails && taxDetails && (
+                        <div className="mt-4 space-y-2 text-sm">
+                          <div className="grid grid-cols-2 gap-2">
+                            <span className="text-muted-foreground">Základní daň z příjmu:</span>
+                            <span className="font-medium text-right">{taxDetails.baseTax.toFixed(2)} €</span>
+                            
+                            <span className="text-muted-foreground">Solidární příplatek:</span>
+                            <span className="font-medium text-right">{taxDetails.solidarity.toFixed(2)} €</span>
+                            
+                            <span className="text-muted-foreground">Církevní daň:</span>
+                            <span className="font-medium text-right">{taxDetails.church.toFixed(2)} €</span>
+                            
+                            <span className="text-muted-foreground">Zdravotní pojištění:</span>
+                            <span className="font-medium text-right">{taxDetails.healthInsurance.toFixed(2)} €</span>
+                            
+                            <span className="text-muted-foreground">Důchodové pojištění:</span>
+                            <span className="font-medium text-right">{taxDetails.pensionInsurance.toFixed(2)} €</span>
+                            
+                            <span className="text-muted-foreground">Pojištění pro případ nezaměstnanosti:</span>
+                            <span className="font-medium text-right">{taxDetails.unemploymentInsurance.toFixed(2)} €</span>
+                            
+                            <span className="text-muted-foreground">Pojištění dlouhodobé péče:</span>
+                            <span className="font-medium text-right">{taxDetails.nursingCareInsurance.toFixed(2)} €</span>
+                          </div>
+                          
+                          <div className="pt-2 mt-2 border-t">
+                            <div className="flex justify-between">
+                              <span className="font-medium">Celkové daňové odvody:</span>
+                              <span className="font-medium">{calculatedTax.toFixed(2)} €</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="font-medium">Celkové sociální odvody:</span>
+                              <span className="font-medium">{taxDetails.socialSecurity.toFixed(2)} €</span>
+                            </div>
+                            <div className="flex justify-between mt-2">
+                              <span className="font-medium">Efektivní daňová sazba:</span>
+                              <span className="font-medium">
+                                {((calculatedTax + taxDetails.socialSecurity) / parseFloat(income) * 100).toFixed(1)}%
+                              </span>
+                            </div>
+                          </div>
+                          
+                          <div className="bg-blue-50 p-2 rounded-md mt-4">
+                            <p className="text-xs">
+                              Tato kalkulačka poskytuje pouze zjednodušený odhad. Přesný výpočet daně závisí na mnoha dalších faktorech.
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    
                     <p className="text-sm text-muted-foreground mt-4">
                       Tento výpočet je zjednodušený a nezahrnuje všechny faktory ovlivňující výši daně, jako jsou odpočitatelné položky, příspěvky na sociální a zdravotní pojištění atd.
                     </p>
+                    
+                    <div className="mt-4 pt-4 border-t border-border">
+                      <Link to="/calculator" className="flex items-center text-primary hover:underline">
+                        <BadgeEuroIcon className="mr-2 h-4 w-4" />
+                        Použít pokročilou kalkulačku daně
+                      </Link>
+                    </div>
                   </div>
                 )}
               </div>

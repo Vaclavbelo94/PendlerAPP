@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,8 +10,9 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { cs } from "date-fns/locale";
-import { Calculator as CalculatorIcon, CoinsIcon, CarIcon } from "lucide-react";
+import { Calculator as CalculatorIcon, CoinsIcon, CarIcon, Globe, BadgeEuroIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import CrossBorderTaxCalculator from "@/components/calculator/CrossBorderTaxCalculator";
 
 const Calculator = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -136,7 +136,7 @@ const Calculator = () => {
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl font-bold mb-4 text-dhl-black">Kalkulačky</h1>
           <p className="text-lg text-dhl-black max-w-3xl mx-auto mb-8">
-            Spočítejte si čistou mzdu a cestovní náklady na základě vašich směn
+            Spočítejte si čistou mzdu, cestovní náklady a daňové povinnosti pro přeshraniční pracovníky
           </p>
         </div>
       </section>
@@ -153,6 +153,10 @@ const Calculator = () => {
               <TabsTrigger value="travel" className="data-[state=active]:bg-dhl-red data-[state=active]:text-white">
                 <CarIcon className="mr-2 h-4 w-4" />
                 Cestovní náklady
+              </TabsTrigger>
+              <TabsTrigger value="cross-border" className="data-[state=active]:bg-dhl-red data-[state=active]:text-white">
+                <Globe className="mr-2 h-4 w-4" />
+                Přeshraniční pracovníci
               </TabsTrigger>
             </TabsList>
             
@@ -488,6 +492,83 @@ const Calculator = () => {
                       <p className="text-sm text-muted-foreground">
                         Tento odpočet lze uplatnit v ročním daňovém přiznání. Pro více informací navštivte sekci <a href="/laws/tax-return" className="text-dhl-red hover:underline">Daňové přiznání</a>.
                       </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+            
+            {/* New Cross-Border Workers Tab */}
+            <TabsContent value="cross-border" className="space-y-6">
+              <div className="grid grid-cols-1 gap-6">
+                <div className="bg-blue-50 p-4 rounded-md mb-4">
+                  <h3 className="text-lg font-medium mb-2">Přeshraniční pracovníci (Pendleři)</h3>
+                  <p>
+                    Pracujete v jiné zemi, než ve které bydlíte? Tato specializovaná kalkulačka vám pomůže
+                    vyhodnotit daňové dopady a sociální odvody podle různých přeshraničních scénářů.
+                  </p>
+                </div>
+                
+                <CrossBorderTaxCalculator />
+                
+                <Card className="border-dhl-yellow">
+                  <CardHeader className="border-b border-dhl-yellow">
+                    <div className="flex items-center gap-2">
+                      <BadgeEuroIcon className="h-5 w-5 text-dhl-red" />
+                      <CardTitle>Informace pro přeshraniční pracovníky</CardTitle>
+                    </div>
+                    <CardDescription>Důležité informace pro osoby pracující v zahraničí</CardDescription>
+                  </CardHeader>
+                  <CardContent className="pt-6">
+                    <div className="space-y-6">
+                      <div>
+                        <h3 className="font-medium mb-2">Pravidlo 183 dnů</h3>
+                        <p className="text-sm text-muted-foreground mb-2">
+                          Pokud pracujete v zahraničí více než 183 dní v roce, obvykle se stáváte daňovým
+                          rezidentem této země a musíte zde zdanit své celosvětové příjmy.
+                        </p>
+                      </div>
+                      
+                      <div>
+                        <h3 className="font-medium mb-2">Smlouvy o zamezení dvojího zdanění</h3>
+                        <p className="text-sm text-muted-foreground mb-2">
+                          Tyto smlouvy určují, ve které zemi budete zdaňovat své příjmy a kde budete platit
+                          sociální a zdravotní pojištění. Pravidla se liší podle konkrétních zemí.
+                        </p>
+                      </div>
+                      
+                      <div>
+                        <h3 className="font-medium mb-2">Sociální zabezpečení (Nařízení EU 883/2004)</h3>
+                        <p className="text-sm text-muted-foreground mb-2">
+                          Podle nařízení EU platíte sociální pojištění pouze v jedné zemi. Pokud pracujete ve více
+                          zemích, záleží na tom, kde vykonáváte podstatnou část své činnosti.
+                        </p>
+                      </div>
+                      
+                      <div>
+                        <h3 className="font-medium mb-2">Formulář A1</h3>
+                        <p className="text-sm text-muted-foreground mb-2">
+                          Tento formulář potvrzuje, ve které zemi jste účastníkem systému sociálního zabezpečení.
+                          Je důležitý pro přeshraniční pracovníky a měl by být vystaven před zahájením práce v zahraničí.
+                        </p>
+                      </div>
+                      
+                      <div className="bg-yellow-50 p-4 rounded-md">
+                        <p className="font-medium">Důležité upozornění:</p>
+                        <p className="text-sm">
+                          Tato kalkulačka poskytuje pouze orientační výpočty. Pro přesné informace o vaší daňové
+                          povinnosti konzultujte daňového poradce nebo příslušný finanční úřad.
+                        </p>
+                      </div>
+                      
+                      <div>
+                        <Button variant="link" className="p-0 h-auto text-dhl-red">
+                          <a href="/laws/tax-return" className="flex items-center">
+                            Více informací o daňovém přiznání v Německu
+                            <span className="ml-1">→</span>
+                          </a>
+                        </Button>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
