@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Calendar as CalendarIcon, Calendar as CalendarLucide, FileDown, Download, Lock, LogIn, UserPlus, Pencil, Note } from "lucide-react";
+import { Calendar as CalendarIcon, Calendar as CalendarLucide, FileDown, Download, Lock, LogIn, UserPlus, Pencil, FileText } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -462,7 +462,7 @@ const Shifts = () => {
                               {currentShift.notes && (
                                 <div className="mt-3 bg-white p-3 rounded-md border border-muted">
                                   <div className="flex items-center gap-2 mb-1 text-sm text-muted-foreground">
-                                    <Note className="h-3 w-3" />
+                                    <FileText className="h-3 w-3" />
                                     <span>Poznámka:</span>
                                   </div>
                                   <p className="text-sm whitespace-pre-wrap">{currentShift.notes}</p>
