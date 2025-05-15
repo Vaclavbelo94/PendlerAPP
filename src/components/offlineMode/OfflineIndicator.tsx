@@ -1,14 +1,13 @@
 
 import React from 'react';
 import { useOfflineStatus } from '@/hooks/useOfflineStatus';
-import { Wifi, WifiOff, CloudOff } from 'lucide-react';
+import { WifiOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
@@ -23,27 +22,25 @@ const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({ className }) => {
 
   return (
     <div className={cn("fixed bottom-4 right-4 z-50", className)}>
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Badge variant="outline" className="bg-background px-3 py-1 flex items-center gap-1.5 border-amber-500">
-              <WifiOff className="h-3.5 w-3.5 text-amber-500" />
-              <span className="text-amber-500 font-medium">Offline</span>
-            </Badge>
-          </TooltipTrigger>
-          <TooltipContent side="left">
-            <div className="text-sm">
-              <div className="font-medium mb-1">Offline režim</div>
-              <div className="text-xs text-muted-foreground">
-                Pracujete v offline režimu.
-                {lastOnlineAt && (
-                  <div>Naposledy online: {format(lastOnlineAt, 'HH:mm, dd.MM.yyyy')}</div>
-                )}
-              </div>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Badge variant="outline" className="bg-background px-3 py-1 flex items-center gap-1.5 border-amber-500">
+            <WifiOff className="h-3.5 w-3.5 text-amber-500" />
+            <span className="text-amber-500 font-medium">Offline</span>
+          </Badge>
+        </TooltipTrigger>
+        <TooltipContent side="left">
+          <div className="text-sm">
+            <div className="font-medium mb-1">Offline režim</div>
+            <div className="text-xs text-muted-foreground">
+              Pracujete v offline režimu.
+              {lastOnlineAt && (
+                <div>Naposledy online: {format(lastOnlineAt, 'HH:mm, dd.MM.yyyy')}</div>
+              )}
             </div>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+          </div>
+        </TooltipContent>
+      </Tooltip>
     </div>
   );
 };
