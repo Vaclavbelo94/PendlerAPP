@@ -25,6 +25,8 @@ import Profile from "./pages/Profile";
 import Premium from "./pages/Premium";
 import LayoutWrapper from "./components/layouts/LayoutWrapper";
 import { ShiftNotifications } from "./components/notifications/ShiftNotifications";
+import OfflineIndicator from "./components/offlineMode/OfflineIndicator";
+import OfflineSyncManager from "./components/offlineMode/OfflineSyncManager";
 
 // Law detail pages
 import MinimumWage from "./pages/laws/MinimumWage";
@@ -38,7 +40,20 @@ import ChildBenefits from "./pages/laws/ChildBenefits";
 
 import "./index.css";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      // Enable offline caching of query results
+      cacheTime: 1000 * 60 * 60 * 24, // 24 hours
+      staleTime: 1000 * 60 * 60, // 1 hour
+      retry: (failureCount, error) => {
+        // Don't retry if we're offline
+        if (!navigator.onLine) return false;
+        return failureCount < 3;
+      }
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -47,6 +62,8 @@ const App = () => (
       <Sonner position="top-right" closeButton />
       <BrowserRouter>
         <ShiftNotifications />
+        <OfflineSyncManager />
+        <OfflineIndicator />
         <Routes>
           <Route path="/" element={<LayoutWrapper><Index /></LayoutWrapper>} />
           <Route path="/language" element={<LayoutWrapper><Language /></LayoutWrapper>} />

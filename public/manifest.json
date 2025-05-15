@@ -1,0 +1,17 @@
+
+{
+  "name": "Pendler Buddy Guide",
+  "short_name": "Pendler",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64",
+      "type": "image/x-icon"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1e40af",
+  "orientation": "portrait-primary"
+}
