@@ -27,18 +27,35 @@ export interface Notification {
   };
 }
 
+// Kontrola, zda je aplikace v nativním prostředí
+const isNativeApp = () => {
+  // Detekce různých nativních prostředí
+  return (
+    window.navigator.userAgent.includes('PendlerApp') ||     // Vlastní User-Agent pro aplikaci
+    document.URL.indexOf('http://') === -1 &&               // Kontrola lokálního souboru (file://)
+    document.URL.indexOf('https://') === -1 ||              // Kontrola lokálního souboru
+    window.matchMedia('(display-mode: standalone)').matches  // PWA v standalone módu
+  );
+};
+
 export const useOfflineNotifications = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const { isOffline } = useOfflineStatus();
   const { user } = useAuth();
+  const [nativeMode, setNativeMode] = useState(false);
+
+  // Detekce nativního prostředí
+  useEffect(() => {
+    setNativeMode(isNativeApp());
+  }, []);
 
   // Load notifications based on online/offline status
   useEffect(() => {
     const loadNotifications = async () => {
       try {
-        if (isOffline) {
-          // Load from IndexedDB when offline
+        if (isOffline || nativeMode) {
+          // Load from IndexedDB when offline or in native app
           const offlineNotifications = await getAllData<Notification>(STORES.notifications);
           setNotifications(offlineNotifications);
           const count = offlineNotifications.filter(n => !n.read).length;
@@ -80,13 +97,13 @@ export const useOfflineNotifications = () => {
         window.removeEventListener('storage', () => {});
       }
     };
-  }, [isOffline, user]);
+  }, [isOffline, user, nativeMode]);
 
   // Save notifications based on online/offline status
   const saveNotifications = async (updatedNotifications: Notification[]) => {
     try {
-      if (isOffline) {
-        // Save to IndexedDB when offline
+      if (isOffline || nativeMode) {
+        // Save to IndexedDB when offline or in native app
         for (const notification of updatedNotifications) {
           await saveData(STORES.notifications, notification);
         }
@@ -120,8 +137,8 @@ export const useOfflineNotifications = () => {
       const updatedNotifications = [newNotification, ...notifications];
       await saveNotifications(updatedNotifications);
       
-      // Pokud jsme offline a máme uživatele, přidáme do fronty k synchronizaci
-      if (isOffline && user) {
+      // Pokud jsme offline/v nativním módu a máme uživatele, přidáme do fronty k synchronizaci
+      if ((isOffline || nativeMode) && user) {
         await addToSyncQueue('notifications', newNotification.id, 'INSERT', {
           title: newNotification.title,
           message: newNotification.message,
@@ -129,10 +146,24 @@ export const useOfflineNotifications = () => {
         });
       }
       
-      // Show toast for real-time feedback
-      toast(notification.title, {
-        description: notification.message,
-      });
+      // Pokud jsme v nativní aplikaci, použijeme nativní notifikace (pokud jsou povoleny)
+      if (nativeMode && 'Notification' in window && Notification.permission === 'granted') {
+        try {
+          navigator.serviceWorker?.ready.then(registration => {
+            registration.showNotification(notification.title, {
+              body: notification.message,
+              icon: '/favicon.ico'
+            });
+          });
+        } catch (error) {
+          console.error('Native notification error:', error);
+        }
+      } else {
+        // Standard toast for web
+        toast(notification.title, {
+          description: notification.message,
+        });
+      }
       
       return newNotification;
     } catch (error) {
@@ -149,8 +180,8 @@ export const useOfflineNotifications = () => {
       );
       await saveNotifications(updatedNotifications);
       
-      // Pokud jsme offline a máme uživatele, přidáme do fronty k synchronizaci
-      if (isOffline && user) {
+      // Pokud jsme offline/v nativním módu a máme uživatele, přidáme do fronty k synchronizaci
+      if ((isOffline || nativeMode) && user) {
         await addToSyncQueue('notifications', id, 'UPDATE', { read: true });
       }
     } catch (error) {
@@ -168,8 +199,8 @@ export const useOfflineNotifications = () => {
       }));
       await saveNotifications(updatedNotifications);
       
-      // Pokud jsme offline a máme uživatele, přidáme do fronty k synchronizaci pro každou notifikaci
-      if (isOffline && user) {
+      // Pokud jsme offline/v nativním módu a máme uživatele, přidáme do fronty k synchronizaci
+      if ((isOffline || nativeMode) && user) {
         for (const notification of notifications) {
           if (!notification.read) {
             await addToSyncQueue('notifications', notification.id, 'UPDATE', { read: true });
@@ -187,10 +218,10 @@ export const useOfflineNotifications = () => {
     try {
       const updatedNotifications = notifications.filter(notification => notification.id !== id);
       
-      if (isOffline) {
+      if (isOffline || nativeMode) {
         await deleteItemById(STORES.notifications, id);
         
-        // Pokud jsme offline a máme uživatele, přidáme do fronty k synchronizaci
+        // Pokud jsme offline/v nativním módu a máme uživatele, přidáme do fronty k synchronizaci
         if (user) {
           await addToSyncQueue('notifications', id, 'DELETE', null);
         }
@@ -213,6 +244,15 @@ export const useOfflineNotifications = () => {
     }
   };
 
+  // Požádat o povolení notifikací (pro budoucí použití v nativní aplikaci)
+  const requestNotificationPermission = async () => {
+    if ('Notification' in window) {
+      const permission = await Notification.requestPermission();
+      return permission === 'granted';
+    }
+    return false;
+  };
+
   return {
     notifications,
     unreadCount,
@@ -220,6 +260,8 @@ export const useOfflineNotifications = () => {
     markAsRead,
     markAllAsRead,
     deleteNotification,
-    clearNotifications
+    clearNotifications,
+    requestNotificationPermission,
+    isNativeMode: nativeMode
   };
 };

@@ -2,16 +2,47 @@
 {
   "name": "Pendler Buddy Guide",
   "short_name": "Pendler",
+  "description": "Aplikace pro podporu pendlerů v Německu",
   "icons": [
     {
       "src": "/favicon.ico",
       "sizes": "64x64",
       "type": "image/x-icon"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ],
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#1e40af",
-  "orientation": "portrait-primary"
+  "orientation": "portrait-primary",
+  "categories": ["productivity", "utilities"],
+  "shortcuts": [
+    {
+      "name": "Výuka němčiny",
+      "short_name": "Němčina",
+      "description": "Otevřít sekci výuky němčiny",
+      "url": "/language?source=pwa",
+      "icons": [{ "src": "/favicon.ico", "sizes": "64x64" }]
+    },
+    {
+      "name": "Překladač",
+      "short_name": "Překladač",
+      "description": "Otevřít překladač",
+      "url": "/translator?source=pwa",
+      "icons": [{ "src": "/favicon.ico", "sizes": "64x64" }]
+    }
+  ],
+  "prefer_related_applications": false
 }
