@@ -4,13 +4,13 @@ import { useOfflineStatus } from '@/hooks/useOfflineStatus';
 import { syncWithLocalStorage, loadFromLocalStorage } from '@/utils/offlineStorage';
 import { toast } from '@/components/ui/use-toast';
 import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
 
 export const OfflineSyncManager = () => {
   const { isOffline } = useOfflineStatus();
   const { user, isPremium, refreshPremiumStatus } = useAuth();
   const [isCheckingStatus, setIsCheckingStatus] = React.useState(true);
   const [hasShownOnlineToast, setHasShownOnlineToast] = React.useState(false);
+  const [isInitialized, setIsInitialized] = React.useState(false);
 
   // Na začátku vždy aktualizujeme premium status z databáze
   React.useEffect(() => {
@@ -23,12 +23,14 @@ export const OfflineSyncManager = () => {
           console.error('Chyba při kontrole premium statusu:', error);
         } finally {
           setIsCheckingStatus(false);
+          setIsInitialized(true);
         }
       };
       
       checkPremiumDirectly();
     } else {
       setIsCheckingStatus(false);
+      setIsInitialized(true);
     }
   }, [user, refreshPremiumStatus]);
 
@@ -39,13 +41,14 @@ export const OfflineSyncManager = () => {
       user: user?.id, 
       isPremium,
       isCheckingStatus,
-      hasShownOnlineToast
+      hasShownOnlineToast,
+      isInitialized
     });
-  }, [isOffline, user, isPremium, isCheckingStatus, hasShownOnlineToast]);
+  }, [isOffline, user, isPremium, isCheckingStatus, hasShownOnlineToast, isInitialized]);
 
   // Load data to IndexedDB when app starts or when going offline
   React.useEffect(() => {
-    if (isOffline && user && !isCheckingStatus) {
+    if (isOffline && user && isInitialized && !isCheckingStatus) {
       console.log('Offline mode activated, premium status:', isPremium);
       
       if (!isPremium) {
@@ -75,11 +78,11 @@ export const OfflineSyncManager = () => {
       // Reset the flag when going offline
       setHasShownOnlineToast(false);
     }
-  }, [isOffline, user, isPremium, isCheckingStatus]);
+  }, [isOffline, user, isPremium, isCheckingStatus, isInitialized]);
 
   // Sync data back to server when coming online
   React.useEffect(() => {
-    if (!isOffline && user && !isCheckingStatus) {
+    if (!isOffline && user && isInitialized && !isCheckingStatus) {
       console.log('Online mode activated, premium status:', isPremium);
       
       // Only show notification once per session
@@ -116,7 +119,7 @@ export const OfflineSyncManager = () => {
           setHasShownOnlineToast(true);
         });
     }
-  }, [isOffline, user, isPremium, isCheckingStatus, hasShownOnlineToast]);
+  }, [isOffline, user, isPremium, isCheckingStatus, hasShownOnlineToast, isInitialized]);
 
   return null; // This component doesn't render anything
 };
