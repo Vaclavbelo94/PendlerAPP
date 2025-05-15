@@ -43,7 +43,10 @@ const Sidebar = ({ closeSidebar }: SidebarProps) => {
   ];
 
   // Funkce pro navigaci - opraveno aby nedocházelo k refreshi stránky
-  const handleNavigate = (path: string) => () => {
+  const handleNavigate = (path: string) => (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+    }
     navigate(path);
     const isMobile = window.innerWidth < 768;
     if (isMobile) {

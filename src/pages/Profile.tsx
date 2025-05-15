@@ -47,8 +47,8 @@ const Profile = () => {
   const [colorScheme, setColorScheme] = useState("purple");
   const [compactMode, setCompactMode] = useState(false);
   
-  // For data visualization
-  const [showStats, setShowStats] = useState(true);
+  // For data visualization - changed to false by default
+  const [showStats, setShowStats] = useState(false);
   
   useEffect(() => {
     // Check if user is logged in
@@ -90,7 +90,7 @@ const Profile = () => {
         setAvatar(currentUser.avatar || "");
         setColorScheme(currentUser.colorScheme || "purple");
         setCompactMode(currentUser.compactMode || false);
-        setShowStats(currentUser.showStats !== false);
+        setShowStats(currentUser.showStats === true);
       }
     } catch (error) {
       console.error("Error loading user data:", error);
@@ -313,7 +313,20 @@ const Profile = () => {
         </div>
       )}
       
-      {/* Data Visualization Section */}
+      {/* Data Visualization Section - Now hidden by default */}
+      {!showStats && (
+        <div className="mb-8">
+          <Button 
+            variant="outline" 
+            onClick={() => setShowStats(true)}
+            className="flex items-center gap-2"
+          >
+            <PieChart className="h-4 w-4" />
+            Zobrazit statistiky
+          </Button>
+        </div>
+      )}
+      
       {showStats && (
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
@@ -334,19 +347,6 @@ const Profile = () => {
             <UserActivityChart />
             <LanguageSkillsChart />
           </div>
-        </div>
-      )}
-      
-      {!showStats && (
-        <div className="mb-8">
-          <Button 
-            variant="outline" 
-            onClick={() => setShowStats(true)}
-            className="flex items-center gap-2"
-          >
-            <PieChart className="h-4 w-4" />
-            Zobrazit statistiky
-          </Button>
         </div>
       )}
       
