@@ -45,20 +45,12 @@ export const useOfflineNotifications = () => {
           setUnreadCount(count);
         } else {
           if (user) {
-            // Load from Supabase
-            const { data, error } = await supabase
-              .from('notifications')
-              .select('*')
-              .eq('user_id', user.id)
-              .order('created_at', { ascending: false });
-              
-            if (error) throw error;
-            
-            if (data) {
-              setNotifications(data);
-              const count = data.filter((n: Notification) => !n.read).length;
-              setUnreadCount(count);
-            }
+            // Pro online režim s přihlášeným uživatelem použijeme localStorage
+            // Poznámka: V této verzi nepodporujeme ukládání notifikací do Supabase
+            const storedNotifications = JSON.parse(localStorage.getItem(`notifications_${user.id}`) || '[]');
+            setNotifications(storedNotifications);
+            const count = storedNotifications.filter((n: Notification) => !n.read).length;
+            setUnreadCount(count);
           } else {
             // Load from localStorage when online but not authenticated
             const storedNotifications = JSON.parse(localStorage.getItem('notifications') || '[]');
@@ -77,7 +69,7 @@ export const useOfflineNotifications = () => {
     // Add event listener for storage changes when online
     if (!isOffline) {
       window.addEventListener('storage', (e) => {
-        if (e.key === 'notifications') {
+        if (e.key === 'notifications' || e.key === `notifications_${user?.id}`) {
           loadNotifications();
         }
       });
@@ -99,33 +91,8 @@ export const useOfflineNotifications = () => {
           await saveData(STORES.notifications, notification);
         }
       } else if (user) {
-        // Save to Supabase when online and authenticated
-        for (const notification of updatedNotifications.filter(n => !n.id.includes('local-'))) {
-          if (notification.id.startsWith('temp-')) {
-            // Nová notifikace
-            const { data, error } = await supabase
-              .from('notifications')
-              .insert({
-                title: notification.title,
-                message: notification.message,
-                type: notification.type,
-                read: notification.read,
-                user_id: user.id,
-                related_to: notification.relatedTo
-              })
-              .select();
-            
-            if (error) throw error;
-          } else {
-            // Aktualizace existující notifikace
-            const { error } = await supabase
-              .from('notifications')
-              .update({ read: notification.read })
-              .eq('id', notification.id);
-            
-            if (error) throw error;
-          }
-        }
+        // Ukládání do localStorage s ID uživatele
+        localStorage.setItem(`notifications_${user.id}`, JSON.stringify(updatedNotifications));
       } else {
         // Save to localStorage when online but not authenticated
         localStorage.setItem('notifications', JSON.stringify(updatedNotifications));
@@ -159,8 +126,6 @@ export const useOfflineNotifications = () => {
           title: newNotification.title,
           message: newNotification.message,
           type: newNotification.type,
-          user_id: user.id,
-          related_to: newNotification.relatedTo
         });
       }
       
