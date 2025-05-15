@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,9 +15,12 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/components/ui/use-toast";
 import { ArrowRight } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 const Register = () => {
   const { toast } = useToast();
+  const { signUp, user } = useAuth();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -33,6 +36,12 @@ const Register = () => {
     confirmPassword: "",
     agreeTerms: "",
   });
+
+  // Pokud je uživatel již přihlášen, přesměrujeme ho na hlavní stránku
+  if (user) {
+    navigate("/");
+    return null;
+  }
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -87,20 +96,40 @@ const Register = () => {
     return valid;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (validateForm()) {
       setLoading(true);
       
-      // Simulace registrace
-      setTimeout(() => {
-        setLoading(false);
+      try {
+        const { error } = await signUp(formData.email, formData.password, formData.name);
+        
+        if (error) {
+          toast({
+            title: "Registrace selhala",
+            description: error.message,
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Registrace úspěšná!",
+            description: "Zkontrolujte svůj email pro dokončení registrace.",
+            variant: "default",
+          });
+          
+          // Přesměrování na přihlašovací stránku po úspěšné registraci
+          navigate("/login");
+        }
+      } catch (error) {
         toast({
-          title: "Registrace úspěšná!",
-          description: "Váš účet byl vytvořen.",
+          title: "Registrace selhala",
+          description: error.message,
+          variant: "destructive",
         });
-      }, 1500);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
