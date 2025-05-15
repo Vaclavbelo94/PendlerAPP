@@ -1,7 +1,24 @@
+
 import * as React from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Session } from '@supabase/supabase-js';
 import { toast } from '@/components/ui/use-toast';
+
+// Helper function to clean up auth state
+const cleanupAuthState = () => {
+  // Remove standard auth tokens
+  localStorage.removeItem('supabase.auth.token');
+  // Remove all Supabase auth keys from localStorage
+  Object.keys(localStorage).forEach((key) => {
+    if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+      localStorage.removeItem(key);
+    }
+  });
+  // Clean up our custom keys too
+  localStorage.removeItem('adminLoggedIn');
+  localStorage.removeItem('currentUser');
+  localStorage.removeItem('isLoggedIn');
+};
 
 interface AuthContextType {
   user: User | null;
@@ -36,6 +53,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setUser(session?.user ?? null);
           
           if (session?.user) {
+            // Use setTimeout to prevent potential deadlocks
             setTimeout(() => {
               refreshAdminStatus();
               refreshPremiumStatus();
@@ -80,7 +98,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (error) throw error;
       setIsAdmin(data.is_admin || false);
       
-      // Také aktualizujeme v localStorage pro přímý přístup v komponentách
+      // Uložíme do localStorage pro přímý přístup v komponentách
       localStorage.setItem('adminLoggedIn', data.is_admin ? 'true' : 'false');
     } catch (error) {
       console.error('Chyba při získávání admin statusu:', error);
@@ -125,37 +143,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signIn = async (email: string, password: string) => {
     try {
+      // Clean up existing auth state
+      cleanupAuthState();
+      
+      // Attempt global sign out first to clear any existing sessions
+      try {
+        await supabase.auth.signOut({ scope: 'global' });
+      } catch (err) {
+        // Continue even if this fails
+        console.log('Sign out before sign in failed, continuing anyway');
+      }
+      
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
       });
       
       if (error) {
-        toast({
-          title: "Přihlášení selhalo",
-          description: error.message,
-          variant: "destructive",
-        });
         return { error };
       }
       
-      toast({
-        title: "Úspěšně přihlášeno!",
-        variant: "default",
-      });
       return { error: null };
     } catch (err: any) {
-      toast({
-        title: "Přihlášení selhalo",
-        description: err.message,
-        variant: "destructive",
-      });
       return { error: err };
     }
   };
 
   const signUp = async (email: string, password: string, username?: string) => {
     try {
+      // Clean up existing auth state
+      cleanupAuthState();
+      
       const { data, error } = await supabase.auth.signUp({ 
         email, 
         password,
@@ -167,47 +185,43 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
       
       if (error) {
-        toast({
-          title: "Registrace selhala",
-          description: error.message,
-          variant: "destructive",
-        });
         return { error };
       }
       
-      toast({
-        title: "Účet byl vytvořen!",
-        description: "Zkontrolujte svůj email pro potvrzení.",
-        variant: "default",
-      });
       return { error: null };
     } catch (err: any) {
-      toast({
-        title: "Registrace selhala",
-        description: err.message,
-        variant: "destructive",
-      });
       return { error: err };
     }
   };
 
   const signOut = async () => {
     try {
+      // Clean up auth state first
+      cleanupAuthState();
+      
+      // Attempt global sign out
       await supabase.auth.signOut({ scope: 'global' });
-      // Vyčistíme lokální storage
-      localStorage.removeItem('adminLoggedIn');
-      localStorage.removeItem('currentUser');
-      localStorage.removeItem('isLoggedIn');
+      
+      // Force reset state
+      setUser(null);
+      setSession(null);
+      setIsAdmin(false);
+      setIsPremium(false);
+      
       toast({
         title: "Byli jste odhlášeni",
         variant: "default",
       });
     } catch (error: any) {
+      console.error('Sign out error:', error);
       toast({
         title: "Odhlášení selhalo",
         description: error.message,
         variant: "destructive",
       });
+      
+      // Force cleanup even if sign out fails
+      cleanupAuthState();
     }
   };
 

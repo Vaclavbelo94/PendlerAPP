@@ -1,11 +1,12 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
+import { toast } from "@/components/ui/use-toast";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -14,11 +15,12 @@ const Login = () => {
   const navigate = useNavigate();
   const { signIn, user } = useAuth();
   
-  // Pokud je uživatel již přihlášen, přesměrujeme ho na hlavní stránku
-  if (user) {
-    navigate("/");
-    return null;
-  }
+  useEffect(() => {
+    // Pokud je uživatel již přihlášen, přesměrujeme ho na hlavní stránku
+    if (user) {
+      navigate("/");
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,10 +29,25 @@ const Login = () => {
     try {
       const { error } = await signIn(email, password);
       
-      if (!error) {
-        // Přesměrování na hlavní stránku po úspěšném přihlášení
+      if (error) {
+        toast({
+          title: "Přihlášení selhalo",
+          description: error.message || "Zkontrolujte své přihlašovací údaje a zkuste to znovu.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Úspěšně přihlášeno!",
+          variant: "default",
+        });
         navigate("/");
       }
+    } catch (error: any) {
+      toast({
+        title: "Chyba při přihlašování",
+        description: error?.message || "Nastala neznámá chyba. Zkuste to prosím později.",
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
