@@ -37,14 +37,16 @@ export const useNotifications = () => {
     loadNotifications();
     
     // Add event listener for storage changes
-    window.addEventListener('storage', (e) => {
+    const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'notifications') {
         loadNotifications();
       }
-    });
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
     
     return () => {
-      window.removeEventListener('storage', () => {});
+      window.removeEventListener('storage', handleStorageChange);
     };
   }, []);
 
