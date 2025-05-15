@@ -1,15 +1,14 @@
-
 import * as React from "react"
 
 import type {
   ToastActionElement,
-  ToastProps,
+  ToastProps as ShadcnToastProps,
 } from "@/components/ui/toast"
 
 const TOAST_LIMIT = 20
 const TOAST_REMOVE_DELAY = 1000000
 
-type ToasterToastProps = Omit<ToastProps, "id"> & {
+type ToasterToastProps = Omit<ShadcnToastProps, "id"> & {
   id: string
   title?: React.ReactNode
   description?: React.ReactNode
