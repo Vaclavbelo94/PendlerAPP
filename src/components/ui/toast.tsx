@@ -115,13 +115,6 @@ type ToastProps = React.ComponentPropsWithoutRef<typeof Toast>
 
 type ToastActionElement = React.ReactElement<typeof ToastAction>
 
-// Create and export a useToast hook to fix the import issue
-function useToast() {
-  return {
-    toasts: [] // This will be overwritten by the actual implementation in hooks/use-toast.ts
-  };
-}
-
 export {
   type ToastProps,
   type ToastActionElement,
@@ -132,5 +125,4 @@ export {
   ToastDescription,
   ToastClose,
   ToastAction,
-  useToast
 }
