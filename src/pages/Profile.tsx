@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -49,6 +50,10 @@ const Profile = () => {
   
   // For data visualization - changed to false by default
   const [showStats, setShowStats] = useState(false);
+  
+  // Track the currently selected tab to prevent multiple rapid clicks
+  const [activeTab, setActiveTab] = useState("account");
+  const [isTabSwitching, setIsTabSwitching] = useState(false);
   
   useEffect(() => {
     // Check if user is logged in
@@ -264,6 +269,25 @@ const Profile = () => {
     
     // This will be saved when the user clicks "Save Preferences" in the preferences tab
   };
+
+  // Handle tab changes safely to prevent crashes from rapid clicking
+  const handleTabChange = (value: string) => {
+    // If we're already switching tabs, ignore additional clicks
+    if (isTabSwitching) {
+      return;
+    }
+    
+    // Set flag to ignore additional clicks
+    setIsTabSwitching(true);
+    
+    // Update the active tab
+    setActiveTab(value);
+    
+    // Reset the flag after a short delay to prevent rapid clicks
+    setTimeout(() => {
+      setIsTabSwitching(false);
+    }, 300); // 300ms debounce
+  };
   
   if (loading) {
     return (
@@ -350,7 +374,7 @@ const Profile = () => {
         </div>
       )}
       
-      <Tabs defaultValue="account" className="space-y-6">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
         <TabsList className="grid grid-cols-3 md:grid-cols-6 max-w-3xl">
           <TabsTrigger value="account">
             <UserIcon className="mr-2 h-4 w-4" /> Účet
