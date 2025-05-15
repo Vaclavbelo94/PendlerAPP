@@ -18,6 +18,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/hooks/useAuth";
+import { Badge } from "@/components/ui/badge";
 
 interface NavbarProps {
   toggleSidebar: () => void;
@@ -25,30 +27,10 @@ interface NavbarProps {
 }
 
 const Navbar = ({ toggleSidebar, rightContent }: NavbarProps) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userName, setUserName] = useState("");
   const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-
-  // Check login status when the component mounts or route changes
-  useEffect(() => {
-    const checkLoginStatus = () => {
-      const loggedIn = localStorage.getItem("isLoggedIn") === "true";
-      setIsLoggedIn(loggedIn);
-      
-      if (loggedIn) {
-        try {
-          const currentUser = JSON.parse(localStorage.getItem("currentUser") || "{}");
-          setUserName(currentUser.name || "");
-        } catch (error) {
-          console.error("Error parsing user data:", error);
-        }
-      }
-    };
-
-    checkLoginStatus();
-  }, [location]);
+  const { user, isPremium, signOut } = useAuth();
 
   // Add scroll event listener
   useEffect(() => {
@@ -66,11 +48,8 @@ const Navbar = ({ toggleSidebar, rightContent }: NavbarProps) => {
     };
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("isLoggedIn");
-    localStorage.removeItem("currentUser");
-    setIsLoggedIn(false);
-    setUserName("");
+  const handleLogout = async () => {
+    await signOut();
     navigate("/");
   };
 
@@ -94,7 +73,7 @@ const Navbar = ({ toggleSidebar, rightContent }: NavbarProps) => {
         
         <div className="flex items-center gap-3">
           {/* Calculator Link - only visible when logged in */}
-          {isLoggedIn && (
+          {user && (
             <Button 
               variant="ghost" 
               className="text-sm font-medium flex items-center gap-2 hidden md:flex" 
@@ -108,14 +87,17 @@ const Navbar = ({ toggleSidebar, rightContent }: NavbarProps) => {
           {/* Right Content (e.g. notifications) */}
           {rightContent}
           
-          {isLoggedIn ? (
+          {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="gap-2">
                   <div className="w-7 h-7 rounded-full bg-primary-100 flex items-center justify-center text-primary-700">
                     <UserIcon className="h-4 w-4" />
                   </div>
-                  <span className="hidden sm:inline text-sm font-medium">{userName}</span>
+                  <span className="hidden sm:inline text-sm font-medium">
+                    {user.user_metadata?.username || user.email?.split('@')[0] || 'Uživatel'}
+                  </span>
+                  {isPremium && <Badge className="bg-amber-500">Premium</Badge>}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">

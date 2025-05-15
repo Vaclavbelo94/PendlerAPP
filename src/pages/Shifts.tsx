@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Calendar as CalendarIcon, Calendar as CalendarLucide, FileDown, Download, Lock, LogIn, UserPlus, Pencil, FileText, ChartBar } from "lucide-react";
+import { Calendar as CalendarIcon, FileDown, Download, Lock, LogIn, Pencil, FileText } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,25 +13,15 @@ import { format } from "date-fns";
 import { cs } from "date-fns/locale";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { cn } from "@/lib/utils";
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/components/ui/sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import ShiftAnalytics from "@/components/shifts/ShiftAnalytics";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 
 // Typy směn
 type ShiftType = "morning" | "afternoon" | "night";
-
-// Struktura uživatele
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  isPremium: boolean;
-  premiumExpiry?: Date;
-}
 
 // Struktura směny - rozšířená o poznámky
 interface Shift {
@@ -41,53 +31,26 @@ interface Shift {
   notes?: string;  // Přidané pole pro poznámky
 }
 
-// Sample data for the employee shifts
-const employeeShifts = [
-  { id: 1, name: "Jan Novák", userId: "user1", shifts: [3, 5, 7, 9, 11, 15, 17, 19, 21, 23, 25, 27, 29] },
-  { id: 2, name: "Marie Svobodová", userId: "user2", shifts: [2, 4, 6, 8, 10, 14, 16, 18, 20, 22, 24, 26, 28] },
-  { id: 3, name: "Petr Černý", userId: "user3", shifts: [1, 3, 5, 7, 9, 13, 15, 17, 19, 21, 25, 27, 29] },
-  { id: 4, name: "Jana Dvořáková", userId: "user4", shifts: [2, 4, 6, 8, 12, 14, 16, 18, 20, 24, 26, 28, 30] },
-];
-
-// Testovací uživatelský profil s premium funkcí
-const testUser: User = {
-  id: "vaclav",
-  name: "Václav",
-  email: "vaclav@example.com",
-  isPremium: true,
-  premiumExpiry: new Date(new Date().setMonth(new Date().getMonth() + 3)) // 3 měsíce od dnes
-};
-
 const Shifts = () => {
   const [activeTab, setActiveTab] = useState("calendar");
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [route, setRoute] = useState({ from: "", to: "", time: "" });
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
   const [shiftType, setShiftType] = useState<ShiftType>("morning");
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [loginDialogOpen, setLoginDialogOpen] = useState(false);
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [userShifts, setUserShifts] = useState<Shift[]>([]);
   const [shiftNotes, setShiftNotes] = useState<string>("");
   const [editNoteDialogOpen, setEditNoteDialogOpen] = useState(false);
   const [analyticsPeriod, setAnalyticsPeriod] = useState<"week" | "month" | "year">("month");
   
-  // Načtení stavu přihlášení při načtení stránky
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  
+  // Načtení směn přihlášeného uživatele
   useEffect(() => {
-    const loggedInUser = localStorage.getItem("currentUser");
-    if (loggedInUser) {
-      try {
-        const user = JSON.parse(loggedInUser);
-        setCurrentUser(user);
-        setIsLoggedIn(true);
-        loadUserShifts(user.id);
-      } catch (e) {
-        console.error("Chyba při načítání uživatele", e);
-      }
+    if (user) {
+      loadUserShifts(user.id);
     }
-  }, []);
+  }, [user]);
 
   // Načtení směn přihlášeného uživatele
   const loadUserShifts = (userId: string) => {
@@ -105,32 +68,9 @@ const Shifts = () => {
     }
   };
 
-  // Handler for logging in
-  const handleLogin = () => {
-    if (username === "vaclav" && password === "Vaclav711") {
-      const user = testUser;
-      setCurrentUser(user);
-      setIsLoggedIn(true);
-      localStorage.setItem("currentUser", JSON.stringify(user));
-      loadUserShifts(user.id);
-      setLoginDialogOpen(false);
-      toast.success("Přihlášení úspěšné!");
-    } else {
-      toast.error("Neplatné přihlašovací údaje!");
-    }
-  };
-
-  // Handler for logging out
-  const handleLogout = () => {
-    setCurrentUser(null);
-    setIsLoggedIn(false);
-    localStorage.removeItem("currentUser");
-    toast.info("Byli jste odhlášeni.");
-  };
-
   // Handler pro přidání nebo aktualizaci směny
   const handleSaveShift = () => {
-    if (!selectedDate || !isLoggedIn || !currentUser) {
+    if (!selectedDate || !user) {
       toast.error("Nejprve se přihlašte nebo vyberte datum.");
       return;
     }
@@ -146,7 +86,7 @@ const Shifts = () => {
     const newShift: Shift = {
       date: selectedDate,
       type: shiftType,
-      userId: currentUser.id,
+      userId: user.id,
       notes: shiftNotes
     };
 
@@ -162,12 +102,12 @@ const Shifts = () => {
     }
 
     setUserShifts(updatedShifts);
-    localStorage.setItem(`shifts_${currentUser.id}`, JSON.stringify(updatedShifts));
+    localStorage.setItem(`shifts_${user.id}`, JSON.stringify(updatedShifts));
   };
 
   // Handler pro odstranění směny
   const handleDeleteShift = () => {
-    if (!selectedDate || !isLoggedIn || !currentUser) return;
+    if (!selectedDate || !user) return;
 
     const updatedShifts = userShifts.filter(shift => 
       !(shift.date.getDate() === selectedDate.getDate() && 
@@ -177,7 +117,7 @@ const Shifts = () => {
 
     if (updatedShifts.length !== userShifts.length) {
       setUserShifts(updatedShifts);
-      localStorage.setItem(`shifts_${currentUser.id}`, JSON.stringify(updatedShifts));
+      localStorage.setItem(`shifts_${user.id}`, JSON.stringify(updatedShifts));
       toast.success("Směna odstraněna");
     }
   };
@@ -250,8 +190,8 @@ const Shifts = () => {
 
   // Handler for saving route
   const handleSaveRoute = () => {
-    if (!isLoggedIn) {
-      setLoginDialogOpen(true);
+    if (!user) {
+      navigate("/login");
       return;
     }
     toast.success(`Trasa uložena: ${route.from} → ${route.to} v ${route.time}`);
@@ -259,8 +199,8 @@ const Shifts = () => {
 
   // Handler for exporting PDF
   const handleExportPDF = () => {
-    if (!isLoggedIn) {
-      setLoginDialogOpen(true);
+    if (!user) {
+      navigate("/login");
       return;
     }
     toast.success("Export do PDF byl zahájen. Soubor bude brzy ke stažení.");
@@ -288,7 +228,7 @@ const Shifts = () => {
 
   // Uložení poznámky
   const handleSaveNote = () => {
-    if (!selectedDate || !currentUser) return;
+    if (!selectedDate || !user) return;
     
     const shiftIndex = userShifts.findIndex(shift => 
       shift.date.getDate() === selectedDate.getDate() && 
@@ -304,7 +244,7 @@ const Shifts = () => {
       };
       
       setUserShifts(updatedShifts);
-      localStorage.setItem(`shifts_${currentUser.id}`, JSON.stringify(updatedShifts));
+      localStorage.setItem(`shifts_${user.id}`, JSON.stringify(updatedShifts));
       toast.success("Poznámka ke směně byla uložena");
     }
     
@@ -320,82 +260,8 @@ const Shifts = () => {
           <p className="text-lg text-dhl-black max-w-3xl mx-auto mb-8">
             Efektivní plánování pracovních směn a spolujízdy pro pendlery.
           </p>
-          
-          {/* Login status */}
-          <div className="mt-4">
-            {!isLoggedIn ? (
-              <Button 
-                variant="outline" 
-                className="bg-white hover:bg-gray-100 flex items-center gap-2"
-                onClick={() => setLoginDialogOpen(true)}
-              >
-                <LogIn className="w-4 h-4" />
-                Přihlásit se pro správu směn
-              </Button>
-            ) : (
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <div className="bg-white px-4 py-2 rounded-md flex items-center gap-2">
-                  <span>Přihlášen jako: <strong>{currentUser?.name}</strong></span>
-                  {currentUser?.isPremium && (
-                    <Badge className="ml-2 bg-amber-500">Premium</Badge>
-                  )}
-                </div>
-                <Button 
-                  variant="outline" 
-                  className="bg-white hover:bg-gray-100"
-                  onClick={handleLogout}
-                >
-                  Odhlásit se
-                </Button>
-              </div>
-            )}
-          </div>
         </div>
       </section>
-      
-      {/* Login Dialog */}
-      <Dialog open={loginDialogOpen} onOpenChange={setLoginDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Přihlášení</DialogTitle>
-            <DialogDescription>
-              Přihlaste se pro správu vašich směn a přístup k dalším funkcím.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="username">Uživatelské jméno</Label>
-              <Input 
-                id="username" 
-                value={username} 
-                onChange={(e) => setUsername(e.target.value)} 
-                placeholder="Zadejte uživatelské jméno" 
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Heslo</Label>
-              <Input 
-                id="password" 
-                type="password" 
-                value={password} 
-                onChange={(e) => setPassword(e.target.value)} 
-                placeholder="Zadejte heslo" 
-              />
-              <p className="text-xs text-muted-foreground mt-1">
-                Pro testovací účet: uživatelské jméno <strong>vaclav</strong>, heslo <strong>Vaclav711</strong>
-              </p>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setLoginDialogOpen(false)}>
-              Zrušit
-            </Button>
-            <Button onClick={handleLogin}>
-              Přihlásit
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
       
       {/* Main content */}
       <section className="py-12">
@@ -415,8 +281,8 @@ const Shifts = () => {
                   <CardHeader className="border-b border-dhl-yellow">
                     <CardTitle>Můj kalendář</CardTitle>
                     <CardDescription>
-                      {isLoggedIn 
-                        ? `Přehled plánovaných směn pro ${currentUser?.name}`
+                      {user 
+                        ? `Přehled plánovaných směn pro ${user.user_metadata?.username || user.email?.split('@')[0] || 'Uživatel'}`
                         : "Přihlaste se pro správu vašich směn"}
                     </CardDescription>
                   </CardHeader>
@@ -447,7 +313,7 @@ const Shifts = () => {
                                   Naplánovaná směna
                                 </Badge>
                                 
-                                {isLoggedIn && (
+                                {user && (
                                   <Button 
                                     size="icon" 
                                     variant="ghost" 
@@ -472,7 +338,7 @@ const Shifts = () => {
                                 </div>
                               )}
                               
-                              {isLoggedIn && (
+                              {user && (
                                 <div className="mt-3">
                                   <Label htmlFor="shift-type">Typ směny</Label>
                                   <Select 
@@ -509,7 +375,7 @@ const Shifts = () => {
                             </div>
                           ) : (
                             <div className="mt-2">
-                              {isLoggedIn ? (
+                              {user ? (
                                 <div>
                                   <Badge variant="outline">Volný den</Badge>
                                   <p className="mt-2 text-muted-foreground">Žádná směna naplánovaná na tento den</p>
@@ -555,7 +421,7 @@ const Shifts = () => {
                                   <p className="mt-2 text-muted-foreground">Přihlaste se pro správu směn</p>
                                   <Button 
                                     className="mt-4" 
-                                    onClick={() => setLoginDialogOpen(true)}
+                                    onClick={() => navigate("/login")}
                                     variant="default"
                                   >
                                     Přihlásit se
@@ -575,7 +441,7 @@ const Shifts = () => {
                           <Button 
                             variant="outline" 
                             className="w-full border-dhl-red text-dhl-red hover:bg-dhl-red/10"
-                            disabled={!isLoggedIn}
+                            disabled={!user}
                           >
                             <FileDown className="mr-2" />
                             Exportovat přehled směn do PDF
@@ -597,10 +463,7 @@ const Shifts = () => {
                                     <Button
                                       id="month"
                                       variant={"outline"}
-                                      className={cn(
-                                        "w-full justify-start text-left font-normal mt-1",
-                                        !selectedMonth && "text-muted-foreground"
-                                      )}
+                                      className="w-full justify-start text-left font-normal mt-1"
                                     >
                                       <CalendarIcon className="mr-2 h-4 w-4" />
                                       {selectedMonth ? (
@@ -646,7 +509,7 @@ const Shifts = () => {
                   </CardHeader>
                   <CardContent>
                     <ScrollArea className="h-[400px]">
-                      {isLoggedIn ? (
+                      {user ? (
                         <div>
                           <div className="mb-4">
                             <h3 className="text-md font-medium mb-2">Statistiky směn</h3>
@@ -737,7 +600,7 @@ const Shifts = () => {
                           <p className="text-muted-foreground mb-2">Přihlaste se pro zobrazení statistik a přehledu směn</p>
                           <Button 
                             className="mt-2" 
-                            onClick={() => setLoginDialogOpen(true)}
+                            onClick={() => navigate("/login")}
                             variant="default"
                           >
                             Přihlásit se
@@ -752,7 +615,7 @@ const Shifts = () => {
             
             {/* New Analytics Tab */}
             <TabsContent value="analytics" className="space-y-6">
-              {isLoggedIn ? (
+              {user ? (
                 <ShiftAnalytics 
                   shifts={userShifts} 
                   period={analyticsPeriod} 
@@ -765,7 +628,7 @@ const Shifts = () => {
                     <p className="text-muted-foreground mb-2">Přihlaste se pro zobrazení analytiky směn</p>
                     <Button 
                       className="mt-4" 
-                      onClick={() => setLoginDialogOpen(true)}
+                      onClick={() => navigate("/login")}
                       variant="default"
                     >
                       Přihlásit se
@@ -864,7 +727,7 @@ const Shifts = () => {
                   <CardDescription>Podrobný výpis směn</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {isLoggedIn ? (
+                  {user ? (
                     <div>
                       <ScrollArea className="h-[500px]">
                         <Table>
@@ -912,7 +775,7 @@ const Shifts = () => {
                       <p className="text-muted-foreground mb-2">Přihlaste se pro zobrazení reportů směn</p>
                       <Button 
                         className="mt-2" 
-                        onClick={() => setLoginDialogOpen(true)}
+                        onClick={() => navigate("/login")}
                         variant="default"
                       >
                         Přihlásit se
@@ -924,73 +787,39 @@ const Shifts = () => {
             </TabsContent>
           </Tabs>
 
-          {/* Additional Information Section */}
-          <section className="mt-12">
-            <h2 className="text-2xl font-bold mb-4">Tipy pro efektivní plánování</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card className="border-dhl-yellow">
-                <CardHeader className="border-b border-dhl-yellow">
-                  <CardTitle>Optimalizace trasy</CardTitle>
-                  <CardDescription>Jak ušetřit čas a peníze na cestě</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ul className="list-disc pl-5 space-y-2">
-                    <li>Využívejte navigaci s aktuální dopravní situací</li>
-                    <li>Zvažte alternativní trasy mimo dopravní špičku</li>
-                    <li>Naplánujte si přestávky na odpočinek</li>
-                  </ul>
-                </CardContent>
-              </Card>
-
-              <Card className="border-dhl-yellow">
-                <CardHeader className="border-b border-dhl-yellow">
-                  <CardTitle>Bezpečnost na cestách</CardTitle>
-                  <CardDescription>Důležité rady pro bezpečnou jízdu</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ul className="list-disc pl-5 space-y-2">
-                    <li>Pravidelně kontrolujte technický stav vozidla</li>
-                    <li>Dodržujte bezpečnou vzdálenost</li>
-                    <li>Neřiďte unavení</li>
-                  </ul>
-                </CardContent>
-              </Card>
-            </div>
-          </section>
+          {/* Dialog pro úpravu poznámky */}
+          <Dialog open={editNoteDialogOpen} onOpenChange={setEditNoteDialogOpen}>
+            <DialogContent className="sm:max-w-[500px]">
+              <DialogHeader>
+                <DialogTitle>Upravit poznámku ke směně</DialogTitle>
+                <DialogDescription>
+                  {selectedDate && format(selectedDate, "EEEE, d. MMMM yyyy", { locale: cs })}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                  <Label htmlFor="note-text">Poznámka</Label>
+                  <Textarea
+                    id="note-text"
+                    value={shiftNotes}
+                    onChange={(e) => setShiftNotes(e.target.value)}
+                    placeholder="Zadejte poznámku ke směně..."
+                    className="min-h-[150px]"
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setEditNoteDialogOpen(false)}>
+                  Zrušit
+                </Button>
+                <Button onClick={handleSaveNote}>
+                  Uložit poznámku
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </section>
-      
-      {/* Dialog pro úpravu poznámky */}
-      <Dialog open={editNoteDialogOpen} onOpenChange={setEditNoteDialogOpen}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>Upravit poznámku ke směně</DialogTitle>
-            <DialogDescription>
-              {selectedDate && format(selectedDate, "EEEE, d. MMMM yyyy", { locale: cs })}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="note-text">Poznámka</Label>
-              <Textarea
-                id="note-text"
-                value={shiftNotes}
-                onChange={(e) => setShiftNotes(e.target.value)}
-                placeholder="Zadejte poznámku ke směně..."
-                className="min-h-[150px]"
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setEditNoteDialogOpen(false)}>
-              Zrušit
-            </Button>
-            <Button onClick={handleSaveNote}>
-              Uložit poznámku
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };

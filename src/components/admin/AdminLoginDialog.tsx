@@ -1,18 +1,18 @@
 
 import { useState } from "react";
-import { toast } from "sonner";
-import { Shield, KeyIcon, LogInIcon, EyeIcon, EyeOffIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
+import { 
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import { useAuth } from "@/hooks/useAuth";
 
 interface AdminLoginDialogProps {
   isOpen: boolean;
@@ -20,158 +20,94 @@ interface AdminLoginDialogProps {
   onSuccess: () => void;
 }
 
-export const AdminLoginDialog = ({ isOpen, onClose, onSuccess }: AdminLoginDialogProps) => {
-  const [username, setUsername] = useState("");
+const AdminLoginDialog = ({ isOpen, onClose, onSuccess }: AdminLoginDialogProps) => {
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [loginError, setLoginError] = useState("");
+  const { signIn, refreshAdminStatus, user } = useAuth();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setLoginError("");
-    
-    // Očistit uživatelské jméno a heslo od mezer
-    const trimmedUsername = username.trim();
-    const trimmedPassword = password.trim();
 
-    // Debug informace
-    console.log("Admin přihlášení - uživatel:", trimmedUsername);
-    console.log("Admin přihlášení - heslo:", trimmedPassword);
-
-    // Simulace ověření (v produkci by toto bylo na backendu)
-    setTimeout(() => {
-      if (trimmedUsername === "vbelo" && trimmedPassword === "Vaclav711") {
-        localStorage.setItem("adminLoggedIn", "true");
+    try {
+      const { error } = await signIn(email, password);
+      
+      if (error) {
+        toast.error("Přihlášení selhalo: " + error.message);
+        return;
+      }
+      
+      // Po úspěšném přihlášení obnovíme admin status
+      await refreshAdminStatus();
+      
+      // Kontrola, zda je uživatel admin (po obnovení statusu)
+      const isAdmin = localStorage.getItem("adminLoggedIn") === "true";
+      
+      if (isAdmin) {
         toast.success("Přihlášení do administrace úspěšné");
-        setLoginError("");
         onSuccess();
       } else {
-        setLoginError("Nesprávné přihlašovací údaje. Zkontrolujte správnost údajů.");
-        toast.error("Nesprávné přihlašovací údaje");
+        toast.error("Nemáte administrátorská práva");
+        // Zůstaneme v dialogu, uživatel není admin
       }
+    } catch (error: any) {
+      toast.error("Přihlášení selhalo: " + error.message);
+    } finally {
       setIsLoading(false);
-    }, 800);
-  };
-
-  // Funkce pro rychlé naplnění testovacími údaji
-  const fillTestCredentials = () => {
-    setUsername("vbelo");
-    setPassword("Vaclav711");
+    }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => {
-      if (!open) onClose();
-    }}>
-      <DialogContent className="sm:max-w-md">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <div className="flex justify-center mb-4">
-            <div className="w-12 h-12 rounded-full bg-primary-500/20 flex items-center justify-center text-primary">
-              <Shield className="h-6 w-6" />
-            </div>
-          </div>
-          <DialogTitle className="text-center">Přihlášení do administrace</DialogTitle>
-          <DialogDescription className="text-center">
-            Pro vstup do administrace je potřeba přihlášení
+          <DialogTitle>Přihlášení administrátora</DialogTitle>
+          <DialogDescription>
+            Pro přístup do administrátorské sekce je nutné se přihlásit s administrátorskými právy.
           </DialogDescription>
         </DialogHeader>
-        
-        <form onSubmit={handleLogin} className="space-y-4">
-          {loginError && (
-            <div className="p-3 bg-red-50 border border-red-200 text-red-600 text-sm rounded-md">
-              {loginError}
-            </div>
-          )}
-          
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="username">Uživatelské jméno</Label>
-            <div className="relative">
-              <Input 
-                id="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className="pl-10"
-                placeholder="Zadejte uživatelské jméno"
-                required
-              />
-              <div className="absolute left-3 top-2.5 text-gray-400">
-                <Shield className="h-4 w-4" />
-              </div>
-            </div>
+            <Label htmlFor="admin-email">Email</Label>
+            <Input 
+              id="admin-email" 
+              type="email" 
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="admin@pendlerhelper.cz"
+              required
+            />
           </div>
-          
           <div className="space-y-2">
-            <Label htmlFor="password">Heslo</Label>
-            <div className="relative">
-              <Input 
-                id="password"
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="pl-10 pr-10"
-                placeholder="Zadejte heslo"
-                required
-              />
-              <div className="absolute left-3 top-2.5 text-gray-400">
-                <KeyIcon className="h-4 w-4" />
-              </div>
-              <button 
-                type="button"
-                className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? (
-                  <EyeOffIcon className="h-4 w-4" />
-                ) : (
-                  <EyeIcon className="h-4 w-4" />
-                )}
-              </button>
-            </div>
+            <Label htmlFor="admin-password">Heslo</Label>
+            <Input 
+              id="admin-password" 
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="********" 
+              required
+            />
           </div>
-          
-          {/* Testovací tlačítko pro vyplnění přihlašovacích údajů */}
-          <div className="text-center">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={fillTestCredentials}
-              className="text-xs"
-            >
-              Vyplnit testovací údaje
-            </Button>
+          <div className="text-sm bg-muted p-2 rounded">
+            <p>Testovací admin přístup:</p>
+            <p>Email: <strong>vaclavbelo94@gmail.com</strong></p>
+            <p>Heslo: <strong>Vaclav711</strong></p>
           </div>
-          
-          <DialogFooter className="pt-4">
-            <Button
+          <DialogFooter>
+            <Button 
               type="button" 
               variant="outline" 
               onClick={onClose}
-              disabled={isLoading}
             >
               Zrušit
             </Button>
             <Button 
-              type="submit"
-              className="gap-2"
+              type="submit" 
               disabled={isLoading}
             >
-              {isLoading ? (
-                <>
-                  <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Přihlašování...
-                </>
-              ) : (
-                <>
-                  <LogInIcon className="h-4 w-4" />
-                  Přihlásit se
-                </>
-              )}
+              {isLoading ? "Přihlašování..." : "Přihlásit"}
             </Button>
           </DialogFooter>
         </form>

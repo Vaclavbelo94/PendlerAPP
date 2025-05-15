@@ -20,31 +20,22 @@ import { PromoCodesPanel } from "@/components/admin/PromoCodesPanel";
 import { PasswordResetPanel } from "@/components/admin/PasswordResetPanel";
 import { PremiumFeaturesPanel } from "@/components/admin/PremiumFeaturesPanel";
 import AdminLoginDialog from "@/components/admin/AdminLoginDialog";
+import { useAuth } from "@/hooks/useAuth";
 
 const Admin = () => {
-  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
   const [showLoginDialog, setShowLoginDialog] = useState(false);
   const navigate = useNavigate();
+  const { isAdmin, signOut } = useAuth();
 
+  // Redirect na hlavní stránku, pokud uživatel není admin
   useEffect(() => {
-    // Kontrola, zda je admin přihlášen
-    const adminLoggedIn = localStorage.getItem("adminLoggedIn") === "true";
-    setIsAdminLoggedIn(adminLoggedIn);
-    
-    // Zobrazení dialogu, pokud není přihlášen
-    if (!adminLoggedIn) {
+    if (!isAdmin) {
       setShowLoginDialog(true);
     }
-  }, []);
-
-  const handleLoginSuccess = () => {
-    setIsAdminLoggedIn(true);
-    setShowLoginDialog(false);
-  };
+  }, [isAdmin]);
 
   const handleLogout = () => {
-    localStorage.removeItem("adminLoggedIn");
-    setIsAdminLoggedIn(false);
+    signOut();
     toast.info("Odhlášení z administrace proběhlo úspěšně");
     navigate("/");
   };
@@ -60,7 +51,7 @@ const Admin = () => {
             </p>
           </div>
           
-          {isAdminLoggedIn && (
+          {isAdmin && (
             <button
               onClick={handleLogout}
               className="bg-red-500/10 text-red-500 hover:bg-red-500/20 px-4 py-2 rounded-md text-sm font-medium"
@@ -70,7 +61,7 @@ const Admin = () => {
           )}
         </div>
 
-        {isAdminLoggedIn ? (
+        {isAdmin ? (
           <Tabs defaultValue="users" className="space-y-6">
             <TabsList>
               <TabsTrigger value="users">Uživatelé</TabsTrigger>
@@ -157,8 +148,8 @@ const Admin = () => {
       
       <AdminLoginDialog 
         isOpen={showLoginDialog} 
-        onClose={() => setShowLoginDialog(false)}
-        onSuccess={handleLoginSuccess}
+        onClose={() => !isAdmin && navigate("/")}
+        onSuccess={() => setShowLoginDialog(false)}
       />
     </div>
   );
