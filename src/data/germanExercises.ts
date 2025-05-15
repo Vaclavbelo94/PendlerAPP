@@ -1,4 +1,3 @@
-
 // Define the proper types to match the data structure
 interface Example {
   id: string;
@@ -325,7 +324,7 @@ export const grammarExercises2: Exercise[] = [
     options: ['der', 'die', 'das'],
     correctAnswer: 'der',
     explanation: 'Tisch (stůl) je podstatné jméno mužského rodu, proto používáme "der".',
-    category: 'articles'
+    category: 'členy'
   },
   {
     id: 2,
@@ -334,7 +333,7 @@ export const grammarExercises2: Exercise[] = [
     options: ['der', 'die', 'das'],
     correctAnswer: 'die',
     explanation: 'Frau (žena) je podstatné jméno ženského rodu, proto používáme "die".',
-    category: 'articles'
+    category: 'členy'
   },
   {
     id: 3,
@@ -343,7 +342,7 @@ export const grammarExercises2: Exercise[] = [
     options: ['der', 'die', 'das'],
     correctAnswer: 'das',
     explanation: 'Kind (dítě) je podstatné jméno středního rodu, proto používáme "das".',
-    category: 'articles'
+    category: 'členy'
   },
   {
     id: 4,
@@ -352,7 +351,7 @@ export const grammarExercises2: Exercise[] = [
     options: ['der', 'die', 'das'],
     correctAnswer: 'das',
     explanation: 'Buch (kniha) je podstatné jméno středního rodu, proto používáme "das".',
-    category: 'articles'
+    category: 'členy'
   },
   
   // Present tense
@@ -363,7 +362,7 @@ export const grammarExercises2: Exercise[] = [
     options: ['arbeite', 'arbeitest', 'arbeitet', 'arbeiten'],
     correctAnswer: 'arbeite',
     explanation: 'Pro 1. osobu jednotného čísla (ich) je koncovka slovesa "-e".',
-    category: 'present-tense'
+    category: 'přítomný-čas'
   },
   {
     id: 6,
@@ -372,7 +371,7 @@ export const grammarExercises2: Exercise[] = [
     options: ['spiele', 'spielst', 'spielt', 'spielen'],
     correctAnswer: 'spielst',
     explanation: 'Pro 2. osobu jednotného čísla (du) je koncovka slovesa "-st".',
-    category: 'present-tense'
+    category: 'přítomný-čas'
   },
   {
     id: 7,
@@ -381,7 +380,7 @@ export const grammarExercises2: Exercise[] = [
     options: ['lese', 'lest', 'liest', 'lesen'],
     correctAnswer: 'liest',
     explanation: 'Pro 3. osobu jednotného čísla (er) je koncovka slovesa "-t" a u nepravidelných sloves může dojít ke změně kmenové samohlásky.',
-    category: 'present-tense'
+    category: 'přítomný-čas'
   },
   
   // Cases
@@ -392,7 +391,7 @@ export const grammarExercises2: Exercise[] = [
     options: ['der', 'dem', 'den', 'des'],
     correctAnswer: 'dem',
     explanation: 'Ve 3. pádu (dativ) se člen "der" (mužský rod) mění na "dem".',
-    category: 'cases'
+    category: 'pády'
   },
   {
     id: 9,
@@ -401,7 +400,7 @@ export const grammarExercises2: Exercise[] = [
     options: ['der', 'dem', 'den', 'des'],
     correctAnswer: 'den',
     explanation: 'Ve 4. pádu (akuzativ) se člen "der" (mužský rod) mění na "den".',
-    category: 'cases'
+    category: 'pády'
   },
   {
     id: 10,
@@ -410,7 +409,7 @@ export const grammarExercises2: Exercise[] = [
     options: ['der', 'dem', 'den', 'des'],
     correctAnswer: 'des',
     explanation: 'Ve 2. pádu (genitiv) se člen "der" (mužský rod) mění na "des".',
-    category: 'cases'
+    category: 'pády'
   },
   
   // Modal verbs
@@ -421,7 +420,7 @@ export const grammarExercises2: Exercise[] = [
     options: ['kann', 'kannst', 'können', 'könnt'],
     correctAnswer: 'kann',
     explanation: 'Pro 1. osobu jednotného čísla (ich) je tvar modálního slovesa "können" - "kann".',
-    category: 'modal-verbs'
+    category: 'modální-slovesa'
   },
   {
     id: 12,
@@ -430,7 +429,7 @@ export const grammarExercises2: Exercise[] = [
     options: ['muss', 'musst', 'müssen', 'müsst'],
     correctAnswer: 'musst',
     explanation: 'Pro 2. osobu jednotného čísla (du) je tvar modálního slovesa "müssen" - "musst".',
-    category: 'modal-verbs'
+    category: 'modální-slovesa'
   },
   {
     id: 13,
@@ -439,7 +438,7 @@ export const grammarExercises2: Exercise[] = [
     options: ['will', 'willst', 'wollen', 'wollt'],
     correctAnswer: 'wollen',
     explanation: 'Pro 1. osobu množného čísla (wir) je tvar modálního slovesa "wollen" - "wollen".',
-    category: 'modal-verbs'
+    category: 'modální-slovesa'
   },
   {
     id: 14,
@@ -448,7 +447,7 @@ export const grammarExercises2: Exercise[] = [
     options: ['darf', 'darfst', 'dürfen', 'dürft'],
     correctAnswer: 'darf',
     explanation: 'Pro 3. osobu jednotného čísla (er) je tvar modálního slovesa "dürfen" - "darf".',
-    category: 'modal-verbs'
+    category: 'modální-slovesa'
   },
   
   // Word order
@@ -459,7 +458,7 @@ export const grammarExercises2: Exercise[] = [
     options: ['gehe', 'heute gehe', 'gehe heute', 'heute ich gehe'],
     correctAnswer: 'gehe',
     explanation: 'V oznamovací větě je sloveso vždy na druhém místě.',
-    category: 'word-order'
+    category: 'slovosled'
   },
   {
     id: 16,
@@ -468,7 +467,6 @@ export const grammarExercises2: Exercise[] = [
     options: ['gehe', 'ich gehe', 'gehe ich', 'ich heute gehe'],
     correctAnswer: 'gehe ich',
     explanation: 'Pokud věta začíná příslovečným určením, sloveso zůstává na druhém místě a podmět se posouvá na třetí místo.',
-    category: 'word-order'
+    category: 'slovosled'
   }
 ];
-
