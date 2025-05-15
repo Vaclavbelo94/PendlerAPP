@@ -204,7 +204,8 @@ export const syncWithLocalStorage = async (): Promise<void> => {
         if (data.success) {
           // Vyčištění synchronizační fronty
           for (const item of syncQueueData) {
-            await deleteItemById(STORES.syncQueue, item.id);
+            // Použijeme typovou anotaci pro item
+            await deleteItemById(STORES.syncQueue, (item as { id: string }).id);
           }
           
           toast({
