@@ -13,6 +13,13 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 
+// Import our new components
+import ServiceRecordCard from "@/components/vehicle/ServiceRecordCard";
+import FuelConsumptionCard from "@/components/vehicle/FuelConsumptionCard";
+import DocumentsCard from "@/components/vehicle/DocumentsCard";
+import InsuranceCard from "@/components/vehicle/InsuranceCard";
+import CrossBorderCard from "@/components/vehicle/CrossBorderCard";
+
 const Vehicle = () => {
   const [activeTab, setActiveTab] = useState("info");
   const [date, setDate] = useState<Date | undefined>(new Date());
@@ -96,10 +103,12 @@ const Vehicle = () => {
             Ověřit vozidlo podle VIN
           </Button>
 
-          <Tabs defaultValue="info" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-8">
+          <Tabs defaultValue="info" className="w-full" onValueChange={(value) => setActiveTab(value)}>
+            <TabsList className="grid w-full grid-cols-4 mb-8">
               <TabsTrigger value="info">Informace o vozidle</TabsTrigger>
-              <TabsTrigger value="dates">Důležité termíny</TabsTrigger>
+              <TabsTrigger value="service">Servis a palivo</TabsTrigger>
+              <TabsTrigger value="documents">Doklady a pojištění</TabsTrigger>
+              <TabsTrigger value="travel">Cestování</TabsTrigger>
             </TabsList>
 
             {/* Vehicle Info Tab */}
@@ -153,48 +162,27 @@ const Vehicle = () => {
               </Card>
             </TabsContent>
 
-            {/* Important Dates Tab */}
-            <TabsContent value="dates">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Důležité termíny</CardTitle>
-                  <CardDescription>Zde si můžete nastavit připomenutí důležitých termínů.</CardDescription>
-                </CardHeader>
-                <CardContent className="grid gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="insurance">Pojištění</Label>
-                    <Input id="insurance" defaultValue="Allianz" disabled />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Datum pojištění</Label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant={"outline"}
-                          className={cn(
-                            "w-[240px] justify-start text-left font-normal",
-                            !date && "text-muted-foreground"
-                          )}
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {date ? format(date, "PPP") : <span>Vyberte datum</span>}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="center" side="bottom">
-                        <Calendar
-                          mode="single"
-                          selected={date}
-                          onSelect={setDate}
-                          disabled={(date) =>
-                            date > new Date()
-                          }
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                </CardContent>
-              </Card>
+            {/* Service and Fuel Tab */}
+            <TabsContent value="service">
+              <div className="grid gap-6 md:grid-cols-1">
+                <ServiceRecordCard />
+                <FuelConsumptionCard />
+              </div>
+            </TabsContent>
+
+            {/* Documents and Insurance Tab */}
+            <TabsContent value="documents">
+              <div className="grid gap-6 md:grid-cols-1">
+                <DocumentsCard />
+                <InsuranceCard />
+              </div>
+            </TabsContent>
+
+            {/* Travel Tab */}
+            <TabsContent value="travel">
+              <div className="grid gap-6 md:grid-cols-1">
+                <CrossBorderCard />
+              </div>
             </TabsContent>
           </Tabs>
         </div>
