@@ -44,7 +44,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       // Enable offline caching of query results
-      cacheTime: 1000 * 60 * 60 * 24, // 24 hours
+      gcTime: 1000 * 60 * 60 * 24, // 24 hours (formerly cacheTime)
       staleTime: 1000 * 60 * 60, // 1 hour
       retry: (failureCount, error) => {
         // Don't retry if we're offline
