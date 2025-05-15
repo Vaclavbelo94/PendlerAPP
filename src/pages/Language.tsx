@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -34,6 +33,9 @@ const Language = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [searchPerformed, setSearchPerformed] = useState(false);
+
+  // Add console log to verify grammar exercises data structure
+  console.log("Grammar Exercises:", grammarExercises);
 
   const handleSearch = () => {
     if (!searchTerm.trim()) {
@@ -96,6 +98,9 @@ const Language = () => {
       setSearchPerformed(false);
     }
   }, [searchTerm]);
+
+  // Cast grammarExercises to ensure it has the right type
+  const typedGrammarExercises = grammarExercises as unknown as GrammarCategory[];
 
   return (
     <div className="container py-8">
@@ -169,11 +174,21 @@ const Language = () => {
         </TabsList>
         
         <TabsContent value="grammar" className="space-y-8">
-          {(grammarExercises as unknown as GrammarCategory[]).map((category) => (
-            <section key={category.id} id={`category-${category.id}`}>
-              <EnhancedGrammarExercise category={category} />
-            </section>
-          ))}
+          {typedGrammarExercises && typedGrammarExercises.length > 0 ? (
+            typedGrammarExercises.map((category) => (
+              <section key={category.id} id={`category-${category.id}`}>
+                <EnhancedGrammarExercise category={category} />
+              </section>
+            ))
+          ) : (
+            <Card>
+              <CardContent className="pt-6">
+                <p className="text-center text-muted-foreground">
+                  Nejsou k dispozici žádná gramatická cvičení.
+                </p>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
         
         <TabsContent value="vocabulary">

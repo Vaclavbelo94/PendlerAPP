@@ -28,6 +28,32 @@ interface EnhancedGrammarExerciseProps {
 }
 
 const EnhancedGrammarExercise: React.FC<EnhancedGrammarExerciseProps> = ({ category }) => {
+  // Add defensive checks to prevent errors with undefined data
+  if (!category) {
+    return (
+      <Card className="mb-8">
+        <CardContent className="pt-6">
+          <p>Kategorie nenalezena.</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Check if rules array exists and has content
+  if (!category.rules || category.rules.length === 0) {
+    return (
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle>{category.name}</CardTitle>
+          <CardDescription>
+            Pro tuto kategorii nejsou k dispozici žádná pravidla.
+          </CardDescription>
+        </CardHeader>
+      </Card>
+    );
+  }
+
+  // Now we know that category and category.rules exist and have content
   return (
     <Card className="mb-8">
       <CardHeader>
@@ -37,7 +63,7 @@ const EnhancedGrammarExercise: React.FC<EnhancedGrammarExerciseProps> = ({ categ
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue={category.rules[0]?.id}>
+        <Tabs defaultValue={category.rules[0]?.id || ""}>
           <TabsList className="mb-4 flex flex-wrap">
             {category.rules.map((rule) => (
               <TabsTrigger key={rule.id} value={rule.id}>
@@ -55,7 +81,7 @@ const EnhancedGrammarExercise: React.FC<EnhancedGrammarExerciseProps> = ({ categ
               
               <div>
                 <h4 className="text-md font-medium mb-2">Příklady:</h4>
-                <LimitedExamples examples={rule.examples} initialLimit={5} />
+                <LimitedExamples examples={rule.examples || []} initialLimit={5} />
               </div>
             </TabsContent>
           ))}
