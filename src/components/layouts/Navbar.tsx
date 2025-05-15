@@ -54,6 +54,12 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProp
     navigate("/");
   };
 
+  // Funkce pro navigaci místo přímého použití onClick={() => navigate()}
+  const handleNavigate = (path: string) => (event: React.MouseEvent) => {
+    event.preventDefault();
+    navigate(path);
+  };
+
   return (
     <header className={`sticky top-0 z-30 w-full transition-all duration-300 ${isScrolled ? 'bg-white shadow-sm' : 'bg-white'}`}>
       <div className="h-16 px-4 border-b flex items-center justify-between">
@@ -88,7 +94,7 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProp
             <Button 
               variant="ghost" 
               className="text-sm font-medium flex items-center gap-2 hidden md:flex" 
-              onClick={() => navigate("/calculator")}
+              onClick={handleNavigate("/calculator")}
             >
               <CalculatorIcon className="h-4 w-4" />
               <span>Kalkulačky</span>
@@ -114,12 +120,12 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProp
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel>Můj účet</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => navigate("/profile")}>
+                <DropdownMenuItem onClick={handleNavigate("/profile")}>
                   <UserIcon className="mr-2 h-4 w-4" />
                   <span>Profil</span>
                 </DropdownMenuItem>
                 {/* Calculator dropdown item - only visible when logged in on mobile */}
-                <DropdownMenuItem onClick={() => navigate("/calculator")} className="md:hidden">
+                <DropdownMenuItem onClick={handleNavigate("/calculator")} className="md:hidden">
                   <CalculatorIcon className="mr-2 h-4 w-4" />
                   <span>Kalkulačky</span>
                 </DropdownMenuItem>
@@ -131,7 +137,7 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProp
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Button variant="default" size="sm" onClick={() => navigate("/login")}>
+            <Button variant="default" size="sm" onClick={handleNavigate("/login")}>
               Přihlásit se
             </Button>
           )}

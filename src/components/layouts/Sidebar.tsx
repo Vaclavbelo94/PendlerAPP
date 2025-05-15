@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { 
   HomeIcon, 
   Languages, 
@@ -24,6 +24,7 @@ interface SidebarProps {
 
 const Sidebar = ({ closeSidebar }: SidebarProps) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { isAdmin, user, isPremium } = useAuth();
   
   const navItems = [
@@ -40,6 +41,16 @@ const Sidebar = ({ closeSidebar }: SidebarProps) => {
     { title: "Často kladené otázky", path: "/faq", icon: HelpCircleIcon },
     { title: "Kontakt", path: "/contact", icon: PhoneIcon },
   ];
+
+  // Funkce pro navigaci místo přímého použití Link
+  const handleNavigate = (path: string) => (event: React.MouseEvent) => {
+    event.preventDefault();
+    navigate(path);
+    const isMobile = window.innerWidth < 768;
+    if (isMobile) {
+      closeSidebar();
+    }
+  };
 
   // Zavřít sidebar po kliknutí na odkaz na mobilních zařízeních
   const handleLinkClick = () => {
@@ -76,20 +87,20 @@ const Sidebar = ({ closeSidebar }: SidebarProps) => {
           <div className="space-y-1">
             <p className="text-xs font-medium text-muted-foreground pl-4 pb-1">Hlavní navigace</p>
             {navItems.map((item) => (
-              <Link key={item.path} to={item.path} onClick={handleLinkClick}>
-                <Button
-                  variant={location.pathname === item.path ? "secondary" : "ghost"}
-                  size="sm"
-                  className={`w-full justify-start gap-3 ${
-                    location.pathname === item.path
-                      ? "font-medium"
-                      : "font-normal"
-                  }`}
-                >
-                  <item.icon className="h-4 w-4" />
-                  {item.title}
-                </Button>
-              </Link>
+              <Button
+                key={item.path}
+                variant={location.pathname === item.path ? "secondary" : "ghost"}
+                size="sm"
+                className={`w-full justify-start gap-3 ${
+                  location.pathname === item.path
+                    ? "font-medium"
+                    : "font-normal"
+                }`}
+                onClick={handleNavigate(item.path)}
+              >
+                <item.icon className="h-4 w-4" />
+                {item.title}
+              </Button>
             ))}
           </div>
           
@@ -98,20 +109,20 @@ const Sidebar = ({ closeSidebar }: SidebarProps) => {
           <div className="space-y-1">
             <p className="text-xs font-medium text-muted-foreground pl-4 pb-1">Informace</p>
             {secondaryItems.map((item) => (
-              <Link key={item.path} to={item.path} onClick={handleLinkClick}>
-                <Button
-                  variant={location.pathname === item.path ? "secondary" : "ghost"}
-                  size="sm"
-                  className={`w-full justify-start gap-3 ${
-                    location.pathname === item.path
-                      ? "font-medium"
-                      : "font-normal"
-                  }`}
-                >
-                  <item.icon className="h-4 w-4" />
-                  {item.title}
-                </Button>
-              </Link>
+              <Button
+                key={item.path}
+                variant={location.pathname === item.path ? "secondary" : "ghost"}
+                size="sm"
+                className={`w-full justify-start gap-3 ${
+                  location.pathname === item.path
+                    ? "font-medium"
+                    : "font-normal"
+                }`}
+                onClick={handleNavigate(item.path)}
+              >
+                <item.icon className="h-4 w-4" />
+                {item.title}
+              </Button>
             ))}
           </div>
         </div>
@@ -120,17 +131,16 @@ const Sidebar = ({ closeSidebar }: SidebarProps) => {
       <div className="p-4">
         {/* Admin tlačítko v levém dolním rohu - pouze pro administrátory, když jsou přihlášeni */}
         {user && isAdmin && (
-          <Link to="/admin" className="mb-4 block" onClick={handleLinkClick}>
-            <Button 
-              variant={location.pathname === "/admin" ? "secondary" : "outline"}
-              size="sm"
-              className="w-full justify-start gap-3"
-            >
-              <Shield className="h-4 w-4" />
-              <span className="font-medium">Admin</span>
-              <span className="ml-auto h-2 w-2 rounded-full bg-green-500" />
-            </Button>
-          </Link>
+          <Button 
+            variant={location.pathname === "/admin" ? "secondary" : "outline"}
+            size="sm"
+            className="w-full justify-start gap-3 mb-4"
+            onClick={handleNavigate("/admin")}
+          >
+            <Shield className="h-4 w-4" />
+            <span className="font-medium">Admin</span>
+            <span className="ml-auto h-2 w-2 rounded-full bg-green-500" />
+          </Button>
         )}
         
         <div className="bg-slate-50 rounded-lg p-3 mt-2">
@@ -143,9 +153,14 @@ const Sidebar = ({ closeSidebar }: SidebarProps) => {
                 {isPremium && <span className="bg-amber-500 text-white text-xs px-2 py-0.5 rounded">Premium</span>}
               </div>
               <div className="grid gap-2">
-                <Link to="/profile" onClick={handleLinkClick}>
-                  <Button size="sm" variant="outline" className="w-full">Profil</Button>
-                </Link>
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={handleNavigate("/profile")}
+                >
+                  Profil
+                </Button>
                 <Button 
                   size="sm" 
                   variant="default" 
@@ -165,12 +180,22 @@ const Sidebar = ({ closeSidebar }: SidebarProps) => {
               <p className="text-sm font-medium">Přihlášení</p>
               <p className="text-xs text-muted-foreground mb-2">Přihlašte se pro více možností</p>
               <div className="grid gap-2">
-                <Link to="/login" onClick={handleLinkClick}>
-                  <Button size="sm" variant="default" className="w-full">Přihlásit se</Button>
-                </Link>
-                <Link to="/register" onClick={handleLinkClick}>
-                  <Button size="sm" variant="outline" className="w-full">Registrovat</Button>
-                </Link>
+                <Button 
+                  size="sm" 
+                  variant="default" 
+                  className="w-full"
+                  onClick={handleNavigate("/login")}
+                >
+                  Přihlásit se
+                </Button>
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={handleNavigate("/register")}
+                >
+                  Registrovat
+                </Button>
               </div>
             </>
           )}
