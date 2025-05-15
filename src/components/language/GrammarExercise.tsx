@@ -10,16 +10,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Check, Play } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
-
-export type Exercise = {
-  id: number;
-  type: 'multiplechoice' | 'fillblank';
-  question: string;
-  options?: string[];
-  correctAnswer: string;
-  explanation: string;
-  category: string;
-}
+import { Exercise } from "@/data/germanExercises";
 
 type GrammarExerciseProps = {
   exercises: Exercise[];

@@ -1,7 +1,322 @@
 
-import { Exercise } from "../components/language/GrammarExercise";
+// Define the proper types to match the data structure
+interface Example {
+  id: string;
+  german: string;
+  czech: string;
+}
 
-export const grammarExercises: Exercise[] = [
+interface GrammarRule {
+  id: string;
+  name: string;
+  description: string;
+  examples: Example[];
+}
+
+interface GrammarCategory {
+  id: string;
+  name: string;
+  rules: GrammarRule[];
+}
+
+// Export types for use in other files
+export type { Example, GrammarRule, GrammarCategory };
+
+// Exercise type for interactive grammar exercises
+export interface Exercise {
+  id: number;
+  type: 'multiplechoice' | 'fillblank';
+  question: string;
+  options?: string[];
+  correctAnswer: string;
+  explanation: string;
+  category: string;
+}
+
+// Define the grammar exercises data structure
+export const grammarExercises: GrammarCategory[] = [
+  {
+    id: "nouns",
+    name: "Podstatná jména",
+    rules: [
+      {
+        id: "gender",
+        name: "Rody podstatných jmen",
+        description: "V němčině mají podstatná jména jeden ze tří rodů: mužský (der), ženský (die), nebo střední (das). Rod podstatného jména je třeba se naučit společně s novým slovem.",
+        examples: [
+          { id: "n1", german: "der Mann", czech: "muž" },
+          { id: "n2", german: "die Frau", czech: "žena" },
+          { id: "n3", german: "das Kind", czech: "dítě" },
+          { id: "n4", german: "der Tisch", czech: "stůl" },
+          { id: "n5", german: "die Tür", czech: "dveře" },
+          { id: "n6", german: "das Fenster", czech: "okno" },
+          { id: "n7", german: "der Computer", czech: "počítač" },
+          { id: "n8", german: "die Lampe", czech: "lampa" }
+        ]
+      },
+      {
+        id: "plural",
+        name: "Tvoření množného čísla",
+        description: "Němčina má několik způsobů, jak tvořit množné číslo podstatných jmen. Přidání koncovky -e, -en, -er, nebo přehlasování samohlásky jsou nejčastější způsoby.",
+        examples: [
+          { id: "p1", german: "der Tisch → die Tische", czech: "stůl → stoly" },
+          { id: "p2", german: "die Frau → die Frauen", czech: "žena → ženy" },
+          { id: "p3", german: "das Kind → die Kinder", czech: "dítě → děti" },
+          { id: "p4", german: "der Mann → die Männer", czech: "muž → muži" },
+          { id: "p5", german: "das Haus → die Häuser", czech: "dům → domy" },
+          { id: "p6", german: "die Blume → die Blumen", czech: "květina → květiny" }
+        ]
+      },
+      {
+        id: "compounds",
+        name: "Složená podstatná jména",
+        description: "V němčině se často vytvářejí složená podstatná jména spojením dvou nebo více slov. Rod složeného podstatného jména se řídí posledním slovem.",
+        examples: [
+          { id: "c1", german: "das Haus + die Tür = die Haustür", czech: "dům + dveře = domovní dveře" },
+          { id: "c2", german: "der Hand + das Tuch = das Handtuch", czech: "ruka + látka = ručník" },
+          { id: "c3", german: "das Buch + der Laden = der Buchladen", czech: "kniha + obchod = knihkupectví" },
+          { id: "c4", german: "die Arbeit + der Platz = der Arbeitsplatz", czech: "práce + místo = pracoviště" },
+          { id: "c5", german: "der Tisch + die Lampe = die Tischlampe", czech: "stůl + lampa = stolní lampa" }
+        ]
+      }
+    ]
+  },
+  {
+    id: "articles",
+    name: "Členy",
+    rules: [
+      {
+        id: "definite",
+        name: "Určité členy",
+        description: "Určité členy (der, die, das) se používají, když mluvíme o konkrétní, známé věci nebo osobě.",
+        examples: [
+          { id: "d1", german: "der Mann ist mein Vater", czech: "ten muž je můj otec" },
+          { id: "d2", german: "die Frau arbeitet dort", czech: "ta žena tam pracuje" },
+          { id: "d3", german: "das Auto ist neu", czech: "to auto je nové" },
+          { id: "d4", german: "der Computer funktioniert nicht", czech: "ten počítač nefunguje" },
+          { id: "d5", german: "die Sonne scheint", czech: "slunce svítí" }
+        ]
+      },
+      {
+        id: "indefinite",
+        name: "Neurčité členy",
+        description: "Neurčité členy (ein, eine, ein) se používají, když mluvíme o obecné, dosud neznámé věci nebo osobě.",
+        examples: [
+          { id: "i1", german: "ein Mann steht dort", czech: "nějaký muž tam stojí" },
+          { id: "i2", german: "eine Frau singt", czech: "nějaká žena zpívá" },
+          { id: "i3", german: "ein Kind spielt", czech: "nějaké dítě si hraje" },
+          { id: "i4", german: "ich kaufe ein Buch", czech: "kupuji (nějakou) knihu" },
+          { id: "i5", german: "wir brauchen eine Lösung", czech: "potřebujeme (nějaké) řešení" }
+        ]
+      },
+      {
+        id: "cases",
+        name: "Členy v pádech",
+        description: "Členy se v němčině ohýbají podle čtyř pádů: nominativ (1. pád), genitiv (2. pád), dativ (3. pád) a akuzativ (4. pád).",
+        examples: [
+          { id: "c1", german: "Nominativ: der Mann, die Frau, das Kind", czech: "Nominativ: ten muž, ta žena, to dítě" },
+          { id: "c2", german: "Genitiv: des Mannes, der Frau, des Kindes", czech: "Genitiv: toho muže, té ženy, toho dítěte" },
+          { id: "c3", german: "Dativ: dem Mann, der Frau, dem Kind", czech: "Dativ: tomu muži, té ženě, tomu dítěti" },
+          { id: "c4", german: "Akkusativ: den Mann, die Frau, das Kind", czech: "Akuzativ: toho muže, tu ženu, to dítě" }
+        ]
+      }
+    ]
+  },
+  {
+    id: "verbs",
+    name: "Slovesa",
+    rules: [
+      {
+        id: "conjugation",
+        name: "Časování sloves v přítomném čase",
+        description: "V němčině se slovesa časují podle osoby a čísla. Základní koncovky pro přítomný čas jsou: -e, -st, -t, -en, -t, -en.",
+        examples: [
+          { id: "v1", german: "ich mache (dělám)", czech: "machen (dělat) - 1. os. j. č." },
+          { id: "v2", german: "du machst (děláš)", czech: "machen (dělat) - 2. os. j. č." },
+          { id: "v3", german: "er/sie/es macht (dělá)", czech: "machen (dělat) - 3. os. j. č." },
+          { id: "v4", german: "wir machen (děláme)", czech: "machen (dělat) - 1. os. mn. č." },
+          { id: "v5", german: "ihr macht (děláte)", czech: "machen (dělat) - 2. os. mn. č." },
+          { id: "v6", german: "sie/Sie machen (dělají/děláte)", czech: "machen (dělat) - 3. os. mn. č. / vykání" }
+        ]
+      },
+      {
+        id: "irregular",
+        name: "Nepravidelná slovesa",
+        description: "Některá slovesa v němčině mají nepravidelné časování, často se mění kmenová samohláska.",
+        examples: [
+          { id: "ir1", german: "ich bin, du bist, er ist", czech: "sein (být) - jsem, jsi, je" },
+          { id: "ir2", german: "ich habe, du hast, er hat", czech: "haben (mít) - mám, máš, má" },
+          { id: "ir3", german: "ich gehe, du gehst, er geht", czech: "gehen (jít) - jdu, jdeš, jde" },
+          { id: "ir4", german: "ich fahre, du fährst, er fährt", czech: "fahren (jet) - jedu, jedeš, jede" },
+          { id: "ir5", german: "ich lese, du liest, er liest", czech: "lesen (číst) - čtu, čteš, čte" },
+          { id: "ir6", german: "ich nehme, du nimmst, er nimmt", czech: "nehmen (brát) - beru, bereš, bere" }
+        ]
+      },
+      {
+        id: "modal",
+        name: "Modální slovesa",
+        description: "Modální slovesa vyjadřují možnost, nutnost, schopnost, atd. Patří mezi ně: können, müssen, dürfen, sollen, wollen, mögen.",
+        examples: [
+          { id: "m1", german: "ich kann Deutsch sprechen", czech: "umím/můžu mluvit německy" },
+          { id: "m2", german: "du musst jetzt gehen", czech: "musíš teď jít" },
+          { id: "m3", german: "er darf hier nicht rauchen", czech: "nesmí zde kouřit" },
+          { id: "m4", german: "wir sollen früh aufstehen", czech: "máme brzy vstát" },
+          { id: "m5", german: "ihr wollt nach Berlin fahren", czech: "chcete jet do Berlína" },
+          { id: "m6", german: "sie mögen Schokolade", czech: "mají rádi čokoládu" }
+        ]
+      },
+      {
+        id: "perfect",
+        name: "Perfekt (minulý čas složený)",
+        description: "Perfekt se tvoří pomocí přítomného tvaru haben (nebo sein) a participia perfekta (Partizip II).",
+        examples: [
+          { id: "pf1", german: "ich habe gegessen", czech: "jedl/a jsem" },
+          { id: "pf2", german: "du hast geschlafen", czech: "spal/a jsi" },
+          { id: "pf3", german: "er hat gearbeitet", czech: "pracoval" },
+          { id: "pf4", german: "wir sind gefahren", czech: "jeli jsme" },
+          { id: "pf5", german: "ihr seid gekommen", czech: "přišli jste" },
+          { id: "pf6", german: "sie haben gesprochen", czech: "mluvili" }
+        ]
+      }
+    ]
+  },
+  {
+    id: "sentences",
+    name: "Větná skladba",
+    rules: [
+      {
+        id: "word-order",
+        name: "Slovosled v německé větě",
+        description: "V německé oznamovací větě je sloveso vždy na druhém místě. Pokud věta začíná jiným větným členem než podmětem, podmět následuje až po slovese.",
+        examples: [
+          { id: "wo1", german: "Ich gehe nach Hause.", czech: "Jdu domů." },
+          { id: "wo2", german: "Heute gehe ich nach Hause.", czech: "Dnes jdu domů." },
+          { id: "wo3", german: "Nach Hause gehe ich heute.", czech: "Domů jdu dnes." },
+          { id: "wo4", german: "Er kauft ein Buch.", czech: "Kupuje knihu." },
+          { id: "wo5", german: "Das Buch kauft er.", czech: "Tu knihu kupuje on." }
+        ]
+      },
+      {
+        id: "questions",
+        name: "Tázací věty",
+        description: "V tázacích větách je sloveso na prvním místě, nebo na druhém místě po tázacím slově.",
+        examples: [
+          { id: "q1", german: "Gehst du nach Hause?", czech: "Jdeš domů?" },
+          { id: "q2", german: "Kauft er ein Buch?", czech: "Kupuje knihu?" },
+          { id: "q3", german: "Wo wohnst du?", czech: "Kde bydlíš?" },
+          { id: "q4", german: "Warum kommst du so spät?", czech: "Proč přicházíš tak pozdě?" },
+          { id: "q5", german: "Wann fährst du in den Urlaub?", czech: "Kdy jedeš na dovolenou?" }
+        ]
+      },
+      {
+        id: "negation",
+        name: "Zápor ve větě",
+        description: "V němčině se zápor tvoří pomocí 'nicht' (ne) nebo 'kein' (žádný). 'Nicht' stojí obvykle na konci věty nebo před příslovcem, 'kein' nahrazuje neurčitý člen.",
+        examples: [
+          { id: "n1", german: "Ich verstehe das nicht.", czech: "Nerozumím tomu." },
+          { id: "n2", german: "Er kommt heute nicht.", czech: "Dnes nepřijde." },
+          { id: "n3", german: "Ich habe kein Auto.", czech: "Nemám auto." },
+          { id: "n4", german: "Wir haben keine Zeit.", czech: "Nemáme čas." },
+          { id: "n5", german: "Das ist nicht gut.", czech: "To není dobré." }
+        ]
+      },
+      {
+        id: "subordinate",
+        name: "Vedlejší věty",
+        description: "Ve vedlejších větách jde časované sloveso na konec věty. Vedlejší věty začínají spojkami jako dass, weil, wenn, atd.",
+        examples: [
+          { id: "s1", german: "Ich weiß, dass er kommt.", czech: "Vím, že přijde." },
+          { id: "s2", german: "Er bleibt zu Hause, weil er krank ist.", czech: "Zůstává doma, protože je nemocný." },
+          { id: "s3", german: "Wenn ich Zeit habe, besuche ich dich.", czech: "Když budu mít čas, navštívím tě." },
+          { id: "s4", german: "Sie fragt, ob wir kommen.", czech: "Ptá se, zda přijdeme." },
+          { id: "s5", german: "Das ist das Buch, das ich lese.", czech: "To je ta kniha, kterou čtu." }
+        ]
+      }
+    ]
+  },
+  {
+    id: "cases",
+    name: "Pády",
+    rules: [
+      {
+        id: "nominative",
+        name: "Nominativ (1. pád)",
+        description: "Nominativ odpovídá na otázku 'kdo, co?' a používá se pro podmět věty.",
+        examples: [
+          { id: "nom1", german: "Der Mann liest.", czech: "Ten muž čte." },
+          { id: "nom2", german: "Die Katze schläft.", czech: "Ta kočka spí." },
+          { id: "nom3", german: "Das Kind spielt.", czech: "To dítě si hraje." },
+          { id: "nom4", german: "Die Bücher sind neu.", czech: "Ty knihy jsou nové." }
+        ]
+      },
+      {
+        id: "accusative",
+        name: "Akkusativ (4. pád)",
+        description: "Akkusativ odpovídá na otázku 'koho, co?' a používá se pro přímý předmět.",
+        examples: [
+          { id: "acc1", german: "Ich sehe den Mann.", czech: "Vidím toho muže." },
+          { id: "acc2", german: "Er kauft eine Katze.", czech: "Kupuje kočku." },
+          { id: "acc3", german: "Wir besuchen das Kind.", czech: "Navštěvujeme to dítě." },
+          { id: "acc4", german: "Sie liest die Bücher.", czech: "Čte ty knihy." }
+        ]
+      },
+      {
+        id: "dative",
+        name: "Dativ (3. pád)",
+        description: "Dativ odpovídá na otázku 'komu, čemu?' a používá se pro nepřímý předmět a po určitých předložkách.",
+        examples: [
+          { id: "dat1", german: "Ich gebe dem Mann ein Buch.", czech: "Dávám tomu muži knihu." },
+          { id: "dat2", german: "Er hilft der Frau.", czech: "Pomáhá té ženě." },
+          { id: "dat3", german: "Wir schenken dem Kind ein Spielzeug.", czech: "Darujeme tomu dítěti hračku." },
+          { id: "dat4", german: "Mit den Freunden", czech: "S (těmi) přáteli" }
+        ]
+      },
+      {
+        id: "genitive",
+        name: "Genitiv (2. pád)",
+        description: "Genitiv odpovídá na otázku 'koho, čeho?' a vyjadřuje přivlastnění nebo příslušnost.",
+        examples: [
+          { id: "gen1", german: "Das Auto des Mannes", czech: "Auto toho muže" },
+          { id: "gen2", german: "Die Tasche der Frau", czech: "Taška té ženy" },
+          { id: "gen3", german: "Das Spielzeug des Kindes", czech: "Hračka toho dítěte" },
+          { id: "gen4", german: "während des Tages", czech: "během dne" }
+        ]
+      }
+    ]
+  },
+  {
+    id: "adjectives",
+    name: "Přídavná jména",
+    rules: [
+      {
+        id: "endings",
+        name: "Koncovky přídavných jmen",
+        description: "Přídavná jména v němčině mají koncovky, které se mění podle rodu, pádu a členu, který jim předchází.",
+        examples: [
+          { id: "adj1", german: "der große Mann", czech: "ten velký muž" },
+          { id: "adj2", german: "eine schöne Frau", czech: "nějaká krásná žena" },
+          { id: "adj3", german: "das kleine Kind", czech: "to malé dítě" },
+          { id: "adj4", german: "mit gutem Essen", czech: "s dobrým jídlem" }
+        ]
+      },
+      {
+        id: "comparison",
+        name: "Stupňování přídavných jmen",
+        description: "Přídavná jména se stupňují přidáním -er pro 2. stupeň (komparativ) a -(e)st pro 3. stupeň (superlativ).",
+        examples: [
+          { id: "comp1", german: "klein - kleiner - am kleinsten", czech: "malý - menší - nejmenší" },
+          { id: "comp2", german: "groß - größer - am größten", czech: "velký - větší - největší" },
+          { id: "comp3", german: "schön - schöner - am schönsten", czech: "krásný - krásnější - nejkrásnější" },
+          { id: "comp4", german: "gut - besser - am besten", czech: "dobrý - lepší - nejlepší" },
+          { id: "comp5", german: "viel - mehr - am meisten", czech: "mnoho - více - nejvíce" }
+        ]
+      }
+    ]
+  }
+];
+
+// Update grammar exercises array with exercise objects
+export const grammarExercises2: Exercise[] = [
   // Articles (der, die, das)
   {
     id: 1,
@@ -39,43 +354,7 @@ export const grammarExercises: Exercise[] = [
     explanation: 'Buch (kniha) je podstatné jméno středního rodu, proto používáme "das".',
     category: 'articles'
   },
-  {
-    id: 17,
-    type: 'multiplechoice',
-    question: 'Vyberte správný člen: _____ Hund bellt.',
-    options: ['der', 'die', 'das'],
-    correctAnswer: 'der',
-    explanation: 'Hund (pes) je podstatné jméno mužského rodu, proto používáme "der".',
-    category: 'articles'
-  },
-  {
-    id: 18,
-    type: 'multiplechoice',
-    question: 'Vyberte správný člen: _____ Katze miaut.',
-    options: ['der', 'die', 'das'],
-    correctAnswer: 'die',
-    explanation: 'Katze (kočka) je podstatné jméno ženského rodu, proto používáme "die".',
-    category: 'articles'
-  },
-  {
-    id: 19,
-    type: 'multiplechoice',
-    question: 'Vyberte správný člen: _____ Auto fährt schnell.',
-    options: ['der', 'die', 'das'],
-    correctAnswer: 'das',
-    explanation: 'Auto (auto) je podstatné jméno středního rodu, proto používáme "das".',
-    category: 'articles'
-  },
-  {
-    id: 20,
-    type: 'multiplechoice',
-    question: 'Vyberte správný člen: _____ Sonne scheint.',
-    options: ['der', 'die', 'das'],
-    correctAnswer: 'die',
-    explanation: 'Sonne (slunce) je podstatné jméno ženského rodu, proto používáme "die".',
-    category: 'articles'
-  },
-
+  
   // Present tense
   {
     id: 5,
@@ -104,43 +383,7 @@ export const grammarExercises: Exercise[] = [
     explanation: 'Pro 3. osobu jednotného čísla (er) je koncovka slovesa "-t" a u nepravidelných sloves může dojít ke změně kmenové samohlásky.',
     category: 'present-tense'
   },
-  {
-    id: 21,
-    type: 'multiplechoice',
-    question: 'Doplňte správný tvar slovesa "kommen" pro "sie (množné)": Sie _____ aus Tschechien.',
-    options: ['komme', 'kommst', 'kommt', 'kommen'],
-    correctAnswer: 'kommen',
-    explanation: 'Pro 3. osobu množného čísla (sie) je koncovka slovesa "-en".',
-    category: 'present-tense'
-  },
-  {
-    id: 22,
-    type: 'multiplechoice',
-    question: 'Doplňte správný tvar slovesa "fahren" pro "wir": Wir _____ nach Berlin.',
-    options: ['fahre', 'fährst', 'fährt', 'fahren'],
-    correctAnswer: 'fahren',
-    explanation: 'Pro 1. osobu množného čísla (wir) je koncovka slovesa "-en".',
-    category: 'present-tense'
-  },
-  {
-    id: 23,
-    type: 'multiplechoice',
-    question: 'Doplňte správný tvar slovesa "sehen" pro "ihr": Ihr _____ einen Film.',
-    options: ['sehe', 'siehst', 'sieht', 'seht'],
-    correctAnswer: 'seht',
-    explanation: 'Pro 2. osobu množného čísla (ihr) je koncovka slovesa "-t".',
-    category: 'present-tense'
-  },
-  {
-    id: 24,
-    type: 'multiplechoice',
-    question: 'Doplňte správný tvar slovesa "geben" pro "du": Du _____ mir das Buch.',
-    options: ['gebe', 'gibst', 'gibt', 'geben'],
-    correctAnswer: 'gibst',
-    explanation: 'Pro 2. osobu jednotného čísla (du) je koncovka slovesa "-st" a dochází ke změně kmenové samohlásky "e" na "i".',
-    category: 'present-tense'
-  },
-
+  
   // Cases
   {
     id: 8,
@@ -169,43 +412,7 @@ export const grammarExercises: Exercise[] = [
     explanation: 'Ve 2. pádu (genitiv) se člen "der" (mužský rod) mění na "des".',
     category: 'cases'
   },
-  {
-    id: 25,
-    type: 'multiplechoice',
-    question: 'Vyberte správný tvar členu v dativu: Ich helfe _____ Frau.',
-    options: ['der', 'dem', 'die', 'des'],
-    correctAnswer: 'der',
-    explanation: 'Ve 3. pádu (dativ) se člen "die" (ženský rod) mění na "der".',
-    category: 'cases'
-  },
-  {
-    id: 26,
-    type: 'multiplechoice',
-    question: 'Vyberte správný tvar členu v akuzativu: Er besucht _____ Stadt.',
-    options: ['der', 'dem', 'die', 'des'],
-    correctAnswer: 'die',
-    explanation: 'Ve 4. pádu (akuzativ) zůstává člen "die" (ženský rod) beze změny.',
-    category: 'cases'
-  },
-  {
-    id: 27,
-    type: 'multiplechoice',
-    question: 'Vyberte správný tvar členu v genitivu: Das ist das Spielzeug _____ Kindes.',
-    options: ['der', 'dem', 'das', 'des'],
-    correctAnswer: 'des',
-    explanation: 'Ve 2. pádu (genitiv) se člen "das" (střední rod) mění na "des".',
-    category: 'cases'
-  },
-  {
-    id: 28,
-    type: 'multiplechoice',
-    question: 'Vyberte správný tvar členu v dativu: Wir folgen _____ Anweisungen.',
-    options: ['die', 'der', 'den', 'des'],
-    correctAnswer: 'den',
-    explanation: 'Ve 3. pádu (dativ) množného čísla se člen "die" mění na "den".',
-    category: 'cases'
-  },
-
+  
   // Modal verbs
   {
     id: 11,
@@ -243,43 +450,7 @@ export const grammarExercises: Exercise[] = [
     explanation: 'Pro 3. osobu jednotného čísla (er) je tvar modálního slovesa "dürfen" - "darf".',
     category: 'modal-verbs'
   },
-  {
-    id: 29,
-    type: 'multiplechoice',
-    question: 'Doplňte správný tvar modálního slovesa "sollen": Ihr _____ früh aufstehen.',
-    options: ['sollst', 'soll', 'sollt', 'sollen'],
-    correctAnswer: 'sollt',
-    explanation: 'Pro 2. osobu množného čísla (ihr) je tvar modálního slovesa "sollen" - "sollt".',
-    category: 'modal-verbs'
-  },
-  {
-    id: 30,
-    type: 'multiplechoice',
-    question: 'Doplňte správný tvar modálního slovesa "mögen": Sie (jednotné) _____ Schokolade.',
-    options: ['mag', 'magst', 'mögt', 'mögen'],
-    correctAnswer: 'mag',
-    explanation: 'Pro 3. osobu jednotného čísla (sie) je tvar modálního slovesa "mögen" - "mag".',
-    category: 'modal-verbs'
-  },
-  {
-    id: 31,
-    type: 'multiplechoice',
-    question: 'Doplňte správný tvar modálního slovesa "können": Sie (množné) _____ gut kochen.',
-    options: ['kannst', 'kann', 'könnt', 'können'],
-    correctAnswer: 'können',
-    explanation: 'Pro 3. osobu množného čísla (sie) je tvar modálního slovesa "können" - "können".',
-    category: 'modal-verbs'
-  },
-  {
-    id: 32,
-    type: 'multiplechoice',
-    question: 'Doplňte správný tvar modálního slovesa "müssen": Ihr _____ pünktlich sein.',
-    options: ['muss', 'musst', 'müsst', 'müssen'],
-    correctAnswer: 'müsst',
-    explanation: 'Pro 2. osobu množného čísla (ihr) je tvar modálního slovesa "müssen" - "müsst".',
-    category: 'modal-verbs'
-  },
-
+  
   // Word order
   {
     id: 15,
@@ -298,41 +469,6 @@ export const grammarExercises: Exercise[] = [
     correctAnswer: 'gehe ich',
     explanation: 'Pokud věta začíná příslovečným určením, sloveso zůstává na druhém místě a podmět se posouvá na třetí místo.',
     category: 'word-order'
-  },
-  {
-    id: 33,
-    type: 'multiplechoice',
-    question: 'Vyberte správné pořadí slov: "Wann _____ du nach Hause?"',
-    options: ['gehst', 'du gehst', 'gehst du', 'du wann gehst'],
-    correctAnswer: 'gehst du',
-    explanation: 'V tázací větě začínající tázacím slovem je sloveso na druhém místě a podmět na třetím.',
-    category: 'word-order'
-  },
-  {
-    id: 34,
-    type: 'multiplechoice',
-    question: 'Vyberte správné pořadí slov: "_____ du mir helfen?"',
-    options: ['Kannst', 'Du kannst', 'Kannst du', 'Du kannst mir'],
-    correctAnswer: 'Kannst du',
-    explanation: 'V tázací větě je modální sloveso na prvním místě a podmět na druhém.',
-    category: 'word-order'
-  },
-  {
-    id: 35,
-    type: 'multiplechoice',
-    question: 'Vyberte správné pořadí slov: "Am Wochenende _____ wir ins Restaurant."',
-    options: ['gehen', 'wir gehen', 'gehen wir', 'wir am Wochenende gehen'],
-    correctAnswer: 'gehen wir',
-    explanation: 'Pokud věta začíná příslovečným určením času, sloveso zůstává na druhém místě a podmět se posouvá za sloveso.',
-    category: 'word-order'
-  },
-  {
-    id: 36,
-    type: 'multiplechoice',
-    question: 'Vyberte správné pořadí slov v souvětí: "Ich weiß, dass _____ ."',
-    options: ['du kommst morgen', 'du morgen kommst', 'kommst du morgen', 'morgen du kommst'],
-    correctAnswer: 'du morgen kommst',
-    explanation: 'Ve vedlejší větě uvozené spojkou "dass" je sloveso až na konci věty.',
-    category: 'word-order'
   }
 ];
+

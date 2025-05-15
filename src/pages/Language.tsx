@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -8,26 +9,7 @@ import { grammarExercises } from "@/data/germanExercises";
 import EnhancedGrammarExercise from "@/components/language/EnhancedGrammarExercise";
 import VocabularySection from "@/components/language/VocabularySection";
 import InteractiveQuiz from "@/components/language/InteractiveQuiz";
-
-// Define the proper types to match the data structure
-interface Example {
-  id: string;
-  german: string;
-  czech: string;
-}
-
-interface GrammarRule {
-  id: string;
-  name: string;
-  description: string;
-  examples: Example[];
-}
-
-interface GrammarCategory {
-  id: string;
-  name: string;
-  rules: GrammarRule[];
-}
+import { GrammarCategory } from "@/data/germanExercises";
 
 const Language = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -50,7 +32,7 @@ const Language = () => {
     const results: any[] = [];
     
     // Treat grammarExercises as GrammarCategory[]
-    (grammarExercises as unknown as GrammarCategory[]).forEach(category => {
+    grammarExercises.forEach(category => {
       category.rules.forEach(rule => {
         if (
           rule.name.toLowerCase().includes(term) || 
@@ -98,9 +80,6 @@ const Language = () => {
       setSearchPerformed(false);
     }
   }, [searchTerm]);
-
-  // Cast grammarExercises to ensure it has the right type
-  const typedGrammarExercises = grammarExercises as unknown as GrammarCategory[];
 
   return (
     <div className="container py-8">
@@ -174,8 +153,8 @@ const Language = () => {
         </TabsList>
         
         <TabsContent value="grammar" className="space-y-8">
-          {typedGrammarExercises && typedGrammarExercises.length > 0 ? (
-            typedGrammarExercises.map((category) => (
+          {grammarExercises && grammarExercises.length > 0 ? (
+            grammarExercises.map((category) => (
               <section key={category.id} id={`category-${category.id}`}>
                 <EnhancedGrammarExercise category={category} />
               </section>
@@ -206,6 +185,77 @@ const Language = () => {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-4">
+                  <h3 className="font-medium">Pozdravy a představení</h3>
+                  <ul className="space-y-2">
+                    <li className="p-2 bg-slate-50 rounded-md">
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="font-medium">Guten Morgen!</div>
+                        <div>Dobré ráno!</div>
+                      </div>
+                    </li>
+                    <li className="p-2 bg-slate-50 rounded-md">
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="font-medium">Guten Tag!</div>
+                        <div>Dobrý den!</div>
+                      </div>
+                    </li>
+                    <li className="p-2 bg-slate-50 rounded-md">
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="font-medium">Guten Abend!</div>
+                        <div>Dobrý večer!</div>
+                      </div>
+                    </li>
+                    <li className="p-2 bg-slate-50 rounded-md">
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="font-medium">Ich heiße...</div>
+                        <div>Jmenuji se...</div>
+                      </div>
+                    </li>
+                    <li className="p-2 bg-slate-50 rounded-md">
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="font-medium">Wie heißt du?</div>
+                        <div>Jak se jmenuješ?</div>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+                <div className="space-y-4">
+                  <h3 className="font-medium">V restauraci</h3>
+                  <ul className="space-y-2">
+                    <li className="p-2 bg-slate-50 rounded-md">
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="font-medium">Ich möchte bestellen.</div>
+                        <div>Chtěl/a bych si objednat.</div>
+                      </div>
+                    </li>
+                    <li className="p-2 bg-slate-50 rounded-md">
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="font-medium">Die Speisekarte, bitte.</div>
+                        <div>Jídelní lístek, prosím.</div>
+                      </div>
+                    </li>
+                    <li className="p-2 bg-slate-50 rounded-md">
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="font-medium">Ein Glas Wasser, bitte.</div>
+                        <div>Sklenici vody, prosím.</div>
+                      </div>
+                    </li>
+                    <li className="p-2 bg-slate-50 rounded-md">
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="font-medium">Zahlen, bitte!</div>
+                        <div>Platit, prosím!</div>
+                      </div>
+                    </li>
+                    <li className="p-2 bg-slate-50 rounded-md">
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="font-medium">Das schmeckt sehr gut.</div>
+                        <div>To je velmi chutné.</div>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+                
+                <div className="space-y-4">
                   <h3 className="font-medium">V práci</h3>
                   <ul className="space-y-2">
                     <li className="p-2 bg-slate-50 rounded-md">
@@ -229,24 +279,30 @@ const Language = () => {
                   </ul>
                 </div>
                 <div className="space-y-4">
-                  <h3 className="font-medium">Na úřadě</h3>
+                  <h3 className="font-medium">Na nákupech</h3>
                   <ul className="space-y-2">
                     <li className="p-2 bg-slate-50 rounded-md">
                       <div className="grid grid-cols-2 gap-2">
-                        <div className="font-medium">Ich habe einen Termin.</div>
-                        <div>Mám termín schůzky.</div>
+                        <div className="font-medium">Wie viel kostet das?</div>
+                        <div>Kolik to stojí?</div>
                       </div>
                     </li>
                     <li className="p-2 bg-slate-50 rounded-md">
                       <div className="grid grid-cols-2 gap-2">
-                        <div className="font-medium">Ich brauche ein Formular.</div>
-                        <div>Potřebuji formulář.</div>
+                        <div className="font-medium">Ich suche...</div>
+                        <div>Hledám...</div>
                       </div>
                     </li>
                     <li className="p-2 bg-slate-50 rounded-md">
                       <div className="grid grid-cols-2 gap-2">
-                        <div className="font-medium">Wie lange dauert das?</div>
-                        <div>Jak dlouho to bude trvat?</div>
+                        <div className="font-medium">Haben Sie das in einer anderen Größe?</div>
+                        <div>Máte to v jiné velikosti?</div>
+                      </div>
+                    </li>
+                    <li className="p-2 bg-slate-50 rounded-md">
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="font-medium">Ich nehme das.</div>
+                        <div>Vezmu si to.</div>
                       </div>
                     </li>
                   </ul>
