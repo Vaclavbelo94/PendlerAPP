@@ -54,7 +54,7 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProp
     navigate("/");
   };
 
-  // Funkce pro navigaci místo přímého použití onClick={() => navigate()}
+  // Funkce pro navigaci - opraveno aby nedocházelo k refreshi stránky
   const handleNavigate = (path: string) => () => {
     navigate(path);
   };

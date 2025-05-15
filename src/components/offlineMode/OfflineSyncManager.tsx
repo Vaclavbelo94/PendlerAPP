@@ -4,7 +4,6 @@ import { useOfflineStatus } from '@/hooks/useOfflineStatus';
 import { syncWithLocalStorage, loadFromLocalStorage } from '@/utils/offlineStorage';
 import { toast } from '@/components/ui/use-toast';
 import { useAuth } from '@/hooks/useAuth';
-import { usePremiumCheck } from '@/hooks/usePremiumCheck';
 import { supabase } from '@/integrations/supabase/client';
 
 export const OfflineSyncManager = () => {
@@ -12,7 +11,7 @@ export const OfflineSyncManager = () => {
   const { user, isPremium, refreshPremiumStatus } = useAuth();
   const [isCheckingStatus, setIsCheckingStatus] = React.useState(true);
 
-  // Na začátku vždy aktualizujme premium status z databáze
+  // Na začátku vždy aktualizujeme premium status z databáze
   React.useEffect(() => {
     if (user) {
       const checkPremiumDirectly = async () => {
@@ -32,9 +31,21 @@ export const OfflineSyncManager = () => {
     }
   }, [user, refreshPremiumStatus]);
 
+  // Console.log pro ladící účely
+  React.useEffect(() => {
+    console.log('OfflineSyncManager stav:', { 
+      isOffline, 
+      user: user?.id, 
+      isPremium,
+      isCheckingStatus
+    });
+  }, [isOffline, user, isPremium, isCheckingStatus]);
+
   // Load data to IndexedDB when app starts or when going offline
   React.useEffect(() => {
     if (isOffline && user && !isCheckingStatus) {
+      console.log('Offline mode activated, premium status:', isPremium);
+      
       if (!isPremium) {
         toast({
           title: "Omezená offline funkcionalita",
@@ -64,6 +75,8 @@ export const OfflineSyncManager = () => {
   // Sync data back to server when coming online
   React.useEffect(() => {
     if (!isOffline && user && !isCheckingStatus) {
+      console.log('Online mode activated, premium status:', isPremium);
+      
       if (!isPremium) {
         toast({
           title: "Omezená synchronizace",

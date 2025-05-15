@@ -42,7 +42,7 @@ const Sidebar = ({ closeSidebar }: SidebarProps) => {
     { title: "Kontakt", path: "/contact", icon: PhoneIcon },
   ];
 
-  // Funkce pro navigaci místo přímého použití Link
+  // Funkce pro navigaci - opraveno aby nedocházelo k refreshi stránky
   const handleNavigate = (path: string) => () => {
     navigate(path);
     const isMobile = window.innerWidth < 768;
