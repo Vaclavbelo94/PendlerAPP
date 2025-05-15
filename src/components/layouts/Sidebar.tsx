@@ -41,16 +41,32 @@ const Sidebar = ({ closeSidebar }: SidebarProps) => {
     { title: "Kontakt", path: "/contact", icon: PhoneIcon },
   ];
 
+  // Zavřít sidebar po kliknutí na odkaz na mobilních zařízeních
+  const handleLinkClick = () => {
+    const isMobile = window.innerWidth < 768;
+    if (isMobile) {
+      closeSidebar();
+    }
+  };
+
   return (
     <div className="h-full w-64 bg-white border-r border-slate-200 flex flex-col">
       <div className="p-4 flex items-center justify-between">
-        <Link to="/" className="flex items-center space-x-2">
+        <Link to="/" onClick={handleLinkClick} className="flex items-center space-x-2">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white font-bold text-sm">
             PH
           </div>
           <span className="font-poppins font-bold text-lg text-gray-800">Pendler Helper</span>
         </Link>
-        <Button variant="ghost" size="icon" onClick={closeSidebar} className="lg:hidden">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          onClick={(e) => {
+            e.stopPropagation();
+            closeSidebar();
+          }} 
+          className="lg:hidden"
+        >
           <X className="h-5 w-5" />
         </Button>
       </div>
@@ -60,7 +76,7 @@ const Sidebar = ({ closeSidebar }: SidebarProps) => {
           <div className="space-y-1">
             <p className="text-xs font-medium text-muted-foreground pl-4 pb-1">Hlavní navigace</p>
             {navItems.map((item) => (
-              <Link key={item.path} to={item.path}>
+              <Link key={item.path} to={item.path} onClick={handleLinkClick}>
                 <Button
                   variant={location.pathname === item.path ? "secondary" : "ghost"}
                   size="sm"
@@ -82,7 +98,7 @@ const Sidebar = ({ closeSidebar }: SidebarProps) => {
           <div className="space-y-1">
             <p className="text-xs font-medium text-muted-foreground pl-4 pb-1">Informace</p>
             {secondaryItems.map((item) => (
-              <Link key={item.path} to={item.path}>
+              <Link key={item.path} to={item.path} onClick={handleLinkClick}>
                 <Button
                   variant={location.pathname === item.path ? "secondary" : "ghost"}
                   size="sm"
@@ -104,7 +120,7 @@ const Sidebar = ({ closeSidebar }: SidebarProps) => {
       <div className="p-4">
         {/* Admin tlačítko v levém dolním rohu - pouze pro administrátory, když jsou přihlášeni */}
         {user && isAdmin && (
-          <Link to="/admin" className="mb-4 block">
+          <Link to="/admin" className="mb-4 block" onClick={handleLinkClick}>
             <Button 
               variant={location.pathname === "/admin" ? "secondary" : "outline"}
               size="sm"
@@ -127,7 +143,7 @@ const Sidebar = ({ closeSidebar }: SidebarProps) => {
                 {isPremium && <span className="bg-amber-500 text-white text-xs px-2 py-0.5 rounded">Premium</span>}
               </div>
               <div className="grid gap-2">
-                <Link to="/profile">
+                <Link to="/profile" onClick={handleLinkClick}>
                   <Button size="sm" variant="outline" className="w-full">Profil</Button>
                 </Link>
                 <Button 
@@ -135,6 +151,7 @@ const Sidebar = ({ closeSidebar }: SidebarProps) => {
                   variant="default" 
                   className="w-full"
                   onClick={() => {
+                    closeSidebar();
                     const { signOut } = require('@/hooks/useAuth').useAuth();
                     signOut();
                   }}
@@ -148,10 +165,10 @@ const Sidebar = ({ closeSidebar }: SidebarProps) => {
               <p className="text-sm font-medium">Přihlášení</p>
               <p className="text-xs text-muted-foreground mb-2">Přihlašte se pro více možností</p>
               <div className="grid gap-2">
-                <Link to="/login">
+                <Link to="/login" onClick={handleLinkClick}>
                   <Button size="sm" variant="default" className="w-full">Přihlásit se</Button>
                 </Link>
-                <Link to="/register">
+                <Link to="/register" onClick={handleLinkClick}>
                   <Button size="sm" variant="outline" className="w-full">Registrovat</Button>
                 </Link>
               </div>

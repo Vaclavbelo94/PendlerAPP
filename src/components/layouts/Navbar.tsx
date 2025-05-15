@@ -24,9 +24,10 @@ import { Badge } from "@/components/ui/badge";
 interface NavbarProps {
   toggleSidebar: () => void;
   rightContent?: React.ReactNode;
+  sidebarOpen?: boolean;
 }
 
-const Navbar = ({ toggleSidebar, rightContent }: NavbarProps) => {
+const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProps) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -57,8 +58,18 @@ const Navbar = ({ toggleSidebar, rightContent }: NavbarProps) => {
     <header className={`sticky top-0 z-30 w-full transition-all duration-300 ${isScrolled ? 'bg-white shadow-sm' : 'bg-white'}`}>
       <div className="h-16 px-4 border-b flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" className="lg:hidden" onClick={toggleSidebar}>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="lg:hidden" 
+            onClick={(e) => {
+              e.stopPropagation(); // Zabraňuje šíření události kliku
+              toggleSidebar();
+            }}
+            data-menu-trigger="true" // Pro detekci kliknutí na toto tlačítko
+          >
             <Menu className="h-5 w-5" />
+            <span className="sr-only">Toggle menu</span>
           </Button>
           
           <div className="relative hidden md:flex items-center">

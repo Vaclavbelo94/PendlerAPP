@@ -26,6 +26,11 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
   // Close sidebar when clicking outside on mobile
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      // Ignorovat kliknutí na samotné menu tlačítko
+      if (target.closest('[data-menu-trigger="true"]')) {
+        return;
+      }
       if (deviceSize === "mobile" && sidebarOpen) {
         setSidebarOpen(false);
       }
@@ -64,7 +69,8 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
         {/* Navbar */}
         <Navbar 
           toggleSidebar={() => setSidebarOpen(!sidebarOpen)} 
-          rightContent={navbarRightContent} 
+          rightContent={navbarRightContent}
+          sidebarOpen={sidebarOpen}
         />
         
         {/* Overlay for mobile sidebar */}
@@ -72,7 +78,7 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
           <div 
             className="fixed inset-0 bg-black/50 z-40"
             onClick={() => setSidebarOpen(false)}
-            role="presentation" // Added for accessibility
+            role="presentation"
             aria-label="Close sidebar"
           />
         )}

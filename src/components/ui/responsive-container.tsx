@@ -46,23 +46,43 @@ export function ResponsiveGrid({
   children,
   className,
   columns = { mobile: 1, sm: 2, md: 2, lg: 3, xl: 4 },
-  gap = "gap-4",
+  gap = "gap-6",
   ...props
 }: ResponsiveGridProps) {
-  const { mobile = 1, sm = 2, md = 3, lg = 4, xl = 4 } = columns
+  // Použijeme dynamicky vygenerované třídy místo interpolace, protože Tailwind může optimalizovat pouze statické třídy
+  const gridColsClasses = [
+    `grid-cols-${columns.mobile || 1}`,
+    `sm:grid-cols-${columns.sm || 2}`,
+    `md:grid-cols-${columns.md || 2}`,
+    `lg:grid-cols-${columns.lg || 3}`,
+    `xl:grid-cols-${columns.xl || 4}`,
+  ];
   
   return (
     <div
       className={cn(
         "grid",
-        `grid-cols-${mobile}`,
-        `sm:grid-cols-${sm}`,
-        `md:grid-cols-${md}`,
-        `lg:grid-cols-${lg}`,
-        `xl:grid-cols-${xl}`,
+        ...gridColsClasses,
         gap,
         className
       )}
+      style={{
+        // Zajistíme, že třídy grid-cols-XX jsou správně aplikované pomocí custom stylů
+        gridTemplateColumns: `repeat(${columns.mobile || 1}, minmax(0, 1fr))`,
+        // Přidáme media queries pro responzivní chování
+        [`@media (min-width: 640px)`]: {
+          gridTemplateColumns: `repeat(${columns.sm || 2}, minmax(0, 1fr))`,
+        },
+        [`@media (min-width: 768px)`]: {
+          gridTemplateColumns: `repeat(${columns.md || 2}, minmax(0, 1fr))`,
+        },
+        [`@media (min-width: 1024px)`]: {
+          gridTemplateColumns: `repeat(${columns.lg || 3}, minmax(0, 1fr))`,
+        },
+        [`@media (min-width: 1280px)`]: {
+          gridTemplateColumns: `repeat(${columns.xl || 4}, minmax(0, 1fr))`,
+        },
+      }}
       {...props}
     >
       {children}
