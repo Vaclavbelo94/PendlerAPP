@@ -17,11 +17,27 @@ import { useToast } from "@/components/ui/use-toast";
 import { ArrowRight } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
+interface FormData {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  agreeTerms: boolean;
+}
+
+interface FormErrors {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  agreeTerms: string;
+}
+
 const Register = () => {
   const { toast } = useToast();
   const { signUp, user } = useAuth();
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
     password: "",
@@ -29,7 +45,7 @@ const Register = () => {
     agreeTerms: false,
   });
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState({
+  const [errors, setErrors] = useState<FormErrors>({
     name: "",
     email: "",
     password: "",
@@ -43,7 +59,7 @@ const Register = () => {
     return null;
   }
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
@@ -96,7 +112,7 @@ const Register = () => {
     return valid;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (validateForm()) {
@@ -114,14 +130,14 @@ const Register = () => {
         } else {
           toast({
             title: "Registrace úspěšná!",
-            description: "Zkontrolujte svůj email pro dokončení registrace.",
+            description: "Váš účet byl vytvořen a jste přihlášeni.",
             variant: "default",
           });
           
-          // Přesměrování na přihlašovací stránku po úspěšné registraci
-          navigate("/login");
+          // Přesměrování na hlavní stránku po úspěšné registraci
+          navigate("/");
         }
-      } catch (error) {
+      } catch (error: any) {
         toast({
           title: "Registrace selhala",
           description: error.message,

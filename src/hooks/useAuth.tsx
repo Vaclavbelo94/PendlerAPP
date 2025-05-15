@@ -1,4 +1,3 @@
-
 import * as React from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Session } from '@supabase/supabase-js';
@@ -180,12 +179,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         options: {
           data: {
             username: username || email.split('@')[0]
-          }
+          },
+          emailRedirectTo: window.location.origin
         }
       });
       
       if (error) {
         return { error };
+      }
+      
+      // Pokud byla registrace úspěšná, aktualizujeme lokální stav
+      if (data.user) {
+        setUser(data.user);
+        setSession(data.session);
+        
+        // Pokusíme se načíst profil
+        setTimeout(() => {
+          refreshAdminStatus();
+          refreshPremiumStatus();
+        }, 0);
+        
+        // Uložíme základní informace o uživateli
+        const currentUser = {
+          id: data.user.id,
+          name: username || email.split('@')[0],
+          email: email,
+          isPremium: false
+        };
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        localStorage.setItem('isLoggedIn', 'true');
       }
       
       return { error: null };

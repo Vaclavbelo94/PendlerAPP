@@ -20,3 +20,9 @@ export const supabase = createClient<Database>(
     }
   }
 );
+
+// Funkce pro kontrolu aktuálního stavu přihlášení
+export const checkAuthState = async () => {
+  const { data } = await supabase.auth.getSession();
+  return data.session;
+};
