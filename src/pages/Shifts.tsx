@@ -1,55 +1,33 @@
+
 import { useState, useEffect } from "react";
-import { Calendar as CalendarIcon, FileDown, Download, Lock, LogIn, Pencil, FileText } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { FileDown, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { cs } from "date-fns/locale";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/components/ui/use-toast";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import ShiftAnalytics from "@/components/shifts/ShiftAnalytics";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { 
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow
-} from "@/components/ui/table";
-
-// Typy směn
-type ShiftType = "morning" | "afternoon" | "night";
-
-// Struktura směny - rozšířená o poznámky
-interface Shift {
-  date: Date;
-  type: ShiftType;
-  userId: string;
-  notes?: string;  // Přidané pole pro poznámky
-}
+import { AnalyticsPeriod, Shift, ShiftType } from "@/components/shifts/types";
+import { ShiftCalendar } from "@/components/shifts/ShiftCalendar";
+import { ShiftDetails } from "@/components/shifts/ShiftDetails";
+import { MonthlyReport } from "@/components/shifts/MonthlyReport";
+import { ExportPdfDialog } from "@/components/shifts/ExportPdfDialog";
+import { EditNoteDialog } from "@/components/shifts/EditNoteDialog";
+import { PlanningTab } from "@/components/shifts/PlanningTab";
+import { ReportsTab } from "@/components/shifts/ReportsTab";
 
 const Shifts = () => {
   const [activeTab, setActiveTab] = useState("calendar");
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
-  const [route, setRoute] = useState({ from: "", to: "", time: "" });
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
   const [shiftType, setShiftType] = useState<ShiftType>("morning");
   const [userShifts, setUserShifts] = useState<Shift[]>([]);
   const [shiftNotes, setShiftNotes] = useState<string>("");
   const [editNoteDialogOpen, setEditNoteDialogOpen] = useState(false);
-  const [analyticsPeriod, setAnalyticsPeriod] = useState<"week" | "month" | "year">("month");
+  const [analyticsPeriod, setAnalyticsPeriod] = useState<AnalyticsPeriod>("month");
   
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -142,80 +120,6 @@ const Shifts = () => {
     );
   };
 
-  // Funkce pro zobrazení data směny ve správném formátu
-  const formatShiftDate = (date: Date) => {
-    return format(date, "EEEE, d. MMMM yyyy", { locale: cs });
-  };
-  
-  // Zobrazení času směny podle typu
-  const getShiftTimeByType = (type: ShiftType) => {
-    switch (type) {
-      case "morning": return "Ranní (6:00 - 14:00)";
-      case "afternoon": return "Odpolední (14:00 - 22:00)";
-      case "night": return "Noční (22:00 - 6:00)";
-    }
-  };
-
-  // Získání barvy pro typ směny
-  const getShiftColor = (type: ShiftType) => {
-    switch (type) {
-      case "morning": return "bg-blue-500";
-      case "afternoon": return "bg-green-500";
-      case "night": return "bg-purple-500";
-    }
-  };
-  
-  // Získání modifikátorů pro kalendář podle směn uživatele
-  const getCalendarModifiers = () => {
-    if (!userShifts.length) return {};
-    
-    const morningShifts = userShifts
-      .filter(shift => shift.type === "morning")
-      .map(shift => new Date(shift.date));
-    
-    const afternoonShifts = userShifts
-      .filter(shift => shift.type === "afternoon")
-      .map(shift => new Date(shift.date));
-    
-    const nightShifts = userShifts
-      .filter(shift => shift.type === "night")
-      .map(shift => new Date(shift.date));
-      
-    return {
-      morning: morningShifts,
-      afternoon: afternoonShifts,
-      night: nightShifts,
-    };
-  };
-  
-  // Získání stylů pro modifikátory kalendáře
-  const getCalendarModifiersStyles = () => {
-    return {
-      morning: { backgroundColor: "#3b82f6", color: "#ffffff", fontWeight: "bold" },
-      afternoon: { backgroundColor: "#22c55e", color: "#ffffff", fontWeight: "bold" },
-      night: { backgroundColor: "#8b5cf6", color: "#ffffff", fontWeight: "bold" }
-    };
-  };
-
-  // Handler for saving route
-  const handleSaveRoute = () => {
-    if (!user) {
-      navigate("/login");
-      return;
-    }
-    toast.success(`Trasa uložena: ${route.from} → ${route.to} v ${route.time}`);
-  };
-
-  // Handler for exporting PDF
-  const handleExportPDF = () => {
-    if (!user) {
-      navigate("/login");
-      return;
-    }
-    toast.success("Export do PDF byl zahájen. Soubor bude brzy ke stažení.");
-    // In a real implementation, this would trigger a PDF generation process
-  };
-
   // Aktuální směna pro vybraný den
   const currentShift = getShiftForSelectedDate();
   
@@ -296,219 +200,42 @@ const Shifts = () => {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="flex justify-center p-4 bg-white rounded-lg shadow-sm">
-                      <Calendar
-                        mode="single"
-                        selected={selectedDate}
-                        onSelect={setSelectedDate}
-                        className="p-3 pointer-events-auto"
-                        locale={cs}
-                        showOutsideDays
-                        modifiers={getCalendarModifiers()}
-                        modifiersStyles={getCalendarModifiersStyles()}
-                      />
-                    </div>
+                    {/* Calendar Component */}
+                    <ShiftCalendar 
+                      selectedDate={selectedDate}
+                      onSelectDate={setSelectedDate}
+                      shifts={userShifts}
+                    />
+
                     <div className="mt-8">
                       <h3 className="text-lg font-medium mb-3">Detaily směny</h3>
-                      {selectedDate && (
-                        <div className="bg-muted p-4 rounded-md">
-                          <p className="font-medium">
-                            {format(selectedDate, "EEEE, d. MMMM yyyy", { locale: cs })}
-                          </p>
-                          {currentShift ? (
-                            <div className="mt-2">
-                              <div className="flex justify-between items-start">
-                                <Badge className={`${getShiftColor(currentShift.type)} text-white hover:opacity-90`}>
-                                  Naplánovaná směna
-                                </Badge>
-                                
-                                {user && (
-                                  <Button 
-                                    size="icon" 
-                                    variant="ghost" 
-                                    className="h-8 w-8" 
-                                    onClick={handleOpenNoteDialog}
-                                    title="Upravit poznámku"
-                                  >
-                                    <Pencil className="h-4 w-4" />
-                                  </Button>
-                                )}
-                              </div>
-                              <p className="mt-2">Směna: {getShiftTimeByType(currentShift.type)}</p>
-                              
-                              {/* Zobrazení poznámky ke směně */}
-                              {currentShift.notes && (
-                                <div className="mt-3 bg-white p-3 rounded-md border border-muted">
-                                  <div className="flex items-center gap-2 mb-1 text-sm text-muted-foreground">
-                                    <FileText className="h-3 w-3" />
-                                    <span>Poznámka:</span>
-                                  </div>
-                                  <p className="text-sm whitespace-pre-wrap">{currentShift.notes}</p>
-                                </div>
-                              )}
-                              
-                              {user && (
-                                <div className="mt-3">
-                                  <Label htmlFor="shift-type">Typ směny</Label>
-                                  <Select 
-                                    value={shiftType} 
-                                    onValueChange={(value: ShiftType) => setShiftType(value)}
-                                  >
-                                    <SelectTrigger id="shift-type" className="mt-1">
-                                      <SelectValue placeholder="Vyberte typ směny" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value="morning">Ranní (6:00 - 14:00)</SelectItem>
-                                      <SelectItem value="afternoon">Odpolední (14:00 - 22:00)</SelectItem>
-                                      <SelectItem value="night">Noční (22:00 - 6:00)</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                  
-                                  <div className="flex gap-2 mt-4">
-                                    <Button 
-                                      onClick={handleSaveShift} 
-                                      variant="default" 
-                                      className="flex-1"
-                                    >
-                                      Aktualizovat směnu
-                                    </Button>
-                                    <Button 
-                                      onClick={handleDeleteShift} 
-                                      variant="destructive"
-                                    >
-                                      Odstranit
-                                    </Button>
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          ) : (
-                            <div className="mt-2">
-                              {user ? (
-                                <div>
-                                  <Badge variant="outline">Volný den</Badge>
-                                  <p className="mt-2 text-muted-foreground">Žádná směna naplánovaná na tento den</p>
-                                  
-                                  <div className="mt-3">
-                                    <Label htmlFor="shift-type">Typ směny</Label>
-                                    <Select 
-                                      value={shiftType} 
-                                      onValueChange={(value: ShiftType) => setShiftType(value)}
-                                    >
-                                      <SelectTrigger id="shift-type" className="mt-1">
-                                        <SelectValue placeholder="Vyberte typ směny" />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        <SelectItem value="morning">Ranní (6:00 - 14:00)</SelectItem>
-                                        <SelectItem value="afternoon">Odpolední (14:00 - 22:00)</SelectItem>
-                                        <SelectItem value="night">Noční (22:00 - 6:00)</SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                    
-                                    <div className="mt-3">
-                                      <Label htmlFor="shift-notes">Poznámka ke směně (volitelné)</Label>
-                                      <Textarea
-                                        id="shift-notes"
-                                        placeholder="Zadejte poznámku ke směně..."
-                                        value={shiftNotes}
-                                        onChange={(e) => setShiftNotes(e.target.value)}
-                                        className="mt-1"
-                                      />
-                                    </div>
-                                    
-                                    <Button 
-                                      onClick={handleSaveShift} 
-                                      className="mt-4 w-full"
-                                    >
-                                      Přidat směnu
-                                    </Button>
-                                  </div>
-                                </div>
-                              ) : (
-                                <div>
-                                  <Badge variant="outline">Nepřihlášený uživatel</Badge>
-                                  <p className="mt-2 text-muted-foreground">Přihlaste se pro správu směn</p>
-                                  <Button 
-                                    className="mt-4" 
-                                    onClick={() => navigate("/login")}
-                                    variant="default"
-                                  >
-                                    Přihlásit se
-                                  </Button>
-                                </div>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      )}
+                      {/* Shift Details Component */}
+                      <ShiftDetails
+                        selectedDate={selectedDate}
+                        currentShift={currentShift}
+                        shiftType={shiftType}
+                        setShiftType={setShiftType}
+                        shiftNotes={shiftNotes}
+                        setShiftNotes={setShiftNotes}
+                        user={user}
+                        onSaveShift={handleSaveShift}
+                        onDeleteShift={handleDeleteShift}
+                        onOpenNoteDialog={handleOpenNoteDialog}
+                      />
                     </div>
                     
                     {/* Export PDF Dialog */}
                     <div className="mt-6">
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button 
-                            variant="outline" 
-                            className="w-full border-dhl-red text-dhl-red hover:bg-dhl-red/10"
-                            disabled={!user}
-                          >
-                            <FileDown className="mr-2" />
-                            Exportovat přehled směn do PDF
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[425px]">
-                          <DialogHeader>
-                            <DialogTitle>Exportovat směny do PDF</DialogTitle>
-                            <DialogDescription>
-                              Vyberte měsíc, pro který chcete exportovat přehled směn.
-                            </DialogDescription>
-                          </DialogHeader>
-                          <div className="py-4">
-                            <div className="space-y-4">
-                              <div>
-                                <Label htmlFor="month">Měsíc</Label>
-                                <Popover>
-                                  <PopoverTrigger asChild>
-                                    <Button
-                                      id="month"
-                                      variant={"outline"}
-                                      className="w-full justify-start text-left font-normal mt-1"
-                                    >
-                                      <CalendarIcon className="mr-2 h-4 w-4" />
-                                      {selectedMonth ? (
-                                        format(selectedMonth, "MMMM yyyy", { locale: cs })
-                                      ) : (
-                                        <span>Vyberte měsíc</span>
-                                      )}
-                                    </Button>
-                                  </PopoverTrigger>
-                                  <PopoverContent className="w-auto p-0" align="start">
-                                    <Calendar
-                                      mode="single"
-                                      selected={selectedMonth}
-                                      onSelect={(date) => date && setSelectedMonth(date)}
-                                      initialFocus
-                                      className="p-3 pointer-events-auto"
-                                      locale={cs}
-                                    />
-                                  </PopoverContent>
-                                </Popover>
-                              </div>
-                            </div>
-                          </div>
-                          <DialogFooter>
-                            <Button type="submit" onClick={handleExportPDF} className="bg-dhl-red hover:bg-dhl-red/90">
-                              <Download className="mr-2 h-4 w-4" />
-                              Exportovat
-                            </Button>
-                          </DialogFooter>
-                        </DialogContent>
-                      </Dialog>
+                      <ExportPdfDialog 
+                        user={user}
+                        selectedMonth={selectedMonth}
+                        setSelectedMonth={setSelectedMonth}
+                      />
                     </div>
                   </CardContent>
                 </Card>
 
-                {/* Monthly Report Preview */}
+                {/* Monthly Report Component */}
                 <Card className="border-dhl-yellow">
                   <CardHeader className="border-b border-dhl-yellow">
                     <CardTitle>Měsíční přehled</CardTitle>
@@ -517,112 +244,21 @@ const Shifts = () => {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <ScrollArea className="h-[400px]">
-                      {user ? (
-                        <div>
-                          <div className="mb-4">
-                            <h3 className="text-md font-medium mb-2">Statistiky směn</h3>
-                            <div className="grid grid-cols-3 gap-4">
-                              <Card className="bg-blue-50">
-                                <CardContent className="py-4 px-3 text-center">
-                                  <p className="font-bold text-2xl text-blue-500">
-                                    {userShifts.filter(s => s.type === "morning").length}
-                                  </p>
-                                  <p className="text-sm text-muted-foreground">Ranní</p>
-                                </CardContent>
-                              </Card>
-                              <Card className="bg-green-50">
-                                <CardContent className="py-4 px-3 text-center">
-                                  <p className="font-bold text-2xl text-green-500">
-                                    {userShifts.filter(s => s.type === "afternoon").length}
-                                  </p>
-                                  <p className="text-sm text-muted-foreground">Odpolední</p>
-                                </CardContent>
-                              </Card>
-                              <Card className="bg-purple-50">
-                                <CardContent className="py-4 px-3 text-center">
-                                  <p className="font-bold text-2xl text-purple-500">
-                                    {userShifts.filter(s => s.type === "night").length}
-                                  </p>
-                                  <p className="text-sm text-muted-foreground">Noční</p>
-                                </CardContent>
-                              </Card>
-                            </div>
-                          </div>
-                          
-                          <Table>
-                            <TableCaption>Přehled směn</TableCaption>
-                            <TableHeader>
-                              <TableRow>
-                                <TableHead>Datum</TableHead>
-                                <TableHead>Typ směny</TableHead>
-                                <TableHead>Poznámka</TableHead>
-                                <TableHead className="text-right">Akce</TableHead>
-                              </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                              {userShifts.length === 0 ? (
-                                <TableRow>
-                                  <TableCell colSpan={4} className="text-center py-4">
-                                    Zatím nemáte naplánované žádné směny
-                                  </TableCell>
-                                </TableRow>
-                              ) : (
-                                userShifts.map((shift, index) => (
-                                  <TableRow key={index}>
-                                    <TableCell>{formatShiftDate(shift.date)}</TableCell>
-                                    <TableCell>
-                                      <Badge className={`${getShiftColor(shift.type)} text-white`}>
-                                        {getShiftTimeByType(shift.type)}
-                                      </Badge>
-                                    </TableCell>
-                                    <TableCell>
-                                      {shift.notes ? (
-                                        <div className="truncate max-w-[200px]" title={shift.notes}>
-                                          {shift.notes}
-                                        </div>
-                                      ) : (
-                                        <span className="text-muted-foreground text-sm">-</span>
-                                      )}
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                      <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => {
-                                          setSelectedDate(shift.date);
-                                          setActiveTab("calendar");
-                                        }}
-                                      >
-                                        Zobrazit
-                                      </Button>
-                                    </TableCell>
-                                  </TableRow>
-                                ))
-                              )}
-                            </TableBody>
-                          </Table>
-                        </div>
-                      ) : (
-                        <div className="flex flex-col items-center justify-center h-[300px] text-center">
-                          <Lock className="h-12 w-12 text-gray-300 mb-4" />
-                          <p className="text-muted-foreground mb-2">Přihlaste se pro zobrazení statistik a přehledu směn</p>
-                          <Button 
-                            className="mt-2" 
-                            onClick={() => navigate("/login")}
-                            variant="default"
-                          >
-                            Přihlásit se
-                          </Button>
-                        </div>
-                      )}
-                    </ScrollArea>
+                    <MonthlyReport
+                      shifts={userShifts}
+                      user={user}
+                      selectedMonth={selectedMonth}
+                      onSelectDate={(date) => {
+                        setSelectedDate(date);
+                        setActiveTab("calendar");
+                      }}
+                    />
                   </CardContent>
                 </Card>
               </div>
             </TabsContent>
             
-            {/* New Analytics Tab */}
+            {/* Analytics Tab */}
             <TabsContent value="analytics" className="space-y-6">
               {user ? (
                 <ShiftAnalytics 
@@ -649,184 +285,24 @@ const Shifts = () => {
             
             {/* Planning Tab */}
             <TabsContent value="planning" className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Route Planning Section */}
-                <Card className="border-dhl-yellow">
-                  <CardHeader className="border-b border-dhl-yellow">
-                    <CardTitle>Plánování trasy</CardTitle>
-                    <CardDescription>Zadejte svou trasu a časy cesty</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div>
-                      <Label htmlFor="from">Odkud</Label>
-                      <Input 
-                        id="from" 
-                        placeholder="Místo odjezdu" 
-                        value={route.from} 
-                        onChange={(e) => setRoute({...route, from: e.target.value})} 
-                        className="border-dhl-black focus-visible:ring-dhl-yellow"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="to">Kam</Label>
-                      <Input 
-                        id="to" 
-                        placeholder="Cílová destinace" 
-                        value={route.to}
-                        onChange={(e) => setRoute({...route, to: e.target.value})}
-                        className="border-dhl-black focus-visible:ring-dhl-yellow"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="time">Čas odjezdu</Label>
-                      <Input 
-                        id="time" 
-                        type="time" 
-                        value={route.time}
-                        onChange={(e) => setRoute({...route, time: e.target.value})}
-                        className="border-dhl-black focus-visible:ring-dhl-yellow"
-                      />
-                    </div>
-                    <Button 
-                      className="w-full bg-dhl-yellow text-dhl-black hover:bg-dhl-yellow/90" 
-                      onClick={handleSaveRoute}
-                    >
-                      Uložit trasu
-                    </Button>
-                  </CardContent>
-                </Card>
-
-                {/* Ride Sharing Section */}
-                <Card className="border-dhl-yellow">
-                  <CardHeader className="border-b border-dhl-yellow">
-                    <CardTitle>Spolujízda</CardTitle>
-                    <CardDescription>Najděte nebo nabídněte spolujízdu</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="bg-muted rounded-md p-3">
-                      <p className="font-medium mb-2">Dostupné spolujízdy:</p>
-                      <ul className="space-y-2">
-                        <li className="p-2 bg-background rounded border border-dhl-yellow">
-                          <p className="font-medium">Praha → Mladá Boleslav</p>
-                          <p className="text-sm text-muted-foreground">Odjezd: 5:30, Volná místa: 3</p>
-                        </li>
-                        <li className="p-2 bg-background rounded border border-dhl-yellow">
-                          <p className="font-medium">Kladno → Praha</p>
-                          <p className="text-sm text-muted-foreground">Odjezd: 6:00, Volná místa: 2</p>
-                        </li>
-                        <li className="p-2 bg-background rounded border border-dhl-yellow">
-                          <p className="font-medium">Beroun → Praha</p>
-                          <p className="text-sm text-muted-foreground">Odjezd: 6:15, Volná místa: 1</p>
-                        </li>
-                      </ul>
-                    </div>
-                    <Button className="w-full bg-dhl-red text-white hover:bg-dhl-red/90">
-                      Hledat spolujízdu
-                    </Button>
-                  </CardContent>
-                </Card>
-              </div>
+              <PlanningTab user={user} />
             </TabsContent>
             
             {/* Reports Tab */}
             <TabsContent value="reports" className="space-y-6">
-              <Card className="border-dhl-yellow">
-                <CardHeader className="border-b border-dhl-yellow">
-                  <CardTitle>Přehled směn - {format(new Date(), "MMMM yyyy", { locale: cs })}</CardTitle>
-                  <CardDescription>Podrobný výpis směn</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {user ? (
-                    <div>
-                      <ScrollArea className="h-[500px]">
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead>Typ směny</TableHead>
-                              <TableHead>Počet směn</TableHead>
-                              <TableHead className="text-right">Celkem hodin</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            <TableRow>
-                              <TableCell className="font-medium">Ranní</TableCell>
-                              <TableCell>{userShifts.filter(s => s.type === "morning").length}</TableCell>
-                              <TableCell className="text-right">{userShifts.filter(s => s.type === "morning").length * 8}</TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">Odpolední</TableCell>
-                              <TableCell>{userShifts.filter(s => s.type === "afternoon").length}</TableCell>
-                              <TableCell className="text-right">{userShifts.filter(s => s.type === "afternoon").length * 8}</TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">Noční</TableCell>
-                              <TableCell>{userShifts.filter(s => s.type === "night").length}</TableCell>
-                              <TableCell className="text-right">{userShifts.filter(s => s.type === "night").length * 8}</TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">Celkem</TableCell>
-                              <TableCell>{userShifts.length}</TableCell>
-                              <TableCell className="text-right">{userShifts.length * 8}</TableCell>
-                            </TableRow>
-                          </TableBody>
-                        </Table>
-                      </ScrollArea>
-                      <div className="mt-6 flex justify-end">
-                        <Button onClick={handleExportPDF} className="bg-dhl-red text-white hover:bg-dhl-red/90">
-                          <Download className="mr-2 h-4 w-4" />
-                          Exportovat do PDF
-                        </Button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center h-[300px] text-center">
-                      <Lock className="h-12 w-12 text-gray-300 mb-4" />
-                      <p className="text-muted-foreground mb-2">Přihlaste se pro zobrazení reportů směn</p>
-                      <Button 
-                        className="mt-2" 
-                        onClick={() => navigate("/login")}
-                        variant="default"
-                      >
-                        Přihlásit se
-                      </Button>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+              <ReportsTab user={user} shifts={userShifts} />
             </TabsContent>
           </Tabs>
 
-          {/* Dialog pro úpravu poznámky */}
-          <Dialog open={editNoteDialogOpen} onOpenChange={setEditNoteDialogOpen}>
-            <DialogContent className="sm:max-w-[500px]">
-              <DialogHeader>
-                <DialogTitle>Upravit poznámku ke směně</DialogTitle>
-                <DialogDescription>
-                  {selectedDate && format(selectedDate, "EEEE, d. MMMM yyyy", { locale: cs })}
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4 py-4">
-                <div className="space-y-2">
-                  <Label htmlFor="note-text">Poznámka</Label>
-                  <Textarea
-                    id="note-text"
-                    value={shiftNotes}
-                    onChange={(e) => setShiftNotes(e.target.value)}
-                    placeholder="Zadejte poznámku ke směně..."
-                    className="min-h-[150px]"
-                  />
-                </div>
-              </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setEditNoteDialogOpen(false)}>
-                  Zrušit
-                </Button>
-                <Button onClick={handleSaveNote}>
-                  Uložit poznámku
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          {/* Edit Note Dialog Component */}
+          <EditNoteDialog
+            open={editNoteDialogOpen}
+            onOpenChange={setEditNoteDialogOpen}
+            selectedDate={selectedDate}
+            shiftNotes={shiftNotes}
+            onNotesChange={setShiftNotes}
+            onSaveNote={handleSaveNote}
+          />
         </div>
       </section>
     </div>

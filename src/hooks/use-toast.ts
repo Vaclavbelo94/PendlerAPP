@@ -1,15 +1,14 @@
 
 import * as React from "react"
 import {
-  Toast,
-  ToastActionElement,
-  ToastProps,
+  type ToastActionElement,
+  ToastProps as ToastPrimitiveProps,
 } from "@/components/ui/toast"
 
 const TOAST_LIMIT = 20
 const TOAST_REMOVE_DELAY = 1000000
 
-type ToasterToastProps = ToastProps & {
+type ToasterToastProps = ToastPrimitiveProps & {
   id: string
   title?: React.ReactNode
   description?: React.ReactNode
@@ -91,8 +90,6 @@ export const reducer = (state: State, action: Action): State => {
     case "DISMISS_TOAST": {
       const { toastId } = action
 
-      // ! Side effects ! - This could be extracted into a dismissToast() action,
-      // but I'll keep it here for simplicity
       if (toastId) {
         addToRemoveQueue(toastId)
       } else {
@@ -138,9 +135,11 @@ function dispatch(action: Action) {
   })
 }
 
-type ToastProps = Omit<ToasterToastProps, "id">
+interface ToastOptions extends Omit<ToasterToastProps, "id"> {
+  variant?: "default" | "destructive",
+}
 
-function toast({ ...props }: ToastProps) {
+function toast(opts: ToastOptions) {
   const id = genId()
 
   const update = (props: ToasterToastProps) =>
@@ -153,7 +152,7 @@ function toast({ ...props }: ToastProps) {
   dispatch({
     type: "ADD_TOAST",
     toast: {
-      ...props,
+      ...opts,
       id,
       open: true,
       onOpenChange: (open) => {
@@ -168,6 +167,23 @@ function toast({ ...props }: ToastProps) {
     update,
   }
 }
+
+// Add convenience methods for toast
+toast.success = (message: string) => {
+  return toast({ 
+    title: "Success", 
+    description: message,
+    variant: "default" 
+  });
+};
+
+toast.error = (message: string) => {
+  return toast({ 
+    title: "Error", 
+    description: message,
+    variant: "destructive" 
+  });
+};
 
 function useToast() {
   const [state, setState] = React.useState<State>(memoryState)
