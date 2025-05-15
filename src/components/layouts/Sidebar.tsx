@@ -43,8 +43,7 @@ const Sidebar = ({ closeSidebar }: SidebarProps) => {
   ];
 
   // Funkce pro navigaci místo přímého použití Link
-  const handleNavigate = (path: string) => (event: React.MouseEvent) => {
-    event.preventDefault();
+  const handleNavigate = (path: string) => () => {
     navigate(path);
     const isMobile = window.innerWidth < 768;
     if (isMobile) {
@@ -63,12 +62,12 @@ const Sidebar = ({ closeSidebar }: SidebarProps) => {
   return (
     <div className="h-full w-64 bg-white border-r border-slate-200 flex flex-col">
       <div className="p-4 flex items-center justify-between">
-        <Link to="/" onClick={handleLinkClick} className="flex items-center space-x-2">
+        <div onClick={handleNavigate("/")} className="flex items-center space-x-2 cursor-pointer">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white font-bold text-sm">
             PH
           </div>
           <span className="font-poppins font-bold text-lg text-gray-800">Pendler Helper</span>
-        </Link>
+        </div>
         <Button 
           variant="ghost" 
           size="icon" 

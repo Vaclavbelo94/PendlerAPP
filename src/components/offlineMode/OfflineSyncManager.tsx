@@ -5,16 +5,37 @@ import { syncWithLocalStorage, loadFromLocalStorage } from '@/utils/offlineStora
 import { toast } from '@/components/ui/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { usePremiumCheck } from '@/hooks/usePremiumCheck';
+import { supabase } from '@/integrations/supabase/client';
 
 export const OfflineSyncManager = () => {
   const { isOffline } = useOfflineStatus();
-  const { user } = useAuth();
-  const { canAccess, isPremiumFeature } = usePremiumCheck('offline-sync');
+  const { user, isPremium, refreshPremiumStatus } = useAuth();
+  const [isCheckingStatus, setIsCheckingStatus] = React.useState(true);
+
+  // Na začátku vždy aktualizujme premium status z databáze
+  React.useEffect(() => {
+    if (user) {
+      const checkPremiumDirectly = async () => {
+        try {
+          setIsCheckingStatus(true);
+          await refreshPremiumStatus();
+        } catch (error) {
+          console.error('Chyba při kontrole premium statusu:', error);
+        } finally {
+          setIsCheckingStatus(false);
+        }
+      };
+      
+      checkPremiumDirectly();
+    } else {
+      setIsCheckingStatus(false);
+    }
+  }, [user, refreshPremiumStatus]);
 
   // Load data to IndexedDB when app starts or when going offline
   React.useEffect(() => {
-    if (isOffline && user) {
-      if (isPremiumFeature && !canAccess) {
+    if (isOffline && user && !isCheckingStatus) {
+      if (!isPremium) {
         toast({
           title: "Omezená offline funkcionalita",
           description: "Plná offline synchronizace je dostupná pouze pro prémiové uživatele",
@@ -38,12 +59,12 @@ export const OfflineSyncManager = () => {
           });
         });
     }
-  }, [isOffline, user, canAccess, isPremiumFeature]);
+  }, [isOffline, user, isPremium, isCheckingStatus]);
 
   // Sync data back to server when coming online
   React.useEffect(() => {
-    if (!isOffline && user) {
-      if (isPremiumFeature && !canAccess) {
+    if (!isOffline && user && !isCheckingStatus) {
+      if (!isPremium) {
         toast({
           title: "Omezená synchronizace",
           description: "Plná synchronizace je dostupná pouze pro prémiové uživatele",
@@ -67,7 +88,7 @@ export const OfflineSyncManager = () => {
           });
         });
     }
-  }, [isOffline, user, canAccess, isPremiumFeature]);
+  }, [isOffline, user, isPremium, isCheckingStatus]);
 
   return null; // This component doesn't render anything
 };

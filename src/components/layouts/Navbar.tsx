@@ -55,8 +55,7 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProp
   };
 
   // Funkce pro navigaci místo přímého použití onClick={() => navigate()}
-  const handleNavigate = (path: string) => (event: React.MouseEvent) => {
-    event.preventDefault();
+  const handleNavigate = (path: string) => () => {
     navigate(path);
   };
 
