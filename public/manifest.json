@@ -26,7 +26,7 @@
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#1e40af",
-  "orientation": "portrait-primary",
+  "orientation": "portrait",
   "categories": ["productivity", "utilities"],
   "shortcuts": [
     {
@@ -44,5 +44,8 @@
       "icons": [{ "src": "/favicon.ico", "sizes": "64x64" }]
     }
   ],
-  "prefer_related_applications": false
+  "prefer_related_applications": false,
+  "display_override": ["standalone", "fullscreen", "minimal-ui"],
+  "dir": "auto",
+  "lang": "cs"
 }

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -5,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { BookOpen, Volume2, Check, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 // Define the vocabulary item type
 interface VocabularyItem {
@@ -188,34 +190,39 @@ const VocabularySection: React.FC<VocabularySectionProps> = ({ vocabularyItems =
           <Button 
             variant={currentMode === 'learn' ? "default" : "outline"}
             onClick={() => setCurrentMode('learn')}
+            className="flex-grow sm:flex-grow-0"
           >
             <BookOpen className="w-4 h-4 mr-2" /> Učení
           </Button>
           <Button 
             variant={currentMode === 'practice' ? "default" : "outline"}
             onClick={() => setCurrentMode('practice')}
+            className="flex-grow sm:flex-grow-0"
           >
             <Check className="w-4 h-4 mr-2" /> Procvičování
           </Button>
         </div>
 
         <div className="mb-4">
-          <Label>Kategorie</Label>
-          <div className="flex flex-wrap gap-2 mt-2">
-            {categories.map((category) => (
-              <Button
-                key={category}
-                variant={selectedCategory === category ? "default" : "outline"}
-                size="sm"
-                onClick={() => {
-                  setSelectedCategory(category);
-                  setPracticeIndex(0);
-                }}
-              >
-                {category === 'all' ? 'Vše' : category}
-              </Button>
-            ))}
-          </div>
+          <Label className="mb-2 block">Kategorie</Label>
+          <ScrollArea className="max-h-[150px]">
+            <div className="flex flex-wrap gap-2 py-1">
+              {categories.map((category) => (
+                <Button
+                  key={category}
+                  variant={selectedCategory === category ? "default" : "outline"}
+                  size="sm"
+                  className="mb-1 whitespace-nowrap"
+                  onClick={() => {
+                    setSelectedCategory(category);
+                    setPracticeIndex(0);
+                  }}
+                >
+                  {category === 'all' ? 'Vše' : category}
+                </Button>
+              ))}
+            </div>
+          </ScrollArea>
         </div>
 
         {currentMode === 'learn' && (
@@ -236,7 +243,7 @@ const VocabularySection: React.FC<VocabularySectionProps> = ({ vocabularyItems =
                   key={item.id}
                   className="p-3 bg-slate-50 rounded-md flex items-center justify-between"
                 >
-                  <div className="flex-1 grid grid-cols-2 gap-4">
+                  <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-2">
                     <div>
                       <span className="font-medium">{item.german}</span>
                     </div>

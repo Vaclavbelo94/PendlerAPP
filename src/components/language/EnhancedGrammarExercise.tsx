@@ -3,6 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import LimitedExamples from "./LimitedExamples";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface Example {
   id: string;
@@ -31,7 +32,7 @@ const EnhancedGrammarExercise: React.FC<EnhancedGrammarExerciseProps> = ({ categ
   // Add defensive checks to prevent errors with undefined data
   if (!category) {
     return (
-      <Card className="mb-8">
+      <Card className="mb-4 sm:mb-8">
         <CardContent className="pt-6">
           <p>Kategorie nenalezena.</p>
         </CardContent>
@@ -42,7 +43,7 @@ const EnhancedGrammarExercise: React.FC<EnhancedGrammarExerciseProps> = ({ categ
   // Check if rules array exists and has content
   if (!category.rules || category.rules.length === 0) {
     return (
-      <Card className="mb-8">
+      <Card className="mb-4 sm:mb-8">
         <CardHeader>
           <CardTitle>{category.name}</CardTitle>
           <CardDescription>
@@ -55,7 +56,7 @@ const EnhancedGrammarExercise: React.FC<EnhancedGrammarExerciseProps> = ({ categ
 
   // Now we know that category and category.rules exist and have content
   return (
-    <Card className="mb-8">
+    <Card className="mb-4 sm:mb-8">
       <CardHeader>
         <CardTitle>{category.name}</CardTitle>
         <CardDescription>
@@ -64,13 +65,19 @@ const EnhancedGrammarExercise: React.FC<EnhancedGrammarExerciseProps> = ({ categ
       </CardHeader>
       <CardContent>
         <Tabs defaultValue={category.rules[0]?.id || ""}>
-          <TabsList className="mb-4 flex flex-wrap">
-            {category.rules.map((rule) => (
-              <TabsTrigger key={rule.id} value={rule.id}>
-                {rule.name}
-              </TabsTrigger>
-            ))}
-          </TabsList>
+          <ScrollArea className="w-full pb-2">
+            <TabsList className="mb-4 inline-flex flex-wrap min-w-max gap-1">
+              {category.rules.map((rule) => (
+                <TabsTrigger 
+                  key={rule.id} 
+                  value={rule.id}
+                  className="px-3 py-1.5 text-sm whitespace-nowrap"
+                >
+                  {rule.name}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </ScrollArea>
           
           {category.rules.map((rule) => (
             <TabsContent key={rule.id} value={rule.id} className="space-y-4">

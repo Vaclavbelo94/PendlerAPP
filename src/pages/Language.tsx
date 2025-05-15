@@ -13,6 +13,7 @@ import { GrammarCategory } from "@/data/germanExercises";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { ResponsiveContainer } from "@/components/ui/responsive-container";
 
 const Language = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -109,19 +110,19 @@ const Language = () => {
   }, [searchTerm]);
 
   return (
-    <div className="container py-8">
-      <h1 className="text-3xl font-bold mb-6">Výuka německého jazyka</h1>
+    <div className="container py-4 sm:py-8">
+      <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Výuka německého jazyka</h1>
       
-      <div className="mb-8">
+      <div className="mb-4 sm:mb-8">
         <Card>
-          <CardHeader>
+          <CardHeader className="pb-2">
             <CardTitle>Hledání v gramatice</CardTitle>
             <CardDescription>
               Hledejte gramatická pravidla nebo příklady
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <div className="flex-1">
                 <Input
                   type="text"
@@ -135,7 +136,7 @@ const Language = () => {
                   }}
                 />
               </div>
-              <Button onClick={handleSearch}>Hledat</Button>
+              <Button onClick={handleSearch} className="w-full sm:w-auto">Hledat</Button>
             </div>
             
             {searchPerformed && searchResults.length === 0 && (
@@ -147,39 +148,43 @@ const Language = () => {
             {searchResults.length > 0 && (
               <div className="mt-4">
                 <h3 className="font-medium mb-2">Výsledky hledání:</h3>
-                <ul className="space-y-1">
-                  {searchResults.map((result, index) => (
-                    <li key={index}>
-                      <Button
-                        variant="link"
-                        className="p-0 h-auto text-left"
-                        onClick={() => {
-                          // Zde by bylo ideální přeskočit na konkrétní pravidlo
-                          document.getElementById(`category-${result.categoryId}`)?.scrollIntoView({
-                            behavior: "smooth"
-                          });
-                        }}
-                      >
-                        {result.categoryName} &rarr; {result.ruleName}
-                      </Button>
-                    </li>
-                  ))}
-                </ul>
+                <ScrollArea className="max-h-[200px]">
+                  <ul className="space-y-1">
+                    {searchResults.map((result, index) => (
+                      <li key={index}>
+                        <Button
+                          variant="link"
+                          className="p-0 h-auto text-left"
+                          onClick={() => {
+                            // Zde by bylo ideální přeskočit na konkrétní pravidlo
+                            document.getElementById(`category-${result.categoryId}`)?.scrollIntoView({
+                              behavior: "smooth"
+                            });
+                          }}
+                        >
+                          {result.categoryName} &rarr; {result.ruleName}
+                        </Button>
+                      </li>
+                    ))}
+                  </ul>
+                </ScrollArea>
               </div>
             )}
           </CardContent>
         </Card>
       </div>
       
-      <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-8">
-        <TabsList className="w-full overflow-x-auto flex flex-nowrap">
-          <TabsTrigger value="grammar" className="flex-shrink-0">Gramatika</TabsTrigger>
-          <TabsTrigger value="vocabulary" className="flex-shrink-0">Slovní zásoba</TabsTrigger>
-          <TabsTrigger value="phrases" className="flex-shrink-0">Fráze</TabsTrigger>
-          <TabsTrigger value="interactive" className="flex-shrink-0">Interaktivní cvičení</TabsTrigger>
-        </TabsList>
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-4 sm:space-y-8">
+        <ScrollArea className="w-full pb-2">
+          <TabsList className="w-full inline-flex flex-nowrap min-w-max">
+            <TabsTrigger value="grammar" className="flex-shrink-0">Gramatika</TabsTrigger>
+            <TabsTrigger value="vocabulary" className="flex-shrink-0">Slovní zásoba</TabsTrigger>
+            <TabsTrigger value="phrases" className="flex-shrink-0">Fráze</TabsTrigger>
+            <TabsTrigger value="interactive" className="flex-shrink-0">Interaktivní cvičení</TabsTrigger>
+          </TabsList>
+        </ScrollArea>
         
-        <TabsContent value="grammar" className="space-y-8">
+        <TabsContent value="grammar" className="space-y-4 sm:space-y-8">
           {grammarExercises && grammarExercises.length > 0 ? (
             grammarExercises.map((category) => (
               <section key={category.id} id={`category-${category.id}`}>
@@ -210,11 +215,11 @@ const Language = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div className="space-y-3">
                   <h3 className="font-medium">Pozdravy a představení</h3>
-                  <ScrollArea className={isMobile ? "max-w-full" : undefined}>
-                    <div className={isMobile ? "min-w-[280px]" : undefined}>
+                  <ScrollArea className="w-full">
+                    <div className="min-w-[280px]">
                       <Table className="w-full">
                         <TableBody>
                           <TableRow>
@@ -242,10 +247,10 @@ const Language = () => {
                     </div>
                   </ScrollArea>
                 </div>
-                <div className="space-y-4">
+                <div className="space-y-3">
                   <h3 className="font-medium">V restauraci</h3>
-                  <ScrollArea className={isMobile ? "max-w-full" : undefined}>
-                    <div className={isMobile ? "min-w-[280px]" : undefined}>
+                  <ScrollArea className="w-full">
+                    <div className="min-w-[280px]">
                       <Table className="w-full">
                         <TableBody>
                           <TableRow>
@@ -274,10 +279,10 @@ const Language = () => {
                   </ScrollArea>
                 </div>
                 
-                <div className="space-y-4">
+                <div className="space-y-3">
                   <h3 className="font-medium">V práci</h3>
-                  <ScrollArea className={isMobile ? "max-w-full" : undefined}>
-                    <div className={isMobile ? "min-w-[280px]" : undefined}>
+                  <ScrollArea className="w-full">
+                    <div className="min-w-[280px]">
                       <Table className="w-full">
                         <TableBody>
                           <TableRow>
@@ -297,10 +302,10 @@ const Language = () => {
                     </div>
                   </ScrollArea>
                 </div>
-                <div className="space-y-4">
+                <div className="space-y-3">
                   <h3 className="font-medium">Na nákupech</h3>
-                  <ScrollArea className={isMobile ? "max-w-full" : undefined}>
-                    <div className={isMobile ? "min-w-[280px]" : undefined}>
+                  <ScrollArea className="w-full">
+                    <div className="min-w-[280px]">
                       <Table className="w-full">
                         <TableBody>
                           <TableRow>
