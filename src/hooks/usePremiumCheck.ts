@@ -1,61 +1,41 @@
 
 import { useState, useEffect } from 'react';
-
-interface PremiumFeature {
-  id: string;
-  name: string;
-  description: string;
-  isEnabled: boolean;
-  key: string;
-}
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 
 export const usePremiumCheck = (featureKey: string) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isPremiumFeature, setIsPremiumFeature] = useState(false);
-  const [userHasPremium, setUserHasPremium] = useState(false);
   const [canAccess, setCanAccess] = useState(false);
+  const { user, isPremium } = useAuth();
 
   useEffect(() => {
-    const checkPremiumAccess = () => {
+    const checkPremiumAccess = async () => {
       setIsLoading(true);
+      
       try {
-        // 1. Načtení informací o premium funkcích
-        const premiumFeatures: PremiumFeature[] = JSON.parse(
-          localStorage.getItem('premiumFeatures') || '[]'
-        );
+        // 1. Zjištění, zda je daná funkce označena jako premium
+        const { data, error } = await supabase
+          .from('premium_features')
+          .select('is_enabled')
+          .eq('key', featureKey)
+          .single();
         
-        // 2. Zjištění, zda je daná funkce označena jako premium
-        const feature = premiumFeatures.find(f => f.key === featureKey);
-        const isPremium = feature ? feature.isEnabled : false;
-        setIsPremiumFeature(isPremium);
-        
-        // 3. Zjištění, zda je uživatel přihlášen
-        const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-        
-        // 4. Pokud je uživatel přihlášen, zjistíme, zda má premium
-        let hasPremium = false;
-        if (isLoggedIn) {
-          // Načtení seznamu uživatelů
-          const users = JSON.parse(localStorage.getItem('users') || '[]');
-          
-          // Načtení aktuálně přihlášeného uživatele
-          const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-          
-          // Najdeme uživatele podle emailu
-          const user = users.find((u: any) => u.email === currentUser.email);
-          
-          // Zkontrolujeme, zda má uživatel premium
-          if (user && user.isPremium) {
-            hasPremium = true;
-          }
+        if (error) {
+          console.error('Chyba při kontrole premium funkce:', error);
+          // V případě chyby dáme uživateli přístup (failsafe)
+          setIsPremiumFeature(false);
+          setCanAccess(true);
+          return;
         }
         
-        setUserHasPremium(hasPremium);
+        const isFeaturePremium = data?.is_enabled || false;
+        setIsPremiumFeature(isFeaturePremium);
         
-        // 5. Uživatel může přistupovat k funkci, pokud:
+        // 2. Uživatel může přistupovat k funkci, pokud:
         // - funkce není prémiová NEBO
         // - uživatel má premium
-        setCanAccess(!isPremium || hasPremium);
+        setCanAccess(!isFeaturePremium || isPremium);
         
       } catch (error) {
         console.error('Chyba při kontrole premium přístupu:', error);
@@ -66,26 +46,14 @@ export const usePremiumCheck = (featureKey: string) => {
       }
     };
 
-    checkPremiumAccess();
-    
-    // Přidáme event listener pro změny v localStorage
-    const handleStorageChange = (e: StorageEvent) => {
-      if (
-        e.key === 'premiumFeatures' || 
-        e.key === 'users' || 
-        e.key === 'isLoggedIn' || 
-        e.key === 'currentUser'
-      ) {
-        checkPremiumAccess();
-      }
-    };
-    
-    window.addEventListener('storage', handleStorageChange);
-    
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
-  }, [featureKey]);
+    if (user) {
+      checkPremiumAccess();
+    } else {
+      setIsPremiumFeature(true);
+      setCanAccess(false);
+      setIsLoading(false);
+    }
+  }, [featureKey, user, isPremium]);
 
-  return { isLoading, isPremiumFeature, userHasPremium, canAccess };
+  return { isLoading, isPremiumFeature, canAccess };
 };

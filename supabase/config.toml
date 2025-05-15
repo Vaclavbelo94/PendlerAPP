@@ -1,1 +1,8 @@
+
 project_id = "ghfjdgnnhhxhamcwjodx"
+
+[functions.sync_offline_data]
+verify_jwt = true
+
+[functions.get_premium_features]
+verify_jwt = false

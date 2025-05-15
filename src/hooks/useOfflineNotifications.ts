@@ -2,12 +2,15 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { useOfflineStatus } from './useOfflineStatus';
+import { useAuth } from './useAuth';
+import { supabase } from '@/integrations/supabase/client';
 import {
   saveData,
   getAllData,
   getItemById,
   deleteItemById,
-  STORES
+  STORES,
+  addToSyncQueue
 } from '@/utils/offlineStorage';
 
 export interface Notification {
@@ -17,6 +20,7 @@ export interface Notification {
   type: 'info' | 'warning' | 'success' | 'error';
   date: string; // ISO string
   read: boolean;
+  user_id?: string;
   relatedTo?: {
     type: string;
     id: string;
@@ -27,6 +31,7 @@ export const useOfflineNotifications = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const { isOffline } = useOfflineStatus();
+  const { user } = useAuth();
 
   // Load notifications based on online/offline status
   useEffect(() => {
@@ -39,11 +44,28 @@ export const useOfflineNotifications = () => {
           const count = offlineNotifications.filter(n => !n.read).length;
           setUnreadCount(count);
         } else {
-          // Load from localStorage when online
-          const storedNotifications = JSON.parse(localStorage.getItem('notifications') || '[]');
-          setNotifications(storedNotifications);
-          const count = storedNotifications.filter((n: Notification) => !n.read).length;
-          setUnreadCount(count);
+          if (user) {
+            // Load from Supabase
+            const { data, error } = await supabase
+              .from('notifications')
+              .select('*')
+              .eq('user_id', user.id)
+              .order('created_at', { ascending: false });
+              
+            if (error) throw error;
+            
+            if (data) {
+              setNotifications(data);
+              const count = data.filter((n: Notification) => !n.read).length;
+              setUnreadCount(count);
+            }
+          } else {
+            // Load from localStorage when online but not authenticated
+            const storedNotifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+            setNotifications(storedNotifications);
+            const count = storedNotifications.filter((n: Notification) => !n.read).length;
+            setUnreadCount(count);
+          }
         }
       } catch (error) {
         console.error('Error loading notifications:', error);
@@ -66,7 +88,7 @@ export const useOfflineNotifications = () => {
         window.removeEventListener('storage', () => {});
       }
     };
-  }, [isOffline]);
+  }, [isOffline, user]);
 
   // Save notifications based on online/offline status
   const saveNotifications = async (updatedNotifications: Notification[]) => {
@@ -76,8 +98,36 @@ export const useOfflineNotifications = () => {
         for (const notification of updatedNotifications) {
           await saveData(STORES.notifications, notification);
         }
+      } else if (user) {
+        // Save to Supabase when online and authenticated
+        for (const notification of updatedNotifications.filter(n => !n.id.includes('local-'))) {
+          if (notification.id.startsWith('temp-')) {
+            // Nová notifikace
+            const { data, error } = await supabase
+              .from('notifications')
+              .insert({
+                title: notification.title,
+                message: notification.message,
+                type: notification.type,
+                read: notification.read,
+                user_id: user.id,
+                related_to: notification.relatedTo
+              })
+              .select();
+            
+            if (error) throw error;
+          } else {
+            // Aktualizace existující notifikace
+            const { error } = await supabase
+              .from('notifications')
+              .update({ read: notification.read })
+              .eq('id', notification.id);
+            
+            if (error) throw error;
+          }
+        }
       } else {
-        // Save to localStorage when online
+        // Save to localStorage when online but not authenticated
         localStorage.setItem('notifications', JSON.stringify(updatedNotifications));
       }
       
@@ -90,17 +140,29 @@ export const useOfflineNotifications = () => {
   };
 
   // Add a new notification
-  const addNotification = async (notification: Omit<Notification, 'id' | 'date' | 'read'>) => {
+  const addNotification = async (notification: Omit<Notification, 'id' | 'date' | 'read' | 'user_id'>) => {
     const newNotification: Notification = {
-      id: Math.random().toString(36).substring(2, 11),
+      id: user ? `temp-${Math.random().toString(36).substring(2, 11)}` : `local-${Math.random().toString(36).substring(2, 11)}`,
       date: new Date().toISOString(),
       read: false,
+      user_id: user?.id,
       ...notification
     };
 
     try {
       const updatedNotifications = [newNotification, ...notifications];
       await saveNotifications(updatedNotifications);
+      
+      // Pokud jsme offline a máme uživatele, přidáme do fronty k synchronizaci
+      if (isOffline && user) {
+        await addToSyncQueue('notifications', newNotification.id, 'INSERT', {
+          title: newNotification.title,
+          message: newNotification.message,
+          type: newNotification.type,
+          user_id: user.id,
+          related_to: newNotification.relatedTo
+        });
+      }
       
       // Show toast for real-time feedback
       toast(notification.title, {
@@ -121,6 +183,11 @@ export const useOfflineNotifications = () => {
         notification.id === id ? { ...notification, read: true } : notification
       );
       await saveNotifications(updatedNotifications);
+      
+      // Pokud jsme offline a máme uživatele, přidáme do fronty k synchronizaci
+      if (isOffline && user) {
+        await addToSyncQueue('notifications', id, 'UPDATE', { read: true });
+      }
     } catch (error) {
       console.error('Error marking notification as read:', error);
       throw error;
@@ -135,6 +202,15 @@ export const useOfflineNotifications = () => {
         read: true
       }));
       await saveNotifications(updatedNotifications);
+      
+      // Pokud jsme offline a máme uživatele, přidáme do fronty k synchronizaci pro každou notifikaci
+      if (isOffline && user) {
+        for (const notification of notifications) {
+          if (!notification.read) {
+            await addToSyncQueue('notifications', notification.id, 'UPDATE', { read: true });
+          }
+        }
+      }
     } catch (error) {
       console.error('Error marking all notifications as read:', error);
       throw error;
@@ -148,6 +224,11 @@ export const useOfflineNotifications = () => {
       
       if (isOffline) {
         await deleteItemById(STORES.notifications, id);
+        
+        // Pokud jsme offline a máme uživatele, přidáme do fronty k synchronizaci
+        if (user) {
+          await addToSyncQueue('notifications', id, 'DELETE', null);
+        }
       }
       
       await saveNotifications(updatedNotifications);
