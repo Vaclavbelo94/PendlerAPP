@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Calendar as CalendarIcon, Calendar as CalendarLucide, FileDown, Download, Lock, LogIn, UserPlus, Pencil, FileText } from "lucide-react";
+import { Calendar as CalendarIcon, Calendar as CalendarLucide, FileDown, Download, Lock, LogIn, UserPlus, Pencil, FileText, ChartBar } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,6 +19,7 @@ import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, Tabl
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/components/ui/sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import ShiftAnalytics from "@/components/shifts/ShiftAnalytics";
 
 // Typy směn
 type ShiftType = "morning" | "afternoon" | "night";
@@ -71,6 +72,7 @@ const Shifts = () => {
   const [userShifts, setUserShifts] = useState<Shift[]>([]);
   const [shiftNotes, setShiftNotes] = useState<string>("");
   const [editNoteDialogOpen, setEditNoteDialogOpen] = useState(false);
+  const [analyticsPeriod, setAnalyticsPeriod] = useState<"week" | "month" | "year">("month");
   
   // Načtení stavu přihlášení při načtení stránky
   useEffect(() => {
@@ -401,6 +403,7 @@ const Shifts = () => {
           <Tabs defaultValue="calendar" className="mb-8">
             <TabsList className="mb-4 bg-dhl-yellow text-dhl-black">
               <TabsTrigger value="calendar" className="data-[state=active]:bg-dhl-red data-[state=active]:text-white">Kalendář směn</TabsTrigger>
+              <TabsTrigger value="analytics" className="data-[state=active]:bg-dhl-red data-[state=active]:text-white">Analytika</TabsTrigger>
               <TabsTrigger value="planning" className="data-[state=active]:bg-dhl-red data-[state=active]:text-white">Plánování tras</TabsTrigger>
               <TabsTrigger value="reports" className="data-[state=active]:bg-dhl-red data-[state=active]:text-white">Reporty</TabsTrigger>
             </TabsList>
@@ -745,6 +748,31 @@ const Shifts = () => {
                   </CardContent>
                 </Card>
               </div>
+            </TabsContent>
+            
+            {/* New Analytics Tab */}
+            <TabsContent value="analytics" className="space-y-6">
+              {isLoggedIn ? (
+                <ShiftAnalytics 
+                  shifts={userShifts} 
+                  period={analyticsPeriod} 
+                  onPeriodChange={setAnalyticsPeriod}
+                />
+              ) : (
+                <Card>
+                  <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+                    <Lock className="h-12 w-12 text-gray-300 mb-4" />
+                    <p className="text-muted-foreground mb-2">Přihlaste se pro zobrazení analytiky směn</p>
+                    <Button 
+                      className="mt-4" 
+                      onClick={() => setLoginDialogOpen(true)}
+                      variant="default"
+                    >
+                      Přihlásit se
+                    </Button>
+                  </CardContent>
+                </Card>
+              )}
             </TabsContent>
             
             {/* Planning Tab */}
