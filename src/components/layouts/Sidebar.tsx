@@ -155,7 +155,7 @@ const Sidebar = ({ closeSidebar }: SidebarProps) => {
                   <Button size="sm" variant="outline" className="w-full">Registrovat</Button>
                 </Link>
               </div>
-            </div>
+            </>
           )}
         </div>
       </div>
