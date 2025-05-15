@@ -24,6 +24,7 @@ const TranslatorPage = () => {
   const [isTranslating, setIsTranslating] = useState(false);
   const [sourceLanguage, setSourceLanguage] = useState("cs");
   const [targetLanguage, setTargetLanguage] = useState("de");
+  const [activeTab, setActiveTab] = useState("translator");
   const { toast } = useToast();
 
   const languages: Language[] = [
@@ -33,6 +34,10 @@ const TranslatorPage = () => {
     { code: "pl", name: "Polština" },
     { code: "sk", name: "Slovenština" }
   ];
+
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+  };
 
   const handleTranslate = async () => {
     if (!sourceText.trim()) {
@@ -139,7 +144,7 @@ const TranslatorPage = () => {
       {/* Translator section */}
       <section className="py-12 bg-background">
         <div className="container mx-auto px-4">
-          <Tabs defaultValue="translator" className="max-w-5xl mx-auto">
+          <Tabs value={activeTab} onValueChange={handleTabChange} className="max-w-5xl mx-auto">
             <TabsList className="grid w-full grid-cols-2 mb-8">
               <TabsTrigger value="translator">Překladač</TabsTrigger>
               <TabsTrigger value="phrases">Užitečné fráze</TabsTrigger>

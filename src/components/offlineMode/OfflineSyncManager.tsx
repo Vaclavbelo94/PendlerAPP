@@ -10,6 +10,7 @@ export const OfflineSyncManager = () => {
   const { isOffline } = useOfflineStatus();
   const { user, isPremium, refreshPremiumStatus } = useAuth();
   const [isCheckingStatus, setIsCheckingStatus] = React.useState(true);
+  const [hasShownOnlineToast, setHasShownOnlineToast] = React.useState(false);
 
   // Na začátku vždy aktualizujeme premium status z databáze
   React.useEffect(() => {
@@ -37,9 +38,10 @@ export const OfflineSyncManager = () => {
       isOffline, 
       user: user?.id, 
       isPremium,
-      isCheckingStatus
+      isCheckingStatus,
+      hasShownOnlineToast
     });
-  }, [isOffline, user, isPremium, isCheckingStatus]);
+  }, [isOffline, user, isPremium, isCheckingStatus, hasShownOnlineToast]);
 
   // Load data to IndexedDB when app starts or when going offline
   React.useEffect(() => {
@@ -69,6 +71,9 @@ export const OfflineSyncManager = () => {
             variant: 'destructive'
           });
         });
+      
+      // Reset the flag when going offline
+      setHasShownOnlineToast(false);
     }
   }, [isOffline, user, isPremium, isCheckingStatus]);
 
@@ -77,11 +82,17 @@ export const OfflineSyncManager = () => {
     if (!isOffline && user && !isCheckingStatus) {
       console.log('Online mode activated, premium status:', isPremium);
       
+      // Only show notification once per session
+      if (hasShownOnlineToast) {
+        return;
+      }
+      
       if (!isPremium) {
         toast({
           title: "Omezená synchronizace",
           description: "Plná synchronizace je dostupná pouze pro prémiové uživatele",
         });
+        setHasShownOnlineToast(true);
         return;
       }
       
@@ -91,6 +102,8 @@ export const OfflineSyncManager = () => {
             title: 'Online opět',
             description: 'Vaše data byla synchronizována.',
           });
+          // Mark that we've shown the toast
+          setHasShownOnlineToast(true);
         })
         .catch((error) => {
           console.error('Error syncing data:', error);
@@ -99,9 +112,11 @@ export const OfflineSyncManager = () => {
             description: 'Zkontrolujte prosím připojení a zkuste to znovu.',
             variant: 'destructive'
           });
+          // Even on error, we don't want to show the toast again
+          setHasShownOnlineToast(true);
         });
     }
-  }, [isOffline, user, isPremium, isCheckingStatus]);
+  }, [isOffline, user, isPremium, isCheckingStatus, hasShownOnlineToast]);
 
   return null; // This component doesn't render anything
 };
