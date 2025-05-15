@@ -14,6 +14,10 @@ type Language = {
   name: string;
 };
 
+// Define translation type to fix type errors
+type TranslationDictionary = Record<string, string>;
+type LanguageDictionary = Record<string, TranslationDictionary>;
+
 const TranslatorPage = () => {
   const [sourceText, setSourceText] = useState("");
   const [translatedText, setTranslatedText] = useState("");
@@ -49,7 +53,7 @@ const TranslatorPage = () => {
       const langPair = `${sourceLanguage}-${targetLanguage}`;
       
       // Základní slovník pro nejčastější fráze ve všech podporovaných jazycích
-      const basicTranslations: Record<string, Record<string, string>> = {
+      const basicTranslations: Record<string, LanguageDictionary> = {
         "cs": {
           "ahoj": { de: "Hallo", en: "Hello", pl: "Cześć", sk: "Ahoj" },
           "dobrý den": { de: "Guten Tag", en: "Good day", pl: "Dzień dobry", sk: "Dobrý deň" },

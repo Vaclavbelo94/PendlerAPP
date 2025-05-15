@@ -1,5 +1,4 @@
 import { Toast, ToastActionElement, ToastProps } from "@/components/ui/toast";
-import { useToast as useToastInternal } from "@/components/ui/toast";
 
 const TOAST_LIMIT = 5;
 const TOAST_REMOVE_DELAY = 1000000;
@@ -167,11 +166,32 @@ function toast({ ...props }: Toast) {
 }
 
 function useToast() {
+  const subscribe = React.useCallback((callback: (state: State) => void) => {
+    listeners.push(callback);
+    return () => {
+      const index = listeners.indexOf(callback);
+      if (index > -1) {
+        listeners.splice(index, 1);
+      }
+    };
+  }, []);
+
+  const getState = React.useCallback(() => memoryState, []);
+
+  const toasts = React.useSyncExternalStore(
+    subscribe,
+    getState,
+    getState
+  );
+
   return {
-    ...useToastInternal(),
+    toasts: toasts.toasts,
     toast,
     dismiss: (toastId?: string) => dispatch({ type: "DISMISS_TOAST", toastId }),
   };
 }
+
+// Import React at the top
+import * as React from "react";
 
 export { useToast, toast };
