@@ -1,10 +1,50 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, BookOpen } from "lucide-react";
+import { ArrowLeft, BookOpen, Calculator } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/components/ui/use-toast";
+import { Separator } from "@/components/ui/separator";
 
 const ChildBenefits = () => {
+  const [numChildren, setNumChildren] = useState<string>("1");
+  const [calculatedBenefit, setCalculatedBenefit] = useState<{
+    monthly: number;
+    yearly: number;
+  } | null>(null);
+  const { toast } = useToast();
+
+  const MONTHLY_BENEFIT_PER_CHILD = 250; // EUR (current as of 2023)
+
+  const calculateBenefit = () => {
+    const children = parseInt(numChildren);
+    
+    if (isNaN(children) || children <= 0 || children > 10) {
+      toast({
+        title: "Neplatná hodnota",
+        description: "Zadejte platný počet dětí v rozmezí 1-10",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Calculate monthly and yearly benefits
+    const monthlyBenefit = children * MONTHLY_BENEFIT_PER_CHILD;
+    const yearlyBenefit = monthlyBenefit * 12;
+    
+    setCalculatedBenefit({
+      monthly: monthlyBenefit,
+      yearly: yearlyBenefit
+    });
+    
+    toast({
+      title: "Výpočet dokončen",
+      description: `Měsíční přídavky: ${monthlyBenefit.toFixed(2)} €`,
+    });
+  };
+
   return (
     <div className="flex flex-col">
       {/* Header section */}
@@ -58,6 +98,76 @@ const ChildBenefits = () => {
               <div className="bg-yellow-50 p-4 rounded-md">
                 <p className="font-medium">Důležité pro pendlery:</p>
                 <p>I když pracujete v Německu, ale vaše děti žijí v České republice, můžete za určitých podmínek mít nárok na německé přídavky na děti. Podle pravidel EU má přednost vyplácet rodinné dávky stát, ve kterém je vykonávána výdělečná činnost.</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* New Child Benefits Calculator */}
+          <Card className="mb-8">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Calculator className="h-5 w-5 text-primary" />
+                <CardTitle>Kalkulačka přídavků na děti</CardTitle>
+              </div>
+              <CardDescription>Výpočet výše přídavků na děti (Kindergeld)</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="bg-yellow-50 p-4 rounded-md mb-4">
+                  <p className="font-medium">Jak používat kalkulačku:</p>
+                  <p>Zadejte počet dětí, pro které žádáte o přídavky, a kalkulačka vám vypočítá celkovou měsíční a roční částku přídavků.</p>
+                </div>
+                
+                <div className="grid gap-4 sm:grid-cols-1">
+                  <div>
+                    <Label htmlFor="numChildren">Počet dětí</Label>
+                    <input
+                      id="numChildren"
+                      type="number"
+                      value={numChildren}
+                      onChange={(e) => setNumChildren(e.target.value)}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      placeholder="Zadejte počet dětí"
+                      min="1"
+                      max="10"
+                    />
+                  </div>
+                </div>
+                
+                <Button onClick={calculateBenefit} className="w-full">Vypočítat přídavky</Button>
+                
+                {calculatedBenefit !== null && (
+                  <div className="mt-4 p-4 bg-primary-50 rounded-md">
+                    <p className="text-lg font-semibold">Výsledek výpočtu:</p>
+                    <div className="grid gap-3 mt-3">
+                      <div className="flex justify-between items-center">
+                        <span>Počet dětí:</span>
+                        <span className="font-semibold">{parseInt(numChildren)}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span>Přídavek na jedno dítě:</span>
+                        <span className="font-semibold">{MONTHLY_BENEFIT_PER_CHILD.toFixed(2)} €</span>
+                      </div>
+                      <Separator />
+                      <div className="flex justify-between items-center">
+                        <span>Celkové měsíční přídavky:</span>
+                        <span className="font-semibold text-primary">{calculatedBenefit.monthly.toFixed(2)} €</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span>Celkové roční přídavky:</span>
+                        <span className="font-semibold">{calculatedBenefit.yearly.toFixed(2)} €</span>
+                      </div>
+                    </div>
+                    <div className="mt-4 text-sm text-muted-foreground">
+                      <p className="font-medium">Informace o vyplácení:</p>
+                      <ul className="list-disc pl-5 mt-1 space-y-1">
+                        <li>Přídavky jsou vypláceny měsíčně</li>
+                        <li>Nárok na přídavky lze uplatnit až 6 měsíců zpětně od podání žádosti</li>
+                        <li>Přídavky se vyplácí až do konce měsíce, ve kterém dítě dosáhne věkového limitu</li>
+                      </ul>
+                    </div>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>

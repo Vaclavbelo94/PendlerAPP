@@ -1,7 +1,7 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -15,10 +15,11 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Search } from "lucide-react";
 
 const Laws = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const laws = [
     {
@@ -27,7 +28,10 @@ const Laws = () => {
       title: "Minimální mzda",
       description: "Aktuální výše minimální mzdy v Německu.",
       link: "https://www.example.com/minimalni-mzda",
-      detailPath: "/laws/minimum-wage"
+      detailPath: "/laws/minimum-wage",
+      lastUpdated: "15.01.2023",
+      importance: "high",
+      relevantFor: ["zaměstnanci", "zaměstnavatelé"]
     },
     {
       id: 2,
@@ -35,7 +39,10 @@ const Laws = () => {
       title: "Daňové třídy",
       description: "Přehled daňových tříd a jejich vliv na zdanění.",
       link: "https://www.example.com/danove-tridy",
-      detailPath: "/laws/tax-classes"
+      detailPath: "/laws/tax-classes",
+      lastUpdated: "10.03.2023",
+      importance: "high",
+      relevantFor: ["všichni pracující v Německu"]
     },
     {
       id: 3,
@@ -43,7 +50,10 @@ const Laws = () => {
       title: "Zdravotní pojištění",
       description: "Informace o zdravotním pojištění v Německu.",
       link: "https://www.example.com/zdravotni-pojisteni",
-      detailPath: "/laws/health-insurance"
+      detailPath: "/laws/health-insurance",
+      lastUpdated: "25.02.2023",
+      importance: "high",
+      relevantFor: ["všichni pracující v Německu", "studenti", "důchodci"]
     },
     {
       id: 4,
@@ -51,7 +61,10 @@ const Laws = () => {
       title: "Pracovní smlouva",
       description: "Co by měla obsahovat pracovní smlouva v Německu.",
       link: "https://www.example.com/pracovni-smlouva",
-      detailPath: "/laws/work-contract"
+      detailPath: "/laws/work-contract",
+      lastUpdated: "05.04.2023",
+      importance: "medium",
+      relevantFor: ["zaměstnanci", "zaměstnavatelé"]
     },
     {
       id: 5,
@@ -59,7 +72,10 @@ const Laws = () => {
       title: "Daňové přiznání",
       description: "Jak podat daňové přiznání v Německu.",
       link: "https://www.example.com/danove-priznani",
-      detailPath: "/laws/tax-return"
+      detailPath: "/laws/tax-return",
+      lastUpdated: "30.03.2023",
+      importance: "medium",
+      relevantFor: ["všichni pracující v Německu"]
     },
     {
       id: 6,
@@ -67,7 +83,10 @@ const Laws = () => {
       title: "Důchodové pojištění",
       description: "Informace o důchodovém pojištění v Německu.",
       link: "https://www.example.com/duchodove-pojisteni",
-      detailPath: "/laws/pension-insurance"
+      detailPath: "/laws/pension-insurance",
+      lastUpdated: "12.01.2023",
+      importance: "medium",
+      relevantFor: ["všichni pracující v Německu", "důchodci"]
     },
     {
       id: 7,
@@ -75,7 +94,10 @@ const Laws = () => {
       title: "Ochrana zaměstnanců",
       description: "Práva a povinnosti zaměstnanců v Německu.",
       link: "https://www.example.com/ochrana-zamestnancu",
-      detailPath: "/laws/employee-protection"
+      detailPath: "/laws/employee-protection",
+      lastUpdated: "18.02.2023",
+      importance: "medium",
+      relevantFor: ["zaměstnanci", "zaměstnavatelé"]
     },
     {
       id: 8,
@@ -83,13 +105,45 @@ const Laws = () => {
       title: "Přídavky na děti",
       description: "Podmínky pro získání přídavků na děti v Německu.",
       link: "https://www.example.com/pridavky-na-deti",
-      detailPath: "/laws/child-benefits"
+      detailPath: "/laws/child-benefits",
+      lastUpdated: "07.01.2023",
+      importance: "medium",
+      relevantFor: ["rodiče", "pečující osoby"]
     },
   ];
 
-  const filteredLaws = selectedCategory === "all"
-    ? laws
-    : laws.filter((law) => law.category === selectedCategory);
+  const getImportanceBadge = (importance: string) => {
+    switch (importance) {
+      case "high":
+        return <Badge className="bg-red-500 hover:bg-red-600">Vysoká</Badge>;
+      case "medium":
+        return <Badge className="bg-orange-500 hover:bg-orange-600">Střední</Badge>;
+      case "low":
+        return <Badge className="bg-green-500 hover:bg-green-600">Nízká</Badge>;
+      default:
+        return null;
+    }
+  };
+
+  const getCategoryTranslation = (category: string) => {
+    const categories: Record<string, string> = {
+      "Arbeitsrecht": "Pracovní právo",
+      "Steuerrecht": "Daňové právo",
+      "Sozialversicherung": "Sociální pojištění"
+    };
+    
+    return categories[category] || category;
+  };
+
+  // Apply filters
+  const filteredLaws = laws
+    .filter((law) => selectedCategory === "all" || law.category === selectedCategory)
+    .filter((law) => 
+      searchQuery === "" || 
+      law.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      law.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      law.category.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
   return (
     <div className="flex flex-col">
@@ -106,65 +160,100 @@ const Laws = () => {
       {/* Main content */}
       <section className="py-12">
         <div className="container mx-auto px-4">
-          <Card className="max-w-4xl mx-auto">
+          <Card className="max-w-5xl mx-auto">
             <CardHeader>
               <CardTitle>Seznam zákonů a předpisů</CardTitle>
               <CardDescription>
-                Vyberte kategorii pro zobrazení relevantních informací
+                Vyberte kategorii nebo vyhledávejte pro zobrazení relevantních informací
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid gap-4">
-                <div>
-                  <Label htmlFor="category">Kategorie</Label>
-                  <select
-                    id="category"
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    value={selectedCategory}
-                    onChange={(e) => setSelectedCategory(e.target.value)}
-                  >
-                    <option value="all">Všechny</option>
-                    <option value="Arbeitsrecht">Pracovní právo</option>
-                    <option value="Steuerrecht">Daňové právo</option>
-                    <option value="Sozialversicherung">Sociální pojištění</option>
-                  </select>
+              <div className="grid gap-6">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <Label htmlFor="category">Kategorie</Label>
+                    <select
+                      id="category"
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      value={selectedCategory}
+                      onChange={(e) => setSelectedCategory(e.target.value)}
+                    >
+                      <option value="all">Všechny</option>
+                      <option value="Arbeitsrecht">Pracovní právo</option>
+                      <option value="Steuerrecht">Daňové právo</option>
+                      <option value="Sozialversicherung">Sociální pojištění</option>
+                    </select>
+                  </div>
+                  <div>
+                    <Label htmlFor="search">Vyhledávání</Label>
+                    <div className="relative">
+                      <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="search"
+                        type="text"
+                        placeholder="Hledat podle názvu nebo popisu..."
+                        className="pl-9"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                      />
+                    </div>
+                  </div>
                 </div>
 
-                <ScrollArea className="rounded-md border">
+                <ScrollArea className="h-[500px] rounded-md border">
                   <Table>
+                    <TableCaption>
+                      {filteredLaws.length === 0 ? "Žádné položky neodpovídají vašim kritériím" : `Celkem ${filteredLaws.length} položek`}
+                    </TableCaption>
                     <TableHeader>
                       <TableRow>
                         <TableHead className="w-[100px]">Kategorie</TableHead>
                         <TableHead>Název</TableHead>
                         <TableHead>Popis</TableHead>
-                        <TableHead className="text-right">Odkaz</TableHead>
-                        <TableHead className="text-right">Více informací</TableHead>
+                        <TableHead>Důležitost</TableHead>
+                        <TableHead>Aktualizováno</TableHead>
+                        <TableHead className="text-right">Odkazy</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {filteredLaws.map((law) => (
                         <TableRow key={law.id}>
                           <TableCell className="font-medium">
-                            <Badge>{law.category}</Badge>
+                            <Badge variant="outline" className="bg-primary-50 text-primary border-primary">
+                              {getCategoryTranslation(law.category)}
+                            </Badge>
                           </TableCell>
-                          <TableCell>{law.title}</TableCell>
+                          <TableCell className="font-medium">{law.title}</TableCell>
                           <TableCell>{law.description}</TableCell>
+                          <TableCell>{getImportanceBadge(law.importance)}</TableCell>
+                          <TableCell>{law.lastUpdated}</TableCell>
                           <TableCell className="text-right">
-                            <a href={law.link} target="_blank" rel="noopener noreferrer" className="underline">Externí zdroj</a>
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <Link to={law.detailPath}>
-                              <Button variant="outline" size="sm" className="flex items-center gap-1">
-                                Více informací
-                                <ArrowRight className="h-4 w-4" />
-                              </Button>
-                            </Link>
+                            <div className="flex flex-col sm:flex-row gap-2 justify-end">
+                              <a href={law.link} target="_blank" rel="noopener noreferrer" className="underline text-sm text-muted-foreground hover:text-foreground">
+                                Externí zdroj
+                              </a>
+                              <Link to={law.detailPath}>
+                                <Button variant="outline" size="sm" className="flex items-center gap-1 whitespace-nowrap">
+                                  Více informací
+                                  <ArrowRight className="h-4 w-4" />
+                                </Button>
+                              </Link>
+                            </div>
                           </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
                   </Table>
                 </ScrollArea>
+
+                <div className="bg-blue-50 p-4 rounded-md">
+                  <h3 className="text-sm font-medium mb-2">O německých zákonech pro pendlery</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Jako pendler potřebujete znát jak české, tak německé zákony, které se na vás vztahují. 
+                    Informace na této stránce jsou pouze orientační a nenahrazují konzultaci s odborníkem na dané téma.
+                    Vždy se ujistěte, že používáte aktuální informace, protože zákony a předpisy se mohou měnit.
+                  </p>
+                </div>
               </div>
             </CardContent>
           </Card>

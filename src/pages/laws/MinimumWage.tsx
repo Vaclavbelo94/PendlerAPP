@@ -2,10 +2,50 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, BookOpen } from "lucide-react";
+import { ArrowLeft, BookOpen, Calculator } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/components/ui/use-toast";
 
 const MinimumWage = () => {
+  const [hoursPerWeek, setHoursPerWeek] = useState<string>("40");
+  const [calculatedSalary, setCalculatedSalary] = useState<{
+    monthly: number;
+    yearly: number;
+  } | null>(null);
+  const { toast } = useToast();
+
+  const HOURLY_WAGE = 12.00; // Current minimum wage in Germany
+
+  const calculateSalary = () => {
+    const hours = parseFloat(hoursPerWeek);
+    
+    if (isNaN(hours) || hours <= 0 || hours > 60) {
+      toast({
+        title: "Neplatná hodnota",
+        description: "Zadejte platný počet hodin v rozmezí 1-60",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Calculate monthly and yearly gross salary based on minimum wage
+    const weeklyGross = hours * HOURLY_WAGE;
+    const monthlyGross = weeklyGross * 4.33; // Average weeks in month
+    const yearlyGross = monthlyGross * 12;
+    
+    setCalculatedSalary({
+      monthly: monthlyGross,
+      yearly: yearlyGross
+    });
+    
+    toast({
+      title: "Výpočet dokončen",
+      description: `Měsíční hrubá mzda: ${monthlyGross.toFixed(2)} €`,
+    });
+  };
+
   return (
     <div className="flex flex-col">
       {/* Header section */}
@@ -84,6 +124,81 @@ const MinimumWage = () => {
                   </tr>
                 </tbody>
               </table>
+            </CardContent>
+          </Card>
+          
+          {/* New Minimum Wage Calculator */}
+          <Card className="mb-8">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Calculator className="h-5 w-5 text-primary" />
+                <CardTitle>Kalkulačka minimální mzdy</CardTitle>
+              </div>
+              <CardDescription>Výpočet hrubé mzdy na základě minimální hodinové sazby</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="bg-yellow-50 p-4 rounded-md mb-4">
+                  <p className="font-medium">Jak používat kalkulačku:</p>
+                  <p>Zadejte počet hodin, které týdně odpracujete, a kalkulačka vám vypočítá hrubou měsíční a roční mzdu na základě aktuální minimální mzdy {HOURLY_WAGE} € za hodinu.</p>
+                </div>
+                
+                <div className="grid gap-4 sm:grid-cols-1">
+                  <div>
+                    <Label htmlFor="hoursPerWeek">Počet hodin týdně</Label>
+                    <input
+                      id="hoursPerWeek"
+                      type="number"
+                      value={hoursPerWeek}
+                      onChange={(e) => setHoursPerWeek(e.target.value)}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      placeholder="Zadejte počet hodin týdně"
+                      min="1"
+                      max="60"
+                    />
+                    <p className="text-sm text-muted-foreground mt-1">Běžný plný úvazek je 40 hodin týdně</p>
+                  </div>
+                </div>
+                
+                <Button onClick={calculateSalary} className="w-full">Vypočítat mzdu</Button>
+                
+                {calculatedSalary !== null && (
+                  <div className="mt-4 p-4 bg-primary-50 rounded-md">
+                    <p className="text-lg font-semibold">Výsledek výpočtu:</p>
+                    <div className="grid gap-3 mt-3">
+                      <div className="flex justify-between items-center">
+                        <span>Počet hodin týdně:</span>
+                        <span className="font-semibold">{parseFloat(hoursPerWeek)} hodin</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span>Hodinová sazba:</span>
+                        <span className="font-semibold">{HOURLY_WAGE.toFixed(2)} €</span>
+                      </div>
+                      <Separator />
+                      <div className="flex justify-between items-center">
+                        <span>Týdenní hrubá mzda:</span>
+                        <span className="font-semibold">{(parseFloat(hoursPerWeek) * HOURLY_WAGE).toFixed(2)} €</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span>Měsíční hrubá mzda:</span>
+                        <span className="font-semibold text-primary">{calculatedSalary.monthly.toFixed(2)} €</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span>Roční hrubá mzda:</span>
+                        <span className="font-semibold">{calculatedSalary.yearly.toFixed(2)} €</span>
+                      </div>
+                    </div>
+                    <div className="mt-4 text-sm text-muted-foreground">
+                      <p className="font-medium">Upozornění:</p>
+                      <ul className="list-disc pl-5 mt-1 space-y-1">
+                        <li>Výpočet zobrazuje hrubou mzdu před zdaněním a odvody</li>
+                        <li>Výpočet je založen na průměru 4,33 týdnů v měsíci</li>
+                        <li>Čistá mzda závisí na vaší daňové třídě a dalších faktorech</li>
+                      </ul>
+                    </div>
+                  </div>
+                )}
+              </div>
             </CardContent>
           </Card>
           
