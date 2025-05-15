@@ -85,23 +85,6 @@ const Login = () => {
               {isLoading ? "Přihlašování..." : "Přihlásit se"}
             </Button>
           </form>
-          <div className="relative my-2">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">
-                Testovací účet
-              </span>
-            </div>
-          </div>
-          <div className="grid gap-2 text-sm">
-            <p>Pro testování použijte:</p>
-            <div className="bg-muted p-2 rounded">
-              <p>Email: <strong>vaclavbelo94@gmail.com</strong></p>
-              <p>Heslo: <strong>Vaclav711</strong></p>
-            </div>
-          </div>
         </CardContent>
         <CardFooter>
           <div className="text-center w-full text-sm">
