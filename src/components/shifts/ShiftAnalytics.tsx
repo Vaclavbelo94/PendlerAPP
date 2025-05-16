@@ -1,10 +1,10 @@
 
-import React, { useMemo } from "react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
+import React, { useState, useMemo } from "react";
+import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, eachDayOfInterval } from "date-fns";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { ChartColumnBig } from "lucide-react";
@@ -17,170 +17,94 @@ interface ShiftAnalyticsProps {
 }
 
 // Colors for the different shift types
-const SHIFT_COLORS = {
-  morning: "#3b82f6",  // blue
-  afternoon: "#22c55e", // green
-  night: "#8b5cf6"      // purple
+const COLORS = {
+  morning: "#3b82f6",  // blue-500
+  afternoon: "#22c55e", // green-500
+  night: "#a855f7",    // purple-500
 };
 
-const ShiftAnalytics: React.FC<ShiftAnalyticsProps> = ({ 
-  shifts, 
-  period,
-  onPeriodChange
-}) => {
-  // Group shifts by type to get totals
-  const shiftsByType = useMemo(() => {
-    const grouped = {
-      morning: shifts.filter(s => s.type === "morning").length,
-      afternoon: shifts.filter(s => s.type === "afternoon").length,
-      night: shifts.filter(s => s.type === "night").length
-    };
-    
-    return [
-      { name: "Ranní", value: grouped.morning, color: SHIFT_COLORS.morning },
-      { name: "Odpolední", value: grouped.afternoon, color: SHIFT_COLORS.afternoon },
-      { name: "Noční", value: grouped.night, color: SHIFT_COLORS.night }
-    ];
-  }, [shifts]);
-  
-  // Calculate total working hours 
-  const totalHours = useMemo(() => shifts.length * 8, [shifts]);
-  
-  // Group shifts by day of week
-  const shiftsByDayOfWeek = useMemo(() => {
-    const days = ["Neděle", "Pondělí", "Úterý", "Středa", "Čtvrtek", "Pátek", "Sobota"];
-    const grouped = days.map(day => ({
-      name: day,
-      morning: 0,
-      afternoon: 0,
-      night: 0
-    }));
-    
-    shifts.forEach(shift => {
-      const dayOfWeek = new Date(shift.date).getDay();
-      grouped[dayOfWeek][shift.type]++;
-    });
-    
-    return grouped;
-  }, [shifts]);
+const ShiftAnalytics = ({ shifts, period, onPeriodChange }: ShiftAnalyticsProps) => {
+  const [selectedTab, setSelectedTab] = useState<"distribution" | "trend">("distribution");
 
-  // Group shifts by month
-  const shiftsByMonth = useMemo(() => {
-    const months = [
-      "Leden", "Únor", "Březen", "Duben", "Květen", "Červen", 
-      "Červenec", "Srpen", "Září", "Říjen", "Listopad", "Prosinec"
-    ];
+  // Filter shifts based on the selected period
+  const filteredShifts = useMemo(() => {
+    const now = new Date();
+    let startDate, endDate;
     
-    const grouped = months.map(month => ({
-      name: month,
-      morning: 0,
-      afternoon: 0,
-      night: 0
-    }));
-    
-    shifts.forEach(shift => {
-      const monthIndex = new Date(shift.date).getMonth();
-      grouped[monthIndex][shift.type]++;
-    });
-    
-    return grouped;
-  }, [shifts]);
-
-  // Function to get the appropriate chart data based on selected period
-  const getChartData = () => {
-    switch (period) {
+    switch(period) {
       case "week":
-        return shiftsByDayOfWeek;
+        startDate = startOfWeek(now, { weekStartsOn: 1 });
+        endDate = endOfWeek(now, { weekStartsOn: 1 });
+        break;
       case "month":
-        // For month view, we'll use a subset of the month data
-        const currentMonth = new Date().getMonth();
-        const startDay = new Date().getDate() - 30; // Last 30 days
-        const filteredShifts = shifts.filter(shift => {
-          const shiftDate = new Date(shift.date);
-          const dayDiff = Math.floor((new Date().getTime() - shiftDate.getTime()) / (1000 * 60 * 60 * 24));
-          return dayDiff <= 30;
-        });
-        
-        // Group by day
-        const dayData: any[] = [];
-        const daysMap = new Map();
-        
-        filteredShifts.forEach(shift => {
-          const day = new Date(shift.date).getDate();
-          const key = `${day}`;
-          
-          if (!daysMap.has(key)) {
-            daysMap.set(key, {
-              name: `${day}`,
-              morning: 0,
-              afternoon: 0,
-              night: 0
-            });
-          }
-          
-          daysMap.get(key)[shift.type]++;
-        });
-        
-        daysMap.forEach(value => dayData.push(value));
-        return dayData.sort((a, b) => parseInt(a.name) - parseInt(b.name));
-      
+        startDate = startOfMonth(now);
+        endDate = endOfMonth(now);
+        break;
       case "year":
-        return shiftsByMonth;
+        startDate = new Date(now.getFullYear(), 0, 1);
+        endDate = new Date(now.getFullYear(), 11, 31);
+        break;
       default:
-        return [];
+        startDate = startOfMonth(now);
+        endDate = endOfMonth(now);
     }
-  };
-
-  // Calculate consecutive working days
-  const consecutiveWorkingDays = useMemo(() => {
-    if (shifts.length === 0) return 0;
     
-    // Sort shifts by date
-    const sortedShifts = [...shifts].sort((a, b) => 
+    return shifts.filter(shift => {
+      const shiftDate = new Date(shift.date);
+      return shiftDate >= startDate && shiftDate <= endDate;
+    });
+  }, [shifts, period]);
+  
+  // Prepare data for the pie chart (shift type distribution)
+  const pieChartData = useMemo(() => {
+    const typeCounts = filteredShifts.reduce((acc, shift) => {
+      const { type } = shift;
+      if (!acc[type]) acc[type] = 0;
+      acc[type]++;
+      return acc;
+    }, {} as Record<string, number>);
+    
+    return Object.entries(typeCounts).map(([name, value]) => ({
+      name: name === "morning" ? "Ranní" : name === "afternoon" ? "Odpolední" : "Noční",
+      value,
+      color: COLORS[name as keyof typeof COLORS]
+    }));
+  }, [filteredShifts]);
+  
+  // Prepare data for the bar chart (shift trend over time)
+  const trendData = useMemo(() => {
+    if (filteredShifts.length === 0) return [];
+
+    const sortedShifts = [...filteredShifts].sort((a, b) => 
       new Date(a.date).getTime() - new Date(b.date).getTime()
     );
+
+    const firstDate = new Date(sortedShifts[0].date);
+    const lastDate = new Date(sortedShifts[sortedShifts.length - 1].date);
+
+    const daysInterval = eachDayOfInterval({ start: firstDate, end: lastDate });
     
-    let maxConsecutive = 0;
-    let currentStreak = 0;
-    let previousDate: Date | null = null;
-    
-    sortedShifts.forEach(shift => {
-      const currentDate = new Date(shift.date);
+    // Group shifts by date
+    const shiftsByDate = daysInterval.map(date => {
+      const dateString = format(date, "yyyy-MM-dd");
+      const dayShifts = sortedShifts.filter(shift => 
+        format(new Date(shift.date), "yyyy-MM-dd") === dateString
+      );
       
-      if (previousDate) {
-        // Check if this shift is exactly 1 day after the previous one
-        const dayDiff = Math.floor((currentDate.getTime() - previousDate.getTime()) / (1000 * 60 * 60 * 24));
-        
-        if (dayDiff === 1) {
-          currentStreak++;
-        } else {
-          // Reset streak if there's a gap
-          currentStreak = 1;
-        }
-      } else {
-        currentStreak = 1;
-      }
-      
-      maxConsecutive = Math.max(maxConsecutive, currentStreak);
-      previousDate = currentDate;
+      return {
+        date: format(date, "dd.MM"),
+        morning: dayShifts.filter(s => s.type === "morning").length,
+        afternoon: dayShifts.filter(s => s.type === "afternoon").length,
+        night: dayShifts.filter(s => s.type === "night").length,
+      };
     });
     
-    return maxConsecutive;
-  }, [shifts]);
-
-  // Calculate weekend shifts
-  const weekendShifts = useMemo(() => 
-    shifts.filter(shift => {
-      const day = new Date(shift.date).getDay();
-      return day === 0 || day === 6; // 0 is Sunday, 6 is Saturday
-    }).length,
-    [shifts]
-  );
+    return shiftsByDate;
+  }, [filteredShifts]);
 
   return (
-    <div className="space-y-6">
-      {/* Period selector */}
-      <div className="flex justify-between items-center">
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between pb-2">
         <h2 className="text-2xl font-bold">Analýza směn</h2>
         <div className="flex items-center space-x-2">
           <Label htmlFor="period">Období:</Label>
@@ -195,131 +119,115 @@ const ShiftAnalytics: React.FC<ShiftAnalyticsProps> = ({
             </SelectContent>
           </Select>
         </div>
-      </div>
-      
-      {/* Main analytics area */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Summary stats */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Souhrn</CardTitle>
-            <CardDescription>Základní statistiky směn</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-muted-foreground">Celkem směn:</span>
-                <span className="font-bold text-lg">{shifts.length}</span>
+      </CardHeader>
+      <CardContent>
+        <Tabs value={selectedTab} onValueChange={(value) => setSelectedTab(value as "distribution" | "trend")} className="w-full">
+          <TabsList className="w-full">
+            <TabsTrigger value="distribution" className="flex-1">Distribuce</TabsTrigger>
+            <TabsTrigger value="trend" className="flex-1">Trend</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="distribution" className="pt-4">
+            {pieChartData.length > 0 ? (
+              <ChartContainer className="h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={pieChartData}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {pieChartData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip 
+                      content={({ active, payload }) => {
+                        if (active && payload && payload.length) {
+                          return (
+                            <ChartTooltip>
+                              <ChartTooltipContent>
+                                <div className="flex flex-col">
+                                  <span className="text-sm font-bold">{payload[0].name}</span>
+                                  <span className="text-xs">Počet: {payload[0].value}</span>
+                                </div>
+                              </ChartTooltipContent>
+                            </ChartTooltip>
+                          );
+                        }
+                        return null;
+                      }}
+                    />
+                    <Legend formatter={(value) => <span className="text-sm">{value}</span>} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            ) : (
+              <div className="flex flex-col items-center justify-center h-[300px]">
+                <ChartColumnBig className="h-16 w-16 text-gray-300 mb-4" />
+                <p className="text-muted-foreground">Žádné směny v tomto období</p>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-muted-foreground">Celkem hodin:</span>
-                <span className="font-bold text-lg">{totalHours}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-muted-foreground">Víkendových směn:</span>
-                <span className="font-bold text-lg">{weekendShifts}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-muted-foreground">Max. po sobě jdoucích dní:</span>
-                <span className="font-bold text-lg">{consecutiveWorkingDays}</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      
-        {/* Shift distribution by type */}
-        <Card className="col-span-2">
-          <CardHeader>
-            <CardTitle>Rozložení typů směn</CardTitle>
-            <CardDescription>Poměr ranních, odpoledních a nočních směn</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-[220px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={shiftsByType}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+            )}
+          </TabsContent>
+          
+          <TabsContent value="trend" className="pt-4">
+            {trendData.length > 0 ? (
+              <ChartContainer className="h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={trendData}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                   >
-                    {shiftsByType.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-              
-              <div className="flex flex-col justify-center space-y-4">
-                <div className="flex items-center space-x-2">
-                  <div className="w-4 h-4 rounded-full bg-blue-500" />
-                  <span>Ranní: {shiftsByType[0].value} směn ({totalHours > 0 ? ((shiftsByType[0].value * 100) / shifts.length).toFixed(0) : 0}%)</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-4 h-4 rounded-full bg-green-500" />
-                  <span>Odpolední: {shiftsByType[1].value} směn ({totalHours > 0 ? ((shiftsByType[1].value * 100) / shifts.length).toFixed(0) : 0}%)</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-4 h-4 rounded-full bg-purple-500" />
-                  <span>Noční: {shiftsByType[2].value} směn ({totalHours > 0 ? ((shiftsByType[2].value * 100) / shifts.length).toFixed(0) : 0}%)</span>
-                </div>
+                    <XAxis dataKey="date" />
+                    <YAxis allowDecimals={false} />
+                    <Tooltip 
+                      content={({ active, payload, label }) => {
+                        if (active && payload && payload.length) {
+                          return (
+                            <ChartTooltip>
+                              <ChartTooltipContent>
+                                <div className="flex flex-col">
+                                  <span className="text-sm font-bold">{label}</span>
+                                  {payload.map((entry) => (
+                                    <span key={entry.name} className="text-xs flex items-center">
+                                      <span className="w-2 h-2 rounded-full mr-1" style={{ backgroundColor: entry.color }}></span>
+                                      {entry.name === "morning" ? "Ranní" : entry.name === "afternoon" ? "Odpolední" : "Noční"}: {entry.value}
+                                    </span>
+                                  ))}
+                                </div>
+                              </ChartTooltipContent>
+                            </ChartTooltip>
+                          );
+                        }
+                        return null;
+                      }}
+                    />
+                    <Legend formatter={(value) => (
+                      <span className="text-sm">
+                        {value === "morning" ? "Ranní" : value === "afternoon" ? "Odpolední" : "Noční"}
+                      </span>
+                    )} />
+                    <Bar dataKey="morning" stackId="a" fill={COLORS.morning} />
+                    <Bar dataKey="afternoon" stackId="a" fill={COLORS.afternoon} />
+                    <Bar dataKey="night" stackId="a" fill={COLORS.night} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            ) : (
+              <div className="flex flex-col items-center justify-center h-[300px]">
+                <ChartColumnBig className="h-16 w-16 text-gray-300 mb-4" />
+                <p className="text-muted-foreground">Žádné směny v tomto období</p>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-      
-      {/* Shift distribution chart */}
-      <Card>
-        <CardHeader className="border-b">
-          <CardTitle>Rozložení směn v čase</CardTitle>
-          <CardDescription>
-            {period === "week" ? "Rozložení podle dnů v týdnu" : 
-             period === "month" ? "Rozložení za poslední měsíc" : 
-             "Rozložení podle měsíců v roce"}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="pt-6">
-          <div className="h-[300px]">
-            <ChartContainer
-              config={{
-                morning: { color: SHIFT_COLORS.morning },
-                afternoon: { color: SHIFT_COLORS.afternoon },
-                night: { color: SHIFT_COLORS.night },
-              }}
-            >
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={getChartData()}
-                  margin={{
-                    top: 5,
-                    right: 30,
-                    left: 20,
-                    bottom: 5,
-                  }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <ChartTooltip
-                    content={<ChartTooltipContent />}
-                  />
-                  <Legend />
-                  <Bar dataKey="morning" name="Ranní" fill={SHIFT_COLORS.morning} />
-                  <Bar dataKey="afternoon" name="Odpolední" fill={SHIFT_COLORS.afternoon} />
-                  <Bar dataKey="night" name="Noční" fill={SHIFT_COLORS.night} />
-                </BarChart>
-              </ResponsiveContainer>
-            </ChartContainer>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+            )}
+          </TabsContent>
+        </Tabs>
+      </CardContent>
+    </Card>
   );
 };
 
