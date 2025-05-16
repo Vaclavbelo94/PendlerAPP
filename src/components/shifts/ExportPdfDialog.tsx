@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { toast } from "@/components/ui/use-toast";
-import { jsPDF } from "jspdf";
+import jsPDF from "jspdf"; // Changed from { jsPDF } to default import
 import autoTable from "jspdf-autotable";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -127,22 +127,22 @@ export const ExportPdfDialog = ({
             }
           };
           
-          supabase
-            .from('reports')
-            .insert({
-              user_id: user.id,
-              title: reportData.title,
-              type: 'shift-report',
-              data: reportData.data,
-              start_date: startOfMonth.toISOString(),
-              end_date: endOfMonth.toISOString()
-            })
-            .then(() => {
-              console.log("Report saved to database");
-            })
-            .catch(err => {
-              console.error("Error saving report:", err);
-            });
+          // Fixed Promise chain by using async/await
+          try {
+            await supabase
+              .from('reports')
+              .insert({
+                user_id: user.id,
+                title: reportData.title,
+                type: 'shift-report',
+                data: reportData.data,
+                start_date: startOfMonth.toISOString(),
+                end_date: endOfMonth.toISOString()
+              });
+            console.log("Report saved to database");
+          } catch (err) {
+            console.error("Error saving report:", err);
+          }
         } catch (err) {
           console.error("Error preparing report data:", err);
         }
