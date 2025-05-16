@@ -1,276 +1,428 @@
-
-import { useState } from "react";
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Languages, ArrowRight, BookOpen } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { workPhrases } from "@/data/translatorData";
-
-type Language = {
-  code: string;
-  name: string;
-};
-
-// Define translation type to fix type errors
-type TranslationDictionary = Record<string, string>;
-type LanguageDictionary = Record<string, TranslationDictionary>;
+import { Switch } from "@/components/ui/switch";
+import { Separator } from "@/components/ui/separator";
+import { ArrowRightLeft, Copy, Volume2, Languages, FileText, Mic, History } from "lucide-react";
+import { toast } from "sonner";
+import PremiumCheck from '@/components/premium/PremiumCheck';
 
 const TranslatorPage = () => {
   const [sourceText, setSourceText] = useState("");
   const [translatedText, setTranslatedText] = useState("");
-  const [isTranslating, setIsTranslating] = useState(false);
   const [sourceLanguage, setSourceLanguage] = useState("cs");
   const [targetLanguage, setTargetLanguage] = useState("de");
-  const [activeTab, setActiveTab] = useState("translator");
-  const { toast } = useToast();
+  const [isTranslating, setIsTranslating] = useState(false);
+  const [history, setHistory] = useState<Array<{
+    id: string;
+    sourceText: string;
+    translatedText: string;
+    sourceLanguage: string;
+    targetLanguage: string;
+    timestamp: Date;
+  }>>([]);
+  const [autoTranslate, setAutoTranslate] = useState(false);
+  const [activeTab, setActiveTab] = useState("text");
 
-  const languages: Language[] = [
-    { code: "cs", name: "Čeština" },
-    { code: "de", name: "Němčina" },
-    { code: "en", name: "Angličtina" },
-    { code: "pl", name: "Polština" },
-    { code: "sk", name: "Slovenština" }
-  ];
+  // Efekt pro automatický překlad při změně textu
+  useEffect(() => {
+    if (autoTranslate && sourceText.length > 0) {
+      const timer = setTimeout(() => {
+        handleTranslate();
+      }, 1000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [sourceText, autoTranslate, sourceLanguage, targetLanguage]);
 
-  const handleTabChange = (value: string) => {
-    setActiveTab(value);
-  };
+  // Načtení historie překladů z localStorage
+  useEffect(() => {
+    const savedHistory = localStorage.getItem('translationHistory');
+    if (savedHistory) {
+      try {
+        setHistory(JSON.parse(savedHistory));
+      } catch (e) {
+        console.error('Chyba při načítání historie překladů:', e);
+      }
+    }
+  }, []);
+
+  // Uložení historie překladů do localStorage
+  useEffect(() => {
+    if (history.length > 0) {
+      localStorage.setItem('translationHistory', JSON.stringify(history));
+    }
+  }, [history]);
 
   const handleTranslate = async () => {
     if (!sourceText.trim()) {
-      toast({
-        title: "Chyba",
-        description: "Zadejte text k překladu",
-        variant: "destructive",
-      });
+      toast.error("Zadejte text k překladu");
       return;
     }
 
     setIsTranslating(true);
+
     try {
-      // V reálné aplikaci by byl dotaz na API
+      // Simulace API volání pro překlad
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Kombinace jazykových párů
-      const langPair = `${sourceLanguage}-${targetLanguage}`;
+      // Jednoduchá simulace překladu pro demo účely
+      let result = "";
       
-      // Základní slovník pro nejčastější fráze ve všech podporovaných jazycích
-      const basicTranslations: Record<string, LanguageDictionary> = {
-        "cs": {
-          "ahoj": { de: "Hallo", en: "Hello", pl: "Cześć", sk: "Ahoj" },
-          "dobrý den": { de: "Guten Tag", en: "Good day", pl: "Dzień dobry", sk: "Dobrý deň" },
-          "děkuji": { de: "Danke", en: "Thank you", pl: "Dziękuję", sk: "Ďakujem" },
-          "prosím": { de: "Bitte", en: "Please", pl: "Proszę", sk: "Prosím" },
-          "ano": { de: "Ja", en: "Yes", pl: "Tak", sk: "Áno" },
-          "ne": { de: "Nein", en: "No", pl: "Nie", sk: "Nie" },
-          "jak se máš": { de: "Wie geht es dir", en: "How are you", pl: "Jak się masz", sk: "Ako sa máš" },
-          "dobrou noc": { de: "Gute Nacht", en: "Good night", pl: "Dobranoc", sk: "Dobrú noc" },
-        },
-        "de": {
-          "hallo": { cs: "Ahoj", en: "Hello", pl: "Cześć", sk: "Ahoj" },
-          "guten tag": { cs: "Dobrý den", en: "Good day", pl: "Dzień dobry", sk: "Dobrý deň" },
-          "danke": { cs: "Děkuji", en: "Thank you", pl: "Dziękuję", sk: "Ďakujem" },
-        },
-        "en": {
-          "hello": { cs: "Ahoj", de: "Hallo", pl: "Cześć", sk: "Ahoj" },
-          "good day": { cs: "Dobrý den", de: "Guten Tag", pl: "Dzień dobry", sk: "Dobrý deň" },
-          "thank you": { cs: "Děkuji", de: "Danke", pl: "Dziękuję", sk: "Ďakujem" },
-        },
-        "pl": {
-          "cześć": { cs: "Ahoj", de: "Hallo", en: "Hello", sk: "Ahoj" },
-          "dzień dobry": { cs: "Dobrý den", de: "Guten Tag", en: "Good day", sk: "Dobrý deň" },
-          "dziękuję": { cs: "Děkuji", de: "Danke", en: "Thank you", sk: "Ďakujem" },
-        },
-        "sk": {
-          "ahoj": { cs: "Ahoj", de: "Hallo", en: "Hello", pl: "Cześć" },
-          "dobrý deň": { cs: "Dobrý den", de: "Guten Tag", en: "Good day", pl: "Dzień dobry" },
-          "ďakujem": { cs: "Děkuji", de: "Danke", en: "Thank you", pl: "Dziękuję" },
-        }
-      };
-      
-      // Kontrola, zda existuje překlad
-      const sourceLang = basicTranslations[sourceLanguage];
-      if (sourceLang) {
+      if (sourceLanguage === "cs" && targetLanguage === "de") {
+        const translations: Record<string, string> = {
+          "ahoj": "hallo",
+          "dobrý den": "guten tag",
+          "děkuji": "danke",
+          "prosím": "bitte",
+          "ano": "ja",
+          "ne": "nein",
+          "jak se máš": "wie geht es dir",
+          "na shledanou": "auf wiedersehen"
+        };
+        
         const lowerText = sourceText.toLowerCase();
-        const translationEntry = sourceLang[lowerText];
-        if (translationEntry && translationEntry[targetLanguage]) {
-          setTranslatedText(translationEntry[targetLanguage]);
+        
+        if (translations[lowerText]) {
+          result = translations[lowerText];
         } else {
-          // Mock překlad
-          const targetLangName = languages.find(l => l.code === targetLanguage)?.name || targetLanguage;
-          setTranslatedText(`${sourceText} [přeloženo do ${targetLangName.toLowerCase()}]`);
+          // Simulace překladu pro neznámý text
+          result = sourceText
+            .split(' ')
+            .map(word => word.length > 3 ? word + 'en' : word)
+            .join(' ');
+        }
+      } else if (sourceLanguage === "de" && targetLanguage === "cs") {
+        const translations: Record<string, string> = {
+          "hallo": "ahoj",
+          "guten tag": "dobrý den",
+          "danke": "děkuji",
+          "bitte": "prosím",
+          "ja": "ano",
+          "nein": "ne",
+          "wie geht es dir": "jak se máš",
+          "auf wiedersehen": "na shledanou"
+        };
+        
+        const lowerText = sourceText.toLowerCase();
+        
+        if (translations[lowerText]) {
+          result = translations[lowerText];
+        } else {
+          // Simulace překladu pro neznámý text
+          result = sourceText
+            .split(' ')
+            .map(word => word.endsWith('en') ? word.slice(0, -2) : word)
+            .join(' ');
         }
       } else {
-        // Mock překlad
-        const targetLangName = languages.find(l => l.code === targetLanguage)?.name || targetLanguage;
-        setTranslatedText(`${sourceText} [přeloženo do ${targetLangName.toLowerCase()}]`);
+        // Pro ostatní jazykové kombinace jen simulujeme překlad
+        result = `[${sourceLanguage} → ${targetLanguage}] ` + sourceText;
       }
       
-      toast({
-        title: "Hotovo",
-        description: "Text byl přeložen",
-      });
+      setTranslatedText(result);
+      
+      // Přidání do historie
+      const newHistoryItem = {
+        id: Date.now().toString(),
+        sourceText,
+        translatedText: result,
+        sourceLanguage,
+        targetLanguage,
+        timestamp: new Date()
+      };
+      
+      setHistory(prev => [newHistoryItem, ...prev.slice(0, 9)]);
+      
     } catch (error) {
-      toast({
-        title: "Chyba překladu",
-        description: "Nepodařilo se přeložit text. Zkuste to prosím znovu.",
-        variant: "destructive",
-      });
+      console.error('Chyba při překladu:', error);
+      toast.error("Došlo k chybě při překladu");
     } finally {
       setIsTranslating(false);
     }
   };
 
-  const handlePhraseSelect = (phrase: string) => {
-    setSourceText(phrase);
+  const handleSwapLanguages = () => {
+    setSourceLanguage(targetLanguage);
+    setTargetLanguage(sourceLanguage);
+    setSourceText(translatedText);
+    setTranslatedText(sourceText);
+  };
+
+  const handleCopyTranslation = () => {
+    navigator.clipboard.writeText(translatedText);
+    toast.success("Překlad byl zkopírován do schránky");
+  };
+
+  const handleTextToSpeech = (text: string, language: string) => {
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = language === 'cs' ? 'cs-CZ' : language === 'de' ? 'de-DE' : 'en-US';
+      window.speechSynthesis.speak(utterance);
+    } else {
+      toast.error("Váš prohlížeč nepodporuje převod textu na řeč");
+    }
+  };
+
+  const handleLoadFromHistory = (item: typeof history[0]) => {
+    setSourceText(item.sourceText);
+    setTranslatedText(item.translatedText);
+    setSourceLanguage(item.sourceLanguage);
+    setTargetLanguage(item.targetLanguage);
+  };
+
+  const handleClearHistory = () => {
+    setHistory([]);
+    localStorage.removeItem('translationHistory');
+    toast.success("Historie překladů byla vymazána");
   };
 
   return (
-    <div className="flex flex-col">
-      {/* Header section */}
-      <section className="bg-gradient-to-br from-primary-50 to-secondary-50 py-12">
-        <div className="container mx-auto px-4 text-center">
-          <Languages className="w-12 h-12 text-primary mx-auto mb-4" />
-          <h1 className="text-4xl font-bold mb-4">Překladač</h1>
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-8">
-            Přeložte si text mezi několika jazyky pro snazší komunikaci v práci i běžném životě.
-          </p>
-        </div>
-      </section>
-
-      {/* Translator section */}
-      <section className="py-12 bg-background">
-        <div className="container mx-auto px-4">
-          <Tabs value={activeTab} onValueChange={handleTabChange} className="max-w-5xl mx-auto">
-            <TabsList className="grid w-full grid-cols-2 mb-8">
-              <TabsTrigger value="translator">Překladač</TabsTrigger>
-              <TabsTrigger value="phrases">Užitečné fráze</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="translator">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Překladač</CardTitle>
-                  <CardDescription>Vyberte jazyky a vložte text, který chcete přeložit</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <div className="flex justify-between items-center mb-2">
-                        <label className="block text-sm font-medium">Zdrojový jazyk</label>
-                        <Select value={sourceLanguage} onValueChange={setSourceLanguage}>
-                          <SelectTrigger className="w-[180px]">
-                            <SelectValue placeholder="Vyberte jazyk" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {languages.map((lang) => (
-                              <SelectItem key={`source-${lang.code}`} value={lang.code}>
-                                {lang.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <Textarea
-                        placeholder={`Zadejte text v ${languages.find(l => l.code === sourceLanguage)?.name || ''}...`}
-                        className="h-40 resize-none"
-                        value={sourceText}
-                        onChange={(e) => setSourceText(e.target.value)}
-                      />
+    <PremiumCheck featureKey="translator">
+      <div className="container py-6 md:py-10">
+        <h1 className="text-3xl font-bold mb-6">Překladač</h1>
+        
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2 md:w-auto">
+            <TabsTrigger value="text" className="flex items-center gap-2">
+              <FileText className="h-4 w-4" />
+              <span>Text</span>
+            </TabsTrigger>
+            <TabsTrigger value="history" className="flex items-center gap-2">
+              <History className="h-4 w-4" />
+              <span>Historie</span>
+            </TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="text" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Languages className="h-5 w-5" />
+                  <span>Překlad textu</span>
+                </CardTitle>
+                <CardDescription>
+                  Přeložte text mezi češtinou, němčinou a angličtinou
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="flex flex-col md:flex-row gap-4 items-start">
+                  <div className="w-full md:w-1/2 space-y-2">
+                    <div className="flex justify-between">
+                      <Label htmlFor="sourceLanguage">Zdrojový jazyk</Label>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-6 px-2 text-xs"
+                        onClick={() => setSourceText("")}
+                      >
+                        Vymazat
+                      </Button>
                     </div>
-                    
-                    <div>
-                      <div className="flex justify-between items-center mb-2">
-                        <label className="block text-sm font-medium">Cílový jazyk</label>
-                        <Select value={targetLanguage} onValueChange={setTargetLanguage}>
-                          <SelectTrigger className="w-[180px]">
-                            <SelectValue placeholder="Vyberte jazyk" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {languages.map((lang) => (
-                              <SelectItem key={`target-${lang.code}`} value={lang.code}>
-                                {lang.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <Textarea
-                        placeholder="Zde se zobrazí přeložený text..."
-                        className="h-40 resize-none bg-slate-50"
-                        value={translatedText}
-                        readOnly
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="flex justify-center mt-6">
+                    <Select value={sourceLanguage} onValueChange={setSourceLanguage}>
+                      <SelectTrigger id="sourceLanguage">
+                        <SelectValue placeholder="Vyberte jazyk" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="cs">Čeština</SelectItem>
+                        <SelectItem value="de">Němčina</SelectItem>
+                        <SelectItem value="en">Angličtina</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Textarea
+                      placeholder="Zadejte text k překladu..."
+                      className="min-h-[200px] resize-none"
+                      value={sourceText}
+                      onChange={(e) => setSourceText(e.target.value)}
+                    />
                     <Button 
-                      onClick={handleTranslate} 
-                      disabled={isTranslating}
-                      size="lg"
-                      className="px-8"
+                      variant="outline" 
+                      size="sm" 
+                      className="w-full sm:w-auto"
+                      onClick={() => handleTextToSpeech(sourceText, sourceLanguage)}
                     >
-                      {isTranslating ? (
-                        <>
-                          <svg className="animate-spin -ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                          </svg>
-                          Překládám...
-                        </>
-                      ) : (
-                        <>
-                          Přeložit <ArrowRight className="ml-2 h-5 w-5" />
-                        </>
-                      )}
+                      <Volume2 className="mr-2 h-4 w-4" />
+                      Přečíst
                     </Button>
                   </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="phrases">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Užitečné fráze pro pendlery</CardTitle>
-                  <CardDescription>
-                    Klikněte na frázi pro přenesení do překladače
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-6">
-                    {workPhrases.map((category) => (
-                      <div key={category.id} className="space-y-2">
-                        <h3 className="text-lg font-medium flex items-center gap-2">
-                          <BookOpen className="h-5 w-5" /> 
-                          {category.title}
-                        </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                          {category.phrases.map((phrase, index) => (
+                  
+                  <div className="hidden md:flex items-center self-center">
+                    <Button 
+                      variant="outline" 
+                      size="icon" 
+                      className="rounded-full"
+                      onClick={handleSwapLanguages}
+                    >
+                      <ArrowRightLeft className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  
+                  <div className="w-full md:w-1/2 space-y-2">
+                    <div className="flex justify-between">
+                      <Label htmlFor="targetLanguage">Cílový jazyk</Label>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-6 px-2 text-xs"
+                        onClick={handleCopyTranslation}
+                      >
+                        <Copy className="h-3 w-3 mr-1" />
+                        Kopírovat
+                      </Button>
+                    </div>
+                    <Select value={targetLanguage} onValueChange={setTargetLanguage}>
+                      <SelectTrigger id="targetLanguage">
+                        <SelectValue placeholder="Vyberte jazyk" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="cs">Čeština</SelectItem>
+                        <SelectItem value="de">Němčina</SelectItem>
+                        <SelectItem value="en">Angličtina</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Textarea
+                      placeholder="Přeložený text..."
+                      className="min-h-[200px] resize-none bg-muted/30"
+                      value={translatedText}
+                      readOnly
+                    />
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="w-full sm:w-auto"
+                      onClick={() => handleTextToSpeech(translatedText, targetLanguage)}
+                    >
+                      <Volume2 className="mr-2 h-4 w-4" />
+                      Přečíst
+                    </Button>
+                  </div>
+                </div>
+                
+                <div className="md:hidden flex justify-center my-4">
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
+                    className="rounded-full"
+                    onClick={handleSwapLanguages}
+                  >
+                    <ArrowRightLeft className="h-4 w-4" />
+                  </Button>
+                </div>
+                
+                <Separator />
+                
+                <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="auto-translate"
+                      checked={autoTranslate}
+                      onCheckedChange={setAutoTranslate}
+                    />
+                    <Label htmlFor="auto-translate">Automatický překlad</Label>
+                  </div>
+                  
+                  <Button 
+                    onClick={handleTranslate} 
+                    disabled={isTranslating || !sourceText.trim()}
+                    className="w-full sm:w-auto"
+                  >
+                    {isTranslating ? (
+                      <>
+                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent mr-2"></div>
+                        Překládám...
+                      </>
+                    ) : (
+                      <>
+                        <Languages className="mr-2 h-4 w-4" />
+                        Přeložit
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="history" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <History className="h-5 w-5" />
+                  <span>Historie překladů</span>
+                </CardTitle>
+                <CardDescription>
+                  Vaše poslední překlady
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {history.length === 0 ? (
+                  <div className="text-center py-8">
+                    <p className="text-muted-foreground">Zatím nemáte žádné překlady v historii</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {history.map((item) => (
+                      <Card key={item.id} className="overflow-hidden">
+                        <CardContent className="p-4">
+                          <div className="flex justify-between items-start mb-2">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-medium">
+                                {item.sourceLanguage === 'cs' ? 'Čeština' : 
+                                 item.sourceLanguage === 'de' ? 'Němčina' : 'Angličtina'}
+                              </span>
+                              <ArrowRightLeft className="h-3 w-3 text-muted-foreground" />
+                              <span className="text-sm font-medium">
+                                {item.targetLanguage === 'cs' ? 'Čeština' : 
+                                 item.targetLanguage === 'de' ? 'Němčina' : 'Angličtina'}
+                              </span>
+                            </div>
+                            <span className="text-xs text-muted-foreground">
+                              {new Date(item.timestamp).toLocaleString()}
+                            </span>
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="bg-muted/30 p-2 rounded-md">
+                              <p className="text-sm line-clamp-2">{item.sourceText}</p>
+                            </div>
+                            <div className="bg-muted/30 p-2 rounded-md">
+                              <p className="text-sm line-clamp-2">{item.translatedText}</p>
+                            </div>
+                          </div>
+                          <div className="mt-2 flex justify-end">
                             <Button 
-                              key={index} 
-                              variant="outline" 
-                              className="justify-start h-auto py-2 text-left" 
-                              onClick={() => handlePhraseSelect(phrase)}
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => handleLoadFromHistory(item)}
                             >
-                              {phrase}
+                              Použít znovu
                             </Button>
-                          ))}
-                        </div>
-                      </div>
+                          </div>
+                        </CardContent>
+                      </Card>
                     ))}
                   </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
-        </div>
-      </section>
-    </div>
+                )}
+              </CardContent>
+              <CardFooter className="flex justify-end">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={handleClearHistory}
+                  disabled={history.length === 0}
+                >
+                  Vymazat historii
+                </Button>
+              </CardFooter>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </PremiumCheck>
   );
 };
 

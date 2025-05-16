@@ -22,112 +22,170 @@ import UserActivityChart from "@/components/profile/UserActivityChart";
 import LanguageSkillsChart from "@/components/profile/LanguageSkillsChart";
 import ProfileAppearance from "@/components/profile/ProfileAppearance";
 import { formatDateByPreference } from "@/utils/chartData";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from '@/integrations/supabase/client';
+
+interface UserProfile {
+  name: string;
+  email: string;
+  phoneNumber: string;
+  address: string;
+  avatar: string;
+  preferredLanguage: string;
+  notificationsEnabled: boolean;
+  darkMode: boolean;
+  defaultVehicle: string;
+  currency: string;
+  dateFormat: string;
+  timeFormat: string;
+  shiftReminderHours: string;
+  colorScheme: string;
+  compactMode: boolean;
+  showStats: boolean;
+}
 
 const Profile = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState<any>(null);
+  const { user, isPremium, signOut } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   
-  // Nová uživatelská nastavení
-  const [preferredLanguage, setPreferredLanguage] = useState("cs");
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-  const [darkMode, setDarkMode] = useState(false);
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [address, setAddress] = useState("");
-  const [defaultVehicle, setDefaultVehicle] = useState("none");
-  const [currency, setCurrency] = useState("EUR");
-  const [dateFormat, setDateFormat] = useState("dd.MM.yyyy");
-  const [timeFormat, setTimeFormat] = useState("24h");
-  const [shiftReminderHours, setShiftReminderHours] = useState("12");
-  const [avatar, setAvatar] = useState("");
-  const [colorScheme, setColorScheme] = useState("purple");
-  const [compactMode, setCompactMode] = useState(false);
+  // Profil uživatele
+  const [userProfile, setUserProfile] = useState<UserProfile>({
+    name: "",
+    email: "",
+    phoneNumber: "",
+    address: "",
+    avatar: "",
+    preferredLanguage: "cs",
+    notificationsEnabled: true,
+    darkMode: false,
+    defaultVehicle: "none",
+    currency: "EUR",
+    dateFormat: "dd.MM.yyyy",
+    timeFormat: "24h",
+    shiftReminderHours: "12",
+    colorScheme: "purple",
+    compactMode: false,
+    showStats: false
+  });
   
-  // For data visualization - changed to false by default
-  const [showStats, setShowStats] = useState(false);
+  // Hodnoty extrahované pro použití v komponentě
+  const {
+    name,
+    email,
+    phoneNumber,
+    address,
+    avatar,
+    preferredLanguage,
+    notificationsEnabled,
+    darkMode,
+    defaultVehicle,
+    currency,
+    dateFormat,
+    timeFormat,
+    shiftReminderHours,
+    colorScheme,
+    compactMode,
+    showStats
+  } = userProfile;
   
   // Track the currently selected tab to prevent multiple rapid clicks
   const [activeTab, setActiveTab] = useState("account");
   const [isTabSwitching, setIsTabSwitching] = useState(false);
   
+  // Načtení profilu uživatele při prvním renderu
   useEffect(() => {
     // Check if user is logged in
-    const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-    if (!isLoggedIn) {
+    if (!user) {
       navigate("/login");
       return;
     }
     
+    loadUserProfile();
+  }, [navigate, user]);
+  
+  const loadUserProfile = async () => {
+    setLoading(true);
+    
     try {
-      // Get user data from localStorage
-      const userData = JSON.parse(localStorage.getItem("currentUser") || "{}");
-      setUser(userData);
-      setName(userData.name || "");
-      setEmail(userData.email || "");
+      // Pokus o načtení z localStorage
+      const storedProfile = localStorage.getItem(`profile_${user?.id}`);
       
-      // Get all users to find additional data
-      const allUsers = JSON.parse(localStorage.getItem("users") || "[]");
-      const currentUser = allUsers.find((u: any) => u.email === userData.email);
-      if (currentUser) {
-        // Nastavení základních údajů
-        setUser({
-          ...userData,
-          isPremium: currentUser.isPremium || false,
-          premiumExpiry: currentUser.premiumExpiry || null
+      if (storedProfile) {
+        // Načtení z localStorage
+        const profileData = JSON.parse(storedProfile);
+        setUserProfile({
+          ...userProfile,
+          ...profileData,
+          email: user?.email || ""
         });
-        
-        // Nastavení uživatelských preferencí (pokud existují)
-        setPreferredLanguage(currentUser.preferredLanguage || "cs");
-        setNotificationsEnabled(currentUser.notificationsEnabled !== false);
-        setDarkMode(currentUser.darkMode || false);
-        setPhoneNumber(currentUser.phoneNumber || "");
-        setAddress(currentUser.address || "");
-        setDefaultVehicle(currentUser.defaultVehicle || "none");
-        setCurrency(currentUser.currency || "EUR");
-        setDateFormat(currentUser.dateFormat || "dd.MM.yyyy");
-        setTimeFormat(currentUser.timeFormat || "24h");
-        setShiftReminderHours(currentUser.shiftReminderHours || "12");
-        setAvatar(currentUser.avatar || "");
-        setColorScheme(currentUser.colorScheme || "purple");
-        setCompactMode(currentUser.compactMode || false);
-        setShowStats(currentUser.showStats === true);
+      } else {
+        // Inicializace základních údajů z Auth
+        setUserProfile({
+          ...userProfile,
+          name: user?.user_metadata?.username || user?.email?.split('@')[0] || '',
+          email: user?.email || ""
+        });
       }
+      
+      // Aplikování vzhledových nastavení
+      applyAppearanceSettings();
     } catch (error) {
-      console.error("Error loading user data:", error);
+      console.error("Error loading user profile:", error);
       toast.error("Chyba při načítání uživatelského profilu");
     } finally {
       setLoading(false);
     }
-  }, [navigate]);
+  };
+
+  const applyAppearanceSettings = () => {
+    // Aplikovat tmavý režim
+    if (userProfile.darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    
+    // Aplikovat barevné schéma - vyžadovalo by další CSS proměnné
+    document.documentElement.style.setProperty('--color-primary', getColorByScheme(userProfile.colorScheme));
+    
+    // Aplikovat kompaktní režim
+    if (userProfile.compactMode) {
+      document.documentElement.classList.add('compact');
+    } else {
+      document.documentElement.classList.remove('compact');
+    }
+  };
+  
+  const getColorByScheme = (scheme: string): string => {
+    switch (scheme) {
+      case 'purple': return '#8884d8';
+      case 'blue': return '#0ea5e9';
+      case 'green': return '#10b981';
+      case 'amber': return '#f59e0b';
+      case 'red': return '#ef4444';
+      case 'pink': return '#ec4899';
+      default: return '#8884d8';
+    }
+  };
   
   const handleProfileUpdate = () => {
     try {
-      // Update user info in localStorage
-      const allUsers = JSON.parse(localStorage.getItem("users") || "[]");
-      const updatedUsers = allUsers.map((u: any) => {
-        if (u.email === user.email) {
-          return { 
-            ...u, 
-            name,
-            phoneNumber,
-            address,
-            avatar
-          };
-        }
-        return u;
-      });
+      // Aktualizace jména, telefonu, adresy a avataru
+      const updatedProfile = {
+        ...userProfile,
+        name,
+        phoneNumber,
+        address,
+        avatar
+      };
       
-      localStorage.setItem("users", JSON.stringify(updatedUsers));
-      
-      // Update current user
-      const updatedUser = { ...user, name, phoneNumber, address, avatar };
-      localStorage.setItem("currentUser", JSON.stringify(updatedUser));
-      setUser(updatedUser);
+      // Uložení do localStorage
+      localStorage.setItem(`profile_${user?.id}`, JSON.stringify(updatedProfile));
+      setUserProfile(updatedProfile);
       
       toast.success("Profil byl úspěšně aktualizován");
     } catch (error) {
@@ -136,8 +194,8 @@ const Profile = () => {
     }
   };
   
-  const handlePasswordChange = () => {
-    // Validations
+  const handlePasswordChange = async () => {
+    // Validace
     if (newPassword !== confirmPassword) {
       toast.error("Nová hesla se neshodují");
       return;
@@ -149,24 +207,14 @@ const Profile = () => {
     }
     
     try {
-      // Get all users
-      const allUsers = JSON.parse(localStorage.getItem("users") || "[]");
-      const currentUserIndex = allUsers.findIndex((u: any) => u.email === user.email);
+      // Update password using Supabase Auth
+      const { error } = await supabase.auth.updateUser({ 
+        password: newPassword 
+      });
       
-      if (currentUserIndex === -1) {
-        toast.error("Uživatel nenalezen");
-        return;
+      if (error) {
+        throw error;
       }
-      
-      // Check if current password matches
-      if (allUsers[currentUserIndex].password !== currentPassword) {
-        toast.error("Současné heslo je nesprávné");
-        return;
-      }
-      
-      // Update password
-      allUsers[currentUserIndex].password = newPassword;
-      localStorage.setItem("users", JSON.stringify(allUsers));
       
       // Clear password fields
       setCurrentPassword("");
@@ -174,41 +222,17 @@ const Profile = () => {
       setConfirmPassword("");
       
       toast.success("Heslo bylo úspěšně změněno");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error changing password:", error);
-      toast.error("Chyba při změně hesla");
+      toast.error(error.message || "Chyba při změně hesla");
     }
   };
   
   const handlePreferencesUpdate = () => {
     try {
-      // Update user preferences in localStorage
-      const allUsers = JSON.parse(localStorage.getItem("users") || "[]");
-      const updatedUsers = allUsers.map((u: any) => {
-        if (u.email === user.email) {
-          return { 
-            ...u, 
-            preferredLanguage,
-            notificationsEnabled,
-            darkMode,
-            defaultVehicle,
-            currency,
-            dateFormat,
-            timeFormat,
-            shiftReminderHours,
-            colorScheme,
-            compactMode,
-            showStats
-          };
-        }
-        return u;
-      });
-      
-      localStorage.setItem("users", JSON.stringify(updatedUsers));
-      
-      // Update current user
-      const updatedUser = { 
-        ...user, 
+      // Aktualizace uživatelských předvoleb
+      const updatedProfile = {
+        ...userProfile,
         preferredLanguage,
         notificationsEnabled,
         darkMode,
@@ -221,29 +245,24 @@ const Profile = () => {
         compactMode,
         showStats
       };
-      localStorage.setItem("currentUser", JSON.stringify(updatedUser));
-      setUser(updatedUser);
+      
+      // Uložení do localStorage
+      localStorage.setItem(`profile_${user?.id}`, JSON.stringify(updatedProfile));
+      setUserProfile(updatedProfile);
+      
+      // Aplikování nastavení vzhledu
+      applyAppearanceSettings();
       
       toast.success("Uživatelské předvolby byly úspěšně aktualizovány");
-      
-      // V reálné aplikaci by zde byla implementace změny motivu
-      if (darkMode) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-      
     } catch (error) {
       console.error("Error updating preferences:", error);
       toast.error("Chyba při aktualizaci předvoleb");
     }
   };
   
-  const handleLogout = () => {
-    localStorage.removeItem("isLoggedIn");
-    localStorage.removeItem("currentUser");
+  const handleLogout = async () => {
+    await signOut();
     navigate("/");
-    toast.success("Byli jste úspěšně odhlášeni");
   };
   
   const formatDate = (dateString: string | null) => {
@@ -256,18 +275,35 @@ const Profile = () => {
     colorScheme: string;
     compactMode: boolean;
   }) => {
-    setDarkMode(settings.darkMode);
-    setColorScheme(settings.colorScheme);
-    setCompactMode(settings.compactMode);
+    // Aktualizace stavů
+    const updatedProfile = {
+      ...userProfile,
+      darkMode: settings.darkMode,
+      colorScheme: settings.colorScheme,
+      compactMode: settings.compactMode
+    };
     
-    // Apply settings immediately for preview
+    setUserProfile(updatedProfile);
+    
+    // Aplikování nastavení
     if (settings.darkMode) {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
     }
     
-    // This will be saved when the user clicks "Save Preferences" in the preferences tab
+    document.documentElement.style.setProperty('--color-primary', getColorByScheme(settings.colorScheme));
+    
+    if (settings.compactMode) {
+      document.documentElement.classList.add('compact');
+    } else {
+      document.documentElement.classList.remove('compact');
+    }
+    
+    // Uložení do localStorage
+    localStorage.setItem(`profile_${user?.id}`, JSON.stringify(updatedProfile));
+    
+    toast.success("Nastavení vzhledu bylo uloženo");
   };
 
   // Handle tab changes safely to prevent crashes from rapid clicking
@@ -304,14 +340,14 @@ const Profile = () => {
       <h1 className="text-3xl font-bold mb-6">Váš profil</h1>
       
       {/* Premium Status Banner */}
-      {user?.isPremium ? (
+      {isPremium ? (
         <div className="bg-gradient-to-r from-amber-100 to-yellow-100 border border-amber-200 rounded-lg p-4 mb-8">
           <div className="flex items-center gap-3">
             <ShieldIcon className="h-8 w-8 text-amber-500" />
             <div>
               <h3 className="font-medium text-lg">Premium účet</h3>
               <p className="text-sm text-muted-foreground">
-                Vaše předplatné vyprší: {formatDate(user.premiumExpiry)}
+                Vaše předplatné vyprší: {user?.user_metadata?.premium_expiry ? formatDate(user.user_metadata.premium_expiry) : "Neurčito"}
               </p>
             </div>
           </div>
@@ -342,7 +378,10 @@ const Profile = () => {
         <div className="mb-8">
           <Button 
             variant="outline" 
-            onClick={() => setShowStats(true)}
+            onClick={() => {
+              setUserProfile(prev => ({ ...prev, showStats: true }));
+              localStorage.setItem(`profile_${user?.id}`, JSON.stringify({...userProfile, showStats: true}));
+            }}
             className="flex items-center gap-2"
           >
             <PieChart className="h-4 w-4" />
@@ -361,7 +400,10 @@ const Profile = () => {
             <Button 
               variant="outline" 
               size="sm"
-              onClick={() => setShowStats(false)}
+              onClick={() => {
+                setUserProfile(prev => ({ ...prev, showStats: false }));
+                localStorage.setItem(`profile_${user?.id}`, JSON.stringify({...userProfile, showStats: false}));
+              }}
             >
               Skrýt statistiky
             </Button>
@@ -410,7 +452,7 @@ const Profile = () => {
                 <Input
                   id="name"
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={(e) => setUserProfile(prev => ({ ...prev, name: e.target.value }))}
                 />
               </div>
               
@@ -433,7 +475,7 @@ const Profile = () => {
                   id="phone"
                   type="tel"
                   value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  onChange={(e) => setUserProfile(prev => ({ ...prev, phoneNumber: e.target.value }))}
                   placeholder="+420 123 456 789"
                 />
               </div>
@@ -443,7 +485,7 @@ const Profile = () => {
                 <Input
                   id="address"
                   value={address}
-                  onChange={(e) => setAddress(e.target.value)}
+                  onChange={(e) => setUserProfile(prev => ({ ...prev, address: e.target.value }))}
                   placeholder="Ulice, Město, PSČ"
                 />
               </div>
@@ -463,7 +505,7 @@ const Profile = () => {
                       id="avatar"
                       type="text"
                       value={avatar}
-                      onChange={(e) => setAvatar(e.target.value)}
+                      onChange={(e) => setUserProfile(prev => ({ ...prev, avatar: e.target.value }))}
                       placeholder="URL obrázku pro avatar"
                     />
                     <p className="text-xs text-muted-foreground mt-1">
@@ -474,12 +516,7 @@ const Profile = () => {
               </div>
             </CardContent>
             <CardFooter className="flex justify-between">
-              <Button variant="outline" onClick={() => {
-                setName(user?.name || "");
-                setPhoneNumber(user?.phoneNumber || "");
-                setAddress(user?.address || "");
-                setAvatar(user?.avatar || "");
-              }}>
+              <Button variant="outline" onClick={loadUserProfile}>
                 Zrušit
               </Button>
               <Button onClick={handleProfileUpdate}>Uložit změny</Button>
@@ -551,7 +588,10 @@ const Profile = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="language">Preferovaný jazyk</Label>
-                  <Select value={preferredLanguage} onValueChange={setPreferredLanguage}>
+                  <Select 
+                    value={preferredLanguage} 
+                    onValueChange={(value) => setUserProfile(prev => ({ ...prev, preferredLanguage: value }))}
+                  >
                     <SelectTrigger id="language" className="w-full">
                       <SelectValue placeholder="Vyberte jazyk" />
                     </SelectTrigger>
@@ -565,7 +605,10 @@ const Profile = () => {
 
                 <div className="space-y-2">
                   <Label htmlFor="currency">Měna</Label>
-                  <Select value={currency} onValueChange={setCurrency}>
+                  <Select 
+                    value={currency} 
+                    onValueChange={(value) => setUserProfile(prev => ({ ...prev, currency: value }))}
+                  >
                     <SelectTrigger id="currency" className="w-full">
                       <SelectValue placeholder="Vyberte měnu" />
                     </SelectTrigger>
@@ -578,7 +621,10 @@ const Profile = () => {
                 
                 <div className="space-y-2">
                   <Label htmlFor="dateFormat">Formát data</Label>
-                  <Select value={dateFormat} onValueChange={setDateFormat}>
+                  <Select 
+                    value={dateFormat}
+                    onValueChange={(value) => setUserProfile(prev => ({ ...prev, dateFormat: value }))}
+                  >
                     <SelectTrigger id="dateFormat" className="w-full">
                       <SelectValue placeholder="Vyberte formát data" />
                     </SelectTrigger>
@@ -592,7 +638,10 @@ const Profile = () => {
 
                 <div className="space-y-2">
                   <Label htmlFor="timeFormat">Formát času</Label>
-                  <Select value={timeFormat} onValueChange={setTimeFormat}>
+                  <Select 
+                    value={timeFormat} 
+                    onValueChange={(value) => setUserProfile(prev => ({ ...prev, timeFormat: value }))}
+                  >
                     <SelectTrigger id="timeFormat" className="w-full">
                       <SelectValue placeholder="Vyberte formát času" />
                     </SelectTrigger>
@@ -605,7 +654,10 @@ const Profile = () => {
 
                 <div className="space-y-2">
                   <Label htmlFor="defaultVehicle">Výchozí vozidlo</Label>
-                  <Select value={defaultVehicle} onValueChange={setDefaultVehicle}>
+                  <Select 
+                    value={defaultVehicle} 
+                    onValueChange={(value) => setUserProfile(prev => ({ ...prev, defaultVehicle: value }))}
+                  >
                     <SelectTrigger id="defaultVehicle" className="w-full">
                       <SelectValue placeholder="Vyberte vozidlo" />
                     </SelectTrigger>
@@ -619,7 +671,10 @@ const Profile = () => {
                 
                 <div className="space-y-2">
                   <Label htmlFor="shiftReminder">Upozornění na směnu před</Label>
-                  <Select value={shiftReminderHours} onValueChange={setShiftReminderHours}>
+                  <Select 
+                    value={shiftReminderHours} 
+                    onValueChange={(value) => setUserProfile(prev => ({ ...prev, shiftReminderHours: value }))}
+                  >
                     <SelectTrigger id="shiftReminder" className="w-full">
                       <SelectValue placeholder="Vyberte čas" />
                     </SelectTrigger>
@@ -647,7 +702,7 @@ const Profile = () => {
                   <Switch 
                     id="showStats" 
                     checked={showStats}
-                    onCheckedChange={setShowStats}
+                    onCheckedChange={(checked) => setUserProfile(prev => ({ ...prev, showStats: checked }))}
                   />
                 </div>
               </div>
@@ -691,7 +746,7 @@ const Profile = () => {
                 <Switch 
                   id="notificationsEnabled" 
                   checked={notificationsEnabled}
-                  onCheckedChange={setNotificationsEnabled}
+                  onCheckedChange={(checked) => setUserProfile(prev => ({ ...prev, notificationsEnabled: checked }))}
                 />
               </div>
               
@@ -748,7 +803,7 @@ const Profile = () => {
               <div className="bg-slate-50 p-4 rounded-md">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="font-medium">Stav předplatného</h3>
-                  {user?.isPremium ? (
+                  {isPremium ? (
                     <Badge variant="default" className="bg-amber-500">Aktivní</Badge>
                   ) : (
                     <Badge variant="outline">Neaktivní</Badge>
@@ -758,14 +813,14 @@ const Profile = () => {
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Typ účtu:</span>
-                    <span className="font-medium">{user?.isPremium ? 'Premium' : 'Standard'}</span>
+                    <span className="font-medium">{isPremium ? 'Premium' : 'Standard'}</span>
                   </div>
                   
-                  {user?.isPremium && (
+                  {isPremium && (
                     <>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Platné do:</span>
-                        <span className="font-medium">{formatDate(user.premiumExpiry)}</span>
+                        <span className="font-medium">{user?.user_metadata?.premium_expiry ? formatDate(user.user_metadata.premium_expiry) : "Neurčito"}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Automatické obnovení:</span>
@@ -779,7 +834,7 @@ const Profile = () => {
               <div>
                 <h3 className="font-medium mb-2">Dostupné Premium funkce</h3>
                 <div className="space-y-2">
-                  {user?.isPremium ? (
+                  {isPremium ? (
                     <>
                       <PremiumFeatureItem name="Plánování směn" isActive={true} />
                       <PremiumFeatureItem name="Pokročilý překladač" isActive={true} />
@@ -798,72 +853,53 @@ const Profile = () => {
                   )}
                 </div>
               </div>
+              
+              {!isPremium && (
+                <div className="mt-4 text-center">
+                  <Button onClick={() => navigate("/premium")} className="bg-amber-500 hover:bg-amber-600">
+                    <ShieldIcon className="mr-2 h-4 w-4" />
+                    Aktivovat Premium
+                  </Button>
+                </div>
+              )}
             </CardContent>
-            <CardFooter>
-              {!user?.isPremium && (
-                <Button onClick={() => navigate("/premium")} className="ml-auto">
-                  Získat Premium
-                </Button>
-              )}
-              {user?.isPremium && (
-                <Button variant="outline" className="ml-auto">
-                  Spravovat předplatné
-                </Button>
-              )}
-            </CardFooter>
           </Card>
         </TabsContent>
       </Tabs>
-      
-      <div className="mt-10 pt-6 border-t">
-        <h3 className="font-medium text-lg mb-4">Nastavení účtu</h3>
-        <Button 
-          variant="destructive" 
-          onClick={handleLogout}
-          className="flex items-center gap-2"
-        >
-          <LogOutIcon className="h-4 w-4" />
-          Odhlásit se
-        </Button>
-      </div>
     </div>
   );
 };
 
-// Helper component for notifications settings
-const NotificationSetting = ({ 
-  id, 
-  title, 
-  description, 
-  icon, 
-  disabled = false 
-}: { 
-  id: string; 
-  title: string; 
-  description: string; 
-  icon?: React.ReactNode;
+// Pomocná komponenta pro zobrazení notifikačního nastavení
+interface NotificationSettingProps {
+  id: string;
+  title: string;
+  description: string;
+  icon: React.ReactNode;
   disabled?: boolean;
-}) => {
+}
+
+const NotificationSetting = ({ id, title, description, icon, disabled = false }: NotificationSettingProps) => {
   const [enabled, setEnabled] = useState(true);
   
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-start gap-3">
-        {icon && (
-          <div className="mt-0.5 text-muted-foreground">
-            {icon}
-          </div>
-        )}
+        <div className={`mt-1 ${disabled ? 'text-muted-foreground' : ''}`}>
+          {icon}
+        </div>
         <div>
-          <Label htmlFor={id} className="text-base">{title}</Label>
-          <p className="text-sm text-muted-foreground">
+          <Label htmlFor={id} className={`text-base ${disabled ? 'text-muted-foreground' : ''}`}>
+            {title}
+          </Label>
+          <p className={`text-sm ${disabled ? 'text-muted-foreground/70' : 'text-muted-foreground'}`}>
             {description}
           </p>
         </div>
       </div>
       <Switch 
         id={id} 
-        checked={enabled && !disabled}
+        checked={enabled && !disabled} 
         onCheckedChange={setEnabled}
         disabled={disabled}
       />
@@ -871,14 +907,29 @@ const NotificationSetting = ({
   );
 };
 
-// Helper component for premium features list
-const PremiumFeatureItem = ({ name, isActive }: { name: string; isActive: boolean }) => (
-  <div className="flex items-center justify-between p-2 border rounded-md">
+// Pomocná komponenta pro zobrazení prémiové funkce
+interface PremiumFeatureItemProps {
+  name: string;
+  isActive: boolean;
+}
+
+const PremiumFeatureItem = ({ name, isActive }: PremiumFeatureItemProps) => (
+  <div className="flex items-center justify-between py-1 border-b border-muted">
     <span>{name}</span>
     {isActive ? (
-      <Badge className="bg-green-500">Aktivní</Badge>
+      <span className="text-green-600 text-sm font-medium flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+        </svg>
+        Aktivní
+      </span>
     ) : (
-      <Badge variant="outline">Neaktivní</Badge>
+      <span className="text-gray-400 text-sm flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+        </svg>
+        Neaktivní
+      </span>
     )}
   </div>
 );

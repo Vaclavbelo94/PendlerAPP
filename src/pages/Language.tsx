@@ -9,15 +9,15 @@ import GrammarTab from "@/components/language/tabs/GrammarTab";
 import PhrasesTab from "@/components/language/tabs/PhrasesTab";
 import VocabularySection from "@/components/language/VocabularySection";
 import InteractiveQuiz from "@/components/language/InteractiveQuiz";
+import PremiumCheck from "@/components/premium/PremiumCheck";
+import { useAuth } from "@/hooks/useAuth";
 
 const Language = () => {
   const [activeTab, setActiveTab] = useState("grammar");
+  const { isPremium, isAdmin } = useAuth();
   
   // Use media query to detect mobile screens
   const isMobile = useMediaQuery("xs");
-
-  // Add console log to verify grammar exercises data structure
-  console.log("Grammar Exercises:", grammarExercises);
 
   return (
     <div className="container py-4 sm:py-6">
@@ -40,11 +40,15 @@ const Language = () => {
         </TabsContent>
         
         <TabsContent value="phrases">
+          {/* Základní fráze jsou dostupné i v bezplatné verzi */}
           <PhrasesTab />
         </TabsContent>
         
         <TabsContent value="interactive">
-          <InteractiveQuiz />
+          {/* Interaktivní kvíz je pouze pro premium */}
+          <PremiumCheck featureKey="language">
+            <InteractiveQuiz />
+          </PremiumCheck>
         </TabsContent>
       </LanguageTabsNavigation>
     </div>
