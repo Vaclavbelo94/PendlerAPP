@@ -26,8 +26,8 @@
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#1e40af",
-  "orientation": "portrait",
-  "categories": ["productivity", "utilities"],
+  "orientation": "any",
+  "categories": ["productivity", "utilities", "education"],
   "shortcuts": [
     {
       "name": "Výuka němčiny",
@@ -47,5 +47,15 @@
   "prefer_related_applications": false,
   "display_override": ["standalone", "fullscreen", "minimal-ui"],
   "dir": "auto",
-  "lang": "cs"
+  "lang": "cs",
+  "related_applications": [],
+  "screenshots": [
+    {
+      "src": "/screenshot1.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "platform": "wide",
+      "label": "Hlavní obrazovka aplikace Pendler Buddy"
+    }
+  ]
 }
