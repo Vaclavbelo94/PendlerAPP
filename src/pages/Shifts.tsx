@@ -5,7 +5,7 @@ import { ShiftCalendar } from '@/components/shifts/ShiftCalendar';
 import { ShiftDetails } from '@/components/shifts/ShiftDetails';
 import { PlanningTab } from '@/components/shifts/PlanningTab';
 import { MonthlyReport } from '@/components/shifts/MonthlyReport';
-import { ShiftAnalytics } from '@/components/shifts/ShiftAnalytics';
+import ShiftAnalytics from '@/components/shifts/ShiftAnalytics';
 import { ReportsTab } from '@/components/shifts/ReportsTab';
 import { ExportPdfDialog } from '@/components/shifts/ExportPdfDialog';
 import { EditNoteDialog } from '@/components/shifts/EditNoteDialog';
@@ -24,6 +24,7 @@ const Shifts = () => {
   const [activeTab, setActiveTab] = useState("planning");
   const [noteDialogOpen, setNoteDialogOpen] = useState(false);
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
+  const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
   
   const isMobile = useDeviceSize() === "mobile";
   const isTablet = useMediaQuery("md");
@@ -143,6 +144,11 @@ const Shifts = () => {
     setNoteDialogOpen(false);
   };
 
+  // Handle export
+  const handleExport = () => {
+    setExportDialogOpen(true);
+  };
+
   return (
     <PremiumCheck featureKey="shifts">
       <div className="container mx-auto px-4 py-8">
@@ -193,15 +199,21 @@ const Shifts = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="md:col-span-2">
                 <MonthlyReport 
-                  shifts={shifts} 
-                  onExport={() => setExportDialogOpen(true)} 
+                  shifts={shifts}
+                  user={user}
+                  selectedMonth={selectedMonth}
+                  onSelectDate={setSelectedDate}
                 />
               </div>
               <div>
-                <ShiftAnalytics shifts={shifts} />
+                <ShiftAnalytics 
+                  shifts={shifts} 
+                  period="month"
+                  onPeriodChange={(period) => console.log(`Period changed to ${period}`)}
+                />
               </div>
             </div>
-            <ReportsTab shifts={shifts} />
+            <ReportsTab shifts={shifts} user={user} />
           </TabsContent>
         </Tabs>
         
@@ -209,14 +221,16 @@ const Shifts = () => {
         <EditNoteDialog 
           open={noteDialogOpen} 
           onOpenChange={setNoteDialogOpen}
-          notes={shiftNotes}
-          onSave={handleSaveNotes}
+          selectedDate={selectedDate}
+          shiftNotes={shiftNotes}
+          onNotesChange={setShiftNotes}
+          onSaveNote={handleSaveShift}
         />
         
         <ExportPdfDialog
-          open={exportDialogOpen}
-          onOpenChange={setExportDialogOpen}
-          shifts={shifts}
+          user={user}
+          selectedMonth={selectedMonth}
+          setSelectedMonth={setSelectedMonth}
         />
       </div>
     </PremiumCheck>

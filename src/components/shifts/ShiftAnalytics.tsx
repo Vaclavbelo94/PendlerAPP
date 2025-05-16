@@ -8,22 +8,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { ChartColumnBig } from "lucide-react";
-
-// Shift types
-type ShiftType = "morning" | "afternoon" | "night";
-
-// Shift interface
-interface Shift {
-  date: Date;
-  type: ShiftType;
-  userId: string;
-  notes?: string;
-}
+import { Shift, AnalyticsPeriod } from "./types";
 
 interface ShiftAnalyticsProps {
   shifts: Shift[];
-  period: "week" | "month" | "year";
-  onPeriodChange: (period: "week" | "month" | "year") => void;
+  period: AnalyticsPeriod;
+  onPeriodChange: (period: AnalyticsPeriod) => void;
 }
 
 // Colors for the different shift types
@@ -194,7 +184,7 @@ const ShiftAnalytics: React.FC<ShiftAnalyticsProps> = ({
         <h2 className="text-2xl font-bold">Analýza směn</h2>
         <div className="flex items-center space-x-2">
           <Label htmlFor="period">Období:</Label>
-          <Select value={period} onValueChange={(value: "week" | "month" | "year") => onPeriodChange(value)}>
+          <Select value={period} onValueChange={(value: AnalyticsPeriod) => onPeriodChange(value)}>
             <SelectTrigger id="period" className="w-[180px]">
               <SelectValue placeholder="Vyberte období" />
             </SelectTrigger>

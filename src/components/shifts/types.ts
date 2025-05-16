@@ -4,6 +4,7 @@ export type ShiftType = "morning" | "afternoon" | "night";
 
 // Defines the structure of a shift entry
 export interface Shift {
+  id: string;
   date: Date;
   type: ShiftType;
   userId: string;
