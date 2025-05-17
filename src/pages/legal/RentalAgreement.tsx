@@ -8,7 +8,7 @@ import { Helmet } from "react-helmet";
 
 const RentalAgreement = () => {
   return (
-    <PremiumCheck featureKey="legal_documents">
+    <PremiumCheck featureKey="legal-assistant">
       <div className="flex flex-col">
         <Helmet>
           <title>Nájemní smlouva | Právní asistent</title>

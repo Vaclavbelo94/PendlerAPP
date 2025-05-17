@@ -96,26 +96,38 @@ export const PremiumFeaturesPanel = () => {
           setFeatures(defaultFeatures);
           localStorage.setItem("premiumFeatures", JSON.stringify(defaultFeatures));
         } else {
-          // Check if we need to add the new tax-advisor feature
-          const hasTaxAdvisor = storedFeatures.some((f: PremiumFeature) => f.key === "tax-advisor");
+          // Check if we need to update any keys to the correct format
+          const updatedFeatures = storedFeatures.map((feature: PremiumFeature) => {
+            // Fix any legal_assistant keys
+            if (feature.key === "legal_assistant") {
+              return { ...feature, key: "legal-assistant" };
+            }
+            return feature;
+          });
+          
+          // Check if we need to add the tax-advisor feature
+          const hasTaxAdvisor = updatedFeatures.some((f: PremiumFeature) => f.key === "tax-advisor");
           
           if (!hasTaxAdvisor) {
-            const updatedFeatures = [
-              ...storedFeatures,
-              {
-                id: String(storedFeatures.length + 1),
-                name: "Daňový poradce",
-                description: "Interaktivní průvodce daňovým přiznáním a daňová optimalizace",
-                isEnabled: true,
-                key: "tax-advisor"
-              }
-            ];
-            
-            setFeatures(updatedFeatures);
-            localStorage.setItem("premiumFeatures", JSON.stringify(updatedFeatures));
-          } else {
-            setFeatures(storedFeatures);
+            updatedFeatures.push({
+              id: String(updatedFeatures.length + 1),
+              name: "Daňový poradce",
+              description: "Interaktivní průvodce daňovým přiznáním a daňová optimalizace",
+              isEnabled: true,
+              key: "tax-advisor"
+            });
           }
+          
+          // Check if we need to update the legal assistant key
+          const hasLegalAssistant = updatedFeatures.some((f: PremiumFeature) => f.key === "legal-assistant");
+          
+          if (!hasLegalAssistant && updatedFeatures.some((f: PremiumFeature) => f.key === "legal_assistant")) {
+            // Already handled in the map above
+            localStorage.setItem("premiumFeatures", JSON.stringify(updatedFeatures));
+          }
+          
+          setFeatures(updatedFeatures);
+          localStorage.setItem("premiumFeatures", JSON.stringify(updatedFeatures));
         }
       } catch (error) {
         console.error("Chyba při načítání prémiových funkcí:", error);
@@ -267,4 +279,3 @@ export const PremiumFeaturesPanel = () => {
     </div>
   );
 };
-

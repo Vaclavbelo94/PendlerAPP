@@ -58,7 +58,7 @@ const LegalAssistant = () => {
   ];
 
   return (
-    <PremiumCheck featureKey="legal_assistant">
+    <PremiumCheck featureKey="legal-assistant">
       <div className="container py-8">
         <Helmet>
           <title>Právní asistent | Pendler Buddy</title>
