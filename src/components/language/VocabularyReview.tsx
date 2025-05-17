@@ -6,8 +6,13 @@ import { Button } from '@/components/ui/button';
 import VocabularyReviewCard from './VocabularyReviewCard';
 import { Brain, CheckCircle2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { VocabularyItem } from '@/models/VocabularyItem';
 
-const VocabularyReview: React.FC = () => {
+interface VocabularyReviewProps {
+  // No props needed as we're using the useSpacedRepetition hook directly
+}
+
+const VocabularyReview: React.FC<VocabularyReviewProps> = () => {
   const { toast } = useToast();
   const { 
     dueItems, 

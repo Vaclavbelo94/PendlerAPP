@@ -148,15 +148,7 @@ const VocabularySection: React.FC = () => {
         <TabsContent value="review" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="md:col-span-2">
-              <VocabularyReview
-                currentItem={currentItem}
-                dueItems={dueItems}
-                completedToday={completedToday}
-                dailyGoal={dailyGoal}
-                onCorrect={markCorrect}
-                onIncorrect={markIncorrect}
-                onNext={goToNextItem}
-              />
+              <VocabularyReview />
             </div>
             <div className="md:col-span-1">
               <VocabularyStatistics statistics={getStatistics()} />
