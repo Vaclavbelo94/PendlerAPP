@@ -71,8 +71,8 @@ export interface VocabularyContextType {
   dailyGoal: number;
   completedToday: number;
   addVocabularyItem: (item: Omit<VocabularyItem, 'id'>) => void;
-  markCorrect: () => void;
-  markIncorrect: () => void;
+  markCorrect: (itemId: string) => void; // Updated to explicitly require itemId parameter
+  markIncorrect: (itemId: string) => void; // Updated to explicitly require itemId parameter
   goToNextItem: () => void;
   getStatistics: () => any;
   setDailyGoal: (goal: number) => void;
@@ -199,8 +199,8 @@ export const VocabularyProvider: React.FC<VocabularyProviderProps> = ({ children
     dailyGoal,
     completedToday,
     addVocabularyItem,
-    markCorrect,
-    markIncorrect,
+    markCorrect, // The markCorrect function from useSpacedRepetition already accepts an itemId
+    markIncorrect, // The markIncorrect function from useSpacedRepetition already accepts an itemId
     goToNextItem,
     getStatistics,
     setDailyGoal,
