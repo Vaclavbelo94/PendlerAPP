@@ -4,11 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Settings, Save, DiamondIcon } from 'lucide-react';
+import { Settings, Save } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { usePremiumCheck } from '@/hooks/usePremiumCheck';
 import PremiumFeatureAlert from '@/components/PremiumFeatureAlert';
-import { Badge } from "@/components/ui/badge";
+import { PremiumBadge } from '@/components/premium/PremiumBadge';
 
 interface VocabularySettingsProps {
   dailyGoal: number;
@@ -53,10 +53,7 @@ const VocabularySettings: React.FC<VocabularySettingsProps> = ({ dailyGoal, onSa
           <div className="space-y-0.5">
             <div className="flex items-center gap-2">
               <Label htmlFor="spacedRepetition">Používat inteligentní opakování</Label>
-              <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-200">
-                <DiamondIcon className="h-3 w-3 mr-1 text-amber-500" />
-                Premium
-              </Badge>
+              <PremiumBadge variant="compact" />
             </div>
             <p className="text-sm text-muted-foreground">
               Automaticky upraví frekvenci opakování podle vašeho výkonu

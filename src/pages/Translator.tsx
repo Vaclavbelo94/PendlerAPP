@@ -1,14 +1,14 @@
 
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FileText, Languages, History, DiamondIcon } from "lucide-react";
+import { FileText, Languages, History } from "lucide-react";
 import PremiumCheck from '@/components/premium/PremiumCheck';
 import { workPhrases } from '@/data/translatorData';
 import TextTranslation from '@/components/translator/TextTranslation';
 import PhrasesTranslation from '@/components/translator/PhrasesTranslation';
 import TranslationHistory from '@/components/translator/TranslationHistory';
 import { useTranslator } from '@/hooks/useTranslator';
-import { Badge } from '@/components/ui/badge';
+import { PremiumBadge } from '@/components/premium/PremiumBadge';
 
 const TranslatorPage = () => {
   const [activeTab, setActiveTab] = useState("text");
@@ -39,10 +39,7 @@ const TranslatorPage = () => {
       <div className="container py-6 md:py-10">
         <div className="flex items-center gap-3 mb-4">
           <h1 className="text-3xl font-bold">Překladač</h1>
-          <Badge className="bg-amber-100 text-amber-800 border-amber-200">
-            <DiamondIcon className="h-3.5 w-3.5 mr-1 text-amber-500" />
-            Premium
-          </Badge>
+          <PremiumBadge />
         </div>
         
         <Tabs defaultValue={activeTab} value={activeTab} onValueChange={setActiveTab} className="space-y-6">

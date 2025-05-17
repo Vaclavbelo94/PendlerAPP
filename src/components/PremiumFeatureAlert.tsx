@@ -1,7 +1,8 @@
 
-import { ShieldIcon, LockIcon, DiamondIcon } from "lucide-react";
+import { DiamondIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { PremiumBadge } from "@/components/premium/PremiumBadge";
 
 interface PremiumFeatureAlertProps {
   featureName: string;
