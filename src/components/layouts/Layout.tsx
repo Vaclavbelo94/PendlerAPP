@@ -50,7 +50,7 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
   const isMobile = deviceSize === "mobile";
   
   return (
-    <div className={`flex min-h-screen bg-background ${theme === 'dark' ? 'dark' : ''}`}>
+    <div className="flex min-h-screen bg-background">
       {/* Sidebar - hidden on mobile by default */}
       <div 
         className={`${

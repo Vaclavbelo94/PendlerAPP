@@ -6,8 +6,9 @@ import './App.css';
 // Layouts
 import LayoutWrapper from './components/layouts/LayoutWrapper';
 
-// Auth Provider
+// Auth & Theme Providers
 import { AuthProvider } from './hooks/useAuth';
+import { ThemeProvider } from './hooks/useTheme';
 
 // Pages
 import Index from './pages/Index';
@@ -44,44 +45,46 @@ import TaxClasses from './pages/laws/TaxClasses';
 function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <LayoutWrapper>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/calculator" element={<Calculator />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/cookies" element={<Cookies />} />
-            <Route path="/faq" element={<FAQ />} />
-            <Route path="/language" element={<Language />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/premium" element={<Premium />} />
-            <Route path="/privacy" element={<Privacy />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/profile-extended" element={<ProfileExtended />} />
-            <Route path="/profile-extended/:userId" element={<ProfileExtended />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/shifts" element={<Shifts />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/translator" element={<Translator />} />
-            <Route path="/vehicle" element={<Vehicle />} />
-            
-            {/* Stránky o zákonech */}
-            <Route path="/laws" element={<Laws />} />
-            <Route path="/laws/child-benefits" element={<ChildBenefits />} />
-            <Route path="/laws/employee-protection" element={<EmployeeProtection />} />
-            <Route path="/laws/health-insurance" element={<HealthInsurance />} />
-            <Route path="/laws/minimum-holidays" element={<MinimumHolidays />} />
-            <Route path="/laws/minimum-wage" element={<MinimumWage />} />
-            <Route path="/laws/parental-allowance" element={<ParentalAllowance />} />
-            <Route path="/laws/pension-insurance" element={<PensionInsurance />} />
-            <Route path="/laws/tax-classes" element={<TaxClasses />} />
-            
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </LayoutWrapper>
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <LayoutWrapper>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/admin" element={<Admin />} />
+              <Route path="/calculator" element={<Calculator />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/cookies" element={<Cookies />} />
+              <Route path="/faq" element={<FAQ />} />
+              <Route path="/language" element={<Language />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/premium" element={<Premium />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/profile-extended" element={<ProfileExtended />} />
+              <Route path="/profile-extended/:userId" element={<ProfileExtended />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/shifts" element={<Shifts />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/translator" element={<Translator />} />
+              <Route path="/vehicle" element={<Vehicle />} />
+              
+              {/* Stránky o zákonech */}
+              <Route path="/laws" element={<Laws />} />
+              <Route path="/laws/child-benefits" element={<ChildBenefits />} />
+              <Route path="/laws/employee-protection" element={<EmployeeProtection />} />
+              <Route path="/laws/health-insurance" element={<HealthInsurance />} />
+              <Route path="/laws/minimum-holidays" element={<MinimumHolidays />} />
+              <Route path="/laws/minimum-wage" element={<MinimumWage />} />
+              <Route path="/laws/parental-allowance" element={<ParentalAllowance />} />
+              <Route path="/laws/pension-insurance" element={<PensionInsurance />} />
+              <Route path="/laws/tax-classes" element={<TaxClasses />} />
+              
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </LayoutWrapper>
+        </AuthProvider>
+      </ThemeProvider>
     </BrowserRouter>
   );
 }
