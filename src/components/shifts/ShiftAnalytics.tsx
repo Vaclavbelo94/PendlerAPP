@@ -1,5 +1,6 @@
+
 import React, { useState, useMemo } from "react";
-import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from "recharts";
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, eachDayOfInterval } from "date-fns";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -117,6 +118,48 @@ const ShiftAnalytics = ({ shifts, period, onPeriodChange }: ShiftAnalyticsProps)
     return shiftsByDate;
   }, [filteredShifts]);
 
+  // Custom tooltip renderer for the pie chart
+  const renderPieTooltip = (props: any) => {
+    if (props.active && props.payload && props.payload.length) {
+      return (
+        <ChartTooltip>
+          <ChartTooltipContent>
+            <div className="flex flex-col">
+              <span className="text-sm font-bold">{props.payload[0].name}</span>
+              <span className="text-xs">Počet: {props.payload[0].value}</span>
+            </div>
+          </ChartTooltipContent>
+        </ChartTooltip>
+      );
+    }
+    return null;
+  };
+  
+  // Custom tooltip renderer for the bar chart
+  const renderBarTooltip = (props: any) => {
+    if (props.active && props.payload && props.payload.length) {
+      return (
+        <ChartTooltip>
+          <ChartTooltipContent>
+            <div className="flex flex-col">
+              <span className="text-sm font-bold">{props.label}</span>
+              {props.payload.map((entry: any) => (
+                <span key={entry.name} className="text-xs flex items-center">
+                  <span 
+                    className="w-2 h-2 rounded-full mr-1" 
+                    style={{ backgroundColor: entry.color }}
+                  ></span>
+                  {entry.name === "morning" ? "Ranní" : entry.name === "afternoon" ? "Odpolední" : "Noční"}: {entry.value}
+                </span>
+              ))}
+            </div>
+          </ChartTooltipContent>
+        </ChartTooltip>
+      );
+    }
+    return null;
+  };
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -161,23 +204,7 @@ const ShiftAnalytics = ({ shifts, period, onPeriodChange }: ShiftAnalyticsProps)
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Pie>
-                    <Tooltip 
-                      content={(props) => {
-                        if (props.active && props.payload && props.payload.length) {
-                          return (
-                            <ChartTooltip>
-                              <ChartTooltipContent>
-                                <div className="flex flex-col">
-                                  <span className="text-sm font-bold">{props.payload[0].name}</span>
-                                  <span className="text-xs">Počet: {props.payload[0].value}</span>
-                                </div>
-                              </ChartTooltipContent>
-                            </ChartTooltip>
-                          );
-                        }
-                        return null;
-                      }}
-                    />
+                    <RechartsTooltip content={renderPieTooltip} />
                     <Legend formatter={(value) => <span className="text-sm">{value}</span>} />
                   </PieChart>
                 </ResponsiveContainer>
@@ -200,28 +227,7 @@ const ShiftAnalytics = ({ shifts, period, onPeriodChange }: ShiftAnalyticsProps)
                   >
                     <XAxis dataKey="date" />
                     <YAxis allowDecimals={false} />
-                    <Tooltip 
-                      content={(props) => {
-                        if (props.active && props.payload && props.payload.length) {
-                          return (
-                            <ChartTooltip>
-                              <ChartTooltipContent>
-                                <div className="flex flex-col">
-                                  <span className="text-sm font-bold">{props.label}</span>
-                                  {props.payload.map((entry) => (
-                                    <span key={entry.name} className="text-xs flex items-center">
-                                      <span className="w-2 h-2 rounded-full mr-1" style={{ backgroundColor: entry.color }}></span>
-                                      {entry.name === "morning" ? "Ranní" : entry.name === "afternoon" ? "Odpolední" : "Noční"}: {entry.value}
-                                    </span>
-                                  ))}
-                                </div>
-                              </ChartTooltipContent>
-                            </ChartTooltip>
-                          );
-                        }
-                        return null;
-                      }}
-                    />
+                    <RechartsTooltip content={renderBarTooltip} />
                     <Legend formatter={(value) => (
                       <span className="text-sm">
                         {value === "morning" ? "Ranní" : value === "afternoon" ? "Odpolední" : "Noční"}
