@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
@@ -13,10 +12,10 @@ import { useAuth } from '@/hooks/useAuth';
 import { PremiumBadge } from '@/components/premium/PremiumBadge';
 
 interface VocabularyAddProps {
-  addVocabularyItem: (item: Omit<VocabularyItem, 'id'> & Partial<VocabularyItem>) => void;
+  addItem: (item: Omit<VocabularyItem, 'id'> & Partial<VocabularyItem>) => void;
 }
 
-const VocabularyAdd: React.FC<VocabularyAddProps> = ({ addVocabularyItem }) => {
+const VocabularyAdd: React.FC<VocabularyAddProps> = ({ addItem }) => {
   const [newWord, setNewWord] = useState('');
   const [newTranslation, setNewTranslation] = useState('');
   const [newExample, setNewExample] = useState('');
@@ -28,7 +27,7 @@ const VocabularyAdd: React.FC<VocabularyAddProps> = ({ addVocabularyItem }) => {
   // Handle adding a new vocabulary item
   const handleAddWord = () => {
     if (newWord.trim() && newTranslation.trim()) {
-      addVocabularyItem({
+      addItem({
         word: newWord.trim(),
         translation: newTranslation.trim(),
         example: newExample.trim() || undefined,

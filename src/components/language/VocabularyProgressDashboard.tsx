@@ -1,40 +1,39 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { UserProgress, VocabularyItem } from '@/models/VocabularyItem';
+import { UserProgress } from '@/models/VocabularyItem';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import WeeklyProgressHeatmap from './WeeklyProgressHeatmap';
 import LearningSessionHistory from './LearningSessionHistory';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from 'recharts';
 
 interface VocabularyProgressDashboardProps {
-  userProgress: UserProgress;
-  items: VocabularyItem[];
+  vocabularyCount: number;
+  progress: UserProgress;
 }
 
 const VocabularyProgressDashboard: React.FC<VocabularyProgressDashboardProps> = ({ 
-  userProgress,
-  items
+  vocabularyCount,
+  progress
 }) => {
   // Prepare data for category distribution chart
-  const categoryData = Object.entries(userProgress.categoryDistribution || {})
+  const categoryData = Object.entries(progress.categoryDistribution || {})
     .map(([name, value]) => ({ name, value }))
     .sort((a, b) => b.value - a.value);
   
   // Prepare data for difficulty distribution
   const difficultyData = [
-    { name: 'Lehká', value: userProgress.difficultyDistribution?.easy || 0, color: '#10b981' },
-    { name: 'Střední', value: userProgress.difficultyDistribution?.medium || 0, color: '#f59e0b' },
-    { name: 'Těžká', value: userProgress.difficultyDistribution?.hard || 0, color: '#ef4444' },
-    { name: 'Nespecifikováno', value: userProgress.difficultyDistribution?.unspecified || 0, color: '#94a3b8' }
+    { name: 'Lehká', value: progress.difficultyDistribution?.easy || 0, color: '#10b981' },
+    { name: 'Střední', value: progress.difficultyDistribution?.medium || 0, color: '#f59e0b' },
+    { name: 'Těžká', value: progress.difficultyDistribution?.hard || 0, color: '#ef4444' },
+    { name: 'Nespecifikováno', value: progress.difficultyDistribution?.unspecified || 0, color: '#94a3b8' }
   ].filter(item => item.value > 0);
   
   // Prepare mastery level data
   const masteryData = [
-    { name: 'Zvládnuto', value: items.filter(item => item.repetitionLevel >= 4).length, color: '#10b981' },
-    { name: 'Učím se', value: items.filter(item => item.repetitionLevel > 0 && item.repetitionLevel < 4).length, color: '#3b82f6' },
-    { name: 'Nové', value: items.filter(item => item.repetitionLevel === 0).length, color: '#94a3b8' }
+    { name: 'Zvládnuto', value: 0, color: '#10b981' },
+    { name: 'Učím se', value: 0, color: '#3b82f6' },
+    { name: 'Nové', value: vocabularyCount, color: '#94a3b8' }
   ].filter(item => item.value > 0);
   
   // COLORS
@@ -44,10 +43,10 @@ const VocabularyProgressDashboard: React.FC<VocabularyProgressDashboardProps> = 
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="md:col-span-2">
-          <LearningSessionHistory dailyStats={userProgress.dailyStats} />
+          <LearningSessionHistory dailyStats={progress.dailyStats} />
         </div>
         <div>
-          <WeeklyProgressHeatmap dailyStats={userProgress.dailyStats} />
+          <WeeklyProgressHeatmap dailyStats={progress.dailyStats} />
         </div>
       </div>
 
@@ -179,28 +178,28 @@ const VocabularyProgressDashboard: React.FC<VocabularyProgressDashboardProps> = 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1 border rounded-md p-3">
                 <p className="text-xs text-muted-foreground">Celkem slovíček</p>
-                <p className="text-2xl font-bold">{items.length}</p>
+                <p className="text-2xl font-bold">{vocabularyCount}</p>
               </div>
               
               <div className="space-y-1 border rounded-md p-3">
                 <p className="text-xs text-muted-foreground">Série dnů</p>
-                <p className="text-2xl font-bold">{userProgress.streakDays || 0}</p>
-                {userProgress.streakDays > 0 && (
+                <p className="text-2xl font-bold">{progress.streakDays || 0}</p>
+                {progress.streakDays > 0 && (
                   <Badge variant="outline" className="bg-amber-100 text-amber-800 mt-1">
-                    {userProgress.streakDays} {userProgress.streakDays === 1 ? 'den' : userProgress.streakDays < 5 ? 'dny' : 'dní'}
+                    {progress.streakDays} {progress.streakDays === 1 ? 'den' : progress.streakDays < 5 ? 'dny' : 'dní'}
                   </Badge>
                 )}
               </div>
 
               <div className="space-y-1 border rounded-md p-3">
                 <p className="text-xs text-muted-foreground">Celkem opakováno</p>
-                <p className="text-2xl font-bold">{userProgress.totalReviewed || 0}</p>
+                <p className="text-2xl font-bold">{progress.totalReviewed || 0}</p>
               </div>
               
               <div className="space-y-1 border rounded-md p-3">
                 <p className="text-xs text-muted-foreground">Průměrná úspěšnost</p>
                 <div className="flex items-center">
-                  <p className="text-2xl font-bold mr-1">{userProgress.averageAccuracy || 0}%</p>
+                  <p className="text-2xl font-bold mr-1">{progress.averageAccuracy || 0}%</p>
                 </div>
               </div>
             </div>
