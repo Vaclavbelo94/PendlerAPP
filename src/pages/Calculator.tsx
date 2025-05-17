@@ -12,6 +12,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useAmortizationSchedule } from '@/hooks/useAmortizationSchedule';
+import AmortizationTable from '@/components/calculator/AmortizationTable';
 
 const Calculator = () => {
   // Check if we're on a mobile device
@@ -20,6 +22,9 @@ const Calculator = () => {
   const [interestRate, setInterestRate] = useState<string>("5");
   const [loanTerm, setLoanTerm] = useState<string>("12");
   const [monthlyPayment, setMonthlyPayment] = useState<number | null>(null);
+  const [showAmortization, setShowAmortization] = useState<boolean>(false);
+  
+  const { schedule, calculateAmortizationSchedule } = useAmortizationSchedule();
   
   const calculateMonthlyPayment = () => {
     const principal = parseFloat(loanAmount);
@@ -29,6 +34,9 @@ const Calculator = () => {
     if (principal > 0 && rate > 0 && months > 0) {
       const payment = (principal * rate) / (1 - Math.pow(1 + rate, -months));
       setMonthlyPayment(payment);
+      
+      // Calculate amortization schedule
+      calculateAmortizationSchedule(principal, rate, months, payment);
     } else {
       setMonthlyPayment(null);
     }
@@ -121,6 +129,20 @@ const Calculator = () => {
                       <span className="block text-sm text-muted-foreground mb-1">Měsíční splátka:</span>
                       <span className="text-2xl font-bold">{monthlyPayment.toFixed(2)} Kč</span>
                     </p>
+                    
+                    <Button 
+                      variant="outline" 
+                      className="w-full mt-4"
+                      onClick={() => setShowAmortization(!showAmortization)}
+                    >
+                      {showAmortization ? 'Skrýt splátkový kalendář' : 'Zobrazit splátkový kalendář'}
+                    </Button>
+                    
+                    {showAmortization && schedule.length > 0 && (
+                      <div className="mt-4 overflow-hidden">
+                        <AmortizationTable schedule={schedule} />
+                      </div>
+                    )}
                   </div>
                 )}
               </CardContent>
