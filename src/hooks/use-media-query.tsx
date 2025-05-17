@@ -15,7 +15,9 @@ export type MediaQueryType =
   | "landscape"
   | "reduced-motion"
   | "high-contrast"
-  | "print";
+  | "print"
+  | "hover"
+  | "touch";
 
 // Definice mediálních dotazů pro různé velikosti obrazovky a preference
 const mediaQueries = {
@@ -31,7 +33,9 @@ const mediaQueries = {
   landscape: "(orientation: landscape)",
   "reduced-motion": "(prefers-reduced-motion: reduce)",
   "high-contrast": "(prefers-contrast: more)",
-  "print": "(print)"
+  "print": "(print)",
+  "hover": "(hover: hover)",
+  "touch": "(hover: none) and (pointer: coarse)"
 };
 
 /**
@@ -47,6 +51,9 @@ const mediaQueries = {
  * 
  * // Použití pro přístupnost
  * const prefersReducedMotion = useMediaQuery("reduced-motion");
+ * 
+ * // Detekce dotykových zařízení
+ * const isTouch = useMediaQuery("touch");
  */
 export function useMediaQuery(query: MediaQueryType | string): boolean {
   const [matches, setMatches] = useState<boolean>(false);
