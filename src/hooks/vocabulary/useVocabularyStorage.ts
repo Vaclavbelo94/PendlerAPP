@@ -51,6 +51,12 @@ export const useVocabularyStorage = (initialItems: VocabularyItem[] = []) => {
     saveDailyGoal(goal);
   };
 
+  // Add a function to load items manually (for the provider to use)
+  const loadInitialItems = async () => {
+    const loadedItems = await loadVocabularyItems(initialItems);
+    return loadedItems;
+  };
+
   return {
     items,
     setItems,
@@ -58,5 +64,6 @@ export const useVocabularyStorage = (initialItems: VocabularyItem[] = []) => {
     completedToday,
     setCompletedToday,
     setDailyGoal: setVocabularyDailyGoal,
+    loadInitialItems,
   };
 };

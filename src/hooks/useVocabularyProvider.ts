@@ -1,4 +1,5 @@
 
+import { useState, useEffect } from 'react';
 import { VocabularyItem } from '@/models/VocabularyItem';
 import { useSpacedRepetition } from '@/hooks/useSpacedRepetition';
 import { useVocabularyProgress } from '@/hooks/useVocabularyProgress';
@@ -8,9 +9,9 @@ import { useVocabularyBulk } from '@/hooks/vocabulary/useVocabularyBulk';
 import { useVocabularyStorage } from '@/hooks/vocabulary/useVocabularyStorage';
 
 export const useVocabularyProvider = (initialItems: VocabularyItem[] = []) => {
-  // Load storage functions
-  const { loadInitialItems } = useVocabularyStorage(initialItems);
-  const loadedItems = loadInitialItems();
+  // Initialize vocabulary storage
+  const storage = useVocabularyStorage(initialItems);
+  const loadedItems = initialItems.length > 0 ? initialItems : storage.items;
   
   // Load spaced repetition functionality
   const {
@@ -28,9 +29,6 @@ export const useVocabularyProvider = (initialItems: VocabularyItem[] = []) => {
     bulkAddVocabularyItems
   } = useSpacedRepetition(loadedItems);
   
-  // Setup storage for the updated items
-  useVocabularyStorage(items);
-
   // Load CRUD operations
   const {
     editDialogOpen,
