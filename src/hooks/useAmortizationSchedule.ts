@@ -9,8 +9,16 @@ export interface AmortizationRow {
   remainingBalance: number;
 }
 
+export interface AmortizationSummary {
+  totalPayments: number;
+  totalPrincipal: number;
+  totalInterest: number;
+  effectiveRate: number;
+}
+
 export function useAmortizationSchedule() {
   const [schedule, setSchedule] = useState<AmortizationRow[]>([]);
+  const [summary, setSummary] = useState<AmortizationSummary | null>(null);
 
   const calculateAmortizationSchedule = (
     principal: number,
@@ -20,10 +28,12 @@ export function useAmortizationSchedule() {
   ) => {
     const amortizationSchedule: AmortizationRow[] = [];
     let balance = principal;
+    let totalInterest = 0;
     
     for (let period = 1; period <= periods; period++) {
       // Calculate interest for this period
       const interestPayment = balance * monthlyRate;
+      totalInterest += interestPayment;
       
       // Calculate principal for this period
       const principalPayment = monthlyPayment - interestPayment;
@@ -48,12 +58,26 @@ export function useAmortizationSchedule() {
       });
     }
     
+    // Calculate summary statistics
+    const summaryData: AmortizationSummary = {
+      totalPayments: monthlyPayment * periods,
+      totalPrincipal: principal,
+      totalInterest,
+      effectiveRate: totalInterest / principal
+    };
+    
     setSchedule(amortizationSchedule);
-    return amortizationSchedule;
+    setSummary(summaryData);
+    
+    return {
+      schedule: amortizationSchedule,
+      summary: summaryData
+    };
   };
 
   return {
     schedule,
+    summary,
     calculateAmortizationSchedule
   };
 }

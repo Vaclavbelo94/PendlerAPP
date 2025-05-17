@@ -24,7 +24,7 @@ const Calculator = () => {
   const [monthlyPayment, setMonthlyPayment] = useState<number | null>(null);
   const [showAmortization, setShowAmortization] = useState<boolean>(false);
   
-  const { schedule, calculateAmortizationSchedule } = useAmortizationSchedule();
+  const { schedule, summary, calculateAmortizationSchedule } = useAmortizationSchedule();
   
   const calculateMonthlyPayment = () => {
     const principal = parseFloat(loanAmount);
@@ -37,6 +37,7 @@ const Calculator = () => {
       
       // Calculate amortization schedule
       calculateAmortizationSchedule(principal, rate, months, payment);
+      setShowAmortization(true);
     } else {
       setMonthlyPayment(null);
     }
@@ -79,7 +80,7 @@ const Calculator = () => {
             <Card>
               <CardHeader>
                 <CardTitle>Kalkulačka splátek půjčky</CardTitle>
-                <CardDescription>Spočítejte si měsíční splátku vaší půjčky</CardDescription>
+                <CardDescription>Spočítejte si měsíční splátku vaší půjčky a zobrazte si splátkový kalendář</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
@@ -124,22 +125,39 @@ const Calculator = () => {
                 </Button>
                 
                 {monthlyPayment !== null && (
-                  <div className="mt-4 p-4 bg-muted rounded-md">
-                    <p className="text-center">
-                      <span className="block text-sm text-muted-foreground mb-1">Měsíční splátka:</span>
-                      <span className="text-2xl font-bold">{monthlyPayment.toFixed(2)} Kč</span>
-                    </p>
+                  <div className="mt-4">
+                    <div className="p-4 bg-muted rounded-md">
+                      <p className="text-center">
+                        <span className="block text-sm text-muted-foreground mb-1">Měsíční splátka:</span>
+                        <span className="text-2xl font-bold">{monthlyPayment.toFixed(2)} Kč</span>
+                      </p>
+                      
+                      {summary && (
+                        <div className="mt-3 pt-3 border-t border-border grid grid-cols-2 gap-2 text-sm">
+                          <div>
+                            <span className="text-muted-foreground">Celkem zaplatíte:</span>
+                            <p className="font-medium">{summary.totalPayments.toFixed(2)} Kč</p>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">Z toho na úrocích:</span>
+                            <p className="font-medium">{summary.totalInterest.toFixed(2)} Kč</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                     
-                    <Button 
-                      variant="outline" 
-                      className="w-full mt-4"
-                      onClick={() => setShowAmortization(!showAmortization)}
-                    >
-                      {showAmortization ? 'Skrýt splátkový kalendář' : 'Zobrazit splátkový kalendář'}
-                    </Button>
+                    <div className="mt-4">
+                      <Button 
+                        variant="outline" 
+                        className="w-full"
+                        onClick={() => setShowAmortization(!showAmortization)}
+                      >
+                        {showAmortization ? 'Skrýt splátkový kalendář' : 'Zobrazit splátkový kalendář'}
+                      </Button>
+                    </div>
                     
                     {showAmortization && schedule.length > 0 && (
-                      <div className="mt-4 overflow-hidden">
+                      <div className="mt-4">
                         <AmortizationTable schedule={schedule} />
                       </div>
                     )}
