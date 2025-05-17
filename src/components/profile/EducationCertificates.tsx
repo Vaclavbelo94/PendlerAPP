@@ -93,7 +93,9 @@ const EducationCertificates = ({ userId, readOnly = false }: EducationCertificat
         throw error;
       }
 
-      setCertificates(prev => [...prev, data[0]]);
+      // Správně typujeme přidaný certifikát
+      const newData = data[0] as unknown as Certificate;
+      setCertificates(prev => [...prev, newData]);
       setNewCertificate({
         name: "",
         issuer: "",

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './App.css';
@@ -39,10 +40,6 @@ import MinimumWage from './pages/laws/MinimumWage';
 import ParentalAllowance from './pages/laws/ParentalAllowance';
 import PensionInsurance from './pages/laws/PensionInsurance';
 import TaxClasses from './pages/laws/TaxClasses';
-import TaxReturn from './pages/TaxReturn';
-import WorkContract from './pages/WorkContract';
-import WorkingHours from './pages/WorkingHours';
-import ProfileExtended from './pages/ProfileExtended';
 
 function App() {
   return (
@@ -80,9 +77,6 @@ function App() {
             <Route path="/laws/parental-allowance" element={<ParentalAllowance />} />
             <Route path="/laws/pension-insurance" element={<PensionInsurance />} />
             <Route path="/laws/tax-classes" element={<TaxClasses />} />
-            <Route path="/laws/tax-return" element={<TaxReturn />} />
-            <Route path="/laws/work-contract" element={<WorkContract />} />
-            <Route path="/laws/working-hours" element={<WorkingHours />} />
             
             <Route path="*" element={<NotFound />} />
           </Routes>

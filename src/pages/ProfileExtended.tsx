@@ -1,17 +1,20 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { UserIcon, Settings2Icon, ShieldIcon, GraduationCapIcon, BriefcaseIcon, LinkIcon } from "lucide-react";
+import { 
+  UserIcon, Settings2Icon, ShieldIcon, GraduationCapIcon, BriefcaseIcon
+} from "lucide-react";
 
 import ProfileSettings from "@/components/profile/ProfileSettings";
 import SocialLinks from "@/components/profile/SocialLinks";
 import WorkPreferences from "@/components/profile/WorkPreferences";
 import EducationCertificates from "@/components/profile/EducationCertificates";
+import ProfileOverview from "@/components/profile/ProfileOverview";
 
 const ProfileExtended = () => {
   const { userId } = useParams();
@@ -106,15 +109,7 @@ const ProfileExtended = () => {
 
                   <Separator />
                   
-                  {/* Bio a informace z rozšířeného profilu se zobrazí zde,
-                      ale pro načtení těchto dat potřebujeme komponentu ProfileOverview */}
-                  
-                  <div className="pt-2">
-                    <h3 className="font-medium text-lg">O uživateli</h3>
-                    <p className="text-muted-foreground text-sm mt-2">
-                      Pro zobrazení více informací o tomto uživateli si prohlédněte záložky výše.
-                    </p>
-                  </div>
+                  <ProfileOverview userId={userId} />
                 </CardContent>
               </Card>
             </div>

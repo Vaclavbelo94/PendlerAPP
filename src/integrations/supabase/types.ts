@@ -171,6 +171,123 @@ export type Database = {
         }
         Relationships: []
       }
+      user_certificates: {
+        Row: {
+          created_at: string
+          id: string
+          issuer: string
+          name: string
+          type: string | null
+          updated_at: string
+          url: string | null
+          user_id: string
+          year: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          issuer: string
+          name: string
+          type?: string | null
+          updated_at?: string
+          url?: string | null
+          user_id: string
+          year: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          issuer?: string
+          name?: string
+          type?: string | null
+          updated_at?: string
+          url?: string | null
+          user_id?: string
+          year?: string
+        }
+        Relationships: []
+      }
+      user_extended_profiles: {
+        Row: {
+          bio: string | null
+          created_at: string
+          display_name: string | null
+          email_notifications: boolean | null
+          id: string
+          language_reminders: boolean | null
+          location: string | null
+          preferred_language: string | null
+          shift_notifications: boolean | null
+          updated_at: string
+          user_id: string
+          website: string | null
+        }
+        Insert: {
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          email_notifications?: boolean | null
+          id?: string
+          language_reminders?: boolean | null
+          location?: string | null
+          preferred_language?: string | null
+          shift_notifications?: boolean | null
+          updated_at?: string
+          user_id: string
+          website?: string | null
+        }
+        Update: {
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          email_notifications?: boolean | null
+          id?: string
+          language_reminders?: boolean | null
+          location?: string | null
+          preferred_language?: string | null
+          shift_notifications?: boolean | null
+          updated_at?: string
+          user_id?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
+      user_social_links: {
+        Row: {
+          created_at: string
+          facebook: string | null
+          github: string | null
+          id: string
+          instagram: string | null
+          linkedin: string | null
+          twitter: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          facebook?: string | null
+          github?: string | null
+          id?: string
+          instagram?: string | null
+          linkedin?: string | null
+          twitter?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          facebook?: string | null
+          github?: string | null
+          id?: string
+          instagram?: string | null
+          linkedin?: string | null
+          twitter?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_statistics: {
         Row: {
           created_at: string | null
@@ -198,6 +315,48 @@ export type Database = {
           shift_count?: number | null
           updated_at?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      user_work_preferences: {
+        Row: {
+          carpool_driver: boolean | null
+          carpool_passenger: boolean | null
+          created_at: string
+          id: string
+          max_shifts_per_week: number | null
+          notes: string | null
+          preferred_locations: string[] | null
+          preferred_shift_type: string | null
+          updated_at: string
+          user_id: string
+          willing_to_travel_km: number | null
+        }
+        Insert: {
+          carpool_driver?: boolean | null
+          carpool_passenger?: boolean | null
+          created_at?: string
+          id?: string
+          max_shifts_per_week?: number | null
+          notes?: string | null
+          preferred_locations?: string[] | null
+          preferred_shift_type?: string | null
+          updated_at?: string
+          user_id: string
+          willing_to_travel_km?: number | null
+        }
+        Update: {
+          carpool_driver?: boolean | null
+          carpool_passenger?: boolean | null
+          created_at?: string
+          id?: string
+          max_shifts_per_week?: number | null
+          notes?: string | null
+          preferred_locations?: string[] | null
+          preferred_shift_type?: string | null
+          updated_at?: string
+          user_id?: string
+          willing_to_travel_km?: number | null
         }
         Relationships: []
       }

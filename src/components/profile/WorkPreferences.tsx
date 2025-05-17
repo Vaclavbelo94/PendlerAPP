@@ -4,13 +4,14 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-import { Slider } from "@/components/ui/slider";
-import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
+import { X } from "lucide-react";
 
 interface WorkPreferencesProps {
   userId?: string;
@@ -30,6 +31,8 @@ interface WorkPreferencesData {
 const WorkPreferences = ({ userId, readOnly = false }: WorkPreferencesProps) => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [newLocation, setNewLocation] = useState("");
   const [preferences, setPreferences] = useState<WorkPreferencesData>({
     preferred_shift_type: "any",
     max_shifts_per_week: 5,
@@ -39,9 +42,18 @@ const WorkPreferences = ({ userId, readOnly = false }: WorkPreferencesProps) => 
     preferred_locations: [],
     notes: ""
   });
-  const [newLocation, setNewLocation] = useState("");
 
   const targetUserId = userId || user?.id;
+  
+  // Možnosti pro směny
+  const shiftTypes = [
+    { value: "any", label: "Jakýkoli typ" },
+    { value: "morning", label: "Ranní" },
+    { value: "afternoon", label: "Odpolední" },
+    { value: "night", label: "Noční" },
+    { value: "weekday", label: "Pouze pracovní dny" },
+    { value: "weekend", label: "Pouze víkendy" }
+  ];
 
   useEffect(() => {
     const loadWorkPreferences = async () => {
@@ -62,13 +74,13 @@ const WorkPreferences = ({ userId, readOnly = false }: WorkPreferencesProps) => 
 
         if (data) {
           setPreferences({
-            preferred_shift_type: data.preferred_shift_type || "any",
+            preferred_shift_type: data.preferred_shift_type || 'any',
             max_shifts_per_week: data.max_shifts_per_week || 5,
             willing_to_travel_km: data.willing_to_travel_km || 50,
             carpool_driver: data.carpool_driver || false,
             carpool_passenger: data.carpool_passenger || false,
             preferred_locations: data.preferred_locations || [],
-            notes: data.notes || ""
+            notes: data.notes || ''
           });
         }
       } catch (error) {
@@ -84,22 +96,21 @@ const WorkPreferences = ({ userId, readOnly = false }: WorkPreferencesProps) => 
   const handleSavePreferences = async () => {
     if (!user?.id) return;
     
-    setLoading(true);
+    setSaving(true);
     try {
       // Kontrola, zda záznam existuje
-      const { data: existingPrefs, error: checkError } = await supabase
+      const { data: existingData, error: checkError } = await supabase
         .from('user_work_preferences')
         .select('user_id')
         .eq('user_id', user.id)
         .maybeSingle();
-      
+        
       if (checkError && checkError.code !== 'PGRST116') {
-        console.error('Chyba při kontrole existence pracovních preferencí:', checkError);
         throw checkError;
       }
-
+      
       let result;
-      if (existingPrefs) {
+      if (existingData) {
         // Aktualizace existujícího záznamu
         result = await supabase
           .from('user_work_preferences')
@@ -110,7 +121,7 @@ const WorkPreferences = ({ userId, readOnly = false }: WorkPreferencesProps) => 
             carpool_driver: preferences.carpool_driver,
             carpool_passenger: preferences.carpool_passenger,
             preferred_locations: preferences.preferred_locations,
-            notes: preferences.notes,
+            notes: preferences.notes || null,
             updated_at: new Date().toISOString()
           })
           .eq('user_id', user.id);
@@ -126,45 +137,57 @@ const WorkPreferences = ({ userId, readOnly = false }: WorkPreferencesProps) => 
             carpool_driver: preferences.carpool_driver,
             carpool_passenger: preferences.carpool_passenger,
             preferred_locations: preferences.preferred_locations,
-            notes: preferences.notes
+            notes: preferences.notes || null
           });
       }
-
+      
       if (result.error) {
         throw result.error;
       }
-
+      
       toast.success("Pracovní preference byly úspěšně uloženy");
     } catch (error) {
       console.error('Chyba při ukládání pracovních preferencí:', error);
       toast.error("Nepodařilo se uložit pracovní preference");
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
 
   const addLocation = () => {
-    if (newLocation && !preferences.preferred_locations.includes(newLocation)) {
-      setPreferences(prev => ({
-        ...prev,
-        preferred_locations: [...prev.preferred_locations, newLocation]
-      }));
-      setNewLocation("");
+    if (!newLocation.trim()) return;
+    if (preferences.preferred_locations.includes(newLocation.trim())) {
+      toast.error("Tato lokalita již byla přidána");
+      return;
     }
+    setPreferences(prev => ({
+      ...prev,
+      preferred_locations: [...prev.preferred_locations, newLocation.trim()]
+    }));
+    setNewLocation("");
   };
 
   const removeLocation = (location: string) => {
     setPreferences(prev => ({
-      ...prev, 
+      ...prev,
       preferred_locations: prev.preferred_locations.filter(loc => loc !== location)
     }));
   };
 
+  const getShiftTypeLabel = (type: string) => {
+    const found = shiftTypes.find(st => st.value === type);
+    return found ? found.label : type;
+  };
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center p-6">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-      </div>
+      <Card>
+        <CardContent className="p-6">
+          <div className="flex justify-center">
+            <div className="h-6 w-6 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 
@@ -174,199 +197,194 @@ const WorkPreferences = ({ userId, readOnly = false }: WorkPreferencesProps) => 
         <CardTitle>Pracovní preference</CardTitle>
         <CardDescription>
           {readOnly 
-            ? "Preference pro práci a dojíždění" 
-            : "Nastavte své preference pro pracovní směny a dojíždění"}
+            ? "Přehled pracovních preferencí" 
+            : "Nastavte své preference pro práci a směny"}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="shiftType">Preferovaný typ směny</Label>
-            {readOnly ? (
-              <p>{preferences.preferred_shift_type === "day" 
-                  ? "Denní" 
-                  : preferences.preferred_shift_type === "night" 
-                    ? "Noční" 
-                    : "Jakákoliv"}</p>
-            ) : (
+        {readOnly ? (
+          // Zobrazení preferencí pro čtení
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="p-3 border rounded-md">
+                <h3 className="text-sm font-medium text-muted-foreground">Preferovaný typ směny</h3>
+                <p className="font-medium">{getShiftTypeLabel(preferences.preferred_shift_type)}</p>
+              </div>
+              
+              <div className="p-3 border rounded-md">
+                <h3 className="text-sm font-medium text-muted-foreground">Maximum směn za týden</h3>
+                <p className="font-medium">{preferences.max_shifts_per_week}</p>
+              </div>
+              
+              <div className="p-3 border rounded-md">
+                <h3 className="text-sm font-medium text-muted-foreground">Ochota cestovat</h3>
+                <p className="font-medium">Do {preferences.willing_to_travel_km} km</p>
+              </div>
+              
+              <div className="p-3 border rounded-md">
+                <h3 className="text-sm font-medium text-muted-foreground">Spolujízda</h3>
+                <p className="font-medium">
+                  {preferences.carpool_driver && preferences.carpool_passenger 
+                    ? "Řidič i spolujezdec" 
+                    : preferences.carpool_driver 
+                      ? "Řidič" 
+                      : preferences.carpool_passenger 
+                        ? "Spolujezdec" 
+                        : "Ne"}
+                </p>
+              </div>
+            </div>
+            
+            <div className="p-3 border rounded-md">
+              <h3 className="text-sm font-medium text-muted-foreground mb-2">Preferované lokality</h3>
+              {preferences.preferred_locations.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {preferences.preferred_locations.map(loc => (
+                    <Badge key={loc} variant="secondary">{loc}</Badge>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-muted-foreground text-sm">Bez preferovaných lokalit</p>
+              )}
+            </div>
+            
+            {preferences.notes && (
+              <div className="p-3 border rounded-md">
+                <h3 className="text-sm font-medium text-muted-foreground mb-2">Poznámky</h3>
+                <p className="text-sm whitespace-pre-wrap">{preferences.notes}</p>
+              </div>
+            )}
+          </div>
+        ) : (
+          // Formulář pro editaci
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="shiftType">Preferovaný typ směny</Label>
               <Select 
                 value={preferences.preferred_shift_type} 
                 onValueChange={(value) => setPreferences(prev => ({ ...prev, preferred_shift_type: value }))}
-                disabled={readOnly}
               >
                 <SelectTrigger id="shiftType" className="w-full">
                   <SelectValue placeholder="Vyberte typ směny" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="any">Jakákoliv</SelectItem>
-                  <SelectItem value="day">Denní</SelectItem>
-                  <SelectItem value="night">Noční</SelectItem>
+                  {shiftTypes.map(type => (
+                    <SelectItem key={type.value} value={type.value}>{type.label}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
-            )}
-          </div>
-          
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="maxShifts">Maximální počet směn za týden</Label>
-              <span className="text-sm font-medium">{preferences.max_shifts_per_week}</span>
             </div>
-            {readOnly ? (
-              <p>{preferences.max_shifts_per_week}</p>
-            ) : (
-              <Slider
-                id="maxShifts"
-                min={1}
-                max={7}
-                step={1}
-                value={[preferences.max_shifts_per_week]}
-                onValueChange={([value]) => setPreferences(prev => ({ ...prev, max_shifts_per_week: value }))}
-                disabled={readOnly}
-              />
-            )}
-          </div>
-          
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="travelDistance">Ochota cestovat (km)</Label>
-              <span className="text-sm font-medium">{preferences.willing_to_travel_km} km</span>
-            </div>
-            {readOnly ? (
-              <p>{preferences.willing_to_travel_km} km</p>
-            ) : (
-              <Slider
-                id="travelDistance"
-                min={5}
-                max={200}
-                step={5}
-                value={[preferences.willing_to_travel_km]}
-                onValueChange={([value]) => setPreferences(prev => ({ ...prev, willing_to_travel_km: value }))}
-                disabled={readOnly}
-              />
-            )}
-          </div>
-        </div>
-        
-        <Separator />
-        
-        <div className="space-y-4">
-          <h3 className="text-lg font-medium">Spolujízda</h3>
-          
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="carpoolDriver">Nabízím místo v autě</Label>
-              <p className="text-sm text-muted-foreground">Jezdím autem a mohu vzít kolegy</p>
-            </div>
-            {readOnly ? (
-              <div className="text-sm font-medium">
-                {preferences.carpool_driver ? "Ano" : "Ne"}
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="maxShifts">Maximum směn za týden</Label>
+                <Input
+                  id="maxShifts"
+                  type="number"
+                  min="1"
+                  max="7"
+                  value={preferences.max_shifts_per_week}
+                  onChange={(e) => setPreferences(prev => ({ ...prev, max_shifts_per_week: parseInt(e.target.value) || 5 }))}
+                />
               </div>
-            ) : (
-              <Switch
-                id="carpoolDriver"
-                checked={preferences.carpool_driver}
-                onCheckedChange={(checked) => setPreferences(prev => ({ ...prev, carpool_driver: checked }))}
-                disabled={readOnly}
-              />
-            )}
-          </div>
-          
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="carpoolPassenger">Hledám spolujízdu</Label>
-              <p className="text-sm text-muted-foreground">Mohu se přidat jako spolujezdec</p>
-            </div>
-            {readOnly ? (
-              <div className="text-sm font-medium">
-                {preferences.carpool_passenger ? "Ano" : "Ne"}
+              
+              <div className="space-y-2">
+                <Label htmlFor="travelDistance">Ochota cestovat (km)</Label>
+                <Input
+                  id="travelDistance"
+                  type="number"
+                  min="0"
+                  value={preferences.willing_to_travel_km}
+                  onChange={(e) => setPreferences(prev => ({ ...prev, willing_to_travel_km: parseInt(e.target.value) || 0 }))}
+                />
               </div>
-            ) : (
-              <Switch
-                id="carpoolPassenger"
-                checked={preferences.carpool_passenger}
-                onCheckedChange={(checked) => setPreferences(prev => ({ ...prev, carpool_passenger: checked }))}
-                disabled={readOnly}
-              />
-            )}
-          </div>
-        </div>
-        
-        <Separator />
-        
-        <div className="space-y-4">
-          <h3 className="text-lg font-medium">Preferované lokality</h3>
-          
-          {readOnly ? (
-            <div className="flex flex-wrap gap-2">
-              {preferences.preferred_locations.length > 0 ? (
-                preferences.preferred_locations.map((location, index) => (
-                  <div key={index} className="bg-muted px-3 py-1 rounded-full text-sm">
-                    {location}
-                  </div>
-                ))
-              ) : (
-                <p className="text-sm text-muted-foreground">Žádné preferované lokality</p>
-              )}
             </div>
-          ) : (
-            <>
-              <div className="flex gap-2">
-                <Input 
-                  placeholder="Zadejte lokalitu"
+            
+            <div className="space-y-3">
+              <Label>Spolujízda</Label>
+              
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label htmlFor="carpoolDriver" className="cursor-pointer">Jsem ochotný řídit</Label>
+                </div>
+                <Switch 
+                  id="carpoolDriver" 
+                  checked={preferences.carpool_driver}
+                  onCheckedChange={(checked) => setPreferences(prev => ({ ...prev, carpool_driver: checked }))}
+                />
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label htmlFor="carpoolPassenger" className="cursor-pointer">Jsem ochotný jet jako spolujezdec</Label>
+                </div>
+                <Switch 
+                  id="carpoolPassenger" 
+                  checked={preferences.carpool_passenger}
+                  onCheckedChange={(checked) => setPreferences(prev => ({ ...prev, carpool_passenger: checked }))}
+                />
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Preferované lokality</Label>
+              
+              <div className="flex gap-2 items-center">
+                <Input
                   value={newLocation}
                   onChange={(e) => setNewLocation(e.target.value)}
-                  className="flex-1"
+                  placeholder="Přidat lokalitu"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      addLocation();
+                    }
+                  }}
                 />
-                <Button type="button" onClick={addLocation} disabled={!newLocation}>
+                <Button type="button" onClick={addLocation} className="shrink-0">
                   Přidat
                 </Button>
               </div>
               
-              <div className="flex flex-wrap gap-2">
-                {preferences.preferred_locations.map((location, index) => (
-                  <div 
-                    key={index} 
-                    className="bg-muted px-3 py-1 rounded-full text-sm flex items-center gap-2"
-                  >
-                    <span>{location}</span>
-                    <button 
-                      onClick={() => removeLocation(location)}
-                      className="h-4 w-4 rounded-full bg-muted-foreground/30 text-foreground flex items-center justify-center hover:bg-muted-foreground/50 transition-colors"
+              {preferences.preferred_locations.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {preferences.preferred_locations.map(loc => (
+                    <Badge 
+                      key={loc}
+                      variant="secondary"
+                      className="flex items-center gap-1"
                     >
-                      ×
-                    </button>
-                  </div>
-                ))}
-                {preferences.preferred_locations.length === 0 && (
-                  <p className="text-sm text-muted-foreground">Žádné preferované lokality</p>
-                )}
-              </div>
-            </>
-          )}
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="workNotes">Poznámky</Label>
-          {readOnly ? (
-            <p className="text-sm whitespace-pre-line">
-              {preferences.notes || "Žádné poznámky"}
-            </p>
-          ) : (
-            <Input
-              id="workNotes"
-              value={preferences.notes}
-              onChange={(e) => setPreferences(prev => ({ ...prev, notes: e.target.value }))}
-              placeholder="Další poznámky k pracovním preferencím"
-              disabled={readOnly}
-            />
-          )}
-        </div>
+                      {loc}
+                      <button 
+                        type="button"
+                        onClick={() => removeLocation(loc)}
+                        className="ml-1 h-4 w-4 rounded-full flex items-center justify-center hover:bg-muted"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </Badge>
+                  ))}
+                </div>
+              )}
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="notes">Poznámky</Label>
+              <Textarea
+                id="notes"
+                value={preferences.notes}
+                onChange={(e) => setPreferences(prev => ({ ...prev, notes: e.target.value }))}
+                placeholder="Další poznámky a preference ohledně práce..."
+                rows={4}
+              />
+            </div>
+          </div>
+        )}
       </CardContent>
-      
       {!readOnly && (
-        <CardFooter className="flex justify-end">
-          <Button onClick={handleSavePreferences} disabled={loading}>
-            {loading ? "Ukládání..." : "Uložit preference"}
+        <CardFooter>
+          <Button onClick={handleSavePreferences} disabled={saving} className="ml-auto">
+            {saving ? "Ukládání..." : "Uložit preference"}
           </Button>
         </CardFooter>
       )}
