@@ -4,10 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Settings, Save, Crown } from 'lucide-react';
+import { Settings, Save, DiamondIcon } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { usePremiumCheck } from '@/hooks/usePremiumCheck';
 import PremiumFeatureAlert from '@/components/PremiumFeatureAlert';
+import { Badge } from "@/components/ui/badge";
 
 interface VocabularySettingsProps {
   dailyGoal: number;
@@ -39,33 +40,24 @@ const VocabularySettings: React.FC<VocabularySettingsProps> = ({ dailyGoal, onSa
     }
 
     if (isPremiumFeature && !canAccess) {
-      return (
-        <div className="border border-amber-200 rounded-md p-3 bg-amber-50">
-          <div className="flex items-center gap-2 mb-2">
-            <Crown className="h-4 w-4 text-amber-500" />
-            <span className="font-medium text-amber-700">Prémiová funkce</span>
-          </div>
-          <p className="text-sm text-muted-foreground mb-3">
-            Pokročilé nastavení opakování je dostupné pouze pro Premium uživatele.
-          </p>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="bg-amber-100 text-amber-800 hover:bg-amber-200 border-amber-300"
-            onClick={() => window.location.href = "/premium"}
-          >
-            <Crown className="mr-2 h-3 w-3" />
-            Aktivovat Premium
-          </Button>
-        </div>
-      );
+      return <PremiumFeatureAlert 
+        featureName="Inteligentní opakování" 
+        description="Chytré plánování opakování slovíček podle vaší úspěšnosti."
+        compact={true}
+      />;
     }
 
     return (
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label htmlFor="spacedRepetition">Používat inteligentní opakování</Label>
+            <div className="flex items-center gap-2">
+              <Label htmlFor="spacedRepetition">Používat inteligentní opakování</Label>
+              <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-200">
+                <DiamondIcon className="h-3 w-3 mr-1 text-amber-500" />
+                Premium
+              </Badge>
+            </div>
             <p className="text-sm text-muted-foreground">
               Automaticky upraví frekvenci opakování podle vašeho výkonu
             </p>

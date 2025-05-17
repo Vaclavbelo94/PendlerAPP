@@ -16,6 +16,8 @@ import OfflineIndicator from "@/components/offlineMode/OfflineIndicator";
 import OfflineDownloadCard from "@/components/language/OfflineDownloadCard";
 import LanguageSidebar from "@/components/language/LanguageSidebar";
 import LanguageManager, { useLanguageContext } from "@/components/language/LanguageManager";
+import { Badge } from "@/components/ui/badge";
+import { DiamondIcon } from "lucide-react";
 
 const LanguageContent = () => {
   const { isPremium, isAdmin } = useAuth();
@@ -24,6 +26,20 @@ const LanguageContent = () => {
   
   // Use media query to detect mobile screens
   const isMobile = useMediaQuery("xs");
+
+  // Function to render premium badge for specific tabs
+  const renderPremiumBadge = (tabName: string) => {
+    const premiumTabs = ['interactive', 'gamification'];
+    if (premiumTabs.includes(tabName)) {
+      return (
+        <Badge className="ml-2 bg-amber-100 text-amber-800 border-amber-200">
+          <DiamondIcon className="h-3 w-3 mr-1 text-amber-500" />
+          Premium
+        </Badge>
+      );
+    }
+    return null;
+  };
 
   return (
     <div className="container py-4 sm:py-6">
@@ -48,6 +64,7 @@ const LanguageContent = () => {
           <LanguageTabsNavigation 
             activeTab={activeTab} 
             onTabChange={setActiveTab}
+            renderBadge={renderPremiumBadge}
           >
             <TabsContent value="grammar" className="space-y-4 sm:space-y-6">
               <GrammarTab />
@@ -65,12 +82,24 @@ const LanguageContent = () => {
             <TabsContent value="interactive">
               {/* Interaktivní kvíz je pouze pro premium */}
               <PremiumCheck featureKey="language">
+                <div className="mb-4">
+                  <div className="inline-flex items-center mb-4 px-3 py-1 rounded-full bg-amber-100 text-amber-800 border border-amber-200">
+                    <DiamondIcon className="h-4 w-4 mr-2 text-amber-500" />
+                    <span className="text-sm font-medium">Premium funkce</span>
+                  </div>
+                </div>
                 <InteractiveQuiz />
               </PremiumCheck>
             </TabsContent>
 
             <TabsContent value="gamification">
               {/* Gamifikační záložka */}
+              <div className="mb-4">
+                <div className="inline-flex items-center mb-4 px-3 py-1 rounded-full bg-amber-100 text-amber-800 border border-amber-200">
+                  <DiamondIcon className="h-4 w-4 mr-2 text-amber-500" />
+                  <span className="text-sm font-medium">Premium funkce</span>
+                </div>
+              </div>
               <GamificationFeatures />
             </TabsContent>
           </LanguageTabsNavigation>

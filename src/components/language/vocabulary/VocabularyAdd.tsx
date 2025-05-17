@@ -5,10 +5,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus } from 'lucide-react';
+import { Plus, DiamondIcon } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { VocabularyItem } from '@/models/VocabularyItem';
 import { useToast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge';
+import { useAuth } from '@/hooks/useAuth';
 
 interface VocabularyAddProps {
   addVocabularyItem: (item: Omit<VocabularyItem, 'id'> & Partial<VocabularyItem>) => void;
@@ -21,6 +23,7 @@ const VocabularyAdd: React.FC<VocabularyAddProps> = ({ addVocabularyItem }) => {
   const [newCategory, setNewCategory] = useState('Obecné');
   const [newDifficulty, setNewDifficulty] = useState('medium');
   const { toast } = useToast();
+  const { isPremium } = useAuth();
 
   // Handle adding a new vocabulary item
   const handleAddWord = () => {
@@ -89,23 +92,42 @@ const VocabularyAdd: React.FC<VocabularyAddProps> = ({ addVocabularyItem }) => {
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="example">Příklad použití</Label>
+            <div className="flex items-center gap-2 mb-1">
+              <Label htmlFor="example">Příklad použití</Label>
+              {!isPremium && (
+                <Badge className="bg-amber-100 text-amber-800 border-amber-200">
+                  <DiamondIcon className="h-3 w-3 mr-1 text-amber-500" />
+                  Premium
+                </Badge>
+              )}
+            </div>
             <Textarea
               id="example"
-              placeholder="např. Der Hund bellt."
+              placeholder={isPremium ? "např. Der Hund bellt." : "Dostupné s Premium účtem"}
               value={newExample}
               onChange={(e) => setNewExample(e.target.value)}
+              disabled={!isPremium}
+              className={!isPremium ? "bg-amber-50 border-amber-200" : ""}
             />
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="category">Kategorie</Label>
+              <div className="flex items-center gap-2 mb-1">
+                <Label htmlFor="category">Kategorie</Label>
+                {!isPremium && (
+                  <Badge className="bg-amber-100 text-amber-800 border-amber-200">
+                    <DiamondIcon className="h-3 w-3 mr-1 text-amber-500" />
+                    Premium
+                  </Badge>
+                )}
+              </div>
               <Select
-                value={newCategory}
+                value={isPremium ? newCategory : "Obecné"}
                 onValueChange={setNewCategory}
+                disabled={!isPremium}
               >
-                <SelectTrigger>
+                <SelectTrigger className={!isPremium ? "bg-amber-50 border-amber-200" : ""}>
                   <SelectValue placeholder="Vyberte kategorii" />
                 </SelectTrigger>
                 <SelectContent>
@@ -124,12 +146,21 @@ const VocabularyAdd: React.FC<VocabularyAddProps> = ({ addVocabularyItem }) => {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="difficulty">Obtížnost</Label>
+              <div className="flex items-center gap-2 mb-1">
+                <Label htmlFor="difficulty">Obtížnost</Label>
+                {!isPremium && (
+                  <Badge className="bg-amber-100 text-amber-800 border-amber-200">
+                    <DiamondIcon className="h-3 w-3 mr-1 text-amber-500" />
+                    Premium
+                  </Badge>
+                )}
+              </div>
               <Select
-                value={newDifficulty}
+                value={isPremium ? newDifficulty : "medium"}
                 onValueChange={setNewDifficulty}
+                disabled={!isPremium}
               >
-                <SelectTrigger>
+                <SelectTrigger className={!isPremium ? "bg-amber-50 border-amber-200" : ""}>
                   <SelectValue placeholder="Vyberte obtížnost" />
                 </SelectTrigger>
                 <SelectContent>
