@@ -5,7 +5,7 @@ import BasicCalculator from "@/components/calculator/BasicCalculator";
 import ScientificCalculator from "@/components/calculator/ScientificCalculator";
 import { ResponsiveContainer } from "@/components/ui/responsive-container";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calculator as CalculatorIcon, TrendingUp, CreditCard, BarChart3, Function } from "lucide-react";
+import { Calculator as CalculatorIcon, TrendingUp, CreditCard, BarChart3, Square } from "lucide-react";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -45,7 +45,7 @@ const Calculator = () => {
               <span className={isMobile ? "hidden" : ""}>Základní</span>
             </TabsTrigger>
             <TabsTrigger value="scientific" className="flex items-center gap-2 text-sm md:text-base py-2 px-3 md:py-2 md:px-4">
-              <Function className="h-4 w-4" />
+              <Square className="h-4 w-4" />
               <span className={isMobile ? "hidden" : ""}>Vědecká</span>
             </TabsTrigger>
             <TabsTrigger value="financial" className="flex items-center gap-2 text-sm md:text-base py-2 px-3 md:py-2 md:px-4">

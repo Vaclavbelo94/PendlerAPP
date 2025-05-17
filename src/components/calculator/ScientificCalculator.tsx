@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -528,7 +527,7 @@ const ScientificCalculator = () => {
           </Button>
           <Button
             size={buttonSize}
-            variant="primary"
+            variant="default" // Changed from "primary" to "default"
             className={`${buttonClass} bg-primary`}
             onClick={handleEquals}
           >
