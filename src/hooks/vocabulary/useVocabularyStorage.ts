@@ -1,39 +1,62 @@
 
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { VocabularyItem } from '@/models/VocabularyItem';
 import { useOfflineStatus } from '@/hooks/useOfflineStatus';
+import { 
+  saveVocabularyItems, 
+  loadVocabularyItems,
+  saveDailyProgress,
+  loadDailyProgress,
+  saveDailyGoal,
+  loadDailyGoal
+} from '@/services/vocabularyStorage';
 
-export const useVocabularyStorage = (items: VocabularyItem[]) => {
+export const useVocabularyStorage = (initialItems: VocabularyItem[] = []) => {
+  const [items, setItems] = useState<VocabularyItem[]>(initialItems);
+  const [dailyGoal, setDailyGoal] = useState(10); // Default daily goal
+  const [completedToday, setCompletedToday] = useState(0);
   const { isOffline } = useOfflineStatus();
+
+  // Load items from localStorage on component mount
+  useEffect(() => {
+    const loadItems = async () => {
+      const loadedItems = await loadVocabularyItems(initialItems);
+      setItems(loadedItems);
+      
+      // Load daily progress
+      const progress = loadDailyProgress();
+      setCompletedToday(progress);
+      
+      // Load daily goal
+      const goal = loadDailyGoal(10);
+      setDailyGoal(goal);
+    };
+    
+    loadItems();
+  }, [initialItems]);
 
   // Save items to localStorage whenever they change
   useEffect(() => {
-    try {
-      localStorage.setItem('vocabulary_items', JSON.stringify(items));
-      
-      if (!isOffline) {
-        // If we're online, we can attempt to sync with the server/database if needed
-        // For now we're just using localStorage, but this could be expanded
-      }
-    } catch (error) {
-      console.error('Error saving vocabulary items to localStorage:', error);
-    }
-  }, [items, isOffline]);
+    saveVocabularyItems(items);
+  }, [items]);
 
-  // Load initial items from localStorage
-  const loadInitialItems = (): VocabularyItem[] => {
-    try {
-      const storedItems = localStorage.getItem('vocabulary_items');
-      if (storedItems) {
-        return JSON.parse(storedItems);
-      }
-    } catch (error) {
-      console.error('Error loading vocabulary items from localStorage:', error);
-    }
-    return [];
+  // Update daily progress whenever completedToday changes
+  useEffect(() => {
+    saveDailyProgress(completedToday);
+  }, [completedToday]);
+
+  // Set daily goal
+  const setVocabularyDailyGoal = (goal: number) => {
+    setDailyGoal(goal);
+    saveDailyGoal(goal);
   };
 
   return {
-    loadInitialItems
+    items,
+    setItems,
+    dailyGoal,
+    completedToday,
+    setCompletedToday,
+    setDailyGoal: setVocabularyDailyGoal,
   };
 };
