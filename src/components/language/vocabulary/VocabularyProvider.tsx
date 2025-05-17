@@ -53,7 +53,8 @@ export const VocabularyProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       if ('indexedDB' in window) {
         try {
           saveData('testHistory', {
-            id: result.id,
+            // Generate an ID if none exists on the result
+            id: result.id || `test-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
             ...result,
             startTime: result.startTime.toISOString(),
             endTime: result.endTime.toISOString()
@@ -77,7 +78,8 @@ export const VocabularyProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         testHistory.forEach(result => {
           try {
             saveData('testHistory', {
-              id: result.id,
+              // Generate an ID if none exists on the result
+              id: result.id || `test-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
               ...result,
               startTime: result.startTime.toISOString(),
               endTime: result.endTime.toISOString()

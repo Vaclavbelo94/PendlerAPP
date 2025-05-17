@@ -174,7 +174,7 @@ const OfflineSync: React.FC = () => {
       </CardHeader>
       <CardContent className="space-y-4">
         {isOffline && (
-          <Alert variant="warning">
+          <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
               Pracujete v offline režimu. Všechny změny budou uloženy lokálně.
