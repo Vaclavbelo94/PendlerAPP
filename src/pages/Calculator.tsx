@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import PremiumCheck from '@/components/premium/PremiumCheck';
 import BasicCalculator from "@/components/calculator/BasicCalculator";
 import ScientificCalculator from "@/components/calculator/ScientificCalculator";
+import TaxCalculator from "@/components/calculator/TaxCalculator";
 import { ResponsiveContainer } from "@/components/ui/responsive-container";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calculator as CalculatorIcon, TrendingUp, CreditCard, BarChart3, Square } from "lucide-react";
@@ -127,15 +128,7 @@ const Calculator = () => {
           </TabsContent>
           
           <TabsContent value="tax" className="mt-4 md:mt-6">
-            <div className="flex flex-col space-y-6">
-              <div className="p-4 md:p-8 bg-muted rounded-lg flex flex-col items-center justify-center text-center">
-                <BarChart3 className="h-12 w-12 text-muted-foreground mb-4" />
-                <h3 className="text-xl font-medium mb-2">Daňová kalkulačka</h3>
-                <p className="text-muted-foreground">
-                  Rozšířená daňová kalkulačka bude dostupná v příští aktualizaci aplikace.
-                </p>
-              </div>
-            </div>
+            <TaxCalculator />
           </TabsContent>
         </Tabs>
       </ResponsiveContainer>
