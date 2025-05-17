@@ -57,6 +57,7 @@ initializeAppData();
 const ServiceWorkerManager = () => {
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const [registration, setRegistration] = useState<ServiceWorkerRegistration | null>(null);
+  const [registered, setRegistered] = useState(false);
   
   // Pomocná funkce pro detekci pomalých zařízení
   const isLowEndDevice = () => {
@@ -70,41 +71,42 @@ const ServiceWorkerManager = () => {
 
   useEffect(() => {
     // Přidáme zpoždění před registrací Service Workeru pro zlepšení výkonu načítání
-    const registerServiceWorkerWithDelay = () => {
+    const registerServiceWorkerWithDelay = async () => {
       if ('serviceWorker' in navigator) {
-        // Na pomalých zařízeních přidáme větší zpoždění
-        const delay = isLowEndDevice() ? 3000 : 1000;
-        
-        setTimeout(() => {
-          navigator.serviceWorker.register('/sw.js')
-            .then(reg => {
-              console.log('ServiceWorker registration successful with scope: ', reg.scope);
-              setRegistration(reg);
-              
-              // Kontrola aktualizací
-              reg.addEventListener('updatefound', () => {
-                const newWorker = reg.installing;
-                if (newWorker) {
-                  newWorker.addEventListener('statechange', () => {
-                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                      setUpdateAvailable(true);
-                      toast('Je k dispozici aktualizace aplikace', {
-                        description: 'Klikněte pro instalaci a restartování',
-                        action: {
-                          label: 'Aktualizovat',
-                          onClick: () => updateServiceWorker()
-                        },
-                        duration: 10000
-                      });
-                    }
+        try {
+          // Na pomalých zařízeních přidáme větší zpoždění
+          const delay = isLowEndDevice() ? 3000 : 1000;
+          
+          // Používáme Promise.all pro paralelní zpracování a setTimeout s Promise
+          await new Promise(resolve => setTimeout(resolve, delay));
+          
+          const reg = await navigator.serviceWorker.register('/sw.js');
+          console.log('ServiceWorker registration successful with scope: ', reg.scope);
+          setRegistration(reg);
+          setRegistered(true);
+          
+          // Kontrola aktualizací
+          reg.addEventListener('updatefound', () => {
+            const newWorker = reg.installing;
+            if (newWorker) {
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  setUpdateAvailable(true);
+                  toast('Je k dispozici aktualizace aplikace', {
+                    description: 'Klikněte pro instalaci a restartování',
+                    action: {
+                      label: 'Aktualizovat',
+                      onClick: () => updateServiceWorker()
+                    },
+                    duration: 10000
                   });
                 }
               });
-            })
-            .catch(error => {
-              console.log('ServiceWorker registration failed: ', error);
-            });
-        }, delay);
+            }
+          });
+        } catch (error) {
+          console.error('ServiceWorker registration failed: ', error);
+        }
       }
     };
     
@@ -127,27 +129,28 @@ const ServiceWorkerManager = () => {
       navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange);
       
       // Kontrola a oznámení o offline připravenosti - s větším zpožděním
-      if (navigator.onLine) {
-        // Funkce pro kontrolu offline připravenosti
-        const checkOfflineReadiness = () => {
-          if (navigator.serviceWorker.controller) {
-            const messageChannel = new MessageChannel();
-            messageChannel.port1.onmessage = (event) => {
-              if (event.data.offlineReady) {
-                toast.success('Aplikace je připravena pro offline použití', {
-                  description: `Uloženo ${event.data.cachedItems} položek`,
-                  duration: 3000
-                });
-              }
-            };
-            
-            navigator.serviceWorker.controller.postMessage({
-              type: 'CHECK_OFFLINE_READY'
-            }, [messageChannel.port2]);
-          }
-        };
+      const checkOfflineReadiness = () => {
+        if (!registered) return; // Kontrolujeme, že service worker byl úspěšně registrován
         
-        // Odložíme kontrolu offline připravenosti
+        if (navigator.serviceWorker.controller) {
+          const messageChannel = new MessageChannel();
+          messageChannel.port1.onmessage = (event) => {
+            if (event.data.offlineReady) {
+              toast.success('Aplikace je připravena pro offline použití', {
+                description: `Uloženo ${event.data.cachedItems} položek`,
+                duration: 3000
+              });
+            }
+          };
+          
+          navigator.serviceWorker.controller.postMessage({
+            type: 'CHECK_OFFLINE_READY'
+          }, [messageChannel.port2]);
+        }
+      };
+      
+      // Odložíme kontrolu offline připravenosti a kontrolujeme status připojení
+      if (navigator.onLine) {
         setTimeout(checkOfflineReadiness, 5000);
       }
       
@@ -155,7 +158,7 @@ const ServiceWorkerManager = () => {
         navigator.serviceWorker.removeEventListener('controllerchange', handleControllerChange);
       };
     }
-  }, []);
+  }, [registered]);
   
   const updateServiceWorker = () => {
     if (registration && registration.waiting) {

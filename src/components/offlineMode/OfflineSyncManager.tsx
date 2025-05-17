@@ -19,14 +19,18 @@ const isNativeApp = () => {
 export const OfflineSyncManager = () => {
   const { isOffline } = useOfflineStatus();
   const { user, isPremium, refreshPremiumStatus } = useAuth();
-  const [isCheckingStatus, setIsCheckingStatus] = React.useState(true);
+  const [isCheckingStatus, setIsCheckingStatus] = React.useState(false);
   const [hasShownOnlineToast, setHasShownOnlineToast] = React.useState(false);
   const [isInitialized, setIsInitialized] = React.useState(false);
   const [isNativeMode, setIsNativeMode] = React.useState(false);
   const { settings } = useSyncSettings();
+  const initializeRef = React.useRef(false);
 
   // Detekce nativního prostředí - pouze jednou při načtení
   React.useEffect(() => {
+    if (initializeRef.current) return;
+    initializeRef.current = true;
+    
     const checkNative = () => {
       setIsNativeMode(isNativeApp());
     };
@@ -34,18 +38,18 @@ export const OfflineSyncManager = () => {
     // Použijeme requestAnimationFrame pro plynulejší spuštění
     requestAnimationFrame(() => {
       checkNative();
+      setIsInitialized(true);
     });
   }, []);
 
-  // Na začátku vždy aktualizujeme premium status z databáze - pouze jednou
+  // Na začátku vždy aktualizujeme premium status z databáze - pouze jednou a s omezením
   React.useEffect(() => {
     let isMounted = true;
     
     const checkPremiumDirectly = async () => {
-      if (!user) {
+      if (!user || !isInitialized) {
         if (isMounted) {
           setIsCheckingStatus(false);
-          setIsInitialized(true);
         }
         return;
       }
@@ -58,47 +62,25 @@ export const OfflineSyncManager = () => {
       } finally {
         if (isMounted) {
           setIsCheckingStatus(false);
-          setIsInitialized(true);
         }
       }
     };
     
-    // Použijeme setTimeout pro odložení těžkých operací
-    setTimeout(() => {
-      if (isMounted) {
-        checkPremiumDirectly();
-      }
-    }, 1000);
+    // Použijeme setTimeout pro odložení těžkých operací a jen pokud je uživatel přihlášen
+    if (user && isInitialized && !isCheckingStatus) {
+      setTimeout(() => {
+        if (isMounted) {
+          checkPremiumDirectly();
+        }
+      }, 1000);
+    } else if (isInitialized) {
+      setIsCheckingStatus(false);
+    }
     
     return () => {
       isMounted = false;
     };
-  }, [user, refreshPremiumStatus]);
-
-  // Console.log pro ladící účely - omezíme na důležité změny stavu
-  React.useEffect(() => {
-    if (isInitialized) {
-      console.log('OfflineSyncManager stav:', { 
-        isOffline, 
-        user: user?.id, 
-        isPremium,
-        isCheckingStatus,
-        hasShownOnlineToast,
-        isNativeMode
-      });
-    }
-  }, [isOffline, user, isPremium, isInitialized, isNativeMode]);
-
-  // Registrace na synchronizační události service workeru - pouze jednou
-  React.useEffect(() => {
-    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-      navigator.serviceWorker.ready.then(() => {
-        console.log('Service Worker je připraven');
-      }).catch(err => {
-        console.error('Service Worker není připraven:', err);
-      });
-    }
-  }, []);
+  }, [user, refreshPremiumStatus, isInitialized]);
 
   // Load data to IndexedDB when app starts or when going offline
   React.useEffect(() => {
@@ -109,11 +91,8 @@ export const OfflineSyncManager = () => {
         return;
       }
       
-      console.log('Offline/native mode activated, premium status:', isPremium);
-      
       // V nativní aplikaci nepotřebujeme kontrolovat premium status pro offline funkcionalitu
       if (!isPremium && !isNativeMode) {
-        // Kontrola nastavení notifikací
         if (settings.showSyncNotifications) {
           // Kontrola, zda již byla notifikace zobrazena v této session
           const notificationShown = sessionStorage.getItem('syncNotificationShown');
@@ -158,10 +137,17 @@ export const OfflineSyncManager = () => {
     };
     
     // Použijeme requestIdleCallback pro spuštění méně důležitých operací když je prohlížeč volný
-    if ('requestIdleCallback' in window) {
-      window.requestIdleCallback(() => handleOfflineMode());
-    } else {
-      setTimeout(handleOfflineMode, 2000);
+    // a pouze pokud je uživatel přihlášený a stránka je inicializovaná
+    if (user && isInitialized && !isCheckingStatus) {
+      if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(() => {
+          if (isMounted) handleOfflineMode();
+        });
+      } else {
+        setTimeout(() => {
+          if (isMounted) handleOfflineMode();
+        }, 2000);
+      }
     }
     
     return () => {
@@ -169,7 +155,7 @@ export const OfflineSyncManager = () => {
     };
   }, [isOffline, user, isPremium, isCheckingStatus, isInitialized, isNativeMode, settings]);
 
-  // Sync data back to server when coming online
+  // Sync data back to server when coming online - optimalizováno
   React.useEffect(() => {
     let isMounted = true;
     
@@ -177,8 +163,6 @@ export const OfflineSyncManager = () => {
       if (!(!isOffline && user && isInitialized && !isCheckingStatus)) {
         return;
       }
-      
-      console.log('Online mode activated, premium status:', isPremium);
       
       // Only show notification once per session
       if (hasShownOnlineToast) {
@@ -208,12 +192,10 @@ export const OfflineSyncManager = () => {
       // Synchronizace pouze pokud je povolena v nastavení
       if (settings.enableBackgroundSync) {
         // Pokus o registraci na background sync v service workeru
-        if ('serviceWorker' in navigator && 'SyncManager' in window) {
+        if ('serviceWorker' in navigator && 'SyncManager' in window && navigator.serviceWorker.controller) {
           try {
             const registration = await navigator.serviceWorker.ready;
-            console.log('Registrace background sync');
             await registration.sync.register('sync-pendler-data');
-            console.log('Background sync zaregistrován');
           } catch (error) {
             console.error('Background sync chyba:', error);
             // Fallback na klasickou synchronizaci
@@ -224,7 +206,6 @@ export const OfflineSyncManager = () => {
           performSyncOperation();
         }
       } else {
-        console.log('Background synchronizace je vypnuta v nastavení');
         if (isMounted) {
           setHasShownOnlineToast(true);
         }
@@ -232,11 +213,14 @@ export const OfflineSyncManager = () => {
     };
     
     // Odložíme synchronizaci pro zlepšení výkonu při načítání
-    setTimeout(() => {
-      if (isMounted) {
-        handleOnlineMode();
-      }
-    }, 3000);
+    // a pouze pokud je uživatel přihlášen a aplikace inicializována
+    if (user && isInitialized && !isCheckingStatus && !isOffline && !hasShownOnlineToast) {
+      setTimeout(() => {
+        if (isMounted) {
+          handleOnlineMode();
+        }
+      }, 3000);
+    }
     
     return () => {
       isMounted = false;
@@ -304,4 +288,4 @@ export const OfflineSyncManager = () => {
   return null; // This component doesn't render anything
 };
 
-export default OfflineSyncManager;
+export default React.memo(OfflineSyncManager);
