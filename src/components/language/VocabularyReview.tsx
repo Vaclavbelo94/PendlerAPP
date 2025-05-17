@@ -1,18 +1,17 @@
 
-import React from 'react';
-import { useSpacedRepetition } from '@/hooks/useSpacedRepetition';
-import { Card, CardContent } from "@/components/ui/card";
-import VocabularyReviewCard from './VocabularyReviewCard';
-import ReviewComplete from './vocabulary/ReviewComplete';
-import ReviewStart from './vocabulary/ReviewStart';
-import CompactSessionStats from './vocabulary/CompactSessionStats';
-import GoalProgressBar from './vocabulary/GoalProgressBar';
-import ReviewHeader from './vocabulary/ReviewHeader';
-import { useVocabularyReviewSession } from '@/hooks/useVocabularyReviewSession';
+import React, { useEffect } from 'react';
+import { Card } from "@/components/ui/card";
 import { useLanguageContext } from './LanguageManager';
+import { useSpacedRepetition } from '@/hooks/useSpacedRepetition';
+import { useVocabularyReviewSession } from '@/hooks/useVocabularyReviewSession';
+import VocabularyReviewCard from './VocabularyReviewCard';
+import GoalProgressBar from './vocabulary/GoalProgressBar';
+import CompactSessionStats from './vocabulary/CompactSessionStats';
+import ReviewHeader from './vocabulary/ReviewHeader';
+import ReviewContent from './vocabulary/review/ReviewContent';
 
 const VocabularyReview: React.FC = () => {
-  const { addXp } = useLanguageContext(); // Připojení na gamifikační kontext
+  const { addXp } = useLanguageContext();
   
   const { 
     dueItems, 
@@ -41,10 +40,9 @@ const VocabularyReview: React.FC = () => {
     goToNextItem
   );
   
-  // Přidat XP při dokončení session
-  React.useEffect(() => {
+  // Add XP when session is completed
+  useEffect(() => {
     if (isComplete && sessionStats.correctCount > 0) {
-      // Přidat XP na základě výkonu
       const xpPoints = sessionStats.correctCount * 2 - sessionStats.incorrectCount + (sessionStats.streakCount || 0);
       if (xpPoints > 0) {
         addXp(xpPoints);
@@ -52,7 +50,7 @@ const VocabularyReview: React.FC = () => {
     }
   }, [isComplete, sessionStats, addXp]);
 
-  // Funkce pro obnovení přehledu slovíček
+  // Function to refresh the vocabulary review
   const handleRefresh = () => {
     resetSession();
     window.location.reload();
@@ -62,23 +60,15 @@ const VocabularyReview: React.FC = () => {
     return (
       <Card className="w-full">
         <ReviewHeader isComplete={isComplete} dueItemsCount={dueItems.length} />
-        <CardContent>
-          <div className="flex flex-col items-center justify-center py-8 space-y-6">
-            {isComplete ? (
-              <ReviewComplete 
-                completedToday={completedToday} 
-                dailyGoal={dailyGoal} 
-                sessionStats={sessionStats}
-                onRefresh={handleRefresh}
-              />
-            ) : (
-              <ReviewStart 
-                dueItemsCount={dueItems.length} 
-                onStart={handleStartReview} 
-              />
-            )}
-          </div>
-        </CardContent>
+        <ReviewContent 
+          isComplete={isComplete}
+          completedToday={completedToday}
+          dailyGoal={dailyGoal}
+          sessionStats={sessionStats}
+          dueItemsCount={dueItems.length}
+          onStart={handleStartReview}
+          onRefresh={handleRefresh}
+        />
       </Card>
     );
   }
