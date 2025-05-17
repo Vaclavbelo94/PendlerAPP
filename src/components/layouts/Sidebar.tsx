@@ -13,10 +13,13 @@ import {
   HelpCircleIcon, 
   PhoneIcon, 
   X,
-  Shield
+  Shield,
+  Moon,
+  Sun
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useTheme } from "@/hooks/useTheme";
 
 interface SidebarProps {
   closeSidebar: () => void;
@@ -26,6 +29,7 @@ const Sidebar = ({ closeSidebar }: SidebarProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { isAdmin, user, isPremium } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   
   const navItems = [
     { title: "Domů", path: "/", icon: HomeIcon },
@@ -63,13 +67,13 @@ const Sidebar = ({ closeSidebar }: SidebarProps) => {
   };
 
   return (
-    <div className="h-full w-64 bg-white border-r border-slate-200 flex flex-col">
+    <div className="h-full w-64 bg-sidebar text-sidebar-foreground border-r border-sidebar-border flex flex-col">
       <div className="p-4 flex items-center justify-between">
         <div onClick={handleNavigate("/")} className="flex items-center space-x-2 cursor-pointer">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white font-bold text-sm">
             PH
           </div>
-          <span className="font-poppins font-bold text-lg text-gray-800">Pendler Helper</span>
+          <span className="font-poppins font-bold text-lg">Pendler Helper</span>
         </div>
         <Button 
           variant="ghost" 
@@ -78,16 +82,16 @@ const Sidebar = ({ closeSidebar }: SidebarProps) => {
             e.stopPropagation();
             closeSidebar();
           }} 
-          className="lg:hidden"
+          className="lg:hidden text-sidebar-foreground"
         >
           <X className="h-5 w-5" />
         </Button>
       </div>
-      <Separator />
+      <Separator className="bg-sidebar-border" />
       <ScrollArea className="flex-1 px-3 py-4">
         <div className="space-y-4">
           <div className="space-y-1">
-            <p className="text-xs font-medium text-muted-foreground pl-4 pb-1">Hlavní navigace</p>
+            <p className="text-xs font-medium text-sidebar-foreground/60 pl-4 pb-1">Hlavní navigace</p>
             {navItems.map((item) => (
               <Button
                 key={item.path}
@@ -97,7 +101,7 @@ const Sidebar = ({ closeSidebar }: SidebarProps) => {
                   location.pathname === item.path
                     ? "font-medium"
                     : "font-normal"
-                }`}
+                } hover:bg-sidebar-accent hover:text-sidebar-accent-foreground`}
                 onClick={handleNavigate(item.path)}
               >
                 <item.icon className="h-4 w-4" />
@@ -106,10 +110,10 @@ const Sidebar = ({ closeSidebar }: SidebarProps) => {
             ))}
           </div>
           
-          <Separator />
+          <Separator className="bg-sidebar-border" />
           
           <div className="space-y-1">
-            <p className="text-xs font-medium text-muted-foreground pl-4 pb-1">Informace</p>
+            <p className="text-xs font-medium text-sidebar-foreground/60 pl-4 pb-1">Informace</p>
             {secondaryItems.map((item) => (
               <Button
                 key={item.path}
@@ -119,17 +123,37 @@ const Sidebar = ({ closeSidebar }: SidebarProps) => {
                   location.pathname === item.path
                     ? "font-medium"
                     : "font-normal"
-                }`}
+                } hover:bg-sidebar-accent hover:text-sidebar-accent-foreground`}
                 onClick={handleNavigate(item.path)}
               >
                 <item.icon className="h-4 w-4" />
                 {item.title}
               </Button>
             ))}
+            
+            {/* Tlačítko pro přepínání tématu */}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full justify-start gap-3 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+              onClick={toggleTheme}
+            >
+              {theme === 'dark' ? (
+                <>
+                  <Sun className="h-4 w-4" />
+                  Světlý režim
+                </>
+              ) : (
+                <>
+                  <Moon className="h-4 w-4" />
+                  Tmavý režim
+                </>
+              )}
+            </Button>
           </div>
         </div>
       </ScrollArea>
-      <Separator />
+      <Separator className="bg-sidebar-border" />
       <div className="p-4">
         {/* Admin tlačítko v levém dolním rohu - pouze pro administrátory, když jsou přihlášeni */}
         {user && isAdmin && (
@@ -145,7 +169,7 @@ const Sidebar = ({ closeSidebar }: SidebarProps) => {
           </Button>
         )}
         
-        <div className="bg-slate-50 rounded-lg p-3 mt-2">
+        <div className="bg-sidebar-accent rounded-lg p-3 mt-2">
           {user ? (
             <div className="space-y-2">
               <div className="flex items-center justify-between">

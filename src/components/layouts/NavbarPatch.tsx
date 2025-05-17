@@ -1,8 +1,13 @@
 
-import { NotificationIndicator } from "../notifications/NotificationIndicator";
+import React from "react";
+import { NotificationIndicator } from "@/components/notifications/NotificationIndicator";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
-// This is a patch to add the notification indicator to the navbar
-// Import this in Layout.tsx and pass it to the Navbar component as a prop
 export const NavbarRightContent = () => {
-  return <NotificationIndicator />;
+  return (
+    <div className="flex items-center gap-2">
+      <ThemeToggle />
+      <NotificationIndicator />
+    </div>
+  );
 };

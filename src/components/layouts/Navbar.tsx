@@ -20,6 +20,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
 import { Badge } from "@/components/ui/badge";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 interface NavbarProps {
   toggleSidebar: () => void;
@@ -63,8 +64,8 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProp
   };
 
   return (
-    <header className={`sticky top-0 z-30 w-full transition-all duration-300 ${isScrolled ? 'bg-white shadow-sm' : 'bg-white'}`}>
-      <div className="h-16 px-4 border-b flex items-center justify-between">
+    <header className={`sticky top-0 z-30 w-full transition-all duration-300 ${isScrolled ? 'bg-card shadow-sm' : 'bg-card'}`}>
+      <div className="h-16 px-4 border-b border-border flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Button 
             variant="ghost" 
@@ -85,7 +86,7 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProp
             <Input
               type="search"
               placeholder="Hledat..."
-              className="pl-8 bg-slate-50 border-none w-[200px] lg:w-[300px]"
+              className="pl-8 bg-muted border-none w-[200px] lg:w-[300px]"
             />
           </div>
         </div>
@@ -103,6 +104,11 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProp
             </Button>
           )}
           
+          {/* Theme toggle button (visible on desktop) */}
+          <div className="hidden md:flex">
+            <ThemeToggle />
+          </div>
+          
           {/* Right Content (e.g. notifications) */}
           {rightContent}
           
@@ -110,7 +116,7 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProp
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="gap-2">
-                  <div className="w-7 h-7 rounded-full bg-primary-100 flex items-center justify-center text-primary-700">
+                  <div className="w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center text-foreground">
                     <UserIcon className="h-4 w-4" />
                   </div>
                   <span className="hidden sm:inline text-sm font-medium">

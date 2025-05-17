@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
@@ -7,8 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { CheckCircle, Palette, Eye } from "lucide-react";
+import { CheckCircle, Palette, Eye, Moon, Sun } from "lucide-react";
 import { toast } from "sonner";
+import { useTheme } from "@/hooks/useTheme";
 
 interface ProfileAppearanceProps {
   initialDarkMode: boolean;
@@ -27,9 +28,20 @@ const ProfileAppearance = ({
   initialCompactMode = false,
   onSave
 }: ProfileAppearanceProps) => {
+  const { theme, setTheme } = useTheme();
   const [darkMode, setDarkMode] = useState(initialDarkMode);
   const [colorScheme, setColorScheme] = useState(initialColorScheme);
   const [compactMode, setCompactMode] = useState(initialCompactMode);
+  
+  // Synchronizovat stav dark mode s globálním tématem
+  useEffect(() => {
+    setDarkMode(theme === 'dark');
+  }, [theme]);
+  
+  // Nastavit globální téma při změně darkMode přepínače
+  useEffect(() => {
+    setTheme(darkMode ? 'dark' : 'light');
+  }, [darkMode, setTheme]);
   
   const handleSave = () => {
     onSave({ darkMode, colorScheme, compactMode });
@@ -57,7 +69,14 @@ const ProfileAppearance = ({
           <TabsContent value="theme" className="space-y-4 pt-4">
             <div className="flex items-center justify-between">
               <div>
-                <Label htmlFor="darkMode" className="text-base">Tmavý režim</Label>
+                <Label htmlFor="darkMode" className="text-base flex items-center gap-2">
+                  {darkMode ? (
+                    <Moon className="h-4 w-4" />
+                  ) : (
+                    <Sun className="h-4 w-4" />
+                  )}
+                  <span>Tmavý režim</span>
+                </Label>
                 <p className="text-sm text-muted-foreground">
                   Tmavý režim je šetrnější k očím při používání v noci
                 </p>

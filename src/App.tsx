@@ -1,10 +1,10 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
+import { ThemeProvider } from "@/hooks/useTheme";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Language from "./pages/Language";
@@ -61,52 +61,54 @@ const queryClient = new QueryClient({
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <TooltipProvider delayDuration={0}>
-        <Toaster />
-        <Sonner position="top-right" closeButton />
-        <BrowserRouter>
-          <ShiftNotifications />
-          <OfflineSyncManager />
-          <OfflineIndicator />
-          <Routes>
-            <Route path="/" element={<LayoutWrapper><Index /></LayoutWrapper>} />
-            <Route path="/language" element={<LayoutWrapper><Language /></LayoutWrapper>} />
-            <Route path="/laws" element={<LayoutWrapper><Laws /></LayoutWrapper>} />
-            <Route path="/vehicle" element={<LayoutWrapper><Vehicle /></LayoutWrapper>} />
-            <Route path="/shifts" element={<LayoutWrapper><Shifts /></LayoutWrapper>} />
-            <Route path="/calculator" element={<LayoutWrapper><Calculator /></LayoutWrapper>} />
-            <Route path="/translator" element={<LayoutWrapper><TranslatorPage /></LayoutWrapper>} />
-            <Route path="/login" element={<LayoutWrapper><Login /></LayoutWrapper>} />
-            <Route path="/register" element={<LayoutWrapper><Register /></LayoutWrapper>} />
-            <Route path="/profile" element={<LayoutWrapper><Profile /></LayoutWrapper>} />
-            <Route path="/premium" element={<LayoutWrapper><Premium /></LayoutWrapper>} />
-            <Route path="/about" element={<LayoutWrapper><About /></LayoutWrapper>} />
-            <Route path="/contact" element={<LayoutWrapper><Contact /></LayoutWrapper>} />
-            <Route path="/faq" element={<LayoutWrapper><FAQ /></LayoutWrapper>} />
-            <Route path="/terms" element={<LayoutWrapper><Terms /></LayoutWrapper>} />
-            <Route path="/privacy" element={<LayoutWrapper><Privacy /></LayoutWrapper>} />
-            <Route path="/cookies" element={<LayoutWrapper><Cookies /></LayoutWrapper>} />
-            <Route path="/admin" element={<LayoutWrapper><Admin /></LayoutWrapper>} />
-            
-            {/* Law detail pages */}
-            <Route path="/laws/minimum-wage" element={<LayoutWrapper><MinimumWage /></LayoutWrapper>} />
-            <Route path="/laws/tax-classes" element={<LayoutWrapper><TaxClasses /></LayoutWrapper>} />
-            <Route path="/laws/health-insurance" element={<LayoutWrapper><HealthInsurance /></LayoutWrapper>} />
-            <Route path="/laws/work-contract" element={<LayoutWrapper><WorkContract /></LayoutWrapper>} />
-            <Route path="/laws/tax-return" element={<LayoutWrapper><TaxReturn /></LayoutWrapper>} />
-            <Route path="/laws/pension-insurance" element={<LayoutWrapper><PensionInsurance /></LayoutWrapper>} />
-            <Route path="/laws/employee-protection" element={<LayoutWrapper><EmployeeProtection /></LayoutWrapper>} />
-            <Route path="/laws/child-benefits" element={<LayoutWrapper><ChildBenefits /></LayoutWrapper>} />
-            <Route path="/laws/working-hours" element={<LayoutWrapper><WorkingHours /></LayoutWrapper>} />
-            <Route path="/laws/minimum-holidays" element={<LayoutWrapper><MinimumHolidays /></LayoutWrapper>} />
-            <Route path="/laws/parental-allowance" element={<LayoutWrapper><ParentalAllowance /></LayoutWrapper>} />
-            
-            <Route path="*" element={<LayoutWrapper><NotFound /></LayoutWrapper>} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <TooltipProvider delayDuration={0}>
+          <Toaster />
+          <Sonner position="top-right" closeButton />
+          <BrowserRouter>
+            <ShiftNotifications />
+            <OfflineSyncManager />
+            <OfflineIndicator />
+            <Routes>
+              <Route path="/" element={<LayoutWrapper><Index /></LayoutWrapper>} />
+              <Route path="/language" element={<LayoutWrapper><Language /></LayoutWrapper>} />
+              <Route path="/laws" element={<LayoutWrapper><Laws /></LayoutWrapper>} />
+              <Route path="/vehicle" element={<LayoutWrapper><Vehicle /></LayoutWrapper>} />
+              <Route path="/shifts" element={<LayoutWrapper><Shifts /></LayoutWrapper>} />
+              <Route path="/calculator" element={<LayoutWrapper><Calculator /></LayoutWrapper>} />
+              <Route path="/translator" element={<LayoutWrapper><TranslatorPage /></LayoutWrapper>} />
+              <Route path="/login" element={<LayoutWrapper><Login /></LayoutWrapper>} />
+              <Route path="/register" element={<LayoutWrapper><Register /></LayoutWrapper>} />
+              <Route path="/profile" element={<LayoutWrapper><Profile /></LayoutWrapper>} />
+              <Route path="/premium" element={<LayoutWrapper><Premium /></LayoutWrapper>} />
+              <Route path="/about" element={<LayoutWrapper><About /></LayoutWrapper>} />
+              <Route path="/contact" element={<LayoutWrapper><Contact /></LayoutWrapper>} />
+              <Route path="/faq" element={<LayoutWrapper><FAQ /></LayoutWrapper>} />
+              <Route path="/terms" element={<LayoutWrapper><Terms /></LayoutWrapper>} />
+              <Route path="/privacy" element={<LayoutWrapper><Privacy /></LayoutWrapper>} />
+              <Route path="/cookies" element={<LayoutWrapper><Cookies /></LayoutWrapper>} />
+              <Route path="/admin" element={<LayoutWrapper><Admin /></LayoutWrapper>} />
+              
+              {/* Law detail pages */}
+              <Route path="/laws/minimum-wage" element={<LayoutWrapper><MinimumWage /></LayoutWrapper>} />
+              <Route path="/laws/tax-classes" element={<LayoutWrapper><TaxClasses /></LayoutWrapper>} />
+              <Route path="/laws/health-insurance" element={<LayoutWrapper><HealthInsurance /></LayoutWrapper>} />
+              <Route path="/laws/work-contract" element={<LayoutWrapper><WorkContract /></LayoutWrapper>} />
+              <Route path="/laws/tax-return" element={<LayoutWrapper><TaxReturn /></LayoutWrapper>} />
+              <Route path="/laws/pension-insurance" element={<LayoutWrapper><PensionInsurance /></LayoutWrapper>} />
+              <Route path="/laws/employee-protection" element={<LayoutWrapper><EmployeeProtection /></LayoutWrapper>} />
+              <Route path="/laws/child-benefits" element={<LayoutWrapper><ChildBenefits /></LayoutWrapper>} />
+              <Route path="/laws/working-hours" element={<LayoutWrapper><WorkingHours /></LayoutWrapper>} />
+              <Route path="/laws/minimum-holidays" element={<LayoutWrapper><MinimumHolidays /></LayoutWrapper>} />
+              <Route path="/laws/parental-allowance" element={<LayoutWrapper><ParentalAllowance /></LayoutWrapper>} />
+              
+              <Route path="*" element={<LayoutWrapper><NotFound /></LayoutWrapper>} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </AuthProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 

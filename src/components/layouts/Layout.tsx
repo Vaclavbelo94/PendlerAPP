@@ -6,6 +6,7 @@ import Sidebar from "./Sidebar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useState, useEffect } from "react";
 import { useDeviceSize } from "@/hooks/use-mobile";
+import { useTheme } from "@/hooks/useTheme";
 
 interface LayoutProps {
   children: ReactNode;
@@ -15,6 +16,7 @@ interface LayoutProps {
 const Layout = ({ children, navbarRightContent }: LayoutProps) => {
   const deviceSize = useDeviceSize();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { theme } = useTheme();
   
   // Close sidebar when changing to mobile view
   useEffect(() => {
@@ -48,7 +50,7 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
   const isMobile = deviceSize === "mobile";
   
   return (
-    <div className="flex min-h-screen bg-slate-50">
+    <div className={`flex min-h-screen bg-background ${theme === 'dark' ? 'dark' : ''}`}>
       {/* Sidebar - hidden on mobile by default */}
       <div 
         className={`${

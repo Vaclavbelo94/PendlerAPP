@@ -37,36 +37,45 @@
 
     --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 10%;
-    --sidebar-foreground: 0 0% 100%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 0 0% 10%;
     --sidebar-primary: 48 100% 50%;
     --sidebar-primary-foreground: 0 0% 10%;
-    --sidebar-accent: 0 0% 15%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 0 0% 15%;
+    --sidebar-accent: 0 0% 96%;
+    --sidebar-accent-foreground: 0 0% 10%;
+    --sidebar-border: 0 0% 90%;
     --sidebar-ring: 48 100% 50%;
   }
 
   .dark {
     --background: 0 0% 10%;
     --foreground: 0 0% 100%;
+    
     --card: 0 0% 10%;
     --card-foreground: 0 0% 100%;
+    
     --popover: 0 0% 10%;
     --popover-foreground: 0 0% 100%;
+    
     --primary: 48 100% 50%;
     --primary-foreground: 0 0% 10%;
+    
     --secondary: 0 84% 60%;
     --secondary-foreground: 0 0% 100%;
+    
     --muted: 0 0% 15%;
     --muted-foreground: 0 0% 65%;
+    
     --accent: 48 100% 50%;
     --accent-foreground: 0 0% 10%;
+    
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
+    
     --border: 0 0% 20%;
     --input: 0 0% 20%;
     --ring: 48 100% 50%;
+    
     --sidebar-background: 0 0% 10%;
     --sidebar-foreground: 0 0% 100%;
     --sidebar-primary: 48 100% 50%;
@@ -83,7 +92,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-inter;
+    @apply bg-background text-foreground font-inter transition-colors duration-200;
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-poppins font-bold;
@@ -92,7 +101,7 @@
 
 @layer components {
   .feature-card {
-    @apply flex flex-col bg-white rounded-xl shadow-md p-6 transition-all hover:shadow-lg border border-border;
+    @apply flex flex-col bg-card rounded-xl shadow-md p-6 transition-all hover:shadow-lg border border-border;
   }
   
   .feature-icon {
