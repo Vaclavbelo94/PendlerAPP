@@ -14,6 +14,7 @@ import { toast } from "@/components/ui/use-toast";
 import PremiumCheck from '@/components/premium/PremiumCheck';
 import { translateText } from '@/services/translationAPI';
 import { workPhrases } from '@/data/translatorData';
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const TranslatorPage = () => {
   const [sourceText, setSourceText] = useState("");
@@ -348,18 +349,20 @@ const TranslatorPage = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <TabsList className="mb-6 w-full flex overflow-x-auto pb-2 gap-1">
-                  {workPhrases.map((category) => (
-                    <TabsTrigger 
-                      key={category.id} 
-                      value={category.id}
-                      onClick={() => setPhrasesTab(category.id)}
-                      className={phrasesTab === category.id ? "bg-primary text-white" : ""}
+                <ScrollArea className="w-full pb-2">
+                  <TabsList className="mb-6 w-full flex overflow-x-auto pb-2 gap-1">
+                    {workPhrases.map((category) => (
+                      <TabsTrigger 
+                        key={category.id} 
+                        value={category.id}
+                        onClick={() => setPhrasesTab(category.id)}
+                        className={phrasesTab === category.id ? "bg-primary text-primary-foreground" : ""}
                       >
-                      {category.title}
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
+                        {category.title}
+                      </TabsTrigger>
+                    ))}
+                  </TabsList>
+                </ScrollArea>
 
                 <div className="space-y-4">
                   {workPhrases
