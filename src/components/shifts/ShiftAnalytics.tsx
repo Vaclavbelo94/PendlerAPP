@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from "react";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, eachDayOfInterval } from "date-fns";
@@ -21,6 +20,22 @@ const COLORS = {
   morning: "#3b82f6",  // blue-500
   afternoon: "#22c55e", // green-500
   night: "#a855f7",    // purple-500
+};
+
+// Define a chart config for the ChartContainer
+const chartConfig = {
+  morning: { 
+    color: COLORS.morning,
+    label: "Ranní"
+  },
+  afternoon: { 
+    color: COLORS.afternoon,
+    label: "Odpolední"
+  },
+  night: { 
+    color: COLORS.night,
+    label: "Noční"
+  }
 };
 
 const ShiftAnalytics = ({ shifts, period, onPeriodChange }: ShiftAnalyticsProps) => {
@@ -129,7 +144,7 @@ const ShiftAnalytics = ({ shifts, period, onPeriodChange }: ShiftAnalyticsProps)
           
           <TabsContent value="distribution" className="pt-4">
             {pieChartData.length > 0 ? (
-              <ChartContainer className="h-[300px]">
+              <ChartContainer className="h-[300px]" config={chartConfig}>
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
@@ -177,7 +192,7 @@ const ShiftAnalytics = ({ shifts, period, onPeriodChange }: ShiftAnalyticsProps)
           
           <TabsContent value="trend" className="pt-4">
             {trendData.length > 0 ? (
-              <ChartContainer className="h-[300px]">
+              <ChartContainer className="h-[300px]" config={chartConfig}>
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     data={trendData}
