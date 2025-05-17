@@ -2,19 +2,22 @@
 // Offline úložiště pro správu dat v IndexedDB
 import { toast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { VocabularyItem } from "@/models/VocabularyItem";
 
 // Definice dostupných úložišť
 export const STORES = {
   shifts: 'shifts',
   reports: 'reports',
   notifications: 'notifications',
-  syncQueue: 'syncQueue'
+  syncQueue: 'syncQueue',
+  vocabulary: 'vocabulary', // Add vocabulary store
+  testHistory: 'testHistory' // Add test history store
 };
 
 // Inicializace IndexedDB
 const initDB = () => {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open('pendlerAppDB', 1);
+    const request = indexedDB.open('pendlerAppDB', 2); // Increase version to update schema
     
     request.onerror = (event) => {
       reject("Nepodařilo se otevřít databázi.");
@@ -38,6 +41,16 @@ const initDB = () => {
       
       if (!db.objectStoreNames.contains(STORES.syncQueue)) {
         db.createObjectStore(STORES.syncQueue, { keyPath: 'id', autoIncrement: true });
+      }
+      
+      // Add vocabulary store
+      if (!db.objectStoreNames.contains(STORES.vocabulary)) {
+        db.createObjectStore(STORES.vocabulary, { keyPath: 'id' });
+      }
+      
+      // Add test history store
+      if (!db.objectStoreNames.contains(STORES.testHistory)) {
+        db.createObjectStore(STORES.testHistory, { keyPath: 'id', autoIncrement: true });
       }
     };
     
@@ -67,6 +80,54 @@ export const saveData = async <T extends { id: string }>(storeName: string, data
     });
   } catch (error) {
     console.error(`Chyba při ukládání dat (${storeName}):`, error);
+    throw error;
+  }
+};
+
+// Bulk save multiple items to IndexedDB
+export const bulkSaveData = async <T extends { id: string }>(storeName: string, dataItems: T[]): Promise<T[]> => {
+  try {
+    const db = await initDB() as IDBDatabase;
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(storeName, 'readwrite');
+      const store = transaction.objectStore(storeName);
+      
+      let completed = 0;
+      let failed = 0;
+      
+      dataItems.forEach((item) => {
+        const request = store.put(item);
+        
+        request.onsuccess = () => {
+          completed++;
+          if (completed + failed === dataItems.length) {
+            if (failed > 0) {
+              reject(`Failed to save ${failed} items`);
+            } else {
+              resolve(dataItems);
+            }
+          }
+        };
+        
+        request.onerror = () => {
+          failed++;
+          if (completed + failed === dataItems.length) {
+            reject(`Failed to save ${failed} items`);
+          }
+        };
+      });
+      
+      transaction.oncomplete = () => {
+        resolve(dataItems);
+      };
+      
+      transaction.onerror = () => {
+        reject(`Transaction failed`);
+      };
+    });
+  } catch (error) {
+    console.error(`Chyba při hromadném ukládání dat (${storeName}):`, error);
     throw error;
   }
 };
@@ -144,6 +205,90 @@ export const deleteItemById = async (storeName: string, id: string): Promise<boo
   }
 };
 
+// Clear all data in a store
+export const clearStore = async (storeName: string): Promise<boolean> => {
+  try {
+    const db = await initDB() as IDBDatabase;
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(storeName, 'readwrite');
+      const store = transaction.objectStore(storeName);
+      const request = store.clear();
+      
+      request.onerror = (event) => {
+        reject((event.target as IDBRequest).error);
+      };
+      
+      request.onsuccess = () => {
+        resolve(true);
+      };
+    });
+  } catch (error) {
+    console.error(`Chyba při mazání úložiště (${storeName}):`, error);
+    return false;
+  }
+};
+
+// Save all vocabulary to offline storage
+export const saveVocabularyToOfflineStorage = async (items: VocabularyItem[]): Promise<void> => {
+  try {
+    // First clear the vocabulary store
+    await clearStore(STORES.vocabulary);
+    
+    // Then bulk save all items
+    await bulkSaveData(STORES.vocabulary, items);
+    
+    // Also save to localStorage as backup
+    localStorage.setItem('vocabulary_items', JSON.stringify(items));
+    
+    console.log('Vocabulary saved to offline storage:', items.length, 'items');
+  } catch (error) {
+    console.error('Failed to save vocabulary to offline storage:', error);
+  }
+};
+
+// Load vocabulary from offline storage
+export const loadVocabularyFromOfflineStorage = async (): Promise<VocabularyItem[]> => {
+  try {
+    // First try IndexedDB
+    const items = await getAllData<VocabularyItem>(STORES.vocabulary);
+    if (items && items.length > 0) {
+      console.log('Loaded vocabulary from IndexedDB:', items.length, 'items');
+      return items;
+    }
+    
+    // Fall back to localStorage
+    const storedItems = localStorage.getItem('vocabulary_items');
+    if (storedItems) {
+      const parsedItems = JSON.parse(storedItems);
+      console.log('Loaded vocabulary from localStorage:', parsedItems.length, 'items');
+      
+      // Save to IndexedDB for next time
+      if (parsedItems.length > 0) {
+        await bulkSaveData(STORES.vocabulary, parsedItems);
+      }
+      
+      return parsedItems;
+    }
+    
+    return [];
+  } catch (error) {
+    console.error('Failed to load vocabulary from offline storage:', error);
+    
+    // Last resort: try localStorage directly
+    try {
+      const storedItems = localStorage.getItem('vocabulary_items');
+      if (storedItems) {
+        return JSON.parse(storedItems);
+      }
+    } catch (e) {
+      console.error('Also failed to load from localStorage:', e);
+    }
+    
+    return [];
+  }
+};
+
 // Načtení dat z localStorage do IndexedDB
 export const loadFromLocalStorage = async (): Promise<void> => {
   try {
@@ -165,6 +310,13 @@ export const loadFromLocalStorage = async (): Promise<void> => {
       }
     }
     
+    // Načtení slovíček
+    const vocabularyData = localStorage.getItem('vocabulary_items');
+    if (vocabularyData) {
+      const vocabulary = JSON.parse(vocabularyData);
+      await bulkSaveData(STORES.vocabulary, vocabulary);
+    }
+    
     console.log('Data byla úspěšně načtena do offline úložiště');
   } catch (error) {
     console.error('Chyba při načítání dat do offline úložiště:', error);
@@ -184,6 +336,12 @@ export const syncWithLocalStorage = async (): Promise<void> => {
     const notificationsData = await getAllData(STORES.notifications);
     if (notificationsData.length > 0) {
       localStorage.setItem('notifications', JSON.stringify(notificationsData));
+    }
+    
+    // Synchronizace slovíček
+    const vocabularyData = await getAllData(STORES.vocabulary);
+    if (vocabularyData.length > 0) {
+      localStorage.setItem('vocabulary_items', JSON.stringify(vocabularyData));
     }
     
     // Kontrola, zda je uživatel přihlášen

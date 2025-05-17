@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import { VocabularyProvider, useVocabularyContext } from './VocabularyProvider';
 import { useOfflineStatus } from '@/hooks/useOfflineStatus';
 import { toast } from '@/components/ui/use-toast';
+import { saveData, getAllData } from '@/utils/offlineStorage';
 
 interface VocabularyManagerProps {
   children: React.ReactNode;
@@ -10,48 +11,98 @@ interface VocabularyManagerProps {
 
 // Offline storage key for vocabulary items
 const VOCABULARY_OFFLINE_KEY = 'vocabulary_offline_data';
+const VOCABULARY_INDEXED_DB_STORE = 'vocabulary';
 
 const VocabularySync = ({ children }: { children: React.ReactNode }) => {
-  const { items, bulkAddVocabularyItems } = useVocabularyContext();
+  const { items, bulkAddVocabularyItems, testHistory } = useVocabularyContext();
   const { isOffline } = useOfflineStatus();
 
-  // When going offline, save the current vocabulary items to localStorage
+  // When going offline, save the current vocabulary items to localStorage and IndexedDB
   useEffect(() => {
     if (isOffline && items.length > 0) {
       try {
+        // Save to localStorage as backup
         localStorage.setItem(VOCABULARY_OFFLINE_KEY, JSON.stringify(items));
+        
+        // Save to IndexedDB for better storage
+        if ('indexedDB' in window) {
+          items.forEach(item => {
+            try {
+              saveData(VOCABULARY_INDEXED_DB_STORE, item)
+                .catch(error => console.error('Error saving item to IndexedDB:', error));
+            } catch (err) {
+              console.error('Error processing item for IndexedDB storage:', err);
+            }
+          });
+        }
+        
         console.log('Vocabulary data saved for offline use:', items.length, 'items');
+        
+        // Also save test history
+        if (testHistory.length > 0) {
+          localStorage.setItem('vocabulary_test_history', JSON.stringify(testHistory));
+        }
       } catch (error) {
         console.error('Error saving vocabulary for offline use:', error);
       }
     }
-  }, [isOffline, items]);
+  }, [isOffline, items, testHistory]);
 
   // When coming back online, check for any offline data to restore
   useEffect(() => {
     if (!isOffline) {
-      try {
-        const offlineData = localStorage.getItem(VOCABULARY_OFFLINE_KEY);
-        if (offlineData) {
-          const parsedData = JSON.parse(offlineData);
-          if (Array.isArray(parsedData) && parsedData.length > 0) {
-            // Only restore if there's actual data and we don't have the data already
-            if (items.length === 0 || window.confirm('Chcete obnovit slovíčka uložená offline?')) {
-              bulkAddVocabularyItems(parsedData);
-              toast({
-                title: 'Data obnovena',
-                description: `${parsedData.length} slovíček bylo obnoveno z offline úložiště.`,
-              });
-              // Clear offline data after successful restore
-              localStorage.removeItem(VOCABULARY_OFFLINE_KEY);
+      const restoreFromLocalStorage = async () => {
+        try {
+          const offlineData = localStorage.getItem(VOCABULARY_OFFLINE_KEY);
+          if (offlineData) {
+            const parsedData = JSON.parse(offlineData);
+            if (Array.isArray(parsedData) && parsedData.length > 0) {
+              // Only restore if there's actual data and we don't have the data already
+              if (items.length === 0 || window.confirm('Chcete obnovit slovíčka uložená offline?')) {
+                bulkAddVocabularyItems(parsedData);
+                toast({
+                  title: 'Data obnovena',
+                  description: `${parsedData.length} slovíček bylo obnoveno z offline úložiště.`,
+                });
+                // Clear offline data after successful restore
+                localStorage.removeItem(VOCABULARY_OFFLINE_KEY);
+              }
             }
           }
+        } catch (error) {
+          console.error('Error restoring from localStorage:', error);
         }
-      } catch (error) {
-        console.error('Error restoring offline vocabulary data:', error);
-      }
+      };
+      
+      const restoreFromIndexedDB = async () => {
+        if ('indexedDB' in window) {
+          try {
+            const offlineItems = await getAllData(VOCABULARY_INDEXED_DB_STORE);
+            if (offlineItems && offlineItems.length > 0) {
+              // Check if we need to restore (if we have no items or user confirms)
+              if (items.length === 0 || window.confirm('Chcete obnovit slovíčka uložená v IndexedDB?')) {
+                bulkAddVocabularyItems(offlineItems);
+                toast({
+                  title: 'Data obnovena z IndexedDB',
+                  description: `${offlineItems.length} slovíček bylo obnoveno z IndexedDB.`,
+                });
+              }
+            }
+          } catch (error) {
+            console.error('Error restoring from IndexedDB:', error);
+            // If IndexedDB fails, fall back to localStorage
+            restoreFromLocalStorage();
+          }
+        } else {
+          // If IndexedDB is not supported, fall back to localStorage
+          restoreFromLocalStorage();
+        }
+      };
+      
+      // First try IndexedDB, fall back to localStorage if needed
+      restoreFromIndexedDB();
     }
-  }, [isOffline, bulkAddVocabularyItems]);
+  }, [isOffline, bulkAddVocabularyItems, items.length]);
 
   return <>{children}</>;
 };

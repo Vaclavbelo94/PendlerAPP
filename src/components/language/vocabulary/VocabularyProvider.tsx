@@ -1,8 +1,10 @@
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { VocabularyItem, UserProgress } from '@/models/VocabularyItem';
 import { useVocabularyProvider } from '@/hooks/useVocabularyProvider';
 import { TestResult } from './VocabularyTest';
+import { saveTestHistory, loadTestHistory } from '@/utils/vocabularyStorage';
+import { useOfflineStatus } from '@/hooks/useOfflineStatus';
 
 interface VocabularyContextType {
   items: VocabularyItem[];
@@ -33,39 +35,29 @@ interface VocabularyContextType {
 const VocabularyContext = createContext<VocabularyContextType | null>(null);
 
 export const VocabularyProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Načtení uložených výsledků testů z localStorage
-  const loadTestHistory = (): TestResult[] => {
-    try {
-      const savedTestHistory = localStorage.getItem('vocabulary_test_history');
-      if (savedTestHistory) {
-        // Při načítání musíme znovu vytvořit Date objekty, které byly serializovány
-        const parsedHistory = JSON.parse(savedTestHistory);
-        return parsedHistory.map((test: any) => ({
-          ...test,
-          startTime: new Date(test.startTime),
-          endTime: new Date(test.endTime)
-        }));
-      }
-    } catch (error) {
-      console.error('Chyba při načítání historie testů:', error);
-    }
-    return [];
-  };
-
-  const [testHistory, setTestHistory] = useState<TestResult[]>(loadTestHistory);
+  const [testHistory, setTestHistory] = useState<TestResult[]>(loadTestHistory());
+  const { isOffline } = useOfflineStatus();
   
   const vocabularyProvider = useVocabularyProvider();
 
+  // Add test result and save to storage
   const addTestResult = (result: TestResult) => {
     const updatedHistory = [result, ...testHistory];
     setTestHistory(updatedHistory);
     
     try {
-      localStorage.setItem('vocabulary_test_history', JSON.stringify(updatedHistory));
+      saveTestHistory(updatedHistory);
     } catch (error) {
       console.error('Chyba při ukládání historie testů:', error);
     }
   };
+
+  // Save test history when it changes or we go offline
+  useEffect(() => {
+    if (isOffline && testHistory.length > 0) {
+      saveTestHistory(testHistory);
+    }
+  }, [testHistory, isOffline]);
 
   return (
     <VocabularyContext.Provider value={{
@@ -85,4 +77,3 @@ export const useVocabularyContext = () => {
   }
   return context;
 };
-
