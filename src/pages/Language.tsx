@@ -18,7 +18,7 @@ import { Separator } from "@/components/ui/separator";
 import GamificationFeatures from "@/components/language/GamificationFeatures";
 import OfflineIndicator from "@/components/offlineMode/OfflineIndicator";
 import { Button } from "@/components/ui/button";
-import { Download, CloudCheck } from "lucide-react";
+import { Download, Check } from "lucide-react";
 
 const Language = () => {
   const [activeTab, setActiveTab] = useState("grammar");
@@ -116,7 +116,7 @@ const Language = () => {
             <Card className="bg-muted/30 border-dashed">
               <CardContent className="p-3 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <CloudCheck className="h-5 w-5 text-primary" />
+                  <Check className="h-5 w-5 text-primary" />
                   <div>
                     <div className="font-medium">Offline dostupnost</div>
                     <p className="text-sm text-muted-foreground">
