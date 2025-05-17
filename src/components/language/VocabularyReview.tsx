@@ -1,146 +1,126 @@
 
-import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { ThumbsUp, ThumbsDown, ArrowRight, Check } from "lucide-react";
-import { VocabularyItem } from '@/models/VocabularyItem';
-import { Badge } from "@/components/ui/badge";
+import React, { useState, useEffect } from 'react';
+import { useSpacedRepetition } from '@/hooks/useSpacedRepetition';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from '@/components/ui/button';
+import VocabularyReviewCard from './VocabularyReviewCard';
+import { Brain, CheckCircle2 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
-interface VocabularyReviewProps {
-  currentItem: VocabularyItem | null;
-  dueItems: VocabularyItem[];
-  completedToday: number;
-  dailyGoal: number;
-  onCorrect: (id: string) => void;
-  onIncorrect: (id: string) => void;
-  onNext: () => void;
-}
-
-const VocabularyReview: React.FC<VocabularyReviewProps> = ({
-  currentItem,
-  dueItems,
-  completedToday,
-  dailyGoal,
-  onCorrect,
-  onIncorrect,
-  onNext,
-}) => {
-  const [showTranslation, setShowTranslation] = useState(false);
+const VocabularyReview: React.FC = () => {
+  const { toast } = useToast();
+  const { 
+    dueItems, 
+    currentItem, 
+    markCorrect, 
+    markIncorrect, 
+    goToNextItem,
+    dailyGoal,
+    completedToday,
+    getStatistics
+  } = useSpacedRepetition();
   
+  const [isComplete, setIsComplete] = useState(false);
+
+  useEffect(() => {
+    if (!currentItem && dueItems.length === 0) {
+      setIsComplete(true);
+    } else {
+      setIsComplete(false);
+    }
+  }, [currentItem, dueItems]);
+
+  const handleStartReview = () => {
+    if (dueItems.length > 0) {
+      goToNextItem();
+      setIsComplete(false);
+    } else {
+      toast({
+        title: "Žádná slovíčka k opakování",
+        description: "Momentálně nemáte žádná slovíčka k opakování.",
+      });
+    }
+  };
+
+  const goalProgress = Math.min((completedToday / Math.max(dailyGoal, 1)) * 100, 100);
+
   if (!currentItem) {
     return (
       <Card className="w-full">
         <CardHeader>
           <CardTitle>Opakování slovíček</CardTitle>
-          <CardDescription>Všechna slovíčka na dnes jsou hotová</CardDescription>
+          <CardDescription>
+            {isComplete
+              ? "Všechna slovíčka na dnešek jsou hotová. Skvělá práce!"
+              : `Máte ${dueItems.length} slovíček k opakování.`}
+          </CardDescription>
         </CardHeader>
-        <CardContent className="pt-6 text-center">
-          <Check className="mx-auto h-12 w-12 text-green-500 mb-4" />
-          <p>Gratulujeme! Dokončili jste všechna dnešní slovíčka.</p>
-          <p className="text-muted-foreground mt-2">Vraťte se zítra pro další opakování.</p>
-        </CardContent>
-        <CardFooter className="flex justify-center">
-          <div className="w-full max-w-md">
-            <div className="mb-2 flex justify-between text-sm">
-              <span>Dokončeno dnes</span>
-              <span className="font-medium">{completedToday}/{dailyGoal}</span>
-            </div>
-            <Progress value={(completedToday / dailyGoal) * 100} />
+        <CardContent>
+          <div className="flex flex-col items-center justify-center py-8 space-y-6">
+            {isComplete ? (
+              <>
+                <div className="rounded-full bg-green-100 p-6">
+                  <CheckCircle2 className="h-12 w-12 text-green-600" />
+                </div>
+                <div className="text-center">
+                  <h3 className="text-lg font-medium">Opakování dokončeno!</h3>
+                  <p className="text-muted-foreground mt-1">
+                    Dnes jste si zopakovali {completedToday} slovíček.
+                    {dailyGoal > 0 && completedToday >= dailyGoal && " Splnili jste svůj denní cíl!"}
+                  </p>
+                </div>
+                <Button onClick={() => window.location.reload()} variant="outline">
+                  Aktualizovat
+                </Button>
+              </>
+            ) : (
+              <>
+                <div className="rounded-full bg-primary/10 p-6">
+                  <Brain className="h-12 w-12 text-primary" />
+                </div>
+                <div className="text-center max-w-md">
+                  <h3 className="text-lg font-medium">Připraveno k opakování</h3>
+                  <p className="text-muted-foreground mt-1">
+                    Máte {dueItems.length} slovíček k opakování. 
+                    Pravidelné opakování vám pomůže efektivněji si zapamatovat slovní zásobu.
+                  </p>
+                </div>
+                <Button onClick={handleStartReview}>
+                  Začít opakování
+                </Button>
+              </>
+            )}
           </div>
-        </CardFooter>
+        </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <div className="flex justify-between items-center">
-          <div>
-            <CardTitle>Opakování slovíček</CardTitle>
-            <CardDescription>
-              Zbývá {dueItems.length} slovíček na dnes
-            </CardDescription>
+    <div className="space-y-6">
+      <VocabularyReviewCard
+        item={currentItem}
+        onCorrect={markCorrect}
+        onIncorrect={markIncorrect}
+        remainingItems={dueItems.length}
+        totalItems={dueItems.length + 1} // Include current item
+      />
+      
+      <Card>
+        <CardContent className="pt-6">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm">Denní cíl: {completedToday}/{dailyGoal}</span>
+            <span className="text-sm font-medium">{Math.round(goalProgress)}%</span>
           </div>
-          <Badge variant="outline">
-            {currentItem.category || "Obecné"}
-          </Badge>
-        </div>
-      </CardHeader>
-      <CardContent className="pt-6">
-        <div className="space-y-6">
-          <div className="text-center space-y-4">
-            <p className="text-xl font-medium">{currentItem.word}</p>
-            {currentItem.example && (
-              <p className="text-sm italic text-muted-foreground">
-                "{currentItem.example}"
-              </p>
-            )}
-            
-            {showTranslation ? (
-              <div className="p-4 bg-muted/50 rounded-md mt-4">
-                <p className="text-xl font-medium">{currentItem.translation}</p>
-              </div>
-            ) : (
-              <Button 
-                variant="outline" 
-                onClick={() => setShowTranslation(true)}
-                className="mt-4"
-              >
-                Ukázat překlad
-              </Button>
-            )}
+          <div className="h-2 w-full bg-gray-100 rounded-full">
+            <div 
+              className="h-2 bg-primary rounded-full transition-all" 
+              style={{ width: `${goalProgress}%` }}
+            ></div>
           </div>
-          
-          <div className="w-full">
-            <div className="mb-2 flex justify-between text-sm">
-              <span>Dokončeno dnes</span>
-              <span className="font-medium">{completedToday}/{dailyGoal}</span>
-            </div>
-            <Progress value={(completedToday / dailyGoal) * 100} />
-          </div>
-        </div>
-      </CardContent>
-      <CardFooter>
-        <div className="flex w-full justify-between gap-4">
-          {showTranslation ? (
-            <>
-              <Button 
-                variant="outline"
-                className="flex-1"
-                onClick={() => {
-                  onIncorrect(currentItem.id);
-                  setShowTranslation(false);
-                }}
-              >
-                <ThumbsDown className="mr-2 h-4 w-4" />
-                Neznám
-              </Button>
-              <Button 
-                className="flex-1"
-                onClick={() => {
-                  onCorrect(currentItem.id);
-                  setShowTranslation(false);
-                }}
-              >
-                <ThumbsUp className="mr-2 h-4 w-4" />
-                Znám
-              </Button>
-            </>
-          ) : (
-            <Button 
-              variant="ghost" 
-              className="ml-auto" 
-              onClick={() => onNext()}
-            >
-              Přeskočit
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          )}
-        </div>
-      </CardFooter>
-    </Card>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 

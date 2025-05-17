@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from '@/components/ui/progress';
@@ -11,11 +10,7 @@ import { CalendarCheck, Trophy, BookOpen, Brain } from "lucide-react";
 import { UserProgress, DailyProgressStat, VocabularyItem } from '@/models/VocabularyItem';
 import { format, parseISO, subDays } from 'date-fns';
 import { cs } from 'date-fns/locale';
-
-interface VocabularyProgressDashboardProps {
-  userProgress: UserProgress;
-  items: VocabularyItem[];
-}
+import WeeklyProgressHeatmap from './WeeklyProgressHeatmap';
 
 // Colors for charts
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
@@ -25,6 +20,11 @@ const DIFFICULTY_COLORS = {
   hard: '#FF8042',
   unspecified: '#8884d8'
 };
+
+interface VocabularyProgressDashboardProps {
+  userProgress: UserProgress;
+  items: VocabularyItem[];
+}
 
 const VocabularyProgressDashboard: React.FC<VocabularyProgressDashboardProps> = ({ 
   userProgress,
@@ -132,6 +132,9 @@ const VocabularyProgressDashboard: React.FC<VocabularyProgressDashboardProps> = 
           </CardContent>
         </Card>
       </div>
+
+      {/* Weekly Heatmap */}
+      <WeeklyProgressHeatmap dailyStats={userProgress.dailyStats} />
 
       {/* Daily progress chart */}
       <Card>
