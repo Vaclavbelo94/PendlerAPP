@@ -16,9 +16,10 @@ import OfflineIndicator from "@/components/offlineMode/OfflineIndicator";
 import OfflineDownloadCard from "@/components/language/OfflineDownloadCard";
 import LanguageSidebar from "@/components/language/LanguageSidebar";
 import LanguageManager, { useLanguageContext } from "@/components/language/LanguageManager";
+import GamificationSummary from "@/components/language/GamificationSummary";
 import { PremiumBadge } from "@/components/premium/PremiumBadge";
 import { Button } from "@/components/ui/button";
-import { Languages, FileText, BookOpen, GraduationCap, ChevronRight } from "lucide-react";
+import { Languages, FileText, BookOpen, GraduationCap, ChevronRight, Trophy } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const LanguageContent = () => {
@@ -78,6 +79,15 @@ const LanguageContent = () => {
           <Button
             variant="outline"
             size="sm"
+            className="flex items-center gap-1 bg-primary/10 hover:bg-primary/20 border-primary/30"
+            onClick={() => setActiveTab("gamification")}
+          >
+            <Trophy className="h-4 w-4" />
+            <span>Pokroky</span>
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
             className="flex items-center gap-1"
             onClick={() => navigate("/translator")}
           >
@@ -86,6 +96,11 @@ const LanguageContent = () => {
           </Button>
         </div>
       </div>
+      
+      {/* Gamifikační přehled - zobrazí se pouze na hlavní stránce */}
+      {activeTab === "grammar" && (
+        <GamificationSummary />
+      )}
       
       <div className="flex flex-col md:flex-row gap-4 md:gap-6 items-start">
         {/* Language learning navigation and content */}
@@ -134,7 +149,7 @@ const LanguageContent = () => {
             </TabsContent>
 
             <TabsContent value="gamification">
-              {/* Gamifikační záložka */}
+              {/* Vylepšená gamifikační záložka */}
               <div className="mb-4">
                 <PremiumBadge variant="rounded" />
               </div>
