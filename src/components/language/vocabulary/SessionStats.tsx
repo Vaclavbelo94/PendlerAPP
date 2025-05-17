@@ -1,7 +1,8 @@
 
 import React from 'react';
-import { Check, X, Clock, BarChart, Zap, Trophy, Timer, Award } from 'lucide-react';
+import { Check, X, Clock, BarChart, Zap, Trophy, Timer, Award, Star, CheckSquare, Flag, Medal } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { motion } from 'framer-motion';
 
 interface SessionStatsProps {
   startTime: Date;
@@ -53,19 +54,19 @@ const SessionStats: React.FC<SessionStatsProps> = ({
     if (accuracy === 100 && totalAnswers >= 5) {
       badges.push({ 
         title: "Mistr slovíček", 
-        color: "text-purple-600 bg-purple-100",
+        color: "text-purple-600 bg-purple-100 dark:bg-purple-900/30 dark:text-purple-400",
         icon: <Trophy className="h-3 w-3 mr-1" />
       });
     } else if (accuracy >= 90) {
       badges.push({ 
         title: "Perfekcionista", 
-        color: "text-purple-600 bg-purple-100",
+        color: "text-purple-600 bg-purple-100 dark:bg-purple-900/30 dark:text-purple-400",
         icon: <Trophy className="h-3 w-3 mr-1" />
       });
     } else if (accuracy >= 75) {
       badges.push({ 
         title: "Pečlivý student", 
-        color: "text-blue-600 bg-blue-100",
+        color: "text-blue-600 bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400",
         icon: <Award className="h-3 w-3 mr-1" />
       });
     }
@@ -74,13 +75,13 @@ const SessionStats: React.FC<SessionStatsProps> = ({
     if (wordsPerMinute >= 15) {
       badges.push({ 
         title: "Bleskový jazyk", 
-        color: "text-amber-600 bg-amber-100",
+        color: "text-amber-600 bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400",
         icon: <Zap className="h-3 w-3 mr-1" />
       });
     } else if (wordsPerMinute >= 10) {
       badges.push({ 
         title: "Rychlý student", 
-        color: "text-blue-600 bg-blue-100",
+        color: "text-blue-600 bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400",
         icon: <Timer className="h-3 w-3 mr-1" />
       });
     }
@@ -88,14 +89,14 @@ const SessionStats: React.FC<SessionStatsProps> = ({
     // Streak-based achievements
     if (streakCount && streakCount >= 10) {
       badges.push({ 
-        title: "Sérivý mistr", 
-        color: "text-amber-600 bg-amber-100",
+        title: "Sériový mistr", 
+        color: "text-amber-600 bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400",
         icon: <Zap className="h-3 w-3 mr-1" />
       });
     } else if (streakCount && streakCount >= 5) {
       badges.push({ 
         title: "Série mistrovství", 
-        color: "text-amber-600 bg-amber-100",
+        color: "text-amber-600 bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400",
         icon: <Award className="h-3 w-3 mr-1" />
       });
     }
@@ -104,13 +105,13 @@ const SessionStats: React.FC<SessionStatsProps> = ({
     if (correctCount >= 30) {
       badges.push({ 
         title: "Jazykový maraton", 
-        color: "text-emerald-600 bg-emerald-100",
+        color: "text-emerald-600 bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400",
         icon: <Award className="h-3 w-3 mr-1" />
       });
     } else if (correctCount >= 20) {
       badges.push({ 
         title: "Slovní zásoba", 
-        color: "text-emerald-600 bg-emerald-100",
+        color: "text-emerald-600 bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400",
         icon: <Check className="h-3 w-3 mr-1" />
       });
     }
@@ -119,8 +120,17 @@ const SessionStats: React.FC<SessionStatsProps> = ({
     if (durationMinutes <= 3 && correctCount >= 10 && accuracy >= 80) {
       badges.push({ 
         title: "Efektivní učení", 
-        color: "text-indigo-600 bg-indigo-100",
+        color: "text-indigo-600 bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-400",
         icon: <Clock className="h-3 w-3 mr-1" />
+      });
+    }
+    
+    // First achievement always unlocked if none of the above apply
+    if (badges.length === 0) {
+      badges.push({ 
+        title: "První kroky", 
+        color: "text-blue-600 bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400",
+        icon: <Star className="h-3 w-3 mr-1" />
       });
     }
     
@@ -129,6 +139,22 @@ const SessionStats: React.FC<SessionStatsProps> = ({
   
   const badges = generateAchievements();
 
+  // Animation variants for list items
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+  
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -136,25 +162,46 @@ const SessionStats: React.FC<SessionStatsProps> = ({
           <BarChart className="h-4 w-4 mr-2" /> 
           Statistika relace
         </h3>
-        <div className="flex items-center gap-2">
+        <motion.div 
+          initial={{ scale: 0.8 }}
+          animate={{ scale: 1 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+          className="flex items-center gap-2"
+        >
           <Zap className="h-5 w-5 text-amber-500" />
           <span className="font-bold text-lg">{points} bodů</span>
-        </div>
+        </motion.div>
       </div>
       
       {badges.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-3">
+        <motion.div 
+          className="flex flex-wrap gap-2 mb-3"
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+        >
           {badges.map((badge, index) => (
-            <Badge key={index} variant="outline" className={`${badge.color} border-none flex items-center`}>
-              {badge.icon}
-              {badge.title}
-            </Badge>
+            <motion.div 
+              key={index}
+              variants={itemVariants}
+              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+            >
+              <Badge variant="outline" className={`${badge.color} border-none flex items-center`}>
+                {badge.icon}
+                {badge.title}
+              </Badge>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       )}
       
       <div className="grid grid-cols-2 gap-4">
-        <div className="bg-muted/50 rounded-md p-3">
+        <motion.div 
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.1 }}
+          className="bg-muted/50 rounded-md p-3"
+        >
           <div className="flex justify-between items-center">
             <div className="flex items-center">
               <Clock className="h-4 w-4 text-muted-foreground mr-2" />
@@ -162,9 +209,14 @@ const SessionStats: React.FC<SessionStatsProps> = ({
             </div>
             <span className="font-medium">{durationMinutes} min</span>
           </div>
-        </div>
+        </motion.div>
         
-        <div className="bg-muted/50 rounded-md p-3">
+        <motion.div 
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.1 }}
+          className="bg-muted/50 rounded-md p-3"
+        >
           <div className="flex justify-between items-center">
             <div className="flex items-center">
               <Timer className="h-4 w-4 text-muted-foreground mr-2" />
@@ -172,9 +224,14 @@ const SessionStats: React.FC<SessionStatsProps> = ({
             </div>
             <span className="font-medium">{avgResponse} s/slovo</span>
           </div>
-        </div>
+        </motion.div>
         
-        <div className="bg-green-100/50 dark:bg-green-900/20 rounded-md p-3">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="bg-green-100/50 dark:bg-green-900/20 rounded-md p-3"
+        >
           <div className="flex justify-between items-center">
             <div className="flex items-center">
               <Check className="h-4 w-4 text-green-600 dark:text-green-400 mr-2" />
@@ -182,9 +239,14 @@ const SessionStats: React.FC<SessionStatsProps> = ({
             </div>
             <span className="font-medium">{correctCount}</span>
           </div>
-        </div>
+        </motion.div>
         
-        <div className="bg-red-100/50 dark:bg-red-900/20 rounded-md p-3">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="bg-red-100/50 dark:bg-red-900/20 rounded-md p-3"
+        >
           <div className="flex justify-between items-center">
             <div className="flex items-center">
               <X className="h-4 w-4 text-red-600 dark:text-red-400 mr-2" />
@@ -192,24 +254,36 @@ const SessionStats: React.FC<SessionStatsProps> = ({
             </div>
             <span className="font-medium">{incorrectCount}</span>
           </div>
-        </div>
+        </motion.div>
       </div>
       
-      <div className="mt-2 pt-2 border-t">
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.4 }}
+        className="mt-2 pt-2 border-t"
+      >
         <div className="flex justify-between items-center">
           <span className="text-sm text-muted-foreground">Úspěšnost</span>
           <span className="font-medium">{accuracy}%</span>
         </div>
         <div className="w-full bg-muted h-2 rounded-full mt-1 overflow-hidden">
-          <div
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: `${accuracy}%` }}
+            transition={{ delay: 0.5, duration: 0.8, ease: "easeOut" }}
             className="h-full bg-green-500 rounded-full"
-            style={{ width: `${accuracy}%` }}
-          ></div>
+          ></motion.div>
         </div>
-      </div>
+      </motion.div>
       
       {streakCount && streakCount > 0 && (
-        <div className="mt-2 pt-2 border-t">
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="mt-2 pt-2 border-t"
+        >
           <div className="flex justify-between items-center">
             <div className="flex items-center">
               <Trophy className="h-4 w-4 text-amber-500 mr-2" />
@@ -217,7 +291,7 @@ const SessionStats: React.FC<SessionStatsProps> = ({
             </div>
             <span className="font-medium">{streakCount} správně v řadě</span>
           </div>
-        </div>
+        </motion.div>
       )}
     </div>
   );

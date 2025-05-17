@@ -1,7 +1,8 @@
 
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Check, X, Clock, Zap, Award } from 'lucide-react';
+import { Check, X, Clock, Zap, Award, Star } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface CompactSessionStatsProps {
   startTime: Date;
@@ -35,6 +36,39 @@ const CompactSessionStats: React.FC<CompactSessionStatsProps> = ({
 
   // Check for any notable achievements
   const hasNotableAchievement = accuracy >= 90 || (streakCount && streakCount >= 5) || reviewedWords.length >= 15;
+  
+  // Define achievement badges
+  const getAchievementBadge = () => {
+    if (accuracy === 100 && totalAnswers >= 5) {
+      return { 
+        title: "Perfektní úspěšnost!", 
+        icon: <Star className="h-3 w-3 mr-1 text-amber-500" />,
+        color: "bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400"
+      };
+    } else if (streakCount && streakCount >= 8) {
+      return { 
+        title: "Skvělá série!", 
+        icon: <Award className="h-3 w-3 mr-1 text-purple-500" />,
+        color: "bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400"
+      };
+    } else if (reviewedWords.length >= 20) {
+      return { 
+        title: "Jazykový maraton!", 
+        icon: <Zap className="h-3 w-3 mr-1 text-blue-500" />,
+        color: "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
+      };
+    } else if (accuracy >= 90) {
+      return { 
+        title: "Skvělý výkon!", 
+        icon: <Award className="h-3 w-3 mr-1" />,
+        color: "bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400"
+      };
+    }
+    
+    return null;
+  };
+  
+  const achievementBadge = getAchievementBadge();
 
   return (
     <Card className="overflow-hidden">
@@ -60,16 +94,26 @@ const CompactSessionStats: React.FC<CompactSessionStatsProps> = ({
               {accuracy}% úspěšnost
             </div>
             
-            <div className="flex items-center space-x-1 bg-amber-100 dark:bg-amber-900/30 px-2 py-1 rounded">
+            <motion.div 
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+              className="flex items-center space-x-1 bg-amber-100 dark:bg-amber-900/30 px-2 py-1 rounded"
+            >
               <Zap className="h-4 w-4 text-amber-500" />
               <span className="font-medium">{points}</span>
-            </div>
+            </motion.div>
             
-            {hasNotableAchievement && (
-              <div className="text-xs flex items-center px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded">
-                <Award className="h-3 w-3 mr-1" />
-                <span>Skvělý výkon!</span>
-              </div>
+            {achievementBadge && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }} 
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2, duration: 0.3 }}
+                className={`text-xs flex items-center px-2 py-1 ${achievementBadge.color} rounded`}
+              >
+                {achievementBadge.icon}
+                <span>{achievementBadge.title}</span>
+              </motion.div>
             )}
           </div>
         </div>
