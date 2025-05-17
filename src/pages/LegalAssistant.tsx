@@ -9,7 +9,11 @@ import {
   FilePen,
   Search,
   ClipboardList,
-  Home
+  Home,
+  Scale,
+  FileCheck,
+  Briefcase,
+  HandCoins
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -30,30 +34,30 @@ const LegalAssistant = () => {
       link: "/legal/rental-agreement",
     },
     {
-      title: "Daňová registrace",
-      icon: FileText,
-      description: "Formuláře a návody pro daňovou registraci v Německu",
-      link: "/laws/tax-return",
-      soon: true
+      title: "Právní postavení pendlerů",
+      icon: Scale,
+      description: "Právní status přeshraničních pracovníků a související práva",
+      link: "/legal/legal-status",
     },
     {
-      title: "Zdravotní pojištění",
-      icon: ClipboardList,
-      description: "Formuláře a informace o zdravotním pojištění",
-      link: "/laws/health-insurance"
+      title: "Založení živnosti v Německu",
+      icon: Briefcase,
+      description: "Průvodce pro založení Gewerbe a samostatnou činnost",
+      link: "/legal/business-registration",
+      soon: true
     },
     {
       title: "Sociální zabezpečení",
-      icon: Search,
-      description: "Žádosti a informace o sociálním zabezpečení",
+      icon: FileCheck,
+      description: "Formuláře a informace o sociálním zabezpečení",
       link: "/legal/social-security",
-      soon: true
     },
     {
-      title: "Rodinné dávky",
-      icon: BookOpen,
-      description: "Informace o rodinných dávkách a přídavcích v Německu",
-      link: "/laws/child-benefits"
+      title: "Bankovní účet",
+      icon: HandCoins,
+      description: "Průvodce otevřením bankovního účtu v Německu",
+      link: "/legal/bank-account",
+      soon: true
     }
   ];
 
