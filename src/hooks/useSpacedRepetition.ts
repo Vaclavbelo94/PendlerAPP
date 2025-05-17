@@ -1,19 +1,18 @@
+
 import { useState, useEffect } from 'react';
 import { VocabularyItem } from '@/models/VocabularyItem';
 import { useToast } from '@/hooks/use-toast';
 import { useOfflineStatus } from './useOfflineStatus';
-import { addDays } from 'date-fns';
-
-// Spaced repetition intervals (in days)
-const REPETITION_INTERVALS = [
-  1,    // Level 0: Review after 1 day
-  3,    // Level 1: Review after 3 days
-  7,    // Level 2: Review after 7 days
-  14,   // Level 3: Review after 14 days
-  30,   // Level 4: Review after 30 days
-  60,   // Level 5: Review after 60 days
-  90,   // Level 6: Review after 90 days
-];
+import { calculateNextReviewDate } from '@/utils/dateUtils';
+import { calculateVocabularyStatistics } from '@/utils/vocabularyStats';
+import { 
+  saveVocabularyItems, 
+  loadVocabularyItems,
+  saveDailyProgress,
+  loadDailyProgress,
+  saveDailyGoal,
+  loadDailyGoal
+} from '@/services/vocabularyStorage';
 
 export const useSpacedRepetition = (initialItems: VocabularyItem[] = []) => {
   const [items, setItems] = useState<VocabularyItem[]>(initialItems);
@@ -26,27 +25,16 @@ export const useSpacedRepetition = (initialItems: VocabularyItem[] = []) => {
 
   // Load items from localStorage on component mount
   useEffect(() => {
-    try {
-      const storedItems = localStorage.getItem('vocabulary_items');
-      if (storedItems) {
-        setItems(JSON.parse(storedItems));
-      } else if (initialItems.length > 0) {
-        setItems(initialItems);
-        localStorage.setItem('vocabulary_items', JSON.stringify(initialItems));
-      }
-      
-      // Load daily progress
-      const today = new Date().toISOString().split('T')[0];
-      const dailyProgress = localStorage.getItem(`vocab_progress_${today}`);
-      if (dailyProgress) {
-        setCompletedToday(parseInt(dailyProgress, 10));
-      } else {
-        setCompletedToday(0);
-      }
-      
-    } catch (error) {
-      console.error('Error loading vocabulary items:', error);
-    }
+    const loadedItems = loadVocabularyItems(initialItems);
+    setItems(loadedItems);
+    
+    // Load daily progress
+    const progress = loadDailyProgress();
+    setCompletedToday(progress);
+    
+    // Load daily goal
+    const goal = loadDailyGoal(10);
+    setDailyGoal(goal);
   }, [initialItems]);
 
   // Calculate due items whenever items change
@@ -71,17 +59,12 @@ export const useSpacedRepetition = (initialItems: VocabularyItem[] = []) => {
 
   // Save items to localStorage whenever they change
   useEffect(() => {
-    try {
-      localStorage.setItem('vocabulary_items', JSON.stringify(items));
-    } catch (error) {
-      console.error('Error saving vocabulary items:', error);
-    }
+    saveVocabularyItems(items);
   }, [items]);
 
   // Update daily progress whenever completedToday changes
   useEffect(() => {
-    const today = new Date().toISOString().split('T')[0];
-    localStorage.setItem(`vocab_progress_${today}`, completedToday.toString());
+    saveDailyProgress(completedToday);
     
     // Check if daily goal is met
     if (completedToday >= dailyGoal) {
@@ -92,21 +75,12 @@ export const useSpacedRepetition = (initialItems: VocabularyItem[] = []) => {
     }
   }, [completedToday, dailyGoal, toast]);
 
-  // Function to calculate the next review date based on repetition level
-  const calculateNextReviewDate = (level: number): string => {
-    const interval = level < REPETITION_INTERVALS.length 
-      ? REPETITION_INTERVALS[level] 
-      : REPETITION_INTERVALS[REPETITION_INTERVALS.length - 1];
-    
-    return addDays(new Date(), interval).toISOString();
-  };
-
   // Mark a word as correct
   const markCorrect = (itemId: string) => {
     setItems(prevItems => {
       return prevItems.map(item => {
         if (item.id === itemId) {
-          const newRepetitionLevel = Math.min((item.repetitionLevel || 0) + 1, REPETITION_INTERVALS.length - 1);
+          const newRepetitionLevel = Math.min((item.repetitionLevel || 0) + 1, 6); // Max level is 6
           return {
             ...item,
             lastReviewed: new Date().toISOString(),
@@ -175,14 +149,6 @@ export const useSpacedRepetition = (initialItems: VocabularyItem[] = []) => {
   const bulkAddVocabularyItems = (newItems: VocabularyItem[]) => {
     setItems(prev => [...prev, ...newItems]);
     
-    // Update localStorage
-    try {
-      const updatedItems = [...items, ...newItems];
-      localStorage.setItem('vocabulary_items', JSON.stringify(updatedItems));
-    } catch (error) {
-      console.error('Error saving vocabulary items:', error);
-    }
-    
     toast({
       title: "Import dokončen",
       description: `Úspěšně importováno ${newItems.length} slovíček.`,
@@ -191,32 +157,13 @@ export const useSpacedRepetition = (initialItems: VocabularyItem[] = []) => {
 
   // Get statistics for vocabulary learning
   const getStatistics = () => {
-    const totalWords = items.length;
-    const newWords = items.filter(item => item.repetitionLevel === 0).length;
-    const learningWords = items.filter(item => item.repetitionLevel > 0 && item.repetitionLevel < 4).length;
-    const masteredWords = items.filter(item => item.repetitionLevel >= 4).length;
-    
-    const correctRate = items.reduce((acc, item) => {
-      const total = (item.correctCount || 0) + (item.incorrectCount || 0);
-      return total > 0 ? acc + ((item.correctCount || 0) / total) : acc;
-    }, 0) / (totalWords || 1);
-    
-    return {
-      totalWords,
-      newWords,
-      learningWords,
-      masteredWords,
-      correctRate: correctRate * 100, // as percentage
-      dueToday: dueItems.length,
-      completedToday,
-      dailyGoal,
-    };
+    return calculateVocabularyStatistics(items, dueItems, completedToday, dailyGoal);
   };
 
   // Set daily goal
   const setVocabularyDailyGoal = (goal: number) => {
     setDailyGoal(goal);
-    localStorage.setItem('vocab_daily_goal', goal.toString());
+    saveDailyGoal(goal);
   };
 
   return {
