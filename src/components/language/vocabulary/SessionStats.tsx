@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Check, X, Clock, BarChart, Zap, Trophy, Timer } from 'lucide-react';
+import { Check, X, Clock, BarChart, Zap, Trophy, Timer, Award } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 interface SessionStatsProps {
@@ -45,12 +45,89 @@ const SessionStats: React.FC<SessionStatsProps> = ({
   // Calculate points based on performance
   const points = correctCount * 10 - incorrectCount * 3 + (streakCount || 0) * 5;
   
-  // Determine achievement badges
-  const badges = [];
-  if (accuracy >= 90) badges.push({ title: "Perfekcionista", color: "text-purple-600 bg-purple-100" });
-  if (wordsPerMinute >= 10) badges.push({ title: "Rychlík", color: "text-blue-600 bg-blue-100" });
-  if (streakCount && streakCount >= 5) badges.push({ title: "Série mistrovství", color: "text-amber-600 bg-amber-100" });
-  if (correctCount >= 20) badges.push({ title: "Slovní zásoba", color: "text-emerald-600 bg-emerald-100" });
+  // Generate achievement badges based on performance metrics
+  const generateAchievements = () => {
+    const badges = [];
+    
+    // Accuracy-based achievements
+    if (accuracy === 100 && totalAnswers >= 5) {
+      badges.push({ 
+        title: "Mistr slovíček", 
+        color: "text-purple-600 bg-purple-100",
+        icon: <Trophy className="h-3 w-3 mr-1" />
+      });
+    } else if (accuracy >= 90) {
+      badges.push({ 
+        title: "Perfekcionista", 
+        color: "text-purple-600 bg-purple-100",
+        icon: <Trophy className="h-3 w-3 mr-1" />
+      });
+    } else if (accuracy >= 75) {
+      badges.push({ 
+        title: "Pečlivý student", 
+        color: "text-blue-600 bg-blue-100",
+        icon: <Award className="h-3 w-3 mr-1" />
+      });
+    }
+    
+    // Speed-based achievements
+    if (wordsPerMinute >= 15) {
+      badges.push({ 
+        title: "Bleskový jazyk", 
+        color: "text-amber-600 bg-amber-100",
+        icon: <Zap className="h-3 w-3 mr-1" />
+      });
+    } else if (wordsPerMinute >= 10) {
+      badges.push({ 
+        title: "Rychlý student", 
+        color: "text-blue-600 bg-blue-100",
+        icon: <Timer className="h-3 w-3 mr-1" />
+      });
+    }
+    
+    // Streak-based achievements
+    if (streakCount && streakCount >= 10) {
+      badges.push({ 
+        title: "Sérivý mistr", 
+        color: "text-amber-600 bg-amber-100",
+        icon: <Zap className="h-3 w-3 mr-1" />
+      });
+    } else if (streakCount && streakCount >= 5) {
+      badges.push({ 
+        title: "Série mistrovství", 
+        color: "text-amber-600 bg-amber-100",
+        icon: <Award className="h-3 w-3 mr-1" />
+      });
+    }
+    
+    // Volume-based achievements
+    if (correctCount >= 30) {
+      badges.push({ 
+        title: "Jazykový maraton", 
+        color: "text-emerald-600 bg-emerald-100",
+        icon: <Award className="h-3 w-3 mr-1" />
+      });
+    } else if (correctCount >= 20) {
+      badges.push({ 
+        title: "Slovní zásoba", 
+        color: "text-emerald-600 bg-emerald-100",
+        icon: <Check className="h-3 w-3 mr-1" />
+      });
+    }
+    
+    // Short session but high performance
+    if (durationMinutes <= 3 && correctCount >= 10 && accuracy >= 80) {
+      badges.push({ 
+        title: "Efektivní učení", 
+        color: "text-indigo-600 bg-indigo-100",
+        icon: <Clock className="h-3 w-3 mr-1" />
+      });
+    }
+    
+    return badges;
+  };
+  
+  const badges = generateAchievements();
 
   return (
     <div className="space-y-4">
@@ -68,8 +145,9 @@ const SessionStats: React.FC<SessionStatsProps> = ({
       {badges.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-3">
           {badges.map((badge, index) => (
-            <Badge key={index} variant="outline" className={`${badge.color} border-none`}>
-              <Trophy className="h-3 w-3 mr-1" /> {badge.title}
+            <Badge key={index} variant="outline" className={`${badge.color} border-none flex items-center`}>
+              {badge.icon}
+              {badge.title}
             </Badge>
           ))}
         </div>
