@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { CalendarIcon, Download, FileDown } from "lucide-react";
 import { format } from "date-fns";
@@ -18,7 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { toast } from "@/components/ui/use-toast";
-import jsPDF from "jspdf"; // Changed from { jsPDF } to default import
+import jsPDF from "jspdf"; 
 import autoTable from "jspdf-autotable";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -26,14 +25,23 @@ interface ExportPdfDialogProps {
   user: any;
   selectedMonth: Date;
   setSelectedMonth: (date: Date) => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export const ExportPdfDialog = ({ 
   user, 
   selectedMonth, 
-  setSelectedMonth 
+  setSelectedMonth,
+  open,
+  onOpenChange
 }: ExportPdfDialogProps) => {
   const [isExporting, setIsExporting] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  
+  // Use controlled or uncontrolled dialog state
+  const dialogOpen = open !== undefined ? open : isDialogOpen;
+  const setDialogOpen = onOpenChange || setIsDialogOpen;
 
   // Function to generate PDF and trigger download
   const handleExportPDF = async () => {
@@ -163,11 +171,73 @@ export const ExportPdfDialog = ({
       });
     } finally {
       setIsExporting(false);
+      setDialogOpen(false);
     }
   };
 
+  // If using the controlled dialog pattern
+  if (open !== undefined) {
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Exportovat směny do PDF</DialogTitle>
+            <DialogDescription>
+              Vyberte měsíc, pro který chcete exportovat přehled směn.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="month">Měsíc</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      id="month"
+                      variant={"outline"}
+                      className="w-full justify-start text-left font-normal mt-1"
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {selectedMonth ? (
+                        format(selectedMonth, "MMMM yyyy", { locale: cs })
+                      ) : (
+                        <span>Vyberte měsíc</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={selectedMonth}
+                      onSelect={(date) => date && setSelectedMonth(date)}
+                      initialFocus
+                      className={cn("p-3 pointer-events-auto")}
+                      locale={cs}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button 
+              type="submit" 
+              onClick={handleExportPDF} 
+              className="bg-dhl-red hover:bg-dhl-red/90"
+              disabled={isExporting}
+            >
+              <Download className="mr-2 h-4 w-4" />
+              {isExporting ? "Generuji PDF..." : "Exportovat"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  // Original implementation with trigger button
   return (
-    <Dialog>
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
         <Button 
           variant="outline" 
