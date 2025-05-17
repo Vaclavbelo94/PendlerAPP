@@ -34,6 +34,39 @@ export const useAuthStatus = (userId: string | undefined) => {
     if (!userId) return;
     
     try {
+      // Specific check for the target user email
+      const { data: userData, error: userError } = await supabase
+        .from('profiles')
+        .select('email')
+        .eq('id', userId)
+        .single();
+        
+      if (userError) throw userError;
+      
+      // If this is the specific user we want to give premium to
+      if (userData?.email === 'uzivatel@pendlerapp.com') {
+        // Set premium status and calculate expiry date (3 months from now)
+        const threeMonthsLater = new Date();
+        threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
+        
+        setIsPremium(true);
+        
+        // Update their premium status in the database
+        await supabase
+          .from('profiles')
+          .update({ 
+            is_premium: true,
+            premium_expiry: threeMonthsLater.toISOString()
+          })
+          .eq('id', userId);
+          
+        return {
+          isPremium: true,
+          premiumExpiry: threeMonthsLater.toISOString()
+        };
+      }
+      
+      // For all other users, check their premium status as usual
       const { data, error } = await supabase
         .from('profiles')
         .select('is_premium, premium_expiry')

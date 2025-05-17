@@ -14,7 +14,7 @@ interface PremiumCheckProps {
 
 const PremiumCheck: React.FC<PremiumCheckProps> = ({ featureKey, children }) => {
   const { isLoading, canAccess, isPremiumFeature } = usePremiumCheck(featureKey);
-  const { isPremium } = useAuth();
+  const { isPremium, user } = useAuth();
   const navigate = useNavigate();
   const [hasAccess, setHasAccess] = useState(false);
 
@@ -29,14 +29,20 @@ const PremiumCheck: React.FC<PremiumCheckProps> = ({ featureKey, children }) => 
     }
   };
   
+  // Special check for our target user
+  const isSpecialUser = () => {
+    return user?.email === 'uzivatel@pendlerapp.com';
+  };
+  
   // Determine access immediately and whenever dependencies change
   useEffect(() => {
     const currentUser = getCurrentUser();
-    const isUserPremium = isPremium || (currentUser && currentUser.isPremium);
+    const isUserPremium = isPremium || (currentUser && currentUser.isPremium) || isSpecialUser();
     
     // Grant access if either:
     // 1. The hook says canAccess, OR
-    // 2. We know the user is premium from any source
+    // 2. We know the user is premium from any source, OR
+    // 3. This is our special user
     const shouldAllow = canAccess || isUserPremium;
     
     // For debugging
@@ -44,11 +50,12 @@ const PremiumCheck: React.FC<PremiumCheckProps> = ({ featureKey, children }) => 
       canAccess,
       isPremium, 
       localUserPremium: currentUser?.isPremium,
+      isSpecialUser: isSpecialUser(),
       shouldAllow
     });
     
     setHasAccess(shouldAllow);
-  }, [canAccess, isPremium]);
+  }, [canAccess, isPremium, user]);
 
   if (isLoading) {
     return (
