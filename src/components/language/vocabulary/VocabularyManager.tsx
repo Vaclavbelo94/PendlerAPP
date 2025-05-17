@@ -4,6 +4,7 @@ import { VocabularyProvider, useVocabularyContext } from './VocabularyProvider';
 import { useOfflineStatus } from '@/hooks/useOfflineStatus';
 import { toast } from '@/components/ui/use-toast';
 import { saveData, getAllData } from '@/utils/offlineStorage';
+import { VocabularyItem } from '@/models/VocabularyItem';
 
 interface VocabularyManagerProps {
   children: React.ReactNode;
@@ -12,6 +13,25 @@ interface VocabularyManagerProps {
 // Offline storage key for vocabulary items
 const VOCABULARY_OFFLINE_KEY = 'vocabulary_offline_data';
 const VOCABULARY_INDEXED_DB_STORE = 'vocabulary';
+
+// Function to validate if an object is a VocabularyItem
+const isVocabularyItem = (item: unknown): item is VocabularyItem => {
+  return (
+    typeof item === 'object' && 
+    item !== null &&
+    'id' in item && 
+    'word' in item && 
+    'translation' in item && 
+    'repetitionLevel' in item &&
+    'correctCount' in item &&
+    'incorrectCount' in item
+  );
+};
+
+// Function to validate an array of vocabulary items
+const validateVocabularyItems = (items: unknown[]): VocabularyItem[] => {
+  return items.filter(isVocabularyItem);
+};
 
 const VocabularySync = ({ children }: { children: React.ReactNode }) => {
   const { items, bulkAddVocabularyItems, testHistory } = useVocabularyContext();
@@ -59,13 +79,16 @@ const VocabularySync = ({ children }: { children: React.ReactNode }) => {
             if (Array.isArray(parsedData) && parsedData.length > 0) {
               // Only restore if there's actual data and we don't have the data already
               if (items.length === 0 || window.confirm('Chcete obnovit slovíčka uložená offline?')) {
-                bulkAddVocabularyItems(parsedData);
-                toast({
-                  title: 'Data obnovena',
-                  description: `${parsedData.length} slovíček bylo obnoveno z offline úložiště.`,
-                });
-                // Clear offline data after successful restore
-                localStorage.removeItem(VOCABULARY_OFFLINE_KEY);
+                const validItems = validateVocabularyItems(parsedData);
+                if (validItems.length > 0) {
+                  bulkAddVocabularyItems(validItems);
+                  toast({
+                    title: 'Data obnovena',
+                    description: `${validItems.length} slovíček bylo obnoveno z offline úložiště.`,
+                  });
+                  // Clear offline data after successful restore
+                  localStorage.removeItem(VOCABULARY_OFFLINE_KEY);
+                }
               }
             }
           }
@@ -81,11 +104,15 @@ const VocabularySync = ({ children }: { children: React.ReactNode }) => {
             if (offlineItems && offlineItems.length > 0) {
               // Check if we need to restore (if we have no items or user confirms)
               if (items.length === 0 || window.confirm('Chcete obnovit slovíčka uložená v IndexedDB?')) {
-                bulkAddVocabularyItems(offlineItems);
-                toast({
-                  title: 'Data obnovena z IndexedDB',
-                  description: `${offlineItems.length} slovíček bylo obnoveno z IndexedDB.`,
-                });
+                // Validate that items are valid VocabularyItems
+                const validItems = validateVocabularyItems(offlineItems);
+                if (validItems.length > 0) {
+                  bulkAddVocabularyItems(validItems);
+                  toast({
+                    title: 'Data obnovena z IndexedDB',
+                    description: `${validItems.length} slovíček bylo obnoveno z IndexedDB.`,
+                  });
+                }
               }
             }
           } catch (error) {
