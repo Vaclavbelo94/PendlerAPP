@@ -43,7 +43,13 @@ export const VocabularyProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   // Add test result and save to storage
   const addTestResult = (result: TestResult) => {
-    const updatedHistory = [result, ...testHistory];
+    // Generate an ID if none exists
+    const resultWithId = { 
+      ...result, 
+      id: result.id || `test-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
+    };
+    
+    const updatedHistory = [resultWithId, ...testHistory];
     setTestHistory(updatedHistory);
     
     try {
@@ -53,11 +59,10 @@ export const VocabularyProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       if ('indexedDB' in window) {
         try {
           saveData('testHistory', {
-            // Generate an ID if none exists on the result
-            id: result.id || `test-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
-            ...result,
-            startTime: result.startTime.toISOString(),
-            endTime: result.endTime.toISOString()
+            id: resultWithId.id,
+            ...resultWithId,
+            startTime: resultWithId.startTime.toISOString(),
+            endTime: resultWithId.endTime.toISOString()
           });
         } catch (err) {
           console.error('Error saving test result to IndexedDB:', err);
@@ -78,7 +83,6 @@ export const VocabularyProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         testHistory.forEach(result => {
           try {
             saveData('testHistory', {
-              // Generate an ID if none exists on the result
               id: result.id || `test-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
               ...result,
               startTime: result.startTime.toISOString(),

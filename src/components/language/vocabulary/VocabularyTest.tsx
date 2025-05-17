@@ -10,12 +10,13 @@ export interface TestItem {
 }
 
 export interface TestResult {
+  id?: string; // Adding optional id property
   startTime: Date;
   endTime: Date;
   totalQuestions: number;
   correctAnswers: number;
   incorrectAnswers: number;
-  wrongAnswers: number; // Adding this property to fix the error
+  wrongAnswers: number;
   score: number; // percentage
   timeSpentSeconds: number;
   categories: string[];
