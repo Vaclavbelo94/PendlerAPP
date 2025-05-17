@@ -1,115 +1,95 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "@/hooks/useAuth";
-import { ThemeProvider } from "@/hooks/useTheme";
-import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
-import Language from "./pages/Language";
-import Laws from "./pages/Laws";
-import Vehicle from "./pages/Vehicle";
-import Shifts from "./pages/Shifts";
-import Calculator from "./pages/Calculator";
-import TranslatorPage from "./pages/Translator";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import About from "./pages/About";
-import Contact from "./pages/Contact";
-import FAQ from "./pages/FAQ";
-import Terms from "./pages/Terms";
-import Privacy from "./pages/Privacy";
-import Cookies from "./pages/Cookies";
-import Admin from "./pages/Admin";
-import Profile from "./pages/Profile";
-import Premium from "./pages/Premium";
-import LayoutWrapper from "./components/layouts/LayoutWrapper";
-import { ShiftNotifications } from "./components/notifications/ShiftNotifications";
-import OfflineIndicator from "./components/offlineMode/OfflineIndicator";
-import OfflineSyncManager from "./components/offlineMode/OfflineSyncManager";
+import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import './App.css';
 
-// Law detail pages
-import MinimumWage from "./pages/laws/MinimumWage";
-import TaxClasses from "./pages/laws/TaxClasses";
-import HealthInsurance from "./pages/laws/HealthInsurance";
-import WorkContract from "./pages/laws/WorkContract";
-import TaxReturn from "./pages/laws/TaxReturn";
-import PensionInsurance from "./pages/laws/PensionInsurance";
-import EmployeeProtection from "./pages/laws/EmployeeProtection";
-import ChildBenefits from "./pages/laws/ChildBenefits";
-import WorkingHours from "./pages/laws/WorkingHours";
-import MinimumHolidays from "./pages/laws/MinimumHolidays";
-import ParentalAllowance from "./pages/laws/ParentalAllowance";
+// Layouts
+import LayoutWrapper from './components/layouts/LayoutWrapper';
 
-import "./index.css";
+// Auth Provider
+import { AuthProvider } from './hooks/useAuth';
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      // Enable offline caching of query results
-      gcTime: 1000 * 60 * 60 * 24, // 24 hours (formerly cacheTime)
-      staleTime: 1000 * 60 * 60, // 1 hour
-      retry: (failureCount, error) => {
-        // Don't retry if we're offline
-        if (!navigator.onLine) return false;
-        return failureCount < 3;
-      }
-    },
-  },
-});
+// Pages
+import Index from './pages/Index';
+import About from './pages/About';
+import Admin from './pages/Admin';
+import Calculator from './pages/Calculator';
+import Contact from './pages/Contact';
+import Cookies from './pages/Cookies';
+import FAQ from './pages/FAQ';
+import Language from './pages/Language';
+import Login from './pages/Login';
+import NotFound from './pages/NotFound';
+import Premium from './pages/Premium';
+import Privacy from './pages/Privacy';
+import Profile from './pages/Profile';
+import ProfileExtended from './pages/ProfileExtended';
+import Register from './pages/Register';
+import Shifts from './pages/Shifts';
+import Terms from './pages/Terms';
+import Translator from './pages/Translator';
+import Vehicle from './pages/Vehicle';
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <ThemeProvider>
+// Stránky o zákonech
+import Laws from './pages/Laws';
+import ChildBenefits from './pages/laws/ChildBenefits';
+import EmployeeProtection from './pages/laws/EmployeeProtection';
+import HealthInsurance from './pages/laws/HealthInsurance';
+import MinimumHolidays from './pages/laws/MinimumHolidays';
+import MinimumWage from './pages/laws/MinimumWage';
+import ParentalAllowance from './pages/laws/ParentalAllowance';
+import PensionInsurance from './pages/laws/PensionInsurance';
+import TaxClasses from './pages/laws/TaxClasses';
+import TaxReturn from './pages/TaxReturn';
+import WorkContract from './pages/WorkContract';
+import WorkingHours from './pages/WorkingHours';
+import ProfileExtended from './pages/ProfileExtended';
+
+function App() {
+  return (
+    <BrowserRouter>
       <AuthProvider>
-        <TooltipProvider delayDuration={0}>
-          <Toaster />
-          <Sonner position="top-right" closeButton />
-          <BrowserRouter>
-            <ShiftNotifications />
-            <OfflineSyncManager />
-            <OfflineIndicator />
-            <Routes>
-              <Route path="/" element={<LayoutWrapper><Index /></LayoutWrapper>} />
-              <Route path="/language" element={<LayoutWrapper><Language /></LayoutWrapper>} />
-              <Route path="/laws" element={<LayoutWrapper><Laws /></LayoutWrapper>} />
-              <Route path="/vehicle" element={<LayoutWrapper><Vehicle /></LayoutWrapper>} />
-              <Route path="/shifts" element={<LayoutWrapper><Shifts /></LayoutWrapper>} />
-              <Route path="/calculator" element={<LayoutWrapper><Calculator /></LayoutWrapper>} />
-              <Route path="/translator" element={<LayoutWrapper><TranslatorPage /></LayoutWrapper>} />
-              <Route path="/login" element={<LayoutWrapper><Login /></LayoutWrapper>} />
-              <Route path="/register" element={<LayoutWrapper><Register /></LayoutWrapper>} />
-              <Route path="/profile" element={<LayoutWrapper><Profile /></LayoutWrapper>} />
-              <Route path="/premium" element={<LayoutWrapper><Premium /></LayoutWrapper>} />
-              <Route path="/about" element={<LayoutWrapper><About /></LayoutWrapper>} />
-              <Route path="/contact" element={<LayoutWrapper><Contact /></LayoutWrapper>} />
-              <Route path="/faq" element={<LayoutWrapper><FAQ /></LayoutWrapper>} />
-              <Route path="/terms" element={<LayoutWrapper><Terms /></LayoutWrapper>} />
-              <Route path="/privacy" element={<LayoutWrapper><Privacy /></LayoutWrapper>} />
-              <Route path="/cookies" element={<LayoutWrapper><Cookies /></LayoutWrapper>} />
-              <Route path="/admin" element={<LayoutWrapper><Admin /></LayoutWrapper>} />
-              
-              {/* Law detail pages */}
-              <Route path="/laws/minimum-wage" element={<LayoutWrapper><MinimumWage /></LayoutWrapper>} />
-              <Route path="/laws/tax-classes" element={<LayoutWrapper><TaxClasses /></LayoutWrapper>} />
-              <Route path="/laws/health-insurance" element={<LayoutWrapper><HealthInsurance /></LayoutWrapper>} />
-              <Route path="/laws/work-contract" element={<LayoutWrapper><WorkContract /></LayoutWrapper>} />
-              <Route path="/laws/tax-return" element={<LayoutWrapper><TaxReturn /></LayoutWrapper>} />
-              <Route path="/laws/pension-insurance" element={<LayoutWrapper><PensionInsurance /></LayoutWrapper>} />
-              <Route path="/laws/employee-protection" element={<LayoutWrapper><EmployeeProtection /></LayoutWrapper>} />
-              <Route path="/laws/child-benefits" element={<LayoutWrapper><ChildBenefits /></LayoutWrapper>} />
-              <Route path="/laws/working-hours" element={<LayoutWrapper><WorkingHours /></LayoutWrapper>} />
-              <Route path="/laws/minimum-holidays" element={<LayoutWrapper><MinimumHolidays /></LayoutWrapper>} />
-              <Route path="/laws/parental-allowance" element={<LayoutWrapper><ParentalAllowance /></LayoutWrapper>} />
-              
-              <Route path="*" element={<LayoutWrapper><NotFound /></LayoutWrapper>} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
+        <LayoutWrapper>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/admin" element={<Admin />} />
+            <Route path="/calculator" element={<Calculator />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/cookies" element={<Cookies />} />
+            <Route path="/faq" element={<FAQ />} />
+            <Route path="/language" element={<Language />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/premium" element={<Premium />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/profile-extended" element={<ProfileExtended />} />
+            <Route path="/profile-extended/:userId" element={<ProfileExtended />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/shifts" element={<Shifts />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/translator" element={<Translator />} />
+            <Route path="/vehicle" element={<Vehicle />} />
+            
+            {/* Stránky o zákonech */}
+            <Route path="/laws" element={<Laws />} />
+            <Route path="/laws/child-benefits" element={<ChildBenefits />} />
+            <Route path="/laws/employee-protection" element={<EmployeeProtection />} />
+            <Route path="/laws/health-insurance" element={<HealthInsurance />} />
+            <Route path="/laws/minimum-holidays" element={<MinimumHolidays />} />
+            <Route path="/laws/minimum-wage" element={<MinimumWage />} />
+            <Route path="/laws/parental-allowance" element={<ParentalAllowance />} />
+            <Route path="/laws/pension-insurance" element={<PensionInsurance />} />
+            <Route path="/laws/tax-classes" element={<TaxClasses />} />
+            <Route path="/laws/tax-return" element={<TaxReturn />} />
+            <Route path="/laws/work-contract" element={<WorkContract />} />
+            <Route path="/laws/working-hours" element={<WorkingHours />} />
+            
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </LayoutWrapper>
       </AuthProvider>
-    </ThemeProvider>
-  </QueryClientProvider>
-);
+    </BrowserRouter>
+  );
+}
 
 export default App;

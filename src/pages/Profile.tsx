@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { 
-  UserIcon, KeyIcon, ShieldIcon, LogOutIcon, SettingsIcon, 
+  UserIcon, KeyIcon, ShieldIcon, LogOutIcon, SettingsIcon, Settings2Icon,
   BellIcon, LanguagesIcon, CarIcon, ClockIcon, LayoutIcon,
   Activity, PieChart
 } from "lucide-react";
