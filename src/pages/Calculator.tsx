@@ -2,9 +2,10 @@
 import React, { useState } from 'react';
 import PremiumCheck from '@/components/premium/PremiumCheck';
 import BasicCalculator from "@/components/calculator/BasicCalculator";
+import ScientificCalculator from "@/components/calculator/ScientificCalculator";
 import { ResponsiveContainer } from "@/components/ui/responsive-container";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calculator as CalculatorIcon, TrendingUp, CreditCard, BarChart3 } from "lucide-react";
+import { Calculator as CalculatorIcon, TrendingUp, CreditCard, BarChart3, Function } from "lucide-react";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -38,10 +39,14 @@ const Calculator = () => {
         <h1 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6">Kalkulačky</h1>
         
         <Tabs defaultValue="basic" className="space-y-6">
-          <TabsList className="w-full grid grid-cols-3 md:w-auto md:inline-flex">
+          <TabsList className="w-full grid grid-cols-4 md:w-auto md:inline-flex">
             <TabsTrigger value="basic" className="flex items-center gap-2 text-sm md:text-base py-2 px-3 md:py-2 md:px-4">
               <CalculatorIcon className="h-4 w-4" />
               <span className={isMobile ? "hidden" : ""}>Základní</span>
+            </TabsTrigger>
+            <TabsTrigger value="scientific" className="flex items-center gap-2 text-sm md:text-base py-2 px-3 md:py-2 md:px-4">
+              <Function className="h-4 w-4" />
+              <span className={isMobile ? "hidden" : ""}>Vědecká</span>
             </TabsTrigger>
             <TabsTrigger value="financial" className="flex items-center gap-2 text-sm md:text-base py-2 px-3 md:py-2 md:px-4">
               <CreditCard className="h-4 w-4" />
@@ -55,6 +60,10 @@ const Calculator = () => {
           
           <TabsContent value="basic" className="mt-4 md:mt-6">
             <BasicCalculator />
+          </TabsContent>
+          
+          <TabsContent value="scientific" className="mt-4 md:mt-6">
+            <ScientificCalculator />
           </TabsContent>
           
           <TabsContent value="financial" className="mt-4 md:mt-6">
