@@ -125,6 +125,9 @@ const VocabularySection: React.FC = () => {
         example: newExample.trim() || undefined,
         category: newCategory || 'Obecné',
         difficulty: newDifficulty as 'easy' | 'medium' | 'hard' || undefined,
+        repetitionLevel: 0,
+        correctCount: 0,
+        incorrectCount: 0
       });
       
       // Reset form

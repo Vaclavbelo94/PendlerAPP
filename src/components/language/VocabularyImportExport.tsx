@@ -1,10 +1,9 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Download, Upload, AlertCircle, FileJson, FileCsv } from 'lucide-react';
+import { Download, Upload, AlertCircle, FileJson, Files } from 'lucide-react';
 import { VocabularyItem } from '@/models/VocabularyItem';
 import { useToast } from '@/hooks/use-toast';
 
@@ -291,7 +290,7 @@ const VocabularyImportExport: React.FC<VocabularyImportExportProps> = ({ vocabul
               JSON
             </TabsTrigger>
             <TabsTrigger value="csv" className="flex items-center">
-              <FileCsv className="mr-2 h-4 w-4" />
+              <Files className="mr-2 h-4 w-4" />
               CSV
             </TabsTrigger>
           </TabsList>
