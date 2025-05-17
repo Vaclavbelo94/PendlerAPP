@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,9 +8,11 @@ import { Progress } from "@/components/ui/progress";
 import { VocabularyItem } from '@/models/VocabularyItem';
 import { useToast } from '@/hooks/use-toast';
 import { CheckCircle2, XCircle, Hourglass, Trophy, Star, Book } from 'lucide-react';
+import { TestResult } from './VocabularyTest';
 
 interface TestModeProps {
   vocabularyItems: VocabularyItem[];
+  onComplete?: (results: TestResult) => void;
 }
 
 interface QuestionConfig {
@@ -28,7 +29,7 @@ type Question = {
   correctIndex?: number;
 };
 
-const TestMode: React.FC<TestModeProps> = ({ vocabularyItems }) => {
+const TestMode: React.FC<TestModeProps> = ({ vocabularyItems, onComplete }) => {
   const [isConfiguring, setIsConfiguring] = useState(true);
   const [isRunning, setIsRunning] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
@@ -208,7 +209,30 @@ const TestMode: React.FC<TestModeProps> = ({ vocabularyItems }) => {
       // Test complete
       const endTime = new Date();
       const timeInMs = startTime ? endTime.getTime() - startTime.getTime() : 0;
-      setTimeSpent(Math.floor(timeInMs / 1000)); // in seconds
+      const timeInSeconds = Math.floor(timeInMs / 1000);
+      setTimeSpent(timeInSeconds);
+      
+      // Create test result object
+      if (onComplete && startTime) {
+        const testResult: TestResult = {
+          startTime,
+          endTime,
+          totalQuestions: questions.length,
+          correctAnswers: score,
+          incorrectAnswers: questions.length - score,
+          score: Math.round((score / questions.length) * 100),
+          timeSpentSeconds: timeInSeconds,
+          categories: config.categories.includes('all') 
+            ? Array.from(new Set(vocabularyItems.map(item => item.category || 'Obecné'))) 
+            : [...config.categories],
+          difficulties: config.difficulty.includes('all')
+            ? ['easy', 'medium', 'hard']
+            : [...config.difficulty] as string[]
+        };
+        
+        onComplete(testResult);
+      }
+      
       setIsRunning(false);
       setIsComplete(true);
     }

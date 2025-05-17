@@ -7,54 +7,56 @@ import VocabularyAdd from './VocabularyAdd';
 import VocabularyProgressDashboard from '../VocabularyProgressDashboard';
 import VocabularyBulkActions from './VocabularyBulkActions';
 import VocabularyImportExport from '../VocabularyImportExport';
-import VocabularyTest, { TestResult } from './VocabularyTest';
-import { useVocabularyContext } from './VocabularyProvider';
+import VocabularyTest from './VocabularyTest';
+import { useVocabularyContext } from './VocabularyManager';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguageContext } from '../LanguageManager';
 
-export const ReviewTabContent: React.FC = () => (
+export const ReviewTabContent = () => (
   <TabsContent value="review" className="pt-6 space-y-6">
     <VocabularyReview />
   </TabsContent>
 );
 
-export const TestTabContent: React.FC = () => {
+export const TestTabContent = () => {
   const { items, addTestResult } = useVocabularyContext();
   const { addXp } = useLanguageContext();
   const { toast } = useToast();
-
-  const handleCompleteTest = (results: TestResult) => {
+  
+  const handleCompleteTest = (results) => {
     // Přidat výsledky do statistik uživatele
     addTestResult(results);
     
     // Vypočítat XP body na základě výsledků
-    const score = Math.round((results.correctAnswers / results.totalQuestions) * 100);
-    const xpPoints = Math.round((score / 10) * results.correctAnswers);
+    const score = Math.round(results.correctAnswers / results.totalQuestions * 100);
+    const xpPoints = Math.round(score / 10 * results.correctAnswers);
     
     // Přidat XP body za dokončení testu
     if (xpPoints > 0) {
       addXp(xpPoints);
-      
       toast({
         title: `+${xpPoints} XP`,
-        description: "Získali jste XP body za dokončení testu!",
+        description: "Získali jste XP body za dokončení testu!"
       });
     }
   };
-
+  
   return (
     <TabsContent value="test" className="pt-6 space-y-6">
-      <VocabularyTest vocabularyItems={items} onCompleteTest={handleCompleteTest} />
+      <VocabularyTest 
+        vocabularyItems={items} 
+        onCompleteTest={handleCompleteTest} 
+      />
     </TabsContent>
   );
 };
 
-export const BrowseTabContent: React.FC = () => {
+export const BrowseTabContent = () => {
   const { items, handleEditItem, handleDeleteItem } = useVocabularyContext();
-
+  
   return (
     <TabsContent value="browse" className="pt-6">
-      <VocabularyTable 
+      <VocabularyTable
         vocabularyItems={items}
         onEditItem={handleEditItem}
         onDeleteItem={handleDeleteItem}
@@ -63,19 +65,21 @@ export const BrowseTabContent: React.FC = () => {
   );
 };
 
-export const AddTabContent: React.FC = () => {
+export const AddTabContent = () => {
   const { addVocabularyItem } = useVocabularyContext();
-
+  
   return (
     <TabsContent value="add" className="pt-6">
-      <VocabularyAdd addItem={addVocabularyItem} />
+      <VocabularyAdd
+        addItem={addVocabularyItem}
+      />
     </TabsContent>
   );
 };
 
-export const BulkTabContent: React.FC = () => {
+export const BulkTabContent = () => {
   const { items, handleBulkDeleteItems, handleBulkUpdateItems } = useVocabularyContext();
-
+  
   return (
     <TabsContent value="bulk" className="pt-6">
       <VocabularyBulkActions
@@ -87,12 +91,12 @@ export const BulkTabContent: React.FC = () => {
   );
 };
 
-export const ProgressTabContent: React.FC = () => {
+export const ProgressTabContent = () => {
   const { items, userProgress } = useVocabularyContext();
-
+  
   return (
     <TabsContent value="progress" className="pt-6">
-      <VocabularyProgressDashboard 
+      <VocabularyProgressDashboard
         vocabularyCount={items.length}
         progress={userProgress}
       />
@@ -100,9 +104,9 @@ export const ProgressTabContent: React.FC = () => {
   );
 };
 
-export const ImportExportTabContent: React.FC = () => {
+export const ImportExportTabContent = () => {
   const { items, bulkAddVocabularyItems } = useVocabularyContext();
-
+  
   return (
     <TabsContent value="import-export" className="pt-6">
       <VocabularyImportExport
