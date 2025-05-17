@@ -3,9 +3,13 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { VocabularyItem, UserProgress } from '@/models/VocabularyItem';
 import { useVocabularyProvider } from '@/hooks/useVocabularyProvider';
 import { TestResult } from './VocabularyTest';
-import { saveTestHistory, loadTestHistory } from '@/utils/vocabularyStorage';
+import { 
+  saveTestHistory, 
+  loadTestHistory, 
+  saveTestResultToIndexedDB,
+  saveTestHistoryToOfflineStorage
+} from '@/utils/vocabularyStorage';
 import { useOfflineStatus } from '@/hooks/useOfflineStatus';
-import { saveData } from '@/utils/offlineStorage';
 
 interface VocabularyContextType {
   items: VocabularyItem[];
@@ -53,21 +57,11 @@ export const VocabularyProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     setTestHistory(updatedHistory);
     
     try {
+      // Save to localStorage
       saveTestHistory(updatedHistory);
       
-      // Also save to IndexedDB if available
-      if ('indexedDB' in window) {
-        try {
-          saveData('testHistory', {
-            id: resultWithId.id,
-            ...resultWithId,
-            startTime: resultWithId.startTime.toISOString(),
-            endTime: resultWithId.endTime.toISOString()
-          });
-        } catch (err) {
-          console.error('Error saving test result to IndexedDB:', err);
-        }
-      }
+      // Also save current test to IndexedDB
+      saveTestResultToIndexedDB(resultWithId);
     } catch (error) {
       console.error('Chyba při ukládání historie testů:', error);
     }
@@ -76,23 +70,7 @@ export const VocabularyProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   // Save test history when it changes or we go offline
   useEffect(() => {
     if ((isOffline || testHistory.length > 0) && testHistory.length > 0) {
-      saveTestHistory(testHistory);
-      
-      // Also save to IndexedDB if offline
-      if (isOffline && 'indexedDB' in window) {
-        testHistory.forEach(result => {
-          try {
-            saveData('testHistory', {
-              id: result.id || `test-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
-              ...result,
-              startTime: result.startTime.toISOString(),
-              endTime: result.endTime.toISOString()
-            });
-          } catch (err) {
-            console.error('Error saving test history item to IndexedDB:', err);
-          }
-        });
-      }
+      saveTestHistoryToOfflineStorage(testHistory);
     }
   }, [testHistory, isOffline]);
 

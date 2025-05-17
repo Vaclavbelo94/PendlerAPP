@@ -8,8 +8,9 @@ import {
   saveDailyProgress,
   loadDailyProgress,
   saveDailyGoal,
-  loadDailyGoal
-} from '@/services/vocabularyStorage';
+  loadDailyGoal,
+  loadVocabularyFromOfflineStorage
+} from '@/utils/vocabularyStorage';
 
 export const useVocabularyStorage = (initialItems: VocabularyItem[] = []) => {
   const [items, setItems] = useState<VocabularyItem[]>(initialItems);
@@ -20,7 +21,8 @@ export const useVocabularyStorage = (initialItems: VocabularyItem[] = []) => {
   // Load items from localStorage on component mount
   useEffect(() => {
     const loadItems = async () => {
-      const loadedItems = await loadVocabularyItems(initialItems);
+      // Try to load from IndexedDB first, then localStorage
+      const loadedItems = await loadVocabularyFromOfflineStorage(initialItems);
       setItems(loadedItems);
       
       // Load daily progress
@@ -53,7 +55,7 @@ export const useVocabularyStorage = (initialItems: VocabularyItem[] = []) => {
 
   // Add a function to load items manually (for the provider to use)
   const loadInitialItems = async () => {
-    const loadedItems = await loadVocabularyItems(initialItems);
+    const loadedItems = await loadVocabularyFromOfflineStorage(initialItems);
     return loadedItems;
   };
 
