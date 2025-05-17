@@ -23,6 +23,9 @@ export function useMediaQuery(query: MediaQueryType | string): boolean {
   const [matches, setMatches] = useState<boolean>(false);
 
   useEffect(() => {
+    // For server-side rendering / initial render before hydration
+    if (typeof window === 'undefined') return;
+    
     const mediaQuery = window.matchMedia(
       mediaQueries[query as MediaQueryType] || query
     );
@@ -35,13 +38,21 @@ export function useMediaQuery(query: MediaQueryType | string): boolean {
     updateMatches();
 
     // Listen for changes
-    mediaQuery.addEventListener("change", updateMatches);
-
-    // Cleanup
-    return () => {
-      mediaQuery.removeEventListener("change", updateMatches);
-    };
+    if (typeof mediaQuery.addEventListener === 'function') {
+      mediaQuery.addEventListener("change", updateMatches);
+      return () => {
+        mediaQuery.removeEventListener("change", updateMatches);
+      };
+    } else {
+      // Fallback for older browsers
+      mediaQuery.addListener(updateMatches);
+      return () => {
+        mediaQuery.removeListener(updateMatches);
+      };
+    }
   }, [query]);
 
   return matches;
 }
+
+export default useMediaQuery;

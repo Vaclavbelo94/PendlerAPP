@@ -9,6 +9,7 @@ import { Calculator } from "lucide-react";
 import { useState } from "react";
 import CrossBorderTaxCalculator from "./CrossBorderTaxCalculator";
 import { useToast } from '@/components/ui/use-toast';
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 const BasicCalculator = () => {
   const [num1, setNum1] = useState<string>('0');
@@ -16,6 +17,9 @@ const BasicCalculator = () => {
   const [operation, setOperation] = useState<string>('add');
   const [result, setResult] = useState<number | string>(0);
   const { toast } = useToast();
+  
+  // Check if we're on a mobile device
+  const isMobile = useMediaQuery("xs");
 
   const calculateResult = () => {
     const number1 = parseFloat(num1);
@@ -67,9 +71,9 @@ const BasicCalculator = () => {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <Card>
-        <CardHeader>
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
+      <Card className="h-auto">
+        <CardHeader className="space-y-1">
           <div className="flex items-center gap-2">
             <Calculator className="h-5 w-5 text-primary" />
             <CardTitle>Základní kalkulačka</CardTitle>
@@ -86,13 +90,14 @@ const BasicCalculator = () => {
               type="number"
               value={num1}
               onChange={(e) => setNum1(e.target.value)}
+              className="text-lg h-12 md:text-base md:h-10"
             />
           </div>
           
           <div className="space-y-2">
             <Label htmlFor="operation">Operace</Label>
             <Select value={operation} onValueChange={setOperation}>
-              <SelectTrigger id="operation">
+              <SelectTrigger id="operation" className="h-12 md:h-10">
                 <SelectValue placeholder="Vyberte operaci" />
               </SelectTrigger>
               <SelectContent>
@@ -111,17 +116,22 @@ const BasicCalculator = () => {
               type="number"
               value={num2}
               onChange={(e) => setNum2(e.target.value)}
+              className="text-lg h-12 md:text-base md:h-10"
             />
           </div>
           
-          <Button onClick={calculateResult} className="w-full">
+          <Button 
+            onClick={calculateResult} 
+            className="w-full h-12 md:h-10 text-base"
+            size={isMobile ? "lg" : "default"}
+          >
             <Calculator className="mr-2 h-4 w-4" />
             Vypočítat
           </Button>
           
-          <div className="p-4 bg-muted rounded-md text-center">
+          <div className="p-4 bg-muted rounded-md text-center mt-6">
             <div className="text-sm font-medium">Výsledek:</div>
-            <div className="text-3xl font-bold">{result}</div>
+            <div className="text-3xl font-bold mt-2 break-all">{result}</div>
           </div>
         </CardContent>
       </Card>
