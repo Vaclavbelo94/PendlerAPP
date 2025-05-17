@@ -20,3 +20,27 @@ export interface VocabularyCollection {
   description?: string;
   items: VocabularyItem[];
 }
+
+export interface UserProgress {
+  dailyStats: DailyProgressStat[];
+  totalReviewed: number;
+  streakDays: number;
+  lastStudyDate?: string;
+  averageAccuracy: number;
+  categoryDistribution: {
+    [category: string]: number;
+  };
+  difficultyDistribution: {
+    easy: number;
+    medium: number;
+    hard: number;
+    unspecified: number;
+  };
+}
+
+export interface DailyProgressStat {
+  date: string; // ISO date string
+  wordsReviewed: number;
+  correctCount: number;
+  incorrectCount: number;
+}

@@ -2,7 +2,8 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from '@/components/ui/progress';
-import { Brain, BookOpen, Star, Clock } from 'lucide-react';
+import { Brain, BookOpen, Star, Clock, Calendar } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 interface VocabularyStatisticsProps {
   statistics: {
@@ -18,6 +19,17 @@ interface VocabularyStatisticsProps {
 }
 
 const VocabularyStatistics: React.FC<VocabularyStatisticsProps> = ({ statistics }) => {
+  // Calculate goal completion percentage
+  const goalCompletionRate = Math.min(
+    (statistics.completedToday / Math.max(statistics.dailyGoal, 1)) * 100, 
+    100
+  );
+
+  // Calculate mastery percentage
+  const masteryRate = statistics.totalWords > 0 
+    ? (statistics.masteredWords / statistics.totalWords) * 100
+    : 0;
+
   return (
     <Card>
       <CardHeader>
@@ -32,7 +44,7 @@ const VocabularyStatistics: React.FC<VocabularyStatisticsProps> = ({ statistics 
             <span className="font-medium">{statistics.completedToday}/{statistics.dailyGoal} slov</span>
           </div>
           <Progress 
-            value={(statistics.completedToday / statistics.dailyGoal) * 100} 
+            value={goalCompletionRate} 
             className="h-2"
           />
         </div>
@@ -57,6 +69,9 @@ const VocabularyStatistics: React.FC<VocabularyStatisticsProps> = ({ statistics 
               <span className="text-sm font-medium">Zvládnutá</span>
             </div>
             <p className="mt-2 text-2xl font-bold">{statistics.masteredWords}</p>
+            <Badge variant="secondary" className="mt-1">
+              {Math.round(masteryRate)}% slovní zásoby
+            </Badge>
           </div>
           
           <div className="rounded-lg border p-3">
@@ -90,6 +105,24 @@ const VocabularyStatistics: React.FC<VocabularyStatisticsProps> = ({ statistics 
             value={statistics.correctRate} 
             className="h-2"
           />
+        </div>
+        
+        {/* Calendar streak indicator */}
+        <div className="flex items-center justify-between pt-2">
+          <div className="flex items-center gap-1.5">
+            <Calendar className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm text-muted-foreground">Poslední aktivita</span>
+          </div>
+          <div className="flex gap-1">
+            {Array.from({ length: 7 }).map((_, i) => (
+              <div
+                key={i}
+                className={`h-2 w-2 rounded-full ${
+                  i < 5 ? 'bg-primary/60' : 'bg-muted'
+                }`}
+              />
+            ))}
+          </div>
         </div>
       </CardContent>
     </Card>

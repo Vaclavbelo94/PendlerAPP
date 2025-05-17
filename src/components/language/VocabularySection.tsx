@@ -1,15 +1,16 @@
-
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSpacedRepetition } from '@/hooks/useSpacedRepetition';
+import { useVocabularyProgress } from '@/hooks/useVocabularyProgress';
 import VocabularyReview from './VocabularyReview';
 import VocabularyStatistics from './VocabularyStatistics';
+import VocabularyProgressDashboard from './VocabularyProgressDashboard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus, Save, Settings } from 'lucide-react';
+import { Plus, Save, Settings, BarChart2 } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -23,6 +24,7 @@ const sampleVocabularyItems: VocabularyItem[] = [
     translation: 'pes',
     example: 'Der Hund bellt.',
     category: 'Zvířata',
+    difficulty: 'easy',
     repetitionLevel: 0,
     correctCount: 0,
     incorrectCount: 0
@@ -33,6 +35,7 @@ const sampleVocabularyItems: VocabularyItem[] = [
     translation: 'kočka',
     example: 'Die Katze miaut.',
     category: 'Zvířata',
+    difficulty: 'medium',
     repetitionLevel: 0,
     correctCount: 0,
     incorrectCount: 0
@@ -43,6 +46,7 @@ const sampleVocabularyItems: VocabularyItem[] = [
     translation: 'dům',
     example: 'Das ist mein Haus.',
     category: 'Bydlení',
+    difficulty: 'hard',
     repetitionLevel: 0,
     correctCount: 0,
     incorrectCount: 0
@@ -53,6 +57,7 @@ const sampleVocabularyItems: VocabularyItem[] = [
     translation: 'stůl',
     example: 'Der Tisch ist aus Holz.',
     category: 'Nábytek',
+    difficulty: 'medium',
     repetitionLevel: 0,
     correctCount: 0,
     incorrectCount: 0
@@ -63,6 +68,7 @@ const sampleVocabularyItems: VocabularyItem[] = [
     translation: 'mluvit',
     example: 'Ich spreche Deutsch.',
     category: 'Slovesa',
+    difficulty: 'easy',
     repetitionLevel: 0,
     correctCount: 0,
     incorrectCount: 0
@@ -75,6 +81,7 @@ const VocabularySection: React.FC = () => {
   const [newTranslation, setNewTranslation] = useState('');
   const [newExample, setNewExample] = useState('');
   const [newCategory, setNewCategory] = useState('Obecné');
+  const [newDifficulty, setNewDifficulty] = useState('medium');
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [newDailyGoal, setNewDailyGoal] = useState(10);
   
@@ -92,6 +99,8 @@ const VocabularySection: React.FC = () => {
     setDailyGoal
   } = useSpacedRepetition(sampleVocabularyItems);
 
+  const { userProgress } = useVocabularyProgress(items);
+
   // Update newDailyGoal when dailyGoal changes
   useEffect(() => {
     setNewDailyGoal(dailyGoal);
@@ -105,6 +114,7 @@ const VocabularySection: React.FC = () => {
         translation: newTranslation.trim(),
         example: newExample.trim() || undefined,
         category: newCategory || 'Obecné',
+        difficulty: newDifficulty as 'easy' | 'medium' | 'hard' || undefined,
       });
       
       // Reset form
@@ -112,6 +122,7 @@ const VocabularySection: React.FC = () => {
       setNewTranslation('');
       setNewExample('');
       setNewCategory('Obecné');
+      setNewDifficulty('medium');
     }
   };
 
@@ -124,10 +135,14 @@ const VocabularySection: React.FC = () => {
   return (
     <div className="space-y-6">
       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="review">Opakování</TabsTrigger>
           <TabsTrigger value="browse">Procházet</TabsTrigger>
           <TabsTrigger value="add">Přidat slovíčko</TabsTrigger>
+          <TabsTrigger value="progress">
+            <BarChart2 className="h-4 w-4 mr-2" />
+            Pokrok
+          </TabsTrigger>
         </TabsList>
         
         <TabsContent value="review" className="space-y-4">
@@ -198,6 +213,7 @@ const VocabularySection: React.FC = () => {
           )}
         </TabsContent>
         
+        {/* Browse tab */}
         <TabsContent value="browse">
           <Card>
             <CardHeader>
@@ -243,6 +259,7 @@ const VocabularySection: React.FC = () => {
           </Card>
         </TabsContent>
         
+        {/* Add vocabulary tab */}
         <TabsContent value="add">
           <Card>
             <CardHeader>
@@ -291,28 +308,47 @@ const VocabularySection: React.FC = () => {
                   />
                 </div>
                 
-                <div className="space-y-2">
-                  <Label htmlFor="category">Kategorie</Label>
-                  <Select
-                    value={newCategory}
-                    onValueChange={setNewCategory}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Vyberte kategorii" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Obecné">Obecné</SelectItem>
-                      <SelectItem value="Zvířata">Zvířata</SelectItem>
-                      <SelectItem value="Jídlo">Jídlo</SelectItem>
-                      <SelectItem value="Cestování">Cestování</SelectItem>
-                      <SelectItem value="Práce">Práce</SelectItem>
-                      <SelectItem value="Volný čas">Volný čas</SelectItem>
-                      <SelectItem value="Rodina">Rodina</SelectItem>
-                      <SelectItem value="Bydlení">Bydlení</SelectItem>
-                      <SelectItem value="Slovesa">Slovesa</SelectItem>
-                      <SelectItem value="Přídavná jména">Přídavná jména</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="category">Kategorie</Label>
+                    <Select
+                      value={newCategory}
+                      onValueChange={setNewCategory}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Vyberte kategorii" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Obecné">Obecné</SelectItem>
+                        <SelectItem value="Zvířata">Zvířata</SelectItem>
+                        <SelectItem value="Jídlo">Jídlo</SelectItem>
+                        <SelectItem value="Cestování">Cestování</SelectItem>
+                        <SelectItem value="Práce">Práce</SelectItem>
+                        <SelectItem value="Volný čas">Volný čas</SelectItem>
+                        <SelectItem value="Rodina">Rodina</SelectItem>
+                        <SelectItem value="Bydlení">Bydlení</SelectItem>
+                        <SelectItem value="Slovesa">Slovesa</SelectItem>
+                        <SelectItem value="Přídavná jména">Přídavná jména</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="difficulty">Obtížnost</Label>
+                    <Select
+                      value={newDifficulty}
+                      onValueChange={setNewDifficulty}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Vyberte obtížnost" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="easy">Lehká</SelectItem>
+                        <SelectItem value="medium">Střední</SelectItem>
+                        <SelectItem value="hard">Těžká</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
                 
                 <Button type="submit" className="w-full">
@@ -322,6 +358,14 @@ const VocabularySection: React.FC = () => {
               </form>
             </CardContent>
           </Card>
+        </TabsContent>
+        
+        {/* New Progress Dashboard Tab */}
+        <TabsContent value="progress">
+          <VocabularyProgressDashboard 
+            userProgress={userProgress}
+            items={items}
+          />
         </TabsContent>
       </Tabs>
     </div>
