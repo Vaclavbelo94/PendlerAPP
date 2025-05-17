@@ -4,13 +4,12 @@ import { FormField, FormItem, FormControl, FormMessage } from "@/components/ui/f
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { UseFormReturn } from "react-hook-form";
-import { z } from "zod";
 import { Check } from "lucide-react";
 import { Exercise } from "@/data/germanExercises";
 
 interface ExerciseQuestionProps {
   exercise: Exercise;
-  form: UseFormReturn<{answer: string}, any>;
+  form: UseFormReturn<{answer?: string}, any>; // Changed from {answer: string} to {answer?: string}
   showAnswer: boolean;
 }
 
