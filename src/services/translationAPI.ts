@@ -4,6 +4,14 @@ interface TranslationResponse {
   detectedLanguage?: string;
 }
 
+interface TranslationDictionary {
+  [sourceLanguage: string]: {
+    [targetLanguage: string]: {
+      [phrase: string]: string;
+    };
+  };
+}
+
 // This is a simple mock translation API for demo purposes
 // In a real application, you'd integrate with a real API like LibreTranslate, Google Translate, etc.
 export async function translateText(
@@ -12,7 +20,7 @@ export async function translateText(
   targetLanguage: string
 ): Promise<TranslationResponse> {
   // Simple dictionary for demo purposes
-  const translations: Record<string, Record<string, string>> = {
+  const translations: TranslationDictionary = {
     cs: {
       de: {
         "ahoj": "hallo",
