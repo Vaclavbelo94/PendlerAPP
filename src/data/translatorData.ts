@@ -20,6 +20,11 @@ export const workPhrases: PhraseCategory[] = [
       "Mohu dostat zálohu na mzdu?",
       "Kdy je výplata?",
       "Jak dlouhá je pauza na oběd?",
+      "Potřebuji přesčasové hodiny.",
+      "Jaké jsou moje pracovní povinnosti?",
+      "Mohu pracovat na dálku/z domova?",
+      "Kde je nejbližší toaleta?",
+      "Ztratil/a jsem přístupovou kartu."
     ],
   },
   {
@@ -36,6 +41,11 @@ export const workPhrases: PhraseCategory[] = [
       "Kolik stojí parkování?",
       "Jak dlouho trvá cesta do...?",
       "Je na silnici zácpa?",
+      "Můžete mi zavolat taxi?",
+      "Jaká je nejrychlejší cesta do...?",
+      "Je toto správný směr na...?",
+      "Kolik stojí pronájem auta?",
+      "Kde si mohu koupit jízdenku?"
     ],
   },
   {
@@ -52,6 +62,11 @@ export const workPhrases: PhraseCategory[] = [
       "Kde najdu nejbližší obchod?",
       "Je v okolí lékárna/nemocnice?",
       "Jak funguje třídění odpadu?",
+      "Je v bytě WiFi připojení?",
+      "Mohu mít domácího mazlíčka?",
+      "Kdy se platí kauce?",
+      "Kde je hlavní uzávěr vody/plynu?",
+      "Potřebuji vyměnit klíče."
     ],
   },
   {
@@ -68,6 +83,11 @@ export const workPhrases: PhraseCategory[] = [
       "Potřebuji informace o zdravotním pojištění.",
       "Jak funguje daňové přiznání v této zemi?",
       "Kde najdu informace o sociálním pojištění?",
+      "Jaké jsou podmínky pro získání občanství?",
+      "Potřebuji prodloužit platnost víza.",
+      "Kde si mohu ověřit dokument?",
+      "Jaké jsou úřední hodiny?",
+      "Potřebuji právní poradenství."
     ],
   },
   {
@@ -84,6 +104,61 @@ export const workPhrases: PhraseCategory[] = [
       "Auto má poruchu.",
       "Nevím, kde se nacházím.",
       "Jak se dostanu zpět do...",
+      "Potřebuji lék na...",
+      "Je mi špatně/nevolno.",
+      "Potřebuji pomoc s překladem.",
+      "Mám alergii na...",
+      "Kde je nejbližší policejní stanice?"
+    ],
+  },
+  {
+    id: "shopping",
+    title: "Nakupování",
+    phrases: [
+      "Kolik to stojí?",
+      "Přijímáte platební karty?",
+      "Máte slevy?",
+      "Hledám...",
+      "Můžete mi pomoci najít...?",
+      "Kde najdu oddělení s...?",
+      "Mohu si to vyzkoušet?",
+      "Máte to ve větší/menší velikosti?",
+      "Máte to v jiné barvě?",
+      "Je možné toto zboží vrátit?",
+      "Jaká je záruční doba?",
+      "Potřebuji účtenku.",
+      "Je toto zboží ve slevě?",
+      "Kde je zkušební kabinka?",
+      "Kdy zavíráte?"
+    ],
+  },
+  {
+    id: "food",
+    title: "Jídlo a restaurace",
+    phrases: [
+      "Máte menu v angličtině/češtině?",
+      "Jsem vegetarián/vegan.",
+      "Mám alergii na...",
+      "Co doporučujete?",
+      "Mohu dostat sklenici vody?",
+      "Můžeme platit zvlášť?",
+      "Přijímáte spropitné?",
+      "Je toto jídlo pálivé?",
+      "Mohu si objednat?",
+      "Účet, prosím.",
+      "Máte bezlepkové/bezlaktózové jídlo?",
+      "Jaká je dnešní specialita?",
+      "Je v tomto jídle maso?",
+      "Můžete mi to zabalit s sebou?",
+      "Máte rezervaci na jméno...?"
     ],
   },
 ];
+
+export const languagePairs = [
+  { code: "cs", name: "Čeština" },
+  { code: "de", name: "Němčina" },
+  { code: "en", name: "Angličtina" },
+  { code: "sk", name: "Slovenština" },
+  { code: "pl", name: "Polština" },
+]

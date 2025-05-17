@@ -1,16 +1,28 @@
 
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FileText, Languages, History } from "lucide-react";
+import { FileText, Languages, History, ArrowLeftRight } from "lucide-react";
 import PremiumCheck from '@/components/premium/PremiumCheck';
-import { workPhrases } from '@/data/translatorData';
+import { workPhrases, languagePairs } from '@/data/translatorData';
 import TextTranslation from '@/components/translator/TextTranslation';
 import PhrasesTranslation from '@/components/translator/PhrasesTranslation';
 import TranslationHistory from '@/components/translator/TranslationHistory';
 import { useTranslator } from '@/hooks/useTranslator';
 import { PremiumBadge } from '@/components/premium/PremiumBadge';
+import { 
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle
+} from "@/components/ui/navigation-menu";
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 const TranslatorPage = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("text");
   const [phrasesTab, setPhrasesTab] = useState("workplace");
   
@@ -37,9 +49,50 @@ const TranslatorPage = () => {
   return (
     <PremiumCheck featureKey="translator">
       <div className="container py-6 md:py-10">
-        <div className="flex items-center gap-3 mb-4">
-          <h1 className="text-3xl font-bold">Překladač</h1>
-          <PremiumBadge />
+        {/* Enhanced Navigation */}
+        <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between">
+          <div className="flex items-center gap-3 mb-4 sm:mb-0">
+            <h1 className="text-3xl font-bold">Překladač</h1>
+            <PremiumBadge />
+          </div>
+          
+          <NavigationMenu className="w-full sm:w-auto">
+            <NavigationMenuList className="w-full sm:w-auto">
+              <NavigationMenuItem>
+                <NavigationMenuTrigger className="bg-muted/40">Rychlé přechody</NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <div className="grid gap-2 p-4 w-[220px] md:w-[320px]">
+                    <Button 
+                      variant="ghost" 
+                      className="flex justify-start items-center gap-2 text-left w-full" 
+                      onClick={() => navigate("/language")}
+                    >
+                      <Languages className="h-4 w-4" />
+                      <span>Výuka jazyka</span>
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      className="flex justify-start items-center gap-2 text-left w-full" 
+                      onClick={() => navigate("/language")}
+                    >
+                      <FileText className="h-4 w-4" />
+                      <span>Užitečné fráze</span>
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      className="flex justify-start items-center gap-2 text-left w-full"
+                      onClick={() => {
+                        setActiveTab("phrases");
+                      }}
+                    >
+                      <ArrowLeftRight className="h-4 w-4" />
+                      <span>Rychlý překlad frází</span>
+                    </Button>
+                  </div>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu>
         </div>
         
         <Tabs defaultValue={activeTab} value={activeTab} onValueChange={setActiveTab} className="space-y-6">
@@ -74,6 +127,7 @@ const TranslatorPage = () => {
               handleTranslate={handleTranslate}
               handleSwapLanguages={handleSwapLanguages}
               handleTextToSpeech={handleTextToSpeech}
+              languagePairs={languagePairs}
             />
           </TabsContent>
           

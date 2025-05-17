@@ -24,6 +24,7 @@ interface TextTranslationProps {
   handleTranslate: () => void;
   handleSwapLanguages: () => void;
   handleTextToSpeech: (text: string, language: string) => void;
+  languagePairs: Array<{code: string, name: string}>;
 }
 
 const TextTranslation: React.FC<TextTranslationProps> = ({
@@ -39,7 +40,8 @@ const TextTranslation: React.FC<TextTranslationProps> = ({
   isTranslating,
   handleTranslate,
   handleSwapLanguages,
-  handleTextToSpeech
+  handleTextToSpeech,
+  languagePairs
 }) => {
   const handleCopyTranslation = () => {
     if (!translatedText.trim()) return;
@@ -59,7 +61,7 @@ const TextTranslation: React.FC<TextTranslationProps> = ({
           <span>Překlad textu</span>
         </CardTitle>
         <CardDescription>
-          Přeložte text mezi češtinou, němčinou a angličtinou
+          Přeložte text mezi češtinou, němčinou, angličtinou a dalšími jazyky
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -81,9 +83,9 @@ const TextTranslation: React.FC<TextTranslationProps> = ({
                 <SelectValue placeholder="Vyberte jazyk" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="cs">Čeština</SelectItem>
-                <SelectItem value="de">Němčina</SelectItem>
-                <SelectItem value="en">Angličtina</SelectItem>
+                {languagePairs.map((lang) => (
+                  <SelectItem key={lang.code} value={lang.code}>{lang.name}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
             <Textarea
@@ -134,9 +136,9 @@ const TextTranslation: React.FC<TextTranslationProps> = ({
                 <SelectValue placeholder="Vyberte jazyk" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="cs">Čeština</SelectItem>
-                <SelectItem value="de">Němčina</SelectItem>
-                <SelectItem value="en">Angličtina</SelectItem>
+                {languagePairs.map((lang) => (
+                  <SelectItem key={lang.code} value={lang.code}>{lang.name}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
             <Textarea

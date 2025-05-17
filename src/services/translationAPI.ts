@@ -38,6 +38,85 @@ export async function translateText(
         "kolik stojí": "wie viel kostet",
         "nerozumím": "ich verstehe nicht",
         "pomoc": "hilfe",
+        "jak se jmenuješ": "wie heißt du",
+        "kolik je hodin": "wie spät ist es",
+        "potřebuji pomoc": "ich brauche hilfe",
+        "kde je nejbližší": "wo ist der nächste",
+        "nemocnice": "krankenhaus",
+        "lékárna": "apotheke",
+        "restaurace": "restaurant",
+        "hotel": "hotel",
+        "nádraží": "bahnhof",
+        "letiště": "flughafen",
+        "supermarket": "supermarkt",
+        "obchod": "geschäft",
+        "toaleta": "toilette",
+        "banka": "bank",
+      },
+      en: {
+        "ahoj": "hello",
+        "dobrý den": "good day",
+        "děkuji": "thank you",
+        "prosím": "please",
+        "ano": "yes",
+        "ne": "no",
+        "jak se máš": "how are you",
+        "na shledanou": "goodbye",
+        "dobrý večer": "good evening",
+        "dobrou noc": "good night",
+        "promiň": "sorry",
+        "kde je": "where is",
+        "kolik stojí": "how much does it cost",
+        "nerozumím": "I don't understand",
+        "pomoc": "help",
+        "jak se jmenuješ": "what's your name",
+        "kolik je hodin": "what time is it",
+        "potřebuji pomoc": "I need help",
+        "kde je nejbližší": "where is the nearest",
+        "nemocnice": "hospital",
+        "lékárna": "pharmacy",
+        "restaurace": "restaurant",
+        "hotel": "hotel",
+        "nádraží": "train station",
+        "letiště": "airport",
+        "supermarket": "supermarket",
+        "obchod": "shop",
+        "toaleta": "toilet",
+        "banka": "bank",
+      },
+      sk: {
+        "ahoj": "ahoj",
+        "dobrý den": "dobrý deň",
+        "děkuji": "ďakujem",
+        "prosím": "prosím",
+        "ano": "áno",
+        "ne": "nie",
+        "jak se máš": "ako sa máš",
+        "na shledanou": "dovidenia",
+        "dobrý večer": "dobrý večer",
+        "dobrou noc": "dobrú noc",
+        "promiň": "prepáč",
+        "kde je": "kde je",
+        "kolik stojí": "koľko stojí",
+        "nerozumím": "nerozumiem",
+        "pomoc": "pomoc",
+      },
+      pl: {
+        "ahoj": "cześć",
+        "dobrý den": "dzień dobry",
+        "děkuji": "dziękuję",
+        "prosím": "proszę",
+        "ano": "tak",
+        "ne": "nie",
+        "jak se máš": "jak się masz",
+        "na shledanou": "do widzenia",
+        "dobrý večer": "dobry wieczór",
+        "dobrou noc": "dobranoc",
+        "promiň": "przepraszam",
+        "kde je": "gdzie jest",
+        "kolik stojí": "ile kosztuje",
+        "nerozumím": "nie rozumiem",
+        "pomoc": "pomoc",
       }
     },
     de: {
@@ -57,6 +136,32 @@ export async function translateText(
         "wie viel kostet": "kolik stojí",
         "ich verstehe nicht": "nerozumím",
         "hilfe": "pomoc",
+        "wie heißt du": "jak se jmenuješ",
+        "wie spät ist es": "kolik je hodin",
+        "ich brauche hilfe": "potřebuji pomoc",
+        "wo ist der nächste": "kde je nejbližší",
+        "krankenhaus": "nemocnice",
+        "apotheke": "lékárna",
+        "restaurant": "restaurace",
+        "hotel": "hotel",
+        "bahnhof": "nádraží",
+        "flughafen": "letiště",
+        "supermarkt": "supermarket",
+        "geschäft": "obchod",
+        "toilette": "toaleta",
+        "bank": "banka",
+      },
+      en: {
+        "hallo": "hello",
+        "guten tag": "good day",
+        "danke": "thank you",
+        "bitte": "please",
+        "ja": "yes",
+        "nein": "no",
+        "wie geht es dir": "how are you",
+        "auf wiedersehen": "goodbye",
+        "guten abend": "good evening",
+        "gute nacht": "good night",
       }
     },
     en: {
@@ -76,6 +181,20 @@ export async function translateText(
         "how much is it": "kolik to stojí",
         "I don't understand": "nerozumím",
         "help": "pomoc",
+        "what's your name": "jak se jmenuješ",
+        "what time is it": "kolik je hodin",
+        "I need help": "potřebuji pomoc",
+        "where is the nearest": "kde je nejbližší",
+        "hospital": "nemocnice",
+        "pharmacy": "lékárna",
+        "restaurant": "restaurace",
+        "hotel": "hotel",
+        "train station": "nádraží",
+        "airport": "letiště",
+        "supermarket": "supermarket",
+        "shop": "obchod",
+        "toilet": "toaleta",
+        "bank": "banka",
       },
       de: {
         "hello": "hallo",
@@ -93,6 +212,20 @@ export async function translateText(
         "how much is it": "wie viel kostet",
         "I don't understand": "ich verstehe nicht",
         "help": "hilfe",
+        "what's your name": "wie heißt du",
+        "what time is it": "wie spät ist es",
+        "I need help": "ich brauche hilfe",
+        "where is the nearest": "wo ist der nächste",
+        "hospital": "krankenhaus",
+        "pharmacy": "apotheke",
+        "restaurant": "restaurant",
+        "hotel": "hotel",
+        "train station": "bahnhof",
+        "airport": "flughafen",
+        "supermarket": "supermarkt",
+        "shop": "geschäft",
+        "toilet": "toilette",
+        "bank": "bank",
       }
     },
   };
@@ -126,6 +259,24 @@ export async function translateText(
         } else if (targetLanguage === "cs") {
           result = lowerText.split(' ')
             .map(word => word.endsWith('en') ? word.slice(0, -2) : word)
+            .join(' ');
+        } else if (targetLanguage === "sk") {
+          // Simulate Czech to Slovak conversion
+          result = lowerText.split(' ')
+            .map(word => {
+              if (word.includes("ě")) return word.replace(/ě/g, "e");
+              if (word.endsWith("í")) return word.replace(/í$/g, "ie");
+              return word;
+            })
+            .join(' ');
+        } else if (targetLanguage === "pl") {
+          // Simulate Czech to Polish conversion
+          result = lowerText.split(' ')
+            .map(word => {
+              if (word.includes("ř")) return word.replace(/ř/g, "rz");
+              if (word.endsWith("ý")) return word.replace(/ý$/g, "y");
+              return word;
+            })
             .join(' ');
         }
       }
