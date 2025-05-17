@@ -16,7 +16,7 @@ interface AuthContextType {
   signUp: (email: string, password: string, username?: string) => Promise<{error: any}>;
   signOut: () => Promise<void>;
   refreshAdminStatus: () => Promise<void>;
-  refreshPremiumStatus: () => Promise<void>;
+  refreshPremiumStatus: () => Promise<{ isPremium: boolean; premiumExpiry?: string }>;
 }
 
 const AuthContext = React.createContext<AuthContextType | undefined>(undefined);
