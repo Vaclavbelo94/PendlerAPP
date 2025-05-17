@@ -30,6 +30,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     useAuthStatus(user?.id);
   const { signIn: authSignIn, signUp: authSignUp, signOut: authSignOut } = useAuthMethods();
 
+  // Check for premium status in localStorage as a fallback
+  const getPremiumStatusFromLocalStorage = React.useCallback(() => {
+    try {
+      const userStr = localStorage.getItem("currentUser");
+      if (!userStr) return false;
+      const user = JSON.parse(userStr);
+      return user.isPremium === true;
+    } catch (e) {
+      console.error('Error checking premium status from localStorage:', e);
+      return false;
+    }
+  }, []);
+
+  // Update premium status with localStorage as fallback
+  React.useEffect(() => {
+    if (!isPremium) {
+      const localPremium = getPremiumStatusFromLocalStorage();
+      if (localPremium) {
+        setIsPremium(true);
+      }
+    }
+  }, [isPremium, getPremiumStatusFromLocalStorage, setIsPremium]);
+
   React.useEffect(() => {
     const initialize = async () => {
       setIsLoading(true);
@@ -68,6 +91,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (isPremium) {
           saveUserToLocalStorage(session.user, isPremium, premiumExpiry);
         }
+      }
+      
+      // Check localStorage as a fallback even if no session is found
+      const localPremium = getPremiumStatusFromLocalStorage();
+      if (localPremium) {
+        setIsPremium(true);
       }
       
       setIsLoading(false);
@@ -121,7 +150,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     session,
     isLoading,
     isAdmin,
-    isPremium,
+    isPremium: isPremium || getPremiumStatusFromLocalStorage(), // Always provide a value
     signIn,
     signUp,
     signOut,

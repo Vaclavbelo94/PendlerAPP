@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -22,12 +21,32 @@ export const usePremiumCheck = (featureKey: string) => {
     }
   };
 
+  // Initialize with localStorage value immediately
+  useEffect(() => {
+    // If localStorage shows user is premium, give immediate access while checking
+    const localPremium = getPremiumStatusFromLocalStorage();
+    if (localPremium) {
+      setCanAccess(true);
+    }
+  }, []);
+
   useEffect(() => {
     const checkPremiumAccess = async () => {
       setIsLoading(true);
       
       try {
-        // 1. Zjištění, zda je daná funkce označena jako premium
+        // Check if user is premium from any source
+        const userIsPremium = isPremium || getPremiumStatusFromLocalStorage();
+        
+        // If user is already known to be premium, give access immediately
+        if (userIsPremium) {
+          setIsPremiumFeature(true); // Even if the feature is premium
+          setCanAccess(true);
+          setIsLoading(false);
+          return;
+        }
+        
+        // Otherwise check if the feature is premium
         const { data, error } = await supabase
           .from('premium_features')
           .select('is_enabled')
@@ -45,13 +64,13 @@ export const usePremiumCheck = (featureKey: string) => {
         const isFeaturePremium = data?.is_enabled || false;
         setIsPremiumFeature(isFeaturePremium);
         
-        // Check premium status from auth hook or localStorage
-        const userIsPremium = isPremium || getPremiumStatusFromLocalStorage();
+        // Check premium status from auth hook or localStorage again (to be sure)
+        const confirmedUserIsPremium = isPremium || getPremiumStatusFromLocalStorage();
         
         // 2. Uživatel může přistupovat k funkci, pokud:
         // - funkce není prémiová NEBO
         // - uživatel má premium
-        setCanAccess(!isFeaturePremium || userIsPremium);
+        setCanAccess(!isFeaturePremium || confirmedUserIsPremium);
         
       } catch (error) {
         console.error('Chyba při kontrole premium přístupu:', error);
@@ -62,7 +81,8 @@ export const usePremiumCheck = (featureKey: string) => {
       }
     };
 
-    if (user) {
+    // If we already gave access based on localStorage, still check in the background
+    if (user || getPremiumStatusFromLocalStorage()) {
       checkPremiumAccess();
     } else {
       setIsPremiumFeature(true);

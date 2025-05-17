@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { ShieldIcon, LockIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,7 @@ const PremiumCheck: React.FC<PremiumCheckProps> = ({ featureKey, children }) => 
   const { isLoading, canAccess, isPremiumFeature } = usePremiumCheck(featureKey);
   const { isPremium } = useAuth();
   const navigate = useNavigate();
+  const [hasAccess, setHasAccess] = useState(false);
 
   // Check if user is already premium directly from localStorage as a fallback
   const getCurrentUser = () => {
@@ -28,11 +29,26 @@ const PremiumCheck: React.FC<PremiumCheckProps> = ({ featureKey, children }) => 
     }
   };
   
-  const currentUser = getCurrentUser();
-  const isUserPremium = isPremium || (currentUser && currentUser.isPremium);
-  
-  // Allow access if either the hook says canAccess, or if we know the user is premium
-  const shouldAllowAccess = canAccess || isUserPremium;
+  // Determine access immediately and whenever dependencies change
+  useEffect(() => {
+    const currentUser = getCurrentUser();
+    const isUserPremium = isPremium || (currentUser && currentUser.isPremium);
+    
+    // Grant access if either:
+    // 1. The hook says canAccess, OR
+    // 2. We know the user is premium from any source
+    const shouldAllow = canAccess || isUserPremium;
+    
+    // For debugging
+    console.log('Premium status check:', {
+      canAccess,
+      isPremium, 
+      localUserPremium: currentUser?.isPremium,
+      shouldAllow
+    });
+    
+    setHasAccess(shouldAllow);
+  }, [canAccess, isPremium]);
 
   if (isLoading) {
     return (
@@ -42,7 +58,7 @@ const PremiumCheck: React.FC<PremiumCheckProps> = ({ featureKey, children }) => 
     );
   }
 
-  if (!shouldAllowAccess) {
+  if (!hasAccess) {
     return (
       <div className="container py-8">
         <Card className="text-center">
