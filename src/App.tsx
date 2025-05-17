@@ -41,6 +41,11 @@ import MinimumWage from './pages/laws/MinimumWage';
 import ParentalAllowance from './pages/laws/ParentalAllowance';
 import PensionInsurance from './pages/laws/PensionInsurance';
 import TaxClasses from './pages/laws/TaxClasses';
+import WorkContract from './pages/laws/WorkContract';
+
+// Právní asistent - nová prémiová sekce
+import LegalAssistant from './pages/LegalAssistant';
+import WorkContractGuide from './pages/legal/WorkContract';
 
 function App() {
   return (
@@ -79,6 +84,11 @@ function App() {
               <Route path="/laws/parental-allowance" element={<ParentalAllowance />} />
               <Route path="/laws/pension-insurance" element={<PensionInsurance />} />
               <Route path="/laws/tax-classes" element={<TaxClasses />} />
+              <Route path="/laws/work-contract" element={<WorkContract />} />
+              
+              {/* Nová sekce - Právní asistent */}
+              <Route path="/legal-assistant" element={<LegalAssistant />} />
+              <Route path="/legal/work-contract" element={<WorkContractGuide />} />
               
               <Route path="*" element={<NotFound />} />
             </Routes>

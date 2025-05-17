@@ -1,100 +1,184 @@
 
-import React from 'react';
-import { Button } from "@/components/ui/button";
-import { useLocation, useNavigate } from "react-router-dom";
-import { 
-  HomeIcon, 
-  Languages, 
-  BookOpenIcon, 
-  CarFrontIcon, 
-  CalendarClockIcon, 
-  InfoIcon, 
-  HelpCircleIcon, 
-  PhoneIcon
+import React from "react";
+import { Link, useLocation } from "react-router-dom";
+import {
+  BookOpen,
+  Calculator,
+  Calendar,
+  GraduationCap,
+  Home,
+  Languages,
+  CarTaxiFront,
+  LucideIcon,
+  Pencil,
+  Scale,
+  User,
+  Gavel,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
+import { Separator } from "@/components/ui/separator";
 
 interface NavigationItem {
-  title: string;
+  name: string;
   path: string;
-  icon: React.ElementType;
+  icon: LucideIcon;
+  premium?: boolean;
+}
+
+interface NavigationGroup {
+  title: string;
+  items: NavigationItem[];
 }
 
 interface SidebarNavigationProps {
   closeSidebar: () => void;
 }
 
-const SidebarNavigation: React.FC<SidebarNavigationProps> = ({ closeSidebar }) => {
+const SidebarNavigation = ({ closeSidebar }: SidebarNavigationProps) => {
   const location = useLocation();
-  const navigate = useNavigate();
-  
-  const navItems: NavigationItem[] = [
-    { title: "Domů", path: "/", icon: HomeIcon },
-    { title: "Výuka němčiny", path: "/language", icon: Languages },
-    { title: "Překladač", path: "/translator", icon: Languages },
-    { title: "Přehled zákonů", path: "/laws", icon: BookOpenIcon },
-    { title: "Správa vozidla", path: "/vehicle", icon: CarFrontIcon },
-    { title: "Plánování směn", path: "/shifts", icon: CalendarClockIcon },
-  ];
-  
-  const secondaryItems: NavigationItem[] = [
-    { title: "O projektu", path: "/about", icon: InfoIcon },
-    { title: "Často kladené otázky", path: "/faq", icon: HelpCircleIcon },
-    { title: "Kontakt", path: "/contact", icon: PhoneIcon },
+  const { isAdmin, isPremium } = useAuth();
+
+  const mainNavItems: NavigationItem[] = [
+    {
+      name: "Domů",
+      path: "/",
+      icon: Home
+    },
+    {
+      name: "Výuka jazyka",
+      path: "/language",
+      icon: GraduationCap
+    }
   ];
 
-  const handleNavigate = (path: string) => (e?: React.MouseEvent) => {
-    if (e) {
-      e.preventDefault();
+  const toolsNavItems: NavigationItem[] = [
+    {
+      name: "Překladač",
+      path: "/translator",
+      icon: Languages
+    },
+    {
+      name: "Kalkulačka",
+      path: "/calculator",
+      icon: Calculator
+    },
+    {
+      name: "Směny",
+      path: "/shifts",
+      icon: Calendar
+    },
+    {
+      name: "Doprava",
+      path: "/vehicle",
+      icon: CarTaxiFront
     }
-    navigate(path);
-    const isMobile = window.innerWidth < 768;
-    if (isMobile) {
-      closeSidebar();
+  ];
+
+  const infoNavItems: NavigationItem[] = [
+    {
+      name: "Zákony",
+      path: "/laws",
+      icon: Scale
+    },
+    {
+      name: "Právní asistent",
+      path: "/legal-assistant",
+      icon: Gavel,
+      premium: true
+    },
+    {
+      name: "O nás",
+      path: "/about",
+      icon: Pencil
     }
+  ];
+
+  const accountNavItems: NavigationItem[] = [
+    {
+      name: "Profil",
+      path: "/profile",
+      icon: User
+    }
+  ];
+
+  // Pokud je uživatel admin, přidáme do navigace admin sekci
+  if (isAdmin) {
+    accountNavItems.push({
+      name: "Admin",
+      path: "/admin",
+      icon: BookOpen
+    });
+  }
+
+  // Všechny skupiny navigace
+  const navigationGroups: NavigationGroup[] = [
+    {
+      title: "Hlavní",
+      items: mainNavItems
+    },
+    {
+      title: "Nástroje",
+      items: toolsNavItems
+    },
+    {
+      title: "Informace",
+      items: infoNavItems
+    },
+    {
+      title: "Účet",
+      items: accountNavItems
+    }
+  ];
+
+  const isActive = (path: string) => {
+    return location.pathname === path;
   };
 
   return (
-    <>
-      <div className="space-y-1">
-        <p className="text-xs font-medium text-sidebar-foreground/60 pl-4 pb-1">Hlavní navigace</p>
-        {navItems.map((item) => (
-          <Button
-            key={item.path}
-            variant={location.pathname === item.path ? "secondary" : "ghost"}
-            size="sm"
-            className={`w-full justify-start gap-3 ${
-              location.pathname === item.path
-                ? "font-medium"
-                : "font-normal"
-            } hover:bg-sidebar-accent hover:text-sidebar-accent-foreground`}
-            onClick={handleNavigate(item.path)}
-          >
-            <item.icon className="h-4 w-4" />
-            {item.title}
-          </Button>
-        ))}
-      </div>
-      
-      <div className="space-y-1">
-        <p className="text-xs font-medium text-sidebar-foreground/60 pl-4 pb-1">Informace</p>
-        {secondaryItems.map((item) => (
-          <Button
-            key={item.path}
-            variant={location.pathname === item.path ? "secondary" : "ghost"}
-            size="sm"
-            className={`w-full justify-start gap-3 ${
-              location.pathname === item.path
-                ? "font-medium"
-                : "font-normal"
-            } hover:bg-sidebar-accent hover:text-sidebar-accent-foreground`}
-            onClick={handleNavigate(item.path)}
-          >
-            <item.icon className="h-4 w-4" />
-            {item.title}
-          </Button>
-        ))}
-      </div>
-    </>
+    <nav className="space-y-6">
+      {navigationGroups.map((group, index) => (
+        <div key={group.title} className="space-y-2">
+          <div className="pl-4">
+            <h3 className="text-xs font-medium text-sidebar-foreground/60">{group.title}</h3>
+          </div>
+          <div className="space-y-1">
+            {group.items.map((item) => {
+              const isPremiumItem = item.premium && !isPremium;
+              
+              return (
+                <Link
+                  key={item.name}
+                  to={!isPremiumItem ? item.path : "/premium"}
+                  onClick={closeSidebar}
+                  className="block"
+                >
+                  <Button
+                    variant={isActive(item.path) ? "secondary" : "ghost"}
+                    size="sm"
+                    className={cn(
+                      "w-full justify-start",
+                      isActive(item.path) ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-sidebar-foreground",
+                      "hover:bg-sidebar-hover hover:text-sidebar-hover-foreground"
+                    )}
+                  >
+                    <item.icon className="mr-2 h-4 w-4" />
+                    {item.name}
+                    {isPremiumItem && (
+                      <span className="ml-auto inline-flex items-center rounded-md bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
+                        Premium
+                      </span>
+                    )}
+                  </Button>
+                </Link>
+              );
+            })}
+          </div>
+          {index < navigationGroups.length - 1 && <Separator className="bg-sidebar-border mt-2" />}
+        </div>
+      ))}
+    </nav>
   );
 };
 
