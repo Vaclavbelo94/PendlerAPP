@@ -1,10 +1,11 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, Award, Zap } from 'lucide-react';
+import { CheckCircle2, Award, Zap, Share2 } from 'lucide-react';
 import SessionStats from './SessionStats';
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 import { motion } from "framer-motion";
+import { useToast } from '@/hooks/use-toast';
 
 interface ReviewCompleteProps {
   completedToday: number;
@@ -27,6 +28,8 @@ const ReviewComplete: React.FC<ReviewCompleteProps> = ({
   sessionStats,
   onRefresh
 }) => {
+  const { toast } = useToast();
+  
   // Výpočet bodů
   const points = sessionStats.correctCount * 10 - 
                 sessionStats.incorrectCount * 3 + 
@@ -34,6 +37,44 @@ const ReviewComplete: React.FC<ReviewCompleteProps> = ({
 
   // Určení, zda byl splněn denní cíl
   const isGoalMet = dailyGoal > 0 && completedToday >= dailyGoal;
+
+  // Funkce pro sdílení výsledků
+  const handleShareResults = async () => {
+    try {
+      // Vytvoření textu pro sdílení
+      const shareText = `Právě jsem si zopakoval/a ${sessionStats.reviewedWords.length} slovíček! 
+📊 ${sessionStats.correctCount} správně | ${sessionStats.incorrectCount} špatně
+⚡ ${points} bodů | ${sessionStats.streakCount || 0} nejdelší série
+🎯 ${completedToday}/${dailyGoal} dnes dokončeno
+#JazykováAplikace #Slovíčka`;
+
+      // Použití Web Share API, pokud je dostupné
+      if (navigator.share) {
+        await navigator.share({
+          title: 'Moje výsledky opakování slovíček',
+          text: shareText
+        });
+        toast({
+          title: "Sdíleno",
+          description: "Vaše výsledky byly úspěšně sdíleny."
+        });
+      } else {
+        // Fallback pokud Web Share API není podporováno
+        await navigator.clipboard.writeText(shareText);
+        toast({
+          title: "Zkopírováno do schránky",
+          description: "Text s výsledky byl zkopírován do schránky."
+        });
+      }
+    } catch (error) {
+      console.error('Chyba při sdílení:', error);
+      toast({
+        title: "Chyba při sdílení",
+        description: "Nepodařilo se sdílet výsledky.",
+        variant: "destructive"
+      });
+    }
+  };
 
   return (
     <Card className="w-full max-w-md mx-auto">
@@ -93,7 +134,12 @@ const ReviewComplete: React.FC<ReviewCompleteProps> = ({
           Aktualizovat
         </Button>
         {sessionStats.reviewedWords.length > 5 && (
-          <Button variant="default" className="min-w-32">
+          <Button 
+            variant="default" 
+            className="min-w-32 flex items-center gap-2"
+            onClick={handleShareResults}
+          >
+            <Share2 className="h-4 w-4" />
             Sdílet výsledek
           </Button>
         )}

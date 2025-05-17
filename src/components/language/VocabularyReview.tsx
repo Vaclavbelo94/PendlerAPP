@@ -31,7 +31,8 @@ const VocabularyReview: React.FC = () => {
     currentStreak,
     handleStartReview,
     handleCorrect,
-    handleIncorrect
+    handleIncorrect,
+    resetSession
   } = useVocabularyReviewSession(
     dueItems,
     currentItem,
@@ -51,6 +52,12 @@ const VocabularyReview: React.FC = () => {
     }
   }, [isComplete, sessionStats, addXp]);
 
+  // Funkce pro obnovení přehledu slovíček
+  const handleRefresh = () => {
+    resetSession();
+    window.location.reload();
+  };
+
   if (!currentItem) {
     return (
       <Card className="w-full">
@@ -62,7 +69,7 @@ const VocabularyReview: React.FC = () => {
                 completedToday={completedToday} 
                 dailyGoal={dailyGoal} 
                 sessionStats={sessionStats}
-                onRefresh={() => window.location.reload()}
+                onRefresh={handleRefresh}
               />
             ) : (
               <ReviewStart 
