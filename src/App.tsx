@@ -43,9 +43,10 @@ import PensionInsurance from './pages/laws/PensionInsurance';
 import TaxClasses from './pages/laws/TaxClasses';
 import WorkContract from './pages/laws/WorkContract';
 
-// Právní asistent - nová prémiová sekce
+// Právní asistent - prémiová sekce
 import LegalAssistant from './pages/LegalAssistant';
 import WorkContractGuide from './pages/legal/WorkContract';
+import RentalAgreement from './pages/legal/RentalAgreement';
 
 function App() {
   return (
@@ -86,9 +87,10 @@ function App() {
               <Route path="/laws/tax-classes" element={<TaxClasses />} />
               <Route path="/laws/work-contract" element={<WorkContract />} />
               
-              {/* Nová sekce - Právní asistent */}
+              {/* Právní asistent - prémiová sekce */}
               <Route path="/legal-assistant" element={<LegalAssistant />} />
               <Route path="/legal/work-contract" element={<WorkContractGuide />} />
+              <Route path="/legal/rental-agreement" element={<RentalAgreement />} />
               
               <Route path="*" element={<NotFound />} />
             </Routes>

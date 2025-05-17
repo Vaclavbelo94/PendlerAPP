@@ -8,7 +8,8 @@ import {
   FileSearch,
   FilePen,
   Search,
-  ClipboardList
+  ClipboardList,
+  Home
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,17 +24,16 @@ const LegalAssistant = () => {
       link: "/legal/work-contract"
     },
     {
+      title: "Nájemní smlouva",
+      icon: Home,
+      description: "Vzorová nájemní smlouva a práva nájemníků v Německu",
+      link: "/legal/rental-agreement",
+    },
+    {
       title: "Daňová registrace",
       icon: FileText,
       description: "Formuláře a návody pro daňovou registraci v Německu",
       link: "/laws/tax-return",
-      soon: true
-    },
-    {
-      title: "Bydlení a nájem",
-      icon: FileSearch,
-      description: "Nájemní smlouva a práva nájemníků v Německu",
-      link: "/legal/rental-agreement",
       soon: true
     },
     {
