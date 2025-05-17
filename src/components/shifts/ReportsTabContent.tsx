@@ -1,7 +1,7 @@
 
 import React from "react";
 import { MonthlyReport } from "./MonthlyReport";
-import { ShiftAnalytics } from "./ShiftAnalytics";
+import ShiftAnalytics from "./ShiftAnalytics";
 import { ReportsTab } from "./ReportsTab";
 import { Shift, AnalyticsPeriod } from "./types";
 
