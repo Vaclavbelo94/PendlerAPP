@@ -14,6 +14,7 @@ import {
   Scale,
   User,
   Gavel,
+  Map,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -73,6 +74,12 @@ const SidebarNavigation = ({ closeSidebar }: SidebarNavigationProps) => {
       name: "Doprava",
       path: "/vehicle",
       icon: CarTaxiFront
+    },
+    {
+      name: "Plánování cest",
+      path: "/travel-planning",
+      icon: Map,
+      premium: true
     }
   ];
 

@@ -30,6 +30,7 @@ import Shifts from './pages/Shifts';
 import Terms from './pages/Terms';
 import Translator from './pages/Translator';
 import Vehicle from './pages/Vehicle';
+import TravelPlanning from './pages/TravelPlanning';
 
 // Stránky o zákonech
 import Laws from './pages/Laws';
@@ -74,6 +75,7 @@ function App() {
               <Route path="/terms" element={<Terms />} />
               <Route path="/translator" element={<Translator />} />
               <Route path="/vehicle" element={<Vehicle />} />
+              <Route path="/travel-planning" element={<TravelPlanning />} />
               
               {/* Stránky o zákonech */}
               <Route path="/laws" element={<Laws />} />
