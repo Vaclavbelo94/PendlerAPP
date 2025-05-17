@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSpacedRepetition } from '@/hooks/useSpacedRepetition';
@@ -7,20 +8,15 @@ import VocabularyStatistics from './VocabularyStatistics';
 import VocabularyProgressDashboard from './VocabularyProgressDashboard';
 import VocabularyImportExport from './VocabularyImportExport';
 import VocabularyBrowse from './VocabularyBrowse';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Plus, Save, Settings, BarChart2, Download, Upload } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { 
-  Dialog, DialogContent, DialogDescription, DialogFooter, 
-  DialogHeader, DialogTitle, DialogTrigger 
-} from '@/components/ui/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { BarChart2, Download } from 'lucide-react';
 import { VocabularyItem } from '@/models/VocabularyItem';
 import { useToast } from '@/hooks/use-toast';
+import VocabularyAdd from './vocabulary/VocabularyAdd';
+import VocabularyEdit from './vocabulary/VocabularyEdit';
+import TestMode from './vocabulary/TestMode';
+import VocabularyBulkActions from './vocabulary/VocabularyBulkActions';
+import GamificationTab from './vocabulary/GamificationTab';
+import VocabularySettings from './vocabulary/VocabularySettings';
 
 // Sample vocabulary items for demonstration
 const sampleVocabularyItems: VocabularyItem[] = [
@@ -83,13 +79,6 @@ const sampleVocabularyItems: VocabularyItem[] = [
 
 const VocabularySection: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState('review');
-  const [newWord, setNewWord] = useState('');
-  const [newTranslation, setNewTranslation] = useState('');
-  const [newExample, setNewExample] = useState('');
-  const [newCategory, setNewCategory] = useState('Obecné');
-  const [newDifficulty, setNewDifficulty] = useState('medium');
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const [newDailyGoal, setNewDailyGoal] = useState(10);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [currentEditItem, setCurrentEditItem] = useState<VocabularyItem | null>(null);
   const { toast } = useToast();
@@ -111,83 +100,33 @@ const VocabularySection: React.FC = () => {
 
   const { userProgress } = useVocabularyProgress(items);
 
-  // Update newDailyGoal when dailyGoal changes
-  useEffect(() => {
-    setNewDailyGoal(dailyGoal);
-  }, [dailyGoal]);
-
-  // Handle adding a new vocabulary item
-  const handleAddWord = () => {
-    if (newWord.trim() && newTranslation.trim()) {
-      addVocabularyItem({
-        word: newWord.trim(),
-        translation: newTranslation.trim(),
-        example: newExample.trim() || undefined,
-        category: newCategory || 'Obecné',
-        difficulty: newDifficulty as 'easy' | 'medium' | 'hard' || undefined,
-        repetitionLevel: 0,
-        correctCount: 0,
-        incorrectCount: 0
-      });
-      
-      // Reset form
-      setNewWord('');
-      setNewTranslation('');
-      setNewExample('');
-      setNewCategory('Obecné');
-      setNewDifficulty('medium');
-      
-      toast({
-        title: "Slovíčko přidáno",
-        description: `Slovíčko "${newWord}" bylo úspěšně přidáno.`,
-      });
-    }
-  };
-
   // Handle editing a vocabulary item
   const handleEditItem = (item: VocabularyItem) => {
     setCurrentEditItem(item);
-    setNewWord(item.word);
-    setNewTranslation(item.translation);
-    setNewExample(item.example || '');
-    setNewCategory(item.category || 'Obecné');
-    setNewDifficulty(item.difficulty || 'medium');
     setEditDialogOpen(true);
   };
 
   // Save edited vocabulary item
-  const handleSaveEdit = () => {
-    if (currentEditItem && newWord.trim() && newTranslation.trim()) {
-      // Find the item in the items array
-      const updatedItems = items.map(item => {
-        if (item.id === currentEditItem.id) {
-          return {
-            ...item,
-            word: newWord.trim(),
-            translation: newTranslation.trim(),
-            example: newExample.trim() || undefined,
-            category: newCategory || 'Obecné',
-            difficulty: newDifficulty as 'easy' | 'medium' | 'hard' || undefined,
-          };
-        }
-        return item;
-      });
-      
-      // Update local storage
-      localStorage.setItem('vocabulary_items', JSON.stringify(updatedItems));
-      
-      // Show success message
-      toast({
-        title: "Slovíčko upraveno",
-        description: `Slovíčko "${newWord}" bylo úspěšně upraveno.`,
-      });
-      
-      // Close dialog
-      setEditDialogOpen(false);
-      
-      // Reset form and reload page to refresh the items
-      window.location.reload();
-    }
+  const handleSaveEdit = (updatedItem: VocabularyItem) => {
+    // Find the item in the items array
+    const updatedItems = items.map(item => {
+      if (item.id === updatedItem.id) {
+        return updatedItem;
+      }
+      return item;
+    });
+    
+    // Update local storage
+    localStorage.setItem('vocabulary_items', JSON.stringify(updatedItems));
+    
+    // Show success message
+    toast({
+      title: "Slovíčko upraveno",
+      description: `Slovíčko "${updatedItem.word}" bylo úspěšně upraveno.`,
+    });
+    
+    // Reload page to refresh the items
+    window.location.reload();
   };
   
   // Handle deleting a vocabulary item
@@ -204,30 +143,46 @@ const VocabularySection: React.FC = () => {
     window.location.reload();
   };
 
-  // Handle saving settings
-  const handleSaveSettings = () => {
-    setDailyGoal(newDailyGoal);
-    setSettingsOpen(false);
+  // Handle bulk delete items
+  const handleBulkDeleteItems = (ids: string[]) => {
+    const updatedItems = items.filter(item => !ids.includes(item.id));
+    localStorage.setItem('vocabulary_items', JSON.stringify(updatedItems));
+    window.location.reload();
   };
-  
-  // Handle import of vocabulary items
-  const handleImportItems = (importedItems: VocabularyItem[]) => {
-    bulkAddVocabularyItems(importedItems);
+
+  // Handle bulk update items
+  const handleBulkUpdateItems = (updatedItems: VocabularyItem[]) => {
+    // Create a map of updated items
+    const updatedItemMap = new Map(updatedItems.map(item => [item.id, item]));
+    
+    // Merge updated items with original items
+    const mergedItems = items.map(item => {
+      if (updatedItemMap.has(item.id)) {
+        return updatedItemMap.get(item.id) || item;
+      }
+      return item;
+    });
+    
+    // Update local storage
+    localStorage.setItem('vocabulary_items', JSON.stringify(mergedItems));
+    window.location.reload();
   };
 
   return (
     <div className="space-y-6">
       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-1 sm:grid-cols-7">
           <TabsTrigger value="review">Opakování</TabsTrigger>
+          <TabsTrigger value="test">Testování</TabsTrigger>
           <TabsTrigger value="browse">Procházet</TabsTrigger>
           <TabsTrigger value="add">Přidat slovíčko</TabsTrigger>
+          <TabsTrigger value="bulk">Hromadná správa</TabsTrigger>
           <TabsTrigger value="progress">
-            <BarChart2 className="h-4 w-4 mr-2" />
+            <BarChart2 className="h-4 w-4 mr-2 hidden sm:block" />
             Pokrok
           </TabsTrigger>
           <TabsTrigger value="import-export">
-            <Download className="h-4 w-4 mr-2" />
+            <Download className="h-4 w-4 mr-2 hidden sm:block" />
             Import/Export
           </TabsTrigger>
         </TabsList>
@@ -241,55 +196,18 @@ const VocabularySection: React.FC = () => {
               <VocabularyStatistics statistics={getStatistics()} />
               
               <div className="mt-4 flex justify-end">
-                <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
-                  <DialogTrigger asChild>
-                    <Button variant="outline" size="sm">
-                      <Settings className="mr-2 h-4 w-4" />
-                      Nastavení
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Nastavení opakování</DialogTitle>
-                      <DialogDescription>
-                        Upravte si nastavení pro opakování slovíček
-                      </DialogDescription>
-                    </DialogHeader>
-                    
-                    <div className="space-y-4 py-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="dailyGoal">Denní cíl (počet slovíček)</Label>
-                        <Input
-                          id="dailyGoal"
-                          type="number"
-                          min={1}
-                          max={100}
-                          value={newDailyGoal}
-                          onChange={(e) => setNewDailyGoal(Number(e.target.value))}
-                        />
-                      </div>
-                    </div>
-                    
-                    <DialogFooter>
-                      <Button onClick={handleSaveSettings}>
-                        <Save className="mr-2 h-4 w-4" />
-                        Uložit nastavení
-                      </Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
+                <VocabularySettings 
+                  dailyGoal={dailyGoal}
+                  onSaveSettings={setDailyGoal}
+                />
               </div>
             </div>
           </div>
-
-          {dueItems.length === 0 && !currentItem && (
-            <Alert className="mt-4">
-              <AlertTitle>Žádná slovíčka k opakování</AlertTitle>
-              <AlertDescription>
-                Momentálně nemáte žádná slovíčka k opakování. Přidejte si nová slovíčka nebo se vraťte později.
-              </AlertDescription>
-            </Alert>
-          )}
+        </TabsContent>
+        
+        {/* Test mode tab */}
+        <TabsContent value="test">
+          <TestMode vocabularyItems={items} />
         </TabsContent>
         
         {/* Browse tab with enhanced search and filtering */}
@@ -304,216 +222,54 @@ const VocabularySection: React.FC = () => {
         
         {/* Add vocabulary tab */}
         <TabsContent value="add">
-          <Card>
-            <CardHeader>
-              <CardTitle>Přidat nové slovíčko</CardTitle>
-              <CardDescription>
-                Rozšiřte svou slovní zásobu přidáním nového slovíčka
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form 
-                className="space-y-4"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  handleAddWord();
-                }}
-              >
-                <div className="space-y-2">
-                  <Label htmlFor="word">Německé slovíčko *</Label>
-                  <Input
-                    id="word"
-                    placeholder="např. der Hund"
-                    value={newWord}
-                    onChange={(e) => setNewWord(e.target.value)}
-                    required
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="translation">Český překlad *</Label>
-                  <Input
-                    id="translation"
-                    placeholder="např. pes"
-                    value={newTranslation}
-                    onChange={(e) => setNewTranslation(e.target.value)}
-                    required
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="example">Příklad použití</Label>
-                  <Textarea
-                    id="example"
-                    placeholder="např. Der Hund bellt."
-                    value={newExample}
-                    onChange={(e) => setNewExample(e.target.value)}
-                  />
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="category">Kategorie</Label>
-                    <Select
-                      value={newCategory}
-                      onValueChange={setNewCategory}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Vyberte kategorii" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Obecné">Obecné</SelectItem>
-                        <SelectItem value="Zvířata">Zvířata</SelectItem>
-                        <SelectItem value="Jídlo">Jídlo</SelectItem>
-                        <SelectItem value="Cestování">Cestování</SelectItem>
-                        <SelectItem value="Práce">Práce</SelectItem>
-                        <SelectItem value="Volný čas">Volný čas</SelectItem>
-                        <SelectItem value="Rodina">Rodina</SelectItem>
-                        <SelectItem value="Bydlení">Bydlení</SelectItem>
-                        <SelectItem value="Slovesa">Slovesa</SelectItem>
-                        <SelectItem value="Přídavná jména">Přídavná jména</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="difficulty">Obtížnost</Label>
-                    <Select
-                      value={newDifficulty}
-                      onValueChange={setNewDifficulty}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Vyberte obtížnost" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="easy">Lehká</SelectItem>
-                        <SelectItem value="medium">Střední</SelectItem>
-                        <SelectItem value="hard">Těžká</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                
-                <Button type="submit" className="w-full">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Přidat slovíčko
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
+          <VocabularyAdd addVocabularyItem={addVocabularyItem} />
+        </TabsContent>
+        
+        {/* Bulk actions tab */}
+        <TabsContent value="bulk">
+          <VocabularyBulkActions 
+            vocabularyItems={items}
+            onDeleteItems={handleBulkDeleteItems}
+            onUpdateItems={handleBulkUpdateItems}
+          />
         </TabsContent>
         
         {/* Progress Dashboard Tab */}
         <TabsContent value="progress">
-          <VocabularyProgressDashboard 
-            userProgress={userProgress}
-            items={items}
-          />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div>
+              <VocabularyProgressDashboard 
+                userProgress={userProgress}
+                items={items}
+              />
+            </div>
+            <div>
+              <GamificationTab 
+                userProgress={userProgress}
+                vocabularyItems={items}
+                dailyGoal={dailyGoal}
+                completedToday={completedToday}
+              />
+            </div>
+          </div>
         </TabsContent>
         
         {/* Import/Export Tab */}
         <TabsContent value="import-export">
           <VocabularyImportExport 
             vocabularyItems={items}
-            onImport={handleImportItems}
+            onImport={bulkAddVocabularyItems}
           />
         </TabsContent>
       </Tabs>
       
       {/* Edit Vocabulary Item Dialog */}
-      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Upravit slovíčko</DialogTitle>
-            <DialogDescription>
-              Upravte informace o slovíčku.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="edit-word">Německé slovíčko *</Label>
-              <Input
-                id="edit-word"
-                value={newWord}
-                onChange={(e) => setNewWord(e.target.value)}
-                required
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="edit-translation">Český překlad *</Label>
-              <Input
-                id="edit-translation"
-                value={newTranslation}
-                onChange={(e) => setNewTranslation(e.target.value)}
-                required
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="edit-example">Příklad použití</Label>
-              <Textarea
-                id="edit-example"
-                value={newExample}
-                onChange={(e) => setNewExample(e.target.value)}
-              />
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="edit-category">Kategorie</Label>
-                <Select
-                  value={newCategory}
-                  onValueChange={setNewCategory}
-                >
-                  <SelectTrigger id="edit-category">
-                    <SelectValue placeholder="Vyberte kategorii" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Obecné">Obecné</SelectItem>
-                    <SelectItem value="Zvířata">Zvířata</SelectItem>
-                    <SelectItem value="Jídlo">Jídlo</SelectItem>
-                    <SelectItem value="Cestování">Cestování</SelectItem>
-                    <SelectItem value="Práce">Práce</SelectItem>
-                    <SelectItem value="Volný čas">Volný čas</SelectItem>
-                    <SelectItem value="Rodina">Rodina</SelectItem>
-                    <SelectItem value="Bydlení">Bydlení</SelectItem>
-                    <SelectItem value="Slovesa">Slovesa</SelectItem>
-                    <SelectItem value="Přídavná jména">Přídavná jména</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="edit-difficulty">Obtížnost</Label>
-                <Select
-                  value={newDifficulty}
-                  onValueChange={setNewDifficulty}
-                >
-                  <SelectTrigger id="edit-difficulty">
-                    <SelectValue placeholder="Vyberte obtížnost" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="easy">Lehká</SelectItem>
-                    <SelectItem value="medium">Střední</SelectItem>
-                    <SelectItem value="hard">Těžká</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </div>
-          
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
-              Zrušit
-            </Button>
-            <Button onClick={handleSaveEdit}>
-              Uložit změny
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <VocabularyEdit
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        currentItem={currentEditItem}
+        onSave={handleSaveEdit}
+      />
     </div>
   );
 };
