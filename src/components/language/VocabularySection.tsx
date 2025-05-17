@@ -12,7 +12,7 @@ import {
   ImportExportTabContent
 } from './vocabulary/TabContent';
 import VocabularyEdit from './vocabulary/VocabularyEdit';
-import { VocabularyProvider, useVocabularyContext } from './vocabulary/VocabularyManager';
+import VocabularyManager, { useVocabularyContext } from './vocabulary/VocabularyManager';
 
 const VocabularyContent: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState('review');
@@ -49,9 +49,9 @@ const VocabularyContent: React.FC = () => {
 
 const VocabularySection: React.FC = () => {
   return (
-    <VocabularyProvider>
+    <VocabularyManager>
       <VocabularyContent />
-    </VocabularyProvider>
+    </VocabularyManager>
   );
 };
 
