@@ -5,6 +5,7 @@ import { ShieldIcon, LockIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { usePremiumCheck } from "@/hooks/usePremiumCheck";
+import { useAuth } from "@/hooks/useAuth";
 
 interface PremiumCheckProps {
   featureKey: string;
@@ -13,7 +14,25 @@ interface PremiumCheckProps {
 
 const PremiumCheck: React.FC<PremiumCheckProps> = ({ featureKey, children }) => {
   const { isLoading, canAccess, isPremiumFeature } = usePremiumCheck(featureKey);
+  const { isPremium } = useAuth();
   const navigate = useNavigate();
+
+  // Check if user is already premium directly from localStorage as a fallback
+  const getCurrentUser = () => {
+    try {
+      const userStr = localStorage.getItem("currentUser");
+      return userStr ? JSON.parse(userStr) : null;
+    } catch (e) {
+      console.error("Error fetching user:", e);
+      return null;
+    }
+  };
+  
+  const currentUser = getCurrentUser();
+  const isUserPremium = isPremium || (currentUser && currentUser.isPremium);
+  
+  // Allow access if either the hook says canAccess, or if we know the user is premium
+  const shouldAllowAccess = canAccess || isUserPremium;
 
   if (isLoading) {
     return (
@@ -23,7 +42,7 @@ const PremiumCheck: React.FC<PremiumCheckProps> = ({ featureKey, children }) => 
     );
   }
 
-  if (!canAccess) {
+  if (!shouldAllowAccess) {
     return (
       <div className="container py-8">
         <Card className="text-center">

@@ -9,6 +9,19 @@ export const usePremiumCheck = (featureKey: string) => {
   const [canAccess, setCanAccess] = useState(false);
   const { user, isPremium } = useAuth();
 
+  // Additional fallback for premium status
+  const getPremiumStatusFromLocalStorage = () => {
+    try {
+      const userStr = localStorage.getItem("currentUser");
+      if (!userStr) return false;
+      const user = JSON.parse(userStr);
+      return user.isPremium === true;
+    } catch (e) {
+      console.error('Error checking premium status from localStorage:', e);
+      return false;
+    }
+  };
+
   useEffect(() => {
     const checkPremiumAccess = async () => {
       setIsLoading(true);
@@ -32,10 +45,13 @@ export const usePremiumCheck = (featureKey: string) => {
         const isFeaturePremium = data?.is_enabled || false;
         setIsPremiumFeature(isFeaturePremium);
         
+        // Check premium status from auth hook or localStorage
+        const userIsPremium = isPremium || getPremiumStatusFromLocalStorage();
+        
         // 2. Uživatel může přistupovat k funkci, pokud:
         // - funkce není prémiová NEBO
         // - uživatel má premium
-        setCanAccess(!isFeaturePremium || isPremium);
+        setCanAccess(!isFeaturePremium || userIsPremium);
         
       } catch (error) {
         console.error('Chyba při kontrole premium přístupu:', error);
