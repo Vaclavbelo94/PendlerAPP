@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from "react";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from "recharts";
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, eachDayOfInterval } from "date-fns";
@@ -119,42 +118,38 @@ const ShiftAnalytics = ({ shifts, period, onPeriodChange }: ShiftAnalyticsProps)
   }, [filteredShifts]);
 
   // Custom tooltip renderer for the pie chart
-  const renderPieTooltip = (props: any) => {
-    if (props.active && props.payload && props.payload.length) {
+  const renderPieTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
       return (
-        <ChartTooltip>
-          <ChartTooltipContent>
-            <div className="flex flex-col">
-              <span className="text-sm font-bold">{props.payload[0].name}</span>
-              <span className="text-xs">Počet: {props.payload[0].value}</span>
-            </div>
-          </ChartTooltipContent>
-        </ChartTooltip>
+        <div className="bg-white p-2 border border-gray-200 shadow-sm rounded-md">
+          <div className="flex flex-col">
+            <span className="text-sm font-bold">{payload[0].name}</span>
+            <span className="text-xs">Počet: {payload[0].value}</span>
+          </div>
+        </div>
       );
     }
     return null;
   };
   
   // Custom tooltip renderer for the bar chart
-  const renderBarTooltip = (props: any) => {
-    if (props.active && props.payload && props.payload.length) {
+  const renderBarTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
       return (
-        <ChartTooltip>
-          <ChartTooltipContent>
-            <div className="flex flex-col">
-              <span className="text-sm font-bold">{props.label}</span>
-              {props.payload.map((entry: any) => (
-                <span key={entry.name} className="text-xs flex items-center">
-                  <span 
-                    className="w-2 h-2 rounded-full mr-1" 
-                    style={{ backgroundColor: entry.color }}
-                  ></span>
-                  {entry.name === "morning" ? "Ranní" : entry.name === "afternoon" ? "Odpolední" : "Noční"}: {entry.value}
-                </span>
-              ))}
-            </div>
-          </ChartTooltipContent>
-        </ChartTooltip>
+        <div className="bg-white p-2 border border-gray-200 shadow-sm rounded-md">
+          <div className="flex flex-col">
+            <span className="text-sm font-bold">{label}</span>
+            {payload.map((entry: any) => (
+              <span key={entry.name} className="text-xs flex items-center">
+                <span 
+                  className="w-2 h-2 rounded-full mr-1" 
+                  style={{ backgroundColor: entry.color }}
+                ></span>
+                {entry.name === "morning" ? "Ranní" : entry.name === "afternoon" ? "Odpolední" : "Noční"}: {entry.value}
+              </span>
+            ))}
+          </div>
+        </div>
       );
     }
     return null;
