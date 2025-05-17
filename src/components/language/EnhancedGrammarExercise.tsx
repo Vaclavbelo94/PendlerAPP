@@ -4,25 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import LimitedExamples from "./LimitedExamples";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
-interface Example {
-  id: string;
-  german: string;
-  czech: string;
-}
-
-interface GrammarRule {
-  id: string;
-  name: string;
-  description: string;
-  examples: Example[];
-}
-
-interface GrammarCategory {
-  id: string;
-  name: string;
-  rules: GrammarRule[];
-}
+import { GrammarCategory } from '@/data/germanExercises';
 
 interface EnhancedGrammarExerciseProps {
   category: GrammarCategory;

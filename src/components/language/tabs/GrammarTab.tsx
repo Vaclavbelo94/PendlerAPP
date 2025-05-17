@@ -10,7 +10,7 @@ import { useLanguageContext } from '../LanguageManager';
 import GrammarExercise from '../GrammarExercise';
 import EnhancedGrammarExercise from '../EnhancedGrammarExercise';
 import LimitedExamples from '../LimitedExamples';
-import { grammarExercises } from '@/data/germanExercises';
+import { grammarExercises, grammarExercises2, Exercise, GrammarCategory } from '@/data/germanExercises';
 import { FileText, BookOpen, CheckSquare, CircleCheck, PenTool, Book, ListTree } from 'lucide-react';
 import { PremiumBadge } from '@/components/premium/PremiumBadge';
 import LearningSessionHistory from '../LearningSessionHistory';
@@ -67,23 +67,27 @@ const GrammarTab: React.FC = () => {
     setActiveExercise(null);
   };
   
-  const filteredExercises = grammarExercises.filter(ex => ex.level.toLowerCase() === activeTab);
+  // Exercises are of type Exercise[] now
+  const filteredExercises = grammarExercises2.filter(ex => ex.category.toLowerCase() === activeTab);
   
-  const beginnerCount = grammarExercises.filter(ex => ex.level.toLowerCase() === 'beginner').length;
-  const intermediateCount = grammarExercises.filter(ex => ex.level.toLowerCase() === 'intermediate').length;
-  const advancedCount = grammarExercises.filter(ex => ex.level.toLowerCase() === 'advanced').length;
+  const beginnerCount = grammarExercises2.filter(ex => ex.category.toLowerCase() === 'beginner').length;
+  const intermediateCount = grammarExercises2.filter(ex => ex.category.toLowerCase() === 'intermediate').length;
+  const advancedCount = grammarExercises2.filter(ex => ex.category.toLowerCase() === 'advanced').length;
   
   const beginnerCompleted = completedExercises.filter(id => 
-    grammarExercises.find(ex => ex.id === id && ex.level.toLowerCase() === 'beginner')
+    grammarExercises2.find(ex => ex.id === id && ex.category.toLowerCase() === 'beginner')
   ).length;
   
   const intermediateCompleted = completedExercises.filter(id => 
-    grammarExercises.find(ex => ex.id === id && ex.level.toLowerCase() === 'intermediate')
+    grammarExercises2.find(ex => ex.id === id && ex.category.toLowerCase() === 'intermediate')
   ).length;
   
   const advancedCompleted = completedExercises.filter(id => 
-    grammarExercises.find(ex => ex.id === id && ex.level.toLowerCase() === 'advanced')
+    grammarExercises2.find(ex => ex.id === id && ex.category.toLowerCase() === 'advanced')
   ).length;
+
+  // To store the currently active grammar category
+  const [activeCategory, setActiveCategory] = useState<GrammarCategory | null>(null);
   
   return (
     <div className="space-y-6">
@@ -100,7 +104,7 @@ const GrammarTab: React.FC = () => {
             </CardTitle>
             <div className="flex gap-2">
               <Badge variant="outline" className="bg-muted/50">
-                {beginnerCompleted + intermediateCompleted + advancedCompleted}/{grammarExercises.length} dokončeno
+                {beginnerCompleted + intermediateCompleted + advancedCompleted}/{grammarExercises2.length} dokončeno
               </Badge>
             </div>
           </div>
@@ -136,18 +140,18 @@ const GrammarTab: React.FC = () => {
                   <div className="flex justify-between">
                     <div>
                       <h3 className="font-semibold text-lg flex items-center gap-2">
-                        {exercise.title}
+                        {exercise.question}
                         {completedExercises.includes(exercise.id) && (
                           <CircleCheck className="h-5 w-5 text-green-500" />
                         )}
                       </h3>
-                      <p className="text-muted-foreground text-sm">{exercise.description}</p>
+                      <p className="text-muted-foreground text-sm">{exercise.explanation}</p>
                       <div className="flex flex-wrap gap-2 mt-2">
                         <Badge variant="outline" className="bg-muted/30">
-                          {exercise.level}
+                          {exercise.category}
                         </Badge>
                         <Badge variant="outline" className="bg-muted/30">
-                          {exercise.topics.join(', ')}
+                          {exercise.type}
                         </Badge>
                       </div>
                     </div>
@@ -164,13 +168,13 @@ const GrammarTab: React.FC = () => {
                   {activeExercise === exercise.id && (
                     <div className="mt-4 border-t pt-4">
                       {isPremium ? (
-                        <EnhancedGrammarExercise 
-                          exercise={exercise} 
+                        <GrammarExercise 
+                          exercises={[exercise]}
                           onComplete={() => handleExerciseComplete(exercise.id)}
                         />
                       ) : (
                         <GrammarExercise 
-                          exercise={exercise}
+                          exercises={[exercise]}
                           onComplete={() => handleExerciseComplete(exercise.id)}  
                         />
                       )}
@@ -244,7 +248,8 @@ const GrammarTab: React.FC = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <LimitedExamples />
+          {/* Pass empty array if we don't have a selected category */}
+          <LimitedExamples examples={activeCategory?.rules?.[0]?.examples || []} />
         </CardContent>
       </Card>
     </div>
