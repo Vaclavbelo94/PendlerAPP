@@ -12,7 +12,7 @@ import VocabularyBulkActions from './VocabularyBulkActions';
 import GamificationTab from './GamificationTab';
 import VocabularySettings from './VocabularySettings';
 import VocabularyEdit from './VocabularyEdit';
-import { useVocabularyContext } from './VocabularyManager';
+import { useVocabularyContext } from '@/contexts/VocabularyContext';
 
 export const ReviewTabContent: React.FC = () => {
   const { getStatistics, dailyGoal, setDailyGoal } = useVocabularyContext();
