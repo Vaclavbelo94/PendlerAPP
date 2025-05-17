@@ -1,7 +1,6 @@
-
 import { useState, useEffect } from 'react';
 import { VocabularyItem } from '@/models/VocabularyItem';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { useOfflineStatus } from './useOfflineStatus';
 import { addDays } from 'date-fns';
 
@@ -159,17 +158,35 @@ export const useSpacedRepetition = (initialItems: VocabularyItem[] = []) => {
   };
 
   // Add a new vocabulary item
-  const addVocabularyItem = (item: Omit<VocabularyItem, 'id' | 'repetitionLevel' | 'correctCount' | 'incorrectCount'>) => {
+  const addVocabularyItem = (item: Omit<VocabularyItem, 'id'> & Partial<VocabularyItem>) => {
     const newItem: VocabularyItem = {
       ...item,
-      id: `vocab_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
-      repetitionLevel: 0,
-      correctCount: 0,
-      incorrectCount: 0,
+      id: item.id || `vocab_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
+      repetitionLevel: item.repetitionLevel !== undefined ? item.repetitionLevel : 0,
+      correctCount: item.correctCount !== undefined ? item.correctCount : 0,
+      incorrectCount: item.incorrectCount !== undefined ? item.incorrectCount : 0,
     };
     
     setItems(prev => [...prev, newItem]);
     return newItem;
+  };
+
+  // Bulk add vocabulary items (for import)
+  const bulkAddVocabularyItems = (newItems: VocabularyItem[]) => {
+    setItems(prev => [...prev, ...newItems]);
+    
+    // Update localStorage
+    try {
+      const updatedItems = [...items, ...newItems];
+      localStorage.setItem('vocabulary_items', JSON.stringify(updatedItems));
+    } catch (error) {
+      console.error('Error saving vocabulary items:', error);
+    }
+    
+    toast({
+      title: "Import dokončen",
+      description: `Úspěšně importováno ${newItems.length} slovíček.`,
+    });
   };
 
   // Get statistics for vocabulary learning
@@ -209,6 +226,7 @@ export const useSpacedRepetition = (initialItems: VocabularyItem[] = []) => {
     dailyGoal,
     completedToday,
     addVocabularyItem,
+    bulkAddVocabularyItems,
     markCorrect,
     markIncorrect,
     goToNextItem,
