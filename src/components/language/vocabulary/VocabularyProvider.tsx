@@ -1,77 +1,40 @@
 
-import React from 'react';
-import { VocabularyItem } from '@/models/VocabularyItem';
+import React, { createContext, useContext } from 'react';
 import { useVocabularyProvider } from '@/hooks/useVocabularyProvider';
-import { VocabularyContext } from '@/contexts/VocabularyContext';
+import { VocabularyItem } from '@/models/VocabularyItem';
 
-// Sample vocabulary items for demonstration
-const sampleVocabularyItems: VocabularyItem[] = [
-  {
-    id: 'vocab_1',
-    word: 'der Hund',
-    translation: 'pes',
-    example: 'Der Hund bellt.',
-    category: 'Zvířata',
-    difficulty: 'easy',
-    repetitionLevel: 0,
-    correctCount: 0,
-    incorrectCount: 0
-  },
-  {
-    id: 'vocab_2',
-    word: 'die Katze',
-    translation: 'kočka',
-    example: 'Die Katze miaut.',
-    category: 'Zvířata',
-    difficulty: 'medium',
-    repetitionLevel: 0,
-    correctCount: 0,
-    incorrectCount: 0
-  },
-  {
-    id: 'vocab_3',
-    word: 'das Haus',
-    translation: 'dům',
-    example: 'Das ist mein Haus.',
-    category: 'Bydlení',
-    difficulty: 'hard',
-    repetitionLevel: 0,
-    correctCount: 0,
-    incorrectCount: 0
-  },
-  {
-    id: 'vocab_4',
-    word: 'der Tisch',
-    translation: 'stůl',
-    example: 'Der Tisch ist aus Holz.',
-    category: 'Nábytek',
-    difficulty: 'medium',
-    repetitionLevel: 0,
-    correctCount: 0,
-    incorrectCount: 0
-  },
-  {
-    id: 'vocab_5',
-    word: 'sprechen',
-    translation: 'mluvit',
-    example: 'Ich spreche Deutsch.',
-    category: 'Slovesa',
-    difficulty: 'easy',
-    repetitionLevel: 0,
-    correctCount: 0,
-    incorrectCount: 0
+// Vytvoření kontextu slovní zásoby
+const VocabularyContext = createContext<ReturnType<typeof useVocabularyProvider> | undefined>(undefined);
+
+// Hook pro přístup ke kontextu
+export const useVocabularyContext = () => {
+  const context = useContext(VocabularyContext);
+  if (!context) {
+    throw new Error('useVocabularyContext musí být použit uvnitř VocabularyProvider');
   }
-];
+  return context;
+};
 
-interface VocabularyProviderProps {
-  children: React.ReactNode;
-}
+// Poskytovatele kontextu
+export const VocabularyProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // Načtení slovíček z localStorage při prvním renderu
+  const loadVocabularyItems = (): VocabularyItem[] => {
+    try {
+      const storedItems = localStorage.getItem('vocabulary_items');
+      if (storedItems) {
+        return JSON.parse(storedItems);
+      }
+    } catch (error) {
+      console.error('Chyba při načítání slovíček:', error);
+    }
+    return [];
+  };
 
-export const VocabularyProvider: React.FC<VocabularyProviderProps> = ({ children }) => {
-  const vocabularyState = useVocabularyProvider(sampleVocabularyItems);
-  
+  // Použití hooku pro správu slovní zásoby
+  const vocabularyProviderValue = useVocabularyProvider(loadVocabularyItems());
+
   return (
-    <VocabularyContext.Provider value={vocabularyState}>
+    <VocabularyContext.Provider value={vocabularyProviderValue}>
       {children}
     </VocabularyContext.Provider>
   );

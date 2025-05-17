@@ -1,6 +1,5 @@
 
 import { useState, useEffect } from 'react';
-import { useToast } from '@/hooks/use-toast';
 import { VocabularyItem } from '@/models/VocabularyItem';
 
 interface SessionStats {
@@ -10,23 +9,15 @@ interface SessionStats {
   reviewedWords: string[];
 }
 
-export interface ReviewSessionState {
-  isComplete: boolean;
-  sessionStats: SessionStats;
-  handleStartReview: () => void;
-  handleCorrect: (itemId: string) => void;
-  handleIncorrect: (itemId: string) => void;
-}
-
 export const useVocabularyReviewSession = (
   dueItems: VocabularyItem[],
   currentItem: VocabularyItem | null,
-  markCorrect: (itemId: string) => void,
-  markIncorrect: (itemId: string) => void,
+  markCorrect: (id: string) => void,
+  markIncorrect: (id: string) => void,
   goToNextItem: () => void
-): ReviewSessionState => {
-  const { toast } = useToast();
+) => {
   const [isComplete, setIsComplete] = useState(false);
+  const [isStarted, setIsStarted] = useState(false);
   const [sessionStats, setSessionStats] = useState<SessionStats>({
     startTime: new Date(),
     correctCount: 0,
@@ -34,56 +25,70 @@ export const useVocabularyReviewSession = (
     reviewedWords: []
   });
 
+  // Detekce dokončení session
   useEffect(() => {
-    if (!currentItem && dueItems.length === 0) {
+    if (isStarted && !currentItem && dueItems.length === 0) {
       setIsComplete(true);
-    } else {
-      setIsComplete(false);
     }
-  }, [currentItem, dueItems]);
+  }, [currentItem, dueItems.length, isStarted]);
 
+  // Zahájení relace
   const handleStartReview = () => {
-    if (dueItems.length > 0) {
-      goToNextItem();
-      setIsComplete(false);
-      // Reset session stats when starting a new review
-      setSessionStats({
-        startTime: new Date(),
-        correctCount: 0,
-        incorrectCount: 0,
-        reviewedWords: []
-      });
-    } else {
-      toast({
-        title: "Žádná slovíčka k opakování",
-        description: "Momentálně nemáte žádná slovíčka k opakování.",
-      });
-    }
+    setIsStarted(true);
+    setIsComplete(false);
+    setSessionStats({
+      startTime: new Date(),
+      correctCount: 0,
+      incorrectCount: 0,
+      reviewedWords: []
+    });
   };
 
-  const handleCorrect = (itemId: string) => {
+  // Označení slova jako správné
+  const handleCorrect = (id: string) => {
+    if (!currentItem) return;
+    
     setSessionStats(prev => ({
       ...prev,
       correctCount: prev.correctCount + 1,
-      reviewedWords: [...prev.reviewedWords, itemId]
+      reviewedWords: [...prev.reviewedWords, currentItem.word]
     }));
-    markCorrect(itemId);
+    
+    markCorrect(id);
   };
 
-  const handleIncorrect = (itemId: string) => {
+  // Označení slova jako nesprávné
+  const handleIncorrect = (id: string) => {
+    if (!currentItem) return;
+    
     setSessionStats(prev => ({
       ...prev,
       incorrectCount: prev.incorrectCount + 1,
-      reviewedWords: [...prev.reviewedWords, itemId]
+      reviewedWords: [...prev.reviewedWords, currentItem.word]
     }));
-    markIncorrect(itemId);
+    
+    markIncorrect(id);
+  };
+
+  // Reset session
+  const resetSession = () => {
+    setIsComplete(false);
+    setIsStarted(false);
+    setSessionStats({
+      startTime: new Date(),
+      correctCount: 0,
+      incorrectCount: 0,
+      reviewedWords: []
+    });
   };
 
   return {
     isComplete,
+    isStarted,
     sessionStats,
     handleStartReview,
     handleCorrect,
-    handleIncorrect
+    handleIncorrect,
+    resetSession
   };
 };
