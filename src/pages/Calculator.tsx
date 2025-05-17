@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import PremiumCheck from '@/components/premium/PremiumCheck';
 import BasicCalculator from "@/components/calculator/BasicCalculator";
@@ -158,7 +157,11 @@ const Calculator = () => {
                     
                     {showAmortization && schedule.length > 0 && (
                       <div className="mt-4">
-                        <AmortizationTable schedule={schedule} />
+                        <AmortizationTable 
+                          schedule={schedule} 
+                          loanAmount={parseFloat(loanAmount)}
+                          monthlyPayment={monthlyPayment}
+                        />
                       </div>
                     )}
                   </div>

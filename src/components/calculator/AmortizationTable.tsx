@@ -6,12 +6,19 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { ChevronDown, ChevronUp, Filter } from 'lucide-react';
+import CalendarExport from '@/components/calendar/CalendarExport';
 
 interface AmortizationTableProps {
   schedule: AmortizationRow[];
+  loanAmount?: number;
+  monthlyPayment?: number;
 }
 
-const AmortizationTable: React.FC<AmortizationTableProps> = ({ schedule }) => {
+const AmortizationTable: React.FC<AmortizationTableProps> = ({ 
+  schedule,
+  loanAmount = 0,
+  monthlyPayment = 0
+}) => {
   const isMobile = useMediaQuery("xs");
   
   // For mobile devices, limit the initial display to 3 rows
@@ -93,6 +100,13 @@ const AmortizationTable: React.FC<AmortizationTableProps> = ({ schedule }) => {
             <span className="font-medium">{calculateTotalInterest().toFixed(2)} Kč</span>
           </div>
         </div>
+        
+        {/* Calendar Export Component */}
+        <CalendarExport 
+          schedule={schedule} 
+          loanAmount={loanAmount}
+          monthlyPayment={monthlyPayment} 
+        />
       </div>
       
       <div className="rounded-md border max-h-[500px] overflow-auto">
