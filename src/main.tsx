@@ -1,8 +1,9 @@
 
 import { createRoot } from 'react-dom/client'
-import { StrictMode, useEffect } from 'react'
+import { StrictMode, useEffect, useState } from 'react'
 import App from './App.tsx'
 import './index.css'
+import { toast } from 'sonner'
 
 // Funkce pro inicializaci dat
 const initializeAppData = () => {
@@ -52,22 +53,88 @@ const initializeAppData = () => {
 // Inicializace dat při prvním načtení aplikace
 initializeAppData();
 
-// Register service worker
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .then(registration => {
-        console.log('ServiceWorker registration successful with scope: ', registration.scope);
-      })
-      .catch(error => {
-        console.log('ServiceWorker registration failed: ', error);
+// Service Worker wrapper component
+const ServiceWorkerManager = () => {
+  const [updateAvailable, setUpdateAvailable] = useState(false);
+  const [registration, setRegistration] = useState<ServiceWorkerRegistration | null>(null);
+
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => {
+          console.log('ServiceWorker registration successful with scope: ', reg.scope);
+          setRegistration(reg);
+          
+          // Kontrola aktualizací
+          reg.addEventListener('updatefound', () => {
+            const newWorker = reg.installing;
+            if (newWorker) {
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  setUpdateAvailable(true);
+                  toast('Je k dispozici aktualizace aplikace', {
+                    description: 'Klikněte pro instalaci a restartování',
+                    action: {
+                      label: 'Aktualizovat',
+                      onClick: () => updateServiceWorker()
+                    },
+                    duration: 10000
+                  });
+                }
+              });
+            }
+          });
+        })
+        .catch(error => {
+          console.log('ServiceWorker registration failed: ', error);
+        });
+        
+      // Naslouchání na controller změny
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        console.log('Service Worker Controller Changed');
       });
-  });
-}
+      
+      // Kontrola a oznámení o offline připravenosti
+      if (navigator.onLine && 'serviceWorker' in navigator && navigator.serviceWorker.controller) {
+        const messageChannel = new MessageChannel();
+        messageChannel.port1.onmessage = (event) => {
+          if (event.data.offlineReady) {
+            toast.success('Aplikace je připravena pro offline použití', {
+              description: `Uloženo ${event.data.cachedItems} položek`,
+              duration: 3000
+            });
+          }
+        };
+        
+        setTimeout(() => {
+          if (navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage({
+              type: 'CHECK_OFFLINE_READY'
+            }, [messageChannel.port2]);
+          }
+        }, 3000);
+      }
+    }
+  }, []);
+  
+  const updateServiceWorker = () => {
+    if (registration && registration.waiting) {
+      // Pošleme zprávu čekajícímu service workeru aby převzal kontrolu
+      registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+      setUpdateAvailable(false);
+      
+      // Resetujeme stránku pro načtení nového service workeru
+      window.location.reload();
+    }
+  };
+  
+  return null;
+};
 
 // Obalení aplikace do StrictMode pro lepší detekci chyb
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <App />
+    <ServiceWorkerManager />
   </StrictMode>
 );

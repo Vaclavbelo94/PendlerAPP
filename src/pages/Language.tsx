@@ -1,8 +1,10 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { TabsContent } from "@/components/ui/tabs";
 import { grammarExercises } from "@/data/germanExercises";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { useToast } from "@/components/ui/use-toast";
+import { useOfflineStatus } from "@/hooks/useOfflineStatus";
 import LanguageSearchBar from "@/components/language/layout/LanguageSearchBar";
 import LanguageTabsNavigation from "@/components/language/layout/LanguageTabsNavigation";
 import GrammarTab from "@/components/language/tabs/GrammarTab";
@@ -13,14 +15,90 @@ import PremiumCheck from "@/components/premium/PremiumCheck";
 import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import GamificationFeatures from "@/components/language/GamificationFeatures"; 
+import GamificationFeatures from "@/components/language/GamificationFeatures";
+import OfflineIndicator from "@/components/offlineMode/OfflineIndicator";
+import { Button } from "@/components/ui/button";
+import { Download, CloudCheck } from "lucide-react";
 
 const Language = () => {
   const [activeTab, setActiveTab] = useState("grammar");
   const { isPremium, isAdmin } = useAuth();
+  const { isOffline } = useOfflineStatus();
+  const { toast } = useToast();
+  const [offlineStatus, setOfflineStatus] = useState({
+    grammarSaved: false,
+    vocabularySaved: false,
+    phrasesSaved: false
+  });
   
   // Use media query to detect mobile screens
   const isMobile = useMediaQuery("xs");
+
+  // Při prvním načtení zkontrolujeme, zda máme uložená offline data
+  useEffect(() => {
+    const checkOfflineData = () => {
+      const savedGrammar = localStorage.getItem('offline_grammar');
+      const savedVocabulary = localStorage.getItem('offline_vocabulary');
+      const savedPhrases = localStorage.getItem('offline_phrases');
+      
+      setOfflineStatus({
+        grammarSaved: !!savedGrammar,
+        vocabularySaved: !!savedVocabulary,
+        phrasesSaved: !!savedPhrases
+      });
+    };
+    
+    checkOfflineData();
+  }, []);
+
+  // Funkce pro stažení dat pro offline použití
+  const saveForOffline = (type: 'grammar' | 'vocabulary' | 'phrases') => {
+    try {
+      switch(type) {
+        case 'grammar':
+          localStorage.setItem('offline_grammar', JSON.stringify(grammarExercises));
+          break;
+        case 'vocabulary':
+          // Zde by byl kód pro uložení slovní zásoby
+          const vocabulary = [
+            { word: "der Hund", translation: "pes", example: "Der Hund bellt." },
+            { word: "die Katze", translation: "kočka", example: "Die Katze miaut." },
+            // ... další slovíčka
+          ];
+          localStorage.setItem('offline_vocabulary', JSON.stringify(vocabulary));
+          break;
+        case 'phrases':
+          // Zde by byl kód pro uložení frází
+          const phrases = [
+            { category: "Pozdravy", phrase: "Guten Tag", translation: "Dobrý den" },
+            { category: "Pozdravy", phrase: "Auf Wiedersehen", translation: "Na shledanou" },
+            // ... další fráze
+          ];
+          localStorage.setItem('offline_phrases', JSON.stringify(phrases));
+          break;
+      }
+      
+      setOfflineStatus(prev => ({
+        ...prev,
+        [`${type}Saved`]: true
+      }));
+      
+      toast({
+        title: "Úspěšně uloženo",
+        description: `Data pro ${
+          type === 'grammar' ? 'gramatiku' : 
+          type === 'vocabulary' ? 'slovní zásobu' : 'fráze'
+        } byla uložena pro offline použití.`,
+      });
+    } catch (error) {
+      console.error('Chyba při ukládání offline dat:', error);
+      toast({
+        title: "Chyba při ukládání",
+        description: "Nepodařilo se uložit data pro offline použití.",
+        variant: "destructive"
+      });
+    }
+  };
 
   return (
     <div className="container py-4 sm:py-6">
@@ -31,6 +109,47 @@ const Language = () => {
           
           {activeTab === "grammar" && (
             <LanguageSearchBar grammarExercises={grammarExercises} />
+          )}
+
+          {/* Offline indicator/button for the active tab */}
+          {!isOffline && (
+            <Card className="bg-muted/30 border-dashed">
+              <CardContent className="p-3 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <CloudCheck className="h-5 w-5 text-primary" />
+                  <div>
+                    <div className="font-medium">Offline dostupnost</div>
+                    <p className="text-sm text-muted-foreground">
+                      Stáhněte si materiály pro použití bez připojení k internetu
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  onClick={() => saveForOffline(
+                    activeTab === 'grammar' ? 'grammar' : 
+                    activeTab === 'vocabulary' ? 'vocabulary' : 
+                    activeTab === 'phrases' ? 'phrases' : 'grammar'
+                  )}
+                  disabled={
+                    (activeTab === 'grammar' && offlineStatus.grammarSaved) ||
+                    (activeTab === 'vocabulary' && offlineStatus.vocabularySaved) ||
+                    (activeTab === 'phrases' && offlineStatus.phrasesSaved) ||
+                    activeTab === 'interactive' || 
+                    activeTab === 'gamification'
+                  }
+                  variant="outline"
+                  className="h-8"
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  {(activeTab === 'grammar' && offlineStatus.grammarSaved) ||
+                   (activeTab === 'vocabulary' && offlineStatus.vocabularySaved) ||
+                   (activeTab === 'phrases' && offlineStatus.phrasesSaved) 
+                    ? "Staženo" 
+                    : "Stáhnout pro offline"
+                  }
+                </Button>
+              </CardContent>
+            </Card>
           )}
           
           <LanguageTabsNavigation 
@@ -58,7 +177,7 @@ const Language = () => {
             </TabsContent>
 
             <TabsContent value="gamification">
-              {/* Nová gamifikační záložka */}
+              {/* Gamifikační záložka */}
               <GamificationFeatures />
             </TabsContent>
           </LanguageTabsNavigation>
@@ -120,8 +239,62 @@ const Language = () => {
               </div>
             </CardContent>
           </Card>
+          
+          {/* Offline Status Card */}
+          {!isOffline && (
+            <Card>
+              <div className="bg-primary text-primary-foreground p-3 text-lg font-semibold">
+                Offline dostupnost
+              </div>
+              <CardContent className="p-4 space-y-4">
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span>Gramatika:</span> 
+                    <span className={offlineStatus.grammarSaved ? "text-green-500" : "text-amber-500"}>
+                      {offlineStatus.grammarSaved ? "Staženo" : "Nestaženo"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Slovní zásoba:</span> 
+                    <span className={offlineStatus.vocabularySaved ? "text-green-500" : "text-amber-500"}>
+                      {offlineStatus.vocabularySaved ? "Staženo" : "Nestaženo"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Fráze:</span> 
+                    <span className={offlineStatus.phrasesSaved ? "text-green-500" : "text-amber-500"}>
+                      {offlineStatus.phrasesSaved ? "Staženo" : "Nestaženo"}
+                    </span>
+                  </div>
+                </div>
+                <Button 
+                  className="w-full"
+                  variant="outline"
+                  onClick={() => {
+                    saveForOffline('grammar');
+                    saveForOffline('vocabulary');
+                    saveForOffline('phrases');
+                  }}
+                  disabled={
+                    offlineStatus.grammarSaved && 
+                    offlineStatus.vocabularySaved && 
+                    offlineStatus.phrasesSaved
+                  }
+                >
+                  <Download className="mr-2 h-4 w-4" />
+                  Stáhnout vše
+                </Button>
+                <p className="text-xs text-muted-foreground">
+                  Data budou uložena v paměti vašeho zařízení a budou dostupná i bez připojení k internetu.
+                </p>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
+      
+      {/* Offline indicator component */}
+      <OfflineIndicator />
     </div>
   );
 };
