@@ -15,6 +15,7 @@ import {
   User,
   Gavel,
   Map,
+  FileText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -79,6 +80,12 @@ const SidebarNavigation = ({ closeSidebar }: SidebarNavigationProps) => {
       name: "Plánování cest",
       path: "/travel-planning",
       icon: Map,
+      premium: true
+    },
+    {
+      name: "Daňový poradce",
+      path: "/tax-advisor",
+      icon: FileText,
       premium: true
     }
   ];

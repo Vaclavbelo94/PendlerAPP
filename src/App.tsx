@@ -31,6 +31,7 @@ import Terms from './pages/Terms';
 import Translator from './pages/Translator';
 import Vehicle from './pages/Vehicle';
 import TravelPlanning from './pages/TravelPlanning';
+import TaxAdvisor from './pages/TaxAdvisor';
 
 // Stránky o zákonech
 import Laws from './pages/Laws';
@@ -42,6 +43,7 @@ import MinimumWage from './pages/laws/MinimumWage';
 import ParentalAllowance from './pages/laws/ParentalAllowance';
 import PensionInsurance from './pages/laws/PensionInsurance';
 import TaxClasses from './pages/laws/TaxClasses';
+import TaxReturn from './pages/laws/TaxReturn';
 import WorkContract from './pages/laws/WorkContract';
 
 // Právní asistent - prémiová sekce
@@ -76,6 +78,7 @@ function App() {
               <Route path="/translator" element={<Translator />} />
               <Route path="/vehicle" element={<Vehicle />} />
               <Route path="/travel-planning" element={<TravelPlanning />} />
+              <Route path="/tax-advisor" element={<TaxAdvisor />} />
               
               {/* Stránky o zákonech */}
               <Route path="/laws" element={<Laws />} />
@@ -87,6 +90,7 @@ function App() {
               <Route path="/laws/parental-allowance" element={<ParentalAllowance />} />
               <Route path="/laws/pension-insurance" element={<PensionInsurance />} />
               <Route path="/laws/tax-classes" element={<TaxClasses />} />
+              <Route path="/laws/tax-return" element={<TaxReturn />} />
               <Route path="/laws/work-contract" element={<WorkContract />} />
               
               {/* Právní asistent - prémiová sekce */}

@@ -69,13 +69,53 @@ export const PremiumFeaturesPanel = () => {
               description: "Rozšířené funkce pro správu vozidla a nákladů",
               isEnabled: true,
               key: "vehicle"
+            },
+            {
+              id: "6",
+              name: "Plánování cest",
+              description: "Optimalizace dojíždění a plánování cest",
+              isEnabled: true,
+              key: "travel-planning"
+            },
+            {
+              id: "7",
+              name: "Právní asistent",
+              description: "Průvodce právními dokumenty a poradenství",
+              isEnabled: true,
+              key: "legal-assistant"
+            },
+            {
+              id: "8",
+              name: "Daňový poradce",
+              description: "Interaktivní průvodce daňovým přiznáním a daňová optimalizace",
+              isEnabled: true,
+              key: "tax-advisor"
             }
           ];
           
           setFeatures(defaultFeatures);
           localStorage.setItem("premiumFeatures", JSON.stringify(defaultFeatures));
         } else {
-          setFeatures(storedFeatures);
+          // Check if we need to add the new tax-advisor feature
+          const hasTaxAdvisor = storedFeatures.some((f: PremiumFeature) => f.key === "tax-advisor");
+          
+          if (!hasTaxAdvisor) {
+            const updatedFeatures = [
+              ...storedFeatures,
+              {
+                id: String(storedFeatures.length + 1),
+                name: "Daňový poradce",
+                description: "Interaktivní průvodce daňovým přiznáním a daňová optimalizace",
+                isEnabled: true,
+                key: "tax-advisor"
+              }
+            ];
+            
+            setFeatures(updatedFeatures);
+            localStorage.setItem("premiumFeatures", JSON.stringify(updatedFeatures));
+          } else {
+            setFeatures(storedFeatures);
+          }
         }
       } catch (error) {
         console.error("Chyba při načítání prémiových funkcí:", error);
@@ -139,6 +179,27 @@ export const PremiumFeaturesPanel = () => {
         description: "Rozšířené funkce pro správu vozidla a nákladů",
         isEnabled: true,
         key: "vehicle"
+      },
+      {
+        id: "6",
+        name: "Plánování cest",
+        description: "Optimalizace dojíždění a plánování cest",
+        isEnabled: true,
+        key: "travel-planning"
+      },
+      {
+        id: "7",
+        name: "Právní asistent",
+        description: "Průvodce právními dokumenty a poradenství",
+        isEnabled: true,
+        key: "legal-assistant"
+      },
+      {
+        id: "8",
+        name: "Daňový poradce",
+        description: "Interaktivní průvodce daňovým přiznáním a daňová optimalizace",
+        isEnabled: true,
+        key: "tax-advisor"
       }
     ];
     
