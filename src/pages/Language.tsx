@@ -13,6 +13,7 @@ import PremiumCheck from "@/components/premium/PremiumCheck";
 import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import GamificationFeatures from "@/components/language/GamificationFeatures"; 
 
 const Language = () => {
   const [activeTab, setActiveTab] = useState("grammar");
@@ -54,6 +55,11 @@ const Language = () => {
               <PremiumCheck featureKey="language">
                 <InteractiveQuiz />
               </PremiumCheck>
+            </TabsContent>
+
+            <TabsContent value="gamification">
+              {/* Nová gamifikační záložka */}
+              <GamificationFeatures />
             </TabsContent>
           </LanguageTabsNavigation>
         </div>
