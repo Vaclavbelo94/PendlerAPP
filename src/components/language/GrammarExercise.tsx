@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,13 +14,14 @@ import { Exercise } from "@/data/germanExercises";
 type GrammarExerciseProps = {
   exercises: Exercise[];
   category?: string;
+  onComplete?: (exerciseId: number) => void;  // Added onComplete prop
 }
 
 const formSchema = z.object({
   answer: z.string().min(1, "Prosím vyberte odpověď")
 });
 
-const GrammarExercise = ({ exercises, category }: GrammarExerciseProps) => {
+const GrammarExercise = ({ exercises, category, onComplete }: GrammarExerciseProps) => {
   const [currentExercise, setCurrentExercise] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
   const [score, setScore] = useState({ correct: 0, total: 0 });
@@ -80,6 +80,12 @@ const GrammarExercise = ({ exercises, category }: GrammarExerciseProps) => {
         title: "Dokončeno!",
         description: `Vaše skóre: ${score.correct} z ${score.total}`,
       });
+      
+      // Call onComplete if it exists and pass the current exercise ID
+      if (onComplete && filteredExercises[currentExercise]) {
+        onComplete(filteredExercises[currentExercise].id);
+      }
+      
       // Reset to first exercise
       setCurrentExercise(0);
       setShowAnswer(false);

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -194,7 +193,49 @@ const GrammarTab: React.FC = () => {
                 ) : (
                   filteredExercises.map((exercise) => (
                     <div key={exercise.id} className="border rounded-md p-4 mb-4 bg-card">
-                      {/* ... stejná struktura jako u začátečníka */}
+                      <div className="flex justify-between">
+                        <div>
+                          <h3 className="font-semibold text-lg flex items-center gap-2">
+                            {exercise.question}
+                            {completedExercises.includes(exercise.id) && (
+                              <CircleCheck className="h-5 w-5 text-green-500" />
+                            )}
+                          </h3>
+                          <p className="text-muted-foreground text-sm">{exercise.explanation}</p>
+                          <div className="flex flex-wrap gap-2 mt-2">
+                            <Badge variant="outline" className="bg-muted/30">
+                              {exercise.category}
+                            </Badge>
+                            <Badge variant="outline" className="bg-muted/30">
+                              {exercise.type}
+                            </Badge>
+                          </div>
+                        </div>
+                        <Button 
+                          onClick={() => setActiveExercise(exercise.id)}
+                          variant={completedExercises.includes(exercise.id) ? "outline" : "default"}
+                          className="whitespace-nowrap"
+                        >
+                          {completedExercises.includes(exercise.id) ? 'Opakovat' : 'Začít'}
+                        </Button>
+                      </div>
+                      
+                      {/* Show exercise when active */}
+                      {activeExercise === exercise.id && (
+                        <div className="mt-4 border-t pt-4">
+                          {isPremium ? (
+                            <GrammarExercise 
+                              exercises={[exercise]}
+                              onComplete={() => handleExerciseComplete(exercise.id)}
+                            />
+                          ) : (
+                            <GrammarExercise 
+                              exercises={[exercise]}
+                              onComplete={() => handleExerciseComplete(exercise.id)}  
+                            />
+                          )}
+                        </div>
+                      )}
                     </div>
                   ))
                 )}
@@ -211,7 +252,49 @@ const GrammarTab: React.FC = () => {
                 ) : (
                   filteredExercises.map((exercise) => (
                     <div key={exercise.id} className="border rounded-md p-4 mb-4 bg-card">
-                      {/* ... stejná struktura jako u začátečníka */}
+                      <div className="flex justify-between">
+                        <div>
+                          <h3 className="font-semibold text-lg flex items-center gap-2">
+                            {exercise.question}
+                            {completedExercises.includes(exercise.id) && (
+                              <CircleCheck className="h-5 w-5 text-green-500" />
+                            )}
+                          </h3>
+                          <p className="text-muted-foreground text-sm">{exercise.explanation}</p>
+                          <div className="flex flex-wrap gap-2 mt-2">
+                            <Badge variant="outline" className="bg-muted/30">
+                              {exercise.category}
+                            </Badge>
+                            <Badge variant="outline" className="bg-muted/30">
+                              {exercise.type}
+                            </Badge>
+                          </div>
+                        </div>
+                        <Button 
+                          onClick={() => setActiveExercise(exercise.id)}
+                          variant={completedExercises.includes(exercise.id) ? "outline" : "default"}
+                          className="whitespace-nowrap"
+                        >
+                          {completedExercises.includes(exercise.id) ? 'Opakovat' : 'Začít'}
+                        </Button>
+                      </div>
+                      
+                      {/* Show exercise when active */}
+                      {activeExercise === exercise.id && (
+                        <div className="mt-4 border-t pt-4">
+                          {isPremium ? (
+                            <GrammarExercise 
+                              exercises={[exercise]}
+                              onComplete={() => handleExerciseComplete(exercise.id)}
+                            />
+                          ) : (
+                            <GrammarExercise 
+                              exercises={[exercise]}
+                              onComplete={() => handleExerciseComplete(exercise.id)}  
+                            />
+                          )}
+                        </div>
+                      )}
                     </div>
                   ))
                 )}
