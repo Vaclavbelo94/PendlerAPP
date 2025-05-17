@@ -9,8 +9,11 @@ import CompactSessionStats from './vocabulary/CompactSessionStats';
 import GoalProgressBar from './vocabulary/GoalProgressBar';
 import ReviewHeader from './vocabulary/ReviewHeader';
 import { useVocabularyReviewSession } from '@/hooks/useVocabularyReviewSession';
+import { useLanguageContext } from './LanguageManager';
 
 const VocabularyReview: React.FC = () => {
+  const { addXp } = useLanguageContext(); // Připojení na gamifikační kontext
+  
   const { 
     dueItems, 
     currentItem, 
@@ -23,7 +26,9 @@ const VocabularyReview: React.FC = () => {
   
   const {
     isComplete,
+    isStarted,
     sessionStats,
+    currentStreak,
     handleStartReview,
     handleCorrect,
     handleIncorrect
@@ -34,6 +39,17 @@ const VocabularyReview: React.FC = () => {
     markIncorrect,
     goToNextItem
   );
+  
+  // Přidat XP při dokončení session
+  React.useEffect(() => {
+    if (isComplete && sessionStats.correctCount > 0) {
+      // Přidat XP na základě výkonu
+      const xpPoints = sessionStats.correctCount * 2 - sessionStats.incorrectCount + (sessionStats.streakCount || 0);
+      if (xpPoints > 0) {
+        addXp(xpPoints);
+      }
+    }
+  }, [isComplete, sessionStats, addXp]);
 
   if (!currentItem) {
     return (
@@ -68,13 +84,14 @@ const VocabularyReview: React.FC = () => {
         onIncorrect={handleIncorrect}
         remainingItems={dueItems.length}
         totalItems={dueItems.length + 1} // Include current item
+        currentStreak={currentStreak}
       />
       
       <GoalProgressBar completedToday={completedToday} dailyGoal={dailyGoal} />
 
       {/* Current session stats */}
-      {sessionStats.reviewedWords.length > 0 && (
-        <CompactSessionStats {...sessionStats} />
+      {isStarted && sessionStats.reviewedWords.length > 0 && (
+        <CompactSessionStats {...sessionStats} streakCount={currentStreak} />
       )}
     </div>
   );

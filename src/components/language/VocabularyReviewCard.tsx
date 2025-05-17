@@ -5,7 +5,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, XCircle, Repeat, ThumbsUp, Eye } from 'lucide-react';
+import { CheckCircle, XCircle, Repeat, ThumbsUp, Eye, Flame } from 'lucide-react';
 
 interface VocabularyReviewCardProps {
   item: VocabularyItem;
@@ -13,6 +13,7 @@ interface VocabularyReviewCardProps {
   onIncorrect: (id: string) => void;
   remainingItems: number;
   totalItems: number;
+  currentStreak?: number;
 }
 
 const VocabularyReviewCard: React.FC<VocabularyReviewCardProps> = ({
@@ -21,6 +22,7 @@ const VocabularyReviewCard: React.FC<VocabularyReviewCardProps> = ({
   onIncorrect,
   remainingItems,
   totalItems,
+  currentStreak = 0,
 }) => {
   const [showAnswer, setShowAnswer] = useState(false);
   const [answered, setAnswered] = useState(false);
@@ -66,9 +68,17 @@ const VocabularyReviewCard: React.FC<VocabularyReviewCardProps> = ({
     }`}>
       <CardHeader className="pb-2">
         <div className="flex justify-between items-center">
-          <CardTitle className="text-xl">
-            {item.word}
-          </CardTitle>
+          <div className="flex items-center">
+            <CardTitle className="text-xl">
+              {item.word}
+            </CardTitle>
+            {currentStreak > 2 && (
+              <div className="ml-3 flex items-center bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full">
+                <Flame className="h-3 w-3 mr-1 text-amber-600" />
+                <span className="font-medium">{currentStreak}</span>
+              </div>
+            )}
+          </div>
           <Badge variant="outline" className={`${getDifficultyColor(item.difficulty)} capitalize`}>
             {item.difficulty || 'nespecifikováno'}
           </Badge>

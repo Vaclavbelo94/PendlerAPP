@@ -1,13 +1,14 @@
 
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Check, X, Clock } from 'lucide-react';
+import { Check, X, Clock, Zap } from 'lucide-react';
 
 interface CompactSessionStatsProps {
   startTime: Date;
   correctCount: number;
   incorrectCount: number;
   reviewedWords: string[];
+  streakCount?: number;
 }
 
 const CompactSessionStats: React.FC<CompactSessionStatsProps> = ({
@@ -15,6 +16,7 @@ const CompactSessionStats: React.FC<CompactSessionStatsProps> = ({
   correctCount,
   incorrectCount,
   reviewedWords,
+  streakCount,
 }) => {
   // Calculate session duration
   const durationMinutes = Math.max(
@@ -27,6 +29,9 @@ const CompactSessionStats: React.FC<CompactSessionStatsProps> = ({
   const accuracy = totalAnswers > 0 
     ? Math.round((correctCount / totalAnswers) * 100) 
     : 0;
+    
+  // Calculate points
+  const points = correctCount * 10 - incorrectCount * 3 + (streakCount || 0) * 5;
 
   return (
     <Card className="overflow-hidden">
@@ -50,6 +55,11 @@ const CompactSessionStats: React.FC<CompactSessionStatsProps> = ({
             
             <div className="text-sm font-medium">
               {accuracy}% úspěšnost
+            </div>
+            
+            <div className="flex items-center space-x-1 bg-amber-100 dark:bg-amber-900/30 px-2 py-1 rounded">
+              <Zap className="h-4 w-4 text-amber-500" />
+              <span className="font-medium">{points}</span>
             </div>
           </div>
         </div>
