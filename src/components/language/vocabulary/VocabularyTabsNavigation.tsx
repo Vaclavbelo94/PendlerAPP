@@ -9,10 +9,10 @@ import {
   BarChart, 
   Files, 
   ClipboardList, 
-  Import, 
-  Export 
+  Import,
+  Download 
 } from "lucide-react";
-import { useVocabularyContext } from './VocabularyManager';
+import { useVocabularyContext } from './VocabularyProvider';
 import { motion } from 'framer-motion';
 
 interface VocabularyTabsNavigationProps {
@@ -103,7 +103,7 @@ const VocabularyTabsNavigation: React.FC<VocabularyTabsNavigationProps> = ({ sel
       >
         <div className="flex items-center">
           <Import className="w-3 h-3" />
-          <Export className="w-3 h-3" />
+          <Download className="w-3 h-3" />
         </div>
         <span className="hidden md:inline ml-1">Import/Export</span>
         <span className="md:hidden ml-1">Imp/Exp</span>
@@ -113,4 +113,3 @@ const VocabularyTabsNavigation: React.FC<VocabularyTabsNavigationProps> = ({ sel
 };
 
 export default VocabularyTabsNavigation;
-

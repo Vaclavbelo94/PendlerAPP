@@ -7,9 +7,8 @@ import VocabularyAdd from './VocabularyAdd';
 import VocabularyProgressDashboard from '../VocabularyProgressDashboard';
 import VocabularyBulkActions from './VocabularyBulkActions';
 import VocabularyImportExport from '../VocabularyImportExport';
-import VocabularyTest from './VocabularyTest';
-import { useVocabularyContext } from './VocabularyManager';
-import { TestResult } from './VocabularyTest';
+import VocabularyTest, { TestResult } from './VocabularyTest';
+import { useVocabularyContext } from './VocabularyProvider';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguageContext } from '../LanguageManager';
 
@@ -69,7 +68,7 @@ export const AddTabContent: React.FC = () => {
 
   return (
     <TabsContent value="add" className="pt-6">
-      <VocabularyAdd onAddItem={addVocabularyItem} />
+      <VocabularyAdd addItem={addVocabularyItem} />
     </TabsContent>
   );
 };
@@ -94,8 +93,8 @@ export const ProgressTabContent: React.FC = () => {
   return (
     <TabsContent value="progress" className="pt-6">
       <VocabularyProgressDashboard 
-        totalVocabulary={items.length}
-        userProgress={userProgress}
+        vocabularyCount={items.length}
+        progress={userProgress}
       />
     </TabsContent>
   );
@@ -113,4 +112,3 @@ export const ImportExportTabContent: React.FC = () => {
     </TabsContent>
   );
 };
-

@@ -1,7 +1,6 @@
 
 import React from 'react';
-import { VocabularyProvider } from './VocabularyProvider';
-import { useVocabularyContext } from '@/contexts/VocabularyContext';
+import { VocabularyProvider, useVocabularyContext } from './VocabularyProvider';
 
 interface VocabularyManagerProps {
   children: React.ReactNode;
