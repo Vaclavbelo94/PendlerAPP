@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { VocabularyItem } from '@/models/VocabularyItem';
 
 interface SessionStats {
   startTime: Date;
@@ -18,8 +19,8 @@ export interface ReviewSessionState {
 }
 
 export const useVocabularyReviewSession = (
-  dueItems: any[],
-  currentItem: any | null,
+  dueItems: VocabularyItem[],
+  currentItem: VocabularyItem | null,
   markCorrect: (itemId: string) => void,
   markIncorrect: (itemId: string) => void,
   goToNextItem: () => void

@@ -1,6 +1,7 @@
 
 import React from 'react';
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from '@/components/ui/card';
+import { Check, X, Clock } from 'lucide-react';
 
 interface CompactSessionStatsProps {
   startTime: Date;
@@ -13,44 +14,43 @@ const CompactSessionStats: React.FC<CompactSessionStatsProps> = ({
   startTime,
   correctCount,
   incorrectCount,
-  reviewedWords
+  reviewedWords,
 }) => {
-  // Calculate session duration in minutes
-  const getSessionDuration = () => {
-    const now = new Date();
-    const diffMs = now.getTime() - startTime.getTime();
-    return Math.round(diffMs / 60000); // Convert to minutes
-  };
-
-  // Calculate words per minute rate
-  const getWordsPerMinute = () => {
-    const duration = getSessionDuration();
-    if (duration === 0) return 0;
-    return ((correctCount + incorrectCount) / duration).toFixed(1);
-  };
+  // Calculate session duration
+  const durationMinutes = Math.max(
+    1, 
+    Math.round((new Date().getTime() - startTime.getTime()) / 1000 / 60)
+  );
+  
+  // Calculate accuracy
+  const totalAnswers = correctCount + incorrectCount;
+  const accuracy = totalAnswers > 0 
+    ? Math.round((correctCount / totalAnswers) * 100) 
+    : 0;
 
   return (
-    <Card className="bg-muted/50">
-      <CardContent className="pt-6">
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-sm font-medium">Aktuální sezení</span>
-          <span className="text-xs text-muted-foreground">{getSessionDuration()} min</span>
-        </div>
+    <Card className="overflow-hidden">
+      <CardContent className="p-4">
         <div className="flex justify-between items-center">
-          <div>
-            <div className="flex items-center">
-              <span className="text-xs text-green-600 mr-1">Správně:</span>
+          <div className="flex items-center space-x-2">
+            <Clock className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm font-medium">{durationMinutes} min</span>
+          </div>
+          
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-1">
+              <Check className="h-4 w-4 text-green-500" />
               <span className="text-sm font-medium">{correctCount}</span>
             </div>
-            <div className="flex items-center mt-1">
-              <span className="text-xs text-red-600 mr-1">Nesprávně:</span>
+            
+            <div className="flex items-center space-x-1">
+              <X className="h-4 w-4 text-red-500" />
               <span className="text-sm font-medium">{incorrectCount}</span>
             </div>
-          </div>
-          <div className="text-right">
-            <div className="text-xs text-muted-foreground">Tempo</div>
-            <div className="text-lg font-semibold">{getWordsPerMinute()}</div>
-            <div className="text-xs text-muted-foreground">slov/min</div>
+            
+            <div className="text-sm font-medium">
+              {accuracy}% úspěšnost
+            </div>
           </div>
         </div>
       </CardContent>

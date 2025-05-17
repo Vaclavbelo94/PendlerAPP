@@ -1,6 +1,7 @@
 
 import React from 'react';
-import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from '@/components/ui/progress';
+import { Trophy } from 'lucide-react';
 
 interface GoalProgressBarProps {
   completedToday: number;
@@ -8,23 +9,25 @@ interface GoalProgressBarProps {
 }
 
 const GoalProgressBar: React.FC<GoalProgressBarProps> = ({ completedToday, dailyGoal }) => {
-  const goalProgress = Math.min((completedToday / Math.max(dailyGoal, 1)) * 100, 100);
-  
+  const progressPercentage = dailyGoal > 0 ? Math.min(100, (completedToday / dailyGoal) * 100) : 0;
+  const isGoalMet = completedToday >= dailyGoal;
+
   return (
-    <Card>
-      <CardContent className="pt-6">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm">Denní cíl: {completedToday}/{dailyGoal}</span>
-          <span className="text-sm font-medium">{Math.round(goalProgress)}%</span>
+    <div className="space-y-2">
+      <div className="flex justify-between items-center">
+        <span className="text-sm text-muted-foreground">Denní cíl</span>
+        <div className="flex items-center">
+          <span className="text-sm font-medium mr-1">
+            {completedToday} / {dailyGoal}
+          </span>
+          {isGoalMet && <Trophy className="h-4 w-4 text-amber-500" />}
         </div>
-        <div className="h-2 w-full bg-gray-100 rounded-full">
-          <div 
-            className="h-2 bg-primary rounded-full transition-all" 
-            style={{ width: `${goalProgress}%` }}
-          ></div>
-        </div>
-      </CardContent>
-    </Card>
+      </div>
+      <Progress 
+        value={progressPercentage} 
+        className={isGoalMet ? "bg-muted h-2" : "h-2"}
+      />
+    </div>
   );
 };
 

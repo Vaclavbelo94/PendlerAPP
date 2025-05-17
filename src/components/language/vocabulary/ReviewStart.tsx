@@ -1,38 +1,45 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Brain } from 'lucide-react';
-import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
+import { BookOpen } from 'lucide-react';
 
 interface ReviewStartProps {
   dueItemsCount: number;
   onStart: () => void;
 }
 
-const ReviewStart: React.FC<ReviewStartProps> = ({
-  dueItemsCount,
-  onStart
-}) => {
+const ReviewStart: React.FC<ReviewStartProps> = ({ dueItemsCount, onStart }) => {
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader className="flex flex-col items-center pt-6">
-        <div className="rounded-full bg-primary/10 p-6 mb-4">
-          <Brain className="h-12 w-12 text-primary" />
-        </div>
-        <div className="text-center">
+    <div className="text-center space-y-4 py-6">
+      {dueItemsCount > 0 ? (
+        <>
+          <div className="mx-auto bg-blue-100 rounded-full p-4 w-16 h-16 flex items-center justify-center">
+            <BookOpen className="h-8 w-8 text-blue-600" />
+          </div>
           <h3 className="text-lg font-medium">Připraveno k opakování</h3>
-          <p className="text-muted-foreground mt-1">
-            Máte {dueItemsCount} slovíček k opakování. 
-            Pravidelné opakování vám pomůže efektivněji si zapamatovat slovní zásobu.
+          <p className="text-muted-foreground">
+            Máte {dueItemsCount} slovíček k opakování dnes
           </p>
-        </div>
-      </CardHeader>
-      <CardFooter className="flex justify-center pb-6">
-        <Button onClick={onStart} className="min-w-32">
-          Začít opakování
-        </Button>
-      </CardFooter>
-    </Card>
+          <Button onClick={onStart} className="mt-2">
+            Začít opakování
+          </Button>
+        </>
+      ) : (
+        <>
+          <div className="mx-auto bg-green-100 rounded-full p-4 w-16 h-16 flex items-center justify-center">
+            <BookOpen className="h-8 w-8 text-green-600" />
+          </div>
+          <h3 className="text-lg font-medium">Žádná slovíčka k opakování</h3>
+          <p className="text-muted-foreground">
+            Momentálně nemáte žádná slovíčka k opakování.
+            Přidejte nová slovíčka nebo se vraťte později.
+          </p>
+          <Button variant="outline" onClick={() => window.location.reload()} className="mt-2">
+            Aktualizovat
+          </Button>
+        </>
+      )}
+    </div>
   );
 };
 
