@@ -1,7 +1,7 @@
 
 import * as React from 'react';
 import { useOfflineStatus } from '@/hooks/useOfflineStatus';
-import { WifiOff, CloudOff } from 'lucide-react';
+import { WifiOff, CloudOff, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
+import SyncSettingsDialog from './SyncSettingsDialog';
 
 interface OfflineIndicatorProps {
   className?: string;
@@ -25,6 +26,7 @@ const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({
   const { isOffline, lastOnlineAt } = useOfflineStatus();
   const [offlineReady, setOfflineReady] = React.useState<boolean>(false);
   const [cachedItemsCount, setCachedItemsCount] = React.useState<number>(0);
+  const [settingsOpen, setSettingsOpen] = React.useState<boolean>(false);
 
   // Kontrola stavu offline cache při načtení komponenty
   React.useEffect(() => {
@@ -112,9 +114,21 @@ const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({
       
       {showControls && (
         <div className="bg-card border rounded-lg shadow-sm p-3 w-64">
-          <div className="text-sm font-medium mb-2 flex items-center gap-2">
-            <CloudOff className="h-4 w-4" />
-            Offline obsah
+          <div className="text-sm font-medium mb-2 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <CloudOff className="h-4 w-4" />
+              Offline obsah
+            </div>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setSettingsOpen(true)}>
+                  <Settings className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                Nastavení synchronizace
+              </TooltipContent>
+            </Tooltip>
           </div>
           
           <div className="space-y-1.5 mb-3">
@@ -141,6 +155,12 @@ const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({
           </Button>
         </div>
       )}
+
+      {/* Dialog nastavení synchronizace */}
+      <SyncSettingsDialog 
+        open={settingsOpen}
+        onOpenChange={setSettingsOpen}
+      />
     </div>
   );
 };

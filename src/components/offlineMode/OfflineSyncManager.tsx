@@ -15,6 +15,9 @@ const isNativeApp = () => {
   );
 };
 
+// Klíč pro localStorage - uložení informace o zobrazení notifikace
+const SYNC_NOTIFICATION_SHOWN_KEY = 'syncNotificationShown';
+
 export const OfflineSyncManager = () => {
   const { isOffline } = useOfflineStatus();
   const { user, isPremium, refreshPremiumStatus } = useAuth();
@@ -81,10 +84,16 @@ export const OfflineSyncManager = () => {
       
       // V nativní aplikaci nepotřebujeme kontrolovat premium status pro offline funkcionalitu
       if (!isPremium && !isNativeMode) {
-        toast({
-          title: "Omezená offline funkcionalita",
-          description: "Plná offline synchronizace je dostupná pouze pro prémiové uživatele",
-        });
+        // Kontrola, zda již byla notifikace zobrazena v této session
+        const notificationShown = sessionStorage.getItem(SYNC_NOTIFICATION_SHOWN_KEY);
+        if (!notificationShown) {
+          toast({
+            title: "Omezená offline funkcionalita",
+            description: "Plná offline synchronizace je dostupná pouze pro prémiové uživatele",
+          });
+          // Zapamatujeme si, že jsme notifikaci již zobrazili
+          sessionStorage.setItem(SYNC_NOTIFICATION_SHOWN_KEY, 'true');
+        }
         return;
       }
       
@@ -123,10 +132,16 @@ export const OfflineSyncManager = () => {
       
       // V nativní aplikaci nepotřebujeme kontrolovat premium status pro synchronizaci
       if (!isPremium && !isNativeMode) {
-        toast({
-          title: "Omezená synchronizace",
-          description: "Plná synchronizace je dostupná pouze pro prémiové uživatele",
-        });
+        // Kontrola, zda již byla notifikace zobrazena v této session
+        const notificationShown = sessionStorage.getItem(SYNC_NOTIFICATION_SHOWN_KEY);
+        if (!notificationShown) {
+          toast({
+            title: "Omezená synchronizace",
+            description: "Plná synchronizace je dostupná pouze pro prémiové uživatele",
+          });
+          // Zapamatujeme si, že jsme notifikaci již zobrazili
+          sessionStorage.setItem(SYNC_NOTIFICATION_SHOWN_KEY, 'true');
+        }
         setHasShownOnlineToast(true);
         return;
       }
