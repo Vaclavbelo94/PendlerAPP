@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -167,7 +166,7 @@ const TranslatorPage = () => {
       <div className="container py-6 md:py-10">
         <h1 className="text-3xl font-bold mb-6">Překladač</h1>
         
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <Tabs defaultValue={activeTab} value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-3 md:w-auto">
             <TabsTrigger value="text" className="flex items-center gap-2">
               <FileText className="h-4 w-4" />
@@ -349,26 +348,24 @@ const TranslatorPage = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <ScrollArea className="w-full pb-2">
-                  <TabsList className="mb-6 w-full flex overflow-x-auto pb-2 gap-1">
-                    {workPhrases.map((category) => (
-                      <TabsTrigger 
-                        key={category.id} 
-                        value={category.id}
-                        onClick={() => setPhrasesTab(category.id)}
-                        className={phrasesTab === category.id ? "bg-primary text-primary-foreground" : ""}
-                      >
-                        {category.title}
-                      </TabsTrigger>
-                    ))}
-                  </TabsList>
-                </ScrollArea>
+                <Tabs value={phrasesTab} onValueChange={setPhrasesTab}>
+                  <ScrollArea className="w-full pb-2">
+                    <TabsList className="mb-6 w-full flex flex-wrap gap-2">
+                      {workPhrases.map((category) => (
+                        <TabsTrigger 
+                          key={category.id} 
+                          value={category.id}
+                          className={phrasesTab === category.id ? "bg-primary text-primary-foreground" : ""}
+                        >
+                          {category.title}
+                        </TabsTrigger>
+                      ))}
+                    </TabsList>
+                  </ScrollArea>
 
-                <div className="space-y-4">
-                  {workPhrases
-                    .filter(category => category.id === phrasesTab)
-                    .map(category => (
-                      <div key={category.id} className="space-y-2">
+                  {workPhrases.map((category) => (
+                    <TabsContent key={category.id} value={category.id}>
+                      <div className="space-y-2">
                         <ul className="divide-y">
                           {category.phrases.map((phrase, index) => (
                             <li 
@@ -385,8 +382,9 @@ const TranslatorPage = () => {
                           ))}
                         </ul>
                       </div>
-                    ))}
-                </div>
+                    </TabsContent>
+                  ))}
+                </Tabs>
               </CardContent>
             </Card>
           </TabsContent>
