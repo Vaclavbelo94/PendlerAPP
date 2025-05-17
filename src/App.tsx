@@ -38,6 +38,9 @@ import TaxReturn from "./pages/laws/TaxReturn";
 import PensionInsurance from "./pages/laws/PensionInsurance";
 import EmployeeProtection from "./pages/laws/EmployeeProtection";
 import ChildBenefits from "./pages/laws/ChildBenefits";
+import WorkingHours from "./pages/laws/WorkingHours";
+import MinimumHolidays from "./pages/laws/MinimumHolidays";
+import ParentalAllowance from "./pages/laws/ParentalAllowance";
 
 import "./index.css";
 
@@ -95,6 +98,9 @@ const App = () => (
             <Route path="/laws/pension-insurance" element={<LayoutWrapper><PensionInsurance /></LayoutWrapper>} />
             <Route path="/laws/employee-protection" element={<LayoutWrapper><EmployeeProtection /></LayoutWrapper>} />
             <Route path="/laws/child-benefits" element={<LayoutWrapper><ChildBenefits /></LayoutWrapper>} />
+            <Route path="/laws/working-hours" element={<LayoutWrapper><WorkingHours /></LayoutWrapper>} />
+            <Route path="/laws/minimum-holidays" element={<LayoutWrapper><MinimumHolidays /></LayoutWrapper>} />
+            <Route path="/laws/parental-allowance" element={<LayoutWrapper><ParentalAllowance /></LayoutWrapper>} />
             
             <Route path="*" element={<LayoutWrapper><NotFound /></LayoutWrapper>} />
           </Routes>

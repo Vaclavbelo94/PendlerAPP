@@ -1,8 +1,12 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Volume2, Copy } from "lucide-react";
+import { toast } from "@/components/ui/use-toast";
 
 interface PhraseCategory {
   title: string;
@@ -21,6 +25,9 @@ const phraseCategories: PhraseCategory[] = [
       { german: "Guten Abend!", czech: "Dobrý večer!" },
       { german: "Ich heiße...", czech: "Jmenuji se..." },
       { german: "Wie heißt du?", czech: "Jak se jmenuješ?" },
+      { german: "Freut mich dich kennenzulernen.", czech: "Těší mě, že tě poznávám." },
+      { german: "Woher kommst du?", czech: "Odkud jsi?" },
+      { german: "Ich komme aus Tschechien.", czech: "Jsem z České republiky." },
     ]
   },
   {
@@ -31,6 +38,9 @@ const phraseCategories: PhraseCategory[] = [
       { german: "Ein Glas Wasser, bitte.", czech: "Sklenici vody, prosím." },
       { german: "Zahlen, bitte!", czech: "Platit, prosím!" },
       { german: "Das schmeckt sehr gut.", czech: "To je velmi chutné." },
+      { german: "Haben Sie vegetarische Gerichte?", czech: "Máte vegetariánská jídla?" },
+      { german: "Ist dieses Gericht scharf?", czech: "Je toto jídlo pálivé?" },
+      { german: "Wie viel kostet das?", czech: "Kolik to stojí?" },
     ]
   },
   {
@@ -39,6 +49,11 @@ const phraseCategories: PhraseCategory[] = [
       { german: "Können Sie mir bitte helfen?", czech: "Můžete mi prosím pomoci?" },
       { german: "Ich verstehe nicht.", czech: "Nerozumím." },
       { german: "Können Sie das wiederholen?", czech: "Můžete to zopakovat?" },
+      { german: "Wer ist der Verantwortliche?", czech: "Kdo je odpovědná osoba?" },
+      { german: "Wann ist die Besprechung?", czech: "Kdy je porada?" },
+      { german: "Ich brauche mehr Zeit.", czech: "Potřebuji více času." },
+      { german: "Das ist fertig.", czech: "To je hotové." },
+      { german: "Ich habe eine Frage.", czech: "Mám otázku." },
     ]
   },
   {
@@ -48,11 +63,39 @@ const phraseCategories: PhraseCategory[] = [
       { german: "Ich suche...", czech: "Hledám..." },
       { german: "Haben Sie das in einer anderen Größe?", czech: "Máte to v jiné velikosti?" },
       { german: "Ich nehme das.", czech: "Vezmu si to." },
+      { german: "Wo ist die Umkleidekabine?", czech: "Kde jsou zkušební kabinky?" },
+      { german: "Akzeptieren Sie Kreditkarten?", czech: "Přijímáte kreditní karty?" },
+      { german: "Kann ich das umtauschen?", czech: "Mohu to vyměnit?" },
+      { german: "Gibt es Rabatte?", czech: "Jsou nějaké slevy?" },
     ]
   }
 ];
 
 const PhrasesTab: React.FC = () => {
+  const [selectedCategory, setSelectedCategory] = useState<string>("Pozdravy a představení");
+  
+  const handleTextToSpeech = (text: string) => {
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'de-DE';
+      window.speechSynthesis.speak(utterance);
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Chyba",
+        description: "Váš prohlížeč nepodporuje převod textu na řeč"
+      });
+    }
+  };
+
+  const handleCopyText = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast({
+      title: "Zkopírováno",
+      description: "Text byl zkopírován do schránky"
+    });
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -61,27 +104,86 @@ const PhrasesTab: React.FC = () => {
           Fráze pro běžné životní situace
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {phraseCategories.map((category, index) => (
-            <div key={index} className="space-y-3">
-              <h3 className="font-medium">{category.title}</h3>
-              <ScrollArea className="w-full">
-                <div className="min-w-[280px]">
-                  <Table className="w-full">
-                    <TableBody>
-                      {category.phrases.map((phrase, phraseIndex) => (
-                        <TableRow key={phraseIndex}>
-                          <TableCell className="font-medium">{phrase.german}</TableCell>
-                          <TableCell>{phrase.czech}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              </ScrollArea>
+      <CardContent className="space-y-4">
+        <Tabs defaultValue={phraseCategories[0].title}>
+          <ScrollArea className="w-full">
+            <TabsList className="inline-flex h-auto flex-wrap mb-4 w-full space-x-1 space-y-1">
+              {phraseCategories.map((category, index) => (
+                <TabsTrigger 
+                  key={index} 
+                  value={category.title}
+                  onClick={() => setSelectedCategory(category.title)}
+                  className="mb-1"
+                >
+                  {category.title}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </ScrollArea>
+          
+          {phraseCategories.map((category) => (
+            <div 
+              key={category.title} 
+              className={category.title === selectedCategory ? 'block' : 'hidden'}
+            >
+              <div className="bg-muted/30 rounded-lg">
+                <Table className="w-full">
+                  <TableBody>
+                    {category.phrases.map((phrase, idx) => (
+                      <TableRow key={idx} className="hover:bg-muted/50">
+                        <TableCell className="align-top md:w-1/2">
+                          <div className="flex justify-between items-start">
+                            <span className="font-medium">{phrase.german}</span>
+                            <div className="flex space-x-1 ml-2 shrink-0">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0"
+                                onClick={() => handleTextToSpeech(phrase.german)}
+                              >
+                                <Volume2 className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0"
+                                onClick={() => handleCopyText(phrase.german)}
+                              >
+                                <Copy className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell className="align-top md:w-1/2">
+                          <div className="flex justify-between items-start">
+                            <span>{phrase.czech}</span>
+                            <div className="flex space-x-1 ml-2 shrink-0">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0"
+                                onClick={() => handleCopyText(phrase.czech)}
+                              >
+                                <Copy className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </div>
           ))}
+        </Tabs>
+
+        <div className="bg-muted/20 p-3 rounded-lg mt-4">
+          <h3 className="text-sm font-medium mb-2">Tip pro výslovnost:</h3>
+          <p className="text-sm text-muted-foreground">
+            Pro poslechnutí správné výslovnosti klikněte na ikonu reproduktoru vedle německé fráze.
+            Pro přehlednější zobrazení na mobilních zařízeních otáčejte telefon do landscape režimu.
+          </p>
         </div>
       </CardContent>
     </Card>

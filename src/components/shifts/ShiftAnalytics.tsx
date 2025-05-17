@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo } from "react";
-import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from "recharts";
+import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, eachDayOfInterval } from "date-fns";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -204,7 +204,7 @@ const ShiftAnalytics = ({ shifts, period, onPeriodChange }: ShiftAnalyticsProps)
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Pie>
-                    <RechartsTooltip content={renderPieTooltip} />
+                    <Tooltip content={renderPieTooltip} />
                     <Legend formatter={(value) => <span className="text-sm">{value}</span>} />
                   </PieChart>
                 </ResponsiveContainer>
@@ -227,7 +227,7 @@ const ShiftAnalytics = ({ shifts, period, onPeriodChange }: ShiftAnalyticsProps)
                   >
                     <XAxis dataKey="date" />
                     <YAxis allowDecimals={false} />
-                    <RechartsTooltip content={renderBarTooltip} />
+                    <Tooltip content={renderBarTooltip} />
                     <Legend formatter={(value) => (
                       <span className="text-sm">
                         {value === "morning" ? "Ranní" : value === "afternoon" ? "Odpolední" : "Noční"}

@@ -14,7 +14,11 @@ import {
   Euro, 
   Clock,
   Users,
-  Baby
+  Baby,
+  CalendarDays,
+  BabyIcon,
+  UserCheck,
+  Scale
 } from "lucide-react";
 
 const lawCategories = [
@@ -85,7 +89,7 @@ const lawItems = [
     description: "Práva zaměstnanců a ochranné zákony",
     category: "work",
     updated: "2025-03-30",
-    icon: <Users className="h-5 w-5 text-blue-600" />,
+    icon: <UserCheck className="h-5 w-5 text-blue-600" />,
     path: "/laws/employee-protection"
   },
   {
@@ -96,6 +100,42 @@ const lawItems = [
     updated: "2025-04-05",
     icon: <Baby className="h-5 w-5 text-pink-600" />,
     path: "/laws/child-benefits"
+  },
+  {
+    id: "working-hours",
+    title: "Pracovní doba",
+    description: "Pravidla pracovní doby v Německu",
+    category: "work", 
+    updated: "2025-05-10",
+    icon: <Clock className="h-5 w-5 text-blue-600" />,
+    path: "/laws/working-hours"
+  },
+  {
+    id: "minimum-holidays",
+    title: "Minimální dovolená",
+    description: "Zákonný nárok na dovolenou v Německu",
+    category: "work",
+    updated: "2025-05-12",
+    icon: <CalendarDays className="h-5 w-5 text-green-600" />,
+    path: "/laws/minimum-holidays"
+  },
+  {
+    id: "parental-allowance",
+    title: "Rodičovský příspěvek",
+    description: "Informace o příspěvku Elterngeld",
+    category: "social",
+    updated: "2025-05-15",
+    icon: <BabyIcon className="h-5 w-5 text-pink-600" />,
+    path: "/laws/parental-allowance"
+  },
+  {
+    id: "legal-aid",
+    title: "Právní pomoc",
+    description: "Možnosti právní pomoci pro zahraniční pracovníky",
+    category: "work",
+    updated: "2025-05-08",
+    icon: <Scale className="h-5 w-5 text-indigo-600" />,
+    path: "/laws/legal-aid"
   },
 ];
 
@@ -131,14 +171,14 @@ const LawCard = ({ law }: { law: typeof lawItems[0] }) => (
 );
 
 const Laws = () => {
-  const [activeCategory, setActiveCategory] = useState("work");
+  const [activeCategory, setActiveCategory] = useState("all");
 
   return (
     <PremiumCheck featureKey="laws">
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-6">Přehled zákonů</h1>
         
-        <Tabs defaultValue="work" value={activeCategory} onValueChange={setActiveCategory} className="w-full">
+        <Tabs defaultValue="all" value={activeCategory} onValueChange={setActiveCategory} className="w-full">
           <TabsList className="mb-6 flex flex-wrap gap-2 h-auto">
             <TabsTrigger value="all" className="flex items-center gap-2">
               <BookOpen className="h-4 w-4" />

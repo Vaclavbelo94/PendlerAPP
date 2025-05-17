@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,8 +10,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { ArrowRightLeft, Copy, Volume2, Languages, FileText, Mic, History } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/use-toast";
 import PremiumCheck from '@/components/premium/PremiumCheck';
+import { translateText } from '@/services/translationAPI';
+import { workPhrases } from '@/data/translatorData';
 
 const TranslatorPage = () => {
   const [sourceText, setSourceText] = useState("");
@@ -28,19 +31,9 @@ const TranslatorPage = () => {
   }>>([]);
   const [autoTranslate, setAutoTranslate] = useState(false);
   const [activeTab, setActiveTab] = useState("text");
+  const [phrasesTab, setPhrasesTab] = useState("workplace");
 
-  // Efekt pro automatický překlad při změně textu
-  useEffect(() => {
-    if (autoTranslate && sourceText.length > 0) {
-      const timer = setTimeout(() => {
-        handleTranslate();
-      }, 1000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [sourceText, autoTranslate, sourceLanguage, targetLanguage]);
-
-  // Načtení historie překladů z localStorage
+  // Load history from localStorage on component mount
   useEffect(() => {
     const savedHistory = localStorage.getItem('translationHistory');
     if (savedHistory) {
@@ -52,86 +45,47 @@ const TranslatorPage = () => {
     }
   }, []);
 
-  // Uložení historie překladů do localStorage
+  // Save history to localStorage when it changes
   useEffect(() => {
     if (history.length > 0) {
       localStorage.setItem('translationHistory', JSON.stringify(history));
     }
   }, [history]);
 
+  // Auto-translate effect
+  useEffect(() => {
+    if (autoTranslate && sourceText.trim().length > 0) {
+      const timer = setTimeout(() => {
+        handleTranslate();
+      }, 1000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [sourceText, autoTranslate, sourceLanguage, targetLanguage]);
+
   const handleTranslate = async () => {
     if (!sourceText.trim()) {
-      toast.error("Zadejte text k překladu");
+      toast({
+        variant: "destructive",
+        title: "Chyba",
+        description: "Zadejte text k překladu"
+      });
       return;
     }
 
     setIsTranslating(true);
 
     try {
-      // Simulace API volání pro překlad
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Call our translation API service
+      const result = await translateText(sourceText.trim(), sourceLanguage, targetLanguage);
       
-      // Jednoduchá simulace překladu pro demo účely
-      let result = "";
+      setTranslatedText(result.translatedText);
       
-      if (sourceLanguage === "cs" && targetLanguage === "de") {
-        const translations: Record<string, string> = {
-          "ahoj": "hallo",
-          "dobrý den": "guten tag",
-          "děkuji": "danke",
-          "prosím": "bitte",
-          "ano": "ja",
-          "ne": "nein",
-          "jak se máš": "wie geht es dir",
-          "na shledanou": "auf wiedersehen"
-        };
-        
-        const lowerText = sourceText.toLowerCase();
-        
-        if (translations[lowerText]) {
-          result = translations[lowerText];
-        } else {
-          // Simulace překladu pro neznámý text
-          result = sourceText
-            .split(' ')
-            .map(word => word.length > 3 ? word + 'en' : word)
-            .join(' ');
-        }
-      } else if (sourceLanguage === "de" && targetLanguage === "cs") {
-        const translations: Record<string, string> = {
-          "hallo": "ahoj",
-          "guten tag": "dobrý den",
-          "danke": "děkuji",
-          "bitte": "prosím",
-          "ja": "ano",
-          "nein": "ne",
-          "wie geht es dir": "jak se máš",
-          "auf wiedersehen": "na shledanou"
-        };
-        
-        const lowerText = sourceText.toLowerCase();
-        
-        if (translations[lowerText]) {
-          result = translations[lowerText];
-        } else {
-          // Simulace překladu pro neznámý text
-          result = sourceText
-            .split(' ')
-            .map(word => word.endsWith('en') ? word.slice(0, -2) : word)
-            .join(' ');
-        }
-      } else {
-        // Pro ostatní jazykové kombinace jen simulujeme překlad
-        result = `[${sourceLanguage} → ${targetLanguage}] ` + sourceText;
-      }
-      
-      setTranslatedText(result);
-      
-      // Přidání do historie
+      // Add to history
       const newHistoryItem = {
         id: Date.now().toString(),
         sourceText,
-        translatedText: result,
+        translatedText: result.translatedText,
         sourceLanguage,
         targetLanguage,
         timestamp: new Date()
@@ -141,7 +95,11 @@ const TranslatorPage = () => {
       
     } catch (error) {
       console.error('Chyba při překladu:', error);
-      toast.error("Došlo k chybě při překladu");
+      toast({
+        variant: "destructive",
+        title: "Chyba",
+        description: "Došlo k chybě při překladu"
+      });
     } finally {
       setIsTranslating(false);
     }
@@ -155,17 +113,28 @@ const TranslatorPage = () => {
   };
 
   const handleCopyTranslation = () => {
+    if (!translatedText.trim()) return;
+    
     navigator.clipboard.writeText(translatedText);
-    toast.success("Překlad byl zkopírován do schránky");
+    toast({
+      title: "Zkopírováno",
+      description: "Překlad byl zkopírován do schránky",
+    });
   };
 
   const handleTextToSpeech = (text: string, language: string) => {
+    if (!text.trim()) return;
+    
     if ('speechSynthesis' in window) {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = language === 'cs' ? 'cs-CZ' : language === 'de' ? 'de-DE' : 'en-US';
       window.speechSynthesis.speak(utterance);
     } else {
-      toast.error("Váš prohlížeč nepodporuje převod textu na řeč");
+      toast({
+        variant: "destructive",
+        title: "Chyba",
+        description: "Váš prohlížeč nepodporuje převod textu na řeč"
+      });
     }
   };
 
@@ -179,7 +148,17 @@ const TranslatorPage = () => {
   const handleClearHistory = () => {
     setHistory([]);
     localStorage.removeItem('translationHistory');
-    toast.success("Historie překladů byla vymazána");
+    toast({
+      title: "Historie vymazána",
+      description: "Historie překladů byla vymazána"
+    });
+  };
+
+  const handleUsePhrase = (phrase: string) => {
+    setSourceText(phrase);
+    if (autoTranslate) {
+      handleTranslate();
+    }
   };
 
   return (
@@ -188,10 +167,14 @@ const TranslatorPage = () => {
         <h1 className="text-3xl font-bold mb-6">Překladač</h1>
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 md:w-auto">
+          <TabsList className="grid w-full grid-cols-3 md:w-auto">
             <TabsTrigger value="text" className="flex items-center gap-2">
               <FileText className="h-4 w-4" />
               <span>Text</span>
+            </TabsTrigger>
+            <TabsTrigger value="phrases" className="flex items-center gap-2">
+              <Languages className="h-4 w-4" />
+              <span>Fráze</span>
             </TabsTrigger>
             <TabsTrigger value="history" className="flex items-center gap-2">
               <History className="h-4 w-4" />
@@ -199,6 +182,7 @@ const TranslatorPage = () => {
             </TabsTrigger>
           </TabsList>
           
+          {/* Text Translation Tab */}
           <TabsContent value="text" className="space-y-6">
             <Card>
               <CardHeader>
@@ -245,6 +229,7 @@ const TranslatorPage = () => {
                       size="sm" 
                       className="w-full sm:w-auto"
                       onClick={() => handleTextToSpeech(sourceText, sourceLanguage)}
+                      disabled={!sourceText.trim()}
                     >
                       <Volume2 className="mr-2 h-4 w-4" />
                       Přečíst
@@ -270,6 +255,7 @@ const TranslatorPage = () => {
                         size="sm" 
                         className="h-6 px-2 text-xs"
                         onClick={handleCopyTranslation}
+                        disabled={!translatedText.trim()}
                       >
                         <Copy className="h-3 w-3 mr-1" />
                         Kopírovat
@@ -296,6 +282,7 @@ const TranslatorPage = () => {
                       size="sm" 
                       className="w-full sm:w-auto"
                       onClick={() => handleTextToSpeech(translatedText, targetLanguage)}
+                      disabled={!translatedText.trim()}
                     >
                       <Volume2 className="mr-2 h-4 w-4" />
                       Přečíst
@@ -348,6 +335,60 @@ const TranslatorPage = () => {
             </Card>
           </TabsContent>
           
+          {/* Common Phrases Tab */}
+          <TabsContent value="phrases" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Languages className="h-5 w-5" />
+                  <span>Užitečné fráze</span>
+                </CardTitle>
+                <CardDescription>
+                  Nejčastěji používané fráze pro různé situace
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <TabsList className="mb-6 w-full flex overflow-x-auto pb-2 gap-1">
+                  {workPhrases.map((category) => (
+                    <TabsTrigger 
+                      key={category.id} 
+                      value={category.id}
+                      onClick={() => setPhrasesTab(category.id)}
+                      className={phrasesTab === category.id ? "bg-primary text-white" : ""}
+                      >
+                      {category.title}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+
+                <div className="space-y-4">
+                  {workPhrases
+                    .filter(category => category.id === phrasesTab)
+                    .map(category => (
+                      <div key={category.id} className="space-y-2">
+                        <ul className="divide-y">
+                          {category.phrases.map((phrase, index) => (
+                            <li 
+                              key={index}
+                              className="py-2 flex justify-between items-center hover:bg-muted/40 rounded px-2 cursor-pointer"
+                              onClick={() => handleUsePhrase(phrase)}
+                            >
+                              <span>{phrase}</span>
+                              <Button variant="ghost" size="sm">
+                                <ArrowRightLeft className="h-4 w-4 mr-1" />
+                                Použít
+                              </Button>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Translation History Tab */}
           <TabsContent value="history" className="space-y-6">
             <Card>
               <CardHeader>
