@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -104,10 +103,8 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProp
             </Button>
           )}
           
-          {/* Theme toggle button (visible on desktop) */}
-          <div className="hidden md:flex">
-            <ThemeToggle />
-          </div>
+          {/* Theme toggle button (viditelné pouze na desktop) */}
+          <ThemeToggle />
           
           {/* Right Content (e.g. notifications) */}
           {rightContent}
