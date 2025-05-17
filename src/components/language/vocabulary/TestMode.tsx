@@ -48,6 +48,7 @@ const TestMode: React.FC<TestModeProps> = ({ vocabularyItems, onComplete }) => {
   const [isCorrect, setIsCorrect] = useState(false);
   const [timeSpent, setTimeSpent] = useState(0);
   const [startTime, setStartTime] = useState<Date | null>(null);
+  const [answersGiven, setAnswersGiven] = useState<string[]>([]);
   const { toast } = useToast();
 
   // Get unique categories from vocabulary items
@@ -166,16 +167,19 @@ const TestMode: React.FC<TestModeProps> = ({ vocabularyItems, onComplete }) => {
   const checkAnswer = () => {
     const currentQuestion = questions[currentQuestionIndex];
     let correct = false;
+    let answer = '';
     
     switch (currentQuestion.type) {
       case 'multiple':
         correct = selectedAnswer === String(currentQuestion.correctIndex);
+        answer = selectedAnswer || '';
         break;
       case 'type-in':
         // Case insensitive check, allowing for small typos
         const normalizedTyped = typedAnswer.toLowerCase().trim();
         const normalizedCorrect = currentQuestion.item.translation.toLowerCase().trim();
         correct = normalizedTyped === normalizedCorrect;
+        answer = typedAnswer;
         break;
       case 'true-false':
         if (currentQuestion.options && currentQuestion.options[1] === 'true') {
@@ -183,8 +187,16 @@ const TestMode: React.FC<TestModeProps> = ({ vocabularyItems, onComplete }) => {
         } else {
           correct = selectedAnswer === 'false';
         }
+        answer = selectedAnswer || '';
         break;
     }
+    
+    // Store the answer
+    setAnswersGiven(prev => {
+      const newAnswers = [...prev];
+      newAnswers[currentQuestionIndex] = answer;
+      return newAnswers;
+    });
     
     setIsCorrect(correct);
     setShowFeedback(true);
@@ -214,12 +226,46 @@ const TestMode: React.FC<TestModeProps> = ({ vocabularyItems, onComplete }) => {
       
       // Create test result object
       if (onComplete && startTime) {
+        // Track answers for each question
+        const testItems = questions.map((question, index) => {
+          let wasCorrect = false;
+          let userAnswer = '';
+          
+          switch (question.type) {
+            case 'multiple':
+              wasCorrect = String(question.correctIndex) === answersGiven[index];
+              userAnswer = question.options?.[Number(answersGiven[index])] || '';
+              break;
+            case 'type-in':
+              const normalizedTyped = answersGiven[index]?.toLowerCase().trim() || '';
+              const normalizedCorrect = question.item.translation.toLowerCase().trim();
+              wasCorrect = normalizedTyped === normalizedCorrect;
+              userAnswer = answersGiven[index] || '';
+              break;
+            case 'true-false':
+              const correctAnswer = question.options?.[1] === 'true' ? 'true' : 'false';
+              wasCorrect = correctAnswer === answersGiven[index];
+              userAnswer = answersGiven[index] || '';
+              break;
+          }
+          
+          return {
+            item: question.item,
+            wasCorrect,
+            userAnswer
+          };
+        });
+        
+        const correctAnswersCount = score;
+        const incorrectAnswersCount = questions.length - score;
+        
         const testResult: TestResult = {
           startTime,
           endTime,
           totalQuestions: questions.length,
-          correctAnswers: score,
-          incorrectAnswers: questions.length - score,
+          correctAnswers: correctAnswersCount,
+          incorrectAnswers: incorrectAnswersCount,
+          wrongAnswers: incorrectAnswersCount, // Adding this to match the updated interface
           score: Math.round((score / questions.length) * 100),
           timeSpentSeconds: timeInSeconds,
           categories: config.categories.includes('all') 
@@ -227,7 +273,8 @@ const TestMode: React.FC<TestModeProps> = ({ vocabularyItems, onComplete }) => {
             : [...config.categories],
           difficulties: config.difficulty.includes('all')
             ? ['easy', 'medium', 'hard']
-            : [...config.difficulty] as string[]
+            : [...config.difficulty] as string[],
+          testItems: testItems // Adding the test items to the results
         };
         
         onComplete(testResult);

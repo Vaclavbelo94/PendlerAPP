@@ -3,16 +3,24 @@ import React from 'react';
 import TestMode from './TestMode';
 import { VocabularyItem } from '@/models/VocabularyItem';
 
+export interface TestItem {
+  item: VocabularyItem;
+  wasCorrect: boolean;
+  userAnswer?: string;
+}
+
 export interface TestResult {
   startTime: Date;
   endTime: Date;
   totalQuestions: number;
   correctAnswers: number;
   incorrectAnswers: number;
+  wrongAnswers: number; // Adding this property to fix the error
   score: number; // percentage
   timeSpentSeconds: number;
   categories: string[];
   difficulties: string[];
+  testItems: TestItem[]; // Adding test items array to track individual question results
 }
 
 interface VocabularyTestProps {
