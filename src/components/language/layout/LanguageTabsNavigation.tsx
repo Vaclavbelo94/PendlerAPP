@@ -7,7 +7,7 @@ interface LanguageTabsNavigationProps {
   children: React.ReactNode;
   activeTab: string;
   onTabChange: (value: string) => void;
-  renderBadge?: (tabName: string) => React.ReactNode; // Added this prop
+  renderBadge?: (tabName: string) => React.ReactNode;
 }
 
 const LanguageTabsNavigation: React.FC<LanguageTabsNavigationProps> = ({

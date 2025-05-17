@@ -158,12 +158,14 @@ const LanguageContent = () => {
           </LanguageTabsNavigation>
         </div>
 
-        {/* Sidebar with additional resources */}
-        <LanguageSidebar 
-          offlineStatus={offlineStatus}
-          isOffline={isOffline}
-          saveForOffline={saveForOffline}
-        />
+        {/* Sidebar with additional resources - hide on mobile */}
+        {!isMobile && (
+          <LanguageSidebar 
+            offlineStatus={offlineStatus}
+            isOffline={isOffline}
+            saveForOffline={saveForOffline}
+          />
+        )}
       </div>
       
       {/* Offline indicator component */}
