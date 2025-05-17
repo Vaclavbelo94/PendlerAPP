@@ -162,14 +162,14 @@ const ShiftAnalytics = ({ shifts, period, onPeriodChange }: ShiftAnalyticsProps)
                       ))}
                     </Pie>
                     <Tooltip 
-                      content={({ active, payload }) => {
-                        if (active && payload && payload.length) {
+                      content={(props) => {
+                        if (props.active && props.payload && props.payload.length) {
                           return (
                             <ChartTooltip>
                               <ChartTooltipContent>
                                 <div className="flex flex-col">
-                                  <span className="text-sm font-bold">{payload[0].name}</span>
-                                  <span className="text-xs">Počet: {payload[0].value}</span>
+                                  <span className="text-sm font-bold">{props.payload[0].name}</span>
+                                  <span className="text-xs">Počet: {props.payload[0].value}</span>
                                 </div>
                               </ChartTooltipContent>
                             </ChartTooltip>
@@ -201,14 +201,14 @@ const ShiftAnalytics = ({ shifts, period, onPeriodChange }: ShiftAnalyticsProps)
                     <XAxis dataKey="date" />
                     <YAxis allowDecimals={false} />
                     <Tooltip 
-                      content={({ active, payload, label }) => {
-                        if (active && payload && payload.length) {
+                      content={(props) => {
+                        if (props.active && props.payload && props.payload.length) {
                           return (
                             <ChartTooltip>
                               <ChartTooltipContent>
                                 <div className="flex flex-col">
-                                  <span className="text-sm font-bold">{label}</span>
-                                  {payload.map((entry) => (
+                                  <span className="text-sm font-bold">{props.label}</span>
+                                  {props.payload.map((entry) => (
                                     <span key={entry.name} className="text-xs flex items-center">
                                       <span className="w-2 h-2 rounded-full mr-1" style={{ backgroundColor: entry.color }}></span>
                                       {entry.name === "morning" ? "Ranní" : entry.name === "afternoon" ? "Odpolední" : "Noční"}: {entry.value}

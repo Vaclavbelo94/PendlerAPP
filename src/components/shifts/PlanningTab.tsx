@@ -4,17 +4,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
 import { toast } from "@/components/ui/use-toast";
 
-export const PlanningTab = ({ user }: { user: any }) => {
-  const navigate = useNavigate();
+// Remove the useNavigate import and replace with a prop for navigation function
+export const PlanningTab = ({ user, onNavigateToLogin }: { user: any; onNavigateToLogin?: () => void }) => {
   const [route, setRoute] = useState({ from: "", to: "", time: "" });
   
   // Handler for saving route
   const handleSaveRoute = () => {
     if (!user) {
-      navigate("/login");
+      // Use the callback prop instead of direct navigation
+      if (onNavigateToLogin) {
+        onNavigateToLogin();
+      }
       return;
     }
     toast({

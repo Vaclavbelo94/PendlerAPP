@@ -1,5 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PremiumCheck from '@/components/premium/PremiumCheck';
 import { ShiftCalendar } from '@/components/shifts/ShiftCalendar';
 import { ShiftDetails } from '@/components/shifts/ShiftDetails';
@@ -12,11 +12,12 @@ import { EditNoteDialog } from '@/components/shifts/EditNoteDialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { useDeviceSize } from '@/hooks/use-mobile';
-import { Shift, ShiftType } from '@/components/shifts/types';
+import { Shift, ShiftType, AnalyticsPeriod } from '@/components/shifts/types';
 import { Card } from "@/components/ui/card";
 import { toast } from "@/components/ui/use-toast";
 
 const Shifts = () => {
+  const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [shifts, setShifts] = useState<Shift[]>([]);
   const [shiftType, setShiftType] = useState<ShiftType>("morning");
@@ -25,6 +26,7 @@ const Shifts = () => {
   const [noteDialogOpen, setNoteDialogOpen] = useState(false);
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
+  const [analyticsPeriod, setAnalyticsPeriod] = useState<AnalyticsPeriod>("month");
   
   const isMobile = useDeviceSize() === "mobile";
   const isTablet = useMediaQuery("md");
@@ -163,7 +165,10 @@ const Shifts = () => {
           
           {/* Planning Tab */}
           <TabsContent value="planning" className="space-y-6">
-            <PlanningTab user={user} />
+            <PlanningTab 
+              user={user} 
+              onNavigateToLogin={() => navigate("/login")}
+            />
           </TabsContent>
           
           {/* Calendar Tab */}
@@ -208,8 +213,8 @@ const Shifts = () => {
               <div>
                 <ShiftAnalytics 
                   shifts={shifts} 
-                  period="month"
-                  onPeriodChange={(period) => console.log(`Period changed to ${period}`)}
+                  period={analyticsPeriod}
+                  onPeriodChange={setAnalyticsPeriod}
                 />
               </div>
             </div>
