@@ -1,8 +1,23 @@
 
 import { useEffect, useState } from "react";
 
-type MediaQueryType = "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "dark" | "light" | "portrait" | "landscape";
+// Typy mediálních dotazů
+export type MediaQueryType = 
+  | "xs" 
+  | "sm" 
+  | "md" 
+  | "lg" 
+  | "xl" 
+  | "2xl" 
+  | "dark" 
+  | "light" 
+  | "portrait" 
+  | "landscape"
+  | "reduced-motion"
+  | "high-contrast"
+  | "print";
 
+// Definice mediálních dotazů pro různé velikosti obrazovky a preference
 const mediaQueries = {
   xs: "(max-width: 639px)",
   sm: "(min-width: 640px)",
@@ -14,37 +29,54 @@ const mediaQueries = {
   light: "(prefers-color-scheme: light)",
   portrait: "(orientation: portrait)",
   landscape: "(orientation: landscape)",
+  "reduced-motion": "(prefers-reduced-motion: reduce)",
+  "high-contrast": "(prefers-contrast: more)",
+  "print": "(print)"
 };
 
 /**
- * React hook for detecting if the current viewport matches the specified media query
+ * React hook pro detekci, zda aktuální viewport odpovídá zadanému mediálnímu dotazu
+ * @param query - Klíč definovaného mediálního dotazu nebo vlastní mediální dotaz
+ * @returns boolean - Indikuje, zda mediální dotaz odpovídá aktuálnímu stavu
+ * @example
+ * // Použití s předdefinovaným dotazem
+ * const isMobile = useMediaQuery("xs");
+ * 
+ * // Použití s vlastním dotazem
+ * const isPrint = useMediaQuery("print");
+ * 
+ * // Použití pro přístupnost
+ * const prefersReducedMotion = useMediaQuery("reduced-motion");
  */
 export function useMediaQuery(query: MediaQueryType | string): boolean {
   const [matches, setMatches] = useState<boolean>(false);
+  const [mounted, setMounted] = useState<boolean>(false);
 
   useEffect(() => {
-    // For server-side rendering / initial render before hydration
+    // Pro server-side rendering nebo počáteční vykreslení před hydratací
+    setMounted(true);
     if (typeof window === 'undefined') return;
     
     const mediaQuery = window.matchMedia(
       mediaQueries[query as MediaQueryType] || query
     );
 
+    // Aktualizace stavu při změně mediálního dotazu
     const updateMatches = () => {
       setMatches(mediaQuery.matches);
     };
 
-    // Set initial value
+    // Nastavení počáteční hodnoty
     updateMatches();
 
-    // Listen for changes
+    // Moderní způsob naslouchání změnám (standardizovaný)
     if (typeof mediaQuery.addEventListener === 'function') {
       mediaQuery.addEventListener("change", updateMatches);
       return () => {
         mediaQuery.removeEventListener("change", updateMatches);
       };
     } else {
-      // Fallback for older browsers
+      // Fallback pro starší prohlížeče
       mediaQuery.addListener(updateMatches);
       return () => {
         mediaQuery.removeListener(updateMatches);
@@ -52,7 +84,8 @@ export function useMediaQuery(query: MediaQueryType | string): boolean {
     }
   }, [query]);
 
-  return matches;
+  // Pro SSR vrátí false do doby, než se komponenta namountuje na klientovi
+  return mounted ? matches : false;
 }
 
 export default useMediaQuery;
