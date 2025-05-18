@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { ArrowRightIcon } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -26,39 +25,43 @@ const Hero = () => {
 
             <AnimatedSection type="fade" delay={0.3}>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Button 
-                  size="lg" 
-                  className="font-medium text-base px-8 py-6 rounded-xl shadow-lg shadow-primary-500/20 hover:shadow-primary-500/30"
-                  as={motion.button}
+                <motion.div
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  Začít používat
-                </Button>
-                <Button 
-                  size="lg" 
-                  variant="outline" 
-                  className="font-medium text-base px-8 py-6 rounded-xl"
-                  as={motion.button}
+                  <Button 
+                    size="lg" 
+                    className="font-medium text-base px-8 py-6 rounded-xl shadow-lg shadow-primary-500/20 hover:shadow-primary-500/30"
+                  >
+                    Začít používat
+                  </Button>
+                </motion.div>
+                <motion.div
                   whileHover={{ 
                     scale: 1.05,
                     backgroundColor: "rgba(255, 235, 59, 0.1)" 
                   }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <span>Zjistit více</span>
-                  <motion.span
-                    animate={{ x: [0, 5, 0] }}
-                    transition={{ 
-                      repeat: Infinity, 
-                      repeatType: "loop", 
-                      duration: 1.5,
-                      repeatDelay: 1
-                    }}
+                  <Button 
+                    size="lg" 
+                    variant="outline" 
+                    className="font-medium text-base px-8 py-6 rounded-xl"
                   >
-                    <ArrowRightIcon className="ml-2 h-4 w-4" />
-                  </motion.span>
-                </Button>
+                    <span>Zjistit více</span>
+                    <motion.span
+                      animate={{ x: [0, 5, 0] }}
+                      transition={{ 
+                        repeat: Infinity, 
+                        repeatType: "loop", 
+                        duration: 1.5,
+                        repeatDelay: 1
+                      }}
+                    >
+                      <ArrowRightIcon className="ml-2 h-4 w-4" />
+                    </motion.span>
+                  </Button>
+                </motion.div>
               </div>
               
               <div className="flex items-center justify-center lg:justify-start mt-10 text-gray-600">
