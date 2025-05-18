@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Progress } from "@/components/ui/progress";
@@ -10,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { InfoCircleIcon } from "lucide-react";
+import { CircleInfoIcon } from "@/components/ui/icons";
 
 const ShiftsProgress = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -44,7 +43,7 @@ const ShiftsProgress = () => {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button variant="ghost" size="sm" className="h-5 w-5 p-0" onClick={() => handleOpenDetails(item.label)}>
-                      <InfoCircleIcon className="h-4 w-4 text-muted-foreground" />
+                      <CircleInfoIcon className="h-4 w-4 text-muted-foreground" />
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
