@@ -1,11 +1,10 @@
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { ShieldIcon, LockIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { usePremiumCheck } from "@/hooks/usePremiumCheck";
-import { useAuth } from "@/hooks/useAuth";
+import { useUnifiedPremiumStatus } from "@/hooks/useUnifiedPremiumStatus";
 
 interface PremiumCheckProps {
   featureKey: string;
@@ -13,55 +12,10 @@ interface PremiumCheckProps {
 }
 
 const PremiumCheck: React.FC<PremiumCheckProps> = ({ featureKey, children }) => {
-  const { isLoading, canAccess, isPremiumFeature } = usePremiumCheck(featureKey);
-  const { isPremium, user } = useAuth();
+  const { isVerifying, canAccess } = useUnifiedPremiumStatus(featureKey);
   const navigate = useNavigate();
-  const [hasAccess, setHasAccess] = useState(false);
 
-  // Check if user is already premium directly from localStorage as a fallback
-  const getCurrentUser = () => {
-    try {
-      const userStr = localStorage.getItem("currentUser");
-      return userStr ? JSON.parse(userStr) : null;
-    } catch (e) {
-      console.error("Error fetching user:", e);
-      return null;
-    }
-  };
-  
-  // Special check for our target user
-  const isSpecialUser = () => {
-    const email = user?.email;
-    const isSpecial = email === 'uzivatel@pendlerapp.com';
-    console.log("PremiumCheck special user check:", { email, isSpecial });
-    return isSpecial;
-  };
-  
-  // Determine access immediately and whenever dependencies change
-  useEffect(() => {
-    const currentUser = getCurrentUser();
-    const isUserPremium = isPremium || (currentUser && currentUser.isPremium) || isSpecialUser();
-    
-    // Grant access if either:
-    // 1. The hook says canAccess, OR
-    // 2. We know the user is premium from any source, OR
-    // 3. This is our special user
-    const shouldAllow = canAccess || isUserPremium;
-    
-    console.log('Premium status check:', {
-      featureKey,
-      canAccess,
-      isPremium, 
-      localUserPremium: currentUser?.isPremium,
-      isSpecialUser: isSpecialUser(),
-      email: user?.email,
-      shouldAllow
-    });
-    
-    setHasAccess(shouldAllow);
-  }, [canAccess, isPremium, user]);
-
-  if (isLoading) {
+  if (isVerifying) {
     return (
       <div className="flex justify-center items-center w-full p-12">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
@@ -69,7 +23,7 @@ const PremiumCheck: React.FC<PremiumCheckProps> = ({ featureKey, children }) => 
     );
   }
 
-  if (!hasAccess) {
+  if (!canAccess) {
     return (
       <div className="container py-8">
         <Card className="text-center">

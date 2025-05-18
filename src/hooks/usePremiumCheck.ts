@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/hooks/useAuth';
+import { useUnifiedPremiumStatus } from '@/hooks/useUnifiedPremiumStatus';
 
 /**
  * Hook for checking if a user can access a premium feature
@@ -11,21 +11,15 @@ import { useAuth } from '@/hooks/useAuth';
 export const usePremiumCheck = (featureKey: string) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isPremiumFeature, setIsPremiumFeature] = useState(false);
-  const [canAccess, setCanAccess] = useState(false);
-  const { user, isPremium } = useAuth();
+  
+  // Use our unified premium status hook
+  const { canAccess, isVerifying } = useUnifiedPremiumStatus(featureKey);
 
   useEffect(() => {
     const checkPremiumAccess = async () => {
       setIsLoading(true);
       
       try {
-        // If user is already premium, give immediate access
-        if (isPremium) {
-          setCanAccess(true);
-          setIsLoading(false);
-          return;
-        }
-        
         // Check if the feature is marked as premium in the database
         const { data, error } = await supabase
           .from('premium_features')
@@ -37,29 +31,26 @@ export const usePremiumCheck = (featureKey: string) => {
           console.error('Error checking premium feature:', error);
           // In case of error, allow access (failsafe)
           setIsPremiumFeature(false);
-          setCanAccess(true);
           return;
         }
         
         const isFeaturePremium = data?.is_enabled || false;
         setIsPremiumFeature(isFeaturePremium);
-        
-        // User can access the feature if:
-        // - The feature is not premium, OR
-        // - The user has premium status
-        setCanAccess(!isFeaturePremium || isPremium);
-        
       } catch (error) {
         console.error('Error checking premium access:', error);
-        // Failsafe: allow access
-        setCanAccess(true);
+        // Failsafe: assume not premium
+        setIsPremiumFeature(false);
       } finally {
         setIsLoading(false);
       }
     };
 
     checkPremiumAccess();
-  }, [featureKey, isPremium, user]);
+  }, [featureKey]);
 
-  return { isLoading, isPremiumFeature, canAccess };
+  return { 
+    isLoading: isLoading || isVerifying, 
+    isPremiumFeature, 
+    canAccess 
+  };
 };
