@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -19,8 +19,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { FileText, Download, Info, CheckCircle2 } from "lucide-react";
+import { FileText, Download, Info, CheckCircle2, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { useAuth } from '@/hooks/useAuth';
+import { fetchUserProfileData, generateTaxDocument } from '@/utils/taxDocumentUtils';
+import { toast } from "sonner";
 
 interface FormState {
   name: string;
@@ -41,7 +44,9 @@ interface FormState {
 }
 
 const DocumentGenerator = () => {
-  const { toast } = useToast();
+  const { user } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingProfile, setIsLoadingProfile] = useState(false);
   const [formState, setFormState] = useState<FormState>({
     name: "",
     taxId: "",
@@ -51,10 +56,45 @@ const DocumentGenerator = () => {
     email: "",
     includeCommuteExpenses: true,
     includeSecondHome: false,
-    includeWorkClothes: false
+    includeWorkClothes: false,
+    commuteWorkDays: "220" // Default value
   });
   
   const [showSuccessMessage, setShowSuccessMessage] = useState<boolean>(false);
+  const [generatedDocumentData, setGeneratedDocumentData] = useState<any>(null);
+
+  useEffect(() => {
+    if (user) {
+      loadUserProfile();
+    }
+  }, [user]);
+
+  const loadUserProfile = async () => {
+    if (!user) return;
+    
+    setIsLoadingProfile(true);
+    try {
+      const profileData = await fetchUserProfileData(user.id);
+      
+      if (profileData) {
+        setFormState(prev => ({
+          ...prev,
+          name: profileData.name || prev.name,
+          email: profileData.email || prev.email,
+          address: profileData.address || prev.address,
+          commuteDistance: profileData.commuteDistance || prev.commuteDistance,
+          additionalNotes: profileData.additionalNotes || prev.additionalNotes,
+        }));
+        
+        toast.success("Údaje z profilu byly načteny");
+      }
+    } catch (error) {
+      console.error("Chyba při načítání profilu:", error);
+      toast.error("Nepodařilo se načíst údaje z profilu");
+    } finally {
+      setIsLoadingProfile(false);
+    }
+  };
 
   const updateFormState = (field: keyof FormState, value: string | boolean) => {
     setFormState(prev => ({ ...prev, [field]: value }));
@@ -65,43 +105,75 @@ const DocumentGenerator = () => {
     
     for (const field of requiredFields) {
       if (!formState[field as keyof FormState]) {
-        toast({
-          title: "Chybějící údaje",
-          description: `Prosím vyplňte všechna povinná pole označená hvězdičkou.`,
-          variant: "destructive"
-        });
+        toast.error(`Prosím vyplňte všechna povinná pole označená hvězdičkou.`);
         return false;
       }
     }
     
     if (formState.includeCommuteExpenses && 
         (!formState.commuteDistance || !formState.commuteWorkDays)) {
-      toast({
-        title: "Chybějící údaje",
-        description: "Vyplňte vzdálenost dojíždění a počet pracovních dní.",
-        variant: "destructive"
-      });
+      toast.error("Vyplňte vzdálenost dojíždění a počet pracovních dní.");
       return false;
     }
     
     return true;
   };
   
-  const handleGenerateDocument = () => {
+  const handleGenerateDocument = async () => {
     if (!validateForm()) return;
     
-    setShowSuccessMessage(true);
+    setIsLoading(true);
     
-    setTimeout(() => {
-      // Simulate download completion after a delay
-      toast({
-        title: "Dokument vygenerován",
-        description: "Dokument byl úspěšně vygenerován a připraven ke stažení.",
-      });
+    try {
+      // Generate the document
+      const doc = generateTaxDocument(formState);
+      
+      // Save reference to the generated document for later download
+      setGeneratedDocumentData(doc);
+      setShowSuccessMessage(true);
+      
+      toast.success("Dokument byl úspěšně vygenerován");
+    } catch (error) {
+      console.error("Chyba při generování dokumentu:", error);
+      toast.error("Při generování dokumentu došlo k chybě");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  const handleDownloadDocument = () => {
+    if (!generatedDocumentData) {
+      toast.error("Žádný dokument k dispozici pro stažení");
+      return;
+    }
+    
+    try {
+      // Generate filename based on document type and date
+      const documentType = formState.documentType;
+      const currentDate = new Date().toISOString().split('T')[0];
+      const fileName = `${getDocumentTypeName(documentType)}_${currentDate}.pdf`;
+      
+      // Save the PDF
+      generatedDocumentData.save(fileName);
+      
+      toast.success("Dokument byl úspěšně stažen");
       
       // Reset success message after a bit
       setTimeout(() => setShowSuccessMessage(false), 3000);
-    }, 2000);
+    } catch (error) {
+      console.error("Chyba při stahování dokumentu:", error);
+      toast.error("Při stahování dokumentu došlo k chybě");
+    }
+  };
+  
+  const getDocumentTypeName = (type: string): string => {
+    switch (type) {
+      case 'steuererklaerung': return 'danove_priznani';
+      case 'pendlerbescheinigung': return 'potvrzeni_dojizdeni';
+      case 'antrag-lohnsteuerermassigung': return 'zadost_snizeni_dane';
+      case 'arbeitsmittelnachweis': return 'potvrzeni_pracovni_prostredky';
+      default: return 'danovy_dokument';
+    }
   };
   
   const documentTypes = [
@@ -115,10 +187,32 @@ const DocumentGenerator = () => {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Generátor daňových dokumentů</CardTitle>
-          <CardDescription>
-            Vytvořte předvyplněné dokumenty pro německá daňová přiznání
-          </CardDescription>
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+            <div>
+              <CardTitle>Generátor daňových dokumentů</CardTitle>
+              <CardDescription>
+                Vytvořte předvyplněné dokumenty pro německá daňová přiznání
+              </CardDescription>
+            </div>
+            {user && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={loadUserProfile} 
+                disabled={isLoadingProfile}
+                className="self-start"
+              >
+                {isLoadingProfile ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Načítání...
+                  </>
+                ) : (
+                  "Načíst údaje z profilu"
+                )}
+              </Button>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
           <div className="space-y-8">
@@ -358,9 +452,19 @@ const DocumentGenerator = () => {
             onClick={handleGenerateDocument}
             size="lg"
             className="gap-2"
+            disabled={isLoading}
           >
-            <FileText className="h-5 w-5" />
-            Vygenerovat dokument
+            {isLoading ? (
+              <>
+                <Loader2 className="h-5 w-5 animate-spin" />
+                Generuji dokument...
+              </>
+            ) : (
+              <>
+                <FileText className="h-5 w-5" />
+                Vygenerovat dokument
+              </>
+            )}
           </Button>
         ) : (
           <div className="flex flex-col items-center space-y-4">
@@ -368,7 +472,12 @@ const DocumentGenerator = () => {
               <CheckCircle2 className="h-5 w-5" />
               <span className="font-medium">Dokument byl úspěšně vygenerován</span>
             </div>
-            <Button variant="outline" size="lg" className="gap-2">
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="gap-2"
+              onClick={handleDownloadDocument}
+            >
               <Download className="h-5 w-5" />
               Stáhnout dokument
             </Button>
