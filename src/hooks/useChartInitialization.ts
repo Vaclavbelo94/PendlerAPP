@@ -37,5 +37,16 @@ export const useChartInitialization = ({ type, data, options }: UseChartProps) =
     };
   }, [data, options, type]);
 
+  // Update chart when data or options change
+  useEffect(() => {
+    if (chartInstance.current) {
+      chartInstance.current.data = data;
+      if (options) {
+        chartInstance.current.options = options;
+      }
+      chartInstance.current.update();
+    }
+  }, [data, options]);
+
   return { chartRef };
 };
