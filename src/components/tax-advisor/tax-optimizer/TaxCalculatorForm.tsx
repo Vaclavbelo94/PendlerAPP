@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,10 +11,10 @@ import { Separator } from "@/components/ui/separator";
 import { Calculator } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { fetchUserProfileData } from '@/utils/tax';
-import { TaxCalculatorFormProps } from './types';
+import { TaxCalculatorFormProps, FormData } from './types';
 
 const formSchema = z.object({
-  country: z.string(),
+  country: z.string().min(1, "Zadejte zemi"),
   income: z.string().min(1, "Zadejte výši příjmu"),
   taxClass: z.string().optional(),
   children: z.string().default("0"),
@@ -80,8 +79,24 @@ const TaxCalculatorForm: React.FC<TaxCalculatorFormProps> = ({
     }
   }, [user, form]);
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
-    onCalculate(data);
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
+    // Ensure all required properties for FormData are present
+    const formData: FormData = {
+      country: values.country,
+      income: values.income,
+      taxClass: values.taxClass,
+      children: values.children,
+      married: values.married,
+      church: values.church,
+      commuteDistance: values.commuteDistance,
+      workDays: values.workDays,
+      housingCosts: values.housingCosts,
+      workEquipment: values.workEquipment,
+      insurance: values.insurance,
+      otherExpenses: values.otherExpenses,
+    };
+    
+    onCalculate(formData);
   };
 
   return (
