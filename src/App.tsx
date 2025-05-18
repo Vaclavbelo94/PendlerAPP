@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './App.css';
@@ -17,6 +18,7 @@ import Admin from './pages/Admin';
 import Calculator from './pages/Calculator';
 import Contact from './pages/Contact';
 import Cookies from './pages/Cookies';
+import Dashboard from './pages/Dashboard'; // Nová stránka Dashboard
 import FAQ from './pages/FAQ';
 import Language from './pages/Language';
 import Login from './pages/Login';
@@ -65,6 +67,7 @@ function App() {
                 <Route path="/calculator" element={<Calculator />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/cookies" element={<Cookies />} />
+                <Route path="/dashboard" element={<Dashboard />} /> {/* Nová cesta */}
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/language" element={<Language />} />
                 <Route path="/login" element={<Login />} />

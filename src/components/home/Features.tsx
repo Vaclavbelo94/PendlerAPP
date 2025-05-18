@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Car, Languages, Calendar, ArrowRight } from "lucide-react";
+import { Car, Languages, Calendar, ArrowRight, BarChart3 } from "lucide-react"; // Přidaná ikona BarChart3
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { AnimatedCard, HoverEffectCard } from "@/components/ui/animated-section";
@@ -36,12 +36,19 @@ const features = [
     title: "Překladač",
     description: "Přeložte si jednoduše text z češtiny do němčiny pro snazší komunikaci v práci i běžném životě.",
     link: "/translator"
+  },
+  {
+    icon: BarChart3, // Nová ikona pro Dashboard funkci
+    title: "Osobní Dashboard",
+    description: "Přehledné statistiky a vizualizace vašeho pokroku a aktivit v jednom přehledném místě.",
+    link: "/dashboard",
+    isPremium: true // Označení jako prémiové funkce
   }
 ];
 
 const Features = () => {
   return (
-    <section className="py-16 md:py-24 bg-white">
+    <section className="py-16 md:py-24 bg-white dark:bg-transparent">
       <div className="container mx-auto px-4">
         <motion.div 
           className="text-center mb-12"
@@ -70,7 +77,14 @@ const Features = () => {
                   >
                     <feature.icon className="feature-icon" />
                   </motion.div>
-                  <CardTitle>{feature.title}</CardTitle>
+                  <CardTitle className="flex items-center gap-2">
+                    {feature.title}
+                    {feature.isPremium && (
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-200">
+                        Premium
+                      </span>
+                    )}
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <CardDescription className="text-base mb-4">

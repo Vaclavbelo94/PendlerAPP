@@ -1,38 +1,22 @@
 
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { cn } from "@/lib/utils";
 import {
-  BookOpen,
-  Calculator,
-  Calendar,
-  GraduationCap,
   Home,
   Languages,
-  CarTaxiFront,
-  LucideIcon,
-  Pencil,
+  Car,
+  Calendar,
+  Calculator,
   Scale,
-  User,
-  Gavel,
-  Map,
-  FileText,
+  Plane,
+  Building2,
+  BarChart3, // Nová ikona pro Dashboard
 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { useAuth } from "@/hooks/useAuth";
-import { Separator } from "@/components/ui/separator";
-
-interface NavigationItem {
-  name: string;
-  path: string;
-  icon: LucideIcon;
-  premium?: boolean;
-}
-
-interface NavigationGroup {
-  title: string;
-  items: NavigationItem[];
-}
+import { PremiumBadge } from "@/components/premium/PremiumBadge";
+import { useUnifiedPremiumStatus } from "@/hooks/useUnifiedPremiumStatus";
 
 interface SidebarNavigationProps {
   closeSidebar: () => void;
@@ -40,158 +24,94 @@ interface SidebarNavigationProps {
 
 const SidebarNavigation = ({ closeSidebar }: SidebarNavigationProps) => {
   const location = useLocation();
-  const { isAdmin, isPremium } = useAuth();
-
-  const mainNavItems: NavigationItem[] = [
-    {
-      name: "Domů",
-      path: "/",
-      icon: Home
-    },
-    {
-      name: "Výuka jazyka",
-      path: "/language",
-      icon: GraduationCap
-    }
-  ];
-
-  const toolsNavItems: NavigationItem[] = [
-    {
-      name: "Překladač",
-      path: "/translator",
-      icon: Languages
-    },
-    {
-      name: "Kalkulačka",
-      path: "/calculator",
-      icon: Calculator
-    },
-    {
-      name: "Směny",
-      path: "/shifts",
-      icon: Calendar
-    },
-    {
-      name: "Doprava",
-      path: "/vehicle",
-      icon: CarTaxiFront
-    },
-    {
-      name: "Plánování cest",
-      path: "/travel-planning",
-      icon: Map,
-      premium: true
-    },
-    {
-      name: "Daňový poradce",
-      path: "/tax-advisor",
-      icon: FileText,
-      premium: true
-    }
-  ];
-
-  const infoNavItems: NavigationItem[] = [
-    {
-      name: "Zákony",
-      path: "/laws",
-      icon: Scale
-    },
-    {
-      name: "Právní asistent",
-      path: "/legal-assistant",
-      icon: Gavel,
-      premium: true
-    },
-    {
-      name: "O nás",
-      path: "/about",
-      icon: Pencil
-    }
-  ];
-
-  const accountNavItems: NavigationItem[] = [
-    {
-      name: "Profil",
-      path: "/profile",
-      icon: User
-    }
-  ];
-
-  // Pokud je uživatel admin, přidáme do navigace admin sekci
-  if (isAdmin) {
-    accountNavItems.push({
-      name: "Admin",
-      path: "/admin",
-      icon: BookOpen
-    });
-  }
-
-  // Všechny skupiny navigace
-  const navigationGroups: NavigationGroup[] = [
-    {
-      title: "Hlavní",
-      items: mainNavItems
-    },
-    {
-      title: "Nástroje",
-      items: toolsNavItems
-    },
-    {
-      title: "Informace",
-      items: infoNavItems
-    },
-    {
-      title: "Účet",
-      items: accountNavItems
-    }
-  ];
-
+  const { user, isPremium } = useAuth();
+  const { canAccess: canAccessLaws } = useUnifiedPremiumStatus('laws-detail');
+  const { canAccess: canAccessLegal } = useUnifiedPremiumStatus('legal-assistant');
+  const { canAccess: canAccessDashboard } = useUnifiedPremiumStatus('personal-dashboard'); // Kontrola přístupu k dashboardu
+  
   const isActive = (path: string) => {
-    return location.pathname === path;
+    if (path === '/') {
+      return location.pathname === path;
+    }
+    return location.pathname.startsWith(path);
   };
-
+  
+  // Definice navigačních položek
+  const mainItems = [
+    { name: "Domů", path: "/", icon: Home },
+    { name: "Výuka němčiny", path: "/language", icon: Languages },
+    { name: "Osobní Dashboard", path: "/dashboard", icon: BarChart3, premium: true }, // Nová položka
+    { name: "Správa vozidla", path: "/vehicle", icon: Car },
+    { name: "Plánování směn", path: "/shifts", icon: Calendar },
+    { name: "Kalkulačky", path: "/calculator", icon: Calculator },
+    { name: "Zákony", path: "/laws", icon: Scale, premium: true },
+    { name: "Překladač", path: "/translator", icon: Languages },
+    { name: "Plánování cest", path: "/travel-planning", icon: Plane },
+  ];
+  
+  // Prémiové položky
+  const premiumItems = [
+    { name: "Právní asistent", path: "/legal-assistant", icon: Building2 }
+  ];
+  
+  // Funkce pro vykreslení navigační položky
+  const renderNavItem = (item: any) => {
+    const Icon = item.icon;
+    
+    // Kontrola zda je položka prémiová a zda má uživatel přístup
+    let showPremiumBadge = false;
+    let isDisabled = false;
+    
+    if (item.premium) {
+      if (item.path === "/laws" && !canAccessLaws) {
+        isDisabled = true;
+        showPremiumBadge = true;
+      } else if (item.path === "/dashboard" && !canAccessDashboard) {
+        isDisabled = true;
+        showPremiumBadge = true;
+      }
+    }
+    
+    return (
+      <Link
+        key={item.path}
+        to={isDisabled ? "#" : item.path}
+        className={cn(
+          "flex items-center gap-2 px-3 py-2 rounded-md text-sidebar-foreground/80 hover:bg-sidebar-hover transition-colors",
+          isActive(item.path) && "bg-sidebar-active text-sidebar-foreground font-medium",
+          isDisabled && "opacity-60 pointer-events-none"
+        )}
+        onClick={(e) => {
+          if (isDisabled) {
+            e.preventDefault();
+            return;
+          }
+          closeSidebar();
+        }}
+      >
+        <Icon className="h-5 w-5" />
+        <span>{item.name}</span>
+        {showPremiumBadge && <PremiumBadge variant="compact" />}
+      </Link>
+    );
+  };
+  
   return (
-    <nav className="space-y-6">
-      {navigationGroups.map((group, index) => (
-        <div key={group.title} className="space-y-2">
-          <div className="pl-4">
-            <h3 className="text-xs font-medium text-sidebar-foreground/60">{group.title}</h3>
+    <nav>
+      <div className="space-y-1">
+        {mainItems.map(renderNavItem)}
+      </div>
+      
+      {(isPremium || canAccessLegal) && (
+        <>
+          <div className="my-2 px-3 text-xs font-medium text-sidebar-foreground/60">
+            Prémiové funkce
           </div>
           <div className="space-y-1">
-            {group.items.map((item) => {
-              const isPremiumItem = item.premium && !isPremium;
-              
-              return (
-                <Link
-                  key={item.name}
-                  to={!isPremiumItem ? item.path : "/premium"}
-                  onClick={closeSidebar}
-                  className="block"
-                >
-                  <Button
-                    variant={isActive(item.path) ? "secondary" : "ghost"}
-                    size="sm"
-                    className={cn(
-                      "w-full justify-start",
-                      isActive(item.path) ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-sidebar-foreground",
-                      "hover:bg-sidebar-hover hover:text-sidebar-hover-foreground"
-                    )}
-                  >
-                    <item.icon className="mr-2 h-4 w-4" />
-                    {item.name}
-                    {isPremiumItem && (
-                      <span className="ml-auto inline-flex items-center rounded-md bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
-                        Premium
-                      </span>
-                    )}
-                  </Button>
-                </Link>
-              );
-            })}
+            {premiumItems.map(renderNavItem)}
           </div>
-          {index < navigationGroups.length - 1 && <Separator className="bg-sidebar-border mt-2" />}
-        </div>
-      ))}
+        </>
+      )}
     </nav>
   );
 };
