@@ -13,7 +13,8 @@ import {
   Scale,
   Plane,
   Building2,
-  BarChart3, // Nová ikona pro Dashboard
+  BarChart3,
+  FileText, // Nová ikona pro daňového poradce
 } from "lucide-react";
 import { PremiumBadge } from "@/components/premium/PremiumBadge";
 import { useUnifiedPremiumStatus } from "@/hooks/useUnifiedPremiumStatus";
@@ -27,7 +28,8 @@ const SidebarNavigation = ({ closeSidebar }: SidebarNavigationProps) => {
   const { user, isPremium } = useAuth();
   const { canAccess: canAccessLaws } = useUnifiedPremiumStatus('laws-detail');
   const { canAccess: canAccessLegal } = useUnifiedPremiumStatus('legal-assistant');
-  const { canAccess: canAccessDashboard } = useUnifiedPremiumStatus('personal-dashboard'); // Kontrola přístupu k dashboardu
+  const { canAccess: canAccessDashboard } = useUnifiedPremiumStatus('personal-dashboard'); 
+  const { canAccess: canAccessTaxAdvisor } = useUnifiedPremiumStatus('tax-advisor'); // Nová kontrola přístupu
   
   const isActive = (path: string) => {
     if (path === '/') {
@@ -40,10 +42,11 @@ const SidebarNavigation = ({ closeSidebar }: SidebarNavigationProps) => {
   const mainItems = [
     { name: "Domů", path: "/", icon: Home },
     { name: "Výuka němčiny", path: "/language", icon: Languages },
-    { name: "Osobní Dashboard", path: "/dashboard", icon: BarChart3, premium: true }, // Nová položka
+    { name: "Osobní Dashboard", path: "/dashboard", icon: BarChart3, premium: true },
     { name: "Správa vozidla", path: "/vehicle", icon: Car },
     { name: "Plánování směn", path: "/shifts", icon: Calendar },
     { name: "Kalkulačky", path: "/calculator", icon: Calculator },
+    { name: "Daňový poradce", path: "/tax-advisor", icon: FileText, premium: true }, // Nová položka
     { name: "Zákony", path: "/laws", icon: Scale, premium: true },
     { name: "Překladač", path: "/translator", icon: Languages },
     { name: "Plánování cest", path: "/travel-planning", icon: Plane },
@@ -67,6 +70,9 @@ const SidebarNavigation = ({ closeSidebar }: SidebarNavigationProps) => {
         isDisabled = true;
         showPremiumBadge = true;
       } else if (item.path === "/dashboard" && !canAccessDashboard) {
+        isDisabled = true;
+        showPremiumBadge = true;
+      } else if (item.path === "/tax-advisor" && !canAccessTaxAdvisor) { // Kontrola pro daňového poradce
         isDisabled = true;
         showPremiumBadge = true;
       }
