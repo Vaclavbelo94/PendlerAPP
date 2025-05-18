@@ -3,11 +3,12 @@ import React, { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
-  CardHeader,
 } from "@/components/ui/card";
 import { useAuth } from '@/hooks/useAuth';
 import { fetchUserProfileData, generateTaxDocument } from '@/utils/taxDocumentUtils';
 import { toast } from "sonner";
+import { Separator } from "@/components/ui/separator";
+import { useMediaQuery } from "@/hooks/use-media-query";
 import DocumentGeneratorHeader from "./document-generator/DocumentGeneratorHeader";
 import DocumentGeneratorForm from "./document-generator/DocumentGeneratorForm";
 
@@ -33,6 +34,7 @@ const DocumentGenerator = () => {
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
+  const isMobile = useMediaQuery("xs");
   
   const [formState, setFormState] = useState<FormState>({
     name: "",
@@ -168,24 +170,27 @@ const DocumentGenerator = () => {
 
   return (
     <div className="space-y-4 md:space-y-6">
-      <Card>
-        <CardHeader>
+      <Card className={isMobile ? "shadow-none border-0" : ""}>
+        <div className="p-4 md:p-6">
           <DocumentGeneratorHeader
             onLoadProfile={loadUserProfile}
             isLoadingProfile={isLoadingProfile}
           />
-        </CardHeader>
-        <CardContent>
-          <DocumentGeneratorForm
-            formState={formState}
-            setFormState={setFormState}
-            isLoading={isLoading}
-            showSuccessMessage={showSuccessMessage}
-            onGenerateDocument={handleGenerateDocument}
-            onDownloadDocument={handleDownloadDocument}
-            documentTypes={documentTypes}
-          />
-        </CardContent>
+          
+          <Separator className="my-4" />
+          
+          <CardContent className="p-0 pt-4">
+            <DocumentGeneratorForm
+              formState={formState}
+              setFormState={setFormState}
+              isLoading={isLoading}
+              showSuccessMessage={showSuccessMessage}
+              onGenerateDocument={handleGenerateDocument}
+              onDownloadDocument={handleDownloadDocument}
+              documentTypes={documentTypes}
+            />
+          </CardContent>
+        </div>
       </Card>
     </div>
   );
