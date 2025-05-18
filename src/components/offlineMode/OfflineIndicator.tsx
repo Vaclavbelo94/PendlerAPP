@@ -1,4 +1,3 @@
-
 import * as React from 'react';
 import { useOfflineStatus } from '@/hooks/useOfflineStatus';
 import { WifiOff, CloudOff, Settings } from 'lucide-react';
@@ -9,6 +8,7 @@ import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
+  TooltipProvider
 } from "@/components/ui/tooltip";
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
@@ -105,25 +105,27 @@ const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({
     if (!isOffline) return null;
     
     return (
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Badge variant="outline" className="bg-background px-3 py-1 flex items-center gap-1.5 border-amber-500">
-            <WifiOff className="h-3.5 w-3.5 text-amber-500" />
-            <span className="text-amber-500 font-medium">Offline</span>
-          </Badge>
-        </TooltipTrigger>
-        <TooltipContent side="left">
-          <div className="text-sm">
-            <div className="font-medium mb-1">Offline režim</div>
-            <div className="text-xs text-muted-foreground">
-              Pracujete v offline režimu.
-              {lastOnlineAt && (
-                <div>Naposledy online: {format(lastOnlineAt, 'HH:mm, dd.MM.yyyy')}</div>
-              )}
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Badge variant="outline" className="bg-background px-3 py-1 flex items-center gap-1.5 border-amber-500">
+              <WifiOff className="h-3.5 w-3.5 text-amber-500" />
+              <span className="text-amber-500 font-medium">Offline</span>
+            </Badge>
+          </TooltipTrigger>
+          <TooltipContent side="left">
+            <div className="text-sm">
+              <div className="font-medium mb-1">Offline režim</div>
+              <div className="text-xs text-muted-foreground">
+                Pracujete v offline režimu.
+                {lastOnlineAt && (
+                  <div>Naposledy online: {format(lastOnlineAt, 'HH:mm, dd.MM.yyyy')}</div>
+                )}
+              </div>
             </div>
-          </div>
-        </TooltipContent>
-      </Tooltip>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     );
   }, [isOffline, lastOnlineAt]);
 
@@ -137,16 +139,18 @@ const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({
             <CloudOff className="h-4 w-4" />
             Offline obsah
           </div>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setSettingsOpen(true)}>
-                <Settings className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              Nastavení synchronizace
-            </TooltipContent>
-          </Tooltip>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setSettingsOpen(true)}>
+                  <Settings className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                Nastavení synchronizace
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
         
         <div className="space-y-1.5 mb-3">
