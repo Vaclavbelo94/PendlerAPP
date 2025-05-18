@@ -11,6 +11,14 @@ export interface VocabularyItem {
   repetitionLevel: number; // 0 = new word, increases with correct answers
   correctCount: number;
   incorrectCount: number;
+  // Skill fields (optional)
+  skills?: {
+    reading?: number;
+    writing?: number;
+    speaking?: number;
+    listening?: number;
+    grammar?: number;
+  };
 }
 
 export interface VocabularyCollection {
@@ -41,4 +49,36 @@ export interface DailyProgressStat {
   wordsReviewed: number;
   correctCount: number;
   incorrectCount: number;
+}
+
+// Test History interfaces
+export interface TestResult {
+  id?: string;
+  startTime: Date;
+  endTime: Date;
+  totalQuestions: number;
+  correctAnswers: number;
+  incorrectAnswers: number;
+  wrongAnswers: number;
+  score: number; // percentage
+  timeSpentSeconds: number;
+  categories: string[];
+  difficulties: string[];
+  testItems: TestItem[]; // Array to track individual question results
+  skillsData?: SkillsData; // Add skills data
+}
+
+export interface TestItem {
+  item: VocabularyItem;
+  wasCorrect: boolean;
+  userAnswer?: string;
+  responseTimeMs?: number; // Track response time
+}
+
+export interface SkillsData {
+  reading: number;
+  writing: number;
+  speaking: number;
+  listening: number;
+  grammar: number;
 }
