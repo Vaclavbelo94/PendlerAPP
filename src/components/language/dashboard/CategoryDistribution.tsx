@@ -5,6 +5,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 
 import { CATEGORY_COLORS } from '@/data/vocabularyDashboardData';
 import { Button } from '@/components/ui/button';
 import { BarChart3, Columns2, SortAsc, SortDesc } from 'lucide-react';
+import { useMediaQuery } from '@/hooks/use-media-query';
 
 interface CategoryDistributionProps {
   categoryDistribution?: { [key: string]: number };
@@ -21,6 +22,8 @@ const CategoryDistribution: React.FC<CategoryDistributionProps> = ({ categoryDis
   const [sortBy, setSortBy] = useState<'value' | 'name'>('value');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [viewMode, setViewMode] = useState<'bar' | 'column'>('bar');
+  
+  const isMobile = useMediaQuery("xs");
 
   // Process data for the chart
   const processData = (): CategoryItem[] => {
@@ -107,14 +110,14 @@ const CategoryDistribution: React.FC<CategoryDistributionProps> = ({ categoryDis
         </div>
       </CardHeader>
       <CardContent>
-        <div className="h-[220px]">
+        <div className={`${isMobile ? 'h-[280px]' : 'h-[220px]'}`}>
           {!isEmpty ? (
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
                 data={data}
                 layout={viewMode === 'bar' ? 'vertical' : 'horizontal'}
                 onClick={() => setActiveIndex(null)}
-                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                margin={isMobile ? { top: 5, right: 5, left: 5, bottom: 5 } : { top: 5, right: 30, left: 20, bottom: 5 }}
               >
                 {viewMode === 'bar' ? (
                   <>
@@ -122,9 +125,9 @@ const CategoryDistribution: React.FC<CategoryDistributionProps> = ({ categoryDis
                     <YAxis 
                       type="category" 
                       dataKey="name" 
-                      width={100} 
-                      tick={{ fontSize: 12 }}
-                      tickFormatter={(value) => value.length > 10 ? `${value.slice(0, 10)}...` : value}
+                      width={isMobile ? 80 : 100} 
+                      tick={{ fontSize: isMobile ? 10 : 12 }}
+                      tickFormatter={(value) => value.length > (isMobile ? 7 : 10) ? `${value.slice(0, isMobile ? 7 : 10)}...` : value}
                     />
                   </>
                 ) : (
@@ -132,8 +135,11 @@ const CategoryDistribution: React.FC<CategoryDistributionProps> = ({ categoryDis
                     <XAxis 
                       type="category" 
                       dataKey="name" 
-                      tick={{ fontSize: 12 }}
-                      tickFormatter={(value) => value.length > 10 ? `${value.slice(0, 10)}...` : value}
+                      tick={{ fontSize: isMobile ? 10 : 12 }}
+                      tickFormatter={(value) => value.length > (isMobile ? 7 : 10) ? `${value.slice(0, isMobile ? 7 : 10)}...` : value}
+                      height={isMobile ? 60 : 50}
+                      angle={isMobile ? -45 : 0}
+                      textAnchor={isMobile ? "end" : "middle"}
                     />
                     <YAxis type="number" />
                   </>
@@ -141,7 +147,6 @@ const CategoryDistribution: React.FC<CategoryDistributionProps> = ({ categoryDis
                 <Tooltip content={<CustomTooltip />} />
                 <Bar 
                   dataKey="value" 
-                  // Removed nameKey prop as it's not supported by the Bar component
                   radius={[4, 4, 0, 0]}
                 >
                   {data.map((entry, index) => (
