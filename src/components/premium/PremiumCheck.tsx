@@ -31,7 +31,10 @@ const PremiumCheck: React.FC<PremiumCheckProps> = ({ featureKey, children }) => 
   
   // Special check for our target user
   const isSpecialUser = () => {
-    return user?.email === 'uzivatel@pendlerapp.com';
+    const email = user?.email;
+    const isSpecial = email === 'uzivatel@pendlerapp.com';
+    console.log("PremiumCheck special user check:", { email, isSpecial });
+    return isSpecial;
   };
   
   // Determine access immediately and whenever dependencies change
@@ -45,12 +48,13 @@ const PremiumCheck: React.FC<PremiumCheckProps> = ({ featureKey, children }) => 
     // 3. This is our special user
     const shouldAllow = canAccess || isUserPremium;
     
-    // For debugging
     console.log('Premium status check:', {
+      featureKey,
       canAccess,
       isPremium, 
       localUserPremium: currentUser?.isPremium,
       isSpecialUser: isSpecialUser(),
+      email: user?.email,
       shouldAllow
     });
     

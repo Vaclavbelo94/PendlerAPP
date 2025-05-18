@@ -28,8 +28,11 @@ export const usePremiumCheck = (featureKey: string) => {
       const userEmail = user?.email || 
         (localStorage.getItem("currentUser") ? 
           JSON.parse(localStorage.getItem("currentUser") || "{}").email : null);
+      
+      console.log("Checking special user, email:", userEmail);
       return userEmail === 'uzivatel@pendlerapp.com';
     } catch (e) {
+      console.error('Error in isSpecialUser check:', e);
       return false;
     }
   };
@@ -39,6 +42,8 @@ export const usePremiumCheck = (featureKey: string) => {
     // If localStorage shows user is premium, give immediate access while checking
     const localPremium = getPremiumStatusFromLocalStorage();
     const userIsSpecial = isSpecialUser();
+    
+    console.log("Initial premium check:", { localPremium, userIsSpecial });
     
     if (localPremium || userIsSpecial) {
       setCanAccess(true);
@@ -53,6 +58,14 @@ export const usePremiumCheck = (featureKey: string) => {
         // Check if user is premium from any source or is our special user
         const userIsPremium = isPremium || getPremiumStatusFromLocalStorage();
         const userIsSpecial = isSpecialUser();
+        
+        console.log("Premium access check:", { 
+          featureKey,
+          isPremium, 
+          localStoragePremium: getPremiumStatusFromLocalStorage(),
+          isSpecialUser: userIsSpecial,
+          email: user?.email
+        });
         
         // If user is already known to be premium or is special, give access immediately
         if (userIsPremium || userIsSpecial) {
@@ -83,6 +96,12 @@ export const usePremiumCheck = (featureKey: string) => {
         // Check premium status from auth hook or localStorage again (to be sure)
         const confirmedUserIsPremium = isPremium || getPremiumStatusFromLocalStorage();
         const confirmedUserIsSpecial = isSpecialUser();
+        
+        console.log("Final access decision:", {
+          isFeaturePremium,
+          confirmedUserIsPremium,
+          confirmedUserIsSpecial
+        });
         
         // Uživatel může přistupovat k funkci, pokud:
         // - funkce není prémiová NEBO

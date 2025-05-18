@@ -45,7 +45,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Special check for our target user
   const isSpecialUser = React.useCallback(() => {
-    return user?.email === 'uzivatel@pendlerapp.com';
+    const isSpecial = user?.email === 'uzivatel@pendlerapp.com';
+    console.log("AuthProvider special user check:", { email: user?.email, isSpecial });
+    return isSpecial;
   }, [user?.email]);
 
   // Update premium status with localStorage as fallback
@@ -54,6 +56,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const localPremium = getPremiumStatusFromLocalStorage();
       const specialUser = isSpecialUser();
       if (localPremium || specialUser) {
+        console.log("Setting premium status from localStorage or special user check");
         setIsPremium(true);
       }
     }
@@ -62,7 +65,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Update premium status when user changes
   React.useEffect(() => {
     if (isSpecialUser()) {
+      console.log("Setting premium status for special user");
       setIsPremium(true);
+      
+      // Also update localStorage to make sure it's consistent
+      if (user) {
+        console.log("Updating localStorage for special user");
+        const threeMonthsLater = new Date();
+        threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
+        saveUserToLocalStorage(user, true, threeMonthsLater.toISOString());
+      }
     }
   }, [user, isSpecialUser, setIsPremium]);
 
@@ -77,18 +89,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setUser(session?.user ?? null);
           
           if (session?.user) {
+            console.log("Auth state change with user:", session.user.email);
+            
             // Use setTimeout to prevent potential deadlocks
             setTimeout(() => {
               refreshAdminStatus();
-              refreshPremiumStatus().then(({ isPremium, premiumExpiry }) => {
-                if (isPremium && session?.user) {
-                  saveUserToLocalStorage(session.user, isPremium, premiumExpiry);
-                } else if (session?.user?.email === 'uzivatel@pendlerapp.com') {
-                  // Handle special user
-                  setIsPremium(true);
-                  saveUserToLocalStorage(session.user, true);
-                }
-              });
+              
+              // Special user check first
+              if (session.user.email === 'uzivatel@pendlerapp.com') {
+                console.log("Special user detected in auth state change");
+                setIsPremium(true);
+                
+                // Calculate expiry date (3 months)
+                const threeMonthsLater = new Date();
+                threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
+                
+                // Save to localStorage
+                saveUserToLocalStorage(session.user, true, threeMonthsLater.toISOString());
+              } else {
+                refreshPremiumStatus().then(({ isPremium, premiumExpiry }) => {
+                  if (isPremium && session?.user) {
+                    saveUserToLocalStorage(session.user, isPremium, premiumExpiry);
+                  }
+                });
+              }
             }, 0);
           } else {
             setIsAdmin(false);
@@ -103,12 +127,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(session?.user ?? null);
       
       if (session?.user) {
+        console.log("Existing session found for user:", session.user.email);
         await refreshAdminStatus();
         
         // Check if this is our special user
         if (session.user.email === 'uzivatel@pendlerapp.com') {
+          console.log("Special user detected in existing session");
           setIsPremium(true);
-          saveUserToLocalStorage(session.user, true);
+          
+          // Calculate expiry date (3 months)
+          const threeMonthsLater = new Date();
+          threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
+          
+          // Save to localStorage
+          saveUserToLocalStorage(session.user, true, threeMonthsLater.toISOString());
         } else {
           const { isPremium, premiumExpiry } = await refreshPremiumStatus();
           if (isPremium) {
@@ -120,6 +152,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Check localStorage as a fallback even if no session is found
       const localPremium = getPremiumStatusFromLocalStorage();
       if (localPremium) {
+        console.log("Setting premium status from localStorage");
         setIsPremium(true);
       }
       
@@ -146,8 +179,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       // Check if this is our special user
       if (newUser.email === 'uzivatel@pendlerapp.com') {
+        console.log("Special user signed up");
         setIsPremium(true);
-        saveUserToLocalStorage(newUser, true);
+        
+        // Calculate expiry date (3 months)
+        const threeMonthsLater = new Date();
+        threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
+        
+        saveUserToLocalStorage(newUser, true, threeMonthsLater.toISOString());
       } else {
         // Pokusíme se načíst profil
         setTimeout(() => {
@@ -180,7 +219,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     session,
     isLoading,
     isAdmin,
-    isPremium: isPremium || getPremiumStatusFromLocalStorage() || isSpecialUser(), // Always provide a value
+    isPremium: isPremium || getPremiumStatusFromLocalStorage() || isSpecialUser(), // Always provide the most accurate value
     signIn,
     signUp,
     signOut,
