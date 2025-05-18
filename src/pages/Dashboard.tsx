@@ -3,12 +3,16 @@ import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Chart, ChartItem, ChartOptions } from "@/components/ui/chart";
+import { ChartContainer } from "@/components/ui/chart";
 import { Skeleton } from "@/components/ui/skeleton";
 import PremiumCheck from "@/components/premium/PremiumCheck";
 import { useUnifiedPremiumStatus } from "@/hooks/useUnifiedPremiumStatus";
 import { motion } from "framer-motion";
 import { CalendarIcon, BarChart3, BookOpen, GraduationCap } from "lucide-react";
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+
+// Register Chart.js components
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const FEATURE_KEY = "personal-dashboard";
 
@@ -92,7 +96,10 @@ const Dashboard = () => {
             <div className="pt-4">
               <Button 
                 variant="outline"
-                onClick={() => setIsLoading(true) || setTimeout(() => setIsLoading(false), 1500)}
+                onClick={() => {
+                  setIsLoading(true); 
+                  setTimeout(() => setIsLoading(false), 1500);
+                }}
                 disabled={isLoading}
               >
                 {isLoading ? "Aktualizuje se..." : "Aktualizovat data"}
@@ -189,7 +196,7 @@ const WordsChart = () => {
     const chartElement = document.getElementById('words-chart');
     if (!chartElement) return;
     
-    const ctx = chartElement as ChartItem;
+    const ctx = chartElement as HTMLCanvasElement;
     const data = {
       labels: ['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'],
       datasets: [{
@@ -210,7 +217,7 @@ const WordsChart = () => {
       }
     };
 
-    new Chart(ctx, {
+    new ChartJS(ctx, {
       type: 'bar',
       data,
       options
