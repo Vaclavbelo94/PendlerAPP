@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -26,7 +25,7 @@ import { Calculator, Check, Download, FileText, Info } from "lucide-react";
 import { useTaxCalculator } from '@/hooks/useTaxCalculator';
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
-import { fetchUserProfileData } from '@/utils/taxDocumentUtils';
+import { fetchUserProfileData } from '@/utils/tax';
 
 const formSchema = z.object({
   country: z.string(),

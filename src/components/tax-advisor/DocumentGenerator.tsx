@@ -5,7 +5,7 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { useAuth } from '@/hooks/useAuth';
-import { fetchUserProfileData, generateTaxDocument } from '@/utils/taxDocumentUtils';
+import { fetchUserProfileData, generateTaxDocument } from '@/utils/tax';
 import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
 import { useMediaQuery } from "@/hooks/use-media-query";
