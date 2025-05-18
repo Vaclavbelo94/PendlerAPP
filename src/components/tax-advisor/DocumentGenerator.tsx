@@ -24,6 +24,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from '@/hooks/useAuth';
 import { fetchUserProfileData, generateTaxDocument } from '@/utils/taxDocumentUtils';
 import { toast } from "sonner";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface FormState {
   name: string;
@@ -47,6 +48,8 @@ const DocumentGenerator = () => {
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
+  const isMobile = useIsMobile();
+  
   const [formState, setFormState] = useState<FormState>({
     name: "",
     taxId: "",
@@ -184,10 +187,10 @@ const DocumentGenerator = () => {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       <Card>
         <CardHeader>
-          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+          <div className="flex flex-col gap-4">
             <div>
               <CardTitle>Generátor daňových dokumentů</CardTitle>
               <CardDescription>
@@ -215,10 +218,10 @@ const DocumentGenerator = () => {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-6 md:space-y-8">
+            <div className="grid grid-cols-1 gap-6">
               {/* Základní informace */}
-              <div className="space-y-6">
+              <div className="space-y-5">
                 <div className="space-y-1">
                   <h3 className="text-lg font-medium">Základní informace</h3>
                   <p className="text-sm text-muted-foreground">
@@ -313,7 +316,7 @@ const DocumentGenerator = () => {
               </div>
               
               {/* Pracovní informace */}
-              <div className="space-y-6">
+              <div className="space-y-5 pt-2 md:pt-4">
                 <div className="space-y-1">
                   <h3 className="text-lg font-medium">Pracovní informace</h3>
                   <p className="text-sm text-muted-foreground">
@@ -433,8 +436,8 @@ const DocumentGenerator = () => {
             </div>
             
             <div className="flex justify-center">
-              <div className="bg-muted/50 p-4 rounded-lg flex items-center space-x-2 text-sm text-muted-foreground max-w-2xl">
-                <Info className="h-4 w-4 flex-shrink-0" />
+              <div className="bg-muted/50 p-3 md:p-4 rounded-lg flex items-start md:items-center space-x-2 text-xs md:text-sm text-muted-foreground">
+                <Info className="h-4 w-4 flex-shrink-0 mt-0.5 md:mt-0" />
                 <p>
                   Vygenerované dokumenty slouží jako pomůcka pro přípravu vašeho daňového přiznání. 
                   Přestože jsou připraveny podle aktuálních předpisů, zkontrolujte si všechny údaje 
@@ -450,8 +453,8 @@ const DocumentGenerator = () => {
         {!showSuccessMessage ? (
           <Button 
             onClick={handleGenerateDocument}
-            size="lg"
-            className="gap-2"
+            size={isMobile ? "default" : "lg"}
+            className="gap-2 w-full md:w-auto"
             disabled={isLoading}
           >
             {isLoading ? (
@@ -467,15 +470,15 @@ const DocumentGenerator = () => {
             )}
           </Button>
         ) : (
-          <div className="flex flex-col items-center space-y-4">
+          <div className="flex flex-col items-center space-y-4 w-full">
             <div className="flex items-center space-x-2 text-primary">
               <CheckCircle2 className="h-5 w-5" />
               <span className="font-medium">Dokument byl úspěšně vygenerován</span>
             </div>
             <Button 
               variant="outline" 
-              size="lg" 
-              className="gap-2"
+              size={isMobile ? "default" : "lg"} 
+              className="gap-2 w-full md:w-auto"
               onClick={handleDownloadDocument}
             >
               <Download className="h-5 w-5" />

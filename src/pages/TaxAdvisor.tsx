@@ -10,11 +10,14 @@ import TaxOptimizer from "@/components/tax-advisor/TaxOptimizer";
 import DocumentGenerator from "@/components/tax-advisor/DocumentGenerator";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/hooks/useAuth";
+import { useMediaQuery } from "@/hooks/use-media-query";
+import { ResponsiveContainer } from "@/components/ui/responsive-container";
 
 const TaxAdvisor = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("guide");
+  const isMobile = useMediaQuery("xs");
 
   useEffect(() => {
     // Scroll to top when component mounts
@@ -23,8 +26,8 @@ const TaxAdvisor = () => {
 
   return (
     <PremiumCheck featureKey="tax-advisor">
-      <div className="container py-8">
-        <div className="mb-8">
+      <ResponsiveContainer className="py-6 md:py-8">
+        <div className="mb-6 md:mb-8">
           <Button
             variant="ghost"
             size="sm"
@@ -36,8 +39,8 @@ const TaxAdvisor = () => {
           </Button>
           
           <div className="space-y-2">
-            <h1 className="text-3xl font-bold">Daňový poradce</h1>
-            <p className="text-muted-foreground max-w-3xl">
+            <h1 className="text-2xl md:text-3xl font-bold">Daňový poradce</h1>
+            <p className="text-muted-foreground max-w-3xl text-sm md:text-base">
               Komplexní nástroje pro správu daňových záležitostí v Německu pro přeshraniční pracovníky.
               Získejte informace o daňovém přiznání, optimalizujte své daně a generujte potřebné dokumenty.
             </p>
@@ -50,20 +53,39 @@ const TaxAdvisor = () => {
           value={activeTab}
           onValueChange={setActiveTab}
         >
-          <div className="flex justify-between items-center mb-6">
-            <TabsList className="grid grid-cols-3 w-full max-w-lg">
-              <TabsTrigger value="guide" className="flex items-center gap-2">
-                <FileText className="w-4 h-4" />
-                Průvodce
-              </TabsTrigger>
-              <TabsTrigger value="optimizer" className="flex items-center gap-2">
-                <Calculator className="w-4 h-4" />
-                Optimalizace
-              </TabsTrigger>
-              <TabsTrigger value="generator" className="flex items-center gap-2">
-                <FileSearch className="w-4 h-4" />
-                Generátor dokumentů
-              </TabsTrigger>
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4 md:mb-6">
+            <TabsList className={`grid ${isMobile ? 'grid-cols-1 gap-2' : 'grid-cols-3'} w-full max-w-lg`}>
+              {isMobile ? (
+                <>
+                  <TabsTrigger value="guide" className="flex items-center gap-2 py-3">
+                    <FileText className="w-4 h-4" />
+                    Průvodce
+                  </TabsTrigger>
+                  <TabsTrigger value="optimizer" className="flex items-center gap-2 py-3">
+                    <Calculator className="w-4 h-4" />
+                    Optimalizace
+                  </TabsTrigger>
+                  <TabsTrigger value="generator" className="flex items-center gap-2 py-3">
+                    <FileSearch className="w-4 h-4" />
+                    Generátor dokumentů
+                  </TabsTrigger>
+                </>
+              ) : (
+                <>
+                  <TabsTrigger value="guide" className="flex items-center gap-2">
+                    <FileText className="w-4 h-4" />
+                    Průvodce
+                  </TabsTrigger>
+                  <TabsTrigger value="optimizer" className="flex items-center gap-2">
+                    <Calculator className="w-4 h-4" />
+                    Optimalizace
+                  </TabsTrigger>
+                  <TabsTrigger value="generator" className="flex items-center gap-2">
+                    <FileSearch className="w-4 h-4" />
+                    Generátor dokumentů
+                  </TabsTrigger>
+                </>
+              )}
             </TabsList>
             
             {user && (
@@ -80,7 +102,7 @@ const TaxAdvisor = () => {
             )}
           </div>
           
-          <Separator className="mb-6" />
+          <Separator className="mb-4 md:mb-6" />
 
           <TabsContent value="guide">
             <TaxReturnGuide />
@@ -94,8 +116,8 @@ const TaxAdvisor = () => {
             <DocumentGenerator />
           </TabsContent>
           
-          {/* Mobile profile button */}
-          {user && activeTab === "generator" && (
+          {/* Profile button always visible on mobile for any tab */}
+          {user && isMobile && (
             <div className="mt-6 flex sm:hidden">
               <Button
                 variant="outline"
@@ -107,7 +129,7 @@ const TaxAdvisor = () => {
             </div>
           )}
         </Tabs>
-      </div>
+      </ResponsiveContainer>
     </PremiumCheck>
   );
 };
