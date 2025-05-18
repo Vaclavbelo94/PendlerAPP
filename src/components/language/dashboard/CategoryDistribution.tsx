@@ -139,7 +139,11 @@ const CategoryDistribution: React.FC<CategoryDistributionProps> = ({ categoryDis
                   </>
                 )}
                 <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="value" nameKey="name" radius={[4, 4, 0, 0]}>
+                <Bar 
+                  dataKey="value" 
+                  // Removed nameKey prop as it's not supported by the Bar component
+                  radius={[4, 4, 0, 0]}
+                >
                   {data.map((entry, index) => (
                     <Cell
                       key={`cell-${index}`}
