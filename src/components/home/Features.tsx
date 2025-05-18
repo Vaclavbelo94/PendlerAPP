@@ -3,6 +3,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Car, Languages, Calendar, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { AnimatedCard, HoverEffectCard } from "@/components/ui/animated-section";
+import { motion } from "framer-motion";
 
 const features = [
   {
@@ -41,30 +43,55 @@ const Features = () => {
   return (
     <section className="py-16 md:py-24 bg-white">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
+        <motion.div 
+          className="text-center mb-12"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+        >
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Co nabízíme</h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Pendler Helper poskytuje komplexní nástroje, které vám pomohou s každodenními výzvami 
             při práci v zahraničí.
           </p>
-        </div>
+        </motion.div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((feature, index) => (
-            <Card key={index} className="h-full feature-card hover-scale">
-              <CardHeader>
-                <feature.icon className="feature-icon" />
-                <CardTitle>{feature.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-base mb-4">
-                  {feature.description}
-                </CardDescription>
-                <Link to={feature.link} className="inline-flex items-center text-primary hover:text-primary-600 font-medium">
-                  Více informací <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </CardContent>
-            </Card>
+            <AnimatedCard key={index} index={index} delay={0.2}>
+              <HoverEffectCard className="h-full feature-card">
+                <CardHeader>
+                  <motion.div
+                    whileHover={{ scale: 1.1, rotate: 5 }}
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.3 + index * 0.1, duration: 0.4 }}
+                  >
+                    <feature.icon className="feature-icon" />
+                  </motion.div>
+                  <CardTitle>{feature.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-base mb-4">
+                    {feature.description}
+                  </CardDescription>
+                  <Link to={feature.link} className="group inline-flex items-center text-primary hover:text-primary-600 font-medium">
+                    Více informací 
+                    <motion.div
+                      className="inline-block ml-2"
+                      whileHover={{ x: 5 }}
+                      animate={{ x: [0, 5, 0] }}
+                      transition={{ 
+                        x: { repeat: Infinity, repeatDelay: 2, duration: 1.2 } 
+                      }}
+                    >
+                      <ArrowRight className="h-4 w-4" />
+                    </motion.div>
+                  </Link>
+                </CardContent>
+              </HoverEffectCard>
+            </AnimatedCard>
           ))}
         </div>
       </div>
