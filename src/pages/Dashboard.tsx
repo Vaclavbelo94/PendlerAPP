@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -192,11 +191,19 @@ const DashboardCard = ({ title, description, children, index = 0 }) => (
 );
 
 const WordsChart = () => {
+  const chartRef = useRef(null);
+  const chartInstance = useRef(null);
+
   useEffect(() => {
-    const chartElement = document.getElementById('words-chart');
-    if (!chartElement) return;
+    if (!chartRef.current) return;
     
-    const ctx = chartElement as HTMLCanvasElement;
+    const ctx = chartRef.current;
+    
+    // Destroy existing chart if it exists
+    if (chartInstance.current) {
+      chartInstance.current.destroy();
+    }
+    
     const data = {
       labels: ['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'],
       datasets: [{
@@ -217,16 +224,24 @@ const WordsChart = () => {
       }
     };
 
-    new ChartJS(ctx, {
+    // Create new chart instance
+    chartInstance.current = new ChartJS(ctx, {
       type: 'bar',
       data,
       options
     });
+    
+    // Cleanup on unmount
+    return () => {
+      if (chartInstance.current) {
+        chartInstance.current.destroy();
+      }
+    };
   }, []);
 
   return (
     <div className="h-[200px]">
-      <canvas id="words-chart"></canvas>
+      <canvas ref={chartRef}></canvas>
     </div>
   );
 };
