@@ -16,7 +16,8 @@ export const useVocabularyProgress = (vocabularyItems: VocabularyItem[] = []) =>
       medium: 0,
       hard: 0,
       unspecified: 0
-    }
+    },
+    items: []
   });
 
   // Generate user progress from vocabulary items
@@ -49,7 +50,8 @@ export const useVocabularyProgress = (vocabularyItems: VocabularyItem[] = []) =>
       lastStudyDate,
       averageAccuracy: accuracy,
       categoryDistribution: categoryDist,
-      difficultyDistribution: difficultyDist
+      difficultyDistribution: difficultyDist,
+      items: vocabularyItems // Přidáno pro přístup k položkám v useMasteryStats
     });
   }, [vocabularyItems]);
 

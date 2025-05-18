@@ -1,4 +1,3 @@
-
 export interface VocabularyItem {
   id: string;
   word: string;
@@ -27,15 +26,14 @@ export interface UserProgress {
   streakDays: number;
   lastStudyDate?: string;
   averageAccuracy: number;
-  categoryDistribution: {
-    [category: string]: number;
-  };
-  difficultyDistribution: {
+  categoryDistribution?: { [key: string]: number };
+  difficultyDistribution?: {
     easy: number;
     medium: number;
     hard: number;
     unspecified: number;
   };
+  items?: VocabularyItem[]; // Přidáno pro přístup k položkám v useMasteryStats
 }
 
 export interface DailyProgressStat {
