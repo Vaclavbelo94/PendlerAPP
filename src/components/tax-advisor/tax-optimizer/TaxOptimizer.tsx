@@ -10,6 +10,7 @@ import TaxOptimizationTips from "./TaxOptimizationTips";
 import { FormData, TaxResult } from "./types";
 import { useTaxCalculator } from "@/hooks/useTaxCalculator";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { useToast } from "@/hooks/use-toast";
 
 const TaxOptimizer = () => {
   const [displayCurrency, setDisplayCurrency] = useState("€");
@@ -18,64 +19,81 @@ const TaxOptimizer = () => {
   const [savings, setSavings] = useState<number | null>(null);
   const { calculateTax } = useTaxCalculator();
   const isMobile = useMediaQuery("xs");
+  const { toast } = useToast();
 
   const handleCountryChange = (country: string) => {
     setDisplayCurrency(country === "de" ? "€" : "Kč");
   };
 
   const handleCalculate = (data: FormData) => {
-    // Calculate current tax situation
-    const grossIncome = parseFloat(data.income);
-    const currentTaxResult = calculateTax(grossIncome, {
-      country: data.country,
-      taxClass: data.taxClass,
-      children: data.children ? parseInt(data.children) : 0,
-      married: data.married,
-      church: data.church
-    });
+    try {
+      // Calculate current tax situation
+      const grossIncome = parseFloat(data.income);
+      const currentTaxResult = calculateTax(grossIncome, {
+        country: data.country,
+        taxClass: data.taxClass,
+        children: data.children ? parseInt(data.children) : 0,
+        married: data.married,
+        church: data.church
+      });
 
-    // Set current result
-    if (currentTaxResult) {
-      setCurrentResult(currentTaxResult);
-    }
-
-    // Calculate optimized tax situation
-    const commuteCosts = calculateCommuteCosts(data);
-    const otherDeductions = calculateOtherDeductions(data);
-    const totalDeductions = commuteCosts + otherDeductions;
-    
-    // Apply deductions to calculate optimized tax
-    const optimizedGrossForTax = Math.max(0, grossIncome - totalDeductions);
-    const optimizedTaxResult = calculateTax(optimizedGrossForTax, {
-      country: data.country,
-      taxClass: data.taxClass,
-      children: data.children ? parseInt(data.children) : 0,
-      married: data.married,
-      church: data.church
-    });
-
-    // Calculate savings and set optimized result
-    if (currentTaxResult && optimizedTaxResult) {
-      // Adjust the net income to account for the original gross income
-      const adjustedOptimizedResult = {
-        ...optimizedTaxResult,
-        grossIncome: currentTaxResult.grossIncome, // Keep same gross for proper comparison
-      };
-      
-      const calculatedSavings = adjustedOptimizedResult.netIncome - currentTaxResult.netIncome;
-      
-      setOptimizedResult(adjustedOptimizedResult);
-      setSavings(calculatedSavings);
-      
-      // Na mobilních zařízeních rolovat na výsledky
-      if (isMobile && calculatedSavings > 0) {
-        setTimeout(() => {
-          const resultsElement = document.getElementById('tax-results');
-          if (resultsElement) {
-            resultsElement.scrollIntoView({ behavior: 'smooth' });
-          }
-        }, 300);
+      // Set current result
+      if (currentTaxResult) {
+        setCurrentResult(currentTaxResult);
       }
+
+      // Calculate optimized tax situation
+      const commuteCosts = calculateCommuteCosts(data);
+      const otherDeductions = calculateOtherDeductions(data);
+      const totalDeductions = commuteCosts + otherDeductions;
+      
+      // Apply deductions to calculate optimized tax
+      const optimizedGrossForTax = Math.max(0, grossIncome - totalDeductions);
+      const optimizedTaxResult = calculateTax(optimizedGrossForTax, {
+        country: data.country,
+        taxClass: data.taxClass,
+        children: data.children ? parseInt(data.children) : 0,
+        married: data.married,
+        church: data.church
+      });
+
+      // Calculate savings and set optimized result
+      if (currentTaxResult && optimizedTaxResult) {
+        // Adjust the net income to account for the original gross income
+        const adjustedOptimizedResult = {
+          ...optimizedTaxResult,
+          grossIncome: currentTaxResult.grossIncome, // Keep same gross for proper comparison
+        };
+        
+        const calculatedSavings = adjustedOptimizedResult.netIncome - currentTaxResult.netIncome;
+        
+        setOptimizedResult(adjustedOptimizedResult);
+        setSavings(calculatedSavings);
+        
+        // Show success toast
+        toast({
+          title: "Výpočet proběhl úspěšně",
+          description: `Potenciální úspora: ${calculatedSavings.toFixed(2)} ${displayCurrency}`,
+          variant: calculatedSavings > 0 ? "default" : "destructive"
+        });
+        
+        // Na mobilních zařízeních rolovat na výsledky
+        if (isMobile && calculatedSavings > 0) {
+          setTimeout(() => {
+            const resultsElement = document.getElementById('tax-results');
+            if (resultsElement) {
+              resultsElement.scrollIntoView({ behavior: 'smooth' });
+            }
+          }, 300);
+        }
+      }
+    } catch (error) {
+      console.error("Chyba při výpočtu daní:", error);
+      toast({
+        title: "Chyba při výpočtu",
+        description: "Došlo k chybě při výpočtu daní. Zkontrolujte zadané hodnoty.",
+        variant: "destructive"
+      });
     }
   };
 

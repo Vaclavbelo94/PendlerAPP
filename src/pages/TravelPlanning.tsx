@@ -4,14 +4,43 @@ import { Helmet } from "react-helmet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Car, Calculator, Map, Users, Clock, CalendarClock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 import PremiumCheck from "@/components/premium/PremiumCheck";
 import CommuteOptimizer from "@/components/travel/CommuteOptimizer";
 import RideSharing from "@/components/travel/RideSharing";
 import CommuteCostCalculator from "@/components/travel/CommuteCostCalculator";
 import TrafficPredictions from "@/components/travel/TrafficPredictions";
+import { useToast } from "@/hooks/use-toast";
 
 const TravelPlanning = () => {
   const [activeTab, setActiveTab] = useState("optimizer");
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    // Oznámit uživateli, že byla změněna záložka
+    toast({
+      title: "Záložka změněna",
+      description: `Zobrazuji: ${getTabName(value)}`,
+      duration: 2000
+    });
+  };
+
+  const getTabName = (tabId: string): string => {
+    switch (tabId) {
+      case "optimizer": return "Optimalizace dojíždění";
+      case "ridesharing": return "Sdílení jízd";
+      case "calculator": return "Kalkulačka nákladů";
+      case "predictions": return "Predikce dopravy";
+      default: return "";
+    }
+  };
+
+  const handleNavigateBack = () => {
+    navigate(-1);
+  };
 
   return (
     <PremiumCheck featureKey="travel_planning">
@@ -19,6 +48,15 @@ const TravelPlanning = () => {
         <Helmet>
           <title>Plánování cest | Pendler Buddy</title>
         </Helmet>
+        
+        {/* Back button */}
+        <Button 
+          variant="outline" 
+          onClick={handleNavigateBack} 
+          className="mb-4"
+        >
+          Zpět
+        </Button>
         
         {/* Header section */}
         <section className="mb-8">
@@ -36,8 +74,8 @@ const TravelPlanning = () => {
         </section>
         
         {/* Main content */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="w-full justify-start max-w-3xl">
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
+          <TabsList className="w-full justify-start max-w-3xl overflow-x-auto">
             <TabsTrigger value="optimizer" className="flex items-center gap-2">
               <Car className="h-4 w-4" /> Optimalizace dojíždění
             </TabsTrigger>

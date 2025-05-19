@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { TaxCalculatorFormProps, FormData } from "./types";
 import { z } from "zod";
@@ -18,7 +19,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, RefreshCw, Calculator } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   country: z.string().min(1, { message: "Vyberte zemi" }),
@@ -40,6 +42,8 @@ type FormValues = z.infer<typeof formSchema>;
 const TaxCalculatorForm = ({ onCalculate, onCountryChange, displayCurrency }: TaxCalculatorFormProps) => {
   const [activeTab, setActiveTab] = useState("basic");
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -67,24 +71,67 @@ const TaxCalculatorForm = ({ onCalculate, onCountryChange, displayCurrency }: Ta
   }, [watchCountry, onCountryChange]);
 
   function onSubmit(values: FormValues) {
-    // Ensure we have all required fields for FormData type
-    const formData: FormData = {
-      country: values.country,
-      income: values.income,
-      taxClass: values.taxClass,
-      children: values.children,
-      married: values.married,
-      church: values.church,
-      commuteDistance: values.commuteDistance,
-      workDays: values.workDays,
-      housingCosts: values.housingCosts,
-      workEquipment: values.workEquipment,
-      insurance: values.insurance,
-      otherExpenses: values.otherExpenses
-    };
-    
-    onCalculate(formData);
+    setIsSubmitting(true);
+    try {
+      // Ensure we have all required fields for FormData type
+      const formData: FormData = {
+        country: values.country,
+        income: values.income,
+        taxClass: values.taxClass,
+        children: values.children,
+        married: values.married,
+        church: values.church,
+        commuteDistance: values.commuteDistance,
+        workDays: values.workDays,
+        housingCosts: values.housingCosts,
+        workEquipment: values.workEquipment,
+        insurance: values.insurance,
+        otherExpenses: values.otherExpenses
+      };
+      
+      onCalculate(formData);
+      
+      // Zobrazení úspěšné zprávy
+      toast({
+        title: "Formulář odeslán",
+        description: "Váš daňový výpočet byl spuštěn",
+        duration: 3000
+      });
+    } catch (error) {
+      console.error("Chyba při odesílání formuláře:", error);
+      toast({
+        title: "Chyba formuláře",
+        description: "Při odesílání formuláře došlo k chybě. Zkontrolujte zadané údaje.",
+        variant: "destructive",
+        duration: 5000
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   }
+
+  const resetForm = () => {
+    form.reset({
+      country: "de",
+      income: "0",
+      taxClass: "1",
+      children: "0",
+      married: false,
+      church: false,
+      commuteDistance: "",
+      workDays: "220",
+      housingCosts: "",
+      workEquipment: "",
+      insurance: "",
+      otherExpenses: "",
+    });
+    
+    toast({
+      title: "Formulář resetován",
+      description: "Všechna pole byla nastavena na výchozí hodnoty",
+      duration: 2000
+    });
+  };
 
   return (
     <Form {...form}>
@@ -363,9 +410,33 @@ const TaxCalculatorForm = ({ onCalculate, onCountryChange, displayCurrency }: Ta
           </TabsContent>
         </Tabs>
 
-        <div className="pt-2">
-          <Button type="submit" className="w-full sm:w-auto">
-            Vypočítat
+        <div className="pt-2 flex flex-col sm:flex-row gap-2 sm:justify-between">
+          <Button 
+            type="button" 
+            variant="outline" 
+            onClick={resetForm}
+            className="flex items-center gap-2 order-2 sm:order-1"
+          >
+            <RefreshCw className="h-4 w-4" />
+            Resetovat
+          </Button>
+          
+          <Button 
+            type="submit" 
+            className="w-full sm:w-auto flex items-center gap-2 order-1 sm:order-2"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <>
+                <RefreshCw className="h-4 w-4 animate-spin" />
+                Zpracování...
+              </>
+            ) : (
+              <>
+                <Calculator className="h-4 w-4" />
+                Vypočítat
+              </>
+            )}
           </Button>
         </div>
       </form>
