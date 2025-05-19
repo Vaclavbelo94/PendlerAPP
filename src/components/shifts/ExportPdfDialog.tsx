@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { CalendarIcon, Download, FileDown } from "lucide-react";
 import { format } from "date-fns";
@@ -17,9 +18,8 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { toast } from "@/components/ui/use-toast";
-import jsPDF from "jspdf"; 
-import autoTable from "jspdf-autotable";
 import { supabase } from "@/integrations/supabase/client";
+import { initializePDF, addDocumentHeader, addDocumentFooter } from "@/utils/pdf/pdfHelper";
 
 interface ExportPdfDialogProps {
   user: any;
@@ -61,18 +61,16 @@ export const ExportPdfDialog = ({
         return shiftDate >= startOfMonth && shiftDate <= endOfMonth && shift.userId === user.id;
       });
 
-      // Create PDF document
-      const doc = new jsPDF();
+      // Create PDF document with proper initialization for Czech language
+      const doc = initializePDF();
       
-      // Add title
+      // Přidání standardní hlavičky s logem
       const title = `Přehled směn - ${format(selectedMonth, "MMMM yyyy", { locale: cs })}`;
-      doc.setFontSize(16);
-      doc.text(title, 14, 20);
+      addDocumentHeader(doc, title);
       
       // Add user info
       doc.setFontSize(12);
-      doc.text(`Uživatel: ${user.email || user.username || ""}`, 14, 30);
-      doc.text(`Datum exportu: ${format(new Date(), "dd.MM.yyyy HH:mm", { locale: cs })}`, 14, 37);
+      doc.text(`Uživatel: ${user.email || user.username || ""}`, 14, 50);
 
       // Add summary data
       const morningShifts = filteredShifts.filter((s: any) => s.type === "morning").length;
@@ -81,13 +79,13 @@ export const ExportPdfDialog = ({
       const totalShifts = filteredShifts.length;
       
       doc.setFontSize(14);
-      doc.text("Souhrn směn:", 14, 50);
+      doc.text("Souhrn směn:", 14, 60);
       doc.setFontSize(12);
-      doc.text(`Ranní směny: ${morningShifts}`, 20, 60);
-      doc.text(`Odpolední směny: ${afternoonShifts}`, 20, 67);
-      doc.text(`Noční směny: ${nightShifts}`, 20, 74);
-      doc.text(`Celkem směn: ${totalShifts}`, 20, 81);
-      doc.text(`Celkem hodin: ${totalShifts * 8}`, 20, 88);
+      doc.text(`Ranní směny: ${morningShifts}`, 20, 70);
+      doc.text(`Odpolední směny: ${afternoonShifts}`, 20, 77);
+      doc.text(`Noční směny: ${nightShifts}`, 20, 84);
+      doc.text(`Celkem směn: ${totalShifts}`, 20, 91);
+      doc.text(`Celkem hodin: ${totalShifts * 8}`, 20, 98);
 
       // Create table data for detailed shifts
       const tableData = filteredShifts.map((shift: any) => {
@@ -106,17 +104,22 @@ export const ExportPdfDialog = ({
       });
 
       // Add table to PDF
-      autoTable(doc, {
-        startY: 100,
-        head: [["Datum", "Typ směny", "Poznámka"]],
-        body: tableData,
-        theme: 'grid',
-        headStyles: { fillColor: [220, 0, 0], textColor: [255, 255, 255] },
+      import("jspdf-autotable").then((autoTable) => {
+        autoTable.default(doc, {
+          startY: 110,
+          head: [["Datum", "Typ směny", "Poznámka"]],
+          body: tableData,
+          theme: 'grid',
+          headStyles: { fillColor: [220, 0, 0], textColor: [255, 255, 255] },
+        });
+        
+        // Přidání standardní patičky
+        addDocumentFooter(doc);
+  
+        // Save the PDF
+        const fileName = `smeny_${format(selectedMonth, "MM_yyyy")}.pdf`;
+        doc.save(fileName);
       });
-
-      // Save the PDF
-      const fileName = `smeny_${format(selectedMonth, "MM_yyyy")}.pdf`;
-      doc.save(fileName);
 
       // If user is logged in, save the report to database (non-blocking)
       if (user && supabase) {

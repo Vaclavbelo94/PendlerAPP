@@ -3,31 +3,27 @@ import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { DocumentData } from './types';
 import { getDocumentTitle } from './documentUtils';
+import { initializePDF, addDocumentHeader, addDocumentFooter } from '../pdf/pdfHelper';
 
 export const generateTaxDocument = (data: DocumentData): jsPDF => {
-  const doc = new jsPDF();
+  // Použijeme náš inicializátor pro PDF s českou diakritikou
+  const doc = initializePDF();
   
-  // Add document header
+  // Přidáme hlavičku dokumentu
   const documentTitle = getDocumentTitle(data.documentType);
-  doc.setFontSize(20);
-  doc.text(documentTitle, 105, 20, { align: 'center' });
+  addDocumentHeader(doc, documentTitle);
   
-  // Add tax year
-  doc.setFontSize(14);
-  doc.text(`Zdaňovací období: ${data.yearOfTax}`, 105, 30, { align: 'center' });
-  
-  // Add document date
-  const currentDate = new Date().toLocaleDateString('cs-CZ');
-  doc.setFontSize(10);
-  doc.text(`Datum vyhotovení: ${currentDate}`, 195, 10, { align: 'right' });
+  // Přidáme informaci o zdaňovacím období
+  doc.setFontSize(12);
+  doc.text(`Zdaňovací období: ${data.yearOfTax}`, 14, 50);
   
   // Personal details section
   doc.setFontSize(14);
-  doc.text('Osobní údaje', 15, 45);
+  doc.text('Osobní údaje', 14, 65);
   
   doc.setFontSize(11);
   autoTable(doc, {
-    startY: 50,
+    startY: 70,
     head: [['Položka', 'Hodnota']],
     body: [
       ['Jméno a příjmení', data.name],
@@ -45,7 +41,7 @@ export const generateTaxDocument = (data: DocumentData): jsPDF => {
     const finalY = (doc as any).lastAutoTable.finalY + 10;
     
     doc.setFontSize(14);
-    doc.text('Údaje o zaměstnání', 15, finalY);
+    doc.text('Údaje o zaměstnání', 14, finalY);
     
     doc.setFontSize(11);
     autoTable(doc, {
@@ -64,7 +60,7 @@ export const generateTaxDocument = (data: DocumentData): jsPDF => {
   const deductionsY = (doc as any).lastAutoTable.finalY + 10;
   
   doc.setFontSize(14);
-  doc.text('Odpočitatelné položky', 15, deductionsY);
+  doc.text('Odpočitatelné položky', 14, deductionsY);
   
   const deductions = [];
   
@@ -100,7 +96,7 @@ export const generateTaxDocument = (data: DocumentData): jsPDF => {
     const notesY = (doc as any).lastAutoTable.finalY + 10;
     
     doc.setFontSize(14);
-    doc.text('Doplňující poznámky', 15, notesY);
+    doc.text('Doplňující poznámky', 14, notesY);
     
     doc.setFontSize(11);
     autoTable(doc, {
@@ -122,13 +118,8 @@ export const generateTaxDocument = (data: DocumentData): jsPDF => {
   doc.text('Podpis daňového poplatníka', 55, signatureY + 5, { align: 'center' });
   doc.text('Podpis finančního úředníka', 155, signatureY + 5, { align: 'center' });
   
-  // Footer
-  const pageCount = doc.getNumberOfPages();
-  for (let i = 1; i <= pageCount; i++) {
-    doc.setPage(i);
-    doc.setFontSize(8);
-    doc.text(`Vygenerováno pomocí Pendler Buddy - Daňový poradce | Strana ${i} z ${pageCount}`, 105, 285, { align: 'center' });
-  }
+  // Přidání standardní patičky
+  addDocumentFooter(doc);
   
   return doc;
 };

@@ -21,6 +21,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { useEffect, useState } from "react";
 import { usePremiumCheck } from "@/hooks/usePremiumCheck";
 import { Skeleton } from "@/components/ui/skeleton";
+import { jsPDF } from "jspdf";
+import { initializePDF, addDocumentHeader, addDocumentFooter } from "@/utils/pdf/pdfHelper";
 
 interface ReportsTabProps {
   user: any;
@@ -83,8 +85,10 @@ export const ReportsTab = ({ user, shifts }: ReportsTabProps) => {
     
     setIsExporting(true);
     try {
+      // Příprava dat reportu
+      const reportTitle = `Report směn - ${format(new Date(), "MMMM yyyy", { locale: cs })}`;
       const reportData = {
-        title: `Report směn - ${format(new Date(), "MMMM yyyy", { locale: cs })}`,
+        title: reportTitle,
         data: {
           shifts: shifts.map(shift => ({
             date: shift.date.toISOString(),
@@ -100,6 +104,62 @@ export const ReportsTab = ({ user, shifts }: ReportsTabProps) => {
           }
         }
       };
+      
+      // Vytvoření PDF s hlavičkou a logem
+      const doc = initializePDF();
+      addDocumentHeader(doc, reportTitle);
+      
+      // Přidání informací o uživateli
+      doc.setFontSize(12);
+      doc.text(`Uživatel: ${user?.email || user?.name || ""}`, 14, 50);
+      doc.text(`Období: ${format(new Date(), "MMMM yyyy", { locale: cs })}`, 14, 57);
+
+      // Přidání shrnutí směn
+      doc.setFontSize(14);
+      doc.text("Souhrn směn", 14, 70);
+      
+      // Dynamicky importovat autoTable
+      import("jspdf-autotable").then((autoTable) => {
+        autoTable.default(doc, {
+          startY: 75,
+          head: [['Typ směny', 'Počet', 'Celkem hodin']],
+          body: [
+            ['Ranní', reportData.data.summary.morning, reportData.data.summary.morning * 8],
+            ['Odpolední', reportData.data.summary.afternoon, reportData.data.summary.afternoon * 8],
+            ['Noční', reportData.data.summary.night, reportData.data.summary.night * 8],
+            ['Celkem', reportData.data.summary.total, reportData.data.summary.totalHours]
+          ],
+          theme: 'grid',
+          headStyles: { fillColor: [220, 0, 0], textColor: [255, 255, 255] }
+        });
+        
+        // Přidání detailního seznamu směn
+        const shiftsData = shifts.map(shift => [
+          format(shift.date, "dd.MM.yyyy", { locale: cs }),
+          shift.type === "morning" ? "Ranní" : 
+          shift.type === "afternoon" ? "Odpolední" : "Noční",
+          shift.notes || "-"
+        ]);
+        
+        if (shiftsData.length > 0) {
+          doc.setFontSize(14);
+          doc.text("Detail směn", 14, (doc as any).lastAutoTable.finalY + 15);
+          
+          autoTable.default(doc, {
+            startY: (doc as any).lastAutoTable.finalY + 20,
+            head: [['Datum', 'Typ směny', 'Poznámka']],
+            body: shiftsData,
+            theme: 'grid',
+            headStyles: { fillColor: [220, 0, 0], textColor: [255, 255, 255] }
+          });
+        }
+        
+        // Přidání patičky
+        addDocumentFooter(doc);
+        
+        // Uložení PDF
+        doc.save(`report_smen_${format(new Date(), "MM_yyyy")}.pdf`);
+      });
       
       if (user && session) {
         // Uložení reportu do databáze
@@ -126,18 +186,6 @@ export const ReportsTab = ({ user, shifts }: ReportsTabProps) => {
         fetchUserReports();
       }
       
-      toast({
-        title: "Export do PDF zahájen",
-        description: "PDF dokument bude ke stažení za okamžik",
-      });
-      
-      // Simulace generování PDF (v produkční aplikaci by se zde volala edge funkce)
-      setTimeout(() => {
-        toast({
-          title: "Export dokončen",
-          description: "PDF bylo úspěšně vygenerováno",
-        });
-      }, 2000);
     } catch (error) {
       console.error("Chyba při exportu do PDF:", error);
       toast({

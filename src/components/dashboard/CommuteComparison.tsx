@@ -10,8 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { DownloadIcon } from "lucide-react";
-import { jsPDF } from "jspdf";
-import autoTable from 'jspdf-autotable';
+import { initializePDF, addDocumentHeader, addDocumentFooter } from "@/utils/pdf/pdfHelper";
 
 const detailedData = [
   { name: '1. týden', auto: 42, mhd: 32 },
@@ -33,49 +32,51 @@ const CommuteComparison = () => {
   const [selectedTab, setSelectedTab] = useState<'current' | 'history'>('current');
 
   const generatePdf = () => {
-    const doc = new jsPDF();
+    // Inicializace PDF s českou diakritikou
+    const doc = initializePDF();
     
-    // Add title
-    doc.setFontSize(18);
-    doc.text("Analýza dojíždění", 14, 22);
-    
-    // Add subtitle with date
-    doc.setFontSize(12);
-    doc.setTextColor(100);
-    doc.text(`Vygenerováno: ${new Date().toLocaleDateString('cs-CZ')}`, 14, 30);
+    // Přidání hlavičky s logem
+    addDocumentHeader(doc, "Analýza dojíždění");
     
     // Add summary data
     doc.setFontSize(14);
     doc.setTextColor(0);
-    doc.text("Souhrn za aktuální měsíc", 14, 45);
+    doc.text("Souhrn za aktuální měsíc", 14, 50);
     
-    // Create summary table
-    autoTable(doc, {
-      startY: 50,
-      head: [['Metrika', 'Hodnota']],
-      body: [
-        ['Celková vzdálenost', '128 km'],
-        ['Průměrně denně', '6.4 km'],
-        ['Celkové náklady', '712 Kč'],
-        ['Úspora oproti min. měsíci', '243 Kč (25%)'],
-        ['Auto', '63 km (49%)'],
-        ['MHD', '65 km (51%)'],
-        ['Úspora CO2', '8.2 kg']
-      ],
+    // Import dynamicky jspdf-autotable
+    import("jspdf-autotable").then((autoTable) => {
+      // Create summary table
+      autoTable.default(doc, {
+        startY: 55,
+        head: [['Metrika', 'Hodnota']],
+        body: [
+          ['Celková vzdálenost', '128 km'],
+          ['Průměrně denně', '6.4 km'],
+          ['Celkové náklady', '712 Kč'],
+          ['Úspora oproti min. měsíci', '243 Kč (25%)'],
+          ['Auto', '63 km (49%)'],
+          ['MHD', '65 km (51%)'],
+          ['Úspora CO2', '8.2 kg']
+        ],
+      });
+      
+      // Add weekly data title
+      doc.setFontSize(14);
+      doc.text("Týdenní přehled", 14, (doc as any).lastAutoTable.finalY + 15);
+      
+      // Create weekly data table
+      autoTable.default(doc, {
+        startY: (doc as any).lastAutoTable.finalY + 20,
+        head: [['Týden', 'Automobil (km)', 'MHD (km)']],
+        body: detailedData.map(item => [item.name, item.auto, item.mhd]),
+      });
+      
+      // Přidání patičky
+      addDocumentFooter(doc);
+      
+      // Save the PDF
+      doc.save('analyza-dojizdeni.pdf');
     });
-    
-    // Add weekly data title
-    doc.text("Týdenní přehled", 14, 120);
-    
-    // Create weekly data table
-    autoTable(doc, {
-      startY: 125,
-      head: [['Týden', 'Automobil (km)', 'MHD (km)']],
-      body: detailedData.map(item => [item.name, item.auto, item.mhd]),
-    });
-    
-    // Save the PDF
-    doc.save('analyza-dojizdeni.pdf');
   };
 
   return (
