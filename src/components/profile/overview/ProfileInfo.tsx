@@ -1,6 +1,6 @@
 
 import React from "react";
-import { MapPin, Globe, Calendar } from "lucide-react";
+import { MapPin, Globe, Calendar, CheckCircle } from "lucide-react";
 
 interface ProfileInfoProps {
   location?: string;
@@ -16,6 +16,7 @@ const ProfileInfo = ({ location, website, createdAt, formatDate }: ProfileInfoPr
         <div className="flex items-center text-sm">
           <MapPin className="h-4 w-4 mr-1 text-muted-foreground" />
           <span>{location}</span>
+          <CheckCircle className="h-4 w-4 ml-2 text-green-500" />
         </div>
       )}
       
@@ -30,6 +31,7 @@ const ProfileInfo = ({ location, website, createdAt, formatDate }: ProfileInfoPr
           >
             {website.replace(/^https?:\/\//, '')}
           </a>
+          <CheckCircle className="h-4 w-4 ml-2 text-green-500" />
         </div>
       )}
       

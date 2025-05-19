@@ -4,12 +4,14 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
+import { CheckCircle } from "lucide-react";
 
 interface UserProfileSettings {
   id: string;
@@ -37,6 +39,14 @@ const ProfileSettings = () => {
     languageReminders: true,
     preferredLanguage: "cs",
   });
+  
+  // Track which fields have been changed by the user
+  const [filledFields, setFilledFields] = useState<Record<string, boolean>>({
+    displayName: false,
+    bio: false,
+    location: false,
+    website: false,
+  });
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -58,7 +68,7 @@ const ProfileSettings = () => {
 
         if (data) {
           // Profil existuje, nastavíme data
-          setProfileSettings({
+          const loadedProfile = {
             id: data.user_id,
             displayName: data.display_name || user.user_metadata?.username || "",
             bio: data.bio || "",
@@ -68,6 +78,16 @@ const ProfileSettings = () => {
             shiftNotifications: data.shift_notifications !== undefined ? data.shift_notifications : true,
             languageReminders: data.language_reminders !== undefined ? data.language_reminders : true,
             preferredLanguage: data.preferred_language || "cs",
+          };
+          
+          setProfileSettings(loadedProfile);
+          
+          // Set filled fields based on loaded data
+          setFilledFields({
+            displayName: !!loadedProfile.displayName,
+            bio: !!loadedProfile.bio,
+            location: !!loadedProfile.location,
+            website: !!loadedProfile.website,
           });
         } else {
           // Profil neexistuje, nastavíme výchozí hodnoty
@@ -82,6 +102,14 @@ const ProfileSettings = () => {
             languageReminders: true,
             preferredLanguage: "cs",
           });
+          
+          // Set displayName as filled if it comes from user metadata
+          setFilledFields({
+            displayName: !!(user.user_metadata?.username || user.email?.split('@')[0]),
+            bio: false,
+            location: false,
+            website: false,
+          });
         }
       } catch (error) {
         console.error('Chyba při načítání profilu:', error);
@@ -93,6 +121,18 @@ const ProfileSettings = () => {
 
     loadProfile();
   }, [user]);
+
+  const handleInputChange = (field: keyof typeof profileSettings, value: string | boolean) => {
+    setProfileSettings(prev => ({ ...prev, [field]: value }));
+    
+    // Only update filled state for text fields
+    if (typeof value === 'string' && ['displayName', 'bio', 'location', 'website'].includes(field)) {
+      setFilledFields(prev => ({ 
+        ...prev, 
+        [field]: value.trim().length > 0 
+      }));
+    }
+  };
 
   const handleSaveProfile = async () => {
     if (!user) return;
@@ -181,46 +221,70 @@ const ProfileSettings = () => {
         <div className="space-y-4">
           <h3 className="text-lg font-medium">Osobní údaje</h3>
           
-          <div className="space-y-2">
+          <div className="space-y-2 relative">
             <Label htmlFor="displayName">Zobrazované jméno</Label>
-            <Input
-              id="displayName"
-              value={profileSettings.displayName}
-              onChange={(e) => setProfileSettings(prev => ({ ...prev, displayName: e.target.value }))}
-              placeholder="Zadejte své jméno"
-            />
+            <div className="relative">
+              <Input
+                id="displayName"
+                value={profileSettings.displayName}
+                onChange={(e) => handleInputChange('displayName', e.target.value)}
+                placeholder="Zadejte své jméno"
+                className={filledFields.displayName ? "pr-10" : ""}
+              />
+              {filledFields.displayName && (
+                <CheckCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-green-500" />
+              )}
+            </div>
           </div>
           
           <div className="space-y-2">
             <Label htmlFor="bio">O mně</Label>
-            <Input
-              id="bio"
-              value={profileSettings.bio}
-              onChange={(e) => setProfileSettings(prev => ({ ...prev, bio: e.target.value }))}
-              placeholder="Napište něco o sobě"
-            />
+            <div className="relative">
+              <Textarea
+                id="bio"
+                value={profileSettings.bio}
+                onChange={(e) => handleInputChange('bio', e.target.value)}
+                placeholder="Napište něco o sobě"
+                className={filledFields.bio ? "pr-10" : ""}
+              />
+              {filledFields.bio && (
+                <CheckCircle className="absolute right-3 top-3 h-5 w-5 text-green-500" />
+              )}
+            </div>
             <p className="text-sm text-muted-foreground">Krátký popis, který se zobrazí na vašem profilu</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="location">Bydliště</Label>
-              <Input
-                id="location"
-                value={profileSettings.location}
-                onChange={(e) => setProfileSettings(prev => ({ ...prev, location: e.target.value }))}
-                placeholder="Např. Praha, CZ"
-              />
+              <div className="relative">
+                <Input
+                  id="location"
+                  value={profileSettings.location}
+                  onChange={(e) => handleInputChange('location', e.target.value)}
+                  placeholder="Např. Praha, CZ"
+                  className={filledFields.location ? "pr-10" : ""}
+                />
+                {filledFields.location && (
+                  <CheckCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-green-500" />
+                )}
+              </div>
             </div>
             
             <div className="space-y-2">
               <Label htmlFor="website">Webová stránka</Label>
-              <Input
-                id="website"
-                value={profileSettings.website}
-                onChange={(e) => setProfileSettings(prev => ({ ...prev, website: e.target.value }))}
-                placeholder="https://example.com"
-              />
+              <div className="relative">
+                <Input
+                  id="website"
+                  value={profileSettings.website}
+                  onChange={(e) => handleInputChange('website', e.target.value)}
+                  placeholder="https://example.com"
+                  className={filledFields.website ? "pr-10" : ""}
+                />
+                {filledFields.website && (
+                  <CheckCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-green-500" />
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -238,7 +302,7 @@ const ProfileSettings = () => {
             <Switch
               id="emailNotifications"
               checked={profileSettings.emailNotifications}
-              onCheckedChange={(checked) => setProfileSettings(prev => ({ ...prev, emailNotifications: checked }))}
+              onCheckedChange={(checked) => handleInputChange('emailNotifications', checked)}
             />
           </div>
           
@@ -250,7 +314,7 @@ const ProfileSettings = () => {
             <Switch
               id="shiftNotifications"
               checked={profileSettings.shiftNotifications}
-              onCheckedChange={(checked) => setProfileSettings(prev => ({ ...prev, shiftNotifications: checked }))}
+              onCheckedChange={(checked) => handleInputChange('shiftNotifications', checked)}
             />
           </div>
           
@@ -262,7 +326,7 @@ const ProfileSettings = () => {
             <Switch
               id="languageReminders"
               checked={profileSettings.languageReminders}
-              onCheckedChange={(checked) => setProfileSettings(prev => ({ ...prev, languageReminders: checked }))}
+              onCheckedChange={(checked) => handleInputChange('languageReminders', checked)}
             />
           </div>
         </div>
@@ -276,7 +340,7 @@ const ProfileSettings = () => {
             <Label htmlFor="preferredLanguage">Preferovaný jazyk</Label>
             <Select 
               value={profileSettings.preferredLanguage} 
-              onValueChange={(value) => setProfileSettings(prev => ({ ...prev, preferredLanguage: value }))}
+              onValueChange={(value) => handleInputChange('preferredLanguage', value)}
             >
               <SelectTrigger id="preferredLanguage" className="w-full">
                 <SelectValue placeholder="Vyberte jazyk" />
