@@ -14,8 +14,9 @@ export const initializePDF = (): jsPDF => {
     compress: true
   });
   
-  // Zajištění podpory pro české znaky
-  doc.setLanguage("cs-CZ");
+  // jsPDF nepodporuje přímo "cs-CZ", použijeme obecnou podporu pro UTF-8
+  // místo volání setLanguage, které očekává podporovaný kód jazyka
+  doc.setFont("helvetica");
   
   return doc;
 };

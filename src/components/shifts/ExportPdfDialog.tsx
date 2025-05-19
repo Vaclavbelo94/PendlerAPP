@@ -103,6 +103,9 @@ export const ExportPdfDialog = ({
         ];
       });
 
+      // Generate a file name for the PDF
+      const fileName = `smeny_${format(selectedMonth, "MM_yyyy")}.pdf`;
+
       // Add table to PDF
       import("jspdf-autotable").then((autoTable) => {
         autoTable.default(doc, {
@@ -117,7 +120,6 @@ export const ExportPdfDialog = ({
         addDocumentFooter(doc);
   
         // Save the PDF
-        const fileName = `smeny_${format(selectedMonth, "MM_yyyy")}.pdf`;
         doc.save(fileName);
       });
 
