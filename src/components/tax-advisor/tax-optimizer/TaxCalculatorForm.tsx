@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect } from "react";
-import { TaxCalculatorFormProps } from "./types";
+import { TaxCalculatorFormProps, FormData } from "./types";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,7 +21,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { ChevronDown } from "lucide-react";
 
 const formSchema = z.object({
-  country: z.string(),
+  country: z.string().min(1, { message: "Vyberte zemi" }),
   income: z.string().min(1, { message: "Zadejte výši příjmu" }),
   taxClass: z.string().optional(),
   children: z.string().default("0"),
@@ -36,11 +35,13 @@ const formSchema = z.object({
   otherExpenses: z.string().optional()
 });
 
+type FormValues = z.infer<typeof formSchema>;
+
 const TaxCalculatorForm = ({ onCalculate, onCountryChange, displayCurrency }: TaxCalculatorFormProps) => {
   const [activeTab, setActiveTab] = useState("basic");
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       country: "de",
@@ -65,8 +66,24 @@ const TaxCalculatorForm = ({ onCalculate, onCountryChange, displayCurrency }: Ta
     onCountryChange(watchCountry);
   }, [watchCountry, onCountryChange]);
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    onCalculate(values);
+  function onSubmit(values: FormValues) {
+    // Ensure we have all required fields for FormData type
+    const formData: FormData = {
+      country: values.country,
+      income: values.income,
+      taxClass: values.taxClass,
+      children: values.children,
+      married: values.married,
+      church: values.church,
+      commuteDistance: values.commuteDistance,
+      workDays: values.workDays,
+      housingCosts: values.housingCosts,
+      workEquipment: values.workEquipment,
+      insurance: values.insurance,
+      otherExpenses: values.otherExpenses
+    };
+    
+    onCalculate(formData);
   }
 
   return (
