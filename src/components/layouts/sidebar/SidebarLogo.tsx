@@ -21,7 +21,7 @@ const SidebarLogo: React.FC<{ closeSidebar: () => void }> = ({ closeSidebar }) =
       <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white font-bold text-sm">
         PH
       </div>
-      <span className="font-poppins font-bold text-lg">Pendler Helper</span>
+      <span className="font-poppins font-bold text-lg">PendlerHelfer</span>
     </div>
   );
 };

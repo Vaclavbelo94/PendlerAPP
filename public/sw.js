@@ -1,6 +1,6 @@
 
 // Service Worker pro offline funkcionalitu a PWA podporu
-const CACHE_NAME = 'pendler-buddy-cache-v4';
+const CACHE_NAME = 'pendlerhelfer-cache-v4';
 const APP_SHELL = [
   '/',
   '/index.html',
@@ -304,7 +304,7 @@ self.addEventListener('push', (event) => {
   try {
     const data = event.data.json();
     const options = {
-      body: data.body || 'Nové oznámení od Pendler Buddy',
+      body: data.body || 'Nové oznámení od PendlerHelfer',
       icon: '/favicon.ico',
       badge: '/favicon.ico',
       data: {
@@ -314,14 +314,14 @@ self.addEventListener('push', (event) => {
     
     event.waitUntil(
       self.registration.showNotification(
-        data.title || 'Pendler Buddy', 
+        data.title || 'PendlerHelfer', 
         options
       )
     );
   } catch (error) {
     // Fallback pro textové zprávy
     event.waitUntil(
-      self.registration.showNotification('Pendler Buddy', {
+      self.registration.showNotification('PendlerHelfer', {
         body: event.data.text(),
         icon: '/favicon.ico'
       })

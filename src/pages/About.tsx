@@ -10,7 +10,7 @@ const About = () => {
           <Info className="w-12 h-12 text-primary mx-auto mb-4" />
           <h1 className="text-4xl font-bold mb-4">O projektu</h1>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-            Pendler Helper je komplexní řešení pro české pendlery pracující v Německu.
+            PendlerHelfer je komplexní řešení pro české pendlery pracující v Německu.
           </p>
         </div>
 
@@ -34,7 +34,7 @@ const About = () => {
             <CardContent className="pt-6">
               <h2 className="text-2xl font-bold mb-4">Historie projektu</h2>
               <p className="mb-4">
-                Projekt Pendler Helper vznikl v roce 2023 na základě vlastních zkušeností jeho zakladatelů, 
+                Projekt PendlerHelfer vznikl v roce 2023 na základě vlastních zkušeností jeho zakladatelů, 
                 kteří sami několik let pracovali jako pendleři v Německu. Díky vlastní zkušenosti dokázali 
                 identifikovat hlavní problémy a výzvy, se kterými se čeští pendleři denně potýkají.
               </p>

@@ -1,7 +1,7 @@
 
 {
-  "name": "Pendler Buddy Guide",
-  "short_name": "Pendler",
+  "name": "PendlerHelfer Guide",
+  "short_name": "PendlerHelfer",
   "description": "Aplikace pro podporu pendlerů v Německu",
   "icons": [
     {
@@ -55,7 +55,7 @@
       "sizes": "1280x720",
       "type": "image/png",
       "platform": "wide",
-      "label": "Hlavní obrazovka aplikace Pendler Buddy"
+      "label": "Hlavní obrazovka aplikace PendlerHelfer"
     }
   ]
 }
