@@ -7,11 +7,13 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Clock, Calendar, AlertTriangle, ThumbsUp, CalendarClock } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const TrafficPredictions = () => {
   const [route, setRoute] = useState({ from: "", to: "" });
   const [selectedDay, setSelectedDay] = useState("monday");
   const [selectedTime, setSelectedTime] = useState("07:30");
+  const isMobile = useIsMobile();
   
   const weekdays = [
     { id: "monday", name: "Pondělí" },
@@ -121,7 +123,7 @@ const TrafficPredictions = () => {
           <CardDescription>Analyzujte dopravní situaci na vaší trase podle dne a času.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className={`grid grid-cols-1 ${isMobile ? '' : 'md:grid-cols-2'} gap-4`}>
             <div className="space-y-2">
               <Label htmlFor="route-from">Místo odjezdu</Label>
               <Input 
@@ -143,7 +145,7 @@ const TrafficPredictions = () => {
             </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className={`grid grid-cols-1 ${isMobile ? '' : 'md:grid-cols-2'} gap-4`}>
             <div className="space-y-2">
               <Label htmlFor="route-day">Den v týdnu</Label>
               <Select 
@@ -238,7 +240,7 @@ const TrafficPredictions = () => {
           <div className="space-y-4">
             {shifts.length > 0 ? (
               shifts.map((shift, index) => (
-                <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                <div key={index} className={`flex ${isMobile ? 'flex-col' : 'items-center justify-between'} p-3 border rounded-lg`}>
                   <div className="flex items-center gap-3">
                     <CalendarClock className="h-5 w-5 text-primary" />
                     <div>
@@ -248,7 +250,7 @@ const TrafficPredictions = () => {
                       </p>
                     </div>
                   </div>
-                  <Button variant="outline" size="sm">Zobrazit predikci</Button>
+                  <Button variant="outline" size="sm" className={isMobile ? 'mt-2' : ''}>Zobrazit predikci</Button>
                 </div>
               ))
             ) : (

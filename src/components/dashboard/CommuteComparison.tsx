@@ -11,6 +11,7 @@ import {
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { DownloadIcon } from "lucide-react";
 import { initializePDF, addDocumentHeader, addDocumentFooter } from "@/utils/pdf/pdfHelper";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const detailedData = [
   { name: '1. týden', auto: 42, mhd: 32 },
@@ -30,6 +31,7 @@ const savageData = [
 const CommuteComparison = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState<'current' | 'history'>('current');
+  const isMobile = useIsMobile();
 
   const generatePdf = () => {
     // Inicializace PDF s českou diakritikou
@@ -79,14 +81,16 @@ const CommuteComparison = () => {
     });
   };
 
+  const chartHeight = isMobile ? 200 : 300;
+
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-end">
-        <div className="text-center">
+      <div className={`flex ${isMobile ? 'flex-col space-y-2' : 'justify-between items-end'}`}>
+        <div className={`text-center ${isMobile ? 'w-full' : ''}`}>
           <div className="text-xs text-muted-foreground mb-1">Minulý měsíc</div>
           <div className="text-2xl font-bold">146 km</div>
         </div>
-        <div className="text-center">
+        <div className={`text-center ${isMobile ? 'w-full' : ''}`}>
           <div className="text-xs text-muted-foreground mb-1">Tento měsíc</div>
           <div className="text-2xl font-bold text-green-600">128 km</div>
           <div className="text-xs text-green-600">-12%</div>
@@ -103,7 +107,7 @@ const CommuteComparison = () => {
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-3xl">
+        <DialogContent className={`${isMobile ? 'max-w-[95vw] p-4' : 'max-w-3xl'}`}>
           <DialogHeader>
             <DialogTitle>Podrobná analýza dojíždění</DialogTitle>
             <DialogDescription>
@@ -133,7 +137,7 @@ const CommuteComparison = () => {
 
             {selectedTab === 'current' && (
               <>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div className={`grid grid-cols-1 ${!isMobile && 'md:grid-cols-2'} gap-4 mb-6`}>
                   <div className="p-4 border rounded-lg">
                     <h3 className="text-lg font-medium mb-2">Souhrn</h3>
                     <div className="space-y-2">
@@ -177,11 +181,11 @@ const CommuteComparison = () => {
                   </div>
                 </div>
                 
-                <div className="h-[300px] mb-4">
+                <div className={`h-[${chartHeight}px] mb-4`}>
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
                       data={detailedData}
-                      margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                      margin={isMobile ? { top: 20, right: 10, left: 10, bottom: 5 } : { top: 20, right: 30, left: 20, bottom: 5 }}
                     >
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="name" />
@@ -200,11 +204,11 @@ const CommuteComparison = () => {
               <div className="space-y-6">
                 <div className="p-4 border rounded-lg">
                   <h3 className="text-lg font-medium mb-3">Vývoj dopravy v čase</h3>
-                  <div className="h-[300px] mb-4">
+                  <div className={`h-[${chartHeight}px] mb-4`}>
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart
                         data={savageData}
-                        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                        margin={isMobile ? { top: 5, right: 10, left: 10, bottom: 5 } : { top: 5, right: 30, left: 20, bottom: 5 }}
                       >
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="month" />
@@ -224,11 +228,11 @@ const CommuteComparison = () => {
                     <span className="font-medium">Celková úspora:</span>
                     <span className="text-xl font-bold text-green-600">907 Kč</span>
                   </div>
-                  <div className="h-[200px]">
+                  <div className={`h-[${isMobile ? 180 : 200}px]`}>
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart
                         data={savageData}
-                        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                        margin={isMobile ? { top: 5, right: 10, left: 10, bottom: 5 } : { top: 5, right: 30, left: 20, bottom: 5 }}
                       >
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="month" />

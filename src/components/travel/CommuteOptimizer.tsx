@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Car, Train, Bus, Bike } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const CommuteOptimizer = () => {
   const [origin, setOrigin] = useState('');
@@ -14,6 +15,7 @@ const CommuteOptimizer = () => {
   const [departureTime, setDepartureTime] = useState('07:30');
   const [transportModes, setTransportModes] = useState<string[]>(['car', 'public']);
   const [optimizationPreference, setOptimizationPreference] = useState('time');
+  const isMobile = useIsMobile();
   
   const transportOptions = [
     { id: 'car', name: 'Auto', icon: Car },
@@ -48,7 +50,7 @@ const CommuteOptimizer = () => {
   };
 
   return (
-    <div className="grid md:grid-cols-2 gap-6">
+    <div className={`grid ${isMobile ? 'grid-cols-1' : 'md:grid-cols-2'} gap-4`}>
       <Card>
         <CardHeader>
           <CardTitle>Optimalizace dojíždění</CardTitle>
