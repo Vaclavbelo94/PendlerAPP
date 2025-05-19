@@ -1,196 +1,200 @@
 
-import React, { useState, useEffect } from "react";
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
-import { useAuth } from '@/hooks/useAuth';
-import { fetchUserProfileData, generateTaxDocument } from '@/utils/tax';
-import { toast } from "sonner";
+import React, { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { FileText, Download, Check, Calendar, ExternalLink, Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { useMediaQuery } from "@/hooks/use-media-query";
-import DocumentGeneratorHeader from "./document-generator/DocumentGeneratorHeader";
-import DocumentGeneratorForm from "./document-generator/DocumentGeneratorForm";
-
-interface FormState {
-  name: string;
-  taxId: string;
-  address: string;
-  documentType: string;
-  dateOfBirth?: string;
-  yearOfTax: string;
-  email: string;
-  employerName?: string;
-  incomeAmount?: string;
-  includeCommuteExpenses: boolean;
-  commuteDistance?: string;
-  commuteWorkDays?: string;
-  includeSecondHome: boolean;
-  includeWorkClothes: boolean;
-  additionalNotes?: string;
-}
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 const DocumentGenerator = () => {
-  const { user } = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
-  const [isLoadingProfile, setIsLoadingProfile] = useState(false);
-  const isMobile = useMediaQuery("xs");
-  
-  const [formState, setFormState] = useState<FormState>({
-    name: "",
-    taxId: "",
-    address: "",
-    documentType: "steuererklaerung",
-    yearOfTax: new Date().getFullYear() - 1 + "",
-    email: "",
-    includeCommuteExpenses: true,
-    includeSecondHome: false,
-    includeWorkClothes: false,
-    commuteWorkDays: "220" // Default value
-  });
-  
-  const [showSuccessMessage, setShowSuccessMessage] = useState<boolean>(false);
-  const [generatedDocumentData, setGeneratedDocumentData] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState("templates");
+  const [loading, setLoading] = useState(false);
+  const [generatedDoc, setGeneratedDoc] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (user) {
-      loadUserProfile();
+  const documentTemplates = [
+    {
+      id: "pendler",
+      name: "Pendlerpauschale potvrzení",
+      description: "Potvrzení o vzdálenosti dojíždění pro německý finanční úřad",
+      fields: ["name", "address", "distance", "workdays"]
+    },
+    {
+      id: "statement",
+      name: "Prohlášení o příjmech",
+      description: "Potvrzení o příjmech ze zahraničí pro české úřady",
+      fields: ["name", "taxId", "income", "period"]
+    },
+    {
+      id: "employer",
+      name: "Potvrzení zaměstnavatele",
+      description: "Potvrzení pro německé úřady o zaměstnání v Německu",
+      fields: ["employerName", "employeePosition", "startDate", "salary"]
     }
-  }, [user]);
-
-  const loadUserProfile = async () => {
-    if (!user) return;
-    
-    setIsLoadingProfile(true);
-    try {
-      const profileData = await fetchUserProfileData(user.id);
-      
-      if (profileData) {
-        setFormState(prev => ({
-          ...prev,
-          name: profileData.name || prev.name,
-          email: profileData.email || prev.email,
-          address: profileData.address || prev.address,
-          commuteDistance: profileData.commuteDistance || prev.commuteDistance,
-          additionalNotes: profileData.additionalNotes || prev.additionalNotes,
-        }));
-        
-        toast.success("Údaje z profilu byly načteny");
-      }
-    } catch (error) {
-      console.error("Chyba při načítání profilu:", error);
-      toast.error("Nepodařilo se načíst údaje z profilu");
-    } finally {
-      setIsLoadingProfile(false);
-    }
-  };
-  
-  const validateForm = (): boolean => {
-    const requiredFields = ["name", "taxId", "address", "documentType", "yearOfTax", "email"];
-    
-    for (const field of requiredFields) {
-      if (!formState[field as keyof FormState]) {
-        toast.error(`Prosím vyplňte všechna povinná pole označená hvězdičkou.`);
-        return false;
-      }
-    }
-    
-    if (formState.includeCommuteExpenses && 
-        (!formState.commuteDistance || !formState.commuteWorkDays)) {
-      toast.error("Vyplňte vzdálenost dojíždění a počet pracovních dní.");
-      return false;
-    }
-    
-    return true;
-  };
-  
-  const handleGenerateDocument = async () => {
-    if (!validateForm()) return;
-    
-    setIsLoading(true);
-    
-    try {
-      // Generate the document
-      const doc = generateTaxDocument(formState);
-      
-      // Save reference to the generated document for later download
-      setGeneratedDocumentData(doc);
-      setShowSuccessMessage(true);
-      
-      toast.success("Dokument byl úspěšně vygenerován");
-    } catch (error) {
-      console.error("Chyba při generování dokumentu:", error);
-      toast.error("Při generování dokumentu došlo k chybě");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  
-  const handleDownloadDocument = () => {
-    if (!generatedDocumentData) {
-      toast.error("Žádný dokument k dispozici pro stažení");
-      return;
-    }
-    
-    try {
-      // Generate filename based on document type and date
-      const documentType = formState.documentType;
-      const currentDate = new Date().toISOString().split('T')[0];
-      const fileName = `${getDocumentTypeName(documentType)}_${currentDate}.pdf`;
-      
-      // Save the PDF
-      generatedDocumentData.save(fileName);
-      
-      toast.success("Dokument byl úspěšně stažen");
-      
-      // Reset success message after a bit
-      setTimeout(() => setShowSuccessMessage(false), 3000);
-    } catch (error) {
-      console.error("Chyba při stahování dokumentu:", error);
-      toast.error("Při stahování dokumentu došlo k chybě");
-    }
-  };
-  
-  const getDocumentTypeName = (type: string): string => {
-    switch (type) {
-      case 'steuererklaerung': return 'danove_priznani';
-      case 'pendlerbescheinigung': return 'potvrzeni_dojizdeni';
-      case 'antrag-lohnsteuerermassigung': return 'zadost_snizeni_dane';
-      case 'arbeitsmittelnachweis': return 'potvrzeni_pracovni_prostredky';
-      default: return 'danovy_dokument';
-    }
-  };
-  
-  const documentTypes = [
-    { value: "steuererklaerung", label: "Daňové přiznání (Einkommensteuererklärung)" },
-    { value: "pendlerbescheinigung", label: "Potvrzení o dojíždění (Pendlerbescheinigung)" },
-    { value: "antrag-lohnsteuerermassigung", label: "Žádost o snížení daně ze mzdy" },
-    { value: "arbeitsmittelnachweis", label: "Potvrzení o pracovních prostředcích" },
   ];
 
+  const handleGenerateDocument = (templateId: string) => {
+    setLoading(true);
+    
+    // Simulace generování dokumentu
+    setTimeout(() => {
+      setLoading(false);
+      setGeneratedDoc(`document-${templateId}-${Date.now()}.pdf`);
+      setActiveTab("generated");
+    }, 1500);
+  };
+
+  const handleReset = () => {
+    setGeneratedDoc(null);
+    setActiveTab("templates");
+  };
+
   return (
-    <div className="space-y-4 md:space-y-6">
-      <Card className={isMobile ? "shadow-none border-0" : ""}>
-        <div className="p-4 md:p-6">
-          <DocumentGeneratorHeader
-            onLoadProfile={loadUserProfile}
-            isLoadingProfile={isLoadingProfile}
-          />
-          
-          <Separator className="my-4" />
-          
-          <CardContent className="p-0 pt-4">
-            <DocumentGeneratorForm
-              formState={formState}
-              setFormState={setFormState}
-              isLoading={isLoading}
-              showSuccessMessage={showSuccessMessage}
-              onGenerateDocument={handleGenerateDocument}
-              onDownloadDocument={handleDownloadDocument}
-              documentTypes={documentTypes}
-            />
-          </CardContent>
-        </div>
+    <div className="space-y-8">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg md:text-xl">Generátor dokumentů</CardTitle>
+          <CardDescription>
+            Vytvořte potřebné dokumenty pro úřady jednoduše a rychle
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="w-full grid grid-cols-2">
+              <TabsTrigger value="templates">Šablony dokumentů</TabsTrigger>
+              <TabsTrigger value="generated" disabled={!generatedDoc}>Vygenerované dokumenty</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="templates" className="space-y-6 pt-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {documentTemplates.map((template) => (
+                  <Card key={template.id} className="border border-muted">
+                    <CardHeader className="p-4 pb-0">
+                      <CardTitle className="text-base">{template.name}</CardTitle>
+                      <CardDescription className="text-xs">
+                        {template.description}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="p-4 text-sm">
+                      <div className="space-y-1">
+                        <p className="text-xs text-muted-foreground mb-2">Požadovaná pole:</p>
+                        <div className="space-y-1">
+                          {template.fields.map((field) => (
+                            <div key={field} className="flex items-center gap-2">
+                              <Check className="h-3 w-3 text-green-500" />
+                              <span className="text-xs">{field}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </CardContent>
+                    <CardFooter className="p-4 pt-0">
+                      <Button 
+                        size="sm" 
+                        className="w-full" 
+                        onClick={() => handleGenerateDocument(template.id)}
+                      >
+                        Vytvořit dokument
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                ))}
+              </div>
+              
+              <div className="bg-muted/30 rounded-lg p-4 mt-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <Calendar className="h-5 w-5 text-primary" />
+                  <h3 className="font-medium">Potřebujete specifický dokument?</h3>
+                </div>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Kontaktujte našeho daňového specialistu nebo navštivte oficiální stránky úřadů.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <Button variant="outline" size="sm" className="flex items-center gap-2">
+                    <ExternalLink className="h-4 w-4" />
+                    <span>Finanční úřad</span>
+                  </Button>
+                  <Button variant="outline" size="sm" className="flex items-center gap-2">
+                    <ExternalLink className="h-4 w-4" />
+                    <span>Elster portál</span>
+                  </Button>
+                </div>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="generated" className="space-y-6 pt-4">
+              {loading ? (
+                <div className="flex flex-col items-center justify-center py-12">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+                  <p>Generuji dokument...</p>
+                </div>
+              ) : generatedDoc ? (
+                <div className="space-y-4">
+                  <div className="bg-green-50 border-green-200 border rounded-md p-4 flex items-center gap-3">
+                    <div className="bg-green-100 p-2 rounded-full">
+                      <Check className="h-5 w-5 text-green-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-green-800">Dokument byl úspěšně vygenerován</h3>
+                      <p className="text-sm text-green-700">Můžete si jej stáhnout nebo vytisknout</p>
+                    </div>
+                  </div>
+                  
+                  <Card>
+                    <CardContent className="p-6">
+                      <div className="flex flex-col md:flex-row md:items-center gap-4 justify-between">
+                        <div className="flex items-center gap-3">
+                          <FileText className="h-8 w-8 text-muted-foreground" />
+                          <div>
+                            <h3 className="font-medium">{generatedDoc}</h3>
+                            <p className="text-xs text-muted-foreground">
+                              Vygenerováno {new Date().toLocaleDateString()} v {new Date().toLocaleTimeString()}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex flex-wrap gap-2 mt-3 md:mt-0">
+                          <Button className="flex items-center gap-2">
+                            <Download className="h-4 w-4" />
+                            <span>Stáhnout</span>
+                          </Button>
+                          <Button variant="outline" onClick={handleReset}>
+                            Vytvořit nový
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  <div className="mt-6">
+                    <h3 className="font-medium mb-2">Náhled dokumentu:</h3>
+                    <AspectRatio ratio={16/9}>
+                      <div className="w-full h-full bg-muted flex items-center justify-center rounded-md border">
+                        <div className="text-center p-6">
+                          <FileText className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
+                          <p className="text-muted-foreground">Náhled dokumentu není dostupný</p>
+                          <p className="text-xs text-muted-foreground mt-1">Stáhněte si dokument pro zobrazení</p>
+                        </div>
+                      </div>
+                    </AspectRatio>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <p>Zatím nemáte žádné vygenerované dokumenty</p>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setActiveTab("templates")} 
+                    className="mt-4"
+                  >
+                    Vytvořit dokument
+                  </Button>
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
+        </CardContent>
       </Card>
     </div>
   );

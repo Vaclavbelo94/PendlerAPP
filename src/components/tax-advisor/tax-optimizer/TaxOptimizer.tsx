@@ -9,6 +9,7 @@ import ResultsDisplay from "./ResultsDisplay";
 import TaxOptimizationTips from "./TaxOptimizationTips";
 import { FormData, TaxResult } from "./types";
 import { useTaxCalculator } from "@/hooks/useTaxCalculator";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 const TaxOptimizer = () => {
   const [displayCurrency, setDisplayCurrency] = useState("€");
@@ -16,6 +17,7 @@ const TaxOptimizer = () => {
   const [optimizedResult, setOptimizedResult] = useState<TaxResult | null>(null);
   const [savings, setSavings] = useState<number | null>(null);
   const { calculateTax } = useTaxCalculator();
+  const isMobile = useMediaQuery("xs");
 
   const handleCountryChange = (country: string) => {
     setDisplayCurrency(country === "de" ? "€" : "Kč");
@@ -64,6 +66,16 @@ const TaxOptimizer = () => {
       
       setOptimizedResult(adjustedOptimizedResult);
       setSavings(calculatedSavings);
+      
+      // Na mobilních zařízeních rolovat na výsledky
+      if (isMobile && calculatedSavings > 0) {
+        setTimeout(() => {
+          const resultsElement = document.getElementById('tax-results');
+          if (resultsElement) {
+            resultsElement.scrollIntoView({ behavior: 'smooth' });
+          }
+        }, 300);
+      }
     }
   };
 
@@ -149,7 +161,7 @@ const TaxOptimizer = () => {
           />
           
           {currentResult && (
-            <div className="mt-8 pt-4">
+            <div className="mt-8 pt-4" id="tax-results">
               <Separator className="mb-6" />
               <ResultsDisplay 
                 currentResult={currentResult}
