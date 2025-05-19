@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { DESIGN_TOKENS } from '@/lib/design-system';
 
 export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 export type TextVariant = 'default' | 'muted' | 'primary' | 'secondary' | 'accent' | 'danger';
@@ -57,150 +56,155 @@ const getAlignmentClasses = (align: TextAlignment) => {
   }
 };
 
-export const Heading = React.forwardRef<HTMLHeadingElement, HeadingProps>(
-  ({ children, className, variant = 'default', weight = 'bold', level = 2, align = 'left', truncate = false, ...props }, ref) => {
-    const Tag = `h${level}` as keyof JSX.IntrinsicElements;
+export const Heading = React.forwardRef<
+  HTMLHeadingElement, 
+  HeadingProps & React.HTMLAttributes<HTMLHeadingElement>
+>(({ children, className, variant = 'default', weight = 'bold', level = 2, align = 'left', truncate = false, ...props }, ref) => {
+  const Tag = `h${level}` as keyof JSX.IntrinsicElements;
 
-    const levelClasses = {
-      1: 'text-4xl lg:text-5xl',
-      2: 'text-3xl lg:text-4xl',
-      3: 'text-2xl lg:text-3xl',
-      4: 'text-xl lg:text-2xl',
-      5: 'text-lg',
-      6: 'text-base',
-    };
+  const levelClasses = {
+    1: 'text-4xl lg:text-5xl',
+    2: 'text-3xl lg:text-4xl',
+    3: 'text-2xl lg:text-3xl',
+    4: 'text-xl lg:text-2xl',
+    5: 'text-lg',
+    6: 'text-base',
+  };
 
-    return (
-      <Tag
-        ref={ref}
-        className={cn(
-          'font-poppins scroll-m-20',
-          levelClasses[level],
-          getVariantClasses(variant),
-          getWeightClasses(weight),
-          getAlignmentClasses(align),
-          truncate && 'truncate',
-          className
-        )}
-        {...props}
-      >
-        {children}
-      </Tag>
-    );
-  }
-);
+  return React.createElement(
+    Tag,
+    {
+      ref,
+      className: cn(
+        'font-poppins scroll-m-20',
+        levelClasses[level],
+        getVariantClasses(variant),
+        getWeightClasses(weight),
+        getAlignmentClasses(align),
+        truncate && 'truncate',
+        className
+      ),
+      ...props
+    },
+    children
+  );
+});
 Heading.displayName = 'Heading';
 
-export const Text = React.forwardRef<HTMLParagraphElement, TextProps>(
-  ({ children, className, variant = 'default', weight = 'normal', size = 'base', align = 'left', truncate = false, ...props }, ref) => {
-    const sizeClasses = {
-      'xs': 'text-xs',
-      'sm': 'text-sm',
-      'base': 'text-base',
-      'lg': 'text-lg',
-      'xl': 'text-xl',
-      '2xl': 'text-2xl',
-      '3xl': 'text-3xl',
-      '4xl': 'text-4xl',
-      '5xl': 'text-5xl',
-    };
+export const Text = React.forwardRef<
+  HTMLParagraphElement,
+  TextProps & React.HTMLAttributes<HTMLParagraphElement>
+>(({ children, className, variant = 'default', weight = 'normal', size = 'base', align = 'left', truncate = false, ...props }, ref) => {
+  const sizeClasses = {
+    'xs': 'text-xs',
+    'sm': 'text-sm',
+    'base': 'text-base',
+    'lg': 'text-lg',
+    'xl': 'text-xl',
+    '2xl': 'text-2xl',
+    '3xl': 'text-3xl',
+    '4xl': 'text-4xl',
+    '5xl': 'text-5xl',
+  };
 
-    return (
-      <p
-        ref={ref}
-        className={cn(
-          'font-inter leading-7',
-          sizeClasses[size],
-          getVariantClasses(variant),
-          getWeightClasses(weight),
-          getAlignmentClasses(align),
-          truncate && 'truncate',
-          className
-        )}
-        {...props}
-      >
-        {children}
-      </p>
-    );
-  }
-);
+  return (
+    <p
+      ref={ref}
+      className={cn(
+        'font-inter leading-7',
+        sizeClasses[size],
+        getVariantClasses(variant),
+        getWeightClasses(weight),
+        getAlignmentClasses(align),
+        truncate && 'truncate',
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </p>
+  );
+});
 Text.displayName = 'Text';
 
-export const Label = React.forwardRef<HTMLSpanElement, TextProps>(
-  ({ children, className, variant = 'muted', weight = 'medium', size = 'sm', align = 'left', truncate = false, ...props }, ref) => {
-    const sizeClasses = {
-      'xs': 'text-xs',
-      'sm': 'text-sm',
-      'base': 'text-base',
-      'lg': 'text-lg',
-      'xl': 'text-xl',
-      '2xl': 'text-2xl',
-      '3xl': 'text-3xl',
-      '4xl': 'text-4xl',
-      '5xl': 'text-5xl',
-    };
+export const Label = React.forwardRef<
+  HTMLSpanElement,
+  TextProps & React.HTMLAttributes<HTMLSpanElement>
+>(({ children, className, variant = 'muted', weight = 'medium', size = 'sm', align = 'left', truncate = false, ...props }, ref) => {
+  const sizeClasses = {
+    'xs': 'text-xs',
+    'sm': 'text-sm',
+    'base': 'text-base',
+    'lg': 'text-lg',
+    'xl': 'text-xl',
+    '2xl': 'text-2xl',
+    '3xl': 'text-3xl',
+    '4xl': 'text-4xl',
+    '5xl': 'text-5xl',
+  };
 
-    return (
-      <span
-        ref={ref}
-        className={cn(
-          'inline-block',
-          sizeClasses[size],
-          getVariantClasses(variant),
-          getWeightClasses(weight),
-          getAlignmentClasses(align),
-          truncate && 'truncate',
-          className
-        )}
-        {...props}
-      >
-        {children}
-      </span>
-    );
-  }
-);
+  return (
+    <span
+      ref={ref}
+      className={cn(
+        'inline-block',
+        sizeClasses[size],
+        getVariantClasses(variant),
+        getWeightClasses(weight),
+        getAlignmentClasses(align),
+        truncate && 'truncate',
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </span>
+  );
+});
 Label.displayName = 'Label';
 
-export const Quote = React.forwardRef<HTMLQuoteElement, TypographyBaseProps>(
-  ({ children, className, variant = 'muted', weight = 'normal', align = 'left', truncate = false, ...props }, ref) => {
-    return (
-      <blockquote
-        ref={ref}
-        className={cn(
-          'border-l-4 border-primary pl-4 italic',
-          getVariantClasses(variant),
-          getWeightClasses(weight),
-          getAlignmentClasses(align),
-          truncate && 'truncate',
-          className
-        )}
-        {...props}
-      >
-        {children}
-      </blockquote>
-    );
-  }
-);
+export const Quote = React.forwardRef<
+  HTMLQuoteElement,
+  TypographyBaseProps & React.HTMLAttributes<HTMLQuoteElement>
+>(({ children, className, variant = 'muted', weight = 'normal', align = 'left', truncate = false, ...props }, ref) => {
+  return (
+    <blockquote
+      ref={ref}
+      className={cn(
+        'border-l-4 border-primary pl-4 italic',
+        getVariantClasses(variant),
+        getWeightClasses(weight),
+        getAlignmentClasses(align),
+        truncate && 'truncate',
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </blockquote>
+  );
+});
 Quote.displayName = 'Quote';
 
-export const Code = React.forwardRef<HTMLElement, TypographyBaseProps>(
-  ({ children, className, variant = 'default', weight = 'normal', align = 'left', truncate = false, ...props }, ref) => {
-    return (
-      <code
-        ref={ref}
-        className={cn(
-          'font-mono rounded bg-muted px-1.5 py-0.5',
-          getVariantClasses(variant),
-          getWeightClasses(weight),
-          getAlignmentClasses(align),
-          truncate && 'truncate',
-          className
-        )}
-        {...props}
-      >
-        {children}
-      </code>
-    );
-  }
-);
+export const Code = React.forwardRef<
+  HTMLElement,
+  TypographyBaseProps & React.HTMLAttributes<HTMLElement>
+>(({ children, className, variant = 'default', weight = 'normal', align = 'left', truncate = false, ...props }, ref) => {
+  return (
+    <code
+      ref={ref}
+      className={cn(
+        'font-mono rounded bg-muted px-1.5 py-0.5',
+        getVariantClasses(variant),
+        getWeightClasses(weight),
+        getAlignmentClasses(align),
+        truncate && 'truncate',
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </code>
+  );
+});
 Code.displayName = 'Code';
