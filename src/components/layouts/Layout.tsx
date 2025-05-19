@@ -1,11 +1,11 @@
 
-import { ReactNode } from "react";
+import { ReactNode, useState, useEffect } from "react";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useState, useEffect } from "react";
 import { useDeviceSize } from "@/hooks/use-mobile";
+import { useLocation } from "react-router-dom";
 
 interface LayoutProps {
   children: ReactNode;
@@ -15,15 +15,21 @@ interface LayoutProps {
 const Layout = ({ children, navbarRightContent }: LayoutProps) => {
   const deviceSize = useDeviceSize();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const location = useLocation();
   
-  // Close sidebar when changing to mobile view
+  // Zavřít sidebar při změně cesty (přechodu na jinou stránku)
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [location.pathname]);
+  
+  // Zavřít sidebar při změně na mobilní zobrazení
   useEffect(() => {
     if (deviceSize === "mobile") {
       setSidebarOpen(false);
     }
   }, [deviceSize]);
 
-  // Close sidebar when clicking outside on mobile
+  // Zavřít sidebar při kliknutí mimo na mobilním zařízení
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
@@ -73,7 +79,7 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
           sidebarOpen={sidebarOpen}
         />
         
-        {/* Overlay for mobile sidebar */}
+        {/* Overlay pro mobilní sidebar */}
         {isMobile && sidebarOpen && (
           <div 
             className="fixed inset-0 bg-black/50 z-40"
@@ -83,7 +89,7 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
           />
         )}
         
-        {/* Page content */}
+        {/* Obsah stránky */}
         <ScrollArea className="flex-1">
           <main className="flex-1 px-4 md:px-6 pb-8">
             {children}

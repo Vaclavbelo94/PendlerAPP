@@ -7,22 +7,27 @@ export const DESKTOP_BREAKPOINT = 1280
 
 export type DeviceSize = "mobile" | "tablet" | "desktop" | undefined
 
+// Optimalizovaná verze detekce mobilních zařízení
 export function useIsMobile() {
   const [isMobile, setIsMobile] = React.useState<boolean | undefined>(undefined)
 
   React.useEffect(() => {
-    const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`)
-    const onChange = () => {
-      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
-    }
-    mql.addEventListener("change", onChange)
-    setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
-    return () => mql.removeEventListener("change", onChange)
-  }, [])
+    const checkIsMobile = () => setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+    
+    // Inicializovat hodnotu
+    checkIsMobile();
+    
+    // Přidat event listener pro změnu velikosti okna
+    window.addEventListener("resize", checkIsMobile);
+    
+    // Cleanup
+    return () => window.removeEventListener("resize", checkIsMobile);
+  }, []);
 
-  return !!isMobile
+  return isMobile === undefined ? false : isMobile;
 }
 
+// Optimalizovaná verze detekce velikosti zařízení
 export function useDeviceSize() {
   const [deviceSize, setDeviceSize] = React.useState<DeviceSize>(undefined)
 
@@ -38,10 +43,13 @@ export function useDeviceSize() {
       }
     }
 
-    checkDeviceSize()
-    window.addEventListener("resize", checkDeviceSize)
-    return () => window.removeEventListener("resize", checkDeviceSize)
-  }, [])
+    // Inicializovat hodnotu a přidat event listener
+    checkDeviceSize();
+    window.addEventListener("resize", checkDeviceSize);
+    
+    // Cleanup
+    return () => window.removeEventListener("resize", checkDeviceSize);
+  }, []);
 
-  return deviceSize
+  return deviceSize;
 }

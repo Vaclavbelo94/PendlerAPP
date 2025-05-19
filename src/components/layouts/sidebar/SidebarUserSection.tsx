@@ -1,102 +1,83 @@
 
-import React from 'react';
+import React from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { 
+  LogOut, 
+  User, 
+  Settings, 
+  CreditCard
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from 'react-router-dom';
-import { Shield } from 'lucide-react';
 import { useAuth } from "@/hooks/useAuth";
 
 interface SidebarUserSectionProps {
   closeSidebar: () => void;
 }
 
-const SidebarUserSection: React.FC<SidebarUserSectionProps> = ({ closeSidebar }) => {
+const SidebarUserSection = ({ closeSidebar }: SidebarUserSectionProps) => {
+  const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  const { isAdmin, user, isPremium, signOut } = useAuth();
-  
-  const handleNavigate = (path: string) => (e?: React.MouseEvent) => {
-    if (e) {
-      e.preventDefault();
-    }
-    navigate(path);
-    const isMobile = window.innerWidth < 768;
-    if (isMobile) {
-      closeSidebar();
-    }
+
+  const handleLogout = async () => {
+    await signOut();
+    closeSidebar(); // Zavřít sidebar po odhlášení
+    navigate("/"); // Přesměrovat na domovskou stránku
   };
-  
-  const handleSignOut = () => {
-    closeSidebar();
-    signOut();
-  };
-  
+
+  if (!user) {
+    return (
+      <div className="p-4">
+        <div className="flex flex-col space-y-2">
+          <Link to="/login" onClick={closeSidebar}>
+            <Button variant="outline" className="w-full justify-start">
+              <User className="mr-2 h-4 w-4" />
+              Přihlásit se
+            </Button>
+          </Link>
+          <Link to="/register" onClick={closeSidebar}>
+            <Button variant="default" className="w-full justify-start">
+              <CreditCard className="mr-2 h-4 w-4" />
+              Registrace
+            </Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="p-4">
-      {/* Admin tlačítko v levém dolním rohu - pouze pro administrátory, když jsou přihlášeni */}
-      {user && isAdmin && (
-        <Button 
-          variant={location.pathname === "/admin" ? "secondary" : "outline"}
-          size="sm"
-          className="w-full justify-start gap-3 mb-4"
-          onClick={handleNavigate("/admin")}
-        >
-          <Shield className="h-4 w-4" />
-          <span className="font-medium">Admin</span>
-          <span className="ml-auto h-2 w-2 rounded-full bg-green-500" />
+    <div className="p-4 border-t border-sidebar-border">
+      <div className="flex items-center gap-2 mb-2">
+        <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-primary-foreground">
+          {user.user_metadata?.username?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase() || "U"}
+        </div>
+        <div>
+          <p className="text-sm font-medium text-sidebar-foreground">
+            {user.user_metadata?.username || user.email?.split('@')[0] || 'Uživatel'}
+          </p>
+          <p className="text-xs text-sidebar-foreground/70">
+            {user.email || ''}
+          </p>
+        </div>
+      </div>
+
+      <div className="flex flex-col space-y-1">
+        <Link to="/profile" onClick={closeSidebar}>
+          <Button variant="ghost" className="w-full justify-start">
+            <User className="mr-2 h-4 w-4" />
+            Profil
+          </Button>
+        </Link>
+        <Link to="/profile-extended" onClick={closeSidebar}>
+          <Button variant="ghost" className="w-full justify-start">
+            <Settings className="mr-2 h-4 w-4" />
+            Nastavení
+          </Button>
+        </Link>
+        <Button variant="ghost" className="w-full justify-start text-red-500" onClick={handleLogout}>
+          <LogOut className="mr-2 h-4 w-4" />
+          Odhlásit se
         </Button>
-      )}
-      
-      <div className="bg-sidebar-accent rounded-lg p-3 mt-2">
-        {user ? (
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-medium">
-                {user.user_metadata?.username || user.email?.split('@')[0] || 'Uživatel'}
-              </p>
-              {isPremium && <span className="bg-amber-500 text-white text-xs px-2 py-0.5 rounded">Premium</span>}
-            </div>
-            <div className="grid gap-2">
-              <Button 
-                size="sm" 
-                variant="outline" 
-                className="w-full"
-                onClick={handleNavigate("/profile")}
-              >
-                Profil
-              </Button>
-              <Button 
-                size="sm" 
-                variant="default" 
-                className="w-full"
-                onClick={handleSignOut}
-              >
-                Odhlásit se
-              </Button>
-            </div>
-          </div>
-        ) : (
-          <>
-            <p className="text-sm font-medium">Přihlášení</p>
-            <p className="text-xs text-muted-foreground mb-2">Přihlašte se pro více možností</p>
-            <div className="grid gap-2">
-              <Button 
-                size="sm" 
-                variant="default" 
-                className="w-full"
-                onClick={handleNavigate("/login")}
-              >
-                Přihlásit se
-              </Button>
-              <Button 
-                size="sm" 
-                variant="outline" 
-                className="w-full"
-                onClick={handleNavigate("/register")}
-              >
-                Registrovat
-              </Button>
-            </div>
-          </>
-        )}
       </div>
     </div>
   );
