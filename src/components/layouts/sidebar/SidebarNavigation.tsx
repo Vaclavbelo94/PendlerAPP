@@ -14,7 +14,7 @@ import {
   Plane,
   Building2,
   BarChart3,
-  FileText, // Nová ikona pro daňového poradce
+  FileText,
 } from "lucide-react";
 import { PremiumBadge } from "@/components/premium/PremiumBadge";
 import { useUnifiedPremiumStatus } from "@/hooks/useUnifiedPremiumStatus";
@@ -28,8 +28,13 @@ const SidebarNavigation = ({ closeSidebar }: SidebarNavigationProps) => {
   const { user, isPremium } = useAuth();
   const { canAccess: canAccessLaws } = useUnifiedPremiumStatus('laws-detail');
   const { canAccess: canAccessLegal } = useUnifiedPremiumStatus('legal-assistant');
-  const { canAccess: canAccessDashboard } = useUnifiedPremiumStatus('personal-dashboard'); 
-  const { canAccess: canAccessTaxAdvisor } = useUnifiedPremiumStatus('tax-advisor'); // Nová kontrola přístupu
+  const { canAccess: canAccessDashboard } = useUnifiedPremiumStatus('personal-dashboard');
+  const { canAccess: canAccessTaxAdvisor } = useUnifiedPremiumStatus('tax-advisor');
+  const { canAccess: canAccessVehicle } = useUnifiedPremiumStatus('vehicle-management');
+  const { canAccess: canAccessShifts } = useUnifiedPremiumStatus('shifts-planning');
+  const { canAccess: canAccessCalculator } = useUnifiedPremiumStatus('calculators');
+  const { canAccess: canAccessTranslator } = useUnifiedPremiumStatus('translator');
+  const { canAccess: canAccessTravelPlanning } = useUnifiedPremiumStatus('travel-planning');
   
   const isActive = (path: string) => {
     if (path === '/') {
@@ -38,18 +43,18 @@ const SidebarNavigation = ({ closeSidebar }: SidebarNavigationProps) => {
     return location.pathname.startsWith(path);
   };
   
-  // Definice navigačních položek
+  // Definice navigačních položek - všechny položky jsou prémiové kromě výuky němčiny
   const mainItems = [
-    { name: "Domů", path: "/", icon: Home },
-    { name: "Výuka němčiny", path: "/language", icon: Languages },
+    { name: "Domů", path: "/", icon: Home, premium: false },
+    { name: "Výuka němčiny", path: "/language", icon: Languages, premium: false },
     { name: "Osobní Dashboard", path: "/dashboard", icon: BarChart3, premium: true },
-    { name: "Správa vozidla", path: "/vehicle", icon: Car },
-    { name: "Plánování směn", path: "/shifts", icon: Calendar },
-    { name: "Kalkulačky", path: "/calculator", icon: Calculator },
-    { name: "Daňový poradce", path: "/tax-advisor", icon: FileText, premium: true }, // Nová položka
+    { name: "Správa vozidla", path: "/vehicle", icon: Car, premium: true },
+    { name: "Plánování směn", path: "/shifts", icon: Calendar, premium: true },
+    { name: "Kalkulačky", path: "/calculator", icon: Calculator, premium: true },
+    { name: "Daňový poradce", path: "/tax-advisor", icon: FileText, premium: true },
     { name: "Zákony", path: "/laws", icon: Scale, premium: true },
-    { name: "Překladač", path: "/translator", icon: Languages },
-    { name: "Plánování cest", path: "/travel-planning", icon: Plane },
+    { name: "Překladač", path: "/translator", icon: Languages, premium: true },
+    { name: "Plánování cest", path: "/travel-planning", icon: Plane, premium: true },
   ];
   
   // Prémiové položky
@@ -72,7 +77,22 @@ const SidebarNavigation = ({ closeSidebar }: SidebarNavigationProps) => {
       } else if (item.path === "/dashboard" && !canAccessDashboard) {
         isDisabled = true;
         showPremiumBadge = true;
-      } else if (item.path === "/tax-advisor" && !canAccessTaxAdvisor) { // Kontrola pro daňového poradce
+      } else if (item.path === "/tax-advisor" && !canAccessTaxAdvisor) {
+        isDisabled = true;
+        showPremiumBadge = true;
+      } else if (item.path === "/vehicle" && !canAccessVehicle) {
+        isDisabled = true;
+        showPremiumBadge = true;
+      } else if (item.path === "/shifts" && !canAccessShifts) {
+        isDisabled = true;
+        showPremiumBadge = true;
+      } else if (item.path === "/calculator" && !canAccessCalculator) {
+        isDisabled = true;
+        showPremiumBadge = true;
+      } else if (item.path === "/translator" && !canAccessTranslator) {
+        isDisabled = true;
+        showPremiumBadge = true;
+      } else if (item.path === "/travel-planning" && !canAccessTravelPlanning) {
         isDisabled = true;
         showPremiumBadge = true;
       }
