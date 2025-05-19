@@ -14,6 +14,7 @@ interface AuthContextType {
   isAdmin: boolean;
   isPremium: boolean;
   signIn: (email: string, password: string) => Promise<{error: any}>;
+  signInWithGoogle: () => Promise<{error: any, url?: string}>;
   signUp: (email: string, password: string, username?: string) => Promise<{error: any}>;
   signOut: () => Promise<void>;
   refreshAdminStatus: () => Promise<void>;
@@ -26,7 +27,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const { user, session, isLoading } = useAuthState();
   const { isAdmin, isPremium: statusIsPremium, setIsAdmin, setIsPremium, refreshAdminStatus, refreshPremiumStatus } = 
     useAuthStatus(user?.id);
-  const { signIn: authSignIn, signUp: authSignUp, signOut: authSignOut } = useAuthMethods();
+  const { signIn: authSignIn, signInWithGoogle: authSignInWithGoogle, signUp: authSignUp, signOut: authSignOut } = useAuthMethods();
   
   const [isCheckingStatus, setIsCheckingStatus] = React.useState(false);
   
@@ -82,6 +83,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return result;
   };
 
+  const signInWithGoogle = async () => {
+    const result = await authSignInWithGoogle();
+    return result;
+  };
+
   const signUp = async (email: string, password: string, username?: string) => {
     const { error, user: newUser } = await authSignUp(email, password, username);
     
@@ -134,6 +140,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     isAdmin,
     isPremium: combinedIsPremium,
     signIn,
+    signInWithGoogle,
     signUp,
     signOut,
     refreshAdminStatus,
