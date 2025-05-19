@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import Logo from '@/components/ui/design-system/Logo';
 
 const SidebarLogo: React.FC<{ closeSidebar: () => void }> = ({ closeSidebar }) => {
   const navigate = useNavigate();
@@ -17,12 +18,14 @@ const SidebarLogo: React.FC<{ closeSidebar: () => void }> = ({ closeSidebar }) =
   };
   
   return (
-    <div onClick={handleNavigate("/")} className="flex items-center space-x-2 cursor-pointer">
-      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white font-bold text-sm">
-        PH
-      </div>
-      <span className="font-poppins font-bold text-lg">PendlerHelfer</span>
-    </div>
+    <Logo 
+      size="lg" 
+      variant="full" 
+      onClick={() => handleNavigate("/")()} 
+      className="cursor-pointer" 
+      showTagline={true}
+      animated={true}
+    />
   );
 };
 

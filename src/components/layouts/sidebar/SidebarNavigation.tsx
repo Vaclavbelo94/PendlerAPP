@@ -13,7 +13,8 @@ import {
   MapIcon,
   HelpCircleIcon,
   LayoutDashboardIcon,
-  InfoIcon
+  InfoIcon,
+  Palette
 } from "lucide-react";
 
 interface SidebarNavigationProps {
@@ -35,6 +36,7 @@ const SidebarNavigation = ({ closeSidebar }: SidebarNavigationProps) => {
     { name: "Doprava", href: "/travel-planning", icon: MapIcon },
     { name: "Daně", href: "/tax-advisor", icon: FileTextIcon },
     { name: "Zákony", href: "/laws", icon: InfoIcon },
+    { name: "Design System", href: "/design-system", icon: Palette },
     { name: "FAQ", href: "/faq", icon: HelpCircleIcon }
   ];
   
