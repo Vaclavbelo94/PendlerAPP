@@ -41,73 +41,64 @@ const LanguageContent = () => {
   };
 
   return (
-    <div className="container py-4">
+    <div className="container max-w-screen-lg mx-auto px-2 sm:px-4 py-2 sm:py-4">
       {/* Vylepšená rychlá navigace - upravená pro mobilní zařízení */}
-      <div className="mb-4 sm:mb-6 p-2 sm:p-3 rounded-lg bg-muted/30 flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
+      <div className="mb-3 sm:mb-4 p-1.5 sm:p-2 rounded-lg bg-muted/30 flex flex-col sm:flex-row items-start sm:items-center gap-1.5 sm:gap-3">
         <div className="flex items-center">
-          <GraduationCap className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
-          <span className="font-medium text-sm sm:text-base">Rychlá navigace:</span>
+          <GraduationCap className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+          <span className="font-medium text-xs sm:text-sm">Rychlá navigace:</span>
         </div>
         <div className="flex flex-wrap gap-1 sm:gap-2 w-full">
           <Button
             variant="outline"
             size="sm"
-            className="flex items-center gap-1 text-xs h-7 px-2 sm:text-sm sm:h-8 sm:px-3"
+            className="flex items-center gap-1 text-xs h-6 px-1.5 sm:text-sm sm:h-7 sm:px-2"
             onClick={() => setActiveTab("grammar")}
           >
-            <BookOpen className="h-3 w-3 sm:h-4 sm:w-4" />
+            <BookOpen className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
             <span>Gramatika</span>
           </Button>
           <Button
             variant="outline"
             size="sm"
-            className="flex items-center gap-1 text-xs h-7 px-2 sm:text-sm sm:h-8 sm:px-3"
+            className="flex items-center gap-1 text-xs h-6 px-1.5 sm:text-sm sm:h-7 sm:px-2"
             onClick={() => setActiveTab("vocabulary")}
           >
-            <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
+            <FileText className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
             <span>Slovíčka</span>
           </Button>
           <Button
             variant="outline"
             size="sm"
-            className="flex items-center gap-1 text-xs h-7 px-2 sm:text-sm sm:h-8 sm:px-3"
+            className="flex items-center gap-1 text-xs h-6 px-1.5 sm:text-sm sm:h-7 sm:px-2"
             onClick={() => setActiveTab("phrases")}
           >
-            <Languages className="h-3 w-3 sm:h-4 sm:w-4" />
+            <Languages className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
             <span>Fráze</span>
           </Button>
           <Button
             variant="outline"
             size="sm"
-            className="flex items-center gap-1 text-xs h-7 px-2 sm:text-sm sm:h-8 sm:px-3 bg-primary/10 hover:bg-primary/20 border-primary/30"
+            className="flex items-center gap-1 text-xs h-6 px-1.5 sm:text-sm sm:h-7 sm:px-2 bg-primary/10 hover:bg-primary/20 border-primary/30"
             onClick={() => setActiveTab("gamification")}
           >
-            <Trophy className="h-3 w-3 sm:h-4 sm:w-4" />
+            <Trophy className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
             <span>Pokroky</span>
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-1 text-xs h-7 px-2 sm:text-sm sm:h-8 sm:px-3"
-            onClick={() => navigate("/translator")}
-          >
-            <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span>Překladač</span>
           </Button>
         </div>
       </div>
       
       {/* Gamifikační přehled - zobrazí se pouze na hlavní stránce */}
-      {activeTab === "grammar" && (
-        <div className="mb-4">
+      {activeTab === "grammar" && !isMobile && (
+        <div className="mb-3 sm:mb-4">
           <GamificationSummary />
         </div>
       )}
       
-      <div className="flex flex-col md:flex-row gap-4 md:gap-6 items-start">
+      <div className="flex flex-col md:flex-row gap-3 md:gap-4 items-start">
         {/* Výuka jazyka - navigace a obsah */}
-        <div className="w-full md:w-2/3 space-y-4">
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 sm:mb-4">Výuka německého jazyka</h1>
+        <div className="w-full md:w-2/3 space-y-3 sm:space-y-4">
+          <h1 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2">Výuka německého jazyka</h1>
           
           {activeTab === "grammar" && (
             <LanguageSearchBar grammarExercises={[]} />
@@ -127,7 +118,7 @@ const LanguageContent = () => {
             onTabChange={setActiveTab}
             renderBadge={renderPremiumBadge}
           >
-            <TabsContent value="grammar" className="space-y-4 sm:space-y-6">
+            <TabsContent value="grammar" className="space-y-3 sm:space-y-4">
               <GrammarTab />
             </TabsContent>
             
@@ -143,7 +134,7 @@ const LanguageContent = () => {
             <TabsContent value="interactive">
               {/* Interaktivní kvíz je pouze pro premium */}
               <PremiumCheck featureKey="language">
-                <div className="mb-4">
+                <div className="mb-3">
                   <PremiumBadge variant="rounded" />
                 </div>
                 <InteractiveQuiz />
@@ -152,7 +143,7 @@ const LanguageContent = () => {
 
             <TabsContent value="gamification">
               {/* Vylepšená gamifikační záložka */}
-              <div className="mb-4">
+              <div className="mb-3">
                 <PremiumBadge variant="rounded" />
               </div>
               <GamificationFeatures />

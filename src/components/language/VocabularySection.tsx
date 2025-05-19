@@ -21,7 +21,7 @@ const VocabularyContent: React.FC = () => {
   const isMobile = useMediaQuery("xs");
   
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-2 sm:space-y-4">
       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
         <VocabularyTabsNavigation 
           selectedTab={selectedTab} 
@@ -30,13 +30,15 @@ const VocabularyContent: React.FC = () => {
         />
         
         {/* Tab Contents */}
-        <ReviewTabContent />
-        <TestTabContent />
-        <BrowseTabContent />
-        <AddTabContent />
-        <BulkTabContent />
-        <ProgressTabContent />
-        <ImportExportTabContent />
+        <div className="mt-2 sm:mt-4">
+          <ReviewTabContent />
+          <TestTabContent />
+          <BrowseTabContent />
+          <AddTabContent />
+          <BulkTabContent />
+          <ProgressTabContent />
+          <ImportExportTabContent />
+        </div>
       </Tabs>
       
       {/* Edit Vocabulary Item Dialog */}

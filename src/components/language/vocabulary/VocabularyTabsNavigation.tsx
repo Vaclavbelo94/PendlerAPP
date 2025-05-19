@@ -25,22 +25,22 @@ const VocabularyTabsNavigation: React.FC<VocabularyTabsNavigationProps> = ({ sel
   const { dueItems } = useVocabularyContext();
   
   return (
-    <TabsList className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 h-auto p-1">
+    <TabsList className="grid grid-cols-4 lg:grid-cols-7 h-auto p-0.5">
       <TabsTrigger 
         value="review" 
         onClick={() => setSelectedTab('review')}
-        className="flex items-center"
+        className="flex items-center py-1 px-0.5"
       >
-        <RotateCw className="w-4 h-4 mr-1" />
-        <span className={isMobile ? "text-xs" : "hidden md:inline"}>Opakování</span>
-        <span className={isMobile ? "hidden" : "md:hidden"}>Opakování</span>
+        <RotateCw className="w-3 h-3 mr-0.5" />
+        <span className={isMobile ? "text-[10px]" : "hidden md:inline text-xs"}>Opakování</span>
+        <span className={isMobile ? "hidden" : "md:hidden text-xs"}>Opak</span>
         {dueItems.length > 0 && (
           <motion.div
             initial={{ scale: 0.5 }}
             animate={{ scale: 1 }}
-            className="ml-1.5 flex"
+            className="ml-0.5 flex"
           >
-            <Badge variant="destructive" className="h-4 min-w-4 flex justify-center items-center text-xs">
+            <Badge variant="destructive" className="h-3 min-w-3 flex justify-center items-center text-[10px]">
               {dueItems.length}
             </Badge>
           </motion.div>
@@ -50,64 +50,64 @@ const VocabularyTabsNavigation: React.FC<VocabularyTabsNavigationProps> = ({ sel
       <TabsTrigger 
         value="test" 
         onClick={() => setSelectedTab('test')}
-        className="flex items-center"
+        className="flex items-center py-1 px-0.5"
       >
-        <ClipboardList className="w-4 h-4 mr-1" />
-        <span className={isMobile ? "text-xs" : "hidden md:inline"}>Test</span>
-        <span className={isMobile ? "hidden" : "md:hidden"}>Test</span>
+        <ClipboardList className="w-3 h-3 mr-0.5" />
+        <span className={isMobile ? "text-[10px]" : "hidden md:inline text-xs"}>Test</span>
+        <span className={isMobile ? "hidden" : "md:hidden text-xs"}>Test</span>
       </TabsTrigger>
       
       <TabsTrigger 
         value="browse" 
         onClick={() => setSelectedTab('browse')}
-        className="flex items-center"
+        className="flex items-center py-1 px-0.5"
       >
-        <FileText className="w-4 h-4 mr-1" />
-        <span className={isMobile ? "text-xs" : "hidden md:inline"}>Prohlížet</span>
-        <span className={isMobile ? "hidden" : "md:hidden"}>Prohlížet</span>
+        <FileText className="w-3 h-3 mr-0.5" />
+        <span className={isMobile ? "text-[10px]" : "hidden md:inline text-xs"}>Prohlížet</span>
+        <span className={isMobile ? "hidden" : "md:hidden text-xs"}>Prohl</span>
       </TabsTrigger>
       
       <TabsTrigger 
         value="add" 
         onClick={() => setSelectedTab('add')}
-        className="flex items-center"
+        className="flex items-center py-1 px-0.5"
       >
-        <Plus className="w-4 h-4 mr-1" />
-        <span className={isMobile ? "text-xs" : "hidden md:inline"}>Přidat</span>
-        <span className={isMobile ? "hidden" : "md:hidden"}>Přidat</span>
+        <Plus className="w-3 h-3 mr-0.5" />
+        <span className={isMobile ? "text-[10px]" : "hidden md:inline text-xs"}>Přidat</span>
+        <span className={isMobile ? "hidden" : "md:hidden text-xs"}>Přidat</span>
       </TabsTrigger>
       
       <TabsTrigger 
         value="bulk" 
         onClick={() => setSelectedTab('bulk')}
-        className="flex items-center"
+        className="flex items-center py-1 px-0.5"
       >
-        <Files className="w-4 h-4 mr-1" />
-        <span className={isMobile ? "text-xs" : "hidden md:inline"}>Hromadně</span>
-        <span className={isMobile ? "hidden" : "md:hidden"}>Hromadně</span>
+        <Files className="w-3 h-3 mr-0.5" />
+        <span className={isMobile ? "text-[10px]" : "hidden md:inline text-xs"}>Hromadně</span>
+        <span className={isMobile ? "hidden" : "md:hidden text-xs"}>Hrom</span>
       </TabsTrigger>
       
       <TabsTrigger 
         value="progress" 
         onClick={() => setSelectedTab('progress')}
-        className="flex items-center"
+        className="flex items-center py-1 px-0.5"
       >
-        <BarChart className="w-4 h-4 mr-1" />
-        <span className={isMobile ? "text-xs" : "hidden md:inline"}>Statistiky</span>
-        <span className={isMobile ? "hidden" : "md:hidden"}>Statistiky</span>
+        <BarChart className="w-3 h-3 mr-0.5" />
+        <span className={isMobile ? "text-[10px]" : "hidden md:inline text-xs"}>Statistiky</span>
+        <span className={isMobile ? "hidden" : "md:hidden text-xs"}>Stat</span>
       </TabsTrigger>
       
       <TabsTrigger 
         value="import-export" 
         onClick={() => setSelectedTab('import-export')}
-        className="flex items-center"
+        className="flex items-center py-1 px-0.5"
       >
         <div className="flex items-center">
-          <Import className="w-3 h-3" />
-          <Download className="w-3 h-3" />
+          <Import className="w-2 h-2" />
+          <Download className="w-2 h-2" />
         </div>
-        <span className={isMobile ? "text-xs" : "hidden md:inline ml-1"}>Import/Export</span>
-        <span className={isMobile ? "hidden" : "md:hidden ml-1"}>Imp/Exp</span>
+        <span className={isMobile ? "text-[10px]" : "hidden md:inline text-xs ml-0.5"}>Imp/Exp</span>
+        <span className={isMobile ? "hidden" : "md:hidden text-xs ml-0.5"}>I/E</span>
       </TabsTrigger>
     </TabsList>
   );
