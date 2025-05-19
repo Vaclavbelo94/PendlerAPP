@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -130,12 +131,12 @@ const TaxOptimizer = () => {
     <div className="space-y-8">
       <Card>
         <CardHeader>
-          <CardTitle>Daňová optimalizace pro pendlery</CardTitle>
+          <CardTitle className="text-lg md:text-xl">Daňová optimalizace pro pendlery</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           <Alert className="bg-blue-50 text-blue-800 border-blue-200">
             <Info className="h-4 w-4" />
-            <AlertDescription>
+            <AlertDescription className="text-sm">
               Tento nástroj vám pomůže optimalizovat vaše daňové zatížení při práci v Německu.
               Vyplňte formulář níže a zjistěte, kolik můžete ušetřit na daních.
             </AlertDescription>
