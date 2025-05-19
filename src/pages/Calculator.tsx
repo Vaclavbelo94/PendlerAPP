@@ -2,10 +2,10 @@
 import React from 'react';
 import { Helmet } from "react-helmet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScientificCalculator } from "@/components/calculator/ScientificCalculator";
-import { BasicCalculator } from "@/components/calculator/BasicCalculator";
-import { TaxCalculator } from "@/components/calculator/TaxCalculator";
-import { CrossBorderTaxCalculator } from "@/components/calculator/CrossBorderTaxCalculator";
+import ScientificCalculator from "@/components/calculator/ScientificCalculator";
+import BasicCalculator from "@/components/calculator/BasicCalculator";
+import TaxCalculator from "@/components/calculator/TaxCalculator";
+import CrossBorderTaxCalculator from "@/components/calculator/CrossBorderTaxCalculator";
 import { Calculator, BadgePercent, Calculator as CalcIcon, Brain } from "lucide-react";
 import PremiumCheck from "@/components/premium/PremiumCheck";
 

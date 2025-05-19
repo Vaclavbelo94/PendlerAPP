@@ -4,10 +4,10 @@ import { Helmet } from "react-helmet";
 import PremiumCheck from "@/components/premium/PremiumCheck";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
-import { OverviewTab } from "@/components/dashboard/tabs/OverviewTab";
-import { LanguageTab } from "@/components/dashboard/tabs/LanguageTab"; 
-import { EducationTab } from "@/components/dashboard/tabs/EducationTab";
-import { ScheduleTab } from "@/components/dashboard/tabs/ScheduleTab";
+import OverviewTab from "@/components/dashboard/tabs/OverviewTab";
+import LanguageTab from "@/components/dashboard/tabs/LanguageTab"; 
+import EducationTab from "@/components/dashboard/tabs/EducationTab";
+import ScheduleTab from "@/components/dashboard/tabs/ScheduleTab";
 
 const Dashboard = () => {
   return (

@@ -5,10 +5,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import EducationWidget from "../EducationWidget";
 
 interface EducationTabProps {
-  isLoading: boolean;
+  isLoading?: boolean;
 }
 
-const EducationTab = ({ isLoading }: EducationTabProps) => {
+const EducationTab = ({ isLoading = false }: EducationTabProps) => {
   return (
     <Card>
       <CardHeader>

@@ -5,10 +5,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import ScheduleWidget from "../ScheduleWidget";
 
 interface ScheduleTabProps {
-  isLoading: boolean;
+  isLoading?: boolean;
 }
 
-const ScheduleTab = ({ isLoading }: ScheduleTabProps) => {
+const ScheduleTab = ({ isLoading = false }: ScheduleTabProps) => {
   return (
     <Card>
       <CardHeader>

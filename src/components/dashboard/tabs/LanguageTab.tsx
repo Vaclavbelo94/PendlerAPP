@@ -5,10 +5,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import LanguageStatsWidget from "../LanguageStatsWidget";
 
 interface LanguageTabProps {
-  isLoading: boolean;
+  isLoading?: boolean;
 }
 
-const LanguageTab = ({ isLoading }: LanguageTabProps) => {
+const LanguageTab = ({ isLoading = false }: LanguageTabProps) => {
   return (
     <Card>
       <CardHeader>

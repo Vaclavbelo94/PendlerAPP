@@ -6,10 +6,10 @@ import ShiftsProgress from "../ShiftsProgress";
 import CommuteComparison from "../CommuteComparison";
 
 interface OverviewTabProps {
-  isLoading: boolean;
+  isLoading?: boolean;
 }
 
-const OverviewTab = ({ isLoading }: OverviewTabProps) => {
+const OverviewTab = ({ isLoading = false }: OverviewTabProps) => {
   if (isLoading) {
     return null; // Loading state is handled by the parent
   }
