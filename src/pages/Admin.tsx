@@ -62,7 +62,7 @@ const Admin = () => {
         </div>
 
         {isAdmin ? (
-          <Tabs defaultValue="users" className="space-y-6">
+          <Tabs defaultValue="promo" className="space-y-6">
             <TabsList>
               <TabsTrigger value="users">Uživatelé</TabsTrigger>
               <TabsTrigger value="premium">Premium funkce</TabsTrigger>

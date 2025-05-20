@@ -114,6 +114,38 @@ export const PromoCodesPanel = () => {
     return result;
   };
 
+  // Add functionality to reset usage count
+  const resetUsageCount = (id: string) => {
+    const updatedCodes = promoCodes.map(code => {
+      if (code.id === id) {
+        return {
+          ...code,
+          usedCount: 0
+        };
+      }
+      return code;
+    });
+    savePromoCodes(updatedCodes);
+    toast.success("Počet použití byl resetován");
+  };
+
+  // Extended validity of a promo code
+  const extendValidity = (id: string) => {
+    const updatedCodes = promoCodes.map(code => {
+      if (code.id === id) {
+        const newValidUntil = new Date();
+        newValidUntil.setMonth(newValidUntil.getMonth() + 3); // Extend by 3 months
+        return {
+          ...code,
+          validUntil: newValidUntil.toISOString()
+        };
+      }
+      return code;
+    });
+    savePromoCodes(updatedCodes);
+    toast.success("Platnost promo kódu byla prodloužena");
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -162,7 +194,21 @@ export const PromoCodesPanel = () => {
                 <TableCell>
                   {code.usedCount} / {code.maxUses === null ? "∞" : code.maxUses}
                 </TableCell>
-                <TableCell className="text-right">
+                <TableCell className="text-right space-x-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => resetUsageCount(code.id)}
+                  >
+                    Reset
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => extendValidity(code.id)}
+                  >
+                    Prodloužit
+                  </Button>
                   <Button 
                     variant="destructive" 
                     size="sm"
@@ -256,4 +302,3 @@ export const PromoCodesPanel = () => {
     </div>
   );
 };
-

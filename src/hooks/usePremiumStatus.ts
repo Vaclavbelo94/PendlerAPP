@@ -19,6 +19,14 @@ export const usePremiumStatus = (
       const userStr = localStorage.getItem("currentUser");
       if (!userStr) return false;
       const userData = JSON.parse(userStr);
+      
+      // Check if premium has expired
+      if (userData.isPremium && userData.premiumUntil) {
+        const premiumExpiry = new Date(userData.premiumUntil);
+        const now = new Date();
+        return premiumExpiry > now;
+      }
+      
       return userData.isPremium === true;
     } catch (e) {
       console.error('Error checking premium status from localStorage:', e);
@@ -28,7 +36,8 @@ export const usePremiumStatus = (
 
   // Special check for our target user
   const isSpecialUser = React.useCallback(() => {
-    const isSpecial = user?.email === 'uzivatel@pendlerapp.com';
+    const specialEmails = ['uzivatel@pendlerapp.com', 'admin@pendlerapp.com'];
+    const isSpecial = user?.email ? specialEmails.includes(user.email) : false;
     console.log("Premium status special user check:", { email: user?.email, isSpecial });
     return isSpecial;
   }, [user?.email]);

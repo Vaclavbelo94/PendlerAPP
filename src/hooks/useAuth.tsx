@@ -1,4 +1,3 @@
-
 import * as React from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { useAuthState } from './useAuthState';
@@ -42,8 +41,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       setIsCheckingStatus(true);
       try {
-        // Special user check
-        if (user.email === 'uzivatel@pendlerapp.com') {
+        // Special user check for automatic premium
+        if (user.email === 'uzivatel@pendlerapp.com' || user.email === 'admin@pendlerapp.com') {
           console.log("Special user detected in initial premium check");
           setIsPremium(true);
           
@@ -93,7 +92,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     if (!error && newUser) {
       // Check if this is our special user
-      if (newUser.email === 'uzivatel@pendlerapp.com') {
+      if (newUser.email === 'uzivatel@pendlerapp.com' || newUser.email === 'admin@pendlerapp.com') {
         console.log("Special user signed up");
         setIsPremium(true);
         

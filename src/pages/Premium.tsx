@@ -1,263 +1,186 @@
 
-import { useNavigate } from "react-router-dom";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { CheckIcon, DiamondIcon, StarIcon, ShieldIcon } from "lucide-react";
-import { toast } from "sonner";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { CheckIcon } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import PromoCodeRedemption from "@/components/premium/PromoCodeRedemption";
 
 const Premium = () => {
-  const navigate = useNavigate();
+  const { user, isPremium } = useAuth();
+  const [premiumUntil, setPremiumUntil] = useState<string | null>(null);
 
-  const activatePremium = (months: number) => {
+  useEffect(() => {
+    // Get premium expiry from localStorage
     try {
-      // Check if user is logged in
-      const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-      if (!isLoggedIn) {
-        navigate("/login");
-        return;
+      const userStr = localStorage.getItem("currentUser");
+      if (userStr) {
+        const userData = JSON.parse(userStr);
+        if (userData.premiumUntil) {
+          setPremiumUntil(userData.premiumUntil);
+        }
       }
+    } catch (e) {
+      console.error('Error checking premium status expiry:', e);
+    }
+  }, [isPremium]);
 
-      // Get current user
-      const currentUser = JSON.parse(localStorage.getItem("currentUser") || "{}");
-      
-      // Get all users
-      const allUsers = JSON.parse(localStorage.getItem("users") || "[]");
-      const userIndex = allUsers.findIndex((u: any) => u.email === currentUser.email);
-      
-      if (userIndex === -1) {
-        toast.error("Uživatel nenalezen");
-        return;
-      }
-
-      // Calculate expiry date
-      const now = new Date();
-      const expiry = new Date();
-      expiry.setMonth(now.getMonth() + months);
-
-      // Update user
-      allUsers[userIndex] = {
-        ...allUsers[userIndex],
-        isPremium: true,
-        premiumExpiry: expiry.toISOString(),
-      };
-
-      // Update localStorage
-      localStorage.setItem("users", JSON.stringify(allUsers));
-      localStorage.setItem("currentUser", JSON.stringify({
-        ...currentUser,
-        isPremium: true,
-        premiumExpiry: expiry.toISOString(),
-      }));
-
-      toast.success(`Premium účet aktivován na ${months} ${months === 1 ? 'měsíc' : months < 5 ? 'měsíce' : 'měsíců'}!`);
-      navigate("/profile");
-    } catch (error) {
-      console.error("Error activating premium:", error);
-      toast.error("Chyba při aktivaci Premium účtu");
+  const formatDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString();
+    } catch (e) {
+      return 'Neznámé datum';
     }
   };
 
   return (
-    <div className="container py-10">
-      <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-12">
-          <div className="inline-block p-3 bg-gradient-to-br from-amber-100 to-amber-200 rounded-full mb-4 shadow-md">
-            <DiamondIcon className="h-12 w-12 text-amber-500" />
-          </div>
-          <h1 className="text-3xl font-bold mb-2">Aktivujte Premium účet</h1>
-          <p className="text-muted-foreground max-w-xl mx-auto">
-            Získejte přístup ke všem premium funkcím aplikace a využívejte
-            plný potenciál všech nástrojů.
+    <div className="container py-8 max-w-6xl">
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight mb-2">Premium funkce</h1>
+          <p className="text-muted-foreground">
+            Odemkněte plný potenciál aplikace s prémiovými funkcemi
           </p>
         </div>
-
-        <div className="grid gap-8 md:grid-cols-3">
-          {/* Monthly Plan */}
-          <PricingCard
-            title="Měsíční"
-            price="149 Kč"
-            period="měsíčně"
-            description="Ideální pro krátkodobé použití"
-            features={[
-              "Plánování směn",
-              "Pokročilý překladač",
-              "Daňové kalkulačky",
-              "Rozšířené materiály k němčině",
-              "Správa vozidla"
-            ]}
-            onActivate={() => activatePremium(1)}
-          />
-
-          {/* 3-Month Plan */}
-          <PricingCard
-            title="Čtvrtletní"
-            price="399 Kč"
-            period="na 3 měsíce"
-            description="Ušetříte 11% oproti měsíčnímu"
-            features={[
-              "Plánování směn",
-              "Pokročilý překladač",
-              "Daňové kalkulačky",
-              "Rozšířené materiály k němčině",
-              "Správa vozidla"
-            ]}
-            highlighted={true}
-            badgeText="Nejoblíbenější"
-            onActivate={() => activatePremium(3)}
-          />
-
-          {/* Annual Plan */}
-          <PricingCard
-            title="Roční"
-            price="1499 Kč"
-            period="ročně"
-            description="Ušetříte 16% oproti měsíčnímu"
-            features={[
-              "Plánování směn",
-              "Pokročilý překladač",
-              "Daňové kalkulačky",
-              "Rozšířené materiály k němčině",
-              "Správa vozidla"
-            ]}
-            badgeText="Nejlepší hodnota"
-            onActivate={() => activatePremium(12)}
-          />
-        </div>
         
-        <div className="mt-12">
-          <div className="bg-gradient-to-r from-amber-50 to-amber-100 border border-amber-200 rounded-lg p-6 shadow-sm">
-            <h2 className="text-xl font-semibold text-amber-800 mb-4 flex items-center">
-              <DiamondIcon className="h-5 w-5 mr-2 text-amber-600" />
-              Co získáte s Premium verzí
+        {isPremium && (
+          <div className="bg-green-500/10 border border-green-500/20 p-4 rounded-lg text-center">
+            <h2 className="text-xl font-medium text-green-600 dark:text-green-400">
+              Máte aktivní premium předplatné!
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-              <PremiumFeatureItem 
-                title="Pokročilý překladač" 
-                description="Profesionální překlady s možností ukládání historie a frází"
-              />
-              <PremiumFeatureItem 
-                title="Daňové kalkulačky" 
-                description="Kompletní sada nástrojů pro výpočet daní v Německu"
-              />
-              <PremiumFeatureItem 
-                title="Rozšířený slovník" 
-                description="Přístup k rozšířené databázi slovíček a frází"
-              />
-              <PremiumFeatureItem 
-                title="Plánování směn" 
-                description="Pokročilé nástroje pro správu a export pracovních směn"
-              />
-              <PremiumFeatureItem 
-                title="Interaktivní výuka" 
-                description="Přístup ke kvízům a gamifikačním prvkům výuky němčiny"
-              />
-              <PremiumFeatureItem 
-                title="Prioritní podpora" 
-                description="Přednostní přístup k zákaznické podpoře"
-              />
-            </div>
+            {premiumUntil && (
+              <p className="text-sm text-muted-foreground mt-1">
+                Platné do: {formatDate(premiumUntil)}
+              </p>
+            )}
           </div>
-        </div>
+        )}
+
+        {!isPremium && user && (
+          <PromoCodeRedemption />
+        )}
         
-        <div className="mt-12 text-center">
-          <Button variant="link" onClick={() => navigate(-1)}>
-            Zpět na předchozí stránku
-          </Button>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <PremiumFeatureCard 
+            title="Základní"
+            description="Základní funkce pro všechny uživatele"
+            price="Zdarma"
+            features={[
+              "Základní překladač",
+              "Jednoduchá kalkulačka",
+              "Kalendář směn",
+              "Omezený počet slovíček"
+            ]}
+            current={!isPremium}
+          />
+          
+          <PremiumFeatureCard 
+            title="Premium"
+            description="Rozšířené funkce pro náročné uživatele"
+            price="99 Kč / měsíc"
+            features={[
+              "Neomezený překladač",
+              "Pokročilé kalkulačky",
+              "Neomezený počet slovíček",
+              "Offline přístup ke slovíčkům",
+              "Pokročilé grafy a statistiky",
+              "Přednostní podpora"
+            ]}
+            current={isPremium}
+            recommended
+          />
+          
+          <PremiumFeatureCard 
+            title="Firemní"
+            description="Pro firmy a týmy pendlerů"
+            price="Individuální"
+            features={[
+              "Vše z Premium plánu",
+              "Správa více uživatelů",
+              "Sdílené slovníky a překlady",
+              "API přístup",
+              "Vlastní branding",
+              "Prioritní podpora 24/7"
+            ]}
+            contactSales
+          />
         </div>
       </div>
     </div>
   );
 };
 
-interface PremiumFeatureItemProps {
+interface PremiumFeatureCardProps {
   title: string;
   description: string;
-}
-
-const PremiumFeatureItem = ({ title, description }: PremiumFeatureItemProps) => {
-  return (
-    <div className="flex items-start">
-      <div className="mt-1 p-1 bg-amber-200 rounded-full">
-        <CheckIcon className="h-4 w-4 text-amber-700" />
-      </div>
-      <div className="ml-3">
-        <h3 className="text-base font-medium text-amber-800">{title}</h3>
-        <p className="text-sm text-muted-foreground">{description}</p>
-      </div>
-    </div>
-  );
-};
-
-interface PricingCardProps {
-  title: string;
   price: string;
-  period: string;
-  description: string;
   features: string[];
-  highlighted?: boolean;
-  badgeText?: string;
-  onActivate: () => void;
+  current?: boolean;
+  recommended?: boolean;
+  contactSales?: boolean;
 }
 
-const PricingCard = ({
+const PremiumFeatureCard = ({
   title,
-  price,
-  period,
   description,
+  price,
   features,
-  highlighted = false,
-  badgeText,
-  onActivate
-}: PricingCardProps) => {
+  current,
+  recommended,
+  contactSales,
+}: PremiumFeatureCardProps) => {
   return (
-    <Card className={`flex flex-col relative ${
-      highlighted 
-        ? 'border-amber-300 shadow-lg shadow-amber-100/50 bg-gradient-to-br from-amber-50 to-white' 
-        : ''
-    }`}>
-      {badgeText && (
+    <Card className={`relative ${recommended ? 'border-primary shadow-md' : ''}`}>
+      {recommended && (
         <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-          <Badge className={`${highlighted ? 'bg-amber-500' : 'bg-amber-400'} text-white border-none px-3`}>
-            <StarIcon className="h-3.5 w-3.5 mr-1" />
-            {badgeText}
+          <Badge variant="default" className="bg-primary text-primary-foreground">
+            Doporučeno
           </Badge>
         </div>
       )}
-      <CardHeader className={highlighted ? 'pb-2' : ''}>
+      
+      <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <CardContent className="flex-1">
-        <div className="mb-6">
-          <span className="text-3xl font-bold">{price}</span>
-          <span className="text-muted-foreground"> {period}</span>
+        <div className="mt-2">
+          <span className="text-2xl font-bold">{price}</span>
         </div>
-        <ul className="space-y-2.5">
-          {features.map((feature, i) => (
-            <li key={i} className="flex items-center gap-2">
-              <div className={`p-1 rounded-full ${highlighted ? 'bg-amber-100' : 'bg-muted'}`}>
-                <CheckIcon className={`h-3.5 w-3.5 ${highlighted ? 'text-amber-600' : 'text-green-500'}`} />
-              </div>
-              <span className="text-sm">{feature}</span>
+      </CardHeader>
+      
+      <CardContent>
+        <ul className="space-y-2">
+          {features.map((feature, index) => (
+            <li key={index} className="flex items-start">
+              <CheckIcon className="h-5 w-5 text-green-500 mr-2 shrink-0" />
+              <span>{feature}</span>
             </li>
           ))}
         </ul>
       </CardContent>
+      
       <CardFooter>
-        <Button 
-          className={`w-full ${highlighted ? 'bg-amber-500 hover:bg-amber-600' : ''}`} 
-          onClick={onActivate}
-        >
-          {highlighted ? (
-            <>
-              <DiamondIcon className="mr-2 h-4 w-4" />
-              Aktivovat
-            </>
-          ) : (
-            "Aktivovat"
-          )}
-        </Button>
+        {current ? (
+          <Button variant="outline" className="w-full" disabled>
+            Aktuální plán
+          </Button>
+        ) : contactSales ? (
+          <Button variant="outline" className="w-full">
+            Kontaktujte nás
+          </Button>
+        ) : (
+          <Button className="w-full">
+            Vybrat plán
+          </Button>
+        )}
       </CardFooter>
     </Card>
   );
