@@ -3,9 +3,13 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 
 type Theme = 'light' | 'dark';
 
+type ColorScheme = 'purple' | 'blue' | 'green' | 'amber' | 'red' | 'pink';
+
 interface ThemeContextType {
   theme: Theme;
+  colorScheme: ColorScheme;
   setTheme: (theme: Theme) => void;
+  setColorScheme: (colorScheme: ColorScheme) => void;
   toggleTheme: () => void;
 }
 
@@ -32,6 +36,19 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     return 'light';
   });
 
+  const [colorScheme, setColorScheme] = useState<ColorScheme>(() => {
+    // Načtení barevného schématu z local storage
+    if (typeof window !== 'undefined') {
+      const savedColorScheme = localStorage.getItem('colorScheme') as ColorScheme;
+      if (savedColorScheme) {
+        return savedColorScheme;
+      }
+    }
+    
+    // Výchozí hodnota
+    return 'purple';
+  });
+  
   // Efekt pro aktualizaci HTML atributu a localStorage při změně tématu
   useEffect(() => {
     const root = window.document.documentElement;
@@ -43,6 +60,38 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     // Uložit do localStorage
     localStorage.setItem('theme', theme);
   }, [theme]);
+  
+  // Efekt pro aktualizaci barevného schématu
+  useEffect(() => {
+    const root = window.document.documentElement;
+    
+    // Nastavit CSS proměnnou s primární barvou podle vybraného schématu
+    switch (colorScheme) {
+      case 'purple':
+        root.style.setProperty('--color-primary', '#8884d8');
+        break;
+      case 'blue':
+        root.style.setProperty('--color-primary', '#0ea5e9');
+        break;
+      case 'green':
+        root.style.setProperty('--color-primary', '#10b981');
+        break;
+      case 'amber':
+        root.style.setProperty('--color-primary', '#f59e0b');
+        break;
+      case 'red':
+        root.style.setProperty('--color-primary', '#ef4444');
+        break;
+      case 'pink':
+        root.style.setProperty('--color-primary', '#ec4899');
+        break;
+      default:
+        root.style.setProperty('--color-primary', '#8884d8');
+    }
+    
+    // Uložit do localStorage
+    localStorage.setItem('colorScheme', colorScheme);
+  }, [colorScheme]);
 
   // Funkce pro přepnutí témat
   const toggleTheme = () => {
@@ -50,7 +99,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, colorScheme, setTheme, setColorScheme, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   );

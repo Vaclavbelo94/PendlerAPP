@@ -28,9 +28,9 @@ const ProfileAppearance = ({
   initialCompactMode = false,
   onSave
 }: ProfileAppearanceProps) => {
-  const { theme, setTheme } = useTheme();
+  const { theme, colorScheme, setTheme, setColorScheme } = useTheme();
   const [darkMode, setDarkMode] = useState(initialDarkMode);
-  const [colorScheme, setColorScheme] = useState(initialColorScheme);
+  const [selectedColorScheme, setSelectedColorScheme] = useState(initialColorScheme);
   const [compactMode, setCompactMode] = useState(initialCompactMode);
   
   // Synchronizovat stav dark mode s globálním tématem
@@ -38,13 +38,32 @@ const ProfileAppearance = ({
     setDarkMode(theme === 'dark');
   }, [theme]);
   
+  // Synchronizovat stav barevného schématu s globálním schématem
+  useEffect(() => {
+    setSelectedColorScheme(colorScheme);
+  }, [colorScheme]);
+  
   // Nastavit globální téma při změně darkMode přepínače
   useEffect(() => {
     setTheme(darkMode ? 'dark' : 'light');
   }, [darkMode, setTheme]);
   
+  // Nastavit globální barevné schéma při změně colorScheme
+  useEffect(() => {
+    // Ověříme, že selectedColorScheme je validní hodnota pro setColorScheme
+    const validColorScheme = ['purple', 'blue', 'green', 'amber', 'red', 'pink'].includes(selectedColorScheme) 
+      ? selectedColorScheme 
+      : 'purple';
+      
+    setColorScheme(validColorScheme as any);
+  }, [selectedColorScheme, setColorScheme]);
+  
   const handleSave = () => {
-    onSave({ darkMode, colorScheme, compactMode });
+    onSave({ 
+      darkMode, 
+      colorScheme: selectedColorScheme, 
+      compactMode 
+    });
     toast.success("Nastavení vzhledu bylo uloženo");
   };
   
@@ -98,13 +117,13 @@ const ProfileAppearance = ({
                 </p>
               </div>
               
-              <RadioGroup value={colorScheme} onValueChange={setColorScheme} className="grid grid-cols-3 gap-4">
-                <ColorOption value="purple" label="Fialová" color="#8884d8" selected={colorScheme === "purple"} />
-                <ColorOption value="blue" label="Modrá" color="#0ea5e9" selected={colorScheme === "blue"} />
-                <ColorOption value="green" label="Zelená" color="#10b981" selected={colorScheme === "green"} />
-                <ColorOption value="amber" label="Jantarová" color="#f59e0b" selected={colorScheme === "amber"} />
-                <ColorOption value="red" label="Červená" color="#ef4444" selected={colorScheme === "red"} />
-                <ColorOption value="pink" label="Růžová" color="#ec4899" selected={colorScheme === "pink"} />
+              <RadioGroup value={selectedColorScheme} onValueChange={setSelectedColorScheme} className="grid grid-cols-3 gap-4">
+                <ColorOption value="purple" label="Fialová" color="#8884d8" selected={selectedColorScheme === "purple"} />
+                <ColorOption value="blue" label="Modrá" color="#0ea5e9" selected={selectedColorScheme === "blue"} />
+                <ColorOption value="green" label="Zelená" color="#10b981" selected={selectedColorScheme === "green"} />
+                <ColorOption value="amber" label="Jantarová" color="#f59e0b" selected={selectedColorScheme === "amber"} />
+                <ColorOption value="red" label="Červená" color="#ef4444" selected={selectedColorScheme === "red"} />
+                <ColorOption value="pink" label="Růžová" color="#ec4899" selected={selectedColorScheme === "pink"} />
               </RadioGroup>
             </div>
           </TabsContent>
