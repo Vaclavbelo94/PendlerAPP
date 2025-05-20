@@ -6,6 +6,8 @@ interface ResponsiveContainerProps extends React.HTMLAttributes<HTMLDivElement> 
   children: React.ReactNode
   as?: React.ElementType
   fluid?: boolean
+  padding?: string
+  maxWidth?: string
 }
 
 export function ResponsiveContainer({
@@ -13,14 +15,16 @@ export function ResponsiveContainer({
   className,
   as: Component = "div",
   fluid = false,
+  padding = "px-2 sm:px-4 md:px-6",
+  maxWidth = "max-w-7xl",
   ...props
 }: ResponsiveContainerProps) {
   return (
     <Component
       className={cn(
         fluid 
-          ? "w-full px-4 sm:px-6 lg:px-8" 
-          : "container mx-auto px-4 sm:px-6 lg:px-8",
+          ? `w-full ${padding}` 
+          : `mx-auto ${padding} ${maxWidth}`,
         className
       )}
       {...props}
@@ -46,7 +50,7 @@ export function ResponsiveGrid({
   children,
   className,
   columns = { mobile: 1, sm: 2, md: 2, lg: 3, xl: 4 },
-  gap = "gap-6",
+  gap = "gap-3 sm:gap-4 md:gap-6",
   ...props
 }: ResponsiveGridProps) {
   // Generate responsive grid classes using Tailwind's built-in responsive prefixes

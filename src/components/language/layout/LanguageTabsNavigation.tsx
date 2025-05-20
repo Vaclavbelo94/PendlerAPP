@@ -21,7 +21,7 @@ const LanguageTabsNavigation: React.FC<LanguageTabsNavigationProps> = ({
   
   return (
     <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
-      <TabsList className="flex w-full mb-3 sm:mb-4 bg-muted/60 p-0.5 h-auto">
+      <TabsList className="flex w-full mb-2 sm:mb-3 bg-muted/60 p-0.5 h-auto">
         <TabsTrigger value="grammar" className="flex-1 py-1 sm:py-1.5 px-0.5 sm:px-1.5">
           <BookOpen className="h-3 w-3 sm:h-3.5 sm:w-3.5 sm:mr-1.5" />
           <span className={isMobile ? "sr-only" : "hidden sm:inline text-xs"}>Gramatika</span>
@@ -50,7 +50,7 @@ const LanguageTabsNavigation: React.FC<LanguageTabsNavigationProps> = ({
           <Trophy className="h-3 w-3 sm:h-3.5 sm:w-3.5 sm:mr-1.5" />
           <span className={isMobile ? "sr-only" : "hidden sm:inline text-xs"}>Odměny</span>
           <span className={isMobile ? "text-[10px] mt-0.5" : "sm:hidden text-xs"}>Odměny</span>
-          {renderBadge && renderBadge("interactive")}
+          {renderBadge && renderBadge("gamification")}
         </TabsTrigger>
       </TabsList>
       {children}

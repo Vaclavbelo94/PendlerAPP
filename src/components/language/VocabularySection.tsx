@@ -30,7 +30,7 @@ const VocabularyContent: React.FC = () => {
         />
         
         {/* Tab Contents */}
-        <div className="mt-2 sm:mt-4">
+        <div className="mt-1.5 sm:mt-3">
           <ReviewTabContent />
           <TestTabContent />
           <BrowseTabContent />

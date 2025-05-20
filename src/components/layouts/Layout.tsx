@@ -4,7 +4,7 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useDeviceSize } from "@/hooks/use-mobile";
+import { useMediaQuery } from "@/hooks/use-media-query";
 import { useLocation } from "react-router-dom";
 
 interface LayoutProps {
@@ -13,7 +13,7 @@ interface LayoutProps {
 }
 
 const Layout = ({ children, navbarRightContent }: LayoutProps) => {
-  const deviceSize = useDeviceSize();
+  const isMobile = useMediaQuery("xs");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
   
@@ -22,13 +22,6 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
     setSidebarOpen(false);
   }, [location.pathname]);
   
-  // Zavřít sidebar při změně na mobilní zobrazení
-  useEffect(() => {
-    if (deviceSize === "mobile") {
-      setSidebarOpen(false);
-    }
-  }, [deviceSize]);
-
   // Zavřít sidebar při kliknutí mimo na mobilním zařízení
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -37,21 +30,19 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
       if (target.closest('[data-menu-trigger="true"]')) {
         return;
       }
-      if (deviceSize === "mobile" && sidebarOpen) {
+      if (isMobile && sidebarOpen) {
         setSidebarOpen(false);
       }
     };
 
-    if (sidebarOpen && deviceSize === "mobile") {
+    if (sidebarOpen && isMobile) {
       document.addEventListener("click", handleClickOutside);
     }
 
     return () => {
       document.removeEventListener("click", handleClickOutside);
     };
-  }, [sidebarOpen, deviceSize]);
-
-  const isMobile = deviceSize === "mobile";
+  }, [sidebarOpen, isMobile]);
   
   return (
     <div className="flex min-h-screen bg-background">
@@ -84,14 +75,13 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
           <div 
             className="fixed inset-0 bg-black/50 z-40"
             onClick={() => setSidebarOpen(false)}
-            role="presentation"
-            aria-label="Close sidebar"
+            aria-hidden="true"
           />
         )}
         
         {/* Obsah stránky */}
         <ScrollArea className="flex-1">
-          <main className="flex-1 px-4 md:px-6 pb-8">
+          <main className="flex-1">
             {children}
           </main>
           <Footer />
