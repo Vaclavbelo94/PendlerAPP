@@ -1,0 +1,34 @@
+
+import React from "react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+interface LanguageSelectorProps {
+  value: string;
+  onValueChange: (value: string) => void;
+  id: string;
+  languages: Array<{code: string, name: string}>;
+  label?: string;
+}
+
+const LanguageSelector: React.FC<LanguageSelectorProps> = ({
+  value,
+  onValueChange,
+  id,
+  languages,
+  label
+}) => {
+  return (
+    <Select value={value} onValueChange={onValueChange}>
+      <SelectTrigger id={id}>
+        <SelectValue placeholder={label || "Vyberte jazyk"} />
+      </SelectTrigger>
+      <SelectContent>
+        {languages.map((lang) => (
+          <SelectItem key={lang.code} value={lang.code}>{lang.name}</SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+};
+
+export default LanguageSelector;
