@@ -35,7 +35,7 @@ export const UsageOverTimeChart = ({ data }: UsageOverTimeChartProps) => {
         <Area 
           type="monotone" 
           dataKey="redemptions" 
-          name="usages"
+          name="Uplatněno"
           stackId="1" 
           stroke="var(--color-usages)" 
           fill="var(--color-usages)"
@@ -44,7 +44,7 @@ export const UsageOverTimeChart = ({ data }: UsageOverTimeChartProps) => {
         <Area 
           type="monotone" 
           dataKey="created" 
-          name="creations"
+          name="Vytvořeno"
           stackId="2" 
           stroke="var(--color-creations)" 
           fill="var(--color-creations)" 

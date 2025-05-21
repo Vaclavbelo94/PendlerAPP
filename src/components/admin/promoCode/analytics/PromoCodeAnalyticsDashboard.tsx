@@ -98,13 +98,16 @@ export const PromoCodeAnalyticsDashboard = () => {
                 }}
                 className="h-80"
               >
-                <UsageOverTimeChart data={analytics.usageOverTime} />
-                <ChartTooltip>
-                  <ChartTooltipContent />
-                </ChartTooltip>
-                <ChartLegend>
-                  <ChartLegendContent />
-                </ChartLegend>
+                {/* Wrap UsageOverTimeChart in a fragment to make it a single React element */}
+                <>
+                  <UsageOverTimeChart data={analytics.usageOverTime} />
+                  <ChartTooltip>
+                    <ChartTooltipContent />
+                  </ChartTooltip>
+                  <ChartLegend>
+                    <ChartLegendContent />
+                  </ChartLegend>
+                </>
               </ChartContainer>
             ) : (
               <div className="flex justify-center items-center h-80">
@@ -127,10 +130,13 @@ export const PromoCodeAnalyticsDashboard = () => {
                 }}
                 className="h-80"
               >
-                <DiscountDistributionChart data={analytics.discountDistribution} />
-                <ChartTooltip>
-                  <ChartTooltipContent />
-                </ChartTooltip>
+                {/* Wrap DiscountDistributionChart in a fragment to make it a single React element */}
+                <>
+                  <DiscountDistributionChart data={analytics.discountDistribution} />
+                  <ChartTooltip>
+                    <ChartTooltipContent />
+                  </ChartTooltip>
+                </>
               </ChartContainer>
             ) : (
               <div className="flex justify-center items-center h-80">
