@@ -99,16 +99,12 @@ export const useAuthMethods = () => {
       // Attempt global sign out
       await supabase.auth.signOut({ scope: 'global' });
       
-      toast({
-        title: "Byli jste odhlášeni",
-        variant: "default",
-      });
+      // Using sonner toast
+      toast("Byli jste odhlášeni");
     } catch (error: any) {
       console.error('Sign out error:', error);
-      toast({
-        title: "Odhlášení selhalo",
+      toast("Odhlášení selhalo", {
         description: error.message,
-        variant: "destructive",
       });
       
       // Force cleanup even if sign out fails
