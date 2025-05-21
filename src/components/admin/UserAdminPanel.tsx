@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { Shield } from "lucide-react";
+import { Shield, Loader2 } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -13,12 +13,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { supabase } from "@/integrations/supabase/client";
 
 interface User {
   id: string;
   name: string;
   email: string;
-  password: string; // Přidáno pro kompletnost
   isPremium: boolean;
   registeredAt: string;
   premiumUntil: string | null; // Datum, do kdy platí premium
@@ -29,49 +29,36 @@ export const UserAdminPanel = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Načtení uživatelů z localStorage (v reálné aplikaci by toto přišlo z API)
-    const loadUsers = () => {
+    // Načtení uživatelů z Supabase databáze
+    const loadUsers = async () => {
       setIsLoading(true);
       try {
-        let storedUsers = JSON.parse(localStorage.getItem("users") || "[]");
+        // Fetching from profiles table
+        const { data: profiles, error } = await supabase
+          .from('profiles')
+          .select('id, username, email, is_premium, premium_expiry, created_at')
         
-        // Přidáme vlastnost isPremium, pokud neexistuje
-        const enhancedUsers = storedUsers.map((user: any) => ({
-          ...user,
-          id: user.id || Math.random().toString(36).substr(2, 9),
-          isPremium: user.isPremium || false,
-          registeredAt: user.registeredAt || new Date().toISOString(),
-          premiumUntil: user.premiumUntil || null,
-          password: user.password || "heslo123" // Výchozí heslo pro existující uživatele bez hesla
-        }));
-        
-        // Přidáme testovacího uživatele s premium, pokud neexistuje
-        const testUserExists = enhancedUsers.some((user: User) => user.email === "vaclav@pendlerapp.com");
-        
-        if (!testUserExists) {
-          const threeMonthsLater = new Date();
-          threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
-          
-          enhancedUsers.push({
-            id: Math.random().toString(36).substr(2, 9),
-            name: "Václav",
-            email: "vaclav@pendlerapp.com",
-            password: "Vaclav711",
-            isPremium: true,
-            registeredAt: new Date().toISOString(),
-            premiumUntil: threeMonthsLater.toISOString()
-          });
-          
-          toast.success("Vytvořen testovací uživatelský účet s premium funkcemi");
+        if (error) {
+          throw error;
         }
-        
-        setUsers(enhancedUsers);
-        
-        // Uložení zpět do localStorage s novými vlastnostmi
-        localStorage.setItem("users", JSON.stringify(enhancedUsers));
+
+        if (profiles) {
+          // Transform the data to match our User interface
+          const transformedUsers: User[] = profiles.map(profile => ({
+            id: profile.id,
+            name: profile.username || profile.email?.split('@')[0] || 'Uživatel',
+            email: profile.email || '',
+            isPremium: profile.is_premium || false,
+            registeredAt: profile.created_at,
+            premiumUntil: profile.premium_expiry || null
+          }));
+          
+          setUsers(transformedUsers);
+          console.log("Loaded users from Supabase:", transformedUsers.length);
+        }
       } catch (error) {
         console.error("Chyba při načítání uživatelů:", error);
-        toast.error("Nepodařilo se načíst uživatele");
+        toast.error("Nepodařilo se načíst uživatele z databáze");
       } finally {
         setIsLoading(false);
       }
@@ -80,29 +67,48 @@ export const UserAdminPanel = () => {
     loadUsers();
   }, []);
 
-  const togglePremium = (userId: string) => {
-    const updatedUsers = users.map(user => {
-      if (user.id === userId) {
-        // Pokud zapínáme premium, nastavíme datum konce za 3 měsíce
-        // Pokud vypínáme premium, nastavíme datum konce na null
-        const premiumUntil = !user.isPremium ? 
-          new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString() :
-          null;
-        
-        return { 
-          ...user, 
-          isPremium: !user.isPremium,
-          premiumUntil
-        };
-      }
-      return user;
-    });
+  const togglePremium = async (userId: string) => {
+    // Find the user to get current premium status
+    const user = users.find(u => u.id === userId);
+    if (!user) return;
     
-    setUsers(updatedUsers);
-    localStorage.setItem("users", JSON.stringify(updatedUsers));
+    const newPremiumStatus = !user.isPremium;
     
-    const user = updatedUsers.find(u => u.id === userId);
-    toast.success(`Uživatel ${user?.name} nyní ${user?.isPremium ? 'má' : 'nemá'} premium status`);
+    // Calculate premium expiry date if setting to premium
+    const premiumUntil = newPremiumStatus ? 
+      new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString() : 
+      null;
+    
+    try {
+      // Update in Supabase
+      const { error } = await supabase
+        .from('profiles')
+        .update({ 
+          is_premium: newPremiumStatus,
+          premium_expiry: premiumUntil
+        })
+        .eq('id', userId);
+      
+      if (error) throw error;
+      
+      // Update local state
+      const updatedUsers = users.map(u => {
+        if (u.id === userId) {
+          return { 
+            ...u, 
+            isPremium: newPremiumStatus,
+            premiumUntil
+          };
+        }
+        return u;
+      });
+      
+      setUsers(updatedUsers);
+      toast.success(`Uživatel ${user.name} nyní ${newPremiumStatus ? 'má' : 'nemá'} premium status`);
+    } catch (error) {
+      console.error("Chyba při aktualizaci premium statusu:", error);
+      toast.error("Nepodařilo se aktualizovat premium status");
+    }
   };
 
   return (
@@ -110,7 +116,7 @@ export const UserAdminPanel = () => {
       {isLoading ? (
         <div className="flex justify-center p-8">
           <div className="flex flex-col items-center gap-2">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+            <Loader2 className="h-8 w-8 animate-spin" />
             <p className="text-sm text-muted-foreground">Načítání uživatelů...</p>
           </div>
         </div>
