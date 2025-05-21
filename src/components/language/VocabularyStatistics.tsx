@@ -4,18 +4,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from '@/components/ui/progress';
 import { Brain, BookOpen, Star, Clock, Calendar } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { VocabularyStatistics as VocabularyStatsType } from '@/utils/vocabularyStats';
 
 interface VocabularyStatisticsProps {
-  statistics: {
-    totalWords: number;
-    newWords: number;
-    learningWords: number;
-    masteredWords: number;
-    correctRate: number;
-    dueToday: number;
-    completedToday: number;
-    dailyGoal: number;
-  };
+  statistics: VocabularyStatsType;
 }
 
 const VocabularyStatistics: React.FC<VocabularyStatisticsProps> = ({ statistics }) => {
