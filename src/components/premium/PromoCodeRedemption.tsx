@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,16 +5,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { saveUserToLocalStorage } from "@/utils/authUtils";
-
-interface PromoCode {
-  id: string;
-  code: string;
-  discount: number;
-  duration: number;
-  validUntil: string;
-  usedCount: number;
-  maxUses: number | null;
-}
+import { PromoCode } from "@/components/admin/promoCode/types";
 
 const PromoCodeRedemption = () => {
   const [promoCode, setPromoCode] = useState("");
