@@ -98,12 +98,10 @@ export const PromoCodeAnalyticsDashboard = () => {
                 }}
                 className="h-80"
               >
-                {/* Wrap UsageOverTimeChart in a fragment to make it a single React element */}
+                {/* Wrap all chart elements in a single React fragment */}
                 <>
                   <UsageOverTimeChart data={analytics.usageOverTime} />
-                  <ChartTooltip>
-                    <ChartTooltipContent />
-                  </ChartTooltip>
+                  <ChartTooltip />
                   <ChartLegend>
                     <ChartLegendContent />
                   </ChartLegend>
@@ -130,12 +128,10 @@ export const PromoCodeAnalyticsDashboard = () => {
                 }}
                 className="h-80"
               >
-                {/* Wrap DiscountDistributionChart in a fragment to make it a single React element */}
+                {/* Wrap all chart elements in a single React fragment */}
                 <>
                   <DiscountDistributionChart data={analytics.discountDistribution} />
-                  <ChartTooltip>
-                    <ChartTooltipContent />
-                  </ChartTooltip>
+                  <ChartTooltip />
                 </>
               </ChartContainer>
             ) : (
