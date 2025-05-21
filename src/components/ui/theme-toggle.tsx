@@ -22,11 +22,22 @@ export function ThemeToggle({
 }: ThemeToggleProps) {
   const { theme, toggleTheme } = useTheme();
   const isDesktop = useMediaQuery("md");
+  const [isChanging, setIsChanging] = React.useState(false);
   
   // Don't render if not supposed to show on mobile and we are on mobile
   if (!alwaysShow && !isDesktop) {
     return null;
   }
+  
+  const handleToggle = () => {
+    if (isChanging) return;
+    
+    setIsChanging(true);
+    toggleTheme();
+    setTimeout(() => {
+      setIsChanging(false);
+    }, 300);
+  };
   
   return (
     <Tooltip>
@@ -38,8 +49,9 @@ export function ThemeToggle({
           <Button
             variant={variant}
             size={size}
-            onClick={toggleTheme}
+            onClick={handleToggle}
             className={className}
+            disabled={isChanging}
             aria-label={theme === 'dark' ? 'Přepnout na světlý režim' : 'Přepnout na tmavý režim'}
           >
             {theme === 'dark' ? (

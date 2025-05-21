@@ -10,6 +10,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { CheckCircle, Palette, Eye, Moon, Sun } from "lucide-react";
 import { toast } from "sonner";
 import { useTheme } from "@/hooks/useTheme";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ProfileAppearanceProps {
   initialDarkMode: boolean;
@@ -32,11 +33,17 @@ const ProfileAppearance = ({
   const [darkMode, setDarkMode] = useState(initialDarkMode);
   const [selectedColorScheme, setSelectedColorScheme] = useState(initialColorScheme);
   const [compactMode, setCompactMode] = useState(initialCompactMode);
+  const isMobile = useIsMobile();
+  
+  // Optimalizace pro mobilní zařízení - předejít problikání
+  const [isChangingTheme, setIsChangingTheme] = useState(false);
   
   // Synchronizovat stav dark mode s globálním tématem
   useEffect(() => {
-    setDarkMode(theme === 'dark');
-  }, [theme]);
+    if (!isChangingTheme) {
+      setDarkMode(theme === 'dark');
+    }
+  }, [theme, isChangingTheme]);
   
   // Synchronizovat stav barevného schématu s globálním schématem
   useEffect(() => {
@@ -45,7 +52,18 @@ const ProfileAppearance = ({
   
   // Nastavit globální téma při změně darkMode přepínače
   useEffect(() => {
-    setTheme(darkMode ? 'dark' : 'light');
+    // Zamezit cyklickým aktualizacím při změně témat
+    setIsChangingTheme(true);
+    const timer = setTimeout(() => {
+      setTheme(darkMode ? 'dark' : 'light');
+      setTimeout(() => {
+        setIsChangingTheme(false);
+      }, 100);
+    }, 0);
+    
+    return () => {
+      clearTimeout(timer);
+    };
   }, [darkMode, setTheme]);
   
   // Nastavit globální barevné schéma při změně colorScheme
@@ -79,8 +97,8 @@ const ProfileAppearance = ({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue="theme">
-          <TabsList className="grid w-full grid-cols-2">
+        <Tabs defaultValue="theme" className={isChangingTheme ? 'pointer-events-none' : ''}>
+          <TabsList className={`grid w-full ${isMobile ? 'grid-cols-2' : 'grid-cols-2'}`}>
             <TabsTrigger value="theme">Motiv</TabsTrigger>
             <TabsTrigger value="layout">Rozložení</TabsTrigger>
           </TabsList>
@@ -103,7 +121,11 @@ const ProfileAppearance = ({
               <Switch 
                 id="darkMode" 
                 checked={darkMode}
-                onCheckedChange={setDarkMode}
+                onCheckedChange={(checked) => {
+                  setIsChangingTheme(true);
+                  setDarkMode(checked);
+                }}
+                disabled={isChangingTheme}
               />
             </div>
             
@@ -146,7 +168,11 @@ const ProfileAppearance = ({
         </Tabs>
       </CardContent>
       <CardFooter>
-        <Button onClick={handleSave} className="ml-auto">
+        <Button 
+          onClick={handleSave} 
+          className="ml-auto"
+          disabled={isChangingTheme}
+        >
           Uložit nastavení
         </Button>
       </CardFooter>

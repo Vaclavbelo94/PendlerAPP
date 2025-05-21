@@ -49,20 +49,57 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     return 'purple';
   });
   
+  // Zamezit problikávání při změně tématu
+  const [initialRender, setInitialRender] = useState(true);
+  
+  // Efekt pro inicializaci
+  useEffect(() => {
+    setInitialRender(false);
+  }, []);
+  
   // Efekt pro aktualizaci HTML atributu a localStorage při změně tématu
   useEffect(() => {
+    // Přeskočit první render, aby nedošlo k probliknutí
+    if (initialRender) return;
+    
     const root = window.document.documentElement;
     
-    // Odstranit předchozí třídy a přidat novou
-    root.classList.remove('light', 'dark');
-    root.classList.add(theme);
+    // Aplikovat změnu plynule
+    if (theme === 'dark') {
+      root.classList.add('theme-transition');
+      setTimeout(() => {
+        // Odstranit předchozí třídy a přidat novou
+        root.classList.remove('light');
+        root.classList.add('dark');
+        
+        // Po dokončení přechodu odstranit třídu pro transition
+        setTimeout(() => {
+          root.classList.remove('theme-transition');
+        }, 300);
+      }, 10);
+    } else {
+      root.classList.add('theme-transition');
+      setTimeout(() => {
+        // Odstranit předchozí třídy a přidat novou
+        root.classList.remove('dark');
+        root.classList.add('light');
+        
+        // Po dokončení přechodu odstranit třídu pro transition
+        setTimeout(() => {
+          root.classList.remove('theme-transition');
+        }, 300);
+      }, 10);
+    }
     
     // Uložit do localStorage
     localStorage.setItem('theme', theme);
-  }, [theme]);
+  }, [theme, initialRender]);
   
   // Efekt pro aktualizaci barevného schématu
   useEffect(() => {
+    // Přeskočit první render, aby nedošlo k probliknutí
+    if (initialRender) return;
+    
     const root = window.document.documentElement;
     
     // Nastavit CSS proměnnou s primární barvou podle vybraného schématu
@@ -91,7 +128,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     
     // Uložit do localStorage
     localStorage.setItem('colorScheme', colorScheme);
-  }, [colorScheme]);
+  }, [colorScheme, initialRender]);
 
   // Funkce pro přepnutí témat
   const toggleTheme = () => {
