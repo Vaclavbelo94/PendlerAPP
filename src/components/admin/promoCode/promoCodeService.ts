@@ -1,6 +1,6 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { PromoCode, PromoCodeDB } from "./types";
+import { PromoCode, PromoCodeDB, SupabasePromoCodes } from "./types";
 import { toast } from "sonner";
 
 export const fetchPromoCodes = async (): Promise<PromoCode[]> => {
@@ -8,7 +8,7 @@ export const fetchPromoCodes = async (): Promise<PromoCode[]> => {
     const { data, error } = await supabase
       .from('promo_codes')
       .select('*')
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false }) as { data: PromoCodeDB[] | null, error: any };
     
     if (error) {
       throw error;
@@ -34,15 +34,14 @@ export const createPromoCode = async (promoCode: Omit<PromoCode, 'id' | 'usedCou
         used_count: 0,
         max_uses: promoCode.maxUses
       })
-      .select()
-      .single();
+      .select() as { data: PromoCodeDB[] | null, error: any };
     
     if (error) {
       throw error;
     }
     
     // Transform to our frontend type
-    return mapDbToPromoCode(data);
+    return data && data[0] ? mapDbToPromoCode(data[0]) : null;
   } catch (error) {
     console.error("Chyba při vytváření promo kódu:", error);
     toast.error("Nepodařilo se vytvořit promo kód");
@@ -65,14 +64,13 @@ export const updatePromoCode = async (id: string, updates: Partial<PromoCode>): 
       .from('promo_codes')
       .update(dbUpdates)
       .eq('id', id)
-      .select()
-      .single();
+      .select() as { data: PromoCodeDB[] | null, error: any };
     
     if (error) {
       throw error;
     }
     
-    return mapDbToPromoCode(data);
+    return data && data[0] ? mapDbToPromoCode(data[0]) : null;
   } catch (error) {
     console.error("Chyba při aktualizaci promo kódu:", error);
     toast.error("Nepodařilo se aktualizovat promo kód");
@@ -110,7 +108,7 @@ export const redeemPromoCode = async (userId: string, code: string): Promise<{
       .from('promo_codes')
       .select('*')
       .ilike('code', code)
-      .single();
+      .single() as { data: PromoCodeDB | null, error: any };
     
     if (promoCodeError || !promoCodeData) {
       return { success: false, message: "Neplatný promo kód" };
@@ -174,7 +172,7 @@ export const redeemPromoCode = async (userId: string, code: string): Promise<{
 };
 
 // Utility function to map from DB to our frontend type
-export const mapDbToPromoCode = (data: any): PromoCode => {
+export const mapDbToPromoCode = (data: PromoCodeDB): PromoCode => {
   return {
     id: data.id,
     code: data.code,

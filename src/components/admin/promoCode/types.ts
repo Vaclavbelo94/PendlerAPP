@@ -48,3 +48,7 @@ export interface PromoCodeRedemption {
   promoCodeId: string;
   redeemedAt: string;
 }
+
+// Type assertion helper for Supabase
+export type SupabasePromoCodes = Database['public']['Tables']['promo_codes'];
+export type SupabasePromoCodeRedemptions = Database['public']['Tables']['promo_code_redemptions'];
