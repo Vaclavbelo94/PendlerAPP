@@ -19,6 +19,10 @@ const SidebarUserSection = ({ closeSidebar }: SidebarUserSectionProps) => {
   const { user, signOut, isAdmin } = useAuth();
   const navigate = useNavigate();
 
+  // Debug output
+  console.log("SidebarUserSection - User:", user);
+  console.log("SidebarUserSection - isAdmin status:", isAdmin);
+
   const handleLogout = async () => {
     await signOut();
     closeSidebar(); // Zavřít sidebar po odhlášení
@@ -77,9 +81,9 @@ const SidebarUserSection = ({ closeSidebar }: SidebarUserSectionProps) => {
         </Link>
         {isAdmin && (
           <Link to="/admin" onClick={closeSidebar}>
-            <Button variant="ghost" className="w-full justify-start">
-              <Shield className="mr-2 h-4 w-4" />
-              Administrace
+            <Button variant="ghost" className="w-full justify-start bg-red-500/10 hover:bg-red-500/20">
+              <Shield className="mr-2 h-4 w-4 text-red-500" />
+              <span className="text-red-500">Administrace</span>
             </Button>
           </Link>
         )}

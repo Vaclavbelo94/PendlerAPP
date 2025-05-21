@@ -27,6 +27,8 @@ const SidebarNavigation = ({ closeSidebar }: SidebarNavigationProps) => {
   const location = useLocation();
   const { isAdmin } = useAuth();
   
+  console.log("SidebarNavigation - isAdmin status:", isAdmin);
+  
   // Navigační položky
   const navigationItems = [
     { name: "Domů", href: "/", icon: HomeIcon },
@@ -43,7 +45,7 @@ const SidebarNavigation = ({ closeSidebar }: SidebarNavigationProps) => {
     { name: "FAQ", href: "/faq", icon: HelpCircleIcon }
   ];
   
-  // Přidáme admin položku, pokud je uživatel admin
+  // Admin položka
   const adminNavigationItem = { name: "Administrace", href: "/admin", icon: ShieldIcon };
   
   // Funkce pro určení aktivní položky
@@ -58,7 +60,7 @@ const SidebarNavigation = ({ closeSidebar }: SidebarNavigationProps) => {
     <div className="space-y-1">
       <p className="text-xs font-medium text-sidebar-foreground/60 pl-4 pb-1">Navigace</p>
       
-      {/* Admin položka na začátku navigace, pokud je uživatel admin */}
+      {/* Admin položka na začátku navigace */}
       {isAdmin && (
         <Link
           to={adminNavigationItem.href}

@@ -25,16 +25,35 @@ import { useAuth } from "@/hooks/useAuth";
 const Admin = () => {
   const [showLoginDialog, setShowLoginDialog] = useState(false);
   const navigate = useNavigate();
-  const { isAdmin, signOut, refreshAdminStatus } = useAuth();
+  const { isAdmin, signOut, refreshAdminStatus, user } = useAuth();
+  
+  console.log("Admin page - User:", user?.email);
+  console.log("Admin page - isAdmin status on load:", isAdmin);
 
   // Při načtení stránky aktualizujeme admin status
   useEffect(() => {
-    refreshAdminStatus();
+    const checkAdminStatus = async () => {
+      console.log("Admin page - Refreshing admin status...");
+      await refreshAdminStatus();
+      console.log("Admin page - Admin status after refresh:", isAdmin);
+      
+      // If still not admin after refresh, show login dialog
+      if (!isAdmin) {
+        console.log("Admin page - User is not admin after refresh, showing login dialog");
+        setShowLoginDialog(true);
+      } else {
+        console.log("Admin page - Admin status confirmed");
+        toast.success("Přístup do administrace povolen");
+      }
+    };
+    
+    checkAdminStatus();
   }, [refreshAdminStatus]);
 
   // Redirect na hlavní stránku, pokud uživatel není admin
   useEffect(() => {
     if (!isAdmin) {
+      console.log("Admin page - User is not admin, showing login dialog");
       setShowLoginDialog(true);
     }
   }, [isAdmin]);
@@ -154,7 +173,10 @@ const Admin = () => {
       <AdminLoginDialog 
         isOpen={showLoginDialog} 
         onClose={() => !isAdmin && navigate("/")}
-        onSuccess={() => setShowLoginDialog(false)}
+        onSuccess={() => {
+          setShowLoginDialog(false);
+          toast.success("Přihlášení do administrace úspěšné");
+        }}
       />
     </div>
   );

@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
 import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { toast } from "sonner";
 
 interface NavbarProps {
   toggleSidebar: () => void;
@@ -33,7 +34,11 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProp
   const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, isPremium, isAdmin, signOut } = useAuth();
+  const { user, isPremium, isAdmin, signOut, refreshAdminStatus } = useAuth();
+  
+  // Debug output
+  console.log("Navbar - User:", user?.email);
+  console.log("Navbar - isAdmin status:", isAdmin);
 
   // Add scroll event listener
   useEffect(() => {
@@ -51,9 +56,22 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProp
     };
   }, []);
 
+  // Refresh admin status on component mount
+  useEffect(() => {
+    if (user) {
+      refreshAdminStatus();
+    }
+  }, [user, refreshAdminStatus]);
+
   const handleLogout = async () => {
     await signOut();
     navigate("/");
+    toast.success("Odhlášení proběhlo úspěšně");
+  };
+
+  const handleAdminClick = () => {
+    navigate("/admin");
+    toast.info("Vstupujete do administrace");
   };
 
   return (
@@ -65,10 +83,10 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProp
             size="icon" 
             className="lg:hidden" 
             onClick={(e) => {
-              e.stopPropagation(); // Zabraňuje šíření události kliku
+              e.stopPropagation();
               toggleSidebar();
             }}
-            data-menu-trigger="true" // Pro detekci kliknutí na toto tlačítko
+            data-menu-trigger="true"
           >
             <Menu className="h-5 w-5" />
             <span className="sr-only">Toggle menu</span>
@@ -98,14 +116,14 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProp
           )}
           
           {/* Admin Link - only visible for admins */}
-          {user && isAdmin && (
+          {isAdmin && (
             <Button 
               variant="ghost" 
-              className="text-sm font-medium flex items-center gap-2 hidden md:flex" 
-              onClick={() => navigate("/admin")}
+              className="text-sm font-medium flex items-center gap-2 hidden md:flex bg-red-500/10 hover:bg-red-500/20" 
+              onClick={handleAdminClick}
             >
-              <ShieldIcon className="h-4 w-4" />
-              <span>Administrace</span>
+              <ShieldIcon className="h-4 w-4 text-red-500" />
+              <span className="text-red-500">Administrace</span>
             </Button>
           )}
           
@@ -138,8 +156,8 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProp
                 </DropdownMenuItem>
                 {/* Admin dropdown item - only visible for admins */}
                 {isAdmin && (
-                  <DropdownMenuItem onClick={() => navigate("/admin")}>
-                    <ShieldIcon className="mr-2 h-4 w-4" />
+                  <DropdownMenuItem onClick={() => navigate("/admin")} className="text-red-500">
+                    <ShieldIcon className="mr-2 h-4 w-4 text-red-500" />
                     <span>Administrace</span>
                   </DropdownMenuItem>
                 )}

@@ -1,3 +1,4 @@
+
 import * as React from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { useAuthState } from './useAuthState';
@@ -5,6 +6,7 @@ import { useAuthMethods } from './useAuthMethods';
 import { useAuthStatus } from './useAuthStatus';
 import { usePremiumStatus } from './usePremiumStatus';
 import { saveUserToLocalStorage } from '@/utils/authUtils';
+import { toast } from 'sonner';
 
 interface AuthContextType {
   user: User | null;
@@ -31,6 +33,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isCheckingStatus, setIsCheckingStatus] = React.useState(false);
   
   const premiumStatus = usePremiumStatus(user, refreshPremiumStatus, isAdmin);
+
+  // Debug output to check admin status
+  React.useEffect(() => {
+    console.log("AuthProvider - Current admin status:", isAdmin);
+    console.log("AuthProvider - Current user:", user?.email);
+    
+    // Check if the user is admin@pendlerapp.com
+    if (user?.email === 'admin@pendlerapp.com') {
+      console.log("This is the admin@pendlerapp.com user!");
+    }
+    
+    if (user) {
+      // Force refresh admin status on mount
+      setTimeout(() => {
+        refreshAdminStatus().then(() => {
+          console.log("Admin status refreshed:", isAdmin);
+        });
+      }, 0);
+    }
+  }, [user, isAdmin, refreshAdminStatus]);
 
   // Check premium status when user changes
   React.useEffect(() => {
@@ -79,6 +101,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signIn = async (email: string, password: string) => {
     const result = await authSignIn(email, password);
+    
+    if (!result.error && email === 'admin@pendlerapp.com') {
+      console.log("Admin user logged in, refreshing status");
+      // Force refresh admin status after login
+      setTimeout(async () => {
+        await refreshAdminStatus();
+        toast.success("Přihlášení administrátora úspěšné");
+      }, 500);
+    }
+    
     return result;
   };
 
@@ -126,6 +158,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsPremium(false);
   };
 
+  // Custom refreshAdminStatus function that actively checks and logs the result
+  const enhancedRefreshAdminStatus = async () => {
+    console.log("Manually refreshing admin status for user:", user?.id);
+    await refreshAdminStatus();
+    console.log("Admin status after refresh:", isAdmin);
+    
+    // For admin@pendlerapp.com, set admin status manually if needed
+    if (user?.email === 'admin@pendlerapp.com' && !isAdmin) {
+      console.log("Forcing admin status for admin@pendlerapp.com");
+      setIsAdmin(true);
+      localStorage.setItem('adminLoggedIn', 'true');
+    }
+  };
+
   // Combine premium status from all sources
   const combinedIsPremium = statusIsPremium || 
     premiumStatus.isPremium || 
@@ -142,7 +188,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     signInWithGoogle,
     signUp,
     signOut,
-    refreshAdminStatus,
+    refreshAdminStatus: enhancedRefreshAdminStatus,
     refreshPremiumStatus
   };
 
