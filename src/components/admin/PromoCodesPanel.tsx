@@ -26,6 +26,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Form, FormField, FormItem, FormLabel, FormControl, FormDescription } from "@/components/ui/form";
+import { useForm } from "react-hook-form";
 
 interface PromoCode {
   id: string;
@@ -34,6 +36,13 @@ interface PromoCode {
   duration: number; // trvání v měsících
   validUntil: string;
   usedCount: number;
+  maxUses: number | null;
+}
+
+interface PromoCodeFormValues {
+  code: string;
+  discount: number;
+  duration: number;
   maxUses: number | null;
 }
 
@@ -77,10 +86,13 @@ export const PromoCodesPanel = () => {
     const validUntil = new Date();
     validUntil.setMonth(now.getMonth() + 3); // Platnost 3 měsíce od vytvoření
 
+    // Ensure discount is a number between 0 and 100
+    const discount = Math.min(100, Math.max(0, newPromoCode.discount || 100));
+
     const newCode: PromoCode = {
       id: Math.random().toString(36).substr(2, 9),
       code,
-      discount: newPromoCode.discount || 100,
+      discount,
       duration: newPromoCode.duration || 1,
       validUntil: validUntil.toISOString(),
       usedCount: 0,
@@ -253,6 +265,9 @@ export const PromoCodesPanel = () => {
                   discount: Math.min(100, Math.max(0, parseInt(e.target.value) || 0)) 
                 })}
               />
+              <p className="text-xs text-muted-foreground">
+                100% = plný premium přístup, 0% = žádná sleva
+              </p>
             </div>
             
             <div className="space-y-2">

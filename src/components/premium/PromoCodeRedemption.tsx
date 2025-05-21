@@ -7,6 +7,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { saveUserToLocalStorage } from "@/utils/authUtils";
 
+interface PromoCode {
+  id: string;
+  code: string;
+  discount: number;
+  duration: number;
+  validUntil: string;
+  usedCount: number;
+  maxUses: number | null;
+}
+
 const PromoCodeRedemption = () => {
   const [promoCode, setPromoCode] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -21,7 +31,7 @@ const PromoCodeRedemption = () => {
       // First, check if this code exists in localStorage
       const storedCodes = JSON.parse(localStorage.getItem("promoCodes") || "[]");
       const codeToRedeem = storedCodes.find(
-        (code: any) => code.code.toUpperCase() === promoCode.toUpperCase()
+        (code: PromoCode) => code.code.toUpperCase() === promoCode.toUpperCase()
       );
       
       if (!codeToRedeem) {
@@ -45,14 +55,19 @@ const PromoCodeRedemption = () => {
       const premiumExpiry = new Date();
       premiumExpiry.setMonth(premiumExpiry.getMonth() + codeToRedeem.duration);
       
+      // Use the discount from the promo code
+      // If discount is 100%, give full premium access
+      // If less than 100%, we could implement partial premium features or discounted pricing
+      const isPremium = codeToRedeem.discount === 100;
+      
       // Update user's premium status in Supabase
       try {
         // Try to update the database 
         const { error } = await supabase
           .from("profiles")
           .update({
-            is_premium: true,
-            premium_expiry: premiumExpiry.toISOString()
+            is_premium: isPremium,
+            premium_expiry: isPremium ? premiumExpiry.toISOString() : null
           })
           .eq("id", user.id);
         
@@ -64,7 +79,7 @@ const PromoCodeRedemption = () => {
 
       // Update in localStorage as backup
       if (user) {
-        saveUserToLocalStorage(user, true, premiumExpiry.toISOString());
+        saveUserToLocalStorage(user, isPremium, isPremium ? premiumExpiry.toISOString() : null);
       }
       
       // Update promo code usage count
@@ -74,7 +89,11 @@ const PromoCodeRedemption = () => {
       // Refresh premium status
       await refreshPremiumStatus();
       
-      toast.success(`Premium status byl aktivován do ${premiumExpiry.toLocaleDateString()}`);
+      if (isPremium) {
+        toast.success(`Premium status byl aktivován do ${premiumExpiry.toLocaleDateString()}`);
+      } else {
+        toast.success(`Promo kód byl použit se slevou ${codeToRedeem.discount}%`);
+      }
     } catch (error) {
       console.error("Error redeeming promo code:", error);
       toast.error("Nastala chyba při aktivaci promo kódu");
