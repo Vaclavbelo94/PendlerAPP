@@ -8,6 +8,7 @@ type ColorScheme = 'purple' | 'blue' | 'green' | 'amber' | 'red' | 'pink';
 interface ThemeContextType {
   theme: Theme;
   colorScheme: ColorScheme;
+  isChangingTheme: boolean;
   setTheme: (theme: Theme) => void;
   setColorScheme: (colorScheme: ColorScheme) => void;
   toggleTheme: () => void;
@@ -49,12 +50,22 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     return 'purple';
   });
   
+  // Stav pro sledování, zda právě probíhá změna tématu
+  const [isChangingTheme, setIsChangingTheme] = useState(false);
+  
   // Zamezit problikávání při změně tématu
   const [initialRender, setInitialRender] = useState(true);
   
   // Efekt pro inicializaci
   useEffect(() => {
-    setInitialRender(false);
+    // Přidáme třídu pro zamezení animací během prvního načtení
+    document.documentElement.classList.add('no-animation');
+    
+    // Odstraníme třídu po chvíli
+    setTimeout(() => {
+      document.documentElement.classList.remove('no-animation');
+      setInitialRender(false);
+    }, 300);
   }, []);
   
   // Efekt pro aktualizaci HTML atributu a localStorage při změně tématu
@@ -64,6 +75,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     
     const root = window.document.documentElement;
     
+    // Nastavit příznak změny tématu
+    setIsChangingTheme(true);
+    
     // Aplikovat změnu plynule
     if (theme === 'dark') {
       root.classList.add('theme-transition');
@@ -72,9 +86,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         root.classList.remove('light');
         root.classList.add('dark');
         
-        // Po dokončení přechodu odstranit třídu pro transition
+        // Po dokončení přechodu odstranit třídu pro transition a resetovat příznak změny
         setTimeout(() => {
           root.classList.remove('theme-transition');
+          setIsChangingTheme(false);
         }, 300);
       }, 10);
     } else {
@@ -84,9 +99,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         root.classList.remove('dark');
         root.classList.add('light');
         
-        // Po dokončení přechodu odstranit třídu pro transition
+        // Po dokončení přechodu odstranit třídu pro transition a resetovat příznak změny
         setTimeout(() => {
           root.classList.remove('theme-transition');
+          setIsChangingTheme(false);
         }, 300);
       }, 10);
     }
@@ -132,11 +148,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   // Funkce pro přepnutí témat
   const toggleTheme = () => {
+    if (isChangingTheme) return; // Zabránit rychlému přepínání, pokud už změna probíhá
     setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, colorScheme, setTheme, setColorScheme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, colorScheme, isChangingTheme, setTheme, setColorScheme, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   );

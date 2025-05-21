@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -19,8 +19,21 @@ import ProfileOverview from "@/components/profile/ProfileOverview";
 const ProfileExtended = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, isAdmin } = useAuth();
-  const [activeTab, setActiveTab] = useState("overview");
+  
+  // Get tab from URL query parameters
+  const queryParams = new URLSearchParams(location.search);
+  const tabParam = queryParams.get("tab");
+  
+  const [activeTab, setActiveTab] = useState(tabParam || "overview");
+  
+  // Update activeTab when URL query parameters change
+  useEffect(() => {
+    if (tabParam && ["overview", "settings", "education", "work"].includes(tabParam)) {
+      setActiveTab(tabParam);
+    }
+  }, [tabParam]);
   
   const isOwnProfile = !userId || userId === user?.id;
   const showAdminControls = isAdmin && !isOwnProfile;
@@ -29,6 +42,12 @@ const ProfileExtended = () => {
     navigate("/login");
     return null;
   }
+
+  // Update URL when tab changes
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    navigate(`/profile-extended${value !== "overview" ? `?tab=${value}` : ""}`, { replace: true });
+  };
 
   return (
     <div className="container py-6 md:py-10">
@@ -43,7 +62,7 @@ const ProfileExtended = () => {
         </div>
       )}
       
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
         <TabsList className="grid grid-cols-2 md:grid-cols-4 max-w-2xl">
           <TabsTrigger value="overview">
             <UserIcon className="mr-2 h-4 w-4" /> Přehled

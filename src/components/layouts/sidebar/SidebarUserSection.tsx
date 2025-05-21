@@ -67,13 +67,13 @@ const SidebarUserSection = ({ closeSidebar }: SidebarUserSectionProps) => {
       </div>
 
       <div className="flex flex-col space-y-1">
-        <Link to="/profile" onClick={closeSidebar}>
+        <Link to="/profile-extended" onClick={closeSidebar}>
           <Button variant="ghost" className="w-full justify-start">
             <User className="mr-2 h-4 w-4" />
             Profil
           </Button>
         </Link>
-        <Link to="/profile-extended" onClick={closeSidebar}>
+        <Link to="/profile-extended?tab=settings" onClick={closeSidebar}>
           <Button variant="ghost" className="w-full justify-start">
             <Settings className="mr-2 h-4 w-4" />
             Nastavení
