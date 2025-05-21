@@ -6,7 +6,12 @@ import { PromoCodeDialog } from "./promoCode/PromoCodeDialog";
 import { PromoCodesTable } from "./promoCode/PromoCodesTable";
 import { EmptyState } from "./promoCode/EmptyState";
 import { PromoCode } from "./promoCode/types";
-import { loadPromoCodes, savePromoCodes } from "./promoCode/promoCodeUtils";
+import {
+  fetchPromoCodes,
+  deletePromoCode,
+  updatePromoCode,
+  migratePromoCodesFromLocalStorage
+} from "./promoCode/promoCodeService";
 
 export const PromoCodesPanel = () => {
   const [promoCodes, setPromoCodes] = useState<PromoCode[]>([]);
@@ -14,65 +19,71 @@ export const PromoCodesPanel = () => {
   const [showDialog, setShowDialog] = useState(false);
 
   useEffect(() => {
-    // Načtení promo kódů z localStorage
-    const fetchPromoCodes = () => {
+    const loadPromoCodesData = async () => {
       setIsLoading(true);
       try {
-        const codes = loadPromoCodes();
+        // First check if we need to migrate data from localStorage
+        const localData = localStorage.getItem("promoCodes");
+        if (localData) {
+          const migrated = await migratePromoCodesFromLocalStorage();
+          if (migrated) {
+            toast.success("Úspěšně jsme přenesli vaše promo kódy");
+          }
+        }
+
+        // Then load from Supabase
+        const codes = await fetchPromoCodes();
         setPromoCodes(codes);
+      } catch (error) {
+        console.error("Chyba při načítání promo kódů:", error);
+        toast.error("Nepodařilo se načíst promo kódy");
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchPromoCodes();
+    loadPromoCodesData();
   }, []);
 
   const handleCreatePromoCode = (newCode: PromoCode) => {
-    const updatedCodes = [...promoCodes, newCode];
-    savePromoCodes(updatedCodes);
-    setPromoCodes(updatedCodes);
+    setPromoCodes(prevCodes => [newCode, ...prevCodes]);
   };
 
-  const deletePromoCode = (id: string) => {
-    const updatedCodes = promoCodes.filter(code => code.id !== id);
-    savePromoCodes(updatedCodes);
-    setPromoCodes(updatedCodes);
-    toast.success("Promo kód byl úspěšně smazán");
+  const handleDeletePromoCode = async (id: string) => {
+    const success = await deletePromoCode(id);
+    if (success) {
+      setPromoCodes(prevCodes => prevCodes.filter(code => code.id !== id));
+      toast.success("Promo kód byl úspěšně smazán");
+    }
   };
 
-  // Add functionality to reset usage count
-  const resetUsageCount = (id: string) => {
-    const updatedCodes = promoCodes.map(code => {
-      if (code.id === id) {
-        return {
-          ...code,
-          usedCount: 0
-        };
-      }
-      return code;
-    });
-    savePromoCodes(updatedCodes);
-    setPromoCodes(updatedCodes);
-    toast.success("Počet použití byl resetován");
+  const resetUsageCount = async (id: string) => {
+    const promoCode = promoCodes.find(code => code.id === id);
+    if (!promoCode) return;
+
+    const updatedCode = await updatePromoCode(id, { usedCount: 0 });
+    if (updatedCode) {
+      setPromoCodes(prevCodes =>
+        prevCodes.map(code => (code.id === id ? updatedCode : code))
+      );
+      toast.success("Počet použití byl resetován");
+    }
   };
 
-  // Extended validity of a promo code
-  const extendValidity = (id: string) => {
-    const updatedCodes = promoCodes.map(code => {
-      if (code.id === id) {
-        const newValidUntil = new Date();
-        newValidUntil.setMonth(newValidUntil.getMonth() + 3); // Extend by 3 months
-        return {
-          ...code,
-          validUntil: newValidUntil.toISOString()
-        };
-      }
-      return code;
-    });
-    savePromoCodes(updatedCodes);
-    setPromoCodes(updatedCodes);
-    toast.success("Platnost promo kódu byla prodloužena");
+  const extendValidity = async (id: string) => {
+    const promoCode = promoCodes.find(code => code.id === id);
+    if (!promoCode) return;
+
+    const newValidUntil = new Date();
+    newValidUntil.setMonth(newValidUntil.getMonth() + 3); // Extend by 3 months
+
+    const updatedCode = await updatePromoCode(id, { validUntil: newValidUntil.toISOString() });
+    if (updatedCode) {
+      setPromoCodes(prevCodes =>
+        prevCodes.map(code => (code.id === id ? updatedCode : code))
+      );
+      toast.success("Platnost promo kódu byla prodloužena");
+    }
   };
 
   return (
@@ -98,7 +109,7 @@ export const PromoCodesPanel = () => {
           promoCodes={promoCodes}
           onResetUsage={resetUsageCount}
           onExtendValidity={extendValidity}
-          onDelete={deletePromoCode}
+          onDelete={handleDeletePromoCode}
         />
       )}
 

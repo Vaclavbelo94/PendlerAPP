@@ -1,22 +1,7 @@
 
-import { PromoCode } from "./types";
-import { toast } from "sonner";
-
-export const loadPromoCodes = (): PromoCode[] => {
-  try {
-    const storedCodes = JSON.parse(localStorage.getItem("promoCodes") || "[]");
-    return storedCodes;
-  } catch (error) {
-    console.error("Chyba při načítání promo kódů:", error);
-    toast.error("Nepodařilo se načíst promo kódy");
-    return [];
-  }
-};
-
-export const savePromoCodes = (codes: PromoCode[]): void => {
-  localStorage.setItem("promoCodes", JSON.stringify(codes));
-};
-
+/**
+ * Generates a random promo code with the "PROMO-" prefix
+ */
 export const generateRandomCode = (): string => {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   let result = "PROMO-";
@@ -24,4 +9,16 @@ export const generateRandomCode = (): string => {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
   return result;
+};
+
+/**
+ * Format date for displaying in the UI
+ */
+export const formatDate = (dateString: string): string => {
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString();
+  } catch (e) {
+    return 'Neznámé datum';
+  }
 };

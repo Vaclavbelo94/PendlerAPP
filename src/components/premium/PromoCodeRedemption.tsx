@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -5,7 +6,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { saveUserToLocalStorage } from "@/utils/authUtils";
-import { PromoCode } from "@/components/admin/promoCode/types";
+import { redeemPromoCode } from "@/components/admin/promoCode/promoCodeService";
 
 const PromoCodeRedemption = () => {
   const [promoCode, setPromoCode] = useState("");
@@ -18,37 +19,27 @@ const PromoCodeRedemption = () => {
     
     setIsSubmitting(true);
     try {
-      // First, check if this code exists in localStorage
-      const storedCodes = JSON.parse(localStorage.getItem("promoCodes") || "[]");
-      const codeToRedeem = storedCodes.find(
-        (code: PromoCode) => code.code.toUpperCase() === promoCode.toUpperCase()
-      );
+      // Use the service to redeem the code
+      const result = await redeemPromoCode(user.id, promoCode.trim());
       
-      if (!codeToRedeem) {
-        toast.error("Neplatný promo kód");
+      if (!result.success) {
+        toast.error(result.message || "Neplatný promo kód");
         return;
       }
-
-      // Check if code is expired
-      if (new Date(codeToRedeem.validUntil) < new Date()) {
-        toast.error("Tento promo kód již vypršel");
-        return;
-      }
-
-      // Check if code has reached max uses
-      if (codeToRedeem.maxUses !== null && codeToRedeem.usedCount >= codeToRedeem.maxUses) {
-        toast.error("Tento promo kód byl již vyčerpán");
+      
+      const redemptionCode = result.promoCode;
+      if (!redemptionCode) {
+        toast.error("Nastala chyba při získávání informací o promo kódu");
         return;
       }
 
       // Calculate premium expiry date based on promo code duration
       const premiumExpiry = new Date();
-      premiumExpiry.setMonth(premiumExpiry.getMonth() + codeToRedeem.duration);
+      premiumExpiry.setMonth(premiumExpiry.getMonth() + redemptionCode.duration);
       
       // Use the discount from the promo code
       // If discount is 100%, give full premium access
-      // If less than 100%, we could implement partial premium features or discounted pricing
-      const isPremium = codeToRedeem.discount === 100;
+      const isPremium = redemptionCode.discount === 100;
       
       // Update user's premium status in Supabase
       try {
@@ -72,17 +63,13 @@ const PromoCodeRedemption = () => {
         saveUserToLocalStorage(user, isPremium, isPremium ? premiumExpiry.toISOString() : null);
       }
       
-      // Update promo code usage count
-      codeToRedeem.usedCount += 1;
-      localStorage.setItem("promoCodes", JSON.stringify(storedCodes));
-      
       // Refresh premium status
       await refreshPremiumStatus();
       
       if (isPremium) {
         toast.success(`Premium status byl aktivován do ${premiumExpiry.toLocaleDateString()}`);
       } else {
-        toast.success(`Promo kód byl použit se slevou ${codeToRedeem.discount}%`);
+        toast.success(`Promo kód byl použit se slevou ${redemptionCode.discount}%`);
       }
     } catch (error) {
       console.error("Error redeeming promo code:", error);

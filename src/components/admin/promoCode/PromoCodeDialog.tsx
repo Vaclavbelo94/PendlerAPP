@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import { PromoCode } from "./types";
 import { generateRandomCode } from "./promoCodeUtils";
+import { createPromoCode } from "./promoCodeService";
 
 interface PromoCodeDialogProps {
   open: boolean;
@@ -34,35 +35,47 @@ export const PromoCodeDialog = ({ open, onOpenChange, onCreatePromoCode }: Promo
     duration: 1,
     maxUses: 10,
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleCreatePromoCode = () => {
-    const code = newPromoCode.code?.toUpperCase().replace(/\s/g, "") || generateRandomCode();
-    const now = new Date();
-    const validUntil = new Date();
-    validUntil.setMonth(now.getMonth() + 3); // Platnost 3 měsíce od vytvoření
+  const handleCreatePromoCode = async () => {
+    setIsSubmitting(true);
 
-    // Ensure discount is a number between 0 and 100
-    const discount = Math.min(100, Math.max(0, newPromoCode.discount || 100));
+    try {
+      const code = newPromoCode.code?.toUpperCase().replace(/\s/g, "") || generateRandomCode();
+      const now = new Date();
+      const validUntil = new Date();
+      validUntil.setMonth(now.getMonth() + 3); // Platnost 3 měsíce od vytvoření
 
-    const newCode: PromoCode = {
-      id: Math.random().toString(36).substr(2, 9),
-      code,
-      discount,
-      duration: newPromoCode.duration || 1,
-      validUntil: validUntil.toISOString(),
-      usedCount: 0,
-      maxUses: newPromoCode.maxUses || null,
-    };
+      // Ensure discount is a number between 0 and 100
+      const discount = Math.min(100, Math.max(0, newPromoCode.discount || 100));
 
-    onCreatePromoCode(newCode);
-    toast.success(`Promo kód ${code} byl úspěšně vytvořen`);
-    onOpenChange(false);
-    setNewPromoCode({
-      code: "",
-      discount: 100,
-      duration: 1,
-      maxUses: 10,
-    });
+      const newCodeData: Omit<PromoCode, 'id' | 'usedCount' | 'created_at' | 'updated_at'> = {
+        code,
+        discount,
+        duration: newPromoCode.duration || 1,
+        validUntil: validUntil.toISOString(),
+        maxUses: newPromoCode.maxUses || null,
+      };
+
+      const createdCode = await createPromoCode(newCodeData);
+      
+      if (createdCode) {
+        onCreatePromoCode(createdCode);
+        toast.success(`Promo kód ${code} byl úspěšně vytvořen`);
+        onOpenChange(false);
+        setNewPromoCode({
+          code: "",
+          discount: 100,
+          duration: 1,
+          maxUses: 10,
+        });
+      }
+    } catch (error) {
+      console.error("Chyba při vytváření promo kódu:", error);
+      toast.error("Nepodařilo se vytvořit promo kód");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -135,11 +148,11 @@ export const PromoCodeDialog = ({ open, onOpenChange, onCreatePromoCode }: Promo
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
             Zrušit
           </Button>
-          <Button onClick={handleCreatePromoCode}>
-            Vytvořit
+          <Button onClick={handleCreatePromoCode} disabled={isSubmitting}>
+            {isSubmitting ? "Vytvářím..." : "Vytvořit"}
           </Button>
         </DialogFooter>
       </DialogContent>
