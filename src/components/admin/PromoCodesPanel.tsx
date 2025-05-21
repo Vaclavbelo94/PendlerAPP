@@ -2,9 +2,11 @@
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PromoCodeDialog } from "./promoCode/PromoCodeDialog";
 import { PromoCodesTable } from "./promoCode/PromoCodesTable";
 import { EmptyState } from "./promoCode/EmptyState";
+import { PromoCodeAnalyticsDashboard } from "./promoCode/analytics/PromoCodeAnalyticsDashboard";
 import { PromoCode } from "./promoCode/types";
 import {
   fetchPromoCodes,
@@ -17,6 +19,7 @@ export const PromoCodesPanel = () => {
   const [promoCodes, setPromoCodes] = useState<PromoCode[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showDialog, setShowDialog] = useState(false);
+  const [activeTab, setActiveTab] = useState("manage");
 
   useEffect(() => {
     const loadPromoCodesData = async () => {
@@ -88,30 +91,44 @@ export const PromoCodesPanel = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h3 className="text-lg font-medium">Aktivní promo kódy</h3>
-        <Button onClick={() => setShowDialog(true)}>
-          Vytvořit nový kód
-        </Button>
-      </div>
-
-      {isLoading ? (
-        <div className="flex justify-center p-8">
-          <div className="flex flex-col items-center gap-2">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-            <p className="text-sm text-muted-foreground">Načítání promo kódů...</p>
-          </div>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+        <div className="flex justify-between items-center">
+          <TabsList>
+            <TabsTrigger value="manage">Správa kódů</TabsTrigger>
+            <TabsTrigger value="analytics">Analytika</TabsTrigger>
+          </TabsList>
+          
+          {activeTab === "manage" && (
+            <Button onClick={() => setShowDialog(true)}>
+              Vytvořit nový kód
+            </Button>
+          )}
         </div>
-      ) : promoCodes.length === 0 ? (
-        <EmptyState onCreateClick={() => setShowDialog(true)} />
-      ) : (
-        <PromoCodesTable 
-          promoCodes={promoCodes}
-          onResetUsage={resetUsageCount}
-          onExtendValidity={extendValidity}
-          onDelete={handleDeletePromoCode}
-        />
-      )}
+
+        <TabsContent value="manage" className="space-y-4">
+          {isLoading ? (
+            <div className="flex justify-center p-8">
+              <div className="flex flex-col items-center gap-2">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+                <p className="text-sm text-muted-foreground">Načítání promo kódů...</p>
+              </div>
+            </div>
+          ) : promoCodes.length === 0 ? (
+            <EmptyState onCreateClick={() => setShowDialog(true)} />
+          ) : (
+            <PromoCodesTable 
+              promoCodes={promoCodes}
+              onResetUsage={resetUsageCount}
+              onExtendValidity={extendValidity}
+              onDelete={handleDeletePromoCode}
+            />
+          )}
+        </TabsContent>
+
+        <TabsContent value="analytics">
+          <PromoCodeAnalyticsDashboard />
+        </TabsContent>
+      </Tabs>
 
       <PromoCodeDialog 
         open={showDialog} 

@@ -52,3 +52,33 @@ export interface PromoCodeRedemption {
 // Type assertion helper for Supabase
 export type SupabasePromoCodes = Database['public']['Tables']['promo_codes'];
 export type SupabasePromoCodeRedemptions = Database['public']['Tables']['promo_code_redemptions'];
+
+// Analytics types
+export interface UsageOverTimeData {
+  date: string;
+  redemptions: number;
+  created: number;
+}
+
+export interface DiscountDistributionData {
+  discount: number;
+  value: number;
+}
+
+export interface PromoCodeBreakdown extends PromoCode {
+  redemptionRate: number;
+}
+
+export interface PromoCodeAnalytics {
+  totalPromoCodes: number;
+  totalRedemptions: number;
+  activePromoCodes: number;
+  averageDiscount: number;
+  mostUsedCode: string;
+  mostUsedCodeCount: number;
+  discountTrend?: number;
+  activeCodesTrend?: number;
+  usageOverTime: UsageOverTimeData[];
+  discountDistribution: DiscountDistributionData[];
+  codeBreakdown: PromoCodeBreakdown[];
+}
