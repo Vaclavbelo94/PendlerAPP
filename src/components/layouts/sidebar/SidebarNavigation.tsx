@@ -15,7 +15,8 @@ import {
   LayoutDashboardIcon,
   InfoIcon,
   Palette,
-  ShieldIcon
+  ShieldIcon,
+  MapPinned
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -38,6 +39,7 @@ const SidebarNavigation = ({ closeSidebar }: SidebarNavigationProps) => {
     { name: "Kalkulačky", href: "/calculator", icon: CalculatorIcon },
     { name: "Vozidlo", href: "/vehicle", icon: CarIcon },
     { name: "Směny", href: "/shifts", icon: CalendarIcon },
+    { name: "Mapa pendlerů", href: "/commuting-map", icon: MapPinned }, // Nová položka
     { name: "Doprava", href: "/travel-planning", icon: MapIcon },
     { name: "Daně", href: "/tax-advisor", icon: FileTextIcon },
     { name: "Zákony", href: "/laws", icon: InfoIcon },

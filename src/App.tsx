@@ -18,7 +18,7 @@ import Admin from './pages/Admin';
 import Calculator from './pages/Calculator';
 import Contact from './pages/Contact';
 import Cookies from './pages/Cookies';
-import Dashboard from './pages/Dashboard'; // Nová stránka Dashboard
+import Dashboard from './pages/Dashboard';
 import FAQ from './pages/FAQ';
 import Language from './pages/Language';
 import Login from './pages/Login';
@@ -34,6 +34,7 @@ import Translator from './pages/Translator';
 import Vehicle from './pages/Vehicle';
 import TravelPlanning from './pages/TravelPlanning';
 import TaxAdvisor from './pages/TaxAdvisor';
+import CommutingMap from './pages/CommutingMap'; // Přidáváme novou stránku
 
 // Stránky o zákonech
 import Laws from './pages/Laws';
@@ -67,7 +68,7 @@ function App() {
                 <Route path="/calculator" element={<Calculator />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/cookies" element={<Cookies />} />
-                <Route path="/dashboard" element={<Dashboard />} /> {/* Nová cesta */}
+                <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/language" element={<Language />} />
                 <Route path="/login" element={<Login />} />
@@ -83,6 +84,7 @@ function App() {
                 <Route path="/vehicle" element={<Vehicle />} />
                 <Route path="/travel-planning" element={<TravelPlanning />} />
                 <Route path="/tax-advisor" element={<TaxAdvisor />} />
+                <Route path="/commuting-map" element={<CommutingMap />} /> {/* Nová stránka */}
                 
                 {/* Stránky o zákonech */}
                 <Route path="/laws" element={<Laws />} />
