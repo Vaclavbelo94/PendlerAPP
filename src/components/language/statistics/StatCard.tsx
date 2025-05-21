@@ -10,7 +10,7 @@ interface StatCardProps {
   value: number | string;
   badge?: {
     text: string;
-    variant?: string;
+    variant?: "default" | "secondary" | "destructive" | "outline" | "success";
   };
 }
 
