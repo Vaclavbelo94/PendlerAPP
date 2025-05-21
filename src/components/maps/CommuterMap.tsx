@@ -88,17 +88,17 @@ const CommuterMap: React.FC = () => {
         const pointsOfInterest = [
           {
             name: 'Dresden',
-            coordinates: [13.7373, 51.0504],
+            coordinates: [13.7373, 51.0504] as [number, number],
             description: 'Populární cíl pendlerů z ČR',
           },
           {
             name: 'Mnichov',
-            coordinates: [11.5819, 48.1351],
+            coordinates: [11.5819, 48.1351] as [number, number],
             description: 'Významné ekonomické centrum',
           },
           {
             name: 'Praha',
-            coordinates: [14.4378, 50.0755],
+            coordinates: [14.4378, 50.0755] as [number, number],
             description: 'Výchozí bod mnoha pendlerů',
           }
         ];
@@ -142,8 +142,8 @@ const CommuterMap: React.FC = () => {
         
         map.current?.flyTo({
           center: [longitude, latitude],
-          zoom: 10,
-          essential: true
+          essential: true,
+          zoom: 10
         });
 
         // Add or update marker for user location
