@@ -6,10 +6,17 @@ import ProfileBio from "./overview/ProfileBio";
 import ProfileInfo from "./overview/ProfileInfo";
 import ProfileCards from "./overview/ProfileCards";
 import PromoCodeRedemption from "@/components/premium/PromoCodeRedemption";
+import { formatDate, getShiftTypeLabel } from "./utils/formatters";
 
-const ProfileOverview = () => {
+interface ProfileOverviewProps {
+  userId?: string;
+}
+
+const ProfileOverview: React.FC<ProfileOverviewProps> = ({ userId }) => {
   const { user, isPremium } = useAuth();
   const [premiumUntil, setPremiumUntil] = useState<string | null>(null);
+  const [workPreferences, setWorkPreferences] = useState<any>(null);
+  const [certificatesCount, setCertificatesCount] = useState(0);
 
   useEffect(() => {
     // Get premium expiry from localStorage
@@ -24,17 +31,14 @@ const ProfileOverview = () => {
     } catch (e) {
       console.error('Error checking premium status expiry:', e);
     }
-  }, [isPremium]);
 
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return 'Není nastaveno';
-    try {
-      const date = new Date(dateString);
-      return date.toLocaleDateString();
-    } catch (e) {
-      return 'Neznámé datum';
-    }
-  };
+    // For demo purposes, set some dummy work preferences and certificates count
+    setWorkPreferences({
+      preferred_shift_type: "morning",
+      preferred_locations: ["Munich", "Stuttgart"]
+    });
+    setCertificatesCount(2);
+  }, [isPremium, userId]);
 
   return (
     <div className="space-y-6">
@@ -66,8 +70,16 @@ const ProfileOverview = () => {
               </div>
             </Card>
 
-            <ProfileInfo />
-            <ProfileCards />
+            <ProfileInfo 
+              formatDate={formatDate} 
+              createdAt={user?.created_at} 
+            />
+            
+            <ProfileCards 
+              workPreferences={workPreferences} 
+              certificatesCount={certificatesCount} 
+              getShiftTypeLabel={getShiftTypeLabel} 
+            />
           </div>
         </div>
       )}
