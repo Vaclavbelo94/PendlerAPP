@@ -1,11 +1,28 @@
 
 import { Database } from "@/integrations/supabase/types";
 
-// Type from Supabase
-export type PromoCodeDB = Database['public']['Tables']['promo_codes']['Row'];
-export type PromoCodeRedemptionDB = Database['public']['Tables']['promo_code_redemptions']['Row'];
+// Mapování typů z Supabase DB na frontend typy
+// Definice typů DB (protože nejsou v automaticky generovaných typech)
+export interface PromoCodeDB {
+  id: string;
+  code: string;
+  discount: number;
+  duration: number;
+  valid_until: string;
+  used_count: number;
+  max_uses: number | null;
+  created_at?: string;
+  updated_at?: string;
+}
 
-// Frontend types for components
+export interface PromoCodeRedemptionDB {
+  id: string;
+  user_id: string;
+  promo_code_id: string;
+  redeemed_at: string;
+}
+
+// Frontend typy pro komponenty
 export interface PromoCode {
   id: string;
   code: string;

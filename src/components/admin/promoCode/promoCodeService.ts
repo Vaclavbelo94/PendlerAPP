@@ -5,9 +5,8 @@ import { toast } from "sonner";
 
 export const fetchPromoCodes = async (): Promise<PromoCode[]> => {
   try {
-    // Use type assertion to handle the new table that's not yet in the generated types
     const { data, error } = await supabase
-      .from('promo_codes' as any)
+      .from('promo_codes')
       .select('*')
       .order('created_at', { ascending: false });
     
@@ -15,7 +14,7 @@ export const fetchPromoCodes = async (): Promise<PromoCode[]> => {
       throw error;
     }
     
-    return data as unknown as PromoCode[];
+    return (data || []).map(mapDbToPromoCode);
   } catch (error) {
     console.error("Chyba při načítání promo kódů:", error);
     toast.error("Nepodařilo se načíst promo kódy");
@@ -25,9 +24,8 @@ export const fetchPromoCodes = async (): Promise<PromoCode[]> => {
 
 export const createPromoCode = async (promoCode: Omit<PromoCode, 'id' | 'usedCount' | 'created_at' | 'updated_at'>): Promise<PromoCode | null> => {
   try {
-    // Use type assertion to handle the new table that's not yet in the generated types
     const { data, error } = await supabase
-      .from('promo_codes' as any)
+      .from('promo_codes')
       .insert({
         code: promoCode.code,
         discount: promoCode.discount,
@@ -35,7 +33,7 @@ export const createPromoCode = async (promoCode: Omit<PromoCode, 'id' | 'usedCou
         valid_until: promoCode.validUntil,
         used_count: 0,
         max_uses: promoCode.maxUses
-      } as any)
+      })
       .select()
       .single();
     
@@ -44,7 +42,7 @@ export const createPromoCode = async (promoCode: Omit<PromoCode, 'id' | 'usedCou
     }
     
     // Transform to our frontend type
-    return mapDbToPromoCode(data as any);
+    return mapDbToPromoCode(data);
   } catch (error) {
     console.error("Chyba při vytváření promo kódu:", error);
     toast.error("Nepodařilo se vytvořit promo kód");
@@ -55,7 +53,7 @@ export const createPromoCode = async (promoCode: Omit<PromoCode, 'id' | 'usedCou
 export const updatePromoCode = async (id: string, updates: Partial<PromoCode>): Promise<PromoCode | null> => {
   try {
     // Format the data for the database
-    const dbUpdates: Partial<any> = {};
+    const dbUpdates: Partial<PromoCodeDB> = {};
     
     if (updates.discount !== undefined) dbUpdates.discount = updates.discount;
     if (updates.duration !== undefined) dbUpdates.duration = updates.duration;
@@ -63,9 +61,8 @@ export const updatePromoCode = async (id: string, updates: Partial<PromoCode>): 
     if (updates.maxUses !== undefined) dbUpdates.max_uses = updates.maxUses;
     if (updates.usedCount !== undefined) dbUpdates.used_count = updates.usedCount;
     
-    // Use type assertion to handle the new table that's not yet in the generated types
     const { data, error } = await supabase
-      .from('promo_codes' as any)
+      .from('promo_codes')
       .update(dbUpdates)
       .eq('id', id)
       .select()
@@ -75,7 +72,7 @@ export const updatePromoCode = async (id: string, updates: Partial<PromoCode>): 
       throw error;
     }
     
-    return mapDbToPromoCode(data as any);
+    return mapDbToPromoCode(data);
   } catch (error) {
     console.error("Chyba při aktualizaci promo kódu:", error);
     toast.error("Nepodařilo se aktualizovat promo kód");
@@ -85,9 +82,8 @@ export const updatePromoCode = async (id: string, updates: Partial<PromoCode>): 
 
 export const deletePromoCode = async (id: string): Promise<boolean> => {
   try {
-    // Use type assertion to handle the new table that's not yet in the generated types
     const { error } = await supabase
-      .from('promo_codes' as any)
+      .from('promo_codes')
       .delete()
       .eq('id', id);
     
@@ -110,9 +106,8 @@ export const redeemPromoCode = async (userId: string, code: string): Promise<{
 }> => {
   try {
     // First, find the promo code
-    // Use type assertion to handle the new table that's not yet in the generated types
     const { data: promoCodeData, error: promoCodeError } = await supabase
-      .from('promo_codes' as any)
+      .from('promo_codes')
       .select('*')
       .ilike('code', code)
       .single();
@@ -121,7 +116,7 @@ export const redeemPromoCode = async (userId: string, code: string): Promise<{
       return { success: false, message: "Neplatný promo kód" };
     }
     
-    const promoCode = mapDbToPromoCode(promoCodeData as any);
+    const promoCode = mapDbToPromoCode(promoCodeData);
     
     // Check if code is expired
     if (new Date(promoCode.validUntil) < new Date()) {
@@ -134,9 +129,8 @@ export const redeemPromoCode = async (userId: string, code: string): Promise<{
     }
     
     // Check if user has already redeemed this code
-    // Use type assertion to handle the new table that's not yet in the generated types
     const { data: existingRedemption, error: redemptionCheckError } = await supabase
-      .from('promo_code_redemptions' as any)
+      .from('promo_code_redemptions')
       .select('id')
       .eq('user_id', userId)
       .eq('promo_code_id', promoCode.id);
@@ -147,22 +141,20 @@ export const redeemPromoCode = async (userId: string, code: string): Promise<{
     
     // Begin transaction - actually in Supabase JS we can't do proper transactions, so we'll do this in sequence
     // 1. Record the redemption
-    // Use type assertion to handle the new table that's not yet in the generated types
     const { error: redemptionError } = await supabase
-      .from('promo_code_redemptions' as any)
+      .from('promo_code_redemptions')
       .insert({
         user_id: userId,
         promo_code_id: promoCode.id
-      } as any);
+      });
     
     if (redemptionError) {
       throw redemptionError;
     }
     
     // 2. Update the used count
-    // Use type assertion to handle the new table that's not yet in the generated types
     const { error: updateError } = await supabase
-      .from('promo_codes' as any)
+      .from('promo_codes')
       .update({ used_count: promoCode.usedCount + 1 })
       .eq('id', promoCode.id);
     
@@ -217,10 +209,9 @@ export const migratePromoCodesFromLocalStorage = async (): Promise<boolean> => {
     }));
     
     // Insert into Supabase
-    // Use type assertion to handle the new table that's not yet in the generated types
     const { error } = await supabase
-      .from('promo_codes' as any)
-      .insert(codesToInsert as any);
+      .from('promo_codes')
+      .insert(codesToInsert);
     
     if (error) {
       throw error;
