@@ -1,5 +1,6 @@
 
 import { addMinutes, addHours, addDays, addWeeks, addMonths, format } from 'date-fns';
+import { REPETITION_INTERVALS } from '@/constants/spacedRepetition';
 
 // Funkce pro výpočet dalšího data opakování podle úrovně
 export const calculateNextReviewDate = (repetitionLevel: number): string => {
@@ -71,4 +72,29 @@ export const timeToNextReview = (nextReviewDate: string): string => {
   }
   
   return format(reviewDate, 'dd.MM.yyyy');
+};
+
+// Nová funkce pro výpočet skóre znalosti slova na základě historie odpovědí
+export const calculateKnowledgeScore = (correct: number, incorrect: number): number => {
+  if (correct + incorrect === 0) return 0;
+  return Math.round((correct / (correct + incorrect)) * 100);
+};
+
+// Nová funkce pro výpočet optimálního času pro další opakování
+export const optimizeReviewTime = (
+  repetitionLevel: number, 
+  knowledgeScore: number
+): string => {
+  const now = new Date();
+  const baseInterval = REPETITION_INTERVALS[Math.min(repetitionLevel, REPETITION_INTERVALS.length - 1)];
+  
+  // Úprava intervalu podle skóre znalosti
+  let multiplier = 1;
+  if (knowledgeScore > 90) multiplier = 1.2; // Prodloužíme interval
+  if (knowledgeScore < 60) multiplier = 0.8; // Zkrátíme interval
+  
+  const intervalDays = Math.round(baseInterval * multiplier);
+  const nextDate = addDays(now, intervalDays);
+  
+  return nextDate.toISOString();
 };

@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { VocabularyItem } from '@/models/VocabularyItem';
-import { calculateNextReviewDate } from '@/utils/dateUtils';
+import { calculateNextReviewDate, calculateKnowledgeScore, optimizeReviewTime } from '@/utils/dateUtils';
 
 export const useRepetitionAlgorithm = (items: VocabularyItem[]) => {
   const [dueItems, setDueItems] = useState<VocabularyItem[]>([]);
@@ -19,11 +19,30 @@ export const useRepetitionAlgorithm = (items: VocabularyItem[]) => {
       return reviewDate <= now;
     });
     
-    setDueItems(due);
+    // Sort due items by spaced repetition priority
+    const sortedDue = [...due].sort((a, b) => {
+      // Prioritize new items
+      if (!a.lastReviewed && b.lastReviewed) return -1;
+      if (a.lastReviewed && !b.lastReviewed) return 1;
+      
+      // Then prioritize by repetition level (lower levels first)
+      if (a.repetitionLevel !== b.repetitionLevel) {
+        return a.repetitionLevel - b.repetitionLevel;
+      }
+      
+      // If same level, prioritize those with closer review dates
+      if (a.nextReviewDate && b.nextReviewDate) {
+        return new Date(a.nextReviewDate).getTime() - new Date(b.nextReviewDate).getTime();
+      }
+      
+      return 0;
+    });
+    
+    setDueItems(sortedDue);
     
     // If there's no current item but we have due items, set the first one
-    if (!currentItem && due.length > 0) {
-      setCurrentItem(due[0]);
+    if (!currentItem && sortedDue.length > 0) {
+      setCurrentItem(sortedDue[0]);
     }
   }, [items, currentItem]);
 
@@ -31,13 +50,22 @@ export const useRepetitionAlgorithm = (items: VocabularyItem[]) => {
   const markCorrect = (itemId: string, onComplete: () => void) => {
     const updatedItems = items.map(item => {
       if (item.id === itemId) {
-        const newRepetitionLevel = Math.min((item.repetitionLevel || 0) + 1, 6); // Max level is 6
+        const correctCount = (item.correctCount || 0) + 1;
+        const incorrectCount = item.incorrectCount || 0;
+        const knowledgeScore = calculateKnowledgeScore(correctCount, incorrectCount);
+        
+        // Increase repetition level, but cap at maximum level
+        const newRepetitionLevel = Math.min((item.repetitionLevel || 0) + 1, 6);
+        
+        // Calculate next review date based on optimized interval
+        const nextReviewDate = optimizeReviewTime(newRepetitionLevel, knowledgeScore);
+        
         return {
           ...item,
           lastReviewed: new Date().toISOString(),
-          nextReviewDate: calculateNextReviewDate(newRepetitionLevel),
+          nextReviewDate,
           repetitionLevel: newRepetitionLevel,
-          correctCount: (item.correctCount || 0) + 1
+          correctCount
         };
       }
       return item;
@@ -50,13 +78,22 @@ export const useRepetitionAlgorithm = (items: VocabularyItem[]) => {
   const markIncorrect = (itemId: string, onComplete: () => void) => {
     const updatedItems = items.map(item => {
       if (item.id === itemId) {
+        const correctCount = item.correctCount || 0;
+        const incorrectCount = (item.incorrectCount || 0) + 1;
+        const knowledgeScore = calculateKnowledgeScore(correctCount, incorrectCount);
+        
         // Reset repetition level to 0 when incorrect
+        const newRepetitionLevel = 0;
+        
+        // Použití optimalizované funkce pro výpočet dalšího data opakování
+        const nextReviewDate = optimizeReviewTime(newRepetitionLevel, knowledgeScore);
+        
         return {
           ...item,
           lastReviewed: new Date().toISOString(),
-          nextReviewDate: calculateNextReviewDate(0),
-          repetitionLevel: 0,
-          incorrectCount: (item.incorrectCount || 0) + 1
+          nextReviewDate,
+          repetitionLevel: newRepetitionLevel,
+          incorrectCount
         };
       }
       return item;

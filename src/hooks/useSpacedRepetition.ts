@@ -10,7 +10,7 @@ import { useVocabularyStatistics } from './vocabulary/useVocabularyStatistics';
 export const useSpacedRepetition = (initialItems: VocabularyItem[] = []) => {
   const { toast } = useToast();
   
-  // Use the newly created hooks
+  // Použití nově vytvořených hooků
   const {
     items,
     setItems,
@@ -35,7 +35,7 @@ export const useSpacedRepetition = (initialItems: VocabularyItem[] = []) => {
 
   const { getStatistics } = useVocabularyStatistics(items, dueItems, completedToday, dailyGoal);
 
-  // Wrapper for marking items as correct
+  // Wrapper pro označení položek jako správné
   const markCorrect = (itemId: string) => {
     const updatedItems = markItemCorrect(itemId, () => {
       setCompletedToday(prev => prev + 1);
@@ -43,7 +43,7 @@ export const useSpacedRepetition = (initialItems: VocabularyItem[] = []) => {
     setItems(updatedItems);
   };
 
-  // Wrapper for marking items as incorrect
+  // Wrapper pro označení položek jako nesprávné
   const markIncorrect = (itemId: string) => {
     const updatedItems = markItemIncorrect(itemId, () => {
       setCompletedToday(prev => prev + 1);
@@ -51,7 +51,7 @@ export const useSpacedRepetition = (initialItems: VocabularyItem[] = []) => {
     setItems(updatedItems);
   };
 
-  // Check if daily goal is met
+  // Kontrola, zda je splněn denní cíl
   useEffect(() => {
     if (completedToday >= dailyGoal) {
       toast({
