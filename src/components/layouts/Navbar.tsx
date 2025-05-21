@@ -7,7 +7,8 @@ import {
   UserIcon, 
   LogOutIcon, 
   SearchIcon,
-  CalculatorIcon
+  CalculatorIcon,
+  ShieldIcon
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -32,7 +33,7 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProp
   const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, isPremium, signOut } = useAuth();
+  const { user, isPremium, isAdmin, signOut } = useAuth();
 
   // Add scroll event listener
   useEffect(() => {
@@ -96,6 +97,18 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProp
             </Button>
           )}
           
+          {/* Admin Link - only visible for admins */}
+          {user && isAdmin && (
+            <Button 
+              variant="ghost" 
+              className="text-sm font-medium flex items-center gap-2 hidden md:flex" 
+              onClick={() => navigate("/admin")}
+            >
+              <ShieldIcon className="h-4 w-4" />
+              <span>Administrace</span>
+            </Button>
+          )}
+          
           {/* Theme toggle button (viditelné pouze na desktop) */}
           <ThemeToggle />
           
@@ -113,6 +126,7 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProp
                     {user.user_metadata?.username || user.email?.split('@')[0] || 'Uživatel'}
                   </span>
                   {isPremium && <Badge className="bg-amber-500">Premium</Badge>}
+                  {isAdmin && <Badge className="bg-red-500">Admin</Badge>}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
@@ -122,6 +136,13 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProp
                   <UserIcon className="mr-2 h-4 w-4" />
                   <span>Profil</span>
                 </DropdownMenuItem>
+                {/* Admin dropdown item - only visible for admins */}
+                {isAdmin && (
+                  <DropdownMenuItem onClick={() => navigate("/admin")}>
+                    <ShieldIcon className="mr-2 h-4 w-4" />
+                    <span>Administrace</span>
+                  </DropdownMenuItem>
+                )}
                 {/* Calculator dropdown item - only visible when logged in on mobile */}
                 <DropdownMenuItem onClick={() => navigate("/calculator")} className="md:hidden">
                   <CalculatorIcon className="mr-2 h-4 w-4" />

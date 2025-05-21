@@ -25,7 +25,12 @@ import { useAuth } from "@/hooks/useAuth";
 const Admin = () => {
   const [showLoginDialog, setShowLoginDialog] = useState(false);
   const navigate = useNavigate();
-  const { isAdmin, signOut } = useAuth();
+  const { isAdmin, signOut, refreshAdminStatus } = useAuth();
+
+  // Při načtení stránky aktualizujeme admin status
+  useEffect(() => {
+    refreshAdminStatus();
+  }, [refreshAdminStatus]);
 
   // Redirect na hlavní stránku, pokud uživatel není admin
   useEffect(() => {

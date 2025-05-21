@@ -5,7 +5,8 @@ import {
   LogOut, 
   User, 
   Settings, 
-  CreditCard
+  CreditCard,
+  Shield
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -15,7 +16,7 @@ interface SidebarUserSectionProps {
 }
 
 const SidebarUserSection = ({ closeSidebar }: SidebarUserSectionProps) => {
-  const { user, signOut } = useAuth();
+  const { user, signOut, isAdmin } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -74,6 +75,14 @@ const SidebarUserSection = ({ closeSidebar }: SidebarUserSectionProps) => {
             Nastavení
           </Button>
         </Link>
+        {isAdmin && (
+          <Link to="/admin" onClick={closeSidebar}>
+            <Button variant="ghost" className="w-full justify-start">
+              <Shield className="mr-2 h-4 w-4" />
+              Administrace
+            </Button>
+          </Link>
+        )}
         <Button variant="ghost" className="w-full justify-start text-red-500" onClick={handleLogout}>
           <LogOut className="mr-2 h-4 w-4" />
           Odhlásit se
