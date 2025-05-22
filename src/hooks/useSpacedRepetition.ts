@@ -9,6 +9,7 @@ import {
   loadDailyGoal,
   saveDailyGoal
 } from '@/utils/vocabularyStorage';
+import { calculateVocabularyStatistics } from '@/utils/vocabularyStats';
 
 // Pomocné funkce pro spaced repetition algoritmus
 const getNextReviewDate = (repetitionLevel: number): Date => {
@@ -152,29 +153,9 @@ export const useSpacedRepetition = (initialItems: VocabularyItem[] = []) => {
     }
   };
   
-  // Získat statistiky
+  // Získat statistiky - upraveno, aby vracelo data odpovídající VocabularyStatistics
   const getStatistics = () => {
-    const totalItems = items.length;
-    const totalReviewed = items.reduce((sum, item) => sum + item.correctCount + item.incorrectCount, 0);
-    const totalCorrect = items.reduce((sum, item) => sum + item.correctCount, 0);
-    
-    const accuracy = totalReviewed > 0 ? totalCorrect / totalReviewed : 0;
-    
-    // Počet slovíček podle úrovně opakování
-    const levelCounts = items.reduce((acc, item) => {
-      const level = item.repetitionLevel;
-      acc[level] = (acc[level] || 0) + 1;
-      return acc;
-    }, {} as Record<number, number>);
-    
-    return {
-      totalItems,
-      totalReviewed,
-      accuracy,
-      levelCounts,
-      completedToday,
-      dailyGoal
-    };
+    return calculateVocabularyStatistics(items, dueItems, completedToday, dailyGoal);
   };
   
   // Nastavit denní cíl

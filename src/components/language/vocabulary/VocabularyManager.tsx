@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { VocabularyProvider, useVocabularyContext } from './VocabularyProvider';
+import { VocabularyContextType } from '@/contexts/VocabularyContext';
 
 interface VocabularyManagerProps {
   children: React.ReactNode;
@@ -16,5 +17,5 @@ const VocabularyManager: React.FC<VocabularyManagerProps> = ({ children }) => {
 };
 
 export { useVocabularyContext };
-export type { VocabularyContextType } from './VocabularyProvider';
+export type { VocabularyContextType };
 export default VocabularyManager;

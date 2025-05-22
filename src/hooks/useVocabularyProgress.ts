@@ -53,5 +53,5 @@ export const useVocabularyProgress = (vocabularyItems: VocabularyItem[] = []) =>
     });
   }, [vocabularyItems]);
 
-  return { userProgress };
+  return { userProgress, vocabularyItems };
 };

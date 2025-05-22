@@ -5,7 +5,7 @@ import WeeklyProgressHeatmap from './WeeklyProgressHeatmap';
 import LearningSessionHistory from './LearningSessionHistory';
 import { useMasteryStats } from '@/hooks/vocabulary/useMasteryStats';
 import { useVocabularyContext } from './vocabulary/VocabularyProvider';
-import { useSpacedRepetition } from '@/hooks/useSpacedRepetition';
+import { VocabularyStatistics } from '@/utils/vocabularyStats';
 
 // Import refaktorovaných komponent
 import MasteryLevelChart from './dashboard/MasteryLevelChart';
@@ -26,11 +26,11 @@ const VocabularyProgressDashboard: React.FC<VocabularyProgressDashboardProps> = 
 }) => {
   // Získání dat o zvládnutí slovíček
   const { masteredCount, learningCount } = useMasteryStats(progress.items || []);
-  const { testHistory } = useVocabularyContext();
-  const { dueItems, completedToday, dailyGoal, getStatistics } = useSpacedRepetition();
+  const { testHistory, items } = useVocabularyContext();
+  const { dueItems, completedToday, dailyGoal, getStatistics } = useVocabularyContext();
   
   // Get detailed statistics
-  const statistics = getStatistics();
+  const statistics: VocabularyStatistics = getStatistics();
   
   return (
     <div className="space-y-6">
