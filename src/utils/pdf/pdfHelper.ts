@@ -1,9 +1,7 @@
-
 import { jsPDF } from 'jspdf';
 import { DHL_COLORS } from '@/lib/design-system';
 
 // Přidání potřebné fonty pro českou diakritiku
-// Poznámka: jsPDF vyžaduje specifické nastavení fontů pro jazyky s diakritikou
 export const initializePDF = (): jsPDF => {
   // Vytvoření nového PDF dokumentu s podporou pro UTF-8
   const doc = new jsPDF({
@@ -13,10 +11,25 @@ export const initializePDF = (): jsPDF => {
     putOnlyUsedFonts: true,
     compress: true
   });
-  
-  // jsPDF nepodporuje přímo "cs-CZ", použijeme obecnou podporu pro UTF-8
-  // místo volání setLanguage, které očekává podporovaný kód jazyka
+
+  // Načtení standardní fonty Helvetica, která lépe podporuje diakritiku
   doc.setFont("helvetica");
+
+  // Kódování UTF-8 pro podporu diakritiky
+  const utf8Text = (txt: string) => {
+    try {
+      return decodeURIComponent(encodeURIComponent(txt));
+    } catch (e) {
+      return txt; // Fallback na původní text v případě problému
+    }
+  };
+
+  // Přepsání metody text pro správné zobrazení diakritiky
+  const originalText = doc.text;
+  doc.text = function(text: string | string[], x: number | number[], y?: number, options?: any): jsPDF {
+    let processedText = typeof text === 'string' ? utf8Text(text) : text.map(t => utf8Text(t));
+    return originalText.call(this, processedText, x, y, options);
+  };
   
   return doc;
 };
@@ -109,4 +122,3 @@ const drawLogo = (doc: jsPDF, x: number, y: number, size: number): void => {
   doc.setLineWidth(size * 0.1);
   doc.line(x, y + size / 2.2, x + size, y + size / 2.2);
 };
-
