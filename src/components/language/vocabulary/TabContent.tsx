@@ -11,6 +11,7 @@ import { useVocabularyContext } from './VocabularyManager';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguageContext } from '@/hooks/useLanguageContext';
 import { TestResult } from '@/models/VocabularyItem';
+import { Button } from "@/components/ui/button";
 
 export const ReviewTabContent = () => (
   <TabsContent value="review" className="pt-6 space-y-6">
