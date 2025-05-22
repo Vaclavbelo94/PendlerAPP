@@ -1,9 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { VocabularyItem, TestResult, TestItem } from '@/models/VocabularyItem';
+import { VocabularyItem, TestResult, TestItem, SkillsData } from '@/models/VocabularyItem';
 import TestQuestion from './test/TestQuestion';
 import TestResults from './test/TestResults';
 
@@ -119,7 +118,7 @@ const TestMode: React.FC<TestModeProps> = ({ vocabularyItems, onComplete }) => {
       
       // Generate skills data based on performance
       // This is simulated data - in real app it would be based on actual measurements
-      const skillsData = {
+      const skillsData: SkillsData = {
         reading: Math.round(65 + (score / 5) - Math.random() * 15),
         writing: Math.round(60 + (score / 6) - Math.random() * 15),
         speaking: Math.round(50 + (score / 7) - Math.random() * 20),
@@ -140,7 +139,7 @@ const TestMode: React.FC<TestModeProps> = ({ vocabularyItems, onComplete }) => {
         categories,
         difficulties,
         testItems,
-        skillsData
+        skillsData  // Předáváme skills data
       };
       
       onComplete(result);

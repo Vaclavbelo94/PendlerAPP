@@ -25,7 +25,7 @@ const VocabularyProgressDashboard: React.FC<VocabularyProgressDashboardProps> = 
   progress
 }) => {
   // Získání dat o zvládnutí slovíček
-  const { masteredCount, learningCount } = useMasteryStats(progress.items);
+  const { masteredCount, learningCount } = useMasteryStats(progress.items || []);
   const { testHistory } = useVocabularyContext();
   const { dueItems, completedToday, dailyGoal, getStatistics } = useSpacedRepetition();
   

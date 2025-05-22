@@ -42,6 +42,7 @@ export interface UserProgress {
     hard: number;
     unspecified: number;
   };
+  items?: VocabularyItem[]; // Přidáno pro useVocabularyProgress
 }
 
 export interface DailyProgressStat {
@@ -65,6 +66,15 @@ export interface TestResult {
   categories: string[];
   difficulties: string[];
   testItems: TestItem[]; // Array to track individual question results
+  skillsData?: SkillsData; // Přidána chybějící vlastnost
+}
+
+export interface SkillsData {
+  reading: number;
+  writing: number;
+  speaking: number;
+  listening: number;
+  grammar: number;
 }
 
 export interface TestItem {

@@ -8,7 +8,7 @@ interface VocabularySyncProps {
 }
 
 const VocabularySync: React.FC<VocabularySyncProps> = ({ children }) => {
-  const { items, bulkAddVocabularyItems, testHistory } = useVocabularyContext();
+  const { items, bulkAddVocabularyItems, testHistory = [] } = useVocabularyContext();
   
   const {
     isSyncing,

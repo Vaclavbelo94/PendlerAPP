@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { VocabularyItem } from '@/models/VocabularyItem';
+import { VocabularyItem, TestResult } from '@/models/VocabularyItem';
 
 export interface VocabularyContextType {
   items: VocabularyItem[];
@@ -8,6 +8,8 @@ export interface VocabularyContextType {
   currentItem: VocabularyItem | null;
   dailyGoal: number;
   completedToday: number;
+  testHistory: TestResult[];  // Přidáno
+  addTestResult: (result: TestResult) => void; // Přidáno
   addVocabularyItem: (item: Omit<VocabularyItem, 'id'>) => void;
   markCorrect: (itemId: string) => void; 
   markIncorrect: (itemId: string) => void;

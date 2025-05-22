@@ -11,6 +11,7 @@ import VocabularyTest from './VocabularyTest';
 import { useVocabularyContext } from './VocabularyManager';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguageContext } from '../LanguageManager';
+import { TestResult } from '@/models/VocabularyItem';
 
 export const ReviewTabContent = () => (
   <TabsContent value="review" className="pt-6 space-y-6">
@@ -23,7 +24,7 @@ export const TestTabContent = () => {
   const { addXp } = useLanguageContext();
   const { toast } = useToast();
   
-  const handleCompleteTest = (results) => {
+  const handleCompleteTest = (results: TestResult) => {
     // Přidat výsledky do statistik uživatele
     addTestResult(results);
     

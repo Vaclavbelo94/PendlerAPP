@@ -1,6 +1,6 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { VocabularyItem, UserProgress } from '@/models/VocabularyItem';
+import { VocabularyItem, UserProgress, TestResult } from '@/models/VocabularyItem';
 import { useSpacedRepetition } from '@/hooks/useSpacedRepetition';
 import { defaultGermanVocabulary } from '@/data/defaultVocabulary';
 import { saveVocabularyItems, loadVocabularyItems } from '@/utils/vocabularyStorage';
@@ -11,6 +11,8 @@ interface VocabularyContextType {
   currentItem: VocabularyItem | null;
   dailyGoal: number;
   completedToday: number;
+  testHistory: TestResult[];  // Přidána chybějící vlastnost
+  addTestResult: (result: TestResult) => void; // Přidána chybějící metoda
   addVocabularyItem: (item: Omit<VocabularyItem, 'id'> & Partial<VocabularyItem>) => VocabularyItem;
   markCorrect: (itemId: string) => void;
   markIncorrect: (itemId: string) => void;
@@ -41,6 +43,7 @@ export const VocabularyProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   // State pro UI
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [currentEditItem, setCurrentEditItem] = useState<VocabularyItem | null>(null);
+  const [testHistory, setTestHistory] = useState<TestResult[]>([]);
   
   // Inicializace dat
   useEffect(() => {
@@ -56,6 +59,12 @@ export const VocabularyProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       loadInitialData();
     }
   }, [initialLoadDone]);
+  
+  // Přidání nového testu do historie
+  const addTestResult = (result: TestResult) => {
+    setTestHistory(prev => [...prev, result]);
+    // Zde by mělo být uložení do localStorage nebo API
+  };
   
   // Editace slovíčka
   const handleEditItem = (item: VocabularyItem) => {
@@ -107,7 +116,7 @@ export const VocabularyProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     window.location.reload();
   };
   
-  // Dummy data pro pokrok uživatele
+  // Pokrok uživatele
   const userProgress: UserProgress = {
     dailyStats: [],
     totalReviewed: 0,
@@ -119,6 +128,8 @@ export const VocabularyProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     <VocabularyContext.Provider value={{
       ...spacedRepetition,
       userProgress,
+      testHistory,
+      addTestResult,
       editDialogOpen,
       setEditDialogOpen,
       currentEditItem,

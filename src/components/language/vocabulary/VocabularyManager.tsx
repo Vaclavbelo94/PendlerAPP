@@ -16,4 +16,5 @@ const VocabularyManager: React.FC<VocabularyManagerProps> = ({ children }) => {
 };
 
 export { useVocabularyContext };
+export type { VocabularyContextType } from './VocabularyProvider';
 export default VocabularyManager;
