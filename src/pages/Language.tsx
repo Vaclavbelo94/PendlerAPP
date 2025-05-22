@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -7,7 +6,8 @@ import { useAuth } from "@/hooks/useAuth";
 import VocabularySection from "@/components/language/VocabularySection";
 import OfflineIndicator from "@/components/offlineMode/OfflineIndicator";
 import OfflineDownloadCard from "@/components/language/OfflineDownloadCard";
-import LanguageManager, { useLanguageContext } from "@/components/language/LanguageManager";
+import LanguageManager from "@/components/language/LanguageManager";
+import { useLanguageContext } from "@/hooks/useLanguageContext";
 import { Button } from "@/components/ui/button";
 import { BookOpen, FileText, Languages } from "lucide-react";
 import { ResponsiveContainer } from "@/components/ui/responsive-container";
