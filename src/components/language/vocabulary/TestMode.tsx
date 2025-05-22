@@ -99,7 +99,7 @@ const TestMode: React.FC<TestModeProps> = ({ vocabularyItems, onComplete }) => {
     if (testCompleted && startTime && endTime && onComplete) {
       // Count correct and incorrect answers
       const correctAnswers = testItems.filter(item => item.wasCorrect).length;
-      const incorrectAnswers = testItems.length - correctAnswers;
+      const incorrectCount = testItems.length - correctAnswers;
       
       // Calculate score
       const score = Math.round((correctAnswers / testItems.length) * 100);
@@ -132,14 +132,12 @@ const TestMode: React.FC<TestModeProps> = ({ vocabularyItems, onComplete }) => {
         endTime,
         totalQuestions: testItems.length,
         correctAnswers,
-        incorrectAnswers,
-        wrongAnswers: incorrectAnswers, // Duplicate for backward compatibility
         score,
         timeSpentSeconds,
         categories,
         difficulties,
         testItems,
-        skillsData  // Předáváme skills data
+        skillsData
       };
       
       onComplete(result);

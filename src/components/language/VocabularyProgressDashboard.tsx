@@ -24,10 +24,11 @@ const VocabularyProgressDashboard: React.FC<VocabularyProgressDashboardProps> = 
   vocabularyCount,
   progress
 }) => {
+  // Get mastery stats data from the vocabulary context instead
+  const { items } = useVocabularyContext();
   // Získání dat o zvládnutí slovíček
-  const { masteredCount, learningCount } = useMasteryStats(progress.items || []);
-  const { testHistory, items } = useVocabularyContext();
-  const { dueItems, completedToday, dailyGoal, getStatistics } = useVocabularyContext();
+  const { masteredCount, learningCount } = useMasteryStats(items || []);
+  const { testHistory, getStatistics } = useVocabularyContext();
   
   // Get detailed statistics
   const statistics: VocabularyStatistics = getStatistics();

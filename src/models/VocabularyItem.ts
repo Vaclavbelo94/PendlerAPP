@@ -30,15 +30,38 @@ export interface TestResult {
   timeSpentSeconds: number;
   categories?: string[];
   difficulties?: string[];
+  testItems?: TestItem[]; // Add reference to TestItem
+  skillsData?: SkillsData; // Add reference to SkillsData
+}
+
+// Model pro statistiku jednotlivých testových položek
+export interface TestItem {
+  item: VocabularyItem;
+  wasCorrect: boolean;
+  userAnswer?: string;
+  responseTimeMs?: number;
+}
+
+// Model pro sledování dovedností v jazyce
+export interface SkillsData {
+  reading: number;
+  writing: number;
+  speaking: number;
+  listening: number;
+  grammar: number;
+}
+
+// Model pro denní statistiky pokroku
+export interface DailyProgressStat {
+  date: string;
+  wordsReviewed: number;
+  correctCount: number;
+  incorrectCount: number;
 }
 
 // Model pro sledování pokroku uživatele
 export interface UserProgress {
-  dailyStats: Array<{
-    date: string;
-    reviewedCount: number;
-    correctCount: number;
-  }>;
+  dailyStats: DailyProgressStat[];
   totalReviewed: number;
   streakDays: number;
   lastStudyDate?: string;
@@ -73,4 +96,7 @@ export interface VocabularyStatistics {
   };
   accuracy: number;
   dailyGoalCompletion: number;
+  completedToday?: number;
+  dailyGoal?: number;
+  correctRate?: number;
 }
