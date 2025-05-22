@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { TabsContent } from "@/components/ui/tabs";
 import VocabularyReview from '../VocabularyReview';
@@ -117,3 +116,43 @@ export const ImportExportTabContent = () => {
     </TabsContent>
   );
 };
+
+export const LogisticsTabContent = () => (
+  <TabsContent value="logistics" className="pt-6 space-y-6">
+    <div className="prose prose-sm max-w-none">
+      <h2 className="text-2xl font-bold tracking-tight mb-4">Slovíčka: Logistika a rozměry</h2>
+      <p className="text-muted-foreground mb-6">
+        Tato sekce obsahuje běžně používaná slovíčka pro popis rozměrů, váhy, nakládky, vykládky a orientace ve skladu.
+      </p>
+    </div>
+
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="space-y-2">
+        <h3 className="font-medium">Kategorie slovíček:</h3>
+        <ul className="list-disc pl-5 space-y-1 text-sm">
+          <li>Rozměry a váha (schwer, leicht, breit, schmal)</li>
+          <li>Nakládka a vykládka (die Verladung, die Entladung)</li>
+          <li>Skladové prostory (das Tor, die Lagerhalle)</li>
+          <li>Směrové výrazy (nach oben, nach unten)</li>
+        </ul>
+      </div>
+      
+      <div className="space-y-2">
+        <h3 className="font-medium">Doporučené procvičování:</h3>
+        <ul className="list-disc pl-5 space-y-1 text-sm">
+          <li>Rozpoznávání pokynů pro manipulaci s balíky</li>
+          <li>Popis rozměrů a váhy předmětů</li>
+          <li>Komunikace s kolegy při nakládce a vykládce</li>
+        </ul>
+      </div>
+    </div>
+
+    <div className="bg-muted rounded-lg p-4">
+      <h3 className="font-medium mb-2">Rozšířené studijní materiály:</h3>
+      <p className="text-sm mb-4">Pro více příkladů a interaktivní cvičení k těmto slovíčkům přejděte do sekce kurzu německého jazyka.</p>
+      <Button onClick={() => window.open('/german-course', '_blank')} variant="outline">
+        Otevřít rozšířené materiály
+      </Button>
+    </div>
+  </TabsContent>
+);

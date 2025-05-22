@@ -1,4 +1,3 @@
-
 import { VocabularyItem } from '@/models/VocabularyItem';
 
 // Výchozí slovní zásoba pro německý jazyk
@@ -343,6 +342,234 @@ export const defaultGermanVocabulary: VocabularyItem[] = [
     translation: 'plat',
     example: 'Das Gehalt wird monatlich überwiesen.',
     category: 'Práce',
+    difficulty: 'medium',
+    repetitionLevel: 0,
+    correctCount: 0,
+    incorrectCount: 0
+  },
+  
+  // Dimensions and Weight
+  {
+    id: 'de_31',
+    word: 'schwer',
+    translation: 'těžký',
+    example: 'Dieses Paket ist zu schwer für mich.',
+    category: 'Rozměry a váha',
+    difficulty: 'easy',
+    repetitionLevel: 0,
+    correctCount: 0,
+    incorrectCount: 0
+  },
+  {
+    id: 'de_32',
+    word: 'leicht',
+    translation: 'lehký',
+    example: 'Das ist ein leichtes Paket, du kannst es alleine tragen.',
+    category: 'Rozměry a váha',
+    difficulty: 'easy',
+    repetitionLevel: 0,
+    correctCount: 0,
+    incorrectCount: 0
+  },
+  {
+    id: 'de_33',
+    word: 'breit',
+    translation: 'široký',
+    example: 'Der Karton ist zu breit für dieses Regal.',
+    category: 'Rozměry a váha',
+    difficulty: 'medium',
+    repetitionLevel: 0,
+    correctCount: 0,
+    incorrectCount: 0
+  },
+  {
+    id: 'de_34',
+    word: 'schmal',
+    translation: 'úzký',
+    example: 'Der Durchgang ist sehr schmal, seien Sie vorsichtig.',
+    category: 'Rozměry a váha',
+    difficulty: 'medium',
+    repetitionLevel: 0,
+    correctCount: 0,
+    incorrectCount: 0
+  },
+  {
+    id: 'de_35',
+    word: 'die Dimension',
+    translation: 'rozměr',
+    example: 'Wir müssen die Dimensionen jedes Pakets überprüfen.',
+    category: 'Rozměry a váha',
+    difficulty: 'medium',
+    repetitionLevel: 0,
+    correctCount: 0,
+    incorrectCount: 0
+  },
+  {
+    id: 'de_36',
+    word: 'die Größe',
+    translation: 'velikost',
+    example: 'Die Größe des Paketes bestimmt den Preis.',
+    category: 'Rozměry a váha',
+    difficulty: 'medium',
+    repetitionLevel: 0,
+    correctCount: 0,
+    incorrectCount: 0
+  },
+  
+  // Loading and Unloading
+  {
+    id: 'de_37',
+    word: 'die Verladung',
+    translation: 'nakládka',
+    example: 'Die Verladung beginnt um 7 Uhr morgens.',
+    category: 'Logistika',
+    difficulty: 'hard',
+    repetitionLevel: 0,
+    correctCount: 0,
+    incorrectCount: 0
+  },
+  {
+    id: 'de_38',
+    word: 'die Entladung',
+    translation: 'vykládka',
+    example: 'Nach der Entladung muss alles dokumentiert werden.',
+    category: 'Logistika',
+    difficulty: 'hard',
+    repetitionLevel: 0,
+    correctCount: 0,
+    incorrectCount: 0
+  },
+  {
+    id: 'de_39',
+    word: 'beladen',
+    translation: 'naložit',
+    example: 'Wir müssen den LKW vor Mittag beladen.',
+    category: 'Logistika',
+    difficulty: 'medium',
+    repetitionLevel: 0,
+    correctCount: 0,
+    incorrectCount: 0
+  },
+  {
+    id: 'de_40',
+    word: 'entladen',
+    translation: 'vyložit',
+    example: 'Bitte entladen Sie den Container vorsichtig.',
+    category: 'Logistika',
+    difficulty: 'medium',
+    repetitionLevel: 0,
+    correctCount: 0,
+    incorrectCount: 0
+  },
+  
+  // Warehouse and Facilities
+  {
+    id: 'de_41',
+    word: 'das Tor',
+    translation: 'brána',
+    example: 'Der LKW steht vor dem Tor Nummer 5.',
+    category: 'Sklad',
+    difficulty: 'easy',
+    repetitionLevel: 0,
+    correctCount: 0,
+    incorrectCount: 0
+  },
+  {
+    id: 'de_42',
+    word: 'die Lagerhalle',
+    translation: 'skladovací hala',
+    example: 'Die neue Lagerhalle hat 5000 Quadratmeter.',
+    category: 'Sklad',
+    difficulty: 'medium',
+    repetitionLevel: 0,
+    correctCount: 0,
+    incorrectCount: 0
+  },
+  {
+    id: 'de_43',
+    word: 'der Wareneingang',
+    translation: 'příjem zboží',
+    example: 'Alle Pakete müssen zuerst durch den Wareneingang.',
+    category: 'Sklad',
+    difficulty: 'hard',
+    repetitionLevel: 0,
+    correctCount: 0,
+    incorrectCount: 0
+  },
+  {
+    id: 'de_44',
+    word: 'der Warenausgang',
+    translation: 'výdej zboží',
+    example: 'Der Warenausgang schließt um 16 Uhr.',
+    category: 'Sklad',
+    difficulty: 'hard',
+    repetitionLevel: 0,
+    correctCount: 0,
+    incorrectCount: 0
+  },
+  
+  // Common logistics phrases
+  {
+    id: 'de_45',
+    word: 'Das Paket ist beschädigt.',
+    translation: 'Balík je poškozen.',
+    example: 'Bitte notieren Sie: Das Paket ist beschädigt.',
+    category: 'Fráze',
+    difficulty: 'medium',
+    repetitionLevel: 0,
+    correctCount: 0,
+    incorrectCount: 0
+  },
+  {
+    id: 'de_46',
+    word: 'Wohin soll ich das stellen?',
+    translation: 'Kam to mám postavit?',
+    example: 'Entschuldigung, wohin soll ich das stellen?',
+    category: 'Fráze',
+    difficulty: 'medium',
+    repetitionLevel: 0,
+    correctCount: 0,
+    incorrectCount: 0
+  },
+  {
+    id: 'de_47',
+    word: 'Vorsicht, zerbrechlich!',
+    translation: 'Pozor, křehké!',
+    example: 'Vorsicht, zerbrechlich! Bitte vorsichtig behandeln.',
+    category: 'Fráze',
+    difficulty: 'medium',
+    repetitionLevel: 0,
+    correctCount: 0,
+    incorrectCount: 0
+  },
+  {
+    id: 'de_48',
+    word: 'nach oben',
+    translation: 'nahoru',
+    example: 'Der Pfeil zeigt nach oben, so muss das Paket stehen.',
+    category: 'Směry',
+    difficulty: 'easy',
+    repetitionLevel: 0,
+    correctCount: 0,
+    incorrectCount: 0
+  },
+  {
+    id: 'de_49',
+    word: 'nach unten',
+    translation: 'dolů',
+    example: 'Bitte legen Sie die schweren Pakete nach unten.',
+    category: 'Směry',
+    difficulty: 'easy',
+    repetitionLevel: 0,
+    correctCount: 0,
+    incorrectCount: 0
+  },
+  {
+    id: 'de_50',
+    word: 'die Lieferschein',
+    translation: 'dodací list',
+    example: 'Bitte unterschreiben Sie hier auf dem Lieferschein.',
+    category: 'Dokumenty',
     difficulty: 'medium',
     repetitionLevel: 0,
     correctCount: 0,

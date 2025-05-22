@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -311,6 +310,76 @@ export const DirectionsTab = () => {
         </CardContent>
         <CardFooter className="flex justify-between pt-2">
           <div className="text-sm text-muted-foreground">12 slovíček</div>
+          <Button className="flex gap-1" size="sm">
+            Procvičit <ArrowRight className="h-4 w-4" />
+          </Button>
+        </CardFooter>
+      </Card>
+    </div>
+  );
+};
+
+// Záložka: Logistika a rozměry
+export const LogisticsAndDimensionsTab = () => {
+  const dimensionsTerms = [
+    { german: "schwer", czech: "těžký", example: "Dieses Paket ist zu schwer für mich.", category: "Rozměry" },
+    { german: "leicht", czech: "lehký", example: "Das ist ein leichtes Paket, du kannst es alleine tragen.", category: "Rozměry" },
+    { german: "breit", czech: "široký", example: "Der Karton ist zu breit für dieses Regal.", category: "Rozměry" },
+    { german: "schmal", czech: "úzký", example: "Der Durchgang ist sehr schmal, seien Sie vorsichtig.", category: "Rozměry" },
+    { german: "die Dimension", czech: "rozměr", example: "Wir müssen die Dimensionen jedes Pakets überprüfen.", category: "Rozměry" },
+    { german: "die Größe", czech: "velikost", example: "Die Größe des Paketes bestimmt den Preis.", category: "Rozměry" },
+  ];
+
+  const loadingTerms = [
+    { german: "die Verladung", czech: "nakládka", example: "Die Verladung beginnt um 7 Uhr morgens.", category: "Proces" },
+    { german: "die Entladung", czech: "vykládka", example: "Nach der Entladung muss alles dokumentiert werden.", category: "Proces" },
+    { german: "beladen", czech: "naložit", example: "Wir müssen den LKW vor Mittag beladen.", category: "Proces" },
+    { german: "entladen", czech: "vyložit", example: "Bitte entladen Sie den Container vorsichtig.", category: "Proces" },
+  ];
+
+  const warehouseTerms = [
+    { german: "das Tor", czech: "brána", example: "Der LKW steht vor dem Tor Nummer 5.", category: "Sklad" },
+    { german: "die Lagerhalle", czech: "skladovací hala", example: "Die neue Lagerhalle hat 5000 Quadratmeter.", category: "Sklad" },
+    { german: "der Wareneingang", czech: "příjem zboží", example: "Alle Pakete müssen zuerst durch den Wareneingang.", category: "Sklad" },
+    { german: "der Warenausgang", czech: "výdej zboží", example: "Der Warenausgang schließt um 16 Uhr.", category: "Sklad" },
+  ];
+
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Logistika a rozměry</CardTitle>
+          <CardDescription>
+            Slovíčka a fráze pro práci s balíky různých rozměrů a vah
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <LessonSection 
+            title="Rozměry a váha" 
+            description="Klíčová slovíčka pro popis velikosti a váhy balíků"
+            items={dimensionsTerms} 
+          />
+          <LessonSection 
+            title="Nakládka a vykládka" 
+            description="Pojmy používané při nakládání a vykládání zboží"
+            items={loadingTerms} 
+          />
+          <LessonSection 
+            title="Skladové prostory" 
+            description="Důležitá místa ve skladu a logistickém centru"
+            items={warehouseTerms} 
+          />
+          
+          <div className="mt-6 p-4 border rounded-lg border-blue-200 bg-blue-50">
+            <h4 className="font-medium text-blue-800 mb-2">Tip pro praxi</h4>
+            <p className="text-sm text-blue-700">
+              Při popisování balíků vždy používejte přesné rozměry: "Der Karton ist 50 cm breit, 30 cm hoch und 40 cm tief."
+              (Krabice je 50 cm široká, 30 cm vysoká a 40 cm hluboká.)
+            </p>
+          </div>
+        </CardContent>
+        <CardFooter className="flex justify-between pt-2">
+          <div className="text-sm text-muted-foreground">14 slovíček</div>
           <Button className="flex gap-1" size="sm">
             Procvičit <ArrowRight className="h-4 w-4" />
           </Button>
