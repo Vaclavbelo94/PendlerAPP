@@ -2,52 +2,95 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FileText, Download, Check, Calendar, ExternalLink, Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { toast } from "sonner";
+import DocumentGeneratorForm from "./DocumentGeneratorForm";
+import { downloadTaxDocument } from "@/utils/tax/pdfGenerator";
+import type { DocumentData } from "@/utils/tax/types";
+
+// Přeložené názvy polí pro dokumenty
+const documentTypes = [
+  { value: "steuererklaerung", label: "Daňové přiznání" },
+  { value: "pendlerbescheinigung", label: "Potvrzení o dojíždění" },
+  { value: "antrag-lohnsteuerermassigung", label: "Žádost o snížení daně ze mzdy" },
+  { value: "arbeitsmittelnachweis", label: "Potvrzení o pracovních prostředcích" }
+];
+
+// Ukázkové šablony pro generování dokumentů
+const documentTemplates = [
+  {
+    id: "pendler",
+    name: "Potvrzení o dojíždění",
+    description: "Potvrzení o vzdálenosti dojíždění pro německý finanční úřad",
+    fields: ["jméno", "adresa", "vzdálenost", "pracovní dny"]
+  },
+  {
+    id: "statement",
+    name: "Prohlášení o příjmech",
+    description: "Potvrzení o příjmech ze zahraničí pro české úřady",
+    fields: ["jméno", "daňové ID", "příjem", "období"]
+  },
+  {
+    id: "employer",
+    name: "Potvrzení zaměstnavatele",
+    description: "Potvrzení pro německé úřady o zaměstnání v Německu",
+    fields: ["jméno zaměstnavatele", "pozice zaměstnance", "datum nástupu", "mzda"]
+  }
+];
 
 const DocumentGenerator = () => {
   const [activeTab, setActiveTab] = useState("templates");
   const [loading, setLoading] = useState(false);
-  const [generatedDoc, setGeneratedDoc] = useState<string | null>(null);
+  const [generatedDoc, setGeneratedDoc] = useState<DocumentData | null>(null);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  
+  // Výchozí stav formuláře
+  const [formState, setFormState] = useState({
+    name: "",
+    taxId: "",
+    address: "",
+    documentType: "steuererklaerung",
+    dateOfBirth: "",
+    yearOfTax: new Date().getFullYear().toString(),
+    email: "",
+    employerName: "",
+    incomeAmount: "",
+    includeCommuteExpenses: false,
+    commuteDistance: "",
+    commuteWorkDays: "220",
+    includeSecondHome: false,
+    includeWorkClothes: false,
+    additionalNotes: ""
+  });
 
-  const documentTemplates = [
-    {
-      id: "pendler",
-      name: "Pendlerpauschale potvrzení",
-      description: "Potvrzení o vzdálenosti dojíždění pro německý finanční úřad",
-      fields: ["name", "address", "distance", "workdays"]
-    },
-    {
-      id: "statement",
-      name: "Prohlášení o příjmech",
-      description: "Potvrzení o příjmech ze zahraničí pro české úřady",
-      fields: ["name", "taxId", "income", "period"]
-    },
-    {
-      id: "employer",
-      name: "Potvrzení zaměstnavatele",
-      description: "Potvrzení pro německé úřady o zaměstnání v Německu",
-      fields: ["employerName", "employeePosition", "startDate", "salary"]
-    }
-  ];
-
-  const handleGenerateDocument = (templateId: string) => {
+  const handleGenerateDocument = () => {
     setLoading(true);
     
     // Simulace generování dokumentu
     setTimeout(() => {
       setLoading(false);
-      setGeneratedDoc(`document-${templateId}-${Date.now()}.pdf`);
+      setGeneratedDoc(formState as unknown as DocumentData);
+      setShowSuccessMessage(true);
       setActiveTab("generated");
+      toast.success("Dokument byl úspěšně vygenerován");
     }, 1500);
+  };
+
+  const handleDownloadDocument = () => {
+    if (generatedDoc) {
+      downloadTaxDocument(generatedDoc);
+      toast.success("Dokument byl stažen");
+    } else {
+      toast.error("Nelze stáhnout dokument, data nejsou dostupná");
+    }
   };
 
   const handleReset = () => {
     setGeneratedDoc(null);
+    setShowSuccessMessage(false);
     setActiveTab("templates");
   };
 
@@ -94,7 +137,14 @@ const DocumentGenerator = () => {
                       <Button 
                         size="sm" 
                         className="w-full" 
-                        onClick={() => handleGenerateDocument(template.id)}
+                        onClick={() => {
+                          setFormState(prev => ({
+                            ...prev,
+                            documentType: template.id === "pendler" ? "pendlerbescheinigung" : 
+                              template.id === "statement" ? "steuererklaerung" : "arbeitsmittelnachweis"
+                          }));
+                          setActiveTab("form");
+                        }}
                       >
                         Vytvořit dokument
                       </Button>
@@ -123,6 +173,18 @@ const DocumentGenerator = () => {
                 </div>
               </div>
             </TabsContent>
+
+            <TabsContent value="form" className="space-y-6 pt-4">
+              <DocumentGeneratorForm
+                formState={formState}
+                setFormState={setFormState}
+                isLoading={loading}
+                showSuccessMessage={showSuccessMessage}
+                onGenerateDocument={handleGenerateDocument}
+                onDownloadDocument={handleDownloadDocument}
+                documentTypes={documentTypes}
+              />
+            </TabsContent>
             
             <TabsContent value="generated" className="space-y-6 pt-4">
               {loading ? (
@@ -148,14 +210,21 @@ const DocumentGenerator = () => {
                         <div className="flex items-center gap-3">
                           <FileText className="h-8 w-8 text-muted-foreground" />
                           <div>
-                            <h3 className="font-medium">{generatedDoc}</h3>
+                            <h3 className="font-medium">
+                              {generatedDoc.documentType ? 
+                                documentTypes.find(d => d.value === generatedDoc.documentType)?.label || "Daňový dokument" : 
+                                "Daňový dokument"}
+                            </h3>
                             <p className="text-xs text-muted-foreground">
                               Vygenerováno {new Date().toLocaleDateString()} v {new Date().toLocaleTimeString()}
                             </p>
                           </div>
                         </div>
                         <div className="flex flex-wrap gap-2 mt-3 md:mt-0">
-                          <Button className="flex items-center gap-2">
+                          <Button 
+                            className="flex items-center gap-2"
+                            onClick={handleDownloadDocument}
+                          >
                             <Download className="h-4 w-4" />
                             <span>Stáhnout</span>
                           </Button>

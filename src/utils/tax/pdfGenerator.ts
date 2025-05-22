@@ -123,3 +123,10 @@ export const generateTaxDocument = (data: DocumentData): jsPDF => {
   
   return doc;
 };
+
+// Pomocná funkce pro stažení PDF dokumentu
+export const downloadTaxDocument = (data: DocumentData): void => {
+  const doc = generateTaxDocument(data);
+  const filename = `${getDocumentTitle(data.documentType).replace(/\s+/g, '_').toLowerCase()}_${new Date().getFullYear()}.pdf`;
+  doc.save(filename);
+};

@@ -1,17 +1,17 @@
 
 export interface DocumentData {
-  documentType: string;
-  yearOfTax: string;
   name: string;
   taxId: string;
   address: string;
+  documentType: string;
   dateOfBirth?: string;
+  yearOfTax: string;
   email: string;
   employerName?: string;
   incomeAmount?: string;
+  includeCommuteExpenses: boolean;
   commuteDistance?: string;
   commuteWorkDays?: string;
-  includeCommuteExpenses: boolean;
   includeSecondHome: boolean;
   includeWorkClothes: boolean;
   additionalNotes?: string;
