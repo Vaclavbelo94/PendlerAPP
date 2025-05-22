@@ -2,17 +2,17 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { VocabularyItem, UserProgress, TestResult } from '@/models/VocabularyItem';
 import { useSpacedRepetition } from '@/hooks/useSpacedRepetition';
-import { defaultGermanVocabulary } from '@/data/defaultVocabulary';
+import { defaultGermanVocabulary } from '@/data/defaultGermanVocabulary';
 import { saveVocabularyItems, loadVocabularyItems } from '@/utils/vocabularyStorage';
 
-interface VocabularyContextType {
+export interface VocabularyContextType {
   items: VocabularyItem[];
   dueItems: VocabularyItem[];
   currentItem: VocabularyItem | null;
   dailyGoal: number;
   completedToday: number;
-  testHistory: TestResult[];  // Přidána chybějící vlastnost
-  addTestResult: (result: TestResult) => void; // Přidána chybějící metoda
+  testHistory: TestResult[];
+  addTestResult: (result: TestResult) => void;
   addVocabularyItem: (item: Omit<VocabularyItem, 'id'> & Partial<VocabularyItem>) => VocabularyItem;
   markCorrect: (itemId: string) => void;
   markIncorrect: (itemId: string) => void;

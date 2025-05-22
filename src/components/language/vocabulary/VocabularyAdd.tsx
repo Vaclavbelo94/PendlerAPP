@@ -1,15 +1,17 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus } from 'lucide-react';
+import { Plus, ShieldCheck } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { VocabularyItem } from '@/models/VocabularyItem';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { PremiumBadge } from '@/components/premium/PremiumBadge';
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface VocabularyAddProps {
   addItem: (item: Omit<VocabularyItem, 'id'> & Partial<VocabularyItem>) => void;
@@ -22,10 +24,19 @@ const VocabularyAdd: React.FC<VocabularyAddProps> = ({ addItem }) => {
   const [newCategory, setNewCategory] = useState('Obecné');
   const [newDifficulty, setNewDifficulty] = useState('medium');
   const { toast } = useToast();
-  const { isPremium } = useAuth();
+  const { isPremium, isAdmin } = useAuth();
 
   // Handle adding a new vocabulary item
   const handleAddWord = () => {
+    if (!isAdmin) {
+      toast({
+        title: "Přístup odepřen",
+        description: "Pouze administrátoři mohou přidávat nová slovíčka.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     if (newWord.trim() && newTranslation.trim()) {
       addItem({
         word: newWord.trim(),
@@ -52,12 +63,33 @@ const VocabularyAdd: React.FC<VocabularyAddProps> = ({ addItem }) => {
     }
   };
 
+  if (!isAdmin) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Přidání slovíček omezeno</CardTitle>
+          <CardDescription>
+            Tato funkce je dostupná pouze pro administrátory
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Alert variant="default" className="bg-amber-50 border-amber-200">
+            <ShieldCheck className="h-5 w-5 text-amber-600" />
+            <AlertDescription className="text-amber-800">
+              Přidávání nových slovíček je omezeno pouze na administrátory systému. Pokud potřebujete přidat nové slovíčko, kontaktujte prosím administrátora.
+            </AlertDescription>
+          </Alert>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>Přidat nové slovíčko</CardTitle>
         <CardDescription>
-          Rozšiřte svou slovní zásobu přidáním nového slovíčka
+          Rozšiřte slovní zásobu přidáním nového slovíčka (pouze pro administrátory)
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -121,15 +153,18 @@ const VocabularyAdd: React.FC<VocabularyAddProps> = ({ addItem }) => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Obecné">Obecné</SelectItem>
-                  <SelectItem value="Zvířata">Zvířata</SelectItem>
-                  <SelectItem value="Jídlo">Jídlo</SelectItem>
+                  <SelectItem value="Pozdravy">Pozdravy</SelectItem>
+                  <SelectItem value="Podstatná jména">Podstatná jména</SelectItem>
+                  <SelectItem value="Slovesa">Slovesa</SelectItem>
+                  <SelectItem value="Přídavná jména">Přídavná jména</SelectItem>
                   <SelectItem value="Cestování">Cestování</SelectItem>
+                  <SelectItem value="Jídlo">Jídlo</SelectItem>
+                  <SelectItem value="Barvy">Barvy</SelectItem>
+                  <SelectItem value="Čísla">Čísla</SelectItem>
                   <SelectItem value="Práce">Práce</SelectItem>
                   <SelectItem value="Volný čas">Volný čas</SelectItem>
                   <SelectItem value="Rodina">Rodina</SelectItem>
                   <SelectItem value="Bydlení">Bydlení</SelectItem>
-                  <SelectItem value="Slovesa">Slovesa</SelectItem>
-                  <SelectItem value="Přídavná jména">Přídavná jména</SelectItem>
                 </SelectContent>
               </Select>
             </div>

@@ -10,7 +10,8 @@ import {
   Files, 
   ClipboardList, 
   Import,
-  Download 
+  Download,
+  ShieldCheck
 } from "lucide-react";
 import { useVocabularyContext } from './VocabularyProvider';
 import { motion } from 'framer-motion';
@@ -19,12 +20,14 @@ interface VocabularyTabsNavigationProps {
   selectedTab: string;
   setSelectedTab: (tab: string) => void;
   isMobile?: boolean;
+  isAdmin?: boolean;
 }
 
 const VocabularyTabsNavigation: React.FC<VocabularyTabsNavigationProps> = ({ 
   selectedTab, 
   setSelectedTab, 
-  isMobile = false
+  isMobile = false,
+  isAdmin = false
 }) => {
   const { dueItems } = useVocabularyContext();
   
@@ -84,23 +87,29 @@ const VocabularyTabsNavigation: React.FC<VocabularyTabsNavigationProps> = ({
         className="flex items-center justify-center py-1 px-0.5"
       >
         <div className="flex items-center">
-          <Plus className={`${isMobile ? 'w-3 h-3' : 'w-3.5 h-3.5'} mr-1`} />
+          {isAdmin ? (
+            <Plus className={`${isMobile ? 'w-3 h-3' : 'w-3.5 h-3.5'} mr-1`} />
+          ) : (
+            <ShieldCheck className={`${isMobile ? 'w-3 h-3' : 'w-3.5 h-3.5'} mr-1`} />
+          )}
           <span className={isMobile ? "text-[10px]" : "text-xs"}>Přidat</span>
         </div>
       </TabsTrigger>
       
       {!isMobile && (
         <>
-          <TabsTrigger 
-            value="bulk" 
-            onClick={() => setSelectedTab('bulk')}
-            className="flex items-center justify-center py-1 px-0.5"
-          >
-            <div className="flex items-center">
-              <Files className="w-3.5 h-3.5 mr-1" />
-              <span className="text-xs">Hromadně</span>
-            </div>
-          </TabsTrigger>
+          {isAdmin && (
+            <TabsTrigger 
+              value="bulk" 
+              onClick={() => setSelectedTab('bulk')}
+              className="flex items-center justify-center py-1 px-0.5"
+            >
+              <div className="flex items-center">
+                <Files className="w-3.5 h-3.5 mr-1" />
+                <span className="text-xs">Hromadně</span>
+              </div>
+            </TabsTrigger>
+          )}
           
           <TabsTrigger 
             value="progress" 
@@ -113,17 +122,19 @@ const VocabularyTabsNavigation: React.FC<VocabularyTabsNavigationProps> = ({
             </div>
           </TabsTrigger>
           
-          <TabsTrigger 
-            value="import-export" 
-            onClick={() => setSelectedTab('import-export')}
-            className="flex items-center justify-center py-1 px-0.5"
-          >
-            <div className="flex items-center">
-              <Import className="w-3 h-3 mr-0.5" />
-              <Download className="w-3 h-3" />
-              <span className="text-xs ml-1">Imp/Exp</span>
-            </div>
-          </TabsTrigger>
+          {isAdmin && (
+            <TabsTrigger 
+              value="import-export" 
+              onClick={() => setSelectedTab('import-export')}
+              className="flex items-center justify-center py-1 px-0.5"
+            >
+              <div className="flex items-center">
+                <Import className="w-3 h-3 mr-0.5" />
+                <Download className="w-3 h-3" />
+                <span className="text-xs ml-1">Imp/Exp</span>
+              </div>
+            </TabsTrigger>
+          )}
         </>
       )}
     </TabsList>

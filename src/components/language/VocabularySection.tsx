@@ -8,6 +8,9 @@ import VocabularyReview from './VocabularyReview';
 import { useVocabularyContext } from './vocabulary/VocabularyManager';
 import VocabularyTabsNavigation from './vocabulary/VocabularyTabsNavigation';
 import VocabularyManager from './vocabulary/VocabularyManager';
+import { useAuth } from '@/hooks/useAuth';
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { ShieldCheck } from "lucide-react";
 
 import {
   ReviewTabContent,
@@ -22,6 +25,7 @@ import {
 const VocabularyContent: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState('review');
   const isMobile = useIsMobile();
+  const { isAdmin } = useAuth();
   
   return (
     <div className="space-y-4">
@@ -31,6 +35,7 @@ const VocabularyContent: React.FC = () => {
             selectedTab={selectedTab} 
             setSelectedTab={setSelectedTab} 
             isMobile={isMobile}
+            isAdmin={isAdmin}
           />
         </Card>
         
@@ -38,10 +43,23 @@ const VocabularyContent: React.FC = () => {
           <ReviewTabContent />
           <TestTabContent />
           <BrowseTabContent />
-          <AddTabContent />
-          <BulkTabContent />
+          
+          {isAdmin ? (
+            <AddTabContent />
+          ) : (
+            <TabsContent value="add">
+              <Alert variant="default" className="bg-amber-50 border-amber-200">
+                <ShieldCheck className="h-5 w-5 text-amber-600" />
+                <AlertDescription className="text-amber-800">
+                  Pouze administrátoři mají možnost přidávat nová slovíčka.
+                </AlertDescription>
+              </Alert>
+            </TabsContent>
+          )}
+          
+          {isAdmin && <BulkTabContent />}
           <ProgressTabContent />
-          <ImportExportTabContent />
+          {isAdmin && <ImportExportTabContent />}
         </div>
       </Tabs>
     </div>
