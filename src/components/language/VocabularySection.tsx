@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useVocabularyContext } from './vocabulary/VocabularyManager';
+import VocabularyManager, { useVocabularyContext } from './vocabulary/VocabularyManager';
 import { useAuth } from '@/hooks/useAuth';
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ShieldCheck, BookOpen, Search, Brain, Trophy, RotateCw } from "lucide-react";
@@ -160,7 +160,9 @@ const VocabularyContent: React.FC = () => {
 const VocabularySection: React.FC = () => {
   return (
     <div className="py-2">
-      <VocabularyContent />
+      <VocabularyManager>
+        <VocabularyContent />
+      </VocabularyManager>
     </div>
   );
 };
