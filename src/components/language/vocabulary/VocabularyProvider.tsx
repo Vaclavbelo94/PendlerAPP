@@ -1,15 +1,9 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { VocabularyItem, UserProgress } from '@/models/VocabularyItem';
-import { useVocabularyProvider } from '@/hooks/useVocabularyProvider';
-import { TestResult } from './VocabularyTest';
-import { 
-  saveTestHistory, 
-  loadTestHistory, 
-  saveTestResultToIndexedDB,
-  saveTestHistoryToOfflineStorage
-} from '@/utils/vocabularyStorage';
-import { useOfflineStatus } from '@/hooks/useOfflineStatus';
+import { useSpacedRepetition } from '@/hooks/useSpacedRepetition';
+import { defaultGermanVocabulary } from '@/data/defaultVocabulary';
+import { saveVocabularyItems, loadVocabularyItems } from '@/utils/vocabularyStorage';
 
 interface VocabularyContextType {
   items: VocabularyItem[];
@@ -33,52 +27,106 @@ interface VocabularyContextType {
   editDialogOpen: boolean;
   setEditDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
   currentEditItem: VocabularyItem | null;
-  testHistory: TestResult[];
-  addTestResult: (result: TestResult) => void;
 }
 
 const VocabularyContext = createContext<VocabularyContextType | null>(null);
 
 export const VocabularyProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [testHistory, setTestHistory] = useState<TestResult[]>(loadTestHistory());
-  const { isOffline } = useOfflineStatus();
+  // Načtení výchozích dat nebo z úložiště
+  const [initialLoadDone, setInitialLoadDone] = useState(false);
   
-  const vocabularyProvider = useVocabularyProvider();
-
-  // Add test result and save to storage
-  const addTestResult = (result: TestResult) => {
-    // Generate an ID if none exists
-    const resultWithId = { 
-      ...result, 
-      id: result.id || `test-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
+  // Načtení spaced repetition funkcionality
+  const spacedRepetition = useSpacedRepetition(initialLoadDone ? undefined : defaultGermanVocabulary);
+  
+  // State pro UI
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [currentEditItem, setCurrentEditItem] = useState<VocabularyItem | null>(null);
+  
+  // Inicializace dat
+  useEffect(() => {
+    const loadInitialData = async () => {
+      const items = loadVocabularyItems(defaultGermanVocabulary);
+      if (items && items.length > 0) {
+        spacedRepetition.bulkAddVocabularyItems(items);
+      }
+      setInitialLoadDone(true);
     };
     
-    const updatedHistory = [resultWithId, ...testHistory];
-    setTestHistory(updatedHistory);
-    
-    try {
-      // Save to localStorage
-      saveTestHistory(updatedHistory);
-      
-      // Also save current test to IndexedDB
-      saveTestResultToIndexedDB(resultWithId);
-    } catch (error) {
-      console.error('Chyba při ukládání historie testů:', error);
+    if (!initialLoadDone) {
+      loadInitialData();
     }
+  }, [initialLoadDone]);
+  
+  // Editace slovíčka
+  const handleEditItem = (item: VocabularyItem) => {
+    setCurrentEditItem(item);
+    setEditDialogOpen(true);
   };
-
-  // Save test history when it changes or we go offline
-  useEffect(() => {
-    if ((isOffline || testHistory.length > 0) && testHistory.length > 0) {
-      saveTestHistoryToOfflineStorage(testHistory);
-    }
-  }, [testHistory, isOffline]);
+  
+  // Uložení editace
+  const handleSaveEdit = (updatedItem: VocabularyItem) => {
+    const updatedItems = spacedRepetition.items.map(item => 
+      item.id === updatedItem.id ? updatedItem : item
+    );
+    
+    // Uložit do storage
+    saveVocabularyItems(updatedItems);
+    
+    // Zavřít dialog
+    setEditDialogOpen(false);
+    setCurrentEditItem(null);
+    
+    // Aktualizovat stav
+    window.location.reload(); // Jednoduchá aktualizace - v produkci by bylo lepší to udělat přes state
+  };
+  
+  // Smazání slovíčka
+  const handleDeleteItem = (id: string) => {
+    const updatedItems = spacedRepetition.items.filter(item => item.id !== id);
+    saveVocabularyItems(updatedItems);
+    window.location.reload();
+  };
+  
+  // Hromadné smazání
+  const handleBulkDeleteItems = (ids: string[]) => {
+    const updatedItems = spacedRepetition.items.filter(item => !ids.includes(item.id));
+    saveVocabularyItems(updatedItems);
+    window.location.reload();
+  };
+  
+  // Hromadná aktualizace
+  const handleBulkUpdateItems = (updatedItems: VocabularyItem[]) => {
+    const itemMap = new Map(updatedItems.map(item => [item.id, item]));
+    
+    const newItems = spacedRepetition.items.map(item => {
+      const updatedItem = itemMap.get(item.id);
+      return updatedItem || item;
+    });
+    
+    saveVocabularyItems(newItems);
+    window.location.reload();
+  };
+  
+  // Dummy data pro pokrok uživatele
+  const userProgress: UserProgress = {
+    dailyStats: [],
+    totalReviewed: 0,
+    streakDays: 0,
+    averageAccuracy: 0
+  };
 
   return (
     <VocabularyContext.Provider value={{
-      ...vocabularyProvider,
-      testHistory,
-      addTestResult
+      ...spacedRepetition,
+      userProgress,
+      editDialogOpen,
+      setEditDialogOpen,
+      currentEditItem,
+      handleEditItem,
+      handleSaveEdit,
+      handleDeleteItem,
+      handleBulkDeleteItems,
+      handleBulkUpdateItems
     }}>
       {children}
     </VocabularyContext.Provider>

@@ -1,3 +1,4 @@
+
 export interface VocabularyItem {
   id: string;
   word: string;
@@ -41,7 +42,6 @@ export interface UserProgress {
     hard: number;
     unspecified: number;
   };
-  items?: VocabularyItem[]; // Přidáno pro přístup k položkám v useMasteryStats
 }
 
 export interface DailyProgressStat {
@@ -65,7 +65,6 @@ export interface TestResult {
   categories: string[];
   difficulties: string[];
   testItems: TestItem[]; // Array to track individual question results
-  skillsData?: SkillsData; // Add skills data
 }
 
 export interface TestItem {
@@ -73,12 +72,4 @@ export interface TestItem {
   wasCorrect: boolean;
   userAnswer?: string;
   responseTimeMs?: number; // Track response time
-}
-
-export interface SkillsData {
-  reading: number;
-  writing: number;
-  speaking: number;
-  listening: number;
-  grammar: number;
 }
