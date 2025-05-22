@@ -23,11 +23,16 @@ const phraseCategories: PhraseCategory[] = [
       { german: "Guten Morgen!", czech: "Dobré ráno!" },
       { german: "Guten Tag!", czech: "Dobrý den!" },
       { german: "Guten Abend!", czech: "Dobrý večer!" },
+      { german: "Auf Wiedersehen!", czech: "Na shledanou!" },
+      { german: "Tschüss!", czech: "Ahoj! (při loučení)" },
+      { german: "Hallo!", czech: "Ahoj!" },
       { german: "Ich heiße...", czech: "Jmenuji se..." },
       { german: "Wie heißt du?", czech: "Jak se jmenuješ?" },
       { german: "Freut mich dich kennenzulernen.", czech: "Těší mě, že tě poznávám." },
       { german: "Woher kommst du?", czech: "Odkud jsi?" },
       { german: "Ich komme aus Tschechien.", czech: "Jsem z České republiky." },
+      { german: "Wie geht es dir?", czech: "Jak se máš?" },
+      { german: "Mir geht es gut, danke.", czech: "Mám se dobře, děkuji." },
     ]
   },
   {
@@ -41,6 +46,10 @@ const phraseCategories: PhraseCategory[] = [
       { german: "Haben Sie vegetarische Gerichte?", czech: "Máte vegetariánská jídla?" },
       { german: "Ist dieses Gericht scharf?", czech: "Je toto jídlo pálivé?" },
       { german: "Wie viel kostet das?", czech: "Kolik to stojí?" },
+      { german: "Können Sie mir eine Empfehlung geben?", czech: "Můžete mi něco doporučit?" },
+      { german: "Ich bin allergisch gegen...", czech: "Jsem alergický/á na..." },
+      { german: "Gibt es WLAN hier?", czech: "Je tu Wi-Fi?" },
+      { german: "Das Passwort für WLAN, bitte.", czech: "Heslo na Wi-Fi, prosím." },
     ]
   },
   {
@@ -54,6 +63,12 @@ const phraseCategories: PhraseCategory[] = [
       { german: "Ich brauche mehr Zeit.", czech: "Potřebuji více času." },
       { german: "Das ist fertig.", czech: "To je hotové." },
       { german: "Ich habe eine Frage.", czech: "Mám otázku." },
+      { german: "Kann ich heute früher gehen?", czech: "Můžu dnes odejít dříve?" },
+      { german: "Wann haben wir Pause?", czech: "Kdy máme přestávku?" },
+      { german: "Ich habe einen Termin beim Arzt.", czech: "Mám schůzku u lékaře." },
+      { german: "Das ist dringend.", czech: "To je naléhavé." },
+      { german: "Ich bin krank.", czech: "Jsem nemocný/á." },
+      { german: "Ich kann heute nicht kommen.", czech: "Dnes nemůžu přijít." },
     ]
   },
   {
@@ -67,6 +82,39 @@ const phraseCategories: PhraseCategory[] = [
       { german: "Akzeptieren Sie Kreditkarten?", czech: "Přijímáte kreditní karty?" },
       { german: "Kann ich das umtauschen?", czech: "Mohu to vyměnit?" },
       { german: "Gibt es Rabatte?", czech: "Jsou nějaké slevy?" },
+      { german: "Das ist zu teuer.", czech: "To je příliš drahé." },
+      { german: "Haben Sie etwas günstigeres?", czech: "Máte něco levnějšího?" },
+      { german: "Ich möchte nur schauen.", czech: "Chci se jen podívat." },
+      { german: "Wo ist die Kasse?", czech: "Kde je pokladna?" },
+    ]
+  },
+  {
+    title: "U lékaře",
+    phrases: [
+      { german: "Ich habe Schmerzen.", czech: "Mám bolesti." },
+      { german: "Wo tut es weh?", czech: "Kde to bolí?" },
+      { german: "Ich habe Fieber.", czech: "Mám horečku." },
+      { german: "Ich habe Kopfschmerzen.", czech: "Bolí mě hlava." },
+      { german: "Ich brauche ein Rezept.", czech: "Potřebuji recept." },
+      { german: "Ich bin allergisch gegen dieses Medikament.", czech: "Jsem alergický/á na tento lék." },
+      { german: "Wie oft sollte ich die Tabletten nehmen?", czech: "Jak často bych měl/a brát ty tablety?" },
+      { german: "Brauche ich eine Krankschreibung?", czech: "Potřebuji neschopenku?" },
+      { german: "Wann soll ich wiederkommen?", czech: "Kdy mám přijít znovu?" },
+    ]
+  },
+  {
+    title: "Cestování",
+    phrases: [
+      { german: "Wo ist der Bahnhof?", czech: "Kde je nádraží?" },
+      { german: "Eine Fahrkarte nach... bitte.", czech: "Jízdenku do... prosím." },
+      { german: "Wann fährt der nächste Zug?", czech: "Kdy jede další vlak?" },
+      { german: "Ist dieser Platz frei?", czech: "Je toto místo volné?" },
+      { german: "Ich habe mich verirrt.", czech: "Ztratil/a jsem se." },
+      { german: "Können Sie mir den Weg zeigen?", czech: "Můžete mi ukázat cestu?" },
+      { german: "Wie komme ich zum Flughafen?", czech: "Jak se dostanu na letiště?" },
+      { german: "Wo kann ich ein Taxi finden?", czech: "Kde najdu taxi?" },
+      { german: "Wie weit ist es?", czech: "Jak daleko to je?" },
+      { german: "Entschuldigung, ist hier in der Nähe eine Toilette?", czech: "Promiňte, je tu někde poblíž toaleta?" },
     ]
   }
 ];

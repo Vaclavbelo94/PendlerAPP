@@ -1,30 +1,43 @@
 
 import React from 'react';
 import { CardTitle, CardDescription } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
 
 interface ExerciseHeaderProps {
   currentExercise: number;
   totalExercises: number;
   category?: string;
-  score: { correct: number; total: number };
+  score: {
+    correct: number;
+    total: number;
+  };
 }
 
-const ExerciseHeader: React.FC<ExerciseHeaderProps> = ({ 
-  currentExercise, 
-  totalExercises, 
-  category, 
-  score 
-}) => {
+const ExerciseHeader = ({ currentExercise, totalExercises, category, score }: ExerciseHeaderProps) => {
+  const progressPercentage = totalExercises > 0 ? (currentExercise / totalExercises) * 100 : 0;
+  
   return (
-    <div className="flex justify-between items-center">
-      <div>
-        <CardTitle>Cvičení {currentExercise + 1}/{totalExercises}</CardTitle>
-        {category && <CardDescription>{category}</CardDescription>}
-      </div>
-      <div className="text-sm text-muted-foreground">
-        Skóre: {score.correct}/{score.total}
-      </div>
-    </div>
+    <>
+      <CardTitle className="flex justify-between items-center text-lg">
+        <span>
+          Gramatické cvičení 
+          {category && <Badge variant="outline" className="ml-2">{category}</Badge>}
+        </span>
+        {score.total > 0 && (
+          <span className="text-sm font-medium">
+            Skóre: {score.correct}/{score.total}
+          </span>
+        )}
+      </CardTitle>
+      <CardDescription>
+        <div className="flex justify-between items-center mt-1">
+          <span>Otázka {currentExercise + 1} z {totalExercises}</span>
+          <span className="text-sm">{Math.round(progressPercentage)}%</span>
+        </div>
+        <Progress value={progressPercentage} className="h-2 mt-2" />
+      </CardDescription>
+    </>
   );
 };
 

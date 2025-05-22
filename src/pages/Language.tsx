@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -14,6 +15,8 @@ import { ResponsiveContainer } from "@/components/ui/responsive-container";
 import { germanCourseDescription } from "@/data/germanCourseDescription";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import PhrasesTab from "@/components/language/tabs/PhrasesTab";
+import GrammarTab from "@/components/language/tabs/GrammarTab";
 
 const LanguageContent = () => {
   const { isPremium } = useAuth();
@@ -106,41 +109,9 @@ const LanguageContent = () => {
         
         {activeTab === "vocabulary" && <VocabularySection />}
         
-        {activeTab === "grammar" && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Gramatika němčiny</CardTitle>
-              <CardDescription>
-                Základní gramatická pravidla němčiny pro začátečníky
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center p-6">
-                <p className="text-muted-foreground">
-                  Sekce gramatiky je momentálně ve vývoji.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+        {activeTab === "grammar" && <GrammarTab />}
         
-        {activeTab === "phrases" && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Užitečné fráze</CardTitle>
-              <CardDescription>
-                Fráze a konverzační obraty pro každodenní situace
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center p-6">
-                <p className="text-muted-foreground">
-                  Sekce s frázemi je momentálně ve vývoji.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+        {activeTab === "phrases" && <PhrasesTab />}
       </div>
       
       {/* Indikátor offline režimu */}

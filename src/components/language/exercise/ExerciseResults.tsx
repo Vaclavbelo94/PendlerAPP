@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Play } from "lucide-react";
+import { ChevronRight, Check } from "lucide-react";
 
 interface ExerciseResultsProps {
   showAnswer: boolean;
@@ -9,20 +9,18 @@ interface ExerciseResultsProps {
   onNext: () => void;
 }
 
-const ExerciseResults: React.FC<ExerciseResultsProps> = ({ 
-  showAnswer, 
-  onSubmit, 
-  onNext 
-}) => {
+const ExerciseResults = ({ showAnswer, onSubmit, onNext }: ExerciseResultsProps) => {
   return (
-    <div className="flex justify-between">
+    <div className="flex justify-end space-x-2">
       {!showAnswer ? (
-        <Button type="button" onClick={onSubmit} disabled={showAnswer}>
+        <Button type="submit" onClick={onSubmit}>
+          <Check className="mr-1 h-4 w-4" />
           Zkontrolovat
         </Button>
       ) : (
-        <Button type="button" onClick={onNext} className="flex items-center gap-2">
-          Další <Play className="h-4 w-4" />
+        <Button onClick={onNext}>
+          Další otázka
+          <ChevronRight className="ml-1 h-4 w-4" />
         </Button>
       )}
     </div>

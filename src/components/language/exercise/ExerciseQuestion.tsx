@@ -1,91 +1,89 @@
 
 import React from 'react';
-import { FormField, FormItem, FormControl, FormMessage } from "@/components/ui/form";
+import { FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { UseFormReturn } from "react-hook-form";
-import { Check } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { CheckCircle2, XCircle } from "lucide-react";
 import { Exercise } from "@/data/germanExercises";
 
 interface ExerciseQuestionProps {
   exercise: Exercise;
-  form: UseFormReturn<{answer?: string}, any>; // Changed from {answer: string} to {answer?: string}
+  form: any;
   showAnswer: boolean;
 }
 
-const ExerciseQuestion: React.FC<ExerciseQuestionProps> = ({ 
-  exercise, 
-  form, 
-  showAnswer 
-}) => {
+const ExerciseQuestion = ({ exercise, form, showAnswer }: ExerciseQuestionProps) => {
+  const isAnswerCorrect = form.getValues().answer === exercise.correctAnswer;
+
   return (
-    <div className="mb-6">
-      <p className="text-lg mb-4">{exercise.question}</p>
+    <div className="space-y-4">
+      <div className="bg-muted/20 p-4 rounded-lg">
+        <p className="text-lg font-medium">{exercise.question}</p>
+      </div>
 
-      {exercise.type === 'multiplechoice' && exercise.options && (
-        <FormField
-          control={form.control}
-          name="answer"
-          render={({ field }) => (
-            <FormItem className="space-y-3">
-              <FormControl>
-                <RadioGroup
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  className="flex flex-col space-y-2"
-                  disabled={showAnswer}
-                >
-                  {exercise.options.map((option, index) => (
-                    <div key={index} className={`flex items-center space-x-2 rounded-md border p-3 ${
-                      showAnswer && option === exercise.correctAnswer 
-                        ? "border-green-500 bg-green-50" 
-                        : showAnswer && field.value === option && option !== exercise.correctAnswer
-                          ? "border-red-500 bg-red-50"
-                          : ""
-                    }`}>
-                      <RadioGroupItem value={option} id={`option-${index}`} />
-                      <label htmlFor={`option-${index}`} className="flex-grow cursor-pointer">
-                        {option}
-                      </label>
-                      {showAnswer && option === exercise.correctAnswer && (
-                        <Check className="h-5 w-5 text-green-500" />
-                      )}
-                    </div>
-                  ))}
-                </RadioGroup>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      )}
-
-      {exercise.type === 'fillblank' && (
-        <FormField
-          control={form.control}
-          name="answer"
-          render={({ field }) => (
-            <FormItem>
-              <Select 
-                onValueChange={field.onChange} 
+      <FormField
+        control={form.control}
+        name="answer"
+        render={({ field }) => (
+          <FormItem>
+            {exercise.type === "multiplechoice" && exercise.options && (
+              <RadioGroup
+                onValueChange={field.onChange}
                 defaultValue={field.value}
+                className="space-y-2"
                 disabled={showAnswer}
               >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Vyberte správnou odpověď" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {exercise.options?.map((option, index) => (
-                    <SelectItem key={index} value={option}>{option}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                {exercise.options.map((option) => (
+                  <div
+                    key={option}
+                    className={`flex items-center space-x-2 rounded-md border p-3 ${
+                      showAnswer && option === exercise.correctAnswer
+                        ? "border-green-500 bg-green-50"
+                        : showAnswer && field.value === option && option !== exercise.correctAnswer
+                        ? "border-red-500 bg-red-50"
+                        : "border-input"
+                    }`}
+                  >
+                    <RadioGroupItem value={option} id={option} />
+                    <Label
+                      htmlFor={option}
+                      className="flex-1 font-normal cursor-pointer"
+                    >
+                      {option}
+                    </Label>
+                    {showAnswer && option === exercise.correctAnswer && (
+                      <CheckCircle2 className="h-5 w-5 text-green-500" />
+                    )}
+                    {showAnswer && field.value === option && option !== exercise.correctAnswer && (
+                      <XCircle className="h-5 w-5 text-red-500" />
+                    )}
+                  </div>
+                ))}
+              </RadioGroup>
+            )}
+
+            {exercise.type === "fillblank" && (
+              <FormControl>
+                <Input
+                  placeholder="Zadejte odpověď"
+                  {...field}
+                  disabled={showAnswer}
+                />
+              </FormControl>
+            )}
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      {showAnswer && (
+        <Alert className={isAnswerCorrect ? "bg-green-50" : "bg-red-50"}>
+          <AlertDescription className="text-sm">
+            {exercise.explanation}
+          </AlertDescription>
+        </Alert>
       )}
     </div>
   );

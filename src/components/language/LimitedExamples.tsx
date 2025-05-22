@@ -1,63 +1,60 @@
 
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
-
-interface Example {
-  id: string;
-  german: string;
-  czech: string;
-}
+import { Card } from "@/components/ui/card";
+import { Volume2 } from 'lucide-react';
+import { Example } from '@/data/germanExercises';
 
 interface LimitedExamplesProps {
   examples: Example[];
   initialLimit?: number;
 }
 
-const LimitedExamples: React.FC<LimitedExamplesProps> = ({ 
-  examples, 
-  initialLimit = 5 
-}) => {
+const LimitedExamples: React.FC<LimitedExamplesProps> = ({ examples, initialLimit = 3 }) => {
   const [showAll, setShowAll] = useState(false);
-  
-  // Pokud je příkladů méně než limit, zobrazíme všechny
-  const hasMoreExamples = examples.length > initialLimit;
   const displayedExamples = showAll ? examples : examples.slice(0, initialLimit);
-  
+
+  const handleTextToSpeech = (text: string) => {
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'de-DE';
+      window.speechSynthesis.speak(utterance);
+    }
+  };
+
   return (
     <div className="space-y-3">
-      <ul className="space-y-2">
-        {displayedExamples.map((example) => (
-          <li key={example.id} className="p-2 bg-slate-50 rounded-md">
-            <div className="grid grid-cols-2 gap-2">
-              <div className="font-medium">{example.german}</div>
-              <div>{example.czech}</div>
+      {displayedExamples.map((example) => (
+        <Card key={example.id} className="p-3">
+          <div className="flex justify-between items-start">
+            <div className="space-y-1 flex-1">
+              <div className="flex items-center">
+                <p className="font-medium">{example.german}</p>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="ml-1 h-7 w-7 p-0"
+                  onClick={() => handleTextToSpeech(example.german)}
+                >
+                  <Volume2 className="h-3.5 w-3.5" />
+                  <span className="sr-only">Přečíst</span>
+                </Button>
+              </div>
+              <p className="text-sm text-muted-foreground">{example.czech}</p>
             </div>
-          </li>
-        ))}
-      </ul>
-      
-      {hasMoreExamples && (
-        <div className="flex justify-center pt-2">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={() => setShowAll(!showAll)}
-            className="flex items-center text-slate-600"
-          >
-            {showAll ? (
-              <>
-                <ChevronUpIcon className="h-4 w-4 mr-1" />
-                Zobrazit méně
-              </>
-            ) : (
-              <>
-                <ChevronDownIcon className="h-4 w-4 mr-1" />
-                Zobrazit více ({examples.length - initialLimit})
-              </>
-            )}
-          </Button>
-        </div>
+          </div>
+        </Card>
+      ))}
+
+      {examples.length > initialLimit && (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="mt-2"
+          onClick={() => setShowAll(!showAll)}
+        >
+          {showAll ? "Zobrazit méně příkladů" : `Zobrazit všech ${examples.length} příkladů`}
+        </Button>
       )}
     </div>
   );
