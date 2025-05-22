@@ -10,7 +10,7 @@ import VocabularyImportExport from '../VocabularyImportExport';
 import VocabularyTest from './VocabularyTest';
 import { useVocabularyContext } from './VocabularyManager';
 import { useToast } from '@/hooks/use-toast';
-import { useLanguageContext } from '../LanguageManager';
+import { useLanguageContext } from '@/hooks/useLanguageContext';
 import { TestResult } from '@/models/VocabularyItem';
 
 export const ReviewTabContent = () => (

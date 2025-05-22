@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Download, BookOpen, Languages, FileText, Cloud, ArrowRight, Star, Trophy, Award } from 'lucide-react';
 import { PremiumBadge } from '@/components/premium/PremiumBadge';
 import DailyChallenge from './DailyChallenge';
-import { useLanguageContext } from './LanguageManager';
+import { useLanguageContext } from '@/hooks/useLanguageContext';
 
 interface LanguageSidebarProps {
   offlineStatus: {
