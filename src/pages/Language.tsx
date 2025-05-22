@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { TabsContent } from "@/components/ui/tabs";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useOfflineStatus } from "@/hooks/useOfflineStatus";
 import { useAuth } from "@/hooks/useAuth";
 import LanguageTabsNavigation from "@/components/language/layout/LanguageTabsNavigation";
@@ -14,45 +15,46 @@ import LanguageSidebar from "@/components/language/LanguageSidebar";
 import LanguageManager, { useLanguageContext } from "@/components/language/LanguageManager";
 import { Button } from "@/components/ui/button";
 import { BookOpen, FileText, Languages } from "lucide-react";
+import { ResponsiveContainer } from "@/components/ui/responsive-container";
 
 const LanguageContent = () => {
   const { isPremium } = useAuth();
   const { isOffline } = useOfflineStatus();
   const { activeTab, setActiveTab, offlineStatus, saveForOffline } = useLanguageContext();
   
-  // Použití media query pro detekci mobilních zařízení
-  const isMobile = useMediaQuery("xs");
+  // Použití optimalizovaného hooku pro detekci mobilních zařízení
+  const isMobile = useIsMobile();
 
   return (
-    <div className="container max-w-screen-lg mx-auto px-2 sm:px-4 py-2 sm:py-4">
+    <ResponsiveContainer>
       {/* Zjednodušená navigace */}
       <div className="mb-3 sm:mb-4 p-1.5 sm:p-2 rounded-lg bg-muted/30 flex flex-wrap gap-2">
         <Button
           variant={activeTab === "grammar" ? "secondary" : "outline"}
-          size="sm"
+          size={isMobile ? "sm" : "default"}
           className="flex items-center gap-1"
           onClick={() => setActiveTab("grammar")}
         >
-          <BookOpen className="h-4 w-4" />
-          <span>Gramatika</span>
+          <BookOpen className={isMobile ? "h-3.5 w-3.5" : "h-4 w-4"} />
+          <span className={isMobile ? "text-xs" : ""}>Gramatika</span>
         </Button>
         <Button
           variant={activeTab === "vocabulary" ? "secondary" : "outline"}
-          size="sm"
+          size={isMobile ? "sm" : "default"}
           className="flex items-center gap-1"
           onClick={() => setActiveTab("vocabulary")}
         >
-          <FileText className="h-4 w-4" />
-          <span>Slovíčka</span>
+          <FileText className={isMobile ? "h-3.5 w-3.5" : "h-4 w-4"} />
+          <span className={isMobile ? "text-xs" : ""}>Slovíčka</span>
         </Button>
         <Button
           variant={activeTab === "phrases" ? "secondary" : "outline"}
-          size="sm"
+          size={isMobile ? "sm" : "default"}
           className="flex items-center gap-1"
           onClick={() => setActiveTab("phrases")}
         >
-          <Languages className="h-4 w-4" />
-          <span>Fráze</span>
+          <Languages className={isMobile ? "h-3.5 w-3.5" : "h-4 w-4"} />
+          <span className={isMobile ? "text-xs" : ""}>Fráze</span>
         </Button>
       </div>
       
@@ -100,7 +102,7 @@ const LanguageContent = () => {
       
       {/* Indikátor offline režimu */}
       <OfflineIndicator />
-    </div>
+    </ResponsiveContainer>
   );
 };
 
