@@ -1,102 +1,145 @@
 
 import { useState, useEffect } from "react";
-import { TabsContent } from "@/components/ui/tabs";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useOfflineStatus } from "@/hooks/useOfflineStatus";
 import { useAuth } from "@/hooks/useAuth";
-import LanguageTabsNavigation from "@/components/language/layout/LanguageTabsNavigation";
-import GrammarTab from "@/components/language/tabs/GrammarTab";
-import PhrasesTab from "@/components/language/tabs/PhrasesTab";
 import VocabularySection from "@/components/language/VocabularySection";
 import OfflineIndicator from "@/components/offlineMode/OfflineIndicator";
 import OfflineDownloadCard from "@/components/language/OfflineDownloadCard";
-import LanguageSidebar from "@/components/language/LanguageSidebar";
 import LanguageManager, { useLanguageContext } from "@/components/language/LanguageManager";
 import { Button } from "@/components/ui/button";
 import { BookOpen, FileText, Languages } from "lucide-react";
 import { ResponsiveContainer } from "@/components/ui/responsive-container";
+import { germanCourseDescription } from "@/data/germanCourseDescription";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 
 const LanguageContent = () => {
   const { isPremium } = useAuth();
   const { isOffline } = useOfflineStatus();
   const { activeTab, setActiveTab, offlineStatus, saveForOffline } = useLanguageContext();
   
-  // Použití optimalizovaného hooku pro detekci mobilních zařízení
+  // Optimalizovaný hook pro mobilní zařízení
   const isMobile = useIsMobile();
+  
+  // Simulace postupu v kurzu (v produkci by toto bylo načítáno z dat uživatele)
+  const [courseProgress, setCourseProgress] = useState({
+    basics: 40,
+    packaging: 20,
+    numbers: 10,
+    directions: 0,
+    practice: 30
+  });
 
   return (
     <ResponsiveContainer>
-      {/* Zjednodušená navigace */}
-      <div className="mb-3 sm:mb-4 p-1.5 sm:p-2 rounded-lg bg-muted/30 flex flex-wrap gap-2">
-        <Button
-          variant={activeTab === "grammar" ? "secondary" : "outline"}
-          size={isMobile ? "sm" : "default"}
-          className="flex items-center gap-1"
-          onClick={() => setActiveTab("grammar")}
-        >
-          <BookOpen className={isMobile ? "h-3.5 w-3.5" : "h-4 w-4"} />
-          <span className={isMobile ? "text-xs" : ""}>Gramatika</span>
-        </Button>
-        <Button
-          variant={activeTab === "vocabulary" ? "secondary" : "outline"}
-          size={isMobile ? "sm" : "default"}
-          className="flex items-center gap-1"
-          onClick={() => setActiveTab("vocabulary")}
-        >
-          <FileText className={isMobile ? "h-3.5 w-3.5" : "h-4 w-4"} />
-          <span className={isMobile ? "text-xs" : ""}>Slovíčka</span>
-        </Button>
-        <Button
-          variant={activeTab === "phrases" ? "secondary" : "outline"}
-          size={isMobile ? "sm" : "default"}
-          className="flex items-center gap-1"
-          onClick={() => setActiveTab("phrases")}
-        >
-          <Languages className={isMobile ? "h-3.5 w-3.5" : "h-4 w-4"} />
-          <span className={isMobile ? "text-xs" : ""}>Fráze</span>
-        </Button>
-      </div>
+      {/* Úvodní sekce s popisem kurzu */}
+      <Card className="mb-4">
+        <CardHeader>
+          <CardTitle className="text-xl md:text-2xl">{germanCourseDescription.title}</CardTitle>
+          <CardDescription>{germanCourseDescription.subtitle}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground mb-4">{germanCourseDescription.description}</p>
+          
+          <div className="mb-4">
+            <div className="flex justify-between text-sm mb-1">
+              <span>Celkový postup v kurzu</span>
+              <span>20%</span>
+            </div>
+            <Progress value={20} className="h-2" />
+          </div>
+          
+          {/* Navigační tlačítka pro mobilní verzi */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-4">
+            <Button
+              variant={activeTab === "grammar" ? "default" : "outline"}
+              size={isMobile ? "sm" : "default"}
+              className="flex items-center justify-center sm:justify-start gap-1 h-12"
+              onClick={() => setActiveTab("grammar")}
+            >
+              <BookOpen className="h-4 w-4" />
+              <div className="flex flex-col items-start">
+                <span className={isMobile ? "text-xs" : ""}>Gramatika</span>
+                <span className="text-[10px] text-muted-foreground">Základní pravidla</span>
+              </div>
+            </Button>
+            <Button
+              variant={activeTab === "vocabulary" ? "default" : "outline"}
+              size={isMobile ? "sm" : "default"}
+              className="flex items-center justify-center sm:justify-start gap-1 h-12"
+              onClick={() => setActiveTab("vocabulary")}
+            >
+              <FileText className="h-4 w-4" />
+              <div className="flex flex-col items-start">
+                <span className={isMobile ? "text-xs" : ""}>Slovíčka</span>
+                <span className="text-[10px] text-muted-foreground">Práce v centru</span>
+              </div>
+            </Button>
+            <Button
+              variant={activeTab === "phrases" ? "default" : "outline"}
+              size={isMobile ? "sm" : "default"}
+              className="flex items-center justify-center sm:justify-start gap-1 h-12"
+              onClick={() => setActiveTab("phrases")}
+            >
+              <Languages className="h-4 w-4" />
+              <div className="flex flex-col items-start">
+                <span className={isMobile ? "text-xs" : ""}>Fráze</span>
+                <span className="text-[10px] text-muted-foreground">Užitečné výrazy</span>
+              </div>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
       
-      <div className="flex flex-col md:flex-row gap-3 md:gap-4 items-start">
-        {/* Výuka jazyka - navigace a obsah */}
-        <div className="w-full md:w-2/3 space-y-3 sm:space-y-4">
-          <h1 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2">Německý jazyk</h1>
-          
-          {/* Tlačítko pro offline režim pro aktivní záložku */}
-          {!isOffline && (
-            <OfflineDownloadCard 
-              activeTab={activeTab} 
-              offlineStatus={offlineStatus}
-              saveForOffline={saveForOffline}
-            />
-          )}
-          
-          <LanguageTabsNavigation 
+      {/* Výuka jazyka - obsah */}
+      <div className="w-full space-y-3 sm:space-y-4">
+        {/* Indikátor offline režimu */}
+        {!isOffline && (
+          <OfflineDownloadCard 
             activeTab={activeTab} 
-            onTabChange={setActiveTab}
-          >
-            <TabsContent value="grammar" className="space-y-3 sm:space-y-4">
-              <GrammarTab />
-            </TabsContent>
-            
-            <TabsContent value="vocabulary">
-              <VocabularySection />
-            </TabsContent>
-            
-            <TabsContent value="phrases">
-              <PhrasesTab />
-            </TabsContent>
-          </LanguageTabsNavigation>
-        </div>
-
-        {/* Postranní panel s dalšími zdroji - skrytý na mobilu */}
-        {!isMobile && (
-          <LanguageSidebar 
             offlineStatus={offlineStatus}
-            isOffline={isOffline}
             saveForOffline={saveForOffline}
           />
+        )}
+        
+        {activeTab === "vocabulary" && <VocabularySection />}
+        
+        {activeTab === "grammar" && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Gramatika němčiny</CardTitle>
+              <CardDescription>
+                Základní gramatická pravidla němčiny pro začátečníky
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center p-6">
+                <p className="text-muted-foreground">
+                  Sekce gramatiky je momentálně ve vývoji.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+        
+        {activeTab === "phrases" && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Užitečné fráze</CardTitle>
+              <CardDescription>
+                Fráze a konverzační obraty pro každodenní situace
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center p-6">
+                <p className="text-muted-foreground">
+                  Sekce s frázemi je momentálně ve vývoji.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
         )}
       </div>
       

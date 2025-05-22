@@ -1,85 +1,76 @@
 
+// Typový model pro položku slovní zásoby
+
 export interface VocabularyItem {
   id: string;
   word: string;
   translation: string;
   example?: string;
+  notes?: string;
   category?: string;
   difficulty?: 'easy' | 'medium' | 'hard';
-  // Spaced repetition fields
-  lastReviewed?: string; // ISO date string
-  nextReviewDate?: string; // ISO date string
-  repetitionLevel: number; // 0 = new word, increases with correct answers
-  correctCount: number;
-  incorrectCount: number;
-  // Skill fields (optional)
-  skills?: {
-    reading?: number;
-    writing?: number;
-    speaking?: number;
-    listening?: number;
-    grammar?: number;
-  };
-}
-
-export interface VocabularyCollection {
-  id: string;
-  name: string;
-  description?: string;
-  items: VocabularyItem[];
-}
-
-export interface UserProgress {
-  dailyStats: DailyProgressStat[];
-  totalReviewed: number;
-  streakDays: number;
-  lastStudyDate?: string;
-  averageAccuracy: number;
-  categoryDistribution?: { [key: string]: number };
-  difficultyDistribution?: {
-    easy: number;
-    medium: number;
-    hard: number;
-    unspecified: number;
-  };
-  items?: VocabularyItem[]; // Přidáno pro useVocabularyProgress
-}
-
-export interface DailyProgressStat {
-  date: string; // ISO date string
-  wordsReviewed: number;
+  tags?: string[];
+  
+  // Údaje pro spaced repetition algoritmus
+  repetitionLevel: number;
+  nextReviewDate?: string;
+  lastReviewed?: string;
   correctCount: number;
   incorrectCount: number;
 }
 
-// Test History interfaces
+// Model pro výsledky testu
 export interface TestResult {
   id?: string;
   startTime: Date;
   endTime: Date;
   totalQuestions: number;
   correctAnswers: number;
-  incorrectAnswers: number;
-  wrongAnswers: number;
-  score: number; // percentage
+  score: number;
   timeSpentSeconds: number;
-  categories: string[];
-  difficulties: string[];
-  testItems: TestItem[]; // Array to track individual question results
-  skillsData?: SkillsData; // Přidána chybějící vlastnost
+  categories?: string[];
+  difficulties?: string[];
 }
 
-export interface SkillsData {
-  reading: number;
-  writing: number;
-  speaking: number;
-  listening: number;
-  grammar: number;
+// Model pro sledování pokroku uživatele
+export interface UserProgress {
+  dailyStats: Array<{
+    date: string;
+    reviewedCount: number;
+    correctCount: number;
+  }>;
+  totalReviewed: number;
+  streakDays: number;
+  lastStudyDate?: string;
+  averageAccuracy: number;
+  categoryDistribution?: Record<string, number>;
+  difficultyDistribution?: {
+    easy: number;
+    medium: number;
+    hard: number;
+    unspecified: number;
+  };
 }
 
-export interface TestItem {
-  item: VocabularyItem;
-  wasCorrect: boolean;
-  userAnswer?: string;
-  responseTimeMs?: number; // Track response time
+// Model pro statistiky slovní zásoby
+export interface VocabularyStatistics {
+  totalWords: number;
+  newWords: number;
+  learningWords: number;
+  masteredWords: number;
+  dueToday: number;
+  categoryDistribution: Record<string, number>;
+  difficultyBreakdown: {
+    easy: number;
+    medium: number;
+    hard: number;
+    unspecified: number;
+  };
+  progress: {
+    today: number;
+    yesterday: number;
+    lastWeek: number;
+  };
+  accuracy: number;
+  dailyGoalCompletion: number;
 }
