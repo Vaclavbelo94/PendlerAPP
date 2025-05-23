@@ -1,240 +1,296 @@
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
-import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns";
-import { CalendarIcon, FileText, Plus } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { DocumentRecord } from '@/types/vehicle';
+import { fetchDocuments, saveDocument, deleteDocument } from '@/services/vehicleService';
+import { PlusCircle, TrashIcon, FileIcon, CalendarIcon, FileTextIcon } from 'lucide-react';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { format } from 'date-fns';
 
-interface Document {
-  id: string;
-  name: string;
-  expiryDate: Date | null;
-  reminderDays: number;
-  notes: string;
+interface DocumentsCardProps {
+  vehicleId?: string;
 }
 
-const DocumentsCard = () => {
-  const [documents, setDocuments] = useState<Document[]>([
-    {
-      id: "1",
-      name: "SPZ Registrace",
-      expiryDate: new Date(2025, 5, 15),
-      reminderDays: 30,
-      notes: "Německé SPZ"
+const documentSchema = z.object({
+  vehicle_id: z.string(),
+  name: z.string().min(1, 'Zadejte název dokumentu'),
+  type: z.string().min(1, 'Vyberte typ dokumentu'),
+  expiry_date: z.string().optional(),
+  notes: z.string().optional(),
+});
+
+const documentTypes = [
+  { value: 'manual', label: 'Návod k obsluze' },
+  { value: 'stk', label: 'STK protokol' },
+  { value: 'insurance', label: 'Pojištění' },
+  { value: 'service_book', label: 'Servisní knížka' },
+  { value: 'invoice', label: 'Faktura' },
+  { value: 'other', label: 'Ostatní' },
+];
+
+const DocumentsCard: React.FC<DocumentsCardProps> = ({ vehicleId }) => {
+  const [documents, setDocuments] = useState<DocumentRecord[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedDocument, setSelectedDocument] = useState<DocumentRecord | null>(null);
+
+  const form = useForm<DocumentRecord>({
+    resolver: zodResolver(documentSchema),
+    defaultValues: {
+      vehicle_id: vehicleId || '',
+      name: '',
+      type: '',
+      expiry_date: '',
+      notes: '',
     },
-    {
-      id: "2",
-      name: "Dálniční známka",
-      expiryDate: new Date(2025, 0, 31),
-      reminderDays: 14,
-      notes: "Německá dálniční známka"
-    },
-    {
-      id: "3",
-      name: "Pojištění",
-      expiryDate: new Date(2025, 3, 1),
-      reminderDays: 30,
-      notes: "Allianz pojištění"
-    }
-  ]);
-  
-  const [isAddingDocument, setIsAddingDocument] = useState(false);
-  const [newDocument, setNewDocument] = useState<Partial<Document>>({
-    name: "",
-    expiryDate: null,
-    reminderDays: 30,
-    notes: ""
   });
 
+  useEffect(() => {
+    if (vehicleId) {
+      loadDocuments();
+    }
+  }, [vehicleId]);
+
+  useEffect(() => {
+    if (selectedDocument) {
+      form.reset({
+        ...selectedDocument,
+        expiry_date: selectedDocument.expiry_date || '',
+        notes: selectedDocument.notes || '',
+      });
+    } else {
+      form.reset({
+        vehicle_id: vehicleId || '',
+        name: '',
+        type: '',
+        expiry_date: '',
+        notes: '',
+      });
+    }
+  }, [selectedDocument, form, vehicleId]);
+
+  const loadDocuments = async () => {
+    if (!vehicleId) return;
+    
+    setIsLoading(true);
+    try {
+      const docs = await fetchDocuments(vehicleId);
+      setDocuments(docs);
+    } catch (error) {
+      console.error('Chyba při načítání dokumentů:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleAddDocument = () => {
-    if (!newDocument.name) {
-      toast.error("Vyplňte alespoň název dokumentu");
-      return;
-    }
-
-    const document: Document = {
-      id: Date.now().toString(),
-      name: newDocument.name,
-      expiryDate: newDocument.expiryDate,
-      reminderDays: newDocument.reminderDays || 30,
-      notes: newDocument.notes || ""
-    };
-
-    setDocuments([...documents, document]);
-    setNewDocument({
-      name: "",
-      expiryDate: null,
-      reminderDays: 30,
-      notes: ""
-    });
-    setIsAddingDocument(false);
-    toast.success("Dokument přidán");
+    setSelectedDocument(null);
+    setIsDialogOpen(true);
   };
 
-  const getExpiryStatus = (expiryDate: Date | null) => {
-    if (!expiryDate) return "";
-    
-    const today = new Date();
-    const daysUntilExpiry = Math.ceil((expiryDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-    
-    if (daysUntilExpiry < 0) return "Expirováno";
-    if (daysUntilExpiry < 30) return "Brzy expiruje";
-    return "Platné";
+  const handleEditDocument = (document: DocumentRecord) => {
+    setSelectedDocument(document);
+    setIsDialogOpen(true);
   };
 
-  const getStatusClass = (status: string) => {
-    switch (status) {
-      case "Expirováno":
-        return "bg-red-100 text-red-800";
-      case "Brzy expiruje":
-        return "bg-amber-100 text-amber-800";
-      case "Platné":
-        return "bg-green-100 text-green-800";
-      default:
-        return "bg-gray-100 text-gray-800";
+  const handleSubmit = async (data: DocumentRecord) => {
+    try {
+      const savedDocument = await saveDocument({
+        ...data,
+        id: selectedDocument?.id,
+      });
+      
+      if (savedDocument) {
+        if (selectedDocument) {
+          setDocuments(prev => prev.map(d => d.id === savedDocument.id ? savedDocument : d));
+        } else {
+          setDocuments(prev => [savedDocument, ...prev]);
+        }
+        setIsDialogOpen(false);
+      }
+    } catch (error) {
+      console.error('Chyba při ukládání dokumentu:', error);
     }
+  };
+
+  const handleDeleteDocument = async (id: string) => {
+    if (confirm('Opravdu chcete smazat tento dokument?')) {
+      try {
+        const success = await deleteDocument(id);
+        if (success) {
+          setDocuments(prev => prev.filter(d => d.id !== id));
+        }
+      } catch (error) {
+        console.error('Chyba při mazání dokumentu:', error);
+      }
+    }
+  };
+
+  const getDocumentTypeLabel = (type: string) => {
+    const docType = documentTypes.find(t => t.value === type);
+    return docType ? docType.label : type;
   };
 
   return (
     <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="flex items-center gap-2">
-              <FileText className="h-5 w-5" />
-              Dokumenty
-            </CardTitle>
-            <CardDescription>Správa dokumentů a připomenutí</CardDescription>
-          </div>
-          <Button onClick={() => setIsAddingDocument(true)} size="sm">
-            <Plus className="mr-2 h-4 w-4" /> Přidat dokument
-          </Button>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <div>
+          <CardTitle className="text-xl font-bold">Dokumenty</CardTitle>
+          <CardDescription>Správa dokumentů k vozidlu</CardDescription>
         </div>
+        <Button onClick={handleAddDocument}>
+          <PlusCircle className="h-4 w-4 mr-2" /> Přidat dokument
+        </Button>
       </CardHeader>
       <CardContent>
-        {documents.length > 0 ? (
-          <div className="space-y-4">
-            {documents.map((document) => {
-              const status = getExpiryStatus(document.expiryDate);
-              return (
-                <div key={document.id} className="rounded-md border p-4">
-                  <div className="flex justify-between mb-2">
-                    <h3 className="font-medium">{document.name}</h3>
-                    {document.expiryDate && (
-                      <span className={`text-xs px-2 py-1 rounded-full ${getStatusClass(status)}`}>
-                        {status}
-                      </span>
-                    )}
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
-                    <div>
-                      <span className="text-muted-foreground">Platnost do:</span>{" "}
-                      {document.expiryDate ? format(document.expiryDate, "dd.MM.yyyy") : "Bez data expirace"}
-                    </div>
-                    <div>
-                      <span className="text-muted-foreground">Připomenutí:</span>{" "}
-                      {document.reminderDays} dní před expirací
-                    </div>
-                  </div>
-                  {document.notes && (
-                    <div className="mt-2 text-sm">
-                      <span className="text-muted-foreground">Poznámky:</span>{" "}
-                      {document.notes}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+        {isLoading ? (
+          <div className="flex justify-center py-8">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+          </div>
+        ) : documents.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">
+            <FileTextIcon className="mx-auto h-12 w-12 mb-4 opacity-20" />
+            <p>Zatím zde nejsou žádné dokumenty</p>
+            <p className="text-sm mt-2">Klikněte na "Přidat dokument" pro přidání prvního dokumentu</p>
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center py-8 text-center">
-            <FileText className="h-10 w-10 text-muted-foreground mb-3" />
-            <p className="text-muted-foreground">Žádné dokumenty</p>
+          <div className="space-y-4">
+            {documents.map((document) => (
+              <div key={document.id} className="border rounded-lg p-4 flex flex-col md:flex-row justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <FileIcon className="h-5 w-5 text-primary" />
+                    <h3 className="font-medium text-lg">{document.name}</h3>
+                    <span className="text-xs bg-secondary text-secondary-foreground px-1.5 py-0.5 rounded ml-2">
+                      {getDocumentTypeLabel(document.type)}
+                    </span>
+                  </div>
+                  {document.expiry_date && (
+                    <div className="flex items-center gap-2 mb-1 text-sm text-muted-foreground">
+                      <CalendarIcon className="h-4 w-4" />
+                      <span>Platnost do: {new Date(document.expiry_date).toLocaleDateString('cs-CZ')}</span>
+                    </div>
+                  )}
+                  {document.notes && <p className="text-sm mt-2">{document.notes}</p>}
+                </div>
+                <div className="flex items-center mt-3 md:mt-0">
+                  <Button variant="ghost" size="sm" onClick={() => handleEditDocument(document)}>
+                    Upravit
+                  </Button>
+                  <Button variant="ghost" size="icon" className="text-destructive" onClick={() => handleDeleteDocument(document.id!)}>
+                    <TrashIcon className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            ))}
           </div>
         )}
-      </CardContent>
 
-      {/* Dialog for adding new document */}
-      <Dialog open={isAddingDocument} onOpenChange={setIsAddingDocument}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Přidat dokument</DialogTitle>
-            <DialogDescription>
-              Zaznamenejte důležité dokumenty a jejich platnost.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="name">Název dokumentu*</Label>
-              <Input
-                id="name"
-                value={newDocument.name}
-                onChange={(e) => setNewDocument({ ...newDocument, name: e.target.value })}
-                placeholder="např. Technický průkaz"
-                required
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="expiry">Datum expirace</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !newDocument.expiryDate && "text-muted-foreground"
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{selectedDocument ? 'Upravit dokument' : 'Přidat dokument'}</DialogTitle>
+              <DialogDescription>
+                {selectedDocument 
+                  ? 'Upravte informace o dokumentu' 
+                  : 'Zadejte informace o novém dokumentu'}
+              </DialogDescription>
+            </DialogHeader>
+            
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Název dokumentu *</FormLabel>
+                      <FormControl>
+                        <Input placeholder="STK protokol 2023" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="type"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Typ dokumentu *</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Vyberte typ dokumentu" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {documentTypes.map((type) => (
+                              <SelectItem key={type.value} value={type.value}>
+                                {type.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
                     )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {newDocument.expiryDate ? format(newDocument.expiryDate, "PPP") : <span>Vyberte datum</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={newDocument.expiryDate || undefined}
-                    onSelect={(date) => setNewDocument({ ...newDocument, expiryDate: date })}
-                    initialFocus
                   />
-                </PopoverContent>
-              </Popover>
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="reminderDays">Připomenout před expirací (dny)</Label>
-              <Input
-                id="reminderDays"
-                type="number"
-                value={newDocument.reminderDays?.toString() || "30"}
-                onChange={(e) => setNewDocument({ ...newDocument, reminderDays: parseInt(e.target.value) })}
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="notes">Poznámky</Label>
-              <Input
-                id="notes"
-                value={newDocument.notes}
-                onChange={(e) => setNewDocument({ ...newDocument, notes: e.target.value })}
-                placeholder="Dodatečné informace"
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsAddingDocument(false)}>
-              Zrušit
-            </Button>
-            <Button onClick={handleAddDocument}>
-              Uložit
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+                  
+                  <FormField
+                    control={form.control}
+                    name="expiry_date"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Datum platnosti</FormLabel>
+                        <FormControl>
+                          <Input type="date" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                
+                <FormField
+                  control={form.control}
+                  name="notes"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Poznámky</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="Další informace o dokumentu..." {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <input type="hidden" {...form.register("vehicle_id")} />
+                
+                <div className="flex justify-end pt-4">
+                  <Button type="button" variant="outline" className="mr-2" onClick={() => setIsDialogOpen(false)}>
+                    Zrušit
+                  </Button>
+                  <Button type="submit">
+                    {selectedDocument ? 'Uložit změny' : 'Přidat dokument'}
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </DialogContent>
+        </Dialog>
+      </CardContent>
     </Card>
   );
 };

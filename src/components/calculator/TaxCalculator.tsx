@@ -1,339 +1,437 @@
-import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart3, Calculator } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
-import { useTaxCalculator } from "@/hooks/useTaxCalculator";
-import { useMediaQuery } from "@/hooks/use-media-query";
 
-const TaxCalculator = () => {
-  const { toast } = useToast();
-  const { calculateTax, result } = useTaxCalculator();
-  const isMobile = useMediaQuery("xs");
-  
-  // Income Tax Calculator
-  const [income, setIncome] = useState<string>("50000");
-  const [country, setCountry] = useState<string>("de");
-  const [taxClass, setTaxClass] = useState<string>("1");
-  const [children, setChildren] = useState<string>("0");
-  const [married, setMarried] = useState<boolean>(false);
-  const [church, setChurch] = useState<boolean>(false);
-  
-  // VAT Calculator
-  const [price, setPrice] = useState<string>("1000");
-  const [vatRate, setVatRate] = useState<string>("21");
-  const [includesVat, setIncludesVat] = useState<boolean>(true);
-  const [vatAmount, setVatAmount] = useState<number | null>(null);
-  const [priceWithoutVat, setPriceWithoutVat] = useState<number | null>(null);
-  const [priceWithVat, setPriceWithVat] = useState<number | null>(null);
-  
-  const handleCalculateTax = () => {
-    const result = calculateTax(income, {
-      country,
-      taxClass,
-      children: parseInt(children),
-      married,
-      church
-    });
+import React, { useState, useEffect } from 'react';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Separator } from '@/components/ui/separator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+interface TaxCalculatorProps {
+  onCalculate?: (inputs: Record<string, any>, result: Record<string, any>) => void;
+  calculationHistory?: Array<{
+    id?: string;
+    inputs: Record<string, any>;
+    result: Record<string, any>;
+    created_at?: string;
+  }>;
+}
+
+const formSchema = z.object({
+  income: z.string().min(1, 'Zadejte příjem'),
+  taxClass: z.string().min(1, 'Vyberte daňovou třídu'),
+  hasChildren: z.boolean().default(false),
+  numChildren: z.string().optional(),
+  hasPension: z.boolean().default(false),
+  hasHealthInsurance: z.boolean().default(true),
+  church: z.boolean().default(false),
+  additionalDeductions: z.string().default('0'),
+});
+
+const TaxCalculator: React.FC<TaxCalculatorProps> = ({ onCalculate, calculationHistory = [] }) => {
+  const [results, setResults] = useState({
+    grossIncome: 0,
+    incomeTax: 0,
+    socialInsurance: 0,
+    healthInsurance: 0,
+    netIncome: 0,
+    taxRate: 0,
+    churchTax: 0,
+    childBenefit: 0,
+  });
+  const [isCalculated, setIsCalculated] = useState(false);
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      income: '',
+      taxClass: '1',
+      hasChildren: false,
+      numChildren: '0',
+      hasPension: false,
+      hasHealthInsurance: true,
+      church: false,
+      additionalDeductions: '0',
+    },
+  });
+
+  const { watch } = form;
+  const hasChildren = watch('hasChildren');
+
+  const calculateTax = (data: z.infer<typeof formSchema>) => {
+    // Konverze vstupů na čísla
+    const income = parseFloat(data.income);
+    const taxClass = parseInt(data.taxClass);
+    const numChildren = data.hasChildren ? parseInt(data.numChildren || '0') : 0;
+    const additionalDeductions = parseFloat(data.additionalDeductions || '0');
+
+    // Základní výpočty pro německou daň z příjmu
+    let incomeTax = 0;
+    let socialInsurance = 0;
+    let healthInsurance = 0;
+    let churchTax = 0;
+    let childBenefit = 0;
     
-    if (result) {
-      toast({
-        title: "Daňový výpočet dokončen",
-        description: `Čistý příjem: ${result.netIncome.toFixed(2)} ${country === "de" ? "EUR" : "CZK"}`,
-      });
+    // Jednoduchý výpočet daně z příjmu podle třídy
+    // Toto je zjednodušený model, skutečný výpočet je složitější
+    const taxRates = {
+      1: 0.25, // Svobodní, rozvedení
+      2: 0.23, // Samoživitelé
+      3: 0.20, // Vdaní/ženatí s nižším příjmem
+      4: 0.22, // Vdaní/ženatí se srovnatelným příjmem
+      5: 0.27, // Vdaní/ženatí s vyšším příjmem
+      6: 0.30, // Další příjmy
+    };
+
+    incomeTax = income * (taxRates[taxClass as keyof typeof taxRates] || 0.25);
+    
+    // Sociální pojištění (cca 20% z hrubé mzdy)
+    socialInsurance = income * 0.2;
+    
+    // Zdravotní pojištění (cca 7.5% z hrubé mzdy)
+    healthInsurance = data.hasHealthInsurance ? income * 0.075 : 0;
+    
+    // Církevní daň (8-9% z daně z příjmu)
+    churchTax = data.church ? incomeTax * 0.09 : 0;
+    
+    // Přídavky na děti
+    if (numChildren > 0) {
+      // Měsíční přídavek cca 220 EUR na dítě
+      childBenefit = numChildren * 220;
+    }
+    
+    // Odečtení dalších odpočtů
+    const totalDeductions = incomeTax + socialInsurance + healthInsurance + churchTax - additionalDeductions;
+    
+    // Čistý příjem
+    const netIncome = income - totalDeductions + childBenefit;
+    
+    // Celková daňová sazba
+    const taxRate = (totalDeductions / income) * 100;
+
+    const results = {
+      grossIncome: income,
+      incomeTax,
+      socialInsurance,
+      healthInsurance,
+      netIncome,
+      taxRate,
+      churchTax,
+      childBenefit,
+    };
+    
+    setResults(results);
+    setIsCalculated(true);
+    
+    if (onCalculate) {
+      onCalculate(data, results);
     }
   };
-  
-  const handleCalculateVat = () => {
-    try {
-      const priceValue = parseFloat(price);
-      const vatRateValue = parseFloat(vatRate) / 100;
-      
-      if (isNaN(priceValue) || isNaN(vatRateValue) || priceValue < 0 || vatRateValue < 0) {
-        toast({
-          title: "Neplatná hodnota",
-          description: "Zadejte platné hodnoty",
-          variant: "destructive"
-        });
-        return;
-      }
-      
-      if (includesVat) {
-        // Price already includes VAT
-        const priceWithoutVatValue = priceValue / (1 + vatRateValue);
-        const vatAmountValue = priceValue - priceWithoutVatValue;
-        
-        setPriceWithoutVat(priceWithoutVatValue);
-        setPriceWithVat(priceValue);
-        setVatAmount(vatAmountValue);
-      } else {
-        // Price doesn't include VAT
-        const vatAmountValue = priceValue * vatRateValue;
-        const priceWithVatValue = priceValue + vatAmountValue;
-        
-        setPriceWithoutVat(priceValue);
-        setPriceWithVat(priceWithVatValue);
-        setVatAmount(vatAmountValue);
-      }
-      
-      toast({
-        title: "Výpočet DPH dokončen",
-        description: `Cena s DPH: ${priceWithVat?.toFixed(2)} Kč`,
-      });
-    } catch (error) {
-      toast({
-        title: "Chyba výpočtu",
-        description: "Došlo k chybě při výpočtu DPH",
-        variant: "destructive"
-      });
+
+  const loadFromHistory = (historyItem: any) => {
+    if (historyItem?.inputs) {
+      form.reset(historyItem.inputs);
+      setResults(historyItem.result);
+      setIsCalculated(true);
     }
   };
 
   return (
-    <Card className="h-auto">
-      <CardHeader className="space-y-1">
-        <div className="flex items-center gap-2">
-          <BarChart3 className="h-5 w-5 text-primary" />
-          <CardTitle>Daňová kalkulačka</CardTitle>
-        </div>
-        <CardDescription>
-          Kalkulačka pro výpočet daní a DPH
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <Tabs defaultValue="income" className="space-y-4">
-          <TabsList className={`grid w-full ${isMobile ? 'grid-cols-1' : 'grid-cols-2'}`}>
-            <TabsTrigger value="income" className={isMobile ? "mb-2" : ""}>
-              <div className="flex items-center gap-2">
-                <Calculator className="h-4 w-4" />
-                <span>Daň z příjmu</span>
-              </div>
-            </TabsTrigger>
-            <TabsTrigger value="vat">
-              <div className="flex items-center gap-2">
-                <BarChart3 className="h-4 w-4" />
-                <span>DPH</span>
-              </div>
-            </TabsTrigger>
-          </TabsList>
-          
-          {/* Income Tax Calculator */}
-          <TabsContent value="income" className="space-y-4">
-            {/* Form fields */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="income">Hrubý příjem</Label>
-                <Input
-                  id="income"
-                  type="number"
-                  value={income}
-                  onChange={(e) => setIncome(e.target.value)}
-                  min="0"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="country">Země</Label>
-                <Select value={country} onValueChange={setCountry}>
-                  <SelectTrigger id="country">
-                    <SelectValue placeholder="Vyberte zemi" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="de">Německo</SelectItem>
-                    <SelectItem value="cz">Česko</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">  
-              {country === "de" && (
-                <div className="space-y-2">
-                  <Label htmlFor="taxClass">Daňová třída</Label>
-                  <Select value={taxClass} onValueChange={setTaxClass}>
-                    <SelectTrigger id="taxClass">
-                      <SelectValue placeholder="Vyberte daňovou třídu" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="1">Třída I</SelectItem>
-                      <SelectItem value="2">Třída II</SelectItem>
-                      <SelectItem value="3">Třída III</SelectItem>
-                      <SelectItem value="4">Třída IV</SelectItem>
-                      <SelectItem value="5">Třída V</SelectItem>
-                      <SelectItem value="6">Třída VI</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-              
-              <div className="space-y-2">
-                <Label htmlFor="children">Počet dětí</Label>
-                <Input
-                  id="children"
-                  type="number"
-                  value={children}
-                  onChange={(e) => setChildren(e.target.value)}
-                  min="0"
-                />
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="married"
-                  className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
-                  checked={married}
-                  onChange={(e) => setMarried(e.target.checked)}
-                />
-                <Label htmlFor="married">Ženatý/Vdaná</Label>
-              </div>
-              
-              {country === "de" && (
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    id="church"
-                    className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
-                    checked={church}
-                    onChange={(e) => setChurch(e.target.checked)}
-                  />
-                  <Label htmlFor="church">Církevní daň</Label>
-                </div>
-              )}
-            </div>
-            
-            <Button 
-              onClick={handleCalculateTax}
-              className={`w-full mt-4 ${isMobile ? "py-6" : ""}`}
-              size={isMobile ? "lg" : "default"}
-            >
-              <Calculator className="mr-2 h-4 w-4" />
-              Vypočítat daň
-            </Button>
-            
-            {result && (
-              <div className="mt-4 bg-muted rounded-md p-4 space-y-2">
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="text-sm">Hrubý příjem:</div>
-                  <div className="text-sm font-bold text-right">
-                    {result.grossIncome.toFixed(2)} {country === "de" ? "EUR" : "CZK"}
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="text-sm">Daň z příjmu:</div>
-                  <div className="text-sm font-bold text-right text-destructive">
-                    -{result.taxAmount.toFixed(2)} {country === "de" ? "EUR" : "CZK"}
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="text-sm">Sociální pojištění:</div>
-                  <div className="text-sm font-bold text-right text-destructive">
-                    -{result.socialSecurity.toFixed(2)} {country === "de" ? "EUR" : "CZK"}
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="text-sm">Zdravotní pojištění:</div>
-                  <div className="text-sm font-bold text-right text-destructive">
-                    -{result.healthInsurance.toFixed(2)} {country === "de" ? "EUR" : "CZK"}
-                  </div>
-                </div>
-                <div className="border-t pt-2 grid grid-cols-2 gap-2">
-                  <div className="text-base font-medium">Čistý příjem:</div>
-                  <div className="text-base font-bold text-right text-green-600">
-                    {result.netIncome.toFixed(2)} {country === "de" ? "EUR" : "CZK"}
-                  </div>
-                </div>
-                <div className="text-xs text-muted-foreground text-center">
-                  Efektivní daňová sazba: {(result.effectiveTaxRate * 100).toFixed(2)}%
-                </div>
-              </div>
-            )}
-          </TabsContent>
-          
-          {/* VAT Calculator */}
-          <TabsContent value="vat" className="space-y-4">
-            {/* VAT calculator form */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="price">Cena</Label>
-                <Input
-                  id="price"
-                  type="number"
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  min="0"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="vatRate">Sazba DPH (%)</Label>
-                <Select value={vatRate} onValueChange={setVatRate}>
-                  <SelectTrigger id="vatRate">
-                    <SelectValue placeholder="Vyberte sazbu DPH" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="21">21% (Základní)</SelectItem>
-                    <SelectItem value="15">15% (První snížená)</SelectItem>
-                    <SelectItem value="10">10% (Druhá snížená)</SelectItem>
-                    <SelectItem value="19">19% (Německo - základní)</SelectItem>
-                    <SelectItem value="7">7% (Německo - snížená)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            
-            <div className="flex items-center space-x-2 py-2">
-              <input
-                type="checkbox"
-                id="includesVat"
-                className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
-                checked={includesVat}
-                onChange={(e) => setIncludesVat(e.target.checked)}
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Německý daňový kalkulátor</CardTitle>
+          <CardDescription>
+            Vypočítejte svou daň z příjmu a čistou mzdu v Německu
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(calculateTax)} className="space-y-6">
+              <FormField
+                control={form.control}
+                name="income"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Hrubý měsíční příjem (EUR)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="např. 3000" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      Zadejte svůj hrubý měsíční příjem v eurech
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-              <Label htmlFor="includesVat">Cena včetně DPH</Label>
-            </div>
-            
-            <Button 
-              onClick={handleCalculateVat}
-              className={`w-full mt-2 ${isMobile ? "py-6" : ""}`}
-              size={isMobile ? "lg" : "default"}
-            >
-              <Calculator className="mr-2 h-4 w-4" />
-              Vypočítat DPH
-            </Button>
-            
-            {vatAmount !== null && (
-              <div className="mt-4 bg-muted rounded-md p-4 space-y-2">
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="text-sm">Cena bez DPH:</div>
-                  <div className="text-sm font-bold text-right">
-                    {priceWithoutVat?.toFixed(2)} Kč
-                  </div>
+
+              <FormField
+                control={form.control}
+                name="taxClass"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Daňová třída (Steuerklasse)</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Vyberte daňovou třídu" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="1">1 - Svobodní, rozvedení</SelectItem>
+                        <SelectItem value="2">2 - Samoživitelé</SelectItem>
+                        <SelectItem value="3">3 - Manželé (nižší příjem)</SelectItem>
+                        <SelectItem value="4">4 - Manželé (srovnatelný příjem)</SelectItem>
+                        <SelectItem value="5">5 - Manželé (vyšší příjem)</SelectItem>
+                        <SelectItem value="6">6 - Další příjmy</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormDescription>
+                      Vaše daňová třída určuje výši daňových odpočtů
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="hasChildren"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel>
+                        Mám nezaopatřené děti
+                      </FormLabel>
+                      <FormDescription>
+                        Ovlivňuje výši přídavků na děti (Kindergeld)
+                      </FormDescription>
+                    </div>
+                  </FormItem>
+                )}
+              />
+
+              {hasChildren && (
+                <FormField
+                  control={form.control}
+                  name="numChildren"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Počet dětí</FormLabel>
+                      <FormControl>
+                        <Input {...field} type="number" min="1" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              <div className="flex flex-col space-y-4">
+                <FormField
+                  control={form.control}
+                  name="hasPension"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <div className="space-y-1 leading-none">
+                        <FormLabel>
+                          Penzijní připojištění
+                        </FormLabel>
+                        <FormDescription>
+                          Mám uzavřené soukromé penzijní připojištění
+                        </FormDescription>
+                      </div>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="hasHealthInsurance"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <div className="space-y-1 leading-none">
+                        <FormLabel>
+                          Zákonné zdravotní pojištění
+                        </FormLabel>
+                        <FormDescription>
+                          Platím zákonné zdravotní pojištění v Německu
+                        </FormDescription>
+                      </div>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="church"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <div className="space-y-1 leading-none">
+                        <FormLabel>
+                          Církevní daň
+                        </FormLabel>
+                        <FormDescription>
+                          Platím církevní daň v Německu (Kirchensteuer)
+                        </FormDescription>
+                      </div>
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={form.control}
+                name="additionalDeductions"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Další měsíční odpočty (EUR)</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="0" />
+                    </FormControl>
+                    <FormDescription>
+                      Další daňové odpočty (např. náklady na dojíždění)
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Button type="submit" className="w-full">Vypočítat</Button>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+
+      {isCalculated && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Výsledek výpočtu</CardTitle>
+            <CardDescription>
+              Přehled vaší daňové situace
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-muted-foreground">Hrubý měsíční příjem</p>
+                  <p className="text-lg font-semibold">{results.grossIncome.toFixed(2)} EUR</p>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="text-sm">DPH ({vatRate}%):</div>
-                  <div className="text-sm font-bold text-right">
-                    {vatAmount.toFixed(2)} Kč
-                  </div>
-                </div>
-                <div className="border-t pt-2 grid grid-cols-2 gap-2">
-                  <div className="text-base font-medium">Cena s DPH:</div>
-                  <div className="text-base font-bold text-right">
-                    {priceWithVat?.toFixed(2)} Kč
-                  </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Čistý měsíční příjem</p>
+                  <p className="text-lg font-semibold">{results.netIncome.toFixed(2)} EUR</p>
                 </div>
               </div>
-            )}
-          </TabsContent>
-        </Tabs>
-      </CardContent>
-    </Card>
+
+              <Separator />
+
+              <div className="space-y-2">
+                <p className="text-sm font-medium">Srážky:</p>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Daň z příjmu</p>
+                    <p className="font-medium">-{results.incomeTax.toFixed(2)} EUR</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Sociální pojištění</p>
+                    <p className="font-medium">-{results.socialInsurance.toFixed(2)} EUR</p>
+                  </div>
+                  {results.healthInsurance > 0 && (
+                    <div>
+                      <p className="text-sm text-muted-foreground">Zdravotní pojištění</p>
+                      <p className="font-medium">-{results.healthInsurance.toFixed(2)} EUR</p>
+                    </div>
+                  )}
+                  {results.churchTax > 0 && (
+                    <div>
+                      <p className="text-sm text-muted-foreground">Církevní daň</p>
+                      <p className="font-medium">-{results.churchTax.toFixed(2)} EUR</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {results.childBenefit > 0 && (
+                <>
+                  <Separator />
+                  <div>
+                    <p className="text-sm text-muted-foreground">Přídavky na děti</p>
+                    <p className="font-medium text-green-600">+{results.childBenefit.toFixed(2)} EUR</p>
+                  </div>
+                </>
+              )}
+
+              <Separator />
+
+              <div>
+                <p className="text-sm text-muted-foreground">Efektivní daňová zátěž</p>
+                <p className="font-semibold">{results.taxRate.toFixed(2)}%</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {calculationHistory && calculationHistory.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Historie výpočtů</CardTitle>
+            <CardDescription>
+              Vaše poslední výpočty
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {calculationHistory.map((item, index) => (
+                <div key={item.id || index} className="flex justify-between items-center p-3 border rounded-md hover:bg-secondary/20 cursor-pointer" onClick={() => loadFromHistory(item)}>
+                  <div>
+                    <p className="font-medium">{item.inputs.income} EUR (třída {item.inputs.taxClass})</p>
+                    <p className="text-sm text-muted-foreground">
+                      {new Date(item.created_at || Date.now()).toLocaleDateString('cs-CZ')}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p>Čistý příjem: <span className="font-medium">{item.result.netIncome?.toFixed(2)} EUR</span></p>
+                    <p className="text-sm text-muted-foreground">Daň: {item.result.taxRate?.toFixed(2)}%</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </div>
   );
 };
 

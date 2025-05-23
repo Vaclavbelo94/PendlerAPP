@@ -1,215 +1,308 @@
 
-import { useState } from "react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns";
-import { CalendarIcon, Plus, Wrench } from "lucide-react";
-import { toast } from "sonner";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
+import { ServiceRecord } from '@/types/vehicle';
+import { fetchServiceRecords, saveServiceRecord, deleteServiceRecord } from '@/services/vehicleService';
+import { PlusCircle, TrashIcon, WrenchIcon, CalendarIcon } from 'lucide-react';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Textarea } from '@/components/ui/textarea';
+import { format } from 'date-fns';
+import { cs } from 'date-fns/locale';
+import { toast } from 'sonner';
 
-interface ServiceRecord {
-  id: string;
-  date: Date;
-  type: string;
-  description: string;
-  mileage: string;
-  cost: string;
+interface ServiceRecordCardProps {
+  vehicleId?: string;
 }
 
-const ServiceRecordCard = () => {
-  const [serviceRecords, setServiceRecords] = useState<ServiceRecord[]>([
-    {
-      id: "1",
-      date: new Date(2024, 3, 15),
-      type: "Výměna oleje",
-      description: "Výměna oleje a filtrů",
-      mileage: "120000",
-      cost: "150"
+const serviceRecordSchema = z.object({
+  vehicle_id: z.string(),
+  service_date: z.string(),
+  service_type: z.string().min(1, 'Zadejte typ servisu'),
+  description: z.string().min(1, 'Zadejte popis servisu'),
+  mileage: z.string().min(1, 'Zadejte stav kilometrů'),
+  cost: z.string().min(1, 'Zadejte cenu'),
+  provider: z.string().min(1, 'Zadejte poskytovatele'),
+});
+
+const ServiceRecordCard: React.FC<ServiceRecordCardProps> = ({ vehicleId }) => {
+  const [serviceRecords, setServiceRecords] = useState<ServiceRecord[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedRecord, setSelectedRecord] = useState<ServiceRecord | null>(null);
+
+  const form = useForm<ServiceRecord>({
+    resolver: zodResolver(serviceRecordSchema),
+    defaultValues: {
+      vehicle_id: vehicleId || '',
+      service_date: format(new Date(), 'yyyy-MM-dd'),
+      service_type: '',
+      description: '',
+      mileage: '',
+      cost: '',
+      provider: '',
     },
-    {
-      id: "2",
-      date: new Date(2024, 2, 10),
-      type: "Brzdy",
-      description: "Výměna brzdových destiček",
-      mileage: "115000",
-      cost: "320"
-    }
-  ]);
-  
-  const [isAddingRecord, setIsAddingRecord] = useState(false);
-  const [newRecord, setNewRecord] = useState<Partial<ServiceRecord>>({
-    date: new Date(),
-    type: "",
-    description: "",
-    mileage: "",
-    cost: ""
   });
-  const [date, setDate] = useState<Date | undefined>(new Date());
+
+  useEffect(() => {
+    if (vehicleId) {
+      loadServiceRecords();
+    }
+  }, [vehicleId]);
+
+  useEffect(() => {
+    if (selectedRecord) {
+      form.reset({
+        ...selectedRecord,
+        service_date: selectedRecord.service_date ? selectedRecord.service_date : format(new Date(), 'yyyy-MM-dd'),
+      });
+    } else {
+      form.reset({
+        vehicle_id: vehicleId || '',
+        service_date: format(new Date(), 'yyyy-MM-dd'),
+        service_type: '',
+        description: '',
+        mileage: '',
+        cost: '',
+        provider: '',
+      });
+    }
+  }, [selectedRecord, form, vehicleId]);
+
+  const loadServiceRecords = async () => {
+    if (!vehicleId) return;
+    
+    setIsLoading(true);
+    try {
+      const records = await fetchServiceRecords(vehicleId);
+      setServiceRecords(records);
+    } catch (error) {
+      console.error('Chyba při načítání servisních záznamů:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleAddRecord = () => {
-    if (!newRecord.type || !newRecord.mileage) {
-      toast.error("Vyplňte všechna povinná pole");
-      return;
+    setSelectedRecord(null);
+    setIsDialogOpen(true);
+  };
+
+  const handleEditRecord = (record: ServiceRecord) => {
+    setSelectedRecord(record);
+    setIsDialogOpen(true);
+  };
+
+  const handleSubmit = async (data: ServiceRecord) => {
+    try {
+      const savedRecord = await saveServiceRecord({
+        ...data,
+        id: selectedRecord?.id,
+      });
+      
+      if (savedRecord) {
+        if (selectedRecord) {
+          setServiceRecords(prev => prev.map(r => r.id === savedRecord.id ? savedRecord : r));
+        } else {
+          setServiceRecords(prev => [savedRecord, ...prev]);
+        }
+        setIsDialogOpen(false);
+      }
+    } catch (error) {
+      console.error('Chyba při ukládání servisního záznamu:', error);
     }
+  };
 
-    const record: ServiceRecord = {
-      id: Date.now().toString(),
-      date: newRecord.date || new Date(),
-      type: newRecord.type || "",
-      description: newRecord.description || "",
-      mileage: newRecord.mileage || "",
-      cost: newRecord.cost || ""
-    };
-
-    setServiceRecords([record, ...serviceRecords]);
-    setNewRecord({
-      date: new Date(),
-      type: "",
-      description: "",
-      mileage: "",
-      cost: ""
-    });
-    setIsAddingRecord(false);
-    toast.success("Servisní záznam přidán");
+  const handleDeleteRecord = async (id: string) => {
+    if (confirm('Opravdu chcete smazat tento servisní záznam?')) {
+      try {
+        const success = await deleteServiceRecord(id);
+        if (success) {
+          setServiceRecords(prev => prev.filter(r => r.id !== id));
+        }
+      } catch (error) {
+        console.error('Chyba při mazání servisního záznamu:', error);
+      }
+    }
   };
 
   return (
     <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="flex items-center gap-2">
-              <Wrench className="h-5 w-5" />
-              Servisní záznamy
-            </CardTitle>
-            <CardDescription>Historie servisních záznamů vozidla</CardDescription>
-          </div>
-          <Button onClick={() => setIsAddingRecord(true)} size="sm">
-            <Plus className="mr-2 h-4 w-4" /> Přidat záznam
-          </Button>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <div>
+          <CardTitle className="text-xl font-bold">Historie servisu a údržby</CardTitle>
+          <CardDescription>Záznamy o servisech, opravách a údržbě vozidla</CardDescription>
         </div>
+        <Button onClick={handleAddRecord}>
+          <PlusCircle className="h-4 w-4 mr-2" /> Přidat záznam
+        </Button>
       </CardHeader>
       <CardContent>
-        {serviceRecords.length > 0 ? (
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Datum</TableHead>
-                  <TableHead>Typ</TableHead>
-                  <TableHead>Stav km</TableHead>
-                  <TableHead>Cena (€)</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {serviceRecords.map((record) => (
-                  <TableRow key={record.id}>
-                    <TableCell>{format(record.date, "dd.MM.yyyy")}</TableCell>
-                    <TableCell>
-                      <div className="font-medium">{record.type}</div>
-                      <div className="text-xs text-muted-foreground">{record.description}</div>
-                    </TableCell>
-                    <TableCell>{record.mileage}</TableCell>
-                    <TableCell>{record.cost}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+        {isLoading ? (
+          <div className="flex justify-center py-8">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+          </div>
+        ) : serviceRecords.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">
+            <WrenchIcon className="mx-auto h-12 w-12 mb-4 opacity-20" />
+            <p>Zatím zde nejsou žádné servisní záznamy</p>
+            <p className="text-sm mt-2">Klikněte na "Přidat záznam" pro vytvoření prvního záznamu</p>
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center py-8 text-center">
-            <Wrench className="h-10 w-10 text-muted-foreground mb-3" />
-            <p className="text-muted-foreground">Žádné servisní záznamy</p>
+          <div className="space-y-4">
+            {serviceRecords.map((record) => (
+              <div key={record.id} className="border rounded-lg p-4 flex flex-col md:flex-row justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <WrenchIcon className="h-5 w-5 text-primary" />
+                    <h3 className="font-medium text-lg">{record.service_type}</h3>
+                  </div>
+                  <div className="flex items-center gap-2 mb-1 text-sm text-muted-foreground">
+                    <CalendarIcon className="h-4 w-4" />
+                    <span>{record.service_date ? new Date(record.service_date).toLocaleDateString('cs-CZ') : 'Datum není uvedeno'}</span>
+                    <span className="mx-1">•</span>
+                    <span>{record.mileage} km</span>
+                  </div>
+                  <p className="mb-2">{record.description}</p>
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
+                    <span className="text-muted-foreground">Poskytovatel: <span className="text-foreground">{record.provider}</span></span>
+                    <span className="text-muted-foreground">Cena: <span className="text-foreground font-medium">{record.cost} Kč</span></span>
+                  </div>
+                </div>
+                <div className="flex items-center mt-3 md:mt-0">
+                  <Button variant="ghost" size="sm" onClick={() => handleEditRecord(record)}>
+                    Upravit
+                  </Button>
+                  <Button variant="ghost" size="icon" className="text-destructive" onClick={() => handleDeleteRecord(record.id!)}>
+                    <TrashIcon className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            ))}
           </div>
         )}
-      </CardContent>
 
-      {/* Dialog for adding new record */}
-      <Dialog open={isAddingRecord} onOpenChange={setIsAddingRecord}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Přidat servisní záznam</DialogTitle>
-            <DialogDescription>
-              Zadejte detaily servisního zásahu na vozidle.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="date">Datum</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-left font-normal"
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {newRecord.date ? format(newRecord.date, "PPP") : <span>Vyberte datum</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={newRecord.date}
-                    onSelect={(date) => setNewRecord({ ...newRecord, date })}
-                    initialFocus
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{selectedRecord ? 'Upravit servisní záznam' : 'Přidat servisní záznam'}</DialogTitle>
+              <DialogDescription>
+                {selectedRecord 
+                  ? 'Upravte informace o servisním záznamu' 
+                  : 'Zadejte informace o novém servisním záznamu'}
+              </DialogDescription>
+            </DialogHeader>
+            
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="service_type"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Typ servisu *</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Výměna oleje, STK, ..." {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                </PopoverContent>
-              </Popover>
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="type">Typ servisu*</Label>
-              <Input
-                id="type"
-                value={newRecord.type}
-                onChange={(e) => setNewRecord({ ...newRecord, type: e.target.value })}
-                placeholder="např. Výměna oleje"
-                required
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="description">Popis</Label>
-              <Input
-                id="description"
-                value={newRecord.description}
-                onChange={(e) => setNewRecord({ ...newRecord, description: e.target.value })}
-                placeholder="Podrobnosti o servisu"
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="mileage">Stav tachometru (km)*</Label>
-              <Input
-                id="mileage"
-                value={newRecord.mileage}
-                onChange={(e) => setNewRecord({ ...newRecord, mileage: e.target.value })}
-                placeholder="např. 120000"
-                required
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="cost">Cena (€)</Label>
-              <Input
-                id="cost"
-                value={newRecord.cost}
-                onChange={(e) => setNewRecord({ ...newRecord, cost: e.target.value })}
-                placeholder="např. 150"
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsAddingRecord(false)}>
-              Zrušit
-            </Button>
-            <Button onClick={handleAddRecord}>
-              Uložit záznam
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+                  
+                  <FormField
+                    control={form.control}
+                    name="service_date"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Datum *</FormLabel>
+                        <FormControl>
+                          <Input type="date" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Popis *</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="Podrobný popis servisních úkonů..." {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="mileage"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Stav kilometrů *</FormLabel>
+                        <FormControl>
+                          <Input placeholder="78500" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="cost"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Cena *</FormLabel>
+                        <FormControl>
+                          <Input placeholder="2500" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                
+                <FormField
+                  control={form.control}
+                  name="provider"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Poskytovatel *</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Autoservis Novák" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <input type="hidden" {...form.register("vehicle_id")} />
+                
+                <div className="flex justify-end pt-4">
+                  <Button type="button" variant="outline" className="mr-2" onClick={() => setIsDialogOpen(false)}>
+                    Zrušit
+                  </Button>
+                  <Button type="submit">
+                    {selectedRecord ? 'Uložit změny' : 'Přidat záznam'}
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </DialogContent>
+        </Dialog>
+      </CardContent>
     </Card>
   );
 };

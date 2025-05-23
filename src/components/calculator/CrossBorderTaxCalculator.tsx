@@ -1,373 +1,519 @@
 
-import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calculator, Globe, BadgeEuroIcon } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import React, { useState } from 'react';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Separator } from '@/components/ui/separator';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-type TaxScenario = {
-  id: string;
-  name: string;
-  description: string;
-  taxRateHome: number;
-  taxRateWork: number;
-  socialSecurityHome: number;
-  socialSecurityWork: number;
-  specialRules?: string;
-};
+interface CrossBorderTaxCalculatorProps {
+  onCalculate?: (inputs: Record<string, any>, result: Record<string, any>) => void;
+  calculationHistory?: Array<{
+    id?: string;
+    inputs: Record<string, any>;
+    result: Record<string, any>;
+    created_at?: string;
+  }>;
+}
 
-const crossBorderScenarios: TaxScenario[] = [
-  {
-    id: "de-cz",
-    name: "Německo - Česká republika",
-    description: "Bydliště v ČR, práce v Německu",
-    taxRateHome: 0.15, // 15% daň v ČR
-    taxRateWork: 0.35, // Přibližná daň v Německu
-    socialSecurityHome: 0,
-    socialSecurityWork: 0.2, // 20% odvody v Německu
-    specialRules: "183 dní: Pokud pracujete v Německu méně než 183 dní v roce, můžete danit příjem v ČR."
-  },
-  {
-    id: "de-pl",
-    name: "Německo - Polsko",
-    description: "Bydliště v Polsku, práce v Německu",
-    taxRateHome: 0.17, // 17% daň v Polsku
-    taxRateWork: 0.35, // Přibližná daň v Německu
-    socialSecurityHome: 0,
-    socialSecurityWork: 0.2, // 20% odvody v Německu
-    specialRules: "Směrnice 883/2004: Sociální pojištění se platí pouze v jedné zemi (obvykle v Německu)."
-  },
-  {
-    id: "de-at",
-    name: "Německo - Rakousko",
-    description: "Bydliště v Rakousku, práce v Německu",
-    taxRateHome: 0,
-    taxRateWork: 0.35, // Přibližná daň v Německu
-    socialSecurityHome: 0,
-    socialSecurityWork: 0.2, // 20% odvody v Německu
-    specialRules: "Příjmy jsou zdaněny v Německu, ale musíte je uvést v rakouském daňovém přiznání."
-  },
-  {
-    id: "de-fr",
-    name: "Německo - Francie",
-    description: "Bydliště ve Francii, práce v Německu",
-    taxRateHome: 0,
-    taxRateWork: 0.35, // Přibližná daň v Německu
-    socialSecurityHome: 0,
-    socialSecurityWork: 0.2, // 20% odvody v Německu
-    specialRules: "Speciální pravidla platí pro obyvatele pohraničních regionů (do 30 km od hranice)."
-  }
-];
+const formSchema = z.object({
+  incomeDE: z.string().min(1, 'Zadejte příjem v Německu'),
+  incomeCZ: z.string().min(1, 'Zadejte případný příjem v ČR'),
+  isMarried: z.boolean().default(false),
+  spouseIncome: z.string().optional(),
+  workDaysDE: z.string().min(1, 'Zadejte počet pracovních dnů v Německu'),
+  workDaysCZ: z.string().min(1, 'Zadejte počet pracovních dnů v ČR'),
+  includeCommuteExpenses: z.boolean().default(false),
+  commuteDistance: z.string().optional(),
+  commuteWorkDays: z.string().optional(),
+});
 
-type TaxationMethod = "work" | "residence" | "both";
+const CrossBorderTaxCalculator: React.FC<CrossBorderTaxCalculatorProps> = ({ onCalculate, calculationHistory = [] }) => {
+  const [results, setResults] = useState({
+    totalIncome: 0,
+    taxDE: 0,
+    taxCZ: 0,
+    creditMethod: {
+      totalTax: 0,
+      effectiveTaxRate: 0,
+      netIncome: 0
+    },
+    exemptionMethod: {
+      totalTax: 0,
+      effectiveTaxRate: 0,
+      netIncome: 0
+    },
+    commuteDeduction: 0,
+    advantage: 'credit' // 'credit' nebo 'exemption'
+  });
+  const [isCalculated, setIsCalculated] = useState(false);
+  const [activeTab, setActiveTab] = useState('input');
 
-const CrossBorderTaxCalculator = () => {
-  const [scenario, setScenario] = useState<string>("de-cz");
-  const [grossIncome, setGrossIncome] = useState<string>("3000");
-  const [daysWorked, setDaysWorked] = useState<string>("220");
-  const [daysInWorkCountry, setDaysInWorkCountry] = useState<string>("220");
-  const [taxationMethod, setTaxationMethod] = useState<TaxationMethod>("work");
-  const [result, setResult] = useState<any>(null);
-  
-  const { toast } = useToast();
-  
-  const validateInputs = () => {
-    const income = parseFloat(grossIncome);
-    const totalDays = parseInt(daysWorked);
-    const workCountryDays = parseInt(daysInWorkCountry);
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      incomeDE: '',
+      incomeCZ: '0',
+      isMarried: false,
+      spouseIncome: '0',
+      workDaysDE: '220',
+      workDaysCZ: '30',
+      includeCommuteExpenses: false,
+      commuteDistance: '0',
+      commuteWorkDays: '220',
+    },
+  });
+
+  const { watch } = form;
+  const isMarried = watch('isMarried');
+  const includeCommuteExpenses = watch('includeCommuteExpenses');
+
+  const calculateTax = (data: z.infer<typeof formSchema>) => {
+    // Konverze vstupů na čísla
+    const incomeDE = parseFloat(data.incomeDE) || 0;
+    const incomeCZ = parseFloat(data.incomeCZ) || 0;
+    const spouseIncome = data.isMarried ? parseFloat(data.spouseIncome || '0') : 0;
+    const workDaysDE = parseInt(data.workDaysDE) || 0;
+    const workDaysCZ = parseInt(data.workDaysCZ) || 0;
+    const commuteDistance = data.includeCommuteExpenses ? parseFloat(data.commuteDistance || '0') : 0;
+    const commuteWorkDays = data.includeCommuteExpenses ? parseInt(data.commuteWorkDays || '0') : 0;
     
-    if (isNaN(income) || income <= 0) {
-      toast({
-        title: "Neplatná hodnota",
-        description: "Zadejte platnou hodnotu příjmu",
-        variant: "destructive"
-      });
-      return false;
-    }
+    // Výpočet celkového příjmu
+    const totalIncome = incomeDE + incomeCZ;
     
-    if (isNaN(totalDays) || totalDays <= 0 || totalDays > 365) {
-      toast({
-        title: "Neplatná hodnota",
-        description: "Zadejte platný počet pracovních dnů (1-365)",
-        variant: "destructive"
-      });
-      return false;
-    }
+    // Výpočet odpočtu na dojíždění (0.30 EUR/km v Německu)
+    const commuteDeduction = data.includeCommuteExpenses ? commuteDistance * commuteWorkDays * 0.30 : 0;
     
-    if (isNaN(workCountryDays) || workCountryDays < 0 || workCountryDays > totalDays) {
-      toast({
-        title: "Neplatná hodnota",
-        description: "Počet dnů v zemi zaměstnání nemůže být vyšší než celkový počet pracovních dnů",
-        variant: "destructive"
-      });
-      return false;
-    }
+    // Výpočet daně v Německu (zjednodušená sazba 25%)
+    const taxRateDE = 0.25;
+    const taxableIncomeDE = incomeDE - commuteDeduction;
+    const taxDE = Math.max(0, taxableIncomeDE * taxRateDE);
     
-    return true;
-  };
-  
-  const calculateTax = () => {
-    if (!validateInputs()) return;
+    // Výpočet daně v ČR (zjednodušená sazba 15%)
+    const taxRateCZ = 0.15;
+    const taxCZ = incomeCZ * taxRateCZ;
     
-    const income = parseFloat(grossIncome);
-    const totalDays = parseInt(daysWorked);
-    const workCountryDays = parseInt(daysInWorkCountry);
-    const homeCountryDays = totalDays - workCountryDays;
+    // Metoda zápočtu daně
+    // V této metodě se daň zaplacená v jedné zemi odečítá od daňové povinnosti v druhé zemi
+    const totalTaxCredit = taxDE + taxCZ;
+    const effectiveTaxRateCredit = (totalTaxCredit / totalIncome) * 100;
+    const netIncomeCredit = totalIncome - totalTaxCredit;
     
-    const selectedScenario = crossBorderScenarios.find(s => s.id === scenario);
-    if (!selectedScenario) return;
+    // Metoda vynětí příjmu
+    // V této metodě se příjem zdaněný v jedné zemi vyjímá ze zdanitelných příjmů v druhé zemi
+    const totalIncomeCZ = totalIncome;
+    const incomeTaxRatioCZ = incomeCZ / totalIncomeCZ;
+    const taxExemption = taxCZ + (taxDE * (1 - incomeTaxRatioCZ));
+    const effectiveTaxRateExemption = (taxExemption / totalIncome) * 100;
+    const netIncomeExemption = totalIncome - taxExemption;
     
-    // Poměr příjmu podle odpracovaných dnů
-    const workCountryIncome = income * (workCountryDays / totalDays);
-    const homeCountryIncome = income * (homeCountryDays / totalDays);
+    // Určení výhodnější metody
+    const advantage = netIncomeCredit > netIncomeExemption ? 'credit' : 'exemption';
     
-    let taxWorkCountry = 0;
-    let taxHomeCountry = 0;
-    let socialSecurityWorkCountry = 0;
-    let socialSecurityHomeCountry = 0;
+    const results = {
+      totalIncome,
+      taxDE,
+      taxCZ,
+      creditMethod: {
+        totalTax: totalTaxCredit,
+        effectiveTaxRate: effectiveTaxRateCredit,
+        netIncome: netIncomeCredit
+      },
+      exemptionMethod: {
+        totalTax: taxExemption,
+        effectiveTaxRate: effectiveTaxRateExemption,
+        netIncome: netIncomeExemption
+      },
+      commuteDeduction,
+      advantage
+    };
     
-    // Výpočet podle zvoleného režimu zdanění
-    if (taxationMethod === "work" || workCountryDays >= 183) {
-      // Zdanění v zemi zaměstnání
-      taxWorkCountry = workCountryIncome * selectedScenario.taxRateWork;
-      socialSecurityWorkCountry = income * selectedScenario.socialSecurityWork; // Sociální pojištění se obvykle platí z celého příjmu
-    } else if (taxationMethod === "residence") {
-      // Zdanění v zemi bydliště
-      taxHomeCountry = income * selectedScenario.taxRateHome;
-      socialSecurityHomeCountry = income * selectedScenario.socialSecurityHome;
-    } else if (taxationMethod === "both") {
-      // Zdanění rozděleno podle odpracovaných dnů
-      taxWorkCountry = workCountryIncome * selectedScenario.taxRateWork;
-      taxHomeCountry = homeCountryIncome * selectedScenario.taxRateHome;
-      socialSecurityWorkCountry = workCountryIncome * selectedScenario.socialSecurityWork;
-      socialSecurityHomeCountry = homeCountryIncome * selectedScenario.socialSecurityHome;
-    }
+    setResults(results);
+    setIsCalculated(true);
+    setActiveTab('results');
     
-    const totalTax = taxWorkCountry + taxHomeCountry;
-    const totalSocialSecurity = socialSecurityWorkCountry + socialSecurityHomeCountry;
-    const netIncome = income - totalTax - totalSocialSecurity;
-    
-    setResult({
-      grossIncome: income,
-      workCountryDays,
-      homeCountryDays,
-      workCountryIncome,
-      homeCountryIncome,
-      taxWorkCountry,
-      taxHomeCountry,
-      totalTax,
-      socialSecurityWorkCountry,
-      socialSecurityHomeCountry,
-      totalSocialSecurity,
-      netIncome,
-      taxationMethod,
-      scenarioName: selectedScenario.name,
-      specialRules: selectedScenario.specialRules
-    });
-    
-    toast({
-      title: "Výpočet dokončen",
-      description: `Čistý příjem: ${netIncome.toFixed(2)} €`,
-    });
-  };
-  
-  const getScenarioRuleExplanation = () => {
-    const selectedScenario = crossBorderScenarios.find(s => s.id === scenario);
-    if (!selectedScenario) return null;
-    
-    const workCountryDays = parseInt(daysInWorkCountry);
-    
-    if (workCountryDays >= 183) {
-      return (
-        <div className="bg-blue-50 p-4 rounded-md mt-4">
-          <p className="font-medium">Pravidlo 183 dnů:</p>
-          <p>Pracujete v zemi zaměstnání 183 nebo více dní v roce, proto se vaše příjmy zdaňují primárně tam.</p>
-        </div>
-      );
-    } else {
-      return (
-        <div className="bg-blue-50 p-4 rounded-md mt-4">
-          <p className="font-medium">Pravidlo 183 dnů:</p>
-          <p>Pracujete v zemi zaměstnání méně než 183 dní v roce, máte proto možnost zdanit příjmy v zemi bydliště (závisí na konkrétní smlouvě o zamezení dvojího zdanění).</p>
-        </div>
-      );
+    if (onCalculate) {
+      onCalculate(data, results);
     }
   };
-  
+
+  const loadFromHistory = (historyItem: any) => {
+    if (historyItem?.inputs) {
+      form.reset(historyItem.inputs);
+      setResults(historyItem.result);
+      setIsCalculated(true);
+      setActiveTab('results');
+    }
+  };
+
   return (
-    <Card className="border-dhl-yellow">
-      <CardHeader className="border-b border-dhl-yellow">
-        <div className="flex items-center gap-2">
-          <Globe className="h-5 w-5 text-dhl-red" />
-          <CardTitle>Kalkulačka pro přeshraniční pracovníky</CardTitle>
-        </div>
-        <CardDescription>
-          Výpočet daní a odvodů pro přeshraniční pracovníky (tzv. pendlery)
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="pt-6">
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="scenario">Přeshraniční scénář</Label>
-            <Select value={scenario} onValueChange={setScenario}>
-              <SelectTrigger id="scenario" className="border-dhl-black focus-visible:ring-dhl-yellow">
-                <SelectValue placeholder="Vyberte přeshraniční scénář" />
-              </SelectTrigger>
-              <SelectContent>
-                {crossBorderScenarios.map(s => (
-                  <SelectItem key={s.id} value={s.id}>{s.name} - {s.description}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            
-            {scenario && crossBorderScenarios.find(s => s.id === scenario)?.specialRules && (
-              <div className="text-sm text-muted-foreground mt-1">
-                <span className="font-medium">Poznámka:</span> {crossBorderScenarios.find(s => s.id === scenario)?.specialRules}
-              </div>
-            )}
-          </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="gross-income">Roční hrubý příjem (EUR)</Label>
-              <Input
-                id="gross-income"
-                type="number"
-                value={grossIncome}
-                onChange={(e) => setGrossIncome(e.target.value)}
-                className="border-dhl-black focus-visible:ring-dhl-yellow"
-                placeholder="Zadejte váš hrubý roční příjem"
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="taxation-method">Režim zdanění</Label>
-              <Select value={taxationMethod} onValueChange={(value: TaxationMethod) => setTaxationMethod(value)}>
-                <SelectTrigger id="taxation-method" className="border-dhl-black focus-visible:ring-dhl-yellow">
-                  <SelectValue placeholder="Vyberte režim zdanění" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="work">Zdanění v zemi zaměstnání</SelectItem>
-                  <SelectItem value="residence">Zdanění v zemi bydliště</SelectItem>
-                  <SelectItem value="both">Rozdělené zdanění</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="days-worked">Celkový počet pracovních dnů v roce</Label>
-              <Input
-                id="days-worked"
-                type="number"
-                min="1"
-                max="365"
-                value={daysWorked}
-                onChange={(e) => setDaysWorked(e.target.value)}
-                className="border-dhl-black focus-visible:ring-dhl-yellow"
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="days-work-country">Počet pracovních dnů v zemi zaměstnání</Label>
-              <Input
-                id="days-work-country"
-                type="number"
-                min="0"
-                max={daysWorked}
-                value={daysInWorkCountry}
-                onChange={(e) => setDaysInWorkCountry(e.target.value)}
-                className="border-dhl-black focus-visible:ring-dhl-yellow"
-              />
-            </div>
-          </div>
-          
-          {getScenarioRuleExplanation()}
-          
-          <Button 
-            onClick={calculateTax} 
-            className="w-full bg-dhl-red hover:bg-dhl-red/90 text-white"
-          >
-            <Calculator className="mr-2 h-4 w-4" />
-            Vypočítat přeshraniční daně a odvody
-          </Button>
-        </div>
+    <div className="space-y-6">
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList>
+          <TabsTrigger value="input">Vstupní údaje</TabsTrigger>
+          {isCalculated && <TabsTrigger value="results">Výsledky</TabsTrigger>}
+          {calculationHistory.length > 0 && <TabsTrigger value="history">Historie</TabsTrigger>}
+        </TabsList>
         
-        {result && (
-          <div className="mt-6 p-4 bg-muted rounded-md">
-            <h3 className="text-lg font-medium mb-4">Výsledek výpočtu - {result.scenarioName}</h3>
-            
-            <div className="space-y-4">
-              <div>
-                <h4 className="font-medium mb-2">Základní údaje:</h4>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="text-sm text-muted-foreground">Roční hrubý příjem:</div>
-                  <div className="text-sm font-medium text-right">{result.grossIncome.toLocaleString()} €</div>
-                  
-                  <div className="text-sm text-muted-foreground">Pracovní dny v zemi zaměstnání:</div>
-                  <div className="text-sm font-medium text-right">{result.workCountryDays} dnů</div>
-                  
-                  <div className="text-sm text-muted-foreground">Pracovní dny v zemi bydliště:</div>
-                  <div className="text-sm font-medium text-right">{result.homeCountryDays} dnů</div>
+        <TabsContent value="input" className="pt-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Přeshraniční daňový kalkulátor</CardTitle>
+              <CardDescription>
+                Vypočítejte daňovou situaci při práci v Německu a bydlení v ČR
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(calculateTax)} className="space-y-6">
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-medium">Příjmy</h3>
+                    
+                    <FormField
+                      control={form.control}
+                      name="incomeDE"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Roční příjem v Německu (EUR)</FormLabel>
+                          <FormControl>
+                            <Input placeholder="např. 35000" {...field} />
+                          </FormControl>
+                          <FormDescription>
+                            Zadejte svůj roční příjem v Německu v eurech
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="incomeCZ"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Roční příjem v ČR (EUR)</FormLabel>
+                          <FormControl>
+                            <Input placeholder="0" {...field} />
+                          </FormControl>
+                          <FormDescription>
+                            Zadejte případný příjem v ČR v eurech
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="isMarried"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                          <div className="space-y-1 leading-none">
+                            <FormLabel>
+                              Jsem ženatý/vdaná
+                            </FormLabel>
+                            <FormDescription>
+                              Ovlivňuje daňovou třídu v Německu
+                            </FormDescription>
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+
+                    {isMarried && (
+                      <FormField
+                        control={form.control}
+                        name="spouseIncome"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Roční příjem manžela/manželky (EUR)</FormLabel>
+                            <FormControl>
+                              <Input {...field} placeholder="0" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    )}
+                  </div>
+
+                  <Separator />
+
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-medium">Pracovní dny</h3>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="workDaysDE"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Počet pracovních dnů v Německu</FormLabel>
+                            <FormControl>
+                              <Input {...field} placeholder="220" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="workDaysCZ"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Počet pracovních dnů v ČR</FormLabel>
+                            <FormControl>
+                              <Input {...field} placeholder="0" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-medium">Odpočty a výdaje</h3>
+                    
+                    <FormField
+                      control={form.control}
+                      name="includeCommuteExpenses"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                          <div className="space-y-1 leading-none">
+                            <FormLabel>
+                              Zahrnout náklady na dojíždění
+                            </FormLabel>
+                            <FormDescription>
+                              V Německu lze odečíst 0,30 EUR za každý kilometr dojíždění
+                            </FormDescription>
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+
+                    {includeCommuteExpenses && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="commuteDistance"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Vzdálenost dojíždění (km)</FormLabel>
+                              <FormControl>
+                                <Input {...field} placeholder="50" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="commuteWorkDays"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Počet dní dojíždění za rok</FormLabel>
+                              <FormControl>
+                                <Input {...field} placeholder="220" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  <Button type="submit" className="w-full">Vypočítat</Button>
+                </form>
+              </Form>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="results" className="pt-4">
+          {isCalculated && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Výsledek výpočtu</CardTitle>
+                <CardDescription>
+                  Porovnání metod zdanění pro přeshraniční práci
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Celkový roční příjem</p>
+                      <p className="text-lg font-semibold">{results.totalIncome.toFixed(2)} EUR</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Daň v Německu</p>
+                      <p className="text-lg font-semibold">{results.taxDE.toFixed(2)} EUR</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Daň v ČR</p>
+                      <p className="text-lg font-semibold">{results.taxCZ.toFixed(2)} EUR</p>
+                    </div>
+                  </div>
+
+                  {results.commuteDeduction > 0 && (
+                    <>
+                      <Separator />
+                      <div>
+                        <p className="text-sm text-muted-foreground">Odpočet za dojíždění</p>
+                        <p className="text-lg font-semibold text-green-600">{results.commuteDeduction.toFixed(2)} EUR</p>
+                      </div>
+                    </>
+                  )}
+
+                  <Separator />
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <Card className={results.advantage === 'credit' ? 'border-green-500' : ''}>
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-lg">Metoda zápočtu daně</CardTitle>
+                        <CardDescription>
+                          Daň zaplacená v zahraničí se odečítá od celkové daňové povinnosti
+                        </CardDescription>
+                        {results.advantage === 'credit' && (
+                          <div className="mt-1 text-xs px-2 py-1 bg-green-100 text-green-800 rounded-md inline-block">
+                            Výhodnější metoda
+                          </div>
+                        )}
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-2">
+                          <div>
+                            <p className="text-sm text-muted-foreground">Celková daň</p>
+                            <p className="font-medium">{results.creditMethod.totalTax.toFixed(2)} EUR</p>
+                          </div>
+                          <div>
+                            <p className="text-sm text-muted-foreground">Efektivní daňová sazba</p>
+                            <p className="font-medium">{results.creditMethod.effectiveTaxRate.toFixed(2)}%</p>
+                          </div>
+                          <div>
+                            <p className="text-sm text-muted-foreground">Čistý příjem</p>
+                            <p className="font-semibold">{results.creditMethod.netIncome.toFixed(2)} EUR</p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card className={results.advantage === 'exemption' ? 'border-green-500' : ''}>
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-lg">Metoda vynětí příjmu</CardTitle>
+                        <CardDescription>
+                          Příjem zdaněný v zahraničí se vyjímá ze zdanitelného příjmu
+                        </CardDescription>
+                        {results.advantage === 'exemption' && (
+                          <div className="mt-1 text-xs px-2 py-1 bg-green-100 text-green-800 rounded-md inline-block">
+                            Výhodnější metoda
+                          </div>
+                        )}
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-2">
+                          <div>
+                            <p className="text-sm text-muted-foreground">Celková daň</p>
+                            <p className="font-medium">{results.exemptionMethod.totalTax.toFixed(2)} EUR</p>
+                          </div>
+                          <div>
+                            <p className="text-sm text-muted-foreground">Efektivní daňová sazba</p>
+                            <p className="font-medium">{results.exemptionMethod.effectiveTaxRate.toFixed(2)}%</p>
+                          </div>
+                          <div>
+                            <p className="text-sm text-muted-foreground">Čistý příjem</p>
+                            <p className="font-semibold">{results.exemptionMethod.netIncome.toFixed(2)} EUR</p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  <div className="p-4 bg-blue-50 rounded-lg">
+                    <p className="text-sm">
+                      <strong>Tip:</strong> Česká republika má s Německem uzavřenu smlouvu o zamezení dvojího zdanění, která umožňuje použít buď metodu zápočtu, nebo metodu vynětí pro zahraniční příjmy. Je vhodné konzultovat s daňovým poradcem, která metoda je pro vaši situaci nejvýhodnější.
+                    </p>
+                  </div>
+
+                  <div className="flex justify-center">
+                    <Button variant="outline" onClick={() => setActiveTab('input')}>
+                      Upravit údaje
+                    </Button>
+                  </div>
                 </div>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+        
+        <TabsContent value="history" className="pt-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Historie výpočtů</CardTitle>
+              <CardDescription>
+                Vaše poslední výpočty přeshraničního zdanění
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {calculationHistory.length > 0 ? (
+                  calculationHistory.map((item, index) => (
+                    <div key={item.id || index} className="flex justify-between items-center p-3 border rounded-md hover:bg-secondary/20 cursor-pointer" onClick={() => loadFromHistory(item)}>
+                      <div>
+                        <p className="font-medium">
+                          DE: {item.inputs.incomeDE} EUR
+                          {parseInt(item.inputs.incomeCZ) > 0 && `, CZ: ${item.inputs.incomeCZ} EUR`}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {new Date(item.created_at || Date.now()).toLocaleDateString('cs-CZ')}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p>
+                          <span className="text-sm text-muted-foreground">Výhodnější metoda: </span>
+                          <span className="font-medium">
+                            {item.result.advantage === 'credit' ? 'Zápočet' : 'Vynětí'}
+                          </span>
+                        </p>
+                        <p className="text-sm">
+                          Čistý příjem: {item.result[`${item.result.advantage}Method`].netIncome.toFixed(2)} EUR
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-center py-4 text-muted-foreground">Zatím nemáte žádné uložené výpočty</p>
+                )}
               </div>
-              
-              <div>
-                <h4 className="font-medium mb-2">Rozdělení příjmu:</h4>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="text-sm text-muted-foreground">Příjem v zemi zaměstnání:</div>
-                  <div className="text-sm font-medium text-right">{result.workCountryIncome.toLocaleString()} €</div>
-                  
-                  <div className="text-sm text-muted-foreground">Příjem v zemi bydliště:</div>
-                  <div className="text-sm font-medium text-right">{result.homeCountryIncome.toLocaleString()} €</div>
-                </div>
-              </div>
-              
-              <div>
-                <h4 className="font-medium mb-2">Daně a odvody:</h4>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="text-sm text-muted-foreground">Daň v zemi zaměstnání:</div>
-                  <div className="text-sm font-medium text-right">{result.taxWorkCountry.toLocaleString()} €</div>
-                  
-                  <div className="text-sm text-muted-foreground">Daň v zemi bydliště:</div>
-                  <div className="text-sm font-medium text-right">{result.taxHomeCountry.toLocaleString()} €</div>
-                  
-                  <div className="text-sm text-muted-foreground">Sociální odvody v zemi zaměstnání:</div>
-                  <div className="text-sm font-medium text-right">{result.socialSecurityWorkCountry.toLocaleString()} €</div>
-                  
-                  <div className="text-sm text-muted-foreground">Sociální odvody v zemi bydliště:</div>
-                  <div className="text-sm font-medium text-right">{result.socialSecurityHomeCountry.toLocaleString()} €</div>
-                  
-                  <div className="text-sm font-bold">Celkové odvody:</div>
-                  <div className="text-sm font-bold text-right">{(result.totalTax + result.totalSocialSecurity).toLocaleString()} €</div>
-                </div>
-              </div>
-              
-              <div className="bg-dhl-yellow/10 p-3 rounded-md">
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="text-base font-bold">Čistý roční příjem:</div>
-                  <div className="text-base font-bold text-right text-dhl-red">{result.netIncome.toLocaleString()} €</div>
-                  
-                  <div className="text-sm text-muted-foreground">Měsíční čistý příjem:</div>
-                  <div className="text-sm font-medium text-right">{(result.netIncome / 12).toLocaleString()} €</div>
-                </div>
-              </div>
-              
-              {result.specialRules && (
-                <div className="bg-blue-50 p-3 rounded-md">
-                  <p className="font-medium">Důležité informace:</p>
-                  <p className="text-sm">{result.specialRules}</p>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 };
 
