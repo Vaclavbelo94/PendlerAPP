@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Helmet } from "react-helmet";
 import PremiumCheck from "@/components/premium/PremiumCheck";
@@ -16,6 +17,7 @@ import { fetchVehicles, fetchVehicleById, saveVehicle } from "@/services/vehicle
 import { toast } from "sonner";
 import VehicleForm from "@/components/vehicle/VehicleForm";
 import VehicleSelector from "@/components/vehicle/VehicleSelector";
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Vehicle = () => {
   const { user } = useAuth();
@@ -25,6 +27,7 @@ const Vehicle = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isNewVehicleDialogOpen, setIsNewVehicleDialogOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const loadVehicles = async () => {
@@ -113,6 +116,11 @@ const Vehicle = () => {
       console.error("Chyba při ukládání vozidla:", error);
       toast.error("Nepodařilo se uložit vozidlo");
     }
+  };
+
+  // Určení maximální výšky dialogového okna podle typu zařízení
+  const getDialogMaxHeight = () => {
+    return isMobile ? "max-h-[90vh] overflow-hidden" : "";
   };
 
   return (
@@ -232,7 +240,7 @@ const Vehicle = () => {
 
         {/* Dialog pro úpravu vozidla */}
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className="sm:max-w-[600px]">
+          <DialogContent className={`sm:max-w-[600px] ${getDialogMaxHeight()}`}>
             <DialogHeader>
               <DialogTitle>Upravit vozidlo</DialogTitle>
               <DialogDescription>
@@ -245,7 +253,7 @@ const Vehicle = () => {
 
         {/* Dialog pro přidání nového vozidla */}
         <Dialog open={isNewVehicleDialogOpen} onOpenChange={setIsNewVehicleDialogOpen}>
-          <DialogContent className="sm:max-w-[600px]">
+          <DialogContent className={`sm:max-w-[600px] ${getDialogMaxHeight()}`}>
             <DialogHeader>
               <DialogTitle>Přidat nové vozidlo</DialogTitle>
               <DialogDescription>

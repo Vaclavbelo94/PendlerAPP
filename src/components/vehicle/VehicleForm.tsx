@@ -8,6 +8,8 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { VehicleData } from '@/types/vehicle';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const fuelTypes = [
   { value: 'benzín', label: 'Benzín' },
@@ -45,6 +47,7 @@ interface VehicleFormProps {
 }
 
 const VehicleForm: React.FC<VehicleFormProps> = ({ initialData, onSave }) => {
+  const isMobile = useIsMobile();
   const form = useForm<VehicleData>({
     resolver: zodResolver(vehicleSchema),
     defaultValues: initialData || {
@@ -76,10 +79,10 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ initialData, onSave }) => {
     });
   };
 
-  return (
+  const formContent = (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <FormField
             control={form.control}
             name="brand"
@@ -206,7 +209,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ initialData, onSave }) => {
 
         <div className="border-t pt-4 mt-6">
           <h3 className="text-lg font-medium mb-4">Technické údaje</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <FormField
               control={form.control}
               name="engine"
@@ -295,7 +298,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ initialData, onSave }) => {
 
         <div className="border-t pt-4 mt-6">
           <h3 className="text-lg font-medium mb-4">Finanční údaje</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <FormField
               control={form.control}
               name="purchase_price"
@@ -359,6 +362,12 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ initialData, onSave }) => {
         </div>
       </form>
     </Form>
+  );
+
+  return isMobile ? (
+    <ScrollArea className="h-[60vh] pr-4">{formContent}</ScrollArea>
+  ) : (
+    formContent
   );
 };
 
