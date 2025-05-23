@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Helmet } from "react-helmet";
 import PremiumCheck from "@/components/premium/PremiumCheck";
@@ -41,7 +40,7 @@ const Vehicle = () => {
         // Pokud existují vozidla, načteme první
         if (vehiclesData.length > 0) {
           setSelectedVehicleId(vehiclesData[0].id);
-          loadVehicleDetails(vehiclesData[0].id);
+          loadVehicleDetails(vehiclesData[0].id!);
         } else {
           setIsLoading(false);
           // Pokud uživatel nemá žádná vozidla, zobrazíme dialog pro přidání
@@ -62,7 +61,9 @@ const Vehicle = () => {
     setIsLoading(true);
     try {
       const data = await fetchVehicleById(vehicleId);
-      setVehicleData(data);
+      if (data) {
+        setVehicleData(data);
+      }
     } catch (error) {
       console.error("Chyba při načítání dat o vozidle:", error);
       toast.error("Nepodařilo se načíst detaily vozidla");
@@ -208,22 +209,22 @@ const Vehicle = () => {
                     </CardContent>
                   </Card>
 
-                  <InsuranceCard vehicleId={vehicleData.id} />
+                  <InsuranceCard vehicleId={vehicleData.id!} />
                 </div>
                 
-                <FuelConsumptionCard vehicleId={vehicleData.id} />
+                <FuelConsumptionCard vehicleId={vehicleData.id!} />
               </TabsContent>
 
               <TabsContent value="documents">
-                <DocumentsCard vehicleId={vehicleData.id} />
+                <DocumentsCard vehicleId={vehicleData.id!} />
               </TabsContent>
               
               <TabsContent value="maintenance">
-                <ServiceRecordCard vehicleId={vehicleData.id} />
+                <ServiceRecordCard vehicleId={vehicleData.id!} />
               </TabsContent>
               
               <TabsContent value="fuel">
-                <FuelConsumptionCard vehicleId={vehicleData.id} detailed />
+                <FuelConsumptionCard vehicleId={vehicleData.id!} detailed />
               </TabsContent>
             </Tabs>
           </>

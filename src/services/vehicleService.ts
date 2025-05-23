@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { VehicleData, ServiceRecord, FuelRecord, InsuranceRecord, DocumentRecord } from '@/types/vehicle';
 import { toast } from 'sonner';
@@ -51,7 +50,7 @@ export const saveVehicle = async (vehicle: VehicleData) => {
         
       if (error) throw error;
       toast.success('Vozidlo bylo aktualizováno');
-      return data?.[0];
+      return data?.[0] as VehicleData;
     } else {
       // Vytvoření nového
       const { data, error } = await supabase
@@ -61,7 +60,7 @@ export const saveVehicle = async (vehicle: VehicleData) => {
         
       if (error) throw error;
       toast.success('Vozidlo bylo vytvořeno');
-      return data?.[0];
+      return data?.[0] as VehicleData;
     }
   } catch (error) {
     console.error('Chyba při ukládání vozidla:', error);

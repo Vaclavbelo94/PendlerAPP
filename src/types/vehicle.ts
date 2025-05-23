@@ -76,3 +76,12 @@ export interface DocumentRecord {
   created_at?: string;
   updated_at?: string;
 }
+
+export interface CalculationHistory {
+  id?: string;
+  user_id: string;
+  type: string;
+  inputs: Record<string, any>;
+  result: Record<string, any>;
+  created_at?: string;
+}

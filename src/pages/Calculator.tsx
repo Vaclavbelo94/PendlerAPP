@@ -11,15 +11,7 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
-
-interface CalculationHistory {
-  id?: string;
-  user_id: string;
-  type: string;
-  inputs: Record<string, any>;
-  result: Record<string, any>;
-  created_at?: string;
-}
+import { CalculationHistory } from '@/types/vehicle';
 
 const CalculatorPage = () => {
   const [activeTab, setActiveTab] = useState('tax');
@@ -48,7 +40,7 @@ const CalculatorPage = () => {
         .limit(10);
         
       if (error) throw error;
-      setHistory(data || []);
+      setHistory(data as CalculationHistory[] || []);
     } catch (error) {
       console.error('Chyba při načítání historie výpočtů:', error);
     } finally {

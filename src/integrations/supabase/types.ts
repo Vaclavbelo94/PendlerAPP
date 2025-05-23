@@ -9,6 +9,133 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      calculation_history: {
+        Row: {
+          created_at: string
+          id: string
+          inputs: Json
+          result: Json
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          inputs: Json
+          result: Json
+          type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          inputs?: Json
+          result?: Json
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      fuel_records: {
+        Row: {
+          amount_liters: number
+          created_at: string
+          date: string
+          full_tank: boolean
+          id: string
+          mileage: string
+          price_per_liter: number
+          station: string
+          total_cost: number
+          updated_at: string
+          vehicle_id: string
+        }
+        Insert: {
+          amount_liters: number
+          created_at?: string
+          date: string
+          full_tank: boolean
+          id?: string
+          mileage: string
+          price_per_liter: number
+          station: string
+          total_cost: number
+          updated_at?: string
+          vehicle_id: string
+        }
+        Update: {
+          amount_liters?: number
+          created_at?: string
+          date?: string
+          full_tank?: boolean
+          id?: string
+          mileage?: string
+          price_per_liter?: number
+          station?: string
+          total_cost?: number
+          updated_at?: string
+          vehicle_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fuel_records_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      insurance_records: {
+        Row: {
+          coverage_type: string
+          created_at: string
+          id: string
+          monthly_cost: string
+          notes: string
+          policy_number: string
+          provider: string
+          updated_at: string
+          valid_from: string
+          valid_until: string
+          vehicle_id: string
+        }
+        Insert: {
+          coverage_type: string
+          created_at?: string
+          id?: string
+          monthly_cost: string
+          notes: string
+          policy_number: string
+          provider: string
+          updated_at?: string
+          valid_from: string
+          valid_until: string
+          vehicle_id: string
+        }
+        Update: {
+          coverage_type?: string
+          created_at?: string
+          id?: string
+          monthly_cost?: string
+          notes?: string
+          policy_number?: string
+          provider?: string
+          updated_at?: string
+          valid_from?: string
+          valid_until?: string
+          vehicle_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "insurance_records_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       premium_features: {
         Row: {
           created_at: string | null
@@ -172,6 +299,53 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      service_records: {
+        Row: {
+          cost: string
+          created_at: string
+          description: string
+          id: string
+          mileage: string
+          provider: string
+          service_date: string
+          service_type: string
+          updated_at: string
+          vehicle_id: string
+        }
+        Insert: {
+          cost: string
+          created_at?: string
+          description: string
+          id?: string
+          mileage: string
+          provider: string
+          service_date: string
+          service_type: string
+          updated_at?: string
+          vehicle_id: string
+        }
+        Update: {
+          cost?: string
+          created_at?: string
+          description?: string
+          id?: string
+          mileage?: string
+          provider?: string
+          service_date?: string
+          service_type?: string
+          updated_at?: string
+          vehicle_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_records_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       shifts: {
         Row: {
@@ -422,6 +596,125 @@ export type Database = {
           updated_at?: string
           user_id?: string
           willing_to_travel_km?: number | null
+        }
+        Relationships: []
+      }
+      vehicle_documents: {
+        Row: {
+          created_at: string
+          expiry_date: string | null
+          file_path: string | null
+          id: string
+          name: string
+          notes: string | null
+          type: string
+          updated_at: string
+          vehicle_id: string
+        }
+        Insert: {
+          created_at?: string
+          expiry_date?: string | null
+          file_path?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          type: string
+          updated_at?: string
+          vehicle_id: string
+        }
+        Update: {
+          created_at?: string
+          expiry_date?: string | null
+          file_path?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          type?: string
+          updated_at?: string
+          vehicle_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vehicle_documents_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vehicles: {
+        Row: {
+          average_consumption: string
+          brand: string
+          color: string
+          created_at: string
+          engine: string
+          fuel_type: string
+          id: string
+          insurance_monthly: string
+          last_repair_cost: string
+          last_service: string
+          license_plate: string
+          mileage: string
+          model: string
+          next_inspection: string
+          power: string
+          purchase_price: string
+          tax_yearly: string
+          transmission: string
+          updated_at: string
+          user_id: string
+          vin: string
+          year: string
+        }
+        Insert: {
+          average_consumption: string
+          brand: string
+          color: string
+          created_at?: string
+          engine: string
+          fuel_type: string
+          id?: string
+          insurance_monthly: string
+          last_repair_cost: string
+          last_service: string
+          license_plate: string
+          mileage: string
+          model: string
+          next_inspection: string
+          power: string
+          purchase_price: string
+          tax_yearly: string
+          transmission: string
+          updated_at?: string
+          user_id: string
+          vin: string
+          year: string
+        }
+        Update: {
+          average_consumption?: string
+          brand?: string
+          color?: string
+          created_at?: string
+          engine?: string
+          fuel_type?: string
+          id?: string
+          insurance_monthly?: string
+          last_repair_cost?: string
+          last_service?: string
+          license_plate?: string
+          mileage?: string
+          model?: string
+          next_inspection?: string
+          power?: string
+          purchase_price?: string
+          tax_yearly?: string
+          transmission?: string
+          updated_at?: string
+          user_id?: string
+          vin?: string
+          year?: string
         }
         Relationships: []
       }
