@@ -12,11 +12,11 @@ export const fetchVehicles = async (userId: string) => {
       .eq('user_id', userId);
       
     if (error) throw error;
-    return data;
+    return data as VehicleData[];
   } catch (error) {
     console.error('Chyba při načítání vozidel:', error);
     toast.error('Nepodařilo se načíst vozidla');
-    return [];
+    return [] as VehicleData[];
   }
 };
 
@@ -29,7 +29,7 @@ export const fetchVehicleById = async (id: string) => {
       .single();
       
     if (error) throw error;
-    return data;
+    return data as VehicleData;
   } catch (error) {
     console.error('Chyba při načítání vozidla:', error);
     toast.error('Nepodařilo se načíst vozidlo');
@@ -97,11 +97,11 @@ export const fetchServiceRecords = async (vehicleId: string) => {
       .order('service_date', { ascending: false });
       
     if (error) throw error;
-    return data;
+    return data as ServiceRecord[];
   } catch (error) {
     console.error('Chyba při načítání servisních záznamů:', error);
     toast.error('Nepodařilo se načíst servisní záznamy');
-    return [];
+    return [] as ServiceRecord[];
   }
 };
 
@@ -118,7 +118,7 @@ export const saveServiceRecord = async (record: ServiceRecord) => {
         
       if (error) throw error;
       toast.success('Servisní záznam byl aktualizován');
-      return data?.[0];
+      return data?.[0] as ServiceRecord;
     } else {
       const { data, error } = await supabase
         .from('service_records')
@@ -127,7 +127,7 @@ export const saveServiceRecord = async (record: ServiceRecord) => {
         
       if (error) throw error;
       toast.success('Servisní záznam byl vytvořen');
-      return data?.[0];
+      return data?.[0] as ServiceRecord;
     }
   } catch (error) {
     console.error('Chyba při ukládání servisního záznamu:', error);
@@ -163,11 +163,11 @@ export const fetchFuelRecords = async (vehicleId: string) => {
       .order('date', { ascending: false });
       
     if (error) throw error;
-    return data;
+    return data as FuelRecord[];
   } catch (error) {
     console.error('Chyba při načítání záznamů o tankování:', error);
     toast.error('Nepodařilo se načíst záznamy o tankování');
-    return [];
+    return [] as FuelRecord[];
   }
 };
 
@@ -184,7 +184,7 @@ export const saveFuelRecord = async (record: FuelRecord) => {
         
       if (error) throw error;
       toast.success('Záznam o tankování byl aktualizován');
-      return data?.[0];
+      return data?.[0] as FuelRecord;
     } else {
       const { data, error } = await supabase
         .from('fuel_records')
@@ -193,7 +193,7 @@ export const saveFuelRecord = async (record: FuelRecord) => {
         
       if (error) throw error;
       toast.success('Záznam o tankování byl vytvořen');
-      return data?.[0];
+      return data?.[0] as FuelRecord;
     }
   } catch (error) {
     console.error('Chyba při ukládání záznamu o tankování:', error);
@@ -229,11 +229,11 @@ export const fetchInsurance = async (vehicleId: string) => {
       .order('valid_until', { ascending: false });
       
     if (error) throw error;
-    return data;
+    return data as InsuranceRecord[];
   } catch (error) {
     console.error('Chyba při načítání pojištění:', error);
     toast.error('Nepodařilo se načíst pojištění');
-    return [];
+    return [] as InsuranceRecord[];
   }
 };
 
@@ -250,7 +250,7 @@ export const saveInsurance = async (record: InsuranceRecord) => {
         
       if (error) throw error;
       toast.success('Pojištění bylo aktualizováno');
-      return data?.[0];
+      return data?.[0] as InsuranceRecord;
     } else {
       const { data, error } = await supabase
         .from('insurance_records')
@@ -259,7 +259,7 @@ export const saveInsurance = async (record: InsuranceRecord) => {
         
       if (error) throw error;
       toast.success('Pojištění bylo vytvořeno');
-      return data?.[0];
+      return data?.[0] as InsuranceRecord;
     }
   } catch (error) {
     console.error('Chyba při ukládání pojištění:', error);
@@ -295,11 +295,11 @@ export const fetchDocuments = async (vehicleId: string) => {
       .order('name');
       
     if (error) throw error;
-    return data;
+    return data as DocumentRecord[];
   } catch (error) {
     console.error('Chyba při načítání dokumentů:', error);
     toast.error('Nepodařilo se načíst dokumenty');
-    return [];
+    return [] as DocumentRecord[];
   }
 };
 
@@ -316,7 +316,7 @@ export const saveDocument = async (document: DocumentRecord) => {
         
       if (error) throw error;
       toast.success('Dokument byl aktualizován');
-      return data?.[0];
+      return data?.[0] as DocumentRecord;
     } else {
       const { data, error } = await supabase
         .from('vehicle_documents')
@@ -325,7 +325,7 @@ export const saveDocument = async (document: DocumentRecord) => {
         
       if (error) throw error;
       toast.success('Dokument byl vytvořen');
-      return data?.[0];
+      return data?.[0] as DocumentRecord;
     }
   } catch (error) {
     console.error('Chyba při ukládání dokumentu:', error);
