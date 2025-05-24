@@ -1,9 +1,7 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { Helmet } from "react-helmet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import TaxCalculator from "@/components/calculator/TaxCalculator";
-import CrossBorderTaxCalculator from "@/components/calculator/CrossBorderTaxCalculator";
 import { BadgePercent } from "lucide-react";
 import PremiumCheck from "@/components/premium/PremiumCheck";
 import { ResponsiveContainer } from "@/components/ui/responsive-container";
@@ -12,6 +10,19 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { CalculationHistory } from '@/types/vehicle';
+
+// Lazy loading kalkulaček pro lepší výkon
+const TaxCalculator = lazy(() => import("@/components/calculator/TaxCalculator"));
+const CrossBorderTaxCalculator = lazy(() => import("@/components/calculator/CrossBorderTaxCalculator"));
+
+// Loading component pro lazy loaded komponenty
+const CalculatorSkeleton = () => (
+  <div className="space-y-4">
+    <div className="h-8 bg-gray-200 rounded animate-pulse"></div>
+    <div className="h-32 bg-gray-200 rounded animate-pulse"></div>
+    <div className="h-24 bg-gray-200 rounded animate-pulse"></div>
+  </div>
+);
 
 const CalculatorPage = () => {
   const [activeTab, setActiveTab] = useState('tax');
@@ -68,6 +79,12 @@ const CalculatorPage = () => {
       toast.error('Nepodařilo se uložit výpočet');
     }
   };
+
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    // Reset loading state when switching tabs
+    setIsLoading(false);
+  };
   
   return (
     <PremiumCheck featureKey="calculators">
@@ -82,7 +99,7 @@ const CalculatorPage = () => {
           </p>
         </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-3 sm:space-y-4">
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-3 sm:space-y-4">
           <TabsList className="bg-muted/60 p-0.5 h-auto w-full justify-start overflow-x-auto">
             <TabsTrigger 
               value="tax" 
@@ -101,17 +118,21 @@ const CalculatorPage = () => {
           </TabsList>
 
           <TabsContent value="tax">
-            <TaxCalculator 
-              onCalculate={(inputs, result) => saveCalculation('tax', inputs, result)} 
-              calculationHistory={history}
-            />
+            <Suspense fallback={<CalculatorSkeleton />}>
+              <TaxCalculator 
+                onCalculate={(inputs, result) => saveCalculation('tax', inputs, result)} 
+                calculationHistory={history}
+              />
+            </Suspense>
           </TabsContent>
           
           <TabsContent value="border">
-            <CrossBorderTaxCalculator 
-              onCalculate={(inputs, result) => saveCalculation('border', inputs, result)}
-              calculationHistory={history}
-            />
+            <Suspense fallback={<CalculatorSkeleton />}>
+              <CrossBorderTaxCalculator 
+                onCalculate={(inputs, result) => saveCalculation('border', inputs, result)}
+                calculationHistory={history}
+              />
+            </Suspense>
           </TabsContent>
         </Tabs>
       </ResponsiveContainer>

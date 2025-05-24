@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { VehicleData, ServiceRecord, FuelRecord, InsuranceRecord, DocumentRecord } from '@/types/vehicle';
 import { toast } from 'sonner';
@@ -57,9 +58,32 @@ export const saveVehicle = async (vehicle: VehicleData) => {
         throw new Error('user_id je vyžadováno pro vytvoření nového vozidla');
       }
       
+      // Explicit typing for Supabase insert
+      const insertData: any = {
+        user_id: vehicleData.user_id,
+        brand: vehicleData.brand,
+        model: vehicleData.model,
+        year: vehicleData.year,
+        license_plate: vehicleData.license_plate,
+        vin: vehicleData.vin,
+        fuel_type: vehicleData.fuel_type,
+        color: vehicleData.color,
+        mileage: vehicleData.mileage,
+        engine: vehicleData.engine || '',
+        power: vehicleData.power || '',
+        transmission: vehicleData.transmission || '',
+        next_inspection: vehicleData.next_inspection || '',
+        last_service: vehicleData.last_service || '',
+        average_consumption: vehicleData.average_consumption || '',
+        purchase_price: vehicleData.purchase_price || '',
+        insurance_monthly: vehicleData.insurance_monthly || '',
+        tax_yearly: vehicleData.tax_yearly || '',
+        last_repair_cost: vehicleData.last_repair_cost || ''
+      };
+      
       const { data, error } = await supabase
         .from('vehicles')
-        .insert(vehicleData)
+        .insert(insertData)
         .select();
         
       if (error) throw error;
