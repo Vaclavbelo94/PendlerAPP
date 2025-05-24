@@ -1,143 +1,86 @@
 
-import React, { useState, useEffect, Suspense, lazy } from 'react';
-import { Helmet } from "react-helmet";
+import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BadgePercent } from "lucide-react";
-import PremiumCheck from "@/components/premium/PremiumCheck";
-import { ResponsiveContainer } from "@/components/ui/responsive-container";
-import { useMediaQuery } from "@/hooks/use-media-query";
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/hooks/useAuth';
-import { toast } from 'sonner';
-import { CalculationHistory } from '@/types/vehicle';
+import { useIsMobile } from "@/hooks/use-mobile";
+import {
+  CalculatorIcon,
+  PiggyBankIcon,
+  TrendingUpIcon,
+  FileTextIcon,
+  FunctionSquareIcon
+} from "lucide-react";
 
-// Lazy loading kalkulaček pro lepší výkon
-const TaxCalculator = lazy(() => import("@/components/calculator/TaxCalculator"));
-const CrossBorderTaxCalculator = lazy(() => import("@/components/calculator/CrossBorderTaxCalculator"));
+// Import existing components
+import BasicCalculator from "@/components/calculator/BasicCalculator";
+import TaxCalculator from "@/components/calculator/TaxCalculator";
+import CrossBorderTaxCalculator from "@/components/calculator/CrossBorderTaxCalculator";
+import AmortizationTable from "@/components/calculator/AmortizationTable";
+import ScientificCalculator from "@/components/calculator/ScientificCalculator";
 
-// Loading component pro lazy loaded komponenty
-const CalculatorSkeleton = () => (
-  <div className="space-y-4">
-    <div className="h-8 bg-gray-200 rounded animate-pulse"></div>
-    <div className="h-32 bg-gray-200 rounded animate-pulse"></div>
-    <div className="h-24 bg-gray-200 rounded animate-pulse"></div>
-  </div>
-);
+const Calculator = () => {
+  const [activeTab, setActiveTab] = useState("basic");
+  const isMobile = useIsMobile();
 
-const CalculatorPage = () => {
-  const [activeTab, setActiveTab] = useState('tax');
-  const isMobile = useMediaQuery("xs");
-  const { user } = useAuth();
-  const [history, setHistory] = useState<CalculationHistory[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  
-  useEffect(() => {
-    if (user) {
-      loadCalculationHistory();
-    }
-  }, [user, activeTab]);
-
-  const loadCalculationHistory = async () => {
-    if (!user) return;
-    
-    setIsLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from('calculation_history')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('type', activeTab)
-        .order('created_at', { ascending: false })
-        .limit(10);
-        
-      if (error) throw error;
-      setHistory(data as CalculationHistory[] || []);
-    } catch (error) {
-      console.error('Chyba při načítání historie výpočtů:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const saveCalculation = async (type: string, inputs: Record<string, any>, result: Record<string, any>) => {
-    if (!user) return;
-    
-    try {
-      const { error } = await supabase
-        .from('calculation_history')
-        .insert({
-          user_id: user.id,
-          type,
-          inputs,
-          result,
-        });
-        
-      if (error) throw error;
-      loadCalculationHistory();
-    } catch (error) {
-      console.error('Chyba při ukládání výpočtu:', error);
-      toast.error('Nepodařilo se uložit výpočet');
-    }
-  };
-
-  const handleTabChange = (value: string) => {
-    setActiveTab(value);
-    // Reset loading state when switching tabs
-    setIsLoading(false);
-  };
-  
   return (
-    <PremiumCheck featureKey="calculators">
-      <ResponsiveContainer className="py-4 sm:py-6">
-        <Helmet>
-          <title>Kalkulačky | Pendler Buddy</title>
-        </Helmet>
-        <h1 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-4">Kalkulačky</h1>
-        <div className="mb-3 sm:mb-5">
-          <p className="text-sm sm:text-base text-muted-foreground">
-            Daňové kalkulačky pro pendlery pracující v Německu, převod měn a odhad nákladů.
-          </p>
-        </div>
+    <div className="container py-6 md:py-10 max-w-7xl">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold tracking-tight mb-2">Kalkulačky</h1>
+        <p className="text-muted-foreground">
+          Užitečné kalkulátory pro práci i osobní finance
+        </p>
+      </div>
 
-        <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-3 sm:space-y-4">
-          <TabsList className="bg-muted/60 p-0.5 h-auto w-full justify-start overflow-x-auto">
-            <TabsTrigger 
-              value="tax" 
-              className="flex items-center gap-1 py-1 px-2 sm:py-1.5 sm:px-3 text-[10px] sm:text-xs"
-            >
-              <BadgePercent className="h-3 w-3 sm:h-4 sm:w-4" /> 
-              <span>Daňová</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="border" 
-              className="flex items-center gap-1 py-1 px-2 sm:py-1.5 sm:px-3 text-[10px] sm:text-xs"
-            >
-              <BadgePercent className="h-3 w-3 sm:h-4 sm:w-4" /> 
-              <span>Přeshraniční</span>
-            </TabsTrigger>
-          </TabsList>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <TabsList className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-5'} ${isMobile ? 'max-w-full' : 'max-w-5xl'} h-auto`}>
+          <TabsTrigger value="basic" className="flex flex-col items-center gap-1 py-3 px-4">
+            <CalculatorIcon className="h-5 w-5" />
+            <span className="text-sm font-medium">Základní</span>
+            <span className="text-xs text-muted-foreground hidden sm:block">Běžné výpočty</span>
+          </TabsTrigger>
+          <TabsTrigger value="tax" className="flex flex-col items-center gap-1 py-3 px-4">
+            <FileTextIcon className="h-5 w-5" />
+            <span className="text-sm font-medium">Daně</span>
+            <span className="text-xs text-muted-foreground hidden sm:block">Daňové výpočty</span>
+          </TabsTrigger>
+          <TabsTrigger value="crossborder" className="flex flex-col items-center gap-1 py-3 px-4">
+            <TrendingUpIcon className="h-5 w-5" />
+            <span className="text-sm font-medium">Zahraniční</span>
+            <span className="text-xs text-muted-foreground hidden sm:block">Hraniční práce</span>
+          </TabsTrigger>
+          <TabsTrigger value="amortization" className="flex flex-col items-center gap-1 py-3 px-4">
+            <PiggyBankIcon className="h-5 w-5" />
+            <span className="text-sm font-medium">Úvěry</span>
+            <span className="text-xs text-muted-foreground hidden sm:block">Splátkové tabulky</span>
+          </TabsTrigger>
+          <TabsTrigger value="scientific" className="flex flex-col items-center gap-1 py-3 px-4">
+            <FunctionSquareIcon className="h-5 w-5" />
+            <span className="text-sm font-medium">Vědecká</span>
+            <span className="text-xs text-muted-foreground hidden sm:block">Pokročilé funkce</span>
+          </TabsTrigger>
+        </TabsList>
 
-          <TabsContent value="tax">
-            <Suspense fallback={<CalculatorSkeleton />}>
-              <TaxCalculator 
-                onCalculate={(inputs, result) => saveCalculation('tax', inputs, result)} 
-                calculationHistory={history}
-              />
-            </Suspense>
-          </TabsContent>
-          
-          <TabsContent value="border">
-            <Suspense fallback={<CalculatorSkeleton />}>
-              <CrossBorderTaxCalculator 
-                onCalculate={(inputs, result) => saveCalculation('border', inputs, result)}
-                calculationHistory={history}
-              />
-            </Suspense>
-          </TabsContent>
-        </Tabs>
-      </ResponsiveContainer>
-    </PremiumCheck>
+        <TabsContent value="basic" className="space-y-6">
+          <BasicCalculator />
+        </TabsContent>
+
+        <TabsContent value="tax" className="space-y-6">
+          <TaxCalculator />
+        </TabsContent>
+
+        <TabsContent value="crossborder" className="space-y-6">
+          <CrossBorderTaxCalculator />
+        </TabsContent>
+
+        <TabsContent value="amortization" className="space-y-6">
+          <AmortizationTable />
+        </TabsContent>
+
+        <TabsContent value="scientific" className="space-y-6">
+          <ScientificCalculator />
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 };
 
-export default CalculatorPage;
+export default Calculator;

@@ -1,130 +1,98 @@
 
-import { useState, useEffect } from "react";
-import { useMediaQuery } from "@/hooks/use-media-query";
+import React, { useState } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useOfflineStatus } from "@/hooks/useOfflineStatus";
-import { useAuth } from "@/hooks/useAuth";
+import {
+  BookOpenIcon,
+  ListIcon,
+  MessageSquareIcon,
+  FileTextIcon,
+  TrophyIcon,
+  BarChartIcon
+} from "lucide-react";
+
+// Import existing components
 import VocabularySection from "@/components/language/VocabularySection";
-import OfflineIndicator from "@/components/offlineMode/OfflineIndicator";
-import OfflineDownloadCard from "@/components/language/OfflineDownloadCard";
-import LanguageManager from "@/components/language/LanguageManager";
-import { useLanguageContext } from "@/hooks/useLanguageContext";
-import { Button } from "@/components/ui/button";
-import { BookOpen, FileText, Languages } from "lucide-react";
-import { ResponsiveContainer } from "@/components/ui/responsive-container";
-import { germanCourseDescription } from "@/data/germanCourseDescription";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import PhrasesTab from "@/components/language/tabs/PhrasesTab";
 import GrammarTab from "@/components/language/tabs/GrammarTab";
-
-const LanguageContent = () => {
-  const { isPremium } = useAuth();
-  const { isOffline } = useOfflineStatus();
-  const { activeTab, setActiveTab, offlineStatus, saveForOffline } = useLanguageContext();
-  
-  // Optimalizovaný hook pro mobilní zařízení
-  const isMobile = useIsMobile();
-  
-  // Simulace postupu v kurzu (v produkci by toto bylo načítáno z dat uživatele)
-  const [courseProgress, setCourseProgress] = useState({
-    basics: 40,
-    packaging: 20,
-    numbers: 10,
-    directions: 0,
-    practice: 30
-  });
-
-  return (
-    <ResponsiveContainer>
-      {/* Úvodní sekce s popisem kurzu */}
-      <Card className="mb-4">
-        <CardHeader>
-          <CardTitle className="text-xl md:text-2xl">{germanCourseDescription.title}</CardTitle>
-          <CardDescription>{germanCourseDescription.subtitle}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground mb-4">{germanCourseDescription.description}</p>
-          
-          <div className="mb-4">
-            <div className="flex justify-between text-sm mb-1">
-              <span>Celkový postup v kurzu</span>
-              <span>20%</span>
-            </div>
-            <Progress value={20} className="h-2" />
-          </div>
-          
-          {/* Navigační tlačítka pro mobilní verzi */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-4">
-            <Button
-              variant={activeTab === "grammar" ? "default" : "outline"}
-              size={isMobile ? "sm" : "default"}
-              className="flex items-center justify-center sm:justify-start gap-1 h-12"
-              onClick={() => setActiveTab("grammar")}
-            >
-              <BookOpen className="h-4 w-4" />
-              <div className="flex flex-col items-start">
-                <span className={isMobile ? "text-xs" : ""}>Gramatika</span>
-                <span className="text-[10px] text-muted-foreground">Základní pravidla</span>
-              </div>
-            </Button>
-            <Button
-              variant={activeTab === "vocabulary" ? "default" : "outline"}
-              size={isMobile ? "sm" : "default"}
-              className="flex items-center justify-center sm:justify-start gap-1 h-12"
-              onClick={() => setActiveTab("vocabulary")}
-            >
-              <FileText className="h-4 w-4" />
-              <div className="flex flex-col items-start">
-                <span className={isMobile ? "text-xs" : ""}>Slovíčka</span>
-                <span className="text-[10px] text-muted-foreground">Práce v centru</span>
-              </div>
-            </Button>
-            <Button
-              variant={activeTab === "phrases" ? "default" : "outline"}
-              size={isMobile ? "sm" : "default"}
-              className="flex items-center justify-center sm:justify-start gap-1 h-12"
-              onClick={() => setActiveTab("phrases")}
-            >
-              <Languages className="h-4 w-4" />
-              <div className="flex flex-col items-start">
-                <span className={isMobile ? "text-xs" : ""}>Fráze</span>
-                <span className="text-[10px] text-muted-foreground">Užitečné výrazy</span>
-              </div>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-      
-      {/* Výuka jazyka - obsah */}
-      <div className="w-full space-y-3 sm:space-y-4">
-        {/* Indikátor offline režimu */}
-        {!isOffline && (
-          <OfflineDownloadCard 
-            activeTab={activeTab} 
-            offlineStatus={offlineStatus}
-            saveForOffline={saveForOffline}
-          />
-        )}
-        
-        {activeTab === "vocabulary" && <VocabularySection />}
-        
-        {activeTab === "grammar" && <GrammarTab />}
-        
-        {activeTab === "phrases" && <PhrasesTab />}
-      </div>
-      
-      {/* Indikátor offline režimu */}
-      <OfflineIndicator />
-    </ResponsiveContainer>
-  );
-};
+import PhrasesTab from "@/components/language/tabs/PhrasesTab";
+import VocabularyProgressDashboard from "@/components/language/VocabularyProgressDashboard";
+import GamificationFeatures from "@/components/language/GamificationFeatures";
 
 const Language = () => {
+  const [activeTab, setActiveTab] = useState("vocabulary");
+  const isMobile = useIsMobile();
+
   return (
-    <LanguageManager>
-      <LanguageContent />
-    </LanguageManager>
+    <div className="container py-6 md:py-10 max-w-7xl">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold tracking-tight mb-2">Němčina</h1>
+        <p className="text-muted-foreground">
+          Učte se německý jazyk efektivně s našimi interaktivními nástroji
+        </p>
+      </div>
+
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <TabsList className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-6'} ${isMobile ? 'max-w-full' : 'max-w-6xl'} h-auto`}>
+          <TabsTrigger value="vocabulary" className="flex flex-col items-center gap-1 py-3 px-4">
+            <BookOpenIcon className="h-5 w-5" />
+            <span className="text-sm font-medium">Slovíčka</span>
+            <span className="text-xs text-muted-foreground hidden sm:block">Učení slov</span>
+          </TabsTrigger>
+          <TabsTrigger value="grammar" className="flex flex-col items-center gap-1 py-3 px-4">
+            <FileTextIcon className="h-5 w-5" />
+            <span className="text-sm font-medium">Gramatika</span>
+            <span className="text-xs text-muted-foreground hidden sm:block">Pravidla jazyka</span>
+          </TabsTrigger>
+          <TabsTrigger value="phrases" className="flex flex-col items-center gap-1 py-3 px-4">
+            <MessageSquareIcon className="h-5 w-5" />
+            <span className="text-sm font-medium">Fráze</span>
+            <span className="text-xs text-muted-foreground hidden sm:block">Užitečné fráze</span>
+          </TabsTrigger>
+          <TabsTrigger value="progress" className="flex flex-col items-center gap-1 py-3 px-4">
+            <BarChartIcon className="h-5 w-5" />
+            <span className="text-sm font-medium">Pokrok</span>
+            <span className="text-xs text-muted-foreground hidden sm:block">Statistiky</span>
+          </TabsTrigger>
+          <TabsTrigger value="gamification" className="flex flex-col items-center gap-1 py-3 px-4">
+            <TrophyIcon className="h-5 w-5" />
+            <span className="text-sm font-medium">Výzvy</span>
+            <span className="text-xs text-muted-foreground hidden sm:block">Herní prvky</span>
+          </TabsTrigger>
+          <TabsTrigger value="exercises" className="flex flex-col items-center gap-1 py-3 px-4">
+            <ListIcon className="h-5 w-5" />
+            <span className="text-sm font-medium">Cvičení</span>
+            <span className="text-xs text-muted-foreground hidden sm:block">Interaktivní úkoly</span>
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="vocabulary" className="space-y-6">
+          <VocabularySection />
+        </TabsContent>
+
+        <TabsContent value="grammar" className="space-y-6">
+          <GrammarTab />
+        </TabsContent>
+
+        <TabsContent value="phrases" className="space-y-6">
+          <PhrasesTab />
+        </TabsContent>
+
+        <TabsContent value="progress" className="space-y-6">
+          <VocabularyProgressDashboard />
+        </TabsContent>
+
+        <TabsContent value="gamification" className="space-y-6">
+          <GamificationFeatures />
+        </TabsContent>
+
+        <TabsContent value="exercises" className="space-y-6">
+          <div className="text-center py-12">
+            <h3 className="text-lg font-medium mb-2">Cvičení přijdou brzy</h3>
+            <p className="text-muted-foreground">Připravujeme interaktivní cvičení pro lepší učení</p>
+          </div>
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 };
 

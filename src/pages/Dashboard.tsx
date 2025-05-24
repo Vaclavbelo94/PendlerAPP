@@ -1,99 +1,94 @@
 
-import React, { useState } from 'react';
-import { Helmet } from "react-helmet";
-import PremiumCheck from "@/components/premium/PremiumCheck";
+import React, { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card } from "@/components/ui/card";
+import { useIsMobile } from "@/hooks/use-mobile";
+import {
+  LayoutDashboardIcon,
+  BookOpenIcon,
+  CalendarIcon,
+  GraduationCapIcon,
+  ActivityIcon
+} from "lucide-react";
+
+// Import tab content components
 import OverviewTab from "@/components/dashboard/tabs/OverviewTab";
-import LanguageTab from "@/components/dashboard/tabs/LanguageTab"; 
-import EducationTab from "@/components/dashboard/tabs/EducationTab";
 import ScheduleTab from "@/components/dashboard/tabs/ScheduleTab";
-import { ResponsiveContainer } from "@/components/ui/responsive-container";
-import { useMediaQuery } from "@/hooks/use-media-query";
+import LanguageTab from "@/components/dashboard/tabs/LanguageTab";
+import EducationTab from "@/components/dashboard/tabs/EducationTab";
 
 const Dashboard = () => {
-  const [activeTab, setActiveTab] = useState('overview');
-  const isMobile = useMediaQuery("xs");
-  
-  return (
-    <PremiumCheck featureKey="personal_dashboard">
-      <ResponsiveContainer className="py-4 sm:py-6">
-        <Helmet>
-          <title>Můj Dashboard | Pendler Buddy</title>
-        </Helmet>
-        <h1 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-4">Můj Dashboard</h1>
-        <div className="mb-3 sm:mb-5">
-          <p className="text-sm sm:text-base text-muted-foreground">
-            Centrální místo pro přehled vašeho pokroku, statistik a plánování aktivit
-          </p>
+  const { user, isLoading } = useAuth();
+  const navigate = useNavigate();
+  const isMobile = useIsMobile();
+  const [activeTab, setActiveTab] = useState("overview");
+
+  if (isLoading) {
+    return (
+      <div className="container py-6 md:py-10">
+        <div className="flex items-center justify-center h-40">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
+      </div>
+    );
+  }
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-3 sm:space-y-4">
-          <TabsList className="bg-muted/60 p-0.5 h-auto">
-            <TabsTrigger value="overview" className="text-[10px] sm:text-xs py-1 sm:py-1.5">
-              Celkový přehled
-            </TabsTrigger>
-            <TabsTrigger value="language" className="text-[10px] sm:text-xs py-1 sm:py-1.5">
-              Výuka jazyka
-            </TabsTrigger>
-            <TabsTrigger value="education" className="text-[10px] sm:text-xs py-1 sm:py-1.5">
-              Vzdělávání
-            </TabsTrigger>
-            <TabsTrigger value="schedule" className="text-[10px] sm:text-xs py-1 sm:py-1.5">
-              Moje směny
-            </TabsTrigger>
-          </TabsList>
+  if (!user) {
+    navigate("/login");
+    return null;
+  }
 
-          <TabsContent value="overview">
-            <Card>
-              <div className="p-4 border-b">
-                <h3 className="font-semibold">Celkový přehled</h3>
-                <p className="text-sm text-muted-foreground">
-                  Souhrnné statistiky vašeho pokroku ve všech oblastech
-                </p>
-              </div>
-              <OverviewTab />
-            </Card>
-          </TabsContent>
+  return (
+    <div className="container py-6 md:py-10 max-w-7xl">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold tracking-tight mb-2">Dashboard</h1>
+        <p className="text-muted-foreground">
+          Přehled vašich aktivit a rychlý přístup k funkcím
+        </p>
+      </div>
 
-          <TabsContent value="language">
-            <Card>
-              <div className="p-4 border-b">
-                <h3 className="font-semibold">Výuka němčiny</h3>
-                <p className="text-sm text-muted-foreground">
-                  Pokrok v učení němčiny, slovní zásoba a jazykové dovednosti
-                </p>
-              </div>
-              <LanguageTab />
-            </Card>
-          </TabsContent>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <TabsList className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} ${isMobile ? 'max-w-full' : 'max-w-4xl'} h-auto`}>
+          <TabsTrigger value="overview" className="flex flex-col items-center gap-1 py-3 px-4">
+            <LayoutDashboardIcon className="h-5 w-5" />
+            <span className="text-sm font-medium">Přehled</span>
+            <span className="text-xs text-muted-foreground hidden sm:block">Hlavní dashboard</span>
+          </TabsTrigger>
+          <TabsTrigger value="schedule" className="flex flex-col items-center gap-1 py-3 px-4">
+            <CalendarIcon className="h-5 w-5" />
+            <span className="text-sm font-medium">Plánování</span>
+            <span className="text-xs text-muted-foreground hidden sm:block">Směny a události</span>
+          </TabsTrigger>
+          <TabsTrigger value="language" className="flex flex-col items-center gap-1 py-3 px-4">
+            <BookOpenIcon className="h-5 w-5" />
+            <span className="text-sm font-medium">Jazyk</span>
+            <span className="text-xs text-muted-foreground hidden sm:block">Pokrok v němčině</span>
+          </TabsTrigger>
+          <TabsTrigger value="education" className="flex flex-col items-center gap-1 py-3 px-4">
+            <GraduationCapIcon className="h-5 w-5" />
+            <span className="text-sm font-medium">Vzdělání</span>
+            <span className="text-xs text-muted-foreground hidden sm:block">Kurzy a certifikace</span>
+          </TabsTrigger>
+        </TabsList>
 
-          <TabsContent value="education">
-            <Card>
-              <div className="p-4 border-b">
-                <h3 className="font-semibold">Vzdělávání a certifikace</h3>
-                <p className="text-sm text-muted-foreground">
-                  Vaše certifikáty, kurzy a profesní rozvoj
-                </p>
-              </div>
-              <EducationTab />
-            </Card>
-          </TabsContent>
-          
-          <TabsContent value="schedule">
-            <Card>
-              <div className="p-4 border-b">
-                <h3 className="font-semibold">Moje pracovní směny</h3>
-                <p className="text-sm text-muted-foreground">
-                  Plánování směn, odpracované hodiny a docházka
-                </p>
-              </div>
-              <ScheduleTab />
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </ResponsiveContainer>
-    </PremiumCheck>
+        <TabsContent value="overview" className="space-y-6">
+          <OverviewTab />
+        </TabsContent>
+
+        <TabsContent value="schedule" className="space-y-6">
+          <ScheduleTab />
+        </TabsContent>
+
+        <TabsContent value="language" className="space-y-6">
+          <LanguageTab />
+        </TabsContent>
+
+        <TabsContent value="education" className="space-y-6">
+          <EducationTab />
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 };
 
