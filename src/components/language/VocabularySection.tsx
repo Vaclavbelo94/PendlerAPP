@@ -1,20 +1,21 @@
 
 import React, { useState } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { useIsMobile } from "@/hooks/use-mobile";
 import VocabularyManager, { useVocabularyContext } from './vocabulary/VocabularyManager';
 import { useAuth } from '@/hooks/useAuth';
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { ShieldCheck, BookOpen, Search, Brain, Trophy, RotateCw } from "lucide-react";
+import { ShieldCheck, BookOpen, Search, Brain, Trophy, RotateCw, Cpu, Wrench } from "lucide-react";
 
 import {
   WarehouseBasicsTab,
   PackagingTermsTab,
   NumbersTab,
   DirectionsTab,
+  TechnologyTab,
   PracticeTab
 } from './vocabulary/GermanCourseContent';
 
@@ -32,8 +33,8 @@ const VocabularyContent: React.FC = () => {
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">
-            Tato sekce obsahuje základní slovní zásobu a fráze, které budete potřebovat při práci v německém balíkovém třídícím centru. 
-            Začněte se základy a postupně se propracujte k pokročilejším tématům.
+            Tato sekce obsahuje rozšířenou slovní zásobu a fráze, které budete potřebovat při práci v německém balíkovém třídícím centru. 
+            Začněte se základy a postupně se propracujte k pokročilejším tématům včetně moderní technologie.
           </p>
         </CardContent>
       </Card>
@@ -61,7 +62,7 @@ const VocabularyContent: React.FC = () => {
       
       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
         <Card className="border-b p-1">
-          <TabsList className={`grid ${isMobile ? 'grid-cols-3' : 'grid-cols-5'} h-auto p-0.5`}>
+          <TabsList className={`grid ${isMobile ? 'grid-cols-3' : 'grid-cols-6'} h-auto p-0.5`}>
             <TabsTrigger 
               value="basics" 
               onClick={() => setSelectedTab('basics')}
@@ -108,9 +109,24 @@ const VocabularyContent: React.FC = () => {
                 className="flex items-center justify-center py-1 px-0.5"
               >
                 <div className="flex items-center flex-col sm:flex-row sm:gap-1.5">
-                  <Search className={`${isMobile ? 'w-4 h-4' : 'w-4 h-4'}`} />
+                  <Wrench className={`${isMobile ? 'w-4 h-4' : 'w-4 h-4'}`} />
                   <span className={isMobile ? "text-[10px] mt-0.5" : "text-xs"}>
                     Pokyny
+                  </span>
+                </div>
+              </TabsTrigger>
+            )}
+            
+            {!isMobile && (
+              <TabsTrigger 
+                value="technology" 
+                onClick={() => setSelectedTab('technology')}
+                className="flex items-center justify-center py-1 px-0.5"
+              >
+                <div className="flex items-center flex-col sm:flex-row sm:gap-1.5">
+                  <Cpu className={`${isMobile ? 'w-4 h-4' : 'w-4 h-4'}`} />
+                  <span className={isMobile ? "text-[10px] mt-0.5" : "text-xs"}>
+                    Technika
                   </span>
                 </div>
               </TabsTrigger>
@@ -146,6 +162,10 @@ const VocabularyContent: React.FC = () => {
           
           <TabsContent value="directions">
             <DirectionsTab />
+          </TabsContent>
+          
+          <TabsContent value="technology">
+            <TechnologyTab />
           </TabsContent>
           
           <TabsContent value="practice">

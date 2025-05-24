@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,7 +8,7 @@ import { useVocabularyContext } from './VocabularyManager';
 import VocabularyReviewCard from '../VocabularyReviewCard';
 import { VocabularyItem } from '@/models/VocabularyItem';
 import { useVocabularyReviewSession } from '@/hooks/useVocabularyReviewSession';
-import { Volume2, CheckCircle, ArrowRight, PlayCircle } from "lucide-react";
+import { Volume2, CheckCircle, ArrowRight, PlayCircle, AlertCircle } from "lucide-react";
 
 // Helper function to play audio for German pronunciation
 const pronounceWord = (word: string) => {
@@ -106,19 +107,34 @@ export const WarehouseBasicsTab = () => {
     { german: "Guten Tag", czech: "Dobrý den", example: "Guten Tag, Herr Schmidt." },
     { german: "Auf Wiedersehen", czech: "Na shledanou", example: "Ich muss jetzt gehen. Auf Wiedersehen!" },
     { german: "Danke schön", czech: "Děkuji pěkně", example: "Danke schön für Ihre Hilfe." },
+    { german: "Bitte schön", czech: "Prosím pěkně", example: "Können Sie mir bitte schön helfen?" },
+    { german: "Entschuldigung", czech: "Promiňte", example: "Entschuldigung, wo ist die Toilette?" },
   ];
 
   const basicPhrases = [
     { german: "Ich verstehe nicht", czech: "Nerozumím", example: "Entschuldigung, ich verstehe nicht. Können Sie das wiederholen?" },
     { german: "Sprechen Sie Englisch?", czech: "Mluvíte anglicky?", example: "Sprechen Sie Englisch? Ich spreche kein Deutsch." },
     { german: "Wo ist die Toilette?", czech: "Kde jsou toalety?", example: "Entschuldigung, wo ist die Toilette?" },
-    { german: "Ich brauche Hilfe", czech: "Potřebuji pomoct", example: "Ich brauche Hilfe bei dieser Aufgabe." }
+    { german: "Ich brauche Hilfe", czech: "Potřebuji pomoct", example: "Ich brauche Hilfe bei dieser Aufgabe." },
+    { german: "Wie spät ist es?", czech: "Kolik je hodin?", example: "Entschuldigung, wie spät ist es?" },
+    { german: "Wann ist Pause?", czech: "Kdy je přestávka?", example: "Wann haben wir heute Pause?" },
+    { german: "Wo ist der Ausgang?", czech: "Kde je východ?", example: "Können Sie mir zeigen, wo der Ausgang ist?" },
   ];
 
   const introductions = [
     { german: "Ich heiße...", czech: "Jmenuji se...", example: "Hallo, ich heiße Martin." },
     { german: "Ich komme aus Tschechien", czech: "Pocházím z Česka", example: "Ich komme aus Tschechien und arbeite jetzt in Deutschland." },
-    { german: "Ich arbeite im Paketzentrum", czech: "Pracuji v balíkovém centru", example: "Seit einem Monat arbeite ich im Paketzentrum." }
+    { german: "Ich arbeite im Paketzentrum", czech: "Pracuji v balíkovém centru", example: "Seit einem Monat arbeite ich im Paketzentrum." },
+    { german: "Das ist mein erster Tag", czech: "To je můj první den", example: "Das ist mein erster Tag hier. Können Sie mir helfen?" },
+    { german: "Ich bin neu hier", czech: "Jsem tu nový", example: "Ich bin neu hier und kenne mich noch nicht aus." },
+  ];
+
+  const workBasics = [
+    { german: "die Schicht", czech: "směna", example: "Meine Schicht beginnt um 6 Uhr morgens.", category: "Práce" },
+    { german: "der Arbeitsplatz", czech: "pracovní místo", example: "Mein Arbeitsplatz ist beim Förderband.", category: "Práce" },
+    { german: "die Pause", czech: "přestávka", example: "Die Pause dauert 30 Minuten.", category: "Práce" },
+    { german: "der Vorgesetzter", czech: "nadřízený", example: "Mein Vorgesetzter heißt Herr Müller.", category: "Práce" },
+    { german: "der Kollege", czech: "kolega", example: "Das ist mein neuer Kollege aus Prag.", category: "Práce" },
   ];
 
   return (
@@ -134,9 +150,10 @@ export const WarehouseBasicsTab = () => {
           <LessonSection title="Pozdravy" items={greetings} />
           <LessonSection title="Základní fráze" items={basicPhrases} />
           <LessonSection title="Představení se" items={introductions} />
+          <LessonSection title="Základy práce" items={workBasics} />
         </CardContent>
         <CardFooter className="flex justify-between pt-2">
-          <div className="text-sm text-muted-foreground">10 slovíček</div>
+          <div className="text-sm text-muted-foreground">23 slovíček</div>
           <Button className="flex gap-1" size="sm">
             Procvičit <ArrowRight className="h-4 w-4" />
           </Button>
@@ -153,6 +170,10 @@ export const PackagingTermsTab = () => {
     { german: "der Karton", czech: "Krabice", example: "Stellen Sie den Karton auf das Förderband.", category: "Předměty" },
     { german: "die Lieferung", czech: "Dodávka", example: "Die Lieferung muss heute noch raus.", category: "Logistika" },
     { german: "die Adresse", czech: "Adresa", example: "Bitte überprüfen Sie die Adresse auf dem Paket.", category: "Informace" },
+    { german: "die Sendung", czech: "Zásilka", example: "Diese Sendung geht nach Berlin.", category: "Logistika" },
+    { german: "das Etikett", czech: "Štítek", example: "Das Etikett ist beschädigt.", category: "Informace" },
+    { german: "der Briefumschlag", czech: "Obálka", example: "Der Briefumschlag ist zerrissen.", category: "Předměty" },
+    { german: "die Postleitzahl", czech: "PSČ", example: "Die Postleitzahl für München ist 80331.", category: "Informace" },
   ];
 
   const sortingTerms = [
@@ -160,6 +181,10 @@ export const PackagingTermsTab = () => {
     { german: "einpacken", czech: "zabalit", example: "Sie müssen die Ware sorgfältig einpacken.", category: "Činnosti" },
     { german: "auspacken", czech: "vybalit", example: "Bitte packen Sie die beschädigte Ware aus.", category: "Činnosti" },
     { german: "das Förderband", czech: "dopravní pás", example: "Legen Sie das Paket auf das Förderband.", category: "Vybavení" },
+    { german: "wiegen", czech: "vážit", example: "Bitte wiegen Sie dieses Paket.", category: "Činnosti" },
+    { german: "messen", czech: "měřit", example: "Wir müssen die Größe messen.", category: "Činnosti" },
+    { german: "scannen", czech: "skenovat", example: "Scannen Sie den Barcode.", category: "Činnosti" },
+    { german: "verladen", czech: "naložit", example: "Die Pakete werden morgen verladen.", category: "Činnosti" },
   ];
 
   const warehouseTerms = [
@@ -167,15 +192,28 @@ export const PackagingTermsTab = () => {
     { german: "die Palette", czech: "paleta", example: "Stellen Sie die schweren Pakete auf die Palette.", category: "Vybavení" },
     { german: "der Gabelstapler", czech: "vysokozdvižný vozík", example: "Der Gabelstapler transportiert die schweren Paletten.", category: "Vybavení" },
     { german: "die Laderampe", czech: "nakládací rampa", example: "Der LKW parkt an der Laderampe.", category: "Místa" },
+    { german: "der Container", czech: "kontejner", example: "Der Container ist fast voll.", category: "Vybavení" },
+    { german: "das Regal", czech: "regál", example: "Die Pakete stehen im Regal.", category: "Vybavení" },
+    { german: "der Wareneingang", czech: "příjem zboží", example: "Alle neuen Pakete gehen durch den Wareneingang.", category: "Místa" },
+    { german: "der Warenausgang", czech: "expedice", example: "Der Warenausgang ist um 16 Uhr geschlossen.", category: "Místa" },
+  ];
+
+  const qualityTerms = [
+    { german: "beschädigt", czech: "poškozený", example: "Dieses Paket ist beschädigt.", category: "Stav" },
+    { german: "zerbrochen", czech: "rozbitý", example: "Vorsicht, der Inhalt ist zerbrochen.", category: "Stav" },
+    { german: "nass", czech: "mokrý", example: "Das Paket ist nass geworden.", category: "Stav" },
+    { german: "zerbrechlich", czech: "křehký", example: "Vorsicht! Das ist zerbrechlich.", category: "Stav" },
+    { german: "eilig", czech: "spěšný", example: "Diese Sendung ist eilig.", category: "Priorita" },
+    { german: "Express", czech: "express", example: "Das ist eine Express-Sendung.", category: "Priorita" },
   ];
 
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Balíkové centrum - základní slovní zásoba</CardTitle>
+          <CardTitle>Balíkové centrum - rozšířená slovní zásoba</CardTitle>
           <CardDescription>
-            Pojmy spojené s balením, tříděním a pohybem balíků v logistickém centru
+            Pokročilejší pojmy pro efektivní práci v logistickém centru
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -194,9 +232,14 @@ export const PackagingTermsTab = () => {
             description="Pojmy pro orientaci ve skladu a práci s vybavením"
             items={warehouseTerms} 
           />
+          <LessonSection 
+            title="Kvalita a stav zboží" 
+            description="Popis stavu balíků a jejich priority"
+            items={qualityTerms} 
+          />
         </CardContent>
         <CardFooter className="flex justify-between pt-2">
-          <div className="text-sm text-muted-foreground">12 slovíček</div>
+          <div className="text-sm text-muted-foreground">30 slovíček</div>
           <Button className="flex gap-1" size="sm">
             Procvičit <ArrowRight className="h-4 w-4" />
           </Button>
@@ -214,35 +257,62 @@ export const NumbersTab = () => {
     { german: "drei", czech: "tři", example: "Drei Pakete sind beschädigt." },
     { german: "vier", czech: "čtyři", example: "Vier Sendungen für Berlin." },
     { german: "fünf", czech: "pět", example: "Fünf Minuten Pause." },
+    { german: "sechs", czech: "šest", example: "Sechs Paletten sind bereit." },
+    { german: "sieben", czech: "sedm", example: "Sieben Uhr ist Schichtbeginn." },
+    { german: "acht", czech: "osm", example: "Acht Stunden Arbeitszeit." },
+    { german: "neun", czech: "devět", example: "Neun Kilogramm ist das Limit." },
+    { german: "zehn", czech: "deset", example: "Zehn Pakete pro Minute." },
   ];
 
   const tenToHundred = [
-    { german: "zehn", czech: "deset", example: "Zehn Pakete pro Stunde." },
-    { german: "zwanzig", czech: "dvacet", example: "Zwanzig Minuten bis Mittag." },
+    { german: "elf", czech: "jedenáct", example: "Elf Uhr ist Mittagspause." },
+    { german: "zwölf", czech: "dvanáct", example: "Zwölf Sendungen sind angekommen." },
+    { german: "zwanzig", czech: "dvacet", example: "Zwanzig Minuten bis Feierabend." },
     { german: "dreißig", czech: "třicet", example: "Dreißig Pakete wurden bereits sortiert." },
+    { german: "vierzig", czech: "čtyřicet", example: "Vierzig Grad ist zu heiß zum Arbeiten." },
     { german: "fünfzig", czech: "padesát", example: "Fünfzig Kilogramm ist das Maximum." },
+    { german: "sechzig", czech: "šedesát", example: "Sechzig Sekunden pro Paket." },
+    { german: "siebzig", czech: "sedmdesát", example: "Siebzig Prozent sind schon fertig." },
+    { german: "achtzig", czech: "osmdesát", example: "Achtzig Sendungen heute." },
+    { german: "neunzig", czech: "devadesát", example: "Neunzig Minuten bis Schichtende." },
     { german: "hundert", czech: "sto", example: "Hundert Pakete müssen wir noch sortieren." },
+    { german: "tausend", czech: "tisíc", example: "Tausend Pakete täglich." },
   ];
 
   const timeExpressions = [
     { german: "eine Stunde", czech: "hodina", example: "Die Schicht dauert noch eine Stunde." },
     { german: "eine Minute", czech: "minuta", example: "Bitte warten Sie eine Minute." },
-    { german: "eine Woche", czech: "týden", example: "Ich arbeite hier seit einer Woche." }
+    { german: "eine Sekunde", czech: "sekunda", example: "Das dauert nur eine Sekunde." },
+    { german: "eine Woche", czech: "týden", example: "Ich arbeite hier seit einer Woche." },
+    { german: "ein Monat", czech: "měsíc", example: "Nächsten Monat bekomme ich mehr Stunden." },
+    { german: "heute", czech: "dnes", example: "Heute haben wir viel zu tun." },
+    { german: "morgen", czech: "zítra", example: "Morgen ist mein freier Tag." },
+    { german: "gestern", czech: "včera", example: "Gestern waren weniger Pakete da." },
+  ];
+
+  const weightAndSize = [
+    { german: "ein Kilogramm", czech: "kilogram", example: "Das Paket wiegt ein Kilogramm." },
+    { german: "ein Gramm", czech: "gram", example: "Der Brief wiegt nur 20 Gramm." },
+    { german: "eine Tonne", czech: "tuna", example: "Der Container wiegt eine Tonne." },
+    { german: "ein Meter", czech: "metr", example: "Das Paket ist einen Meter lang." },
+    { german: "ein Zentimeter", czech: "centimetr", example: "Fünf Zentimeter zu groß." },
+    { german: "ein Liter", czech: "litr", example: "Vorsicht, ein Liter Flüssigkeit drin." },
   ];
 
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Čísla a počítání</CardTitle>
+          <CardTitle>Čísla a měrné jednotky</CardTitle>
           <CardDescription>
-            Naučte se číslice a výrazy pro počítání, které budete potřebovat při práci
+            Kompletní přehled čísel a jednotek potřebných pro práci
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <LessonSection title="Základní číslovky (1-5)" items={basicNumbers} />
-          <LessonSection title="Další důležité číslovky" items={tenToHundred} />
+          <LessonSection title="Základní číslovky (1-10)" items={basicNumbers} />
+          <LessonSection title="Vyšší číslovky" items={tenToHundred} />
           <LessonSection title="Časové výrazy" items={timeExpressions} />
+          <LessonSection title="Váha a rozměry" items={weightAndSize} />
           
           <div className="mt-6 p-4 bg-muted rounded-lg">
             <h4 className="font-medium mb-2">Interaktivní cvičení</h4>
@@ -253,7 +323,7 @@ export const NumbersTab = () => {
           </div>
         </CardContent>
         <CardFooter className="flex justify-between pt-2">
-          <div className="text-sm text-muted-foreground">13 slovíček</div>
+          <div className="text-sm text-muted-foreground">34 slovíček</div>
           <Button className="flex gap-1" size="sm">
             Procvičit <ArrowRight className="h-4 w-4" />
           </Button>
@@ -271,34 +341,55 @@ export const DirectionsTab = () => {
     { german: "geradeaus", czech: "rovně", example: "Geradeaus finden Sie die Kantine." },
     { german: "oben", czech: "nahoře", example: "Die internationalen Sendungen sind oben." },
     { german: "unten", czech: "dole", example: "Legen Sie die schweren Pakete unten hin." },
+    { german: "hinten", czech: "vzadu", example: "Die Toiletten sind hinten." },
+    { german: "vorne", czech: "vpředu", example: "Der Ausgang ist vorne." },
+    { german: "in der Mitte", czech: "uprostřed", example: "Das Büro ist in der Mitte." },
+    { german: "neben", czech: "vedle", example: "Stellen Sie es neben die anderen Pakete." },
+    { german: "zwischen", czech: "mezi", example: "Zwischen diesen Regalen." },
   ];
 
   const commands = [
     { german: "Bringen Sie das hier hin", czech: "Přineste to sem", example: "Bringen Sie das Paket bitte hier hin." },
     { german: "Stellen Sie das dort", czech: "Položte to tam", example: "Stellen Sie den Karton dort auf den Tisch." },
     { german: "Sortieren Sie diese Pakete", czech: "Roztřiďte tyto balíky", example: "Sortieren Sie diese Pakete nach Größe." },
-    { german: "Achten Sie auf das Gewicht", czech: "Dávejte pozor na váhu", example: "Achten Sie auf das Gewicht der Pakete." }
+    { german: "Achten Sie auf das Gewicht", czech: "Dávejte pozor na váhu", example: "Achten Sie auf das Gewicht der Pakete." },
+    { german: "Seien Sie vorsichtig", czech: "Buďte opatrní", example: "Seien Sie vorsichtig mit zerbrechlichen Sachen." },
+    { german: "Machen Sie es schneller", czech: "Dělejte to rychleji", example: "Wir haben Zeitdruck, machen Sie es schneller." },
+    { german: "Stoppen Sie", czech: "Zastavte", example: "Stoppen Sie! Das Förderband ist kaputt." },
+    { german: "Warten Sie", czech: "Počkejte", example: "Warten Sie, bis ich zurück bin." },
   ];
 
   const questions = [
     { german: "Wohin soll ich das bringen?", czech: "Kam to mám přinést?", example: "Wohin soll ich diese Pakete bringen?" },
     { german: "Wie spät ist es?", czech: "Kolik je hodin?", example: "Entschuldigung, wie spät ist es? Ist es schon Mittagspause?" },
-    { german: "Wann haben wir Pause?", czech: "Kdy máme přestávku?", example: "Wann haben wir heute Pause? Um 12 Uhr?" }
+    { german: "Wann haben wir Pause?", czech: "Kdy máme přestávku?", example: "Wann haben wir heute Pause? Um 12 Uhr?" },
+    { german: "Wo finde ich...?", czech: "Kde najdu...?", example: "Wo finde ich die schweren Pakete?" },
+    { german: "Kann ich Ihnen helfen?", czech: "Můžu vám pomoct?", example: "Sie sehen müde aus. Kann ich Ihnen helfen?" },
+    { german: "Haben Sie Zeit?", czech: "Máte čas?", example: "Haben Sie kurz Zeit? Ich brauche Hilfe." },
+  ];
+
+  const emergencyPhrases = [
+    { german: "Hilfe!", czech: "Pomoc!", example: "Hilfe! Jemand ist verletzt!" },
+    { german: "Rufen Sie einen Arzt", czech: "Zavolejte doktora", example: "Rufen Sie schnell einen Arzt!" },
+    { german: "Das ist gefährlich", czech: "To je nebezpečné", example: "Stopp! Das ist gefährlich!" },
+    { german: "Es gibt ein Problem", czech: "Je tu problém", example: "Es gibt ein Problem mit der Maschine." },
+    { german: "Der Notausgang", czech: "Nouzový východ", example: "Wo ist der nächste Notausgang?" },
   ];
 
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Pokyny a navigace</CardTitle>
+          <CardTitle>Pokyny a komunikace</CardTitle>
           <CardDescription>
-            Orientace v prostoru a porozumění pokynům nadřízených
+            Orientace v prostoru, porozumění pokynům a základní komunikace
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <LessonSection title="Směry" items={directions} />
+          <LessonSection title="Směry a orientace" items={directions} />
           <LessonSection title="Příkazy a pokyny" items={commands} />
           <LessonSection title="Užitečné otázky" items={questions} />
+          <LessonSection title="Nouzové situace" items={emergencyPhrases} />
           
           <div className="mt-4 p-4 border rounded-lg border-blue-200 bg-blue-50">
             <h4 className="font-medium text-blue-800 mb-2">Tip pro porozumění</h4>
@@ -307,9 +398,20 @@ export const DirectionsTab = () => {
               (Promiňte, nerozumím. Můžete to zopakovat?)
             </p>
           </div>
+          
+          <div className="mt-4 p-4 border rounded-lg border-red-200 bg-red-50">
+            <h4 className="font-medium text-red-800 mb-2 flex items-center">
+              <AlertCircle className="h-4 w-4 mr-1" />
+              Důležité nouzové fráze
+            </h4>
+            <p className="text-sm text-red-700">
+              V nouzových situacích je důležité znát základní fráze pro volání o pomoc. 
+              Vždy se obraťte na nadřízeného nebo zavolejte na číslo 112.
+            </p>
+          </div>
         </CardContent>
         <CardFooter className="flex justify-between pt-2">
-          <div className="text-sm text-muted-foreground">12 slovíček</div>
+          <div className="text-sm text-muted-foreground">29 slovíček</div>
           <Button className="flex gap-1" size="sm">
             Procvičit <ArrowRight className="h-4 w-4" />
           </Button>
@@ -319,67 +421,63 @@ export const DirectionsTab = () => {
   );
 };
 
-// Záložka: Logistika a rozměry
-export const LogisticsAndDimensionsTab = () => {
-  const dimensionsTerms = [
-    { german: "schwer", czech: "těžký", example: "Dieses Paket ist zu schwer für mich.", category: "Rozměry" },
-    { german: "leicht", czech: "lehký", example: "Das ist ein leichtes Paket, du kannst es alleine tragen.", category: "Rozměry" },
-    { german: "breit", czech: "široký", example: "Der Karton ist zu breit für dieses Regal.", category: "Rozměry" },
-    { german: "schmal", czech: "úzký", example: "Der Durchgang ist sehr schmal, seien Sie vorsichtig.", category: "Rozměry" },
-    { german: "die Dimension", czech: "rozměr", example: "Wir müssen die Dimensionen jedes Pakets überprüfen.", category: "Rozměry" },
-    { german: "die Größe", czech: "velikost", example: "Die Größe des Paketes bestimmt den Preis.", category: "Rozměry" },
+// Nová záložka: Technologie a vybavení
+export const TechnologyTab = () => {
+  const scanningTerms = [
+    { german: "der Barcode", czech: "čárový kód", example: "Scannen Sie den Barcode auf dem Paket.", category: "Technologie" },
+    { german: "der Scanner", czech: "skener", example: "Der Scanner funktioniert nicht.", category: "Vybavení" },
+    { german: "das Handheld", czech: "ruční terminál", example: "Nehmen Sie das Handheld mit.", category: "Vybavení" },
+    { german: "scannen", czech: "skenovat", example: "Bitte scannen Sie jedes Paket.", category: "Činnosti" },
+    { german: "der QR-Code", czech: "QR kód", example: "Dieser QR-Code ist beschädigt.", category: "Technologie" },
+    { german: "die Seriennummer", czech: "sériové číslo", example: "Notieren Sie sich die Seriennummer.", category: "Informace" },
   ];
 
-  const loadingTerms = [
-    { german: "die Verladung", czech: "nakládka", example: "Die Verladung beginnt um 7 Uhr morgens.", category: "Proces" },
-    { german: "die Entladung", czech: "vykládka", example: "Nach der Entladung muss alles dokumentiert werden.", category: "Proces" },
-    { german: "beladen", czech: "naložit", example: "Wir müssen den LKW vor Mittag beladen.", category: "Proces" },
-    { german: "entladen", czech: "vyložit", example: "Bitte entladen Sie den Container vorsichtig.", category: "Proces" },
+  const systemTerms = [
+    { german: "das System", czech: "systém", example: "Das System ist heute langsam.", category: "Technologie" },
+    { german: "der Computer", czech: "počítač", example: "Der Computer ist eingefroren.", category: "Vybavení" },
+    { german: "die Software", czech: "software", example: "Die Software wurde aktualisiert.", category: "Technologie" },
+    { german: "das Update", czech: "aktualizace", example: "Warten Sie auf das Update.", category: "Technologie" },
+    { german: "der Fehler", czech: "chyba", example: "Es gibt einen Fehler im System.", category: "Problémy" },
+    { german: "das Backup", czech: "záloha", example: "Die Daten sind im Backup gespeichert.", category: "Technologie" },
   ];
 
-  const warehouseTerms = [
-    { german: "das Tor", czech: "brána", example: "Der LKW steht vor dem Tor Nummer 5.", category: "Sklad" },
-    { german: "die Lagerhalle", czech: "skladovací hala", example: "Die neue Lagerhalle hat 5000 Quadratmeter.", category: "Sklad" },
-    { german: "der Wareneingang", czech: "příjem zboží", example: "Alle Pakete müssen zuerst durch den Wareneingang.", category: "Sklad" },
-    { german: "der Warenausgang", czech: "výdej zboží", example: "Der Warenausgang schließt um 16 Uhr.", category: "Sklad" },
+  const machineTerms = [
+    { german: "die Maschine", czech: "stroj", example: "Die Maschine ist kaputt.", category: "Vybavení" },
+    { german: "die Waage", czech: "váha", example: "Stellen Sie das Paket auf die Waage.", category: "Vybavení" },
+    { german: "der Drucker", czech: "tiskárna", example: "Der Drucker hat kein Papier mehr.", category: "Vybavení" },
+    { german: "das Etikettiersystem", czech: "systém etiketování", example: "Das Etikettiersystem druckt nicht.", category: "Vybavení" },
+    { german: "der Sortierer", czech: "třídič", example: "Der automatische Sortierer sortiert nach PLZ.", category: "Vybavení" },
+    { german: "die Wartung", czech: "údržba", example: "Die Maschine braucht Wartung.", category: "Údržba" },
   ];
 
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Logistika a rozměry</CardTitle>
+          <CardTitle>Technologie a vybavení</CardTitle>
           <CardDescription>
-            Slovíčka a fráze pro práci s balíky různých rozměrů a vah
+            Moderní technologie používané v balíkovém centru
           </CardDescription>
         </CardHeader>
         <CardContent>
           <LessonSection 
-            title="Rozměry a váha" 
-            description="Klíčová slovíčka pro popis velikosti a váhy balíků"
-            items={dimensionsTerms} 
+            title="Skenování a identifikace" 
+            description="Technologie pro identifikaci balíků"
+            items={scanningTerms} 
           />
           <LessonSection 
-            title="Nakládka a vykládka" 
-            description="Pojmy používané při nakládání a vykládání zboží"
-            items={loadingTerms} 
+            title="Počítačové systémy" 
+            description="Software a systémy používané v centru"
+            items={systemTerms} 
           />
           <LessonSection 
-            title="Skladové prostory" 
-            description="Důležitá místa ve skladu a logistickém centru"
-            items={warehouseTerms} 
+            title="Stroje a zařízení" 
+            description="Mechanické vybavení a jeho údržba"
+            items={machineTerms} 
           />
-          
-          <div className="mt-6 p-4 border rounded-lg border-blue-200 bg-blue-50">
-            <h4 className="font-medium text-blue-800 mb-2">Tip pro praxi</h4>
-            <p className="text-sm text-blue-700">
-              Při popisování balíků vždy používejte přesné rozměry: "Der Karton ist 50 cm breit, 30 cm hoch und 40 cm tief."
-              (Krabice je 50 cm široká, 30 cm vysoká a 40 cm hluboká.)
-            </p>
-          </div>
         </CardContent>
         <CardFooter className="flex justify-between pt-2">
-          <div className="text-sm text-muted-foreground">14 slovíček</div>
+          <div className="text-sm text-muted-foreground">18 slovíček</div>
           <Button className="flex gap-1" size="sm">
             Procvičit <ArrowRight className="h-4 w-4" />
           </Button>
@@ -389,7 +487,7 @@ export const LogisticsAndDimensionsTab = () => {
   );
 };
 
-// Záložka: Procvičení
+// Záložka: Procvičení (zachována beze změny)
 export const PracticeTab = () => {
   const {
     currentItem,
