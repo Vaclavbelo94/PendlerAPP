@@ -26,9 +26,24 @@ const Language = () => {
   const mockVocabularyCount = 150;
   const mockProgress = {
     dailyStats: [
-      { date: new Date().toISOString(), wordsLearned: 5, timeSpent: 25, accuracy: 85 },
-      { date: new Date(Date.now() - 86400000).toISOString(), wordsLearned: 8, timeSpent: 30, accuracy: 92 },
-      { date: new Date(Date.now() - 172800000).toISOString(), wordsLearned: 3, timeSpent: 15, accuracy: 78 }
+      { 
+        date: new Date().toISOString(), 
+        wordsReviewed: 8, 
+        correctCount: 6, 
+        incorrectCount: 2 
+      },
+      { 
+        date: new Date(Date.now() - 86400000).toISOString(), 
+        wordsReviewed: 12, 
+        correctCount: 10, 
+        incorrectCount: 2 
+      },
+      { 
+        date: new Date(Date.now() - 172800000).toISOString(), 
+        wordsReviewed: 5, 
+        correctCount: 3, 
+        incorrectCount: 2 
+      }
     ],
     totalReviewed: 127,
     streakDays: 5,
