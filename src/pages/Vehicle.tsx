@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Helmet } from "react-helmet";
 import PremiumCheck from "@/components/premium/PremiumCheck";
@@ -19,6 +20,7 @@ import VehicleSelector from "@/components/vehicle/VehicleSelector";
 import { useIsMobile } from '@/hooks/use-mobile';
 import { SectionHeader } from "@/components/ui/section-header";
 import { FlexContainer } from "@/components/ui/flex-container";
+import { cn } from "@/lib/utils";
 
 const Vehicle = () => {
   const { user } = useAuth();
@@ -178,10 +180,10 @@ const Vehicle = () => {
             
             <Tabs defaultValue="overview" className="w-full">
               <TabsList className={cn("mb-6", isMobile ? "grid grid-cols-2 w-full" : "")}>
-                <TabsTrigger value="overview" className={isMobile ? "text-xs" : ""}>Přehled</TabsTrigger>
-                <TabsTrigger value="documents" className={isMobile ? "text-xs" : ""}>Dokumenty</TabsTrigger>
-                <TabsTrigger value="maintenance" className={isMobile ? "text-xs" : ""}>Údržba</TabsTrigger>
-                <TabsTrigger value="fuel" className={isMobile ? "text-xs" : ""}>Spotřeba</TabsTrigger>
+                <TabsTrigger value="overview" className={cn(isMobile ? "text-xs" : "")}>Přehled</TabsTrigger>
+                <TabsTrigger value="documents" className={cn(isMobile ? "text-xs" : "")}>Dokumenty</TabsTrigger>
+                <TabsTrigger value="maintenance" className={cn(isMobile ? "text-xs" : "")}>Údržba</TabsTrigger>
+                <TabsTrigger value="fuel" className={cn(isMobile ? "text-xs" : "")}>Spotřeba</TabsTrigger>
               </TabsList>
 
               <TabsContent value="overview" className="space-y-6">

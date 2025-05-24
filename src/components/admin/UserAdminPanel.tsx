@@ -13,6 +13,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { FlexContainer } from "@/components/ui/flex-container";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -38,7 +40,7 @@ export const UserAdminPanel = () => {
       try {
         console.log("Načítání uživatelů...");
         
-        // Načtení všech profilů z databáze s lepším dotazem
+        // Načtení všech profilů z databáze
         const { data: profiles, error } = await supabase
           .from('profiles')
           .select(`
@@ -47,10 +49,7 @@ export const UserAdminPanel = () => {
             email, 
             is_premium, 
             premium_expiry, 
-            created_at,
-            users!inner (
-              email
-            )
+            created_at
           `)
           .order('created_at', { ascending: false });
         
@@ -64,8 +63,8 @@ export const UserAdminPanel = () => {
         if (profiles && profiles.length > 0) {
           const transformedUsers: User[] = profiles.map(profile => ({
             id: profile.id,
-            name: profile.username || profile.email?.split('@')[0] || profile.users?.email?.split('@')[0] || 'Uživatel',
-            email: profile.email || profile.users?.email || '',
+            name: profile.username || profile.email?.split('@')[0] || 'Uživatel',
+            email: profile.email || '',
             isPremium: profile.is_premium || false,
             registeredAt: profile.created_at,
             premiumUntil: profile.premium_expiry || null
@@ -75,32 +74,8 @@ export const UserAdminPanel = () => {
           console.log("Transformovaní uživatelé:", transformedUsers);
           toast.success(`Načteno ${transformedUsers.length} uživatelů`);
         } else {
-          // Pokusíme se načíst přímo z auth.users pomocí RPC funkce
-          const { data: authUsers, error: rpcError } = await supabase.rpc('get_all_users');
-          
-          if (rpcError) {
-            console.error("Chyba při volání RPC funkce:", rpcError);
-            throw rpcError;
-          }
-          
-          console.log("Uživatelé z auth:", authUsers);
-          
-          if (authUsers && authUsers.length > 0) {
-            const transformedAuthUsers: User[] = authUsers.map((user: any) => ({
-              id: user.id,
-              name: user.email?.split('@')[0] || 'Uživatel',
-              email: user.email || '',
-              isPremium: false,
-              registeredAt: user.created_at,
-              premiumUntil: null
-            }));
-            
-            setUsers(transformedAuthUsers);
-            toast.success(`Načteno ${transformedAuthUsers.length} uživatelů z auth tabulky`);
-          } else {
-            console.log("Žádní uživatelé nebyli nalezeni");
-            setUsers([]);
-          }
+          console.log("Žádní uživatelé nebyli nalezeni");
+          setUsers([]);
         }
       } catch (error) {
         console.error("Chyba při načítání uživatelů:", error);
