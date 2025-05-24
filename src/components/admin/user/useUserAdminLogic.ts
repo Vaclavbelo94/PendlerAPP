@@ -70,11 +70,42 @@ export const useUserAdminLogic = () => {
 
   // Optimalizovaný callback pro toggle premium
   const togglePremium = useMemoizedCallback(async (userId: string) => {
+    console.log(`Hledání uživatele s ID: ${userId}`);
+    console.log("Dostupní uživatelé:", users.map(u => ({ id: u.id, email: u.email })));
+    
     const user = users.find(u => u.id === userId);
     if (!user) {
-      console.error("Uživatel nenalezen:", userId);
-      toast.error("Uživatel nenalezen");
-      return;
+      console.error("Uživatel nenalezen v lokálním stavu:", userId);
+      console.error("Dostupní uživatelé:", users);
+      
+      // Pokusíme se načíst aktuální data z databáze
+      try {
+        const { data: dbUser, error } = await supabase
+          .from('profiles')
+          .select('id, username, email, is_premium, premium_expiry')
+          .eq('id', userId)
+          .single();
+          
+        if (error || !dbUser) {
+          console.error("Uživatel neexistuje v databázi:", error);
+          toast.error("Uživatel nebyl nalezen v databázi");
+          return;
+        }
+        
+        // Použijeme data z databáze
+        console.log("Použijeme data z databáze:", dbUser);
+        const newPremiumStatus = !dbUser.is_premium;
+        const premiumUntil = newPremiumStatus ? 
+          new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString() : 
+          null;
+        
+        await updateUserPremiumStatus(userId, newPremiumStatus, premiumUntil, dbUser.email);
+        return;
+      } catch (dbError) {
+        console.error("Chyba při načítání z databáze:", dbError);
+        toast.error("Nepodařilo se načíst data uživatele");
+        return;
+      }
     }
     
     const newPremiumStatus = !user.isPremium;
@@ -82,9 +113,18 @@ export const useUserAdminLogic = () => {
       new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString() : 
       null;
     
+    await updateUserPremiumStatus(userId, newPremiumStatus, premiumUntil, user.email);
+  }, [users]);
+
+  const updateUserPremiumStatus = async (
+    userId: string, 
+    newPremiumStatus: boolean, 
+    premiumUntil: string | null, 
+    userEmail: string
+  ) => {
     try {
       console.log(`Aktualizace premium statusu pro uživatele ${userId}: ${newPremiumStatus}`);
-      console.log(`Email uživatele: ${user.email}`);
+      console.log(`Email uživatele: ${userEmail}`);
       console.log(`Premium do: ${premiumUntil}`);
       
       const { error } = await supabase
@@ -117,7 +157,8 @@ export const useUserAdminLogic = () => {
         })
       );
       
-      toast.success(`Uživatel ${user.name} nyní ${newPremiumStatus ? 'má' : 'nemá'} premium status`);
+      const userName = users.find(u => u.id === userId)?.name || userEmail.split('@')[0];
+      toast.success(`Uživatel ${userName} nyní ${newPremiumStatus ? 'má' : 'nemá'} premium status`);
       
       // Refresh data to ensure consistency
       await refetch();
@@ -125,7 +166,7 @@ export const useUserAdminLogic = () => {
       console.error("Neočekávaná chyba při aktualizaci premium statusu:", error);
       toast.error("Nepodařilo se aktualizovat premium status");
     }
-  }, [users, refetch]);
+  };
 
   return {
     users,
