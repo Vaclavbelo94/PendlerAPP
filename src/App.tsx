@@ -2,7 +2,7 @@ import React, { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import Layout from "./components/layouts/Layout";
 import { AuthProvider } from "./hooks/auth";
@@ -26,6 +26,7 @@ const ProfileExtended = lazy(() => import("./pages/ProfileExtended"));
 const Translator = lazy(() => import("./pages/Translator"));
 const Premium = lazy(() => import("./pages/Premium"));
 const Admin = lazy(() => import("./pages/Admin"));
+const UnifiedProfile = lazy(() => import("./pages/UnifiedProfile"));
 
 // Statické stránky - můžeme je načíst eagerly pro lepší SEO
 const About = lazy(() => import("./pages/About"));
@@ -125,8 +126,8 @@ const AppWithPerformance = () => {
             <Route path="/tax-advisor" element={<TaxAdvisor />} />
             <Route path="/travel-planning" element={<TravelPlanning />} />
             <Route path="/commuting-map" element={<CommutingMap />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/profile-extended" element={<ProfileExtended />} />
+            <Route path="/profile" element={<UnifiedProfile />} />
+            <Route path="/profile-extended" element={<Navigate to="/profile" replace />} />
             <Route path="/translator" element={<Translator />} />
             <Route path="/premium" element={<Premium />} />
             <Route path="/admin" element={<Admin />} />

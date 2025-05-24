@@ -1,0 +1,183 @@
+
+import React, { useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { 
+  ActivityIcon, PieChartIcon, CalendarIcon, BookOpenIcon,
+  TrendingUpIcon, ClockIcon
+} from "lucide-react";
+import UserActivityChart from "../UserActivityChart";
+import LanguageSkillsChart from "../LanguageSkillsChart";
+
+const ProfileActivitySection = () => {
+  const [showStatistics, setShowStatistics] = useState(false);
+
+  const activityStats = [
+    {
+      title: "Celkové směny",
+      value: "24",
+      change: "+3 tento měsíc",
+      icon: CalendarIcon,
+      color: "text-blue-600"
+    },
+    {
+      title: "Studium němčiny",
+      value: "18h",
+      change: "+2h tento týden",
+      icon: BookOpenIcon,
+      color: "text-green-600"
+    },
+    {
+      title: "Aktivní dny",
+      value: "15",
+      change: "Posledních 30 dní",
+      icon: ActivityIcon,
+      color: "text-purple-600"
+    },
+    {
+      title: "Průměrná doba",
+      value: "1.2h",
+      change: "Na směnu",
+      icon: ClockIcon,
+      color: "text-orange-600"
+    }
+  ];
+
+  return (
+    <div className="space-y-6">
+      {/* Ovládání zobrazení */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <ActivityIcon className="h-5 w-5" />
+            Aktivita a statistiky
+          </CardTitle>
+          <CardDescription>
+            Sledujte svůj pokrok a aktivitu v aplikaci
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between">
+            <div>
+              <Label htmlFor="show-stats" className="text-base font-medium">
+                Zobrazit detailní statistiky
+              </Label>
+              <p className="text-sm text-muted-foreground mt-1">
+                Ukáže grafy a podrobné analýzy vaší aktivity
+              </p>
+            </div>
+            <Switch 
+              id="show-stats"
+              checked={showStatistics}
+              onCheckedChange={setShowStatistics}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Rychlé statistiky */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {activityStats.map((stat, index) => (
+          <Card key={index}>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    {stat.title}
+                  </p>
+                  <p className="text-2xl font-bold mt-1">{stat.value}</p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {stat.change}
+                  </p>
+                </div>
+                <stat.icon className={`h-8 w-8 ${stat.color}`} />
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Detailní statistiky */}
+      {showStatistics && (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <TrendingUpIcon className="h-5 w-5" />
+                  Aktivita v čase
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <UserActivityChart />
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <PieChartIcon className="h-5 w-5" />
+                  Jazykové dovednosti
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <LanguageSkillsChart />
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Nedávná aktivita */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Nedávná aktivita</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {[
+                  {
+                    action: "Dokončena směna",
+                    detail: "München - Ranní směna",
+                    time: "Před 2 hodinami",
+                    type: "shift"
+                  },
+                  {
+                    action: "Studium němčiny",
+                    detail: "15 nových slov naučeno",
+                    time: "Včera",
+                    type: "language"
+                  },
+                  {
+                    action: "Aktualizace profilu",
+                    detail: "Změněny pracovní preference",
+                    time: "Před 3 dny",
+                    type: "profile"
+                  }
+                ].map((activity, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-2 h-2 rounded-full ${
+                        activity.type === 'shift' ? 'bg-blue-500' :
+                        activity.type === 'language' ? 'bg-green-500' :
+                        'bg-purple-500'
+                      }`} />
+                      <div>
+                        <p className="font-medium">{activity.action}</p>
+                        <p className="text-sm text-muted-foreground">{activity.detail}</p>
+                      </div>
+                    </div>
+                    <Badge variant="secondary">{activity.time}</Badge>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default ProfileActivitySection;
