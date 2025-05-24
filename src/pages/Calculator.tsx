@@ -21,6 +21,9 @@ const Calculator = () => {
   const [activeTab, setActiveTab] = useState("basic");
   const isMobile = useIsMobile();
 
+  // Mock schedule data for AmortizationTable
+  const mockSchedule = [];
+
   return (
     <div className="container py-6 md:py-10 max-w-7xl">
       <div className="mb-8">
@@ -72,7 +75,7 @@ const Calculator = () => {
         </TabsContent>
 
         <TabsContent value="amortization" className="space-y-6">
-          <AmortizationTable />
+          <AmortizationTable schedule={mockSchedule} />
         </TabsContent>
 
         <TabsContent value="scientific" className="space-y-6">

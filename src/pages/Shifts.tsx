@@ -10,15 +10,20 @@ import {
   FileTextIcon
 } from "lucide-react";
 
-// Import existing components
-import ShiftCalendarTab from "@/components/shifts/ShiftCalendarTab";
-import PlanningTab from "@/components/shifts/PlanningTab";
-import ReportsTab from "@/components/shifts/ReportsTab";
+// Import existing components with correct named imports
+import { ShiftCalendarTab } from "@/components/shifts/ShiftCalendarTab";
+import { PlanningTab } from "@/components/shifts/PlanningTab";
+import { ReportsTab } from "@/components/shifts/ReportsTab";
 import ShiftAnalytics from "@/components/shifts/ShiftAnalytics";
 
 const Shifts = () => {
   const [activeTab, setActiveTab] = useState("calendar");
   const isMobile = useIsMobile();
+
+  // Mock data for components that need props
+  const mockShifts = [];
+  const mockUser = null;
+  const mockPeriod = "week" as const;
 
   return (
     <div className="container py-6 md:py-10 max-w-7xl">
@@ -54,19 +59,36 @@ const Shifts = () => {
         </TabsList>
 
         <TabsContent value="calendar" className="space-y-6">
-          <ShiftCalendarTab />
+          <ShiftCalendarTab 
+            selectedDate={undefined}
+            onSelectDate={() => {}}
+            shifts={mockShifts}
+            currentShift={null}
+            shiftType="morning"
+            setShiftType={() => {}}
+            shiftNotes=""
+            setShiftNotes={() => {}}
+            user={mockUser}
+            onSaveShift={() => {}}
+            onDeleteShift={() => {}}
+            onOpenNoteDialog={() => {}}
+          />
         </TabsContent>
 
         <TabsContent value="planning" className="space-y-6">
-          <PlanningTab />
+          <PlanningTab user={mockUser} />
         </TabsContent>
 
         <TabsContent value="analytics" className="space-y-6">
-          <ShiftAnalytics />
+          <ShiftAnalytics 
+            shifts={mockShifts}
+            period={mockPeriod}
+            onPeriodChange={() => {}}
+          />
         </TabsContent>
 
         <TabsContent value="reports" className="space-y-6">
-          <ReportsTab />
+          <ReportsTab shifts={mockShifts} user={mockUser} />
         </TabsContent>
       </Tabs>
     </div>

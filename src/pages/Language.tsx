@@ -22,6 +22,10 @@ const Language = () => {
   const [activeTab, setActiveTab] = useState("vocabulary");
   const isMobile = useIsMobile();
 
+  // Mock data for components that need props
+  const mockVocabularyCount = 0;
+  const mockProgress = { reviewed: 0, total: 0, percentage: 0 };
+
   return (
     <div className="container py-6 md:py-10 max-w-7xl">
       <div className="mb-8">
@@ -78,7 +82,10 @@ const Language = () => {
         </TabsContent>
 
         <TabsContent value="progress" className="space-y-6">
-          <VocabularyProgressDashboard />
+          <VocabularyProgressDashboard 
+            vocabularyCount={mockVocabularyCount}
+            progress={mockProgress}
+          />
         </TabsContent>
 
         <TabsContent value="gamification" className="space-y-6">
