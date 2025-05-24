@@ -20,7 +20,6 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useOptimizedQuery } from "@/hooks/useOptimizedQuery";
 import { useMemoizedCallback } from "@/hooks/useMemoizedCallback";
 import { MemoizedCard } from "@/components/optimized/MemoizedCard";
-import { cn } from "@/lib/utils";
 
 interface User {
   id: string;
@@ -36,7 +35,7 @@ export const UserAdminPanel = () => {
   const isMobile = useIsMobile();
 
   // Optimalizovaný query pro načítání uživatelů
-  const { data: profiles, isLoading, error } = useOptimizedQuery({
+  const { data: profiles, isLoading, error, refetch } = useOptimizedQuery({
     queryKey: ['admin-users'],
     queryFn: async () => {
       console.log("Načítání uživatelů...");
@@ -58,6 +57,7 @@ export const UserAdminPanel = () => {
         throw error;
       }
 
+      console.log("Načtená data:", data);
       return data || [];
     },
     staleTime: 2 * 60 * 1000, // 2 minuty pro admin data
@@ -124,11 +124,14 @@ export const UserAdminPanel = () => {
       
       setUsers(updatedUsers);
       toast.success(`Uživatel ${user.name} nyní ${newPremiumStatus ? 'má' : 'nemá'} premium status`);
+      
+      // Refresh data to ensure consistency
+      refetch();
     } catch (error) {
       console.error("Chyba při aktualizaci premium statusu:", error);
       toast.error("Nepodařilo se aktualizovat premium status");
     }
-  }, [users]);
+  }, [users, refetch]);
 
   if (isLoading) {
     return (
@@ -149,6 +152,9 @@ export const UserAdminPanel = () => {
         <p className="text-sm text-muted-foreground mt-2 max-w-md">
           Nepodařilo se načíst uživatele z databáze. Zkuste to prosím znovu.
         </p>
+        <Button onClick={() => refetch()} className="mt-4">
+          Zkusit znovu
+        </Button>
       </FlexContainer>
     );
   }
@@ -161,6 +167,9 @@ export const UserAdminPanel = () => {
         <p className="text-sm text-muted-foreground mt-2 max-w-md">
           V systému zatím nejsou registrovaní žádní uživatelé nebo nemáte oprávnění je zobrazit.
         </p>
+        <Button onClick={() => refetch()} className="mt-4" variant="outline">
+          Obnovit
+        </Button>
       </FlexContainer>
     );
   }
@@ -171,6 +180,9 @@ export const UserAdminPanel = () => {
         <p className="text-sm text-muted-foreground">
           Celkem uživatelů: {users.length}
         </p>
+        <Button onClick={() => refetch()} variant="outline" size="sm">
+          Obnovit data
+        </Button>
       </FlexContainer>
       
       {isMobile ? (
