@@ -1,3 +1,4 @@
+
 import React, { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -11,8 +12,11 @@ import { useResourceOptimization } from "./hooks/useResourceOptimization";
 import { RouteOptimizer } from "./components/optimized/RouteOptimizer";
 import { DatabaseOptimizer } from "./components/optimized/DatabaseOptimizer";
 
-// Lazy loading všech stránek s optimalizací
-const Index = lazy(() => import("./pages/Index"));
+// Lazy loading všech stránek s better error handling
+const Index = lazy(() => import("./pages/Index").catch(err => {
+  console.error('Failed to load Index page:', err);
+  return { default: () => <div>Error loading page</div> };
+}));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Language = lazy(() => import("./pages/Language"));
 const Shifts = lazy(() => import("./pages/Shifts"));
@@ -28,7 +32,7 @@ const Premium = lazy(() => import("./pages/Premium"));
 const Admin = lazy(() => import("./pages/Admin"));
 const UnifiedProfile = lazy(() => import("./pages/UnifiedProfile"));
 
-// Statické stránky - můžeme je načíst eagerly pro lepší SEO
+// Statické stránky
 const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
 const FAQ = lazy(() => import("./pages/FAQ"));
@@ -74,35 +78,33 @@ const PageSkeleton = React.memo(() => (
 
 PageSkeleton.displayName = "PageSkeleton";
 
-// Optimalizovaný QueryClient s pokročilou cache strategií
+// Optimalizovaný QueryClient
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000, // 5 minut
-      gcTime: 15 * 60 * 1000, // 15 minut - zvýšeno z 10 minut
+      staleTime: 5 * 60 * 1000,
+      gcTime: 15 * 60 * 1000,
       retry: (failureCount, error) => {
-        // Pokročilá retry strategie
         if (failureCount >= 3) return false;
         // @ts-ignore
         if (error?.status === 404 || error?.status === 403) return false;
         // @ts-ignore
-        if (error?.status >= 500) return failureCount < 5; // Více pokusů pro server errors
+        if (error?.status >= 500) return failureCount < 5;
         return true;
       },
       retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-      // Nová optimalizace: background refetch
       refetchOnWindowFocus: false,
       refetchOnMount: false,
       refetchOnReconnect: 'always',
     },
     mutations: {
-      retry: 2, // Zvýšeno z 1
+      retry: 2,
       retryDelay: 1000,
     },
   },
 });
 
-// Performance wrapper pro App s novými optimalizacemi
+// Performance wrapper pro App
 const AppWithPerformance = () => {
   usePerformanceOptimization();
   useResourceOptimization({
