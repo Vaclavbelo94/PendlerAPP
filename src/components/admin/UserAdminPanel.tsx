@@ -88,7 +88,11 @@ export const UserAdminPanel = () => {
   // Optimalizovaný callback pro toggle premium
   const togglePremium = useMemoizedCallback(async (userId: string) => {
     const user = users.find(u => u.id === userId);
-    if (!user) return;
+    if (!user) {
+      console.error("Uživatel nenalezen:", userId);
+      toast.error("Uživatel nenalezen");
+      return;
+    }
     
     const newPremiumStatus = !user.isPremium;
     const premiumUntil = newPremiumStatus ? 
@@ -97,6 +101,8 @@ export const UserAdminPanel = () => {
     
     try {
       console.log(`Aktualizace premium statusu pro uživatele ${userId}: ${newPremiumStatus}`);
+      console.log(`Email uživatele: ${user.email}`);
+      console.log(`Premium do: ${premiumUntil}`);
       
       const { error } = await supabase
         .from('profiles')
@@ -108,30 +114,35 @@ export const UserAdminPanel = () => {
       
       if (error) {
         console.error("Chyba při aktualizaci premium statusu:", error);
-        throw error;
+        toast.error(`Chyba při aktualizaci: ${error.message}`);
+        return;
       }
       
-      const updatedUsers = users.map(u => {
-        if (u.id === userId) {
-          return { 
-            ...u, 
-            isPremium: newPremiumStatus,
-            premiumUntil
-          };
-        }
-        return u;
-      });
+      console.log("Premium status úspěšně aktualizován v databázi");
       
-      setUsers(updatedUsers);
+      // Aktualizujeme místní stav
+      setUsers(prevUsers => 
+        prevUsers.map(u => {
+          if (u.id === userId) {
+            return { 
+              ...u, 
+              isPremium: newPremiumStatus,
+              premiumUntil
+            };
+          }
+          return u;
+        })
+      );
+      
       toast.success(`Uživatel ${user.name} nyní ${newPremiumStatus ? 'má' : 'nemá'} premium status`);
       
       // Refresh data to ensure consistency
-      refetch();
+      await refetch();
     } catch (error) {
-      console.error("Chyba při aktualizaci premium statusu:", error);
+      console.error("Neočekávaná chyba při aktualizaci premium statusu:", error);
       toast.error("Nepodařilo se aktualizovat premium status");
     }
-  }, [users, refetch]);
+  }, [users, refetch, setUsers]);
 
   if (isLoading) {
     return (
