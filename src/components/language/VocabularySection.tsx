@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useMediaQuery } from "@/hooks/use-media-query";
 import { useIsMobile } from "@/hooks/use-mobile";
 import VocabularyManager, { useVocabularyContext } from './vocabulary/VocabularyManager';
 import { useAuth } from '@/hooks/useAuth';
@@ -23,7 +22,10 @@ const VocabularyContent: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState('basics');
   const isMobile = useIsMobile();
   const { isAdmin } = useAuth();
-  const { dueItems } = useVocabularyContext();
+  
+  // Get vocabulary context
+  const vocabularyContext = useVocabularyContext();
+  const dueItems = vocabularyContext?.dueItems || [];
   
   return (
     <div className="space-y-4">
@@ -61,114 +63,110 @@ const VocabularyContent: React.FC = () => {
       )}
       
       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
-        <Card className="border-b p-1">
-          <TabsList className={`grid ${isMobile ? 'grid-cols-3' : 'grid-cols-6'} h-auto p-0.5`}>
-            <TabsTrigger 
-              value="basics" 
-              onClick={() => setSelectedTab('basics')}
-              className="flex items-center justify-center py-1 px-0.5"
-            >
-              <div className="flex items-center flex-col sm:flex-row sm:gap-1.5">
-                <BookOpen className={`${isMobile ? 'w-4 h-4' : 'w-4 h-4'}`} />
-                <span className={isMobile ? "text-[10px] mt-0.5" : "text-xs"}>
-                  Základy
-                </span>
-              </div>
-            </TabsTrigger>
-            
-            <TabsTrigger 
-              value="packaging" 
-              onClick={() => setSelectedTab('packaging')}
-              className="flex items-center justify-center py-1 px-0.5"
-            >
-              <div className="flex items-center flex-col sm:flex-row sm:gap-1.5">
-                <Search className={`${isMobile ? 'w-4 h-4' : 'w-4 h-4'}`} />
-                <span className={isMobile ? "text-[10px] mt-0.5" : "text-xs"}>
-                  Balíky
-                </span>
-              </div>
-            </TabsTrigger>
-            
-            <TabsTrigger 
-              value="numbers" 
-              onClick={() => setSelectedTab('numbers')}
-              className="flex items-center justify-center py-1 px-0.5"
-            >
-              <div className="flex items-center flex-col sm:flex-row sm:gap-1.5">
-                <Brain className={`${isMobile ? 'w-4 h-4' : 'w-4 h-4'}`} />
-                <span className={isMobile ? "text-[10px] mt-0.5" : "text-xs"}>
-                  Čísla
-                </span>
-              </div>
-            </TabsTrigger>
-            
-            {!isMobile && (
+        <Card className="border-b">
+          <CardContent className="p-1">
+            <TabsList className={`grid ${isMobile ? 'grid-cols-3' : 'grid-cols-6'} w-full h-auto p-1 bg-muted/50`}>
               <TabsTrigger 
-                value="directions" 
-                onClick={() => setSelectedTab('directions')}
-                className="flex items-center justify-center py-1 px-0.5"
+                value="basics" 
+                className={`flex items-center justify-center ${isMobile ? 'py-2 px-1' : 'py-2 px-3'} data-[state=active]:bg-background data-[state=active]:shadow-sm`}
               >
-                <div className="flex items-center flex-col sm:flex-row sm:gap-1.5">
-                  <Wrench className={`${isMobile ? 'w-4 h-4' : 'w-4 h-4'}`} />
-                  <span className={isMobile ? "text-[10px] mt-0.5" : "text-xs"}>
-                    Pokyny
+                <div className="flex items-center flex-col gap-1">
+                  <BookOpen className="w-4 h-4" />
+                  <span className={`${isMobile ? 'text-xs' : 'text-sm'} font-medium text-center leading-tight`}>
+                    Základy
                   </span>
                 </div>
               </TabsTrigger>
-            )}
-            
-            {!isMobile && (
+              
               <TabsTrigger 
-                value="technology" 
-                onClick={() => setSelectedTab('technology')}
-                className="flex items-center justify-center py-1 px-0.5"
+                value="packaging" 
+                className={`flex items-center justify-center ${isMobile ? 'py-2 px-1' : 'py-2 px-3'} data-[state=active]:bg-background data-[state=active]:shadow-sm`}
               >
-                <div className="flex items-center flex-col sm:flex-row sm:gap-1.5">
-                  <Cpu className={`${isMobile ? 'w-4 h-4' : 'w-4 h-4'}`} />
-                  <span className={isMobile ? "text-[10px] mt-0.5" : "text-xs"}>
-                    Technika
+                <div className="flex items-center flex-col gap-1">
+                  <Search className="w-4 h-4" />
+                  <span className={`${isMobile ? 'text-xs' : 'text-sm'} font-medium text-center leading-tight`}>
+                    Balíky
                   </span>
                 </div>
               </TabsTrigger>
-            )}
-            
-            <TabsTrigger 
-              value="practice" 
-              onClick={() => setSelectedTab('practice')}
-              className="flex items-center justify-center py-1 px-0.5"
-            >
-              <div className="flex items-center flex-col sm:flex-row sm:gap-1.5">
-                <Trophy className={`${isMobile ? 'w-4 h-4' : 'w-4 h-4'}`} />
-                <span className={isMobile ? "text-[10px] mt-0.5" : "text-xs"}>
-                  Procvičení
-                </span>
-              </div>
-            </TabsTrigger>
-          </TabsList>
+              
+              <TabsTrigger 
+                value="numbers" 
+                className={`flex items-center justify-center ${isMobile ? 'py-2 px-1' : 'py-2 px-3'} data-[state=active]:bg-background data-[state=active]:shadow-sm`}
+              >
+                <div className="flex items-center flex-col gap-1">
+                  <Brain className="w-4 h-4" />
+                  <span className={`${isMobile ? 'text-xs' : 'text-sm'} font-medium text-center leading-tight`}>
+                    Čísla
+                  </span>
+                </div>
+              </TabsTrigger>
+              
+              {!isMobile && (
+                <>
+                  <TabsTrigger 
+                    value="directions" 
+                    className="flex items-center justify-center py-2 px-3 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                  >
+                    <div className="flex items-center flex-col gap-1">
+                      <Wrench className="w-4 h-4" />
+                      <span className="text-sm font-medium text-center leading-tight">
+                        Pokyny
+                      </span>
+                    </div>
+                  </TabsTrigger>
+                  
+                  <TabsTrigger 
+                    value="technology" 
+                    className="flex items-center justify-center py-2 px-3 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                  >
+                    <div className="flex items-center flex-col gap-1">
+                      <Cpu className="w-4 h-4" />
+                      <span className="text-sm font-medium text-center leading-tight">
+                        Technika
+                      </span>
+                    </div>
+                  </TabsTrigger>
+                </>
+              )}
+              
+              <TabsTrigger 
+                value="practice" 
+                className={`flex items-center justify-center ${isMobile ? 'py-2 px-1' : 'py-2 px-3'} data-[state=active]:bg-background data-[state=active]:shadow-sm`}
+              >
+                <div className="flex items-center flex-col gap-1">
+                  <Trophy className="w-4 h-4" />
+                  <span className={`${isMobile ? 'text-xs' : 'text-sm'} font-medium text-center leading-tight`}>
+                    Procvičení
+                  </span>
+                </div>
+              </TabsTrigger>
+            </TabsList>
+          </CardContent>
         </Card>
         
-        <div className="mt-2">
-          <TabsContent value="basics">
+        <div className="mt-4">
+          <TabsContent value="basics" className="mt-0">
             <WarehouseBasicsTab />
           </TabsContent>
           
-          <TabsContent value="packaging">
+          <TabsContent value="packaging" className="mt-0">
             <PackagingTermsTab />
           </TabsContent>
           
-          <TabsContent value="numbers">
+          <TabsContent value="numbers" className="mt-0">
             <NumbersTab />
           </TabsContent>
           
-          <TabsContent value="directions">
+          <TabsContent value="directions" className="mt-0">
             <DirectionsTab />
           </TabsContent>
           
-          <TabsContent value="technology">
+          <TabsContent value="technology" className="mt-0">
             <TechnologyTab />
           </TabsContent>
           
-          <TabsContent value="practice">
+          <TabsContent value="practice" className="mt-0">
             <PracticeTab />
           </TabsContent>
         </div>

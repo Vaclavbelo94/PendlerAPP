@@ -6,10 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { MessageSquare, Coffee, Briefcase, Heart, MapPin, Volume2, PlayCircle } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const PhrasesTab = () => {
   const [selectedCategory, setSelectedCategory] = useState('work');
   const isMobile = useIsMobile();
+  const { toast } = useToast();
 
   const phraseCategories = [
     {
@@ -81,8 +83,28 @@ const PhrasesTab = () => {
     if ('speechSynthesis' in window) {
       const utterance = new SpeechSynthesisUtterance(phrase);
       utterance.lang = 'de-DE';
+      utterance.rate = 0.8;
       speechSynthesis.speak(utterance);
+      
+      toast({
+        title: "Reprodukuji výslovnost",
+        description: `"${phrase}"`,
+      });
+    } else {
+      toast({
+        title: "Výslovnost není podporována",
+        description: "Váš prohlížeč nepodporuje text-to-speech",
+        variant: "destructive"
+      });
     }
+  };
+
+  const handlePractice = (categoryId: string) => {
+    console.log(`Starting practice for category: ${categoryId}`);
+    toast({
+      title: "Procvičování spuštěno",
+      description: `Začínáme procvičovat fráze kategorie: ${phraseCategories.find(c => c.id === categoryId)?.title}`,
+    });
   };
 
   return (
@@ -97,31 +119,33 @@ const PhrasesTab = () => {
       </Card>
 
       <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
-        <Card className="border-b p-1">
-          <TabsList className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} h-auto p-0.5`}>
-            {phraseCategories.map((category) => {
-              const Icon = category.icon;
-              return (
-                <TabsTrigger 
-                  key={category.id}
-                  value={category.id}
-                  className="flex items-center justify-center py-1 px-0.5"
-                >
-                  <div className="flex items-center flex-col sm:flex-row sm:gap-1.5">
-                    <Icon className={`${isMobile ? 'w-4 h-4' : 'w-4 h-4'}`} />
-                    <span className={isMobile ? "text-[10px] mt-0.5" : "text-xs"}>
-                      {category.title}
-                    </span>
-                  </div>
-                </TabsTrigger>
-              );
-            })}
-          </TabsList>
+        <Card className="border-b">
+          <CardContent className="p-1">
+            <TabsList className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} w-full h-auto p-1 bg-muted/50`}>
+              {phraseCategories.map((category) => {
+                const Icon = category.icon;
+                return (
+                  <TabsTrigger 
+                    key={category.id}
+                    value={category.id}
+                    className={`flex items-center justify-center ${isMobile ? 'py-2 px-1' : 'py-2 px-3'} data-[state=active]:bg-background data-[state=active]:shadow-sm`}
+                  >
+                    <div className="flex items-center flex-col gap-1">
+                      <Icon className="w-4 h-4" />
+                      <span className={`${isMobile ? 'text-xs' : 'text-sm'} font-medium text-center leading-tight`}>
+                        {category.title}
+                      </span>
+                    </div>
+                  </TabsTrigger>
+                );
+              })}
+            </TabsList>
+          </CardContent>
         </Card>
 
-        <div className="mt-2">
+        <div className="mt-4">
           {phraseCategories.map((category) => (
-            <TabsContent key={category.id} value={category.id}>
+            <TabsContent key={category.id} value={category.id} className="mt-0">
               <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                 <div className="lg:col-span-1">
                   <Card className={`${category.color} mb-4`}>
@@ -136,7 +160,11 @@ const PhrasesTab = () => {
                       <CardDescription>{category.description}</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <Button className="w-full flex gap-1" size="sm">
+                      <Button 
+                        className="w-full flex gap-1" 
+                        size="sm"
+                        onClick={() => handlePractice(category.id)}
+                      >
                         <PlayCircle className="h-4 w-4" />
                         Procvičit fráze
                       </Button>
@@ -168,7 +196,7 @@ const PhrasesTab = () => {
                                 <Button 
                                   variant="ghost" 
                                   size="sm" 
-                                  className="p-0 h-8 w-8" 
+                                  className="p-0 h-8 w-8 hover:bg-primary/10" 
                                   onClick={() => pronouncePhrase(phrase.german)}
                                 >
                                   <Volume2 className="h-4 w-4" />

@@ -13,57 +13,108 @@ interface Achievement {
   description: string;
   icon: React.ReactNode;
   unlocked: boolean;
+  xpReward: number;
 }
 
 const GamificationFeatures = () => {
-  const [xp, setXp] = useState(120);
-  const [level, setLevel] = useState(1);
-  const [streak, setStreak] = useState(3);
-  const [lastActivity, setLastActivity] = useState<Date | null>(null);
-  const [dailyGoalCompleted, setDailyGoalCompleted] = useState(false);
+  const [xp, setXp] = useState(() => {
+    const saved = localStorage.getItem('gamification_xp');
+    return saved ? parseInt(saved) : 120;
+  });
+  
+  const [level, setLevel] = useState(() => {
+    const saved = localStorage.getItem('gamification_level');
+    return saved ? parseInt(saved) : 1;
+  });
+  
+  const [streak, setStreak] = useState(() => {
+    const saved = localStorage.getItem('gamification_streak');
+    return saved ? parseInt(saved) : 3;
+  });
+  
+  const [lastActivity, setLastActivity] = useState<Date | null>(() => {
+    const saved = localStorage.getItem('gamification_last_activity');
+    return saved ? new Date(saved) : null;
+  });
+  
+  const [dailyGoalCompleted, setDailyGoalCompleted] = useState(() => {
+    const saved = localStorage.getItem('gamification_daily_completed');
+    const today = new Date().toDateString();
+    const savedDate = localStorage.getItem('gamification_daily_date');
+    return saved === 'true' && savedDate === today;
+  });
+  
   const { toast } = useToast();
+
+  // Save data to localStorage whenever state changes
+  useEffect(() => {
+    localStorage.setItem('gamification_xp', xp.toString());
+    localStorage.setItem('gamification_level', level.toString());
+    localStorage.setItem('gamification_streak', streak.toString());
+    if (lastActivity) {
+      localStorage.setItem('gamification_last_activity', lastActivity.toISOString());
+    }
+    localStorage.setItem('gamification_daily_completed', dailyGoalCompleted.toString());
+    localStorage.setItem('gamification_daily_date', new Date().toDateString());
+  }, [xp, level, streak, lastActivity, dailyGoalCompleted]);
 
   // XP required for each level
   const xpForNextLevel = level * 150;
   
-  // Mock achievements
-  const [achievements, setAchievements] = useState<Achievement[]>([
-    {
-      id: "first-lesson",
-      name: "První lekce",
-      description: "Dokončili jste svou první lekci",
-      icon: <Star className="h-6 w-6 text-yellow-500" />,
-      unlocked: true
-    },
-    {
-      id: "three-day-streak",
-      name: "3 dny v řadě",
-      description: "Učili jste se 3 dny v řadě",
-      icon: <Trophy className="h-6 w-6 text-amber-500" />,
-      unlocked: true
-    },
-    {
-      id: "grammar-master",
-      name: "Mistr gramatiky",
-      description: "Dokončili jste všechna gramatická cvičení",
-      icon: <Award className="h-6 w-6 text-emerald-500" />,
-      unlocked: false
-    },
-    {
-      id: "vocabulary-pro",
-      name: "Slovníkový profesionál",
-      description: "Naučili jste se 100 nových slovíček",
-      icon: <BadgeCheck className="h-6 w-6 text-blue-500" />,
-      unlocked: false
-    },
-    {
-      id: "quiz-perfect",
-      name: "Perfektní kvíz",
-      description: "Získali jste 100% v kvízu",
-      icon: <CircleCheck className="h-6 w-6 text-purple-500" />,
-      unlocked: false
+  // Achievements with XP rewards
+  const [achievements, setAchievements] = useState<Achievement[]>(() => {
+    const saved = localStorage.getItem('gamification_achievements');
+    if (saved) {
+      return JSON.parse(saved);
     }
-  ]);
+    return [
+      {
+        id: "first-lesson",
+        name: "První lekce",
+        description: "Dokončili jste svou první lekci",
+        icon: <Star className="h-6 w-6 text-yellow-500" />,
+        unlocked: true,
+        xpReward: 50
+      },
+      {
+        id: "three-day-streak",
+        name: "3 dny v řadě",
+        description: "Učili jste se 3 dny v řadě",
+        icon: <Trophy className="h-6 w-6 text-amber-500" />,
+        unlocked: streak >= 3,
+        xpReward: 100
+      },
+      {
+        id: "grammar-master",
+        name: "Mistr gramatiky",
+        description: "Dokončili jste všechna gramatická cvičení",
+        icon: <Award className="h-6 w-6 text-emerald-500" />,
+        unlocked: false,
+        xpReward: 200
+      },
+      {
+        id: "vocabulary-pro",
+        name: "Slovníkový profesionál",
+        description: "Naučili jste se 100 nových slovíček",
+        icon: <BadgeCheck className="h-6 w-6 text-blue-500" />,
+        unlocked: false,
+        xpReward: 300
+      },
+      {
+        id: "quiz-perfect",
+        name: "Perfektní kvíz",
+        description: "Získali jste 100% v kvízu",
+        icon: <CircleCheck className="h-6 w-6 text-purple-500" />,
+        unlocked: false,
+        xpReward: 150
+      }
+    ];
+  });
+
+  // Save achievements when they change
+  useEffect(() => {
+    localStorage.setItem('gamification_achievements', JSON.stringify(achievements));
+  }, [achievements]);
 
   // Simulate earning XP
   const earnXp = (amount: number) => {
@@ -91,10 +142,24 @@ const GamificationFeatures = () => {
     
     // Check if daily goal should be completed
     if (!dailyGoalCompleted && amount >= 20) {
-      setDailyGoalCompleted(true);
-      // Simulate streak update
-      setStreak(prev => prev + 1);
-      unlockAchievementIfNeeded("daily-goal");
+      completeDailyGoal();
+    }
+  };
+
+  // Complete daily goal
+  const completeDailyGoal = () => {
+    setDailyGoalCompleted(true);
+    setStreak(prev => prev + 1);
+    earnXp(25); // Bonus XP for completing daily goal
+    
+    toast({
+      title: "Denní cíl splněn!",
+      description: `Série ${streak + 1} dnů! Získáváte bonus +25 XP.`,
+    });
+
+    // Check for streak achievement
+    if (streak + 1 >= 3) {
+      unlockAchievementIfNeeded("three-day-streak");
     }
   };
 
@@ -107,20 +172,24 @@ const GamificationFeatures = () => {
         prev.map(a => a.id === id ? { ...a, unlocked: true } : a)
       );
       
+      // Give XP reward
+      setXp(prev => prev + achievementToUnlock.xpReward);
+      
       toast({
         title: "Nový úspěch odemčen!",
-        description: `${achievementToUnlock.name}: ${achievementToUnlock.description}`,
+        description: `${achievementToUnlock.name}: ${achievementToUnlock.description} (+${achievementToUnlock.xpReward} XP)`,
       });
     }
   };
 
   // Simulate study activity
   const simulateStudyActivity = () => {
-    earnXp(25);
+    const xpAmount = Math.floor(Math.random() * 30) + 20; // 20-50 XP
+    earnXp(xpAmount);
     
     // Random chance to unlock an achievement
     const randomAchievement = achievements.find(a => !a.unlocked);
-    if (randomAchievement && Math.random() > 0.7) {
+    if (randomAchievement && Math.random() > 0.8) {
       unlockAchievementIfNeeded(randomAchievement.id);
     }
   };
@@ -147,6 +216,7 @@ const GamificationFeatures = () => {
           />
           <div className="flex justify-between text-sm text-muted-foreground">
             <span>Ještě {xpForNextLevel - xp} XP do další úrovně</span>
+            <span>{Math.round((xp / xpForNextLevel) * 100)}%</span>
           </div>
         </CardContent>
       </Card>
@@ -198,10 +268,10 @@ const GamificationFeatures = () => {
             {achievements.map((achievement) => (
               <div 
                 key={achievement.id}
-                className={`flex items-center gap-3 p-2 rounded-md border ${
+                className={`flex items-center gap-3 p-3 rounded-md border transition-all ${
                   achievement.unlocked 
-                    ? "bg-primary/5 border-primary/20" 
-                    : "bg-muted/30 border-dashed opacity-70"
+                    ? "bg-primary/5 border-primary/20 shadow-sm" 
+                    : "bg-muted/30 border-dashed opacity-70 hover:opacity-100"
                 }`}
               >
                 <div className={`p-1.5 rounded-full ${
@@ -209,8 +279,15 @@ const GamificationFeatures = () => {
                 }`}>
                   {achievement.icon}
                 </div>
-                <div>
-                  <div className="font-medium">{achievement.name}</div>
+                <div className="flex-1">
+                  <div className="font-medium flex items-center gap-2">
+                    {achievement.name}
+                    {achievement.unlocked && (
+                      <Badge variant="secondary" className="text-xs">
+                        +{achievement.xpReward} XP
+                      </Badge>
+                    )}
+                  </div>
                   <div className="text-xs text-muted-foreground">
                     {achievement.description}
                   </div>
@@ -234,9 +311,9 @@ const GamificationFeatures = () => {
             {[1, 2, 3, 4, 5, 6, 7].map((day) => (
               <div 
                 key={day}
-                className={`flex flex-col items-center p-2 rounded-md border ${
+                className={`flex flex-col items-center p-2 rounded-md border transition-all ${
                   day <= streak 
-                    ? "bg-primary/5 border-primary/20" 
+                    ? "bg-primary/5 border-primary/20 shadow-sm" 
                     : "bg-muted/30 border-dashed"
                 }`}
               >

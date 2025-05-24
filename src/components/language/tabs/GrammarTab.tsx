@@ -52,6 +52,11 @@ const GrammarTab = () => {
     }
   ];
 
+  const handleStartPractice = (sectionId: string) => {
+    console.log(`Starting practice for section: ${sectionId}`);
+    // Zde by byla logika pro spuštění procvičování
+  };
+
   return (
     <div className="space-y-6">
       <Card className="mb-4">
@@ -116,7 +121,11 @@ const GrammarTab = () => {
                             style={{ width: `${section.progress}%` }}
                           ></div>
                         </div>
-                        <Button className="w-full flex gap-1" size="sm">
+                        <Button 
+                          className="w-full flex gap-1" 
+                          size="sm"
+                          onClick={() => handleStartPractice(section.id)}
+                        >
                           <PlayCircle className="h-4 w-4" />
                           Začít procvičovat
                         </Button>
@@ -146,10 +155,21 @@ const GrammarTab = () => {
                 </div>
 
                 <div className="lg:col-span-2">
-                  {grammarExercises.find(cat => cat.id === section.id) && (
+                  {grammarExercises.find(cat => cat.id === section.id) ? (
                     <EnhancedGrammarExercise 
                       category={grammarExercises.find(cat => cat.id === section.id)!} 
                     />
+                  ) : (
+                    <Card>
+                      <CardContent className="pt-6">
+                        <div className="text-center py-8">
+                          <h3 className="text-lg font-medium mb-2">Cvičení připravujeme</h3>
+                          <p className="text-muted-foreground">
+                            Pro tuto kategorii připravujeme interaktivní cvičení
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
                   )}
                 </div>
               </div>

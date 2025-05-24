@@ -24,11 +24,21 @@ const VocabularyProgressDashboard: React.FC<VocabularyProgressDashboardProps> = 
   vocabularyCount,
   progress
 }) => {
-  // Get mastery stats data from the vocabulary context instead
-  const { items } = useVocabularyContext();
-  // Získání dat o zvládnutí slovíček
-  const { masteredCount, learningCount } = useMasteryStats(items || []);
-  const { testHistory, getStatistics } = useVocabularyContext();
+  // Get context safely with fallbacks
+  const vocabularyContext = useVocabularyContext();
+  const items = vocabularyContext?.items || [];
+  const testHistory = vocabularyContext?.testHistory || [];
+  const getStatistics = vocabularyContext?.getStatistics || (() => ({
+    totalItems: 0,
+    dueItems: 0,
+    completedToday: 0,
+    dailyGoal: 10,
+    streak: 0,
+    accuracy: 0
+  }));
+  
+  // Get mastery stats data
+  const { masteredCount, learningCount } = useMasteryStats(items);
   
   // Get detailed statistics
   const statistics: VocabularyStatistics = getStatistics();
@@ -37,10 +47,10 @@ const VocabularyProgressDashboard: React.FC<VocabularyProgressDashboardProps> = 
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="md:col-span-2">
-          <LearningSessionHistory dailyStats={progress.dailyStats} />
+          <LearningSessionHistory dailyStats={progress.dailyStats || []} />
         </div>
         <div>
-          <WeeklyProgressHeatmap dailyStats={progress.dailyStats} />
+          <WeeklyProgressHeatmap dailyStats={progress.dailyStats || []} />
         </div>
       </div>
 
@@ -61,10 +71,15 @@ const VocabularyProgressDashboard: React.FC<VocabularyProgressDashboardProps> = 
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Category Distribution */}
-        <CategoryDistribution categoryDistribution={progress.categoryDistribution} />
+        <CategoryDistribution categoryDistribution={progress.categoryDistribution || {}} />
         
         {/* Difficulty Distribution */}
-        <DifficultyDistribution difficultyDistribution={progress.difficultyDistribution} />
+        <DifficultyDistribution difficultyDistribution={progress.difficultyDistribution || {
+          easy: 0,
+          medium: 0,
+          hard: 0,
+          unspecified: 0
+        }} />
       </div>
       
       <div className="grid grid-cols-1 gap-6">

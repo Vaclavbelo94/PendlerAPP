@@ -23,19 +23,33 @@ const Language = () => {
   const isMobile = useIsMobile();
 
   // Mock data for components that need props
-  const mockVocabularyCount = 0;
+  const mockVocabularyCount = 150;
   const mockProgress = {
-    dailyStats: [],
-    totalReviewed: 0,
-    streakDays: 0,
-    averageAccuracy: 0,
-    categoryDistribution: {},
+    dailyStats: [
+      { date: new Date().toISOString(), wordsLearned: 5, timeSpent: 25, accuracy: 85 },
+      { date: new Date(Date.now() - 86400000).toISOString(), wordsLearned: 8, timeSpent: 30, accuracy: 92 },
+      { date: new Date(Date.now() - 172800000).toISOString(), wordsLearned: 3, timeSpent: 15, accuracy: 78 }
+    ],
+    totalReviewed: 127,
+    streakDays: 5,
+    averageAccuracy: 87,
+    categoryDistribution: {
+      "Základy": 45,
+      "Práce": 32,
+      "Čísla": 28,
+      "Technika": 15
+    },
     difficultyDistribution: {
-      easy: 0,
-      medium: 0,
-      hard: 0,
-      unspecified: 0
+      easy: 68,
+      medium: 52,
+      hard: 23,
+      unspecified: 7
     }
+  };
+
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    console.log(`Switching to tab: ${value}`);
   };
 
   return (
@@ -47,7 +61,7 @@ const Language = () => {
         </p>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
         <TabsList className={`grid ${isMobile ? 'grid-cols-3' : 'grid-cols-6'} ${isMobile ? 'max-w-full' : 'max-w-6xl'} h-auto`}>
           <TabsTrigger value="vocabulary" className="flex flex-col items-center gap-1 py-3 px-4">
             <BookOpenIcon className="h-5 w-5" />
