@@ -6,27 +6,32 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { CheckCircle, Eye, Moon, Sun } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { CheckCircle, Eye, Moon, Sun, Palette } from "lucide-react";
 import { toast } from "sonner";
 import { useTheme } from "next-themes";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ProfileAppearanceProps {
   initialDarkMode: boolean;
+  initialColorScheme: string;
   initialCompactMode: boolean;
   onSave: (settings: {
     darkMode: boolean;
+    colorScheme: string;
     compactMode: boolean;
   }) => void;
 }
 
 const ProfileAppearance = ({
   initialDarkMode = false,
+  initialColorScheme = "purple",
   initialCompactMode = false,
   onSave
 }: ProfileAppearanceProps) => {
   const { theme, setTheme } = useTheme();
   const [darkMode, setDarkMode] = useState(initialDarkMode);
+  const [colorScheme, setColorScheme] = useState(initialColorScheme);
   const [compactMode, setCompactMode] = useState(initialCompactMode);
   const isMobile = useIsMobile();
   
@@ -59,6 +64,7 @@ const ProfileAppearance = ({
   const handleSave = () => {
     onSave({ 
       darkMode, 
+      colorScheme,
       compactMode 
     });
     toast.success("Nastavení vzhledu bylo uloženo");
@@ -100,6 +106,33 @@ const ProfileAppearance = ({
               }}
               disabled={isChangingTheme}
             />
+          </div>
+          
+          <Separator className="my-4" />
+          
+          <div className="flex items-center justify-between">
+            <div>
+              <Label htmlFor="colorScheme" className="text-base flex items-center gap-2">
+                <Palette className="h-4 w-4" />
+                <span>Barevné schéma</span>
+              </Label>
+              <p className="text-sm text-muted-foreground">
+                Vyberte hlavní barvu aplikace
+              </p>
+            </div>
+            <Select value={colorScheme} onValueChange={setColorScheme}>
+              <SelectTrigger className="w-32">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="purple">Fialová</SelectItem>
+                <SelectItem value="blue">Modrá</SelectItem>
+                <SelectItem value="green">Zelená</SelectItem>
+                <SelectItem value="amber">Oranžová</SelectItem>
+                <SelectItem value="red">Červená</SelectItem>
+                <SelectItem value="pink">Růžová</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           
           <Separator className="my-4" />
