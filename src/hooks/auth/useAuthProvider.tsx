@@ -16,28 +16,49 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const { signIn: authSignIn, signInWithGoogle: authSignInWithGoogle, signUp: authSignUp, signOut: authSignOut } = useAuthMethods();
   
   const [isCheckingStatus, setIsCheckingStatus] = React.useState(false);
+  const [adminStatusLoaded, setAdminStatusLoaded] = React.useState(false);
   
   const premiumStatus = usePremiumStatus(user, refreshPremiumStatus, isAdmin);
 
-  // Debug output to check admin status
+  // Stabilní načítání admin statusu
   React.useEffect(() => {
-    console.log("AuthProvider - Current admin status:", isAdmin);
-    console.log("AuthProvider - Current user:", user?.email);
+    let isMounted = true;
     
-    // Check if the user is admin@pendlerapp.com
-    if (user?.email === 'admin@pendlerapp.com') {
-      console.log("This is the admin@pendlerapp.com user!");
+    const loadAdminStatus = async () => {
+      if (!user || adminStatusLoaded) return;
+      
+      try {
+        // Pro admin@pendlerapp.com nastavíme admin status okamžitě
+        if (user.email === 'admin@pendlerapp.com') {
+          if (isMounted) {
+            setIsAdmin(true);
+            localStorage.setItem('adminLoggedIn', 'true');
+            setAdminStatusLoaded(true);
+          }
+          return;
+        }
+        
+        // Pro ostatní uživatele načteme z databáze
+        await refreshAdminStatus();
+        if (isMounted) {
+          setAdminStatusLoaded(true);
+        }
+      } catch (error) {
+        console.error('Error loading admin status:', error);
+        if (isMounted) {
+          setAdminStatusLoaded(true);
+        }
+      }
+    };
+    
+    if (user && !isLoading) {
+      loadAdminStatus();
     }
     
-    if (user) {
-      // Force refresh admin status on mount
-      setTimeout(() => {
-        refreshAdminStatus().then(() => {
-          console.log("Admin status refreshed:", isAdmin);
-        });
-      }, 0);
-    }
-  }, [user, isAdmin, refreshAdminStatus]);
+    return () => {
+      isMounted = false;
+    };
+  }, [user, isLoading, adminStatusLoaded, refreshAdminStatus, setIsAdmin]);
 
   // Check premium status when user changes
   React.useEffect(() => {
@@ -50,7 +71,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         // Special user check for automatic premium
         if (user.email === 'uzivatel@pendlerapp.com' || user.email === 'admin@pendlerapp.com') {
-          console.log("Special user detected in initial premium check");
           setIsPremium(true);
           
           // Calculate expiry date (3 months)
@@ -60,7 +80,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           // Save to localStorage
           saveUserToLocalStorage(user, true, threeMonthsLater.toISOString());
         } else {
-          await refreshAdminStatus();
           const { isPremium, premiumExpiry } = await refreshPremiumStatus();
           if (isPremium && user) {
             saveUserToLocalStorage(user, isPremium, premiumExpiry);
@@ -82,18 +101,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => {
       isMounted = false;
     };
-  }, [user, refreshAdminStatus, refreshPremiumStatus, setIsPremium]);
+  }, [user, refreshPremiumStatus, setIsPremium]);
 
   const signIn = async (email: string, password: string) => {
     const result = await authSignIn(email, password);
     
     if (!result.error && email === 'admin@pendlerapp.com') {
-      console.log("Admin user logged in, refreshing status");
-      // Force refresh admin status after login
-      setTimeout(async () => {
-        await refreshAdminStatus();
-        toast.success("Přihlášení administrátora úspěšné");
-      }, 500);
+      // Okamžitě nastavíme admin status pro admin uživatele
+      setIsAdmin(true);
+      localStorage.setItem('adminLoggedIn', 'true');
+      setAdminStatusLoaded(true);
     }
     
     return result;
@@ -110,7 +127,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!error && newUser) {
       // Check if this is our special user
       if (newUser.email === 'uzivatel@pendlerapp.com' || newUser.email === 'admin@pendlerapp.com') {
-        console.log("Special user signed up");
         setIsPremium(true);
         
         // Calculate expiry date (3 months)
@@ -118,10 +134,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
         
         saveUserToLocalStorage(newUser, true, threeMonthsLater.toISOString());
+        
+        if (newUser.email === 'admin@pendlerapp.com') {
+          setIsAdmin(true);
+          localStorage.setItem('adminLoggedIn', 'true');
+          setAdminStatusLoaded(true);
+        }
       } else {
         // Load profile after a small delay
         setTimeout(() => {
-          refreshAdminStatus();
+          refreshAdminStatus().then(() => setAdminStatusLoaded(true));
           refreshPremiumStatus().then(({ isPremium, premiumExpiry }) => {
             if (isPremium && newUser) {
               saveUserToLocalStorage(newUser, isPremium, premiumExpiry);
@@ -141,20 +163,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Force reset state
     setIsAdmin(false);
     setIsPremium(false);
+    setAdminStatusLoaded(false);
+    localStorage.removeItem('adminLoggedIn');
   };
 
-  // Custom refreshAdminStatus function that actively checks and logs the result
   const enhancedRefreshAdminStatus = async () => {
-    console.log("Manually refreshing admin status for user:", user?.id);
-    await refreshAdminStatus();
-    console.log("Admin status after refresh:", isAdmin);
-    
-    // For admin@pendlerapp.com, set admin status manually if needed
-    if (user?.email === 'admin@pendlerapp.com' && !isAdmin) {
-      console.log("Forcing admin status for admin@pendlerapp.com");
+    if (user?.email === 'admin@pendlerapp.com') {
       setIsAdmin(true);
       localStorage.setItem('adminLoggedIn', 'true');
+      setAdminStatusLoaded(true);
+      return;
     }
+    
+    await refreshAdminStatus();
+    setAdminStatusLoaded(true);
   };
 
   // Combine premium status from all sources
@@ -166,7 +188,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const value = {
     user,
     session,
-    isLoading,
+    isLoading: isLoading || !adminStatusLoaded,
     isAdmin,
     isPremium: combinedIsPremium,
     signIn,

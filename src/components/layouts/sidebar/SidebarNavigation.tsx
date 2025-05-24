@@ -26,9 +26,7 @@ interface SidebarNavigationProps {
 
 const SidebarNavigation = ({ closeSidebar }: SidebarNavigationProps) => {
   const location = useLocation();
-  const { isAdmin } = useAuth();
-  
-  console.log("SidebarNavigation - isAdmin status:", isAdmin);
+  const { isAdmin, isLoading } = useAuth();
   
   // Hlavní navigační sekce
   const mainNavigation = [
@@ -102,9 +100,48 @@ const SidebarNavigation = ({ closeSidebar }: SidebarNavigationProps) => {
     );
   };
   
+  // Pokud se admin status ještě načítá, nezobrazujeme admin sekci
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        {/* Hlavní navigace */}
+        <div className="space-y-1">
+          <p className="text-xs font-medium text-sidebar-foreground/60 pl-3 pb-1">Hlavní</p>
+          {mainNavigation.map((item) => (
+            <NavigationItem key={item.name} item={item} showDescription />
+          ))}
+        </div>
+        
+        {/* Pracovní sekce */}
+        <div className="space-y-1">
+          <p className="text-xs font-medium text-sidebar-foreground/60 pl-3 pb-1">Práce & Finance</p>
+          {workSections.map((item) => (
+            <NavigationItem key={item.name} item={item} showDescription />
+          ))}
+        </div>
+
+        {/* Osobní rozvoj */}
+        <div className="space-y-1">
+          <p className="text-xs font-medium text-sidebar-foreground/60 pl-3 pb-1">Vzdělávání & Jazyk</p>
+          {personalSections.map((item) => (
+            <NavigationItem key={item.name} item={item} showDescription />
+          ))}
+        </div>
+
+        {/* Ostatní nástroje */}
+        <div className="space-y-1">
+          <p className="text-xs font-medium text-sidebar-foreground/60 pl-3 pb-1">Nástroje & Komunita</p>
+          {toolsSections.map((item) => (
+            <NavigationItem key={item.name} item={item} showDescription />
+          ))}
+        </div>
+      </div>
+    );
+  }
+  
   return (
     <div className="space-y-4">
-      {/* Admin položka na začátku navigace */}
+      {/* Admin položka na začátku navigace - pouze pokud je admin status načten */}
       {isAdmin && (
         <div className="space-y-1">
           <p className="text-xs font-medium text-sidebar-foreground/60 pl-3 pb-1">Administrace</p>

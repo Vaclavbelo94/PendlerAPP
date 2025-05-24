@@ -25,44 +25,39 @@ import { useAuth } from "@/hooks/useAuth";
 const Admin = () => {
   const [showLoginDialog, setShowLoginDialog] = useState(false);
   const navigate = useNavigate();
-  const { isAdmin, signOut, refreshAdminStatus, user } = useAuth();
-  
-  console.log("Admin page - User:", user?.email);
-  console.log("Admin page - isAdmin status on load:", isAdmin);
+  const { isAdmin, signOut, refreshAdminStatus, user, isLoading } = useAuth();
 
-  // Při načtení stránky aktualizujeme admin status
+  // Při načtení stránky kontrolujeme admin status
   useEffect(() => {
     const checkAdminStatus = async () => {
-      console.log("Admin page - Refreshing admin status...");
-      await refreshAdminStatus();
-      console.log("Admin page - Admin status after refresh:", isAdmin);
+      if (isLoading) return; // Počkáme na dokončení načítání
       
-      // If still not admin after refresh, show login dialog
       if (!isAdmin) {
-        console.log("Admin page - User is not admin after refresh, showing login dialog");
         setShowLoginDialog(true);
       } else {
-        console.log("Admin page - Admin status confirmed");
         toast.success("Přístup do administrace povolen");
       }
     };
     
     checkAdminStatus();
-  }, [refreshAdminStatus]);
-
-  // Redirect na hlavní stránku, pokud uživatel není admin
-  useEffect(() => {
-    if (!isAdmin) {
-      console.log("Admin page - User is not admin, showing login dialog");
-      setShowLoginDialog(true);
-    }
-  }, [isAdmin]);
+  }, [isAdmin, isLoading]);
 
   const handleLogout = () => {
     signOut();
     toast.info("Odhlášení z administrace proběhlo úspěšně");
     navigate("/");
   };
+
+  // Pokud se admin status ještě načítá, zobrazíme loading
+  if (isLoading) {
+    return (
+      <div className="container max-w-7xl mx-auto py-8 px-4 md:px-6">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container max-w-7xl mx-auto py-8 px-4 md:px-6">

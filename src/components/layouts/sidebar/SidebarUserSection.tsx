@@ -19,10 +19,6 @@ const SidebarUserSection = ({ closeSidebar }: SidebarUserSectionProps) => {
   const { user, signOut, isAdmin } = useAuth();
   const navigate = useNavigate();
 
-  // Debug output
-  console.log("SidebarUserSection - User:", user);
-  console.log("SidebarUserSection - isAdmin status:", isAdmin);
-
   const handleLogout = async () => {
     await signOut();
     closeSidebar(); // Zavřít sidebar po odhlášení
