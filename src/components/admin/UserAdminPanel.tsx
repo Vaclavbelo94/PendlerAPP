@@ -13,11 +13,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { FlexContainer } from "@/components/ui/flex-container";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useOptimizedQuery } from "@/hooks/useOptimizedQuery";
+import { useMemoizedCallback } from "@/hooks/useMemoizedCallback";
+import { MemoizedCard } from "@/components/optimized/MemoizedCard";
 import { cn } from "@/lib/utils";
 
 interface User {
@@ -31,71 +33,64 @@ interface User {
 
 export const UserAdminPanel = () => {
   const [users, setUsers] = useState<User[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const isMobile = useIsMobile();
 
-  useEffect(() => {
-    const loadUsers = async () => {
-      setIsLoading(true);
-      try {
-        console.log("Načítání uživatelů...");
-        
-        // Načtení všech profilů z databáze
-        const { data: profiles, error } = await supabase
-          .from('profiles')
-          .select(`
-            id, 
-            username, 
-            email, 
-            is_premium, 
-            premium_expiry, 
-            created_at
-          `)
-          .order('created_at', { ascending: false });
-        
-        if (error) {
-          console.error("Chyba při načítání profilů:", error);
-          throw error;
-        }
-
-        console.log("Načtené profily:", profiles);
-
-        if (profiles && profiles.length > 0) {
-          const transformedUsers: User[] = profiles.map(profile => ({
-            id: profile.id,
-            name: profile.username || profile.email?.split('@')[0] || 'Uživatel',
-            email: profile.email || '',
-            isPremium: profile.is_premium || false,
-            registeredAt: profile.created_at,
-            premiumUntil: profile.premium_expiry || null
-          }));
-          
-          setUsers(transformedUsers);
-          console.log("Transformovaní uživatelé:", transformedUsers);
-          toast.success(`Načteno ${transformedUsers.length} uživatelů`);
-        } else {
-          console.log("Žádní uživatelé nebyli nalezeni");
-          setUsers([]);
-        }
-      } catch (error) {
-        console.error("Chyba při načítání uživatelů:", error);
-        toast.error("Nepodařilo se načíst uživatele z databáze");
-        setUsers([]);
-      } finally {
-        setIsLoading(false);
+  // Optimalizovaný query pro načítání uživatelů
+  const { data: profiles, isLoading, error } = useOptimizedQuery({
+    queryKey: ['admin-users'],
+    queryFn: async () => {
+      console.log("Načítání uživatelů...");
+      
+      const { data, error } = await supabase
+        .from('profiles')
+        .select(`
+          id, 
+          username, 
+          email, 
+          is_premium, 
+          premium_expiry, 
+          created_at
+        `)
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error("Chyba při načítání profilů:", error);
+        throw error;
       }
-    };
 
-    loadUsers();
-  }, []);
+      return data || [];
+    },
+    staleTime: 2 * 60 * 1000, // 2 minuty pro admin data
+    dependencies: []
+  });
 
-  const togglePremium = async (userId: string) => {
+  // Transformace dat s memoizací
+  useEffect(() => {
+    if (profiles && profiles.length > 0) {
+      const transformedUsers: User[] = profiles.map(profile => ({
+        id: profile.id,
+        name: profile.username || profile.email?.split('@')[0] || 'Uživatel',
+        email: profile.email || '',
+        isPremium: profile.is_premium || false,
+        registeredAt: profile.created_at,
+        premiumUntil: profile.premium_expiry || null
+      }));
+      
+      setUsers(transformedUsers);
+      console.log("Transformovaní uživatelé:", transformedUsers);
+      toast.success(`Načteno ${transformedUsers.length} uživatelů`);
+    } else if (profiles && profiles.length === 0) {
+      console.log("Žádní uživatelé nebyli nalezeni");
+      setUsers([]);
+    }
+  }, [profiles]);
+
+  // Optimalizovaný callback pro toggle premium
+  const togglePremium = useMemoizedCallback(async (userId: string) => {
     const user = users.find(u => u.id === userId);
     if (!user) return;
     
     const newPremiumStatus = !user.isPremium;
-    
-    // Vypočítat datum expirace premium (90 dní od teď)
     const premiumUntil = newPremiumStatus ? 
       new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString() : 
       null;
@@ -103,7 +98,6 @@ export const UserAdminPanel = () => {
     try {
       console.log(`Aktualizace premium statusu pro uživatele ${userId}: ${newPremiumStatus}`);
       
-      // Aktualizace v Supabase
       const { error } = await supabase
         .from('profiles')
         .update({ 
@@ -117,7 +111,6 @@ export const UserAdminPanel = () => {
         throw error;
       }
       
-      // Aktualizace lokálního stavu
       const updatedUsers = users.map(u => {
         if (u.id === userId) {
           return { 
@@ -135,7 +128,7 @@ export const UserAdminPanel = () => {
       console.error("Chyba při aktualizaci premium statusu:", error);
       toast.error("Nepodařilo se aktualizovat premium status");
     }
-  };
+  }, [users]);
 
   if (isLoading) {
     return (
@@ -144,6 +137,18 @@ export const UserAdminPanel = () => {
           <Loader2 className="h-8 w-8 animate-spin" />
           <p className="text-sm text-muted-foreground">Načítání uživatelů...</p>
         </FlexContainer>
+      </FlexContainer>
+    );
+  }
+
+  if (error) {
+    return (
+      <FlexContainer direction="col" align="center" justify="center" className="p-8 text-center">
+        <Shield className="h-10 w-10 text-destructive mb-4" />
+        <h3 className="text-lg font-medium">Chyba při načítání</h3>
+        <p className="text-sm text-muted-foreground mt-2 max-w-md">
+          Nepodařilo se načíst uživatele z databáze. Zkuste to prosím znovu.
+        </p>
       </FlexContainer>
     );
   }
@@ -169,10 +174,10 @@ export const UserAdminPanel = () => {
       </FlexContainer>
       
       {isMobile ? (
-        // Mobilní zobrazení jako karty
+        // Mobilní zobrazení jako karty s optimalizací
         <div className="space-y-4">
           {users.map((user) => (
-            <Card key={user.id} className="p-4">
+            <MemoizedCard key={user.id} className="p-4">
               <FlexContainer direction="col" gap="sm">
                 <FlexContainer justify="between" align="center">
                   <div>
@@ -213,7 +218,7 @@ export const UserAdminPanel = () => {
                   </Button>
                 </FlexContainer>
               </FlexContainer>
-            </Card>
+            </MemoizedCard>
           ))}
         </div>
       ) : (

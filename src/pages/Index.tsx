@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useDebounce } from "@/hooks/useDebounce";
 
 // Lazy load components to improve initial loading performance
 const Hero = lazy(() => import("@/components/home/Hero"));
@@ -17,7 +18,7 @@ const Benefits = lazy(() => import("@/components/home/Benefits"));
 const AppShowcase = lazy(() => import("@/components/home/AppShowcase"));
 const CTA = lazy(() => import("@/components/home/CTA"));
 
-// Loading placeholder component
+// Optimalizovaný loading placeholder
 const SectionLoader = () => (
   <div className="w-full py-16">
     <div className="container mx-auto px-4">
@@ -40,22 +41,31 @@ const SectionLoader = () => (
 const Index = () => {
   const { user } = useAuth();
   const { canAccess } = useUnifiedPremiumStatus();
-  const [scrolled, setScrolled] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
   const [animatedHeroVisible, setAnimatedHeroVisible] = useState(false);
   const isMobile = !useMediaQuery("md");
 
-  // Handle scroll events
+  // Debounced scroll pro lepší výkon
+  const debouncedScrollY = useDebounce(scrollY, 10);
+  const scrolled = debouncedScrollY > 500;
+
+  // Optimalizovaný scroll handler
   useEffect(() => {
+    let ticking = false;
+    
     const handleScroll = () => {
-      const isScrolled = window.scrollY > 500;
-      if (isScrolled !== scrolled) {
-        setScrolled(isScrolled);
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          setScrollY(window.scrollY);
+          ticking = false;
+        });
+        ticking = true;
       }
     };
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [scrolled]);
+  }, []);
 
   // Show animated hero after a short delay for better perceived performance
   useEffect(() => {
@@ -147,7 +157,7 @@ const Index = () => {
           )}
         </AnimatePresence>
         
-        {/* Lazy loaded content with suspense fallbacks */}
+        {/* Lazy loaded content s optimalizovanými suspense fallbacks */}
         <Suspense fallback={<SectionLoader />}>
           {animatedHeroVisible && <Hero />}
         </Suspense>
