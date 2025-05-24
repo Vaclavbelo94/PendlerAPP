@@ -48,7 +48,7 @@ const Language = () => {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-6'} ${isMobile ? 'max-w-full' : 'max-w-6xl'} h-auto`}>
+        <TabsList className={`grid ${isMobile ? 'grid-cols-3' : 'grid-cols-6'} ${isMobile ? 'max-w-full' : 'max-w-6xl'} h-auto`}>
           <TabsTrigger value="vocabulary" className="flex flex-col items-center gap-1 py-3 px-4">
             <BookOpenIcon className="h-5 w-5" />
             <span className="text-sm font-medium">Slovíčka</span>
@@ -64,21 +64,25 @@ const Language = () => {
             <span className="text-sm font-medium">Fráze</span>
             <span className="text-xs text-muted-foreground hidden sm:block">Užitečné fráze</span>
           </TabsTrigger>
-          <TabsTrigger value="progress" className="flex flex-col items-center gap-1 py-3 px-4">
-            <BarChartIcon className="h-5 w-5" />
-            <span className="text-sm font-medium">Pokrok</span>
-            <span className="text-xs text-muted-foreground hidden sm:block">Statistiky</span>
-          </TabsTrigger>
-          <TabsTrigger value="gamification" className="flex flex-col items-center gap-1 py-3 px-4">
-            <TrophyIcon className="h-5 w-5" />
-            <span className="text-sm font-medium">Výzvy</span>
-            <span className="text-xs text-muted-foreground hidden sm:block">Herní prvky</span>
-          </TabsTrigger>
-          <TabsTrigger value="exercises" className="flex flex-col items-center gap-1 py-3 px-4">
-            <ListIcon className="h-5 w-5" />
-            <span className="text-sm font-medium">Cvičení</span>
-            <span className="text-xs text-muted-foreground hidden sm:block">Interaktivní úkoly</span>
-          </TabsTrigger>
+          {!isMobile && (
+            <>
+              <TabsTrigger value="progress" className="flex flex-col items-center gap-1 py-3 px-4">
+                <BarChartIcon className="h-5 w-5" />
+                <span className="text-sm font-medium">Pokrok</span>
+                <span className="text-xs text-muted-foreground hidden sm:block">Statistiky</span>
+              </TabsTrigger>
+              <TabsTrigger value="gamification" className="flex flex-col items-center gap-1 py-3 px-4">
+                <TrophyIcon className="h-5 w-5" />
+                <span className="text-sm font-medium">Výzvy</span>
+                <span className="text-xs text-muted-foreground hidden sm:block">Herní prvky</span>
+              </TabsTrigger>
+              <TabsTrigger value="exercises" className="flex flex-col items-center gap-1 py-3 px-4">
+                <ListIcon className="h-5 w-5" />
+                <span className="text-sm font-medium">Cvičení</span>
+                <span className="text-xs text-muted-foreground hidden sm:block">Interaktivní úkoly</span>
+              </TabsTrigger>
+            </>
+          )}
         </TabsList>
 
         <TabsContent value="vocabulary" className="space-y-6">

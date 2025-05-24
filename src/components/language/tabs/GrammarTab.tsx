@@ -1,80 +1,161 @@
 
 import React, { useState } from 'react';
-import { useLanguageContext } from '@/hooks/useLanguageContext';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import GrammarExercise from '@/components/language/GrammarExercise';
-import EnhancedGrammarExercise from '@/components/language/EnhancedGrammarExercise';
-import { grammarExercises, grammarExercises2 } from '@/data/germanExercises';
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { BookOpen, Brain, Trophy, ArrowRight, PlayCircle } from "lucide-react";
+import EnhancedGrammarExercise from '../EnhancedGrammarExercise';
+import { germanGrammarCategories } from '@/data/germanExercises';
 
-const GrammarTab: React.FC = () => {
-  const [selectedCategory, setSelectedCategory] = useState('basic');
-  const categories = [
-    { id: 'basic', name: 'Základy' },
-    { id: 'nouns', name: 'Podstatná jména' },
-    { id: 'articles', name: 'Členy' },
-    { id: 'verbs', name: 'Slovesa' },
-    { id: 'cases', name: 'Pády' },
-    { id: 'exercises', name: 'Cvičení' },
+const GrammarTab = () => {
+  const [selectedCategory, setSelectedCategory] = useState('basics');
+  const isMobile = useIsMobile();
+
+  const grammarSections = [
+    {
+      id: 'basics',
+      title: 'Základy',
+      description: 'Základní gramatická pravidla',
+      icon: BookOpen,
+      progress: 67,
+      lessons: 12,
+      color: 'bg-blue-50 border-blue-200'
+    },
+    {
+      id: 'articles',
+      title: 'Členy',
+      description: 'Der, die, das a jejich použití',
+      icon: Brain,
+      progress: 45,
+      lessons: 8,
+      color: 'bg-green-50 border-green-200'
+    },
+    {
+      id: 'cases',
+      title: 'Pády',
+      description: 'Nominativ, Akkusativ, Dativ, Genitiv',
+      icon: Trophy,
+      progress: 23,
+      lessons: 16,
+      color: 'bg-purple-50 border-purple-200'
+    },
+    {
+      id: 'verbs',
+      title: 'Slovesa',
+      description: 'Časování a nepravidelná slovesa',
+      icon: PlayCircle,
+      progress: 78,
+      lessons: 20,
+      color: 'bg-orange-50 border-orange-200'
+    }
   ];
 
-  const getSelectedCategory = () => {
-    return grammarExercises.find(cat => cat.id === selectedCategory) 
-      || grammarExercises[0];
-  };
-
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Gramatika němčiny</CardTitle>
-        <CardDescription>
-          Základní gramatická pravidla němčiny pro začátečníky
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Tabs defaultValue="basic" onValueChange={setSelectedCategory}>
-          <ScrollArea className="w-full pb-4">
-            <TabsList className="inline-flex h-auto flex-wrap mb-4 w-full gap-2">
-              {categories.map((category) => (
+    <div className="space-y-6">
+      <Card className="mb-4">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg">Gramatika němčiny</CardTitle>
+          <CardDescription>
+            Naučte se základní gramatická pravidla německého jazyka krok za krokem
+          </CardDescription>
+        </CardHeader>
+      </Card>
+
+      <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
+        <Card className="border-b p-1">
+          <TabsList className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} h-auto p-0.5`}>
+            {grammarSections.map((section) => {
+              const Icon = section.icon;
+              return (
                 <TabsTrigger 
-                  key={category.id} 
-                  value={category.id}
-                  className="whitespace-nowrap"
+                  key={section.id}
+                  value={section.id}
+                  className="flex items-center justify-center py-1 px-0.5"
                 >
-                  {category.name}
+                  <div className="flex items-center flex-col sm:flex-row sm:gap-1.5">
+                    <Icon className={`${isMobile ? 'w-4 h-4' : 'w-4 h-4'}`} />
+                    <span className={isMobile ? "text-[10px] mt-0.5" : "text-xs"}>
+                      {section.title}
+                    </span>
+                  </div>
                 </TabsTrigger>
-              ))}
-            </TabsList>
-          </ScrollArea>
+              );
+            })}
+          </TabsList>
+        </Card>
 
-          <TabsContent value="exercises" className="space-y-4">
-            <div className="space-y-4">
-              <div className="pb-2">
-                <h3 className="text-lg font-medium">Gramatická cvičení</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Procvičte si gramatická pravidla na interaktivních cvičeních
-                </p>
+        <div className="mt-2">
+          {grammarSections.map((section) => (
+            <TabsContent key={section.id} value={section.id}>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-1">
+                  <Card className={`${section.color} mb-4`}>
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <section.icon className="h-5 w-5" />
+                          <CardTitle className="text-lg">{section.title}</CardTitle>
+                        </div>
+                        <Badge variant="outline">{section.lessons} lekcí</Badge>
+                      </div>
+                      <CardDescription>{section.description}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        <div className="flex justify-between text-sm">
+                          <span>Pokrok</span>
+                          <span>{section.progress}%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div 
+                            className="bg-primary h-2 rounded-full transition-all duration-300" 
+                            style={{ width: `${section.progress}%` }}
+                          ></div>
+                        </div>
+                        <Button className="w-full flex gap-1" size="sm">
+                          <PlayCircle className="h-4 w-4" />
+                          Začít procvičovat
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-base">Rychlý přehled</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div className="flex justify-between text-sm">
+                        <span>Dokončené lekce</span>
+                        <span>{Math.floor(section.lessons * section.progress / 100)}/{section.lessons}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span>Úspěšnost</span>
+                        <span>{section.progress + 10}%</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span>Čas ke studiu</span>
+                        <span>~{section.lessons * 5} min</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                <div className="lg:col-span-2">
+                  {germanGrammarCategories.find(cat => cat.id === section.id) && (
+                    <EnhancedGrammarExercise 
+                      category={germanGrammarCategories.find(cat => cat.id === section.id)!} 
+                    />
+                  )}
+                </div>
               </div>
-              <GrammarExercise 
-                exercises={grammarExercises2}
-                category="členy" 
-              />
-            </div>
-          </TabsContent>
-
-          {['basic', 'nouns', 'articles', 'verbs', 'cases'].map((categoryId) => (
-            <TabsContent key={categoryId} value={categoryId}>
-              {categoryId === selectedCategory && (
-                <EnhancedGrammarExercise 
-                  category={getSelectedCategory()}
-                />
-              )}
             </TabsContent>
           ))}
-        </Tabs>
-      </CardContent>
-    </Card>
+        </div>
+      </Tabs>
+    </div>
   );
 };
 
