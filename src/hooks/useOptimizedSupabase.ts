@@ -2,6 +2,9 @@
 import { useCallback, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useOptimizedQuery } from './useOptimizedQuery';
+import type { Database } from '@/integrations/supabase/types';
+
+type TableName = keyof Database['public']['Tables'];
 
 interface OptimizedSupabaseOptions {
   enableCaching?: boolean;
@@ -18,7 +21,7 @@ export const useOptimizedSupabase = (options: OptimizedSupabaseOptions = {}) => 
 
   // Optimalizovaný select s cache
   const optimizedSelect = useCallback(
-    (table: string, columns: string = '*', filters?: Record<string, any>) => {
+    <T extends TableName>(table: T, columns: string = '*', filters?: Record<string, any>) => {
       let query = supabase.from(table).select(columns);
       
       if (filters) {
@@ -36,7 +39,7 @@ export const useOptimizedSupabase = (options: OptimizedSupabaseOptions = {}) => 
 
   // Batch operace pro lepší výkon
   const batchInsert = useCallback(
-    async (table: string, data: any[]) => {
+    async <T extends TableName>(table: T, data: any[]) => {
       const BATCH_SIZE = 100;
       const results = [];
       
@@ -53,7 +56,7 @@ export const useOptimizedSupabase = (options: OptimizedSupabaseOptions = {}) => 
 
   // Optimalizovaný upsert
   const optimizedUpsert = useCallback(
-    async (table: string, data: any, onConflict: string) => {
+    async <T extends TableName>(table: T, data: any, onConflict: string) => {
       return await supabase
         .from(table)
         .upsert(data, { onConflict })

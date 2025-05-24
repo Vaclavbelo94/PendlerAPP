@@ -1,4 +1,6 @@
 
+import React from 'react';
+
 interface PerformanceMetrics {
   pageLoadTime: number;
   domContentLoaded: number;
@@ -30,8 +32,10 @@ class PerformanceMonitor {
 
       // FID Observer
       const fidObserver = new PerformanceObserver((list) => {
-        const firstInput = list.getEntries()[0];
-        this.metrics.firstInputDelay = firstInput.processingStart - firstInput.startTime;
+        const firstInput = list.getEntries()[0] as PerformanceEventTiming;
+        if (firstInput && 'processingStart' in firstInput) {
+          this.metrics.firstInputDelay = firstInput.processingStart - firstInput.startTime;
+        }
       });
       fidObserver.observe({ entryTypes: ['first-input'] });
       this.observers.push(fidObserver);
