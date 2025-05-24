@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { VehicleData, ServiceRecord, FuelRecord, InsuranceRecord, DocumentRecord } from '@/types/vehicle';
 import { toast } from 'sonner';
@@ -39,7 +38,7 @@ export const fetchVehicleById = async (id: string) => {
 
 export const saveVehicle = async (vehicle: VehicleData) => {
   try {
-    const { id, ...vehicleData } = vehicle;
+    const { id, created_at, updated_at, ...vehicleData } = vehicle;
     
     if (id) {
       // Aktualizace
@@ -53,12 +52,14 @@ export const saveVehicle = async (vehicle: VehicleData) => {
       toast.success('Vozidlo bylo aktualizováno');
       return data?.[0] as VehicleData;
     } else {
-      // Vytvoření nového - zde potřebujeme odstranit updated_at, pokud existuje
-      const { updated_at, ...cleanVehicleData } = vehicleData;
+      // Vytvoření nového - zajistíme, že user_id je vyžadováno
+      if (!vehicleData.user_id) {
+        throw new Error('user_id je vyžadováno pro vytvoření nového vozidla');
+      }
       
       const { data, error } = await supabase
         .from('vehicles')
-        .insert({ ...cleanVehicleData, created_at: new Date().toISOString() })
+        .insert(vehicleData)
         .select();
         
       if (error) throw error;
