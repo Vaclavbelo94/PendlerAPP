@@ -64,31 +64,33 @@ const GrammarTab = () => {
       </Card>
 
       <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
-        <Card className="border-b p-1">
-          <TabsList className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} h-auto p-0.5`}>
-            {grammarSections.map((section) => {
-              const Icon = section.icon;
-              return (
-                <TabsTrigger 
-                  key={section.id}
-                  value={section.id}
-                  className="flex items-center justify-center py-1 px-0.5"
-                >
-                  <div className="flex items-center flex-col sm:flex-row sm:gap-1.5">
-                    <Icon className={`${isMobile ? 'w-4 h-4' : 'w-4 h-4'}`} />
-                    <span className={isMobile ? "text-[10px] mt-0.5" : "text-xs"}>
-                      {section.title}
-                    </span>
-                  </div>
-                </TabsTrigger>
-              );
-            })}
-          </TabsList>
+        <Card className="border-b">
+          <CardContent className="p-1">
+            <TabsList className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} w-full h-auto p-1 bg-muted/50`}>
+              {grammarSections.map((section) => {
+                const Icon = section.icon;
+                return (
+                  <TabsTrigger 
+                    key={section.id}
+                    value={section.id}
+                    className={`flex items-center justify-center ${isMobile ? 'py-2 px-1' : 'py-2 px-3'} data-[state=active]:bg-background data-[state=active]:shadow-sm`}
+                  >
+                    <div className="flex items-center flex-col gap-1">
+                      <Icon className="w-4 h-4" />
+                      <span className={`${isMobile ? 'text-xs' : 'text-sm'} font-medium text-center leading-tight`}>
+                        {section.title}
+                      </span>
+                    </div>
+                  </TabsTrigger>
+                );
+              })}
+            </TabsList>
+          </CardContent>
         </Card>
 
-        <div className="mt-2">
+        <div className="mt-4">
           {grammarSections.map((section) => (
-            <TabsContent key={section.id} value={section.id}>
+            <TabsContent key={section.id} value={section.id} className="mt-0">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-1">
                   <Card className={`${section.color} mb-4`}>
