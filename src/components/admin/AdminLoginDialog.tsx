@@ -24,7 +24,7 @@ const AdminLoginDialog = ({ isOpen, onClose, onSuccess }: AdminLoginDialogProps)
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { signIn, refreshAdminStatus, user } = useAuth();
+  const { signIn, refreshAdminStatus } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,16 +41,19 @@ const AdminLoginDialog = ({ isOpen, onClose, onSuccess }: AdminLoginDialogProps)
       // Po úspěšném přihlášení obnovíme admin status
       await refreshAdminStatus();
       
-      // Kontrola, zda je uživatel admin (po obnovení statusu)
-      const isAdmin = localStorage.getItem("adminLoggedIn") === "true";
-      
-      if (isAdmin) {
-        toast.success("Přihlášení do administrace úspěšné");
-        onSuccess();
-      } else {
-        toast.error("Nemáte administrátorská práva");
-        // Zůstaneme v dialogu, uživatel není admin
-      }
+      // Malé zpoždění pro zpracování admin statusu
+      setTimeout(() => {
+        const isAdmin = localStorage.getItem("adminLoggedIn") === "true";
+        
+        if (isAdmin) {
+          toast.success("Přihlášení do administrace úspěšné");
+          setEmail("");
+          setPassword("");
+          onSuccess();
+        } else {
+          toast.error("Nemáte administrátorská práva");
+        }
+      }, 100);
     } catch (error: any) {
       toast.error("Přihlášení selhalo: " + error.message);
     } finally {
@@ -75,7 +78,7 @@ const AdminLoginDialog = ({ isOpen, onClose, onSuccess }: AdminLoginDialogProps)
               type="email" 
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@pendlerhelper.cz"
+              placeholder="admin@pendlerapp.com"
               required
             />
           </div>
@@ -92,14 +95,15 @@ const AdminLoginDialog = ({ isOpen, onClose, onSuccess }: AdminLoginDialogProps)
           </div>
           <div className="text-sm bg-muted p-2 rounded">
             <p>Testovací admin přístup:</p>
-            <p>Email: <strong>vaclavbelo94@gmail.com</strong></p>
-            <p>Heslo: <strong>Vaclav711</strong></p>
+            <p>Email: <strong>admin@pendlerapp.com</strong></p>
+            <p>Heslo: <strong>admin123</strong></p>
           </div>
           <DialogFooter>
             <Button 
               type="button" 
               variant="outline" 
               onClick={onClose}
+              disabled={isLoading}
             >
               Zrušit
             </Button>

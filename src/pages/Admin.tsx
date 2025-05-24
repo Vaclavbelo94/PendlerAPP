@@ -30,7 +30,7 @@ const Admin = () => {
   // Při načtení stránky kontrolujeme admin status
   useEffect(() => {
     const checkAdminStatus = async () => {
-      if (isLoading) return; // Počkáme na dokončení načítání
+      if (isLoading) return;
       
       if (!isAdmin) {
         setShowLoginDialog(true);
@@ -81,7 +81,7 @@ const Admin = () => {
         </div>
 
         {isAdmin ? (
-          <Tabs defaultValue="promo" className="space-y-6">
+          <Tabs defaultValue="users" className="space-y-6">
             <TabsList>
               <TabsTrigger value="users">Uživatelé</TabsTrigger>
               <TabsTrigger value="premium">Premium funkce</TabsTrigger>

@@ -12,53 +12,88 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Search, Copy, Link as LinkIcon } from "lucide-react";
+import { Search, Copy, Link as LinkIcon, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+
+interface User {
+  id: string;
+  username: string;
+  email: string;
+}
 
 export const PasswordResetPanel = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [resetLinks, setResetLinks] = useState<{[key: string]: string}>({});
+  const [isSearching, setIsSearching] = useState(false);
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (!searchTerm.trim()) {
       toast.error("Zadejte email nebo jméno uživatele");
       return;
     }
 
-    // Načtení uživatelů z localStorage
+    setIsSearching(true);
     try {
-      const storedUsers = JSON.parse(localStorage.getItem("users") || "[]");
       const term = searchTerm.toLowerCase();
       
-      const filteredUsers = storedUsers.filter((user: any) =>
-        user.email.toLowerCase().includes(term) || 
-        (user.name && user.name.toLowerCase().includes(term))
-      );
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, username, email')
+        .or(`email.ilike.%${term}%,username.ilike.%${term}%`);
+      
+      if (error) {
+        console.error("Chyba při hledání uživatelů:", error);
+        toast.error("Nepodařilo se vyhledat uživatele");
+        return;
+      }
+      
+      const filteredUsers = data?.map(profile => ({
+        id: profile.id,
+        username: profile.username || profile.email?.split('@')[0] || 'Uživatel',
+        email: profile.email || ''
+      })) || [];
       
       setUsers(filteredUsers);
       
       if (filteredUsers.length === 0) {
         toast.info("Žádní uživatelé nenalezeni");
+      } else {
+        toast.success(`Nalezeno ${filteredUsers.length} uživatelů`);
       }
     } catch (error) {
       console.error("Chyba při hledání uživatelů:", error);
       toast.error("Nepodařilo se vyhledat uživatele");
+    } finally {
+      setIsSearching(false);
     }
   };
 
-  const generateResetLink = (userId: string, email: string) => {
-    // V reálné aplikaci by toto generovalo unikátní token a ukládalo ho do databáze
-    const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-    const resetLink = `${window.location.origin}/reset-password?token=${token}&email=${encodeURIComponent(email)}`;
-    
-    // Uložení vygenerovaného odkazu
-    setResetLinks({
-      ...resetLinks,
-      [userId]: resetLink
-    });
-    
-    toast.success("Resetovací odkaz byl vygenerován");
-    return resetLink;
+  const generateResetLink = async (userId: string, email: string) => {
+    try {
+      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`
+      });
+      
+      if (error) {
+        console.error("Chyba při generování reset linku:", error);
+        toast.error("Nepodařilo se vygenerovat reset link");
+        return;
+      }
+      
+      // Vytvoříme mock link pro zobrazení (v reálné situaci by Supabase poslal email)
+      const mockResetLink = `${window.location.origin}/reset-password?email=${encodeURIComponent(email)}`;
+      
+      setResetLinks({
+        ...resetLinks,
+        [userId]: mockResetLink
+      });
+      
+      toast.success("Reset email byl odeslán uživateli");
+    } catch (error) {
+      console.error("Chyba při generování reset linku:", error);
+      toast.error("Nepodařilo se vygenerovat reset link");
+    }
   };
 
   const copyToClipboard = (text: string) => {
@@ -90,7 +125,16 @@ export const PasswordResetPanel = () => {
                 onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
               />
             </div>
-            <Button onClick={handleSearch}>Hledat</Button>
+            <Button onClick={handleSearch} disabled={isSearching}>
+              {isSearching ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Hledám...
+                </>
+              ) : (
+                "Hledat"
+              )}
+            </Button>
           </div>
         </div>
       </div>
@@ -107,7 +151,7 @@ export const PasswordResetPanel = () => {
           <TableBody>
             {users.map((user) => (
               <TableRow key={user.id}>
-                <TableCell className="font-medium">{user.name}</TableCell>
+                <TableCell className="font-medium">{user.username}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell className="text-right">
                   {resetLinks[user.id] ? (
@@ -130,7 +174,7 @@ export const PasswordResetPanel = () => {
                       className="gap-1"
                     >
                       <LinkIcon className="h-4 w-4" />
-                      <span>Generovat odkaz</span>
+                      <span>Odeslat reset email</span>
                     </Button>
                   )}
                 </TableCell>
@@ -150,7 +194,7 @@ export const PasswordResetPanel = () => {
                 <div key={userId} className="flex flex-col gap-2 rounded-md border p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-medium">{user?.name}</p>
+                      <p className="font-medium">{user?.username}</p>
                       <p className="text-sm text-muted-foreground">{user?.email}</p>
                     </div>
                     <Button 
