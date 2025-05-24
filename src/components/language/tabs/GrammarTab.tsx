@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { BookOpen, Brain, Trophy, ArrowRight, PlayCircle } from "lucide-react";
 import EnhancedGrammarExercise from '../EnhancedGrammarExercise';
-import { germanGrammarCategories } from '@/data/germanExercises';
+import { grammarExercises } from '@/data/germanExercises';
 
 const GrammarTab = () => {
   const [selectedCategory, setSelectedCategory] = useState('basics');
@@ -144,9 +144,9 @@ const GrammarTab = () => {
                 </div>
 
                 <div className="lg:col-span-2">
-                  {germanGrammarCategories.find(cat => cat.id === section.id) && (
+                  {grammarExercises.find(cat => cat.id === section.id) && (
                     <EnhancedGrammarExercise 
-                      category={germanGrammarCategories.find(cat => cat.id === section.id)!} 
+                      category={grammarExercises.find(cat => cat.id === section.id)!} 
                     />
                   )}
                 </div>
