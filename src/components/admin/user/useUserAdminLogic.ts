@@ -71,12 +71,11 @@ export const useUserAdminLogic = () => {
   // Optimalizovaný callback pro toggle premium
   const togglePremium = useMemoizedCallback(async (userId: string) => {
     console.log(`Hledání uživatele s ID: ${userId}`);
-    console.log("Dostupní uživatelé:", users.map(u => ({ id: u.id, email: u.email })));
+    console.log("Dostupní uživatelé:", users.map(u => ({ id: u.id, email: u.email, isPremium: u.isPremium })));
     
     const user = users.find(u => u.id === userId);
     if (!user) {
       console.error("Uživatel nenalezen v lokálním stavu:", userId);
-      console.error("Dostupní uživatelé:", users);
       
       // Pokusíme se načíst aktuální data z databáze
       try {
@@ -92,13 +91,15 @@ export const useUserAdminLogic = () => {
           return;
         }
         
-        // Použijeme data z databáze
+        // Použijeme data z databáze a správně toggleujeme
         console.log("Použijeme data z databáze:", dbUser);
-        const newPremiumStatus = !dbUser.is_premium;
+        const currentPremiumStatus = dbUser.is_premium || false;
+        const newPremiumStatus = !currentPremiumStatus;
         const premiumUntil = newPremiumStatus ? 
           new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString() : 
           null;
         
+        console.log(`Toggleování premium z ${currentPremiumStatus} na ${newPremiumStatus}`);
         await updateUserPremiumStatus(userId, newPremiumStatus, premiumUntil, dbUser.email);
         return;
       } catch (dbError) {
@@ -108,11 +109,14 @@ export const useUserAdminLogic = () => {
       }
     }
     
-    const newPremiumStatus = !user.isPremium;
+    // Správné toggleování premium statusu
+    const currentPremiumStatus = user.isPremium;
+    const newPremiumStatus = !currentPremiumStatus;
     const premiumUntil = newPremiumStatus ? 
       new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString() : 
       null;
     
+    console.log(`Toggleování premium pro ${user.email} z ${currentPremiumStatus} na ${newPremiumStatus}`);
     await updateUserPremiumStatus(userId, newPremiumStatus, premiumUntil, user.email);
   }, [users]);
 
@@ -158,7 +162,8 @@ export const useUserAdminLogic = () => {
       );
       
       const userName = users.find(u => u.id === userId)?.name || userEmail.split('@')[0];
-      toast.success(`Uživatel ${userName} nyní ${newPremiumStatus ? 'má' : 'nemá'} premium status`);
+      const statusText = newPremiumStatus ? 'má' : 'nemá';
+      toast.success(`Uživatel ${userName} nyní ${statusText} premium status`);
       
       // Refresh data to ensure consistency
       await refetch();
