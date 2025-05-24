@@ -12,16 +12,27 @@ export function useIsMobile() {
   const [isMobile, setIsMobile] = React.useState<boolean | undefined>(undefined)
 
   React.useEffect(() => {
-    const checkIsMobile = () => setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+    const checkIsMobile = () => {
+      const width = window.innerWidth;
+      // Také kontrolujeme user agent pro better mobile detection
+      const userAgent = navigator.userAgent.toLowerCase();
+      const isMobileDevice = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/.test(userAgent);
+      
+      setIsMobile(width < MOBILE_BREAKPOINT || isMobileDevice);
+    };
     
     // Inicializovat hodnotu
     checkIsMobile();
     
     // Přidat event listener pro změnu velikosti okna
     window.addEventListener("resize", checkIsMobile);
+    window.addEventListener("orientationchange", checkIsMobile);
     
     // Cleanup
-    return () => window.removeEventListener("resize", checkIsMobile);
+    return () => {
+      window.removeEventListener("resize", checkIsMobile);
+      window.removeEventListener("orientationchange", checkIsMobile);
+    };
   }, []);
 
   return isMobile === undefined ? false : isMobile;
@@ -34,7 +45,10 @@ export function useDeviceSize() {
   React.useEffect(() => {
     const checkDeviceSize = () => {
       const width = window.innerWidth
-      if (width < MOBILE_BREAKPOINT) {
+      const userAgent = navigator.userAgent.toLowerCase();
+      const isMobileDevice = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/.test(userAgent);
+      
+      if (width < MOBILE_BREAKPOINT || isMobileDevice) {
         setDeviceSize("mobile")
       } else if (width < TABLET_BREAKPOINT) {
         setDeviceSize("tablet")
@@ -46,10 +60,47 @@ export function useDeviceSize() {
     // Inicializovat hodnotu a přidat event listener
     checkDeviceSize();
     window.addEventListener("resize", checkDeviceSize);
+    window.addEventListener("orientationchange", checkDeviceSize);
     
     // Cleanup
-    return () => window.removeEventListener("resize", checkDeviceSize);
+    return () => {
+      window.removeEventListener("resize", checkDeviceSize);
+      window.removeEventListener("orientationchange", checkDeviceSize);
+    };
   }, []);
 
   return deviceSize;
+}
+
+// Hook pro detekci orientace (užitečné pro mobilní zařízení)
+export function useOrientation() {
+  const [orientation, setOrientation] = React.useState<"portrait" | "landscape">("portrait");
+
+  React.useEffect(() => {
+    const checkOrientation = () => {
+      setOrientation(window.innerHeight > window.innerWidth ? "portrait" : "landscape");
+    };
+
+    checkOrientation();
+    window.addEventListener("resize", checkOrientation);
+    window.addEventListener("orientationchange", checkOrientation);
+
+    return () => {
+      window.removeEventListener("resize", checkOrientation);
+      window.removeEventListener("orientationchange", checkOrientation);
+    };
+  }, []);
+
+  return orientation;
+}
+
+// Hook pro detekci touch zařízení
+export function useIsTouch() {
+  const [isTouch, setIsTouch] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsTouch('ontouchstart' in window || navigator.maxTouchPoints > 0);
+  }, []);
+
+  return isTouch;
 }

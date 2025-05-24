@@ -6,6 +6,7 @@
   text-align: center;
 }
 
+/* DHL Brand Colors */
 .dhl-yellow {
   color: #FFCC00;
 }
@@ -30,6 +31,7 @@
   background-color: #000000;
 }
 
+/* Calculator Navigation - Responsive */
 .calculator-nav-link {
   display: flex;
   align-items: center;
@@ -38,6 +40,13 @@
   text-decoration: none;
   border-radius: 0.375rem;
   transition: all 0.2s;
+}
+
+@media (max-width: 768px) {
+  .calculator-nav-link {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+  }
 }
 
 .calculator-nav-link:hover {
@@ -49,6 +58,7 @@
   color: #000000;
 }
 
+/* Animations */
 @keyframes logo-spin {
   from {
     transform: rotate(0deg);
@@ -61,5 +71,54 @@
 @media (prefers-reduced-motion: no-preference) {
   .logo-spin {
     animation: logo-spin infinite 20s linear;
+  }
+}
+
+/* Mobile-specific optimizations */
+@media (max-width: 768px) {
+  /* Smaller touch targets for mobile */
+  .mobile-compact {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+  }
+  
+  /* Better scrolling on mobile */
+  .mobile-scroll {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+  
+  /* Improved tap targets */
+  button, a, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Prevent zoom on form inputs */
+  input, select, textarea {
+    font-size: 16px;
+  }
+}
+
+/* Desktop specific styles */
+@media (min-width: 1024px) {
+  /* Better hover states for desktop */
+  .desktop-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* Improved focus states for accessibility */
+.focus-visible {
+  outline: 2px solid #FFCC00;
+  outline-offset: 2px;
+}
+
+/* Dark mode optimizations */
+@media (prefers-color-scheme: dark) {
+  /* Better contrast in dark mode */
+  .dark-mode-text {
+    color: rgba(255, 255, 255, 0.9);
   }
 }

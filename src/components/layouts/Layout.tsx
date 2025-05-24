@@ -4,7 +4,7 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useMediaQuery } from "@/hooks/use-media-query";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useLocation } from "react-router-dom";
 
 interface LayoutProps {
@@ -13,7 +13,7 @@ interface LayoutProps {
 }
 
 const Layout = ({ children, navbarRightContent }: LayoutProps) => {
-  const isMobile = useMediaQuery("xs");
+  const isMobile = useIsMobile();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
   
@@ -46,7 +46,7 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
   
   return (
     <div className="flex min-h-screen bg-background">
-      {/* Sidebar - hidden on mobile by default */}
+      {/* Sidebar - mobilní optimalizace */}
       <div 
         className={`${
           isMobile 
@@ -62,7 +62,7 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
       </div>
       
       {/* Main content */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-w-0">
         {/* Navbar */}
         <Navbar 
           toggleSidebar={() => setSidebarOpen(!sidebarOpen)} 
@@ -70,7 +70,7 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
           sidebarOpen={sidebarOpen}
         />
         
-        {/* Overlay pro mobilní sidebar */}
+        {/* Mobilní overlay */}
         {isMobile && sidebarOpen && (
           <div 
             className="fixed inset-0 bg-black/50 z-40"
@@ -79,9 +79,9 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
           />
         )}
         
-        {/* Obsah stránky */}
+        {/* Obsah stránky s mobilní optimalizací */}
         <ScrollArea className="flex-1">
-          <main className="flex-1">
+          <main className={`flex-1 ${isMobile ? 'px-2 py-2' : 'px-4 py-4'}`}>
             {children}
           </main>
           <Footer />

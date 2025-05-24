@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Helmet } from "react-helmet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Car, Calculator, Map, Users, Clock } from "lucide-react";
+import { Car, Calculator, Map, Users, Clock, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import PremiumCheck from "@/components/premium/PremiumCheck";
@@ -13,7 +13,6 @@ import CommuteCostCalculator from "@/components/travel/CommuteCostCalculator";
 import TrafficPredictions from "@/components/travel/TrafficPredictions";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { ResponsiveContainer } from "@/components/ui/responsive-container";
 
 const TravelPlanning = () => {
   const [activeTab, setActiveTab] = useState("optimizer");
@@ -23,7 +22,6 @@ const TravelPlanning = () => {
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);
-    // Oznámit uživateli, že byla změněna záložka
     toast({
       title: "Záložka změněna",
       description: `Zobrazuji: ${getTabName(value)}`,
@@ -47,49 +45,79 @@ const TravelPlanning = () => {
 
   return (
     <PremiumCheck featureKey="travel_planning">
-      <ResponsiveContainer className={`py-4 ${isMobile ? 'px-2' : 'py-8'}`}>
+      <div className={`${isMobile ? 'px-3 py-3' : 'max-w-7xl mx-auto px-4 py-8'}`}>
         <Helmet>
           <title>Plánování cest | Pendler Buddy</title>
         </Helmet>
         
-        {/* Back button */}
+        {/* Back button - mobilní optimalizace */}
         <Button 
           variant="outline" 
           onClick={handleNavigateBack} 
-          className="mb-4"
+          className={`mb-4 ${isMobile ? 'h-8 px-2' : ''}`}
+          size={isMobile ? "sm" : "default"}
         >
-          Zpět
+          <ArrowLeft className={`${isMobile ? 'h-3 w-3 mr-1' : 'h-4 w-4 mr-2'}`} />
+          {isMobile ? 'Zpět' : 'Zpět'}
         </Button>
         
-        {/* Header section */}
-        <section className="mb-6">
+        {/* Header section - mobilní optimalizace */}
+        <section className={`mb-${isMobile ? '4' : '6'}`}>
           <div className={`flex items-center gap-3 mb-4 ${isMobile ? 'flex-col text-center' : ''}`}>
-            <div className="p-2 rounded-full bg-primary/10">
-              <Map className="h-6 w-6 text-primary" />
+            <div className={`${isMobile ? 'p-1.5' : 'p-2'} rounded-full bg-primary/10`}>
+              <Map className={`${isMobile ? 'h-5 w-5' : 'h-6 w-6'} text-primary`} />
             </div>
-            <h1 className={`text-3xl font-bold ${isMobile ? 'text-2xl' : ''}`}>Personalizované plánování cest</h1>
+            <h1 className={`${isMobile ? 'text-xl' : 'text-3xl'} font-bold`}>
+              {isMobile ? 'Plánování cest' : 'Personalizované plánování cest'}
+            </h1>
           </div>
           
-          <p className="text-muted-foreground text-lg max-w-3xl">
-            Optimalizujte své každodenní dojíždění, ušetřete náklady a čas s našimi nástroji pro plánování cest.
-            {!isMobile && " Přizpůsobte své cesty podle vašich směn a sdílejte jízdy s ostatními pendlery."}
+          <p className={`text-muted-foreground ${isMobile ? 'text-sm text-center' : 'text-lg'} max-w-3xl`}>
+            {isMobile 
+              ? 'Optimalizujte své dojíždění, ušetřete náklady a čas.' 
+              : 'Optimalizujte své každodenní dojíždění, ušetřete náklady a čas s našimi nástroji pro plánování cest. Přizpůsobte své cesty podle vašich směn a sdílejte jízdy s ostatními pendlery.'
+            }
           </p>
         </section>
         
-        {/* Main content */}
+        {/* Main content - mobilní optimalizace */}
         <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-4">
-          <TabsList className={`${isMobile ? 'w-full flex overflow-x-auto' : 'w-full justify-start max-w-3xl overflow-x-auto'}`}>
-            <TabsTrigger value="optimizer" className="flex items-center gap-2">
-              <Car className="h-4 w-4" /> {!isMobile ? "Optimalizace dojíždění" : "Optimalizace"}
+          <TabsList className={`${isMobile ? 'grid grid-cols-2 gap-1 h-auto p-1' : 'w-full justify-start max-w-3xl'} overflow-x-auto`}>
+            <TabsTrigger 
+              value="optimizer" 
+              className={`flex items-center gap-2 ${isMobile ? 'flex-col py-2 px-1 text-xs' : ''}`}
+            >
+              <Car className={`${isMobile ? 'h-3 w-3' : 'h-4 w-4'}`} />
+              <span className={isMobile ? 'text-[10px] leading-tight' : ''}>
+                {isMobile ? "Optimalizace" : "Optimalizace dojíždění"}
+              </span>
             </TabsTrigger>
-            <TabsTrigger value="ridesharing" className="flex items-center gap-2">
-              <Users className="h-4 w-4" /> {!isMobile ? "Sdílení jízd" : "Sdílení"}
+            <TabsTrigger 
+              value="ridesharing" 
+              className={`flex items-center gap-2 ${isMobile ? 'flex-col py-2 px-1 text-xs' : ''}`}
+            >
+              <Users className={`${isMobile ? 'h-3 w-3' : 'h-4 w-4'}`} />
+              <span className={isMobile ? 'text-[10px] leading-tight' : ''}>
+                {isMobile ? "Sdílení" : "Sdílení jízd"}
+              </span>
             </TabsTrigger>
-            <TabsTrigger value="calculator" className="flex items-center gap-2">
-              <Calculator className="h-4 w-4" /> {!isMobile ? "Kalkulačka nákladů" : "Kalkulačka"}
+            <TabsTrigger 
+              value="calculator" 
+              className={`flex items-center gap-2 ${isMobile ? 'flex-col py-2 px-1 text-xs' : ''}`}
+            >
+              <Calculator className={`${isMobile ? 'h-3 w-3' : 'h-4 w-4'}`} />
+              <span className={isMobile ? 'text-[10px] leading-tight' : ''}>
+                {isMobile ? "Kalkulačka" : "Kalkulačka nákladů"}
+              </span>
             </TabsTrigger>
-            <TabsTrigger value="predictions" className="flex items-center gap-2">
-              <Clock className="h-4 w-4" /> {!isMobile ? "Predikce dopravy" : "Predikce"}
+            <TabsTrigger 
+              value="predictions" 
+              className={`flex items-center gap-2 ${isMobile ? 'flex-col py-2 px-1 text-xs' : ''}`}
+            >
+              <Clock className={`${isMobile ? 'h-3 w-3' : 'h-4 w-4'}`} />
+              <span className={isMobile ? 'text-[10px] leading-tight' : ''}>
+                {isMobile ? "Predikce" : "Predikce dopravy"}
+              </span>
             </TabsTrigger>
           </TabsList>
           
@@ -109,7 +137,7 @@ const TravelPlanning = () => {
             <TrafficPredictions />
           </TabsContent>
         </Tabs>
-      </ResponsiveContainer>
+      </div>
     </PremiumCheck>
   );
 };

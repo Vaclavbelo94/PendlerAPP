@@ -1,13 +1,12 @@
 
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CheckCircle, Eye, Moon, Sun, Palette } from "lucide-react";
+import { Eye, Moon, Sun, Palette } from "lucide-react";
 import { toast } from "sonner";
 import { useTheme } from "next-themes";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -35,7 +34,6 @@ const ProfileAppearance = ({
   const [compactMode, setCompactMode] = useState(initialCompactMode);
   const isMobile = useIsMobile();
   
-  // Optimalizace pro mobilní zařízení - předejít problikání
   const [isChangingTheme, setIsChangingTheme] = useState(false);
   
   // Synchronizovat stav dark mode s globálním tématem
@@ -47,7 +45,6 @@ const ProfileAppearance = ({
   
   // Nastavit globální téma při změně darkMode přepínače
   useEffect(() => {
-    // Zamezit cyklickým aktualizacím při změně témat
     setIsChangingTheme(true);
     const timer = setTimeout(() => {
       setTheme(darkMode ? 'dark' : 'light');
@@ -72,28 +69,28 @@ const ProfileAppearance = ({
   
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Eye className="h-5 w-5" />
+      <CardHeader className={`${isMobile ? 'pb-3' : ''}`}>
+        <CardTitle className={`flex items-center gap-2 ${isMobile ? 'text-base' : ''}`}>
+          <Eye className={`${isMobile ? 'h-4 w-4' : 'h-5 w-5'}`} />
           <span>Nastavení vzhledu</span>
         </CardTitle>
-        <CardDescription>
+        <CardDescription className={`${isMobile ? 'text-xs' : ''}`}>
           Upravte si základní nastavení zobrazení aplikace
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className={`${isMobile ? 'px-4' : ''}`}>
         <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <Label htmlFor="darkMode" className="text-base flex items-center gap-2">
+          <div className={`flex items-center justify-between ${isMobile ? 'flex-col gap-3' : ''}`}>
+            <div className={`${isMobile ? 'text-center' : ''}`}>
+              <Label htmlFor="darkMode" className={`${isMobile ? 'text-sm' : 'text-base'} flex items-center gap-2 ${isMobile ? 'justify-center' : ''}`}>
                 {darkMode ? (
-                  <Moon className="h-4 w-4" />
+                  <Moon className={`${isMobile ? 'h-3 w-3' : 'h-4 w-4'}`} />
                 ) : (
-                  <Sun className="h-4 w-4" />
+                  <Sun className={`${isMobile ? 'h-3 w-3' : 'h-4 w-4'}`} />
                 )}
                 <span>Tmavý režim</span>
               </Label>
-              <p className="text-sm text-muted-foreground">
+              <p className={`${isMobile ? 'text-xs' : 'text-sm'} text-muted-foreground ${isMobile ? 'text-center mt-1' : ''}`}>
                 Tmavý režim je šetrnější k očím při používání v noci
               </p>
             </div>
@@ -110,18 +107,18 @@ const ProfileAppearance = ({
           
           <Separator className="my-4" />
           
-          <div className="flex items-center justify-between">
-            <div>
-              <Label htmlFor="colorScheme" className="text-base flex items-center gap-2">
-                <Palette className="h-4 w-4" />
+          <div className={`flex items-center justify-between ${isMobile ? 'flex-col gap-3' : ''}`}>
+            <div className={`${isMobile ? 'text-center' : ''}`}>
+              <Label htmlFor="colorScheme" className={`${isMobile ? 'text-sm' : 'text-base'} flex items-center gap-2 ${isMobile ? 'justify-center' : ''}`}>
+                <Palette className={`${isMobile ? 'h-3 w-3' : 'h-4 w-4'}`} />
                 <span>Barevné schéma</span>
               </Label>
-              <p className="text-sm text-muted-foreground">
+              <p className={`${isMobile ? 'text-xs' : 'text-sm'} text-muted-foreground ${isMobile ? 'text-center mt-1' : ''}`}>
                 Vyberte hlavní barvu aplikace
               </p>
             </div>
             <Select value={colorScheme} onValueChange={setColorScheme}>
-              <SelectTrigger className="w-32">
+              <SelectTrigger className={`${isMobile ? 'w-full' : 'w-32'}`}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -137,10 +134,10 @@ const ProfileAppearance = ({
           
           <Separator className="my-4" />
           
-          <div className="flex items-center justify-between">
-            <div>
-              <Label htmlFor="compactMode" className="text-base">Kompaktní režim</Label>
-              <p className="text-sm text-muted-foreground">
+          <div className={`flex items-center justify-between ${isMobile ? 'flex-col gap-3' : ''}`}>
+            <div className={`${isMobile ? 'text-center' : ''}`}>
+              <Label htmlFor="compactMode" className={`${isMobile ? 'text-sm' : 'text-base'}`}>Kompaktní režim</Label>
+              <p className={`${isMobile ? 'text-xs' : 'text-sm'} text-muted-foreground ${isMobile ? 'text-center mt-1' : ''}`}>
                 Zmenší velikost prvků a mezery mezi nimi
               </p>
             </div>
@@ -152,11 +149,12 @@ const ProfileAppearance = ({
           </div>
         </div>
       </CardContent>
-      <CardFooter>
+      <CardFooter className={`${isMobile ? 'px-4' : ''}`}>
         <Button 
           onClick={handleSave} 
-          className="ml-auto"
+          className={`${isMobile ? 'w-full' : 'ml-auto'}`}
           disabled={isChangingTheme}
+          size={isMobile ? "sm" : "default"}
         >
           Uložit nastavení
         </Button>
