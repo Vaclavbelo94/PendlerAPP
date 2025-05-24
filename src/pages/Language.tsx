@@ -24,7 +24,19 @@ const Language = () => {
 
   // Mock data for components that need props
   const mockVocabularyCount = 0;
-  const mockProgress = { reviewed: 0, total: 0, percentage: 0 };
+  const mockProgress = {
+    dailyStats: [],
+    totalReviewed: 0,
+    streakDays: 0,
+    averageAccuracy: 0,
+    categoryDistribution: {},
+    difficultyDistribution: {
+      easy: 0,
+      medium: 0,
+      hard: 0,
+      unspecified: 0
+    }
+  };
 
   return (
     <div className="container py-6 md:py-10 max-w-7xl">
