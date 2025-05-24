@@ -1,4 +1,3 @@
-
 import React, { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,6 +9,7 @@ import { AuthProvider } from "./hooks/auth";
 import { usePerformanceOptimization } from "./hooks/usePerformanceOptimization";
 import { useResourceOptimization } from "./hooks/useResourceOptimization";
 import { RouteOptimizer } from "./components/optimized/RouteOptimizer";
+import { DatabaseOptimizer } from "./components/optimized/DatabaseOptimizer";
 
 // Lazy loading všech stránek s optimalizací
 const Index = lazy(() => import("./pages/Index"));
@@ -73,34 +73,46 @@ const PageSkeleton = React.memo(() => (
 
 PageSkeleton.displayName = "PageSkeleton";
 
-// Optimalizovaný QueryClient s cache strategií
+// Optimalizovaný QueryClient s pokročilou cache strategií
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 5 * 60 * 1000, // 5 minut
-      gcTime: 10 * 60 * 1000, // 10 minut
+      gcTime: 15 * 60 * 1000, // 15 minut - zvýšeno z 10 minut
       retry: (failureCount, error) => {
-        // Retry strategie podle typu chyby
+        // Pokročilá retry strategie
         if (failureCount >= 3) return false;
         // @ts-ignore
-        if (error?.status === 404) return false;
+        if (error?.status === 404 || error?.status === 403) return false;
+        // @ts-ignore
+        if (error?.status >= 500) return failureCount < 5; // Více pokusů pro server errors
         return true;
       },
       retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+      // Nová optimalizace: background refetch
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchOnReconnect: 'always',
     },
     mutations: {
-      retry: 1,
+      retry: 2, // Zvýšeno z 1
+      retryDelay: 1000,
     },
   },
 });
 
-// Performance wrapper pro App
+// Performance wrapper pro App s novými optimalizacemi
 const AppWithPerformance = () => {
   usePerformanceOptimization();
-  useResourceOptimization();
+  useResourceOptimization({
+    enableImageOptimization: true,
+    enableFontOptimization: true,
+    enableCSSOptimization: true
+  });
   
   return (
     <RouteOptimizer>
+      <DatabaseOptimizer />
       <Layout>
         <Suspense fallback={<PageSkeleton />}>
           <Routes>
@@ -166,7 +178,7 @@ function App() {
         enableSystem
         disableTransitionOnChange={false}
       >
-        <TooltipProvider delayDuration={300}>
+        <TooltipProvider delayDuration={200}>
           <Toaster 
             position="bottom-right"
             toastOptions={{

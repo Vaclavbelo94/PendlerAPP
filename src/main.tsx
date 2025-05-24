@@ -4,13 +4,14 @@ import { StrictMode, useEffect, useState } from 'react'
 import App from './App.tsx'
 import './index.css'
 import { toast } from 'sonner'
+import { performanceMonitor } from './utils/performanceMonitor'
 
-// Funkce pro inicializaci dat s optimalizací
+// Optimalizovaná inicializace dat s batch operacemi
 const initializeAppData = () => {
-  // Použijeme requestIdleCallback pokud je dostupný
   const initData = () => {
-    if (!localStorage.getItem('premiumFeatures')) {
-      const defaultFeatures = [
+    // Batch inicializace všech localStorage dat
+    const defaultData = {
+      premiumFeatures: [
         {
           id: "1",
           name: "Plánování směn",
@@ -42,18 +43,32 @@ const initializeAppData = () => {
         {
           id: "5",
           name: "Správa vozidla",
-          description: "Rozšířené funkce pro správu vozidla a nákladů",
+          description: "Rozšířené funkce pro správa vozidla a nákladů",
           isEnabled: true,
           key: "vehicle"
         }
-      ];
-      localStorage.setItem('premiumFeatures', JSON.stringify(defaultFeatures));
+      ]
+    };
+
+    // Batch nastavení všech výchozích hodnot
+    Object.entries(defaultData).forEach(([key, value]) => {
+      if (!localStorage.getItem(key)) {
+        localStorage.setItem(key, JSON.stringify(value));
+      }
+    });
+
+    // Inicializace performance monitoringu
+    if ('performance' in window && 'mark' in performance) {
+      performance.mark('app-data-initialized');
     }
   };
 
-  // Použijeme requestIdleCallback pokud je dostupný, jinak setTimeout
-  if ('requestIdleCallback' in window) {
-    requestIdleCallback(initData);
+  // Optimalizované spuštění s prioritou
+  if ('scheduler' in window && 'postTask' in (window as any).scheduler) {
+    // Použijeme Scheduler API pokud je dostupný
+    (window as any).scheduler.postTask(initData, { priority: 'background' });
+  } else if ('requestIdleCallback' in window) {
+    requestIdleCallback(initData, { timeout: 2000 });
   } else {
     setTimeout(initData, 100);
   }
@@ -62,13 +77,12 @@ const initializeAppData = () => {
 // Optimalizovaná inicializace dat
 initializeAppData();
 
-// Service Worker wrapper component s optimalizacemi
+// Vylepšený Service Worker manager s lepším error handling
 const ServiceWorkerManager = () => {
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const [registration, setRegistration] = useState<ServiceWorkerRegistration | null>(null);
   const [registered, setRegistered] = useState(false);
   
-  // Detekce pomalých zařízení
   const isLowEndDevice = () => {
     const isSlowCPU = navigator.hardwareConcurrency && navigator.hardwareConcurrency < 4;
     // @ts-ignore
@@ -81,20 +95,24 @@ const ServiceWorkerManager = () => {
   };
 
   useEffect(() => {
-    const registerServiceWorkerWithDelay = async () => {
+    const registerServiceWorkerWithOptimizations = async () => {
       if ('serviceWorker' in navigator) {
         try {
-          // Na pomalých zařízeních nebo pomalém připojení přidáme větší zpoždění
-          const delay = isLowEndDevice() ? 5000 : 2000;
+          // Adaptivní zpoždění podle výkonu zařízení
+          const delay = isLowEndDevice() ? 8000 : 3000;
           
           await new Promise(resolve => setTimeout(resolve, delay));
           
-          const reg = await navigator.serviceWorker.register('/sw.js');
+          const reg = await navigator.serviceWorker.register('/sw.js', {
+            scope: '/',
+            updateViaCache: 'none' // Vždy kontrolovat aktualizace
+          });
+          
           console.log('ServiceWorker registration successful with scope: ', reg.scope);
           setRegistration(reg);
           setRegistered(true);
           
-          // Kontrola aktualizací
+          // Optimalizovaná kontrola aktualizací
           reg.addEventListener('updatefound', () => {
             const newWorker = reg.installing;
             if (newWorker) {
@@ -107,25 +125,30 @@ const ServiceWorkerManager = () => {
                       label: 'Aktualizovat',
                       onClick: () => updateServiceWorker()
                     },
-                    duration: 10000
+                    duration: 15000 // Delší doba zobrazení
                   });
                 }
               });
             }
           });
+
+          // Pravidelná kontrola aktualizací (každých 30 minut)
+          setInterval(() => {
+            reg.update();
+          }, 30 * 60 * 1000);
+
         } catch (error) {
           console.error('ServiceWorker registration failed: ', error);
         }
       }
     };
     
-    // Registrujeme až po načtení stránky
     if (document.readyState === 'complete') {
-      registerServiceWorkerWithDelay();
+      registerServiceWorkerWithOptimizations();
     } else {
-      window.addEventListener('load', registerServiceWorkerWithDelay);
+      window.addEventListener('load', registerServiceWorkerWithOptimizations);
       return () => {
-        window.removeEventListener('load', registerServiceWorkerWithDelay);
+        window.removeEventListener('load', registerServiceWorkerWithOptimizations);
       };
     }
     
@@ -146,10 +169,10 @@ const ServiceWorkerManager = () => {
   return null;
 };
 
-// Optimalizované renderování s performance monitoring
+// Optimalizované renderování s enhanced monitoring
 const root = createRoot(document.getElementById("root")!);
 
-// Performance monitoring
+// Enhanced performance monitoring
 if ('performance' in window && 'mark' in performance) {
   performance.mark('app-start');
 }
@@ -161,17 +184,36 @@ root.render(
   </StrictMode>
 );
 
-// Log performance metrics
+// Rozšířené performance metriky
 if ('performance' in window) {
   window.addEventListener('load', () => {
     setTimeout(() => {
       const navigationTiming = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
-      console.log('Performance metrics:', {
+      const metrics = {
         DOMContentLoaded: navigationTiming.domContentLoadedEventEnd - navigationTiming.fetchStart,
         LoadComplete: navigationTiming.loadEventEnd - navigationTiming.fetchStart,
         FirstPaint: performance.getEntriesByName('first-paint')[0]?.startTime || 'N/A',
-        FirstContentfulPaint: performance.getEntriesByName('first-contentful-paint')[0]?.startTime || 'N/A'
-      });
-    }, 1000);
+        FirstContentfulPaint: performance.getEntriesByName('first-contentful-paint')[0]?.startTime || 'N/A',
+        TTI: navigationTiming.domInteractive - navigationTiming.fetchStart,
+        TTFB: navigationTiming.responseStart - navigationTiming.requestStart
+      };
+      
+      console.log('Enhanced Performance Metrics:', metrics);
+      
+      // Performance monitoring výstrahy
+      if (metrics.LoadComplete > 3000) {
+        console.warn('Slow page load detected:', metrics.LoadComplete, 'ms');
+      }
+      
+      if (typeof metrics.FirstContentfulPaint === 'number' && metrics.FirstContentfulPaint > 2500) {
+        console.warn('Slow FCP detected:', metrics.FirstContentfulPaint, 'ms');
+      }
+      
+    }, 1500);
   });
 }
+
+// Cleanup při unload
+window.addEventListener('beforeunload', () => {
+  performanceMonitor.destroy();
+});
