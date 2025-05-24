@@ -1,21 +1,44 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="cs">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pendler-buddy-guide</title>
-    <meta name="description" content="Lovable Generated Project" />
-    <meta name="author" content="Lovable" />
+    
+    <!-- Preload kritických zdrojů -->
+    <link rel="preload" href="/src/main.tsx" as="script" type="module" />
+    <link rel="preload" href="/src/index.css" as="style" />
+    
+    <!-- Prefetch pravděpodobných dalších stránek -->
+    <link rel="prefetch" href="/dashboard" />
+    <link rel="prefetch" href="/language" />
+    <link rel="prefetch" href="/calculator" />
+    
+    <!-- DNS prefetch pro externí zdroje -->
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="https://ghfjdgnnhhxhamcwjodx.supabase.co" />
+    
+    <title>Pendler Buddy - Průvodce pro pracovníky v Německu</title>
+    <meta name="description" content="Komplexní průvodce pro Čechy pracující v Německu. Jazykové kurzy, kalkulačky, správa směn a vozidel." />
+    <meta name="author" content="Pendler Buddy" />
 
-    <meta property="og:title" content="pendler-buddy-guide" />
-    <meta property="og:description" content="Lovable Generated Project" />
+    <!-- Performance optimizations -->
+    <meta name="theme-color" content="#FFCC00" />
+    <meta name="color-scheme" content="light dark" />
+    
+    <!-- Optimized Open Graph -->
+    <meta property="og:title" content="Pendler Buddy - Průvodce pro pracovníky v Německu" />
+    <meta property="og:description" content="Komplexní průvodce pro Čechy pracující v Německu" />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta property="og:image" content="/favicon.ico" />
 
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@lovable_dev" />
-    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Pendler Buddy" />
+    <meta name="twitter:description" content="Průvodce pro pracovníky v Německu" />
+    
+    <!-- Favicon optimizations -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/favicon.ico" />
   </head>
 
   <body>

@@ -7,8 +7,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import Layout from "./components/layouts/Layout";
 import { AuthProvider } from "./hooks/auth";
+import { usePerformanceOptimization } from "./hooks/usePerformanceOptimization";
 
-// Lazy loading všech stránek pro lepší výkon
+// Lazy loading všech stránek s optimalizací
 const Index = lazy(() => import("./pages/Index"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Language = lazy(() => import("./pages/Language"));
@@ -23,6 +24,8 @@ const ProfileExtended = lazy(() => import("./pages/ProfileExtended"));
 const Translator = lazy(() => import("./pages/Translator"));
 const Premium = lazy(() => import("./pages/Premium"));
 const Admin = lazy(() => import("./pages/Admin"));
+
+// Statické stránky - můžeme je načíst eagerly pro lepší SEO
 const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
 const FAQ = lazy(() => import("./pages/FAQ"));
@@ -56,82 +59,118 @@ const RentalAgreement = lazy(() => import("./pages/legal/RentalAgreement"));
 
 const DesignSystem = lazy(() => import("./pages/DesignSystem"));
 
-// Loading component pro lazy loaded stránky
-const PageSkeleton = () => (
-  <div className="min-h-screen flex items-center justify-center">
-    <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+// Optimalizovaný loading component
+const PageSkeleton = React.memo(() => (
+  <div className="min-h-screen flex items-center justify-center bg-background">
+    <div className="flex flex-col items-center space-y-4">
+      <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
+      <p className="text-sm text-muted-foreground animate-pulse">Načítání...</p>
+    </div>
   </div>
-);
+));
 
+PageSkeleton.displayName = "PageSkeleton";
+
+// Optimalizovaný QueryClient s cache strategií
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 5 * 60 * 1000, // 5 minut
-      gcTime: 10 * 60 * 1000, // 10 minut (dříve cacheTime)
+      gcTime: 10 * 60 * 1000, // 10 minut
+      retry: (failureCount, error) => {
+        // Retry strategie podle typu chyby
+        if (failureCount >= 3) return false;
+        // @ts-ignore
+        if (error?.status === 404) return false;
+        return true;
+      },
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    },
+    mutations: {
+      retry: 1,
     },
   },
 });
 
+// Performance wrapper pro App
+const AppWithPerformance = () => {
+  usePerformanceOptimization();
+  
+  return (
+    <Layout>
+      <Suspense fallback={<PageSkeleton />}>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/language" element={<Language />} />
+          <Route path="/shifts" element={<Shifts />} />
+          <Route path="/calculator" element={<Calculator />} />
+          <Route path="/vehicle" element={<Vehicle />} />
+          <Route path="/tax-advisor" element={<TaxAdvisor />} />
+          <Route path="/travel-planning" element={<TravelPlanning />} />
+          <Route path="/commuting-map" element={<CommutingMap />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/profile-extended" element={<ProfileExtended />} />
+          <Route path="/translator" element={<Translator />} />
+          <Route path="/premium" element={<Premium />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/cookies" element={<Cookies />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/legal-assistant" element={<LegalAssistant />} />
+          <Route path="/laws" element={<Laws />} />
+          
+          {/* Law routes */}
+          <Route path="/laws/tax-return" element={<TaxReturn />} />
+          <Route path="/laws/work-contract" element={<WorkContract />} />
+          <Route path="/laws/health-insurance" element={<HealthInsurance />} />
+          <Route path="/laws/pension-insurance" element={<PensionInsurance />} />
+          <Route path="/laws/minimum-wage" element={<MinimumWage />} />
+          <Route path="/laws/working-hours" element={<WorkingHours />} />
+          <Route path="/laws/minimum-holidays" element={<MinimumHolidays />} />
+          <Route path="/laws/employee-protection" element={<EmployeeProtection />} />
+          <Route path="/laws/tax-classes" element={<TaxClasses />} />
+          <Route path="/laws/child-benefits" element={<ChildBenefits />} />
+          <Route path="/laws/parental-allowance" element={<ParentalAllowance />} />
+          
+          {/* Legal routes */}
+          <Route path="/legal/legal-status" element={<LegalStatus />} />
+          <Route path="/legal/social-security" element={<SocialSecurity />} />
+          <Route path="/legal/work-contract" element={<WorkContractLegal />} />
+          <Route path="/legal/rental-agreement" element={<RentalAgreement />} />
+          
+          <Route path="/design-system" element={<DesignSystem />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
+    </Layout>
+  );
+};
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        <TooltipProvider>
-          <Toaster />
+      <ThemeProvider 
+        attribute="class" 
+        defaultTheme="system" 
+        enableSystem
+        disableTransitionOnChange={false}
+      >
+        <TooltipProvider delayDuration={300}>
+          <Toaster 
+            position="bottom-right"
+            toastOptions={{
+              duration: 4000,
+            }}
+          />
           <BrowserRouter>
             <AuthProvider>
-              <Layout>
-                <Suspense fallback={<PageSkeleton />}>
-                  <Routes>
-                    <Route path="/" element={<Index />} />
-                    <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/language" element={<Language />} />
-                    <Route path="/shifts" element={<Shifts />} />
-                    <Route path="/calculator" element={<Calculator />} />
-                    <Route path="/vehicle" element={<Vehicle />} />
-                    <Route path="/tax-advisor" element={<TaxAdvisor />} />
-                    <Route path="/travel-planning" element={<TravelPlanning />} />
-                    <Route path="/commuting-map" element={<CommutingMap />} />
-                    <Route path="/profile" element={<Profile />} />
-                    <Route path="/profile-extended" element={<ProfileExtended />} />
-                    <Route path="/translator" element={<Translator />} />
-                    <Route path="/premium" element={<Premium />} />
-                    <Route path="/admin" element={<Admin />} />
-                    <Route path="/about" element={<About />} />
-                    <Route path="/contact" element={<Contact />} />
-                    <Route path="/faq" element={<FAQ />} />
-                    <Route path="/terms" element={<Terms />} />
-                    <Route path="/privacy" element={<Privacy />} />
-                    <Route path="/cookies" element={<Cookies />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route path="/legal-assistant" element={<LegalAssistant />} />
-                    <Route path="/laws" element={<Laws />} />
-                    
-                    {/* Law routes */}
-                    <Route path="/laws/tax-return" element={<TaxReturn />} />
-                    <Route path="/laws/work-contract" element={<WorkContract />} />
-                    <Route path="/laws/health-insurance" element={<HealthInsurance />} />
-                    <Route path="/laws/pension-insurance" element={<PensionInsurance />} />
-                    <Route path="/laws/minimum-wage" element={<MinimumWage />} />
-                    <Route path="/laws/working-hours" element={<WorkingHours />} />
-                    <Route path="/laws/minimum-holidays" element={<MinimumHolidays />} />
-                    <Route path="/laws/employee-protection" element={<EmployeeProtection />} />
-                    <Route path="/laws/tax-classes" element={<TaxClasses />} />
-                    <Route path="/laws/child-benefits" element={<ChildBenefits />} />
-                    <Route path="/laws/parental-allowance" element={<ParentalAllowance />} />
-                    
-                    {/* Legal routes */}
-                    <Route path="/legal/legal-status" element={<LegalStatus />} />
-                    <Route path="/legal/social-security" element={<SocialSecurity />} />
-                    <Route path="/legal/work-contract" element={<WorkContractLegal />} />
-                    <Route path="/legal/rental-agreement" element={<RentalAgreement />} />
-                    
-                    <Route path="/design-system" element={<DesignSystem />} />
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </Suspense>
-              </Layout>
+              <AppWithPerformance />
             </AuthProvider>
           </BrowserRouter>
         </TooltipProvider>

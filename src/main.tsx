@@ -5,79 +5,88 @@ import App from './App.tsx'
 import './index.css'
 import { toast } from 'sonner'
 
-// Funkce pro inicializaci dat
+// Funkce pro inicializaci dat s optimalizací
 const initializeAppData = () => {
-  // Inicializace prémiových funkcí, pokud ještě neexistují
-  if (!localStorage.getItem('premiumFeatures')) {
-    const defaultFeatures = [
-      {
-        id: "1",
-        name: "Plánování směn",
-        description: "Přidávání a správa směn v kalendáři",
-        isEnabled: true,
-        key: "shifts"
-      },
-      {
-        id: "2",
-        name: "Pokročilý překladač",
-        description: "Překlad delších textů a dokumentů",
-        isEnabled: true,
-        key: "translator"
-      },
-      {
-        id: "3",
-        name: "Daňové kalkulačky",
-        description: "Rozšířené kalkulačky pro výpočet daní a odvodů",
-        isEnabled: true,
-        key: "calculator"
-      },
-      {
-        id: "4",
-        name: "Rozšířené materiály k němčině",
-        description: "Prémiové výukové materiály a cvičení",
-        isEnabled: true,
-        key: "language"
-      },
-      {
-        id: "5",
-        name: "Správa vozidla",
-        description: "Rozšířené funkce pro správu vozidla a nákladů",
-        isEnabled: true,
-        key: "vehicle"
-      }
-    ];
-    localStorage.setItem('premiumFeatures', JSON.stringify(defaultFeatures));
+  // Použijeme requestIdleCallback pokud je dostupný
+  const initData = () => {
+    if (!localStorage.getItem('premiumFeatures')) {
+      const defaultFeatures = [
+        {
+          id: "1",
+          name: "Plánování směn",
+          description: "Přidávání a správa směn v kalendáři",
+          isEnabled: true,
+          key: "shifts"
+        },
+        {
+          id: "2",
+          name: "Pokročilý překladač",
+          description: "Překlad delších textů a dokumentů",
+          isEnabled: true,
+          key: "translator"
+        },
+        {
+          id: "3",
+          name: "Daňové kalkulačky",
+          description: "Rozšířené kalkulačky pro výpočet daní a odvodů",
+          isEnabled: true,
+          key: "calculator"
+        },
+        {
+          id: "4",
+          name: "Rozšířené materiály k němčině",
+          description: "Prémiové výukové materiály a cvičení",
+          isEnabled: true,
+          key: "language"
+        },
+        {
+          id: "5",
+          name: "Správa vozidla",
+          description: "Rozšířené funkce pro správu vozidla a nákladů",
+          isEnabled: true,
+          key: "vehicle"
+        }
+      ];
+      localStorage.setItem('premiumFeatures', JSON.stringify(defaultFeatures));
+    }
+  };
+
+  // Použijeme requestIdleCallback pokud je dostupný, jinak setTimeout
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(initData);
+  } else {
+    setTimeout(initData, 100);
   }
 }
 
-// Inicializace dat při prvním načtení aplikace
+// Optimalizovaná inicializace dat
 initializeAppData();
 
-// Service Worker wrapper component
+// Service Worker wrapper component s optimalizacemi
 const ServiceWorkerManager = () => {
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const [registration, setRegistration] = useState<ServiceWorkerRegistration | null>(null);
   const [registered, setRegistered] = useState(false);
   
-  // Pomocná funkce pro detekci pomalých zařízení
+  // Detekce pomalých zařízení
   const isLowEndDevice = () => {
-    // Detekce pomalých zařízení (méně než 4 jader nebo méně než 4GB RAM)
     const isSlowCPU = navigator.hardwareConcurrency && navigator.hardwareConcurrency < 4;
-    // @ts-ignore - deviceMemory není standardní vlastnost, ale je podporována v Chrome
+    // @ts-ignore
     const isLowMemory = navigator.deviceMemory && navigator.deviceMemory < 4;
+    const isSlowConnection = 'connection' in navigator && 
+      // @ts-ignore
+      (navigator.connection?.effectiveType === 'slow-2g' || navigator.connection?.effectiveType === '2g');
     
-    return isSlowCPU || isLowMemory;
+    return isSlowCPU || isLowMemory || isSlowConnection;
   };
 
   useEffect(() => {
-    // Přidáme zpoždění před registrací Service Workeru pro zlepšení výkonu načítání
     const registerServiceWorkerWithDelay = async () => {
       if ('serviceWorker' in navigator) {
         try {
-          // Na pomalých zařízeních přidáme větší zpoždění
-          const delay = isLowEndDevice() ? 3000 : 1000;
+          // Na pomalých zařízeních nebo pomalém připojení přidáme větší zpoždění
+          const delay = isLowEndDevice() ? 5000 : 2000;
           
-          // Používáme Promise.all pro paralelní zpracování a setTimeout s Promise
           await new Promise(resolve => setTimeout(resolve, delay));
           
           const reg = await navigator.serviceWorker.register('/sw.js');
@@ -110,7 +119,7 @@ const ServiceWorkerManager = () => {
       }
     };
     
-    // Provedeme registraci až po načtení stránky
+    // Registrujeme až po načtení stránky
     if (document.readyState === 'complete') {
       registerServiceWorkerWithDelay();
     } else {
@@ -120,53 +129,16 @@ const ServiceWorkerManager = () => {
       };
     }
     
-    // Naslouchání na controller změny
-    const handleControllerChange = () => {
-      console.log('Service Worker Controller Changed');
-    };
-    
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange);
-      
-      // Kontrola a oznámení o offline připravenosti - s větším zpožděním
-      const checkOfflineReadiness = () => {
-        if (!registered) return; // Kontrolujeme, že service worker byl úspěšně registrován
-        
-        if (navigator.serviceWorker.controller) {
-          const messageChannel = new MessageChannel();
-          messageChannel.port1.onmessage = (event) => {
-            if (event.data.offlineReady) {
-              toast.success('Aplikace je připravena pro offline použití', {
-                description: `Uloženo ${event.data.cachedItems} položek`,
-                duration: 3000
-              });
-            }
-          };
-          
-          navigator.serviceWorker.controller.postMessage({
-            type: 'CHECK_OFFLINE_READY'
-          }, [messageChannel.port2]);
-        }
-      };
-      
-      // Odložíme kontrolu offline připravenosti a kontrolujeme status připojení
-      if (navigator.onLine) {
-        setTimeout(checkOfflineReadiness, 5000);
-      }
-      
-      return () => {
-        navigator.serviceWorker.removeEventListener('controllerchange', handleControllerChange);
-      };
+    // Performance tracking
+    if ('performance' in window && 'mark' in performance) {
+      performance.mark('sw-manager-init');
     }
-  }, [registered]);
+  }, []);
   
   const updateServiceWorker = () => {
     if (registration && registration.waiting) {
-      // Pošleme zprávu čekajícímu service workeru aby převzal kontrolu
       registration.waiting.postMessage({ type: 'SKIP_WAITING' });
       setUpdateAvailable(false);
-      
-      // Resetujeme stránku pro načtení nového service workeru
       window.location.reload();
     }
   };
@@ -174,10 +146,32 @@ const ServiceWorkerManager = () => {
   return null;
 };
 
-// Obalení aplikace do StrictMode pro lepší detekci chyb
-createRoot(document.getElementById("root")!).render(
+// Optimalizované renderování s performance monitoring
+const root = createRoot(document.getElementById("root")!);
+
+// Performance monitoring
+if ('performance' in window && 'mark' in performance) {
+  performance.mark('app-start');
+}
+
+root.render(
   <StrictMode>
     <App />
     <ServiceWorkerManager />
   </StrictMode>
 );
+
+// Log performance metrics
+if ('performance' in window) {
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      const navigationTiming = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+      console.log('Performance metrics:', {
+        DOMContentLoaded: navigationTiming.domContentLoadedEventEnd - navigationTiming.fetchStart,
+        LoadComplete: navigationTiming.loadEventEnd - navigationTiming.fetchStart,
+        FirstPaint: performance.getEntriesByName('first-paint')[0]?.startTime || 'N/A',
+        FirstContentfulPaint: performance.getEntriesByName('first-contentful-paint')[0]?.startTime || 'N/A'
+      });
+    }, 1000);
+  });
+}
