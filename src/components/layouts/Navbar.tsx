@@ -7,8 +7,7 @@ import {
   UserIcon, 
   LogOutIcon, 
   SearchIcon,
-  CalculatorIcon,
-  ShieldIcon
+  CalculatorIcon
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -35,10 +34,6 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProp
   const navigate = useNavigate();
   const location = useLocation();
   const { user, isPremium, isAdmin, signOut, refreshAdminStatus } = useAuth();
-  
-  // Debug output
-  console.log("Navbar - User:", user?.email);
-  console.log("Navbar - isAdmin status:", isAdmin);
 
   // Add scroll event listener
   useEffect(() => {
@@ -67,11 +62,6 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProp
     await signOut();
     navigate("/");
     toast.success("Odhlášení proběhlo úspěšně");
-  };
-
-  const handleAdminClick = () => {
-    navigate("/admin");
-    toast.info("Vstupujete do administrace");
   };
 
   return (
@@ -115,18 +105,6 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProp
             </Button>
           )}
           
-          {/* Admin Link - only visible for admins */}
-          {isAdmin && (
-            <Button 
-              variant="ghost" 
-              className="text-sm font-medium flex items-center gap-2 hidden md:flex bg-red-500/10 hover:bg-red-500/20" 
-              onClick={handleAdminClick}
-            >
-              <ShieldIcon className="h-4 w-4 text-red-500" />
-              <span className="text-red-500">Administrace</span>
-            </Button>
-          )}
-          
           {/* Theme toggle button (viditelné pouze na desktop) */}
           <ThemeToggle />
           
@@ -154,18 +132,6 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProp
                   <UserIcon className="mr-2 h-4 w-4" />
                   <span>Profil</span>
                 </DropdownMenuItem>
-                {/* Admin dropdown item - only visible for admins */}
-                {isAdmin && (
-                  <DropdownMenuItem onClick={() => navigate("/admin")} className="text-red-500">
-                    <ShieldIcon className="mr-2 h-4 w-4 text-red-500" />
-                    <span>Administrace</span>
-                  </DropdownMenuItem>
-                )}
-                {/* Calculator dropdown item - only visible when logged in on mobile */}
-                <DropdownMenuItem onClick={() => navigate("/calculator")} className="md:hidden">
-                  <CalculatorIcon className="mr-2 h-4 w-4" />
-                  <span>Kalkulačky</span>
-                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout}>
                   <LogOutIcon className="mr-2 h-4 w-4" />
@@ -174,9 +140,14 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProp
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Button variant="default" size="sm" onClick={() => navigate("/login")}>
-              Přihlásit se
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" asChild>
+                <Link to="/login">Přihlásit se</Link>
+              </Button>
+              <Button asChild>
+                <Link to="/register">Registrovat se</Link>
+              </Button>
+            </div>
           )}
         </div>
       </div>
