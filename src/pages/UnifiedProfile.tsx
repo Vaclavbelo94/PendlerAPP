@@ -41,22 +41,26 @@ const UnifiedProfile = () => {
       <ProfileHeader />
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} max-w-2xl`}>
-          <TabsTrigger value="overview" className="flex items-center gap-2">
-            <UserIcon className="h-4 w-4" />
-            <span className={isMobile ? "hidden sm:inline" : ""}>Přehled</span>
+        <TabsList className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} ${isMobile ? 'max-w-full' : 'max-w-4xl'} h-auto`}>
+          <TabsTrigger value="overview" className="flex flex-col items-center gap-1 py-3 px-4">
+            <UserIcon className="h-5 w-5" />
+            <span className="text-sm font-medium">Přehled</span>
+            <span className="text-xs text-muted-foreground hidden sm:block">Základní informace</span>
           </TabsTrigger>
-          <TabsTrigger value="settings" className="flex items-center gap-2">
-            <Settings2Icon className="h-4 w-4" />
-            <span className={isMobile ? "hidden sm:inline" : ""}>Nastavení</span>
+          <TabsTrigger value="settings" className="flex flex-col items-center gap-1 py-3 px-4">
+            <Settings2Icon className="h-5 w-5" />
+            <span className="text-sm font-medium">Nastavení</span>
+            <span className="text-xs text-muted-foreground hidden sm:block">Osobní údaje</span>
           </TabsTrigger>
-          <TabsTrigger value="appearance" className="flex items-center gap-2">
-            <PaletteIcon className="h-4 w-4" />
-            <span className={isMobile ? "hidden sm:inline" : ""}>Vzhled</span>
+          <TabsTrigger value="appearance" className="flex flex-col items-center gap-1 py-3 px-4">
+            <PaletteIcon className="h-5 w-5" />
+            <span className="text-sm font-medium">Vzhled</span>
+            <span className="text-xs text-muted-foreground hidden sm:block">Téma a barvy</span>
           </TabsTrigger>
-          <TabsTrigger value="activity" className="flex items-center gap-2">
-            <ActivityIcon className="h-4 w-4" />
-            <span className={isMobile ? "hidden sm:inline" : ""}>Aktivita</span>
+          <TabsTrigger value="activity" className="flex flex-col items-center gap-1 py-3 px-4">
+            <ActivityIcon className="h-5 w-5" />
+            <span className="text-sm font-medium">Aktivita</span>
+            <span className="text-xs text-muted-foreground hidden sm:block">Statistiky</span>
           </TabsTrigger>
         </TabsList>
         

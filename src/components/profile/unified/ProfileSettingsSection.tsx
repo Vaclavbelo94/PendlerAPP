@@ -29,22 +29,22 @@ const ProfileSettingsSection = () => {
 
   return (
     <Tabs defaultValue="personal" className="space-y-6">
-      <TabsList className="grid grid-cols-2 md:grid-cols-4 max-w-2xl">
-        <TabsTrigger value="personal" className="flex items-center gap-2">
+      <TabsList className="grid grid-cols-2 md:grid-cols-4 max-w-4xl h-auto">
+        <TabsTrigger value="personal" className="flex flex-col items-center gap-1 py-3">
           <UserIcon className="h-4 w-4" />
-          <span className="hidden sm:inline">Osobní údaje</span>
+          <span className="text-sm">Osobní údaje</span>
         </TabsTrigger>
-        <TabsTrigger value="password" className="flex items-center gap-2">
+        <TabsTrigger value="password" className="flex flex-col items-center gap-1 py-3">
           <KeyIcon className="h-4 w-4" />
-          <span className="hidden sm:inline">Heslo</span>
+          <span className="text-sm">Heslo</span>
         </TabsTrigger>
-        <TabsTrigger value="notifications" className="flex items-center gap-2">
+        <TabsTrigger value="notifications" className="flex flex-col items-center gap-1 py-3">
           <BellIcon className="h-4 w-4" />
-          <span className="hidden sm:inline">Notifikace</span>
+          <span className="text-sm">Notifikace</span>
         </TabsTrigger>
-        <TabsTrigger value="language" className="flex items-center gap-2">
+        <TabsTrigger value="language" className="flex flex-col items-center gap-1 py-3">
           <LanguagesIcon className="h-4 w-4" />
-          <span className="hidden sm:inline">Jazyk</span>
+          <span className="text-sm">Jazyk</span>
         </TabsTrigger>
       </TabsList>
 
