@@ -5,18 +5,25 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
-    <!-- Preload kritických zdrojů -->
+    <!-- Optimalizované preloading kritických zdrojů -->
     <link rel="preload" href="/src/main.tsx" as="script" type="module" />
     <link rel="preload" href="/src/index.css" as="style" />
+    <link rel="preload" href="/src/App.tsx" as="script" type="module" />
     
     <!-- Prefetch pravděpodobných dalších stránek -->
     <link rel="prefetch" href="/dashboard" />
     <link rel="prefetch" href="/language" />
     <link rel="prefetch" href="/calculator" />
+    <link rel="prefetch" href="/vehicle" />
+    <link rel="prefetch" href="/shifts" />
     
     <!-- DNS prefetch pro externí zdroje -->
     <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
     <link rel="dns-prefetch" href="https://ghfjdgnnhhxhamcwjodx.supabase.co" />
+    
+    <!-- Font optimalizace -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     
     <title>Pendler Buddy - Průvodce pro pracovníky v Německu</title>
     <meta name="description" content="Komplexní průvodce pro Čechy pracující v Německu. Jazykové kurzy, kalkulačky, správa směn a vozidel." />
@@ -25,6 +32,15 @@
     <!-- Performance optimizations -->
     <meta name="theme-color" content="#FFCC00" />
     <meta name="color-scheme" content="light dark" />
+    
+    <!-- Bundle optimalizace -->
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    
+    <!-- Resource hints pro rychlejší načítání -->
+    <link rel="modulepreload" href="/src/main.tsx" />
+    <link rel="modulepreload" href="/src/App.tsx" />
     
     <!-- Optimized Open Graph -->
     <meta property="og:title" content="Pendler Buddy - Průvodce pro pracovníky v Německu" />
@@ -39,6 +55,14 @@
     <!-- Favicon optimizations -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" href="/favicon.ico" />
+    
+    <!-- Critical CSS inlining připraven -->
+    <style id="critical-css">
+      /* Zde by byl critical CSS pro above-the-fold content */
+      .route-optimizer {
+        contain: layout style paint;
+      }
+    </style>
   </head>
 
   <body>
