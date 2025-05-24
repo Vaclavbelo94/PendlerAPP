@@ -410,6 +410,36 @@ export type Database = {
         }
         Relationships: []
       }
+      user_appearance_settings: {
+        Row: {
+          color_scheme: string | null
+          compact_mode: boolean | null
+          created_at: string | null
+          dark_mode: boolean | null
+          id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          color_scheme?: string | null
+          compact_mode?: boolean | null
+          created_at?: string | null
+          dark_mode?: boolean | null
+          id?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          color_scheme?: string | null
+          compact_mode?: boolean | null
+          created_at?: string | null
+          dark_mode?: boolean | null
+          id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_certificates: {
         Row: {
           created_at: string
@@ -554,6 +584,45 @@ export type Database = {
           shift_count?: number | null
           updated_at?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      user_travel_preferences: {
+        Row: {
+          created_at: string | null
+          fuel_price_per_liter: number | null
+          home_address: string | null
+          id: string
+          monthly_transport_budget: number | null
+          preferred_transport: string | null
+          updated_at: string | null
+          user_id: string
+          vehicle_consumption: number | null
+          work_address: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          fuel_price_per_liter?: number | null
+          home_address?: string | null
+          id?: string
+          monthly_transport_budget?: number | null
+          preferred_transport?: string | null
+          updated_at?: string | null
+          user_id: string
+          vehicle_consumption?: number | null
+          work_address?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          fuel_price_per_liter?: number | null
+          home_address?: string | null
+          id?: string
+          monthly_transport_budget?: number | null
+          preferred_transport?: string | null
+          updated_at?: string | null
+          user_id?: string
+          vehicle_consumption?: number | null
+          work_address?: string | null
         }
         Relationships: []
       }

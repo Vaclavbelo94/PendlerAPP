@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -10,12 +9,14 @@ import { Eye, Moon, Sun, Palette } from "lucide-react";
 import { toast } from "sonner";
 import { useTheme } from "next-themes";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ProfileAppearanceProps {
-  initialDarkMode: boolean;
-  initialColorScheme: string;
-  initialCompactMode: boolean;
-  onSave: (settings: {
+  initialDarkMode?: boolean;
+  initialColorScheme?: string;
+  initialCompactMode?: boolean;
+  onSave?: (settings: {
     darkMode: boolean;
     colorScheme: string;
     compactMode: boolean;
@@ -29,12 +30,48 @@ const ProfileAppearance = ({
   onSave
 }: ProfileAppearanceProps) => {
   const { theme, setTheme } = useTheme();
+  const { user } = useAuth();
   const [darkMode, setDarkMode] = useState(initialDarkMode);
   const [colorScheme, setColorScheme] = useState(initialColorScheme);
   const [compactMode, setCompactMode] = useState(initialCompactMode);
+  const [isLoading, setIsLoading] = useState(true);
   const isMobile = useIsMobile();
   
   const [isChangingTheme, setIsChangingTheme] = useState(false);
+
+  // Načtení nastavení z databáze při načtení komponenty
+  useEffect(() => {
+    const loadAppearanceSettings = async () => {
+      if (!user) return;
+      
+      setIsLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('user_appearance_settings')
+          .select('*')
+          .eq('user_id', user.id)
+          .maybeSingle();
+        
+        if (error && error.code !== 'PGRST116') {
+          console.error('Chyba při načítání nastavení vzhledu:', error);
+          throw error;
+        }
+
+        if (data) {
+          setDarkMode(data.dark_mode);
+          setColorScheme(data.color_scheme);
+          setCompactMode(data.compact_mode);
+        }
+      } catch (error) {
+        console.error('Chyba při načítání nastavení vzhledu:', error);
+        toast.error("Nepodařilo se načíst nastavení vzhledu");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadAppearanceSettings();
+  }, [user]);
   
   // Synchronizovat stav dark mode s globálním tématem
   useEffect(() => {
@@ -58,14 +95,74 @@ const ProfileAppearance = ({
     };
   }, [darkMode, setTheme]);
   
-  const handleSave = () => {
-    onSave({ 
-      darkMode, 
-      colorScheme,
-      compactMode 
-    });
-    toast.success("Nastavení vzhledu bylo uloženo");
+  const handleSave = async () => {
+    if (!user) return;
+    
+    setIsLoading(true);
+    try {
+      // Zkontrolujeme, zda nastavení už existuje
+      const { data: existingSettings, error: checkError } = await supabase
+        .from('user_appearance_settings')
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      
+      if (checkError && checkError.code !== 'PGRST116') {
+        throw checkError;
+      }
+
+      const settingsData = {
+        user_id: user.id,
+        dark_mode: darkMode,
+        color_scheme: colorScheme,
+        compact_mode: compactMode,
+        updated_at: new Date().toISOString()
+      };
+
+      let result;
+      if (existingSettings) {
+        // Aktualizace existujícího nastavení
+        result = await supabase
+          .from('user_appearance_settings')
+          .update(settingsData)
+          .eq('user_id', user.id);
+      } else {
+        // Vytvoření nového nastavení
+        result = await supabase
+          .from('user_appearance_settings')
+          .insert(settingsData);
+      }
+
+      if (result.error) {
+        throw result.error;
+      }
+
+      toast.success("Nastavení vzhledu bylo uloženo");
+      
+      if (onSave) {
+        onSave({ 
+          darkMode, 
+          colorScheme,
+          compactMode 
+        });
+      }
+    } catch (error) {
+      console.error('Chyba při ukládání nastavení vzhledu:', error);
+      toast.error("Nepodařilo se uložit nastavení vzhledu");
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardContent className="flex items-center justify-center p-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </CardContent>
+      </Card>
+    );
+  }
   
   return (
     <Card>
@@ -153,10 +250,10 @@ const ProfileAppearance = ({
         <Button 
           onClick={handleSave} 
           className={`${isMobile ? 'w-full' : 'ml-auto'}`}
-          disabled={isChangingTheme}
+          disabled={isChangingTheme || isLoading}
           size={isMobile ? "sm" : "default"}
         >
-          Uložit nastavení
+          {isLoading ? "Ukládání..." : "Uložit nastavení"}
         </Button>
       </CardFooter>
     </Card>
