@@ -2,17 +2,17 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Moon, Sun } from "lucide-react";
-import { useTheme } from "@/hooks/useTheme";
+import { useTheme } from "next-themes";
 
 const SidebarThemeSwitcher: React.FC = () => {
-  const { theme, toggleTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const [isChanging, setIsChanging] = React.useState(false);
   
   const handleToggleTheme = () => {
     if (isChanging) return;
     
     setIsChanging(true);
-    toggleTheme();
+    setTheme(theme === 'dark' ? 'light' : 'dark');
     setTimeout(() => {
       setIsChanging(false);
     }, 300);
