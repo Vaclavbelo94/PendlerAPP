@@ -31,6 +31,13 @@ export const Logo: React.FC<LogoProps> = ({
     xl: 'w-12 h-12 text-lg',
   };
 
+  const logoImageClasses = {
+    sm: 'w-6 h-6',
+    md: 'w-8 h-8',
+    lg: 'w-10 h-10',
+    xl: 'w-12 h-12',
+  };
+
   // Komponenta obalu - buď animovaná nebo statická
   const Wrapper = animated ? motion.div : React.Fragment;
   
@@ -49,40 +56,44 @@ export const Logo: React.FC<LogoProps> = ({
     switch (variant) {
       case 'minimal':
         return (
-          <div className={cn(
-            'rounded-lg bg-gradient-to-br from-dhl-yellow to-amber-400 flex items-center justify-center text-black font-bold relative overflow-hidden shadow-md',
-            sizeClasses[size]
-          )}>
-            <span className="absolute inset-0 bg-gradient-to-tr from-primary-600 to-primary-400 opacity-30"></span>
-            <span className="relative z-10 font-poppins tracking-tighter">PH</span>
-            {animated && (
-              <motion.div 
-                className="absolute bottom-0 left-0 right-0 h-1 bg-dhl-red"
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ duration: 0.5 }}
-              />
-            )}
+          <div className={cn('relative', logoImageClasses[size])}>
+            <img 
+              src="/lovable-uploads/88ef4e0f-4d33-458c-98f4-7b644e5b8588.png" 
+              alt="PendlerApp Logo" 
+              className={cn('object-contain', logoImageClasses[size])}
+              onError={(e) => {
+                // Fallback pokud se obrázek nenačte
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+                target.parentElement!.innerHTML = `
+                  <div class="rounded-lg bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-bold ${logoImageClasses[size]}">
+                    <span class="font-poppins tracking-tighter">PA</span>
+                  </div>
+                `;
+              }}
+            />
           </div>
         );
       
       case 'full':
         return (
           <>
-            <div className={cn(
-              'rounded-lg bg-gradient-to-br from-dhl-yellow to-amber-400 flex items-center justify-center text-black font-bold relative overflow-hidden shadow-md',
-              sizeClasses[size]
-            )}>
-              <span className="absolute inset-0 bg-gradient-to-tr from-primary-600 to-primary-400 opacity-30"></span>
-              <span className="relative z-10 font-poppins tracking-tighter">PH</span>
-              {animated && (
-                <motion.div 
-                  className="absolute bottom-0 left-0 right-0 h-1 bg-dhl-red"
-                  initial={{ scaleX: 0 }}
-                  animate={{ scaleX: 1 }}
-                  transition={{ duration: 0.5 }}
-                />
-              )}
+            <div className={cn('relative', logoImageClasses[size])}>
+              <img 
+                src="/lovable-uploads/88ef4e0f-4d33-458c-98f4-7b644e5b8588.png" 
+                alt="PendlerApp Logo" 
+                className={cn('object-contain', logoImageClasses[size])}
+                onError={(e) => {
+                  // Fallback pokud se obrázek nenačte
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  target.parentElement!.innerHTML = `
+                    <div class="rounded-lg bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-bold ${logoImageClasses[size]}">
+                      <span class="font-poppins tracking-tighter">PA</span>
+                    </div>
+                  `;
+                }}
+              />
             </div>
             <div className="flex flex-col items-start">
               <span className={cn(
@@ -92,7 +103,7 @@ export const Logo: React.FC<LogoProps> = ({
                 size === 'lg' && "text-xl",
                 size === 'xl' && "text-2xl"
               )}>
-                PendlerHelfer
+                PendlerApp
               </span>
               {showTagline && (
                 <span className="text-xs text-muted-foreground tracking-tight">Pro české pendlery</span>
@@ -104,20 +115,22 @@ export const Logo: React.FC<LogoProps> = ({
       default:
         return (
           <>
-            <div className={cn(
-              'rounded-lg bg-gradient-to-br from-dhl-yellow to-amber-400 flex items-center justify-center text-black font-bold relative overflow-hidden shadow-md',
-              sizeClasses[size]
-            )}>
-              <span className="absolute inset-0 bg-gradient-to-tr from-primary-600 to-primary-400 opacity-30"></span>
-              <span className="relative z-10 font-poppins tracking-tighter">PH</span>
-              {animated && (
-                <motion.div 
-                  className="absolute bottom-0 left-0 right-0 h-1 bg-dhl-red"
-                  initial={{ scaleX: 0 }}
-                  animate={{ scaleX: 1 }}
-                  transition={{ duration: 0.5 }}
-                />
-              )}
+            <div className={cn('relative', logoImageClasses[size])}>
+              <img 
+                src="/lovable-uploads/88ef4e0f-4d33-458c-98f4-7b644e5b8588.png" 
+                alt="PendlerApp Logo" 
+                className={cn('object-contain', logoImageClasses[size])}
+                onError={(e) => {
+                  // Fallback pokud se obrázek nenačte
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  target.parentElement!.innerHTML = `
+                    <div class="rounded-lg bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-bold ${logoImageClasses[size]}">
+                      <span class="font-poppins tracking-tighter">PA</span>
+                    </div>
+                  `;
+                }}
+              />
             </div>
             <span className={cn(
               "font-poppins font-bold leading-none tracking-tight",
@@ -126,7 +139,7 @@ export const Logo: React.FC<LogoProps> = ({
               size === 'lg' && "text-xl",
               size === 'xl' && "text-2xl"
             )}>
-              PendlerHelfer
+              PendlerApp
             </span>
           </>
         );

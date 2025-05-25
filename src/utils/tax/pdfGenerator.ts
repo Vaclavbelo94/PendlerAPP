@@ -33,7 +33,7 @@ export const generateTaxDocument = (data: DocumentData): jsPDF => {
       ['Email', data.email],
     ],
     theme: 'grid',
-    headStyles: { fillColor: [60, 60, 60] },
+    headStyles: { fillColor: [255, 102, 0] }, // Orange color
     // Nastavení pro správné zobrazení diakritiky v tabulkách
     styles: {
       font: 'helvetica',
@@ -60,7 +60,7 @@ export const generateTaxDocument = (data: DocumentData): jsPDF => {
         ['Roční příjem (€)', data.incomeAmount || 'Neuvedeno'],
       ],
       theme: 'grid',
-      headStyles: { fillColor: [60, 60, 60] },
+      headStyles: { fillColor: [255, 102, 0] }, // Orange color
       styles: {
         font: 'helvetica',
         fontStyle: 'normal'
@@ -99,7 +99,7 @@ export const generateTaxDocument = (data: DocumentData): jsPDF => {
       head: [['Položka', 'Údaje']],
       body: deductions,
       theme: 'grid',
-      headStyles: { fillColor: [60, 60, 60] },
+      headStyles: { fillColor: [255, 102, 0] }, // Orange color
       styles: {
         font: 'helvetica',
         fontStyle: 'normal'
@@ -120,7 +120,7 @@ export const generateTaxDocument = (data: DocumentData): jsPDF => {
       head: [['Poznámky']],
       body: [[data.additionalNotes]],
       theme: 'grid',
-      headStyles: { fillColor: [60, 60, 60] },
+      headStyles: { fillColor: [255, 102, 0] }, // Orange color
       styles: {
         font: 'helvetica',
         fontStyle: 'normal'
@@ -150,4 +150,3 @@ export const downloadTaxDocument = (data: DocumentData): void => {
   const filename = `${getDocumentTitle(data.documentType).replace(/\s+/g, '_').toLowerCase()}_${new Date().getFullYear()}.pdf`;
   doc.save(filename);
 };
-

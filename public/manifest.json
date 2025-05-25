@@ -1,22 +1,22 @@
 
 {
-  "name": "PendlerHelfer Guide",
-  "short_name": "PendlerHelfer",
+  "name": "PendlerApp Guide",
+  "short_name": "PendlerApp",
   "description": "Aplikace pro podporu pendlerů v Německu",
   "icons": [
     {
-      "src": "/favicon.ico",
+      "src": "/lovable-uploads/88ef4e0f-4d33-458c-98f4-7b644e5b8588.png",
       "sizes": "64x64",
-      "type": "image/x-icon"
+      "type": "image/png"
     },
     {
-      "src": "/icon-192.png",
+      "src": "/lovable-uploads/88ef4e0f-4d33-458c-98f4-7b644e5b8588.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icon-512.png",
+      "src": "/lovable-uploads/88ef4e0f-4d33-458c-98f4-7b644e5b8588.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
@@ -25,7 +25,7 @@
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#1e40af",
+  "theme_color": "#ff6600",
   "orientation": "any",
   "categories": ["productivity", "utilities", "education"],
   "shortcuts": [
@@ -34,14 +34,14 @@
       "short_name": "Němčina",
       "description": "Otevřít sekci výuky němčiny",
       "url": "/language?source=pwa",
-      "icons": [{ "src": "/favicon.ico", "sizes": "64x64" }]
+      "icons": [{ "src": "/lovable-uploads/88ef4e0f-4d33-458c-98f4-7b644e5b8588.png", "sizes": "64x64" }]
     },
     {
       "name": "Překladač",
       "short_name": "Překladač",
       "description": "Otevřít překladač",
       "url": "/translator?source=pwa",
-      "icons": [{ "src": "/favicon.ico", "sizes": "64x64" }]
+      "icons": [{ "src": "/lovable-uploads/88ef4e0f-4d33-458c-98f4-7b644e5b8588.png", "sizes": "64x64" }]
     }
   ],
   "prefer_related_applications": false,
@@ -55,7 +55,7 @@
       "sizes": "1280x720",
       "type": "image/png",
       "platform": "wide",
-      "label": "Hlavní obrazovka aplikace PendlerHelfer"
+      "label": "Hlavní obrazovka aplikace PendlerApp"
     }
   ]
 }

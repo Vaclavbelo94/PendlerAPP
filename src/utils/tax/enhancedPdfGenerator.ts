@@ -1,12 +1,11 @@
-
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { DocumentData } from './types';
 import { getDocumentTitle } from './documentUtils';
 
-// Opravené barvy místo DHL
+// Updated brand colors to match new orange theme
 const BRAND_COLORS = {
-  primary: '#2563eb', // Blue
+  primary: '#ff6600', // Orange
   secondary: '#64748b', // Slate gray
   accent: '#f59e0b', // Amber
   success: '#10b981', // Emerald
@@ -48,7 +47,7 @@ export const generateEnhancedTaxDocument = (data: DocumentData): jsPDF => {
     ],
     theme: 'grid',
     headStyles: { 
-      fillColor: [37, 99, 235], // Primary blue
+      fillColor: [255, 102, 0], // Orange
       textColor: [255, 255, 255]
     },
     styles: {
@@ -74,7 +73,7 @@ export const generateEnhancedTaxDocument = (data: DocumentData): jsPDF => {
       ],
       theme: 'grid',
       headStyles: { 
-        fillColor: [37, 99, 235],
+        fillColor: [255, 102, 0],
         textColor: [255, 255, 255]
       },
       styles: {
@@ -116,7 +115,7 @@ export const generateEnhancedTaxDocument = (data: DocumentData): jsPDF => {
       body: deductions,
       theme: 'grid',
       headStyles: { 
-        fillColor: [37, 99, 235],
+        fillColor: [255, 102, 0],
         textColor: [255, 255, 255]
       },
       styles: {
@@ -140,7 +139,7 @@ export const generateEnhancedTaxDocument = (data: DocumentData): jsPDF => {
       body: [[data.additionalNotes]],
       theme: 'grid',
       headStyles: { 
-        fillColor: [37, 99, 235],
+        fillColor: [255, 102, 0],
         textColor: [255, 255, 255]
       },
       styles: {
@@ -172,19 +171,33 @@ const addEnhancedDocumentHeader = (doc: jsPDF, title: string): void => {
   const headerHeight = 25;
   
   // Přidání barevné hlavičky
-  doc.setFillColor(37, 99, 235); // Primary blue
+  doc.setFillColor(255, 255, 255); // White background
   doc.rect(0, 0, doc.internal.pageSize.width, headerHeight, 'F');
   
+  // Přidání loga PendlerApp
+  try {
+    const logoWidth = 15;
+    const logoHeight = 15;
+    doc.addImage('/lovable-uploads/88ef4e0f-4d33-458c-98f4-7b644e5b8588.png', 'PNG', marginLeft, 5, logoWidth, logoHeight);
+  } catch (error) {
+    console.log('Logo image not found, using fallback text');
+    // Fallback na textové logo
+    doc.setTextColor(255, 102, 0);
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.text("PendlerApp", marginLeft, 12);
+  }
+  
   // Přidání názvu aplikace
-  doc.setTextColor(255, 255, 255);
+  doc.setTextColor(0, 0, 0);
   doc.setFontSize(16);
   doc.setFont("helvetica", "bold");
-  doc.text("PendlerHelfer", marginLeft, 12);
+  doc.text("PendlerApp", marginLeft + 20, 12);
   
   // Přidání podtitulku aplikace
   doc.setFontSize(9);
   doc.setFont("helvetica", "normal");
-  doc.text("Daňový asistent pro pendlery", marginLeft, 17);
+  doc.text("Daňový asistent pro pendlery", marginLeft + 20, 17);
   
   // Přidání názvu dokumentu
   doc.setTextColor(0, 0, 0);
@@ -196,15 +209,15 @@ const addEnhancedDocumentHeader = (doc: jsPDF, title: string): void => {
   const currentDate = new Date().toLocaleDateString('cs-CZ');
   doc.setFontSize(8);
   doc.setFont("helvetica", "normal");
-  doc.setTextColor(255, 255, 255);
+  doc.setTextColor(0, 0, 0);
   doc.text(`Vygenerováno: ${currentDate}`, doc.internal.pageSize.width - marginLeft, 10, { align: "right" });
   
   // Přidání URL webu
   doc.setFontSize(8);
-  doc.text("www.pendlerhelfer.cz", doc.internal.pageSize.width - marginLeft, 15, { align: "right" });
+  doc.text("www.pendlerapp.cz", doc.internal.pageSize.width - marginLeft, 15, { align: "right" });
   
   // Přidání oddělovací čáry
-  doc.setDrawColor(245, 158, 11); // Accent amber
+  doc.setDrawColor(255, 102, 0); // Orange
   doc.setLineWidth(0.5);
   doc.line(marginLeft, headerHeight + 20, doc.internal.pageSize.width - marginLeft, headerHeight + 20);
 };
@@ -216,14 +229,14 @@ const addEnhancedDocumentFooter = (doc: jsPDF): void => {
   
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
-    doc.setDrawColor(245, 158, 11); // Accent amber
+    doc.setDrawColor(255, 102, 0); // Orange
     doc.setLineWidth(0.5);
     doc.line(marginLeft, doc.internal.pageSize.height - 20, doc.internal.pageSize.width - marginLeft, doc.internal.pageSize.height - 20);
     
     doc.setFontSize(8);
     doc.setTextColor(100);
     doc.text(
-      `Strana ${i} z ${pageCount} | PendlerHelfer © ${new Date().getFullYear()}`,
+      `Strana ${i} z ${pageCount} | PendlerApp © ${new Date().getFullYear()}`,
       doc.internal.pageSize.width / 2,
       doc.internal.pageSize.height - 10,
       { align: "center" }
