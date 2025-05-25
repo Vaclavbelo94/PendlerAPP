@@ -142,8 +142,10 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProp
             {/* Theme toggle button (viditelné pouze na desktop) */}
             {!isMobile && <ThemeToggle />}
             
-            {/* Right Content (e.g. notifications) */}
-            {rightContent}
+            {/* Right Content (e.g. notifications) - optimized for mobile */}
+            <div className="flex items-center gap-1">
+              {rightContent}
+            </div>
             
             {user ? (
               <DropdownMenu>

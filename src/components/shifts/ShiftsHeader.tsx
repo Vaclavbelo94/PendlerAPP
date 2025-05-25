@@ -1,37 +1,28 @@
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { MapIcon } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { CalendarDays } from 'lucide-react';
+import ScheduleShareDialog from '@/components/sharing/ScheduleShareDialog';
+import { useIsMobile } from '@/hooks/use-mobile';
 
-export const ShiftsHeader: React.FC = () => {
-  const navigate = useNavigate();
-
-  const handleNavigateToTravel = () => {
-    navigate('/travel-planning');
-  };
+export const ShiftsHeader = () => {
+  const isMobile = useIsMobile();
 
   return (
-    <div className="mb-8 text-center md:text-left">
-      <h1 className="text-3xl font-bold tracking-tight mb-2">Směny</h1>
-      <p className="text-muted-foreground text-lg">
-        Plánujte a sledujte své pracovní směny efektivně
-      </p>
-      
-      <div className="mt-4 p-4 bg-muted/50 rounded-lg border">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="text-center md:text-left">
-            <h3 className="font-medium text-lg">Potřebujete naplánovat cestu?</h3>
-            <p className="text-sm text-muted-foreground">
-              Optimalizujte své dojíždění a najděte spolujízdy v sekci Doprava
-            </p>
-          </div>
-          <Button onClick={handleNavigateToTravel} className="flex items-center gap-2 w-full md:w-auto">
-            <MapIcon className="h-4 w-4" />
-            Plánování cest
-          </Button>
+    <div className="mb-8">
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-3">
+          <CalendarDays className="h-8 w-8 text-primary" />
+          <h1 className="text-3xl font-bold tracking-tight">Správa směn</h1>
         </div>
+        
+        {/* Desktop share button */}
+        {!isMobile && (
+          <ScheduleShareDialog />
+        )}
       </div>
+      <p className="text-muted-foreground">
+        Organizujte a sledujte své pracovní směny
+      </p>
     </div>
   );
 };

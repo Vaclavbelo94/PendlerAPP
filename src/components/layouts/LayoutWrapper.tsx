@@ -1,17 +1,34 @@
 
-import Layout from "./Layout";
-import { NavbarRightContent } from "./NavbarPatch";
+import React, { ReactNode } from 'react';
+import Layout from './Layout';
+import { NotificationManager } from '@/components/notifications/NotificationManager';
+import { ShiftNotifications } from '@/components/notifications/ShiftNotifications';
+import { CompactNotificationIndicator } from '@/components/notifications/CompactNotificationIndicator';
+import AdminPanelDialog from '@/components/admin/AdminPanelDialog';
+import { useAuth } from '@/hooks/useAuth';
 
-// Wraps the original Layout component with additional props
 interface LayoutWrapperProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 const LayoutWrapper = ({ children }: LayoutWrapperProps) => {
+  const { isAdmin } = useAuth();
+
+  const navbarRightContent = (
+    <div className="flex items-center gap-1">
+      <CompactNotificationIndicator />
+      {isAdmin && <AdminPanelDialog />}
+    </div>
+  );
+
   return (
-    <Layout navbarRightContent={<NavbarRightContent />}>
-      {children}
-    </Layout>
+    <>
+      <NotificationManager />
+      <ShiftNotifications />
+      <Layout navbarRightContent={navbarRightContent}>
+        {children}
+      </Layout>
+    </>
   );
 };
 
