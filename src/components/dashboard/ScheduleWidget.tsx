@@ -1,43 +1,72 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
+import { ShiftDashboardWidget } from "@/components/shifts/dashboard/ShiftDashboardWidget";
 
 const ScheduleWidget = () => {
-  const schedule = [
-    { day: 'Pondělí', time: '6:00 - 14:00', type: 'Ranní' },
-    { day: 'Středa', time: '14:00 - 22:00', type: 'Odpolední' },
-    { day: 'Čtvrtek', time: '14:00 - 22:00', type: 'Odpolední' },
-    { day: 'Sobota', time: '22:00 - 6:00', type: 'Noční' }
-  ];
+  const { user } = useAuth();
   
-  return (
-    <div>
-      <div className="space-y-3">
-        {schedule.map((shift, i) => (
-          <div key={i} className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
-            <div>
-              <div className="font-medium">{shift.day}</div>
-              <div className="text-sm text-muted-foreground">{shift.time}</div>
+  // Načtení směn z localStorage pro ukázku
+  const getShiftsFromStorage = () => {
+    try {
+      const shiftsStr = localStorage.getItem("shifts");
+      if (!shiftsStr) return [];
+      
+      const shifts = JSON.parse(shiftsStr);
+      return shifts
+        .filter((shift: any) => shift.userId === user?.id)
+        .map((shift: any) => ({
+          date: new Date(shift.date),
+          type: shift.type,
+          notes: shift.notes
+        }));
+    } catch {
+      return [];
+    }
+  };
+
+  const shifts = user ? getShiftsFromStorage() : [];
+  
+  if (!user) {
+    const schedule = [
+      { day: 'Pondělí', time: '6:00 - 14:00', type: 'Ranní' },
+      { day: 'Středa', time: '14:00 - 22:00', type: 'Odpolední' },
+      { day: 'Čtvrtek', time: '14:00 - 22:00', type: 'Odpolední' },
+      { day: 'Sobota', time: '22:00 - 6:00', type: 'Noční' }
+    ];
+    
+    return (
+      <div>
+        <div className="space-y-3">
+          {schedule.map((shift, i) => (
+            <div key={i} className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
+              <div>
+                <div className="font-medium">{shift.day}</div>
+                <div className="text-sm text-muted-foreground">{shift.time}</div>
+              </div>
+              <div>
+                <span className={`px-2 py-1 text-xs font-medium rounded ${
+                  shift.type === 'Ranní' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300' : 
+                  shift.type === 'Odpolední' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300' :
+                  'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300'
+                }`}>
+                  {shift.type}
+                </span>
+              </div>
             </div>
-            <div>
-              <span className={`px-2 py-1 text-xs font-medium rounded ${
-                shift.type === 'Ranní' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300' : 
-                shift.type === 'Odpolední' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300' :
-                'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300'
-              }`}>
-                {shift.type}
-              </span>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
+        <div className="pt-4">
+          <Button variant="outline" size="sm" className="w-full">
+            Zobrazit celý rozpis
+          </Button>
+        </div>
       </div>
-      <div className="pt-4">
-        <Button variant="outline" size="sm" className="w-full">
-          Zobrazit celý rozpis
-        </Button>
-      </div>
-    </div>
-  );
+    );
+  }
+
+  return <ShiftDashboardWidget shifts={shifts} />;
 };
 
 export default ScheduleWidget;

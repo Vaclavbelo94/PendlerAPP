@@ -3,7 +3,7 @@ import { cs } from "date-fns/locale";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Lock, Download, Trash2 } from "lucide-react";
+import { Lock, Download, Trash2, FileSpreadsheet } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { 
   Table,
@@ -22,6 +22,7 @@ import { usePremiumCheck } from "@/hooks/usePremiumCheck";
 import { Skeleton } from "@/components/ui/skeleton";
 import { jsPDF } from "jspdf";
 import { initializePDF, addDocumentHeader, addDocumentFooter } from "@/utils/pdf/pdfHelper";
+import { ExcelExportService } from "./services/excelExportService";
 
 interface ReportsTabProps {
   user: any;
@@ -103,6 +104,40 @@ export const ReportsTab = ({ user, shifts }: ReportsTabProps) => {
       });
     } finally {
       setDeletingReportId(null);
+    }
+  };
+
+  // Nová funkce pro Excel export
+  const handleExportExcel = async () => {
+    setIsExporting(true);
+    try {
+      const currentMonth = new Date();
+      const exportData = shifts.map(shift => ({
+        date: shift.date,
+        type: shift.type,
+        notes: shift.notes || ""
+      }));
+
+      ExcelExportService.exportShiftsToExcel(
+        exportData,
+        currentMonth,
+        user?.email || user?.name || "user"
+      );
+
+      toast({
+        title: "Excel export dokončen",
+        description: "Soubor byl úspěšně stažen",
+      });
+      
+    } catch (error) {
+      console.error("Chyba při Excel exportu:", error);
+      toast({
+        title: "Chyba",
+        description: "Nepodařilo se exportovat data do Excel",
+        variant: "destructive",
+      });
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -383,7 +418,17 @@ export const ReportsTab = ({ user, shifts }: ReportsTabProps) => {
               </div>
             )}
             
-            <div className="flex justify-end pt-4 border-t">
+            <div className="flex flex-col sm:flex-row justify-end gap-2 pt-4 border-t">
+              <Button 
+                onClick={handleExportExcel} 
+                variant="outline"
+                className="flex items-center gap-2"
+                disabled={isExporting}
+              >
+                <FileSpreadsheet className="h-4 w-4" />
+                {isExporting ? "Generuji Excel..." : "Exportovat do Excel"}
+              </Button>
+              
               <Button 
                 onClick={handleExportPDF} 
                 className="bg-dhl-red text-white hover:bg-dhl-red/90 whitespace-nowrap"
