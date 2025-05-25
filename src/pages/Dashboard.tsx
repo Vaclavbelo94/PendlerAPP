@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import ScheduleTab from "@/components/dashboard/tabs/ScheduleTab";
 import LanguageTab from "@/components/dashboard/tabs/LanguageTab";
 import EducationTab from "@/components/dashboard/tabs/EducationTab";
+import OverviewTab from "@/components/dashboard/tabs/OverviewTab";
 import QuickPromoCode from "@/components/dashboard/QuickPromoCode";
 
 const Dashboard = () => {
@@ -47,11 +48,7 @@ const Dashboard = () => {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Quick Promo Code Widget - only show for non-premium users */}
-            <QuickPromoCode />
-            
-          </div>
+          <OverviewTab />
         </TabsContent>
 
         <TabsContent value="schedule">
