@@ -1,0 +1,176 @@
+
+/* Mobile Translator Optimizations */
+@media screen and (max-width: 768px) {
+  /* Portrait mobile optimizations */
+  .mobile-translator-container {
+    padding: 1rem 0.75rem;
+    min-height: calc(100vh - 4rem);
+  }
+  
+  .mobile-translator-card {
+    border-radius: 0.75rem;
+    margin: 0;
+    min-height: calc(100vh - 12rem);
+  }
+  
+  .mobile-translator-textarea {
+    font-size: 1rem;
+    line-height: 1.5;
+    min-height: 120px;
+    max-height: 200px;
+    resize: none;
+  }
+  
+  .mobile-translator-controls {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: hsl(var(--background));
+    border-top: 1px solid hsl(var(--border));
+    padding: 1rem;
+    z-index: 50;
+    backdrop-filter: blur(8px);
+  }
+  
+  .mobile-translator-button {
+    min-height: 48px;
+    font-size: 1rem;
+    touch-action: manipulation;
+  }
+  
+  /* Language selector optimizations */
+  .mobile-language-selector {
+    min-height: 44px;
+    font-size: 0.9rem;
+  }
+  
+  /* Textarea auto-resize */
+  .mobile-auto-resize {
+    overflow-y: hidden;
+    transition: height 0.2s ease;
+  }
+}
+
+/* Landscape mobile optimizations */
+@media screen and (orientation: landscape) and (max-height: 500px) {
+  .landscape-translator-container {
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+  }
+  
+  .landscape-translator-header {
+    flex-shrink: 0;
+    padding: 0.5rem 0;
+  }
+  
+  .landscape-translator-header h1 {
+    font-size: 1.25rem;
+    margin-bottom: 0.25rem;
+  }
+  
+  .landscape-translator-header p {
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .landscape-translator-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    padding-bottom: 5rem;
+  }
+  
+  .landscape-translator-textarea {
+    min-height: 80px !important;
+    max-height: 120px !important;
+    font-size: 0.875rem;
+  }
+  
+  .landscape-translator-controls {
+    bottom: 0;
+    padding: 0.75rem;
+  }
+  
+  .landscape-translator-button {
+    min-height: 40px;
+    font-size: 0.875rem;
+  }
+  
+  /* Compact tabs for landscape */
+  .landscape-tabs-list {
+    height: auto;
+    padding: 0.25rem;
+  }
+  
+  .landscape-tabs-trigger {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+    min-height: 2.5rem;
+  }
+  
+  /* Reduced spacing in landscape */
+  .landscape-spacing {
+    gap: 0.5rem;
+  }
+  
+  .landscape-spacing > * + * {
+    margin-top: 0.5rem;
+  }
+}
+
+/* Touch optimizations */
+@media (pointer: coarse) {
+  .touch-optimized-button {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0.75rem;
+  }
+  
+  .touch-optimized-input {
+    min-height: 44px;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+  
+  .touch-optimized-textarea {
+    font-size: 16px; /* Prevents zoom on iOS */
+    line-height: 1.5;
+  }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  .mobile-translator-textarea,
+  .mobile-auto-resize {
+    transition: none;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .mobile-translator-controls {
+    border-top: 2px solid;
+    background: hsl(var(--background));
+  }
+  
+  .mobile-translator-card {
+    border: 2px solid hsl(var(--border));
+  }
+}
+
+/* Focus improvements for keyboard navigation */
+.mobile-translator-container *:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+/* Smooth transitions for orientation changes */
+@media screen {
+  .orientation-transition {
+    transition: all 0.3s ease-in-out;
+  }
+}
