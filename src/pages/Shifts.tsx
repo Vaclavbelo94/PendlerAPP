@@ -13,11 +13,11 @@ import {
   MapIcon
 } from "lucide-react";
 
-// Import existing components with correct named imports
+// Import refactored components
 import { ShiftCalendarTab } from "@/components/shifts/ShiftCalendarTab";
 import { ReportsTab } from "@/components/shifts/ReportsTab";
 import ShiftAnalytics from "@/components/shifts/ShiftAnalytics";
-import { useShiftManagement } from "@/components/shifts/useShiftManagement";
+import { useRefactoredShiftManagement } from "@/components/shifts/hooks/useRefactoredShiftManagement";
 import { EditNoteDialog } from "@/components/shifts/EditNoteDialog";
 
 const Shifts = () => {
@@ -45,8 +45,9 @@ const Shifts = () => {
     currentShift,
     handleSaveShift,
     handleDeleteShift,
-    handleSaveNotes
-  } = useShiftManagement(user);
+    handleSaveNotes,
+    isLoading
+  } = useRefactoredShiftManagement(user);
 
   const handleOpenNoteDialog = () => {
     setNoteDialogOpen(true);
@@ -59,6 +60,18 @@ const Shifts = () => {
   const handleNavigateToTravel = () => {
     navigate('/travel-planning');
   };
+
+  if (isLoading) {
+    return (
+      <PremiumCheck featureKey="shifts">
+        <div className="container py-6 md:py-10 max-w-7xl">
+          <div className="flex justify-center py-12">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+          </div>
+        </div>
+      </PremiumCheck>
+    );
+  }
 
   return (
     <PremiumCheck featureKey="shifts">

@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState } from 'react';
 import { Helmet } from "react-helmet";
 import PremiumCheck from "@/components/premium/PremiumCheck";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,118 +11,65 @@ import DocumentsCard from "@/components/vehicle/DocumentsCard";
 import InsuranceCard from "@/components/vehicle/InsuranceCard";
 import FuelConsumptionCard from "@/components/vehicle/FuelConsumptionCard";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { VehicleData } from "@/types/vehicle";
-import { fetchVehicles, fetchVehicleById, saveVehicle } from "@/services/vehicleService";
-import { toast } from "sonner";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import VehicleForm from "@/components/vehicle/VehicleForm";
 import VehicleSelector from "@/components/vehicle/VehicleSelector";
 import { useIsMobile } from '@/hooks/use-mobile';
 import { SectionHeader } from "@/components/ui/section-header";
 import { FlexContainer } from "@/components/ui/flex-container";
 import { cn } from "@/lib/utils";
+import { useVehicleData } from "@/hooks/vehicle/useVehicleData";
+import { useVehicleOperations } from "@/hooks/vehicle/useVehicleOperations";
 
 const Vehicle = () => {
   const { user } = useAuth();
-  const [vehicles, setVehicles] = useState<VehicleData[]>([]);
-  const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
-  const [vehicleData, setVehicleData] = useState<VehicleData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isNewVehicleDialogOpen, setIsNewVehicleDialogOpen] = useState(false);
   const isMobile = useIsMobile();
 
-  useEffect(() => {
-    const loadVehicles = async () => {
-      if (!user) {
-        setIsLoading(false);
-        return;
+  const {
+    vehicles,
+    setVehicles,
+    selectedVehicleId,
+    vehicleData,
+    setVehicleData,
+    isLoading,
+    handleVehicleSelect
+  } = useVehicleData(user);
+
+  const { handleSaveVehicle } = useVehicleOperations(
+    user,
+    setVehicles,
+    setVehicleData,
+    (id: string) => handleVehicleSelect(id)
+  );
+
+  const onSaveVehicle = async (vehicle: any) => {
+    const result = await handleSaveVehicle(vehicle);
+    if (result) {
+      if (vehicle.id) {
+        setIsEditDialogOpen(false);
+      } else {
+        setIsNewVehicleDialogOpen(false);
       }
-
-      try {
-        const vehiclesData = await fetchVehicles(user.id);
-        setVehicles(vehiclesData);
-        
-        // Pokud existují vozidla, načteme první
-        if (vehiclesData.length > 0) {
-          setSelectedVehicleId(vehiclesData[0].id);
-          loadVehicleDetails(vehiclesData[0].id!);
-        } else {
-          setIsLoading(false);
-          // Už nezobrazujeme automaticky dialog pro přidání vozidla
-        }
-      } catch (error) {
-        console.error("Chyba při načítání vozidel:", error);
-        setIsLoading(false);
-      }
-    };
-
-    loadVehicles();
-  }, [user]);
-
-  const loadVehicleDetails = async (vehicleId: string) => {
-    if (!vehicleId) return;
-    
-    setIsLoading(true);
-    try {
-      const data = await fetchVehicleById(vehicleId);
-      if (data) {
-        setVehicleData(data);
-      }
-    } catch (error) {
-      console.error("Chyba při načítání dat o vozidle:", error);
-      toast.error("Nepodařilo se načíst detaily vozidla");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (selectedVehicleId) {
-      loadVehicleDetails(selectedVehicleId);
-    }
-  }, [selectedVehicleId]);
-
-  const handleVehicleSelect = (vehicleId: string) => {
-    setSelectedVehicleId(vehicleId);
-  };
-
-  const handleSaveVehicle = async (vehicle: VehicleData) => {
-    try {
-      if (!user) {
-        toast.error("Pro uložení vozidla je nutné být přihlášen");
-        return;
-      }
-      
-      const updatedVehicle = await saveVehicle({
-        ...vehicle,
-        user_id: user.id
-      });
-      
-      if (updatedVehicle) {
-        // Pokud je to úprava existujícího vozidla
-        if (vehicle.id) {
-          setVehicleData(updatedVehicle);
-          setVehicles(prev => prev.map(v => v.id === vehicle.id ? updatedVehicle : v));
-          setIsEditDialogOpen(false);
-        } 
-        // Pokud je to nové vozidlo
-        else {
-          setVehicles(prev => [...prev, updatedVehicle]);
-          setSelectedVehicleId(updatedVehicle.id);
-          setVehicleData(updatedVehicle);
-          setIsNewVehicleDialogOpen(false);
-        }
-      }
-    } catch (error) {
-      console.error("Chyba při ukládání vozidla:", error);
-      toast.error("Nepodařilo se uložit vozidlo");
     }
   };
 
   const getDialogMaxHeight = () => {
     return isMobile ? "max-h-[90vh] overflow-hidden" : "";
   };
+
+  if (isLoading) {
+    return (
+      <PremiumCheck featureKey="vehicle_management">
+        <div className="container py-6">
+          <div className="flex justify-center py-12">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+          </div>
+        </div>
+      </PremiumCheck>
+    );
+  }
 
   return (
     <PremiumCheck featureKey="vehicle_management">
@@ -150,11 +98,7 @@ const Vehicle = () => {
           </div>
         )}
 
-        {isLoading ? (
-          <div className="flex justify-center py-12">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-          </div>
-        ) : !vehicleData ? (
+        {!vehicleData ? (
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-12">
               <p className="text-center text-muted-foreground mb-4">
@@ -254,7 +198,7 @@ const Vehicle = () => {
                 Upravte údaje o svém vozidle.
               </DialogDescription>
             </DialogHeader>
-            {vehicleData && <VehicleForm initialData={vehicleData} onSave={handleSaveVehicle} />}
+            {vehicleData && <VehicleForm initialData={vehicleData} onSave={onSaveVehicle} />}
           </DialogContent>
         </Dialog>
 
@@ -267,7 +211,7 @@ const Vehicle = () => {
                 Zadejte údaje o svém vozidle.
               </DialogDescription>
             </DialogHeader>
-            <VehicleForm onSave={handleSaveVehicle} />
+            <VehicleForm onSave={onSaveVehicle} />
           </DialogContent>
         </Dialog>
       </div>
