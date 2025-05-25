@@ -12,7 +12,7 @@ import { workPhrases } from "@/data/translatorData";
 
 // Lazy load components for better performance
 const TextTranslation = React.lazy(() => import("@/components/translator/TextTranslation"));
-const MobileTranslatorOptimized = React.lazy(() => import("@/components/translator/MobileTranslatorOptimized").then(module => ({ default: module.MobileTranslatorOptimized })));
+const OptimizedMobileTranslator = React.lazy(() => import("@/components/translator/OptimizedMobileTranslator"));
 const TranslationHistory = React.lazy(() => import("@/components/translator/TranslationHistory"));
 const PhrasesTranslation = React.lazy(() => import("@/components/translator/PhrasesTranslation"));
 
@@ -115,7 +115,7 @@ const Translator = () => {
           <TabsContent value="translator">
             <Suspense fallback={<TranslatorSkeleton />}>
               {useMobileLayout ? (
-                <MobileTranslatorOptimized
+                <OptimizedMobileTranslator
                   sourceText={sourceText}
                   setSourceText={setSourceText}
                   translatedText={translatedText}
