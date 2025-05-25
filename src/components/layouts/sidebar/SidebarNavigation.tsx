@@ -2,22 +2,22 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { useIsMobile } from "@/hooks/use-mobile";
-import {
-  LayoutDashboard,
+import { 
+  Home,
   Calculator,
-  Calendar,
-  Book,
   Car,
+  Calendar,
+  BookOpen,
+  Languages,
   FileText,
   MapPin,
-  Languages,
-  Scale,
-  Home,
-  User,
-  Settings
+  Crown,
+  Settings,
+  Users,
+  Shield
 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { Badge } from "@/components/ui/badge";
 
 interface SidebarNavigationProps {
   closeSidebar: () => void;
@@ -25,174 +25,157 @@ interface SidebarNavigationProps {
 
 const SidebarNavigation = ({ closeSidebar }: SidebarNavigationProps) => {
   const location = useLocation();
-  const isMobile = useIsMobile();
+  const { user, isPremium, isAdmin } = useAuth();
 
-  const mainNavigation = [
+  const mainItems = [
     {
-      title: "Domů",
-      href: "/",
+      name: "Domů",
+      href: user ? "/dashboard" : "/",
       icon: Home,
+      requiresAuth: false
     },
     {
-      title: "Dashboard",
-      href: "/dashboard",
-      icon: LayoutDashboard,
-    },
-    {
-      title: "Moje směny",
-      href: "/shifts",
-      icon: Calendar,
-    },
-    {
-      title: "Výuka němčiny",
-      href: "/vocabulary",
-      icon: Book,
-    },
-    {
-      title: "Překladač",
-      href: "/translator",
-      icon: Languages,
-    },
-    {
-      title: "Moje vozidlo",
-      href: "/vehicle",
-      icon: Car,
-    },
-    {
-      title: "Zákony",
-      href: "/laws",
-      icon: Scale,
-    },
-  ];
-
-  const toolsNavigation = [
-    {
-      title: "Výpočet mzdy",
+      name: "Kalkulačky",
       href: "/calculator",
       icon: Calculator,
+      requiresAuth: true,
+      isPremium: true
     },
     {
-      title: "Daňový poradce",
+      name: "Daňový poradce",
       href: "/tax-advisor",
       icon: FileText,
+      requiresAuth: true,
+      isPremium: true
     },
     {
-      title: "Plánovač jízd",
+      name: "Správa vozidel",
+      href: "/vehicle",
+      icon: Car,
+      requiresAuth: true
+    },
+    {
+      name: "Správa směn",
+      href: "/shifts",
+      icon: Calendar,
+      requiresAuth: true
+    },
+    {
+      name: "Výuka němčiny",
+      href: "/vocabulary",
+      icon: BookOpen,
+      requiresAuth: true,
+      isPremium: true
+    },
+    {
+      name: "Překladač",
+      href: "/translator",
+      icon: Languages,
+      requiresAuth: true,
+      isPremium: true
+    },
+    {
+      name: "Právní informace",
+      href: "/laws",
+      icon: Shield,
+      requiresAuth: false
+    },
+    {
+      name: "Plánování cest",
       href: "/travel-planning",
       icon: MapPin,
-    },
+      requiresAuth: true,
+      isPremium: true
+    }
   ];
 
-  const accountNavigation = [
+  const bottomItems = [
     {
-      title: "Můj profil",
-      href: "/profile",
-      icon: User,
+      name: "Premium",
+      href: "/premium",
+      icon: Crown,
+      requiresAuth: false,
+      className: "text-amber-600 dark:text-amber-400"
     },
     {
-      title: "Nastavení",
+      name: "Nastavení",
       href: "/settings",
       icon: Settings,
-    },
+      requiresAuth: true
+    }
   ];
 
+  // Add admin items if user is admin
+  if (isAdmin) {
+    bottomItems.unshift({
+      name: "Admin Panel",
+      href: "/admin-panel",
+      icon: Users,
+      requiresAuth: true,
+      className: "text-red-600 dark:text-red-400"
+    });
+  }
+
   const isActive = (href: string) => {
-    if (href === "/") {
-      return location.pathname === "/";
-    }
-    return location.pathname.startsWith(href);
+    if (href === "/" && location.pathname !== "/") return false;
+    if (href === "/dashboard" && location.pathname === "/") return false;
+    return location.pathname === href || location.pathname.startsWith(href + '/');
   };
 
-  const buttonSize = isMobile ? "sm" : "sm";
-  const buttonClassName = isMobile ? "h-9 justify-start text-sm" : "justify-start";
+  const shouldShowItem = (item: any) => {
+    if (item.requiresAuth && !user) return false;
+    return true;
+  };
 
   return (
-    <div className="space-y-4">
-      <div>
-        <p className={`text-xs font-medium text-sidebar-foreground/60 pl-4 pb-2 ${isMobile ? 'text-xs' : 'text-xs'}`}>
-          Hlavní
+    <div className="space-y-1">
+      <div className="space-y-1">
+        <p className="text-xs font-medium text-sidebar-foreground/60 pl-4 pb-1">
+          Hlavní navigace
         </p>
-        <nav className="space-y-1">
-          {mainNavigation.map((item) => {
-            const Icon = item.icon;
-            return (
-              <Button
-                key={item.href}
-                variant={isActive(item.href) ? "secondary" : "ghost"}
-                size={buttonSize}
-                asChild
-                className={cn(
-                  buttonClassName,
-                  "w-full text-sidebar-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent",
-                  isActive(item.href) && "bg-sidebar-accent text-sidebar-accent-foreground"
-                )}
-              >
-                <Link to={item.href} onClick={closeSidebar}>
-                  <Icon className={`${isMobile ? 'h-4 w-4' : 'h-4 w-4'} mr-2`} />
-                  {item.title}
-                </Link>
-              </Button>
-            );
-          })}
-        </nav>
+        {mainItems.filter(shouldShowItem).map((item) => (
+          <Button
+            key={item.name}
+            variant={isActive(item.href) ? "secondary" : "ghost"}
+            className={`w-full justify-start h-10 px-4 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground ${
+              isActive(item.href) ? 'bg-sidebar-accent text-sidebar-accent-foreground' : ''
+            } ${item.className || ''}`}
+            asChild
+            onClick={closeSidebar}
+          >
+            <Link to={item.href} className="flex items-center gap-3">
+              <item.icon className="h-4 w-4 flex-shrink-0" />
+              <span className="flex-1 text-left">{item.name}</span>
+              {item.isPremium && !isPremium && (
+                <Badge className="bg-amber-500 text-white text-xs px-1 py-0 h-4">
+                  Pro
+                </Badge>
+              )}
+            </Link>
+          </Button>
+        ))}
       </div>
-
-      <div>
-        <p className={`text-xs font-medium text-sidebar-foreground/60 pl-4 pb-2 ${isMobile ? 'text-xs' : 'text-xs'}`}>
-          Nástroje
-        </p>
-        <nav className="space-y-1">
-          {toolsNavigation.map((item) => {
-            const Icon = item.icon;
-            return (
-              <Button
-                key={item.href}
-                variant={isActive(item.href) ? "secondary" : "ghost"}
-                size={buttonSize}
-                asChild
-                className={cn(
-                  buttonClassName,
-                  "w-full text-sidebar-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent",
-                  isActive(item.href) && "bg-sidebar-accent text-sidebar-accent-foreground"
-                )}
-              >
-                <Link to={item.href} onClick={closeSidebar}>
-                  <Icon className={`${isMobile ? 'h-4 w-4' : 'h-4 w-4'} mr-2`} />
-                  {item.title}
-                </Link>
-              </Button>
-            );
-          })}
-        </nav>
-      </div>
-
-      <div>
-        <p className={`text-xs font-medium text-sidebar-foreground/60 pl-4 pb-2 ${isMobile ? 'text-xs' : 'text-xs'}`}>
+      
+      <div className="pt-4 space-y-1">
+        <p className="text-xs font-medium text-sidebar-foreground/60 pl-4 pb-1">
           Účet
         </p>
-        <nav className="space-y-1">
-          {accountNavigation.map((item) => {
-            const Icon = item.icon;
-            return (
-              <Button
-                key={item.href}
-                variant={isActive(item.href) ? "secondary" : "ghost"}
-                size={buttonSize}
-                asChild
-                className={cn(
-                  buttonClassName,
-                  "w-full text-sidebar-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent",
-                  isActive(item.href) && "bg-sidebar-accent text-sidebar-accent-foreground"
-                )}
-              >
-                <Link to={item.href} onClick={closeSidebar}>
-                  <Icon className={`${isMobile ? 'h-4 w-4' : 'h-4 w-4'} mr-2`} />
-                  {item.title}
-                </Link>
-              </Button>
-            );
-          })}
-        </nav>
+        {bottomItems.filter(shouldShowItem).map((item) => (
+          <Button
+            key={item.name}
+            variant={isActive(item.href) ? "secondary" : "ghost"}
+            className={`w-full justify-start h-10 px-4 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground ${
+              isActive(item.href) ? 'bg-sidebar-accent text-sidebar-accent-foreground' : ''
+            } ${item.className || ''}`}
+            asChild
+            onClick={closeSidebar}
+          >
+            <Link to={item.href} className="flex items-center gap-3">
+              <item.icon className="h-4 w-4 flex-shrink-0" />
+              <span className="flex-1 text-left">{item.name}</span>
+            </Link>
+          </Button>
+        ))}
       </div>
     </div>
   );

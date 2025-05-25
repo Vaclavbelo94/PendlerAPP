@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { X } from "lucide-react";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { useIsMobile, useOrientation } from "@/hooks/use-mobile";
 import SidebarLogo from "./sidebar/SidebarLogo";
 import SidebarNavigation from "./sidebar/SidebarNavigation";
 import SidebarThemeSwitcher from "./sidebar/SidebarThemeSwitcher";
@@ -16,10 +16,17 @@ interface SidebarProps {
 
 const Sidebar = ({ closeSidebar }: SidebarProps) => {
   const isMobile = useIsMobile();
+  const orientation = useOrientation();
+  
+  // Určit šířku a padding na základě orientace
+  const isLandscapeMobile = isMobile && orientation === "landscape";
+  const sidebarWidth = isLandscapeMobile ? 'w-60' : isMobile ? 'w-72' : 'w-64';
+  const contentPadding = isLandscapeMobile ? 'p-2' : isMobile ? 'p-3' : 'p-4';
+  const scrollPadding = isLandscapeMobile ? 'px-1 py-2' : isMobile ? 'px-2 py-3' : 'px-3 py-4';
   
   return (
-    <div className={`h-full ${isMobile ? 'w-72' : 'w-64'} bg-sidebar text-sidebar-foreground border-r border-sidebar-border flex flex-col`}>
-      <div className={`${isMobile ? 'p-3' : 'p-4'} flex items-center justify-between`}>
+    <div className={`h-full ${sidebarWidth} bg-sidebar text-sidebar-foreground border-r border-sidebar-border flex flex-col`}>
+      <div className={`${contentPadding} flex items-center justify-between`}>
         <SidebarLogo closeSidebar={closeSidebar} />
         {isMobile && (
           <Button 
@@ -38,14 +45,14 @@ const Sidebar = ({ closeSidebar }: SidebarProps) => {
       
       <Separator className="bg-sidebar-border" />
       
-      <ScrollArea className={`flex-1 ${isMobile ? 'px-2 py-3' : 'px-3 py-4'}`}>
+      <ScrollArea className={`flex-1 ${scrollPadding}`}>
         <div className="space-y-4">
           <SidebarNavigation closeSidebar={closeSidebar} />
           
           <Separator className="bg-sidebar-border" />
           
           <div className="space-y-1">
-            <p className={`text-xs font-medium text-sidebar-foreground/60 pl-4 pb-1 ${isMobile ? 'text-xs' : 'text-xs'}`}>
+            <p className={`text-xs font-medium text-sidebar-foreground/60 pl-4 pb-1 ${isLandscapeMobile ? 'text-xs' : 'text-xs'}`}>
               Informace
             </p>
             <SidebarThemeSwitcher />

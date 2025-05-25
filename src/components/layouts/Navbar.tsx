@@ -6,8 +6,7 @@ import {
   Menu,
   UserIcon, 
   LogOutIcon, 
-  SearchIcon,
-  CalculatorIcon
+  SearchIcon
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -122,18 +121,6 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProp
           </div>
           
           <div className="flex items-center gap-3">
-            {/* Calculator Link - only visible when logged in */}
-            {user && (
-              <Button 
-                variant="ghost" 
-                className="text-sm font-medium flex items-center gap-2 hidden md:flex" 
-                onClick={() => navigate("/calculator")}
-              >
-                <CalculatorIcon className="h-4 w-4" />
-                <span>Kalkulačky</span>
-              </Button>
-            )}
-            
             {/* Theme toggle button (viditelné pouze na desktop) */}
             <ThemeToggle />
             

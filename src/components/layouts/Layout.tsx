@@ -4,7 +4,7 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { useIsMobile, useOrientation } from "@/hooks/use-mobile";
 import { useLocation } from "react-router-dom";
 
 interface LayoutProps {
@@ -14,6 +14,7 @@ interface LayoutProps {
 
 const Layout = ({ children, navbarRightContent }: LayoutProps) => {
   const isMobile = useIsMobile();
+  const orientation = useOrientation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
   
@@ -43,10 +44,13 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
       document.removeEventListener("click", handleClickOutside);
     };
   }, [sidebarOpen, isMobile]);
+
+  // Určit, zda je v landscape módu na mobilním zařízení
+  const isLandscapeMobile = isMobile && orientation === "landscape";
   
   return (
     <div className="flex min-h-screen bg-background">
-      {/* Sidebar - mobilní optimalizace */}
+      {/* Sidebar - mobilní optimalizace s podporou landscape */}
       <div 
         className={`${
           isMobile 
@@ -54,6 +58,8 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
             : 'sticky top-0 h-screen'
         } ${
           isMobile && !sidebarOpen ? '-translate-x-full' : 'translate-x-0'
+        } ${
+          isLandscapeMobile ? 'w-60' : '' // Menší šířka v landscape módu
         }`}
       >
         <Sidebar 
@@ -63,7 +69,7 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
       
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Navbar */}
+        {/* Navbar s optimalizací pro landscape */}
         <Navbar 
           toggleSidebar={() => setSidebarOpen(!sidebarOpen)} 
           rightContent={navbarRightContent}
@@ -81,7 +87,13 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
         
         {/* Obsah stránky s mobilní optimalizací */}
         <ScrollArea className="flex-1">
-          <main className={`flex-1 ${isMobile ? 'px-2 py-2' : 'px-4 py-4'}`}>
+          <main className={`flex-1 ${
+            isMobile 
+              ? isLandscapeMobile 
+                ? 'px-3 py-2' // Menší padding v landscape
+                : 'px-2 py-2' 
+              : 'px-4 py-4'
+          }`}>
             {children}
           </main>
           <Footer />
