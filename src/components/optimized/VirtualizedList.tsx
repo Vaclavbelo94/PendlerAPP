@@ -4,67 +4,61 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 
 interface VirtualizedListProps<T> {
   items: T[];
+  height: number;
+  itemHeight: number;
   renderItem: (item: T, index: number) => React.ReactNode;
-  estimateSize?: number;
   className?: string;
-  containerHeight?: number;
+  overscan?: number;
 }
 
-export const VirtualizedList = <T,>({
+export function VirtualizedList<T>({
   items,
+  height,
+  itemHeight,
   renderItem,
-  estimateSize = 50,
-  className,
-  containerHeight = 400
-}: VirtualizedListProps<T>) => {
+  className = '',
+  overscan = 5
+}: VirtualizedListProps<T>) {
   const parentRef = React.useRef<HTMLDivElement>(null);
 
   const virtualizer = useVirtualizer({
     count: items.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => estimateSize,
-    overscan: 5,
+    estimateSize: () => itemHeight,
+    overscan
   });
 
   const virtualItems = virtualizer.getVirtualItems();
 
-  // Memoizujeme rendered items pro lepší výkon
-  const renderedItems = useMemo(() => {
-    return virtualItems.map((virtualItem) => (
-      <div
-        key={virtualItem.key}
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: `${virtualItem.size}px`,
-          transform: `translateY(${virtualItem.start}px)`,
-        }}
-      >
-        {renderItem(items[virtualItem.index], virtualItem.index)}
-      </div>
-    ));
-  }, [virtualItems, items, renderItem]);
-
   return (
     <div
       ref={parentRef}
-      className={className}
-      style={{
-        height: `${containerHeight}px`,
-        overflow: 'auto',
-      }}
+      className={`overflow-auto ${className}`}
+      style={{ height }}
     >
       <div
         style={{
-          height: `${virtualizer.getTotalSize()}px`,
+          height: virtualizer.getTotalSize(),
           width: '100%',
-          position: 'relative',
+          position: 'relative'
         }}
       >
-        {renderedItems}
+        {virtualItems.map((virtualItem) => (
+          <div
+            key={virtualItem.key}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: virtualItem.size,
+              transform: `translateY(${virtualItem.start}px)`
+            }}
+          >
+            {renderItem(items[virtualItem.index], virtualItem.index)}
+          </div>
+        ))}
       </div>
     </div>
   );
-};
+}

@@ -16,24 +16,22 @@ export const useBundleOptimization = (options: BundleOptimizationOptions = {}) =
     prefetchDelay = 2000
   } = options;
 
-  // Prefetch route modules based on current route
   const prefetchRoutes = useCallback(() => {
     if (!enablePrefetching) return;
 
     const routePrefetchMap: Record<string, string[]> = {
       '/': ['/dashboard', '/language', '/calculator'],
       '/dashboard': ['/language', '/shifts', '/vehicle'],
+      '/translator': ['/language', '/dashboard'],
       '/language': ['/translator', '/dashboard'],
       '/calculator': ['/tax-advisor', '/dashboard'],
       '/shifts': ['/dashboard', '/vehicle'],
-      '/vehicle': ['/dashboard', '/shifts'],
-      '/premium': ['/dashboard'],
+      '/vehicle': ['/dashboard', '/shifts']
     };
 
     const currentRoutePrefetches = routePrefetchMap[location.pathname] || [];
     
     currentRoutePrefetches.forEach(route => {
-      // Create invisible link elements for prefetching
       const link = document.createElement('link');
       link.rel = 'prefetch';
       link.href = route;
@@ -42,49 +40,35 @@ export const useBundleOptimization = (options: BundleOptimizationOptions = {}) =
     });
   }, [location.pathname, enablePrefetching]);
 
-  // Optimize images on current route
-  const optimizeCurrentRouteImages = useCallback(() => {
-    const images = document.querySelectorAll('img');
-    
-    images.forEach(img => {
-      // Add loading="lazy" if not already present
-      if (!img.hasAttribute('loading')) {
-        img.setAttribute('loading', 'lazy');
-      }
-      
-      // Add decoding="async" for better performance
-      if (!img.hasAttribute('decoding')) {
-        img.setAttribute('decoding', 'async');
-      }
-    });
-  }, []);
+  const optimizeBundles = useCallback(() => {
+    if (!enableCodeSplitting) return;
 
-  // Clean up unused resources when leaving route
-  const cleanupRouteResources = useCallback(() => {
-    // Remove prefetch links that are no longer needed
-    const prefetchLinks = document.querySelectorAll('link[rel="prefetch"]');
-    prefetchLinks.forEach(link => {
-      if (link.getAttribute('href') !== location.pathname) {
-        link.remove();
-      }
+    // Preload critical modules
+    const criticalModules = [
+      '/src/components/ui/button.tsx',
+      '/src/components/ui/card.tsx',
+      '/src/hooks/useAuth.tsx'
+    ];
+
+    criticalModules.forEach(module => {
+      const link = document.createElement('link');
+      link.rel = 'modulepreload';
+      link.href = module;
+      document.head.appendChild(link);
     });
-  }, [location.pathname]);
+  }, [enableCodeSplitting]);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       prefetchRoutes();
-      optimizeCurrentRouteImages();
+      optimizeBundles();
     }, prefetchDelay);
 
-    return () => {
-      clearTimeout(timeoutId);
-      cleanupRouteResources();
-    };
-  }, [location.pathname, prefetchRoutes, optimizeCurrentRouteImages, cleanupRouteResources, prefetchDelay]);
+    return () => clearTimeout(timeoutId);
+  }, [prefetchRoutes, optimizeBundles, prefetchDelay]);
 
   return {
     prefetchRoutes,
-    optimizeCurrentRouteImages,
-    cleanupRouteResources
+    optimizeBundles
   };
 };

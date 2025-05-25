@@ -1,0 +1,283 @@
+
+/* Enhanced mobile responsive styles */
+@media screen and (max-width: 768px) {
+  /* Mobile-first optimizations */
+  .mobile-container {
+    padding: 0.75rem;
+    min-height: 100vh;
+    min-height: 100dvh; /* Dynamic viewport height */
+  }
+  
+  .mobile-card {
+    border-radius: 0.75rem;
+    margin: 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .mobile-input {
+    font-size: 16px; /* Prevents zoom on iOS */
+    min-height: 44px;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+  }
+  
+  .mobile-button {
+    min-height: 44px;
+    min-width: 44px;
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .mobile-text {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+  
+  /* Safe area support */
+  .mobile-safe-area {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+}
+
+/* Portrait mobile specific */
+@media screen and (max-width: 768px) and (orientation: portrait) {
+  .mobile-navbar-fixed {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    background: hsl(var(--background));
+    border-bottom: 1px solid hsl(var(--border));
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  
+  .mobile-content-wrapper {
+    margin-top: 4rem; /* Account for fixed navbar */
+    min-height: calc(100vh - 4rem);
+    min-height: calc(100dvh - 4rem);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .mobile-main-content {
+    padding: 1rem;
+    min-height: calc(100vh - 8rem);
+  }
+  
+  .mobile-sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+  }
+  
+  .mobile-hero-section {
+    min-height: 80vh;
+    min-height: 80dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+  }
+  
+  .mobile-text-optimize {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  .mobile-button-spacing {
+    margin-bottom: 0.75rem;
+  }
+  
+  .mobile-touch-target {
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* Landscape mobile optimizations */
+@media screen and (max-width: 768px) and (orientation: landscape) {
+  .landscape-main-content {
+    padding: 0.5rem;
+    min-height: calc(100vh - 3rem);
+  }
+  
+  .landscape-container {
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    max-height: 100vh;
+    overflow: hidden;
+  }
+  
+  .landscape-header {
+    flex-shrink: 0;
+    padding: 0.25rem 0;
+  }
+  
+  .landscape-content {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    min-height: 0;
+  }
+  
+  .landscape-tabs {
+    height: auto;
+  }
+  
+  .landscape-tabs .landscape-tabs-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 0.25rem;
+    padding: 0.25rem;
+    height: auto;
+  }
+  
+  .landscape-tabs .landscape-tabs-trigger {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+    line-height: 1.2;
+    min-height: 2.5rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  /* Compact UI elements for landscape */
+  .landscape-compact h1 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .landscape-compact p {
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .landscape-compact .mobile-button {
+    min-height: 36px;
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
+  }
+}
+
+/* Small landscape screens (height <= 500px) */
+@media screen and (orientation: landscape) and (max-height: 500px) {
+  .small-landscape-container {
+    padding: 0.25rem;
+    font-size: 0.875rem;
+  }
+  
+  .small-landscape-header h1 {
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+  }
+  
+  .small-landscape-header p {
+    font-size: 0.75rem;
+    margin-bottom: 0.25rem;
+  }
+  
+  .small-landscape-button {
+    min-height: 32px;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+  }
+  
+  .small-landscape-tabs .landscape-tabs-trigger {
+    min-height: 2rem;
+    font-size: 0.625rem;
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+/* Touch optimizations */
+@media (pointer: coarse) {
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+    touch-action: manipulation;
+  }
+  
+  .touch-button {
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.1s ease;
+  }
+  
+  .touch-button:active {
+    transform: scale(0.98);
+  }
+  
+  /* Better scrolling on touch devices */
+  .touch-scroll {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    scroll-behavior: smooth;
+  }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .mobile-card {
+    border: 2px solid hsl(var(--border));
+  }
+  
+  .mobile-button {
+    border: 2px solid hsl(var(--border));
+  }
+}
+
+/* Dark mode optimizations */
+@media (prefers-color-scheme: dark) {
+  .mobile-navbar-fixed {
+    background: rgba(0, 0, 0, 0.95);
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .mobile-sidebar-overlay {
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+}
+
+/* Performance optimizations */
+.mobile-container,
+.mobile-card,
+.mobile-content-wrapper {
+  contain: layout style paint;
+}
+
+.mobile-button,
+.touch-button {
+  will-change: transform;
+}
+
+/* Keyboard handling for mobile */
+.keyboard-open .mobile-content-wrapper {
+  height: calc(100vh - 4rem);
+  height: calc(100dvh - 4rem);
+  overflow: hidden;
+}
+
+.keyboard-open .mobile-main-content {
+  padding-bottom: 2rem;
+}
