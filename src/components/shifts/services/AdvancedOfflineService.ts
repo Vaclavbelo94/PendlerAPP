@@ -6,14 +6,14 @@ import { supabase } from '@/integrations/supabase/client';
 import { errorHandler } from '@/utils/errorHandler';
 
 export class AdvancedOfflineService extends ShiftOfflineService {
-  private static instance: AdvancedOfflineService;
+  private static advancedInstance: AdvancedOfflineService;
   private conflictResolver = ConflictResolutionService.getInstance();
 
   static getInstance(): AdvancedOfflineService {
-    if (!AdvancedOfflineService.instance) {
-      AdvancedOfflineService.instance = new AdvancedOfflineService();
+    if (!AdvancedOfflineService.advancedInstance) {
+      AdvancedOfflineService.advancedInstance = new AdvancedOfflineService();
     }
-    return AdvancedOfflineService.instance;
+    return AdvancedOfflineService.advancedInstance;
   }
 
   async syncWithConflictResolution(userId: string): Promise<{
@@ -68,8 +68,14 @@ export class AdvancedOfflineService extends ShiftOfflineService {
       if (error) throw error;
       
       return data?.map(shift => ({
-        ...shift,
-        date: new Date(shift.date)
+        id: shift.id,
+        userId: shift.user_id,
+        user_id: shift.user_id,
+        date: new Date(shift.date),
+        type: shift.type,
+        notes: shift.notes || '',
+        created_at: shift.created_at,
+        updated_at: shift.updated_at
       })) || [];
     } catch (error) {
       errorHandler.handleError(error, { operation: 'getRemoteShifts' });
@@ -147,8 +153,7 @@ export class AdvancedOfflineService extends ShiftOfflineService {
     const duplicateShift: Shift = {
       ...shift,
       id: `${shift.id}_duplicate_${Date.now()}`,
-      notes: `${shift.notes}\n\n[Duplikát kvůli konfliktu]`,
-      created_at: new Date().toISOString()
+      notes: `${shift.notes}\n\n[Duplikát kvůli konfliktu]`
     };
 
     await this.updateLocalShift(duplicateShift, userId);
@@ -193,5 +198,10 @@ export class AdvancedOfflineService extends ShiftOfflineService {
     }
 
     return { synced, errors };
+  }
+
+  cleanup() {
+    // Clean up any resources
+    this.conflictResolver = ConflictResolutionService.getInstance();
   }
 }

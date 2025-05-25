@@ -1,4 +1,3 @@
-
 import { Shift } from '../types';
 import { notificationService } from './NotificationService';
 
@@ -45,8 +44,8 @@ export class ConflictResolutionService {
   }
 
   private determineConflictType(local: Shift, remote: Shift): ConflictData['conflictType'] | null {
-    const localTime = new Date(local.updated_at || local.created_at).getTime();
-    const remoteTime = new Date(remote.updated_at || remote.created_at).getTime();
+    const localTime = new Date(local.updated_at || local.created_at || Date.now()).getTime();
+    const remoteTime = new Date(remote.updated_at || remote.created_at || Date.now()).getTime();
     
     // Pokud se liší obsah a byly upraveny zhruba ve stejnou dobu (±5 minut)
     if (Math.abs(localTime - remoteTime) < 300000) {
@@ -81,8 +80,8 @@ export class ConflictResolutionService {
         
       case 'version_mismatch':
         // Pro verze mismatch preferujeme novější verzi
-        const localTime = new Date(localShift.updated_at || localShift.created_at).getTime();
-        const remoteTime = new Date(remoteShift.updated_at || remoteShift.created_at).getTime();
+        const localTime = new Date(localShift.updated_at || localShift.created_at || Date.now()).getTime();
+        const remoteTime = new Date(remoteShift.updated_at || remoteShift.created_at || Date.now()).getTime();
         
         return {
           action: localTime > remoteTime ? 'keep_local' : 'keep_remote'
@@ -98,8 +97,7 @@ export class ConflictResolutionService {
     const mergedShift: Shift = {
       ...local,
       type: local.type || remote.type,
-      notes: this.mergeNotes(local.notes, remote.notes),
-      updated_at: new Date().toISOString()
+      notes: this.mergeNotes(local.notes, remote.notes)
     };
     
     return {

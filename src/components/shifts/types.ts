@@ -1,15 +1,30 @@
 
-// Defines the types of shifts that can be scheduled
 export type ShiftType = "morning" | "afternoon" | "night";
 
-// Defines the structure of a shift entry
 export interface Shift {
   id: string;
+  userId: string;
+  user_id?: string; // For database compatibility
   date: Date;
   type: ShiftType;
-  userId: string;
-  notes?: string;
+  notes: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
-// Period for analytics
-export type AnalyticsPeriod = "week" | "month" | "year";
+export type AnalyticsPeriod = "week" | "month" | "quarter" | "year";
+
+export interface ShiftStats {
+  totalShifts: number;
+  morningShifts: number;
+  afternoonShifts: number;
+  nightShifts: number;
+  totalHours: number;
+  averagePerWeek: number;
+}
+
+export interface ShiftCalendarEvent extends Shift {
+  title: string;
+  start: Date;
+  end: Date;
+}

@@ -1,4 +1,3 @@
-
 import { useEffect, useCallback, useMemo } from "react";
 import { useShiftLoading } from "./useShiftLoading";
 import { useShiftData } from "./useShiftData";
@@ -141,7 +140,7 @@ export const useUnifiedShiftManagement = (user: any) => {
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      offlineService.cleanup?.();
+      offlineService.cleanup();
     };
   }, [offlineService]);
 

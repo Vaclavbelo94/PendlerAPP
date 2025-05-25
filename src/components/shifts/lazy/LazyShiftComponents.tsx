@@ -1,11 +1,10 @@
-
 import React, { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 // Lazy loaded komponenty pro optimalizaci bundle size
 const ShiftAnalytics = React.lazy(() => import('../ShiftAnalytics'));
-const ReportsTab = React.lazy(() => import('../ReportsTab'));
-const EditNoteDialog = React.lazy(() => import('../EditNoteDialog'));
+const ReportsTab = React.lazy(() => import('../ReportsTab').then(module => ({ default: module.ReportsTab })));
+const EditNoteDialog = React.lazy(() => import('../EditNoteDialog').then(module => ({ default: module.EditNoteDialog })));
 
 // Loading komponenty
 const AnalyticsLoader = () => (
