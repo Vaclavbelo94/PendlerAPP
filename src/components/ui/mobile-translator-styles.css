@@ -1,24 +1,29 @@
 
-/* Mobile Translator Optimizations */
+/* Mobile Translator Optimizations - Enhanced */
 @media screen and (max-width: 768px) {
   /* Portrait mobile optimizations */
   .mobile-translator-container {
     padding: 1rem 0.75rem;
     min-height: calc(100vh - 4rem);
+    contain: layout style paint;
   }
   
   .mobile-translator-card {
     border-radius: 0.75rem;
     margin: 0;
     min-height: calc(100vh - 12rem);
+    will-change: transform;
   }
   
   .mobile-translator-textarea {
-    font-size: 1rem;
+    font-size: 16px; /* Prevents zoom on iOS */
     line-height: 1.5;
     min-height: 120px;
     max-height: 200px;
     resize: none;
+    touch-action: manipulation;
+    -webkit-appearance: none;
+    border-radius: 0.5rem;
   }
   
   .mobile-translator-controls {
@@ -26,33 +31,51 @@
     bottom: 0;
     left: 0;
     right: 0;
-    background: hsl(var(--background));
+    background: rgba(255, 255, 255, 0.95);
     border-top: 1px solid hsl(var(--border));
     padding: 1rem;
     z-index: 50;
     backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    safe-area-inset-bottom: env(safe-area-inset-bottom);
   }
   
   .mobile-translator-button {
     min-height: 48px;
+    min-width: 48px;
     font-size: 1rem;
     touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.1s ease;
+  }
+  
+  .mobile-translator-button:active {
+    transform: scale(0.98);
   }
   
   /* Language selector optimizations */
   .mobile-language-selector {
     min-height: 44px;
-    font-size: 0.9rem;
+    font-size: 1rem;
+    touch-action: manipulation;
   }
   
-  /* Textarea auto-resize */
-  .mobile-auto-resize {
-    overflow-y: hidden;
-    transition: height 0.2s ease;
+  /* Improved scrolling */
+  .mobile-scroll-container {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    scroll-behavior: smooth;
+  }
+  
+  /* Better focus styles for mobile */
+  .mobile-translator-container *:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+    border-radius: 0.25rem;
   }
 }
 
-/* Landscape mobile optimizations */
+/* Enhanced landscape mobile optimizations */
 @media screen and (orientation: landscape) and (max-height: 500px) {
   .landscape-translator-container {
     padding: 0.5rem;
@@ -60,6 +83,7 @@
     flex-direction: column;
     height: 100vh;
     overflow: hidden;
+    contain: layout style paint;
   }
   
   .landscape-translator-header {
@@ -83,22 +107,39 @@
     flex-direction: column;
     min-height: 0;
     padding-bottom: 5rem;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
   
   .landscape-translator-textarea {
     min-height: 80px !important;
     max-height: 120px !important;
-    font-size: 0.875rem;
+    font-size: 16px; /* Prevents zoom */
   }
   
   .landscape-translator-controls {
     bottom: 0;
-    padding: 0.75rem;
+    padding: 0.5rem;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(12px);
   }
   
   .landscape-translator-button {
     min-height: 40px;
     font-size: 0.875rem;
+  }
+  
+  /* Compact layout for landscape */
+  .landscape-compact-layout {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 0.5rem;
+    align-items: start;
+  }
+  
+  .landscape-compact-layout .mobile-translator-textarea {
+    min-height: 80px;
+    max-height: 100px;
   }
   
   /* Compact tabs for landscape */
@@ -123,29 +164,40 @@
   }
 }
 
-/* Touch optimizations */
+/* Touch optimizations for all devices */
 @media (pointer: coarse) {
   .touch-optimized-button {
     min-height: 44px;
     min-width: 44px;
     padding: 0.75rem;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
   
   .touch-optimized-input {
     min-height: 44px;
     font-size: 16px; /* Prevents zoom on iOS */
+    touch-action: manipulation;
   }
   
   .touch-optimized-textarea {
     font-size: 16px; /* Prevents zoom on iOS */
     line-height: 1.5;
+    touch-action: manipulation;
+  }
+  
+  /* Better button feedback */
+  .touch-optimized-button:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
   }
 }
 
 /* Accessibility improvements */
 @media (prefers-reduced-motion: reduce) {
   .mobile-translator-textarea,
-  .mobile-auto-resize {
+  .mobile-auto-resize,
+  .touch-optimized-button {
     transition: none;
   }
 }
@@ -162,15 +214,50 @@
   }
 }
 
-/* Focus improvements for keyboard navigation */
-.mobile-translator-container *:focus-visible {
-  outline: 2px solid hsl(var(--ring));
-  outline-offset: 2px;
+/* Dark mode optimizations */
+@media (prefers-color-scheme: dark) {
+  .mobile-translator-controls {
+    background: rgba(0, 0, 0, 0.95);
+    border-top-color: rgba(255, 255, 255, 0.1);
+  }
 }
 
-/* Smooth transitions for orientation changes */
-@media screen {
-  .orientation-transition {
-    transition: all 0.3s ease-in-out;
+/* Performance optimizations */
+.mobile-translator-container {
+  contain: layout style paint;
+}
+
+.mobile-translator-card {
+  contain: layout style;
+  transform: translateZ(0); /* Force hardware acceleration */
+}
+
+.mobile-translator-textarea {
+  contain: layout style;
+  will-change: contents;
+}
+
+/* Safe area adjustments for devices with notches */
+@supports (padding: max(0px)) {
+  .mobile-translator-controls {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+  
+  .landscape-translator-container {
+    padding-left: max(0.5rem, env(safe-area-inset-left));
+    padding-right: max(0.5rem, env(safe-area-inset-right));
+  }
+}
+
+/* Improved keyboard handling */
+@media screen and (max-height: 400px) {
+  .mobile-translator-container {
+    padding-bottom: 6rem;
+  }
+  
+  .landscape-translator-content {
+    padding-bottom: 6rem;
   }
 }
