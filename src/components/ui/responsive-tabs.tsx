@@ -1,143 +1,85 @@
 
-import React from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useIsMobile, useOrientation } from '@/hooks/use-mobile';
-import { cn } from '@/lib/utils';
+import * as React from "react"
+import * as TabsPrimitive from "@radix-ui/react-tabs"
+import { cn } from "@/lib/utils"
+import { useIsMobile } from "@/hooks/use-mobile"
 
-interface ResponsiveTabsProps {
-  children: React.ReactNode;
-  value?: string;
-  onValueChange?: (value: string) => void;
-  className?: string;
-  orientation?: 'horizontal' | 'vertical';
-}
+const ResponsiveTabs = TabsPrimitive.Root
 
-export const ResponsiveTabs: React.FC<ResponsiveTabsProps> = ({
-  children,
-  value,
-  onValueChange,
-  className,
-  orientation = 'horizontal'
-}) => {
-  const isMobile = useIsMobile();
-  const deviceOrientation = useOrientation();
-  
-  const isLandscapeMobile = isMobile && deviceOrientation === 'landscape';
+const ResponsiveTabsList = React.forwardRef<
+  React.ElementRef<typeof TabsPrimitive.List>,
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>
+>(({ className, ...props }, ref) => {
+  const isMobile = useIsMobile()
   
   return (
-    <Tabs
-      value={value}
-      onValueChange={onValueChange}
+    <TabsPrimitive.List
+      ref={ref}
       className={cn(
-        'w-full',
-        {
-          'landscape-tabs': isLandscapeMobile,
-          'mobile-tabs': isMobile && deviceOrientation === 'portrait',
-        },
+        "inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground",
+        isMobile && "mobile-tabs-list relative z-[10] bg-background border-b border-border",
         className
       )}
-      orientation={isLandscapeMobile ? 'horizontal' : orientation}
-    >
-      {children}
-    </Tabs>
-  );
-};
+      {...props}
+    />
+  )
+})
+ResponsiveTabsList.displayName = TabsPrimitive.List.displayName
 
-interface ResponsiveTabsListProps {
-  children: React.ReactNode;
-  className?: string;
-}
-
-export const ResponsiveTabsList: React.FC<ResponsiveTabsListProps> = ({
-  children,
-  className
-}) => {
-  const isMobile = useIsMobile();
-  const orientation = useOrientation();
-  
-  const isLandscapeMobile = isMobile && orientation === 'landscape';
+const ResponsiveTabsTrigger = React.forwardRef<
+  React.ElementRef<typeof TabsPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger> & {
+    icon?: React.ReactNode
+    description?: string
+  }
+>(({ className, children, icon, description, ...props }, ref) => {
+  const isMobile = useIsMobile()
   
   return (
-    <TabsList
+    <TabsPrimitive.Trigger
+      ref={ref}
       className={cn(
-        'grid w-full',
-        {
-          'h-auto grid-flow-col gap-1 p-1': isLandscapeMobile,
-          'grid-cols-1 gap-1': isMobile && orientation === 'portrait',
-          'max-w-3xl': !isMobile,
-        },
+        "inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm",
+        isMobile && "mobile-tabs-trigger flex-col gap-1 min-h-[44px] p-3 relative z-[10] bg-background",
         className
       )}
-      role="tablist"
-      aria-orientation={isLandscapeMobile ? 'horizontal' : 'vertical'}
+      {...props}
     >
-      {children}
-    </TabsList>
-  );
-};
+      {isMobile ? (
+        <>
+          {icon && <span className="text-lg">{icon}</span>}
+          <span className="text-xs font-medium">{children}</span>
+          {description && <span className="text-xs text-muted-foreground sr-only">{description}</span>}
+        </>
+      ) : (
+        <>
+          {icon && <span className="mr-2">{icon}</span>}
+          {children}
+        </>
+      )}
+    </TabsPrimitive.Trigger>
+  )
+})
+ResponsiveTabsTrigger.displayName = TabsPrimitive.Trigger.displayName
 
-interface ResponsiveTabsTriggerProps {
-  children: React.ReactNode;
-  value: string;
-  className?: string;
-  icon?: React.ReactNode;
-  description?: string;
-}
-
-export const ResponsiveTabsTrigger: React.FC<ResponsiveTabsTriggerProps> = ({
-  children,
-  value,
-  className,
-  icon,
-  description
-}) => {
-  const isMobile = useIsMobile();
-  const orientation = useOrientation();
-  
-  const isLandscapeMobile = isMobile && orientation === 'landscape';
+const ResponsiveTabsContent = React.forwardRef<
+  React.ElementRef<typeof TabsPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>
+>(({ className, ...props }, ref) => {
+  const isMobile = useIsMobile()
   
   return (
-    <TabsTrigger
-      value={value}
+    <TabsPrimitive.Content
+      ref={ref}
       className={cn(
-        'flex items-center gap-2',
-        {
-          'flex-col py-2 px-3 text-xs h-auto': isLandscapeMobile,
-          'justify-start py-3 px-4': isMobile && orientation === 'portrait',
-          'py-3 px-4': !isMobile,
-        },
+        "mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        isMobile && "mobile-tabs-content relative z-[5] bg-background",
         className
       )}
-      role="tab"
-      aria-controls={`${value}-content`}
-      aria-describedby={description ? `${value}-desc` : undefined}
-    >
-      {icon && (
-        <span className={cn(
-          'flex-shrink-0',
-          isLandscapeMobile ? 'mb-1' : 'mr-2'
-        )}>
-          {icon}
-        </span>
-      )}
-      <span className={cn(
-        'font-medium',
-        isLandscapeMobile && 'text-center leading-tight'
-      )}>
-        {children}
-      </span>
-      {description && isLandscapeMobile && (
-        <span className="text-xs text-muted-foreground hidden sm:block">
-          {description}
-        </span>
-      )}
-      {description && (
-        <span id={`${value}-desc`} className="sr-only">
-          {description}
-        </span>
-      )}
-    </TabsTrigger>
-  );
-};
+      {...props}
+    />
+  )
+})
+ResponsiveTabsContent.displayName = TabsPrimitive.Content.displayName
 
-export { TabsContent as ResponsiveTabsContent };
+export { ResponsiveTabs, ResponsiveTabsList, ResponsiveTabsTrigger, ResponsiveTabsContent }

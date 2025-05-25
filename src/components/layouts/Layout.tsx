@@ -64,7 +64,7 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
           <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
             <SheetContent 
               side="top" 
-              className="h-[70vh] w-full p-0 bg-sidebar text-sidebar-foreground border-b border-sidebar-border"
+              className="h-[70vh] w-full p-0 bg-sidebar text-sidebar-foreground border-b border-sidebar-border z-[100]"
             >
               <Sidebar 
                 closeSidebar={() => setSidebarOpen(false)} 
@@ -93,27 +93,27 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
           <>
             {/* Mobilní overlay backdrop */}
             <div 
-              className="fixed inset-0 bg-black/50 z-40"
+              className="fixed inset-0 bg-black/50 z-[60]"
               onClick={() => setSidebarOpen(false)}
               aria-hidden="true"
             />
             {/* Sidebar overlay */}
-            <div className="fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out">
+            <div className="fixed inset-y-0 left-0 z-[70] transform transition-transform duration-300 ease-in-out">
               <Sidebar closeSidebar={() => setSidebarOpen(false)} />
             </div>
           </>
         )}
         
         {/* Main content container */}
-        <div className="flex-1 flex flex-col min-w-0 relative">
+        <div className="flex-1 flex flex-col min-w-0 relative z-[1]">
           <Navbar 
             toggleSidebar={() => setSidebarOpen(!sidebarOpen)} 
             rightContent={navbarRightContent}
             sidebarOpen={sidebarOpen}
           />
           
-          {/* Obsah stránky s mobilní optimalizací */}
-          <ScrollArea className="flex-1">
+          {/* Obsah stránky s mobilní optimalizací - SNÍŽENÝ Z-INDEX */}
+          <ScrollArea className="flex-1 relative z-[1]">
             <main className="flex-1 px-3 py-3 min-h-[calc(100vh-4rem)]">
               {children}
             </main>
