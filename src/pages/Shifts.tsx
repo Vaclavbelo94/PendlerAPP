@@ -1,8 +1,9 @@
 
-import React, { useState } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import PremiumCheck from '@/components/premium/PremiumCheck';
 import ResponsivePage from "@/components/layouts/ResponsivePage";
+import { ShiftsErrorBoundary } from "@/components/shifts/ShiftsErrorBoundary";
 
 // Import refactored components
 import { ShiftsHeader } from "@/components/shifts/ShiftsHeader";
@@ -36,26 +37,32 @@ const Shifts = () => {
     isLoading
   } = useUnifiedShiftManagement(user);
 
-  const handleOpenNoteDialog = () => {
+  // Memoized callbacks to prevent unnecessary re-renders
+  const handleOpenNoteDialog = useCallback(() => {
     setNoteDialogOpen(true);
-  };
+  }, [setNoteDialogOpen]);
 
-  const handleSaveNote = () => {
+  const handleSaveNote = useCallback(() => {
     handleSaveNotes(shiftNotes);
-  };
+  }, [handleSaveNotes, shiftNotes]);
 
-  const handleQuickAdd = () => {
+  const handleQuickAdd = useCallback(() => {
     setActiveSection("calendar");
     setSelectedDate(new Date());
-  };
+  }, [setSelectedDate]);
 
-  const handleNotificationSettings = () => {
+  const handleNotificationSettings = useCallback(() => {
     // TODO: Open notification settings dialog
-  };
+  }, []);
 
-  const handleShareSchedule = () => {
+  const handleShareSchedule = useCallback(() => {
     // TODO: Implement share functionality
-  };
+  }, []);
+
+  // Memoized widgets component
+  const shiftsWidgets = useMemo(() => (
+    <ShiftWidgets shifts={shifts} />
+  ), [shifts]);
 
   if (isLoading) {
     return (
@@ -72,49 +79,51 @@ const Shifts = () => {
   return (
     <PremiumCheck featureKey="shifts">
       <ResponsivePage>
-        <div className="container py-6 md:py-10 max-w-7xl mx-auto">
-          <ShiftsHeader />
+        <ShiftsErrorBoundary>
+          <div className="container py-6 md:py-10 max-w-7xl mx-auto">
+            <ShiftsHeader />
 
-          <MobileShiftActions
-            onQuickAdd={handleQuickAdd}
-            onNotificationSettings={handleNotificationSettings}
-            onShareSchedule={handleShareSchedule}
-          />
+            <MobileShiftActions
+              onQuickAdd={handleQuickAdd}
+              onNotificationSettings={handleNotificationSettings}
+              onShareSchedule={handleShareSchedule}
+            />
 
-          <ShiftWidgets shifts={shifts} />
+            {shiftsWidgets}
 
-          <ShiftsNavigation 
-            activeSection={activeSection}
-            onSectionChange={setActiveSection}
-          />
+            <ShiftsNavigation 
+              activeSection={activeSection}
+              onSectionChange={setActiveSection}
+            />
 
-          <ShiftsContent
-            activeSection={activeSection}
-            selectedDate={selectedDate}
-            onSelectDate={setSelectedDate}
-            shifts={shifts}
-            currentShift={currentShift}
-            shiftType={shiftType}
-            setShiftType={setShiftType}
-            shiftNotes={shiftNotes}
-            setShiftNotes={setShiftNotes}
-            user={user}
-            onSaveShift={handleSaveShift}
-            onDeleteShift={handleDeleteShift}
-            onOpenNoteDialog={handleOpenNoteDialog}
-            analyticsPeriod={analyticsPeriod}
-            setAnalyticsPeriod={setAnalyticsPeriod}
-          />
+            <ShiftsContent
+              activeSection={activeSection}
+              selectedDate={selectedDate}
+              onSelectDate={setSelectedDate}
+              shifts={shifts}
+              currentShift={currentShift}
+              shiftType={shiftType}
+              setShiftType={setShiftType}
+              shiftNotes={shiftNotes}
+              setShiftNotes={setShiftNotes}
+              user={user}
+              onSaveShift={handleSaveShift}
+              onDeleteShift={handleDeleteShift}
+              onOpenNoteDialog={handleOpenNoteDialog}
+              analyticsPeriod={analyticsPeriod}
+              setAnalyticsPeriod={setAnalyticsPeriod}
+            />
 
-          <EditNoteDialog
-            open={noteDialogOpen}
-            onOpenChange={setNoteDialogOpen}
-            selectedDate={selectedDate}
-            shiftNotes={shiftNotes}
-            onNotesChange={setShiftNotes}
-            onSaveNote={handleSaveNote}
-          />
-        </div>
+            <EditNoteDialog
+              open={noteDialogOpen}
+              onOpenChange={setNoteDialogOpen}
+              selectedDate={selectedDate}
+              shiftNotes={shiftNotes}
+              onNotesChange={setShiftNotes}
+              onSaveNote={handleSaveNote}
+            />
+          </div>
+        </ShiftsErrorBoundary>
       </ResponsivePage>
     </PremiumCheck>
   );

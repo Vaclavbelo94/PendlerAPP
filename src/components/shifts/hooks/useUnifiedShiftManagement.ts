@@ -1,11 +1,11 @@
 
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useMemo } from "react";
 import { useShiftLoading } from "./useShiftLoading";
 import { useShiftData } from "./useShiftData";
 import { useCurrentShift } from "./useCurrentShift";
 import { EnhancedShiftService } from "../services/enhancedShiftService";
 import { ShiftNotificationService } from "../notifications/ShiftNotificationService";
-import { toast } from "@/hooks/use-toast";
+import { notificationService } from "../services/NotificationService";
 import { errorHandler } from "@/utils/errorHandler";
 
 export const useUnifiedShiftManagement = (user: any) => {
@@ -19,18 +19,14 @@ export const useUnifiedShiftManagement = (user: any) => {
     shiftData.setShiftNotes
   );
 
-  const shiftService = EnhancedShiftService.getInstance();
-  const notificationService = ShiftNotificationService.getInstance();
+  const shiftService = useMemo(() => EnhancedShiftService.getInstance(), []);
+  const notificationServiceInstance = useMemo(() => ShiftNotificationService.getInstance(), []);
 
-  const isOnline = () => navigator.onLine;
+  const isOnline = useCallback(() => navigator.onLine, []);
 
   const handleSaveShift = useCallback(async () => {
     if (!shiftData.selectedDate || !user) {
-      toast({
-        title: "Chyba",
-        description: "Pro uložení směny musíte být přihlášeni a vybrat datum.",
-        variant: "destructive"
-      });
+      notificationService.showAuthRequired();
       return;
     }
     
@@ -42,51 +38,34 @@ export const useUnifiedShiftManagement = (user: any) => {
         user.id
       );
       
-      toast({
-        title: isUpdate ? "Směna aktualizována" : "Směna přidána",
-        description: `Směna byla úspěšně ${isUpdate ? "upravena" : "přidána"}.`,
-      });
+      notificationService.showShiftSaved(isUpdate);
       
       if (!isUpdate && savedShift) {
-        await notificationService.scheduleShiftReminder(savedShift);
+        await notificationServiceInstance.scheduleShiftReminder(savedShift);
       }
       
       window.dispatchEvent(new CustomEvent('refresh-shifts'));
       
     } catch (error) {
       if (isOnline()) {
-        toast({
-          title: "Chyba při ukládání",
-          description: "Nepodařilo se uložit směnu na server. Zkuste to prosím znovu.",
-          variant: "destructive"
-        });
+        notificationService.showShiftError('save');
       } else {
-        toast({
-          title: "Uloženo offline",
-          description: "Směna byla uložena offline a bude synchronizována při obnovení připojení.",
-        });
+        notificationService.showOfflineSaved();
       }
+      errorHandler.handleError(error, { operation: 'handleSaveShift' });
     }
-  }, [shiftData, user, shiftService, notificationService]);
+  }, [shiftData, user, shiftService, notificationServiceInstance, isOnline]);
 
   const handleDeleteShift = useCallback(async () => {
     if (!currentShift || !user) return;
     
     try {
       // Implementation from the enhanced service would go here
-      toast({
-        title: "Směna odstraněna",
-        description: "Směna byla úspěšně odstraněna.",
-        variant: "destructive"
-      });
-      
+      notificationService.showShiftDeleted();
       window.dispatchEvent(new CustomEvent('refresh-shifts'));
     } catch (error) {
-      toast({
-        title: "Chyba při mazání",
-        description: "Nepodařilo se odstranit směnu.",
-        variant: "destructive"
-      });
+      notificationService.showShiftError('delete');
+      errorHandler.handleError(error, { operation: 'handleDeleteShift' });
     }
   }, [currentShift, user]);
 
@@ -98,29 +77,28 @@ export const useUnifiedShiftManagement = (user: any) => {
     }
   }, [shiftData, currentShift, handleSaveShift]);
 
-  // Handle online/offline events
-  useEffect(() => {
-    const handleOnline = async () => {
+  // Memoized event handlers
+  const handleOnline = useCallback(async () => {
+    try {
       const processedCount = await shiftService.processOfflineQueue();
       if (processedCount > 0) {
-        toast({
-          title: "Synchronizace dokončena",
-          description: `Synchronizováno ${processedCount} směn`,
-        });
+        notificationService.showSyncComplete(processedCount);
       }
-    };
+    } catch (error) {
+      errorHandler.handleError(error, { operation: 'handleOnline' });
+    }
+  }, [shiftService]);
 
-    const handleShiftsUpdated = (event: any) => {
-      setShifts(prev => [...prev]);
-      
-      if (event.detail?.message) {
-        toast({
-          title: "Synchronizace",
-          description: event.detail.message,
-        });
-      }
-    };
+  const handleShiftsUpdated = useCallback((event: any) => {
+    setShifts(prev => [...prev]);
+    
+    if (event.detail?.message) {
+      notificationService.showRemoteUpdate(event.detail.message);
+    }
+  }, [setShifts]);
 
+  // Handle online/offline events
+  useEffect(() => {
     window.addEventListener('online', handleOnline);
     window.addEventListener('shifts-updated', handleShiftsUpdated);
     window.addEventListener('refresh-shifts', handleShiftsUpdated);
@@ -130,20 +108,24 @@ export const useUnifiedShiftManagement = (user: any) => {
       window.removeEventListener('shifts-updated', handleShiftsUpdated);
       window.removeEventListener('refresh-shifts', handleShiftsUpdated);
     };
-  }, [shiftService, setShifts]);
+  }, [handleOnline, handleShiftsUpdated]);
 
   // Initialize notifications
   useEffect(() => {
     const initNotifications = async () => {
-      const hasPermission = await notificationService.requestPermission();
-      if (hasPermission) {
-        notificationService.restoreScheduledReminders();
-        notificationService.scheduleDailySummary();
+      try {
+        const hasPermission = await notificationServiceInstance.requestPermission();
+        if (hasPermission) {
+          notificationServiceInstance.restoreScheduledReminders();
+          notificationServiceInstance.scheduleDailySummary();
+        }
+      } catch (error) {
+        errorHandler.handleError(error, { operation: 'initNotifications' });
       }
     };
 
     initNotifications();
-  }, [notificationService]);
+  }, [notificationServiceInstance]);
 
   // Cleanup on unmount
   useEffect(() => {

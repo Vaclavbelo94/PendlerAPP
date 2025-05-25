@@ -1,21 +1,22 @@
 
-import React from "react";
+import React, { useMemo, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { SwipeableCalendar } from "./calendar/SwipeableCalendar";
 import { format } from "date-fns";
 import { cs } from "date-fns/locale";
 import { CalendarDays, Clock, FileText, Trash2 } from "lucide-react";
-import { ShiftType } from "./types";
+import { Shift, ShiftType } from "./types";
 
 interface ShiftCalendarTabProps {
   selectedDate: Date | undefined;
   onSelectDate: (date: Date | undefined) => void;
-  shifts: any[];
-  currentShift?: any;
+  shifts: Shift[];
+  currentShift?: Shift | null;
   shiftType: ShiftType;
   setShiftType: (type: ShiftType) => void;
   shiftNotes: string;
@@ -26,7 +27,7 @@ interface ShiftCalendarTabProps {
   onOpenNoteDialog: () => void;
 }
 
-export const ShiftCalendarTab: React.FC<ShiftCalendarTabProps> = ({
+export const ShiftCalendarTab = React.memo<ShiftCalendarTabProps>(({
   selectedDate,
   onSelectDate,
   shifts,
@@ -40,30 +41,83 @@ export const ShiftCalendarTab: React.FC<ShiftCalendarTabProps> = ({
   onDeleteShift,
   onOpenNoteDialog
 }) => {
-  // Funkce pro získání směn pro daný den
-  const getShiftsForDate = (date: Date) => {
+  // Memoized function for getting shifts for a specific date
+  const getShiftsForDate = useCallback((date: Date) => {
     return shifts.filter(shift => {
       const shiftDate = new Date(shift.date);
       return shiftDate.toDateString() === date.toDateString();
     });
-  };
+  }, [shifts]);
 
-  const modifiers = {
+  // Memoized calendar modifiers
+  const modifiers = useMemo(() => ({
     hasShift: (date: Date) => getShiftsForDate(date).length > 0,
-  };
+  }), [getShiftsForDate]);
 
-  const modifiersStyles = {
+  const modifiersStyles = useMemo(() => ({
     hasShift: {
       backgroundColor: 'var(--primary)',
       color: 'white',
       borderRadius: '50%'
     }
-  };
+  }), []);
 
-  const handleMonthChange = (date: Date) => {
-    // Kalendář změnil měsíc pomocí swipe
+  const handleMonthChange = useCallback((date: Date) => {
     console.log('Měsíc změněn na:', format(date, 'MMMM yyyy', { locale: cs }));
-  };
+  }, []);
+
+  const handleShiftTypeChange = useCallback((value: ShiftType) => {
+    setShiftType(value);
+  }, [setShiftType]);
+
+  const handleNotesChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setShiftNotes(e.target.value);
+  }, [setShiftNotes]);
+
+  // Loading skeleton component
+  const CalendarSkeleton = () => (
+    <div className="space-y-4">
+      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-64 w-full" />
+      <Skeleton className="h-20 w-full" />
+    </div>
+  );
+
+  const DetailSkeleton = () => (
+    <div className="space-y-4">
+      <Skeleton className="h-8 w-32" />
+      <Skeleton className="h-10 w-full" />
+      <Skeleton className="h-24 w-full" />
+      <Skeleton className="h-10 w-full" />
+    </div>
+  );
+
+  // Show loading state if shifts are being loaded
+  if (!shifts && shifts !== null) {
+    return (
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <CalendarDays className="h-5 w-5" />
+              Kalendář směn
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CalendarSkeleton />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Detail směny</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <DetailSkeleton />
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -125,7 +179,7 @@ export const ShiftCalendarTab: React.FC<ShiftCalendarTabProps> = ({
             <>
               <div className="space-y-2">
                 <label className="text-sm font-medium">Typ směny</label>
-                <Select value={shiftType} onValueChange={setShiftType}>
+                <Select value={shiftType} onValueChange={handleShiftTypeChange}>
                   <SelectTrigger>
                     <SelectValue placeholder="Vyberte typ směny" />
                   </SelectTrigger>
@@ -142,7 +196,7 @@ export const ShiftCalendarTab: React.FC<ShiftCalendarTabProps> = ({
                 <Textarea 
                   placeholder="Volitelná poznámka k směně..."
                   value={shiftNotes}
-                  onChange={(e) => setShiftNotes(e.target.value)}
+                  onChange={handleNotesChange}
                   rows={3}
                 />
               </div>
@@ -172,4 +226,6 @@ export const ShiftCalendarTab: React.FC<ShiftCalendarTabProps> = ({
       </Card>
     </div>
   );
-};
+});
+
+ShiftCalendarTab.displayName = 'ShiftCalendarTab';
