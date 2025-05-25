@@ -114,8 +114,12 @@ export const useShiftManagement = (user: any) => {
         // Update existing shift
         const { data, error } = await supabase
           .from('shifts')
-          .update(shiftData)
+          .update({
+            type: shiftType,
+            notes: shiftNotes.trim()
+          })
           .eq('id', currentShift.id)
+          .eq('user_id', user.id)
           .select()
           .single();
           
@@ -127,44 +131,75 @@ export const useShiftManagement = (user: any) => {
           description: `Směna byla úspěšně upravena.`,
         });
       } else {
-        // Add new shift
-        const { data, error } = await supabase
+        // Check if shift already exists for this date
+        const { data: existingShift, error: checkError } = await supabase
           .from('shifts')
-          .insert(shiftData)
-          .select()
-          .single();
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('date', shiftData.date)
+          .maybeSingle();
           
-        if (error) throw error;
-        savedShift = data;
+        if (checkError) throw checkError;
         
-        toast({
-          title: "Směna přidána",
-          description: `Nová směna byla úspěšně přidána.`,
-        });
+        if (existingShift) {
+          // Update existing shift instead of creating new one
+          const { data, error } = await supabase
+            .from('shifts')
+            .update({
+              type: shiftType,
+              notes: shiftNotes.trim()
+            })
+            .eq('id', existingShift.id)
+            .eq('user_id', user.id)
+            .select()
+            .single();
+            
+          if (error) throw error;
+          savedShift = data;
+          
+          toast({
+            title: "Směna aktualizována",
+            description: `Směna byla úspěšně upravena.`,
+          });
+        } else {
+          // Add new shift
+          const { data, error } = await supabase
+            .from('shifts')
+            .insert(shiftData)
+            .select()
+            .single();
+            
+          if (error) throw error;
+          savedShift = data;
+          
+          toast({
+            title: "Směna přidána",
+            description: `Nová směna byla úspěšně přidána.`,
+          });
+        }
       }
       
-      // Update local state
-      const formattedShift = {
-        id: savedShift.id,
-        date: new Date(savedShift.date),
-        type: savedShift.type as ShiftType,
-        notes: savedShift.notes || "",
-        userId: savedShift.user_id
-      };
+      // Update local state - reload all shifts to ensure consistency
+      const { data: allShifts, error: reloadError } = await supabase
+        .from('shifts')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('date', { ascending: false });
+        
+      if (reloadError) throw reloadError;
       
-      if (currentShift) {
-        setShifts(prev => prev.map(shift => 
-          shift.id === currentShift.id ? formattedShift : shift
-        ));
-      } else {
-        setShifts(prev => [...prev, formattedShift]);
-      }
+      const formattedShifts = allShifts?.map(shift => ({
+        id: shift.id,
+        date: new Date(shift.date),
+        type: shift.type as ShiftType,
+        notes: shift.notes || "",
+        userId: shift.user_id
+      })) || [];
+      
+      setShifts(formattedShifts);
       
       // Update localStorage backup
-      const updatedShifts = currentShift 
-        ? shifts.map(shift => shift.id === currentShift.id ? formattedShift : shift)
-        : [...shifts, formattedShift];
-      localStorage.setItem("shifts", JSON.stringify(updatedShifts));
+      localStorage.setItem("shifts", JSON.stringify(formattedShifts));
       
     } catch (error) {
       console.error("Error saving shift:", error);
@@ -196,6 +231,10 @@ export const useShiftManagement = (user: any) => {
       // Update localStorage backup
       localStorage.setItem("shifts", JSON.stringify(updatedShifts));
       
+      // Reset form
+      setShiftType("morning");
+      setShiftNotes("");
+      
       toast({
         title: "Směna odstraněna",
         description: `Směna byla úspěšně odstraněna.`,
@@ -212,13 +251,14 @@ export const useShiftManagement = (user: any) => {
   };
   
   // Handle saving notes from dialog
-  const handleSaveNotes = (notes: string) => {
+  const handleSaveNotes = async (notes: string) => {
     setShiftNotes(notes);
+    setNoteDialogOpen(false);
+    
     // If there is a current shift, update it immediately
     if (currentShift) {
-      handleSaveShift();
+      await handleSaveShift();
     }
-    setNoteDialogOpen(false);
   };
 
   return {
