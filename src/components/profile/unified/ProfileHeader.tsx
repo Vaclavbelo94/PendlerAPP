@@ -46,7 +46,7 @@ const ProfileHeader = () => {
         <div className={`rounded-full bg-primary/10 flex items-center justify-center ${
           isLandscapeMobile ? "h-12 w-12" : "h-16 w-16"
         }`}>
-          <UserIcon className={isLandscapeMobile ? "h-6 w-6" : "h-8 w-8"} + " text-primary"} />
+          <UserIcon className={`${isLandscapeMobile ? "h-6 w-6" : "h-8 w-8"} text-primary`} />
         </div>
         
         <div className="flex-1">
