@@ -11,6 +11,7 @@ import { performanceMonitor } from '@/utils/performanceMonitor';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { usePerformanceOptimization } from '@/hooks/usePerformanceOptimization';
 import { AuthProvider } from '@/hooks/auth';
+import { ThemeProvider } from '@/hooks/useTheme';
 
 // Lazy loaded components for better performance
 import { 
@@ -125,11 +126,13 @@ function App() {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <Router>
-            <AppContent />
-          </Router>
-        </AuthProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <Router>
+              <AppContent />
+            </Router>
+          </AuthProvider>
+        </ThemeProvider>
       </QueryClientProvider>
     </ErrorBoundary>
   );
