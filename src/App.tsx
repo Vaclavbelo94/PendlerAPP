@@ -25,6 +25,20 @@ import Register from './pages/Register';
 import { ShiftNotifications } from "@/components/notifications/ShiftNotifications";
 import Translator from './pages/Translator';
 
+// Import law detail pages
+import MinimumWage from './pages/laws/MinimumWage';
+import TaxClasses from './pages/laws/TaxClasses';
+import HealthInsurance from './pages/laws/HealthInsurance';
+import WorkContract from './pages/laws/WorkContract';
+import TaxReturn from './pages/laws/TaxReturn';
+import PensionInsurance from './pages/laws/PensionInsurance';
+import EmployeeProtection from './pages/laws/EmployeeProtection';
+import ChildBenefits from './pages/laws/ChildBenefits';
+import WorkingHours from './pages/laws/WorkingHours';
+import MinimumHolidays from './pages/laws/MinimumHolidays';
+import ParentalAllowance from './pages/laws/ParentalAllowance';
+import LegalAid from './pages/laws/LegalAid';
+
 const queryClient = new QueryClient();
 
 function App() {
@@ -49,6 +63,21 @@ function App() {
                 <Route path="/vocabulary" element={<Vocabulary />} />
                 <Route path="/translator" element={<Translator />} />
                 <Route path="/laws" element={<Laws />} />
+                
+                {/* Law detail pages */}
+                <Route path="/laws/minimum-wage" element={<MinimumWage />} />
+                <Route path="/laws/tax-classes" element={<TaxClasses />} />
+                <Route path="/laws/health-insurance" element={<HealthInsurance />} />
+                <Route path="/laws/work-contract" element={<WorkContract />} />
+                <Route path="/laws/tax-return" element={<TaxReturn />} />
+                <Route path="/laws/pension-insurance" element={<PensionInsurance />} />
+                <Route path="/laws/employee-protection" element={<EmployeeProtection />} />
+                <Route path="/laws/child-benefits" element={<ChildBenefits />} />
+                <Route path="/laws/working-hours" element={<WorkingHours />} />
+                <Route path="/laws/minimum-holidays" element={<MinimumHolidays />} />
+                <Route path="/laws/parental-allowance" element={<ParentalAllowance />} />
+                <Route path="/laws/legal-aid" element={<LegalAid />} />
+                
                 <Route path="/admin" element={<Admin />} />
                 <Route path="/admin-panel" element={<AdminPanel />} />
                 <Route path="/premium" element={<Premium />} />
