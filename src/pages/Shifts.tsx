@@ -1,7 +1,9 @@
+
 import React, { useState } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import PremiumCheck from '@/components/premium/PremiumCheck';
 import {
@@ -12,7 +14,6 @@ import {
 } from "lucide-react";
 
 // Import responsive components
-import { ResponsiveTabs, ResponsiveTabsList, ResponsiveTabsTrigger, ResponsiveTabsContent } from "@/components/ui/responsive-tabs";
 import ResponsivePage from "@/components/layouts/ResponsivePage";
 
 // Import refactored components
@@ -23,7 +24,7 @@ import { useRefactoredShiftManagement } from "@/components/shifts/hooks/useRefac
 import { EditNoteDialog } from "@/components/shifts/EditNoteDialog";
 
 const Shifts = () => {
-  const [activeTab, setActiveTab] = useState("calendar");
+  const [activeSection, setActiveSection] = useState("calendar");
   const isMobile = useIsMobile();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -102,32 +103,57 @@ const Shifts = () => {
             </div>
           </div>
 
-          <ResponsiveTabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <ResponsiveTabsList>
-              <ResponsiveTabsTrigger 
-                value="calendar" 
-                icon={<CalendarIcon className="h-5 w-5" />}
-                description="Přehled směn"
-              >
-                Kalendář
-              </ResponsiveTabsTrigger>
-              <ResponsiveTabsTrigger 
-                value="analytics" 
-                icon={<BarChartIcon className="h-5 w-5" />}
-                description="Statistiky"
-              >
-                Analýzy
-              </ResponsiveTabsTrigger>
-              <ResponsiveTabsTrigger 
-                value="reports" 
-                icon={<FileTextIcon className="h-5 w-5" />}
-                description="Měsíční přehledy"
-              >
-                Reporty
-              </ResponsiveTabsTrigger>
-            </ResponsiveTabsList>
+          {/* Grid menu similar to Calculator */}
+          <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-3'} gap-4 mb-8`}>
+            <Card 
+              className={`p-6 cursor-pointer transition-all hover:shadow-lg ${
+                activeSection === "calendar" ? "ring-2 ring-primary bg-primary/5" : ""
+              }`}
+              onClick={() => setActiveSection("calendar")}
+            >
+              <div className="flex flex-col items-center gap-3 text-center">
+                <CalendarIcon className="h-8 w-8 text-primary" />
+                <div>
+                  <h3 className="text-lg font-semibold">Kalendář</h3>
+                  <p className="text-sm text-muted-foreground">Přehled směn</p>
+                </div>
+              </div>
+            </Card>
 
-            <ResponsiveTabsContent value="calendar" className="space-y-6">
+            <Card 
+              className={`p-6 cursor-pointer transition-all hover:shadow-lg ${
+                activeSection === "analytics" ? "ring-2 ring-primary bg-primary/5" : ""
+              }`}
+              onClick={() => setActiveSection("analytics")}
+            >
+              <div className="flex flex-col items-center gap-3 text-center">
+                <BarChartIcon className="h-8 w-8 text-primary" />
+                <div>
+                  <h3 className="text-lg font-semibold">Analýzy</h3>
+                  <p className="text-sm text-muted-foreground">Statistiky</p>
+                </div>
+              </div>
+            </Card>
+
+            <Card 
+              className={`p-6 cursor-pointer transition-all hover:shadow-lg ${
+                activeSection === "reports" ? "ring-2 ring-primary bg-primary/5" : ""
+              }`}
+              onClick={() => setActiveSection("reports")}
+            >
+              <div className="flex flex-col items-center gap-3 text-center">
+                <FileTextIcon className="h-8 w-8 text-primary" />
+                <div>
+                  <h3 className="text-lg font-semibold">Reporty</h3>
+                  <p className="text-sm text-muted-foreground">Měsíční přehledy</p>
+                </div>
+              </div>
+            </Card>
+          </div>
+
+          {/* Content sections */}
+          <div className="space-y-6">
+            {activeSection === "calendar" && (
               <ShiftCalendarTab 
                 selectedDate={selectedDate}
                 onSelectDate={setSelectedDate}
@@ -142,20 +168,20 @@ const Shifts = () => {
                 onDeleteShift={handleDeleteShift}
                 onOpenNoteDialog={handleOpenNoteDialog}
               />
-            </ResponsiveTabsContent>
+            )}
 
-            <ResponsiveTabsContent value="analytics" className="space-y-6">
+            {activeSection === "analytics" && (
               <ShiftAnalytics 
                 shifts={shifts}
                 period={analyticsPeriod}
                 onPeriodChange={setAnalyticsPeriod}
               />
-            </ResponsiveTabsContent>
+            )}
 
-            <ResponsiveTabsContent value="reports" className="space-y-6">
+            {activeSection === "reports" && (
               <ReportsTab shifts={shifts} user={user} />
-            </ResponsiveTabsContent>
-          </ResponsiveTabs>
+            )}
+          </div>
 
           <EditNoteDialog
             open={noteDialogOpen}
