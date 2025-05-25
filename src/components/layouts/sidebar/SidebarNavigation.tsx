@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -12,7 +11,8 @@ import {
   Car,
   FileText,
   MapPin,
-  Languages
+  Languages,
+  Scale
 } from "lucide-react";
 
 interface SidebarNavigationProps {
@@ -66,6 +66,11 @@ const SidebarNavigation = ({ closeSidebar }: SidebarNavigationProps) => {
       title: "Plánovač jízd",
       href: "/travel-planning",
       icon: MapPin,
+    },
+    {
+      title: "Zákony",
+      href: "/laws",
+      icon: Scale,
     },
   ];
 

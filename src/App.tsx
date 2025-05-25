@@ -13,6 +13,7 @@ import Settings from './pages/Settings';
 import Vehicle from './pages/Vehicle';
 import Shifts from './pages/Shifts';
 import Vocabulary from './pages/Vocabulary';
+import Laws from './pages/Laws';
 import AdminPanel from './pages/AdminPanel';
 import Admin from './pages/Admin';
 import Pricing from './pages/Pricing';
@@ -45,6 +46,7 @@ function App() {
                 <Route path="/shifts" element={<Shifts />} />
                 <Route path="/vocabulary" element={<Vocabulary />} />
                 <Route path="/translator" element={<Translator />} />
+                <Route path="/laws" element={<Laws />} />
                 <Route path="/admin" element={<Admin />} />
                 <Route path="/admin-panel" element={<AdminPanel />} />
                 <Route path="/pricing" element={<Pricing />} />
