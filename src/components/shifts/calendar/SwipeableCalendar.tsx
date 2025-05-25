@@ -2,9 +2,10 @@
 import React, { useRef, useState } from 'react';
 import { TouchCalendar } from '@/components/ui/touch-calendar';
 import { addMonths, subMonths } from 'date-fns';
-import { Calendar, CalendarProps } from '@/components/ui/calendar';
+import { CalendarProps } from '@/components/ui/calendar';
 
-interface SwipeableCalendarProps extends CalendarProps {
+interface SwipeableCalendarProps extends Omit<CalendarProps, 'month'> {
+  month?: Date;
   onMonthChange?: (date: Date) => void;
 }
 
