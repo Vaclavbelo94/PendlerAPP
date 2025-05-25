@@ -1,33 +1,23 @@
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Bookmark, Trash2, MapPin, Clock, Car, Train, Bus, Bike } from "lucide-react";
-import { toast } from "sonner";
-import { useAuth } from "@/hooks/useAuth";
-import { routeService, SavedRoute } from "@/services/routeService";
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Bookmark, Trash2, Clock } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { routeService, SavedRoute } from '@/services/routeService';
+import { toast } from '@/hooks/use-toast';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface SavedRoutesProps {
-  onLoadRoute?: (route: SavedRoute) => void;
+  onRouteSelect?: (route: SavedRoute) => void;
 }
 
-const SavedRoutes = ({ onLoadRoute }: SavedRoutesProps) => {
-  const { user } = useAuth();
+const SavedRoutes: React.FC<SavedRoutesProps> = ({ onRouteSelect }) => {
   const [savedRoutes, setSavedRoutes] = useState<SavedRoute[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
-  const [routeName, setRouteName] = useState('');
-
-  const transportIcons = {
-    car: Car,
-    public: Train,
-    bus: Bus,
-    bike: Bike,
-  };
+  const [isLoading, setIsLoading] = useState(false);
+  const { user } = useAuth();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (user?.id) {
@@ -38,179 +28,126 @@ const SavedRoutes = ({ onLoadRoute }: SavedRoutesProps) => {
   const loadSavedRoutes = async () => {
     if (!user?.id) return;
     
+    setIsLoading(true);
     try {
-      setLoading(true);
       const routes = await routeService.getSavedRoutes(user.id);
       setSavedRoutes(routes);
     } catch (error) {
       console.error('Error loading saved routes:', error);
-      toast.error('Nepodařilo se načíst uložené trasy');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSaveRoute = async (routeData: Omit<SavedRoute, 'id' | 'user_id'>) => {
-    if (!user?.id || !routeName.trim()) return;
-
-    try {
-      await routeService.saveRoute({
-        ...routeData,
-        name: routeName.trim(),
-        user_id: user.id
+      toast({
+        title: "Chyba",
+        description: "Nepodařilo se načíst uložené trasy.",
+        variant: "destructive"
       });
-      
-      toast.success('Trasa byla uložena');
-      setRouteName('');
-      setSaveDialogOpen(false);
-      loadSavedRoutes();
-    } catch (error) {
-      console.error('Error saving route:', error);
-      toast.error('Nepodařilo se uložit trasu');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleDeleteRoute = async (routeId: string) => {
     try {
       await routeService.deleteSavedRoute(routeId);
-      toast.success('Trasa byla smazána');
-      loadSavedRoutes();
+      setSavedRoutes(prev => prev.filter(route => route.id !== routeId));
+      toast({
+        title: "Úspěch",
+        description: "Trasa byla smazána."
+      });
     } catch (error) {
       console.error('Error deleting route:', error);
-      toast.error('Nepodařilo se smazat trasu');
+      toast({
+        title: "Chyba",
+        description: "Nepodařilo se smazat trasu.",
+        variant: "destructive"
+      });
     }
-  };
-
-  const handleLoadRoute = (route: SavedRoute) => {
-    onLoadRoute?.(route);
-    toast.success(`Trasa "${route.name}" byla načtena`);
   };
 
   if (!user) {
     return (
       <Card>
-        <CardContent className="p-6 text-center">
-          <p className="text-muted-foreground">Pro ukládání tras se přihlaste</p>
+        <CardContent className="pt-6">
+          <p className="text-sm text-muted-foreground text-center">
+            Pro ukládání tras se prosím přihlaste.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardContent className="pt-6">
+          <p className="text-sm text-muted-foreground text-center">
+            Načítám uložené trasy...
+          </p>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold">Uložené trasy</h3>
-        <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
-          <DialogTrigger asChild>
-            <Button size="sm">
-              <Bookmark className="h-4 w-4 mr-2" />
-              Uložit aktuální trasu
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Uložit trasu</DialogTitle>
-              <DialogDescription>
-                Zadejte název pro uložení aktuální trasy
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="route-name">Název trasy</Label>
-                <Input
-                  id="route-name"
-                  value={routeName}
-                  onChange={(e) => setRouteName(e.target.value)}
-                  placeholder="Např. Domů z práce"
-                />
-              </div>
-              <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setSaveDialogOpen(false)}>
-                  Zrušit
-                </Button>
-                <Button 
-                  onClick={() => handleSaveRoute({
-                    name: routeName,
-                    origin_address: '',
-                    destination_address: '',
-                    transport_modes: [],
-                    optimization_preference: 'time'
-                  })}
-                  disabled={!routeName.trim()}
-                >
-                  Uložit
-                </Button>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
-      </div>
-
-      {loading ? (
-        <Card>
-          <CardContent className="p-6 text-center">
-            <p>Načítám uložené trasy...</p>
-          </CardContent>
-        </Card>
-      ) : savedRoutes.length === 0 ? (
-        <Card>
-          <CardContent className="p-6 text-center">
-            <p className="text-muted-foreground">Nemáte žádné uložené trasy</p>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="space-y-3">
-          {savedRoutes.map((route) => (
-            <Card key={route.id} className="hover:shadow-md transition-shadow">
-              <CardContent className="p-4">
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <h4 className="font-medium mb-2">{route.name}</h4>
-                    <div className="space-y-1 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-2">
-                        <MapPin className="h-3 w-3" />
-                        <span className="truncate">{route.origin_address}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <MapPin className="h-3 w-3" />
-                        <span className="truncate">{route.destination_address}</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 mt-2">
-                      {route.transport_modes.map((mode) => {
-                        const Icon = transportIcons[mode as keyof typeof transportIcons];
-                        return Icon ? (
-                          <Badge key={mode} variant="outline" className="text-xs">
-                            <Icon className="h-3 w-3 mr-1" />
-                            {mode}
-                          </Badge>
-                        ) : null;
-                      })}
-                    </div>
-                  </div>
-                  <div className="flex gap-1 ml-4">
-                    <Button 
-                      size="sm" 
-                      variant="outline"
-                      onClick={() => handleLoadRoute(route)}
-                    >
-                      Načíst
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      variant="outline"
-                      onClick={() => handleDeleteRoute(route.id!)}
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
+    <Card>
+      <CardHeader>
+        <CardTitle className={`flex items-center gap-2 ${isMobile ? 'text-lg' : ''}`}>
+          <Bookmark className="h-5 w-5" />
+          Uložené trasy
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        {savedRoutes.length === 0 ? (
+          <p className="text-sm text-muted-foreground text-center">
+            Zatím nemáte žádné uložené trasy.
+          </p>
+        ) : (
+          <div className="space-y-3">
+            {savedRoutes.map((route) => (
+              <div
+                key={route.id}
+                className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors"
+              >
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-medium text-sm truncate">
+                    {route.name}
+                  </h4>
+                  <p className="text-xs text-muted-foreground truncate">
+                    {route.origin_address} → {route.destination_address}
+                  </p>
+                  <div className="flex items-center gap-2 mt-1">
+                    {route.transport_modes.map((mode) => (
+                      <Badge key={mode} variant="secondary" className="text-xs">
+                        {mode}
+                      </Badge>
+                    ))}
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
-    </div>
+                
+                <div className="flex items-center gap-1 ml-2">
+                  {onRouteSelect && (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => onRouteSelect(route)}
+                      className="h-8 w-8 p-0"
+                    >
+                      <Clock className="h-4 w-4" />
+                    </Button>
+                  )}
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => route.id && handleDeleteRoute(route.id)}
+                    className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 };
 

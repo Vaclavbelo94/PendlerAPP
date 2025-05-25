@@ -1,7 +1,10 @@
 
 import React from 'react';
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { MapPin, Clock } from 'lucide-react';
+import { MobileOptimizedCard } from '@/components/ui/mobile-optimized-card';
 
 interface RouteFormProps {
   origin: string;
@@ -10,48 +13,71 @@ interface RouteFormProps {
   onOriginChange: (value: string) => void;
   onDestinationChange: (value: string) => void;
   onDepartureTimeChange: (value: string) => void;
+  onOptimize: () => void;
 }
 
-const RouteForm = ({ 
-  origin, 
-  destination, 
+const RouteForm: React.FC<RouteFormProps> = ({
+  origin,
+  destination,
   departureTime,
   onOriginChange,
   onDestinationChange,
-  onDepartureTimeChange
-}: RouteFormProps) => {
+  onDepartureTimeChange,
+  onOptimize
+}) => {
   return (
-    <>
-      <div className="space-y-2">
-        <Label htmlFor="origin">Místo odjezdu</Label>
-        <Input 
-          id="origin" 
-          placeholder="Zadejte adresu nebo místo odjezdu" 
-          value={origin} 
-          onChange={(e) => onOriginChange(e.target.value)}
-        />
+    <MobileOptimizedCard title="Trasa" compact>
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="origin" className="flex items-center gap-2">
+              <MapPin className="h-4 w-4" />
+              Výchozí bod
+            </Label>
+            <Input
+              id="origin"
+              placeholder="Zadejte výchozí adresu"
+              value={origin}
+              onChange={(e) => onOriginChange(e.target.value)}
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="destination" className="flex items-center gap-2">
+              <MapPin className="h-4 w-4" />
+              Cíl
+            </Label>
+            <Input
+              id="destination"
+              placeholder="Zadejte cílovou adresu"
+              value={destination}
+              onChange={(e) => onDestinationChange(e.target.value)}
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="departure" className="flex items-center gap-2">
+              <Clock className="h-4 w-4" />
+              Čas odjezdu
+            </Label>
+            <Input
+              id="departure"
+              type="time"
+              value={departureTime}
+              onChange={(e) => onDepartureTimeChange(e.target.value)}
+            />
+          </div>
+        </div>
+        
+        <Button 
+          onClick={onOptimize}
+          className="w-full"
+          disabled={!origin || !destination}
+        >
+          Optimalizovat trasu
+        </Button>
       </div>
-      
-      <div className="space-y-2">
-        <Label htmlFor="destination">Cíl cesty</Label>
-        <Input 
-          id="destination" 
-          placeholder="Zadejte adresu nebo cíl cesty" 
-          value={destination} 
-          onChange={(e) => onDestinationChange(e.target.value)}
-        />
-      </div>
-      
-      <div className="space-y-2">
-        <Label htmlFor="departure-time">Čas odjezdu</Label>
-        <Input 
-          id="departure-time" 
-          type="time" 
-          value={departureTime}
-          onChange={(e) => onDepartureTimeChange(e.target.value)}
-        />
-      </div>
-    </>
+    </MobileOptimizedCard>
   );
 };
 
