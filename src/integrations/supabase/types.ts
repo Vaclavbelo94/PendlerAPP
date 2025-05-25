@@ -300,6 +300,203 @@ export type Database = {
         }
         Relationships: []
       }
+      rideshare_contacts: {
+        Row: {
+          created_at: string | null
+          id: string
+          message: string | null
+          offer_id: string | null
+          requester_user_id: string
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          message?: string | null
+          offer_id?: string | null
+          requester_user_id: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          message?: string | null
+          offer_id?: string | null
+          requester_user_id?: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rideshare_contacts_offer_id_fkey"
+            columns: ["offer_id"]
+            isOneToOne: false
+            referencedRelation: "rideshare_offers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rideshare_offers: {
+        Row: {
+          created_at: string | null
+          departure_date: string
+          departure_time: string
+          destination_address: string
+          id: string
+          is_active: boolean | null
+          is_recurring: boolean | null
+          notes: string | null
+          origin_address: string
+          price_per_person: number | null
+          recurring_days: number[] | null
+          seats_available: number
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          departure_date: string
+          departure_time: string
+          destination_address: string
+          id?: string
+          is_active?: boolean | null
+          is_recurring?: boolean | null
+          notes?: string | null
+          origin_address: string
+          price_per_person?: number | null
+          recurring_days?: number[] | null
+          seats_available: number
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          departure_date?: string
+          departure_time?: string
+          destination_address?: string
+          id?: string
+          is_active?: boolean | null
+          is_recurring?: boolean | null
+          notes?: string | null
+          origin_address?: string
+          price_per_person?: number | null
+          recurring_days?: number[] | null
+          seats_available?: number
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      rideshare_requests: {
+        Row: {
+          created_at: string | null
+          departure_date: string
+          departure_time_from: string
+          departure_time_to: string
+          destination_address: string
+          id: string
+          is_active: boolean | null
+          max_price_per_person: number | null
+          notes: string | null
+          origin_address: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          departure_date: string
+          departure_time_from: string
+          departure_time_to: string
+          destination_address: string
+          id?: string
+          is_active?: boolean | null
+          max_price_per_person?: number | null
+          notes?: string | null
+          origin_address: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          departure_date?: string
+          departure_time_from?: string
+          departure_time_to?: string
+          destination_address?: string
+          id?: string
+          is_active?: boolean | null
+          max_price_per_person?: number | null
+          notes?: string | null
+          origin_address?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      route_search_history: {
+        Row: {
+          destination_address: string
+          id: string
+          origin_address: string
+          search_date: string | null
+          user_id: string
+        }
+        Insert: {
+          destination_address: string
+          id?: string
+          origin_address: string
+          search_date?: string | null
+          user_id: string
+        }
+        Update: {
+          destination_address?: string
+          id?: string
+          origin_address?: string
+          search_date?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      saved_routes: {
+        Row: {
+          created_at: string | null
+          destination_address: string
+          id: string
+          name: string
+          optimization_preference: string
+          origin_address: string
+          route_data: Json | null
+          transport_modes: string[]
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          destination_address: string
+          id?: string
+          name: string
+          optimization_preference: string
+          origin_address: string
+          route_data?: Json | null
+          transport_modes: string[]
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          destination_address?: string
+          id?: string
+          name?: string
+          optimization_preference?: string
+          origin_address?: string
+          route_data?: Json | null
+          transport_modes?: string[]
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       service_records: {
         Row: {
           cost: string

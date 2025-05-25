@@ -26,7 +26,7 @@ export const routeService = {
   // Uložené trasy
   async saveRoute(route: SavedRoute) {
     const { data, error } = await supabase
-      .from('saved_routes')
+      .from('saved_routes' as any)
       .insert([route])
       .select()
       .single();
@@ -37,7 +37,7 @@ export const routeService = {
 
   async getSavedRoutes(userId: string) {
     const { data, error } = await supabase
-      .from('saved_routes')
+      .from('saved_routes' as any)
       .select('*')
       .eq('user_id', userId)
       .order('updated_at', { ascending: false });
@@ -48,7 +48,7 @@ export const routeService = {
 
   async deleteSavedRoute(id: string) {
     const { error } = await supabase
-      .from('saved_routes')
+      .from('saved_routes' as any)
       .delete()
       .eq('id', id);
     
@@ -58,7 +58,7 @@ export const routeService = {
   // Historie vyhledávání
   async addSearchHistory(search: RouteSearchHistory) {
     const { data, error } = await supabase
-      .from('route_search_history')
+      .from('route_search_history' as any)
       .insert([search])
       .select()
       .single();
@@ -69,7 +69,7 @@ export const routeService = {
 
   async getSearchHistory(userId: string, limit: number = 10) {
     const { data, error } = await supabase
-      .from('route_search_history')
+      .from('route_search_history' as any)
       .select('*')
       .eq('user_id', userId)
       .order('search_date', { ascending: false })
@@ -81,7 +81,7 @@ export const routeService = {
 
   async clearSearchHistory(userId: string) {
     const { error } = await supabase
-      .from('route_search_history')
+      .from('route_search_history' as any)
       .delete()
       .eq('user_id', userId);
     

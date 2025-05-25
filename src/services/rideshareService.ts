@@ -47,7 +47,7 @@ export const rideshareService = {
   // Nabídky spolujízd
   async createOffer(offer: RideshareOffer) {
     const { data, error } = await supabase
-      .from('rideshare_offers')
+      .from('rideshare_offers' as any)
       .insert([offer])
       .select()
       .single();
@@ -63,7 +63,7 @@ export const rideshareService = {
     limit?: number;
   }) {
     let query = supabase
-      .from('rideshare_offers')
+      .from('rideshare_offers' as any)
       .select('*')
       .eq('is_active', true)
       .order('departure_date', { ascending: true });
@@ -88,7 +88,7 @@ export const rideshareService = {
 
   async getUserOffers(userId: string) {
     const { data, error } = await supabase
-      .from('rideshare_offers')
+      .from('rideshare_offers' as any)
       .select('*')
       .eq('user_id', userId)
       .order('departure_date', { ascending: true });
@@ -99,7 +99,7 @@ export const rideshareService = {
 
   async updateOffer(id: string, updates: Partial<RideshareOffer>) {
     const { data, error } = await supabase
-      .from('rideshare_offers')
+      .from('rideshare_offers' as any)
       .update({ ...updates, updated_at: new Date().toISOString() })
       .eq('id', id)
       .select()
@@ -111,7 +111,7 @@ export const rideshareService = {
 
   async deleteOffer(id: string) {
     const { error } = await supabase
-      .from('rideshare_offers')
+      .from('rideshare_offers' as any)
       .delete()
       .eq('id', id);
     
@@ -121,7 +121,7 @@ export const rideshareService = {
   // Požadavky na spolujízdy
   async createRequest(request: RideshareRequest) {
     const { data, error } = await supabase
-      .from('rideshare_requests')
+      .from('rideshare_requests' as any)
       .insert([request])
       .select()
       .single();
@@ -137,7 +137,7 @@ export const rideshareService = {
     limit?: number;
   }) {
     let query = supabase
-      .from('rideshare_requests')
+      .from('rideshare_requests' as any)
       .select('*')
       .eq('is_active', true)
       .order('departure_date', { ascending: true });
@@ -163,7 +163,7 @@ export const rideshareService = {
   // Kontakty
   async createContact(contact: RideshareContact) {
     const { data, error } = await supabase
-      .from('rideshare_contacts')
+      .from('rideshare_contacts' as any)
       .insert([contact])
       .select()
       .single();
@@ -174,7 +174,7 @@ export const rideshareService = {
 
   async getContactsForOffer(offerId: string) {
     const { data, error } = await supabase
-      .from('rideshare_contacts')
+      .from('rideshare_contacts' as any)
       .select('*')
       .eq('offer_id', offerId)
       .order('created_at', { ascending: false });
@@ -185,7 +185,7 @@ export const rideshareService = {
 
   async updateContactStatus(contactId: string, status: RideshareContact['status']) {
     const { data, error } = await supabase
-      .from('rideshare_contacts')
+      .from('rideshare_contacts' as any)
       .update({ status, updated_at: new Date().toISOString() })
       .eq('id', contactId)
       .select()
