@@ -25,7 +25,7 @@ const Sidebar = ({ closeSidebar, isLandscapeSheet = false }: SidebarProps) => {
   const contentPadding = isLandscapeSheet ? 'p-3' : isLandscapeMobile ? 'p-2' : isMobile ? 'p-3' : 'p-4';
   const scrollPadding = isLandscapeSheet ? 'px-2 py-1' : isLandscapeMobile ? 'px-1 py-2' : isMobile ? 'px-2 py-3' : 'px-3 py-4';
   
-  // Layout pro landscape sheet - horizontální orientace
+  // Layout pro landscape sheet - horizontální orientace s lepším využitím prostoru
   if (isLandscapeSheet) {
     return (
       <div className={`h-full ${sidebarWidth} bg-sidebar text-sidebar-foreground flex flex-col`}>
@@ -45,29 +45,32 @@ const Sidebar = ({ closeSidebar, isLandscapeSheet = false }: SidebarProps) => {
         </div>
         
         <div className="flex-1 overflow-hidden">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 h-full">
-            {/* Navigace */}
-            <div className="space-y-2">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 p-3 h-full">
+            {/* Navigace - hlavní oblast */}
+            <div className="space-y-2 lg:col-span-1">
               <p className="text-xs font-medium text-sidebar-foreground/60 pb-1">
                 Navigace
               </p>
               <SidebarNavigation closeSidebar={closeSidebar} isHorizontal={true} />
             </div>
             
-            {/* Nastavení */}
-            <div className="space-y-2">
-              <p className="text-xs font-medium text-sidebar-foreground/60 pb-1">
-                Nastavení
-              </p>
-              <SidebarThemeSwitcher />
-            </div>
-            
-            {/* Uživatel */}
-            <div className="space-y-2">
-              <p className="text-xs font-medium text-sidebar-foreground/60 pb-1">
-                Účet
-              </p>
-              <SidebarUserSection closeSidebar={closeSidebar} isCompact={true} />
+            {/* Nastavení a uživatel ve druhém sloupci */}
+            <div className="space-y-3 lg:col-span-1">
+              {/* Nastavení */}
+              <div className="space-y-2">
+                <p className="text-xs font-medium text-sidebar-foreground/60 pb-1">
+                  Nastavení
+                </p>
+                <SidebarThemeSwitcher />
+              </div>
+              
+              {/* Uživatel */}
+              <div className="space-y-2">
+                <p className="text-xs font-medium text-sidebar-foreground/60 pb-1">
+                  Účet
+                </p>
+                <SidebarUserSection closeSidebar={closeSidebar} isCompact={true} />
+              </div>
             </div>
           </div>
         </div>

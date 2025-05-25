@@ -50,10 +50,10 @@ const SidebarNavigation = ({ closeSidebar, isHorizontal = false }: SidebarNaviga
     return location.pathname === path || location.pathname.startsWith(path + "/");
   };
 
-  // Horizontální layout pro landscape sheet
+  // Horizontální layout pro landscape sheet - 3 sloupce a více řádků
   if (isHorizontal) {
     return (
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-3 gap-1 max-h-[200px] overflow-y-auto">
         {navigationItems.map((item) => {
           const Icon = item.icon;
           return (
@@ -62,14 +62,14 @@ const SidebarNavigation = ({ closeSidebar, isHorizontal = false }: SidebarNaviga
               variant={isActive(item.path) ? "secondary" : "ghost"}
               size="sm"
               onClick={() => handleNavigation(item.path)}
-              className={`justify-start h-8 text-xs ${
+              className={`flex flex-col items-center justify-center h-16 text-[10px] leading-tight p-1 ${
                 isActive(item.path) 
                   ? "bg-sidebar-accent text-sidebar-accent-foreground" 
                   : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
               }`}
             >
-              <Icon className="h-3 w-3 mr-2 flex-shrink-0" />
-              <span className="truncate">{item.name}</span>
+              <Icon className="h-4 w-4 mb-1 flex-shrink-0" />
+              <span className="text-center break-words max-w-full leading-3">{item.name}</span>
             </Button>
           );
         })}
