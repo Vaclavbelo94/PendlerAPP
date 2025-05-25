@@ -1,192 +1,105 @@
 
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useNavigate, useLocation } from "react-router-dom";
 import { 
-  Home,
-  Calculator,
-  Car,
-  Calendar,
-  BookOpen,
-  Languages,
-  FileText,
+  Home, 
+  Calculator, 
+  DollarSign, 
+  Car, 
+  CalendarDays, 
+  BookOpen, 
+  Scale, 
+  Settings, 
   MapPin,
-  Crown,
-  Settings,
-  Users,
-  Shield
+  Languages
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { Badge } from "@/components/ui/badge";
 
 interface SidebarNavigationProps {
   closeSidebar: () => void;
+  isHorizontal?: boolean;
 }
 
-interface NavigationItem {
-  name: string;
-  href: string;
-  icon: React.ComponentType<any>;
-  requiresAuth: boolean;
-  isPremium?: boolean;
-  className?: string;
-}
-
-const SidebarNavigation = ({ closeSidebar }: SidebarNavigationProps) => {
+const SidebarNavigation = ({ closeSidebar, isHorizontal = false }: SidebarNavigationProps) => {
+  const navigate = useNavigate();
   const location = useLocation();
-  const { user, isPremium, isAdmin } = useAuth();
+  const { user } = useAuth();
 
-  const mainItems: NavigationItem[] = [
-    {
-      name: "Domů",
-      href: user ? "/dashboard" : "/",
-      icon: Home,
-      requiresAuth: false
-    },
-    {
-      name: "Kalkulačky",
-      href: "/calculator",
-      icon: Calculator,
-      requiresAuth: true,
-      isPremium: true
-    },
-    {
-      name: "Daňový poradce",
-      href: "/tax-advisor",
-      icon: FileText,
-      requiresAuth: true,
-      isPremium: true
-    },
-    {
-      name: "Správa vozidel",
-      href: "/vehicle",
-      icon: Car,
-      requiresAuth: true
-    },
-    {
-      name: "Správa směn",
-      href: "/shifts",
-      icon: Calendar,
-      requiresAuth: true
-    },
-    {
-      name: "Výuka němčiny",
-      href: "/vocabulary",
-      icon: BookOpen,
-      requiresAuth: true,
-      isPremium: true
-    },
-    {
-      name: "Překladač",
-      href: "/translator",
-      icon: Languages,
-      requiresAuth: true,
-      isPremium: true
-    },
-    {
-      name: "Právní informace",
-      href: "/laws",
-      icon: Shield,
-      requiresAuth: false
-    },
-    {
-      name: "Plánování cest",
-      href: "/travel-planning",
-      icon: MapPin,
-      requiresAuth: true,
-      isPremium: true
-    }
+  const navigationItems = [
+    { name: "Domů", path: "/", icon: Home },
+    ...(user ? [{ name: "Dashboard", path: "/dashboard", icon: Home }] : []),
+    { name: "Kalkulačka", path: "/calculator", icon: Calculator },
+    { name: "Daňový poradce", path: "/tax-advisor", icon: DollarSign },
+    { name: "Vozidlo", path: "/vehicle", icon: Car },
+    ...(user ? [{ name: "Směny", path: "/shifts", icon: CalendarDays }] : []),
+    { name: "Slovíčka", path: "/vocabulary", icon: BookOpen },
+    { name: "Překladač", path: "/translator", icon: Languages },
+    { name: "Zákony", path: "/laws", icon: Scale },
+    { name: "Cesty", path: "/travel-planning", icon: MapPin },
+    { name: "Nastavení", path: "/settings", icon: Settings },
   ];
 
-  const bottomItems: NavigationItem[] = [
-    {
-      name: "Premium",
-      href: "/premium",
-      icon: Crown,
-      requiresAuth: false,
-      className: "text-amber-600 dark:text-amber-400"
-    },
-    {
-      name: "Nastavení",
-      href: "/settings",
-      icon: Settings,
-      requiresAuth: true
-    }
-  ];
+  const handleNavigation = (path: string) => {
+    navigate(path);
+    closeSidebar();
+  };
 
-  // Add admin items if user is admin
-  if (isAdmin) {
-    bottomItems.unshift({
-      name: "Admin Panel",
-      href: "/admin-panel",
-      icon: Users,
-      requiresAuth: true,
-      className: "text-red-600 dark:text-red-400"
-    });
+  const isActive = (path: string) => {
+    if (path === "/" && location.pathname !== "/") return false;
+    return location.pathname === path || location.pathname.startsWith(path + "/");
+  };
+
+  // Horizontální layout pro landscape sheet
+  if (isHorizontal) {
+    return (
+      <div className="grid grid-cols-2 gap-2">
+        {navigationItems.map((item) => {
+          const Icon = item.icon;
+          return (
+            <Button
+              key={item.path}
+              variant={isActive(item.path) ? "secondary" : "ghost"}
+              size="sm"
+              onClick={() => handleNavigation(item.path)}
+              className={`justify-start h-8 text-xs ${
+                isActive(item.path) 
+                  ? "bg-sidebar-accent text-sidebar-accent-foreground" 
+                  : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+              }`}
+            >
+              <Icon className="h-3 w-3 mr-2 flex-shrink-0" />
+              <span className="truncate">{item.name}</span>
+            </Button>
+          );
+        })}
+      </div>
+    );
   }
 
-  const isActive = (href: string) => {
-    if (href === "/" && location.pathname !== "/") return false;
-    if (href === "/dashboard" && location.pathname === "/") return false;
-    return location.pathname === href || location.pathname.startsWith(href + '/');
-  };
-
-  const shouldShowItem = (item: NavigationItem) => {
-    if (item.requiresAuth && !user) return false;
-    return true;
-  };
-
+  // Původní vertikální layout
   return (
-    <div className="space-y-1">
-      <div className="space-y-1">
-        <p className="text-xs font-medium text-sidebar-foreground/60 pl-4 pb-1">
-          Hlavní navigace
-        </p>
-        {mainItems.filter(shouldShowItem).map((item) => (
+    <nav className="space-y-1">
+      {navigationItems.map((item) => {
+        const Icon = item.icon;
+        return (
           <Button
-            key={item.name}
-            variant={isActive(item.href) ? "secondary" : "ghost"}
-            className={`w-full justify-start h-10 px-4 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground ${
-              isActive(item.href) ? 'bg-sidebar-accent text-sidebar-accent-foreground' : ''
-            } ${item.className || ''}`}
-            asChild
-            onClick={closeSidebar}
+            key={item.path}
+            variant={isActive(item.path) ? "secondary" : "ghost"}
+            size="sm"
+            onClick={() => handleNavigation(item.path)}
+            className={`w-full justify-start ${
+              isActive(item.path) 
+                ? "bg-sidebar-accent text-sidebar-accent-foreground" 
+                : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+            }`}
           >
-            <Link to={item.href} className="flex items-center gap-3">
-              <item.icon className="h-4 w-4 flex-shrink-0" />
-              <span className="flex-1 text-left">{item.name}</span>
-              {item.isPremium && !isPremium && (
-                <Badge className="bg-amber-500 text-white text-xs px-1 py-0 h-4">
-                  Pro
-                </Badge>
-              )}
-            </Link>
+            <Icon className="h-4 w-4 mr-3" />
+            {item.name}
           </Button>
-        ))}
-      </div>
-      
-      <div className="pt-4 space-y-1">
-        <p className="text-xs font-medium text-sidebar-foreground/60 pl-4 pb-1">
-          Účet
-        </p>
-        {bottomItems.filter(shouldShowItem).map((item) => (
-          <Button
-            key={item.name}
-            variant={isActive(item.href) ? "secondary" : "ghost"}
-            className={`w-full justify-start h-10 px-4 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground ${
-              isActive(item.href) ? 'bg-sidebar-accent text-sidebar-accent-foreground' : ''
-            } ${item.className || ''}`}
-            asChild
-            onClick={closeSidebar}
-          >
-            <Link to={item.href} className="flex items-center gap-3">
-              <item.icon className="h-4 w-4 flex-shrink-0" />
-              <span className="flex-1 text-left">{item.name}</span>
-            </Link>
-          </Button>
-        ))}
-      </div>
-    </div>
+        );
+      })}
+    </nav>
   );
 };
 
