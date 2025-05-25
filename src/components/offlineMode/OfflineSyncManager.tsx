@@ -1,3 +1,4 @@
+
 import * as React from 'react';
 import { useOfflineStatus } from '@/hooks/useOfflineStatus';
 import { syncWithLocalStorage, loadFromLocalStorage } from '@/utils/offlineStorage';
@@ -289,7 +290,7 @@ export const OfflineSyncManager = () => {
     <>
       {/* Add the auto sync manager */}
       <AutoSyncManager 
-        syncInterval={settings.sync_interval || 30000}
+        syncInterval={settings.syncInterval || 30000}
         enableToasts={settings.showSyncNotifications}
       />
     </>
