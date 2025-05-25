@@ -95,7 +95,7 @@ class TaxService {
     if (error) throw error;
     return {
       ...data,
-      document_data: data.document_data as DocumentData
+      document_data: data.document_data as unknown as DocumentData
     } as TaxDocument;
   }
 
@@ -109,7 +109,7 @@ class TaxService {
     if (error) throw error;
     return data?.map(item => ({
       ...item,
-      document_data: item.document_data as DocumentData
+      document_data: item.document_data as unknown as DocumentData
     })) as TaxDocument[] || [];
   }
 
