@@ -16,6 +16,7 @@ import Vocabulary from './pages/Vocabulary';
 import AdminPanel from './pages/AdminPanel';
 import Pricing from './pages/Pricing';
 import Profile from './pages/Profile';
+import TravelPlanning from './pages/TravelPlanning';
 import { ShiftNotifications } from "@/components/notifications/ShiftNotifications";
 
 const queryClient = new QueryClient();
@@ -40,6 +41,7 @@ function App() {
                 <Route path="/admin-panel" element={<AdminPanel />} />
                 <Route path="/pricing" element={<Pricing />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/travel-planning" element={<TravelPlanning />} />
               </Routes>
             </LayoutWrapper>
           </BrowserRouter>

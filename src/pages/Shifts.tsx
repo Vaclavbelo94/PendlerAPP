@@ -3,17 +3,17 @@ import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 import {
   CalendarIcon,
-  ClockIcon,
   BarChartIcon,
-  PlusIcon,
-  FileTextIcon
+  FileTextIcon,
+  MapIcon
 } from "lucide-react";
 
 // Import existing components with correct named imports
 import { ShiftCalendarTab } from "@/components/shifts/ShiftCalendarTab";
-import { PlanningTab } from "@/components/shifts/PlanningTab";
 import { ReportsTab } from "@/components/shifts/ReportsTab";
 import ShiftAnalytics from "@/components/shifts/ShiftAnalytics";
 import { useShiftManagement } from "@/components/shifts/useShiftManagement";
@@ -23,6 +23,7 @@ const Shifts = () => {
   const [activeTab, setActiveTab] = useState("calendar");
   const isMobile = useIsMobile();
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const {
     selectedDate,
@@ -54,6 +55,10 @@ const Shifts = () => {
     handleSaveNotes(shiftNotes);
   };
 
+  const handleNavigateToTravel = () => {
+    navigate('/travel-planning');
+  };
+
   return (
     <div className="container py-6 md:py-10 max-w-7xl">
       <div className="mb-8">
@@ -61,19 +66,30 @@ const Shifts = () => {
         <p className="text-muted-foreground">
           Plánujte a sledujte své pracovní směny efektivně
         </p>
+        
+        {/* Quick link to travel planning */}
+        <div className="mt-4 p-4 bg-muted/50 rounded-lg border">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-medium">Potřebujete naplánovat cestu?</h3>
+              <p className="text-sm text-muted-foreground">
+                Optimalizujte své dojíždění a najděte spolujízdy v sekci Doprava
+              </p>
+            </div>
+            <Button onClick={handleNavigateToTravel} className="flex items-center gap-2">
+              <MapIcon className="h-4 w-4" />
+              Plánování cest
+            </Button>
+          </div>
+        </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} ${isMobile ? 'max-w-full' : 'max-w-4xl'} h-auto`}>
+        <TabsList className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-3'} ${isMobile ? 'max-w-full' : 'max-w-3xl'} h-auto`}>
           <TabsTrigger value="calendar" className="flex flex-col items-center gap-1 py-3 px-4">
             <CalendarIcon className="h-5 w-5" />
             <span className="text-sm font-medium">Kalendář</span>
             <span className="text-xs text-muted-foreground hidden sm:block">Přehled směn</span>
-          </TabsTrigger>
-          <TabsTrigger value="planning" className="flex flex-col items-center gap-1 py-3 px-4">
-            <PlusIcon className="h-5 w-5" />
-            <span className="text-sm font-medium">Plánování</span>
-            <span className="text-xs text-muted-foreground hidden sm:block">Nové směny</span>
           </TabsTrigger>
           <TabsTrigger value="analytics" className="flex flex-col items-center gap-1 py-3 px-4">
             <BarChartIcon className="h-5 w-5" />
@@ -102,10 +118,6 @@ const Shifts = () => {
             onDeleteShift={handleDeleteShift}
             onOpenNoteDialog={handleOpenNoteDialog}
           />
-        </TabsContent>
-
-        <TabsContent value="planning" className="space-y-6">
-          <PlanningTab user={user} />
         </TabsContent>
 
         <TabsContent value="analytics" className="space-y-6">
