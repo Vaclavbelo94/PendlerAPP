@@ -1,5 +1,4 @@
-
-import { Shift } from '../types';
+import { Shift, ShiftType } from '../types';
 import { ConflictResolutionService, ConflictData, ConflictResolution } from './ConflictResolutionService';
 import { ShiftOfflineService } from './ShiftOfflineService';
 import { supabase } from '@/integrations/supabase/client';
@@ -72,7 +71,7 @@ export class AdvancedOfflineService extends ShiftOfflineService {
         userId: shift.user_id,
         user_id: shift.user_id,
         date: new Date(shift.date),
-        type: shift.type,
+        type: shift.type as ShiftType, // Cast to ShiftType
         notes: shift.notes || '',
         created_at: shift.created_at,
         updated_at: shift.updated_at
