@@ -4,7 +4,7 @@ import { TouchCalendar } from '@/components/ui/touch-calendar';
 import { addMonths, subMonths } from 'date-fns';
 import { CalendarProps } from '@/components/ui/calendar';
 
-interface SwipeableCalendarProps extends Omit<CalendarProps, 'month'> {
+interface SwipeableCalendarProps extends CalendarProps {
   month?: Date;
   onMonthChange?: (date: Date) => void;
 }
