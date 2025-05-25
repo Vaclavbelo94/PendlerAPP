@@ -3,7 +3,7 @@ import { cs } from "date-fns/locale";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Lock, Download } from "lucide-react";
+import { Lock, Download, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { 
   Table,
@@ -34,6 +34,7 @@ export const ReportsTab = ({ user, shifts }: ReportsTabProps) => {
   const [isExporting, setIsExporting] = useState(false);
   const [savedReports, setSavedReports] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [deletingReportId, setDeletingReportId] = useState<string | null>(null);
   
   // Kontrola, zda je uživatel premium
   const { canAccess, isPremiumFeature } = usePremiumCheck('pdf-export');
@@ -67,6 +68,41 @@ export const ReportsTab = ({ user, shifts }: ReportsTabProps) => {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // Nová funkce pro mazání reportů
+  const handleDeleteReport = async (reportId: string) => {
+    if (!window.confirm("Opravdu chcete smazat tento report?")) {
+      return;
+    }
+    
+    setDeletingReportId(reportId);
+    try {
+      const { error } = await supabase
+        .from('reports')
+        .delete()
+        .eq('id', reportId)
+        .eq('user_id', user.id); // Bezpečnostní kontrola
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Report smazán",
+        description: "Report byl úspěšně odstraněn",
+      });
+      
+      // Aktualizace seznamu reportů
+      fetchUserReports();
+    } catch (error) {
+      console.error("Chyba při mazání reportu:", error);
+      toast({
+        title: "Chyba",
+        description: "Nepodařilo se smazat report",
+        variant: "destructive",
+      });
+    } finally {
+      setDeletingReportId(null);
     }
   };
 
@@ -206,41 +242,84 @@ export const ReportsTab = ({ user, shifts }: ReportsTabProps) => {
       <CardContent className="p-6">
         {user ? (
           <div className="space-y-6">
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="min-w-[120px]">Typ směny</TableHead>
-                    <TableHead className="text-center min-w-[100px]">Počet směn</TableHead>
-                    <TableHead className="text-right min-w-[120px]">Celkem hodin</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  <TableRow>
-                    <TableCell className="font-medium">Ranní</TableCell>
-                    <TableCell className="text-center">{shifts.filter(s => s.type === "morning").length}</TableCell>
-                    <TableCell className="text-right">{shifts.filter(s => s.type === "morning").length * 8}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Odpolední</TableCell>
-                    <TableCell className="text-center">{shifts.filter(s => s.type === "afternoon").length}</TableCell>
-                    <TableCell className="text-right">{shifts.filter(s => s.type === "afternoon").length * 8}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Noční</TableCell>
-                    <TableCell className="text-center">{shifts.filter(s => s.type === "night").length}</TableCell>
-                    <TableCell className="text-right">{shifts.filter(s => s.type === "night").length * 8}</TableCell>
-                  </TableRow>
-                  <TableRow className="border-t-2 font-semibold">
-                    <TableCell className="font-bold">Celkem</TableCell>
-                    <TableCell className="text-center font-bold">{shifts.length}</TableCell>
-                    <TableCell className="text-right font-bold">{shifts.length * 8}</TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
+            {/* Souhrn směn - zlepšená responsivita */}
+            <div className="w-full">
+              <ScrollArea className="w-full">
+                <div className="min-w-[400px]">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-[120px]">Typ směny</TableHead>
+                        <TableHead className="text-center w-[100px]">Počet směn</TableHead>
+                        <TableHead className="text-right w-[120px]">Celkem hodin</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      <TableRow>
+                        <TableCell className="font-medium">Ranní</TableCell>
+                        <TableCell className="text-center">{shifts.filter(s => s.type === "morning").length}</TableCell>
+                        <TableCell className="text-right">{shifts.filter(s => s.type === "morning").length * 8}</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">Odpolední</TableCell>
+                        <TableCell className="text-center">{shifts.filter(s => s.type === "afternoon").length}</TableCell>
+                        <TableCell className="text-right">{shifts.filter(s => s.type === "afternoon").length * 8}</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">Noční</TableCell>
+                        <TableCell className="text-center">{shifts.filter(s => s.type === "night").length}</TableCell>
+                        <TableCell className="text-right">{shifts.filter(s => s.type === "night").length * 8}</TableCell>
+                      </TableRow>
+                      <TableRow className="border-t-2 font-semibold">
+                        <TableCell className="font-bold">Celkem</TableCell>
+                        <TableCell className="text-center font-bold">{shifts.length}</TableCell>
+                        <TableCell className="text-right font-bold">{shifts.length * 8}</TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </div>
+              </ScrollArea>
             </div>
+
+            {/* Podrobný výpis směn */}
+            {shifts.length > 0 && (
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium">Podrobný výpis směn</h3>
+                <ScrollArea className="w-full">
+                  <div className="min-w-[500px]">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="w-[120px]">Datum</TableHead>
+                          <TableHead className="w-[120px]">Typ směny</TableHead>
+                          <TableHead className="min-w-[200px]">Poznámka</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {shifts
+                          .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                          .map((shift, index) => (
+                          <TableRow key={index}>
+                            <TableCell className="whitespace-nowrap">
+                              {format(shift.date, "dd.MM.yyyy", { locale: cs })}
+                            </TableCell>
+                            <TableCell>
+                              {shift.type === "morning" ? "Ranní" : 
+                               shift.type === "afternoon" ? "Odpolední" : "Noční"}
+                            </TableCell>
+                            <TableCell className="max-w-[200px] truncate" title={shift.notes || "-"}>
+                              {shift.notes || "-"}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </ScrollArea>
+              </div>
+            )}
               
-            {/* Sekce uložených reportů */}
+            {/* Sekce uložených reportů s možností mazání */}
             {session && (
               <div className="space-y-4">
                 <h3 className="text-lg font-medium">Poslední uložené reporty</h3>
@@ -251,36 +330,53 @@ export const ReportsTab = ({ user, shifts }: ReportsTabProps) => {
                     <Skeleton className="h-12 w-full" />
                   </div>
                 ) : savedReports.length > 0 ? (
-                  <div className="overflow-x-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead className="min-w-[200px]">Název</TableHead>
-                          <TableHead className="min-w-[120px]">Vytvořeno</TableHead>
-                          <TableHead className="text-right min-w-[100px]">Akce</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {savedReports.map(report => (
-                          <TableRow key={report.id}>
-                            <TableCell className="break-words max-w-[200px]">{report.title}</TableCell>
-                            <TableCell className="whitespace-nowrap">{new Date(report.created_at).toLocaleDateString()}</TableCell>
-                            <TableCell className="text-right">
-                              <Button 
-                                variant="ghost" 
-                                size="sm"
-                                onClick={() => handleExportPDF()}
-                                disabled={isExporting || (isPremiumFeature && !canAccess)}
-                                className="whitespace-nowrap"
-                              >
-                                <Download className="h-4 w-4 mr-1" /> Stáhnout
-                              </Button>
-                            </TableCell>
+                  <ScrollArea className="w-full">
+                    <div className="min-w-[500px]">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="min-w-[200px]">Název</TableHead>
+                            <TableHead className="w-[120px]">Vytvořeno</TableHead>
+                            <TableHead className="text-right w-[150px]">Akce</TableHead>
                           </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
+                        </TableHeader>
+                        <TableBody>
+                          {savedReports.map(report => (
+                            <TableRow key={report.id}>
+                              <TableCell className="max-w-[200px] truncate" title={report.title}>
+                                {report.title}
+                              </TableCell>
+                              <TableCell className="whitespace-nowrap">
+                                {new Date(report.created_at).toLocaleDateString('cs-CZ')}
+                              </TableCell>
+                              <TableCell className="text-right">
+                                <div className="flex justify-end gap-2">
+                                  <Button 
+                                    variant="ghost" 
+                                    size="sm"
+                                    onClick={() => handleExportPDF()}
+                                    disabled={isExporting || (isPremiumFeature && !canAccess)}
+                                    className="whitespace-nowrap"
+                                  >
+                                    <Download className="h-4 w-4" />
+                                  </Button>
+                                  <Button 
+                                    variant="ghost" 
+                                    size="sm"
+                                    onClick={() => handleDeleteReport(report.id)}
+                                    disabled={deletingReportId === report.id}
+                                    className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </ScrollArea>
                 ) : (
                   <p className="text-sm text-muted-foreground italic">Zatím nemáte žádné uložené reporty</p>
                 )}
