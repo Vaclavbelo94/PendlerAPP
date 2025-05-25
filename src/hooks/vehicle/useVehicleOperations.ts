@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 
 export const useVehicleOperations = (
   user: any,
-  setVehicles: (vehicles: VehicleData[]) => void,
+  setVehicles: React.Dispatch<React.SetStateAction<VehicleData[]>>,
   setVehicleData: (data: VehicleData) => void,
   setSelectedVehicleId: (id: string) => void
 ) => {
