@@ -1,3 +1,4 @@
+
 import { useState, useEffect, lazy, Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -6,7 +7,6 @@ import { useUnifiedPremiumStatus } from "@/hooks/useUnifiedPremiumStatus";
 import { DiamondIcon, ArrowUpCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useDebounce } from "@/hooks/useDebounce";
 
@@ -176,16 +176,6 @@ const Index = () => {
         <Suspense fallback={<SectionLoader />}>
           <CTA />
         </Suspense>
-
-        {/* Přepínač tématu v levém dolním rohu */}
-        <motion.div
-          className="fixed bottom-7 left-5 z-50"
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 1, type: "spring", stiffness: 500 }}
-        >
-          <ThemeToggle alwaysShow={true} className="shadow-lg" />
-        </motion.div>
 
         {/* Tlačítko pro scrollování nahoru */}
         <AnimatePresence>
