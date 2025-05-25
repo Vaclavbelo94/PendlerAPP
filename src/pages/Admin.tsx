@@ -2,15 +2,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { 
-  Tabs, 
-  TabsContent, 
-  TabsList, 
-  TabsTrigger 
-} from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Crown, Users, Settings, Key, ShieldCheck } from "lucide-react";
+import { Crown, Users, Settings, Key, ShieldCheck, BarChart3 } from "lucide-react";
 import { UserAdminPanel } from "@/components/admin/UserAdminPanel";
 import { PromoCodesPanel } from "@/components/admin/PromoCodesPanel";
 import { PasswordResetPanel } from "@/components/admin/PasswordResetPanel";
@@ -22,7 +16,7 @@ import { InfoCard } from "@/components/ui/design-system/InfoCard";
 
 const Admin = () => {
   const [showLoginDialog, setShowLoginDialog] = useState(false);
-  const [activeTab, setActiveTab] = useState("users");
+  const [activeSection, setActiveSection] = useState<string | null>(null);
   const navigate = useNavigate();
   const { isAdmin, signOut, refreshAdminStatus, user, isLoading } = useAuth();
 
@@ -93,6 +87,84 @@ const Admin = () => {
     );
   }
 
+  const adminSections = [
+    {
+      id: "users",
+      title: "Uživatelé",
+      description: "Správa uživatelských účtů",
+      icon: <Users className="h-6 w-6" />,
+      component: <UserAdminPanel />,
+      variant: "primary" as const
+    },
+    {
+      id: "premium",
+      title: "Premium",
+      description: "Správa prémiových funkcí",
+      icon: <Crown className="h-6 w-6" />,
+      component: <PremiumFeaturesPanel />,
+      variant: "accent" as const
+    },
+    {
+      id: "promo",
+      title: "Promo kódy",
+      description: "Vytváření a správa promo kódů",
+      icon: <Key className="h-6 w-6" />,
+      component: <PromoCodesPanel />,
+      variant: "secondary" as const
+    },
+    {
+      id: "reset",
+      title: "Reset hesla",
+      description: "Generování odkazů pro reset",
+      icon: <Settings className="h-6 w-6" />,
+      component: <PasswordResetPanel />,
+      variant: "muted" as const
+    }
+  ];
+
+  if (activeSection) {
+    const section = adminSections.find(s => s.id === activeSection);
+    return (
+      <div className="container py-6 md:py-10 max-w-7xl">
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <Button 
+                variant="ghost" 
+                onClick={() => setActiveSection(null)}
+                className="mb-4 text-muted-foreground hover:text-foreground"
+              >
+                ← Zpět na přehled
+              </Button>
+              <h1 className="text-3xl font-bold tracking-tight mb-2">{section?.title}</h1>
+              <p className="text-muted-foreground">
+                {section?.description}
+              </p>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              <Badge variant="outline" className="flex items-center gap-1">
+                <ShieldCheck className="h-3 w-3" />
+                Admin režim
+              </Badge>
+              <Button
+                onClick={handleLogout}
+                variant="outline"
+                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+              >
+                Odhlásit se
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-6">
+          {section?.component}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container py-6 md:py-10 max-w-7xl">
       <div className="mb-8">
@@ -100,7 +172,7 @@ const Admin = () => {
           <div>
             <h1 className="text-3xl font-bold tracking-tight mb-2">Administrace</h1>
             <p className="text-muted-foreground">
-              Správa uživatelů, promo kódů a systémových nastavení
+              Plánujte a spravujte administrační funkce efektivně
             </p>
           </div>
           
@@ -120,71 +192,32 @@ const Admin = () => {
         </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid grid-cols-4 max-w-md">
-          <TabsTrigger value="users" className="flex items-center gap-2">
-            <Users className="h-4 w-4" />
-            Uživatelé
-          </TabsTrigger>
-          <TabsTrigger value="premium" className="flex items-center gap-2">
-            <Crown className="h-4 w-4" />
-            Premium
-          </TabsTrigger>
-          <TabsTrigger value="promo" className="flex items-center gap-2">
-            <Key className="h-4 w-4" />
-            Promo kódy
-          </TabsTrigger>
-          <TabsTrigger value="reset" className="flex items-center gap-2">
-            <Settings className="h-4 w-4" />
-            Reset hesla
-          </TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="users" className="space-y-6">
-          <InfoCard
-            title="Správa uživatelů"
-            description="Zde můžete spravovat uživatelské účty a jejich premium status."
-            icon={<Users className="h-5 w-5" />}
-            variant="primary"
+      {/* Main Menu Cards */}
+      <div className="grid grid-cols-2 gap-4 mb-8">
+        {adminSections.map((section) => (
+          <div
+            key={section.id}
+            onClick={() => setActiveSection(section.id)}
+            className="group relative p-6 bg-card border rounded-lg cursor-pointer hover:bg-accent/50 transition-all duration-200 hover:scale-[1.02] hover:shadow-md"
           >
-            <UserAdminPanel />
-          </InfoCard>
-        </TabsContent>
-        
-        <TabsContent value="premium" className="space-y-6">
-          <InfoCard
-            title="Správa premium funkcí"
-            description="Nastavte, které funkce aplikace budou dostupné pouze premium uživatelům."
-            icon={<Crown className="h-5 w-5" />}
-            variant="accent"
-          >
-            <PremiumFeaturesPanel />
-          </InfoCard>
-        </TabsContent>
-        
-        <TabsContent value="promo" className="space-y-6">
-          <InfoCard
-            title="Správa promo kódů"
-            description="Vytvářejte a spravujte promo kódy pro předplatné premium funkcí."
-            icon={<Key className="h-5 w-5" />}
-            variant="secondary"
-          >
-            <PromoCodesPanel />
-          </InfoCard>
-        </TabsContent>
-        
-        <TabsContent value="reset" className="space-y-6">
-          <InfoCard
-            title="Reset hesla"
-            description="Generování odkazů pro reset hesla uživatelů."
-            icon={<Settings className="h-5 w-5" />}
-            variant="muted"
-          >
-            <PasswordResetPanel />
-          </InfoCard>
-        </TabsContent>
-      </Tabs>
-      
+            <div className="flex flex-col items-center text-center space-y-3">
+              <div className={`p-3 rounded-full ${
+                section.variant === 'primary' ? 'bg-primary/10 text-primary' :
+                section.variant === 'accent' ? 'bg-accent/10 text-accent' :
+                section.variant === 'secondary' ? 'bg-secondary/10 text-secondary' :
+                'bg-muted/20 text-muted-foreground'
+              }`}>
+                {section.icon}
+              </div>
+              <div>
+                <h3 className="font-semibold text-lg mb-1">{section.title}</h3>
+                <p className="text-sm text-muted-foreground">{section.description}</p>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
       <AdminLoginDialog 
         isOpen={showLoginDialog} 
         onClose={() => !isAdmin && navigate("/")}
