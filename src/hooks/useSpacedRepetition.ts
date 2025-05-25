@@ -2,8 +2,6 @@
 import { useState, useEffect } from 'react';
 import { VocabularyItem } from '@/models/VocabularyItem';
 import { 
-  saveVocabularyItems,
-  loadVocabularyItems,
   saveDailyProgress,
   loadDailyProgress,
   loadDailyGoal,
@@ -38,11 +36,16 @@ export const useSpacedRepetition = (initialItems: VocabularyItem[] = []) => {
   const [dailyGoal, setDailyGoalValue] = useState<number>(10);
   const [completedToday, setCompletedToday] = useState<number>(0);
   
-  // Načtení slovíček a denního cíle
+  // Inicializace dat když jsou k dispozici
   useEffect(() => {
-    const loadedItems = loadVocabularyItems(initialItems);
-    setItems(loadedItems);
-    
+    if (initialItems.length > 0 && items.length === 0) {
+      console.log('Initializing spaced repetition with items:', initialItems.length);
+      setItems(initialItems);
+    }
+  }, [initialItems, items.length]);
+  
+  // Načtení denního cíle a pokroku
+  useEffect(() => {
     const goalValue = loadDailyGoal();
     setDailyGoalValue(goalValue);
     
@@ -52,13 +55,16 @@ export const useSpacedRepetition = (initialItems: VocabularyItem[] = []) => {
   
   // Aktualizovat seznam slovíček ke zkoušení
   useEffect(() => {
-    const dueTodayItems = items.filter(isItemDueToday);
-    setDueItems(dueTodayItems);
-    
-    if (dueTodayItems.length > 0 && !currentItem) {
-      setCurrentItem(dueTodayItems[0]);
+    if (items.length > 0) {
+      const dueTodayItems = items.filter(isItemDueToday);
+      console.log('Due items today:', dueTodayItems.length);
+      setDueItems(dueTodayItems);
+      
+      if (dueTodayItems.length > 0 && !currentItem) {
+        setCurrentItem(dueTodayItems[0]);
+      }
     }
-  }, [items]);
+  }, [items, currentItem]);
   
   // Přidat nové slovíčko
   const addVocabularyItem = (item: Omit<VocabularyItem, 'id'> & Partial<VocabularyItem>) => {
@@ -72,16 +78,16 @@ export const useSpacedRepetition = (initialItems: VocabularyItem[] = []) => {
     
     const updatedItems = [...items, newItem];
     setItems(updatedItems);
-    saveVocabularyItems(updatedItems);
     
     return newItem;
   };
   
   // Přidat více slovíček najednou
   const bulkAddVocabularyItems = (newItems: VocabularyItem[]) => {
-    const updatedItems = [...items, ...newItems];
-    setItems(updatedItems);
-    saveVocabularyItems(updatedItems);
+    if (newItems.length > 0) {
+      console.log('Bulk adding vocabulary items:', newItems.length);
+      setItems(newItems);
+    }
   };
   
   // Označit správnou odpověď
@@ -103,7 +109,6 @@ export const useSpacedRepetition = (initialItems: VocabularyItem[] = []) => {
     });
     
     setItems(updatedItems);
-    saveVocabularyItems(updatedItems);
     
     // Aktualizovat denní pokrok
     const newCompletedToday = completedToday + 1;
@@ -131,7 +136,6 @@ export const useSpacedRepetition = (initialItems: VocabularyItem[] = []) => {
     });
     
     setItems(updatedItems);
-    saveVocabularyItems(updatedItems);
     
     // Aktualizovat denní pokrok
     const newCompletedToday = completedToday + 1;
@@ -153,9 +157,24 @@ export const useSpacedRepetition = (initialItems: VocabularyItem[] = []) => {
     }
   };
   
-  // Získat statistiky - upraveno, aby vracelo data odpovídající VocabularyStatistics
+  // Získat statistiky
   const getStatistics = () => {
-    return calculateVocabularyStatistics(items, dueItems, completedToday, dailyGoal);
+    if (typeof calculateVocabularyStatistics === 'function') {
+      return calculateVocabularyStatistics(items, dueItems, completedToday, dailyGoal);
+    }
+    
+    // Fallback statistiky
+    return {
+      totalWords: items.length,
+      dueToday: dueItems.length,
+      completedToday,
+      dailyGoal,
+      progress: {
+        today: completedToday,
+        yesterday: 0,
+        lastWeek: 0
+      }
+    };
   };
   
   // Nastavit denní cíl
