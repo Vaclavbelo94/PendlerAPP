@@ -8,6 +8,7 @@ import ErrorBoundary from '@/components/common/ErrorBoundary';
 import LazyLoadWrapper from '@/components/common/LazyLoadWrapper';
 import PWAInstallPrompt from '@/components/common/PWAInstallPrompt';
 import LayoutWrapper from '@/components/layouts/LayoutWrapper';
+import ScrollToTop from '@/components/navigation/ScrollToTop';
 import { performanceMonitor } from '@/utils/performanceMonitor';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { usePerformanceOptimization } from '@/hooks/usePerformanceOptimization';
@@ -22,6 +23,7 @@ import {
   LazySettingsModule 
 } from '@/utils/performanceOptimizer';
 
+// Standard pages
 import Index from "@/pages/Index";
 import Dashboard from "@/pages/Dashboard";
 import Language from "@/pages/Language";
@@ -32,6 +34,12 @@ import UnifiedProfile from "@/pages/UnifiedProfile";
 import ProfileExtended from "@/pages/ProfileExtended";
 import TermsOfService from "@/pages/TermsOfService";
 import PrivacyPolicy from "@/pages/PrivacyPolicy";
+import TaxAdvisor from "@/pages/TaxAdvisor";
+import Vocabulary from "@/pages/Vocabulary";
+import Translator from "@/pages/Translator";
+import Laws from "@/pages/Laws";
+import TravelPlanning from "@/pages/TravelPlanning";
+import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -82,17 +90,30 @@ function AppContent() {
   return (
     <ErrorBoundary onError={handleError}>
       <div className="min-h-screen bg-background">
+        <ScrollToTop />
         <LayoutWrapper>
           <Routes>
+            {/* Main pages */}
             <Route path="/" element={<Index />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/language" element={<Language />} />
+            <Route path="/vocabulary" element={<Vocabulary />} />
+            <Route path="/translator" element={<Translator />} />
+            <Route path="/tax-advisor" element={<TaxAdvisor />} />
+            <Route path="/laws" element={<Laws />} />
+            <Route path="/travel-planning" element={<TravelPlanning />} />
+            
+            {/* Auth pages */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            
+            {/* Profile pages */}
             <Route path="/profile" element={<Profile />} />
             <Route path="/profile-unified" element={<UnifiedProfile />} />
             <Route path="/profile-extended" element={<ProfileExtended />} />
             <Route path="/profile-extended/:userId" element={<ProfileExtended />} />
+            
+            {/* Legal pages */}
             <Route path="/terms-of-service" element={<TermsOfService />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             
@@ -129,6 +150,9 @@ function AppContent() {
                 </LazyLoadWrapper>
               } 
             />
+            
+            {/* 404 fallback route */}
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </LayoutWrapper>
         
