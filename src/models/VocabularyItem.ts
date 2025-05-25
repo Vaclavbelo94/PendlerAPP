@@ -99,4 +99,15 @@ export interface VocabularyStatistics {
   completedToday?: number;
   dailyGoal?: number;
   correctRate?: number;
+  // Additional properties needed by components
+  learningEfficiency: number;
+  averageTimeToMastery: number;
+  recentActivity: Array<{
+    date: string;
+    reviewedWords: number;
+    correctCount: number;
+  }>;
+  difficultWords: VocabularyItem[];
+  fastestLearned: VocabularyItem[];
+  mostMistakenWords: VocabularyItem[];
 }
