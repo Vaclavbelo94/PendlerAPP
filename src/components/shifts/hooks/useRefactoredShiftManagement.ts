@@ -1,4 +1,5 @@
 
+import { useCallback } from "react";
 import { useShiftLoading } from "./useShiftLoading";
 import { useShiftData } from "./useShiftData";
 import { useCurrentShift } from "./useCurrentShift";
@@ -26,15 +27,15 @@ export const useRefactoredShiftManagement = (user: any) => {
     shiftData.setShiftNotes
   );
 
-  // Handle saving notes from dialog
-  const handleSaveNotes = async (notes: string) => {
+  // Handle saving notes from dialog - memoized to prevent re-renders
+  const handleSaveNotes = useCallback(async (notes: string) => {
     shiftData.setShiftNotes(notes);
     
     // If there is a current shift, update it immediately
     if (currentShift) {
       await shiftOperations.handleSaveShift();
     }
-  };
+  }, [shiftData, currentShift, shiftOperations]);
 
   return {
     ...shiftData,

@@ -1,4 +1,5 @@
 
+import { useCallback } from 'react';
 import { VehicleData } from '@/types/vehicle';
 import { saveVehicle } from '@/services/vehicle/vehicleCore';
 import { toast } from 'sonner';
@@ -9,7 +10,7 @@ export const useVehicleOperations = (
   setVehicleData: (data: VehicleData) => void,
   setSelectedVehicleId: (id: string) => void
 ) => {
-  const handleSaveVehicle = async (vehicle: VehicleData) => {
+  const handleSaveVehicle = useCallback(async (vehicle: VehicleData) => {
     try {
       if (!user) {
         toast.error("Pro uložení vozidla je nutné být přihlášen");
@@ -40,7 +41,7 @@ export const useVehicleOperations = (
       console.error("Chyba při ukládání vozidla:", error);
       toast.error("Nepodařilo se uložit vozidlo");
     }
-  };
+  }, [user, setVehicles, setVehicleData, setSelectedVehicleId]);
 
   return {
     handleSaveVehicle
