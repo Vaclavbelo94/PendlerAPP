@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -283,7 +282,7 @@ const OverviewTab = () => {
             <Button 
               className="w-full justify-start" 
               variant="outline"
-              onClick={() => navigate("/vocabulary")}
+              onClick={() => navigate("/language?tab=vocabulary")}
             >
               <Plus className="mr-2 h-4 w-4" />
               Procvičovat slovíčka

@@ -8,6 +8,7 @@ import VocabularyProgressDashboard from '../VocabularyProgressDashboard';
 import VocabularyBulkActions from './VocabularyBulkActions';
 import VocabularyImportExport from '../VocabularyImportExport';
 import VocabularyTest from './VocabularyTest';
+import ExercisesTab from '../tabs/ExercisesTab';
 import { useVocabularyContext } from './VocabularyManager';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguageContext } from '@/hooks/useLanguageContext';
@@ -118,6 +119,12 @@ export const ImportExportTabContent = () => {
     </TabsContent>
   );
 };
+
+export const ExercisesTabContent = () => (
+  <TabsContent value="exercises" className="pt-6 space-y-6">
+    <ExercisesTab />
+  </TabsContent>
+);
 
 export const LogisticsTabContent = () => (
   <TabsContent value="logistics" className="pt-6 space-y-6">

@@ -16,6 +16,7 @@ import {
 import VocabularySection from "@/components/language/VocabularySection";
 import GrammarTab from "@/components/language/tabs/GrammarTab";
 import PhrasesTab from "@/components/language/tabs/PhrasesTab";
+import ExercisesTab from "@/components/language/tabs/ExercisesTab";
 import VocabularyProgressDashboard from "@/components/language/VocabularyProgressDashboard";
 import GamificationFeatures from "@/components/language/GamificationFeatures";
 
@@ -107,12 +108,7 @@ const Language = () => {
       case "phrases":
         return <PhrasesTab />;
       case "exercises":
-        return (
-          <div className="text-center py-12">
-            <h3 className="text-lg font-medium mb-2">Cvičení přijdou brzy</h3>
-            <p className="text-muted-foreground">Připravujeme interaktivní cvičení pro lepší učení</p>
-          </div>
-        );
+        return <ExercisesTab />;
       default:
         return <VocabularySection />;
     }

@@ -34,7 +34,7 @@ const LanguageTab = () => {
   ];
 
   const handleNavigateToVocabulary = () => {
-    navigate('/language');
+    navigate('/language?tab=vocabulary');
   };
 
   const handleNavigateToExercises = () => {
