@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from '@/hooks/use-toast';
 import { BookOpen, Target, Trophy, Clock, Brain, CheckCircle } from "lucide-react";
-import { germanExercises, Exercise } from "@/data/germanExercises";
+import { grammarExercises2 as germanExercises, Exercise } from "@/data/germanExercises";
 import ExercisesTabContent from '../exercise/ExercisesTabContent';
 
 const ExercisesTab = () => {
@@ -58,11 +58,11 @@ const ExercisesTab = () => {
     setActiveExercise(null);
   };
 
-  // Filter exercises by level
+  // Filter exercises by difficulty level based on exercise ID ranges
   const exercisesByLevel = {
-    beginner: germanExercises.filter(ex => ex.difficulty === "beginner"),
-    intermediate: germanExercises.filter(ex => ex.difficulty === "intermediate"),
-    advanced: germanExercises.filter(ex => ex.difficulty === "advanced")
+    beginner: germanExercises.filter(ex => ex.id <= 6), // First 6 exercises for beginners
+    intermediate: germanExercises.filter(ex => ex.id > 6 && ex.id <= 12), // Next 6 for intermediate
+    advanced: germanExercises.filter(ex => ex.id > 12) // Remaining for advanced
   };
 
   const currentExercises = exercisesByLevel[selectedLevel as keyof typeof exercisesByLevel] || [];
