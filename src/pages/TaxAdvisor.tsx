@@ -13,6 +13,7 @@ import {
 import TaxOptimizer from "@/components/tax-advisor/TaxOptimizer";
 import DocumentGenerator from "@/components/tax-advisor/DocumentGenerator";
 import TaxReturnGuide from "@/components/tax-advisor/TaxReturnGuide";
+import TaxCalculatorTab from "@/components/tax-advisor/TaxCalculatorTab";
 
 const TaxAdvisor = () => {
   const [activeTab, setActiveTab] = useState("optimizer");
@@ -64,10 +65,7 @@ const TaxAdvisor = () => {
         </TabsContent>
 
         <TabsContent value="calculator" className="space-y-6">
-          <div className="text-center py-12">
-            <h3 className="text-lg font-medium mb-2">Rychlý daňový kalkulátor</h3>
-            <p className="text-muted-foreground">Připravujeme specializované daňové kalkulátory</p>
-          </div>
+          <TaxCalculatorTab />
         </TabsContent>
       </Tabs>
     </div>
