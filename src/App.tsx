@@ -24,6 +24,13 @@ import {
 import Index from "@/pages/Index";
 import Dashboard from "@/pages/Dashboard";
 import Language from "@/pages/Language";
+import Login from "@/pages/Login";
+import Register from "@/pages/Register";
+import Profile from "@/pages/Profile";
+import UnifiedProfile from "@/pages/UnifiedProfile";
+import ProfileExtended from "@/pages/ProfileExtended";
+import TermsOfService from "@/pages/TermsOfService";
+import PrivacyPolicy from "@/pages/PrivacyPolicy";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -78,6 +85,14 @@ function AppContent() {
           <Route path="/" element={<Index />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/language" element={<Language />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/profile-unified" element={<UnifiedProfile />} />
+          <Route path="/profile-extended" element={<ProfileExtended />} />
+          <Route path="/profile-extended/:userId" element={<ProfileExtended />} />
+          <Route path="/terms-of-service" element={<TermsOfService />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           
           {/* Lazy loaded routes */}
           <Route 

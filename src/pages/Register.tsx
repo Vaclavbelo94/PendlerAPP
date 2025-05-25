@@ -1,242 +1,111 @@
 
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { useToast } from "@/components/ui/use-toast";
-import { ArrowRight } from "lucide-react";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
-import { Separator } from "@/components/ui/separator";
-import { redeemPromoCode } from "@/components/admin/promoCode/promoCodeService";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
-
-interface FormData {
-  name: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-  agreeTerms: boolean;
-  promoCode: string;
-}
-
-interface FormErrors {
-  name: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-  agreeTerms: string;
-  promoCode: string;
-}
+import { Separator } from "@/components/ui/separator";
 
 const Register = () => {
-  const { toast: uiToast } = useToast();
-  const { signUp, signInWithGoogle, user } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [username, setUsername] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const navigate = useNavigate();
-  const [formData, setFormData] = useState<FormData>({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    agreeTerms: false,
-    promoCode: "",
-  });
-  const [loading, setLoading] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
-  const [errors, setErrors] = useState<FormErrors>({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    agreeTerms: "",
-    promoCode: "",
-  });
-
-  // Pokud je uživatel již přihlášen, přesměrujeme ho na hlavní stránku
-  if (user) {
-    navigate("/");
-    return null;
-  }
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === "checkbox" ? checked : value,
-    });
-
-    // Clear error when user starts typing
-    setErrors({
-      ...errors,
-      [name]: "",
-    });
-  };
-
-  const validateForm = () => {
-    let valid = true;
-    const newErrors = { ...errors };
-
-    if (!formData.name.trim()) {
-      newErrors.name = "Jméno je povinné";
-      valid = false;
+  const { signUp, signInWithGoogle, user } = useAuth();
+  
+  useEffect(() => {
+    // Redirect user to homepage if already logged in
+    if (user) {
+      navigate("/");
     }
-
-    if (!formData.email.trim()) {
-      newErrors.email = "Email je povinný";
-      valid = false;
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Neplatný email";
-      valid = false;
-    }
-
-    if (!formData.password) {
-      newErrors.password = "Heslo je povinné";
-      valid = false;
-    } else if (formData.password.length < 8) {
-      newErrors.password = "Heslo musí mít alespoň 8 znaků";
-      valid = false;
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "Hesla se neshodují";
-      valid = false;
-    }
-
-    if (!formData.agreeTerms) {
-      newErrors.agreeTerms = "Musíte souhlasit s podmínkami";
-      valid = false;
-    }
-
-    setErrors(newErrors);
-    return valid;
-  };
-
-  const handlePromoCodeRedemption = async (userId: string, promoCode: string) => {
-    if (!promoCode.trim()) return;
-
-    try {
-      const result = await redeemPromoCode(userId, promoCode.trim());
-      if (result.success) {
-        toast.success("Promo kód byl úspěšně aplikován!");
-      } else {
-        toast.error(result.message || "Nepodařilo se aplikovat promo kód");
-      }
-    } catch (error) {
-      console.error("Error applying promo code:", error);
-      toast.error("Nastala chyba při aplikování promo kódu");
-    }
-  };
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (validateForm()) {
-      setLoading(true);
+    if (password !== confirmPassword) {
+      toast.error("Hesla se neshodují");
+      return;
+    }
+    
+    if (password.length < 6) {
+      toast.error("Heslo musí mít alespoň 6 znaků");
+      return;
+    }
+    
+    setIsLoading(true);
+    
+    try {
+      const { error } = await signUp(email, password, username);
       
-      try {
-        const { error } = await signUp(formData.email, formData.password, formData.name);
-        
-        if (error) {
-          uiToast({
-            title: "Registrace selhala",
-            description: error.message,
-            variant: "destructive",
-          });
-        } else {
-          uiToast({
-            title: "Registrace úspěšná!",
-            description: "Váš účet byl vytvořen a jste přihlášeni.",
-            variant: "default",
-          });
-
-          // If there's a promo code, try to apply it after successful registration
-          if (formData.promoCode.trim()) {
-            // Wait a bit for user session to be fully established
-            setTimeout(async () => {
-              try {
-                const { data: { user } } = await supabase.auth.getUser();
-                if (user) {
-                  await handlePromoCodeRedemption(user.id, formData.promoCode);
-                }
-              } catch (error) {
-                console.error("Error getting user for promo code:", error);
-              }
-            }, 1000);
-          }
-          
-          // Přesměrování na hlavní stránku po úspěšné registraci
-          navigate("/");
-        }
-      } catch (error: any) {
-        uiToast({
-          title: "Registrace selhala",
-          description: error.message,
-          variant: "destructive",
+      if (error) {
+        toast.error("Registrace selhala", {
+          description: error.message || "Zkontrolujte své údaje a zkuste to znovu.",
         });
-      } finally {
-        setLoading(false);
+      } else {
+        toast.success("Účet byl úspěšně vytvořen!", {
+          description: "Nyní se můžete přihlásit.",
+        });
+        navigate("/login");
       }
+    } catch (error: any) {
+      toast.error("Chyba při registraci", {
+        description: error?.message || "Nastala neznámá chyba. Zkuste to prosím později.",
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleGoogleSignUp = async () => {
-    setGoogleLoading(true);
+  const handleGoogleRegister = async () => {
+    setIsGoogleLoading(true);
     
     try {
       const { error, url } = await signInWithGoogle();
       
       if (error) {
-        uiToast({
-          title: "Registrace s Google selhala",
-          description: error.message || "Nastala chyba při přihlašování s Google účtem.",
-          variant: "destructive",
+        toast.error("Registrace s Google selhala", {
+          description: error.message || "Nastala chyba při registraci s Google účtem.",
         });
       }
       
-      // Pokud máme URL pro přesměrování, přesměrujeme uživatele (standardní OAuth flow)
       if (url) {
         window.location.href = url;
       }
     } catch (error: any) {
-      uiToast({
-        title: "Chyba při registraci",
+      toast.error("Chyba při registraci", {
         description: error?.message || "Nastala neznámá chyba. Zkuste to prosím později.",
-        variant: "destructive",
       });
     } finally {
-      setGoogleLoading(false);
+      setIsGoogleLoading(false);
     }
   };
 
   return (
-    <div className="container flex items-center justify-center py-12 md:py-20">
-      <Card className="w-full max-w-lg">
+    <div className="container max-w-md mx-auto py-16 px-4">
+      <Card className="w-full">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">Vytvořit účet</CardTitle>
+          <CardTitle className="text-2xl">Registrace</CardTitle>
           <CardDescription>
-            Vytvořte si účet pro přístup k dalším funkcím
+            Vytvořte si nový účet a začněte využívat všechny funkce
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          {/* Google Sign Up Button */}
+        <CardContent className="grid gap-4">
+          {/* Google Register Button */}
           <Button 
             type="button" 
             variant="outline" 
-            className="w-full flex items-center justify-center gap-2 mb-4"
-            onClick={handleGoogleSignUp}
-            disabled={googleLoading}
+            className="w-full flex items-center justify-center gap-2"
+            onClick={handleGoogleRegister}
+            disabled={isGoogleLoading}
           >
-            {googleLoading ? (
+            {isGoogleLoading ? (
               "Registrace..."
             ) : (
               <>
@@ -248,12 +117,12 @@ const Register = () => {
                     <path fill="#EA4335" d="M -14.754 43.989 C -12.984 43.989 -11.404 44.599 -10.154 45.789 L -6.734 42.369 C -8.804 40.429 -11.514 39.239 -14.754 39.239 C -19.444 39.239 -23.494 41.939 -25.464 45.859 L -21.484 48.949 C -20.534 46.099 -17.884 43.989 -14.754 43.989 Z" />
                   </g>
                 </svg>
-                Registrovat se s Google
+                Registrovat se pomocí Google
               </>
             )}
           </Button>
           
-          <div className="relative mb-4">
+          <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <Separator className="w-full" />
             </div>
@@ -264,109 +133,64 @@ const Register = () => {
             </div>
           </div>
           
-          <form onSubmit={handleSubmit}>
-            <div className="grid gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="name">Jméno a příjmení</Label>
-                <Input
-                  id="name"
-                  name="name"
-                  placeholder="Jan Novák"
-                  autoComplete="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  disabled={loading}
-                />
-                {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder="vas@email.cz"
-                  autoComplete="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  disabled={loading}
-                />
-                {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="password">Heslo</Label>
-                <Input
-                  id="password"
-                  name="password"
-                  type="password"
-                  placeholder="********"
-                  autoComplete="new-password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  disabled={loading}
-                />
-                {errors.password && <p className="text-sm text-red-500">{errors.password}</p>}
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="confirmPassword">Potvrzení hesla</Label>
-                <Input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type="password"
-                  placeholder="********"
-                  autoComplete="new-password"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  disabled={loading}
-                />
-                {errors.confirmPassword && <p className="text-sm text-red-500">{errors.confirmPassword}</p>}
-              </div>
-              
-              {/* Promo Code Field */}
-              <div className="grid gap-2">
-                <Label htmlFor="promoCode">Promo kód (volitelné)</Label>
-                <Input
-                  id="promoCode"
-                  name="promoCode"
-                  placeholder="PROMO-PENDLER2025"
-                  value={formData.promoCode}
-                  onChange={handleChange}
-                  disabled={loading}
-                />
-                <p className="text-xs text-muted-foreground">
-                  Máte promo kód? Zadejte ho zde pro aktivaci prémiových funkcí
-                </p>
-                {errors.promoCode && <p className="text-sm text-red-500">{errors.promoCode}</p>}
-              </div>
-              
-              <div className="flex items-center space-x-2">
-                <Checkbox 
-                  id="agreeTerms" 
-                  name="agreeTerms"
-                  checked={formData.agreeTerms}
-                  onCheckedChange={(checked) => 
-                    setFormData({...formData, agreeTerms: checked === true})
-                  }
-                  disabled={loading}
-                />
-                <Label htmlFor="agreeTerms" className="text-sm">
-                  Souhlasím s <Link to="/terms" className="text-primary hover:underline">podmínkami</Link> a{" "}
-                  <Link to="/privacy" className="text-primary hover:underline">ochranou osobních údajů</Link>
-                </Label>
-              </div>
-              {errors.agreeTerms && <p className="text-sm text-red-500">{errors.agreeTerms}</p>}
-              <Button type="submit" className="w-full mt-4" disabled={loading}>
-                {loading ? "Registrace..." : "Registrovat se"}
-                {!loading && <ArrowRight className="ml-2 h-4 w-4" />}
-              </Button>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid gap-2">
+              <Label htmlFor="username">Uživatelské jméno (volitelné)</Label>
+              <Input
+                id="username"
+                type="text"
+                placeholder="Vaše uživatelské jméno"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
             </div>
+            <div className="grid gap-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="vas@email.cz"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="password">Heslo</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="Alespoň 6 znaků"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="confirmPassword">Potvrďte heslo</Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                placeholder="Zadejte heslo znovu"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
+            </div>
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={isLoading}
+            >
+              {isLoading ? "Registrování..." : "Vytvořit účet"}
+            </Button>
           </form>
         </CardContent>
-        <CardFooter className="flex flex-col space-y-4">
-          <div className="text-sm text-center text-muted-foreground">
+        <CardFooter>
+          <div className="text-center w-full text-sm">
             Již máte účet?{" "}
-            <Link to="/login" className="text-primary hover:underline">
-              Přihlásit se
+            <Link to="/login" className="text-primary underline-offset-4 hover:underline">
+              Přihlaste se
             </Link>
           </div>
         </CardFooter>
