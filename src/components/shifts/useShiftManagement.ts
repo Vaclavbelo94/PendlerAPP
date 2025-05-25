@@ -88,6 +88,14 @@ export const useShiftManagement = (user: any) => {
     }
   }, [currentShift]);
   
+  // Helper function to format date correctly for database
+  const formatDateForDB = (date: Date): string => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+  
   // Handle saving shift
   const handleSaveShift = async () => {
     if (!selectedDate || !user) {
@@ -99,8 +107,11 @@ export const useShiftManagement = (user: any) => {
       return;
     }
     
+    const formattedDate = formatDateForDB(selectedDate);
+    console.log("Saving shift for date:", formattedDate, "from selected date:", selectedDate);
+    
     const shiftData = {
-      date: selectedDate.toISOString().split('T')[0], // Format as YYYY-MM-DD
+      date: formattedDate,
       type: shiftType,
       notes: shiftNotes.trim(),
       user_id: user.id
@@ -112,7 +123,7 @@ export const useShiftManagement = (user: any) => {
         .from('shifts')
         .select('*')
         .eq('user_id', user.id)
-        .eq('date', shiftData.date);
+        .eq('date', formattedDate);
         
       if (checkError) throw checkError;
       
