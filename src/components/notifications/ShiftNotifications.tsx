@@ -1,61 +1,71 @@
 
 import { useEffect } from 'react';
 import { useNotifications } from '@/hooks/useNotifications';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 
 interface Shift {
   id: string;
-  title: string;
-  start: string;
-  end: string;
-  location: string;
+  date: string;
+  type: string;
+  notes?: string;
+  user_id: string;
 }
 
 // This component handles the logic for automatically creating notifications based on shifts
 export const ShiftNotifications = () => {
   const { addNotification, notifications } = useNotifications();
+  const { user } = useAuth();
   
   useEffect(() => {
     // Function to check for upcoming shifts and create notifications
-    const checkUpcomingShifts = () => {
+    const checkUpcomingShifts = async () => {
+      if (!user) return;
+      
       try {
-        // Load shifts from localStorage
-        const shifts: Shift[] = JSON.parse(localStorage.getItem('shifts') || '[]');
         const now = new Date();
         
         // Calculate tomorrow's date
         const tomorrow = new Date();
         tomorrow.setDate(now.getDate() + 1);
-        tomorrow.setHours(0, 0, 0, 0);
+        const tomorrowDateString = tomorrow.toISOString().split('T')[0];
         
-        // Calculate day after tomorrow
-        const dayAfterTomorrow = new Date();
-        dayAfterTomorrow.setDate(now.getDate() + 2);
-        dayAfterTomorrow.setHours(0, 0, 0, 0);
+        // Fetch shifts for tomorrow from Supabase
+        const { data: shifts, error } = await supabase
+          .from('shifts')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('date', tomorrowDateString);
+          
+        if (error) {
+          console.error('Error fetching shifts:', error);
+          return;
+        }
         
         // Check for shifts starting tomorrow
-        shifts.forEach(shift => {
-          const shiftStartDate = new Date(shift.start);
+        shifts?.forEach(shift => {
+          // Check if notification already exists
+          const notificationExists = notifications.some(notif => 
+            notif.relatedTo?.type === 'shift' && 
+            notif.relatedTo.id === shift.id &&
+            notif.title.includes('Zítra')
+          );
           
-          // Create a notification for shifts starting tomorrow
-          if (shiftStartDate >= tomorrow && shiftStartDate < dayAfterTomorrow) {
-            // Check if notification already exists
-            const notificationExists = notifications.some(notif => 
-              notif.relatedTo?.type === 'shift' && 
-              notif.relatedTo.id === shift.id &&
-              notif.title.includes('Zítra')
-            );
+          if (!notificationExists) {
+            const shiftTypeText = shift.type === 'morning' ? 'Ranní' : 
+                                shift.type === 'afternoon' ? 'Odpolední' : 'Noční';
+            const timeText = shift.type === 'morning' ? '6:00' : 
+                           shift.type === 'afternoon' ? '14:00' : '22:00';
             
-            if (!notificationExists) {
-              addNotification({
-                title: 'Zítra začíná směna',
-                message: `Směna "${shift.title}" začíná zítra v ${shiftStartDate.getHours()}:${String(shiftStartDate.getMinutes()).padStart(2, '0')} v lokaci ${shift.location}`,
-                type: 'warning',
-                relatedTo: {
-                  type: 'shift',
-                  id: shift.id
-                }
-              });
-            }
+            addNotification({
+              title: 'Zítra začíná směna',
+              message: `${shiftTypeText} směna začíná zítra v ${timeText}${shift.notes ? ` - ${shift.notes}` : ''}`,
+              type: 'warning',
+              relatedTo: {
+                type: 'shift',
+                id: shift.id
+              }
+            });
           }
         });
       } catch (error) {
@@ -64,13 +74,15 @@ export const ShiftNotifications = () => {
     };
     
     // Check immediately and then set interval
-    checkUpcomingShifts();
-    
-    // Set interval to check once every hour
-    const intervalId = setInterval(checkUpcomingShifts, 60 * 60 * 1000);
-    
-    return () => clearInterval(intervalId);
-  }, [addNotification, notifications]);
+    if (user) {
+      checkUpcomingShifts();
+      
+      // Set interval to check once every hour
+      const intervalId = setInterval(checkUpcomingShifts, 60 * 60 * 1000);
+      
+      return () => clearInterval(intervalId);
+    }
+  }, [addNotification, notifications, user]);
   
   // This component doesn't render anything, it just adds logic
   return null;

@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { Shift, ShiftType } from "./types";
 import { toast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 export const useShiftManagement = (user: any) => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
@@ -12,27 +13,59 @@ export const useShiftManagement = (user: any) => {
   const [analyticsPeriod, setAnalyticsPeriod] = useState<import("./types").AnalyticsPeriod>("month");
   const [noteDialogOpen, setNoteDialogOpen] = useState(false);
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Load shifts from localStorage on component mount
+  // Load shifts from Supabase when user is available
   useEffect(() => {
-    try {
-      const savedShifts = localStorage.getItem("shifts");
-      if (savedShifts) {
-        setShifts(JSON.parse(savedShifts));
+    const loadShifts = async () => {
+      if (!user) return;
+      
+      setIsLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('shifts')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('date', { ascending: false });
+
+        if (error) throw error;
+
+        const formattedShifts = data?.map(shift => ({
+          id: shift.id,
+          date: new Date(shift.date),
+          type: shift.type as ShiftType,
+          notes: shift.notes || "",
+          userId: shift.user_id
+        })) || [];
+
+        setShifts(formattedShifts);
+        
+        // Also save to localStorage as backup
+        localStorage.setItem("shifts", JSON.stringify(formattedShifts));
+      } catch (error) {
+        console.error("Error loading shifts:", error);
+        // Fallback to localStorage if Supabase fails
+        try {
+          const savedShifts = localStorage.getItem("shifts");
+          if (savedShifts) {
+            const parsedShifts = JSON.parse(savedShifts).map((shift: any) => ({
+              ...shift,
+              date: new Date(shift.date)
+            }));
+            setShifts(parsedShifts);
+          }
+        } catch (e) {
+          console.error("Error loading shifts from localStorage:", e);
+        }
+      } finally {
+        setIsLoading(false);
       }
-    } catch (e) {
-      console.error("Error loading shifts:", e);
+    };
+
+    if (user) {
+      loadShifts();
     }
-  }, []);
-  
-  // Save shifts to localStorage whenever they change
-  useEffect(() => {
-    try {
-      localStorage.setItem("shifts", JSON.stringify(shifts));
-    } catch (e) {
-      console.error("Error saving shifts:", e);
-    }
-  }, [shifts]);
+  }, [user]);
 
   // Find current shift for the selected date
   const getCurrentShift = () => {
@@ -57,52 +90,125 @@ export const useShiftManagement = (user: any) => {
   }, [currentShift]);
   
   // Handle saving shift
-  const handleSaveShift = () => {
-    if (!selectedDate || !user) return;
-    
-    const newShift = {
-      id: currentShift?.id || Date.now().toString(),
-      date: selectedDate,
-      type: shiftType,
-      notes: shiftNotes.trim(),
-      userId: user.id || user.email
-    };
-    
-    let updatedShifts;
-    
-    if (currentShift) {
-      // Update existing shift
-      updatedShifts = shifts.map(
-        (shift) => (shift.id === currentShift.id ? newShift : shift)
-      );
+  const handleSaveShift = async () => {
+    if (!selectedDate || !user) {
       toast({
-        title: "Směna aktualizována",
-        description: `Směna byla úspěšně upravena.`,
+        title: "Chyba",
+        description: "Pro uložení směny musíte být přihlášeni a vybrat datum.",
+        variant: "destructive"
       });
-    } else {
-      // Add new shift
-      updatedShifts = [...shifts, newShift];
-      toast({
-        title: "Směna přidána",
-        description: `Nová směna byla úspěšně přidána.`,
-      });
+      return;
     }
     
-    setShifts(updatedShifts);
+    const shiftData = {
+      date: selectedDate.toISOString().split('T')[0], // Format as YYYY-MM-DD
+      type: shiftType,
+      notes: shiftNotes.trim(),
+      user_id: user.id
+    };
+    
+    try {
+      let savedShift;
+      
+      if (currentShift) {
+        // Update existing shift
+        const { data, error } = await supabase
+          .from('shifts')
+          .update(shiftData)
+          .eq('id', currentShift.id)
+          .select()
+          .single();
+          
+        if (error) throw error;
+        savedShift = data;
+        
+        toast({
+          title: "Směna aktualizována",
+          description: `Směna byla úspěšně upravena.`,
+        });
+      } else {
+        // Add new shift
+        const { data, error } = await supabase
+          .from('shifts')
+          .insert(shiftData)
+          .select()
+          .single();
+          
+        if (error) throw error;
+        savedShift = data;
+        
+        toast({
+          title: "Směna přidána",
+          description: `Nová směna byla úspěšně přidána.`,
+        });
+      }
+      
+      // Update local state
+      const formattedShift = {
+        id: savedShift.id,
+        date: new Date(savedShift.date),
+        type: savedShift.type as ShiftType,
+        notes: savedShift.notes || "",
+        userId: savedShift.user_id
+      };
+      
+      if (currentShift) {
+        setShifts(prev => prev.map(shift => 
+          shift.id === currentShift.id ? formattedShift : shift
+        ));
+      } else {
+        setShifts(prev => [...prev, formattedShift]);
+      }
+      
+      // Update localStorage backup
+      const updatedShifts = currentShift 
+        ? shifts.map(shift => shift.id === currentShift.id ? formattedShift : shift)
+        : [...shifts, formattedShift];
+      localStorage.setItem("shifts", JSON.stringify(updatedShifts));
+      
+    } catch (error) {
+      console.error("Error saving shift:", error);
+      toast({
+        title: "Chyba při ukládání",
+        description: "Nepodařilo se uložit směnu. Zkuste to prosím znovu.",
+        variant: "destructive"
+      });
+    }
   };
   
   // Handle deleting shift
-  const handleDeleteShift = () => {
-    if (!currentShift) return;
+  const handleDeleteShift = async () => {
+    if (!currentShift || !user) return;
     
-    const updatedShifts = shifts.filter((shift) => shift.id !== currentShift.id);
-    setShifts(updatedShifts);
-    
-    toast({
-      title: "Směna odstraněna",
-      description: `Směna byla úspěšně odstraněna.`,
-      variant: "destructive"
-    });
+    try {
+      const { error } = await supabase
+        .from('shifts')
+        .delete()
+        .eq('id', currentShift.id)
+        .eq('user_id', user.id);
+        
+      if (error) throw error;
+      
+      // Update local state
+      const updatedShifts = shifts.filter((shift) => shift.id !== currentShift.id);
+      setShifts(updatedShifts);
+      
+      // Update localStorage backup
+      localStorage.setItem("shifts", JSON.stringify(updatedShifts));
+      
+      toast({
+        title: "Směna odstraněna",
+        description: `Směna byla úspěšně odstraněna.`,
+        variant: "destructive"
+      });
+    } catch (error) {
+      console.error("Error deleting shift:", error);
+      toast({
+        title: "Chyba při mazání",
+        description: "Nepodařilo se odstranit směnu. Zkuste to prosím znovu.",
+        variant: "destructive"
+      });
+    }
   };
   
   // Handle saving notes from dialog
@@ -135,6 +241,7 @@ export const useShiftManagement = (user: any) => {
     currentShift,
     handleSaveShift,
     handleDeleteShift,
-    handleSaveNotes
+    handleSaveNotes,
+    isLoading
   };
 };

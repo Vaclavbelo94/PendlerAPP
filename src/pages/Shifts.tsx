@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useAuth } from "@/hooks/useAuth";
 import {
   CalendarIcon,
   ClockIcon,
@@ -15,15 +16,43 @@ import { ShiftCalendarTab } from "@/components/shifts/ShiftCalendarTab";
 import { PlanningTab } from "@/components/shifts/PlanningTab";
 import { ReportsTab } from "@/components/shifts/ReportsTab";
 import ShiftAnalytics from "@/components/shifts/ShiftAnalytics";
+import { useShiftManagement } from "@/components/shifts/useShiftManagement";
+import { EditNoteDialog } from "@/components/shifts/EditNoteDialog";
 
 const Shifts = () => {
   const [activeTab, setActiveTab] = useState("calendar");
   const isMobile = useIsMobile();
+  const { user } = useAuth();
 
-  // Mock data for components that need props
-  const mockShifts = [];
-  const mockUser = null;
-  const mockPeriod = "week" as const;
+  const {
+    selectedDate,
+    setSelectedDate,
+    shifts,
+    shiftType,
+    setShiftType,
+    shiftNotes,
+    setShiftNotes,
+    selectedMonth,
+    setSelectedMonth,
+    analyticsPeriod,
+    setAnalyticsPeriod,
+    noteDialogOpen,
+    setNoteDialogOpen,
+    exportDialogOpen,
+    setExportDialogOpen,
+    currentShift,
+    handleSaveShift,
+    handleDeleteShift,
+    handleSaveNotes
+  } = useShiftManagement(user);
+
+  const handleOpenNoteDialog = () => {
+    setNoteDialogOpen(true);
+  };
+
+  const handleSaveNote = () => {
+    handleSaveNotes(shiftNotes);
+  };
 
   return (
     <div className="container py-6 md:py-10 max-w-7xl">
@@ -60,37 +89,46 @@ const Shifts = () => {
 
         <TabsContent value="calendar" className="space-y-6">
           <ShiftCalendarTab 
-            selectedDate={undefined}
-            onSelectDate={() => {}}
-            shifts={mockShifts}
-            currentShift={null}
-            shiftType="morning"
-            setShiftType={() => {}}
-            shiftNotes=""
-            setShiftNotes={() => {}}
-            user={mockUser}
-            onSaveShift={() => {}}
-            onDeleteShift={() => {}}
-            onOpenNoteDialog={() => {}}
+            selectedDate={selectedDate}
+            onSelectDate={setSelectedDate}
+            shifts={shifts}
+            currentShift={currentShift}
+            shiftType={shiftType}
+            setShiftType={setShiftType}
+            shiftNotes={shiftNotes}
+            setShiftNotes={setShiftNotes}
+            user={user}
+            onSaveShift={handleSaveShift}
+            onDeleteShift={handleDeleteShift}
+            onOpenNoteDialog={handleOpenNoteDialog}
           />
         </TabsContent>
 
         <TabsContent value="planning" className="space-y-6">
-          <PlanningTab user={mockUser} />
+          <PlanningTab user={user} />
         </TabsContent>
 
         <TabsContent value="analytics" className="space-y-6">
           <ShiftAnalytics 
-            shifts={mockShifts}
-            period={mockPeriod}
-            onPeriodChange={() => {}}
+            shifts={shifts}
+            period={analyticsPeriod}
+            onPeriodChange={setAnalyticsPeriod}
           />
         </TabsContent>
 
         <TabsContent value="reports" className="space-y-6">
-          <ReportsTab shifts={mockShifts} user={mockUser} />
+          <ReportsTab shifts={shifts} user={user} />
         </TabsContent>
       </Tabs>
+
+      <EditNoteDialog
+        open={noteDialogOpen}
+        onOpenChange={setNoteDialogOpen}
+        selectedDate={selectedDate}
+        shiftNotes={shiftNotes}
+        onNotesChange={setShiftNotes}
+        onSaveNote={handleSaveNote}
+      />
     </div>
   );
 };
