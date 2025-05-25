@@ -1,7 +1,8 @@
 
 import React, { useCallback, useRef, useState } from 'react';
-import { Calendar, CalendarProps } from '@/components/ui/calendar';
+import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
+import type { DayPickerSingleProps } from 'react-day-picker';
 
 interface TouchCalendarProps {
   className?: string;
@@ -10,7 +11,7 @@ interface TouchCalendarProps {
   enableTouch?: boolean;
 }
 
-type CombinedTouchCalendarProps = TouchCalendarProps & CalendarProps;
+type CombinedTouchCalendarProps = TouchCalendarProps & DayPickerSingleProps;
 
 export const TouchCalendar: React.FC<CombinedTouchCalendarProps> = ({
   className,
