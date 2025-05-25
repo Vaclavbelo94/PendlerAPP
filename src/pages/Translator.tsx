@@ -1,14 +1,14 @@
-
 import React, { useState, Suspense } from 'react';
 import { Helmet } from "react-helmet";
 import PremiumCheck from "@/components/premium/PremiumCheck";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Languages } from "lucide-react";
 import { useTranslator } from "@/hooks/useTranslator";
 import { useScreenOrientation } from "@/hooks/useScreenOrientation";
 import { usePerformanceOptimization } from "@/hooks/usePerformanceOptimization";
+import { UniversalMobileNavigation } from "@/components/navigation/UniversalMobileNavigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { workPhrases } from "@/data/translatorData";
+import { MessageSquare, Clock, BookOpen } from "lucide-react";
 
 // Lazy load components for better performance
 const TextTranslation = React.lazy(() => import("@/components/translator/TextTranslation"));
@@ -71,8 +71,135 @@ const Translator = () => {
     { code: "pl", name: "Polština" }
   ];
 
+  const translatorTabs = [
+    {
+      id: "translator",
+      label: "Překladač",
+      icon: Languages,
+      description: "Překlad textů mezi jazyky"
+    },
+    {
+      id: "phrasebook",
+      label: "Frázovník",
+      icon: BookOpen,
+      description: "Užitečné fráze pro práci"
+    },
+    {
+      id: "history",
+      label: "Historie",
+      icon: Clock,
+      description: "Předchozí překlady"
+    }
+  ];
+
   // Use mobile layout for mobile devices or small landscape screens
   const useMobileLayout = isMobile || isSmallLandscape;
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case "translator":
+        return (
+          <Suspense fallback={<TranslatorSkeleton />}>
+            {useMobileLayout ? (
+              <OptimizedMobileTranslator
+                sourceText={sourceText}
+                setSourceText={setSourceText}
+                translatedText={translatedText}
+                sourceLanguage={sourceLanguage}
+                setSourceLanguage={setSourceLanguage}
+                targetLanguage={targetLanguage}
+                setTargetLanguage={setTargetLanguage}
+                autoTranslate={autoTranslate}
+                setAutoTranslate={setAutoTranslate}
+                isTranslating={isTranslating}
+                handleTranslate={handleTranslate}
+                handleSwapLanguages={handleSwapLanguages}
+                handleTextToSpeech={handleTextToSpeech}
+                languagePairs={languagePairs}
+              />
+            ) : (
+              <TextTranslation
+                sourceText={sourceText}
+                setSourceText={setSourceText}
+                translatedText={translatedText}
+                sourceLanguage={sourceLanguage}
+                setSourceLanguage={setSourceLanguage}
+                targetLanguage={targetLanguage}
+                setTargetLanguage={setTargetLanguage}
+                autoTranslate={autoTranslate}
+                setAutoTranslate={setAutoTranslate}
+                isTranslating={isTranslating}
+                handleTranslate={handleTranslate}
+                handleSwapLanguages={handleSwapLanguages}
+                handleTextToSpeech={handleTextToSpeech}
+                languagePairs={languagePairs}
+              />
+            )}
+          </Suspense>
+        );
+      case "phrasebook":
+        return (
+          <Suspense fallback={<TranslatorSkeleton />}>
+            <PhrasesTranslation 
+              workPhrases={workPhrases}
+              phrasesTab={phrasesTab}
+              setPhrasesTab={setPhrasesTab}
+              handleUsePhrase={handleUsePhrase}
+            />
+          </Suspense>
+        );
+      case "history":
+        return (
+          <Suspense fallback={<TranslatorSkeleton />}>
+            <TranslationHistory
+              history={history}
+              handleLoadFromHistory={handleLoadFromHistory}
+              handleClearHistory={handleClearHistory}
+            />
+          </Suspense>
+        );
+      default:
+        return (
+          <Suspense fallback={<TranslatorSkeleton />}>
+            {useMobileLayout ? (
+              <OptimizedMobileTranslator
+                sourceText={sourceText}
+                setSourceText={setSourceText}
+                translatedText={translatedText}
+                sourceLanguage={sourceLanguage}
+                setSourceLanguage={setSourceLanguage}
+                targetLanguage={targetLanguage}
+                setTargetLanguage={setTargetLanguage}
+                autoTranslate={autoTranslate}
+                setAutoTranslate={setAutoTranslate}
+                isTranslating={isTranslating}
+                handleTranslate={handleTranslate}
+                handleSwapLanguages={handleSwapLanguages}
+                handleTextToSpeech={handleTextToSpeech}
+                languagePairs={languagePairs}
+              />
+            ) : (
+              <TextTranslation
+                sourceText={sourceText}
+                setSourceText={setSourceText}
+                translatedText={translatedText}
+                sourceLanguage={sourceLanguage}
+                setSourceLanguage={setSourceLanguage}
+                targetLanguage={targetLanguage}
+                setTargetLanguage={setTargetLanguage}
+                autoTranslate={autoTranslate}
+                setAutoTranslate={setAutoTranslate}
+                isTranslating={isTranslating}
+                handleTranslate={handleTranslate}
+                handleSwapLanguages={handleSwapLanguages}
+                handleTextToSpeech={handleTextToSpeech}
+                languagePairs={languagePairs}
+              />
+            )}
+          </Suspense>
+        );
+    }
+  };
 
   return (
     <PremiumCheck featureKey="translator">
@@ -99,80 +226,15 @@ const Translator = () => {
           }
         </p>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className={`${useMobileLayout ? 'grid w-full grid-cols-3' : ''} ${isSmallLandscape ? 'h-8' : ''}`}>
-            <TabsTrigger value="translator" className={`${useMobileLayout ? 'text-xs' : ''} ${isSmallLandscape ? 'py-1 text-xs' : ''}`}>
-              {useMobileLayout ? 'Překladač' : 'Překladač'}
-            </TabsTrigger>
-            <TabsTrigger value="phrasebook" className={`${useMobileLayout ? 'text-xs' : ''} ${isSmallLandscape ? 'py-1 text-xs' : ''}`}>
-              {useMobileLayout ? 'Fráze' : 'Frázovník'}
-            </TabsTrigger>
-            <TabsTrigger value="history" className={`${useMobileLayout ? 'text-xs' : ''} ${isSmallLandscape ? 'py-1 text-xs' : ''}`}>
-              Historie
-            </TabsTrigger>
-          </TabsList>
+        <UniversalMobileNavigation
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          tabs={translatorTabs}
+        />
 
-          <TabsContent value="translator">
-            <Suspense fallback={<TranslatorSkeleton />}>
-              {useMobileLayout ? (
-                <OptimizedMobileTranslator
-                  sourceText={sourceText}
-                  setSourceText={setSourceText}
-                  translatedText={translatedText}
-                  sourceLanguage={sourceLanguage}
-                  setSourceLanguage={setSourceLanguage}
-                  targetLanguage={targetLanguage}
-                  setTargetLanguage={setTargetLanguage}
-                  autoTranslate={autoTranslate}
-                  setAutoTranslate={setAutoTranslate}
-                  isTranslating={isTranslating}
-                  handleTranslate={handleTranslate}
-                  handleSwapLanguages={handleSwapLanguages}
-                  handleTextToSpeech={handleTextToSpeech}
-                  languagePairs={languagePairs}
-                />
-              ) : (
-                <TextTranslation
-                  sourceText={sourceText}
-                  setSourceText={setSourceText}
-                  translatedText={translatedText}
-                  sourceLanguage={sourceLanguage}
-                  setSourceLanguage={setSourceLanguage}
-                  targetLanguage={targetLanguage}
-                  setTargetLanguage={setTargetLanguage}
-                  autoTranslate={autoTranslate}
-                  setAutoTranslate={setAutoTranslate}
-                  isTranslating={isTranslating}
-                  handleTranslate={handleTranslate}
-                  handleSwapLanguages={handleSwapLanguages}
-                  handleTextToSpeech={handleTextToSpeech}
-                  languagePairs={languagePairs}
-                />
-              )}
-            </Suspense>
-          </TabsContent>
-          
-          <TabsContent value="phrasebook">
-            <Suspense fallback={<TranslatorSkeleton />}>
-              <PhrasesTranslation 
-                workPhrases={workPhrases}
-                phrasesTab={phrasesTab}
-                setPhrasesTab={setPhrasesTab}
-                handleUsePhrase={handleUsePhrase}
-              />
-            </Suspense>
-          </TabsContent>
-          
-          <TabsContent value="history">
-            <Suspense fallback={<TranslatorSkeleton />}>
-              <TranslationHistory
-                history={history}
-                handleLoadFromHistory={handleLoadFromHistory}
-                handleClearHistory={handleClearHistory}
-              />
-            </Suspense>
-          </TabsContent>
-        </Tabs>
+        <div className="space-y-6">
+          {renderTabContent()}
+        </div>
       </div>
     </PremiumCheck>
   );

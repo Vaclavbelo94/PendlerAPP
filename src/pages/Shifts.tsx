@@ -1,22 +1,52 @@
 
 import React, { useState, useCallback, useMemo } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useScreenOrientation } from "@/hooks/useScreenOrientation";
+import { UniversalMobileNavigation } from "@/components/navigation/UniversalMobileNavigation";
 import PremiumCheck from '@/components/premium/PremiumCheck';
 import ResponsivePage from "@/components/layouts/ResponsivePage";
 import { ShiftsErrorBoundary } from "@/components/shifts/ShiftsErrorBoundary";
 
 // Import refactored components
 import { ShiftsHeader } from "@/components/shifts/ShiftsHeader";
-import { ShiftsNavigation } from "@/components/shifts/ShiftsNavigation";
 import { ShiftsContent } from "@/components/shifts/ShiftsContent";
 import { useUnifiedShiftManagement } from "@/components/shifts/hooks/useUnifiedShiftManagement";
 import { LazyEditNoteDialog } from "@/components/shifts/lazy/LazyShiftComponents";
 import MobileShiftActions from "@/components/shifts/mobile/MobileShiftActions";
 import { ShiftWidgets } from "@/components/shifts/dashboard/ShiftWidgets";
+import { Calendar, BarChart3, FileText, Settings } from "lucide-react";
 
 const Shifts = () => {
   const [activeSection, setActiveSection] = useState("calendar");
   const { user } = useAuth();
+  const { isMobile } = useScreenOrientation();
+
+  const shiftTabs = [
+    {
+      id: "calendar",
+      label: "Kalendář",
+      icon: Calendar,
+      description: "Plánování a správa směn"
+    },
+    {
+      id: "analytics",
+      label: "Analýzy",
+      icon: BarChart3,
+      description: "Statistiky a grafy směn"
+    },
+    {
+      id: "reports",
+      label: "Reporty",
+      icon: FileText,
+      description: "Exporty a sestavy"
+    },
+    {
+      id: "settings",
+      label: "Nastavení",
+      icon: Settings,
+      description: "Konfigurace směn"
+    }
+  ];
 
   const {
     selectedDate,
@@ -53,11 +83,11 @@ const Shifts = () => {
   }, [setSelectedDate]);
 
   const handleNotificationSettings = useCallback(() => {
-    // TODO: Open notification settings dialog
+    setActiveSection("settings");
   }, []);
 
   const handleShareSchedule = useCallback(() => {
-    // TODO: Implement share functionality
+    setActiveSection("reports");
   }, []);
 
   // Memoized widgets component
@@ -92,9 +122,10 @@ const Shifts = () => {
 
             {shiftsWidgets}
 
-            <ShiftsNavigation 
-              activeSection={activeSection}
-              onSectionChange={setActiveSection}
+            <UniversalMobileNavigation
+              activeTab={activeSection}
+              onTabChange={setActiveSection}
+              tabs={shiftTabs}
             />
 
             <ShiftsContent
