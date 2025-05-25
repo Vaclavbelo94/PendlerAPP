@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -13,7 +12,7 @@ interface SidebarUserSectionProps {
 
 const SidebarUserSection = ({ closeSidebar, isCompact = false }: SidebarUserSectionProps) => {
   const navigate = useNavigate();
-  const { user, isPremium, logout } = useAuth();
+  const { user, isPremium, signOut } = useAuth();
 
   const handleNavigation = (path: string) => {
     navigate(path);
@@ -21,7 +20,7 @@ const SidebarUserSection = ({ closeSidebar, isCompact = false }: SidebarUserSect
   };
 
   const handleLogout = async () => {
-    await logout();
+    await signOut();
     closeSidebar();
   };
 
