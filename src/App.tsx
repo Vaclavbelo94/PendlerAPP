@@ -23,6 +23,7 @@ import Profile from './pages/Profile';
 import TravelPlanning from './pages/TravelPlanning';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import NotFound from './pages/NotFound';
 import { ShiftNotifications } from "@/components/notifications/ShiftNotifications";
 import Translator from './pages/Translator';
 
@@ -85,6 +86,9 @@ function App() {
                 <Route path="/premium" element={<Premium />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/travel-planning" element={<TravelPlanning />} />
+                
+                {/* 404 Route - must be last */}
+                <Route path="*" element={<NotFound />} />
               </Routes>
             </LayoutWrapper>
           </BrowserRouter>

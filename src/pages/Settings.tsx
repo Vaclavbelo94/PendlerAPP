@@ -19,6 +19,8 @@ import LanguageSettings from '@/components/settings/LanguageSettings';
 import AccountSettings from '@/components/settings/AccountSettings';
 import DataSettings from '@/components/settings/DataSettings';
 import PrivacySettings from '@/components/settings/PrivacySettings';
+import DeviceSettings from '@/components/settings/DeviceSettings';
+import SecuritySettings from '@/components/settings/SecuritySettings';
 import { useSyncSettings } from '@/hooks/useSyncSettings';
 
 const Settings = () => {
@@ -37,7 +39,7 @@ const Settings = () => {
       </div>
 
       <Tabs defaultValue="general" className="space-y-6">
-        <TabsList className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 max-w-full h-auto">
+        <TabsList className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 max-w-full h-auto">
           <TabsTrigger value="general" className="flex flex-col items-center gap-1 py-3">
             <SettingsIcon className="h-4 w-4" />
             <span className="text-xs">Obecné</span>
@@ -58,13 +60,17 @@ const Settings = () => {
             <Globe className="h-4 w-4" />
             <span className="text-xs">Jazyk</span>
           </TabsTrigger>
+          <TabsTrigger value="security" className="flex flex-col items-center gap-1 py-3">
+            <Shield className="h-4 w-4" />
+            <span className="text-xs">Bezpečnost</span>
+          </TabsTrigger>
+          <TabsTrigger value="device" className="flex flex-col items-center gap-1 py-3">
+            <Smartphone className="h-4 w-4" />
+            <span className="text-xs">Zařízení</span>
+          </TabsTrigger>
           <TabsTrigger value="data" className="flex flex-col items-center gap-1 py-3">
             <Database className="h-4 w-4" />
             <span className="text-xs">Data</span>
-          </TabsTrigger>
-          <TabsTrigger value="privacy" className="flex flex-col items-center gap-1 py-3">
-            <Shield className="h-4 w-4" />
-            <span className="text-xs">Soukromí</span>
           </TabsTrigger>
         </TabsList>
 
@@ -91,12 +97,16 @@ const Settings = () => {
           <LanguageSettings />
         </TabsContent>
 
-        <TabsContent value="data" className="space-y-6">
-          <DataSettings />
+        <TabsContent value="security" className="space-y-6">
+          <SecuritySettings />
         </TabsContent>
 
-        <TabsContent value="privacy" className="space-y-6">
-          <PrivacySettings />
+        <TabsContent value="device" className="space-y-6">
+          <DeviceSettings />
+        </TabsContent>
+
+        <TabsContent value="data" className="space-y-6">
+          <DataSettings />
         </TabsContent>
       </Tabs>
     </div>
