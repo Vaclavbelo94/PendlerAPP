@@ -45,15 +45,15 @@ export interface RideshareContact {
 
 export const rideshareService = {
   // Nabídky spolujízd
-  async createOffer(offer: RideshareOffer) {
+  async createOffer(offer: RideshareOffer): Promise<RideshareOffer> {
     const { data, error } = await supabase
-      .from('rideshare_offers' as any)
+      .from('rideshare_offers')
       .insert([offer])
       .select()
       .single();
     
     if (error) throw error;
-    return data;
+    return data as RideshareOffer;
   },
 
   async getOffers(filters?: { 
@@ -61,9 +61,9 @@ export const rideshareService = {
     destination?: string; 
     date?: string; 
     limit?: number;
-  }) {
+  }): Promise<RideshareOffer[]> {
     let query = supabase
-      .from('rideshare_offers' as any)
+      .from('rideshare_offers')
       .select('*')
       .eq('is_active', true)
       .order('departure_date', { ascending: true });
@@ -83,35 +83,35 @@ export const rideshareService = {
 
     const { data, error } = await query;
     if (error) throw error;
-    return data;
+    return (data || []) as RideshareOffer[];
   },
 
-  async getUserOffers(userId: string) {
+  async getUserOffers(userId: string): Promise<RideshareOffer[]> {
     const { data, error } = await supabase
-      .from('rideshare_offers' as any)
+      .from('rideshare_offers')
       .select('*')
       .eq('user_id', userId)
       .order('departure_date', { ascending: true });
     
     if (error) throw error;
-    return data;
+    return (data || []) as RideshareOffer[];
   },
 
-  async updateOffer(id: string, updates: Partial<RideshareOffer>) {
+  async updateOffer(id: string, updates: Partial<RideshareOffer>): Promise<RideshareOffer> {
     const { data, error } = await supabase
-      .from('rideshare_offers' as any)
+      .from('rideshare_offers')
       .update({ ...updates, updated_at: new Date().toISOString() })
       .eq('id', id)
       .select()
       .single();
     
     if (error) throw error;
-    return data;
+    return data as RideshareOffer;
   },
 
-  async deleteOffer(id: string) {
+  async deleteOffer(id: string): Promise<void> {
     const { error } = await supabase
-      .from('rideshare_offers' as any)
+      .from('rideshare_offers')
       .delete()
       .eq('id', id);
     
@@ -119,15 +119,15 @@ export const rideshareService = {
   },
 
   // Požadavky na spolujízdy
-  async createRequest(request: RideshareRequest) {
+  async createRequest(request: RideshareRequest): Promise<RideshareRequest> {
     const { data, error } = await supabase
-      .from('rideshare_requests' as any)
+      .from('rideshare_requests')
       .insert([request])
       .select()
       .single();
     
     if (error) throw error;
-    return data;
+    return data as RideshareRequest;
   },
 
   async getRequests(filters?: { 
@@ -135,9 +135,9 @@ export const rideshareService = {
     destination?: string; 
     date?: string; 
     limit?: number;
-  }) {
+  }): Promise<RideshareRequest[]> {
     let query = supabase
-      .from('rideshare_requests' as any)
+      .from('rideshare_requests')
       .select('*')
       .eq('is_active', true)
       .order('departure_date', { ascending: true });
@@ -157,41 +157,41 @@ export const rideshareService = {
 
     const { data, error } = await query;
     if (error) throw error;
-    return data;
+    return (data || []) as RideshareRequest[];
   },
 
   // Kontakty
-  async createContact(contact: RideshareContact) {
+  async createContact(contact: RideshareContact): Promise<RideshareContact> {
     const { data, error } = await supabase
-      .from('rideshare_contacts' as any)
+      .from('rideshare_contacts')
       .insert([contact])
       .select()
       .single();
     
     if (error) throw error;
-    return data;
+    return data as RideshareContact;
   },
 
-  async getContactsForOffer(offerId: string) {
+  async getContactsForOffer(offerId: string): Promise<RideshareContact[]> {
     const { data, error } = await supabase
-      .from('rideshare_contacts' as any)
+      .from('rideshare_contacts')
       .select('*')
       .eq('offer_id', offerId)
       .order('created_at', { ascending: false });
     
     if (error) throw error;
-    return data;
+    return (data || []) as RideshareContact[];
   },
 
-  async updateContactStatus(contactId: string, status: RideshareContact['status']) {
+  async updateContactStatus(contactId: string, status: RideshareContact['status']): Promise<RideshareContact> {
     const { data, error } = await supabase
-      .from('rideshare_contacts' as any)
+      .from('rideshare_contacts')
       .update({ status, updated_at: new Date().toISOString() })
       .eq('id', contactId)
       .select()
       .single();
     
     if (error) throw error;
-    return data;
+    return data as RideshareContact;
   }
 };

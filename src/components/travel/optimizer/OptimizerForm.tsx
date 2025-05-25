@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
-import { routeService } from "@/services/routeService";
+import { routeService, RouteSearchHistory } from "@/services/routeService";
 import AddressAutocomplete from '../AddressAutocomplete';
 import TransportModeSelector from './TransportModeSelector';
 import OptimizationPreference from './OptimizationPreference';
@@ -52,9 +52,9 @@ const OptimizerForm = ({
     try {
       const history = await routeService.getSearchHistory(user.id, 5);
       const uniqueAddresses = Array.from(new Set([
-        ...history.map(h => h.origin_address),
-        ...history.map(h => h.destination_address)
-      ])).filter(Boolean);
+        ...history.map((h: RouteSearchHistory) => h.origin_address),
+        ...history.map((h: RouteSearchHistory) => h.destination_address)
+      ])).filter(Boolean) as string[];
       setSearchHistory(uniqueAddresses);
     } catch (error) {
       console.error('Error loading search history:', error);

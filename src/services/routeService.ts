@@ -24,31 +24,31 @@ export interface RouteSearchHistory {
 
 export const routeService = {
   // Uložené trasy
-  async saveRoute(route: SavedRoute) {
+  async saveRoute(route: SavedRoute): Promise<SavedRoute> {
     const { data, error } = await supabase
-      .from('saved_routes' as any)
+      .from('saved_routes')
       .insert([route])
       .select()
       .single();
     
     if (error) throw error;
-    return data;
+    return data as SavedRoute;
   },
 
-  async getSavedRoutes(userId: string) {
+  async getSavedRoutes(userId: string): Promise<SavedRoute[]> {
     const { data, error } = await supabase
-      .from('saved_routes' as any)
+      .from('saved_routes')
       .select('*')
       .eq('user_id', userId)
       .order('updated_at', { ascending: false });
     
     if (error) throw error;
-    return data;
+    return (data || []) as SavedRoute[];
   },
 
-  async deleteSavedRoute(id: string) {
+  async deleteSavedRoute(id: string): Promise<void> {
     const { error } = await supabase
-      .from('saved_routes' as any)
+      .from('saved_routes')
       .delete()
       .eq('id', id);
     
@@ -56,32 +56,32 @@ export const routeService = {
   },
 
   // Historie vyhledávání
-  async addSearchHistory(search: RouteSearchHistory) {
+  async addSearchHistory(search: RouteSearchHistory): Promise<RouteSearchHistory> {
     const { data, error } = await supabase
-      .from('route_search_history' as any)
+      .from('route_search_history')
       .insert([search])
       .select()
       .single();
     
     if (error) throw error;
-    return data;
+    return data as RouteSearchHistory;
   },
 
-  async getSearchHistory(userId: string, limit: number = 10) {
+  async getSearchHistory(userId: string, limit: number = 10): Promise<RouteSearchHistory[]> {
     const { data, error } = await supabase
-      .from('route_search_history' as any)
+      .from('route_search_history')
       .select('*')
       .eq('user_id', userId)
       .order('search_date', { ascending: false })
       .limit(limit);
     
     if (error) throw error;
-    return data;
+    return (data || []) as RouteSearchHistory[];
   },
 
-  async clearSearchHistory(userId: string) {
+  async clearSearchHistory(userId: string): Promise<void> {
     const { error } = await supabase
-      .from('route_search_history' as any)
+      .from('route_search_history')
       .delete()
       .eq('user_id', userId);
     
