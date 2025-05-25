@@ -3,7 +3,7 @@ import React from 'react';
 import { Moon, Sun } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from 'next-themes';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { motion } from 'framer-motion';
 
@@ -40,31 +40,33 @@ export function ThemeToggle({
   };
   
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <motion.div
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-        >
-          <Button
-            variant={variant}
-            size={size}
-            onClick={toggleTheme}
-            className={className}
-            disabled={isChangingTheme}
-            aria-label={theme === 'dark' ? 'Přepnout na světlý režim' : 'Přepnout na tmavý režim'}
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <motion.div
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
           >
-            {theme === 'dark' ? (
-              <Sun className="h-[1.2rem] w-[1.2rem] transition-transform duration-200 rotate-0" />
-            ) : (
-              <Moon className="h-[1.2rem] w-[1.2rem] transition-transform duration-200 rotate-0" />
-            )}
-          </Button>
-        </motion.div>
-      </TooltipTrigger>
-      <TooltipContent>
-        <p>{theme === 'dark' ? 'Přepnout na světlý režim' : 'Přepnout na tmavý režim'}</p>
-      </TooltipContent>
-    </Tooltip>
+            <Button
+              variant={variant}
+              size={size}
+              onClick={toggleTheme}
+              className={className}
+              disabled={isChangingTheme}
+              aria-label={theme === 'dark' ? 'Přepnout na světlý režim' : 'Přepnout na tmavý režim'}
+            >
+              {theme === 'dark' ? (
+                <Sun className="h-[1.2rem] w-[1.2rem] transition-transform duration-200 rotate-0" />
+              ) : (
+                <Moon className="h-[1.2rem] w-[1.2rem] transition-transform duration-200 rotate-0" />
+              )}
+            </Button>
+          </motion.div>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{theme === 'dark' ? 'Přepnout na světlý režim' : 'Přepnout na tmavý režim'}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }

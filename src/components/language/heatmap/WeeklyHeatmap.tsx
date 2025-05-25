@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { isSameDay } from 'date-fns';
 import { DayInfo } from './utils/heatmapUtils';
 import DayCell from './DayCell';
 
@@ -30,8 +31,5 @@ const WeeklyHeatmap: React.FC<WeeklyHeatmapProps> = ({
     </div>
   );
 };
-
-// Add missing import
-import { isSameDay } from 'date-fns';
 
 export default WeeklyHeatmap;
