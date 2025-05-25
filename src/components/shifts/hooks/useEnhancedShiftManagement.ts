@@ -5,7 +5,8 @@ import { useShiftData } from "./useShiftData";
 import { useCurrentShift } from "./useCurrentShift";
 import { EnhancedShiftService } from "../services/enhancedShiftService";
 import { ShiftNotificationService } from "../notifications/ShiftNotificationService";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/use-toast";
+import { errorHandler } from "@/utils/errorHandler";
 
 export const useEnhancedShiftManagement = (user: any) => {
   const { shifts, setShifts, isLoading } = useShiftLoading(user);
@@ -58,8 +59,7 @@ export const useEnhancedShiftManagement = (user: any) => {
       window.dispatchEvent(new CustomEvent('refresh-shifts'));
       
     } catch (error) {
-      console.error("Error saving shift:", error);
-      
+      // Error handling is now done in the service layer
       // Show different messages based on network status
       if (isOnline()) {
         toast({

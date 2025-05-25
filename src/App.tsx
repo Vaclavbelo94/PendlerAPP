@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from "@/hooks/useTheme"
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from "@/components/ui/toaster"
+import { ErrorBoundary } from "@/components/error/ErrorBoundary";
 
 import Layout from '@/components/layouts/Layout';
 import ScrollToTop from '@/components/navigation/ScrollToTop';
@@ -25,39 +26,58 @@ import NotFound from '@/pages/NotFound';
 import { AuthProvider } from '@/hooks/useAuth';
 import { NotificationManager } from '@/components/notifications/NotificationManager';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: (failureCount, error: any) => {
+        // Don't retry on 4xx errors except 429
+        if (error?.status >= 400 && error?.status < 500 && error?.status !== 429) {
+          return false;
+        }
+        return failureCount < 3;
+      },
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    },
+  },
+});
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <ScrollToTop />
-        <AuthProvider>
-          <ThemeProvider>
-            <Toaster />
-            <Layout>
-              <NotificationManager />
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/calculator" element={<Calculator />} />
-                <Route path="/tax-advisor" element={<TaxAdvisor />} />
-                <Route path="/vehicle" element={<Vehicle />} />
-                <Route path="/vocabulary" element={<Vocabulary />} />
-                <Route path="/translator" element={<Translator />} />
-                <Route path="/laws" element={<Laws />} />
-                <Route path="/settings" element={<Settings />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/shifts" element={<Shifts />} />
-                <Route path="/travel-planning" element={<TravelPlanning />} />
-                <Route path="/language" element={<Language />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Layout>
-          </ThemeProvider>
-        </AuthProvider>
-      </BrowserRouter>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <ScrollToTop />
+          <AuthProvider>
+            <ThemeProvider>
+              <Toaster />
+              <Layout>
+                <ErrorBoundary>
+                  <NotificationManager />
+                </ErrorBoundary>
+                <ErrorBoundary>
+                  <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/calculator" element={<Calculator />} />
+                    <Route path="/tax-advisor" element={<TaxAdvisor />} />
+                    <Route path="/vehicle" element={<Vehicle />} />
+                    <Route path="/vocabulary" element={<Vocabulary />} />
+                    <Route path="/translator" element={<Translator />} />
+                    <Route path="/laws" element={<Laws />} />
+                    <Route path="/settings" element={<Settings />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/shifts" element={<Shifts />} />
+                    <Route path="/travel-planning" element={<TravelPlanning />} />
+                    <Route path="/language" element={<Language />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </ErrorBoundary>
+              </Layout>
+            </ThemeProvider>
+          </AuthProvider>
+        </BrowserRouter>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
 

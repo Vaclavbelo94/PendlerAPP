@@ -1,7 +1,7 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { ShiftType } from "../types";
 import { formatDateForDB } from "../utils/dateUtils";
+import { errorHandler } from "@/utils/errorHandler";
 
 export interface EnhancedShiftData {
   date: string;
@@ -95,53 +95,60 @@ export class EnhancedShiftService {
     };
 
     try {
-      // Check for existing shifts
-      const { data: existingShifts, error: checkError } = await supabase
-        .from('shifts')
-        .select('*')
-        .eq('user_id', userId)
-        .eq('date', formattedDate);
-        
-      if (checkError) throw checkError;
-
-      let savedShift;
-      let isUpdate = false;
-
-      if (existingShifts && existingShifts.length > 0) {
-        // Update existing shift
-        const { data, error } = await supabase
+      return await errorHandler.retryOperation(async () => {
+        // Check for existing shifts
+        const { data: existingShifts, error: checkError } = await supabase
           .from('shifts')
-          .update({
-            type: shiftType,
-            notes: shiftNotes.trim(),
-            device_id: this.deviceId,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', existingShifts[0].id)
+          .select('*')
           .eq('user_id', userId)
-          .select()
-          .single();
+          .eq('date', formattedDate);
           
-        if (error) throw error;
-        savedShift = data;
-        isUpdate = true;
-      } else {
-        // Create new shift
-        const { data, error } = await supabase
-          .from('shifts')
-          .insert(shiftData)
-          .select()
-          .single();
-          
-        if (error) throw error;
-        savedShift = data;
-      }
+        if (checkError) throw checkError;
 
-      return { savedShift, isUpdate };
+        let savedShift;
+        let isUpdate = false;
+
+        if (existingShifts && existingShifts.length > 0) {
+          // Update existing shift
+          const { data, error } = await supabase
+            .from('shifts')
+            .update({
+              type: shiftType,
+              notes: shiftNotes.trim(),
+              device_id: this.deviceId,
+              synced_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', existingShifts[0].id)
+            .eq('user_id', userId)
+            .select()
+            .single();
+            
+          if (error) throw error;
+          savedShift = data;
+          isUpdate = true;
+        } else {
+          // Create new shift
+          const { data, error } = await supabase
+            .from('shifts')
+            .insert(shiftData)
+            .select()
+            .single();
+            
+          if (error) throw error;
+          savedShift = data;
+        }
+
+        return { savedShift, isUpdate };
+      }, 3, 1000);
     } catch (error) {
-      // Save to offline queue for later sync - no toast here
+      // Save to offline queue for later sync
       await this.saveToOfflineQueue('UPSERT', shiftData);
-      throw error;
+      throw errorHandler.handleError(error, { 
+        operation: 'saveShiftEnhanced',
+        shiftData,
+        userId 
+      });
     }
   }
 
@@ -158,30 +165,39 @@ export class EnhancedShiftService {
       const existingQueue = JSON.parse(localStorage.getItem('offline_shifts_queue') || '[]');
       existingQueue.push(queueItem);
       localStorage.setItem('offline_shifts_queue', JSON.stringify(existingQueue));
-
-      // Don't show toast here - let the calling code handle notifications
     } catch (error) {
-      console.error('Failed to save to offline queue:', error);
+      errorHandler.handleError(error, { 
+        operation: 'saveToOfflineQueue',
+        action,
+        data 
+      });
     }
   }
 
   async processOfflineQueue() {
     const queue = JSON.parse(localStorage.getItem('offline_shifts_queue') || '[]');
-    if (queue.length === 0) return;
+    if (queue.length === 0) return 0;
 
     const processedItems = [];
     
     for (const item of queue) {
       try {
         if (item.action === 'UPSERT') {
-          await supabase.from('shifts').upsert(item.data);
+          await errorHandler.retryOperation(async () => {
+            const { error } = await supabase.from('shifts').upsert(item.data);
+            if (error) throw error;
+          }, 2, 500);
           processedItems.push(item.id);
         }
       } catch (error) {
         item.retries = (item.retries || 0) + 1;
         if (item.retries >= 3) {
           processedItems.push(item.id);
-          console.error('Max retries reached for item:', item);
+          errorHandler.handleError(error, { 
+            operation: 'processOfflineQueue',
+            item,
+            maxRetriesReached: true 
+          });
         }
       }
     }
