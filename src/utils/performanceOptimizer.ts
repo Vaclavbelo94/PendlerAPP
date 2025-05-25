@@ -6,11 +6,11 @@ export const createLazyComponent = (importFn: () => Promise<any>) => {
   return lazy(importFn);
 };
 
-// Bundle splitting for feature modules
-export const LazyShiftsModule = createLazyComponent(() => import('@/components/shifts/ShiftsPage'));
-export const LazyVehicleModule = createLazyComponent(() => import('@/components/vehicle/VehiclePage'));
-export const LazyCalculatorModule = createLazyComponent(() => import('@/components/calculator/CalculatorPage'));
-export const LazySettingsModule = createLazyComponent(() => import('@/components/settings/SettingsPage'));
+// Bundle splitting for feature modules - using existing pages
+export const LazyShiftsModule = createLazyComponent(() => import('@/pages/Shifts'));
+export const LazyVehicleModule = createLazyComponent(() => import('@/pages/Vehicle'));
+export const LazyCalculatorModule = createLazyComponent(() => import('@/pages/Calculator'));
+export const LazySettingsModule = createLazyComponent(() => import('@/pages/Settings'));
 
 // Performance monitoring utilities
 class PerformanceTracker {

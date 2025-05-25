@@ -20,8 +20,8 @@ import {
 } from '@/utils/performanceOptimizer';
 
 import Index from "@/pages/Index";
-import DashboardPage from "@/pages/DashboardPage";
-import LanguagePage from "@/pages/LanguagePage";
+import Dashboard from "@/pages/Dashboard";
+import Language from "@/pages/Language";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -74,8 +74,8 @@ function AppContent() {
       <div className="min-h-screen bg-background">
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/language" element={<LanguagePage />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/language" element={<Language />} />
           
           {/* Lazy loaded routes */}
           <Route 
