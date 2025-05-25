@@ -1,16 +1,14 @@
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Clock, Calendar, AlertTriangle, ThumbsUp, CalendarClock, MapPin, Navigation } from "lucide-react";
+import { CalendarClock, Navigation } from "lucide-react";
 import { toast } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import AddressAutocomplete from './AddressAutocomplete';
+import TrafficAnalysisForm from './traffic/TrafficAnalysisForm';
+import TrafficPredictionCard from './traffic/TrafficPredictionCard';
 
 interface Shift {
   id: string;
@@ -28,14 +26,27 @@ const TrafficPredictions = () => {
   const [loading, setLoading] = useState(false);
   const isMobile = useIsMobile();
   
-  const weekdays = [
-    { id: "monday", name: "Pondělí" },
-    { id: "tuesday", name: "Úterý" },
-    { id: "wednesday", name: "Středa" },
-    { id: "thursday", name: "Čtvrtek" },
-    { id: "friday", name: "Pátek" },
-    { id: "saturday", name: "Sobota" },
-    { id: "sunday", name: "Neděle" }
+  // Sample traffic predictions with more realistic data
+  const trafficPredictions = [
+    {
+      day: "monday",
+      conditions: [
+        { time: "06:00", status: "normal", description: "Běžný provoz, průměrná doba jízdy 45 minut.", minutes: 45, congestion: 15 },
+        { time: "07:00", status: "heavy", description: "Zvýšený provoz, očekávané zdržení 15-20 minut v oblasti křižovatek.", minutes: 65, congestion: 40 },
+        { time: "08:00", status: "very-heavy", description: "Husté dopravní špičky, silné zdržení na hlavních trasách.", minutes: 75, congestion: 60 },
+        { time: "16:00", status: "heavy", description: "Odpolední špička, očekávané zdržení 10-15 minut.", minutes: 55, congestion: 35 },
+        { time: "17:00", status: "very-heavy", description: "Velmi hustý provoz při návratu, zejména u sjezdů z dálnice.", minutes: 70, congestion: 55 },
+        { time: "18:00", status: "normal", description: "Provoz se zklidňuje, jen lokální zdržení.", minutes: 50, congestion: 20 }
+      ]
+    },
+    {
+      day: "friday",
+      conditions: [
+        { time: "14:00", status: "heavy", description: "Zvýšený páteční provoz, začátek víkendových cest.", minutes: 60, congestion: 45 },
+        { time: "15:00", status: "very-heavy", description: "Velmi hustý provoz, očekávané zdržení 25-30 minut.", minutes: 75, congestion: 65 },
+        { time: "16:00", status: "extreme", description: "Extrémně hustý provoz, doporučujeme alternativní trasu.", minutes: 90, congestion: 80 }
+      ]
+    },
   ];
 
   useEffect(() => {
@@ -63,29 +74,6 @@ const TrafficPredictions = () => {
     }
   };
   
-  // Sample traffic predictions with more realistic data
-  const trafficPredictions = [
-    {
-      day: "monday",
-      conditions: [
-        { time: "06:00", status: "normal", description: "Běžný provoz, průměrná doba jízdy 45 minut.", minutes: 45, congestion: 15 },
-        { time: "07:00", status: "heavy", description: "Zvýšený provoz, očekávané zdržení 15-20 minut v oblasti křižovatek.", minutes: 65, congestion: 40 },
-        { time: "08:00", status: "very-heavy", description: "Husté dopravní špičky, silné zdržení na hlavních trasách.", minutes: 75, congestion: 60 },
-        { time: "16:00", status: "heavy", description: "Odpolední špička, očekávané zdržení 10-15 minut.", minutes: 55, congestion: 35 },
-        { time: "17:00", status: "very-heavy", description: "Velmi hustý provoz při návratu, zejména u sjezdů z dálnice.", minutes: 70, congestion: 55 },
-        { time: "18:00", status: "normal", description: "Provoz se zklidňuje, jen lokální zdržení.", minutes: 50, congestion: 20 }
-      ]
-    },
-    {
-      day: "friday",
-      conditions: [
-        { time: "14:00", status: "heavy", description: "Zvýšený páteční provoz, začátek víkendových cest.", minutes: 60, congestion: 45 },
-        { time: "15:00", status: "very-heavy", description: "Velmi hustý provoz, očekávané zdržení 25-30 minut.", minutes: 75, congestion: 65 },
-        { time: "16:00", status: "extreme", description: "Extrémně hustý provoz, doporučujeme alternativní trasu.", minutes: 90, congestion: 80 }
-      ]
-    },
-  ];
-  
   // Find prediction for selected day and time
   const getCurrentPrediction = () => {
     const dayPredictions = trafficPredictions.find(p => p.day === selectedDay);
@@ -108,26 +96,6 @@ const TrafficPredictions = () => {
   };
   
   const prediction = getCurrentPrediction();
-  
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "normal": return "text-green-500";
-      case "heavy": return "text-yellow-500";
-      case "very-heavy": return "text-orange-500";
-      case "extreme": return "text-red-500";
-      default: return "";
-    }
-  };
-  
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "normal": return <ThumbsUp className="h-5 w-5 text-green-500" />;
-      case "heavy": 
-      case "very-heavy": 
-      case "extreme": return <AlertTriangle className="h-5 w-5 text-orange-500" />;
-      default: return null;
-    }
-  };
   
   const handleAnalyzeRoute = async () => {
     if (!route.from || !route.to) {
@@ -157,128 +125,24 @@ const TrafficPredictions = () => {
 
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Predikce dopravní situace</CardTitle>
-          <CardDescription>Analyzujte dopravní situaci na vaší trase podle dne a času.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className={`grid grid-cols-1 ${isMobile ? '' : 'md:grid-cols-2'} gap-4`}>
-            <div className="space-y-2">
-              <Label htmlFor="route-from">Místo odjezdu</Label>
-              <AddressAutocomplete
-                value={route.from}
-                onChange={(value) => setRoute({...route, from: value})}
-                placeholder="Odkud vyjíždíte"
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="route-to">Cíl cesty</Label>
-              <AddressAutocomplete
-                value={route.to}
-                onChange={(value) => setRoute({...route, to: value})}
-                placeholder="Kam jedete"
-              />
-            </div>
-          </div>
-          
-          <div className={`grid grid-cols-1 ${isMobile ? '' : 'md:grid-cols-2'} gap-4`}>
-            <div className="space-y-2">
-              <Label htmlFor="route-day">Den v týdnu</Label>
-              <Select 
-                value={selectedDay}
-                onValueChange={setSelectedDay}
-              >
-                <SelectTrigger id="route-day">
-                  <SelectValue placeholder="Vyberte den" />
-                </SelectTrigger>
-                <SelectContent>
-                  {weekdays.map(day => (
-                    <SelectItem key={day.id} value={day.id}>{day.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="route-time">Čas odjezdu</Label>
-              <Input 
-                id="route-time" 
-                type="time"
-                value={selectedTime}
-                onChange={(e) => setSelectedTime(e.target.value)}
-              />
-            </div>
-          </div>
-          
-          <Button 
-            onClick={handleAnalyzeRoute} 
-            className="w-full"
-            disabled={loading}
-          >
-            {loading ? "Analyzuji..." : "Analyzovat trasu"}
-          </Button>
-        </CardContent>
-      </Card>
+      <TrafficAnalysisForm
+        route={route}
+        selectedDay={selectedDay}
+        selectedTime={selectedTime}
+        onRouteChange={setRoute}
+        onDayChange={setSelectedDay}
+        onTimeChange={setSelectedTime}
+        onAnalyze={handleAnalyzeRoute}
+        loading={loading}
+        isMobile={isMobile}
+      />
       
       {prediction && (
-        <Card>
-          <CardHeader className="pb-2">
-            <div className="flex justify-between items-start">
-              <div>
-                <CardTitle>Předpověď dopravy</CardTitle>
-                <CardDescription className="flex items-center gap-2 mt-1">
-                  <Calendar className="h-4 w-4" />
-                  {weekdays.find(d => d.id === selectedDay)?.name}
-                  <Clock className="h-4 w-4 ml-2" />
-                  {selectedTime}
-                </CardDescription>
-              </div>
-              {getStatusIcon(prediction.status)}
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="p-4 rounded-lg bg-muted">
-                <div className="grid grid-cols-2 gap-4 mb-3">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Doba jízdy</p>
-                    <p className="text-2xl font-bold">{prediction.minutes} min</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Zatížení</p>
-                    <p className="text-2xl font-bold">{(prediction as any).congestion}%</p>
-                  </div>
-                </div>
-                <p className="text-sm">
-                  <span className={`font-medium ${getStatusColor(prediction.status)}`}>
-                    {prediction.status === "normal" ? "Běžný provoz" : 
-                     prediction.status === "heavy" ? "Zvýšený provoz" : 
-                     prediction.status === "very-heavy" ? "Velmi hustý provoz" : 
-                     "Extrémně hustý provoz"}
-                  </span>
-                  <span className="text-muted-foreground"> - {prediction.description}</span>
-                </p>
-              </div>
-              
-              <div className="space-y-2">
-                <p className="font-medium">Doporučení:</p>
-                <ul className="list-disc list-inside text-sm space-y-1 text-muted-foreground">
-                  {prediction.status === "normal" ? (
-                    <li>Žádná zvláštní doporučení, cesta by měla proběhnout bez komplikací.</li>
-                  ) : (
-                    <>
-                      <li>Vyjeďte o {prediction.status === "heavy" ? "10" : prediction.status === "very-heavy" ? "20" : "30"} minut dříve.</li>
-                      <li>Zvažte alternativní trasu nebo jiný dopravní prostředek.</li>
-                      {prediction.status === "extreme" && <li>Pokud je to možné, přeložte cestu na jiný čas.</li>}
-                    </>
-                  )}
-                </ul>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <TrafficPredictionCard
+          prediction={prediction}
+          selectedDay={selectedDay}
+          selectedTime={selectedTime}
+        />
       )}
       
       <Card>
@@ -302,7 +166,7 @@ const TrafficPredictions = () => {
                         </p>
                         {shiftPrediction && (
                           <div className="flex items-center gap-2 mt-1">
-                            <span className={`text-xs px-2 py-1 rounded ${getStatusColor(shiftPrediction.status)} bg-muted`}>
+                            <span className={`text-xs px-2 py-1 rounded bg-muted`}>
                               {shiftPrediction.minutes} min
                             </span>
                           </div>
