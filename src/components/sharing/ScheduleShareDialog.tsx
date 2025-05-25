@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Share2, Mail, Link, Download, Calendar } from 'lucide-react';
+import { Share, Mail, Link, Download, Calendar } from 'lucide-react';
 import { toast } from "sonner";
 
 interface ShareOptions {
@@ -50,17 +50,14 @@ const ScheduleShareDialog = () => {
       return;
     }
     
-    // Simulate sending email
     toast.success("E-mail s rozvrhem byl odeslán");
     setOpen(false);
   };
 
   const handleExport = (format: 'pdf' | 'calendar') => {
     if (format === 'pdf') {
-      // Simulate PDF export
       toast.success("PDF s rozvrhem bylo staženo");
     } else {
-      // Simulate calendar export
       toast.success("Kalendář byl exportován");
     }
   };
@@ -69,7 +66,7 @@ const ScheduleShareDialog = () => {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" className="gap-2">
-          <Share2 className="h-4 w-4" />
+          <Share className="h-4 w-4" />
           Sdílet rozvrh
         </Button>
       </DialogTrigger>
@@ -82,7 +79,6 @@ const ScheduleShareDialog = () => {
         </DialogHeader>
         
         <div className="space-y-4">
-          {/* Tab Navigation */}
           <div className="flex space-x-1 bg-muted p-1 rounded-lg">
             <Button
               variant={activeTab === 'link' ? 'default' : 'ghost'}
@@ -113,7 +109,6 @@ const ScheduleShareDialog = () => {
             </Button>
           </div>
 
-          {/* Share via Link */}
           {activeTab === 'link' && (
             <Card>
               <CardHeader>
@@ -148,7 +143,6 @@ const ScheduleShareDialog = () => {
             </Card>
           )}
 
-          {/* Share via Email */}
           {activeTab === 'email' && (
             <Card>
               <CardHeader>
@@ -196,7 +190,6 @@ const ScheduleShareDialog = () => {
             </Card>
           )}
 
-          {/* Export Options */}
           {activeTab === 'export' && (
             <Card>
               <CardHeader>

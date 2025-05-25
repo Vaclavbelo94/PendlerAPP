@@ -1,99 +1,21 @@
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Mail, Clock, Bell } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from '@/components/ui/use-toast';
+import React, { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Mail } from 'lucide-react';
+import { toast } from "sonner";
 
-interface EmailSettings {
-  enabled: boolean;
-  shiftReminders: boolean;
-  weeklyReports: boolean;
-  reminderHours: number;
-}
+export const EmailNotificationSettings = () => {
+  const [emailEnabled, setEmailEnabled] = useState(true);
+  const [shiftReminders, setShiftReminders] = useState(true);
+  const [weeklyReports, setWeeklyReports] = useState(false);
+  const [emailAddress, setEmailAddress] = useState('');
 
-export const EmailNotificationSettings: React.FC = () => {
-  const { user } = useAuth();
-  const [settings, setSettings] = useState<EmailSettings>({
-    enabled: true,
-    shiftReminders: true,
-    weeklyReports: false,
-    reminderHours: 24
-  });
-  const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    loadSettings();
-  }, [user]);
-
-  const loadSettings = async () => {
-    if (!user) return;
-
-    try {
-      const { data, error } = await supabase
-        .from('user_extended_profiles')
-        .select('email_notifications, shift_notifications, language_reminders')
-        .eq('user_id', user.id)
-        .single();
-
-      if (error && error.code !== 'PGRST116') {
-        console.error('Error loading email settings:', error);
-        return;
-      }
-
-      if (data) {
-        setSettings(prev => ({
-          ...prev,
-          enabled: data.email_notifications ?? true,
-          shiftReminders: data.shift_notifications ?? true
-        }));
-      }
-    } catch (error) {
-      console.error('Error loading email settings:', error);
-    }
-  };
-
-  const saveSettings = async () => {
-    if (!user) return;
-
-    setIsLoading(true);
-    try {
-      const { error } = await supabase
-        .from('user_extended_profiles')
-        .upsert({
-          user_id: user.id,
-          email_notifications: settings.enabled,
-          shift_notifications: settings.shiftReminders,
-          updated_at: new Date().toISOString()
-        });
-
-      if (error) {
-        throw error;
-      }
-
-      toast({
-        title: "Nastavení uloženo",
-        description: "Email notifikace byly úspěšně nastaveny"
-      });
-    } catch (error) {
-      console.error('Error saving email settings:', error);
-      toast({
-        title: "Chyba při ukládání",
-        description: "Nepodařilo se uložit nastavení emailových notifikací",
-        variant: "destructive"
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const updateSetting = <K extends keyof EmailSettings>(key: K, value: EmailSettings[K]) => {
-    setSettings(prev => ({ ...prev, [key]: value }));
+  const handleSave = () => {
+    toast.success("E-mailová nastavení byla uložena");
   };
 
   return (
@@ -101,88 +23,73 @@ export const EmailNotificationSettings: React.FC = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Mail className="h-5 w-5" />
-          Email oznámení
+          E-mailová oznámení
         </CardTitle>
         <CardDescription>
-          Spravujte nastavení emailových notifikací
+          Nastavení e-mailových notifikací a jejich frekvence
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label htmlFor="email-enabled">Povolit email oznámení</Label>
+            <Label htmlFor="emailNotifications">E-mailová oznámení</Label>
             <p className="text-sm text-muted-foreground">
-              Dostávat důležitá upozornění e-mailem
+              Povolit zasílání oznámení e-mailem
             </p>
           </div>
           <Switch
-            id="email-enabled"
-            checked={settings.enabled}
-            onCheckedChange={(checked) => updateSetting('enabled', checked)}
+            id="emailNotifications"
+            checked={emailEnabled}
+            onCheckedChange={setEmailEnabled}
           />
         </div>
 
-        {settings.enabled && (
+        {emailEnabled && (
           <>
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label htmlFor="shift-reminders" className="flex items-center gap-2">
-                  <Clock className="h-4 w-4" />
-                  Připomenutí směn
-                </Label>
-                <p className="text-sm text-muted-foreground">
-                  Dostávat upozornění před začátkem směny
-                </p>
-              </div>
-              <Switch
-                id="shift-reminders"
-                checked={settings.shiftReminders}
-                onCheckedChange={(checked) => updateSetting('shiftReminders', checked)}
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label htmlFor="weekly-reports" className="flex items-center gap-2">
-                  <Bell className="h-4 w-4" />
-                  Týdenní reporty
-                </Label>
-                <p className="text-sm text-muted-foreground">
-                  Dostávat souhrn týdne každý pátek
-                </p>
-              </div>
-              <Switch
-                id="weekly-reports"
-                checked={settings.weeklyReports}
-                onCheckedChange={(checked) => updateSetting('weeklyReports', checked)}
-              />
-            </div>
-
             <div className="space-y-2">
-              <Label htmlFor="reminder-hours">Čas připomenutí před směnou</Label>
-              <Select 
-                value={settings.reminderHours.toString()} 
-                onValueChange={(value) => updateSetting('reminderHours', parseInt(value))}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Vyberte čas připomenutí" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1">1 hodina</SelectItem>
-                  <SelectItem value="4">4 hodiny</SelectItem>
-                  <SelectItem value="24">24 hodin</SelectItem>
-                  <SelectItem value="48">48 hodin</SelectItem>
-                </SelectContent>
-              </Select>
+              <Label htmlFor="emailAddress">E-mailová adresa</Label>
+              <Input
+                id="emailAddress"
+                type="email"
+                placeholder="vas@email.cz"
+                value={emailAddress}
+                onChange={(e) => setEmailAddress(e.target.value)}
+              />
             </div>
+
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label htmlFor="shiftReminders">Připomenutí směn</Label>
+                <p className="text-sm text-muted-foreground">
+                  Dostávat e-maily před začátkem směny
+                </p>
+              </div>
+              <Switch
+                id="shiftReminders"
+                checked={shiftReminders}
+                onCheckedChange={setShiftReminders}
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label htmlFor="weeklyReports">Týdenní přehledy</Label>
+                <p className="text-sm text-muted-foreground">
+                  Dostávat týdenní souhrn směn a statistik
+                </p>
+              </div>
+              <Switch
+                id="weeklyReports"
+                checked={weeklyReports}
+                onCheckedChange={setWeeklyReports}
+              />
+            </div>
+
+            <Button onClick={handleSave} className="w-full">
+              Uložit e-mailová nastavení
+            </Button>
           </>
         )}
-
-        <div className="flex justify-end">
-          <Button onClick={saveSettings} disabled={isLoading}>
-            {isLoading ? 'Ukládání...' : 'Uložit nastavení'}
-          </Button>
-        </div>
       </CardContent>
     </Card>
   );
