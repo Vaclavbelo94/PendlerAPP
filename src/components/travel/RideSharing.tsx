@@ -22,7 +22,7 @@ interface RideshareOffer {
   price_per_person: number;
   notes: string;
   is_recurring: boolean;
-  recurring_days: string[];
+  recurring_days: number[]; // Changed from string[] to number[]
 }
 
 const RideSharing: React.FC = () => {
@@ -37,7 +37,7 @@ const RideSharing: React.FC = () => {
     price_per_person: 0,
     notes: '',
     is_recurring: false,
-    recurring_days: [] as string[]
+    recurring_days: [] as number[] // Changed from string[] to number[]
   });
 
   useEffect(() => {
@@ -80,7 +80,15 @@ const RideSharing: React.FC = () => {
         .from('rideshare_offers')
         .insert({
           user_id: user.id,
-          ...formData
+          origin_address: formData.origin_address,
+          destination_address: formData.destination_address,
+          departure_date: formData.departure_date,
+          departure_time: formData.departure_time,
+          seats_available: formData.seats_available,
+          price_per_person: formData.price_per_person,
+          notes: formData.notes,
+          is_recurring: formData.is_recurring,
+          recurring_days: formData.recurring_days
         });
 
       if (error) throw error;
