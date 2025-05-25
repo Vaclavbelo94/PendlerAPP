@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -12,6 +11,9 @@ import { useTheme } from "@/hooks/useTheme";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+
+// Import the ColorScheme type
+type ColorScheme = 'purple' | 'blue' | 'green' | 'amber' | 'red' | 'pink';
 
 interface ProfileAppearanceProps {
   initialDarkMode?: boolean;
@@ -142,6 +144,11 @@ const ProfileAppearance = ({
     }
   };
 
+  // Handle color scheme change with proper typing
+  const handleColorSchemeChange = (value: string) => {
+    setColorScheme(value as ColorScheme);
+  };
+
   if (isLoading) {
     return (
       <Card>
@@ -199,7 +206,7 @@ const ProfileAppearance = ({
                 Vyberte hlavní barvu aplikace
               </p>
             </div>
-            <Select value={colorScheme} onValueChange={setColorScheme}>
+            <Select value={colorScheme} onValueChange={handleColorSchemeChange}>
               <SelectTrigger className={`${isMobile ? 'w-full' : 'w-32'}`}>
                 <SelectValue />
               </SelectTrigger>
