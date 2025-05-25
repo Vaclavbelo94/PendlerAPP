@@ -1,45 +1,60 @@
 
 import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 
-export type SyncSettings = {
-  showSyncNotifications: boolean;
+export interface SyncSettings {
   enableBackgroundSync: boolean;
-};
+  showSyncNotifications: boolean;
+  syncInterval: number;
+  lastSyncTime?: string;
+}
 
-// Výchozí nastavení
 const defaultSettings: SyncSettings = {
+  enableBackgroundSync: true,
   showSyncNotifications: true,
-  enableBackgroundSync: true
+  syncInterval: 300000, // 5 minutes
 };
-
-const SYNC_SETTINGS_KEY = 'syncSettings';
 
 export const useSyncSettings = () => {
-  const [settings, setSettings] = useState<SyncSettings>(() => {
-    // Při prvním vykreslení načteme nastavení z localStorage nebo použijeme výchozí
-    if (typeof window !== 'undefined') {
-      const savedSettings = localStorage.getItem(SYNC_SETTINGS_KEY);
-      return savedSettings ? JSON.parse(savedSettings) : defaultSettings;
-    }
-    return defaultSettings;
-  });
+  const [settings, setSettings] = useState<SyncSettings>(defaultSettings);
+  const [loading, setLoading] = useState(false);
 
-  // Uložení nastavení při změně
   useEffect(() => {
-    localStorage.setItem(SYNC_SETTINGS_KEY, JSON.stringify(settings));
-    
-    // Aktualizace session storage pro okamžité uplatnění nastavení notifikací
-    if (!settings.showSyncNotifications) {
-      sessionStorage.setItem('syncNotificationShown', 'true');
+    // Load settings from localStorage on mount
+    const savedSettings = localStorage.getItem('syncSettings');
+    if (savedSettings) {
+      try {
+        const parsed = JSON.parse(savedSettings);
+        setSettings({ ...defaultSettings, ...parsed });
+      } catch (error) {
+        console.error('Error loading sync settings:', error);
+      }
     }
-  }, [settings]);
+  }, []);
 
-  const updateSettings = (newSettings: Partial<SyncSettings>) => {
-    setSettings(prev => ({ ...prev, ...newSettings }));
+  const updateSettings = async (newSettings: Partial<SyncSettings>) => {
+    setLoading(true);
+    try {
+      const updatedSettings = { ...settings, ...newSettings };
+      setSettings(updatedSettings);
+      
+      // Save to localStorage
+      localStorage.setItem('syncSettings', JSON.stringify(updatedSettings));
+      
+      if (newSettings.showSyncNotifications !== undefined) {
+        toast.success('Nastavení synchronizace bylo uloženo');
+      }
+    } catch (error) {
+      console.error('Error updating sync settings:', error);
+      toast.error('Chyba při ukládání nastavení');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return {
     settings,
-    updateSettings
+    updateSettings,
+    loading,
   };
 };

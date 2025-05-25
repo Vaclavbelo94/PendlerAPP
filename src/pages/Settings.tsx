@@ -29,7 +29,7 @@ const Settings = () => {
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
           <SettingsIcon className="h-8 w-8 text-primary" />
-          <h1 className="text-3xl font-bold tracking-tight">Nastavení</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Nastavení aplikace</h1>
         </div>
         <p className="text-muted-foreground">
           Spravujte své preference a nastavení aplikace

@@ -14,7 +14,9 @@ import {
   MapPin,
   Languages,
   Scale,
-  Home
+  Home,
+  User,
+  Settings
 } from "lucide-react";
 
 interface SidebarNavigationProps {
@@ -81,6 +83,19 @@ const SidebarNavigation = ({ closeSidebar }: SidebarNavigationProps) => {
     },
   ];
 
+  const accountNavigation = [
+    {
+      title: "Můj profil",
+      href: "/profile",
+      icon: User,
+    },
+    {
+      title: "Nastavení",
+      href: "/settings",
+      icon: Settings,
+    },
+  ];
+
   const isActive = (href: string) => {
     if (href === "/") {
       return location.pathname === "/";
@@ -128,6 +143,35 @@ const SidebarNavigation = ({ closeSidebar }: SidebarNavigationProps) => {
         </p>
         <nav className="space-y-1">
           {toolsNavigation.map((item) => {
+            const Icon = item.icon;
+            return (
+              <Button
+                key={item.href}
+                variant={isActive(item.href) ? "secondary" : "ghost"}
+                size={buttonSize}
+                asChild
+                className={cn(
+                  buttonClassName,
+                  "w-full text-sidebar-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent",
+                  isActive(item.href) && "bg-sidebar-accent text-sidebar-accent-foreground"
+                )}
+              >
+                <Link to={item.href} onClick={closeSidebar}>
+                  <Icon className={`${isMobile ? 'h-4 w-4' : 'h-4 w-4'} mr-2`} />
+                  {item.title}
+                </Link>
+              </Button>
+            );
+          })}
+        </nav>
+      </div>
+
+      <div>
+        <p className={`text-xs font-medium text-sidebar-foreground/60 pl-4 pb-2 ${isMobile ? 'text-xs' : 'text-xs'}`}>
+          Účet
+        </p>
+        <nav className="space-y-1">
+          {accountNavigation.map((item) => {
             const Icon = item.icon;
             return (
               <Button
