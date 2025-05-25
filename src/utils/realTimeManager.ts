@@ -21,36 +21,25 @@ class RealTimeManager {
       const channel = supabase.channel(channelName);
       
       // Configure the channel based on filter
+      const changeConfig: any = {
+        event,
+        schema: 'public',
+        table
+      };
+      
       if (filter) {
-        channel.on(
-          'postgres_changes',
-          {
-            event,
-            schema: 'public',
-            table,
-            filter: `${filter.column}=eq.${filter.value}`
-          },
-          (payload) => {
-            // Notify all callbacks for this channel
-            const callbacks = this.callbacks.get(channelName) || [];
-            callbacks.forEach(cb => cb(payload));
-          }
-        );
-      } else {
-        channel.on(
-          'postgres_changes',
-          {
-            event,
-            schema: 'public',
-            table
-          },
-          (payload) => {
-            // Notify all callbacks for this channel
-            const callbacks = this.callbacks.get(channelName) || [];
-            callbacks.forEach(cb => cb(payload));
-          }
-        );
+        changeConfig.filter = `${filter.column}=eq.${filter.value}`;
       }
+      
+      channel.on(
+        'postgres_changes',
+        changeConfig,
+        (payload) => {
+          // Notify all callbacks for this channel
+          const callbacks = this.callbacks.get(channelName) || [];
+          callbacks.forEach(cb => cb(payload));
+        }
+      );
       
       channel.subscribe();
       this.channels.set(channelName, channel);
