@@ -67,7 +67,7 @@ export const EnhancedStats = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl font-bold mb-4">Pendler Buddy v číslech</h2>
+          <h2 className="text-3xl font-bold mb-4">Pendlerův Pomocník v číslech</h2>
           <p className="text-muted-foreground">Připojte se k tisícům spokojených uživatelů</p>
         </motion.div>
 

@@ -44,7 +44,7 @@ export const HowItWorks = () => {
         >
           <h2 className="text-4xl font-bold mb-4">Jak to funguje?</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Začněte používat Pendler Buddy ve čtyřech jednoduchých krocích
+            Začněte používat Pendlerův Pomocník ve čtyřech jednoduchých krocích
           </p>
         </motion.div>
 

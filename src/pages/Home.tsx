@@ -12,7 +12,7 @@ const Home = () => {
   return (
     <div className="min-h-screen">
       <Helmet>
-        <title>Pendler Buddy - Váš průvodce pro práci v zahraničí</title>
+        <title>Pendlerův Pomocník - Váš průvodce pro práci v zahraničí</title>
       </Helmet>
       
       <Hero />

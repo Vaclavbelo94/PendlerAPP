@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { ThemeProvider } from "@/hooks/useTheme"
 import { AuthProvider } from '@/hooks/auth';
 import LayoutWrapper from '@/components/layouts/LayoutWrapper';
+import ScrollToTop from '@/components/navigation/ScrollToTop';
 import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 import Calculator from './pages/Calculator';
@@ -48,6 +49,7 @@ function App() {
         <ThemeProvider>
           <Toaster />
           <BrowserRouter>
+            <ScrollToTop />
             <LayoutWrapper>
               <ShiftNotifications />
               <Routes>

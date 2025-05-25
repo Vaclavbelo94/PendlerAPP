@@ -68,7 +68,7 @@ const CTA = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            Připojte se k tisícům pendlerů, kteří už používají Pendler Buddy 
+            Připojte se k tisícům pendlerů, kteří už používají Pendlerův Pomocník 
             pro snadnější život při práci v zahraničí.
           </motion.p>
           
