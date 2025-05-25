@@ -1,5 +1,13 @@
+import { errorHandler } from '@/utils/errorHandler';
 
-import { errorHandler } from "@/utils/errorHandler";
+export interface OfflineQueueItem {
+  id: string;
+  action: 'CREATE' | 'UPDATE' | 'DELETE';
+  data: any;
+  timestamp: number;
+  retries: number;
+  lastError?: string;
+}
 
 export class ShiftOfflineService {
   private static instance: ShiftOfflineService;
@@ -11,44 +19,60 @@ export class ShiftOfflineService {
     return ShiftOfflineService.instance;
   }
 
-  async saveToOfflineQueue(action: string, data: any) {
+  protected async addToOfflineQueue(action: string, data: any): Promise<void> {
     try {
-      const queueItem = {
-        id: `shift_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        action,
+      const queueItem: OfflineQueueItem = {
+        id: `offline_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        action: action as 'CREATE' | 'UPDATE' | 'DELETE',
         data,
-        timestamp: new Date().toISOString(),
+        timestamp: Date.now(),
         retries: 0
       };
 
-      const existingQueue = JSON.parse(localStorage.getItem('offline_shifts_queue') || '[]');
+      const existingQueue = this.getOfflineQueue();
       existingQueue.push(queueItem);
       localStorage.setItem('offline_shifts_queue', JSON.stringify(existingQueue));
     } catch (error) {
       errorHandler.handleError(error, { 
-        operation: 'saveToOfflineQueue',
+        operation: 'addToOfflineQueue',
         action,
         data 
       });
     }
   }
 
-  async processOfflineQueue() {
-    const queue = JSON.parse(localStorage.getItem('offline_shifts_queue') || '[]');
-    if (queue.length === 0) return 0;
+  protected getOfflineQueue(): OfflineQueueItem[] {
+    try {
+      const queue = localStorage.getItem('offline_shifts_queue');
+      return queue ? JSON.parse(queue) : [];
+    } catch (error) {
+      errorHandler.handleError(error, { operation: 'getOfflineQueue' });
+      return [];
+    }
+  }
 
-    const processedItems = [];
-    
+  protected async processOfflineQueue(): Promise<{ processed: number; errors: number }> {
+    const queue = this.getOfflineQueue();
+    if (queue.length === 0) return { processed: 0, errors: 0 };
+
+    let processed = 0;
+    let errors = 0;
+    const updatedQueue: OfflineQueueItem[] = [];
+
     for (const item of queue) {
       try {
-        if (item.action === 'UPSERT') {
-          // This would integrate with the main shift service
-          processedItems.push(item.id);
-        }
+        // Process item based on action type
+        await this.processQueueItem(item);
+        processed++;
       } catch (error) {
-        item.retries = (item.retries || 0) + 1;
-        if (item.retries >= 3) {
-          processedItems.push(item.id);
+        item.retries++;
+        item.lastError = error instanceof Error ? error.message : 'Unknown error';
+        
+        // Keep items with less than 3 retries
+        if (item.retries < 3) {
+          updatedQueue.push(item);
+        } else {
+          errors++;
           errorHandler.handleError(error, { 
             operation: 'processOfflineQueue',
             item,
@@ -58,9 +82,18 @@ export class ShiftOfflineService {
       }
     }
 
-    const updatedQueue = queue.filter((item: any) => !processedItems.includes(item.id));
+    // Update queue with remaining items
     localStorage.setItem('offline_shifts_queue', JSON.stringify(updatedQueue));
+    
+    return { processed, errors };
+  }
 
-    return processedItems.length;
+  protected async processQueueItem(item: OfflineQueueItem): Promise<void> {
+    // Override in subclasses
+    throw new Error('processQueueItem must be implemented by subclass');
+  }
+
+  cleanup(): void {
+    // Base cleanup - can be overridden
   }
 }
