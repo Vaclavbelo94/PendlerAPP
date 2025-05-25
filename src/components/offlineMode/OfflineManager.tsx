@@ -9,6 +9,7 @@ import { SyncFeedback } from './SyncFeedback';
 import { SyncStatusIndicator } from './SyncStatusIndicator';
 import { OfflineNotifications } from './OfflineNotifications';
 import { useSyncSettings } from '@/hooks/useSyncSettings';
+import { cn } from '@/lib/utils';
 import { 
   Settings, 
   Database,
