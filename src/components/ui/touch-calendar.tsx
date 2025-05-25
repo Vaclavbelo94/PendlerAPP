@@ -3,13 +3,16 @@ import React, { useCallback, useRef, useState } from 'react';
 import { Calendar, CalendarProps } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 
-interface TouchCalendarProps extends CalendarProps {
+interface TouchCalendarProps {
+  className?: string;
   onSwipeLeft?: () => void;
   onSwipeRight?: () => void;
   enableTouch?: boolean;
 }
 
-export const TouchCalendar: React.FC<TouchCalendarProps> = ({
+type CombinedTouchCalendarProps = TouchCalendarProps & CalendarProps;
+
+export const TouchCalendar: React.FC<CombinedTouchCalendarProps> = ({
   className,
   onSwipeLeft,
   onSwipeRight,
