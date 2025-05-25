@@ -60,7 +60,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, [user, isLoading, adminStatusLoaded, refreshAdminStatus, setIsAdmin]);
 
-  // Check premium status when user changes
+  // Enhanced premium status check with database priority
   React.useEffect(() => {
     let isMounted = true;
     
@@ -69,8 +69,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       setIsCheckingStatus(true);
       try {
-        // Special user check for automatic premium
-        if (user.email === 'uzivatel@pendlerapp.com' || user.email === 'admin@pendlerapp.com') {
+        // Vždy nejdříve načteme aktuální stav z databáze
+        const { isPremium: dbPremium, premiumExpiry } = await refreshPremiumStatus();
+        
+        // Aktualizujeme localStorage s databázovými daty
+        saveUserToLocalStorage(user, dbPremium, premiumExpiry);
+        
+        // Speciální kontrola pro některé uživatele - pouze pokud databáze neřekne jinak
+        if (!dbPremium && (user.email === 'uzivatel@pendlerapp.com' || user.email === 'admin@pendlerapp.com')) {
+          console.log("Applying special user premium status");
           setIsPremium(true);
           
           // Calculate expiry date (3 months)
@@ -80,10 +87,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           // Save to localStorage
           saveUserToLocalStorage(user, true, threeMonthsLater.toISOString());
         } else {
-          const { isPremium, premiumExpiry } = await refreshPremiumStatus();
-          if (isPremium && user) {
-            saveUserToLocalStorage(user, isPremium, premiumExpiry);
-          }
+          // Použijeme stav z databáze
+          setIsPremium(dbPremium);
         }
       } catch (error) {
         console.error('Error checking premium status:', error);
@@ -125,34 +130,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { error, user: newUser } = await authSignUp(email, password, username);
     
     if (!error && newUser) {
-      // Check if this is our special user
-      if (newUser.email === 'uzivatel@pendlerapp.com' || newUser.email === 'admin@pendlerapp.com') {
-        setIsPremium(true);
-        
-        // Calculate expiry date (3 months)
-        const threeMonthsLater = new Date();
-        threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
-        
-        saveUserToLocalStorage(newUser, true, threeMonthsLater.toISOString());
-        
-        if (newUser.email === 'admin@pendlerapp.com') {
-          setIsAdmin(true);
-          localStorage.setItem('adminLoggedIn', 'true');
-          setAdminStatusLoaded(true);
-        }
-      } else {
-        // Load profile after a small delay
-        setTimeout(() => {
-          refreshAdminStatus().then(() => setAdminStatusLoaded(true));
-          refreshPremiumStatus().then(({ isPremium, premiumExpiry }) => {
-            if (isPremium && newUser) {
-              saveUserToLocalStorage(newUser, isPremium, premiumExpiry);
-            } else if (newUser) {
-              saveUserToLocalStorage(newUser, false);
-            }
-          });
-        }, 0);
-      }
+      // Load profile after a small delay
+      setTimeout(() => {
+        refreshAdminStatus().then(() => setAdminStatusLoaded(true));
+        refreshPremiumStatus().then(({ isPremium, premiumExpiry }) => {
+          if (isPremium && newUser) {
+            saveUserToLocalStorage(newUser, isPremium, premiumExpiry);
+          } else if (newUser) {
+            saveUserToLocalStorage(newUser, false);
+          }
+        });
+      }, 0);
     }
     
     return { error };
@@ -179,11 +167,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setAdminStatusLoaded(true);
   };
 
-  // Combine premium status from all sources
-  const combinedIsPremium = statusIsPremium || 
-    premiumStatus.isPremium || 
-    premiumStatus.getPremiumStatusFromLocalStorage() || 
-    premiumStatus.isSpecialUser();
+  // Enhanced refresh premium status that updates localStorage
+  const enhancedRefreshPremiumStatus = async () => {
+    if (!user) return { isPremium: false };
+    
+    const result = await refreshPremiumStatus();
+    
+    // Vždy aktualizujeme localStorage s novými daty z databáze
+    saveUserToLocalStorage(user, result.isPremium, result.premiumExpiry);
+    
+    return result;
+  };
+
+  // Combine premium status with database priority
+  const combinedIsPremium = statusIsPremium;
 
   const value = {
     user,
@@ -196,7 +193,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     signUp,
     signOut,
     refreshAdminStatus: enhancedRefreshAdminStatus,
-    refreshPremiumStatus
+    refreshPremiumStatus: enhancedRefreshPremiumStatus
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

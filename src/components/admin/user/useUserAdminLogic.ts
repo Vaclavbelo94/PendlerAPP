@@ -165,6 +165,13 @@ export const useUserAdminLogic = () => {
       const statusText = newPremiumStatus ? 'má' : 'nemá';
       toast.success(`Uživatel ${userName} nyní ${statusText} premium status`);
       
+      // Přidáme informaci o nutnosti opětovného přihlášení
+      if (!newPremiumStatus) {
+        toast.info("Uživatel musí obnovit stránku nebo se znovu přihlásit pro aktualizaci premium statusu", {
+          duration: 5000
+        });
+      }
+      
       // Refresh data to ensure consistency
       await refetch();
     } catch (error) {
