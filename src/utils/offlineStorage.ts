@@ -1,4 +1,3 @@
-
 // Offline úložiště pro správu dat v IndexedDB
 import { toast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,13 +10,15 @@ export const STORES = {
   notifications: 'notifications',
   syncQueue: 'syncQueue',
   vocabulary: 'vocabulary', // Add vocabulary store
-  testHistory: 'testHistory' // Add test history store
+  testHistory: 'testHistory', // Add test history store
+  vehicles: 'vehicles', // Add vehicles store
+  calculation_history: 'calculation_history' // Add calculation history store
 };
 
 // Inicializace IndexedDB
 const initDB = () => {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open('pendlerAppDB', 2); // Increase version to update schema
+    const request = indexedDB.open('pendlerAppDB', 3); // Increase version to update schema
     
     request.onerror = (event) => {
       reject("Nepodařilo se otevřít databázi.");
@@ -51,6 +52,16 @@ const initDB = () => {
       // Add test history store
       if (!db.objectStoreNames.contains(STORES.testHistory)) {
         db.createObjectStore(STORES.testHistory, { keyPath: 'id', autoIncrement: true });
+      }
+      
+      // Add vehicles store
+      if (!db.objectStoreNames.contains(STORES.vehicles)) {
+        db.createObjectStore(STORES.vehicles, { keyPath: 'id' });
+      }
+      
+      // Add calculation history store
+      if (!db.objectStoreNames.contains(STORES.calculation_history)) {
+        db.createObjectStore(STORES.calculation_history, { keyPath: 'id' });
       }
     };
     
