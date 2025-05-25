@@ -1,4 +1,3 @@
-
 import { format } from "date-fns";
 import { cs } from "date-fns/locale";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -204,72 +203,75 @@ export const ReportsTab = ({ user, shifts }: ReportsTabProps) => {
         <CardTitle>Přehled směn - {format(new Date(), "MMMM yyyy", { locale: cs })}</CardTitle>
         <CardDescription>Podrobný výpis směn</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-6">
         {user ? (
-          <div>
-            <ScrollArea className="h-[500px]">
+          <div className="space-y-6">
+            <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Typ směny</TableHead>
-                    <TableHead>Počet směn</TableHead>
-                    <TableHead className="text-right">Celkem hodin</TableHead>
+                    <TableHead className="min-w-[120px]">Typ směny</TableHead>
+                    <TableHead className="text-center min-w-[100px]">Počet směn</TableHead>
+                    <TableHead className="text-right min-w-[120px]">Celkem hodin</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   <TableRow>
                     <TableCell className="font-medium">Ranní</TableCell>
-                    <TableCell>{shifts.filter(s => s.type === "morning").length}</TableCell>
+                    <TableCell className="text-center">{shifts.filter(s => s.type === "morning").length}</TableCell>
                     <TableCell className="text-right">{shifts.filter(s => s.type === "morning").length * 8}</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell className="font-medium">Odpolední</TableCell>
-                    <TableCell>{shifts.filter(s => s.type === "afternoon").length}</TableCell>
+                    <TableCell className="text-center">{shifts.filter(s => s.type === "afternoon").length}</TableCell>
                     <TableCell className="text-right">{shifts.filter(s => s.type === "afternoon").length * 8}</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell className="font-medium">Noční</TableCell>
-                    <TableCell>{shifts.filter(s => s.type === "night").length}</TableCell>
+                    <TableCell className="text-center">{shifts.filter(s => s.type === "night").length}</TableCell>
                     <TableCell className="text-right">{shifts.filter(s => s.type === "night").length * 8}</TableCell>
                   </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Celkem</TableCell>
-                    <TableCell>{shifts.length}</TableCell>
-                    <TableCell className="text-right">{shifts.length * 8}</TableCell>
+                  <TableRow className="border-t-2 font-semibold">
+                    <TableCell className="font-bold">Celkem</TableCell>
+                    <TableCell className="text-center font-bold">{shifts.length}</TableCell>
+                    <TableCell className="text-right font-bold">{shifts.length * 8}</TableCell>
                   </TableRow>
                 </TableBody>
               </Table>
+            </div>
               
-              {/* Sekce uložených reportů */}
-              {session && (
-                <div className="mt-8">
-                  <h3 className="text-md font-medium mb-2">Poslední uložené reporty</h3>
-                  {isLoading ? (
-                    <div className="space-y-2">
-                      <Skeleton className="h-12 w-full" />
-                      <Skeleton className="h-12 w-full" />
-                      <Skeleton className="h-12 w-full" />
-                    </div>
-                  ) : savedReports.length > 0 ? (
+            {/* Sekce uložených reportů */}
+            {session && (
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium">Poslední uložené reporty</h3>
+                {isLoading ? (
+                  <div className="space-y-2">
+                    <Skeleton className="h-12 w-full" />
+                    <Skeleton className="h-12 w-full" />
+                    <Skeleton className="h-12 w-full" />
+                  </div>
+                ) : savedReports.length > 0 ? (
+                  <div className="overflow-x-auto">
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>Název</TableHead>
-                          <TableHead>Vytvořeno</TableHead>
-                          <TableHead className="text-right">Akce</TableHead>
+                          <TableHead className="min-w-[200px]">Název</TableHead>
+                          <TableHead className="min-w-[120px]">Vytvořeno</TableHead>
+                          <TableHead className="text-right min-w-[100px]">Akce</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {savedReports.map(report => (
                           <TableRow key={report.id}>
-                            <TableCell>{report.title}</TableCell>
-                            <TableCell>{new Date(report.created_at).toLocaleDateString()}</TableCell>
+                            <TableCell className="break-words max-w-[200px]">{report.title}</TableCell>
+                            <TableCell className="whitespace-nowrap">{new Date(report.created_at).toLocaleDateString()}</TableCell>
                             <TableCell className="text-right">
                               <Button 
                                 variant="ghost" 
                                 size="sm"
                                 onClick={() => handleExportPDF()}
                                 disabled={isExporting || (isPremiumFeature && !canAccess)}
+                                className="whitespace-nowrap"
                               >
                                 <Download className="h-4 w-4 mr-1" /> Stáhnout
                               </Button>
@@ -278,16 +280,17 @@ export const ReportsTab = ({ user, shifts }: ReportsTabProps) => {
                         ))}
                       </TableBody>
                     </Table>
-                  ) : (
-                    <p className="text-sm text-muted-foreground italic">Zatím nemáte žádné uložené reporty</p>
-                  )}
-                </div>
-              )}
-            </ScrollArea>
-            <div className="mt-6 flex justify-end">
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground italic">Zatím nemáte žádné uložené reporty</p>
+                )}
+              </div>
+            )}
+            
+            <div className="flex justify-end pt-4 border-t">
               <Button 
                 onClick={handleExportPDF} 
-                className="bg-dhl-red text-white hover:bg-dhl-red/90"
+                className="bg-dhl-red text-white hover:bg-dhl-red/90 whitespace-nowrap"
                 disabled={isExporting || (isPremiumFeature && !canAccess)}
               >
                 <Download className="mr-2 h-4 w-4" />
