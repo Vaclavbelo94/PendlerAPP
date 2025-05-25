@@ -4,7 +4,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   CalculatorIcon,
-  PiggyBankIcon,
   TrendingUpIcon,
   FileTextIcon,
   FunctionSquareIcon
@@ -14,15 +13,11 @@ import {
 import BasicCalculator from "@/components/calculator/BasicCalculator";
 import TaxCalculator from "@/components/calculator/TaxCalculator";
 import CrossBorderTaxCalculator from "@/components/calculator/CrossBorderTaxCalculator";
-import AmortizationTable from "@/components/calculator/AmortizationTable";
 import ScientificCalculator from "@/components/calculator/ScientificCalculator";
 
 const Calculator = () => {
   const [activeTab, setActiveTab] = useState("basic");
   const isMobile = useIsMobile();
-
-  // Mock schedule data for AmortizationTable
-  const mockSchedule = [];
 
   return (
     <div className="container py-6 md:py-10 max-w-7xl">
@@ -34,7 +29,7 @@ const Calculator = () => {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-5'} ${isMobile ? 'max-w-full' : 'max-w-5xl'} h-auto`}>
+        <TabsList className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} ${isMobile ? 'max-w-full' : 'max-w-4xl'} h-auto`}>
           <TabsTrigger value="basic" className="flex flex-col items-center gap-1 py-3 px-4">
             <CalculatorIcon className="h-5 w-5" />
             <span className="text-sm font-medium">Základní</span>
@@ -49,11 +44,6 @@ const Calculator = () => {
             <TrendingUpIcon className="h-5 w-5" />
             <span className="text-sm font-medium">Zahraniční</span>
             <span className="text-xs text-muted-foreground hidden sm:block">Hraniční práce</span>
-          </TabsTrigger>
-          <TabsTrigger value="amortization" className="flex flex-col items-center gap-1 py-3 px-4">
-            <PiggyBankIcon className="h-5 w-5" />
-            <span className="text-sm font-medium">Úvěry</span>
-            <span className="text-xs text-muted-foreground hidden sm:block">Splátkové tabulky</span>
           </TabsTrigger>
           <TabsTrigger value="scientific" className="flex flex-col items-center gap-1 py-3 px-4">
             <FunctionSquareIcon className="h-5 w-5" />
@@ -72,10 +62,6 @@ const Calculator = () => {
 
         <TabsContent value="crossborder" className="space-y-6">
           <CrossBorderTaxCalculator />
-        </TabsContent>
-
-        <TabsContent value="amortization" className="space-y-6">
-          <AmortizationTable schedule={mockSchedule} />
         </TabsContent>
 
         <TabsContent value="scientific" className="space-y-6">

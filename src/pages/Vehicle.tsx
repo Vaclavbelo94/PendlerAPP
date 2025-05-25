@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Helmet } from "react-helmet";
 import PremiumCheck from "@/components/premium/PremiumCheck";
@@ -49,8 +48,7 @@ const Vehicle = () => {
           loadVehicleDetails(vehiclesData[0].id!);
         } else {
           setIsLoading(false);
-          // Pokud uživatel nemá žádná vozidla, zobrazíme dialog pro přidání
-          setIsNewVehicleDialogOpen(true);
+          // Už nezobrazujeme automaticky dialog pro přidání vozidla
         }
       } catch (error) {
         console.error("Chyba při načítání vozidel:", error);
