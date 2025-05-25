@@ -11,9 +11,11 @@ import TextTranslation from "@/components/translator/TextTranslation";
 import MobileTextTranslation from "@/components/translator/MobileTextTranslation";
 import TranslationHistory from "@/components/translator/TranslationHistory";
 import PhrasesTranslation from "@/components/translator/PhrasesTranslation";
+import { workPhrases } from "@/data/translatorData";
 
 const Translator = () => {
   const [activeTab, setActiveTab] = useState("translator");
+  const [phrasesTab, setPhrasesTab] = useState("workplace");
   const { isMobile, isSmallLandscape } = useScreenOrientation();
   
   const {
@@ -123,14 +125,19 @@ const Translator = () => {
           </TabsContent>
           
           <TabsContent value="phrasebook">
-            <PhrasesTranslation onUsePhrase={handleUsePhrase} />
+            <PhrasesTranslation 
+              workPhrases={workPhrases}
+              phrasesTab={phrasesTab}
+              setPhrasesTab={setPhrasesTab}
+              handleUsePhrase={handleUsePhrase}
+            />
           </TabsContent>
           
           <TabsContent value="history">
             <TranslationHistory
               history={history}
-              onLoadFromHistory={handleLoadFromHistory}
-              onClearHistory={handleClearHistory}
+              handleLoadFromHistory={handleLoadFromHistory}
+              handleClearHistory={handleClearHistory}
             />
           </TabsContent>
         </Tabs>
