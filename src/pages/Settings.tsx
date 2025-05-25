@@ -19,8 +19,11 @@ import LanguageSettings from '@/components/settings/LanguageSettings';
 import AccountSettings from '@/components/settings/AccountSettings';
 import DataSettings from '@/components/settings/DataSettings';
 import PrivacySettings from '@/components/settings/PrivacySettings';
+import { useSyncSettings } from '@/hooks/useSyncSettings';
 
 const Settings = () => {
+  const { settings: syncSettings, updateSettings: updateSyncSettings } = useSyncSettings();
+
   return (
     <div className="container py-6 md:py-10 max-w-7xl">
       <div className="mb-8">
@@ -78,7 +81,10 @@ const Settings = () => {
         </TabsContent>
 
         <TabsContent value="notifications" className="space-y-6">
-          <NotificationSettings />
+          <NotificationSettings 
+            syncSettings={syncSettings}
+            updateSyncSettings={updateSyncSettings}
+          />
         </TabsContent>
 
         <TabsContent value="language" className="space-y-6">
