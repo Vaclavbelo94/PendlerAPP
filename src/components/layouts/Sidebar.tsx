@@ -19,11 +19,34 @@ const Sidebar = ({ closeSidebar, isLandscapeSheet = false }: SidebarProps) => {
   const isMobile = useIsMobile();
   const orientation = useOrientation();
   
-  // Určit šířku a padding na základě orientace
+  // Určit orientaci a přizpůsobit rozměry
   const isLandscapeMobile = isMobile && orientation === "landscape";
-  const sidebarWidth = isLandscapeSheet ? 'w-full' : isLandscapeMobile ? 'w-60' : isMobile ? 'w-72' : 'w-64';
-  const contentPadding = isLandscapeSheet ? 'p-3' : isLandscapeMobile ? 'p-2' : isMobile ? 'p-3' : 'p-4';
-  const scrollPadding = isLandscapeSheet ? 'px-2 py-1' : isLandscapeMobile ? 'px-1 py-2' : isMobile ? 'px-2 py-3' : 'px-3 py-4';
+  const isPortraitMobile = isMobile && orientation === "portrait";
+  
+  // Určit šířku a padding na základě orientace
+  const sidebarWidth = isLandscapeSheet 
+    ? 'w-full' 
+    : isPortraitMobile 
+      ? 'w-80' // Širší pro portrait mobile pro lepší použitelnost
+      : isLandscapeMobile 
+        ? 'w-60' 
+        : 'w-64';
+        
+  const contentPadding = isLandscapeSheet 
+    ? 'p-3' 
+    : isPortraitMobile 
+      ? 'p-4' // Více paddingu pro portrait
+      : isLandscapeMobile 
+        ? 'p-2' 
+        : 'p-4';
+        
+  const scrollPadding = isLandscapeSheet 
+    ? 'px-2 py-1' 
+    : isPortraitMobile 
+      ? 'px-4 py-4' // Větší padding pro lepší touch targets
+      : isLandscapeMobile 
+        ? 'px-1 py-2' 
+        : 'px-3 py-4';
   
   // Layout pro landscape sheet - horizontální orientace s lepším využitím prostoru
   if (isLandscapeSheet) {
@@ -78,10 +101,10 @@ const Sidebar = ({ closeSidebar, isLandscapeSheet = false }: SidebarProps) => {
     );
   }
   
-  // Původní vertikální layout
+  // Optimalizovaný vertikální layout pro portrait mobile
   return (
-    <div className={`h-full ${sidebarWidth} bg-sidebar text-sidebar-foreground border-r border-sidebar-border flex flex-col`}>
-      <div className={`${contentPadding} flex items-center justify-between`}>
+    <div className={`h-full ${sidebarWidth} bg-sidebar text-sidebar-foreground border-r border-sidebar-border flex flex-col shadow-lg`}>
+      <div className={`${contentPadding} flex items-center justify-between border-b border-sidebar-border`}>
         <SidebarLogo closeSidebar={closeSidebar} />
         {isMobile && (
           <Button 
@@ -91,9 +114,9 @@ const Sidebar = ({ closeSidebar, isLandscapeSheet = false }: SidebarProps) => {
               e.stopPropagation();
               closeSidebar();
             }} 
-            className="text-sidebar-foreground h-8 w-8"
+            className={`text-sidebar-foreground ${isPortraitMobile ? 'h-10 w-10' : 'h-8 w-8'}`}
           >
-            <X className="h-4 w-4" />
+            <X className={isPortraitMobile ? "h-5 w-5" : "h-4 w-4"} />
           </Button>
         )}
       </div>
@@ -101,13 +124,13 @@ const Sidebar = ({ closeSidebar, isLandscapeSheet = false }: SidebarProps) => {
       <Separator className="bg-sidebar-border" />
       
       <ScrollArea className={`flex-1 ${scrollPadding}`}>
-        <div className="space-y-4">
+        <div className={`space-y-${isPortraitMobile ? '6' : '4'}`}>
           <SidebarNavigation closeSidebar={closeSidebar} />
           
           <Separator className="bg-sidebar-border" />
           
-          <div className="space-y-1">
-            <p className={`text-xs font-medium text-sidebar-foreground/60 pl-4 pb-1 ${isLandscapeMobile ? 'text-xs' : 'text-xs'}`}>
+          <div className="space-y-2">
+            <p className={`text-xs font-medium text-sidebar-foreground/60 pl-4 pb-1`}>
               Informace
             </p>
             <SidebarThemeSwitcher />

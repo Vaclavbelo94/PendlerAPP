@@ -1,4 +1,3 @@
-
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 @tailwind base;
 @tailwind components;
@@ -6,6 +5,8 @@
 
 /* Import landscape styles */
 @import "./components/ui/landscape-styles.css";
+/* Import mobile portrait styles */
+@import "./components/ui/mobile-portrait-styles.css";
 
 @layer base {
   :root {
