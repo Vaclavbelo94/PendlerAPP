@@ -3,193 +3,185 @@ import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 import { 
-  ShieldIcon, CalendarIcon, MapPinIcon, GlobeIcon, 
-  BookOpenIcon, CarIcon, SettingsIcon
+  BookOpen, 
+  Trophy, 
+  Target, 
+  Calendar,
+  ArrowRight,
+  Clock,
+  Award
 } from "lucide-react";
-import ProfileBio from "../overview/ProfileBio";
-import ProfileInfo from "../overview/ProfileInfo";
-import ProfileCards from "../overview/ProfileCards";
-import PromoCodeRedemption from "@/components/premium/PromoCodeRedemption";
-import { formatDate, getShiftTypeLabel } from "../utils/formatters";
 
 const ProfileOverviewSection = () => {
   const { user, isPremium } = useAuth();
   const navigate = useNavigate();
 
-  const quickActions = [
-    {
-      title: "Nastavení účtu",
-      description: "Upravit osobní údaje a heslo",
-      icon: SettingsIcon,
-      action: () => navigate("/profile?tab=settings")
-    },
-    {
-      title: "Plánování směn",
-      description: "Spravovat směny a rozvrh",
-      icon: CalendarIcon,
-      action: () => navigate("/shifts"),
-      premium: true
-    },
-    {
-      title: "Správa vozidla",
-      description: "Přidat nebo upravit vozidlo",
-      icon: CarIcon,
-      action: () => navigate("/vehicle"),
-      premium: true
-    },
-    {
-      title: "Německý jazyk",
-      description: "Pokračovat v učení",
-      icon: BookOpenIcon,
-      action: () => navigate("/language")
-    }
+  // Mock data for demonstration
+  const stats = {
+    wordsLearned: 245,
+    testsCompleted: 12,
+    currentStreak: 7,
+    totalStudyTime: 42
+  };
+
+  const achievements = [
+    { name: "První týden", icon: Calendar, earned: true },
+    { name: "100 slov", icon: BookOpen, earned: true },
+    { name: "7denní série", icon: Trophy, earned: true },
+    { name: "Perfekcionista", icon: Target, earned: false }
   ];
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      {/* Hlavní informace */}
-      <div className="lg:col-span-2 space-y-6">
-        {/* Premium Status */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <ShieldIcon className="h-5 w-5" />
-              Status účtu
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {isPremium ? (
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-medium text-amber-800">Premium aktivní</h3>
-                    <p className="text-sm text-amber-600 mt-1">
-                      Máte přístup ke všem funkcím aplikace
-                    </p>
-                  </div>
-                  <Badge className="bg-amber-500">Premium</Badge>
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
-                  <h3 className="font-medium text-slate-700">Standardní účet</h3>
-                  <p className="text-sm text-slate-600 mt-1">
-                    Aktivujte Premium pro plný přístup
-                  </p>
-                </div>
-                <PromoCodeRedemption />
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Bio a základní info */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>O mně</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ProfileBio />
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Základní informace</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ProfileInfo 
-                formatDate={formatDate} 
-                createdAt={user?.created_at} 
-              />
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Karty s preferencemi */}
-        <ProfileCards 
-          workPreferences={{
-            preferred_shift_type: "morning",
-            preferred_locations: ["München", "Stuttgart"]
-          }} 
-          certificatesCount={2} 
-          getShiftTypeLabel={getShiftTypeLabel} 
-        />
-      </div>
-
-      {/* Sidebar s rychlými akcemi */}
-      <div className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Rychlé akce</CardTitle>
-            <CardDescription>
-              Nejčastěji používané funkce
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {quickActions.map((action, index) => (
-              <Button
-                key={index}
-                variant={action.premium && !isPremium ? "secondary" : "outline"}
-                className="w-full justify-start h-auto p-4 text-left"
-                onClick={action.action}
-                disabled={action.premium && !isPremium}
-              >
-                <div className="flex items-start gap-3 w-full">
-                  <action.icon className="h-5 w-5 mt-0.5 flex-shrink-0" />
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">{action.title}</span>
-                      {action.premium && (
-                        <Badge variant="secondary" className="text-xs">Premium</Badge>
-                      )}
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {action.description}
-                    </p>
-                  </div>
-                </div>
-              </Button>
-            ))}
-          </CardContent>
-        </Card>
-
-        {/* Pokrok v profilu */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Kompletnost profilu</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="w-full bg-secondary rounded-full h-2">
-                <div className="bg-primary h-2 rounded-full" style={{ width: '65%' }}></div>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Váš profil je kompletní z 65%
+    <div className="space-y-6">
+      {/* User Info Card */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <BookOpen className="h-5 w-5" />
+            Můj profil
+          </CardTitle>
+          <CardDescription>
+            Přehled vašeho pokroku v učení němčiny
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-semibold text-lg">{user?.email}</h3>
+              <p className="text-muted-foreground">
+                {isPremium ? "Premium uživatel" : "Základní uživatel"}
               </p>
-              <div className="space-y-2 text-sm">
-                <div className="flex items-center gap-2 text-green-600">
-                  ✓ Základní údaje vyplněny
-                </div>
-                <div className="flex items-center gap-2 text-green-600">
-                  ✓ Email ověřen
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  • Přidejte biografii
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  • Nastavte pracovní preference
-                </div>
+            </div>
+            <Badge variant={isPremium ? "default" : "secondary"}>
+              {isPremium ? "Premium" : "Základní"}
+            </Badge>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Learning Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <BookOpen className="h-8 w-8 text-blue-500" />
+              <div>
+                <p className="text-2xl font-bold">{stats.wordsLearned}</p>
+                <p className="text-sm text-muted-foreground">Naučených slov</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <Award className="h-8 w-8 text-green-500" />
+              <div>
+                <p className="text-2xl font-bold">{stats.testsCompleted}</p>
+                <p className="text-sm text-muted-foreground">Dokončených testů</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <Trophy className="h-8 w-8 text-yellow-500" />
+              <div>
+                <p className="text-2xl font-bold">{stats.currentStreak}</p>
+                <p className="text-sm text-muted-foreground">Denní série</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <Clock className="h-8 w-8 text-purple-500" />
+              <div>
+                <p className="text-2xl font-bold">{stats.totalStudyTime}h</p>
+                <p className="text-sm text-muted-foreground">Celkový čas</p>
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
+
+      {/* Quick Actions */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Rychlé akce</CardTitle>
+          <CardDescription>
+            Pokračujte ve vašem učení
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Button 
+              onClick={() => navigate("/vocabulary")} 
+              className="flex items-center justify-between w-full"
+            >
+              <span>Pokračovat v lekci němčiny</span>
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+            <Button 
+              variant="outline"
+              onClick={() => navigate("/vocabulary")} 
+              className="flex items-center justify-between w-full"
+            >
+              <span>Nový test slovíček</span>
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Achievements */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Úspěchy</CardTitle>
+          <CardDescription>
+            Vaše dosažené milníky
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {achievements.map((achievement, index) => {
+              const Icon = achievement.icon;
+              return (
+                <div
+                  key={index}
+                  className={`flex flex-col items-center p-3 rounded-lg border ${
+                    achievement.earned 
+                      ? 'bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800' 
+                      : 'bg-gray-50 border-gray-200 dark:bg-gray-900/20 dark:border-gray-800'
+                  }`}
+                >
+                  <Icon 
+                    className={`h-6 w-6 mb-2 ${
+                      achievement.earned ? 'text-green-600 dark:text-green-400' : 'text-gray-400'
+                    }`} 
+                  />
+                  <span className="text-xs text-center font-medium">
+                    {achievement.name}
+                  </span>
+                  {achievement.earned && (
+                    <Badge variant="secondary" className="mt-1 text-[10px]">
+                      Splněno
+                    </Badge>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

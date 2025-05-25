@@ -3,26 +3,42 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Settings, Zap, Download } from 'lucide-react';
+import { Settings, Smartphone, Wifi, Battery } from 'lucide-react';
 import { toast } from "sonner";
-import { SyncSettings } from '@/hooks/useSyncSettings';
 
 interface GeneralSettingsProps {
-  syncSettings: SyncSettings;
-  updateSyncSettings: (settings: Partial<SyncSettings>) => void;
+  syncSettings: any;
+  updateSyncSettings: (settings: any) => void;
 }
 
 const GeneralSettings = ({ syncSettings, updateSyncSettings }: GeneralSettingsProps) => {
   const [autoSave, setAutoSave] = useState(true);
+  const [compactMode, setCompactMode] = useState(false);
+  const [autoRefresh, setAutoRefresh] = useState(true);
   const [defaultView, setDefaultView] = useState("dashboard");
-  const [itemsPerPage, setItemsPerPage] = useState("20");
 
   const handleSaveSettings = () => {
-    // Save general settings logic would go here
+    const settings = {
+      autoSave,
+      compactMode,
+      autoRefresh,
+      defaultView
+    };
+    
+    localStorage.setItem('generalSettings', JSON.stringify(settings));
     toast.success("Obecná nastavení byla uložena");
+  };
+
+  const handleResetSettings = () => {
+    setAutoSave(true);
+    setCompactMode(false);
+    setAutoRefresh(true);
+    setDefaultView("dashboard");
+    localStorage.removeItem('generalSettings');
+    toast.success("Nastavení byla resetována na výchozí hodnoty");
   };
 
   return (
@@ -34,7 +50,7 @@ const GeneralSettings = ({ syncSettings, updateSyncSettings }: GeneralSettingsPr
             Obecná nastavení
           </CardTitle>
           <CardDescription>
-            Základní nastavení pro chování aplikace
+            Základní předvolby aplikace
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -42,7 +58,7 @@ const GeneralSettings = ({ syncSettings, updateSyncSettings }: GeneralSettingsPr
             <div className="space-y-0.5">
               <Label htmlFor="autoSave">Automatické ukládání</Label>
               <p className="text-sm text-muted-foreground">
-                Automaticky uložit změny při opuštění stránky
+                Automaticky ukládá změny při editaci
               </p>
             </div>
             <Switch
@@ -54,110 +70,85 @@ const GeneralSettings = ({ syncSettings, updateSyncSettings }: GeneralSettingsPr
 
           <Separator />
 
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label htmlFor="compactMode" className="flex items-center gap-2">
+                <Smartphone className="h-4 w-4" />
+                Kompaktní režim
+              </Label>
+              <p className="text-sm text-muted-foreground">
+                Zmenší rozložení pro lepší využití prostoru
+              </p>
+            </div>
+            <Switch
+              id="compactMode"
+              checked={compactMode}
+              onCheckedChange={setCompactMode}
+            />
+          </div>
+
+          <Separator />
+
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label htmlFor="autoRefresh" className="flex items-center gap-2">
+                <Wifi className="h-4 w-4" />
+                Automatické obnovování
+              </Label>
+              <p className="text-sm text-muted-foreground">
+                Pravidelně aktualizuje data v pozadí
+              </p>
+            </div>
+            <Switch
+              id="autoRefresh"
+              checked={autoRefresh}
+              onCheckedChange={setAutoRefresh}
+            />
+          </div>
+
+          <Separator />
+
           <div className="space-y-2">
-            <Label htmlFor="defaultView">Výchozí pohled po přihlášení</Label>
+            <Label htmlFor="defaultView">Výchozí zobrazení</Label>
             <Select value={defaultView} onValueChange={setDefaultView}>
               <SelectTrigger>
                 <SelectValue placeholder="Vyberte výchozí stránku" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="dashboard">Dashboard</SelectItem>
-                <SelectItem value="shifts">Směny</SelectItem>
-                <SelectItem value="vocabulary">Slovíčka</SelectItem>
-                <SelectItem value="calculator">Kalkulačka</SelectItem>
+                <SelectItem value="shifts">Moje směny</SelectItem>
+                <SelectItem value="vocabulary">Slovník</SelectItem>
+                <SelectItem value="profile">Profil</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="itemsPerPage">Počet položek na stránku</Label>
-            <Select value={itemsPerPage} onValueChange={setItemsPerPage}>
-              <SelectTrigger>
-                <SelectValue placeholder="Vyberte počet položek" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="10">10 položek</SelectItem>
-                <SelectItem value="20">20 položek</SelectItem>
-                <SelectItem value="50">50 položek</SelectItem>
-                <SelectItem value="100">100 položek</SelectItem>
-              </SelectContent>
-            </Select>
+          <Separator />
+
+          <div className="p-4 bg-muted rounded-lg">
+            <div className="flex items-center gap-2 mb-2">
+              <Battery className="h-4 w-4" />
+              <span className="font-medium">Synchronizace</span>
+            </div>
+            <p className="text-sm text-muted-foreground mb-3">
+              Nastavení synchronizace dat mezi zařízeními
+            </p>
+            <div className="flex items-center justify-between">
+              <span className="text-sm">Poslední synchronizace</span>
+              <span className="text-sm text-muted-foreground">
+                {new Date().toLocaleString('cs-CZ')}
+              </span>
+            </div>
           </div>
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Zap className="h-5 w-5" />
-            Synchronizace
-          </CardTitle>
-          <CardDescription>
-            Nastavení pro synchronizaci dat mezi zařízeními
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="backgroundSync">Synchronizace na pozadí</Label>
-              <p className="text-sm text-muted-foreground">
-                Synchronizovat data automaticky na pozadí
-              </p>
-            </div>
-            <Switch
-              id="backgroundSync"
-              checked={syncSettings.enableBackgroundSync}
-              onCheckedChange={(checked) => updateSyncSettings({ enableBackgroundSync: checked })}
-            />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="syncNotifications">Oznámení o synchronizaci</Label>
-              <p className="text-sm text-muted-foreground">
-                Zobrazovat oznámení o stavu synchronizace
-              </p>
-            </div>
-            <Switch
-              id="syncNotifications"
-              checked={syncSettings.showSyncNotifications}
-              onCheckedChange={(checked) => updateSyncSettings({ showSyncNotifications: checked })}
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Download className="h-5 w-5" />
-            Offline režim
-          </CardTitle>
-          <CardDescription>
-            Nastavení pro práci bez internetového připojení
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="offlineMode">Povolit offline režim</Label>
-              <p className="text-sm text-muted-foreground">
-                Umožnit používání aplikace bez internetového připojení
-              </p>
-            </div>
-            <Switch id="offlineMode" defaultChecked />
-          </div>
-
-          <Button variant="outline" className="w-full">
-            <Download className="h-4 w-4 mr-2" />
-            Stáhnout data pro offline použití
-          </Button>
-        </CardContent>
-      </Card>
-
-      <div className="flex justify-end">
+      <div className="flex gap-3">
         <Button onClick={handleSaveSettings}>
           Uložit nastavení
+        </Button>
+        <Button variant="outline" onClick={handleResetSettings}>
+          Resetovat na výchozí
         </Button>
       </div>
     </div>
