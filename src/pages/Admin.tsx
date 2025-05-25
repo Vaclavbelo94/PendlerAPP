@@ -8,15 +8,40 @@ import AdminLoginDialog from "@/components/admin/AdminLoginDialog";
 import { useAuth } from "@/hooks/useAuth";
 import { SectionHeader } from "@/components/ui/section-header";
 import { InfoCard } from "@/components/ui/design-system/InfoCard";
-import { AdminHeader } from "@/components/admin/AdminHeader";
-import { AdminQuickStats } from "@/components/admin/AdminQuickStats";
-import { AdminCategories } from "@/components/admin/AdminCategories";
-import { AdminSectionView } from "@/components/admin/AdminSectionView";
-import { adminSections } from "@/components/admin/AdminSections";
+import { AdminLayout } from "@/components/admin/core/AdminLayout";
+import { AdminDashboard } from "@/components/admin/core/AdminDashboard";
+import { useAdminContext } from "@/components/admin/core/AdminProvider";
+import { UserAdminPanel } from "@/components/admin/UserAdminPanel";
+import { PromoCodesPanel } from "@/components/admin/PromoCodesPanel";
+import { PremiumFeaturesPanel } from "@/components/admin/PremiumFeaturesPanel";
+import SystemLogsPanel from "@/components/admin/logs/SystemLogsPanel";
+import SystemMonitoringPanel from "@/components/admin/monitoring/SystemMonitoringPanel";
+
+const AdminContent = () => {
+  const { currentSection } = useAdminContext();
+
+  const renderContent = () => {
+    switch (currentSection) {
+      case 'users-list':
+        return <UserAdminPanel />;
+      case 'promo-codes':
+        return <PromoCodesPanel />;
+      case 'premium-features':
+        return <PremiumFeaturesPanel />;
+      case 'system-logs':
+        return <SystemLogsPanel />;
+      case 'system-monitoring':
+        return <SystemMonitoringPanel />;
+      default:
+        return <AdminDashboard />;
+    }
+  };
+
+  return renderContent();
+};
 
 const Admin = () => {
   const [showLoginDialog, setShowLoginDialog] = useState(false);
-  const [activeSection, setActiveSection] = useState<string | null>(null);
   const navigate = useNavigate();
   const { isAdmin, signOut, refreshAdminStatus, user, isLoading } = useAuth();
 
@@ -38,10 +63,6 @@ const Admin = () => {
     signOut();
     toast.info("Odhlášení z administrace proběhlo úspěšně");
     navigate("/");
-  };
-
-  const handleRefresh = () => {
-    window.location.reload();
   };
 
   if (isLoading) {
@@ -89,34 +110,10 @@ const Admin = () => {
     );
   }
 
-  const activeAdminSection = adminSections.find(s => s.id === activeSection);
-
-  if (activeSection && activeAdminSection) {
-    return (
-      <AdminSectionView
-        section={activeAdminSection}
-        userEmail={user?.email}
-        onBack={() => setActiveSection(null)}
-        onLogout={handleLogout}
-      />
-    );
-  }
-
   return (
-    <div className="container py-6 md:py-10 max-w-7xl">
-      <AdminHeader 
-        userEmail={user?.email}
-        onLogout={handleLogout}
-        onRefresh={handleRefresh}
-      />
-
-      <AdminQuickStats />
-
-      <AdminCategories 
-        adminSections={adminSections}
-        onSectionClick={setActiveSection}
-      />
-
+    <AdminLayout>
+      <AdminContent />
+      
       <AdminLoginDialog 
         isOpen={showLoginDialog} 
         onClose={() => !isAdmin && navigate("/")}
@@ -125,7 +122,7 @@ const Admin = () => {
           toast.success("Přihlášení do administrace úspěšné");
         }}
       />
-    </div>
+    </AdminLayout>
   );
 };
 
