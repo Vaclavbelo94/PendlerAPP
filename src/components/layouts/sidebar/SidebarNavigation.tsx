@@ -36,7 +36,7 @@ const SidebarNavigation = ({ closeSidebar }: SidebarNavigationProps) => {
       icon: Calendar,
     },
     {
-      title: "Moje slovíčka",
+      title: "Výuka němčiny",
       href: "/vocabulary",
       icon: Book,
     },
@@ -44,6 +44,11 @@ const SidebarNavigation = ({ closeSidebar }: SidebarNavigationProps) => {
       title: "Překladač",
       href: "/translator",
       icon: Languages,
+    },
+    {
+      title: "Moje vozidlo",
+      href: "/vehicle",
+      icon: Car,
     },
   ];
 
@@ -59,12 +64,7 @@ const SidebarNavigation = ({ closeSidebar }: SidebarNavigationProps) => {
       icon: FileText,
     },
     {
-      title: "Moje vozidlo",
-      href: "/vehicle",
-      icon: Car,
-    },
-    {
-      title: "Moje cesty",
+      title: "Plánovač jízd",
       href: "/travel-planning",
       icon: MapPin,
     },
