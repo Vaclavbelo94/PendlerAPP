@@ -14,6 +14,7 @@ import Vehicle from './pages/Vehicle';
 import Shifts from './pages/Shifts';
 import Vocabulary from './pages/Vocabulary';
 import AdminPanel from './pages/AdminPanel';
+import Admin from './pages/Admin';
 import Pricing from './pages/Pricing';
 import Profile from './pages/Profile';
 import TravelPlanning from './pages/TravelPlanning';
@@ -40,6 +41,7 @@ function App() {
                 <Route path="/shifts" element={<Shifts />} />
                 <Route path="/vocabulary" element={<Vocabulary />} />
                 <Route path="/translator" element={<Translator />} />
+                <Route path="/admin" element={<Admin />} />
                 <Route path="/admin-panel" element={<AdminPanel />} />
                 <Route path="/pricing" element={<Pricing />} />
                 <Route path="/profile" element={<Profile />} />
