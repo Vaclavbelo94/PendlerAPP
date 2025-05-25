@@ -17,6 +17,7 @@ interface TaxReminder {
 
 const TaxNotifications = () => {
   const [reminders, setReminders] = useState<TaxReminder[]>([]);
+  const [showAllReminders, setShowAllReminders] = useState(false);
 
   useEffect(() => {
     // Simulace načtení připomínek - v reálné aplikaci by se načítaly z API
@@ -45,6 +46,22 @@ const TaxNotifications = () => {
         date: `${currentYear}-12-31`,
         type: 'warning',
         priority: 'medium'
+      },
+      {
+        id: '4',
+        title: 'Freistellungsauftrag',
+        description: 'Zkontrolujte své příkazy k osvobození od daně',
+        date: `${currentYear}-11-30`,
+        type: 'info',
+        priority: 'low'
+      },
+      {
+        id: '5',
+        title: 'Sonderausgaben',
+        description: 'Připravte si doklady o zvláštních výdajích',
+        date: `${currentYear}-06-30`,
+        type: 'warning',
+        priority: 'low'
       }
     ];
     
@@ -73,6 +90,25 @@ const TaxNotifications = () => {
     }
   };
 
+  const getPriorityLabel = (priority: string) => {
+    switch (priority) {
+      case 'high':
+        return 'Vysoká';
+      case 'medium':
+        return 'Střední';
+      case 'low':
+        return 'Nízká';
+      default:
+        return priority;
+    }
+  };
+
+  const displayedReminders = showAllReminders ? reminders : reminders.slice(0, 3);
+
+  const handleShowAllReminders = () => {
+    setShowAllReminders(!showAllReminders);
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -86,7 +122,7 @@ const TaxNotifications = () => {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {reminders.length === 0 ? (
+          {displayedReminders.length === 0 ? (
             <Alert>
               <Info className="h-4 w-4" />
               <AlertDescription>
@@ -94,7 +130,7 @@ const TaxNotifications = () => {
               </AlertDescription>
             </Alert>
           ) : (
-            reminders.map((reminder) => (
+            displayedReminders.map((reminder) => (
               <Alert key={reminder.id} className="border-l-4">
                 <div className="flex items-start gap-3">
                   {getIconForType(reminder.type)}
@@ -102,7 +138,7 @@ const TaxNotifications = () => {
                     <div className="flex items-center justify-between mb-1">
                       <h4 className="text-sm font-medium">{reminder.title}</h4>
                       <Badge variant={getVariantForPriority(reminder.priority)}>
-                        {reminder.priority}
+                        {getPriorityLabel(reminder.priority)}
                       </Badge>
                     </div>
                     <p className="text-sm text-muted-foreground mb-2">
@@ -118,12 +154,19 @@ const TaxNotifications = () => {
           )}
         </div>
         
-        <div className="mt-6 pt-4 border-t">
-          <Button variant="outline" size="sm" className="w-full">
-            <FileText className="h-4 w-4 mr-2" />
-            Zobrazit všechny připomínky
-          </Button>
-        </div>
+        {reminders.length > 3 && (
+          <div className="mt-6 pt-4 border-t">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="w-full"
+              onClick={handleShowAllReminders}
+            >
+              <FileText className="h-4 w-4 mr-2" />
+              {showAllReminders ? 'Zobrazit méně připomínek' : 'Zobrazit všechny připomínky'}
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
