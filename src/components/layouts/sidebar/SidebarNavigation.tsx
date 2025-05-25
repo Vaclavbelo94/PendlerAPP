@@ -11,7 +11,6 @@ import {
   Book,
   Car,
   FileText,
-  Settings,
   MapPin,
   Languages
 } from "lucide-react";
@@ -137,29 +136,6 @@ const SidebarNavigation = ({ closeSidebar }: SidebarNavigationProps) => {
               </Button>
             );
           })}
-        </nav>
-      </div>
-
-      <div>
-        <p className={`text-xs font-medium text-sidebar-foreground/60 pl-4 pb-2 ${isMobile ? 'text-xs' : 'text-xs'}`}>
-          Ostatní
-        </p>
-        <nav className="space-y-1">
-          <Button
-            variant={isActive("/settings") ? "secondary" : "ghost"}
-            size={buttonSize}
-            asChild
-            className={cn(
-              buttonClassName,
-              "w-full text-sidebar-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent",
-              isActive("/settings") && "bg-sidebar-accent text-sidebar-accent-foreground"
-            )}
-          >
-            <Link to="/settings" onClick={closeSidebar}>
-              <Settings className={`${isMobile ? 'h-4 w-4' : 'h-4 w-4'} mr-2`} />
-              Nastavení
-            </Link>
-          </Button>
         </nav>
       </div>
     </div>
