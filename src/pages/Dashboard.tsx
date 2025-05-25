@@ -1,11 +1,12 @@
+
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
-import ScheduleTab from "@/components/dashboard/ScheduleTab";
-import LanguageTab from "@/components/dashboard/LanguageTab";
-import EducationTab from "@/components/dashboard/EducationTab";
+import ScheduleTab from "@/components/dashboard/tabs/ScheduleTab";
+import LanguageTab from "@/components/dashboard/tabs/LanguageTab";
+import EducationTab from "@/components/dashboard/tabs/EducationTab";
 import QuickPromoCode from "@/components/dashboard/QuickPromoCode";
 
 const Dashboard = () => {

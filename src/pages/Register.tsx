@@ -19,6 +19,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Separator } from "@/components/ui/separator";
 import { redeemPromoCode } from "@/components/admin/promoCode/promoCodeService";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface FormData {
   name: string;
@@ -195,7 +196,7 @@ const Register = () => {
       const { error, url } = await signInWithGoogle();
       
       if (error) {
-        toast({
+        uiToast({
           title: "Registrace s Google selhala",
           description: error.message || "Nastala chyba při přihlašování s Google účtem.",
           variant: "destructive",
@@ -207,7 +208,7 @@ const Register = () => {
         window.location.href = url;
       }
     } catch (error: any) {
-      toast({
+      uiToast({
         title: "Chyba při registraci",
         description: error?.message || "Nastala neznámá chyba. Zkuste to prosím později.",
         variant: "destructive",
