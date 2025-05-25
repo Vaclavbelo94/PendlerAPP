@@ -48,8 +48,8 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <ThemeProvider>
-          <Toaster />
           <BrowserRouter>
+            <Toaster />
             <ScrollToTop />
             <LayoutWrapper>
               <ShiftNotifications />
