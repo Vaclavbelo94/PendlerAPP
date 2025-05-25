@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Calendar as CalendarIcon, Download, FileText } from 'lucide-react';
@@ -190,7 +189,8 @@ export const CalendarExport: React.FC<CalendarExportProps> = ({ shifts }) => {
             className="flex items-center gap-2"
           >
             <Download className="h-4 w-4" />
-            <span>Stáhnout .ics soubor</span>
+            <span className="hidden sm:inline">Stáhnout .ics soubor</span>
+            <span className="sm:hidden">.ics</span>
           </Button>
           
           <DropdownMenu>
@@ -200,7 +200,8 @@ export const CalendarExport: React.FC<CalendarExportProps> = ({ shifts }) => {
                 className="flex items-center gap-2"
               >
                 <CalendarIcon className="h-4 w-4" />
-                <span>Google Kalendář</span>
+                <span className="hidden sm:inline">Google Kalendář</span>
+                <span className="sm:hidden">Google</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
