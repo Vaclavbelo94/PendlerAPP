@@ -62,8 +62,8 @@ export const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
     return shiftsByDate.get(dateKey);
   }, [shiftsByDate]);
 
-  // Custom day renderer with memoization
-  const DayContent = React.memo(({ date }: { date: Date }) => {
+  // Custom day renderer without memoization to avoid type conflicts
+  const DayContent = ({ date }: { date: Date }) => {
     const shift = getShiftForDate(date);
     const isSelected = selectedDate && isSameDay(date, selectedDate);
     
@@ -100,7 +100,7 @@ export const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
         )}
       </div>
     );
-  });
+  };
 
   const handlePreviousMonth = useCallback(() => {
     setCurrentMonth(prev => new Date(prev.getFullYear(), prev.getMonth() - 1));

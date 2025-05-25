@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,7 +7,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { 
   WifiOff, 
   Wifi, 
-  Sync, 
+  sync, 
   AlertTriangle, 
   CheckCircle, 
   Clock,
@@ -189,7 +188,7 @@ export const EnhancedOfflineManager: React.FC = () => {
         {isSyncing && (
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <Sync className="h-4 w-4 animate-spin" />
+              <sync className="h-4 w-4 animate-spin" />
               <span className="text-sm">Synchronizace probíhá...</span>
             </div>
             <Progress value={syncProgress} className="w-full" />
@@ -222,7 +221,7 @@ export const EnhancedOfflineManager: React.FC = () => {
             disabled={isSyncing || isOffline}
             className="flex items-center gap-2"
           >
-            <Sync className={`h-4 w-4 ${isSyncing ? 'animate-spin' : ''}`} />
+            <sync className={`h-4 w-4 ${isSyncing ? 'animate-spin' : ''}`} />
             {isSyncing ? 'Synchronizuji...' : 'Synchronizovat nyní'}
           </Button>
 
