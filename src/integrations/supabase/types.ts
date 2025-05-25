@@ -868,6 +868,39 @@ export type Database = {
         }
         Relationships: []
       }
+      user_sync_settings: {
+        Row: {
+          created_at: string
+          enable_background_sync: boolean
+          id: string
+          last_sync_time: string | null
+          show_sync_notifications: boolean
+          sync_interval: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          enable_background_sync?: boolean
+          id?: string
+          last_sync_time?: string | null
+          show_sync_notifications?: boolean
+          sync_interval?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          enable_background_sync?: boolean
+          id?: string
+          last_sync_time?: string | null
+          show_sync_notifications?: boolean
+          sync_interval?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_travel_preferences: {
         Row: {
           created_at: string | null

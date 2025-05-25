@@ -13,7 +13,6 @@ import {
   Smartphone
 } from 'lucide-react';
 import ProfileAppearance from '@/components/profile/ProfileAppearance';
-import { useSyncSettings } from '@/hooks/useSyncSettings';
 import GeneralSettings from '@/components/settings/GeneralSettings';
 import NotificationSettings from '@/components/settings/NotificationSettings';
 import LanguageSettings from '@/components/settings/LanguageSettings';
@@ -22,8 +21,6 @@ import DataSettings from '@/components/settings/DataSettings';
 import PrivacySettings from '@/components/settings/PrivacySettings';
 
 const Settings = () => {
-  const { settings: syncSettings, updateSettings: updateSyncSettings } = useSyncSettings();
-
   return (
     <div className="container py-6 md:py-10 max-w-7xl">
       <div className="mb-8">
@@ -69,10 +66,7 @@ const Settings = () => {
         </TabsList>
 
         <TabsContent value="general" className="space-y-6">
-          <GeneralSettings 
-            syncSettings={syncSettings}
-            updateSyncSettings={updateSyncSettings}
-          />
+          <GeneralSettings />
         </TabsContent>
 
         <TabsContent value="account" className="space-y-6">
@@ -84,10 +78,7 @@ const Settings = () => {
         </TabsContent>
 
         <TabsContent value="notifications" className="space-y-6">
-          <NotificationSettings 
-            syncSettings={syncSettings}
-            updateSyncSettings={updateSyncSettings}
-          />
+          <NotificationSettings />
         </TabsContent>
 
         <TabsContent value="language" className="space-y-6">
