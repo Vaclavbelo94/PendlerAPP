@@ -1,3 +1,4 @@
+
 import { VocabularyItem, VocabularyStatistics } from '@/models/VocabularyItem';
 import { calculateKnowledgeScore } from '@/utils/dateUtils';
 
@@ -45,6 +46,21 @@ export const useVocabularyStatistics = (
       new: totalNew,
       learning: items.filter(item => item.repetitionLevel !== undefined && item.repetitionLevel < 4 && item.lastReviewed).length,
       mastered: items.filter(item => item.repetitionLevel !== undefined && item.repetitionLevel >= 4).length
+    };
+
+    // Category distribution
+    const categoryDistribution: Record<string, number> = {};
+    items.forEach(item => {
+      const category = item.category || 'Obecné';
+      categoryDistribution[category] = (categoryDistribution[category] || 0) + 1;
+    });
+
+    // Difficulty breakdown
+    const difficultyBreakdown = {
+      easy: items.filter(item => item.difficulty === 'easy').length,
+      medium: items.filter(item => item.difficulty === 'medium').length,
+      hard: items.filter(item => item.difficulty === 'hard').length,
+      unspecified: items.filter(item => !item.difficulty).length
     };
     
     // Find difficult words (high incorrect count)
@@ -113,6 +129,15 @@ export const useVocabularyStatistics = (
       dueToday: dueItemsCount,
       completedToday,
       dailyGoal,
+      categoryDistribution,
+      difficultyBreakdown,
+      progress: {
+        today: completedToday,
+        yesterday: 0,
+        lastWeek: 0
+      },
+      accuracy: averageScore,
+      dailyGoalCompletion: completionPercentage,
       averageTimeToMastery,
       learningEfficiency,
       difficultWords,
