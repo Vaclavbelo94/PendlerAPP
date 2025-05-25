@@ -1,11 +1,9 @@
-
 import React from 'react';
-import { UserProgress } from '@/models/VocabularyItem';
+import { UserProgress, VocabularyStatistics } from '@/models/VocabularyItem';
 import WeeklyProgressHeatmap from './WeeklyProgressHeatmap';
 import LearningSessionHistory from './LearningSessionHistory';
 import { useMasteryStats } from '@/hooks/vocabulary/useMasteryStats';
 import { useVocabularyContext } from './vocabulary/VocabularyProvider';
-import { VocabularyStatistics } from '@/utils/vocabularyStats';
 
 // Import refaktorovaných komponent
 import MasteryLevelChart from './dashboard/MasteryLevelChart';

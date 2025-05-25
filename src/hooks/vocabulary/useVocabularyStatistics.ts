@@ -1,7 +1,5 @@
-
-import { VocabularyItem } from '@/models/VocabularyItem';
+import { VocabularyItem, VocabularyStatistics } from '@/models/VocabularyItem';
 import { calculateKnowledgeScore } from '@/utils/dateUtils';
-import { VocabularyStatistics } from '@/utils/vocabularyStats';
 
 export const useVocabularyStatistics = (
   items: VocabularyItem[], 

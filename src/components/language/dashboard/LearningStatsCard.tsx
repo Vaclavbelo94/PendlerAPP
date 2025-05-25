@@ -5,7 +5,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { VocabularyStatistics } from '@/utils/vocabularyStats';
+import { VocabularyStatistics } from '@/models/VocabularyItem';
 
 interface LearningStatsCardProps {
   statistics: VocabularyStatistics;

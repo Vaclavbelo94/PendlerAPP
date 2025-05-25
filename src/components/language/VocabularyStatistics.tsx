@@ -1,8 +1,7 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from 'lucide-react';
-import { VocabularyStatistics as VocabularyStatsType } from '@/utils/vocabularyStats';
+import { VocabularyStatistics as VocabularyStatsType } from '@/models/VocabularyItem';
 
 // Import our newly created components
 import ProgressBar from './statistics/ProgressBar';
