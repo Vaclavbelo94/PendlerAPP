@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from "@/components/ui/toaster"
 
 import Layout from '@/components/layouts/Layout';
+import ScrollToTop from '@/components/navigation/ScrollToTop';
 import Home from '@/pages/Home';
 import Calculator from '@/pages/Calculator';
 import TaxAdvisor from '@/pages/TaxAdvisor';
@@ -30,6 +31,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
+        <ScrollToTop />
         <AuthProvider>
           <ThemeProvider>
             <Toaster />
