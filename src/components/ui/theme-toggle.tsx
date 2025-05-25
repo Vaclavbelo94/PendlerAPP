@@ -2,7 +2,7 @@
 import React from 'react';
 import { Moon, Sun } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useTheme } from '@/components/theme-provider';
+import { useTheme } from '@/hooks/useTheme';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { motion } from 'framer-motion';
@@ -20,9 +20,8 @@ export function ThemeToggle({
   alwaysShow = false,
   className
 }: ThemeToggleProps) {
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, isChangingTheme } = useTheme();
   const isDesktop = useMediaQuery("md");
-  const [isChangingTheme, setIsChangingTheme] = React.useState(false);
   
   // Don't render if not supposed to show on mobile and we are on mobile
   if (!alwaysShow && !isDesktop) {
@@ -32,11 +31,7 @@ export function ThemeToggle({
   const toggleTheme = () => {
     if (isChangingTheme) return;
     
-    setIsChangingTheme(true);
     setTheme(theme === 'dark' ? 'light' : 'dark');
-    setTimeout(() => {
-      setIsChangingTheme(false);
-    }, 300);
   };
   
   return (

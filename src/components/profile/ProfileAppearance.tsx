@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Eye, Moon, Sun, Palette } from "lucide-react";
 import { toast } from "sonner";
-import { useTheme } from "@/components/theme-provider";
+import { useTheme } from "@/hooks/useTheme";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -30,15 +30,12 @@ const ProfileAppearance = ({
   initialCompactMode = false,
   onSave
 }: ProfileAppearanceProps) => {
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, colorScheme, setColorScheme, isChangingTheme } = useTheme();
   const { user } = useAuth();
   const [darkMode, setDarkMode] = useState(initialDarkMode);
-  const [colorScheme, setColorScheme] = useState(initialColorScheme);
   const [compactMode, setCompactMode] = useState(initialCompactMode);
   const [isLoading, setIsLoading] = useState(true);
   const isMobile = useIsMobile();
-  
-  const [isChangingTheme, setIsChangingTheme] = useState(false);
 
   // Načtení nastavení z databáze při načtení komponenty
   useEffect(() => {
@@ -83,17 +80,7 @@ const ProfileAppearance = ({
   
   // Nastavit globální téma při změně darkMode přepínače
   useEffect(() => {
-    setIsChangingTheme(true);
-    const timer = setTimeout(() => {
-      setTheme(darkMode ? 'dark' : 'light');
-      setTimeout(() => {
-        setIsChangingTheme(false);
-      }, 100);
-    }, 0);
-    
-    return () => {
-      clearTimeout(timer);
-    };
+    setTheme(darkMode ? 'dark' : 'light');
   }, [darkMode, setTheme]);
   
   const handleSave = async () => {
@@ -195,10 +182,7 @@ const ProfileAppearance = ({
             <Switch 
               id="darkMode" 
               checked={darkMode}
-              onCheckedChange={(checked) => {
-                setIsChangingTheme(true);
-                setDarkMode(checked);
-              }}
+              onCheckedChange={setDarkMode}
               disabled={isChangingTheme}
             />
           </div>

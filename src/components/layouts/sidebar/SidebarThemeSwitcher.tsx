@@ -2,20 +2,15 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Moon, Sun } from "lucide-react";
-import { useTheme } from "@/components/theme-provider";
+import { useTheme } from "@/hooks/useTheme";
 
 const SidebarThemeSwitcher: React.FC = () => {
-  const { theme, setTheme } = useTheme();
-  const [isChanging, setIsChanging] = React.useState(false);
+  const { theme, setTheme, isChangingTheme } = useTheme();
   
   const handleToggleTheme = () => {
-    if (isChanging) return;
+    if (isChangingTheme) return;
     
-    setIsChanging(true);
     setTheme(theme === 'dark' ? 'light' : 'dark');
-    setTimeout(() => {
-      setIsChanging(false);
-    }, 300);
   };
   
   return (
@@ -24,7 +19,7 @@ const SidebarThemeSwitcher: React.FC = () => {
       size="sm"
       className="w-full justify-start gap-3 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
       onClick={handleToggleTheme}
-      disabled={isChanging}
+      disabled={isChangingTheme}
     >
       {theme === 'dark' ? (
         <>
