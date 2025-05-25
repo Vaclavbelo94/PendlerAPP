@@ -9,7 +9,7 @@ import { Calculator } from "lucide-react";
 import { useState } from "react";
 import CrossBorderTaxCalculator from "./CrossBorderTaxCalculator";
 import { useToast } from '@/components/ui/use-toast';
-import { useMediaQuery } from "@/hooks/use-media-query";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const BasicCalculator = () => {
   const [num1, setNum1] = useState<string>('0');
@@ -17,9 +17,7 @@ const BasicCalculator = () => {
   const [operation, setOperation] = useState<string>('add');
   const [result, setResult] = useState<number | string>(0);
   const { toast } = useToast();
-  
-  // Check if we're on a mobile device
-  const isMobile = useMediaQuery("xs");
+  const isMobile = useIsMobile();
 
   const calculateResult = () => {
     const number1 = parseFloat(num1);
@@ -90,14 +88,15 @@ const BasicCalculator = () => {
               type="number"
               value={num1}
               onChange={(e) => setNum1(e.target.value)}
-              className="text-lg h-12 md:text-base md:h-10"
+              className={`${isMobile ? 'text-lg h-12' : 'text-base h-10'}`}
+              placeholder="Zadejte první číslo"
             />
           </div>
           
           <div className="space-y-2">
             <Label htmlFor="operation">Operace</Label>
             <Select value={operation} onValueChange={setOperation}>
-              <SelectTrigger id="operation" className="h-12 md:h-10">
+              <SelectTrigger id="operation" className={isMobile ? "h-12" : "h-10"}>
                 <SelectValue placeholder="Vyberte operaci" />
               </SelectTrigger>
               <SelectContent>
@@ -116,13 +115,14 @@ const BasicCalculator = () => {
               type="number"
               value={num2}
               onChange={(e) => setNum2(e.target.value)}
-              className="text-lg h-12 md:text-base md:h-10"
+              className={`${isMobile ? 'text-lg h-12' : 'text-base h-10'}`}
+              placeholder="Zadejte druhé číslo"
             />
           </div>
           
           <Button 
             onClick={calculateResult} 
-            className="w-full h-12 md:h-10 text-base"
+            className={`w-full ${isMobile ? 'h-12 text-base' : 'h-10'} bg-primary hover:bg-primary/90 transition-colors`}
             size={isMobile ? "lg" : "default"}
           >
             <Calculator className="mr-2 h-4 w-4" />
@@ -130,8 +130,10 @@ const BasicCalculator = () => {
           </Button>
           
           <div className="p-4 bg-muted rounded-md text-center mt-6">
-            <div className="text-sm font-medium">Výsledek:</div>
-            <div className="text-3xl font-bold mt-2 break-all">{result}</div>
+            <div className="text-sm font-medium text-muted-foreground mb-1">Výsledek:</div>
+            <div className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold break-all`}>
+              {result}
+            </div>
           </div>
         </CardContent>
       </Card>

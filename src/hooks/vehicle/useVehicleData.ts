@@ -8,10 +8,11 @@ export const useVehicleData = (user: any) => {
   const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
   const [vehicleData, setVehicleData] = useState<VehicleData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasInitialized, setHasInitialized] = useState(false);
 
-  // Load vehicles for user - memoized to prevent infinite loops
+  // Load vehicles for user - simplified to prevent infinite loops
   const loadVehicles = useCallback(async () => {
-    if (!user?.id) {
+    if (!user?.id || hasInitialized) {
       setIsLoading(false);
       return;
     }
@@ -23,47 +24,51 @@ export const useVehicleData = (user: any) => {
       setVehicles(vehiclesData);
       
       // Pokud existují vozidla a není vybrané žádné, načteme první
-      if (vehiclesData.length > 0 && !selectedVehicleId) {
+      if (vehiclesData.length > 0) {
         setSelectedVehicleId(vehiclesData[0].id!);
-      } else if (vehiclesData.length === 0) {
+      } else {
         setSelectedVehicleId(null);
         setVehicleData(null);
       }
+      
+      setHasInitialized(true);
     } catch (error) {
       console.error("Chyba při načítání vozidel:", error);
     } finally {
       setIsLoading(false);
     }
-  }, [user?.id]); // Removed selectedVehicleId dependency to prevent infinite loop
-
-  useEffect(() => {
-    loadVehicles();
-  }, [loadVehicles]);
+  }, [user?.id, hasInitialized]);
 
   // Load vehicle details when selected vehicle changes
-  useEffect(() => {
-    const loadVehicleDetails = async () => {
-      if (!selectedVehicleId) {
-        setVehicleData(null);
-        return;
-      }
-      
-      setIsLoading(true);
-      try {
-        console.log("Loading vehicle details for:", selectedVehicleId);
-        const data = await fetchVehicleById(selectedVehicleId);
-        setVehicleData(data);
-      } catch (error) {
-        console.error("Chyba při načítání dat o vozidle:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    if (selectedVehicleId) {
-      loadVehicleDetails();
+  const loadVehicleDetails = useCallback(async (vehicleId: string) => {
+    if (!vehicleId) {
+      setVehicleData(null);
+      return;
     }
-  }, [selectedVehicleId]);
+    
+    try {
+      console.log("Loading vehicle details for:", vehicleId);
+      const data = await fetchVehicleById(vehicleId);
+      setVehicleData(data);
+    } catch (error) {
+      console.error("Chyba při načítání dat o vozidle:", error);
+      setVehicleData(null);
+    }
+  }, []);
+
+  // Initial load
+  useEffect(() => {
+    if (user?.id && !hasInitialized) {
+      loadVehicles();
+    }
+  }, [user?.id, hasInitialized, loadVehicles]);
+
+  // Load details when selected vehicle changes
+  useEffect(() => {
+    if (selectedVehicleId && hasInitialized) {
+      loadVehicleDetails(selectedVehicleId);
+    }
+  }, [selectedVehicleId, hasInitialized, loadVehicleDetails]);
 
   const handleVehicleSelect = useCallback((vehicleId: string) => {
     console.log("Selecting vehicle:", vehicleId);
@@ -78,6 +83,6 @@ export const useVehicleData = (user: any) => {
     setVehicleData,
     isLoading,
     handleVehicleSelect,
-    loadVehicles // Export loadVehicles for manual refresh if needed
+    loadVehicles
   };
 };

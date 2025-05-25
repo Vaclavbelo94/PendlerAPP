@@ -12,9 +12,6 @@ import CommuteCostCalculator from "@/components/travel/CommuteCostCalculator";
 import TrafficPredictions from "@/components/travel/TrafficPredictions";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
-
-// Import responsive components
-import { ResponsiveTabs, ResponsiveTabsList, ResponsiveTabsTrigger, ResponsiveTabsContent } from "@/components/ui/responsive-tabs";
 import ResponsivePage from "@/components/layouts/ResponsivePage";
 import AccessibleButton from "@/components/ui/accessible-button";
 
@@ -47,6 +44,33 @@ const TravelPlanning = () => {
     navigate(-1);
   };
 
+  const tabs = [
+    {
+      id: "optimizer",
+      label: isMobile ? "Optimalizace" : "Optimalizace dojíždění",
+      icon: Car,
+      description: "Optimalizace tras a dopravy"
+    },
+    {
+      id: "ridesharing",
+      label: isMobile ? "Sdílení" : "Sdílení jízd",
+      icon: Users,
+      description: "Hledání spolujízd"
+    },
+    {
+      id: "calculator",
+      label: isMobile ? "Kalkulačka" : "Kalkulačka nákladů",
+      icon: Calculator,
+      description: "Výpočet nákladů na dopravu"
+    },
+    {
+      id: "predictions",
+      label: isMobile ? "Predikce" : "Predikce dopravy",
+      icon: Clock,
+      description: "Předpověď dopravní situace"
+    }
+  ];
+
   return (
     <PremiumCheck featureKey="travel_planning">
       <ResponsivePage>
@@ -54,7 +78,7 @@ const TravelPlanning = () => {
           <title>Plánování cest | Pendler Buddy</title>
         </Helmet>
         
-        {/* Back button - mobilní optimalizace */}
+        {/* Back button */}
         <AccessibleButton 
           variant="outline" 
           onClick={handleNavigateBack} 
@@ -67,7 +91,7 @@ const TravelPlanning = () => {
           {isMobile ? 'Zpět' : 'Zpět'}
         </AccessibleButton>
         
-        {/* Header section - mobilní optimalizace */}
+        {/* Header section */}
         <section className={`mb-${isMobile ? '4' : '6'}`} role="banner">
           <div className={`flex items-center gap-3 mb-4 ${isMobile ? 'flex-col text-center' : ''}`}>
             <div className={`${isMobile ? 'p-1.5' : 'p-2'} rounded-full bg-primary/10`} role="img" aria-label="Ikona mapy">
@@ -86,55 +110,39 @@ const TravelPlanning = () => {
           </p>
         </section>
         
-        {/* Main content - mobilní optimalizace */}
-        <ResponsiveTabs value={activeTab} onValueChange={handleTabChange} className="space-y-4">
-          <ResponsiveTabsList>
-            <ResponsiveTabsTrigger 
-              value="optimizer" 
-              icon={<Car className={`${isMobile ? 'h-3 w-3' : 'h-4 w-4'}`} />}
-              description="Optimalizace tras a dopravy"
-            >
-              {isMobile ? "Optimalizace" : "Optimalizace dojíždění"}
-            </ResponsiveTabsTrigger>
-            <ResponsiveTabsTrigger 
-              value="ridesharing" 
-              icon={<Users className={`${isMobile ? 'h-3 w-3' : 'h-4 w-4'}`} />}
-              description="Hledání spolujízd"
-            >
-              {isMobile ? "Sdílení" : "Sdílení jízd"}
-            </ResponsiveTabsTrigger>
-            <ResponsiveTabsTrigger 
-              value="calculator" 
-              icon={<Calculator className={`${isMobile ? 'h-3 w-3' : 'h-4 w-4'}`} />}
-              description="Výpočet nákladů na dopravu"
-            >
-              {isMobile ? "Kalkulačka" : "Kalkulačka nákladů"}
-            </ResponsiveTabsTrigger>
-            <ResponsiveTabsTrigger 
-              value="predictions" 
-              icon={<Clock className={`${isMobile ? 'h-3 w-3' : 'h-4 w-4'}`} />}
-              description="Předpověď dopravní situace"
-            >
-              {isMobile ? "Predikce" : "Predikce dopravy"}
-            </ResponsiveTabsTrigger>
-          </ResponsiveTabsList>
-          
-          <ResponsiveTabsContent value="optimizer">
-            <CommuteOptimizer />
-          </ResponsiveTabsContent>
-          
-          <ResponsiveTabsContent value="ridesharing">
-            <RideSharing />
-          </ResponsiveTabsContent>
-          
-          <ResponsiveTabsContent value="calculator">
-            <CommuteCostCalculator />
-          </ResponsiveTabsContent>
-          
-          <ResponsiveTabsContent value="predictions">
-            <TrafficPredictions />
-          </ResponsiveTabsContent>
-        </ResponsiveTabs>
+        {/* Tabs navigation */}
+        <div className={`grid gap-2 mb-6 ${isMobile ? 'grid-cols-2' : 'grid-cols-4'}`}>
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => handleTabChange(tab.id)}
+                className={`flex items-center gap-2 p-4 rounded-lg border transition-colors ${
+                  activeTab === tab.id 
+                    ? 'bg-primary text-primary-foreground' 
+                    : 'bg-card hover:bg-accent'
+                } ${isMobile ? 'flex-col text-center' : ''}`}
+              >
+                <Icon className={`${isMobile ? 'h-5 w-5' : 'h-4 w-4'}`} />
+                <span className={`${isMobile ? 'text-xs' : 'text-sm'} font-medium`}>
+                  {tab.label}
+                </span>
+                {!isMobile && (
+                  <span className="sr-only">{tab.description}</span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+        
+        {/* Tab content */}
+        <div className="space-y-4">
+          {activeTab === "optimizer" && <CommuteOptimizer />}
+          {activeTab === "ridesharing" && <RideSharing />}
+          {activeTab === "calculator" && <CommuteCostCalculator />}
+          {activeTab === "predictions" && <TrafficPredictions />}
+        </div>
       </ResponsivePage>
     </PremiumCheck>
   );
