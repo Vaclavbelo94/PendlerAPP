@@ -23,32 +23,66 @@ const OverviewTab = () => {
   const [shifts, setShifts] = useState<ShiftData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Načítání dat při každé změně user nebo při mount komponenty
   useEffect(() => {
-    if (user) {
-      fetchDashboardData();
+    console.log("OverviewTab useEffect triggered, user:", user?.id);
+    
+    if (!user) {
+      console.log("No user found, resetting state");
+      setShifts([]);
+      setIsLoading(false);
+      return;
     }
+    
+    fetchDashboardData();
   }, [user]);
 
   const fetchDashboardData = async () => {
-    if (!user) return;
+    if (!user) {
+      console.log("fetchDashboardData: No user available");
+      return;
+    }
     
+    console.log("Fetching dashboard data for user:", user.id);
     setIsLoading(true);
+    
     try {
       // Fetch shifts data
-      const { data: shiftsData } = await supabase
+      const { data: shiftsData, error } = await supabase
         .from('shifts')
         .select('*')
         .eq('user_id', user.id)
         .order('date', { ascending: false })
         .limit(10);
 
-      if (shiftsData) {
+      console.log("Shifts data received:", shiftsData);
+      console.log("Shifts error:", error);
+
+      if (error) {
+        console.error("Error fetching shifts:", error);
+      } else if (shiftsData) {
         setShifts(shiftsData);
+        console.log("Shifts set to state:", shiftsData.length, "items");
       }
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
+      // Fallback to localStorage if Supabase fails
+      try {
+        const savedShifts = localStorage.getItem("shifts");
+        if (savedShifts) {
+          const parsedShifts = JSON.parse(savedShifts).map((shift: any) => ({
+            ...shift,
+            date: new Date(shift.date).toISOString().split('T')[0] // Ensure date is string
+          }));
+          setShifts(parsedShifts);
+          console.log("Loaded shifts from localStorage:", parsedShifts.length, "items");
+        }
+      } catch (e) {
+        console.error("Error loading shifts from localStorage:", e);
+      }
     } finally {
       setIsLoading(false);
+      console.log("Loading finished");
     }
   };
 
@@ -71,6 +105,14 @@ const OverviewTab = () => {
   });
 
   const recentShifts = shifts.slice(0, 3);
+
+  console.log("Rendering OverviewTab:", {
+    isLoading,
+    hasUser: !!user,
+    shiftsCount: shifts.length,
+    thisWeekHours,
+    thisMonthShiftsCount: thisMonthShifts.length
+  });
 
   if (isLoading) {
     return (
