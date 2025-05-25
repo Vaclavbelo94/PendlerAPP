@@ -1,147 +1,132 @@
 
-import { Button } from "@/components/ui/button";
-import { ArrowRightIcon } from "lucide-react";
-import { motion } from "framer-motion";
-import { AnimatedSection } from "@/components/ui/animated-section";
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
+import { ArrowRight, Crown, Sparkles } from 'lucide-react';
 
 const CTA = () => {
   return (
-    <section className="py-20 md:py-28 overflow-hidden relative">
-      <motion.div 
-        className="absolute inset-0 bg-gradient-to-br from-primary-600 to-secondary-600 z-0"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        transition={{ duration: 1 }}
-        viewport={{ once: true }}
-      />
-      
-      {/* Decorative elements */}
-      <div className="absolute top-0 left-0 w-full h-24 bg-white" style={{ 
-        clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 0)',
-        opacity: 0.1 
-      }}></div>
-      <div className="absolute bottom-0 right-0 w-full h-24 bg-white" style={{ 
-        clipPath: 'polygon(0 100%, 100% 0, 100% 100%, 0 100%)',
-        opacity: 0.1 
-      }}></div>
+    <section className="py-24 relative overflow-hidden">
+      {/* Animated background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-blue-500/5 to-purple-500/10" />
       
       {/* Floating particles */}
-      {[...Array(8)].map((_, i) => (
-        <motion.div
-          key={`particle-${i}`}
-          className={`absolute w-${2 + Math.floor(i % 4)} h-${2 + Math.floor(i % 4)} rounded-full bg-white/10`}
-          initial={{ 
-            x: `${20 + (i * 10)}%`, 
-            y: `${15 + ((i * 7) % 50)}%`,
-            opacity: 0.1 + (i * 0.02)
-          }}
-          animate={{ 
-            y: [`${15 + ((i * 7) % 50)}%`, `${10 + ((i * 9) % 40)}%`, `${15 + ((i * 7) % 50)}%`],
-            opacity: [0.1 + (i * 0.02), 0.2 + (i * 0.03), 0.1 + (i * 0.02)],
-          }}
-          transition={{ 
-            duration: 3 + (i % 3), 
-            repeat: Infinity,
-            repeatType: "reverse",
-            ease: "easeInOut",
-            delay: i * 0.2
-          }}
-        />
-      ))}
+      <div className="absolute inset-0 overflow-hidden">
+        {[...Array(20)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-2 h-2 bg-primary/20 rounded-full"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
+            animate={{
+              y: [0, -30, 0],
+              opacity: [0, 1, 0],
+              scale: [0, 1, 0],
+            }}
+            transition={{
+              duration: 3 + Math.random() * 2,
+              repeat: Infinity,
+              delay: Math.random() * 2,
+            }}
+          />
+        ))}
+      </div>
       
-      <div className="container-custom relative z-10">
-        <AnimatedSection className="max-w-3xl mx-auto text-center" type="scale">
-          <motion.h2 
-            className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-white"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
+      <div className="container mx-auto px-4 relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center bg-card/50 backdrop-blur-sm rounded-3xl p-12 shadow-2xl border"
+        >
+          <motion.div
+            animate={{ rotate: [0, 10, -10, 0] }}
+            transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+            className="inline-block mb-6"
           >
-            Váš průvodce světem práce v Německu
-          </motion.h2>
-          <motion.p 
-            className="text-lg md:text-xl mb-10 text-white/90"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            <Crown className="h-12 w-12 text-primary mx-auto" />
+          </motion.div>
+          
+          <motion.h2
+            className="text-4xl font-bold mb-4"
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            viewport={{ once: true }}
           >
-            Objevte výhody našeho komplexního nástroje pro české pendlery. 
-            Usnadníme vám komunikaci, orientaci v zákonech a pomohou vám ušetřit čas i peníze.
+            Připraveni začít?
+          </motion.h2>
+          
+          <motion.p
+            className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
+            Připojte se k tisícům pendlerů, kteří už používají Pendler Buddy 
+            pro snadnější život při práci v zahraničí.
           </motion.p>
-          <motion.div 
+          
+          <motion.div
             className="flex flex-col sm:flex-row gap-4 justify-center"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
             viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.6 }}
           >
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
-              <Button 
-                variant="secondary" 
-                size="lg" 
-                className="font-semibold text-base px-8 py-6 rounded-xl bg-white text-primary-700 hover:bg-white/90"
-              >
-                Vyzkoušet zdarma
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Button asChild size="lg" className="px-8 group">
+                <Link to="/register">
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  Vytvořit účet zdarma
+                  <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                </Link>
               </Button>
             </motion.div>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
-              <Button 
-                variant="outline" 
-                size="lg" 
-                className="font-semibold text-base px-8 py-6 rounded-xl border-white text-white hover:bg-white/10 transition-all"
-              >
-                Zobrazit funkce
-                <motion.div
-                  animate={{ x: [0, 5, 0] }}
-                  transition={{ 
-                    repeat: Infinity, 
-                    duration: 1.5,
-                    repeatDelay: 2
-                  }}
-                >
-                  <ArrowRightIcon className="ml-2 h-5 w-5" />
-                </motion.div>
+            
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Button asChild variant="outline" size="lg" className="px-8 backdrop-blur-sm bg-background/50">
+                <Link to="/login">
+                  Už mám účet
+                </Link>
               </Button>
             </motion.div>
           </motion.div>
-        </AnimatedSection>
+          
+          {/* Trust indicators */}
+          <motion.div
+            className="mt-8 flex items-center justify-center gap-8 text-sm text-muted-foreground"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.8 }}
+          >
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+              Zdarma navždy
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
+              Žádné poplatky
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse" />
+              Okamžitý přístup
+            </div>
+          </motion.div>
+        </motion.div>
       </div>
-      
-      {/* Shapes */}
-      <motion.div 
-        className="absolute -top-24 -left-24 w-64 h-64 bg-white/10 rounded-full"
-        animate={{ 
-          scale: [1, 1.1, 1],
-          opacity: [0.1, 0.15, 0.1],
-        }}
-        transition={{ duration: 8, repeat: Infinity, repeatType: "reverse" }}
-      />
-      <motion.div 
-        className="absolute -bottom-20 -right-20 w-80 h-80 bg-white/10 rounded-full"
-        animate={{ 
-          scale: [1, 1.15, 1],
-          opacity: [0.1, 0.18, 0.1],
-        }}
-        transition={{ duration: 10, repeat: Infinity, repeatType: "reverse", delay: 1 }}
-      />
-      <motion.div 
-        className="absolute top-1/3 right-10 w-16 h-16 bg-white/10 rounded-full"
-        animate={{ 
-          y: [0, -15, 0],
-          opacity: [0.1, 0.2, 0.1],
-        }}
-        transition={{ duration: 5, repeat: Infinity, repeatType: "reverse" }}
-      />
-      <motion.div 
-        className="absolute bottom-1/3 left-10 w-24 h-24 bg-white/10 rounded-full"
-        animate={{ 
-          y: [0, 15, 0],
-          opacity: [0.1, 0.2, 0.1],
-        }}
-        transition={{ duration: 6, repeat: Infinity, repeatType: "reverse", delay: 0.5 }}
-      />
     </section>
   );
 };
