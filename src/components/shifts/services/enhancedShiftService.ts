@@ -2,7 +2,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { ShiftType } from "../types";
 import { formatDateForDB } from "../utils/dateUtils";
-import { toast } from "@/components/ui/use-toast";
 
 export interface EnhancedShiftData {
   date: string;
@@ -68,13 +67,13 @@ export class EnhancedShiftService {
       const eventText = event === 'INSERT' ? 'přidána' : 
                        event === 'UPDATE' ? 'upravena' : 'odstraněna';
       
-      toast({
-        title: `Směna ${eventText}`,
-        description: `Změna byla synchronizována z jiného zařízení`,
-      });
-
-      // Trigger app-wide refresh
-      window.dispatchEvent(new CustomEvent('shifts-updated', { detail: payload }));
+      // Trigger app-wide refresh without showing toast here
+      window.dispatchEvent(new CustomEvent('shifts-updated', { 
+        detail: { 
+          payload, 
+          message: `Směna ${eventText} z jiného zařízení` 
+        } 
+      }));
     }
   }
 
@@ -140,7 +139,7 @@ export class EnhancedShiftService {
 
       return { savedShift, isUpdate };
     } catch (error) {
-      // Save to offline queue for later sync
+      // Save to offline queue for later sync - no toast here
       await this.saveToOfflineQueue('UPSERT', shiftData);
       throw error;
     }
@@ -160,10 +159,7 @@ export class EnhancedShiftService {
       existingQueue.push(queueItem);
       localStorage.setItem('offline_shifts_queue', JSON.stringify(existingQueue));
 
-      toast({
-        title: "Uloženo offline",
-        description: "Směna bude synchronizována při obnovení připojení",
-      });
+      // Don't show toast here - let the calling code handle notifications
     } catch (error) {
       console.error('Failed to save to offline queue:', error);
     }
@@ -194,12 +190,7 @@ export class EnhancedShiftService {
     const updatedQueue = queue.filter((item: any) => !processedItems.includes(item.id));
     localStorage.setItem('offline_shifts_queue', JSON.stringify(updatedQueue));
 
-    if (processedItems.length > 0) {
-      toast({
-        title: "Synchronizace dokončena",
-        description: `Synchronizováno ${processedItems.length} směn`,
-      });
-    }
+    return processedItems.length;
   }
 
   cleanup() {

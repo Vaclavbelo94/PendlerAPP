@@ -21,7 +21,10 @@ export const useEnhancedShiftManagement = (user: any) => {
   const shiftService = EnhancedShiftService.getInstance();
   const notificationService = ShiftNotificationService.getInstance();
 
-  // Handle enhanced shift saving with real-time sync
+  // Helper function to check if we're online
+  const isOnline = () => navigator.onLine;
+
+  // Handle enhanced shift saving with unified notifications
   const handleSaveShift = useCallback(async () => {
     if (!shiftData.selectedDate || !user) {
       toast({
@@ -40,6 +43,7 @@ export const useEnhancedShiftManagement = (user: any) => {
         user.id
       );
       
+      // Success - show appropriate message
       toast({
         title: isUpdate ? "Směna aktualizována" : "Směna přidána",
         description: `Směna byla úspěšně ${isUpdate ? "upravena" : "přidána"}.`,
@@ -55,23 +59,46 @@ export const useEnhancedShiftManagement = (user: any) => {
       
     } catch (error) {
       console.error("Error saving shift:", error);
-      toast({
-        title: "Chyba při ukládání",
-        description: "Směna byla uložena offline a bude synchronizována později.",
-        variant: "destructive"
-      });
+      
+      // Show different messages based on network status
+      if (isOnline()) {
+        toast({
+          title: "Chyba při ukládání",
+          description: "Nepodařilo se uložit směnu na server. Zkuste to prosím znovu.",
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Uloženo offline",
+          description: "Směna byla uložena offline a bude synchronizována při obnovení připojení.",
+        });
+      }
     }
   }, [shiftData, user, shiftService, notificationService]);
 
   // Handle online/offline events
   useEffect(() => {
-    const handleOnline = () => {
-      shiftService.processOfflineQueue();
+    const handleOnline = async () => {
+      const processedCount = await shiftService.processOfflineQueue();
+      if (processedCount > 0) {
+        toast({
+          title: "Synchronizace dokončena",
+          description: `Synchronizováno ${processedCount} směn`,
+        });
+      }
     };
 
-    const handleShiftsUpdated = () => {
+    const handleShiftsUpdated = (event: any) => {
       // Refresh shifts when real-time update occurs
       setShifts(prev => [...prev]);
+      
+      // Show notification for changes from other devices
+      if (event.detail?.message) {
+        toast({
+          title: "Synchronizace",
+          description: event.detail.message,
+        });
+      }
     };
 
     window.addEventListener('online', handleOnline);
