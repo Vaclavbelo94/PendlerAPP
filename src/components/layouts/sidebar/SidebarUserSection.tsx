@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { 
@@ -68,7 +69,7 @@ const SidebarUserSection = ({ closeSidebar }: SidebarUserSectionProps) => {
             Profil
           </Button>
         </Link>
-        <Link to="/profile?tab=settings" onClick={closeSidebar}>
+        <Link to="/settings" onClick={closeSidebar}>
           <Button variant="ghost" className="w-full justify-start">
             <Settings className="mr-2 h-4 w-4" />
             Nastavení
