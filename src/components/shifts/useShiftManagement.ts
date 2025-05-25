@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Shift, ShiftType } from "./types";
 import { toast } from "@/components/ui/use-toast";
@@ -108,20 +107,45 @@ export const useShiftManagement = (user: any) => {
     };
     
     try {
+      // First, check for existing shifts for this date and user
+      const { data: existingShifts, error: checkError } = await supabase
+        .from('shifts')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('date', shiftData.date);
+        
+      if (checkError) throw checkError;
+      
+      // If there are multiple shifts for the same date, delete all but keep the first one
+      if (existingShifts && existingShifts.length > 1) {
+        console.log(`Found ${existingShifts.length} duplicate shifts, cleaning up...`);
+        
+        // Keep the first shift, delete the rest
+        const shiftsToDelete = existingShifts.slice(1);
+        for (const shift of shiftsToDelete) {
+          await supabase
+            .from('shifts')
+            .delete()
+            .eq('id', shift.id)
+            .eq('user_id', user.id);
+        }
+      }
+      
       let savedShift;
       
-      if (currentShift) {
-        // Update existing shift
+      if (existingShifts && existingShifts.length > 0) {
+        // Update the existing shift (using the first one after cleanup)
+        const shiftToUpdate = existingShifts[0];
         const { data, error } = await supabase
           .from('shifts')
           .update({
             type: shiftType,
             notes: shiftNotes.trim()
           })
-          .eq('id', currentShift.id)
+          .eq('id', shiftToUpdate.id)
           .eq('user_id', user.id)
           .select()
-          .single();
+          .maybeSingle();
           
         if (error) throw error;
         savedShift = data;
@@ -131,55 +155,23 @@ export const useShiftManagement = (user: any) => {
           description: `Směna byla úspěšně upravena.`,
         });
       } else {
-        // Check if shift already exists for this date
-        const { data: existingShift, error: checkError } = await supabase
+        // Create new shift
+        const { data, error } = await supabase
           .from('shifts')
-          .select('*')
-          .eq('user_id', user.id)
-          .eq('date', shiftData.date)
+          .insert(shiftData)
+          .select()
           .maybeSingle();
           
-        if (checkError) throw checkError;
+        if (error) throw error;
+        savedShift = data;
         
-        if (existingShift) {
-          // Update existing shift instead of creating new one
-          const { data, error } = await supabase
-            .from('shifts')
-            .update({
-              type: shiftType,
-              notes: shiftNotes.trim()
-            })
-            .eq('id', existingShift.id)
-            .eq('user_id', user.id)
-            .select()
-            .single();
-            
-          if (error) throw error;
-          savedShift = data;
-          
-          toast({
-            title: "Směna aktualizována",
-            description: `Směna byla úspěšně upravena.`,
-          });
-        } else {
-          // Add new shift
-          const { data, error } = await supabase
-            .from('shifts')
-            .insert(shiftData)
-            .select()
-            .single();
-            
-          if (error) throw error;
-          savedShift = data;
-          
-          toast({
-            title: "Směna přidána",
-            description: `Nová směna byla úspěšně přidána.`,
-          });
-        }
+        toast({
+          title: "Směna přidána",
+          description: `Nová směna byla úspěšně přidána.`,
+        });
       }
       
-      // Update local state - reload all shifts to ensure consistency
+      // Reload all shifts to ensure consistency
       const { data: allShifts, error: reloadError } = await supabase
         .from('shifts')
         .select('*')
