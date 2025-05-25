@@ -41,7 +41,7 @@ export const ShiftCalendarTab: React.FC<ShiftCalendarTabProps> = ({
   return (
     <div className="space-y-6">
       <div className={`grid ${isTablet ? "grid-cols-2" : "grid-cols-1"} gap-6`}>
-        <Card className="p-4">
+        <Card className="p-4 bg-card border">
           <ShiftCalendar 
             selectedDate={selectedDate}
             onSelectDate={onSelectDate}
@@ -49,7 +49,7 @@ export const ShiftCalendarTab: React.FC<ShiftCalendarTabProps> = ({
           />
         </Card>
         
-        <Card className="p-4">
+        <Card className="p-4 bg-card border">
           <ShiftDetails 
             selectedDate={selectedDate}
             currentShift={currentShift}
@@ -66,7 +66,7 @@ export const ShiftCalendarTab: React.FC<ShiftCalendarTabProps> = ({
       </div>
       
       {shifts.length > 0 && (
-        <Card className="p-4">
+        <Card className="p-4 bg-card border">
           <CalendarExport shifts={shifts} />
         </Card>
       )}

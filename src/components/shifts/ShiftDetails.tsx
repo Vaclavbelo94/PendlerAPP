@@ -45,8 +45,8 @@ export const ShiftDetails = ({
   }
 
   return (
-    <div className="bg-muted p-4 rounded-md">
-      <p className="font-medium">
+    <div className="bg-card border rounded-md p-4">
+      <p className="font-medium text-foreground">
         {format(selectedDate, "EEEE, d. MMMM yyyy", { locale: cs })}
       </p>
       
@@ -69,22 +69,22 @@ export const ShiftDetails = ({
               </Button>
             )}
           </div>
-          <p className="mt-2">Směna: {getShiftTimeByType(currentShift.type)}</p>
+          <p className="mt-2 text-foreground">Směna: {getShiftTimeByType(currentShift.type)}</p>
           
           {/* Zobrazení poznámky ke směně */}
           {currentShift.notes && (
-            <div className="mt-3 bg-white p-3 rounded-md border border-muted">
+            <div className="mt-3 bg-muted/50 p-3 rounded-md border">
               <div className="flex items-center gap-2 mb-1 text-sm text-muted-foreground">
                 <FileText className="h-3 w-3" />
                 <span>Poznámka:</span>
               </div>
-              <p className="text-sm whitespace-pre-wrap">{currentShift.notes}</p>
+              <p className="text-sm whitespace-pre-wrap text-foreground">{currentShift.notes}</p>
             </div>
           )}
           
           {user && (
             <div className="mt-3">
-              <Label htmlFor="shift-type">Typ směny</Label>
+              <Label htmlFor="shift-type" className="text-foreground">Typ směny</Label>
               <Select 
                 value={shiftType} 
                 onValueChange={(value: ShiftType) => setShiftType(value)}
@@ -125,7 +125,7 @@ export const ShiftDetails = ({
               <p className="mt-2 text-muted-foreground">Žádná směna naplánovaná na tento den</p>
               
               <div className="mt-3">
-                <Label htmlFor="shift-type">Typ směny</Label>
+                <Label htmlFor="shift-type" className="text-foreground">Typ směny</Label>
                 <Select 
                   value={shiftType} 
                   onValueChange={(value: ShiftType) => setShiftType(value)}
@@ -141,7 +141,7 @@ export const ShiftDetails = ({
                 </Select>
                 
                 <div className="mt-3">
-                  <Label htmlFor="shift-notes">Poznámka ke směně (volitelné)</Label>
+                  <Label htmlFor="shift-notes" className="text-foreground">Poznámka ke směně (volitelné)</Label>
                   <Textarea
                     id="shift-notes"
                     placeholder="Zadejte poznámku ke směně..."

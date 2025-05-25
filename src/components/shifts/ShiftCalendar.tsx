@@ -48,7 +48,7 @@ export const ShiftCalendar = ({
   };
 
   return (
-    <div className="flex justify-center p-4 bg-white rounded-lg shadow-sm">
+    <div className="flex justify-center p-4 bg-card rounded-lg border">
       <Calendar
         mode="single"
         selected={selectedDate}
