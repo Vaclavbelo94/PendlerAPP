@@ -79,23 +79,23 @@ const Shifts = () => {
   return (
     <PremiumCheck featureKey="shifts">
       <ResponsivePage>
-        <div className="container py-6 md:py-10 max-w-7xl">
-          <div className="mb-8">
+        <div className="container py-6 md:py-10 max-w-7xl mx-auto">
+          <div className="mb-8 text-center md:text-left">
             <h1 className="text-3xl font-bold tracking-tight mb-2">Směny</h1>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground text-lg">
               Plánujte a sledujte své pracovní směny efektivně
             </p>
             
             {/* Quick link to travel planning */}
             <div className="mt-4 p-4 bg-muted/50 rounded-lg border">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-medium">Potřebujete naplánovat cestu?</h3>
+              <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div className="text-center md:text-left">
+                  <h3 className="font-medium text-lg">Potřebujete naplánovat cestu?</h3>
                   <p className="text-sm text-muted-foreground">
                     Optimalizujte své dojíždění a najděte spolujízdy v sekci Doprava
                   </p>
                 </div>
-                <Button onClick={handleNavigateToTravel} className="flex items-center gap-2">
+                <Button onClick={handleNavigateToTravel} className="flex items-center gap-2 w-full md:w-auto">
                   <MapIcon className="h-4 w-4" />
                   Plánování cest
                 </Button>
