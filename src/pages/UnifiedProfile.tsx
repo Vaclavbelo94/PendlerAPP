@@ -28,7 +28,7 @@ const UnifiedProfile = () => {
 
   return (
     <div className="container py-8 max-w-6xl">
-      <ProfileHeader user={user} isPremium={isPremium} />
+      <ProfileHeader />
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-8">
         <TabsList className="grid w-full grid-cols-4">
