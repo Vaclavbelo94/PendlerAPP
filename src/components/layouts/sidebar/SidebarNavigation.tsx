@@ -54,7 +54,7 @@ const SidebarNavigation = ({ closeSidebar }: SidebarNavigationProps) => {
 
   const toolsNavigation = [
     {
-      title: "Kalkulačka mezd",
+      title: "Výpočet mzdy",
       href: "/calculator",
       icon: Calculator,
     },
