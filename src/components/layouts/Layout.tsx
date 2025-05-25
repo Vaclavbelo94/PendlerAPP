@@ -84,7 +84,7 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
     );
   }
   
-  // Optimalizovaný layout pro portrait mobile
+  // Optimalizovaný layout pro portrait mobile s opravou z-index
   if (isPortraitMobile) {
     return (
       <div className="flex min-h-screen bg-background relative">
@@ -104,18 +104,23 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
           </>
         )}
         
-        {/* Main content container */}
-        <div className="flex-1 flex flex-col min-w-0 relative z-[1]">
-          <Navbar 
-            toggleSidebar={() => setSidebarOpen(!sidebarOpen)} 
-            rightContent={navbarRightContent}
-            sidebarOpen={sidebarOpen}
-          />
+        {/* Main content container s fixovaným navbar */}
+        <div className="flex-1 flex flex-col min-w-0 relative">
+          {/* Navbar s vyšším z-index */}
+          <div className="sticky top-0 z-[40] bg-card border-b border-border">
+            <Navbar 
+              toggleSidebar={() => setSidebarOpen(!sidebarOpen)} 
+              rightContent={navbarRightContent}
+              sidebarOpen={sidebarOpen}
+            />
+          </div>
           
-          {/* Obsah stránky s mobilní optimalizací - SNÍŽENÝ Z-INDEX */}
+          {/* Obsah stránky s odpovídajícím z-index a paddingem pro navbar */}
           <ScrollArea className="flex-1 relative z-[1]">
             <main className="flex-1 px-3 py-3 min-h-[calc(100vh-4rem)]">
-              {children}
+              <div className="relative z-[1]">
+                {children}
+              </div>
             </main>
             <Footer />
           </ScrollArea>

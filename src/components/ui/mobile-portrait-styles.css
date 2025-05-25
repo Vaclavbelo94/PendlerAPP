@@ -70,13 +70,13 @@
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   }
   
-  /* Improved tab navigation for mobile - CRITICAL Z-INDEX FIX */
+  /* FIXED: Improved tab navigation for mobile - CRITICAL Z-INDEX FIX */
   .mobile-tabs {
     width: 100%;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     position: relative;
-    z-index: 10 !important;
+    z-index: 1 !important;
   }
   
   .mobile-tabs .mobile-tabs-list {
@@ -84,8 +84,9 @@
     min-width: max-content;
     padding: 0.5rem;
     gap: 0.5rem;
-    position: relative;
-    z-index: 10 !important;
+    position: sticky;
+    top: 0;
+    z-index: 2 !important;
     background: hsl(var(--background));
     border-bottom: 1px solid hsl(var(--border));
   }
@@ -97,34 +98,52 @@
     min-height: 44px;
     white-space: nowrap;
     position: relative;
-    z-index: 10 !important;
+    z-index: 2 !important;
     background: hsl(var(--background));
   }
   
   /* Ensure tabs content doesn't get covered */
   .mobile-tabs .mobile-tabs-content {
     position: relative;
-    z-index: 5 !important;
+    z-index: 1 !important;
     background: hsl(var(--background));
+    margin-top: 0.5rem;
   }
   
-  /* Fix for responsive tabs specifically */
+  /* Fix for responsive tabs specifically - LOWER Z-INDEX */
   [data-radix-tabs-content] {
     position: relative !important;
-    z-index: 5 !important;
+    z-index: 1 !important;
   }
   
   [data-radix-tabs-list] {
-    position: relative !important;
-    z-index: 10 !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 2 !important;
     background: hsl(var(--background)) !important;
     border-bottom: 1px solid hsl(var(--border)) !important;
   }
   
   [data-radix-tabs-trigger] {
     position: relative !important;
-    z-index: 10 !important;
+    z-index: 2 !important;
     background: hsl(var(--background)) !important;
+  }
+  
+  /* Fix navbar overlap issues */
+  .mobile-navbar-fixed {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 40 !important;
+    background: hsl(var(--background)) !important;
+    backdrop-filter: blur(8px) !important;
+  }
+  
+  /* Ensure content starts below navbar */
+  .mobile-content-wrapper {
+    position: relative !important;
+    z-index: 1 !important;
+    padding-top: 0.5rem !important;
   }
 }
 
