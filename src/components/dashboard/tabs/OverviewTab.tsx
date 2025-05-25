@@ -61,8 +61,13 @@ const OverviewTab = () => {
       if (error) {
         console.error("Error fetching shifts:", error);
       } else if (shiftsData) {
-        setShifts(shiftsData);
-        console.log("Shifts set to state:", shiftsData.length, "items");
+        // Ensure all dates are properly formatted as strings
+        const formattedShifts = shiftsData.map(shift => ({
+          ...shift,
+          date: typeof shift.date === 'string' ? shift.date : new Date(shift.date).toISOString().split('T')[0]
+        }));
+        setShifts(formattedShifts);
+        console.log("Shifts set to state:", formattedShifts.length, "items");
       }
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
@@ -86,25 +91,49 @@ const OverviewTab = () => {
     }
   };
 
-  // Calculate this week's hours
-  const thisWeekShifts = shifts.filter(shift => {
-    const shiftDate = new Date(shift.date);
-    const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 });
-    const weekEnd = endOfWeek(new Date(), { weekStartsOn: 1 });
-    return shiftDate >= weekStart && shiftDate <= weekEnd;
-  });
+  // Calculate this week's hours - with error handling
+  const thisWeekShifts = React.useMemo(() => {
+    if (!shifts || shifts.length === 0) return [];
+    
+    try {
+      return shifts.filter(shift => {
+        const shiftDate = new Date(shift.date);
+        if (isNaN(shiftDate.getTime())) return false; // Invalid date
+        
+        const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 });
+        const weekEnd = endOfWeek(new Date(), { weekStartsOn: 1 });
+        return shiftDate >= weekStart && shiftDate <= weekEnd;
+      });
+    } catch (error) {
+      console.error("Error calculating this week's shifts:", error);
+      return [];
+    }
+  }, [shifts]);
 
   const thisWeekHours = thisWeekShifts.length * 8;
 
-  // Calculate this month's shifts
-  const thisMonthShifts = shifts.filter(shift => {
-    const shiftDate = new Date(shift.date);
-    const monthStart = startOfMonth(new Date());
-    const monthEnd = endOfMonth(new Date());
-    return shiftDate >= monthStart && shiftDate <= monthEnd;
-  });
+  // Calculate this month's shifts - with error handling
+  const thisMonthShifts = React.useMemo(() => {
+    if (!shifts || shifts.length === 0) return [];
+    
+    try {
+      return shifts.filter(shift => {
+        const shiftDate = new Date(shift.date);
+        if (isNaN(shiftDate.getTime())) return false; // Invalid date
+        
+        const monthStart = startOfMonth(new Date());
+        const monthEnd = endOfMonth(new Date());
+        return shiftDate >= monthStart && shiftDate <= monthEnd;
+      });
+    } catch (error) {
+      console.error("Error calculating this month's shifts:", error);
+      return [];
+    }
+  }, [shifts]);
 
-  const recentShifts = shifts.slice(0, 3);
+  const recentShifts = React.useMemo(() => {
+    return shifts.slice(0, 3);
+  }, [shifts]);
 
   console.log("Rendering OverviewTab:", {
     isLoading,
@@ -195,7 +224,14 @@ const OverviewTab = () => {
                   <div key={shift.id} className="flex items-center justify-between p-3 border rounded-lg">
                     <div>
                       <p className="font-medium">
-                        {format(new Date(shift.date), "dd.MM.yyyy", { locale: cs })}
+                        {(() => {
+                          try {
+                            return format(new Date(shift.date), "dd.MM.yyyy", { locale: cs });
+                          } catch (error) {
+                            console.error("Error formatting date:", error, shift.date);
+                            return shift.date;
+                          }
+                        })()}
                       </p>
                       <p className="text-sm text-muted-foreground">
                         {shift.type === "morning" ? "Ranní" : 
