@@ -1,7 +1,6 @@
-
 import React, { memo, useMemo } from 'react';
 import { ShiftCalendarTab } from './ShiftCalendarTab';
-import { ReportsTab } from './ReportsTab';
+import { LazyShiftAnalytics, LazyReportsTab } from './lazy/LazyShiftComponents';
 import ShiftAnalytics from './ShiftAnalytics';
 import { Shift, ShiftType, AnalyticsPeriod } from './types';
 
@@ -63,7 +62,7 @@ export const ShiftsContent = memo<ShiftsContentProps>(({
         );
       case "analytics":
         return (
-          <ShiftAnalytics 
+          <LazyShiftAnalytics 
             shifts={memoizedShifts}
             period={analyticsPeriod}
             onPeriodChange={setAnalyticsPeriod}
@@ -71,7 +70,7 @@ export const ShiftsContent = memo<ShiftsContentProps>(({
         );
       case "reports":
         return (
-          <ReportsTab shifts={memoizedShifts} user={user} />
+          <LazyReportsTab shifts={memoizedShifts} user={user} />
         );
       default:
         return null;
