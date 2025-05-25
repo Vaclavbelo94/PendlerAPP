@@ -27,16 +27,16 @@ const SidebarNavigation = ({ closeSidebar }: SidebarNavigationProps) => {
   const mainNavigation = [
     {
       title: "Dashboard",
-      href: "/",  // Changed from "/dashboard" to "/"
+      href: "/",
       icon: LayoutDashboard,
     },
     {
-      title: "Směny",
+      title: "Moje směny",
       href: "/shifts",
       icon: Calendar,
     },
     {
-      title: "Slovíčka",
+      title: "Moje slovíčka",
       href: "/vocabulary",
       icon: Book,
     },
@@ -59,12 +59,12 @@ const SidebarNavigation = ({ closeSidebar }: SidebarNavigationProps) => {
       icon: FileText,
     },
     {
-      title: "Vozidlo",
+      title: "Moje vozidlo",
       href: "/vehicle",
       icon: Car,
     },
     {
-      title: "Plánování cest",
+      title: "Moje cesty",
       href: "/travel-planning",
       icon: MapPin,
     },
