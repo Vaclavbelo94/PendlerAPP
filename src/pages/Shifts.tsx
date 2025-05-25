@@ -11,7 +11,7 @@ import { ShiftsNavigation } from "@/components/shifts/ShiftsNavigation";
 import { ShiftsContent } from "@/components/shifts/ShiftsContent";
 import { useUnifiedShiftManagement } from "@/components/shifts/hooks/useUnifiedShiftManagement";
 import { LazyEditNoteDialog } from "@/components/shifts/lazy/LazyShiftComponents";
-import { MobileShiftActions } from "@/components/shifts/mobile/MobileShiftActions";
+import MobileShiftActions from "@/components/shifts/mobile/MobileShiftActions";
 import { ShiftWidgets } from "@/components/shifts/dashboard/ShiftWidgets";
 
 const Shifts = () => {
