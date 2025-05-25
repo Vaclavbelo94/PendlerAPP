@@ -10,13 +10,38 @@ import { useAuth } from '@/hooks/auth';
 import { useTaxManagement } from '@/hooks/useTaxManagement';
 import { DocumentData } from '@/utils/tax/types';
 import { downloadEnhancedTaxDocument } from '@/utils/tax/enhancedPdfGenerator';
-import DocumentGeneratorForm from './document-generator/DocumentGeneratorForm';
+import DocumentGeneratorForm from './DocumentGeneratorForm';
 import TaxNotifications from './TaxNotifications';
 
 const EnhancedDocumentGenerator = () => {
   const { user } = useAuth();
   const { documents, saveDocument, loadDocuments } = useTaxManagement();
   const [isGenerating, setIsGenerating] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [formState, setFormState] = useState({
+    name: '',
+    taxId: '',
+    address: '',
+    documentType: 'steuererklaerung',
+    dateOfBirth: '',
+    yearOfTax: new Date().getFullYear().toString(),
+    email: '',
+    employerName: '',
+    incomeAmount: '',
+    includeCommuteExpenses: false,
+    commuteDistance: '',
+    commuteWorkDays: '220',
+    includeSecondHome: false,
+    includeWorkClothes: false,
+    additionalNotes: ''
+  });
+
+  const documentTypes = [
+    { value: 'steuererklaerung', label: 'Daňové přiznání' },
+    { value: 'pendlerbescheinigung', label: 'Potvrzení o dojíždění' },
+    { value: 'antrag-lohnsteuerermassigung', label: 'Žádost o snížení daně ze mzdy' },
+    { value: 'arbeitsmittelnachweis', label: 'Potvrzení o pracovních prostředcích' }
+  ];
 
   useEffect(() => {
     if (user?.id) {
@@ -24,20 +49,23 @@ const EnhancedDocumentGenerator = () => {
     }
   }, [user?.id]);
 
-  const handleDocumentGenerate = async (documentData: DocumentData) => {
+  const handleDocumentGenerate = async () => {
     if (!user?.id) return;
 
     setIsGenerating(true);
     try {
       // Generování PDF
-      downloadEnhancedTaxDocument(documentData);
+      downloadEnhancedTaxDocument(formState as DocumentData);
       
       // Uložení do databáze
       await saveDocument({
-        document_type: documentData.documentType,
-        document_data: documentData,
-        file_name: `${documentData.documentType}_${new Date().getFullYear()}.pdf`,
+        document_type: formState.documentType,
+        document_data: formState as DocumentData,
+        file_name: `${formState.documentType}_${new Date().getFullYear()}.pdf`,
       });
+      
+      setShowSuccessMessage(true);
+      setTimeout(() => setShowSuccessMessage(false), 3000);
       
     } catch (error) {
       console.error('Error generating document:', error);
@@ -48,6 +76,10 @@ const EnhancedDocumentGenerator = () => {
 
   const handleDocumentRegenerate = (documentData: DocumentData) => {
     downloadEnhancedTaxDocument(documentData);
+  };
+
+  const handleDownloadDocument = () => {
+    downloadEnhancedTaxDocument(formState as DocumentData);
   };
 
   if (!user) {
@@ -87,8 +119,13 @@ const EnhancedDocumentGenerator = () => {
           </CardHeader>
           <CardContent>
             <DocumentGeneratorForm 
-              onGenerate={handleDocumentGenerate}
-              isGenerating={isGenerating}
+              formState={formState}
+              setFormState={setFormState}
+              isLoading={isGenerating}
+              showSuccessMessage={showSuccessMessage}
+              onGenerateDocument={handleDocumentGenerate}
+              onDownloadDocument={handleDownloadDocument}
+              documentTypes={documentTypes}
             />
           </CardContent>
         </Card>

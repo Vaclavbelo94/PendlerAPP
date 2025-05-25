@@ -23,6 +23,14 @@ const TaxCalculatorTab = () => {
 
   const germanTaxCalculations = calculations.filter(calc => calc.calculation_type === 'german_tax');
 
+  // Transform calculations to match TaxCalculator's expected format
+  const calculationHistory = germanTaxCalculations.map(calc => ({
+    id: calc.id,
+    inputs: calc.inputs,
+    result: calc.results, // Map 'results' to 'result' for compatibility
+    created_at: calc.created_at
+  }));
+
   if (!user) {
     return (
       <Card>
@@ -63,7 +71,7 @@ const TaxCalculatorTab = () => {
       
       <TaxCalculator 
         onCalculate={handleCalculate}
-        calculationHistory={germanTaxCalculations}
+        calculationHistory={calculationHistory}
       />
     </div>
   );
