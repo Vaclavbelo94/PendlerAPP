@@ -1,18 +1,31 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Clock, Calendar, AlertTriangle, ThumbsUp, CalendarClock } from "lucide-react";
-import { toast } from "@/components/ui/use-toast";
+import { Clock, Calendar, AlertTriangle, ThumbsUp, CalendarClock, MapPin, Navigation } from "lucide-react";
+import { toast } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import AddressAutocomplete from './AddressAutocomplete';
+
+interface Shift {
+  id: string;
+  date: string;
+  type: string;
+  notes?: string;
+}
 
 const TrafficPredictions = () => {
+  const { user } = useAuth();
   const [route, setRoute] = useState({ from: "", to: "" });
   const [selectedDay, setSelectedDay] = useState("monday");
   const [selectedTime, setSelectedTime] = useState("07:30");
+  const [shifts, setShifts] = useState<Shift[]>([]);
+  const [loading, setLoading] = useState(false);
   const isMobile = useIsMobile();
   
   const weekdays = [
@@ -24,26 +37,51 @@ const TrafficPredictions = () => {
     { id: "saturday", name: "Sobota" },
     { id: "sunday", name: "Neděle" }
   ];
+
+  useEffect(() => {
+    if (user?.id) {
+      loadUserShifts();
+    }
+  }, [user?.id]);
+
+  const loadUserShifts = async () => {
+    if (!user?.id) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('shifts')
+        .select('*')
+        .eq('user_id', user.id)
+        .gte('date', new Date().toISOString().split('T')[0])
+        .order('date', { ascending: true })
+        .limit(10);
+      
+      if (error) throw error;
+      setShifts(data || []);
+    } catch (error) {
+      console.error('Error loading shifts:', error);
+    }
+  };
   
-  // Sample traffic predictions
+  // Sample traffic predictions with more realistic data
   const trafficPredictions = [
     {
       day: "monday",
       conditions: [
-        { time: "06:00", status: "normal", description: "Běžný provoz, průměrná doba jízdy 45 minut.", minutes: 45 },
-        { time: "07:00", status: "heavy", description: "Zvýšený provoz, očekávané zdržení 15-20 minut v oblasti Prahy.", minutes: 65 },
-        { time: "08:00", status: "very-heavy", description: "Husté dopravní špičky, silné zdržení v okolí Drážďan.", minutes: 75 },
-        { time: "16:00", status: "heavy", description: "Odpolední špička, očekávané zdržení 10-15 minut.", minutes: 55 },
-        { time: "17:00", status: "very-heavy", description: "Velmi hustý provoz při návratu, zejména u sjezdů z dálnice.", minutes: 70 },
-        { time: "18:00", status: "normal", description: "Provoz se zklidňuje, jen lokální zdržení.", minutes: 50 }
+        { time: "06:00", status: "normal", description: "Běžný provoz, průměrná doba jízdy 45 minut.", minutes: 45, congestion: 15 },
+        { time: "07:00", status: "heavy", description: "Zvýšený provoz, očekávané zdržení 15-20 minut v oblasti křižovatek.", minutes: 65, congestion: 40 },
+        { time: "08:00", status: "very-heavy", description: "Husté dopravní špičky, silné zdržení na hlavních trasách.", minutes: 75, congestion: 60 },
+        { time: "16:00", status: "heavy", description: "Odpolední špička, očekávané zdržení 10-15 minut.", minutes: 55, congestion: 35 },
+        { time: "17:00", status: "very-heavy", description: "Velmi hustý provoz při návratu, zejména u sjezdů z dálnice.", minutes: 70, congestion: 55 },
+        { time: "18:00", status: "normal", description: "Provoz se zklidňuje, jen lokální zdržení.", minutes: 50, congestion: 20 }
       ]
     },
     {
       day: "friday",
       conditions: [
-        { time: "14:00", status: "heavy", description: "Zvýšený páteční provoz, začátek víkendových cest.", minutes: 60 },
-        { time: "15:00", status: "very-heavy", description: "Velmi hustý provoz, očekávané zdržení 25-30 minut.", minutes: 75 },
-        { time: "16:00", status: "extreme", description: "Extrémně hustý provoz, doporučujeme alternativní trasu.", minutes: 90 }
+        { time: "14:00", status: "heavy", description: "Zvýšený páteční provoz, začátek víkendových cest.", minutes: 60, congestion: 45 },
+        { time: "15:00", status: "very-heavy", description: "Velmi hustý provoz, očekávané zdržení 25-30 minut.", minutes: 75, congestion: 65 },
+        { time: "16:00", status: "extreme", description: "Extrémně hustý provoz, doporučujeme alternativní trasu.", minutes: 90, congestion: 80 }
       ]
     },
   ];
@@ -71,7 +109,7 @@ const TrafficPredictions = () => {
   
   const prediction = getCurrentPrediction();
   
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
       case "normal": return "text-green-500";
       case "heavy": return "text-yellow-500";
@@ -81,7 +119,7 @@ const TrafficPredictions = () => {
     }
   };
   
-  const getStatusIcon = (status) => {
+  const getStatusIcon = (status: string) => {
     switch (status) {
       case "normal": return <ThumbsUp className="h-5 w-5 text-green-500" />;
       case "heavy": 
@@ -91,29 +129,31 @@ const TrafficPredictions = () => {
     }
   };
   
-  const handleAnalyzeRoute = () => {
+  const handleAnalyzeRoute = async () => {
     if (!route.from || !route.to) {
-      toast({
-        title: "Chybí údaje",
-        description: "Zadejte prosím místo odjezdu a cíl.",
-        variant: "destructive",
-      });
+      toast.error("Zadejte prosím místo odjezdu a cíl.");
       return;
     }
     
-    // In a real application, this would trigger an API call to get predictions
-    toast({
-      title: "Trasa analyzována",
-      description: `Analýza dopravní situace pro trasu ${route.from} → ${route.to} byla dokončena.`,
-    });
+    setLoading(true);
+    
+    // Simulate API call
+    setTimeout(() => {
+      toast.success(`Analýza dopravní situace pro trasu ${route.from} → ${route.to} byla dokončena.`);
+      setLoading(false);
+    }, 1500);
   };
-  
-  // Sample shift data for integration with shift planning
-  const shifts = [
-    { date: "2023-06-15", startTime: "06:00", type: "morning" },
-    { date: "2023-06-16", startTime: "14:00", type: "afternoon" },
-    { date: "2023-06-17", startTime: "22:00", type: "night" }
-  ];
+
+  const getShiftPrediction = (shift: Shift) => {
+    const dayOfWeek = new Date(shift.date).getDay();
+    const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const dayPredictions = trafficPredictions.find(p => p.day === dayNames[dayOfWeek]);
+    
+    if (!dayPredictions) return null;
+    
+    // Default prediction for shift start time
+    return dayPredictions.conditions[Math.floor(Math.random() * dayPredictions.conditions.length)];
+  };
 
   return (
     <div className="space-y-6">
@@ -126,21 +166,19 @@ const TrafficPredictions = () => {
           <div className={`grid grid-cols-1 ${isMobile ? '' : 'md:grid-cols-2'} gap-4`}>
             <div className="space-y-2">
               <Label htmlFor="route-from">Místo odjezdu</Label>
-              <Input 
-                id="route-from" 
-                placeholder="Odkud vyjíždíte" 
+              <AddressAutocomplete
                 value={route.from}
-                onChange={(e) => setRoute({...route, from: e.target.value})}
+                onChange={(value) => setRoute({...route, from: value})}
+                placeholder="Odkud vyjíždíte"
               />
             </div>
             
             <div className="space-y-2">
               <Label htmlFor="route-to">Cíl cesty</Label>
-              <Input 
-                id="route-to" 
-                placeholder="Kam jedete" 
+              <AddressAutocomplete
                 value={route.to}
-                onChange={(e) => setRoute({...route, to: e.target.value})}
+                onChange={(value) => setRoute({...route, to: value})}
+                placeholder="Kam jedete"
               />
             </div>
           </div>
@@ -174,7 +212,13 @@ const TrafficPredictions = () => {
             </div>
           </div>
           
-          <Button onClick={handleAnalyzeRoute} className="w-full">Analyzovat trasu</Button>
+          <Button 
+            onClick={handleAnalyzeRoute} 
+            className="w-full"
+            disabled={loading}
+          >
+            {loading ? "Analyzuji..." : "Analyzovat trasu"}
+          </Button>
         </CardContent>
       </Card>
       
@@ -197,9 +241,15 @@ const TrafficPredictions = () => {
           <CardContent>
             <div className="space-y-4">
               <div className="p-4 rounded-lg bg-muted">
-                <div className="flex justify-between items-center mb-2">
-                  <p className="font-medium">Očekávaná doba jízdy:</p>
-                  <p className="text-xl font-bold">{prediction.minutes} minut</p>
+                <div className="grid grid-cols-2 gap-4 mb-3">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Doba jízdy</p>
+                    <p className="text-2xl font-bold">{prediction.minutes} min</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Zatížení</p>
+                    <p className="text-2xl font-bold">{(prediction as any).congestion}%</p>
+                  </div>
                 </div>
                 <p className="text-sm">
                   <span className={`font-medium ${getStatusColor(prediction.status)}`}>
@@ -220,8 +270,8 @@ const TrafficPredictions = () => {
                   ) : (
                     <>
                       <li>Vyjeďte o {prediction.status === "heavy" ? "10" : prediction.status === "very-heavy" ? "20" : "30"} minut dříve.</li>
-                      <li>Zvažte alternativní trasu přes {route.from === "Praha" ? "Lovosice a Ústí nad Labem" : "Mladou Boleslav a Liberec"}.</li>
-                      {prediction.status === "extreme" && <li>Pokud je to možné, přeložte cestu na jiný čas nebo den.</li>}
+                      <li>Zvažte alternativní trasu nebo jiný dopravní prostředek.</li>
+                      {prediction.status === "extreme" && <li>Pokud je to možné, přeložte cestu na jiný čas.</li>}
                     </>
                   )}
                 </ul>
@@ -233,30 +283,43 @@ const TrafficPredictions = () => {
       
       <Card>
         <CardHeader>
-          <CardTitle>Integrace s vašimi směnami</CardTitle>
-          <CardDescription>Predikce dopravy pro vaše naplánované směny</CardDescription>
+          <CardTitle>Predikce pro vaše směny</CardTitle>
+          <CardDescription>Dopravní predikce pro vaše naplánované směny</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {shifts.length > 0 ? (
-              shifts.map((shift, index) => (
-                <div key={index} className={`flex ${isMobile ? 'flex-col' : 'items-center justify-between'} p-3 border rounded-lg`}>
-                  <div className="flex items-center gap-3">
-                    <CalendarClock className="h-5 w-5 text-primary" />
-                    <div>
-                      <p className="font-medium">{shift.date}</p>
-                      <p className="text-sm text-muted-foreground">
-                        Začátek směny: {shift.startTime}
-                      </p>
+              shifts.map((shift) => {
+                const shiftPrediction = getShiftPrediction(shift);
+                return (
+                  <div key={shift.id} className={`flex ${isMobile ? 'flex-col' : 'items-center justify-between'} p-4 border rounded-lg`}>
+                    <div className="flex items-center gap-3">
+                      <CalendarClock className="h-5 w-5 text-primary" />
+                      <div>
+                        <p className="font-medium">{new Date(shift.date).toLocaleDateString('cs-CZ')}</p>
+                        <p className="text-sm text-muted-foreground">
+                          Směna: {shift.type}
+                        </p>
+                        {shiftPrediction && (
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className={`text-xs px-2 py-1 rounded ${getStatusColor(shiftPrediction.status)} bg-muted`}>
+                              {shiftPrediction.minutes} min
+                            </span>
+                          </div>
+                        )}
+                      </div>
                     </div>
+                    <Button variant="outline" size="sm" className={isMobile ? 'mt-2 w-full' : ''}>
+                      <Navigation className="h-4 w-4 mr-2" />
+                      Zobrazit detaily
+                    </Button>
                   </div>
-                  <Button variant="outline" size="sm" className={isMobile ? 'mt-2' : ''}>Zobrazit predikci</Button>
-                </div>
-              ))
+                );
+              })
             ) : (
               <div className="text-center p-4 text-muted-foreground">
-                <p>Nemáte žádné naplánované směny. Přidejte je v sekci "Plánování směn".</p>
-                <Button className="mt-2" variant="outline">
+                <p>Nemáte žádné naplánované směny.</p>
+                <Button className="mt-2" variant="outline" onClick={() => window.location.href = '/shifts'}>
                   Přejít na plánování směn
                 </Button>
               </div>

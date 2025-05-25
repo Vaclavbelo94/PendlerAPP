@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,92 +6,135 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Clock, MapPin, Calendar, User, Users, Car } from "lucide-react";
-import { toast } from "@/components/ui/use-toast";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Clock, MapPin, Calendar, User, Users, Car, MessageCircle, CheckCircle, XCircle } from "lucide-react";
+import { toast } from "sonner";
+import { useAuth } from "@/hooks/useAuth";
+import { rideshareService, RideshareOffer, RideshareContact } from "@/services/rideshareService";
+import AddressAutocomplete from './AddressAutocomplete';
 
 const RideSharing = () => {
+  const { user } = useAuth();
   const [offerMode, setOfferMode] = useState(false);
-  
-  // Sample ride offers data
-  const sampleRides = [
-    {
-      id: '1',
-      driver: 'Jan Novák',
-      origin: 'Praha, Česká republika',
-      destination: 'Dresden, Deutschland',
-      departureTime: '06:30',
-      departureDate: '2023-06-15',
-      seatsAvailable: 3,
-      price: '150 CZK',
-      notes: 'Jezdím každé pondělí a středu. Auto s klimatizací.'
-    },
-    {
-      id: '2',
-      driver: 'Marie Svobodová',
-      origin: 'Chomutov, Česká republika',
-      destination: 'Chemnitz, Deutschland',
-      departureTime: '05:45',
-      departureDate: '2023-06-14',
-      seatsAvailable: 2,
-      price: '120 CZK',
-      notes: 'Pouze úterý a čtvrtek. Možnost převezení menších zavazadel.'
-    },
-    {
-      id: '3',
-      driver: 'Petr Černý',
-      origin: 'Most, Česká republika',
-      destination: 'Leipzig, Deutschland',
-      departureTime: '06:15',
-      departureDate: '2023-06-16',
-      seatsAvailable: 1,
-      price: '200 CZK',
-      notes: 'Jezdím každý pátek. Nekuřácké auto.'
-    }
-  ];
-
-  const [newRideOffer, setNewRideOffer] = useState({
+  const [rides, setRides] = useState<RideshareOffer[]>([]);
+  const [userOffers, setUserOffers] = useState<RideshareOffer[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [contactDialogOpen, setContactDialogOpen] = useState(false);
+  const [selectedOffer, setSelectedOffer] = useState<RideshareOffer | null>(null);
+  const [contactMessage, setContactMessage] = useState('');
+  const [searchFilters, setSearchFilters] = useState({
     origin: '',
     destination: '',
-    departureTime: '07:00',
-    departureDate: '',
-    seatsAvailable: '2',
-    price: '',
+    date: ''
+  });
+  
+  const [newRideOffer, setNewRideOffer] = useState({
+    origin_address: '',
+    destination_address: '',
+    departure_time: '07:00',
+    departure_date: '',
+    seats_available: 2,
+    price_per_person: '',
     notes: ''
   });
 
-  const handleSubmitOffer = () => {
-    if (!newRideOffer.origin || !newRideOffer.destination || !newRideOffer.departureDate) {
-      toast({
-        title: "Neúplné údaje",
-        description: "Vyplňte prosím všechny povinné údaje.",
-        variant: "destructive",
+  useEffect(() => {
+    loadRides();
+    if (user?.id) {
+      loadUserOffers();
+    }
+  }, [user?.id]);
+
+  const loadRides = async () => {
+    try {
+      setLoading(true);
+      const data = await rideshareService.getOffers({
+        origin: searchFilters.origin,
+        destination: searchFilters.destination,
+        date: searchFilters.date,
+        limit: 20
       });
+      setRides(data);
+    } catch (error) {
+      console.error('Error loading rides:', error);
+      toast.error('Nepodařilo se načíst spolujízdy');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadUserOffers = async () => {
+    if (!user?.id) return;
+    
+    try {
+      const data = await rideshareService.getUserOffers(user.id);
+      setUserOffers(data);
+    } catch (error) {
+      console.error('Error loading user offers:', error);
+    }
+  };
+
+  const handleSubmitOffer = async () => {
+    if (!user?.id) {
+      toast.error('Pro nabídnutí spolujízdy se musíte přihlásit');
+      return;
+    }
+
+    if (!newRideOffer.origin_address || !newRideOffer.destination_address || !newRideOffer.departure_date) {
+      toast.error("Vyplňte prosím všechny povinné údaje.");
       return;
     }
     
-    toast({
-      title: "Nabídka přidána",
-      description: "Vaše nabídka spolujízdy byla úspěšně přidána.",
-    });
-    
-    // Reset form and switch back to search view
-    setNewRideOffer({
-      origin: '',
-      destination: '',
-      departureTime: '07:00',
-      departureDate: '',
-      seatsAvailable: '2',
-      price: '',
-      notes: ''
-    });
-    setOfferMode(false);
+    try {
+      await rideshareService.createOffer({
+        ...newRideOffer,
+        user_id: user.id,
+        price_per_person: newRideOffer.price_per_person ? parseFloat(newRideOffer.price_per_person) : undefined
+      });
+      
+      toast.success("Vaše nabídka spolujízdy byla úspěšně přidána.");
+      
+      // Reset form and switch back to search view
+      setNewRideOffer({
+        origin_address: '',
+        destination_address: '',
+        departure_time: '07:00',
+        departure_date: '',
+        seats_available: 2,
+        price_per_person: '',
+        notes: ''
+      });
+      setOfferMode(false);
+      loadRides();
+      loadUserOffers();
+    } catch (error) {
+      console.error('Error creating offer:', error);
+      toast.error('Nepodařilo se vytvořit nabídku spolujízdy');
+    }
   };
 
-  const handleContactDriver = (rideId: string) => {
-    toast({
-      title: "Kontakt odeslán",
-      description: "Řidič byl kontaktován. Brzy vás bude kontaktovat.",
-    });
+  const handleContactDriver = async () => {
+    if (!user?.id || !selectedOffer?.id) return;
+
+    try {
+      await rideshareService.createContact({
+        offer_id: selectedOffer.id,
+        requester_user_id: user.id,
+        message: contactMessage
+      });
+      
+      toast.success("Řidič byl kontaktován. Brzy vás bude kontaktovat.");
+      setContactDialogOpen(false);
+      setContactMessage('');
+      setSelectedOffer(null);
+    } catch (error) {
+      console.error('Error contacting driver:', error);
+      toast.error('Nepodařilo se kontaktovat řidiče');
+    }
+  };
+
+  const handleSearch = () => {
+    loadRides();
   };
 
   return (
@@ -124,21 +166,19 @@ const RideSharing = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="offer-origin">Místo odjezdu *</Label>
-                <Input 
-                  id="offer-origin"
-                  placeholder="Odkud vyjíždíte" 
-                  value={newRideOffer.origin}
-                  onChange={(e) => setNewRideOffer({...newRideOffer, origin: e.target.value})}
+                <AddressAutocomplete
+                  value={newRideOffer.origin_address}
+                  onChange={(value) => setNewRideOffer({...newRideOffer, origin_address: value})}
+                  placeholder="Odkud vyjíždíte"
                 />
               </div>
               
               <div className="space-y-2">
                 <Label htmlFor="offer-destination">Cíl cesty *</Label>
-                <Input 
-                  id="offer-destination"
-                  placeholder="Kam jedete" 
-                  value={newRideOffer.destination}
-                  onChange={(e) => setNewRideOffer({...newRideOffer, destination: e.target.value})}
+                <AddressAutocomplete
+                  value={newRideOffer.destination_address}
+                  onChange={(value) => setNewRideOffer({...newRideOffer, destination_address: value})}
+                  placeholder="Kam jedete"
                 />
               </div>
               
@@ -147,8 +187,8 @@ const RideSharing = () => {
                 <Input 
                   id="offer-date"
                   type="date"
-                  value={newRideOffer.departureDate}
-                  onChange={(e) => setNewRideOffer({...newRideOffer, departureDate: e.target.value})}
+                  value={newRideOffer.departure_date}
+                  onChange={(e) => setNewRideOffer({...newRideOffer, departure_date: e.target.value})}
                 />
               </div>
               
@@ -157,16 +197,16 @@ const RideSharing = () => {
                 <Input 
                   id="offer-time"
                   type="time"
-                  value={newRideOffer.departureTime}
-                  onChange={(e) => setNewRideOffer({...newRideOffer, departureTime: e.target.value})}
+                  value={newRideOffer.departure_time}
+                  onChange={(e) => setNewRideOffer({...newRideOffer, departure_time: e.target.value})}
                 />
               </div>
               
               <div className="space-y-2">
                 <Label htmlFor="offer-seats">Počet volných míst</Label>
                 <Select 
-                  value={newRideOffer.seatsAvailable}
-                  onValueChange={(value) => setNewRideOffer({...newRideOffer, seatsAvailable: value})}
+                  value={newRideOffer.seats_available.toString()}
+                  onValueChange={(value) => setNewRideOffer({...newRideOffer, seats_available: parseInt(value)})}
                 >
                   <SelectTrigger id="offer-seats">
                     <SelectValue placeholder="Počet míst" />
@@ -186,8 +226,8 @@ const RideSharing = () => {
                 <Input 
                   id="offer-price"
                   placeholder="Např. 150" 
-                  value={newRideOffer.price}
-                  onChange={(e) => setNewRideOffer({...newRideOffer, price: e.target.value})}
+                  value={newRideOffer.price_per_person}
+                  onChange={(e) => setNewRideOffer({...newRideOffer, price_per_person: e.target.value})}
                 />
               </div>
             </div>
@@ -215,10 +255,22 @@ const RideSharing = () => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Input placeholder="Místo odjezdu" />
-                <Input placeholder="Cíl cesty" />
-                <Input type="date" />
-                <Button className="md:col-span-3">Hledat spolujízdy</Button>
+                <AddressAutocomplete
+                  value={searchFilters.origin}
+                  onChange={(value) => setSearchFilters({...searchFilters, origin: value})}
+                  placeholder="Místo odjezdu"
+                />
+                <AddressAutocomplete
+                  value={searchFilters.destination}
+                  onChange={(value) => setSearchFilters({...searchFilters, destination: value})}
+                  placeholder="Cíl cesty"
+                />
+                <Input 
+                  type="date" 
+                  value={searchFilters.date}
+                  onChange={(e) => setSearchFilters({...searchFilters, date: e.target.value})}
+                />
+                <Button onClick={handleSearch} className="md:col-span-3">Hledat spolujízdy</Button>
               </div>
             </CardContent>
           </Card>
@@ -226,79 +278,126 @@ const RideSharing = () => {
           <div className="space-y-4">
             <h3 className="text-xl font-medium">Dostupné spolujízdy</h3>
             
-            {sampleRides.map(ride => (
-              <Card key={ride.id}>
-                <CardHeader className="pb-2">
-                  <div className="flex justify-between">
-                    <CardTitle className="text-lg flex items-center gap-2">
-                      <User className="h-5 w-5" /> {ride.driver}
-                    </CardTitle>
-                    <Badge variant="outline" className="flex items-center gap-1">
-                      <Users className="h-3.5 w-3.5" />
-                      {ride.seatsAvailable} míst
-                    </Badge>
-                  </div>
-                  <CardDescription className="flex items-center gap-1.5">
-                    <Calendar className="h-3.5 w-3.5" />
-                    {ride.departureDate}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="pb-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-3">
-                      <div className="flex items-start gap-2">
-                        <MapPin className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
-                        <div>
-                          <p className="text-sm font-medium">Odkud</p>
-                          <p className="text-sm text-muted-foreground">{ride.origin}</p>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-start gap-2">
-                        <MapPin className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
-                        <div>
-                          <p className="text-sm font-medium">Kam</p>
-                          <p className="text-sm text-muted-foreground">{ride.destination}</p>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-3">
-                      <div className="flex items-start gap-2">
-                        <Clock className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
-                        <div>
-                          <p className="text-sm font-medium">Odjezd</p>
-                          <p className="text-sm text-muted-foreground">{ride.departureTime}</p>
-                        </div>
-                      </div>
-                      
-                      {ride.price && (
-                        <div className="flex items-center gap-2">
-                          <p className="text-sm font-medium">Cena:</p>
-                          <p className="text-sm">{ride.price}</p>
-                        </div>
-                      )}
-                      
-                      {ride.notes && (
-                        <p className="text-sm text-muted-foreground italic">{ride.notes}</p>
-                      )}
-                    </div>
-                  </div>
+            {loading ? (
+              <Card>
+                <CardContent className="p-6 text-center">
+                  <p>Načítám spolujízdy...</p>
                 </CardContent>
-                <CardFooter>
-                  <Button 
-                    className="w-full" 
-                    onClick={() => handleContactDriver(ride.id)}
-                    variant="outline"
-                  >
-                    Kontaktovat řidiče
-                  </Button>
-                </CardFooter>
               </Card>
-            ))}
+            ) : rides.length === 0 ? (
+              <Card>
+                <CardContent className="p-6 text-center">
+                  <p className="text-muted-foreground">Žádné spolujízdy nebyly nalezeny</p>
+                </CardContent>
+              </Card>
+            ) : (
+              rides.map(ride => (
+                <Card key={ride.id}>
+                  <CardHeader className="pb-2">
+                    <div className="flex justify-between">
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <User className="h-5 w-5" /> Řidič
+                      </CardTitle>
+                      <Badge variant="outline" className="flex items-center gap-1">
+                        <Users className="h-3.5 w-3.5" />
+                        {ride.seats_available} míst
+                      </Badge>
+                    </div>
+                    <CardDescription className="flex items-center gap-1.5">
+                      <Calendar className="h-3.5 w-3.5" />
+                      {ride.departure_date}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="pb-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-3">
+                        <div className="flex items-start gap-2">
+                          <MapPin className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
+                          <div>
+                            <p className="text-sm font-medium">Odkud</p>
+                            <p className="text-sm text-muted-foreground">{ride.origin_address}</p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-start gap-2">
+                          <MapPin className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
+                          <div>
+                            <p className="text-sm font-medium">Kam</p>
+                            <p className="text-sm text-muted-foreground">{ride.destination_address}</p>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-3">
+                        <div className="flex items-start gap-2">
+                          <Clock className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
+                          <div>
+                            <p className="text-sm font-medium">Odjezd</p>
+                            <p className="text-sm text-muted-foreground">{ride.departure_time}</p>
+                          </div>
+                        </div>
+                        
+                        {ride.price_per_person && (
+                          <div className="flex items-center gap-2">
+                            <p className="text-sm font-medium">Cena:</p>
+                            <p className="text-sm">{ride.price_per_person} CZK</p>
+                          </div>
+                        )}
+                        
+                        {ride.notes && (
+                          <p className="text-sm text-muted-foreground italic">{ride.notes}</p>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                  <CardFooter>
+                    <Button 
+                      className="w-full" 
+                      onClick={() => {
+                        setSelectedOffer(ride);
+                        setContactDialogOpen(true);
+                      }}
+                      variant="outline"
+                      disabled={!user}
+                    >
+                      <MessageCircle className="h-4 w-4 mr-2" />
+                      Kontaktovat řidiče
+                    </Button>
+                  </CardFooter>
+                </Card>
+              ))
+            )}
           </div>
         </div>
       )}
+
+      {/* Contact Dialog */}
+      <Dialog open={contactDialogOpen} onOpenChange={setContactDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Kontaktovat řidiče</DialogTitle>
+            <DialogDescription>
+              Pošlete zprávu řidiči a vyjednejte podrobnosti spolujízdy
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <Textarea
+              value={contactMessage}
+              onChange={(e) => setContactMessage(e.target.value)}
+              placeholder="Napište zprávu řidiči..."
+              rows={4}
+            />
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setContactDialogOpen(false)}>
+                Zrušit
+              </Button>
+              <Button onClick={handleContactDriver} disabled={!contactMessage.trim()}>
+                Odeslat zprávu
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
