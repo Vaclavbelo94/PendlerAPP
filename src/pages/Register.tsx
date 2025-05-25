@@ -17,6 +17,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { ArrowRight } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Separator } from "@/components/ui/separator";
+import { redeemPromoCode } from "@/components/admin/promoCode/promoCodeService";
+import { toast } from "sonner";
 
 interface FormData {
   name: string;
@@ -24,6 +26,7 @@ interface FormData {
   password: string;
   confirmPassword: string;
   agreeTerms: boolean;
+  promoCode: string;
 }
 
 interface FormErrors {
@@ -32,10 +35,11 @@ interface FormErrors {
   password: string;
   confirmPassword: string;
   agreeTerms: string;
+  promoCode: string;
 }
 
 const Register = () => {
-  const { toast } = useToast();
+  const { toast: uiToast } = useToast();
   const { signUp, signInWithGoogle, user } = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState<FormData>({
@@ -44,6 +48,7 @@ const Register = () => {
     password: "",
     confirmPassword: "",
     agreeTerms: false,
+    promoCode: "",
   });
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
@@ -53,6 +58,7 @@ const Register = () => {
     password: "",
     confirmPassword: "",
     agreeTerms: "",
+    promoCode: "",
   });
 
   // Pokud je uživatel již přihlášen, přesměrujeme ho na hlavní stránku
@@ -114,6 +120,22 @@ const Register = () => {
     return valid;
   };
 
+  const handlePromoCodeRedemption = async (userId: string, promoCode: string) => {
+    if (!promoCode.trim()) return;
+
+    try {
+      const result = await redeemPromoCode(userId, promoCode.trim());
+      if (result.success) {
+        toast.success("Promo kód byl úspěšně aplikován!");
+      } else {
+        toast.error(result.message || "Nepodařilo se aplikovat promo kód");
+      }
+    } catch (error) {
+      console.error("Error applying promo code:", error);
+      toast.error("Nastala chyba při aplikování promo kódu");
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -124,23 +146,38 @@ const Register = () => {
         const { error } = await signUp(formData.email, formData.password, formData.name);
         
         if (error) {
-          toast({
+          uiToast({
             title: "Registrace selhala",
             description: error.message,
             variant: "destructive",
           });
         } else {
-          toast({
+          uiToast({
             title: "Registrace úspěšná!",
             description: "Váš účet byl vytvořen a jste přihlášeni.",
             variant: "default",
           });
+
+          // If there's a promo code, try to apply it after successful registration
+          if (formData.promoCode.trim()) {
+            // Wait a bit for user session to be fully established
+            setTimeout(async () => {
+              try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) {
+                  await handlePromoCodeRedemption(user.id, formData.promoCode);
+                }
+              } catch (error) {
+                console.error("Error getting user for promo code:", error);
+              }
+            }, 1000);
+          }
           
           // Přesměrování na hlavní stránku po úspěšné registraci
           navigate("/");
         }
       } catch (error: any) {
-        toast({
+        uiToast({
           title: "Registrace selhala",
           description: error.message,
           variant: "destructive",
@@ -283,6 +320,24 @@ const Register = () => {
                 />
                 {errors.confirmPassword && <p className="text-sm text-red-500">{errors.confirmPassword}</p>}
               </div>
+              
+              {/* Promo Code Field */}
+              <div className="grid gap-2">
+                <Label htmlFor="promoCode">Promo kód (volitelné)</Label>
+                <Input
+                  id="promoCode"
+                  name="promoCode"
+                  placeholder="PROMO-PENDLER2025"
+                  value={formData.promoCode}
+                  onChange={handleChange}
+                  disabled={loading}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Máte promo kód? Zadejte ho zde pro aktivaci prémiových funkcí
+                </p>
+                {errors.promoCode && <p className="text-sm text-red-500">{errors.promoCode}</p>}
+              </div>
+              
               <div className="flex items-center space-x-2">
                 <Checkbox 
                   id="agreeTerms" 

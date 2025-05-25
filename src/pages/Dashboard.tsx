@@ -1,42 +1,31 @@
-
 import React, { useState } from "react";
-import { useAuth } from "@/hooks/useAuth";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useIsMobile } from "@/hooks/use-mobile";
-import {
-  LayoutDashboardIcon,
-  BookOpenIcon,
-  CalendarIcon,
-  GraduationCapIcon,
-  ActivityIcon
-} from "lucide-react";
-
-// Import tab content components
-import OverviewTab from "@/components/dashboard/tabs/OverviewTab";
-import ScheduleTab from "@/components/dashboard/tabs/ScheduleTab";
-import LanguageTab from "@/components/dashboard/tabs/LanguageTab";
-import EducationTab from "@/components/dashboard/tabs/EducationTab";
+import { useAuth } from "@/hooks/useAuth";
+import ScheduleTab from "@/components/dashboard/ScheduleTab";
+import LanguageTab from "@/components/dashboard/LanguageTab";
+import EducationTab from "@/components/dashboard/EducationTab";
+import QuickPromoCode from "@/components/dashboard/QuickPromoCode";
 
 const Dashboard = () => {
-  const { user, isLoading } = useAuth();
-  const navigate = useNavigate();
-  const isMobile = useIsMobile();
+  const { user, isPremium } = useAuth();
   const [activeTab, setActiveTab] = useState("overview");
 
-  if (isLoading) {
+  if (!user) {
     return (
-      <div className="container py-6 md:py-10">
-        <div className="flex items-center justify-center h-40">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="container py-8 max-w-4xl">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Vítejte v PendlerApp</h1>
+          <p className="text-muted-foreground mb-6">
+            Pro přístup k dashboard se prosím přihlaste.
+          </p>
+          <Button asChild>
+            <Link to="/login">Přihlásit se</Link>
+          </Button>
         </div>
       </div>
     );
-  }
-
-  if (!user) {
-    navigate("/login");
-    return null;
   }
 
   return (
@@ -49,42 +38,30 @@ const Dashboard = () => {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} ${isMobile ? 'max-w-full' : 'max-w-4xl'} h-auto`}>
-          <TabsTrigger value="overview" className="flex flex-col items-center gap-1 py-3 px-4">
-            <LayoutDashboardIcon className="h-5 w-5" />
-            <span className="text-sm font-medium">Přehled</span>
-            <span className="text-xs text-muted-foreground hidden sm:block">Hlavní dashboard</span>
-          </TabsTrigger>
-          <TabsTrigger value="schedule" className="flex flex-col items-center gap-1 py-3 px-4">
-            <CalendarIcon className="h-5 w-5" />
-            <span className="text-sm font-medium">Plánování</span>
-            <span className="text-xs text-muted-foreground hidden sm:block">Směny a události</span>
-          </TabsTrigger>
-          <TabsTrigger value="language" className="flex flex-col items-center gap-1 py-3 px-4">
-            <BookOpenIcon className="h-5 w-5" />
-            <span className="text-sm font-medium">Jazyk</span>
-            <span className="text-xs text-muted-foreground hidden sm:block">Pokrok v němčině</span>
-          </TabsTrigger>
-          <TabsTrigger value="education" className="flex flex-col items-center gap-1 py-3 px-4">
-            <GraduationCapIcon className="h-5 w-5" />
-            <span className="text-sm font-medium">Vzdělání</span>
-            <span className="text-xs text-muted-foreground hidden sm:block">Kurzy a certifikace</span>
-          </TabsTrigger>
+        <TabsList className="grid grid-cols-4 max-w-md">
+          <TabsTrigger value="overview">Přehled</TabsTrigger>
+          <TabsTrigger value="schedule">Rozvrh</TabsTrigger>
+          <TabsTrigger value="language">Jazyky</TabsTrigger>
+          <TabsTrigger value="education">Vzdělání</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
-          <OverviewTab />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Quick Promo Code Widget - only show for non-premium users */}
+            <QuickPromoCode />
+            
+          </div>
         </TabsContent>
 
-        <TabsContent value="schedule" className="space-y-6">
+        <TabsContent value="schedule">
           <ScheduleTab />
         </TabsContent>
 
-        <TabsContent value="language" className="space-y-6">
+        <TabsContent value="language">
           <LanguageTab />
         </TabsContent>
 
-        <TabsContent value="education" className="space-y-6">
+        <TabsContent value="education">
           <EducationTab />
         </TabsContent>
       </Tabs>

@@ -1,82 +1,68 @@
 
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card } from "@/components/ui/card";
+import { User, Settings, Activity, Crown } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { 
-  UserIcon, Settings2Icon, PaletteIcon, ActivityIcon
-} from "lucide-react";
 
+// Import profile components
+import ProfileHeader from "@/components/profile/unified/ProfileHeader";
 import ProfileOverviewSection from "@/components/profile/unified/ProfileOverviewSection";
 import ProfileSettingsSection from "@/components/profile/unified/ProfileSettingsSection";
-import ProfileAppearanceSection from "@/components/profile/unified/ProfileAppearanceSection";
 import ProfileActivitySection from "@/components/profile/unified/ProfileActivitySection";
-import ProfileHeader from "@/components/profile/unified/ProfileHeader";
+import SubscriptionManagement from "@/components/profile/SubscriptionManagement";
 
 const UnifiedProfile = () => {
-  const navigate = useNavigate();
-  const { user, isLoading } = useAuth();
-  const isMobile = useIsMobile();
+  const { user, isPremium } = useAuth();
   const [activeTab, setActiveTab] = useState("overview");
-  
-  if (isLoading) {
+
+  if (!user) {
     return (
-      <div className="container py-6 md:py-10">
-        <div className="flex items-center justify-center h-40">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="container py-8 max-w-4xl">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Přístup odepřen</h1>
+          <p className="text-muted-foreground">Pro zobrazení profilu se musíte přihlásit.</p>
         </div>
       </div>
     );
   }
 
-  if (!user) {
-    navigate("/login");
-    return null;
-  }
-
   return (
-    <div className="container py-6 md:py-10 max-w-7xl">
-      <ProfileHeader />
+    <div className="container py-8 max-w-6xl">
+      <ProfileHeader user={user} isPremium={isPremium} />
       
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} ${isMobile ? 'max-w-full' : 'max-w-4xl'} h-auto`}>
-          <TabsTrigger value="overview" className="flex flex-col items-center gap-1 py-3 px-4">
-            <UserIcon className="h-5 w-5" />
-            <span className="text-sm font-medium">Přehled</span>
-            <span className="text-xs text-muted-foreground hidden sm:block">Základní informace</span>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-8">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="overview" className="flex items-center gap-2">
+            <User className="h-4 w-4" />
+            Přehled
           </TabsTrigger>
-          <TabsTrigger value="settings" className="flex flex-col items-center gap-1 py-3 px-4">
-            <Settings2Icon className="h-5 w-5" />
-            <span className="text-sm font-medium">Nastavení</span>
-            <span className="text-xs text-muted-foreground hidden sm:block">Osobní údaje</span>
+          <TabsTrigger value="settings" className="flex items-center gap-2">
+            <Settings className="h-4 w-4" />
+            Nastavení
           </TabsTrigger>
-          <TabsTrigger value="appearance" className="flex flex-col items-center gap-1 py-3 px-4">
-            <PaletteIcon className="h-5 w-5" />
-            <span className="text-sm font-medium">Vzhled</span>
-            <span className="text-xs text-muted-foreground hidden sm:block">Téma a barvy</span>
+          <TabsTrigger value="subscription" className="flex items-center gap-2">
+            <Crown className="h-4 w-4" />
+            Předplatné
           </TabsTrigger>
-          <TabsTrigger value="activity" className="flex flex-col items-center gap-1 py-3 px-4">
-            <ActivityIcon className="h-5 w-5" />
-            <span className="text-sm font-medium">Aktivita</span>
-            <span className="text-xs text-muted-foreground hidden sm:block">Statistiky</span>
+          <TabsTrigger value="activity" className="flex items-center gap-2">
+            <Activity className="h-4 w-4" />
+            Aktivita
           </TabsTrigger>
         </TabsList>
-        
-        <TabsContent value="overview" className="space-y-6">
+
+        <TabsContent value="overview" className="mt-6">
           <ProfileOverviewSection />
         </TabsContent>
-        
-        <TabsContent value="settings" className="space-y-6">
+
+        <TabsContent value="settings" className="mt-6">
           <ProfileSettingsSection />
         </TabsContent>
-        
-        <TabsContent value="appearance" className="space-y-6">
-          <ProfileAppearanceSection />
+
+        <TabsContent value="subscription" className="mt-6">
+          <SubscriptionManagement />
         </TabsContent>
-        
-        <TabsContent value="activity" className="space-y-6">
+
+        <TabsContent value="activity" className="mt-6">
           <ProfileActivitySection />
         </TabsContent>
       </Tabs>
