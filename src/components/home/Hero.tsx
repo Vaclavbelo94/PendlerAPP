@@ -7,10 +7,13 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { AnimatedBackground } from './AnimatedBackground';
 import { FloatingIcons } from './FloatingIcons';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Hero = () => {
+  const isMobile = useIsMobile();
+
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section className={`relative overflow-hidden ${isMobile ? 'mobile-hero-section' : 'min-h-screen flex items-center justify-center'}`}>
       {/* Animated background elements */}
       <AnimatedBackground />
       <FloatingIcons />
@@ -36,7 +39,11 @@ const Hero = () => {
           </motion.div>
           
           <motion.h1
-            className="text-5xl md:text-7xl font-bold tracking-tight mb-6"
+            className={`font-bold tracking-tight mb-6 ${
+              isMobile 
+                ? 'text-3xl md:text-4xl' 
+                : 'text-5xl md:text-7xl'
+            }`}
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
@@ -47,7 +54,11 @@ const Hero = () => {
           </motion.h1>
           
           <motion.p
-            className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-4xl mx-auto leading-relaxed"
+            className={`text-muted-foreground mb-8 max-w-4xl mx-auto leading-relaxed mobile-text-optimize ${
+              isMobile 
+                ? 'text-lg px-4' 
+                : 'text-xl md:text-2xl'
+            }`}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.5 }}
@@ -57,7 +68,11 @@ const Hero = () => {
           </motion.p>
           
           <motion.div
-            className="flex flex-col sm:flex-row gap-4 justify-center mb-12"
+            className={`flex gap-4 justify-center mb-12 ${
+              isMobile 
+                ? 'flex-col px-4' 
+                : 'flex-col sm:flex-row'
+            }`}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.7 }}
@@ -66,7 +81,7 @@ const Hero = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <Button asChild size="lg" className="px-8 py-3 text-lg group">
+              <Button asChild size="lg" className={`px-8 py-3 text-lg group mobile-button-spacing ${isMobile ? 'w-full' : ''}`}>
                 <Link to="/dashboard">
                   Začít používat
                   <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
@@ -78,7 +93,7 @@ const Hero = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <Button asChild variant="outline" size="lg" className="px-8 py-3 text-lg backdrop-blur-sm bg-background/50">
+              <Button asChild variant="outline" size="lg" className={`px-8 py-3 text-lg backdrop-blur-sm bg-background/50 mobile-button-spacing ${isMobile ? 'w-full' : ''}`}>
                 <Link to="/premium">
                   Zobrazit Premium
                 </Link>
@@ -88,7 +103,11 @@ const Hero = () => {
           
           {/* Interactive feature cards preview */}
           <motion.div
-            className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto"
+            className={`grid gap-4 max-w-4xl mx-auto ${
+              isMobile 
+                ? 'grid-cols-2 px-4' 
+                : 'grid-cols-2 md:grid-cols-4'
+            }`}
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.9 }}
@@ -101,7 +120,7 @@ const Hero = () => {
             ].map((item, index) => (
               <motion.div
                 key={index}
-                className={`p-3 rounded-lg ${item.color} text-sm font-medium backdrop-blur-sm`}
+                className={`p-3 rounded-lg ${item.color} text-sm font-medium backdrop-blur-sm mobile-touch-target`}
                 whileHover={{ scale: 1.05, y: -2 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
@@ -112,20 +131,22 @@ const Hero = () => {
         </motion.div>
       </div>
       
-      {/* Scroll indicator */}
-      <motion.div
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-        animate={{ y: [0, 10, 0] }}
-        transition={{ duration: 2, repeat: Infinity }}
-      >
-        <div className="w-6 h-10 border border-muted rounded-full flex justify-center">
-          <motion.div
-            className="w-1 h-3 bg-primary rounded-full mt-2"
-            animate={{ y: [0, 12, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          />
-        </div>
-      </motion.div>
+      {/* Scroll indicator - skrýt na mobilních zařízeních */}
+      {!isMobile && (
+        <motion.div
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+          animate={{ y: [0, 10, 0] }}
+          transition={{ duration: 2, repeat: Infinity }}
+        >
+          <div className="w-6 h-10 border border-muted rounded-full flex justify-center">
+            <motion.div
+              className="w-1 h-3 bg-primary rounded-full mt-2"
+              animate={{ y: [0, 12, 0] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
+          </div>
+        </motion.div>
+      )}
     </section>
   );
 };

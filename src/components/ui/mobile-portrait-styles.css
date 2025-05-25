@@ -50,7 +50,7 @@
     justify-content: center;
   }
   
-  /* Improved dropdown positioning - HIGHER Z-INDEX */
+  /* FIXED: Improved dropdown positioning */
   .mobile-dropdown {
     position: fixed !important;
     top: auto !important;
@@ -60,7 +60,10 @@
     width: auto !important;
     max-height: 60vh;
     overflow-y: auto;
-    z-index: 80 !important;
+    z-index: 90 !important;
+    background: hsl(var(--background)) !important;
+    border: 1px solid hsl(var(--border)) !important;
+    border-radius: 0.5rem !important;
   }
   
   /* Better card layout */
@@ -70,7 +73,7 @@
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   }
   
-  /* FIXED: Improved tab navigation for mobile - CRITICAL Z-INDEX FIX */
+  /* CRITICAL FIX: Improved tab navigation for mobile */
   .mobile-tabs {
     width: 100%;
     overflow-x: auto;
@@ -86,7 +89,7 @@
     gap: 0.5rem;
     position: sticky;
     top: 0;
-    z-index: 2 !important;
+    z-index: 10 !important;
     background: hsl(var(--background));
     border-bottom: 1px solid hsl(var(--border));
   }
@@ -98,7 +101,7 @@
     min-height: 44px;
     white-space: nowrap;
     position: relative;
-    z-index: 2 !important;
+    z-index: 10 !important;
     background: hsl(var(--background));
   }
   
@@ -108,35 +111,57 @@
     z-index: 1 !important;
     background: hsl(var(--background));
     margin-top: 0.5rem;
+    padding: 1rem;
   }
   
-  /* Fix for responsive tabs specifically - LOWER Z-INDEX */
+  /* CRITICAL: Fix for responsive tabs z-index issues */
   [data-radix-tabs-content] {
     position: relative !important;
     z-index: 1 !important;
+    background: hsl(var(--background)) !important;
   }
   
   [data-radix-tabs-list] {
     position: sticky !important;
     top: 0 !important;
-    z-index: 2 !important;
+    z-index: 10 !important;
     background: hsl(var(--background)) !important;
     border-bottom: 1px solid hsl(var(--border)) !important;
   }
   
   [data-radix-tabs-trigger] {
     position: relative !important;
-    z-index: 2 !important;
+    z-index: 10 !important;
     background: hsl(var(--background)) !important;
   }
   
-  /* Fix navbar overlap issues */
+  /* CRITICAL: Fix main content area for mobile portrait */
+  .mobile-main-content {
+    position: relative !important;
+    z-index: 1 !important;
+    min-height: calc(100vh - 4rem) !important;
+    padding: 1rem !important;
+    overflow-x: hidden !important;
+  }
+  
+  /* Fix hero section for mobile portrait */
+  .mobile-hero-section {
+    min-height: 100vh !important;
+    padding: 2rem 1rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+  
+  /* Fix navigation for mobile portrait */
   .mobile-navbar-fixed {
     position: sticky !important;
     top: 0 !important;
-    z-index: 40 !important;
+    z-index: 50 !important;
     background: hsl(var(--background)) !important;
     backdrop-filter: blur(8px) !important;
+    border-bottom: 1px solid hsl(var(--border)) !important;
   }
   
   /* Ensure content starts below navbar */
@@ -144,6 +169,25 @@
     position: relative !important;
     z-index: 1 !important;
     padding-top: 0.5rem !important;
+  }
+  
+  /* Fix scrollable areas on mobile */
+  .mobile-scroll-area {
+    max-height: calc(100vh - 8rem) !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  
+  /* Improve text readability on mobile */
+  .mobile-text-optimize {
+    line-height: 1.6 !important;
+    font-size: 1rem !important;
+  }
+  
+  /* Fix button spacing on mobile */
+  .mobile-button-spacing {
+    margin: 0.5rem 0 !important;
+    min-height: 48px !important;
   }
 }
 
@@ -164,6 +208,10 @@
     padding: 0.375rem 0.75rem;
     font-size: 0.8rem;
   }
+  
+  .landscape-main-content {
+    padding: 0.5rem !important;
+  }
 }
 
 /* High contrast improvements */
@@ -183,5 +231,16 @@
   .mobile-sidebar-overlay,
   .transition-transform {
     transition: none;
+  }
+}
+
+/* Fix for viewport units on mobile */
+@supports (-webkit-touch-callout: none) {
+  .mobile-hero-section {
+    min-height: -webkit-fill-available !important;
+  }
+  
+  .mobile-main-content {
+    min-height: -webkit-fill-available !important;
   }
 }
