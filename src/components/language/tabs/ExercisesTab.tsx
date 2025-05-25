@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from '@/hooks/use-toast';
-import { grammarExercises2 as germanExercises } from "@/data/germanExercises";
+import { grammarExercises2 as germanExercises } from "@/data/exercises/grammarExercises";
 import DailyProgressCards from '../exercise/DailyProgressCards';
 import LevelSelector from '../exercise/LevelSelector';
 import { useExerciseProgress } from '../exercise/hooks/useExerciseProgress';
