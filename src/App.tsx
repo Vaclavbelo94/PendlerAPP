@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from "@/components/theme-provider"
-import { QueryClient } from 'react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from "@/components/ui/toaster"
 
 import Layout from '@/components/layouts/Layout';
@@ -23,9 +23,11 @@ import NotFound from '@/pages/NotFound';
 import { AuthProvider } from '@/hooks/useAuth';
 import { NotificationManager } from '@/components/notifications/NotificationManager';
 
+const queryClient = new QueryClient();
+
 function App() {
   return (
-    <QueryClient>
+    <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <AuthProvider>
           <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
@@ -52,7 +54,7 @@ function App() {
           </ThemeProvider>
         </AuthProvider>
       </BrowserRouter>
-    </QueryClient>
+    </QueryClientProvider>
   );
 }
 

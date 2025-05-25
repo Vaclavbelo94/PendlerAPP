@@ -1,4 +1,3 @@
-
 import { Shift } from '@/components/shifts/types';
 
 export interface CalendarEvent {
@@ -27,6 +26,26 @@ export const generateShiftEvents = (shifts: Shift[]): CalendarEvent[] => {
       startDate,
       endDate,
       location: 'Pracoviště'
+    };
+  });
+};
+
+export const generateAmortizationEvents = (
+  scheduleWithDates: (import('@/hooks/useAmortizationSchedule').AmortizationRow & { date: Date })[],
+  loanAmount: number,
+  monthlyPayment: number
+): CalendarEvent[] => {
+  return scheduleWithDates.map((row, index) => {
+    const startDate = new Date(row.date);
+    const endDate = new Date(row.date);
+    endDate.setHours(endDate.getHours() + 1); // 1 hour duration
+    
+    return {
+      title: `Splátka úvěru - ${row.period}. měsíc`,
+      description: `Splátka č. ${row.period}: ${monthlyPayment.toLocaleString('cs-CZ')} Kč (úrok: ${row.interest.toLocaleString('cs-CZ')} Kč, jistina: ${row.principal.toLocaleString('cs-CZ')} Kč)`,
+      startDate,
+      endDate,
+      location: 'Banka'
     };
   });
 };
