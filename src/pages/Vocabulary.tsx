@@ -2,7 +2,6 @@
 import React from 'react';
 import VocabularySection from '@/components/language/VocabularySection';
 import LanguageManager from '@/components/language/LanguageManager';
-import VocabularyReview from '@/components/language/VocabularyReview';
 
 const Vocabulary = () => {
   return (
@@ -16,11 +15,6 @@ const Vocabulary = () => {
         </div>
 
         <VocabularySection />
-        
-        {/* Review panel moved to bottom */}
-        <div className="mt-8">
-          <VocabularyReview />
-        </div>
       </div>
     </LanguageManager>
   );
