@@ -5,6 +5,7 @@ import { useOfflineStatus } from '@/hooks/useOfflineStatus';
 import { getAllData, deleteItemById, saveData } from '@/utils/offlineStorage';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { useSyncErrorHandler } from '@/hooks/useSyncErrorHandler';
 
 export interface SyncQueueItem {
   id: string;
@@ -21,6 +22,7 @@ export interface SyncQueueItem {
 export const useSyncQueue = () => {
   const { user } = useAuth();
   const { isOffline } = useOfflineStatus();
+  const { addErrorFromException } = useSyncErrorHandler();
   const [queueItems, setQueueItems] = useState<SyncQueueItem[]>([]);
   const [isSyncing, setIsSyncing] = useState(false);
 
@@ -33,8 +35,9 @@ export const useSyncQueue = () => {
       setQueueItems(items.filter(item => item.user_id === user.id));
     } catch (error) {
       console.error('Error loading sync queue:', error);
+      addErrorFromException(error, 'syncQueue', undefined, 'Chyba při načítání fronty synchronizace');
     }
-  }, [user]);
+  }, [user, addErrorFromException]);
 
   // Add item to queue
   const addToQueue = useCallback(async (item: Omit<SyncQueueItem, 'id' | 'retry_count' | 'user_id' | 'created_at'>) => {
@@ -53,8 +56,9 @@ export const useSyncQueue = () => {
       setQueueItems(prev => [...prev, queueItem]);
     } catch (error) {
       console.error('Error adding to sync queue:', error);
+      addErrorFromException(error, 'syncQueue', queueItem.id, 'Chyba při přidávání do fronty synchronizace');
     }
-  }, [user]);
+  }, [user, addErrorFromException]);
 
   // Process single queue item
   const processSyncItem = async (item: SyncQueueItem): Promise<boolean> => {
@@ -67,21 +71,24 @@ export const useSyncQueue = () => {
             const { error } = await supabase
               .from('shifts')
               .insert(item.data);
-            success = !error;
+            if (error) throw error;
+            success = true;
           } else if (item.action === 'UPDATE') {
             const { error } = await supabase
               .from('shifts')
               .update(item.data)
               .eq('id', item.entity_id)
               .eq('user_id', user?.id);
-            success = !error;
+            if (error) throw error;
+            success = true;
           } else if (item.action === 'DELETE') {
             const { error } = await supabase
               .from('shifts')
               .delete()
               .eq('id', item.entity_id)
               .eq('user_id', user?.id);
-            success = !error;
+            if (error) throw error;
+            success = true;
           }
           break;
 
@@ -90,21 +97,24 @@ export const useSyncQueue = () => {
             const { error } = await supabase
               .from('vehicles')
               .insert(item.data);
-            success = !error;
+            if (error) throw error;
+            success = true;
           } else if (item.action === 'UPDATE') {
             const { error } = await supabase
               .from('vehicles')
               .update(item.data)
               .eq('id', item.entity_id)
               .eq('user_id', user?.id);
-            success = !error;
+            if (error) throw error;
+            success = true;
           } else if (item.action === 'DELETE') {
             const { error } = await supabase
               .from('vehicles')
               .delete()
               .eq('id', item.entity_id)
               .eq('user_id', user?.id);
-            success = !error;
+            if (error) throw error;
+            success = true;
           }
           break;
 
@@ -113,7 +123,8 @@ export const useSyncQueue = () => {
             const { error } = await supabase
               .from('calculation_history')
               .insert(item.data);
-            success = !error;
+            if (error) throw error;
+            success = true;
           }
           break;
       }
@@ -121,6 +132,12 @@ export const useSyncQueue = () => {
       return success;
     } catch (error) {
       console.error('Error processing sync item:', error);
+      addErrorFromException(
+        error, 
+        item.entity_type, 
+        item.entity_id, 
+        `Chyba při synchronizaci ${item.entity_type}`
+      );
       return false;
     }
   };
@@ -138,7 +155,11 @@ export const useSyncQueue = () => {
       
       if (success) {
         processed.push(item.id);
-        await deleteItemById('syncQueue', item.id);
+        try {
+          await deleteItemById('syncQueue', item.id);
+        } catch (error) {
+          console.error('Error removing processed item:', error);
+        }
       } else {
         // Increment retry count
         const updatedItem = {
@@ -148,12 +169,25 @@ export const useSyncQueue = () => {
         };
         
         if (updatedItem.retry_count < 3) {
-          await saveData('syncQueue', updatedItem);
-          failed.push(updatedItem);
+          try {
+            await saveData('syncQueue', updatedItem);
+            failed.push(updatedItem);
+          } catch (error) {
+            console.error('Error updating failed item:', error);
+          }
         } else {
           // Max retries reached, remove from queue
-          await deleteItemById('syncQueue', item.id);
-          console.error('Max retries reached for sync item:', item);
+          try {
+            await deleteItemById('syncQueue', item.id);
+            addErrorFromException(
+              new Error('Maximální počet pokusů dosažen'),
+              item.entity_type,
+              item.entity_id,
+              `Synchronizace ${item.entity_type} selhala po 3 pokusech`
+            );
+          } catch (error) {
+            console.error('Error removing failed item:', error);
+          }
         }
       }
     }
@@ -177,7 +211,7 @@ export const useSyncQueue = () => {
     }
 
     setIsSyncing(false);
-  }, [user, isOffline, queueItems]);
+  }, [user, isOffline, queueItems, addErrorFromException]);
 
   // Auto-sync when coming online
   useEffect(() => {

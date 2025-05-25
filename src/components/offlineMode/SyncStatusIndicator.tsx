@@ -4,13 +4,15 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useSyncQueue } from '@/hooks/useSyncQueue';
 import { useOfflineStatus } from '@/hooks/useOfflineStatus';
+import { useSyncErrorHandler } from '@/hooks/useSyncErrorHandler';
 import { 
   CloudOff, 
   Wifi, 
   RefreshCw, 
   CheckCircle,
   AlertCircle,
-  Clock
+  Clock,
+  XCircle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -27,12 +29,22 @@ export const SyncStatusIndicator: React.FC<SyncStatusIndicatorProps> = ({
 }) => {
   const { isOffline } = useOfflineStatus();
   const { queueCount, isSyncing, processQueue } = useSyncQueue();
+  const { activeErrors } = useSyncErrorHandler();
 
   const getStatusInfo = () => {
     if (isOffline) {
       return {
         icon: CloudOff,
         text: compact ? 'Offline' : 'Režim offline',
+        variant: 'destructive' as const,
+        color: 'text-red-500'
+      };
+    }
+
+    if (activeErrors.length > 0) {
+      return {
+        icon: XCircle,
+        text: compact ? `${activeErrors.length} chyb` : `${activeErrors.length} chyb synchronizace`,
         variant: 'destructive' as const,
         color: 'text-red-500'
       };
@@ -74,9 +86,9 @@ export const SyncStatusIndicator: React.FC<SyncStatusIndicatorProps> = ({
         <Icon 
           className={cn("h-3 w-3", status.color, status.animate && "animate-spin")} 
         />
-        {queueCount > 0 && (
+        {(queueCount > 0 || activeErrors.length > 0) && (
           <Badge variant="outline" className="text-xs px-1 py-0">
-            {queueCount}
+            {activeErrors.length > 0 ? activeErrors.length : queueCount}
           </Badge>
         )}
       </div>
@@ -92,7 +104,7 @@ export const SyncStatusIndicator: React.FC<SyncStatusIndicatorProps> = ({
         {status.text}
       </Badge>
       
-      {showDetails && queueCount > 0 && !isOffline && (
+      {showDetails && queueCount > 0 && !isOffline && activeErrors.length === 0 && (
         <Button
           size="sm"
           variant="outline"
@@ -112,6 +124,13 @@ export const SyncStatusIndicator: React.FC<SyncStatusIndicatorProps> = ({
             </>
           )}
         </Button>
+      )}
+
+      {showDetails && activeErrors.length > 0 && (
+        <Badge variant="destructive" className="text-xs">
+          <AlertCircle className="h-3 w-3 mr-1" />
+          {activeErrors.length} chyb
+        </Badge>
       )}
     </div>
   );
