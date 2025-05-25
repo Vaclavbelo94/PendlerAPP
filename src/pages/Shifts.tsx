@@ -16,12 +16,14 @@ import {
 // Import responsive components
 import ResponsivePage from "@/components/layouts/ResponsivePage";
 
-// Import refactored components
+// Import enhanced components
 import { ShiftCalendarTab } from "@/components/shifts/ShiftCalendarTab";
 import { ReportsTab } from "@/components/shifts/ReportsTab";
 import ShiftAnalytics from "@/components/shifts/ShiftAnalytics";
-import { useRefactoredShiftManagement } from "@/components/shifts/hooks/useRefactoredShiftManagement";
+import { useEnhancedShiftManagement } from "@/components/shifts/hooks/useEnhancedShiftManagement";
 import { EditNoteDialog } from "@/components/shifts/EditNoteDialog";
+import { MobileShiftActions } from "@/components/shifts/mobile/MobileShiftActions";
+import { ShiftWidgets } from "@/components/shifts/dashboard/ShiftWidgets";
 
 const Shifts = () => {
   const [activeSection, setActiveSection] = useState("calendar");
@@ -50,7 +52,7 @@ const Shifts = () => {
     handleDeleteShift,
     handleSaveNotes,
     isLoading
-  } = useRefactoredShiftManagement(user);
+  } = useEnhancedShiftManagement(user);
 
   const handleOpenNoteDialog = () => {
     setNoteDialogOpen(true);
@@ -62,6 +64,19 @@ const Shifts = () => {
 
   const handleNavigateToTravel = () => {
     navigate('/travel-planning');
+  };
+
+  const handleQuickAdd = () => {
+    setActiveSection("calendar");
+    setSelectedDate(new Date());
+  };
+
+  const handleNotificationSettings = () => {
+    // TODO: Open notification settings dialog
+  };
+
+  const handleShareSchedule = () => {
+    // TODO: Implement share functionality
   };
 
   if (isLoading) {
@@ -102,6 +117,16 @@ const Shifts = () => {
               </div>
             </div>
           </div>
+
+          {/* Mobile quick actions */}
+          <MobileShiftActions
+            onQuickAdd={handleQuickAdd}
+            onNotificationSettings={handleNotificationSettings}
+            onShareSchedule={handleShareSchedule}
+          />
+
+          {/* Dashboard widgets */}
+          <ShiftWidgets shifts={shifts} />
 
           {/* Grid menu similar to Calculator */}
           <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-3'} gap-4 mb-8`}>
