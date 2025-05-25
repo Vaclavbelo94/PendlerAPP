@@ -2,9 +2,10 @@
 import React, { useRef, useState } from 'react';
 import { TouchCalendar } from '@/components/ui/touch-calendar';
 import { addMonths, subMonths } from 'date-fns';
-import { CalendarProps } from '@/components/ui/calendar';
+import { Calendar } from '@/components/ui/calendar';
+import { DayPicker } from 'react-day-picker';
 
-interface SwipeableCalendarProps extends CalendarProps {
+interface SwipeableCalendarProps extends React.ComponentProps<typeof DayPicker> {
   onMonthChange?: (date: Date) => void;
 }
 
