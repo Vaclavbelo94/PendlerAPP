@@ -11,7 +11,7 @@ import { InfoCard } from "@/components/ui/design-system/InfoCard";
 import { AdminLayout } from "@/components/admin/core/AdminLayout";
 import { AdminDashboard } from "@/components/admin/core/AdminDashboard";
 import { useAdminContext } from "@/components/admin/core/AdminProvider";
-import { UserAdminPanel } from "@/components/admin/UserAdminPanel";
+import { UserManagement } from "@/components/admin/users";
 import { PromoCodesPanel } from "@/components/admin/PromoCodesPanel";
 import { PremiumFeaturesPanel } from "@/components/admin/PremiumFeaturesPanel";
 import SystemLogsPanel from "@/components/admin/logs/SystemLogsPanel";
@@ -23,7 +23,7 @@ const AdminContent = () => {
   const renderContent = () => {
     switch (currentSection) {
       case 'users-list':
-        return <UserAdminPanel />;
+        return <UserManagement />;
       case 'promo-codes':
         return <PromoCodesPanel />;
       case 'premium-features':

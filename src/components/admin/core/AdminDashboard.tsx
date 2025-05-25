@@ -2,6 +2,7 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { 
   Users, 
   Crown, 
@@ -10,12 +11,16 @@ import {
   Database,
   Server,
   AlertTriangle,
-  CheckCircle
+  CheckCircle,
+  ArrowRight,
+  Shield,
+  Settings,
+  BarChart3
 } from 'lucide-react';
 import { useAdminContext } from './AdminProvider';
 
 export const AdminDashboard: React.FC = () => {
-  const { stats, isLoading } = useAdminContext();
+  const { stats, isLoading, setCurrentSection } = useAdminContext();
 
   if (isLoading) {
     return (
@@ -31,28 +36,32 @@ export const AdminDashboard: React.FC = () => {
       value: stats.totalUsers,
       icon: <Users className="h-6 w-6" />,
       description: '+12% oproti minulému měsíci',
-      trend: 'up'
+      trend: 'up',
+      action: () => setCurrentSection('users-list')
     },
     {
       title: 'Premium uživatelé',
       value: stats.premiumUsers,
       icon: <Crown className="h-6 w-6" />,
       description: `${((stats.premiumUsers / stats.totalUsers) * 100).toFixed(1)}% konverzní poměr`,
-      trend: 'up'
+      trend: 'up',
+      action: () => setCurrentSection('premium-features')
     },
     {
       title: 'Aktivní uživatelé',
       value: stats.activeUsers,
       icon: <Activity className="h-6 w-6" />,
       description: 'Za posledních 30 dní',
-      trend: 'stable'
+      trend: 'stable',
+      action: () => setCurrentSection('system-monitoring')
     },
     {
       title: 'Systémová dostupnost',
       value: `${stats.systemHealth}%`,
       icon: <Server className="h-6 w-6" />,
       description: 'Aktuální uptime',
-      trend: 'up'
+      trend: 'up',
+      action: () => setCurrentSection('system-logs')
     }
   ];
 
@@ -70,6 +79,33 @@ export const AdminDashboard: React.FC = () => {
     { type: 'data_export', message: 'Export uživatelských dat', time: '2 hodiny', user: 'admin@pendlerapp.com' }
   ];
 
+  const quickActions = [
+    {
+      title: 'Správa uživatelů',
+      description: 'Spravovat uživatelské účty a oprávnění',
+      icon: <Users className="h-5 w-5" />,
+      action: () => setCurrentSection('users-list')
+    },
+    {
+      title: 'System Monitoring',
+      description: 'Sledovat výkon a stav systému',
+      icon: <BarChart3 className="h-5 w-5" />,
+      action: () => setCurrentSection('system-monitoring')
+    },
+    {
+      title: 'Premium funkce',
+      description: 'Konfigurovat premium funkcionalitu',
+      icon: <Crown className="h-5 w-5" />,
+      action: () => setCurrentSection('premium-features')
+    },
+    {
+      title: 'Systémové logy',
+      description: 'Prohlížet a analyzovat logy',
+      icon: <Settings className="h-5 w-5" />,
+      action: () => setCurrentSection('system-logs')
+    }
+  ];
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -83,7 +119,7 @@ export const AdminDashboard: React.FC = () => {
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {statCards.map((stat, index) => (
-          <Card key={index}>
+          <Card key={index} className="cursor-pointer transition-all hover:shadow-md" onClick={stat.action}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 {stat.title}
@@ -102,6 +138,38 @@ export const AdminDashboard: React.FC = () => {
           </Card>
         ))}
       </div>
+
+      {/* Quick Actions */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Rychlé akce</CardTitle>
+          <CardDescription>
+            Nejčastěji používané administrátorské funkce
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {quickActions.map((action, index) => (
+              <div
+                key={index}
+                onClick={action.action}
+                className="flex items-center justify-between p-4 border rounded-lg cursor-pointer transition-all hover:shadow-md hover:bg-accent/50"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-primary/10 rounded-md">
+                    {action.icon}
+                  </div>
+                  <div>
+                    <h3 className="font-medium">{action.title}</h3>
+                    <p className="text-sm text-muted-foreground">{action.description}</p>
+                  </div>
+                </div>
+                <ArrowRight className="h-4 w-4 text-muted-foreground" />
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* System Status */}
