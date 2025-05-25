@@ -10,6 +10,7 @@ import PWAInstallPrompt from '@/components/common/PWAInstallPrompt';
 import { performanceMonitor } from '@/utils/performanceMonitor';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { usePerformanceOptimization } from '@/hooks/usePerformanceOptimization';
+import { AuthProvider } from '@/hooks/auth';
 
 // Lazy loaded components for better performance
 import { 
@@ -124,9 +125,11 @@ function App() {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <Router>
-          <AppContent />
-        </Router>
+        <AuthProvider>
+          <Router>
+            <AppContent />
+          </Router>
+        </AuthProvider>
       </QueryClientProvider>
     </ErrorBoundary>
   );
