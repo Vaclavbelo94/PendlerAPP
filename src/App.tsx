@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { ThemeProvider } from "@/hooks/useTheme"
 import { AuthProvider } from '@/hooks/auth';
 import LayoutWrapper from '@/components/layouts/LayoutWrapper';
+import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 import Calculator from './pages/Calculator';
 import TaxAdvisor from './pages/TaxAdvisor';
@@ -16,7 +17,7 @@ import Vocabulary from './pages/Vocabulary';
 import Laws from './pages/Laws';
 import AdminPanel from './pages/AdminPanel';
 import Admin from './pages/Admin';
-import Pricing from './pages/Pricing';
+import Premium from './pages/Premium';
 import Profile from './pages/Profile';
 import TravelPlanning from './pages/TravelPlanning';
 import Login from './pages/Login';
@@ -36,7 +37,8 @@ function App() {
             <LayoutWrapper>
               <ShiftNotifications />
               <Routes>
-                <Route path="/" element={<Dashboard />} />
+                <Route path="/" element={<Home />} />
+                <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/calculator" element={<Calculator />} />
@@ -49,7 +51,7 @@ function App() {
                 <Route path="/laws" element={<Laws />} />
                 <Route path="/admin" element={<Admin />} />
                 <Route path="/admin-panel" element={<AdminPanel />} />
-                <Route path="/pricing" element={<Pricing />} />
+                <Route path="/premium" element={<Premium />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/travel-planning" element={<TravelPlanning />} />
               </Routes>

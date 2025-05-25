@@ -11,12 +11,14 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { redeemPromoCode } from "@/components/admin/promoCode/promoCodeService";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useNavigate } from "react-router-dom";
 
 const SubscriptionManagement = () => {
   const { user, isPremium, refreshPremiumStatus } = useAuth();
   const [promoCode, setPromoCode] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [premiumUntil, setPremiumUntil] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Get premium expiry from localStorage
@@ -212,6 +214,15 @@ const SubscriptionManagement = () => {
               </ul>
             </div>
           </div>
+          
+          {!isPremium && (
+            <div className="mt-6 pt-4 border-t">
+              <Button onClick={() => navigate('/premium')} className="w-full">
+                <Crown className="h-4 w-4 mr-2" />
+                Aktivovat Premium
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
 

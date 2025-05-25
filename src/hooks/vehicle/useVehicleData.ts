@@ -34,7 +34,7 @@ export const useVehicleData = (user: any) => {
     } finally {
       setIsLoading(false);
     }
-  }, [user?.id, selectedVehicleId]);
+  }, [user?.id]); // Removed selectedVehicleId dependency to prevent infinite loop
 
   useEffect(() => {
     loadVehicles();
@@ -77,6 +77,7 @@ export const useVehicleData = (user: any) => {
     vehicleData,
     setVehicleData,
     isLoading,
-    handleVehicleSelect
+    handleVehicleSelect,
+    loadVehicles // Export loadVehicles for manual refresh if needed
   };
 };

@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -12,7 +13,8 @@ import {
   FileText,
   MapPin,
   Languages,
-  Scale
+  Scale,
+  Home
 } from "lucide-react";
 
 interface SidebarNavigationProps {
@@ -25,8 +27,13 @@ const SidebarNavigation = ({ closeSidebar }: SidebarNavigationProps) => {
 
   const mainNavigation = [
     {
-      title: "Dashboard",
+      title: "Domů",
       href: "/",
+      icon: Home,
+    },
+    {
+      title: "Dashboard",
+      href: "/dashboard",
       icon: LayoutDashboard,
     },
     {
@@ -49,6 +56,11 @@ const SidebarNavigation = ({ closeSidebar }: SidebarNavigationProps) => {
       href: "/vehicle",
       icon: Car,
     },
+    {
+      title: "Zákony",
+      href: "/laws",
+      icon: Scale,
+    },
   ];
 
   const toolsNavigation = [
@@ -66,11 +78,6 @@ const SidebarNavigation = ({ closeSidebar }: SidebarNavigationProps) => {
       title: "Plánovač jízd",
       href: "/travel-planning",
       icon: MapPin,
-    },
-    {
-      title: "Zákony",
-      href: "/laws",
-      icon: Scale,
     },
   ];
 
