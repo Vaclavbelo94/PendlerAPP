@@ -4,11 +4,14 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Crown, Users, Settings, Key, ShieldCheck, BarChart3 } from "lucide-react";
+import { Crown, Users, Settings, Key, ShieldCheck, BarChart3, FileText, Activity } from "lucide-react";
 import { UserAdminPanel } from "@/components/admin/UserAdminPanel";
 import { PromoCodesPanel } from "@/components/admin/PromoCodesPanel";
 import { PasswordResetPanel } from "@/components/admin/PasswordResetPanel";
 import { PremiumFeaturesPanel } from "@/components/admin/PremiumFeaturesPanel";
+import AdminAnalyticsDashboard from "@/components/admin/analytics/AdminAnalyticsDashboard";
+import SystemLogsPanel from "@/components/admin/logs/SystemLogsPanel";
+import SystemMonitoringPanel from "@/components/admin/monitoring/SystemMonitoringPanel";
 import AdminLoginDialog from "@/components/admin/AdminLoginDialog";
 import { useAuth } from "@/hooks/useAuth";
 import { SectionHeader } from "@/components/ui/section-header";
@@ -119,6 +122,30 @@ const Admin = () => {
       icon: <Settings className="h-6 w-6" />,
       component: <PasswordResetPanel />,
       variant: "muted" as const
+    },
+    {
+      id: "analytics",
+      title: "Analytics",
+      description: "Pokročilé analytické přehledy",
+      icon: <BarChart3 className="h-6 w-6" />,
+      component: <AdminAnalyticsDashboard />,
+      variant: "primary" as const
+    },
+    {
+      id: "logs",
+      title: "Systémové logy",
+      description: "Monitoring a debugování",
+      icon: <FileText className="h-6 w-6" />,
+      component: <SystemLogsPanel />,
+      variant: "secondary" as const
+    },
+    {
+      id: "monitoring",
+      title: "System Monitoring",
+      description: "Real-time systémové metriky",
+      icon: <Activity className="h-6 w-6" />,
+      component: <SystemMonitoringPanel />,
+      variant: "accent" as const
     }
   ];
 
@@ -170,9 +197,9 @@ const Admin = () => {
       <div className="mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight mb-2">Administrace</h1>
+            <h1 className="text-3xl font-bold tracking-tight mb-2">Pokročilá administrace</h1>
             <p className="text-muted-foreground">
-              Plánujte a spravujte administrační funkce efektivně
+              Kompletní správa aplikace s pokročilými funkcemi pro monitoring, analytics a systémové logy
             </p>
           </div>
           
@@ -193,7 +220,7 @@ const Admin = () => {
       </div>
 
       {/* Main Menu Cards */}
-      <div className="grid grid-cols-2 gap-4 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
         {adminSections.map((section) => (
           <div
             key={section.id}
