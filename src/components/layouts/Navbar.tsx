@@ -6,7 +6,8 @@ import {
   Menu,
   UserIcon, 
   LogOutIcon, 
-  SearchIcon
+  SearchIcon,
+  Settings as SettingsIcon
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -39,7 +40,6 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProp
   const isMobile = useIsMobile();
   const orientation = useOrientation();
   
-  // Určit, zda je v landscape módu na mobilním zařízení
   const isLandscapeMobile = isMobile && orientation === "landscape";
   const isPortraitMobile = isMobile && orientation === "portrait";
 
@@ -59,14 +59,12 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProp
     };
   }, []);
 
-  // Refresh admin status on component mount
   useEffect(() => {
     if (user) {
       refreshAdminStatus();
     }
   }, [user, refreshAdminStatus]);
 
-  // Keyboard shortcut for search
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
@@ -85,10 +83,8 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProp
     toast.success("Odhlášení proběhlo úspěšně");
   };
 
-  // Dynamická výška navbar na základě orientace
+  // Optimalizované rozměry pro různé mobile módy
   const navbarHeight = isLandscapeMobile ? 'h-12' : 'h-16';
-  
-  // Optimalizované tlačítko menu pro portrait mobile
   const menuButtonClass = isPortraitMobile 
     ? "p-3 min-h-[44px] min-w-[44px]" 
     : isLandscapeMobile 
@@ -130,11 +126,11 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProp
               />
             </div>
             
-            {/* Mobile search button */}
+            {/* Mobile search button - optimalizovaný */}
             <Button 
               variant="ghost" 
               size={isLandscapeMobile ? "sm" : "icon"}
-              className={`md:hidden ${isPortraitMobile ? "min-h-[44px] min-w-[44px]" : ""}`}
+              className={`md:hidden ${isPortraitMobile ? "min-h-[44px] min-w-[44px] p-2" : "p-1"}`}
               onClick={() => setSearchOpen(true)}
             >
               <SearchIcon className={isLandscapeMobile ? "h-4 w-4" : "h-5 w-5"} />
@@ -144,7 +140,7 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProp
           
           <div className="flex items-center gap-2">
             {/* Theme toggle button (viditelné pouze na desktop) */}
-            {!isPortraitMobile && <ThemeToggle />}
+            {!isMobile && <ThemeToggle />}
             
             {/* Right Content (e.g. notifications) */}
             {rightContent}
@@ -154,24 +150,62 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProp
                 <DropdownMenuTrigger asChild>
                   <Button 
                     variant="ghost" 
-                    className={`gap-2 ${isLandscapeMobile ? 'px-2' : 'px-3'} ${isPortraitMobile ? "min-h-[44px]" : ""}`}
+                    className={`${
+                      isMobile 
+                        ? isLandscapeMobile 
+                          ? 'p-1 min-h-[36px] min-w-[36px]' 
+                          : 'p-2 min-h-[44px] min-w-[44px]'
+                        : 'gap-2 px-3'
+                    }`}
                   >
                     <div className={`rounded-full bg-primary/20 flex items-center justify-center text-foreground ${
-                      isLandscapeMobile ? 'w-6 h-6' : 'w-8 h-8'
+                      isLandscapeMobile ? 'w-5 h-5' : isPortraitMobile ? 'w-7 h-7' : 'w-8 h-8'
                     }`}>
-                      <UserIcon className={isLandscapeMobile ? "h-3 w-3" : "h-4 w-4"} />
+                      <UserIcon className={isLandscapeMobile ? "h-3 w-3" : isPortraitMobile ? "h-4 w-4" : "h-4 w-4"} />
                     </div>
-                    <span className={`hidden sm:inline font-medium ${isLandscapeMobile ? 'text-xs' : 'text-sm'}`}>
-                      {user.user_metadata?.username || user.email?.split('@')[0] || 'Uživatel'}
-                    </span>
-                    {/* Skrýt badges v landscape mobile módu pro úsporu místa */}
-                    {!isLandscapeMobile && isPremium && <Badge className="bg-amber-500 text-xs">Premium</Badge>}
-                    {!isLandscapeMobile && isAdmin && <Badge className="bg-red-500 text-xs">Admin</Badge>}
+                    
+                    {/* Na mobilu skrýt text a badges */}
+                    {!isMobile && (
+                      <>
+                        <span className="hidden sm:inline font-medium text-sm">
+                          {user.user_metadata?.username || user.email?.split('@')[0] || 'Uživatel'}
+                        </span>
+                        {isPremium && <Badge className="bg-amber-500 text-xs">Premium</Badge>}
+                        {isAdmin && <Badge className="bg-red-500 text-xs">Admin</Badge>}
+                      </>
+                    )}
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 z-50">
-                  <DropdownMenuLabel>Můj účet</DropdownMenuLabel>
+                <DropdownMenuContent align="end" className="w-56 z-50 bg-background border">
+                  <DropdownMenuLabel className="flex flex-col">
+                    <span className="font-medium">
+                      {user.user_metadata?.username || user.email?.split('@')[0] || 'Uživatel'}
+                    </span>
+                    <span className="text-xs text-muted-foreground truncate">
+                      {user.email}
+                    </span>
+                    {/* Na mobilu zobrazit badges v dropdown */}
+                    {isMobile && (
+                      <div className="flex gap-1 mt-1">
+                        {isPremium && <Badge className="bg-amber-500 text-xs">Premium</Badge>}
+                        {isAdmin && <Badge className="bg-red-500 text-xs">Admin</Badge>}
+                      </div>
+                    )}
+                  </DropdownMenuLabel>
                   <DropdownMenuSeparator />
+                  
+                  {/* Na mobilu přidat Theme Toggle do menu */}
+                  {isMobile && (
+                    <>
+                      <DropdownMenuItem onClick={(e) => e.preventDefault()}>
+                        <SettingsIcon className="mr-2 h-4 w-4" />
+                        <span className="flex-1">Vzhled</span>
+                        <ThemeToggle alwaysShow={true} size="sm" variant="ghost" />
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                    </>
+                  )}
+                  
                   <DropdownMenuItem onClick={() => navigate("/profile")}>
                     <UserIcon className="mr-2 h-4 w-4" />
                     <span>Profil</span>
@@ -185,10 +219,19 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProp
               </DropdownMenu>
             ) : (
               <div className="flex items-center gap-2">
-                <Button variant="ghost" asChild size={isLandscapeMobile ? "sm" : "default"}>
+                <Button 
+                  variant="ghost" 
+                  asChild 
+                  size={isLandscapeMobile ? "sm" : "default"}
+                  className={isPortraitMobile ? "text-sm px-3" : ""}
+                >
                   <Link to="/login">Přihlásit se</Link>
                 </Button>
-                <Button asChild size={isLandscapeMobile ? "sm" : "default"}>
+                <Button 
+                  asChild 
+                  size={isLandscapeMobile ? "sm" : "default"}
+                  className={isPortraitMobile ? "text-sm px-3" : ""}
+                >
                   <Link to="/register">Registrovat se</Link>
                 </Button>
               </div>

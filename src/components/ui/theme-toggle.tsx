@@ -24,7 +24,6 @@ export function ThemeToggle({
   const isMobile = useIsMobile();
   
   // Don't render if not supposed to show on mobile and we are on mobile
-  // Use the actual mobile detection instead of just screen width
   if (!alwaysShow && isMobile) {
     return null;
   }
@@ -35,6 +34,28 @@ export function ThemeToggle({
     setTheme(theme === 'dark' ? 'light' : 'dark');
   };
   
+  const ButtonComponent = (
+    <Button
+      variant={variant}
+      size={size}
+      onClick={toggleTheme}
+      className={className}
+      disabled={isChangingTheme}
+      aria-label={theme === 'dark' ? 'Přepnout na světlý režim' : 'Přepnout na tmavý režim'}
+    >
+      {theme === 'dark' ? (
+        <Sun className="h-[1.2rem] w-[1.2rem] transition-transform duration-200 rotate-0" />
+      ) : (
+        <Moon className="h-[1.2rem] w-[1.2rem] transition-transform duration-200 rotate-0" />
+      )}
+    </Button>
+  );
+
+  // Na mobilu v dropdown menu nepoužívat tooltip ani motion
+  if (alwaysShow && isMobile) {
+    return ButtonComponent;
+  }
+  
   return (
     <TooltipProvider>
       <Tooltip>
@@ -43,20 +64,7 @@ export function ThemeToggle({
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
           >
-            <Button
-              variant={variant}
-              size={size}
-              onClick={toggleTheme}
-              className={className}
-              disabled={isChangingTheme}
-              aria-label={theme === 'dark' ? 'Přepnout na světlý režim' : 'Přepnout na tmavý režim'}
-            >
-              {theme === 'dark' ? (
-                <Sun className="h-[1.2rem] w-[1.2rem] transition-transform duration-200 rotate-0" />
-              ) : (
-                <Moon className="h-[1.2rem] w-[1.2rem] transition-transform duration-200 rotate-0" />
-              )}
-            </Button>
+            {ButtonComponent}
           </motion.div>
         </TooltipTrigger>
         <TooltipContent>
