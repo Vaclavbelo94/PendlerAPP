@@ -1,81 +1,132 @@
 
-import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { ThemeProvider } from "@/hooks/useTheme"
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Toaster } from "@/components/ui/toaster"
-import { ErrorBoundary } from "@/components/error/ErrorBoundary";
+import { Toaster } from "@/components/ui/sonner";
+import { Toaster as ToasterTwo } from "@/components/ui/toaster";
+import ErrorBoundary from '@/components/common/ErrorBoundary';
+import LazyLoadWrapper from '@/components/common/LazyLoadWrapper';
+import PWAInstallPrompt from '@/components/common/PWAInstallPrompt';
+import { performanceMonitor } from '@/utils/performanceMonitor';
+import { useAnalytics } from '@/hooks/useAnalytics';
+import { usePerformanceOptimization } from '@/hooks/usePerformanceOptimization';
 
-import Layout from '@/components/layouts/Layout';
-import ScrollToTop from '@/components/navigation/ScrollToTop';
-import Home from '@/pages/Home';
-import Calculator from '@/pages/Calculator';
-import TaxAdvisor from '@/pages/TaxAdvisor';
-import Vehicle from '@/pages/Vehicle';
-import Vocabulary from '@/pages/Vocabulary';
-import Translator from '@/pages/Translator';
-import Laws from '@/pages/Laws';
-import Settings from '@/pages/Settings';
-import Profile from '@/pages/Profile';
-import Dashboard from '@/pages/Dashboard';
-import Shifts from '@/pages/Shifts';
-import TravelPlanning from '@/pages/TravelPlanning';
-import Language from '@/pages/Language';
-import NotFound from '@/pages/NotFound';
+// Lazy loaded components for better performance
+import { 
+  LazyShiftsModule,
+  LazyVehicleModule, 
+  LazyCalculatorModule,
+  LazySettingsModule 
+} from '@/utils/performanceOptimizer';
 
-import { AuthProvider } from '@/hooks/useAuth';
-import { NotificationManager } from '@/components/notifications/NotificationManager';
+import Index from "@/pages/Index";
+import DashboardPage from "@/pages/DashboardPage";
+import LanguagePage from "@/pages/LanguagePage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retry: (failureCount, error: any) => {
-        // Don't retry on 4xx errors except 429
-        if (error?.status >= 400 && error?.status < 500 && error?.status !== 429) {
-          return false;
-        }
-        return failureCount < 3;
-      },
-      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      gcTime: 1000 * 60 * 30, // 30 minutes
     },
   },
 });
+
+function AppContent() {
+  const { trackPageView, trackError } = useAnalytics();
+  usePerformanceOptimization();
+
+  useEffect(() => {
+    // Track page views
+    const handleLocationChange = () => {
+      trackPageView(window.location.pathname);
+    };
+
+    // Initial page view
+    handleLocationChange();
+
+    // Listen for navigation changes
+    window.addEventListener('popstate', handleLocationChange);
+    
+    // Register service worker for PWA
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then((registration) => {
+          console.log('SW registered: ', registration);
+        })
+        .catch((registrationError) => {
+          console.log('SW registration failed: ', registrationError);
+        });
+    }
+
+    return () => {
+      window.removeEventListener('popstate', handleLocationChange);
+      performanceMonitor.destroy();
+    };
+  }, [trackPageView]);
+
+  const handleError = (error: Error, errorInfo: React.ErrorInfo) => {
+    trackError(error, errorInfo);
+  };
+
+  return (
+    <ErrorBoundary onError={handleError}>
+      <div className="min-h-screen bg-background">
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/language" element={<LanguagePage />} />
+          
+          {/* Lazy loaded routes */}
+          <Route 
+            path="/shifts" 
+            element={
+              <LazyLoadWrapper>
+                <LazyShiftsModule />
+              </LazyLoadWrapper>
+            } 
+          />
+          <Route 
+            path="/calculator" 
+            element={
+              <LazyLoadWrapper>
+                <LazyCalculatorModule />
+              </LazyLoadWrapper>
+            } 
+          />
+          <Route 
+            path="/vehicle" 
+            element={
+              <LazyLoadWrapper>
+                <LazyVehicleModule />
+              </LazyLoadWrapper>
+            } 
+          />
+          <Route 
+            path="/settings" 
+            element={
+              <LazyLoadWrapper>
+                <LazySettingsModule />
+              </LazyLoadWrapper>
+            } 
+          />
+        </Routes>
+        
+        <PWAInstallPrompt />
+        <Toaster position="bottom-right" />
+        <ToasterTwo />
+      </div>
+    </ErrorBoundary>
+  );
+}
 
 function App() {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <ScrollToTop />
-          <AuthProvider>
-            <ThemeProvider>
-              <Toaster />
-              <Layout>
-                <ErrorBoundary>
-                  <NotificationManager />
-                </ErrorBoundary>
-                <ErrorBoundary>
-                  <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/calculator" element={<Calculator />} />
-                    <Route path="/tax-advisor" element={<TaxAdvisor />} />
-                    <Route path="/vehicle" element={<Vehicle />} />
-                    <Route path="/vocabulary" element={<Vocabulary />} />
-                    <Route path="/translator" element={<Translator />} />
-                    <Route path="/laws" element={<Laws />} />
-                    <Route path="/settings" element={<Settings />} />
-                    <Route path="/profile" element={<Profile />} />
-                    <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/shifts" element={<Shifts />} />
-                    <Route path="/travel-planning" element={<TravelPlanning />} />
-                    <Route path="/language" element={<Language />} />
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </ErrorBoundary>
-              </Layout>
-            </ThemeProvider>
-          </AuthProvider>
-        </BrowserRouter>
+        <Router>
+          <AppContent />
+        </Router>
       </QueryClientProvider>
     </ErrorBoundary>
   );
