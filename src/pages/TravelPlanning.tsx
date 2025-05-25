@@ -1,19 +1,30 @@
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { Helmet } from "react-helmet";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { Car, Calculator, Map, Users, Clock, ArrowLeft } from "lucide-react";
+import { Map, ArrowLeft } from "lucide-react";
 import PremiumCheck from "@/components/premium/PremiumCheck";
-import CommuteOptimizer from "@/components/travel/CommuteOptimizer";
-import RideSharing from "@/components/travel/RideSharing";
-import CommuteCostCalculator from "@/components/travel/CommuteCostCalculator";
-import TrafficPredictions from "@/components/travel/TrafficPredictions";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import ResponsivePage from "@/components/layouts/ResponsivePage";
 import AccessibleButton from "@/components/ui/accessible-button";
+import { MobileTravelNavigation } from "@/components/travel/MobileTravelNavigation";
+import { 
+  CommuteOptimizerLazy,
+  RideSharingLazy, 
+  CommuteCostCalculatorLazy,
+  TrafficPredictionsLazy 
+} from "@/components/travel/LazyTravelComponents";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const LoadingFallback = () => (
+  <div className="space-y-4">
+    <Skeleton className="h-8 w-1/3" />
+    <Skeleton className="h-32 w-full" />
+    <Skeleton className="h-48 w-full" />
+  </div>
+);
 
 const TravelPlanning = () => {
   const [activeTab, setActiveTab] = useState("optimizer");
@@ -44,36 +55,24 @@ const TravelPlanning = () => {
     navigate(-1);
   };
 
-  const tabs = [
-    {
-      id: "optimizer",
-      label: isMobile ? "Optimalizace" : "Optimalizace dojíždění",
-      icon: Car,
-      description: "Optimalizace tras a dopravy"
-    },
-    {
-      id: "ridesharing",
-      label: isMobile ? "Sdílení" : "Sdílení jízd",
-      icon: Users,
-      description: "Hledání spolujízd"
-    },
-    {
-      id: "calculator",
-      label: isMobile ? "Kalkulačka" : "Kalkulačka nákladů",
-      icon: Calculator,
-      description: "Výpočet nákladů na dopravu"
-    },
-    {
-      id: "predictions",
-      label: isMobile ? "Predikce" : "Predikce dopravy",
-      icon: Clock,
-      description: "Předpověď dopravní situace"
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case "optimizer":
+        return <CommuteOptimizerLazy />;
+      case "ridesharing":
+        return <RideSharingLazy />;
+      case "calculator":
+        return <CommuteCostCalculatorLazy />;
+      case "predictions":
+        return <TrafficPredictionsLazy />;
+      default:
+        return <CommuteOptimizerLazy />;
     }
-  ];
+  };
 
   return (
     <PremiumCheck featureKey="travel_planning">
-      <ResponsivePage>
+      <ResponsivePage enableLandscapeOptimization={true}>
         <Helmet>
           <title>Plánování cest | Pendler Buddy</title>
         </Helmet>
@@ -110,39 +109,19 @@ const TravelPlanning = () => {
           </p>
         </section>
         
-        {/* Tabs navigation */}
-        <div className={`grid gap-2 mb-6 ${isMobile ? 'grid-cols-2' : 'grid-cols-4'}`}>
-          {tabs.map((tab) => {
-            const Icon = tab.icon;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => handleTabChange(tab.id)}
-                className={`flex items-center gap-2 p-4 rounded-lg border transition-colors ${
-                  activeTab === tab.id 
-                    ? 'bg-primary text-primary-foreground' 
-                    : 'bg-card hover:bg-accent'
-                } ${isMobile ? 'flex-col text-center' : ''}`}
-              >
-                <Icon className={`${isMobile ? 'h-5 w-5' : 'h-4 w-4'}`} />
-                <span className={`${isMobile ? 'text-xs' : 'text-sm'} font-medium`}>
-                  {tab.label}
-                </span>
-                {!isMobile && (
-                  <span className="sr-only">{tab.description}</span>
-                )}
-              </button>
-            );
-          })}
-        </div>
+        {/* Navigation */}
+        <MobileTravelNavigation
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+          isMobile={isMobile}
+        />
         
-        {/* Tab content */}
-        <div className="space-y-4">
-          {activeTab === "optimizer" && <CommuteOptimizer />}
-          {activeTab === "ridesharing" && <RideSharing />}
-          {activeTab === "calculator" && <CommuteCostCalculator />}
-          {activeTab === "predictions" && <TrafficPredictions />}
-        </div>
+        {/* Tab content with suspense */}
+        <Suspense fallback={<LoadingFallback />}>
+          <div className="space-y-4">
+            {renderTabContent()}
+          </div>
+        </Suspense>
       </ResponsivePage>
     </PremiumCheck>
   );
