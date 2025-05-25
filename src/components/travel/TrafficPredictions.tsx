@@ -1,194 +1,223 @@
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { CalendarClock, Navigation } from "lucide-react";
-import { toast } from "sonner";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
-import TrafficAnalysisForm from './traffic/TrafficAnalysisForm';
-import TrafficPredictionCard from './traffic/TrafficPredictionCard';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Clock, MapPin, AlertTriangle, TrendingUp, RefreshCw } from 'lucide-react';
 
-interface Shift {
-  id: string;
-  date: string;
-  type: string;
-  notes?: string;
+interface TrafficPrediction {
+  route: string;
+  currentTime: number;
+  predictedTime: number;
+  trafficLevel: 'low' | 'medium' | 'high' | 'very-high';
+  incidents: string[];
+  bestDepartureTime: string;
+  alternativeRoutes: Array<{
+    name: string;
+    time: number;
+    traffic: string;
+  }>;
 }
 
-const TrafficPredictions = () => {
-  const { user } = useAuth();
-  const [route, setRoute] = useState({ from: "", to: "" });
-  const [selectedDay, setSelectedDay] = useState("monday");
-  const [selectedTime, setSelectedTime] = useState("07:30");
-  const [shifts, setShifts] = useState<Shift[]>([]);
-  const [loading, setLoading] = useState(false);
-  const isMobile = useIsMobile();
-  
-  // Sample traffic predictions with more realistic data
-  const trafficPredictions = [
-    {
-      day: "monday",
-      conditions: [
-        { time: "06:00", status: "normal", description: "Běžný provoz, průměrná doba jízdy 45 minut.", minutes: 45, congestion: 15 },
-        { time: "07:00", status: "heavy", description: "Zvýšený provoz, očekávané zdržení 15-20 minut v oblasti křižovatek.", minutes: 65, congestion: 40 },
-        { time: "08:00", status: "very-heavy", description: "Husté dopravní špičky, silné zdržení na hlavních trasách.", minutes: 75, congestion: 60 },
-        { time: "16:00", status: "heavy", description: "Odpolední špička, očekávané zdržení 10-15 minut.", minutes: 55, congestion: 35 },
-        { time: "17:00", status: "very-heavy", description: "Velmi hustý provoz při návratu, zejména u sjezdů z dálnice.", minutes: 70, congestion: 55 },
-        { time: "18:00", status: "normal", description: "Provoz se zklidňuje, jen lokální zdržení.", minutes: 50, congestion: 20 }
+const TrafficPredictions: React.FC = () => {
+  const [selectedRoute, setSelectedRoute] = useState('cheb-dresden');
+  const [predictions, setPredictions] = useState<TrafficPrediction | null>(null);
+  const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
+
+  // Mock data pro demonstraci
+  const mockPredictions: Record<string, TrafficPrediction> = {
+    'cheb-dresden': {
+      route: 'Cheb → Dresden',
+      currentTime: 95,
+      predictedTime: 110,
+      trafficLevel: 'medium',
+      incidents: ['Práce na A17 km 45', 'Zvýšený provoz na hraničním přechodu'],
+      bestDepartureTime: '06:30',
+      alternativeRoutes: [
+        { name: 'Přes Karlovy Vary', time: 125, traffic: 'low' },
+        { name: 'Přes Chomutov', time: 140, traffic: 'medium' }
       ]
     },
-    {
-      day: "friday",
-      conditions: [
-        { time: "14:00", status: "heavy", description: "Zvýšený páteční provoz, začátek víkendových cest.", minutes: 60, congestion: 45 },
-        { time: "15:00", status: "very-heavy", description: "Velmi hustý provoz, očekávané zdržení 25-30 minut.", minutes: 75, congestion: 65 },
-        { time: "16:00", status: "extreme", description: "Extrémně hustý provoz, doporučujeme alternativní trasu.", minutes: 90, congestion: 80 }
+    'karlovy-vary-munich': {
+      route: 'Karlovy Vary → Mnichov',
+      currentTime: 180,
+      predictedTime: 200,
+      trafficLevel: 'high',
+      incidents: ['Nehoda na A93', 'Kolony před Regensburgem'],
+      bestDepartureTime: '05:45',
+      alternativeRoutes: [
+        { name: 'Přes Plzeň-Furth', time: 220, traffic: 'medium' },
+        { name: 'Přes Čes. Budějovice', time: 240, traffic: 'low' }
       ]
-    },
-  ];
+    }
+  };
 
   useEffect(() => {
-    if (user?.id) {
-      loadUserShifts();
-    }
-  }, [user?.id]);
+    loadPredictions();
+    const interval = setInterval(loadPredictions, 300000); // Aktualizace každých 5 minut
+    return () => clearInterval(interval);
+  }, [selectedRoute]);
 
-  const loadUserShifts = async () => {
-    if (!user?.id) return;
-    
-    try {
-      const { data, error } = await supabase
-        .from('shifts')
-        .select('*')
-        .eq('user_id', user.id)
-        .gte('date', new Date().toISOString().split('T')[0])
-        .order('date', { ascending: true })
-        .limit(10);
-      
-      if (error) throw error;
-      setShifts(data || []);
-    } catch (error) {
-      console.error('Error loading shifts:', error);
-    }
-  };
-  
-  // Find prediction for selected day and time
-  const getCurrentPrediction = () => {
-    const dayPredictions = trafficPredictions.find(p => p.day === selectedDay);
-    if (!dayPredictions) return null;
-    
-    // Find closest time
-    const selectedHour = parseInt(selectedTime.split(':')[0]);
-    let closestPrediction = dayPredictions.conditions[0];
-    
-    for (const prediction of dayPredictions.conditions) {
-      const predictionHour = parseInt(prediction.time.split(':')[0]);
-      const currentClosestHour = parseInt(closestPrediction.time.split(':')[0]);
-      
-      if (Math.abs(predictionHour - selectedHour) < Math.abs(currentClosestHour - selectedHour)) {
-        closestPrediction = prediction;
-      }
-    }
-    
-    return closestPrediction;
-  };
-  
-  const prediction = getCurrentPrediction();
-  
-  const handleAnalyzeRoute = async () => {
-    if (!route.from || !route.to) {
-      toast.error("Zadejte prosím místo odjezdu a cíl.");
-      return;
-    }
-    
-    setLoading(true);
-    
-    // Simulate API call
+  const loadPredictions = () => {
+    // Simulace načítání dat z API
     setTimeout(() => {
-      toast.success(`Analýza dopravní situace pro trasu ${route.from} → ${route.to} byla dokončena.`);
-      setLoading(false);
-    }, 1500);
+      setPredictions(mockPredictions[selectedRoute]);
+      setLastUpdate(new Date());
+    }, 500);
   };
 
-  const getShiftPrediction = (shift: Shift) => {
-    const dayOfWeek = new Date(shift.date).getDay();
-    const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-    const dayPredictions = trafficPredictions.find(p => p.day === dayNames[dayOfWeek]);
-    
-    if (!dayPredictions) return null;
-    
-    // Default prediction for shift start time
-    return dayPredictions.conditions[Math.floor(Math.random() * dayPredictions.conditions.length)];
+  const getTrafficColor = (level: string) => {
+    switch (level) {
+      case 'low': return 'bg-green-500';
+      case 'medium': return 'bg-yellow-500';
+      case 'high': return 'bg-orange-500';
+      case 'very-high': return 'bg-red-500';
+      default: return 'bg-gray-500';
+    }
+  };
+
+  const getTrafficLabel = (level: string) => {
+    switch (level) {
+      case 'low': return 'Nízký';
+      case 'medium': return 'Střední';
+      case 'high': return 'Vysoký';
+      case 'very-high': return 'Velmi vysoký';
+      default: return 'Neznámý';
+    }
   };
 
   return (
     <div className="space-y-6">
-      <TrafficAnalysisForm
-        route={route}
-        selectedDay={selectedDay}
-        selectedTime={selectedTime}
-        onRouteChange={setRoute}
-        onDayChange={setSelectedDay}
-        onTimeChange={setSelectedTime}
-        onAnalyze={handleAnalyzeRoute}
-        loading={loading}
-        isMobile={isMobile}
-      />
-      
-      {prediction && (
-        <TrafficPredictionCard
-          prediction={prediction}
-          selectedDay={selectedDay}
-          selectedTime={selectedTime}
-        />
-      )}
-      
       <Card>
         <CardHeader>
-          <CardTitle>Predikce pro vaše směny</CardTitle>
-          <CardDescription>Dopravní predikce pro vaše naplánované směny</CardDescription>
+          <CardTitle className="flex items-center gap-2">
+            <TrendingUp className="h-5 w-5" />
+            Predikce dopravní situace
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            {shifts.length > 0 ? (
-              shifts.map((shift) => {
-                const shiftPrediction = getShiftPrediction(shift);
-                return (
-                  <div key={shift.id} className={`flex ${isMobile ? 'flex-col' : 'items-center justify-between'} p-4 border rounded-lg`}>
-                    <div className="flex items-center gap-3">
-                      <CalendarClock className="h-5 w-5 text-primary" />
-                      <div>
-                        <p className="font-medium">{new Date(shift.date).toLocaleDateString('cs-CZ')}</p>
-                        <p className="text-sm text-muted-foreground">
-                          Směna: {shift.type}
-                        </p>
-                        {shiftPrediction && (
-                          <div className="flex items-center gap-2 mt-1">
-                            <span className={`text-xs px-2 py-1 rounded bg-muted`}>
-                              {shiftPrediction.minutes} min
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <Button variant="outline" size="sm" className={isMobile ? 'mt-2 w-full' : ''}>
-                      <Navigation className="h-4 w-4 mr-2" />
-                      Zobrazit detaily
-                    </Button>
-                  </div>
-                );
-              })
-            ) : (
-              <div className="text-center p-4 text-muted-foreground">
-                <p>Nemáte žádné naplánované směny.</p>
-                <Button className="mt-2" variant="outline" onClick={() => window.location.href = '/shifts'}>
-                  Přejít na plánování směn
-                </Button>
-              </div>
-            )}
+          <div className="flex items-center gap-4 mb-6">
+            <div className="flex-1">
+              <Select value={selectedRoute} onValueChange={setSelectedRoute}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Vyberte trasu" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="cheb-dresden">Cheb → Dresden</SelectItem>
+                  <SelectItem value="karlovy-vary-munich">Karlovy Vary → Mnichov</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <Button variant="outline" size="sm" onClick={loadPredictions}>
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Aktualizovat
+            </Button>
           </div>
+
+          {predictions && (
+            <>
+              {/* Hlavní informace */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <Card className="p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Clock className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Aktuální doba jízdy</span>
+                  </div>
+                  <p className="text-2xl font-bold">{predictions.currentTime} min</p>
+                </Card>
+
+                <Card className="p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Predikovaná doba</span>
+                  </div>
+                  <p className="text-2xl font-bold text-orange-600">{predictions.predictedTime} min</p>
+                  <p className="text-xs text-muted-foreground">
+                    +{predictions.predictedTime - predictions.currentTime} min
+                  </p>
+                </Card>
+
+                <Card className="p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <MapPin className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Hustota provozu</span>
+                  </div>
+                  <Badge className={`${getTrafficColor(predictions.trafficLevel)} text-white`}>
+                    {getTrafficLabel(predictions.trafficLevel)}
+                  </Badge>
+                </Card>
+              </div>
+
+              {/* Doporučení */}
+              <Card className="mb-6">
+                <CardContent className="pt-6">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Clock className="h-5 w-5 text-green-600" />
+                    <span className="font-medium">Doporučený čas odjezdu</span>
+                  </div>
+                  <p className="text-lg font-bold text-green-600">{predictions.bestDepartureTime}</p>
+                  <p className="text-sm text-muted-foreground">
+                    Pro minimální dobu jízdy doporučujeme odjet v {predictions.bestDepartureTime}
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Aktuální incidenty */}
+              {predictions.incidents.length > 0 && (
+                <Card className="mb-6">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-orange-600">
+                      <AlertTriangle className="h-5 w-5" />
+                      Aktuální incidenty na trase
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {predictions.incidents.map((incident, index) => (
+                        <div key={index} className="flex items-center gap-2 p-2 bg-orange-50 rounded-lg">
+                          <AlertTriangle className="h-4 w-4 text-orange-500" />
+                          <span className="text-sm">{incident}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Alternativní trasy */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Alternativní trasy</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {predictions.alternativeRoutes.map((route, index) => (
+                      <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                        <div>
+                          <p className="font-medium">{route.name}</p>
+                          <p className="text-sm text-muted-foreground">
+                            Provoz: {getTrafficLabel(route.traffic)}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-lg font-bold">{route.time} min</p>
+                          <Badge variant="outline" className={getTrafficColor(route.traffic)}>
+                            {getTrafficLabel(route.traffic)}
+                          </Badge>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Poslední aktualizace */}
+              <p className="text-xs text-muted-foreground text-center mt-4">
+                Poslední aktualizace: {lastUpdate.toLocaleTimeString()}
+              </p>
+            </>
+          )}
         </CardContent>
       </Card>
     </div>

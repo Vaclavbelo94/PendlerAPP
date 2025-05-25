@@ -1,202 +1,233 @@
 
-import React, { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Calculator, Car, Train, Bus, Euro } from "lucide-react";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { useTravelPreferences } from "@/hooks/useTravelPreferences";
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Calculator, Car, Train, DollarSign, Fuel, Clock } from 'lucide-react';
 
-const CommuteCostCalculator = () => {
-  const isMobile = useIsMobile();
-  const { preferences, isLoading, updatePreference, savePreferences } = useTravelPreferences();
-  
-  const [distance, setDistance] = useState("");
-  const [results, setResults] = useState<any>(null);
+interface CostCalculation {
+  transport: string;
+  distance: number;
+  dailyCost: number;
+  monthlyCost: number;
+  yearlyCost: number;
+  timeMinutes: number;
+  co2Emissions: number;
+}
 
-  const handleCalculate = () => {
-    const dist = parseFloat(distance);
-    if (!dist || dist <= 0) return;
+const CommuteCostCalculator: React.FC = () => {
+  const [formData, setFormData] = useState({
+    distance: '',
+    workDays: '22',
+    fuelPrice: '35',
+    consumption: '7',
+    publicTransportPrice: '45',
+    parkingCost: '0'
+  });
+  const [results, setResults] = useState<CostCalculation[]>([]);
 
-    const dailyCosts = {
-      car: (dist * 2 * preferences.vehicleConsumption * preferences.fuelPricePerLiter) / 100,
-      publicTransport: 120, // Průměrná cena jízdenky
-      bike: 0
-    };
+  const calculateCosts = () => {
+    const distance = parseFloat(formData.distance);
+    const workDays = parseInt(formData.workDays);
+    const fuelPrice = parseFloat(formData.fuelPrice);
+    const consumption = parseFloat(formData.consumption);
+    const publicPrice = parseFloat(formData.publicTransportPrice);
+    const parking = parseFloat(formData.parkingCost);
 
-    const monthlyCosts = {
-      car: dailyCosts.car * 22, // 22 pracovních dní
-      publicTransport: dailyCosts.publicTransport * 22,
-      bike: 0
-    };
+    if (!distance || distance <= 0) return;
 
-    setResults({ dailyCosts, monthlyCosts, distance: dist });
-  };
+    const calculations: CostCalculation[] = [];
 
-  const handleSavePreferences = async () => {
-    await savePreferences({
-      fuelPricePerLiter: preferences.fuelPricePerLiter,
-      vehicleConsumption: preferences.vehicleConsumption,
-      monthlyTransportBudget: preferences.monthlyTransportBudget
+    // Výpočet pro auto
+    const fuelCostPerKm = (consumption / 100) * fuelPrice;
+    const carDailyCost = (distance * 2 * fuelCostPerKm) + parking; // tam i zpět
+    const carTimeMinutes = Math.round((distance * 2) / 50 * 60); // průměrná rychlost 50 km/h
+
+    calculations.push({
+      transport: 'Auto',
+      distance: distance * 2,
+      dailyCost: carDailyCost,
+      monthlyCost: carDailyCost * workDays,
+      yearlyCost: carDailyCost * workDays * 12,
+      timeMinutes: carTimeMinutes,
+      co2Emissions: (distance * 2) * 0.12 // kg CO2 na km
     });
+
+    // Výpočet pro veřejnou dopravu
+    const publicTimeMinutes = Math.round(carTimeMinutes * 1.5); // veřejná doprava je obvykle pomalejší
+
+    calculations.push({
+      transport: 'Veřejná doprava',
+      distance: distance * 2,
+      dailyCost: publicPrice,
+      monthlyCost: publicPrice * workDays,
+      yearlyCost: publicPrice * workDays * 12,
+      timeMinutes: publicTimeMinutes,
+      co2Emissions: (distance * 2) * 0.05 // kg CO2 na km
+    });
+
+    // Výpočet pro kombinovanou dopravu (auto + vlak)
+    const combinedDailyCost = carDailyCost * 0.3 + publicPrice * 0.8; // mix
+    const combinedTimeMinutes = Math.round((carTimeMinutes + publicTimeMinutes) / 2);
+
+    calculations.push({
+      transport: 'Kombinovaná',
+      distance: distance * 2,
+      dailyCost: combinedDailyCost,
+      monthlyCost: combinedDailyCost * workDays,
+      yearlyCost: combinedDailyCost * workDays * 12,
+      timeMinutes: combinedTimeMinutes,
+      co2Emissions: (distance * 2) * 0.08 // kg CO2 na km
+    });
+
+    setResults(calculations);
   };
 
-  if (isLoading) {
-    return (
-      <Card>
-        <CardContent className="flex items-center justify-center p-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </CardContent>
-      </Card>
-    );
-  }
+  const getTransportIcon = (transport: string) => {
+    switch (transport) {
+      case 'Auto': return <Car className="h-5 w-5" />;
+      case 'Veřejná doprava': return <Train className="h-5 w-5" />;
+      default: return <Calculator className="h-5 w-5" />;
+    }
+  };
 
   return (
-    <div className={`space-y-${isMobile ? '4' : '6'}`}>
+    <div className="space-y-6">
       <Card>
-        <CardHeader className={`${isMobile ? 'pb-3' : ''}`}>
-          <CardTitle className={`flex items-center gap-2 ${isMobile ? 'text-base' : ''}`}>
-            <Calculator className={`${isMobile ? 'h-4 w-4' : 'h-5 w-5'}`} />
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Calculator className="h-5 w-5" />
             Kalkulačka nákladů na dojíždění
           </CardTitle>
-          <CardDescription className={`${isMobile ? 'text-xs' : ''}`}>
-            Vypočítejte si náklady na jednotlivé druhy dopravy
-          </CardDescription>
         </CardHeader>
-        <CardContent className={`space-y-${isMobile ? '4' : '6'}`}>
-          <div className={`grid ${isMobile ? 'grid-cols-1 gap-3' : 'grid-cols-2 gap-4'}`}>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
             <div className="space-y-2">
-              <Label htmlFor="distance" className={`${isMobile ? 'text-sm' : ''}`}>
-                Vzdálenost do práce (km)
-              </Label>
+              <Label htmlFor="distance">Vzdálenost (km)</Label>
               <Input
                 id="distance"
                 type="number"
-                placeholder="např. 25"
-                value={distance}
-                onChange={(e) => setDistance(e.target.value)}
-                className={`${isMobile ? 'h-9' : ''}`}
+                placeholder="50"
+                value={formData.distance}
+                onChange={(e) => setFormData(prev => ({ ...prev, distance: e.target.value }))}
               />
             </div>
-
             <div className="space-y-2">
-              <Label htmlFor="fuelPrice" className={`${isMobile ? 'text-sm' : ''}`}>
-                Cena paliva (Kč/l)
-              </Label>
+              <Label htmlFor="workDays">Pracovních dní/měsíc</Label>
+              <Input
+                id="workDays"
+                type="number"
+                value={formData.workDays}
+                onChange={(e) => setFormData(prev => ({ ...prev, workDays: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="fuelPrice">Cena paliva (Kč/l)</Label>
               <Input
                 id="fuelPrice"
                 type="number"
                 step="0.1"
-                placeholder="např. 35.5"
-                value={preferences.fuelPricePerLiter || ''}
-                onChange={(e) => updatePreference('fuelPricePerLiter', parseFloat(e.target.value) || 0)}
-                className={`${isMobile ? 'h-9' : ''}`}
+                value={formData.fuelPrice}
+                onChange={(e) => setFormData(prev => ({ ...prev, fuelPrice: e.target.value }))}
               />
             </div>
-
             <div className="space-y-2">
-              <Label htmlFor="consumption" className={`${isMobile ? 'text-sm' : ''}`}>
-                Spotřeba auta (l/100km)
-              </Label>
+              <Label htmlFor="consumption">Spotřeba (l/100km)</Label>
               <Input
                 id="consumption"
                 type="number"
                 step="0.1"
-                placeholder="např. 7.5"
-                value={preferences.vehicleConsumption || ''}
-                onChange={(e) => updatePreference('vehicleConsumption', parseFloat(e.target.value) || 0)}
-                className={`${isMobile ? 'h-9' : ''}`}
+                value={formData.consumption}
+                onChange={(e) => setFormData(prev => ({ ...prev, consumption: e.target.value }))}
               />
             </div>
-
             <div className="space-y-2">
-              <Label htmlFor="budget" className={`${isMobile ? 'text-sm' : ''}`}>
-                Měsíční rozpočet (Kč)
-              </Label>
+              <Label htmlFor="publicPrice">Veřejná doprava (Kč/den)</Label>
               <Input
-                id="budget"
+                id="publicPrice"
                 type="number"
-                placeholder="např. 5000"
-                value={preferences.monthlyTransportBudget || ''}
-                onChange={(e) => updatePreference('monthlyTransportBudget', parseFloat(e.target.value) || 0)}
-                className={`${isMobile ? 'h-9' : ''}`}
+                value={formData.publicTransportPrice}
+                onChange={(e) => setFormData(prev => ({ ...prev, publicTransportPrice: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="parking">Parkování (Kč/den)</Label>
+              <Input
+                id="parking"
+                type="number"
+                value={formData.parkingCost}
+                onChange={(e) => setFormData(prev => ({ ...prev, parkingCost: e.target.value }))}
               />
             </div>
           </div>
-
-          <div className={`flex gap-2 ${isMobile ? 'flex-col' : ''}`}>
-            <Button 
-              onClick={handleCalculate} 
-              className={`${isMobile ? 'w-full' : ''}`}
-              size={isMobile ? "sm" : "default"}
-            >
-              Vypočítat náklady
-            </Button>
-            <Button 
-              onClick={handleSavePreferences} 
-              variant="outline"
-              className={`${isMobile ? 'w-full' : ''}`}
-              size={isMobile ? "sm" : "default"}
-            >
-              Uložit preference
-            </Button>
-          </div>
+          
+          <Button onClick={calculateCosts} className="w-full">
+            Vypočítat náklady
+          </Button>
         </CardContent>
       </Card>
 
-      {results && (
-        <div className={`grid ${isMobile ? 'grid-cols-1 gap-3' : 'grid-cols-3 gap-4'}`}>
-          <Card>
-            <CardContent className={`${isMobile ? 'p-4' : 'p-6'}`}>
-              <div className="flex items-center gap-2 mb-3">
-                <Car className={`${isMobile ? 'h-4 w-4' : 'h-5 w-5'} text-blue-600`} />
-                <h3 className={`${isMobile ? 'text-sm' : 'text-base'} font-semibold`}>Auto</h3>
-              </div>
-              <div className="space-y-2">
-                <p className={`${isMobile ? 'text-xs' : 'text-sm'} text-muted-foreground`}>
-                  Denně: {results.dailyCosts.car.toFixed(0)} Kč
-                </p>
-                <p className={`${isMobile ? 'text-lg' : 'text-xl'} font-bold`}>
-                  {results.monthlyCosts.car.toFixed(0)} Kč/měsíc
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+      {results.length > 0 && (
+        <div className="grid gap-4">
+          {results.map((result, index) => (
+            <Card key={index} className={index === 0 ? 'border-primary' : ''}>
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    {getTransportIcon(result.transport)}
+                    <h3 className="font-semibold text-lg">{result.transport}</h3>
+                  </div>
+                  {index === 0 && (
+                    <span className="text-sm bg-primary text-primary-foreground px-2 py-1 rounded">
+                      Nejlevnější
+                    </span>
+                  )}
+                </div>
 
-          <Card>
-            <CardContent className={`${isMobile ? 'p-4' : 'p-6'}`}>
-              <div className="flex items-center gap-2 mb-3">
-                <Train className={`${isMobile ? 'h-4 w-4' : 'h-5 w-5'} text-green-600`} />
-                <h3 className={`${isMobile ? 'text-sm' : 'text-base'} font-semibold`}>MHD</h3>
-              </div>
-              <div className="space-y-2">
-                <p className={`${isMobile ? 'text-xs' : 'text-sm'} text-muted-foreground`}>
-                  Denně: {results.dailyCosts.publicTransport.toFixed(0)} Kč
-                </p>
-                <p className={`${isMobile ? 'text-lg' : 'text-xl'} font-bold`}>
-                  {results.monthlyCosts.publicTransport.toFixed(0)} Kč/měsíc
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div>
+                    <div className="flex items-center gap-1 mb-1">
+                      <DollarSign className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm text-muted-foreground">Denně</span>
+                    </div>
+                    <p className="text-xl font-bold">{result.dailyCost.toFixed(0)} Kč</p>
+                  </div>
+                  
+                  <div>
+                    <div className="flex items-center gap-1 mb-1">
+                      <DollarSign className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm text-muted-foreground">Měsíčně</span>
+                    </div>
+                    <p className="text-xl font-bold">{result.monthlyCost.toFixed(0)} Kč</p>
+                  </div>
+                  
+                  <div>
+                    <div className="flex items-center gap-1 mb-1">
+                      <Clock className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm text-muted-foreground">Čas</span>
+                    </div>
+                    <p className="text-xl font-bold">{result.timeMinutes} min</p>
+                  </div>
+                  
+                  <div>
+                    <div className="flex items-center gap-1 mb-1">
+                      <Fuel className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm text-muted-foreground">CO₂</span>
+                    </div>
+                    <p className="text-xl font-bold">{result.co2Emissions.toFixed(1)} kg</p>
+                  </div>
+                </div>
 
-          <Card>
-            <CardContent className={`${isMobile ? 'p-4' : 'p-6'}`}>
-              <div className="flex items-center gap-2 mb-3">
-                <Bus className={`${isMobile ? 'h-4 w-4' : 'h-5 w-5'} text-orange-600`} />
-                <h3 className={`${isMobile ? 'text-sm' : 'text-base'} font-semibold`}>Kolo</h3>
-              </div>
-              <div className="space-y-2">
-                <p className={`${isMobile ? 'text-xs' : 'text-sm'} text-muted-foreground`}>
-                  Denně: 0 Kč
-                </p>
-                <p className={`${isMobile ? 'text-lg' : 'text-xl'} font-bold`}>
-                  0 Kč/měsíc
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+                <div className="mt-4 p-3 bg-muted rounded-lg">
+                  <p className="text-sm">
+                    <strong>Roční náklady:</strong> {result.yearlyCost.toLocaleString()} Kč
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       )}
     </div>

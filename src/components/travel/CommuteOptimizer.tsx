@@ -4,6 +4,8 @@ import { toast } from "@/components/ui/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import OptimizerForm from './optimizer/OptimizerForm';
 import ResultsDisplay from './optimizer/ResultsDisplay';
+import { useAuth } from '@/hooks/useAuth';
+import { routeService } from '@/services/routeService';
 
 const CommuteOptimizer = () => {
   const [origin, setOrigin] = useState('');
@@ -13,6 +15,7 @@ const CommuteOptimizer = () => {
   const [optimizationPreference, setOptimizationPreference] = useState('time');
   const [optimized, setOptimized] = useState(false);
   const isMobile = useIsMobile();
+  const { user } = useAuth();
   
   const handleTransportToggle = (mode: string) => {
     setTransportModes(prev => 
@@ -22,12 +25,24 @@ const CommuteOptimizer = () => {
     );
   };
   
-  const handleOptimize = () => {
+  const handleOptimize = async () => {
     if (!origin || !destination) {
       return;
     }
     
-    // In a real implementation, this would call an API to get optimized routes
+    // Přidat do historie vyhledávání
+    if (user?.id) {
+      try {
+        await routeService.addSearchHistory({
+          user_id: user.id,
+          origin_address: origin,
+          destination_address: destination
+        });
+      } catch (error) {
+        console.error('Error adding search history:', error);
+      }
+    }
+    
     toast({
       title: "Trasa optimalizována",
       description: `Byla nalezena nejlepší trasa pro ${origin} → ${destination}.`,
@@ -52,7 +67,13 @@ const CommuteOptimizer = () => {
         onOptimize={handleOptimize}
       />
       
-      <ResultsDisplay hasInput={Boolean(origin && destination && optimized)} />
+      <ResultsDisplay 
+        hasInput={Boolean(origin && destination && optimized)}
+        origin={origin}
+        destination={destination}
+        transportModes={transportModes}
+        optimizationPreference={optimizationPreference}
+      />
     </div>
   );
 };

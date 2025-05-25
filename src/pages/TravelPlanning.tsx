@@ -14,7 +14,8 @@ import {
   CommuteOptimizerLazy,
   RideSharingLazy, 
   CommuteCostCalculatorLazy,
-  TrafficPredictionsLazy 
+  TrafficPredictionsLazy,
+  TravelAnalyticsLazy
 } from "@/components/travel/LazyTravelComponents";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -47,6 +48,7 @@ const TravelPlanning = () => {
       case "ridesharing": return "Sdílení jízd";
       case "calculator": return "Kalkulačka nákladů";
       case "predictions": return "Predikce dopravy";
+      case "analytics": return "Analytics";
       default: return "";
     }
   };
@@ -65,6 +67,8 @@ const TravelPlanning = () => {
         return <CommuteCostCalculatorLazy />;
       case "predictions":
         return <TrafficPredictionsLazy />;
+      case "analytics":
+        return <TravelAnalyticsLazy />;
       default:
         return <CommuteOptimizerLazy />;
     }
