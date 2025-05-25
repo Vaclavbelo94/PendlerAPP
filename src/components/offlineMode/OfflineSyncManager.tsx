@@ -1,10 +1,10 @@
-
 import * as React from 'react';
 import { useOfflineStatus } from '@/hooks/useOfflineStatus';
 import { syncWithLocalStorage, loadFromLocalStorage } from '@/utils/offlineStorage';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { useSyncSettings } from '@/hooks/useSyncSettings';
+import { AutoSyncManager } from './AutoSyncManager';
 
 // Kontrola, zda je aplikace v nativním prostředí
 const isNativeApp = () => {
@@ -285,7 +285,15 @@ export const OfflineSyncManager = () => {
     }
   };
 
-  return null; // This component doesn't render anything
+  return (
+    <>
+      {/* Add the auto sync manager */}
+      <AutoSyncManager 
+        syncInterval={settings.sync_interval || 30000}
+        enableToasts={settings.showSyncNotifications}
+      />
+    </>
+  );
 };
 
 export default React.memo(OfflineSyncManager);

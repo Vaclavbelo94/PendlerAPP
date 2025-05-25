@@ -12,8 +12,10 @@ import {
   Database,
   Car,
   Calendar,
-  Calculator
+  Calculator,
+  Clock
 } from 'lucide-react';
+import { SyncStatusIndicator } from './SyncStatusIndicator';
 
 const OfflineStatusPanel: React.FC = () => {
   const {
@@ -23,7 +25,8 @@ const OfflineStatusPanel: React.FC = () => {
     syncAllPendingData,
     shifts,
     vehicles,
-    calculations
+    calculations,
+    syncQueue
   } = useOfflineMaster();
 
   return (
@@ -45,6 +48,12 @@ const OfflineStatusPanel: React.FC = () => {
       </CardHeader>
       
       <CardContent className="space-y-4">
+        {/* Sync status indicator */}
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-medium">Stav synchronizace:</span>
+          <SyncStatusIndicator showDetails={false} />
+        </div>
+
         {/* Connection status */}
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium">Stav připojení:</span>
@@ -92,6 +101,16 @@ const OfflineStatusPanel: React.FC = () => {
                   <span>{calculations.offlineCalculations.filter(c => !c.synced).length}</span>
                 </div>
               )}
+
+              {syncQueue.queueCount > 0 && (
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1">
+                    <Clock className="h-3 w-3" />
+                    <span>Ve frontě</span>
+                  </div>
+                  <span>{syncQueue.queueCount}</span>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -131,7 +150,7 @@ const OfflineStatusPanel: React.FC = () => {
             ) : (
               <>
                 <RefreshCw className="h-4 w-4 mr-2" />
-                Synchronizovat vše
+                Synchronizovat vše ({totalPendingItems})
               </>
             )}
           </Button>
