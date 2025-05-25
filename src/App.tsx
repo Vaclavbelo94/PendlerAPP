@@ -18,6 +18,8 @@ import Admin from './pages/Admin';
 import Pricing from './pages/Pricing';
 import Profile from './pages/Profile';
 import TravelPlanning from './pages/TravelPlanning';
+import Login from './pages/Login';
+import Register from './pages/Register';
 import { ShiftNotifications } from "@/components/notifications/ShiftNotifications";
 import Translator from './pages/Translator';
 
@@ -34,6 +36,8 @@ function App() {
               <ShiftNotifications />
               <Routes>
                 <Route path="/" element={<Dashboard />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
                 <Route path="/calculator" element={<Calculator />} />
                 <Route path="/tax-advisor" element={<TaxAdvisor />} />
                 <Route path="/settings" element={<Settings />} />
