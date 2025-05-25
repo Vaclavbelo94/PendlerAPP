@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export interface RideshareOffer {
   id?: string;
-  user_id?: string;
+  user_id: string;
   origin_address: string;
   destination_address: string;
   departure_date: string;
@@ -20,7 +20,7 @@ export interface RideshareOffer {
 
 export interface RideshareRequest {
   id?: string;
-  user_id?: string;
+  user_id: string;
   origin_address: string;
   destination_address: string;
   departure_date: string;
@@ -36,7 +36,7 @@ export interface RideshareRequest {
 export interface RideshareContact {
   id?: string;
   offer_id: string;
-  requester_user_id?: string;
+  requester_user_id: string;
   message?: string;
   status?: 'pending' | 'accepted' | 'rejected' | 'cancelled';
   created_at?: string;
@@ -48,7 +48,7 @@ export const rideshareService = {
   async createOffer(offer: RideshareOffer): Promise<RideshareOffer> {
     const { data, error } = await supabase
       .from('rideshare_offers')
-      .insert([offer])
+      .insert(offer)
       .select()
       .single();
     
@@ -122,7 +122,7 @@ export const rideshareService = {
   async createRequest(request: RideshareRequest): Promise<RideshareRequest> {
     const { data, error } = await supabase
       .from('rideshare_requests')
-      .insert([request])
+      .insert(request)
       .select()
       .single();
     
@@ -164,7 +164,7 @@ export const rideshareService = {
   async createContact(contact: RideshareContact): Promise<RideshareContact> {
     const { data, error } = await supabase
       .from('rideshare_contacts')
-      .insert([contact])
+      .insert(contact)
       .select()
       .single();
     

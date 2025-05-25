@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export interface SavedRoute {
   id?: string;
-  user_id?: string;
+  user_id: string;
   name: string;
   origin_address: string;
   destination_address: string;
@@ -16,7 +16,7 @@ export interface SavedRoute {
 
 export interface RouteSearchHistory {
   id?: string;
-  user_id?: string;
+  user_id: string;
   origin_address: string;
   destination_address: string;
   search_date?: string;
@@ -27,7 +27,7 @@ export const routeService = {
   async saveRoute(route: SavedRoute): Promise<SavedRoute> {
     const { data, error } = await supabase
       .from('saved_routes')
-      .insert([route])
+      .insert(route)
       .select()
       .single();
     
@@ -59,7 +59,7 @@ export const routeService = {
   async addSearchHistory(search: RouteSearchHistory): Promise<RouteSearchHistory> {
     const { data, error } = await supabase
       .from('route_search_history')
-      .insert([search])
+      .insert(search)
       .select()
       .single();
     
