@@ -17,7 +17,7 @@ export const TouchCalendar: React.FC<CombinedTouchCalendarProps> = ({
   onSwipeLeft,
   onSwipeRight,
   enableTouch = true,
-  ...props
+  ...calendarProps
 }) => {
   const touchStartX = useRef<number>(0);
   const touchStartY = useRef<number>(0);
@@ -61,7 +61,7 @@ export const TouchCalendar: React.FC<CombinedTouchCalendarProps> = ({
     >
       <Calendar
         className={cn("p-3 pointer-events-auto touch-manipulation", className)}
-        {...props}
+        {...calendarProps}
       />
     </div>
   );
