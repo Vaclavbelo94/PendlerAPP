@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Vibration, Calendar, Bell, Share2 } from 'lucide-react';
+import { Calendar, Bell, Share2 } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 interface MobileShiftActionsProps {

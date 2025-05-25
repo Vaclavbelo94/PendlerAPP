@@ -1,6 +1,4 @@
 
-import { useNotificationPermission } from '@/hooks/useNotificationPermission';
-
 export interface ShiftNotification {
   id: string;
   shiftId: string;
@@ -12,7 +10,7 @@ export interface ShiftNotification {
 
 export class ShiftNotificationService {
   private static instance: ShiftNotificationService;
-  private scheduledNotifications: Map<string, number> = new Map();
+  private scheduledNotifications: Map<string, NodeJS.Timeout> = new Map();
 
   static getInstance(): ShiftNotificationService {
     if (!ShiftNotificationService.instance) {
@@ -79,11 +77,7 @@ export class ShiftNotificationService {
         body,
         tag,
         icon: '/lovable-uploads/88ef4e0f-4d33-458c-98f4-7b644e5b8588.png',
-        requireInteraction: true,
-        actions: [
-          { action: 'view', title: 'Zobrazit' },
-          { action: 'dismiss', title: 'Zavřít' }
-        ]
+        requireInteraction: true
       });
     }
   }
