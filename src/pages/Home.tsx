@@ -6,7 +6,6 @@ import Features from '@/components/home/Features';
 import { EnhancedStats } from '@/components/home/EnhancedStats';
 import { HowItWorks } from '@/components/home/HowItWorks';
 import Benefits from '@/components/home/Benefits';
-import AppShowcase from '@/components/home/AppShowcase';
 import CTA from '@/components/home/CTA';
 
 const Home = () => {
@@ -21,7 +20,6 @@ const Home = () => {
       <Features />
       <HowItWorks />
       <Benefits />
-      <AppShowcase />
       <CTA />
     </div>
   );
