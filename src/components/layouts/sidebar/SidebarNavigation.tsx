@@ -23,11 +23,20 @@ interface SidebarNavigationProps {
   closeSidebar: () => void;
 }
 
+interface NavigationItem {
+  name: string;
+  href: string;
+  icon: React.ComponentType<any>;
+  requiresAuth: boolean;
+  isPremium?: boolean;
+  className?: string;
+}
+
 const SidebarNavigation = ({ closeSidebar }: SidebarNavigationProps) => {
   const location = useLocation();
   const { user, isPremium, isAdmin } = useAuth();
 
-  const mainItems = [
+  const mainItems: NavigationItem[] = [
     {
       name: "Domů",
       href: user ? "/dashboard" : "/",
@@ -89,7 +98,7 @@ const SidebarNavigation = ({ closeSidebar }: SidebarNavigationProps) => {
     }
   ];
 
-  const bottomItems = [
+  const bottomItems: NavigationItem[] = [
     {
       name: "Premium",
       href: "/premium",
@@ -122,7 +131,7 @@ const SidebarNavigation = ({ closeSidebar }: SidebarNavigationProps) => {
     return location.pathname === href || location.pathname.startsWith(href + '/');
   };
 
-  const shouldShowItem = (item: any) => {
+  const shouldShowItem = (item: NavigationItem) => {
     if (item.requiresAuth && !user) return false;
     return true;
   };
