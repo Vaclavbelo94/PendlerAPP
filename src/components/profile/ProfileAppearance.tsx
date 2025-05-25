@@ -59,7 +59,7 @@ const ProfileAppearance = ({
 
         if (data) {
           setDarkMode(data.dark_mode);
-          setColorScheme(data.color_scheme);
+          setColorScheme(data.color_scheme as any);
           setCompactMode(data.compact_mode);
         }
       } catch (error) {
@@ -71,7 +71,7 @@ const ProfileAppearance = ({
     };
 
     loadAppearanceSettings();
-  }, [user]);
+  }, [user, setColorScheme]);
   
   // Synchronizovat stav dark mode s globálním tématem
   useEffect(() => {
@@ -146,7 +146,7 @@ const ProfileAppearance = ({
 
   // Handle color scheme change with proper typing
   const handleColorSchemeChange = (value: string) => {
-    setColorScheme(value as ColorScheme);
+    setColorScheme(value as any);
   };
 
   if (isLoading) {
