@@ -1,137 +1,131 @@
 
-/**
- * Utility functions for calendar integration
- */
+import { Shift } from '@/components/shifts/types';
 
-/**
- * Generate an ICS file content for calendar events
- * @param events Array of calendar event objects
- * @returns String content of ICS file
- */
-export const generateICSContent = (events: CalendarEvent[]): string => {
-  let icsContent = [
-    'BEGIN:VCALENDAR',
-    'VERSION:2.0',
-    'PRODID:-//Pendlerhelfer//Calendar Integration//CS',
-    'CALSCALE:GREGORIAN',
-    'METHOD:PUBLISH'
-  ];
-
-  events.forEach(event => {
-    const startDate = formatDateForICS(event.startDate);
-    
-    icsContent = [
-      ...icsContent,
-      'BEGIN:VEVENT',
-      `UID:${Math.random().toString(36).substring(2)}@pendlerhelfer.app`,
-      `DTSTAMP:${formatDateForICS(new Date())}`,
-      `DTSTART:${startDate}`,
-      `SUMMARY:${event.title}`,
-      `DESCRIPTION:${event.description || ''}`,
-    ];
-    
-    // Add optional location if provided
-    if (event.location) {
-      icsContent.push(`LOCATION:${event.location}`);
-    }
-    
-    icsContent.push('END:VEVENT');
-  });
-  
-  icsContent.push('END:VCALENDAR');
-  return icsContent.join('\r\n');
-};
-
-/**
- * Generate a Google Calendar URL for adding an event
- * @param event Calendar event object
- * @returns URL string for Google Calendar
- */
-export const generateGoogleCalendarUrl = (event: CalendarEvent): string => {
-  const startDate = event.startDate.toISOString().replace(/-|:|\.\d+/g, '');
-  
-  // Build the URL with required parameters
-  const baseUrl = 'https://www.google.com/calendar/render?action=TEMPLATE';
-  const params = new URLSearchParams({
-    text: event.title,
-    details: event.description || '',
-    dates: `${startDate}/${startDate}`,
-  });
-  
-  // Add location if provided
-  if (event.location) {
-    params.append('location', event.location);
-  }
-  
-  return `${baseUrl}&${params.toString()}`;
-};
-
-/**
- * Format a date object for ICS file format
- * @param date Date object
- * @returns Formatted date string
- */
-const formatDateForICS = (date: Date): string => {
-  return date.toISOString().replace(/[-:]/g, '').replace(/\.\d+/g, '');
-};
-
-/**
- * Create a downloadable file from content
- * @param content File content
- * @param filename Filename with extension
- * @param mimeType MIME type of the file
- */
-export const downloadFile = (content: string, filename: string, mimeType: string): void => {
-  const blob = new Blob([content], { type: mimeType });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  
-  // Clean up
-  setTimeout(() => {
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  }, 100);
-};
-
-/**
- * Type definition for a calendar event
- */
 export interface CalendarEvent {
   title: string;
-  description?: string;
+  description: string;
   startDate: Date;
+  endDate: Date;
   location?: string;
 }
 
-/**
- * Generate amortization schedule calendar events from amortization rows
- * @param rows Array of amortization rows
- * @param loanAmount Initial loan amount
- * @param paymentAmount Monthly payment amount
- * @returns Array of calendar events
- */
-export const generateAmortizationEvents = (
-  rows: { period: number; payment: number; date?: Date }[],
-  loanAmount: number,
-  paymentAmount: number
-): CalendarEvent[] => {
-  // Use current date as starting point if dates not provided
-  const startDate = new Date();
-  
-  return rows.map((row, index) => {
-    // If row has a date, use it; otherwise calculate based on period
-    const eventDate = row.date || new Date(startDate.getFullYear(), startDate.getMonth() + row.period, startDate.getDate());
+export const generateShiftEvents = (shifts: Shift[]): CalendarEvent[] => {
+  return shifts.map(shift => {
+    const shiftDate = new Date(shift.date);
+    const startTime = getShiftStartTime(shift.type);
+    const endTime = getShiftEndTime(shift.type);
+    
+    const startDate = new Date(shiftDate);
+    startDate.setHours(startTime.hours, startTime.minutes, 0, 0);
+    
+    const endDate = new Date(shiftDate);
+    endDate.setHours(endTime.hours, endTime.minutes, 0, 0);
     
     return {
-      title: `Splátka půjčky #${row.period}`,
-      description: `Pravidelná splátka půjčky ve výši ${paymentAmount.toFixed(2)} Kč. Původní výše půjčky: ${loanAmount.toFixed(2)} Kč.`,
-      startDate: eventDate,
+      title: `${getShiftTypeName(shift.type)} směna`,
+      description: shift.notes || `${getShiftTypeName(shift.type)} směna`,
+      startDate,
+      endDate,
+      location: 'Pracoviště'
     };
   });
 };
 
+const getShiftStartTime = (type: string) => {
+  switch (type) {
+    case 'morning': return { hours: 6, minutes: 0 };
+    case 'afternoon': return { hours: 14, minutes: 0 };
+    case 'night': return { hours: 22, minutes: 0 };
+    default: return { hours: 8, minutes: 0 };
+  }
+};
+
+const getShiftEndTime = (type: string) => {
+  switch (type) {
+    case 'morning': return { hours: 14, minutes: 0 };
+    case 'afternoon': return { hours: 22, minutes: 0 };
+    case 'night': return { hours: 6, minutes: 0 };
+    default: return { hours: 16, minutes: 0 };
+  }
+};
+
+const getShiftTypeName = (type: string) => {
+  switch (type) {
+    case 'morning': return 'Ranní';
+    case 'afternoon': return 'Odpolední';
+    case 'night': return 'Noční';
+    default: return 'Standardní';
+  }
+};
+
+export const generateICSContent = (events: CalendarEvent[]): string => {
+  const formatDate = (date: Date): string => {
+    return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+  };
+
+  let icsContent = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//PendlerApp//Shifts Calendar//EN',
+    'CALSCALE:GREGORIAN'
+  ].join('\r\n');
+
+  events.forEach((event, index) => {
+    icsContent += '\r\n' + [
+      'BEGIN:VEVENT',
+      `UID:shift-${index}-${Date.now()}@pendlerapp.com`,
+      `DTSTART:${formatDate(event.startDate)}`,
+      `DTEND:${formatDate(event.endDate)}`,
+      `SUMMARY:${event.title}`,
+      `DESCRIPTION:${event.description}`,
+      event.location ? `LOCATION:${event.location}` : '',
+      `CREATED:${formatDate(new Date())}`,
+      'END:VEVENT'
+    ].filter(Boolean).join('\r\n');
+  });
+
+  icsContent += '\r\nEND:VCALENDAR';
+  return icsContent;
+};
+
+export const generateGoogleCalendarUrl = (event: CalendarEvent): string => {
+  const formatDate = (date: Date): string => {
+    return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+  };
+
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: event.title,
+    dates: `${formatDate(event.startDate)}/${formatDate(event.endDate)}`,
+    details: event.description,
+    location: event.location || ''
+  });
+
+  return `https://calendar.google.com/calendar/render?${params.toString()}`;
+};
+
+export const generateOutlookCalendarUrl = (event: CalendarEvent): string => {
+  const params = new URLSearchParams({
+    subject: event.title,
+    startdt: event.startDate.toISOString(),
+    enddt: event.endDate.toISOString(),
+    body: event.description,
+    location: event.location || ''
+  });
+
+  return `https://outlook.live.com/calendar/0/deeplink/compose?${params.toString()}`;
+};
+
+export const downloadFile = (content: string, filename: string, mimeType: string) => {
+  const blob = new Blob([content], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  
+  URL.revokeObjectURL(url);
+};

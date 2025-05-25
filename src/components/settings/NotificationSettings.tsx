@@ -9,6 +9,8 @@ import { Separator } from "@/components/ui/separator";
 import { Bell, Mail, Smartphone, Clock } from 'lucide-react';
 import { toast } from "sonner";
 import { SyncSettings } from '@/hooks/useSyncSettings';
+import { EmailNotificationSettings } from '@/components/notifications/EmailNotificationSettings';
+import { PushNotificationSettings } from '@/components/notifications/PushNotificationSettings';
 
 interface NotificationSettingsProps {
   syncSettings: SyncSettings;
@@ -28,55 +30,21 @@ const NotificationSettings = ({ syncSettings, updateSyncSettings }: Notification
 
   return (
     <div className="space-y-6">
+      <EmailNotificationSettings />
+      
+      <PushNotificationSettings />
+
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Bell className="h-5 w-5" />
-            Oznámení
+            Obecná oznámení
           </CardTitle>
           <CardDescription>
-            Spravujte, jaké typy upozornění chcete dostávat
+            Základní nastavení notifikací v aplikaci
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="emailNotifications" className="flex items-center gap-2">
-                <Mail className="h-4 w-4" />
-                E-mailová oznámení
-              </Label>
-              <p className="text-sm text-muted-foreground">
-                Dostávat důležitá oznámení e-mailem
-              </p>
-            </div>
-            <Switch
-              id="emailNotifications"
-              checked={emailNotifications}
-              onCheckedChange={setEmailNotifications}
-            />
-          </div>
-
-          <Separator />
-
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="pushNotifications" className="flex items-center gap-2">
-                <Smartphone className="h-4 w-4" />
-                Push oznámení
-              </Label>
-              <p className="text-sm text-muted-foreground">
-                Dostávat oznámení přímo v prohlížeči
-              </p>
-            </div>
-            <Switch
-              id="pushNotifications"
-              checked={pushNotifications}
-              onCheckedChange={setPushNotifications}
-            />
-          </div>
-
-          <Separator />
-
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="syncNotifications">Oznámení o synchronizaci</Label>
@@ -104,20 +72,6 @@ const NotificationSettings = ({ syncSettings, updateSyncSettings }: Notification
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="shiftReminders">Připomenutí směn</Label>
-              <p className="text-sm text-muted-foreground">
-                Dostávat upozornění před začátkem směny
-              </p>
-            </div>
-            <Switch
-              id="shiftReminders"
-              checked={shiftReminders}
-              onCheckedChange={setShiftReminders}
-            />
-          </div>
-
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="vocabularyReminders">Připomenutí slovíček</Label>
