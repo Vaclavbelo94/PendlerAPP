@@ -1,7 +1,8 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Exercise } from "@/data/germanExercises";
-import ExerciseItem from './ExerciseItem';
+import ExerciseGrid from './ExerciseGrid';
+import ExerciseDialog from './ExerciseDialog';
 
 interface ExercisesTabContentProps {
   exercises: Exercise[];
@@ -15,31 +16,43 @@ interface ExercisesTabContentProps {
 const ExercisesTabContent: React.FC<ExercisesTabContentProps> = ({
   exercises,
   completedExercises,
-  activeExercise,
-  setActiveExercise,
   onComplete,
   isPremium
 }) => {
+  const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handleExerciseStart = (exercise: Exercise) => {
+    setSelectedExercise(exercise);
+    setIsDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setIsDialogOpen(false);
+    setSelectedExercise(null);
+  };
+
+  const handleExerciseComplete = (exerciseId: number) => {
+    onComplete(exerciseId);
+    handleDialogClose();
+  };
+
   return (
-    <div className="space-y-4">
-      {exercises.length === 0 ? (
-        <div className="p-4">
-          <p>Žádná cvičení pro tuto úroveň nejsou k dispozici</p>
-        </div>
-      ) : (
-        exercises.map((exercise) => (
-          <ExerciseItem
-            key={exercise.id}
-            exercise={exercise}
-            isCompleted={completedExercises.includes(exercise.id)}
-            isActive={activeExercise === exercise.id}
-            onExerciseClick={setActiveExercise}
-            onComplete={onComplete}
-            isPremium={isPremium}
-          />
-        ))
-      )}
-    </div>
+    <>
+      <ExerciseGrid
+        exercises={exercises}
+        completedExercises={completedExercises}
+        onExerciseStart={handleExerciseStart}
+        isPremium={isPremium}
+      />
+
+      <ExerciseDialog
+        exercise={selectedExercise}
+        isOpen={isDialogOpen}
+        onClose={handleDialogClose}
+        onComplete={handleExerciseComplete}
+      />
+    </>
   );
 };
 
