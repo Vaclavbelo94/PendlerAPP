@@ -1,373 +1,352 @@
-
-import React from 'react';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import React, { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { VehicleData } from '@/types/vehicle';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { ScrollArea } from '@/components/ui/scroll-area';
-
-const fuelTypes = [
-  { value: 'benzín', label: 'Benzín' },
-  { value: 'diesel', label: 'Diesel' },
-  { value: 'lpg', label: 'LPG' },
-  { value: 'cng', label: 'CNG' },
-  { value: 'elektro', label: 'Elektro' },
-  { value: 'hybrid', label: 'Hybrid' },
-];
-
-const vehicleSchema = z.object({
-  brand: z.string().min(1, 'Zadejte značku vozidla'),
-  model: z.string().min(1, 'Zadejte model vozidla'),
-  year: z.string().regex(/^\d{4}$/, 'Zadejte platný rok (např. 2023)'),
-  license_plate: z.string().min(1, 'Zadejte SPZ'),
-  vin: z.string().min(1, 'Zadejte VIN'),
-  fuel_type: z.string().min(1, 'Vyberte typ paliva'),
-  color: z.string().min(1, 'Zadejte barvu vozidla'),
-  mileage: z.string().min(1, 'Zadejte aktuální stav kilometrů'),
-  engine: z.string().optional(),
-  power: z.string().optional(),
-  transmission: z.string().optional(),
-  next_inspection: z.string().optional(),
-  last_service: z.string().optional(),
-  average_consumption: z.string().optional(),
-  purchase_price: z.string().optional(),
-  insurance_monthly: z.string().optional(),
-  tax_yearly: z.string().optional(),
-  last_repair_cost: z.string().optional(),
-});
 
 interface VehicleFormProps {
-  initialData?: VehicleData;
-  onSave: (data: VehicleData) => void;
+  initialValues?: any;
+  onSubmit: (data: any) => void;
+  onCancel: () => void;
+  isLoading?: boolean;
 }
 
-const VehicleForm: React.FC<VehicleFormProps> = ({ initialData, onSave }) => {
-  const isMobile = useIsMobile();
-  const form = useForm<VehicleData>({
-    resolver: zodResolver(vehicleSchema),
-    defaultValues: initialData || {
-      brand: '',
-      model: '',
-      year: '',
-      license_plate: '',
-      vin: '',
-      fuel_type: '',
-      color: '',
-      mileage: '',
-      engine: '',
-      power: '',
-      transmission: '',
-      next_inspection: '',
-      last_service: '',
-      average_consumption: '',
-      purchase_price: '',
-      insurance_monthly: '',
-      tax_yearly: '',
-      last_repair_cost: '',
-    },
+const VehicleForm = ({
+  initialValues,
+  onSubmit,
+  onCancel,
+  isLoading = false
+}: VehicleFormProps) => {
+  const [formData, setFormData] = useState({
+    brand: '',
+    model: '',
+    year: '',
+    license_plate: '',
+    vin: '',
+    color: '',
+    fuel_type: '',
+    engine: '',
+    power: '',
+    transmission: '',
+    mileage: '',
+    average_consumption: '',
+    purchase_price: '',
+    insurance_monthly: '',
+    tax_yearly: '',
+    last_service: '',
+    next_inspection: '',
+    last_repair_cost: ''
   });
 
-  const handleSubmit = (data: VehicleData) => {
-    onSave({
-      ...data,
-      id: initialData?.id,
-    });
+  useEffect(() => {
+    if (initialValues) {
+      setFormData(initialValues);
+    }
+  }, [initialValues]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
-  const formContent = (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="brand"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Značka *</FormLabel>
-                <FormControl>
-                  <Input placeholder="Škoda" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+  const handleSelect = (name: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
-          <FormField
-            control={form.control}
-            name="model"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Model *</FormLabel>
-                <FormControl>
-                  <Input placeholder="Octavia" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(formData);
+  };
 
-          <FormField
-            control={form.control}
-            name="year"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Rok výroby *</FormLabel>
-                <FormControl>
-                  <Input placeholder="2019" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="license_plate"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>SPZ *</FormLabel>
-                <FormControl>
-                  <Input placeholder="5A2 3456" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="vin"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>VIN *</FormLabel>
-                <FormControl>
-                  <Input placeholder="TMB3G7NE0K0123456" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="fuel_type"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Typ paliva *</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Vyberte typ paliva" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {fuelTypes.map((type) => (
-                      <SelectItem key={type.value} value={type.value}>
-                        {type.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="color"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Barva *</FormLabel>
-                <FormControl>
-                  <Input placeholder="Modrá" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="mileage"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Stav kilometrů *</FormLabel>
-                <FormControl>
-                  <Input placeholder="78500" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Základní informace */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-medium">Základní informace</h3>
+          
+          <div className="space-y-2">
+            <Label htmlFor="brand">Značka *</Label>
+            <Input
+              id="brand"
+              name="brand"
+              value={formData.brand}
+              onChange={handleChange}
+              placeholder="např. Škoda, Volkswagen, ..."
+              required
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="model">Model *</Label>
+            <Input
+              id="model"
+              name="model"
+              value={formData.model}
+              onChange={handleChange}
+              placeholder="např. Octavia, Golf, ..."
+              required
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="year">Rok výroby *</Label>
+            <Input
+              id="year"
+              name="year"
+              value={formData.year}
+              onChange={handleChange}
+              placeholder="např. 2018"
+              required
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="license_plate">SPZ *</Label>
+            <Input
+              id="license_plate"
+              name="license_plate"
+              value={formData.license_plate}
+              onChange={handleChange}
+              placeholder="např. 1A2 3456"
+              required
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="vin">VIN *</Label>
+            <Input
+              id="vin"
+              name="vin"
+              value={formData.vin}
+              onChange={handleChange}
+              placeholder="identifikační číslo vozidla"
+              required
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="color">Barva *</Label>
+            <Input
+              id="color"
+              name="color"
+              value={formData.color}
+              onChange={handleChange}
+              placeholder="např. černá, stříbrná, ..."
+              required
+            />
+          </div>
         </div>
-
-        <div className="border-t pt-4 mt-6">
-          <h3 className="text-lg font-medium mb-4">Technické údaje</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
+        
+        {/* Technické informace */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-medium">Technické informace</h3>
+          
+          <div className="space-y-2">
+            <Label htmlFor="fuel_type">Typ paliva *</Label>
+            <Select 
+              name="fuel_type" 
+              value={formData.fuel_type} 
+              onValueChange={(value) => handleSelect('fuel_type', value)}
+              required
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Vyberte typ paliva" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="benzin">Benzín</SelectItem>
+                <SelectItem value="diesel">Diesel</SelectItem>
+                <SelectItem value="lpg">LPG</SelectItem>
+                <SelectItem value="cng">CNG</SelectItem>
+                <SelectItem value="elektro">Elektro</SelectItem>
+                <SelectItem value="hybrid">Hybrid</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="engine">Motor *</Label>
+            <Input
+              id="engine"
               name="engine"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Motor</FormLabel>
-                  <FormControl>
-                    <Input placeholder="2.0 TDI" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              value={formData.engine}
+              onChange={handleChange}
+              placeholder="např. 1.5 TSI, 2.0 TDI, ..."
+              required
             />
-
-            <FormField
-              control={form.control}
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="power">Výkon (kW) *</Label>
+            <Input
+              id="power"
               name="power"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Výkon</FormLabel>
-                  <FormControl>
-                    <Input placeholder="110 kW" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              value={formData.power}
+              onChange={handleChange}
+              placeholder="např. 110"
+              required
             />
-
-            <FormField
-              control={form.control}
-              name="transmission"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Převodovka</FormLabel>
-                  <FormControl>
-                    <Input placeholder="DSG" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="transmission">Převodovka *</Label>
+            <Select 
+              name="transmission" 
+              value={formData.transmission} 
+              onValueChange={(value) => handleSelect('transmission', value)}
+              required
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Vyberte typ převodovky" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="manual">Manuální</SelectItem>
+                <SelectItem value="automatic">Automatická</SelectItem>
+                <SelectItem value="dsg">DSG</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="mileage">Stav tachometru (km) *</Label>
+            <Input
+              id="mileage"
+              name="mileage"
+              value={formData.mileage}
+              onChange={handleChange}
+              placeholder="např. 95000"
+              required
             />
-
-            <FormField
-              control={form.control}
-              name="next_inspection"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Příští STK</FormLabel>
-                  <FormControl>
-                    <Input placeholder="06/2025" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="last_service"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Poslední servis</FormLabel>
-                  <FormControl>
-                    <Input placeholder="02/2023" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="average_consumption">Průměrná spotřeba (l/100km) *</Label>
+            <Input
+              id="average_consumption"
               name="average_consumption"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Průměrná spotřeba</FormLabel>
-                  <FormControl>
-                    <Input placeholder="5.8 l/100km" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              value={formData.average_consumption}
+              onChange={handleChange}
+              placeholder="např. 6.5"
+              required
             />
           </div>
         </div>
-
-        <div className="border-t pt-4 mt-6">
-          <h3 className="text-lg font-medium mb-4">Finanční údaje</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
+      </div>
+      
+      {/* Finanční informace */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-medium">Finanční informace</h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="purchase_price">Kupní cena (Kč) *</Label>
+            <Input
+              id="purchase_price"
               name="purchase_price"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Pořizovací cena</FormLabel>
-                  <FormControl>
-                    <Input placeholder="450 000 Kč" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              value={formData.purchase_price}
+              onChange={handleChange}
+              placeholder="např. 250000"
+              required
             />
-
-            <FormField
-              control={form.control}
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="insurance_monthly">Měsíční pojistné (Kč) *</Label>
+            <Input
+              id="insurance_monthly"
               name="insurance_monthly"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Měsíční pojistné</FormLabel>
-                  <FormControl>
-                    <Input placeholder="1 250 Kč" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              value={formData.insurance_monthly}
+              onChange={handleChange}
+              placeholder="např. 1200"
+              required
             />
-
-            <FormField
-              control={form.control}
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="tax_yearly">Roční silniční daň (Kč) *</Label>
+            <Input
+              id="tax_yearly"
               name="tax_yearly"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Roční silniční daň</FormLabel>
-                  <FormControl>
-                    <Input placeholder="3 600 Kč" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="last_repair_cost"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Poslední náklady na opravu</FormLabel>
-                  <FormControl>
-                    <Input placeholder="8 700 Kč" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              value={formData.tax_yearly}
+              onChange={handleChange}
+              placeholder="např. 2000"
+              required
             />
           </div>
         </div>
-
-        <div className="flex justify-end pt-4">
-          <Button type="submit">{initialData ? 'Uložit změny' : 'Přidat vozidlo'}</Button>
+      </div>
+      
+      {/* Servisní informace */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-medium">Servisní informace</h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="last_service">Poslední servis *</Label>
+            <Input
+              id="last_service"
+              name="last_service"
+              value={formData.last_service}
+              onChange={handleChange}
+              placeholder="např. 02/2023"
+              required
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="next_inspection">Další technická kontrola *</Label>
+            <Input
+              id="next_inspection"
+              name="next_inspection"
+              value={formData.next_inspection}
+              onChange={handleChange}
+              placeholder="např. 05/2025"
+              required
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="last_repair_cost">Náklady na poslední opravu (Kč) *</Label>
+            <Input
+              id="last_repair_cost"
+              name="last_repair_cost"
+              value={formData.last_repair_cost}
+              onChange={handleChange}
+              placeholder="např. 3500"
+              required
+            />
+          </div>
         </div>
-      </form>
-    </Form>
-  );
-
-  return isMobile ? (
-    <ScrollArea className="h-[60vh] pr-4">{formContent}</ScrollArea>
-  ) : (
-    formContent
+      </div>
+      
+      <div className="flex justify-end space-x-2 pt-4">
+        <Button 
+          type="button" 
+          variant="outline" 
+          onClick={onCancel}
+          disabled={isLoading}
+        >
+          Zrušit
+        </Button>
+        <Button 
+          type="submit" 
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <>
+              <span className="loading loading-spinner loading-xs mr-2"></span>
+              Ukládám...
+            </>
+          ) : initialValues ? "Uložit změny" : "Přidat vozidlo"}
+        </Button>
+      </div>
+    </form>
   );
 };
 

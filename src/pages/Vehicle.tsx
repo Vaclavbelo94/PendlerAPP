@@ -1,221 +1,194 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Sheet, SheetContent, SheetTitle, SheetDescription, SheetHeader } from '@/components/ui/sheet';
 import { Helmet } from "react-helmet";
-import PremiumCheck from "@/components/premium/PremiumCheck";
-import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from '@/hooks/useAuth';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PlusCircle, Edit } from "lucide-react";
-import ServiceRecordCard from "@/components/vehicle/ServiceRecordCard";
-import DocumentsCard from "@/components/vehicle/DocumentsCard";
-import InsuranceCard from "@/components/vehicle/InsuranceCard";
-import FuelConsumptionCard from "@/components/vehicle/FuelConsumptionCard";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import VehicleForm from "@/components/vehicle/VehicleForm";
-import VehicleSelector from "@/components/vehicle/VehicleSelector";
-import { useIsMobile } from '@/hooks/use-mobile';
-import { SectionHeader } from "@/components/ui/section-header";
-import { FlexContainer } from "@/components/ui/flex-container";
-import { cn } from "@/lib/utils";
-import { useVehicleData } from "@/hooks/vehicle/useVehicleData";
-import { useVehicleOperations } from "@/hooks/vehicle/useVehicleOperations";
+import { Plus, Car } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useStandardizedToast } from '@/hooks/useStandardizedToast';
+import VehicleForm from '@/components/vehicle/VehicleForm';
+import VehicleSelector from '@/components/vehicle/VehicleSelector';
+import FuelConsumptionCard from '@/components/vehicle/FuelConsumptionCard';
+import ServiceRecordCard from '@/components/vehicle/ServiceRecordCard';
+import InsuranceCard from '@/components/vehicle/InsuranceCard';
+import DocumentsCard from '@/components/vehicle/DocumentsCard';
+import CrossBorderCard from '@/components/vehicle/CrossBorderCard';
+import EmptyVehicleState from '@/components/vehicle/EmptyVehicleState';
 
 const Vehicle = () => {
   const { user } = useAuth();
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [isNewVehicleDialogOpen, setIsNewVehicleDialogOpen] = useState(false);
-  const isMobile = useIsMobile();
+  const [vehicles, setVehicles] = useState([]);
+  const [selectedVehicleId, setSelectedVehicleId] = useState(null);
+  const [isAddSheetOpen, setIsAddSheetOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const { success, error } = useStandardizedToast();
 
-  const {
-    vehicles,
-    setVehicles,
-    selectedVehicleId,
-    vehicleData,
-    setVehicleData,
-    isLoading,
-    handleVehicleSelect
-  } = useVehicleData(user);
+  useEffect(() => {
+    if (user) {
+      fetchVehicles();
+    }
+  }, [user]);
 
-  const { handleSaveVehicle } = useVehicleOperations(
-    user,
-    setVehicles,
-    setVehicleData,
-    (id: string) => handleVehicleSelect(id)
-  );
-
-  const onSaveVehicle = async (vehicle: any) => {
-    const result = await handleSaveVehicle(vehicle);
-    if (result) {
-      if (vehicle.id) {
-        setIsEditDialogOpen(false);
-      } else {
-        setIsNewVehicleDialogOpen(false);
+  const fetchVehicles = async () => {
+    try {
+      setIsLoading(true);
+      
+      const { data, error: fetchError } = await supabase
+        .from('vehicles')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+      
+      if (fetchError) throw fetchError;
+      
+      setVehicles(data || []);
+      
+      // Select the first vehicle by default if any exist
+      if (data && data.length > 0 && !selectedVehicleId) {
+        setSelectedVehicleId(data[0].id);
       }
+    } catch (error) {
+      console.error("Error fetching vehicles:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const getDialogMaxHeight = () => {
-    return isMobile ? "max-h-[90vh] overflow-hidden" : "";
+  const handleAddVehicle = async (formData) => {
+    if (!user) return;
+    
+    try {
+      setIsSaving(true);
+      
+      const { data, error: insertError } = await supabase
+        .from('vehicles')
+        .insert([{ ...formData, user_id: user.id }])
+        .select()
+        .single();
+      
+      if (insertError) throw insertError;
+      
+      setVehicles([data, ...vehicles]);
+      setSelectedVehicleId(data.id);
+      setIsAddSheetOpen(false);
+      success("Vozidlo bylo úspěšně přidáno");
+      
+    } catch (err) {
+      console.error("Error adding vehicle:", err);
+      error("Chyba při přidání vozidla");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  if (isLoading) {
-    return (
-      <PremiumCheck featureKey="vehicle_management">
-        <div className="container py-6">
-          <div className="flex justify-center py-12">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-          </div>
-        </div>
-      </PremiumCheck>
-    );
-  }
+  // Find the currently selected vehicle object
+  const selectedVehicle = vehicles.find(v => v.id === selectedVehicleId);
 
   return (
-    <PremiumCheck featureKey="vehicle_management">
-      <div className="container py-6">
-        <Helmet>
-          <title>Správa vozidla | Pendler Buddy</title>
-        </Helmet>
+    <div className="container py-6 max-w-7xl">
+      <Helmet>
+        <title>Vozidlo | Pendlerův Pomocník</title>
+      </Helmet>
+      
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Vozidlo</h1>
+          <p className="text-muted-foreground">
+            Správa vašich vozidel, spotřeby a dokumentů
+          </p>
+        </div>
         
-        <SectionHeader 
-          title="Správa vozidla"
-          description="Správa všech údajů o vašem vozidle, náklady na údržbu, historie oprav, spotřeba paliva a další."
-          action={{
-            label: "Přidat vozidlo",
-            onClick: () => setIsNewVehicleDialogOpen(true),
-            icon: <PlusCircle className="h-4 w-4" />
-          }}
-        />
-
-        {vehicles.length > 0 && (
+        <Button onClick={() => setIsAddSheetOpen(true)} className="flex items-center gap-2">
+          <Plus className="h-4 w-4" />
+          Přidat vozidlo
+        </Button>
+      </div>
+      
+      {isLoading ? (
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </div>
+      ) : vehicles.length === 0 ? (
+        <EmptyVehicleState onAddVehicle={() => setIsAddSheetOpen(true)} />
+      ) : (
+        <>
           <div className="mb-6">
-            <VehicleSelector 
-              vehicles={vehicles} 
-              selectedVehicleId={selectedVehicleId} 
-              onSelect={handleVehicleSelect} 
+            <VehicleSelector
+              vehicles={vehicles}
+              selectedVehicleId={selectedVehicleId}
+              onSelect={setSelectedVehicleId}
             />
           </div>
-        )}
-
-        {!vehicleData ? (
-          <Card>
-            <CardContent className="flex flex-col items-center justify-center py-12">
-              <p className="text-center text-muted-foreground mb-4">
-                Nemáte přidané žádné vozidlo. Klikněte na tlačítko "Přidat vozidlo" výše.
-              </p>
-            </CardContent>
-          </Card>
-        ) : (
-          <>
-            <FlexContainer justify="end" className="mb-4">
-              <Button 
-                variant="outline" 
-                onClick={() => setIsEditDialogOpen(true)}
-                size={isMobile ? "sm" : "default"}
-                className="min-h-[44px]"
-              >
-                <Edit className="mr-2 h-4 w-4" />
-                Upravit údaje o vozidle
-              </Button>
-            </FlexContainer>
-            
-            <Tabs defaultValue="overview" className="w-full">
-              <TabsList className={cn("mb-6", isMobile ? "grid grid-cols-2 w-full" : "")}>
-                <TabsTrigger value="overview" className={cn(isMobile ? "text-xs" : "")}>Přehled</TabsTrigger>
-                <TabsTrigger value="documents" className={cn(isMobile ? "text-xs" : "")}>Dokumenty</TabsTrigger>
-                <TabsTrigger value="maintenance" className={cn(isMobile ? "text-xs" : "")}>Údržba</TabsTrigger>
-                <TabsTrigger value="fuel" className={cn(isMobile ? "text-xs" : "")}>Spotřeba</TabsTrigger>
+          
+          {selectedVehicle && (
+            <Tabs defaultValue="overview">
+              <TabsList className="mb-6">
+                <TabsTrigger value="overview">Přehled</TabsTrigger>
+                <TabsTrigger value="fuel">Spotřeba</TabsTrigger>
+                <TabsTrigger value="service">Servis</TabsTrigger>
+                <TabsTrigger value="documents">Dokumenty</TabsTrigger>
+                <TabsTrigger value="crossborder">Přeshraniční</TabsTrigger>
               </TabsList>
-
-              <TabsContent value="overview" className="space-y-6">
-                <div className={cn("grid gap-6", isMobile ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2")}>
-                  <Card>
-                    <div className={cn("p-6", isMobile ? "p-4" : "")}>
-                      <h3 className={cn("font-semibold mb-4", isMobile ? "text-base" : "text-lg")}>
-                        Základní informace
-                      </h3>
-                      <p className={cn("text-muted-foreground mb-4", isMobile ? "text-xs" : "text-sm")}>
-                        Obecné údaje o vašem vozidle
-                      </p>
-                      <div className="space-y-3">
-                        <div className="grid grid-cols-2 gap-3">
-                          <div className={cn("text-muted-foreground", isMobile ? "text-xs" : "text-sm")}>Značka:</div>
-                          <div className={cn("font-medium", isMobile ? "text-sm" : "text-base")}>{vehicleData.brand}</div>
-                          
-                          <div className={cn("text-muted-foreground", isMobile ? "text-xs" : "text-sm")}>Model:</div>
-                          <div className={cn("font-medium", isMobile ? "text-sm" : "text-base")}>{vehicleData.model}</div>
-                          
-                          <div className={cn("text-muted-foreground", isMobile ? "text-xs" : "text-sm")}>Rok výroby:</div>
-                          <div className={cn("font-medium", isMobile ? "text-sm" : "text-base")}>{vehicleData.year}</div>
-                          
-                          <div className={cn("text-muted-foreground", isMobile ? "text-xs" : "text-sm")}>SPZ:</div>
-                          <div className={cn("font-medium", isMobile ? "text-sm" : "text-base")}>{vehicleData.license_plate}</div>
-                          
-                          <div className={cn("text-muted-foreground", isMobile ? "text-xs" : "text-sm")}>VIN:</div>
-                          <div className={cn("font-medium", isMobile ? "text-sm" : "text-base")}>{vehicleData.vin}</div>
-                          
-                          <div className={cn("text-muted-foreground", isMobile ? "text-xs" : "text-sm")}>Typ paliva:</div>
-                          <div className={cn("font-medium", isMobile ? "text-sm" : "text-base")}>{vehicleData.fuel_type}</div>
-                          
-                          <div className={cn("text-muted-foreground", isMobile ? "text-xs" : "text-sm")}>Barva:</div>
-                          <div className={cn("font-medium", isMobile ? "text-sm" : "text-base")}>{vehicleData.color}</div>
-                          
-                          <div className={cn("text-muted-foreground", isMobile ? "text-xs" : "text-sm")}>Kilometráž:</div>
-                          <div className={cn("font-medium", isMobile ? "text-sm" : "text-base")}>{vehicleData.mileage} km</div>
-                        </div>
-                      </div>
-                    </div>
-                  </Card>
-
-                  <InsuranceCard vehicleId={vehicleData.id!} />
-                </div>
-                
-                <FuelConsumptionCard vehicleId={vehicleData.id!} />
-              </TabsContent>
-
-              <TabsContent value="documents">
-                <DocumentsCard vehicleId={vehicleData.id!} />
-              </TabsContent>
               
-              <TabsContent value="maintenance">
-                <ServiceRecordCard vehicleId={vehicleData.id!} />
+              <TabsContent value="overview" className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-6">
+                    <FuelConsumptionCard vehicleId={selectedVehicleId} />
+                    <ServiceRecordCard vehicleId={selectedVehicleId} />
+                  </div>
+                  <div className="space-y-6">
+                    <InsuranceCard vehicleId={selectedVehicleId} />
+                    <DocumentsCard vehicleId={selectedVehicleId} />
+                  </div>
+                </div>
               </TabsContent>
               
               <TabsContent value="fuel">
-                <FuelConsumptionCard vehicleId={vehicleData.id!} detailed />
+                <FuelConsumptionCard vehicleId={selectedVehicleId} fullView />
+              </TabsContent>
+              
+              <TabsContent value="service">
+                <ServiceRecordCard vehicleId={selectedVehicleId} fullView />
+              </TabsContent>
+              
+              <TabsContent value="documents">
+                <DocumentsCard vehicleId={selectedVehicleId} fullView />
+              </TabsContent>
+              
+              <TabsContent value="crossborder">
+                <CrossBorderCard vehicleId={selectedVehicleId} />
               </TabsContent>
             </Tabs>
-          </>
-        )}
-
-        {/* Dialog pro úpravu vozidla */}
-        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className={`sm:max-w-[600px] ${getDialogMaxHeight()}`}>
-            <DialogHeader>
-              <DialogTitle>Upravit vozidlo</DialogTitle>
-              <DialogDescription>
-                Upravte údaje o svém vozidle.
-              </DialogDescription>
-            </DialogHeader>
-            {vehicleData && <VehicleForm initialData={vehicleData} onSave={onSaveVehicle} />}
-          </DialogContent>
-        </Dialog>
-
-        {/* Dialog pro přidání nového vozidla */}
-        <Dialog open={isNewVehicleDialogOpen} onOpenChange={setIsNewVehicleDialogOpen}>
-          <DialogContent className={`sm:max-w-[600px] ${getDialogMaxHeight()}`}>
-            <DialogHeader>
-              <DialogTitle>Přidat nové vozidlo</DialogTitle>
-              <DialogDescription>
-                Zadejte údaje o svém vozidle.
-              </DialogDescription>
-            </DialogHeader>
-            <VehicleForm onSave={onSaveVehicle} />
-          </DialogContent>
-        </Dialog>
-      </div>
-    </PremiumCheck>
+          )}
+        </>
+      )}
+      
+      {/* Sheet for adding new vehicle */}
+      <Sheet open={isAddSheetOpen} onOpenChange={setIsAddSheetOpen}>
+        <SheetContent className="w-full sm:max-w-2xl overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle className="flex items-center gap-2">
+              <Car className="h-5 w-5" />
+              Přidat nové vozidlo
+            </SheetTitle>
+            <SheetDescription>
+              Vyplňte údaje o vašem vozidle. Všechna pole označená * jsou povinná.
+            </SheetDescription>
+          </SheetHeader>
+          
+          <div className="mt-6">
+            <VehicleForm
+              onSubmit={handleAddVehicle}
+              onCancel={() => setIsAddSheetOpen(false)}
+              isLoading={isSaving}
+            />
+          </div>
+        </SheetContent>
+      </Sheet>
+    </div>
   );
 };
 

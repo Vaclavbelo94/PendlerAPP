@@ -34,7 +34,7 @@ const Hero = () => {
           >
             <Badge variant="outline" className="mb-6 px-4 py-2 text-sm backdrop-blur-sm bg-background/50">
               <Sparkles className="h-3 w-3 mr-2" />
-              🚀 Nová verze aplikace je tady!
+              🚀 Vítejte v Pendlerově Pomocníkovi!
             </Badge>
           </motion.div>
           
@@ -63,8 +63,8 @@ const Hero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.5 }}
           >
-            Komplexní aplikace pro všechny, kteří pracují v zahraničí. 
-            Spravujte směny, vozidlo, učte se jazyky a mnoho dalšího.
+            Kompletní aplikace pro všechny, kteří pracují v zahraničí. 
+            Spravujte směny, vozidlo, učte se jazyky a využívejte nástroje pro efektivní práci.
           </motion.p>
           
           <motion.div
@@ -82,8 +82,8 @@ const Hero = () => {
               whileTap={{ scale: 0.95 }}
             >
               <Button asChild size="lg" className={`px-8 py-3 text-lg group mobile-button-spacing ${isMobile ? 'w-full' : ''}`}>
-                <Link to="/dashboard">
-                  Začít používat
+                <Link to="/register">
+                  Začít zdarma
                   <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </Button>
@@ -94,8 +94,8 @@ const Hero = () => {
               whileTap={{ scale: 0.95 }}
             >
               <Button asChild variant="outline" size="lg" className={`px-8 py-3 text-lg backdrop-blur-sm bg-background/50 mobile-button-spacing ${isMobile ? 'w-full' : ''}`}>
-                <Link to="/premium">
-                  Zobrazit Premium
+                <Link to="/login">
+                  Přihlásit se
                 </Link>
               </Button>
             </motion.div>

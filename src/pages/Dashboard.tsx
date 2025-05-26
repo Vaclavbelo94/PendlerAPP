@@ -1,97 +1,97 @@
 
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import React, { useState, useEffect } from "react";
+import { Helmet } from "react-helmet";
 import { useAuth } from "@/hooks/useAuth";
-import { useScreenOrientation } from "@/hooks/useScreenOrientation";
-import { UniversalMobileNavigation } from "@/components/navigation/UniversalMobileNavigation";
-import ScheduleTab from "@/components/dashboard/tabs/ScheduleTab";
-import LanguageTab from "@/components/dashboard/tabs/LanguageTab";
-import EducationTab from "@/components/dashboard/tabs/EducationTab";
-import OverviewTab from "@/components/dashboard/tabs/OverviewTab";
-import QuickPromoCode from "@/components/dashboard/QuickPromoCode";
-import { BarChart3, Calendar, Languages, GraduationCap } from "lucide-react";
+import { useStandardizedToast } from "@/hooks/useStandardizedToast";
+import WelcomeSection from "@/components/dashboard/WelcomeSection";
+import DashboardCard from "@/components/dashboard/DashboardCard";
+import LoadingOverview from "@/components/dashboard/LoadingOverview";
+import EducationWidget from "@/components/dashboard/EducationWidget";
+import LanguageStatsWidget from "@/components/dashboard/LanguageStatsWidget";
+import ShiftsProgress from "@/components/dashboard/ShiftsProgress";
+import CommuteComparison from "@/components/dashboard/CommuteComparison";
 
 const Dashboard = () => {
-  const { user, isPremium } = useAuth();
-  const [activeTab, setActiveTab] = useState("overview");
-  const { isMobile } = useScreenOrientation();
+  const { user } = useAuth();
+  const [isLoading, setIsLoading] = useState(true);
+  const [isFirstVisit, setIsFirstVisit] = useState(false);
+  const { toast } = useStandardizedToast();
 
-  const dashboardTabs = [
-    {
-      id: "overview",
-      label: "Přehled",
-      icon: BarChart3,
-      description: "Celkový přehled vašich aktivit"
-    },
-    {
-      id: "schedule",
-      label: "Rozvrh", 
-      icon: Calendar,
-      description: "Správa směn a kalendář"
-    },
-    {
-      id: "language",
-      label: "Jazyky",
-      icon: Languages,
-      description: "Pokrok v učení němčiny"
-    },
-    {
-      id: "education",
-      label: "Vzdělání",
-      icon: GraduationCap,
-      description: "Kurzy a certifikáty"
+  useEffect(() => {
+    // Check if this is the user's first visit to dashboard
+    const hasVisitedBefore = localStorage.getItem("hasVisitedDashboard");
+    if (!hasVisitedBefore && user) {
+      setIsFirstVisit(true);
+      localStorage.setItem("hasVisitedDashboard", "true");
+      
+      // Show welcome toast
+      setTimeout(() => {
+        toast({
+          title: "Vítejte v Pendlerově Pomocníkovi",
+          description: "Postupujte podle rychlého průvodce pro nastavení vašeho účtu",
+          variant: "info",
+          duration: 6000
+        });
+      }, 1500);
     }
-  ];
 
-  if (!user) {
-    return (
-      <div className="container py-8 max-w-4xl">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Vítejte v PendlerApp</h1>
-          <p className="text-muted-foreground mb-6">
-            Pro přístup k dashboard se prosím přihlaste.
-          </p>
-          <Button asChild>
-            <Link to="/login">Přihlásit se</Link>
-          </Button>
-        </div>
-      </div>
-    );
+    // Simulate loading data
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [user, toast]);
+
+  if (isLoading) {
+    return <LoadingOverview />;
   }
 
-  const renderTabContent = () => {
-    switch (activeTab) {
-      case "overview":
-        return <OverviewTab />;
-      case "schedule":
-        return <ScheduleTab />;
-      case "language":
-        return <LanguageTab />;
-      case "education":
-        return <EducationTab />;
-      default:
-        return <OverviewTab />;
-    }
-  };
-
   return (
-    <div className="container py-6 md:py-10 max-w-7xl">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight mb-2">Dashboard</h1>
-        <p className="text-muted-foreground">
-          Přehled vašich aktivit a rychlý přístup k funkcím
-        </p>
-      </div>
+    <div className="container py-6 max-w-7xl">
+      <Helmet>
+        <title>Dashboard | Pendlerův Pomocník</title>
+      </Helmet>
 
-      <UniversalMobileNavigation
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        tabs={dashboardTabs}
-      />
+      {/* Welcome or Quick Start Section */}
+      <WelcomeSection />
 
-      <div className="space-y-6">
-        {renderTabContent()}
+      {/* Main dashboard grid */}
+      <div className="grid gap-6 mt-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        {/* Shifts Progress */}
+        <DashboardCard
+          title="Směny tento měsíc"
+          description="Přehled vašich naplánovaných směn"
+          className="lg:col-span-2"
+        >
+          <ShiftsProgress />
+        </DashboardCard>
+
+        {/* Language Learning Stats */}
+        <DashboardCard
+          title="Jazykový pokrok"
+          description="Váš pokrok v učení německého jazyka"
+        >
+          <LanguageStatsWidget />
+        </DashboardCard>
+
+        {/* Commute Comparison */}
+        <DashboardCard
+          title="Náklady na dopravu"
+          description="Porovnání nákladů na dojíždění"
+          className="md:col-span-2 lg:col-span-1"
+        >
+          <CommuteComparison />
+        </DashboardCard>
+
+        {/* Education Widget */}
+        <DashboardCard
+          title="Vzdělávací tipy"
+          description="Tipy pro efektivní práci v zahraničí"
+          className="lg:col-span-2"
+        >
+          <EducationWidget />
+        </DashboardCard>
       </div>
     </div>
   );
