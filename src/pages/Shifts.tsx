@@ -8,6 +8,7 @@ import ResponsivePage from "@/components/layouts/ResponsivePage";
 import { ErrorBoundaryWithFallback } from "@/components/common/ErrorBoundaryWithFallback";
 import LoadingFallback from "@/components/common/LoadingFallback";
 import { Calendar, BarChart3, FileText, Settings } from "lucide-react";
+import { useUnifiedShiftManagement } from "@/components/shifts/hooks/useUnifiedShiftManagement";
 
 // Lazy load components with proper error handling
 const ShiftsHeader = React.lazy(() => 
@@ -21,38 +22,6 @@ const ShiftsContent = React.lazy(() =>
   import("@/components/shifts/ShiftsContent").catch(err => {
     console.error('Failed to load ShiftsContent:', err);
     return { default: () => <div>Chyba při načítání obsahu směn</div> };
-  })
-);
-
-const useUnifiedShiftManagement = React.lazy(() => 
-  import("@/components/shifts/hooks/useUnifiedShiftManagement").then(module => ({ default: module.useUnifiedShiftManagement })).catch(err => {
-    console.error('Failed to load useUnifiedShiftManagement:', err);
-    return { default: () => ({
-      selectedDate: new Date(),
-      setSelectedDate: () => {},
-      shifts: [],
-      shiftType: '',
-      setShiftType: () => {},
-      shiftNotes: '',
-      setShiftNotes: () => {},
-      analyticsPeriod: 'month',
-      setAnalyticsPeriod: () => {},
-      noteDialogOpen: false,
-      setNoteDialogOpen: () => {},
-      currentShift: null,
-      handleSaveShift: () => {},
-      handleDeleteShift: () => {},
-      handleSaveNotes: () => {},
-      handleAdvancedSync: () => {},
-      isLoading: false
-    }) };
-  })
-);
-
-const LazyEditNoteDialog = React.lazy(() => 
-  import("@/components/shifts/lazy/LazyShiftComponents").then(module => ({ default: module.LazyEditNoteDialog })).catch(err => {
-    console.error('Failed to load LazyEditNoteDialog:', err);
-    return { default: () => null };
   })
 );
 
@@ -74,6 +43,9 @@ const Shifts = () => {
   const [activeSection, setActiveSection] = useState("calendar");
   const { user, isLoading: authLoading } = useAuth();
   const { isMobile } = useScreenOrientation();
+
+  // Use the unified shift management hook
+  const shiftManagement = useUnifiedShiftManagement(user);
 
   console.log('Shifts page rendering, user:', user?.email, 'authLoading:', authLoading);
 
@@ -133,7 +105,7 @@ const Shifts = () => {
             </React.Suspense>
 
             <React.Suspense fallback={<div />}>
-              <ShiftWidgets shifts={[]} />
+              <ShiftWidgets shifts={shiftManagement.shifts || []} />
             </React.Suspense>
 
             <UniversalMobileNavigation
@@ -143,23 +115,7 @@ const Shifts = () => {
             />
 
             <React.Suspense fallback={<LoadingFallback message="Načítám obsah směn..." />}>
-              <ShiftsContent
-                activeSection={activeSection}
-                selectedDate={new Date()}
-                onSelectDate={() => {}}
-                shifts={[]}
-                currentShift={null}
-                shiftType=""
-                setShiftType={() => {}}
-                shiftNotes=""
-                setShiftNotes={() => {}}
-                user={user}
-                onSaveShift={() => {}}
-                onDeleteShift={() => {}}
-                onOpenNoteDialog={() => {}}
-                analyticsPeriod="month"
-                setAnalyticsPeriod={() => {}}
-              />
+              <ShiftsContent />
             </React.Suspense>
           </div>
         </ErrorBoundaryWithFallback>

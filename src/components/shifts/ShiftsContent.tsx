@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -14,25 +15,7 @@ import EmptyShiftsState from './EmptyShiftsState';
 import { ShiftType, AnalyticsPeriod } from './types';
 import SimpleLoadingSpinner from '@/components/loading/SimpleLoadingSpinner';
 
-interface ShiftsContentProps {
-  activeSection?: string;
-  selectedDate?: Date;
-  onSelectDate?: (date: Date) => void;
-  shifts?: any[];
-  currentShift?: any;
-  shiftType?: ShiftType;
-  setShiftType?: (type: ShiftType) => void;
-  shiftNotes?: string;
-  setShiftNotes?: (notes: string) => void;
-  user?: any;
-  onSaveShift?: () => void;
-  onDeleteShift?: () => void;
-  onOpenNoteDialog?: () => void;
-  analyticsPeriod?: AnalyticsPeriod;
-  setAnalyticsPeriod?: (period: AnalyticsPeriod) => void;
-}
-
-const ShiftsContent = (props: ShiftsContentProps = {}) => {
+const ShiftsContent = () => {
   const { user, isLoading: authLoading } = useAuth();
   const { success, error } = useStandardizedToast();
   const [activeTab, setActiveTab] = useState('calendar');
@@ -49,11 +32,6 @@ const ShiftsContent = (props: ShiftsContentProps = {}) => {
     minHours: 0,
     maxHours: 24
   });
-  
-  // Use props if provided, otherwise use local state
-  const currentSelectedDate = props.selectedDate || selectedDate;
-  const handleSelectDate = props.onSelectDate || setSelectedDate;
-  const currentShifts = props.shifts || shifts;
   
   useEffect(() => {
     const fetchShifts = async () => {
@@ -139,7 +117,7 @@ const ShiftsContent = (props: ShiftsContentProps = {}) => {
     setIsFilterSheetOpen(false);
   };
 
-  const filteredShifts = currentShifts.filter(shift => {
+  const filteredShifts = shifts.filter(shift => {
     // Apply date filters
     if (filters.startDate && new Date(shift.date) < new Date(filters.startDate)) {
       return false;
@@ -173,7 +151,7 @@ const ShiftsContent = (props: ShiftsContentProps = {}) => {
   }
 
   // Show empty state for new users
-  if (currentShifts.length === 0) {
+  if (shifts.length === 0) {
     return <EmptyShiftsState onAddShift={() => setIsAddSheetOpen(true)} />;
   }
 
@@ -221,8 +199,8 @@ const ShiftsContent = (props: ShiftsContentProps = {}) => {
           
           <TabsContent value="calendar" className="mt-0">
             <ShiftCalendar 
-              selectedDate={currentSelectedDate}
-              onSelectDate={handleSelectDate}
+              selectedDate={selectedDate}
+              onSelectDate={setSelectedDate}
               shifts={filteredShifts} 
               onUpdateShift={handleUpdateShift}
               onDeleteShift={handleDeleteShift}
