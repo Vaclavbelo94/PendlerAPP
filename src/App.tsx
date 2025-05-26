@@ -39,6 +39,7 @@ import Vocabulary from "@/pages/Vocabulary";
 import Translator from "@/pages/Translator";
 import Laws from "@/pages/Laws";
 import TravelPlanning from "@/pages/TravelPlanning";
+import Admin from "@/pages/Admin";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient({
