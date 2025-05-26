@@ -6,6 +6,7 @@ import { UniversalMobileNavigation } from "@/components/navigation/UniversalMobi
 import PremiumCheck from '@/components/premium/PremiumCheck';
 import ResponsivePage from "@/components/layouts/ResponsivePage";
 import { ShiftsErrorBoundary } from "@/components/shifts/ShiftsErrorBoundary";
+import SimpleLoadingSpinner from "@/components/loading/SimpleLoadingSpinner";
 
 // Import refactored components
 import { ShiftsHeader } from "@/components/shifts/ShiftsHeader";
@@ -18,7 +19,7 @@ import { Calendar, BarChart3, FileText, Settings } from "lucide-react";
 
 const Shifts = () => {
   const [activeSection, setActiveSection] = useState("calendar");
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const { isMobile } = useScreenOrientation();
 
   const shiftTabs = [
@@ -95,13 +96,12 @@ const Shifts = () => {
     <ShiftWidgets shifts={shifts} />
   ), [shifts]);
 
-  if (isLoading) {
+  // Show loading while auth is loading
+  if (authLoading) {
     return (
       <PremiumCheck featureKey="shifts">
         <ResponsivePage>
-          <div className="flex justify-center py-12">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-          </div>
+          <SimpleLoadingSpinner message="Načítání směn..." />
         </ResponsivePage>
       </PremiumCheck>
     );

@@ -12,6 +12,7 @@ import ShiftStats from './ShiftStats';
 import ShiftFilters from './ShiftFilters';
 import EmptyShiftsState from './EmptyShiftsState';
 import { ShiftType, AnalyticsPeriod } from './types';
+import SimpleLoadingSpinner from '@/components/loading/SimpleLoadingSpinner';
 
 interface ShiftsContentProps {
   activeSection?: string;
@@ -32,13 +33,13 @@ interface ShiftsContentProps {
 }
 
 const ShiftsContent = (props: ShiftsContentProps = {}) => {
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const { success, error } = useStandardizedToast();
   const [activeTab, setActiveTab] = useState('calendar');
   const [isAddSheetOpen, setIsAddSheetOpen] = useState(false);
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
   const [shifts, setShifts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [filters, setFilters] = useState({
     startDate: null,
@@ -56,19 +57,17 @@ const ShiftsContent = (props: ShiftsContentProps = {}) => {
   
   useEffect(() => {
     const fetchShifts = async () => {
-      if (!user) {
-        setIsLoading(false);
+      if (!user || authLoading) {
         return;
       }
 
       try {
         setIsLoading(true);
         
-        // For new users, don't load demo data - just show empty state
+        // For new users, start with empty array - no demo data
         const storedShifts = localStorage.getItem(`userShifts_${user.id}`);
         if (storedShifts) {
           const parsedShifts = JSON.parse(storedShifts);
-          // Only show shifts if they exist and belong to this user
           setShifts(parsedShifts.filter(shift => shift.userId === user.id));
         } else {
           // New user - start with empty shifts array
@@ -82,12 +81,14 @@ const ShiftsContent = (props: ShiftsContentProps = {}) => {
       }
     };
     
-    fetchShifts();
-  }, [user]);
+    // Only fetch when we have a user and auth is not loading
+    if (user && !authLoading) {
+      fetchShifts();
+    }
+  }, [user, authLoading]);
 
   const handleAddShift = async (shiftData) => {
     try {
-      // In a real implementation, we would save to database
       const newShift = {
         id: Date.now().toString(),
         ...shiftData,
@@ -96,7 +97,7 @@ const ShiftsContent = (props: ShiftsContentProps = {}) => {
       
       const updatedShifts = [newShift, ...shifts];
       setShifts(updatedShifts);
-      localStorage.setItem('userShifts', JSON.stringify(updatedShifts));
+      localStorage.setItem(`userShifts_${user.id}`, JSON.stringify(updatedShifts));
       
       setIsAddSheetOpen(false);
       success('Směna byla úspěšně přidána');
@@ -113,7 +114,7 @@ const ShiftsContent = (props: ShiftsContentProps = {}) => {
       );
       
       setShifts(updatedShifts);
-      localStorage.setItem('userShifts', JSON.stringify(updatedShifts));
+      localStorage.setItem(`userShifts_${user.id}`, JSON.stringify(updatedShifts));
       success('Směna byla aktualizována');
     } catch (err) {
       console.error('Error updating shift:', err);
@@ -125,7 +126,7 @@ const ShiftsContent = (props: ShiftsContentProps = {}) => {
     try {
       const updatedShifts = shifts.filter(shift => shift.id !== id);
       setShifts(updatedShifts);
-      localStorage.setItem('userShifts', JSON.stringify(updatedShifts));
+      localStorage.setItem(`userShifts_${user.id}`, JSON.stringify(updatedShifts));
       success('Směna byla smazána');
     } catch (err) {
       console.error('Error deleting shift:', err);
@@ -166,14 +167,12 @@ const ShiftsContent = (props: ShiftsContentProps = {}) => {
     return true;
   });
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    );
+  // Show loading while auth is loading or data is loading
+  if (authLoading || isLoading) {
+    return <SimpleLoadingSpinner message="Načítání směn..." />;
   }
 
+  // Show empty state for new users
   if (currentShifts.length === 0) {
     return <EmptyShiftsState onAddShift={() => setIsAddSheetOpen(true)} />;
   }
