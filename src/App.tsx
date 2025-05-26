@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -49,6 +50,15 @@ import FAQ from "@/pages/FAQ";
 import MinimumWage from "@/pages/laws/MinimumWage";
 import TaxClasses from "@/pages/laws/TaxClasses";
 import HealthInsurance from "@/pages/laws/HealthInsurance";
+import PensionInsurance from "@/pages/laws/PensionInsurance";
+import MinimumHolidays from "@/pages/laws/MinimumHolidays";
+import ParentalAllowance from "@/pages/laws/ParentalAllowance";
+import LegalAid from "@/pages/laws/LegalAid";
+import WorkContract from "@/pages/laws/WorkContract";
+import TaxReturn from "@/pages/laws/TaxReturn";
+import EmployeeProtection from "@/pages/laws/EmployeeProtection";
+import ChildBenefits from "@/pages/laws/ChildBenefits";
+import WorkingHours from "@/pages/laws/WorkingHours";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -116,6 +126,15 @@ function AppContent() {
             <Route path="/laws/minimum-wage" element={<MinimumWage />} />
             <Route path="/laws/tax-classes" element={<TaxClasses />} />
             <Route path="/laws/health-insurance" element={<HealthInsurance />} />
+            <Route path="/laws/work-contract" element={<WorkContract />} />
+            <Route path="/laws/tax-return" element={<TaxReturn />} />
+            <Route path="/laws/pension-insurance" element={<PensionInsurance />} />
+            <Route path="/laws/employee-protection" element={<EmployeeProtection />} />
+            <Route path="/laws/child-benefits" element={<ChildBenefits />} />
+            <Route path="/laws/working-hours" element={<WorkingHours />} />
+            <Route path="/laws/minimum-holidays" element={<MinimumHolidays />} />
+            <Route path="/laws/parental-allowance" element={<ParentalAllowance />} />
+            <Route path="/laws/legal-aid" element={<LegalAid />} />
             
             {/* Auth pages */}
             <Route path="/login" element={<Login />} />
