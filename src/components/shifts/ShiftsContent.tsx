@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -13,7 +14,25 @@ import ShiftStats from './ShiftStats';
 import ShiftFilters from './ShiftFilters';
 import EmptyShiftsState from '../shifts/EmptyShiftsState';
 
-const ShiftsContent = () => {
+interface ShiftsContentProps {
+  activeSection?: string;
+  selectedDate?: Date;
+  onSelectDate?: (date: Date) => void;
+  shifts?: any[];
+  currentShift?: any;
+  shiftType?: string;
+  setShiftType?: (type: string) => void;
+  shiftNotes?: string;
+  setShiftNotes?: (notes: string) => void;
+  user?: any;
+  onSaveShift?: () => void;
+  onDeleteShift?: () => void;
+  onOpenNoteDialog?: () => void;
+  analyticsPeriod?: string;
+  setAnalyticsPeriod?: (period: string) => void;
+}
+
+const ShiftsContent = (props: ShiftsContentProps = {}) => {
   const { user } = useAuth();
   const { success, error } = useStandardizedToast();
   const [activeTab, setActiveTab] = useState('calendar');
@@ -21,6 +40,7 @@ const ShiftsContent = () => {
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
   const [shifts, setShifts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [filters, setFilters] = useState({
     startDate: null,
     endDate: null,
@@ -29,6 +49,11 @@ const ShiftsContent = () => {
     minHours: 0,
     maxHours: 24
   });
+  
+  // Use props if provided, otherwise use local state
+  const currentSelectedDate = props.selectedDate || selectedDate;
+  const handleSelectDate = props.onSelectDate || setSelectedDate;
+  const currentShifts = props.shifts || shifts;
   
   useEffect(() => {
     // Simulate loading shifts data
@@ -108,7 +133,7 @@ const ShiftsContent = () => {
     setIsFilterSheetOpen(false);
   };
 
-  const filteredShifts = shifts.filter(shift => {
+  const filteredShifts = currentShifts.filter(shift => {
     // Apply date filters
     if (filters.startDate && new Date(shift.date) < new Date(filters.startDate)) {
       return false;
@@ -144,7 +169,7 @@ const ShiftsContent = () => {
     );
   }
 
-  if (shifts.length === 0) {
+  if (currentShifts.length === 0) {
     return <EmptyShiftsState onAddShift={() => setIsAddSheetOpen(true)} />;
   }
 
@@ -192,6 +217,8 @@ const ShiftsContent = () => {
           
           <TabsContent value="calendar" className="mt-0">
             <ShiftCalendar 
+              selectedDate={currentSelectedDate}
+              onSelectDate={handleSelectDate}
               shifts={filteredShifts} 
               onUpdateShift={handleUpdateShift}
               onDeleteShift={handleDeleteShift}
