@@ -7,7 +7,8 @@ import {
   UserIcon, 
   LogOutIcon, 
   SearchIcon,
-  Settings as SettingsIcon
+  Settings as SettingsIcon,
+  Shield
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -212,6 +213,14 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProp
                     <UserIcon className="mr-2 h-4 w-4" />
                     <span>Profil</span>
                   </DropdownMenuItem>
+                  
+                  {isAdmin && (
+                    <DropdownMenuItem onClick={() => navigate("/admin")}>
+                      <Shield className="mr-2 h-4 w-4" />
+                      <span>Administrace</span>
+                    </DropdownMenuItem>
+                  )}
+                  
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout}>
                     <LogOutIcon className="mr-2 h-4 w-4" />

@@ -12,7 +12,8 @@ import {
   Scale, 
   Settings, 
   MapPin,
-  Languages
+  Languages,
+  Shield
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -24,7 +25,7 @@ interface SidebarNavigationProps {
 const SidebarNavigation = ({ closeSidebar, isHorizontal = false }: SidebarNavigationProps) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
 
   const navigationItems = [
     { name: "Domů", path: "/", icon: Home },
@@ -38,6 +39,7 @@ const SidebarNavigation = ({ closeSidebar, isHorizontal = false }: SidebarNaviga
     { name: "Zákony", path: "/laws", icon: Scale },
     { name: "Cesty", path: "/travel-planning", icon: MapPin },
     { name: "Nastavení", path: "/settings", icon: Settings },
+    ...(isAdmin ? [{ name: "Administrace", path: "/admin", icon: Shield }] : []),
   ];
 
   const handleNavigation = (path: string) => {
