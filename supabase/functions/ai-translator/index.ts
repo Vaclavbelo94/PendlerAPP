@@ -19,7 +19,7 @@ async function translateWithGoogleTranslate(text: string, sourceLang: string = '
     if (data && data[0] && data[0][0]) {
       const translatedText = data[0][0][0];
       return {
-        response: `🔄 **Překlad**: ${translatedText}\n📝 **Kontext**: Automatický překlad (bez AI asistenta)\n💡 **Tip**: Pro detailnější vysvětlení zkuste později, až bude AI dostupná`,
+        response: `🔄 **Překlad**: ${translatedText}`,
         fallback: true
       };
     }
@@ -42,6 +42,20 @@ function detectLanguage(text: string): { source: string, target: string } {
   return { source: 'auto', target: 'cs' };
 }
 
+// Analyze input type for response formatting
+function analyzeInput(text: string): string {
+  const wordCount = text.trim().split(/\s+/).length;
+  const isQuestion = /^(jak|co|kde|kdy|proč|kdo|why|what|where|when|how|who|wie|was|wo|wann|warum|wer)\s/i.test(text.trim()) || text.includes('?');
+  
+  if (wordCount === 1) {
+    return 'single_word';
+  } else if (isQuestion) {
+    return 'question';
+  } else {
+    return 'sentence';
+  }
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -49,34 +63,42 @@ serve(async (req) => {
 
   try {
     const { message, conversationHistory = [] } = await req.json();
+    const inputType = analyzeInput(message);
 
-    // System prompt optimized for Gemini
-    const systemPrompt = `Jsi specializovaný AI asistent pro německo-český překlad a výuku jazyka. Pomáháš českým pendlerům a pracovníkům v Německu s komunikací.
+    // Simplified system prompt based on input type
+    let systemPrompt = '';
+    
+    switch (inputType) {
+      case 'single_word':
+        systemPrompt = `Jsi překladač. Pro jednotlivá slova poskytni:
+1. Překlad do cílového jazyka
+2. Jednoduchý příklad použití ve větě
 
-TVOJE HLAVNÍ FUNKCE:
-- Překlady mezi češtinou a němčinou s kontextovým vysvětlením
-- Vysvětlení gramatiky, výslovnosti a kulturních rozdílů
-- Praktické rady pro komunikaci v práci, na úřadech, v obchodech
-- Pomoc s konkrétními situacemi (pohovory, prezentace, dokumenty)
-- Výuka základních a pokročilých jazykových konstrukcí
+Formát odpovědi:
+🔄 **Překlad**: [přeložené slovo]
+📝 **Příklad**: [krátká věta s použitím slova]
 
-STYL ODPOVĚDÍ:
-- Přátelský a podporující tón
-- Strukturované odpovědi s jasným rozdělením
-- Vždy uveď překlad + vysvětlení kontextu
-- Praktické příklady použití
-- Krátké, ale kompletní informace
-- Používej české znaky správně
+Buď stručný a konkrétní.`;
+        break;
+        
+      case 'question':
+        systemPrompt = `Jsi jazykový asistent. Odpovídej na otázky o jazyce stručně a prakticky.
 
-FORMÁT ODPOVĚDÍ:
-Pokud uživatel žádá překlad:
+Formát odpovědi:
+💡 **Odpověď**: [krátká a jasná odpověď]
+
+Pokud je potřeba příklad, uveď jen jeden. Buď konkrétní.`;
+        break;
+        
+      default: // sentence
+        systemPrompt = `Jsi překladač. Pro věty a delší texty poskytni pouze čistý překlad.
+
+Formát odpovědi:
 🔄 **Překlad**: [přeložený text]
-📝 **Kontext**: [kdy a jak použít]
-💡 **Tip**: [praktická rada nebo alternativa]
 
-Pro složitější otázky strukturuj odpověď logicky s emoji pro lepší orientaci.
-
-Specializuješ se na praktické situace českých pendlerů v Německu.`;
+Nic dalšího nepřidávej. Pouze překlad.`;
+        break;
+    }
 
     // First try Google Gemini
     try {
@@ -98,10 +120,10 @@ Specializuješ se na praktické situace českých pendlerů v Německu.`;
             }]
           }],
           generationConfig: {
-            temperature: 0.7,
-            topK: 40,
-            topP: 0.95,
-            maxOutputTokens: 1000,
+            temperature: 0.3,
+            topK: 20,
+            topP: 0.8,
+            maxOutputTokens: 200,
           }
         }),
       });
