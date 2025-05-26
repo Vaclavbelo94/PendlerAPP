@@ -38,10 +38,25 @@ export const saveServiceRecord = async (record: Partial<ServiceRecord>): Promise
       if (error) throw error;
       return data;
     } else {
-      // Create new record
+      // Create new record - validate required fields
+      if (!record.vehicle_id || !record.service_date || !record.service_type || 
+          !record.description || !record.mileage || !record.cost || !record.provider) {
+        throw new Error('Missing required fields for service record');
+      }
+
+      const newRecord = {
+        vehicle_id: record.vehicle_id,
+        service_date: record.service_date,
+        service_type: record.service_type,
+        description: record.description,
+        mileage: record.mileage,
+        cost: record.cost,
+        provider: record.provider
+      };
+
       const { data, error } = await supabase
         .from('service_records')
-        .insert(record)
+        .insert(newRecord)
         .select()
         .single();
       
@@ -104,10 +119,27 @@ export const saveFuelRecord = async (record: Partial<FuelRecord>): Promise<FuelR
       if (error) throw error;
       return data;
     } else {
-      // Create new record
+      // Create new record - validate required fields
+      if (!record.vehicle_id || !record.date || record.amount_liters === undefined || 
+          record.price_per_liter === undefined || record.total_cost === undefined || 
+          !record.mileage || record.full_tank === undefined || !record.station) {
+        throw new Error('Missing required fields for fuel record');
+      }
+
+      const newRecord = {
+        vehicle_id: record.vehicle_id,
+        date: record.date,
+        amount_liters: record.amount_liters,
+        price_per_liter: record.price_per_liter,
+        total_cost: record.total_cost,
+        mileage: record.mileage,
+        full_tank: record.full_tank,
+        station: record.station
+      };
+
       const { data, error } = await supabase
         .from('fuel_records')
-        .insert(record)
+        .insert(newRecord)
         .select()
         .single();
       
@@ -170,10 +202,27 @@ export const saveInsuranceRecord = async (record: Partial<InsuranceRecord>): Pro
       if (error) throw error;
       return data;
     } else {
-      // Create new record
+      // Create new record - validate required fields
+      if (!record.vehicle_id || !record.provider || !record.policy_number || 
+          !record.valid_from || !record.valid_until || !record.monthly_cost || 
+          !record.coverage_type) {
+        throw new Error('Missing required fields for insurance record');
+      }
+
+      const newRecord = {
+        vehicle_id: record.vehicle_id,
+        provider: record.provider,
+        policy_number: record.policy_number,
+        valid_from: record.valid_from,
+        valid_until: record.valid_until,
+        monthly_cost: record.monthly_cost,
+        coverage_type: record.coverage_type,
+        notes: record.notes || ''
+      };
+
       const { data, error } = await supabase
         .from('insurance_records')
-        .insert(record)
+        .insert(newRecord)
         .select()
         .single();
       
@@ -236,10 +285,23 @@ export const saveDocument = async (document: Partial<DocumentRecord>): Promise<D
       if (error) throw error;
       return data;
     } else {
-      // Create new document
+      // Create new document - validate required fields
+      if (!document.vehicle_id || !document.name || !document.type) {
+        throw new Error('Missing required fields for document');
+      }
+
+      const newDocument = {
+        vehicle_id: document.vehicle_id,
+        name: document.name,
+        type: document.type,
+        expiry_date: document.expiry_date,
+        notes: document.notes,
+        file_path: document.file_path
+      };
+
       const { data, error } = await supabase
         .from('vehicle_documents')
-        .insert(document)
+        .insert(newDocument)
         .select()
         .single();
       
