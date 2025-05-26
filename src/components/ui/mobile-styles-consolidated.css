@@ -1,9 +1,9 @@
-
 /* Consolidated mobile styles - import all mobile optimizations */
 @import './mobile-translator-styles.css';
 @import './mobile-styles-import.css';
 @import './mobile-responsive-styles.css';
 @import './landscape-styles.css';
+@import './mobile-layout-utils.css';
 
 /* Global mobile performance optimizations */
 @media screen and (max-width: 768px) {

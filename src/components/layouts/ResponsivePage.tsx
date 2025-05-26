@@ -7,33 +7,44 @@ interface ResponsivePageProps {
   children: React.ReactNode;
   className?: string;
   enableLandscapeOptimization?: boolean;
+  enableMobileSafeArea?: boolean;
 }
 
 export const ResponsivePage: React.FC<ResponsivePageProps> = ({
   children,
   className,
-  enableLandscapeOptimization = true
+  enableLandscapeOptimization = true,
+  enableMobileSafeArea = true
 }) => {
   const isMobile = useIsMobile();
   const orientation = useOrientation();
   
   const isLandscapeMobile = isMobile && orientation === 'landscape';
+  const isPortraitMobile = isMobile && orientation === 'portrait';
   
   const pageClasses = cn(
-    'min-h-screen w-full',
+    'min-h-screen w-full relative',
     {
-      // Landscape mobile optimizations
-      'landscape-optimized': isLandscapeMobile && enableLandscapeOptimization,
-      'px-2 py-1': isLandscapeMobile,
-      'px-3 py-2': isMobile && orientation === 'portrait',
+      // Mobile portrait optimizations
+      'mobile-safe-area pt-20 pb-20': isPortraitMobile && enableMobileSafeArea,
+      'landscape-optimized px-2 py-1': isLandscapeMobile && enableLandscapeOptimization,
       'px-4 py-4': !isMobile,
+      // Desktop stability
+      'desktop-stable': !isMobile,
     },
     className
   );
   
   return (
     <div className={pageClasses} role="main">
-      {children}
+      {/* Mobile safe area wrapper */}
+      {isPortraitMobile && enableMobileSafeArea ? (
+        <div className="mobile-content-safe px-4 py-2">
+          {children}
+        </div>
+      ) : (
+        children
+      )}
     </div>
   );
 };

@@ -45,7 +45,10 @@ export const UniversalMobileNavigation: React.FC<UniversalMobileNavigationProps>
 
   if (!isMobile) {
     return (
-      <div className={cn("grid grid-cols-4 gap-2 mb-6", className)}>
+      <div className={cn("grid gap-2 mb-6", 
+        tabs.length <= 4 ? `grid-cols-${tabs.length}` : "grid-cols-4", 
+        className
+      )}>
         {tabs.map((tab) => {
           const Icon = tab.icon;
           return (
@@ -64,14 +67,21 @@ export const UniversalMobileNavigation: React.FC<UniversalMobileNavigationProps>
     );
   }
 
+  // Mobile layout with improved overflow handling
   return (
-    <div className={cn("mb-6", className)}>
-      {/* Mobile tab navigation with swipe support */}
+    <div className={cn("mb-4", className)}>
       <div 
         ref={containerRef}
         className="relative overflow-hidden bg-muted rounded-lg p-1"
       >
-        <div className="grid grid-cols-2 gap-1">
+        {/* Mobile tabs - adaptive layout */}
+        <div className={cn(
+          "flex gap-1",
+          tabs.length > 4 ? "overflow-x-auto pb-1" : "grid",
+          tabs.length === 2 ? "grid-cols-2" : 
+          tabs.length === 3 ? "grid-cols-3" : 
+          tabs.length === 4 ? "grid-cols-2" : ""
+        )}>
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -81,17 +91,18 @@ export const UniversalMobileNavigation: React.FC<UniversalMobileNavigationProps>
                 key={tab.id}
                 onClick={() => onTabChange(tab.id)}
                 className={cn(
-                  "flex flex-col items-center gap-2 p-3 rounded-md transition-all duration-200",
-                  isSmallLandscape ? "min-h-[50px] p-2" : "min-h-[60px]",
+                  "flex flex-col items-center gap-1 p-2 rounded-md transition-all duration-200 min-w-0 flex-shrink-0",
+                  isSmallLandscape ? "min-h-[40px] px-3" : "min-h-[50px]",
+                  tabs.length > 4 ? "min-w-[80px]" : "flex-1",
                   "touch-target",
                   isActive 
                     ? "bg-primary text-primary-foreground shadow-sm" 
                     : "text-muted-foreground hover:text-foreground hover:bg-background/50"
                 )}
               >
-                <Icon className={cn("h-5 w-5", isSmallLandscape && "h-4 w-4")} />
+                <Icon className={cn("h-4 w-4", isSmallLandscape && "h-3 w-3")} />
                 <span className={cn(
-                  "text-xs font-medium text-center leading-tight",
+                  "text-xs font-medium text-center leading-tight truncate w-full",
                   isSmallLandscape && "text-[10px]"
                 )}>
                   {tab.label}
@@ -102,20 +113,22 @@ export const UniversalMobileNavigation: React.FC<UniversalMobileNavigationProps>
         </div>
       </div>
       
-      {/* Swipe indicator */}
-      <div className="flex justify-center mt-2">
-        <div className="flex gap-1">
-          {tabs.map((_, index) => (
-            <div
-              key={index}
-              className={cn(
-                "w-2 h-2 rounded-full transition-colors duration-200",
-                index === currentIndex ? "bg-primary" : "bg-muted-foreground/30"
-              )}
-            />
-          ))}
+      {/* Swipe indicators for overflow */}
+      {tabs.length > 4 && (
+        <div className="flex justify-center mt-2">
+          <div className="flex gap-1">
+            {tabs.map((_, index) => (
+              <div
+                key={index}
+                className={cn(
+                  "w-1.5 h-1.5 rounded-full transition-colors duration-200",
+                  index === currentIndex ? "bg-primary" : "bg-muted-foreground/30"
+                )}
+              />
+            ))}
+          </div>
         </div>
-      </div>
+      )}
       
       {/* Current tab description */}
       <p className={cn(
