@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -167,7 +166,6 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProp
                       <UserIcon className={isLandscapeMobile ? "h-3 w-3" : isPortraitMobile ? "h-4 w-4" : "h-4 w-4"} />
                     </div>
                     
-                    {/* Na mobilu skrýt text a badges */}
                     {!isMobile && (
                       <>
                         <span className="hidden sm:inline font-medium text-sm">
@@ -187,7 +185,6 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProp
                     <span className="text-xs text-muted-foreground truncate">
                       {user.email}
                     </span>
-                    {/* Na mobilu zobrazit badges v dropdown */}
                     {isMobile && (
                       <div className="flex gap-1 mt-1">
                         {isPremium && <Badge className="bg-amber-500 text-xs">Premium</Badge>}
@@ -197,7 +194,6 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProp
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   
-                  {/* Na mobilu přidat Theme Toggle do menu */}
                   {isMobile && (
                     <>
                       <DropdownMenuItem onClick={(e) => e.preventDefault()}>
