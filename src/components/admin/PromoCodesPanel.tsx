@@ -1,6 +1,5 @@
-
 import { useState, useEffect } from "react";
-import { toast } from "sonner";
+import { useStandardizedToast } from "@/hooks/useStandardizedToast";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PromoCodeDialog } from "./promoCode/PromoCodeDialog";
@@ -20,6 +19,7 @@ export const PromoCodesPanel = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showDialog, setShowDialog] = useState(false);
   const [activeTab, setActiveTab] = useState("manage");
+  const { success: showSuccess, error: showError } = useStandardizedToast();
 
   useEffect(() => {
     const loadPromoCodesData = async () => {
@@ -30,7 +30,7 @@ export const PromoCodesPanel = () => {
         if (localData) {
           const migrated = await migratePromoCodesFromLocalStorage();
           if (migrated) {
-            toast.success("Úspěšně jsme přenesli vaše promo kódy");
+            showSuccess("Úspěšně jsme přenesli vaše promo kódy");
           }
         }
 
@@ -39,14 +39,14 @@ export const PromoCodesPanel = () => {
         setPromoCodes(codes);
       } catch (error) {
         console.error("Chyba při načítání promo kódů:", error);
-        toast.error("Nepodařilo se načíst promo kódy");
+        showError("Nepodařilo se načíst promo kódy");
       } finally {
         setIsLoading(false);
       }
     };
 
     loadPromoCodesData();
-  }, []);
+  }, [showSuccess, showError]);
 
   const handleCreatePromoCode = (newCode: PromoCode) => {
     setPromoCodes(prevCodes => [newCode, ...prevCodes]);
@@ -56,7 +56,7 @@ export const PromoCodesPanel = () => {
     const success = await deletePromoCode(id);
     if (success) {
       setPromoCodes(prevCodes => prevCodes.filter(code => code.id !== id));
-      toast.success("Promo kód byl úspěšně smazán");
+      showSuccess("Promo kód byl úspěšně smazán");
     }
   };
 
@@ -69,7 +69,7 @@ export const PromoCodesPanel = () => {
       setPromoCodes(prevCodes =>
         prevCodes.map(code => (code.id === id ? updatedCode : code))
       );
-      toast.success("Počet použití byl resetován");
+      showSuccess("Počet použití byl resetován");
     }
   };
 
@@ -85,7 +85,7 @@ export const PromoCodesPanel = () => {
       setPromoCodes(prevCodes =>
         prevCodes.map(code => (code.id === id ? updatedCode : code))
       );
-      toast.success("Platnost promo kódu byla prodloužena");
+      showSuccess("Platnost promo kódu byla prodloužena");
     }
   };
 

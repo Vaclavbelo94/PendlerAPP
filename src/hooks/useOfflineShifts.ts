@@ -1,9 +1,8 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useOfflineStatus } from '@/hooks/useOfflineStatus';
 import { saveData, getAllData, deleteItemById, addToSyncQueue } from '@/utils/offlineStorage';
-import { toast } from '@/components/ui/use-toast';
+import { useStandardizedToast } from '@/hooks/useStandardizedToast';
 
 export interface OfflineShift {
   id: string;
@@ -21,6 +20,7 @@ export const useOfflineShifts = () => {
   const { isOffline } = useOfflineStatus();
   const [offlineShifts, setOfflineShifts] = useState<OfflineShift[]>([]);
   const [isSyncing, setIsSyncing] = useState(false);
+  const { success: showSuccess, error: showError } = useStandardizedToast();
 
   // Load offline shifts
   const loadOfflineShifts = useCallback(async () => {
@@ -54,22 +54,15 @@ export const useOfflineShifts = () => {
       setOfflineShifts(prev => [...prev.filter(s => s.id !== shift.id), offlineShift]);
       
       if (isOffline) {
-        toast({
-          title: "Směna uložena offline",
-          description: "Bude synchronizována při obnovení připojení"
-        });
+        showSuccess("Směna uložena offline", "Bude synchronizována při obnovení připojení");
       }
       
       return offlineShift;
     } catch (error) {
       console.error('Error saving shift offline:', error);
-      toast({
-        title: "Chyba při ukládání",
-        description: "Nepodařilo se uložit směnu offline",
-        variant: "destructive"
-      });
+      showError("Chyba při ukládání", "Nepodařilo se uložit směnu offline");
     }
-  }, [user, isOffline]);
+  }, [user, isOffline, showSuccess, showError]);
 
   // Delete shift offline
   const deleteShiftOffline = useCallback(async (shiftId: string) => {
@@ -82,15 +75,12 @@ export const useOfflineShifts = () => {
       setOfflineShifts(prev => prev.filter(s => s.id !== shiftId));
       
       if (isOffline) {
-        toast({
-          title: "Směna smazána offline",
-          description: "Změna bude synchronizována při obnovení připojení"
-        });
+        showSuccess("Směna smazána offline", "Změna bude synchronizována při obnovení připojení");
       }
     } catch (error) {
       console.error('Error deleting shift offline:', error);
     }
-  }, [user, isOffline]);
+  }, [user, isOffline, showSuccess]);
 
   // Sync pending shifts
   const syncPendingShifts = useCallback(async () => {
@@ -109,22 +99,15 @@ export const useOfflineShifts = () => {
       setOfflineShifts(prev => prev.map(shift => ({ ...shift, synced: true })));
       
       if (pendingShifts.length > 0) {
-        toast({
-          title: "Směny synchronizovány",
-          description: `Synchronizováno ${pendingShifts.length} směn`
-        });
+        showSuccess("Směny synchronizovány", `Synchronizováno ${pendingShifts.length} směn`);
       }
     } catch (error) {
       console.error('Error syncing shifts:', error);
-      toast({
-        title: "Chyba při synchronizaci",
-        description: "Nepodařilo se synchronizovat směny",
-        variant: "destructive"
-      });
+      showError("Chyba při synchronizaci", "Nepodařilo se synchronizovat směny");
     } finally {
       setIsSyncing(false);
     }
-  }, [user, isOffline, offlineShifts]);
+  }, [user, isOffline, offlineShifts, showSuccess, showError]);
 
   // Load shifts on mount
   useEffect(() => {

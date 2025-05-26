@@ -1,12 +1,13 @@
-
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { useStandardizedToast } from '@/hooks/useStandardizedToast';
 import { cleanupAuthState } from '@/utils/authUtils';
 
 /**
  * Hook for authentication methods (login, register, logout)
  */
 export const useAuthMethods = () => {
+  const { success: showSuccess, error: showError } = useStandardizedToast();
+
   const signIn = async (email: string, password: string) => {
     try {
       // Clean up existing auth state
@@ -99,13 +100,10 @@ export const useAuthMethods = () => {
       // Attempt global sign out
       await supabase.auth.signOut({ scope: 'global' });
       
-      // Using sonner toast
-      toast("Byli jste odhlášeni");
+      showSuccess("Byli jste odhlášeni");
     } catch (error: any) {
       console.error('Sign out error:', error);
-      toast("Odhlášení selhalo", {
-        description: error.message,
-      });
+      showError("Odhlášení selhalo", error.message);
       
       // Force cleanup even if sign out fails
       cleanupAuthState();

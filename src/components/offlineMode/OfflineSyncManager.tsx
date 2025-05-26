@@ -1,9 +1,8 @@
-
 import React, { useState, useRef } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useSyncSettings } from '@/hooks/useSyncSettings';
 import { syncWithLocalStorage } from '@/utils/offlineStorage';
-import { toast } from '@/hooks/use-toast';
+import { useStandardizedToast } from '@/hooks/useStandardizedToast';
 import { AutoSyncManager } from './AutoSyncManager';
 import { PremiumStatusManager } from './core/PremiumStatusManager';
 import { OfflineDataManager } from './core/OfflineDataManager';
@@ -18,6 +17,7 @@ export const OfflineSyncManager = () => {
   const [isInitialized, setIsInitialized] = useState(false);
   const [isNativeMode, setIsNativeMode] = useState(false);
   const initializeRef = useRef(false);
+  const { success: showSuccess, error: showError, info: showInfo } = useStandardizedToast();
 
   // Initialize native mode detection once
   React.useEffect(() => {
@@ -39,28 +39,18 @@ export const OfflineSyncManager = () => {
     if (!user) return;
     
     if (settings.showSyncNotifications) {
-      toast({
-        title: 'Synchronizace',
-        description: 'Probíhá synchronizace vašich dat...',
-      });
+      showInfo('Synchronizace', 'Probíhá synchronizace vašich dat...');
     }
     
     try {
       await syncWithLocalStorage();
       if (settings.showSyncNotifications) {
-        toast({
-          title: 'Hotovo',
-          description: 'Vaše data byla úspěšně synchronizována.',
-        });
+        showSuccess('Hotovo', 'Vaše data byla úspěšně synchronizována.');
       }
     } catch (error) {
       console.error('Error during manual sync:', error);
       if (settings.showSyncNotifications) {
-        toast({
-          title: 'Chyba při synchronizaci',
-          description: 'Zkontrolujte prosím připojení a zkuste to znovu.',
-          variant: 'destructive'
-        });
+        showError('Chyba při synchronizaci', 'Zkontrolujte prosím připojení a zkuste to znovu.');
       }
     }
   };

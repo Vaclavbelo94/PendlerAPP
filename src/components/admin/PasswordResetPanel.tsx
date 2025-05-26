@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { toast } from "sonner";
+import { useStandardizedToast } from "@/hooks/useStandardizedToast";
 import { supabase } from "@/integrations/supabase/client";
 import { PasswordResetSearch } from "./password/PasswordResetSearch";
 import { UsersResetTable } from "./password/UsersResetTable";
@@ -16,10 +16,11 @@ export const PasswordResetPanel = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [resetLinks, setResetLinks] = useState<{[key: string]: string}>({});
   const [isSearching, setIsSearching] = useState(false);
+  const { success: showSuccess, error: showError, info: showInfo } = useStandardizedToast();
 
   const handleSearch = async (searchTerm: string) => {
     if (!searchTerm.trim()) {
-      toast.error("Zadejte email nebo jméno uživatele");
+      showError("Zadejte email nebo jméno uživatele");
       return;
     }
 
@@ -34,7 +35,7 @@ export const PasswordResetPanel = () => {
       
       if (error) {
         console.error("Chyba při hledání uživatelů:", error);
-        toast.error("Nepodařilo se vyhledat uživatele");
+        showError("Nepodařilo se vyhledat uživatele");
         return;
       }
       
@@ -47,13 +48,13 @@ export const PasswordResetPanel = () => {
       setUsers(filteredUsers);
       
       if (filteredUsers.length === 0) {
-        toast.info("Žádní uživatelé nenalezeni");
+        showInfo("Žádní uživatelé nenalezeni");
       } else {
-        toast.success(`Nalezeno ${filteredUsers.length} uživatelů`);
+        showSuccess(`Nalezeno ${filteredUsers.length} uživatelů`);
       }
     } catch (error) {
       console.error("Chyba při hledání uživatelů:", error);
-      toast.error("Nepodařilo se vyhledat uživatele");
+      showError("Nepodařilo se vyhledat uživatele");
     } finally {
       setIsSearching(false);
     }
@@ -67,7 +68,7 @@ export const PasswordResetPanel = () => {
       
       if (error) {
         console.error("Chyba při generování reset linku:", error);
-        toast.error("Nepodařilo se vygenerovat reset link");
+        showError("Nepodařilo se vygenerovat reset link");
         return;
       }
       
@@ -79,21 +80,21 @@ export const PasswordResetPanel = () => {
         [userId]: mockResetLink
       });
       
-      toast.success("Reset email byl odeslán uživateli");
+      showSuccess("Reset email byl odeslán uživateli");
     } catch (error) {
       console.error("Chyba při generování reset linku:", error);
-      toast.error("Nepodařilo se vygenerovat reset link");
+      showError("Nepodařilo se vygenerovat reset link");
     }
   };
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text).then(
       () => {
-        toast.success("Odkaz zkopírován do schránky");
+        showSuccess("Odkaz zkopírován do schránky");
       },
       (err) => {
         console.error('Nepodařilo se zkopírovat odkaz: ', err);
-        toast.error("Nepodařilo se zkopírovat odkaz");
+        showError("Nepodařilo se zkopírovat odkaz");
       }
     );
   };
