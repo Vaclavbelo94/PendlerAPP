@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -153,7 +154,7 @@ const VocabularySection = () => {
               />
             </div>
           </div>
-          <Button onClick={addWord">Přidat</Button>
+          <Button onClick={addWord}>Přidat</Button>
         </CardContent>
       </Card>
 
