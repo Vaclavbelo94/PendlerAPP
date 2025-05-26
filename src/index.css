@@ -1,12 +1,8 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Import landscape styles */
-@import "./components/ui/landscape-styles.css";
-/* Import mobile portrait styles */
-@import "./components/ui/mobile-portrait-styles.css";
 
 @layer base {
   :root {
@@ -19,22 +15,22 @@
     --primary: 222.2 47.4% 11.2%;
     --primary-foreground: 210 40% 98%;
     --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 84% 4.9%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
     --muted: 210 40% 96%;
     --muted-foreground: 215.4 16.3% 46.9%;
     --accent: 210 40% 96%;
-    --accent-foreground: 222.2 84% 4.9%;
+    --accent-foreground: 222.2 47.4% 11.2%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
+    --radius: 0.5rem;
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 240 5.9% 10%;
@@ -42,7 +38,7 @@
     --sidebar-accent: 240 4.8% 95.9%;
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-ring: 217.2 10.6% 64.9%;
   }
 
   .dark {
@@ -77,7 +73,7 @@
     --sidebar-accent: 240 3.7% 15.9%;
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-ring: 217.2 10.6% 64.9%;
   }
 }
 
@@ -85,73 +81,112 @@
   * {
     @apply border-border;
   }
+  
   body {
     @apply bg-background text-foreground;
-    font-family: "Inter", sans-serif;
+    font-family: 'Inter', sans-serif;
+    font-feature-settings: 'cv11', 'ss01';
+    font-variation-settings: 'opsz' 32;
   }
 }
 
-/* Accessibility improvements */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
+/* Prevence problikávání během inicializace */
+.no-transition * {
+  transition: none !important;
+  animation: none !important;
 }
 
-/* Skip link for keyboard navigation */
-.skip-link {
-  position: absolute;
-  top: -40px;
-  left: 6px;
-  background: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
-  padding: 8px;
-  text-decoration: none;
-  transition: top 0.3s;
-  z-index: 100;
+/* Smooth transitions pro změny tématu */
+.theme-transition {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease !important;
 }
 
-.skip-link:focus {
-  top: 6px;
+.theme-transition * {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease !important;
 }
 
-/* Touch target improvements */
-@media (pointer: coarse) {
-  button:not(.icon-only), 
-  [role="button"]:not(.icon-only),
-  input[type="button"], 
-  input[type="submit"],
-  .touch-target {
-    min-height: 44px;
-    min-width: 44px;
-    padding: 0.75rem 1rem;
+/* Optimalizace pro desktop layout */
+@media (min-width: 769px) {
+  .main-layout {
+    display: flex;
+    min-height: 100vh;
+    background: hsl(var(--background));
   }
   
-  .icon-only {
-    min-height: 44px;
-    min-width: 44px;
-  }
-}
-
-/* Improved focus indicators */
-:focus-visible {
-  outline: 2px solid hsl(var(--ring));
-  outline-offset: 2px;
-}
-
-/* High contrast mode improvements */
-@media (prefers-contrast: high) {
-  .border {
-    border-width: 2px;
+  .desktop-sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
   }
   
-  button, [role="button"] {
-    border: 2px solid;
+  .desktop-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
   }
+}
+
+/* Mobilní optimalizace */
+@media (max-width: 768px) {
+  .mobile-navbar-fixed {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: hsl(var(--background));
+    border-bottom: 1px solid hsl(var(--border));
+  }
+  
+  .mobile-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 64px);
+  }
+  
+  .mobile-main-content {
+    flex: 1;
+    padding: 1rem;
+  }
+  
+  .mobile-sidebar-overlay {
+    backdrop-filter: blur(2px);
+  }
+}
+
+/* Landscape mobilní optimalizace */
+@media (max-width: 768px) and (orientation: landscape) {
+  .landscape-main-content {
+    padding: 0.5rem 0.75rem;
+  }
+}
+
+/* Performance optimalizace */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--background));
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
 }

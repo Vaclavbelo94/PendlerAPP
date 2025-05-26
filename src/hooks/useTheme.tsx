@@ -2,7 +2,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
 type Theme = 'light' | 'dark';
-
 type ColorScheme = 'purple' | 'blue' | 'green' | 'amber' | 'red' | 'pink';
 
 interface ThemeContextType {
@@ -16,109 +15,50 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>(() => {
-    // Načtení tématu z local storage při inicializaci
-    if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem('theme') as Theme;
-      
-      // Pokud existuje preference v localStorage, použij ji
-      if (savedTheme) {
-        return savedTheme;
-      }
-      
-      // Jinak se pokus zjistit preferenci systému
-      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        return 'dark';
-      }
-    }
-    
-    // Výchozí hodnota
-    return 'light';
-  });
+// Synchronní funkce pro načtení tématu
+const getInitialTheme = (): Theme => {
+  if (typeof window === 'undefined') return 'light';
+  
+  const savedTheme = localStorage.getItem('theme') as Theme;
+  if (savedTheme) return savedTheme;
+  
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    return 'dark';
+  }
+  
+  return 'light';
+};
 
-  const [colorScheme, setColorScheme] = useState<ColorScheme>(() => {
-    // Načtení barevného schématu z local storage
-    if (typeof window !== 'undefined') {
-      const savedColorScheme = localStorage.getItem('colorScheme') as ColorScheme;
-      if (savedColorScheme) {
-        return savedColorScheme;
-      }
-    }
-    
-    // Výchozí hodnota
-    return 'purple';
-  });
+const getInitialColorScheme = (): ColorScheme => {
+  if (typeof window === 'undefined') return 'purple';
   
-  // Stav pro sledování, zda právě probíhá změna tématu
+  const savedColorScheme = localStorage.getItem('colorScheme') as ColorScheme;
+  return savedColorScheme || 'purple';
+};
+
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  // Synchronní inicializace pro zabránění problikávání
+  const [theme, setTheme] = useState<Theme>(getInitialTheme);
+  const [colorScheme, setColorScheme] = useState<ColorScheme>(getInitialColorScheme);
   const [isChangingTheme, setIsChangingTheme] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
   
-  // Zamezit problikávání při změně tématu
-  const [initialRender, setInitialRender] = useState(true);
-  
-  // Efekt pro inicializaci
+  // Efekt pro inicializaci - spustí se jen jednou
   useEffect(() => {
-    // Přidáme třídu pro zamezení animací během prvního načtení
-    document.documentElement.classList.add('no-animation');
-    
-    // Odstraníme třídu po chvíli
-    setTimeout(() => {
-      document.documentElement.classList.remove('no-animation');
-      setInitialRender(false);
-    }, 300);
-  }, []);
-  
-  // Efekt pro aktualizaci HTML atributu a localStorage při změně tématu
-  useEffect(() => {
-    // Přeskočit první render, aby nedošlo k probliknutí
-    if (initialRender) return;
-    
     const root = window.document.documentElement;
     
-    // Nastavit příznak změny tématu
-    setIsChangingTheme(true);
+    // Okamžitě aplikovat téma bez animace
+    root.classList.add('no-transition');
     
-    // Aplikovat změnu plynule
     if (theme === 'dark') {
-      root.classList.add('theme-transition');
-      setTimeout(() => {
-        // Odstranit předchozí třídy a přidat novou
-        root.classList.remove('light');
-        root.classList.add('dark');
-        
-        // Po dokončení přechodu odstranit třídu pro transition a resetovat příznak změny
-        setTimeout(() => {
-          root.classList.remove('theme-transition');
-          setIsChangingTheme(false);
-        }, 300);
-      }, 10);
+      root.classList.remove('light');
+      root.classList.add('dark');
     } else {
-      root.classList.add('theme-transition');
-      setTimeout(() => {
-        // Odstranit předchozí třídy a přidat novou
-        root.classList.remove('dark');
-        root.classList.add('light');
-        
-        // Po dokončení přechodu odstranit třídu pro transition a resetovat příznak změny
-        setTimeout(() => {
-          root.classList.remove('theme-transition');
-          setIsChangingTheme(false);
-        }, 300);
-      }, 10);
+      root.classList.remove('dark');
+      root.classList.add('light');
     }
     
-    // Uložit do localStorage
-    localStorage.setItem('theme', theme);
-  }, [theme, initialRender]);
-  
-  // Efekt pro aktualizaci barevného schématu
-  useEffect(() => {
-    // Přeskočit první render, aby nedošlo k probliknutí
-    if (initialRender) return;
-    
-    const root = window.document.documentElement;
-    
-    // Nastavit CSS proměnnou s primární barvou podle vybraného schématu
+    // Nastavit barevné schéma
     switch (colorScheme) {
       case 'purple':
         root.style.setProperty('--color-primary', '#8884d8');
@@ -142,13 +82,75 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         root.style.setProperty('--color-primary', '#8884d8');
     }
     
-    // Uložit do localStorage
+    // Po krátkém čase povolit transitions
+    setTimeout(() => {
+      root.classList.remove('no-transition');
+      setIsInitialized(true);
+    }, 100);
+  }, []); // Prázdný dependency array - spustí se jen jednou
+  
+  // Efekt pro změny tématu po inicializaci
+  useEffect(() => {
+    if (!isInitialized) return;
+    
+    const root = window.document.documentElement;
+    setIsChangingTheme(true);
+    
+    // Smooth transition pro změny tématu
+    root.classList.add('theme-transition');
+    
+    setTimeout(() => {
+      if (theme === 'dark') {
+        root.classList.remove('light');
+        root.classList.add('dark');
+      } else {
+        root.classList.remove('dark');
+        root.classList.add('light');
+      }
+      
+      localStorage.setItem('theme', theme);
+      
+      setTimeout(() => {
+        root.classList.remove('theme-transition');
+        setIsChangingTheme(false);
+      }, 200);
+    }, 10);
+  }, [theme, isInitialized]);
+  
+  // Efekt pro změny barevného schématu
+  useEffect(() => {
+    if (!isInitialized) return;
+    
+    const root = window.document.documentElement;
+    
+    switch (colorScheme) {
+      case 'purple':
+        root.style.setProperty('--color-primary', '#8884d8');
+        break;
+      case 'blue':
+        root.style.setProperty('--color-primary', '#0ea5e9');
+        break;
+      case 'green':
+        root.style.setProperty('--color-primary', '#10b981');
+        break;
+      case 'amber':
+        root.style.setProperty('--color-primary', '#f59e0b');
+        break;
+      case 'red':
+        root.style.setProperty('--color-primary', '#ef4444');
+        break;
+      case 'pink':
+        root.style.setProperty('--color-primary', '#ec4899');
+        break;
+      default:
+        root.style.setProperty('--color-primary', '#8884d8');
+    }
+    
     localStorage.setItem('colorScheme', colorScheme);
-  }, [colorScheme, initialRender]);
+  }, [colorScheme, isInitialized]);
 
-  // Funkce pro přepnutí témat
   const toggleTheme = () => {
-    if (isChangingTheme) return; // Zabránit rychlému přepínání, pokud už změna probíhá
+    if (isChangingTheme) return;
     setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
   };
 
@@ -159,7 +161,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-// Hook pro použití tématu v komponentách
 export function useTheme() {
   const context = useContext(ThemeContext);
   
