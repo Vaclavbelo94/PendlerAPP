@@ -6,7 +6,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 const Hero = React.lazy(() => import("@/components/home/Hero"));
 const Features = React.lazy(() => import("@/components/home/Features"));
 const Benefits = React.lazy(() => import("@/components/home/Benefits"));
-const AppShowcase = React.lazy(() => import("@/components/home/AppShowcase"));
 const CTA = React.lazy(() => import("@/components/home/CTA"));
 
 // Optimalizovaný loading placeholder
@@ -46,10 +45,6 @@ export const IndexContent = ({ animatedHeroVisible }: IndexContentProps) => {
       
       <Suspense fallback={<SectionLoader />}>
         <Benefits />
-      </Suspense>
-      
-      <Suspense fallback={<SectionLoader />}>
-        <AppShowcase />
       </Suspense>
       
       <Suspense fallback={<SectionLoader />}>

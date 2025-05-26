@@ -1,10 +1,10 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Sheet, SheetContent, SheetTitle, SheetDescription, SheetHeader } from '@/components/ui/sheet';
 import { Helmet } from "react-helmet";
 import { useAuth } from '@/hooks/useAuth';
-import { Plus, Car } from 'lucide-react';
+import { Plus, Car, Gauge, Wrench, FileText, MapPin } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useStandardizedToast } from '@/hooks/useStandardizedToast';
 import PremiumCheck from '@/components/premium/PremiumCheck';
@@ -16,6 +16,8 @@ import InsuranceCard from '@/components/vehicle/InsuranceCard';
 import DocumentsCard from '@/components/vehicle/DocumentsCard';
 import CrossBorderCard from '@/components/vehicle/CrossBorderCard';
 import EmptyVehicleState from '@/components/vehicle/EmptyVehicleState';
+import { UniversalMobileNavigation } from '@/components/navigation/UniversalMobileNavigation';
+import { useScreenOrientation } from '@/hooks/useScreenOrientation';
 
 const Vehicle = () => {
   const { user } = useAuth();
@@ -24,7 +26,9 @@ const Vehicle = () => {
   const [isAddSheetOpen, setIsAddSheetOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [activeTab, setActiveTab] = useState("overview");
   const { success, error } = useStandardizedToast();
+  const { isMobile, isSmallLandscape } = useScreenOrientation();
 
   useEffect(() => {
     if (user) {
@@ -87,24 +91,110 @@ const Vehicle = () => {
   // Find the currently selected vehicle object
   const selectedVehicle = vehicles.find(v => v.id === selectedVehicleId);
 
+  // Vehicle tabs for navigation
+  const vehicleTabs = [
+    {
+      id: "overview",
+      label: "Přehled",
+      icon: Car,
+      description: "Hlavní přehled vozidla"
+    },
+    {
+      id: "fuel",
+      label: "Spotřeba",
+      icon: Gauge,
+      description: "Sledování spotřeby paliva"
+    },
+    {
+      id: "service",
+      label: "Servis",
+      icon: Wrench,
+      description: "Záznamy o servisu"
+    },
+    {
+      id: "documents",
+      label: "Dokumenty",
+      icon: FileText,
+      description: "Dokumenty vozidla"
+    },
+    {
+      id: "crossborder",
+      label: "Přeshraniční",
+      icon: MapPin,
+      description: "Přeshraniční jízdy"
+    }
+  ];
+
+  const renderTabContent = () => {
+    if (!selectedVehicle) return null;
+
+    switch (activeTab) {
+      case "overview":
+        return (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-6">
+                <FuelConsumptionCard vehicleId={selectedVehicleId} />
+                <ServiceRecordCard vehicleId={selectedVehicleId} />
+              </div>
+              <div className="space-y-6">
+                <InsuranceCard vehicleId={selectedVehicleId} />
+                <DocumentsCard vehicleId={selectedVehicleId} />
+              </div>
+            </div>
+          </div>
+        );
+      case "fuel":
+        return <FuelConsumptionCard vehicleId={selectedVehicleId} fullView />;
+      case "service":
+        return <ServiceRecordCard vehicleId={selectedVehicleId} fullView />;
+      case "documents":
+        return <DocumentsCard vehicleId={selectedVehicleId} fullView />;
+      case "crossborder":
+        return <CrossBorderCard vehicleId={selectedVehicleId} />;
+      default:
+        return (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-6">
+                <FuelConsumptionCard vehicleId={selectedVehicleId} />
+                <ServiceRecordCard vehicleId={selectedVehicleId} />
+              </div>
+              <div className="space-y-6">
+                <InsuranceCard vehicleId={selectedVehicleId} />
+                <DocumentsCard vehicleId={selectedVehicleId} />
+              </div>
+            </div>
+          </div>
+        );
+    }
+  };
+
+  const useMobileLayout = isMobile || isSmallLandscape;
+
   return (
     <PremiumCheck featureKey="vehicle_management">
-      <div className="container py-6 max-w-7xl">
+      <div className={`container py-6 max-w-7xl ${useMobileLayout ? 'pb-32' : ''} ${isSmallLandscape ? 'px-2' : ''}`}>
         <Helmet>
           <title>Vozidlo | Pendlerův Pomocník</title>
         </Helmet>
         
-        <div className="flex justify-between items-center mb-6">
+        <div className={`flex justify-between items-center mb-6 ${isSmallLandscape ? 'mb-4' : ''}`}>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Vozidlo</h1>
-            <p className="text-muted-foreground">
+            <h1 className={`${useMobileLayout ? 'text-2xl' : 'text-3xl'} font-bold tracking-tight`}>
+              Vozidlo
+            </h1>
+            <p className={`text-muted-foreground ${useMobileLayout ? 'text-sm' : ''}`}>
               Správa vašich vozidel, spotřeby a dokumentů
             </p>
           </div>
           
-          <Button onClick={() => setIsAddSheetOpen(true)} className="flex items-center gap-2">
+          <Button 
+            onClick={() => setIsAddSheetOpen(true)} 
+            className={`flex items-center gap-2 ${useMobileLayout ? 'text-sm px-3 py-2' : ''}`}
+          >
             <Plus className="h-4 w-4" />
-            Přidat vozidlo
+            {useMobileLayout ? 'Přidat' : 'Přidat vozidlo'}
           </Button>
         </div>
         
@@ -116,7 +206,7 @@ const Vehicle = () => {
           <EmptyVehicleState onAddVehicle={() => setIsAddSheetOpen(true)} />
         ) : (
           <>
-            <div className="mb-6">
+            <div className={`mb-6 ${isSmallLandscape ? 'mb-4' : ''}`}>
               <VehicleSelector
                 vehicles={vehicles}
                 selectedVehicleId={selectedVehicleId}
@@ -125,44 +215,18 @@ const Vehicle = () => {
             </div>
             
             {selectedVehicle && (
-              <Tabs defaultValue="overview">
-                <TabsList className="mb-6">
-                  <TabsTrigger value="overview">Přehled</TabsTrigger>
-                  <TabsTrigger value="fuel">Spotřeba</TabsTrigger>
-                  <TabsTrigger value="service">Servis</TabsTrigger>
-                  <TabsTrigger value="documents">Dokumenty</TabsTrigger>
-                  <TabsTrigger value="crossborder">Přeshraniční</TabsTrigger>
-                </TabsList>
+              <>
+                <UniversalMobileNavigation
+                  activeTab={activeTab}
+                  onTabChange={setActiveTab}
+                  tabs={vehicleTabs}
+                  className={isSmallLandscape ? 'mb-4' : 'mb-6'}
+                />
                 
-                <TabsContent value="overview" className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-6">
-                      <FuelConsumptionCard vehicleId={selectedVehicleId} />
-                      <ServiceRecordCard vehicleId={selectedVehicleId} />
-                    </div>
-                    <div className="space-y-6">
-                      <InsuranceCard vehicleId={selectedVehicleId} />
-                      <DocumentsCard vehicleId={selectedVehicleId} />
-                    </div>
-                  </div>
-                </TabsContent>
-                
-                <TabsContent value="fuel">
-                  <FuelConsumptionCard vehicleId={selectedVehicleId} fullView />
-                </TabsContent>
-                
-                <TabsContent value="service">
-                  <ServiceRecordCard vehicleId={selectedVehicleId} fullView />
-                </TabsContent>
-                
-                <TabsContent value="documents">
-                  <DocumentsCard vehicleId={selectedVehicleId} fullView />
-                </TabsContent>
-                
-                <TabsContent value="crossborder">
-                  <CrossBorderCard vehicleId={selectedVehicleId} />
-                </TabsContent>
-              </Tabs>
+                <div className="space-y-6">
+                  {renderTabContent()}
+                </div>
+              </>
             )}
           </>
         )}

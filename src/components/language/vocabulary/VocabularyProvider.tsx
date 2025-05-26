@@ -3,7 +3,6 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { VocabularyItem, UserProgress, TestResult } from '@/models/VocabularyItem';
 import { useSpacedRepetition } from '@/hooks/useSpacedRepetition';
 import { defaultGermanVocabulary } from '@/data/defaultGermanVocabulary';
-import { loadVocabularyFromOfflineStorage, saveVocabularyToOfflineStorage } from '@/utils/vocabulary/offlineStorageBridge';
 
 export interface VocabularyContextType {
   items: VocabularyItem[];
@@ -29,28 +28,50 @@ export interface VocabularyContextType {
   editDialogOpen: boolean;
   setEditDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
   currentEditItem: VocabularyItem | null;
+  isLoading: boolean;
 }
 
 const VocabularyContext = createContext<VocabularyContextType | null>(null);
 
 export const VocabularyProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isInitialized, setIsInitialized] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [initialItems, setInitialItems] = useState<VocabularyItem[]>([]);
   
-  // Načtení dat při inicializaci
+  // Načtení dat při inicializaci s fallback mechanismem
   useEffect(() => {
     const initializeData = async () => {
       try {
-        console.log('Loading vocabulary data...');
-        const loadedItems = await loadVocabularyFromOfflineStorage(defaultGermanVocabulary);
-        console.log('Loaded vocabulary items:', loadedItems.length);
-        setInitialItems(loadedItems);
-        setIsInitialized(true);
-      } catch (error) {
-        console.error('Error loading vocabulary:', error);
+        console.log('Initializing vocabulary data...');
+        
+        // Nejprve zkusíme načíst data z localStorage
+        const storedData = localStorage.getItem('vocabulary_items');
+        if (storedData) {
+          try {
+            const parsedData = JSON.parse(storedData);
+            if (Array.isArray(parsedData) && parsedData.length > 0) {
+              console.log('Loaded vocabulary from localStorage:', parsedData.length, 'items');
+              setInitialItems(parsedData);
+              setIsLoading(false);
+              return;
+            }
+          } catch (error) {
+            console.warn('Error parsing stored vocabulary data:', error);
+          }
+        }
+        
         // Fallback na defaultní data
+        console.log('Using default German vocabulary:', defaultGermanVocabulary.length, 'items');
         setInitialItems(defaultGermanVocabulary);
-        setIsInitialized(true);
+        
+        // Uložíme defaultní data do localStorage pro příště
+        localStorage.setItem('vocabulary_items', JSON.stringify(defaultGermanVocabulary));
+        
+      } catch (error) {
+        console.error('Error initializing vocabulary:', error);
+        // Ultimate fallback - aspoň základní data
+        setInitialItems(defaultGermanVocabulary.slice(0, 10));
+      } finally {
+        setIsLoading(false);
       }
     };
     
@@ -58,7 +79,7 @@ export const VocabularyProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   }, []);
   
   // Načtení spaced repetition funkcionality s inicializovanými daty
-  const spacedRepetition = useSpacedRepetition(isInitialized ? initialItems : []);
+  const spacedRepetition = useSpacedRepetition(initialItems);
   
   // State pro UI
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -67,10 +88,10 @@ export const VocabularyProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   
   // Uložení změn při aktualizaci položek
   useEffect(() => {
-    if (isInitialized && spacedRepetition.items.length > 0) {
-      saveVocabularyToOfflineStorage(spacedRepetition.items);
+    if (!isLoading && spacedRepetition.items.length > 0) {
+      localStorage.setItem('vocabulary_items', JSON.stringify(spacedRepetition.items));
     }
-  }, [spacedRepetition.items, isInitialized]);
+  }, [spacedRepetition.items, isLoading]);
   
   // Přidání nového testu do historie
   const addTestResult = (result: TestResult) => {
@@ -85,14 +106,12 @@ export const VocabularyProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   
   // Uložení editace
   const handleSaveEdit = (updatedItem: VocabularyItem) => {
-    // Aktualizace přímo přes spaced repetition hook by měla být implementována
     setEditDialogOpen(false);
     setCurrentEditItem(null);
   };
   
   // Smazání slovíčka
   const handleDeleteItem = (id: string) => {
-    // Implementace smazání by měla být v spaced repetition hook
     console.log('Delete item:', id);
   };
   
@@ -114,8 +133,8 @@ export const VocabularyProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     averageAccuracy: 0
   };
 
-  // Pokud nejsou data inicializována, zobrazíme loading
-  if (!isInitialized) {
+  // Pokud jsou data stále načítána
+  if (isLoading) {
     return (
       <VocabularyContext.Provider value={null}>
         <div className="flex items-center justify-center p-8">
@@ -141,7 +160,8 @@ export const VocabularyProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       handleSaveEdit,
       handleDeleteItem,
       handleBulkDeleteItems,
-      handleBulkUpdateItems
+      handleBulkUpdateItems,
+      isLoading
     }}>
       {children}
     </VocabularyContext.Provider>
