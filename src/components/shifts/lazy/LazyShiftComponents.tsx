@@ -3,6 +3,7 @@ import React, { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ErrorBoundary } from '@/components/error/ErrorBoundary';
 
 // Error fallback pro lazy loaded komponenty
 const LazyErrorFallback = ({ error, retry }: { error: Error; retry: () => void }) => (
@@ -34,16 +35,18 @@ const createSafeLazyComponent = (importFn: () => Promise<any>, fallback: React.C
       return <LazyErrorFallback error={error} retry={retry} />;
     }
 
+    const FallbackComponent = fallback;
+
     return (
-      <Suspense fallback={<fallback />}>
-        <React.ErrorBoundary
-          key={retryKey}
-          fallback={<LazyErrorFallback error={error!} retry={retry} />}
-          onError={setError}
-        >
+      <ErrorBoundary
+        key={retryKey}
+        fallback={<LazyErrorFallback error={error!} retry={retry} />}
+        onError={setError}
+      >
+        <Suspense fallback={<FallbackComponent />}>
           <LazyComponent {...props} ref={ref} />
-        </React.ErrorBoundary>
-      </Suspense>
+        </Suspense>
+      </ErrorBoundary>
     );
   });
 };
