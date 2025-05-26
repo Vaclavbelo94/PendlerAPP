@@ -16,7 +16,8 @@ import {
   Menu,
   X,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  RefreshCw
 } from 'lucide-react';
 import { useAdminContext } from './AdminProvider';
 import { cn } from '@/lib/utils';
@@ -42,7 +43,8 @@ const menuItems: AdminMenuItem[] = [
     children: [
       { id: 'users-list', title: 'Seznam uživatelů', icon: <Users className="h-4 w-4" /> },
       { id: 'users-roles', title: 'Role a oprávnění', icon: <Shield className="h-4 w-4" /> },
-      { id: 'users-activity', title: 'Aktivita uživatelů', icon: <Activity className="h-4 w-4" /> }
+      { id: 'users-activity', title: 'Aktivita uživatelů', icon: <Activity className="h-4 w-4" /> },
+      { id: 'password-reset', title: 'Reset hesla', icon: <RefreshCw className="h-4 w-4" /> }
     ]
   },
   {

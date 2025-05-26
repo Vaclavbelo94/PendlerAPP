@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -13,6 +14,7 @@ import { useAdminContext } from "@/components/admin/core/AdminProvider";
 import { UserManagement } from "@/components/admin/users";
 import { PromoCodesPanel } from "@/components/admin/PromoCodesPanel";
 import { PremiumFeaturesPanel } from "@/components/admin/PremiumFeaturesPanel";
+import { PasswordResetPanel } from "@/components/admin/PasswordResetPanel";
 import SystemMonitoringPanel from "@/components/admin/monitoring/SystemMonitoringPanel";
 
 const AdminContent = () => {
@@ -22,12 +24,22 @@ const AdminContent = () => {
     switch (currentSection) {
       case 'users-list':
         return <UserManagement />;
+      case 'users-roles':
+        return <div className="p-4">Role a oprávnění - zatím nedostupné</div>;
+      case 'users-activity':
+        return <div className="p-4">Aktivita uživatelů - zatím nedostupné</div>;
       case 'promo-codes':
         return <PromoCodesPanel />;
       case 'premium-features':
         return <PremiumFeaturesPanel />;
+      case 'system-logs':
+        return <div className="p-4">Systémové logy - zatím nedostupné</div>;
       case 'system-monitoring':
         return <SystemMonitoringPanel />;
+      case 'database':
+        return <div className="p-4">Databáze - zatím nedostupné</div>;
+      case 'password-reset':
+        return <PasswordResetPanel />;
       default:
         return <AdminDashboard />;
     }

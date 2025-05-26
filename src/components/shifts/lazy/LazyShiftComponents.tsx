@@ -1,10 +1,52 @@
+
 import React, { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { AlertTriangle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
-// Lazy loaded komponenty pro optimalizaci bundle size
-const ShiftAnalytics = React.lazy(() => import('../ShiftAnalytics'));
-const ReportsTab = React.lazy(() => import('../ReportsTab').then(module => ({ default: module.ReportsTab })));
-const EditNoteDialog = React.lazy(() => import('../EditNoteDialog').then(module => ({ default: module.EditNoteDialog })));
+// Error fallback pro lazy loaded komponenty
+const LazyErrorFallback = ({ error, retry }: { error: Error; retry: () => void }) => (
+  <div className="flex flex-col items-center justify-center p-8 space-y-4">
+    <AlertTriangle className="h-8 w-8 text-destructive" />
+    <p className="text-sm text-muted-foreground text-center">
+      Nepodařilo se načíst komponentu: {error.message}
+    </p>
+    <Button onClick={retry} variant="outline" size="sm">
+      Zkusit znovu
+    </Button>
+  </div>
+);
+
+// Safe lazy loader s error boundary
+const createSafeLazyComponent = (importFn: () => Promise<any>, fallback: React.ComponentType) => {
+  const LazyComponent = React.lazy(importFn);
+  
+  return React.forwardRef<any, any>((props, ref) => {
+    const [error, setError] = React.useState<Error | null>(null);
+    const [retryKey, setRetryKey] = React.useState(0);
+
+    const retry = () => {
+      setError(null);
+      setRetryKey(prev => prev + 1);
+    };
+
+    if (error) {
+      return <LazyErrorFallback error={error} retry={retry} />;
+    }
+
+    return (
+      <Suspense fallback={<fallback />}>
+        <React.ErrorBoundary
+          key={retryKey}
+          fallback={<LazyErrorFallback error={error!} retry={retry} />}
+          onError={setError}
+        >
+          <LazyComponent {...props} ref={ref} />
+        </React.ErrorBoundary>
+      </Suspense>
+    );
+  });
+};
 
 // Loading komponenty
 const AnalyticsLoader = () => (
@@ -34,21 +76,27 @@ const DialogLoader = () => (
   </div>
 );
 
-// Wrapped komponenty s lazy loading
-export const LazyShiftAnalytics: React.FC<any> = (props) => (
-  <Suspense fallback={<AnalyticsLoader />}>
-    <ShiftAnalytics {...props} />
-  </Suspense>
+// Bezpečné lazy loaded komponenty
+export const LazyShiftAnalytics = createSafeLazyComponent(
+  () => import('../ShiftAnalytics').catch(err => {
+    console.error('Failed to load ShiftAnalytics:', err);
+    throw new Error('Nepodařilo se načíst analytiku směn');
+  }),
+  AnalyticsLoader
 );
 
-export const LazyReportsTab: React.FC<any> = (props) => (
-  <Suspense fallback={<ReportsLoader />}>
-    <ReportsTab {...props} />
-  </Suspense>
+export const LazyReportsTab = createSafeLazyComponent(
+  () => import('../ReportsTab').then(module => ({ default: module.ReportsTab })).catch(err => {
+    console.error('Failed to load ReportsTab:', err);
+    throw new Error('Nepodařilo se načíst reporty');
+  }),
+  ReportsLoader
 );
 
-export const LazyEditNoteDialog: React.FC<any> = (props) => (
-  <Suspense fallback={<DialogLoader />}>
-    <EditNoteDialog {...props} />
-  </Suspense>
+export const LazyEditNoteDialog = createSafeLazyComponent(
+  () => import('../EditNoteDialog').then(module => ({ default: module.EditNoteDialog })).catch(err => {
+    console.error('Failed to load EditNoteDialog:', err);
+    throw new Error('Nepodařilo se načíst editor poznámek');
+  }),
+  DialogLoader
 );
