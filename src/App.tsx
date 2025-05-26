@@ -114,6 +114,9 @@ function AppContent() {
             <Route path="/profile-extended" element={<ProfileExtended />} />
             <Route path="/profile-extended/:userId" element={<ProfileExtended />} />
             
+            {/* Admin page */}
+            <Route path="/admin" element={<Admin />} />
+            
             {/* Legal pages */}
             <Route path="/terms-of-service" element={<TermsOfService />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
