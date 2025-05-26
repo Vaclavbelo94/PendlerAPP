@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -13,6 +12,7 @@ import ShiftForm from './ShiftForm';
 import ShiftStats from './ShiftStats';
 import ShiftFilters from './ShiftFilters';
 import EmptyShiftsState from '../shifts/EmptyShiftsState';
+import { ShiftType, AnalyticsPeriod } from './types';
 
 interface ShiftsContentProps {
   activeSection?: string;
@@ -20,16 +20,16 @@ interface ShiftsContentProps {
   onSelectDate?: (date: Date) => void;
   shifts?: any[];
   currentShift?: any;
-  shiftType?: string;
-  setShiftType?: (type: string) => void;
+  shiftType?: ShiftType;
+  setShiftType?: (type: ShiftType) => void;
   shiftNotes?: string;
   setShiftNotes?: (notes: string) => void;
   user?: any;
   onSaveShift?: () => void;
   onDeleteShift?: () => void;
   onOpenNoteDialog?: () => void;
-  analyticsPeriod?: string;
-  setAnalyticsPeriod?: (period: string) => void;
+  analyticsPeriod?: AnalyticsPeriod;
+  setAnalyticsPeriod?: (period: AnalyticsPeriod) => void;
 }
 
 const ShiftsContent = (props: ShiftsContentProps = {}) => {
