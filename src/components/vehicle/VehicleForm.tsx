@@ -78,6 +78,16 @@ const VehicleForm: React.FC<VehicleFormProps> = ({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
+              <Label htmlFor="vin">VIN *</Label>
+              <Input 
+                id="vin" 
+                {...register('vin', { required: 'VIN je povinné' })}
+                placeholder="1HGBH41JXMN109186"
+              />
+              {errors.vin && <p className="text-sm text-red-500">{errors.vin.message}</p>}
+            </div>
+            
+            <div>
               <Label htmlFor="fuel_type">Palivo</Label>
               <Input 
                 id="fuel_type" 
@@ -85,13 +95,24 @@ const VehicleForm: React.FC<VehicleFormProps> = ({
                 placeholder="Benzín, Diesel..."
               />
             </div>
-            
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="mileage">Najeto km</Label>
               <Input 
                 id="mileage" 
                 {...register('mileage')}
                 placeholder="85000"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="engine">Motor</Label>
+              <Input 
+                id="engine" 
+                {...register('engine')}
+                placeholder="1.6 TDI"
               />
             </div>
           </div>
