@@ -3,7 +3,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Send, Trash2, Bot } from 'lucide-react';
+import { Send, Trash2, Bot, Zap, Globe } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { useAITranslator } from '@/hooks/useAITranslator';
 import ChatMessage from './ChatMessage';
 import AITypingIndicator from './AITypingIndicator';
@@ -14,16 +15,16 @@ interface AIChatInterfaceProps {
 
 const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ onTextToSpeech }) => {
   const [inputMessage, setInputMessage] = useState('');
-  const { messages, isLoading, sendMessage, clearConversation, loadHistory } = useAITranslator();
+  const { messages, isLoading, currentService, sendMessage, clearConversation, loadHistory } = useAITranslator();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Načtení historie při mount
+  // Load history on mount
   useEffect(() => {
     loadHistory();
   }, []);
 
-  // Auto-scroll na konec zpráv
+  // Auto-scroll to end of messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
@@ -42,6 +43,32 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ onTextToSpeech }) => 
     }
   };
 
+  const getServiceBadge = () => {
+    switch (currentService) {
+      case 'gemini':
+        return (
+          <Badge variant="default" className="flex items-center gap-1">
+            <Bot className="h-3 w-3" />
+            Google Gemini AI
+          </Badge>
+        );
+      case 'google-translate':
+        return (
+          <Badge variant="secondary" className="flex items-center gap-1">
+            <Globe className="h-3 w-3" />
+            Google Translate (záloha)
+          </Badge>
+        );
+      default:
+        return (
+          <Badge variant="outline" className="flex items-center gap-1">
+            <Zap className="h-3 w-3" />
+            Připojuji...
+          </Badge>
+        );
+    }
+  };
+
   const quickActions = [
     "Přelož mi: Kde je nejbližší nemocnice?",
     "Jak se řekne 'děkuji' formálně a neformálně?",
@@ -53,10 +80,13 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ onTextToSpeech }) => 
   return (
     <Card className="h-full flex flex-col">
       <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2">
-          <Bot className="h-5 w-5 text-primary" />
-          AI Překladač
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            <Bot className="h-5 w-5 text-primary" />
+            AI Překladač
+          </CardTitle>
+          {getServiceBadge()}
+        </div>
         <p className="text-sm text-muted-foreground">
           Váš inteligentní asistent pro češtinu a němčinu
         </p>

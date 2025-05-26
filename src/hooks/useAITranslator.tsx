@@ -8,11 +8,14 @@ export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
   timestamp: Date;
+  service?: 'gemini' | 'google-translate' | 'none';
+  fallback?: boolean;
 }
 
 export const useAITranslator = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentService, setCurrentService] = useState<'gemini' | 'google-translate' | 'none'>('gemini');
 
   const sendMessage = async (userMessage: string) => {
     if (!userMessage.trim()) return;
@@ -46,17 +49,37 @@ export const useAITranslator = () => {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
         content: data.response,
-        timestamp: new Date()
+        timestamp: new Date(),
+        service: data.service,
+        fallback: data.fallback
       };
 
       setMessages(prev => [...prev, aiMsg]);
+      setCurrentService(data.service);
 
-      // Uložení do localStorage pro historii
+      // Show service status toast
+      if (data.fallback) {
+        toast({
+          title: "Záložní režim",
+          description: "AI není dostupná, používám Google Translate",
+          variant: "default",
+        });
+      } else if (data.service === 'gemini') {
+        // Only show success toast on first successful Gemini call
+        if (currentService !== 'gemini') {
+          toast({
+            title: "AI aktivní",
+            description: "Používám Google Gemini AI asistenta",
+            variant: "default",
+          });
+        }
+      }
+
+      // Save to localStorage
       const savedHistory = localStorage.getItem('aiTranslatorHistory') || '[]';
       const history = JSON.parse(savedHistory);
       history.push(userMsg, aiMsg);
       
-      // Zachování pouze posledních 100 zpráv
       if (history.length > 100) {
         history.splice(0, history.length - 100);
       }
@@ -97,6 +120,7 @@ export const useAITranslator = () => {
   return {
     messages,
     isLoading,
+    currentService,
     sendMessage,
     clearConversation,
     loadHistory
