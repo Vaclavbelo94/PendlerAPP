@@ -60,5 +60,19 @@ export const performanceMonitor = {
   trackUserInteraction: (action: string, element: string) => {
     const timestamp = Date.now();
     console.log(`[PERFORMANCE] User interaction: ${action} on ${element} at ${timestamp}`);
+  },
+
+  // Add the missing destroy method
+  destroy: () => {
+    console.log(`[PERFORMANCE] Performance monitor destroyed`);
+    // Clean up any performance observers or timers if needed
+    try {
+      if ('performance' in window && 'clearMarks' in performance) {
+        performance.clearMarks();
+        performance.clearMeasures();
+      }
+    } catch (error) {
+      console.warn('[PERFORMANCE] Error during cleanup:', error);
+    }
   }
 };
