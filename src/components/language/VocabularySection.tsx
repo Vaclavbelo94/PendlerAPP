@@ -15,7 +15,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { DotsHorizontalIcon } from "@radix-ui/react-icons"
+import { MoreHorizontal } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -55,7 +55,10 @@ const VocabularySection = () => {
         }
       } catch (error) {
         console.error('Error loading vocabulary items:', error);
-        toast.error('Chyba při načítání slovíček');
+        toast({
+          title: 'Chyba při načítání slovíček',
+          variant: 'error'
+        });
       } finally {
         setIsLoading(false);
       }
@@ -77,13 +80,19 @@ const VocabularySection = () => {
   const handleUseDefault = () => {
     // Load default vocabulary items
     import('@/data/defaultGermanVocabulary').then(module => {
-      const defaultItems = module.default;
+      const defaultItems = module.defaultGermanVocabulary || [];
       setVocabularyItems(defaultItems);
       localStorage.setItem('vocabularyItems', JSON.stringify(defaultItems));
-      toast.success('Základní slovník byl úspěšně načten');
+      toast({
+        title: 'Základní slovník byl úspěšně načten',
+        variant: 'success'
+      });
     }).catch(err => {
       console.error('Failed to load default vocabulary:', err);
-      toast.error('Chyba při načítání základního slovníku');
+      toast({
+        title: 'Chyba při načítání základního slovníku',
+        variant: 'error'
+      });
     });
   };
 
@@ -118,9 +127,16 @@ const VocabularySection = () => {
         isFavorite: false,
         isLearned: false,
       };
-      setVocabularyItems([...vocabularyItems, newItem]);
+      const updatedItems = [...vocabularyItems, newItem];
+      setVocabularyItems(updatedItems);
+      localStorage.setItem('vocabularyItems', JSON.stringify(updatedItems));
       setNewWord('');
       setNewTranslation('');
+      
+      toast({
+        title: 'Slovíčko bylo přidáno',
+        variant: 'success'
+      });
     }
   };
 
@@ -183,7 +199,7 @@ const VocabularySection = () => {
                         htmlFor={item.id.toString()}
                         className="sr-only"
                       >
-                        Souhlasím s podmínkami
+                        Označit jako naučené
                       </Label>
                     </TableCell>
                     <TableCell>{item.word}</TableCell>
@@ -193,7 +209,7 @@ const VocabularySection = () => {
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" className="h-8 w-8 p-0">
                             <span className="sr-only">Otevřít menu</span>
-                            <DotsHorizontalIcon className="h-4 w-4" />
+                            <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
