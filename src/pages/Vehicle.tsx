@@ -3,24 +3,80 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTitle, SheetDescription, SheetHeader } from '@/components/ui/sheet';
 import { Helmet } from "react-helmet";
-import { useAuth } from '@/hooks/useAuth';
+import { useSimplifiedAuth } from '@/hooks/auth/useSimplifiedAuth';
 import { Plus, Car } from 'lucide-react';
-import PremiumCheck from '@/components/premium/PremiumCheck';
-import VehicleForm from '@/components/vehicle/VehicleForm';
-import VehicleSelectorOptimized from '@/components/vehicle/VehicleSelectorOptimized';
-import VehicleNavigation from '@/components/vehicle/VehicleNavigation';
-import FuelConsumptionCard from '@/components/vehicle/FuelConsumptionCard';
-import ServiceRecordCard from '@/components/vehicle/ServiceRecordCard';
-import InsuranceCard from '@/components/vehicle/InsuranceCard';
-import DocumentsCard from '@/components/vehicle/DocumentsCard';
-import EmptyVehicleState from '@/components/vehicle/EmptyVehicleState';
+import OptimizedPremiumCheck from '@/components/premium/OptimizedPremiumCheck';
 import ResponsivePage from '@/components/layouts/ResponsivePage';
+import { ErrorBoundaryWithFallback } from '@/components/common/ErrorBoundaryWithFallback';
+import FastLoadingFallback from '@/components/common/FastLoadingFallback';
 import { useVehicleManagement } from '@/hooks/vehicle/useVehicleManagement';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 
+// Lazy load vehicle components with error handling
+const VehicleForm = React.lazy(() => 
+  import('@/components/vehicle/VehicleForm').catch(err => {
+    console.error('Failed to load VehicleForm:', err);
+    return { default: () => <div className="p-4 text-center text-muted-foreground">Formulář se nenačetl</div> };
+  })
+);
+
+const VehicleSelectorOptimized = React.lazy(() => 
+  import('@/components/vehicle/VehicleSelectorOptimized').catch(err => {
+    console.error('Failed to load VehicleSelectorOptimized:', err);
+    return { default: () => null };
+  })
+);
+
+const VehicleNavigation = React.lazy(() => 
+  import('@/components/vehicle/VehicleNavigation').catch(err => {
+    console.error('Failed to load VehicleNavigation:', err);
+    return { default: () => <div className="p-4 text-center text-muted-foreground">Navigace se nenačetla</div> };
+  })
+);
+
+const FuelConsumptionCard = React.lazy(() => 
+  import('@/components/vehicle/FuelConsumptionCard').catch(err => {
+    console.error('Failed to load FuelConsumptionCard:', err);
+    return { default: () => <div className="p-4 text-center text-muted-foreground">Spotřeba se nenačetla</div> };
+  })
+);
+
+const ServiceRecordCard = React.lazy(() => 
+  import('@/components/vehicle/ServiceRecordCard').catch(err => {
+    console.error('Failed to load ServiceRecordCard:', err);
+    return { default: () => <div className="p-4 text-center text-muted-foreground">Servis se nenačetl</div> };
+  })
+);
+
+const InsuranceCard = React.lazy(() => 
+  import('@/components/vehicle/InsuranceCard').catch(err => {
+    console.error('Failed to load InsuranceCard:', err);
+    return { default: () => <div className="p-4 text-center text-muted-foreground">Pojištění se nenačetlo</div> };
+  })
+);
+
+const DocumentsCard = React.lazy(() => 
+  import('@/components/vehicle/DocumentsCard').catch(err => {
+    console.error('Failed to load DocumentsCard:', err);
+    return { default: () => <div className="p-4 text-center text-muted-foreground">Dokumenty se nenačetly</div> };
+  })
+);
+
+const EmptyVehicleState = React.lazy(() => 
+  import('@/components/vehicle/EmptyVehicleState').catch(err => {
+    console.error('Failed to load EmptyVehicleState:', err);
+    return { default: ({ onAddVehicle }) => (
+      <div className="text-center p-8">
+        <p className="text-muted-foreground mb-4">Nemáte ještě žádné vozidlo</p>
+        <Button onClick={onAddVehicle}>Přidat vozidlo</Button>
+      </div>
+    ) };
+  })
+);
+
 const Vehicle = () => {
-  const { user } = useAuth();
+  const { user, isInitialized } = useSimplifiedAuth();
   const isMobile = useIsMobile();
   const [isAddSheetOpen, setIsAddSheetOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
@@ -57,140 +113,173 @@ const Vehicle = () => {
               isMobile ? "grid-cols-1 gap-4" : "grid-cols-1 lg:grid-cols-2"
             )}>
               <div className="space-y-6">
-                <FuelConsumptionCard vehicleId={selectedVehicleId} />
-                <ServiceRecordCard vehicleId={selectedVehicleId} />
+                <React.Suspense fallback={<FastLoadingFallback minimal />}>
+                  <FuelConsumptionCard vehicleId={selectedVehicleId} />
+                </React.Suspense>
+                <React.Suspense fallback={<FastLoadingFallback minimal />}>
+                  <ServiceRecordCard vehicleId={selectedVehicleId} />
+                </React.Suspense>
               </div>
               <div className="space-y-6">
-                <InsuranceCard vehicleId={selectedVehicleId} />
-                <DocumentsCard vehicleId={selectedVehicleId} />
+                <React.Suspense fallback={<FastLoadingFallback minimal />}>
+                  <InsuranceCard vehicleId={selectedVehicleId} />
+                </React.Suspense>
+                <React.Suspense fallback={<FastLoadingFallback minimal />}>
+                  <DocumentsCard vehicleId={selectedVehicleId} />
+                </React.Suspense>
               </div>
             </div>
           </div>
         );
       case "fuel":
-        return <FuelConsumptionCard vehicleId={selectedVehicleId} fullView />;
+        return (
+          <React.Suspense fallback={<FastLoadingFallback />}>
+            <FuelConsumptionCard vehicleId={selectedVehicleId} fullView />
+          </React.Suspense>
+        );
       case "service":
-        return <ServiceRecordCard vehicleId={selectedVehicleId} fullView />;
+        return (
+          <React.Suspense fallback={<FastLoadingFallback />}>
+            <ServiceRecordCard vehicleId={selectedVehicleId} fullView />
+          </React.Suspense>
+        );
       case "documents":
-        return <DocumentsCard vehicleId={selectedVehicleId} fullView />;
+        return (
+          <React.Suspense fallback={<FastLoadingFallback />}>
+            <DocumentsCard vehicleId={selectedVehicleId} fullView />
+          </React.Suspense>
+        );
       default:
         return null;
     }
   };
 
-  if (isLoading) {
+  // Show loading while auth is initializing
+  if (!isInitialized || isLoading) {
     return (
-      <ResponsivePage>
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-        </div>
-      </ResponsivePage>
+      <OptimizedPremiumCheck featureKey="vehicle_management">
+        <ResponsivePage>
+          <FastLoadingFallback message="Načítání vozidel..." />
+        </ResponsivePage>
+      </OptimizedPremiumCheck>
     );
   }
 
   return (
-    <PremiumCheck featureKey="vehicle_management">
+    <OptimizedPremiumCheck featureKey="vehicle_management">
       <ResponsivePage enableMobileSafeArea>
-        <div className="container max-w-7xl mx-auto px-4">
-          <Helmet>
-            <title>Vozidlo | Pendlerův Pomocník</title>
-          </Helmet>
-          
-          {/* Header */}
-          <div className={cn(
-            "flex justify-between items-center mb-6",
-            isMobile ? "flex-col gap-4 items-stretch mb-4" : ""
-          )}>
-            <div className={cn(isMobile ? "text-center" : "")}>
-              <h1 className={cn(
-                "font-bold tracking-tight",
-                isMobile ? "text-2xl" : "text-3xl"
-              )}>
-                Vozidlo
-              </h1>
-              <p className={cn(
-                "text-muted-foreground",
-                isMobile ? "text-sm" : "text-base"
-              )}>
-                Správa vašich vozidel, spotřeby a dokumentů
-              </p>
+        <ErrorBoundaryWithFallback>
+          <div className="container max-w-7xl mx-auto px-4">
+            <Helmet>
+              <title>Vozidlo | Pendlerův Pomocník</title>
+            </Helmet>
+            
+            {/* Header */}
+            <div className={cn(
+              "flex justify-between items-center mb-6",
+              isMobile ? "flex-col gap-4 items-stretch mb-4" : ""
+            )}>
+              <div className={cn(isMobile ? "text-center" : "")}>
+                <h1 className={cn(
+                  "font-bold tracking-tight",
+                  isMobile ? "text-2xl" : "text-3xl"
+                )}>
+                  Vozidlo
+                </h1>
+                <p className={cn(
+                  "text-muted-foreground",
+                  isMobile ? "text-sm" : "text-base"
+                )}>
+                  Správa vašich vozidel, spotřeby a dokumentů
+                </p>
+              </div>
+              
+              <Button 
+                onClick={() => setIsAddSheetOpen(true)} 
+                className={cn(
+                  "flex items-center gap-2",
+                  isMobile ? "w-full justify-center" : ""
+                )}
+              >
+                <Plus className="h-4 w-4" />
+                {isMobile ? 'Přidat vozidlo' : 'Přidat vozidlo'}
+              </Button>
             </div>
             
-            <Button 
-              onClick={() => setIsAddSheetOpen(true)} 
-              className={cn(
-                "flex items-center gap-2",
-                isMobile ? "w-full justify-center" : ""
-              )}
-            >
-              <Plus className="h-4 w-4" />
-              {isMobile ? 'Přidat vozidlo' : 'Přidat vozidlo'}
-            </Button>
-          </div>
-          
-          {vehicles.length === 0 ? (
-            <EmptyVehicleState onAddVehicle={() => setIsAddSheetOpen(true)} />
-          ) : (
-            <>
-              {/* Vehicle selector */}
-              {vehicles.length > 1 && (
-                <div className="mb-6">
-                  <VehicleSelectorOptimized
-                    vehicles={vehicles}
-                    selectedVehicleId={selectedVehicleId}
-                    onSelect={selectVehicle}
-                    className={isMobile ? "w-full" : ""}
-                  />
-                </div>
-              )}
-              
-              {selectedVehicle && (
-                <>
-                  {/* Navigation */}
+            {vehicles.length === 0 ? (
+              <React.Suspense fallback={<FastLoadingFallback />}>
+                <EmptyVehicleState onAddVehicle={() => setIsAddSheetOpen(true)} />
+              </React.Suspense>
+            ) : (
+              <>
+                {/* Vehicle selector */}
+                {vehicles.length > 1 && (
                   <div className="mb-6">
-                    <VehicleNavigation
-                      activeTab={activeTab}
-                      onTabChange={setActiveTab}
+                    <React.Suspense fallback={<div />}>
+                      <VehicleSelectorOptimized
+                        vehicles={vehicles}
+                        selectedVehicleId={selectedVehicleId}
+                        onSelect={selectVehicle}
+                        className={isMobile ? "w-full" : ""}
+                      />
+                    </React.Suspense>
+                  </div>
+                )}
+                
+                {selectedVehicle && (
+                  <>
+                    {/* Navigation */}
+                    <div className="mb-6">
+                      <React.Suspense fallback={<FastLoadingFallback minimal />}>
+                        <VehicleNavigation
+                          activeTab={activeTab}
+                          onTabChange={setActiveTab}
+                        />
+                      </React.Suspense>
+                    </div>
+                    
+                    {/* Content */}
+                    <div className="pb-6">
+                      <ErrorBoundaryWithFallback>
+                        {renderTabContent()}
+                      </ErrorBoundaryWithFallback>
+                    </div>
+                  </>
+                )}
+              </>
+            )}
+            
+            {/* Add Vehicle Sheet */}
+            <Sheet open={isAddSheetOpen} onOpenChange={setIsAddSheetOpen}>
+              <SheetContent className={cn(
+                "overflow-y-auto",
+                isMobile ? "w-full" : "sm:max-w-2xl"
+              )}>
+                <SheetHeader>
+                  <SheetTitle className="flex items-center gap-2">
+                    <Car className="h-5 w-5" />
+                    Přidat nové vozidlo
+                  </SheetTitle>
+                  <SheetDescription>
+                    Vyplňte údaje o vašem vozidle. Všechna pole označená * jsou povinná.
+                  </SheetDescription>
+                </SheetHeader>
+                
+                <div className="mt-6">
+                  <React.Suspense fallback={<FastLoadingFallback />}>
+                    <VehicleForm
+                      onSubmit={handleAddVehicle}
+                      onCancel={() => setIsAddSheetOpen(false)}
+                      isLoading={isSaving}
                     />
-                  </div>
-                  
-                  {/* Content */}
-                  <div className="pb-6">
-                    {renderTabContent()}
-                  </div>
-                </>
-              )}
-            </>
-          )}
-          
-          {/* Add Vehicle Sheet */}
-          <Sheet open={isAddSheetOpen} onOpenChange={setIsAddSheetOpen}>
-            <SheetContent className={cn(
-              "overflow-y-auto",
-              isMobile ? "w-full" : "sm:max-w-2xl"
-            )}>
-              <SheetHeader>
-                <SheetTitle className="flex items-center gap-2">
-                  <Car className="h-5 w-5" />
-                  Přidat nové vozidlo
-                </SheetTitle>
-                <SheetDescription>
-                  Vyplňte údaje o vašem vozidle. Všechna pole označená * jsou povinná.
-                </SheetDescription>
-              </SheetHeader>
-              
-              <div className="mt-6">
-                <VehicleForm
-                  onSubmit={handleAddVehicle}
-                  onCancel={() => setIsAddSheetOpen(false)}
-                  isLoading={isSaving}
-                />
-              </div>
-            </SheetContent>
-          </Sheet>
-        </div>
+                  </React.Suspense>
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
+        </ErrorBoundaryWithFallback>
       </ResponsivePage>
-    </PremiumCheck>
+    </OptimizedPremiumCheck>
   );
 };
 

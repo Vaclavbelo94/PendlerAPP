@@ -27,7 +27,28 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox"
 import { useStandardizedToast } from '@/hooks/useStandardizedToast';
-import { EmptyVocabularyState } from './vocabulary/EmptyVocabularyState';
+import { ErrorBoundaryWithFallback } from '@/components/common/ErrorBoundaryWithFallback';
+import FastLoadingFallback from '@/components/common/FastLoadingFallback';
+
+// Lazy load with error handling
+const EmptyVocabularyState = React.lazy(() => 
+  import('./vocabulary/EmptyVocabularyState').then(module => ({ 
+    default: module.EmptyVocabularyState 
+  })).catch(err => {
+    console.error('Failed to load EmptyVocabularyState:', err);
+    return { 
+      default: ({ onAddNew, onImport, onUseDefault }) => (
+        <div className="text-center p-8">
+          <p className="text-muted-foreground mb-4">Slovní zásoba se nenačetla</p>
+          <div className="flex gap-2 justify-center">
+            <Button onClick={onAddNew}>Přidat slovíčko</Button>
+            <Button variant="outline" onClick={onUseDefault}>Základní slovník</Button>
+          </div>
+        </div>
+      )
+    };
+  })
+);
 
 const VocabularySection = () => {
   // State for managing vocabulary items
@@ -35,51 +56,71 @@ const VocabularySection = () => {
   const [newTranslation, setNewTranslation] = useState('');
   const [vocabularyItems, setVocabularyItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isInitialized, setIsInitialized] = useState(false);
   const { toast } = useStandardizedToast();
 
-  // Assuming we have a function to load vocabulary items
+  // Fast initialization with timeout
   useEffect(() => {
-    // This is a placeholder - in a real implementation we would fetch from storage/database
     const loadVocabularyItems = async () => {
       try {
         setIsLoading(true);
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
         
-        // Check if we have items in local storage
+        // Quick check for stored items first
         const storedItems = localStorage.getItem('vocabularyItems');
         if (storedItems) {
-          setVocabularyItems(JSON.parse(storedItems));
-        } else {
+          const parsedItems = JSON.parse(storedItems);
+          setVocabularyItems(parsedItems);
+          setIsInitialized(true);
+          setIsLoading(false);
+          return;
+        }
+
+        // Simulate API call with timeout
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Timeout')), 2000)
+        );
+        
+        const loadPromise = new Promise(resolve => setTimeout(resolve, 500));
+        
+        try {
+          await Promise.race([loadPromise, timeoutPromise]);
+          setVocabularyItems([]);
+        } catch (timeoutError) {
+          // Timeout - continue with empty state
           setVocabularyItems([]);
         }
+        
       } catch (error) {
         console.error('Error loading vocabulary items:', error);
+        setVocabularyItems([]);
         toast({
-          title: 'Chyba při načítání slovíček',
-          variant: 'error'
+          title: 'Problém s načítáním',
+          description: 'Slovní zásoba se načetla v režimu offline',
+          variant: 'default'
         });
       } finally {
         setIsLoading(false);
+        setIsInitialized(true);
       }
     };
     
-    loadVocabularyItems();
+    // Small delay to prevent flash
+    const timer = setTimeout(loadVocabularyItems, 100);
+    return () => clearTimeout(timer);
   }, [toast]);
 
   const handleAddNew = () => {
-    // Implementation for adding a new vocabulary item
     console.log('Add new vocabulary item');
   };
   
   const handleImport = () => {
-    // Implementation for importing vocabulary items
     console.log('Import vocabulary items');
   };
   
-  const handleUseDefault = () => {
-    // Load default vocabulary items
-    import('@/data/defaultGermanVocabulary').then(module => {
+  const handleUseDefault = async () => {
+    try {
+      setIsLoading(true);
+      const module = await import('@/data/defaultGermanVocabulary');
       const defaultItems = module.defaultGermanVocabulary || [];
       setVocabularyItems(defaultItems);
       localStorage.setItem('vocabularyItems', JSON.stringify(defaultItems));
@@ -87,30 +128,33 @@ const VocabularySection = () => {
         title: 'Základní slovník byl úspěšně načten',
         variant: 'success'
       });
-    }).catch(err => {
+    } catch (err) {
       console.error('Failed to load default vocabulary:', err);
       toast({
         title: 'Chyba při načítání základního slovníku',
         variant: 'error'
       });
-    });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    );
+  // Show loading only if not initialized
+  if (!isInitialized && isLoading) {
+    return <FastLoadingFallback message="Načítám slovní zásobu..." />;
   }
 
-  if (vocabularyItems.length === 0) {
+  if (isInitialized && vocabularyItems.length === 0) {
     return (
-      <EmptyVocabularyState 
-        onAddNew={handleAddNew} 
-        onImport={handleImport} 
-        onUseDefault={handleUseDefault} 
-      />
+      <ErrorBoundaryWithFallback>
+        <React.Suspense fallback={<FastLoadingFallback message="Načítám možnosti..." />}>
+          <EmptyVocabularyState 
+            onAddNew={handleAddNew} 
+            onImport={handleImport} 
+            onUseDefault={handleUseDefault} 
+          />
+        </React.Suspense>
+      </ErrorBoundaryWithFallback>
     );
   }
 
@@ -141,97 +185,105 @@ const VocabularySection = () => {
   };
 
   return (
-    <div className="space-y-4">
-      <Card>
-        <CardHeader>
-          <CardTitle>Přidat nové slovíčko</CardTitle>
-          <CardDescription>Zde můžete přidat nová slovíčka do svého slovníku</CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="word">Slovo</Label>
-              <Input
-                type="text"
-                id="word"
-                placeholder="Nové slovo"
-                value={newWord}
-                onChange={(e) => setNewWord(e.target.value)}
-              />
+    <ErrorBoundaryWithFallback>
+      <div className="space-y-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Přidat nové slovíčko</CardTitle>
+            <CardDescription>Zde můžete přidat nová slovíčka do svého slovníku</CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="word">Slovo</Label>
+                <Input
+                  type="text"
+                  id="word"
+                  placeholder="Nové slovo"
+                  value={newWord}
+                  onChange={(e) => setNewWord(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="translation">Překlad</Label>
+                <Input
+                  type="text"
+                  id="translation"
+                  placeholder="Překlad slova"
+                  value={newTranslation}
+                  onChange={(e) => setNewTranslation(e.target.value)}
+                />
+              </div>
             </div>
-            <div>
-              <Label htmlFor="translation">Překlad</Label>
-              <Input
-                type="text"
-                id="translation"
-                placeholder="Překlad slova"
-                value={newTranslation}
-                onChange={(e) => setNewTranslation(e.target.value)}
-              />
-            </div>
-          </div>
-          <Button onClick={addWord}>Přidat</Button>
-        </CardContent>
-      </Card>
+            <Button onClick={addWord} disabled={!newWord || !newTranslation}>
+              Přidat
+            </Button>
+          </CardContent>
+        </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Seznam slovíček</CardTitle>
-          <CardDescription>Zde je seznam všech slovíček ve vašem slovníku</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ScrollArea className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[100px]">Stav</TableHead>
-                  <TableHead>Slovo</TableHead>
-                  <TableHead>Překlad</TableHead>
-                  <TableHead className="text-right">Akce</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {vocabularyItems.map((item) => (
-                  <TableRow key={item.id}>
-                    <TableCell className="font-medium">
-                      <Checkbox id={item.id.toString()} />
-                      <Label
-                        htmlFor={item.id.toString()}
-                        className="sr-only"
-                      >
-                        Označit jako naučené
-                      </Label>
-                    </TableCell>
-                    <TableCell>{item.word}</TableCell>
-                    <TableCell>{item.translation}</TableCell>
-                    <TableCell className="text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Otevřít menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Akce</DropdownMenuLabel>
-                          <DropdownMenuItem>
-                            Upravit
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem>
-                            Smazat
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </ScrollArea>
-        </CardContent>
-      </Card>
-    </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Seznam slovíček</CardTitle>
+            <CardDescription>Zde je seznam všech slovíček ve vašem slovníku</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
+              <FastLoadingFallback minimal />
+            ) : (
+              <ScrollArea className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-[100px]">Stav</TableHead>
+                      <TableHead>Slovo</TableHead>
+                      <TableHead>Překlad</TableHead>
+                      <TableHead className="text-right">Akce</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {vocabularyItems.map((item) => (
+                      <TableRow key={item.id}>
+                        <TableCell className="font-medium">
+                          <Checkbox id={item.id.toString()} />
+                          <Label
+                            htmlFor={item.id.toString()}
+                            className="sr-only"
+                          >
+                            Označit jako naučené
+                          </Label>
+                        </TableCell>
+                        <TableCell>{item.word}</TableCell>
+                        <TableCell>{item.translation}</TableCell>
+                        <TableCell className="text-right">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" className="h-8 w-8 p-0">
+                                <span className="sr-only">Otevřít menu</span>
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuLabel>Akce</DropdownMenuLabel>
+                              <DropdownMenuItem>
+                                Upravit
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem>
+                                Smazat
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </ScrollArea>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </ErrorBoundaryWithFallback>
   );
 };
 
