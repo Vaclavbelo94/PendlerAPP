@@ -1,412 +1,155 @@
 
-import { supabase } from '@/integrations/supabase/client';
-import { VehicleData, ServiceRecord, FuelRecord, InsuranceRecord, DocumentRecord } from '@/types/vehicle';
-import { toast } from 'sonner';
+import { ServiceRecord, FuelRecord, InsuranceRecord, DocumentRecord } from '@/types/vehicle';
 
-// Vozidla
-export const fetchVehicles = async (userId: string) => {
-  try {
-    const { data, error } = await supabase
-      .from('vehicles')
-      .select('*')
-      .eq('user_id', userId);
-      
-    if (error) throw error;
-    return data as VehicleData[];
-  } catch (error) {
-    console.error('Chyba při načítání vozidel:', error);
-    toast.error('Nepodařilo se načíst vozidla');
-    return [] as VehicleData[];
-  }
-};
+// Mock data pro development - později nahradit skutečnými Supabase calls
 
-export const fetchVehicleById = async (id: string) => {
-  try {
-    const { data, error } = await supabase
-      .from('vehicles')
-      .select('*')
-      .eq('id', id)
-      .single();
-      
-    if (error) throw error;
-    return data as VehicleData;
-  } catch (error) {
-    console.error('Chyba při načítání vozidla:', error);
-    toast.error('Nepodařilo se načíst vozidlo');
-    return null;
-  }
-};
-
-export const saveVehicle = async (vehicle: VehicleData) => {
-  try {
-    const { id, created_at, updated_at, ...vehicleData } = vehicle;
-    
-    if (id) {
-      // Aktualizace
-      const { data, error } = await supabase
-        .from('vehicles')
-        .update({ ...vehicleData, updated_at: new Date().toISOString() })
-        .eq('id', id)
-        .select();
-        
-      if (error) throw error;
-      toast.success('Vozidlo bylo aktualizováno');
-      return data?.[0] as VehicleData;
-    } else {
-      // Vytvoření nového - zajistíme, že user_id je vyžadováno
-      if (!vehicleData.user_id) {
-        throw new Error('user_id je vyžadováno pro vytvoření nového vozidla');
-      }
-      
-      // Explicit typing for Supabase insert
-      const insertData: any = {
-        user_id: vehicleData.user_id,
-        brand: vehicleData.brand,
-        model: vehicleData.model,
-        year: vehicleData.year,
-        license_plate: vehicleData.license_plate,
-        vin: vehicleData.vin,
-        fuel_type: vehicleData.fuel_type,
-        color: vehicleData.color,
-        mileage: vehicleData.mileage,
-        engine: vehicleData.engine || '',
-        power: vehicleData.power || '',
-        transmission: vehicleData.transmission || '',
-        next_inspection: vehicleData.next_inspection || '',
-        last_service: vehicleData.last_service || '',
-        average_consumption: vehicleData.average_consumption || '',
-        purchase_price: vehicleData.purchase_price || '',
-        insurance_monthly: vehicleData.insurance_monthly || '',
-        tax_yearly: vehicleData.tax_yearly || '',
-        last_repair_cost: vehicleData.last_repair_cost || ''
-      };
-      
-      const { data, error } = await supabase
-        .from('vehicles')
-        .insert(insertData)
-        .select();
-        
-      if (error) throw error;
-      toast.success('Vozidlo bylo vytvořeno');
-      return data?.[0] as VehicleData;
-    }
-  } catch (error) {
-    console.error('Chyba při ukládání vozidla:', error);
-    toast.error('Nepodařilo se uložit vozidlo');
-    return null;
-  }
-};
-
-export const deleteVehicle = async (id: string) => {
-  try {
-    const { error } = await supabase
-      .from('vehicles')
-      .delete()
-      .eq('id', id);
-      
-    if (error) throw error;
-    toast.success('Vozidlo bylo odstraněno');
-    return true;
-  } catch (error) {
-    console.error('Chyba při odstraňování vozidla:', error);
-    toast.error('Nepodařilo se odstranit vozidlo');
-    return false;
-  }
-};
-
-// Servisní záznamy
-export const fetchServiceRecords = async (vehicleId: string) => {
-  try {
-    const { data, error } = await supabase
-      .from('service_records')
-      .select('*')
-      .eq('vehicle_id', vehicleId)
-      .order('service_date', { ascending: false });
-      
-    if (error) throw error;
-    return data as ServiceRecord[];
-  } catch (error) {
-    console.error('Chyba při načítání servisních záznamů:', error);
-    toast.error('Nepodařilo se načíst servisní záznamy');
-    return [] as ServiceRecord[];
-  }
-};
-
-export const saveServiceRecord = async (record: ServiceRecord) => {
-  try {
-    const { id, ...recordData } = record;
-    
-    if (id) {
-      const { data, error } = await supabase
-        .from('service_records')
-        .update({ ...recordData, updated_at: new Date().toISOString() })
-        .eq('id', id)
-        .select();
-        
-      if (error) throw error;
-      toast.success('Servisní záznam byl aktualizován');
-      return data?.[0] as ServiceRecord;
-    } else {
-      const { data, error } = await supabase
-        .from('service_records')
-        .insert({ ...recordData, created_at: new Date().toISOString() })
-        .select();
-        
-      if (error) throw error;
-      toast.success('Servisní záznam byl vytvořen');
-      return data?.[0] as ServiceRecord;
-    }
-  } catch (error) {
-    console.error('Chyba při ukládání servisního záznamu:', error);
-    toast.error('Nepodařilo se uložit servisní záznam');
-    return null;
-  }
-};
-
-export const deleteServiceRecord = async (id: string) => {
-  try {
-    const { error } = await supabase
-      .from('service_records')
-      .delete()
-      .eq('id', id);
-      
-    if (error) throw error;
-    toast.success('Servisní záznam byl odstraněn');
-    return true;
-  } catch (error) {
-    console.error('Chyba při odstraňování servisního záznamu:', error);
-    toast.error('Nepodařilo se odstranit servisní záznam');
-    return false;
-  }
-};
-
-// Záznamy o tankování
-export const fetchFuelRecords = async (vehicleId: string) => {
-  try {
-    const { data, error } = await supabase
-      .from('fuel_records')
-      .select('*')
-      .eq('vehicle_id', vehicleId)
-      .order('date', { ascending: false });
-      
-    if (error) throw error;
-    return data as FuelRecord[];
-  } catch (error) {
-    console.error('Chyba při načítání záznamů o tankování:', error);
-    toast.error('Nepodařilo se načíst záznamy o tankování');
-    return [] as FuelRecord[];
-  }
-};
-
-export const saveFuelRecord = async (record: FuelRecord) => {
-  try {
-    const { id, ...recordData } = record;
-    
-    if (id) {
-      const { data, error } = await supabase
-        .from('fuel_records')
-        .update({ ...recordData, updated_at: new Date().toISOString() })
-        .eq('id', id)
-        .select();
-        
-      if (error) throw error;
-      toast.success('Záznam o tankování byl aktualizován');
-      return data?.[0] as FuelRecord;
-    } else {
-      const { data, error } = await supabase
-        .from('fuel_records')
-        .insert({ ...recordData, created_at: new Date().toISOString() })
-        .select();
-        
-      if (error) throw error;
-      toast.success('Záznam o tankování byl vytvořen');
-      return data?.[0] as FuelRecord;
-    }
-  } catch (error) {
-    console.error('Chyba při ukládání záznamu o tankování:', error);
-    toast.error('Nepodařilo se uložit záznam o tankování');
-    return null;
-  }
-};
-
-export const deleteFuelRecord = async (id: string) => {
-  try {
-    const { error } = await supabase
-      .from('fuel_records')
-      .delete()
-      .eq('id', id);
-      
-    if (error) throw error;
-    toast.success('Záznam o tankování byl odstraněn');
-    return true;
-  } catch (error) {
-    console.error('Chyba při odstraňování záznamu o tankování:', error);
-    toast.error('Nepodařilo se odstranit záznam o tankování');
-    return false;
-  }
-};
-
-// Pojištění
-export const fetchInsurance = async (vehicleId: string) => {
-  try {
-    const { data, error } = await supabase
-      .from('insurance_records')
-      .select('*')
-      .eq('vehicle_id', vehicleId)
-      .order('valid_until', { ascending: false });
-      
-    if (error) throw error;
-    return data as InsuranceRecord[];
-  } catch (error) {
-    console.error('Chyba při načítání pojištění:', error);
-    toast.error('Nepodařilo se načíst pojištění');
-    return [] as InsuranceRecord[];
-  }
-};
-
-export const saveInsurance = async (record: InsuranceRecord) => {
-  try {
-    const { id, ...recordData } = record;
-    
-    if (id) {
-      const { data, error } = await supabase
-        .from('insurance_records')
-        .update({ ...recordData, updated_at: new Date().toISOString() })
-        .eq('id', id)
-        .select();
-        
-      if (error) throw error;
-      toast.success('Pojištění bylo aktualizováno');
-      return data?.[0] as InsuranceRecord;
-    } else {
-      const { data, error } = await supabase
-        .from('insurance_records')
-        .insert({ ...recordData, created_at: new Date().toISOString() })
-        .select();
-        
-      if (error) throw error;
-      toast.success('Pojištění bylo vytvořeno');
-      return data?.[0] as InsuranceRecord;
-    }
-  } catch (error) {
-    console.error('Chyba při ukládání pojištění:', error);
-    toast.error('Nepodařilo se uložit pojištění');
-    return null;
-  }
-};
-
-export const deleteInsurance = async (id: string) => {
-  try {
-    const { error } = await supabase
-      .from('insurance_records')
-      .delete()
-      .eq('id', id);
-      
-    if (error) throw error;
-    toast.success('Pojištění bylo odstraněno');
-    return true;
-  } catch (error) {
-    console.error('Chyba při odstraňování pojištění:', error);
-    toast.error('Nepodařilo se odstranit pojištění');
-    return false;
-  }
-};
-
-// Dokumenty
-export const fetchDocuments = async (vehicleId: string) => {
-  try {
-    const { data, error } = await supabase
-      .from('vehicle_documents')
-      .select('*')
-      .eq('vehicle_id', vehicleId)
-      .order('name');
-      
-    if (error) throw error;
-    return data as DocumentRecord[];
-  } catch (error) {
-    console.error('Chyba při načítání dokumentů:', error);
-    toast.error('Nepodařilo se načíst dokumenty');
-    return [] as DocumentRecord[];
-  }
-};
-
-export const saveDocument = async (document: DocumentRecord) => {
-  try {
-    const { id, ...docData } = document;
-    
-    if (id) {
-      const { data, error } = await supabase
-        .from('vehicle_documents')
-        .update({ ...docData, updated_at: new Date().toISOString() })
-        .eq('id', id)
-        .select();
-        
-      if (error) throw error;
-      toast.success('Dokument byl aktualizován');
-      return data?.[0] as DocumentRecord;
-    } else {
-      const { data, error } = await supabase
-        .from('vehicle_documents')
-        .insert({ ...docData, created_at: new Date().toISOString() })
-        .select();
-        
-      if (error) throw error;
-      toast.success('Dokument byl vytvořen');
-      return data?.[0] as DocumentRecord;
-    }
-  } catch (error) {
-    console.error('Chyba při ukládání dokumentu:', error);
-    toast.error('Nepodařilo se uložit dokument');
-    return null;
-  }
-};
-
-export const deleteDocument = async (id: string) => {
-  try {
-    const { error } = await supabase
-      .from('vehicle_documents')
-      .delete()
-      .eq('id', id);
-      
-    if (error) throw error;
-    toast.success('Dokument byl odstraněn');
-    return true;
-  } catch (error) {
-    console.error('Chyba při odstraňování dokumentu:', error);
-    toast.error('Nepodařilo se odstranit dokument');
-    return false;
-  }
-};
-
-// Pomocná funkce pro výpočet spotřeby
-export const calculateConsumption = (fuelRecords: FuelRecord[]) => {
-  if (fuelRecords.length < 2) return { averageConsumption: 0, totalCost: 0, totalDistance: 0 };
+export const fetchServiceRecords = async (vehicleId: string): Promise<ServiceRecord[]> => {
+  // Simulace načítání
+  await new Promise(resolve => setTimeout(resolve, 500));
   
-  const sortedRecords = [...fuelRecords].sort((a, b) => 
-    new Date(a.date).getTime() - new Date(b.date).getTime()
-  );
-  
-  let totalFuel = 0;
-  let totalCost = 0;
-  let totalDistance = 0;
-  
-  for (let i = 1; i < sortedRecords.length; i++) {
-    const currentMileage = parseFloat(sortedRecords[i].mileage);
-    const prevMileage = parseFloat(sortedRecords[i-1].mileage);
-    
-    if (!isNaN(currentMileage) && !isNaN(prevMileage) && currentMileage > prevMileage) {
-      const distance = currentMileage - prevMileage;
-      totalDistance += distance;
-      totalFuel += sortedRecords[i-1].amount_liters;
-      totalCost += sortedRecords[i-1].total_cost;
+  return [
+    {
+      id: '1',
+      vehicle_id: vehicleId,
+      service_date: '2024-03-15',
+      service_type: 'Výměna oleje',
+      description: 'Výměna motorového oleje a filtru',
+      mileage: '85000',
+      cost: '1500',
+      provider: 'Autoservis Novák'
     }
-  }
-  
-  const averageConsumption = totalDistance > 0 ? (totalFuel / totalDistance) * 100 : 0;
+  ];
+};
+
+export const saveServiceRecord = async (record: Partial<ServiceRecord>): Promise<ServiceRecord | null> => {
+  // Simulace ukládání
+  await new Promise(resolve => setTimeout(resolve, 300));
   
   return {
-    averageConsumption: parseFloat(averageConsumption.toFixed(2)),
-    totalCost: parseFloat(totalCost.toFixed(2)),
-    totalDistance: parseFloat(totalDistance.toFixed(2))
+    id: record.id || Math.random().toString(),
+    vehicle_id: record.vehicle_id!,
+    service_date: record.service_date!,
+    service_type: record.service_type!,
+    description: record.description!,
+    mileage: record.mileage!,
+    cost: record.cost!,
+    provider: record.provider!
   };
+};
+
+export const deleteServiceRecord = async (id: string): Promise<boolean> => {
+  // Simulace mazání
+  await new Promise(resolve => setTimeout(resolve, 200));
+  return true;
+};
+
+export const fetchFuelRecords = async (vehicleId: string): Promise<FuelRecord[]> => {
+  await new Promise(resolve => setTimeout(resolve, 500));
+  
+  return [
+    {
+      id: '1',
+      vehicle_id: vehicleId,
+      date: '2024-04-20',
+      amount_liters: 45.5,
+      price_per_liter: 36.90,
+      total_cost: 1679.95,
+      mileage: '87500',
+      full_tank: true,
+      station: 'Shell'
+    }
+  ];
+};
+
+export const saveFuelRecord = async (record: Partial<FuelRecord>): Promise<FuelRecord | null> => {
+  await new Promise(resolve => setTimeout(resolve, 300));
+  
+  return {
+    id: record.id || Math.random().toString(),
+    vehicle_id: record.vehicle_id!,
+    date: record.date!,
+    amount_liters: record.amount_liters!,
+    price_per_liter: record.price_per_liter!,
+    total_cost: record.total_cost!,
+    mileage: record.mileage!,
+    full_tank: record.full_tank!,
+    station: record.station!
+  };
+};
+
+export const deleteFuelRecord = async (id: string): Promise<boolean> => {
+  await new Promise(resolve => setTimeout(resolve, 200));
+  return true;
+};
+
+export const fetchInsuranceRecords = async (vehicleId: string): Promise<InsuranceRecord[]> => {
+  await new Promise(resolve => setTimeout(resolve, 500));
+  
+  return [
+    {
+      id: '1',
+      vehicle_id: vehicleId,
+      provider: 'Kooperativa',
+      policy_number: 'POL123456',
+      valid_from: '2024-01-01',
+      valid_until: '2024-12-31',
+      monthly_cost: '1200',
+      coverage_type: 'Plné pojištění',
+      notes: 'Zahrnuje povinné ručení a havarijní pojištění'
+    }
+  ];
+};
+
+export const saveInsuranceRecord = async (record: Partial<InsuranceRecord>): Promise<InsuranceRecord | null> => {
+  await new Promise(resolve => setTimeout(resolve, 300));
+  
+  return {
+    id: record.id || Math.random().toString(),
+    vehicle_id: record.vehicle_id!,
+    provider: record.provider!,
+    policy_number: record.policy_number!,
+    valid_from: record.valid_from!,
+    valid_until: record.valid_until!,
+    monthly_cost: record.monthly_cost!,
+    coverage_type: record.coverage_type!,
+    notes: record.notes || ''
+  };
+};
+
+export const deleteInsuranceRecord = async (id: string): Promise<boolean> => {
+  await new Promise(resolve => setTimeout(resolve, 200));
+  return true;
+};
+
+export const fetchDocuments = async (vehicleId: string): Promise<DocumentRecord[]> => {
+  await new Promise(resolve => setTimeout(resolve, 500));
+  
+  return [
+    {
+      id: '1',
+      vehicle_id: vehicleId,
+      name: 'Technický průkaz',
+      type: 'stk',
+      expiry_date: '2025-05-15',
+      notes: 'Platný technický průkaz vozidla'
+    }
+  ];
+};
+
+export const saveDocument = async (document: Partial<DocumentRecord>): Promise<DocumentRecord | null> => {
+  await new Promise(resolve => setTimeout(resolve, 300));
+  
+  return {
+    id: document.id || Math.random().toString(),
+    vehicle_id: document.vehicle_id!,
+    name: document.name!,
+    type: document.type!,
+    expiry_date: document.expiry_date,
+    notes: document.notes
+  };
+};
+
+export const deleteDocument = async (id: string): Promise<boolean> => {
+  await new Promise(resolve => setTimeout(resolve, 200));
+  return true;
 };
