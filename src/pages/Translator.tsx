@@ -1,22 +1,22 @@
+
 import React, { useState, Suspense } from 'react';
 import { Helmet } from "react-helmet";
 import PremiumCheck from "@/components/premium/PremiumCheck";
-import { Languages } from "lucide-react";
+import { Bot, Languages, Clock, BookOpen } from "lucide-react";
 import { useTranslator } from "@/hooks/useTranslator";
 import { useScreenOrientation } from "@/hooks/useScreenOrientation";
 import { usePerformanceOptimization } from "@/hooks/usePerformanceOptimization";
 import { UniversalMobileNavigation } from "@/components/navigation/UniversalMobileNavigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { workPhrases } from "@/data/translatorData";
-import { MessageSquare, Clock, BookOpen } from "lucide-react";
+import SimpleLoadingSpinner from "@/components/loading/SimpleLoadingSpinner";
 
 // Lazy load components for better performance
-const TextTranslation = React.lazy(() => import("@/components/translator/TextTranslation"));
-const OptimizedMobileTranslator = React.lazy(() => import("@/components/translator/OptimizedMobileTranslator"));
+const AIChatInterface = React.lazy(() => import("@/components/translator/AIChatInterface"));
+const QuickTranslation = React.lazy(() => import("@/components/translator/QuickTranslation"));
 const TranslationHistory = React.lazy(() => import("@/components/translator/TranslationHistory"));
 const PhrasesTranslation = React.lazy(() => import("@/components/translator/PhrasesTranslation"));
 
-// Loading fallback component
 const TranslatorSkeleton = () => (
   <div className="space-y-4">
     <Skeleton className="h-8 w-1/3" />
@@ -30,11 +30,10 @@ const TranslatorSkeleton = () => (
 );
 
 const Translator = () => {
-  const [activeTab, setActiveTab] = useState("translator");
+  const [activeTab, setActiveTab] = useState("ai-chat");
   const [phrasesTab, setPhrasesTab] = useState("workplace");
   const { isMobile, isSmallLandscape } = useScreenOrientation();
   
-  // Performance optimization hook
   usePerformanceOptimization({
     enableImageOptimization: true,
     enablePrefetching: true,
@@ -73,10 +72,16 @@ const Translator = () => {
 
   const translatorTabs = [
     {
-      id: "translator",
-      label: "Překladač",
+      id: "ai-chat",
+      label: "AI Chat",
+      icon: Bot,
+      description: "Inteligentní AI asistent pro překlady"
+    },
+    {
+      id: "quick-translate",
+      label: "Rychlé překlady",
       icon: Languages,
-      description: "Překlad textů mezi jazyky"
+      description: "Klasický překladač"
     },
     {
       id: "phrasebook",
@@ -92,49 +97,35 @@ const Translator = () => {
     }
   ];
 
-  // Use mobile layout for mobile devices or small landscape screens
   const useMobileLayout = isMobile || isSmallLandscape;
 
   const renderTabContent = () => {
     switch (activeTab) {
-      case "translator":
+      case "ai-chat":
+        return (
+          <Suspense fallback={<SimpleLoadingSpinner message="Načítání AI překladače..." />}>
+            <AIChatInterface onTextToSpeech={handleTextToSpeech} />
+          </Suspense>
+        );
+      case "quick-translate":
         return (
           <Suspense fallback={<TranslatorSkeleton />}>
-            {useMobileLayout ? (
-              <OptimizedMobileTranslator
-                sourceText={sourceText}
-                setSourceText={setSourceText}
-                translatedText={translatedText}
-                sourceLanguage={sourceLanguage}
-                setSourceLanguage={setSourceLanguage}
-                targetLanguage={targetLanguage}
-                setTargetLanguage={setTargetLanguage}
-                autoTranslate={autoTranslate}
-                setAutoTranslate={setAutoTranslate}
-                isTranslating={isTranslating}
-                handleTranslate={handleTranslate}
-                handleSwapLanguages={handleSwapLanguages}
-                handleTextToSpeech={handleTextToSpeech}
-                languagePairs={languagePairs}
-              />
-            ) : (
-              <TextTranslation
-                sourceText={sourceText}
-                setSourceText={setSourceText}
-                translatedText={translatedText}
-                sourceLanguage={sourceLanguage}
-                setSourceLanguage={setSourceLanguage}
-                targetLanguage={targetLanguage}
-                setTargetLanguage={setTargetLanguage}
-                autoTranslate={autoTranslate}
-                setAutoTranslate={setAutoTranslate}
-                isTranslating={isTranslating}
-                handleTranslate={handleTranslate}
-                handleSwapLanguages={handleSwapLanguages}
-                handleTextToSpeech={handleTextToSpeech}
-                languagePairs={languagePairs}
-              />
-            )}
+            <QuickTranslation
+              sourceText={sourceText}
+              setSourceText={setSourceText}
+              translatedText={translatedText}
+              sourceLanguage={sourceLanguage}
+              setSourceLanguage={setSourceLanguage}
+              targetLanguage={targetLanguage}
+              setTargetLanguage={setTargetLanguage}
+              autoTranslate={autoTranslate}
+              setAutoTranslate={setAutoTranslate}
+              isTranslating={isTranslating}
+              handleTranslate={handleTranslate}
+              handleSwapLanguages={handleSwapLanguages}
+              handleTextToSpeech={handleTextToSpeech}
+              languagePairs={languagePairs}
+            />
           </Suspense>
         );
       case "phrasebook":
@@ -160,42 +151,8 @@ const Translator = () => {
         );
       default:
         return (
-          <Suspense fallback={<TranslatorSkeleton />}>
-            {useMobileLayout ? (
-              <OptimizedMobileTranslator
-                sourceText={sourceText}
-                setSourceText={setSourceText}
-                translatedText={translatedText}
-                sourceLanguage={sourceLanguage}
-                setSourceLanguage={setSourceLanguage}
-                targetLanguage={targetLanguage}
-                setTargetLanguage={setTargetLanguage}
-                autoTranslate={autoTranslate}
-                setAutoTranslate={setAutoTranslate}
-                isTranslating={isTranslating}
-                handleTranslate={handleTranslate}
-                handleSwapLanguages={handleSwapLanguages}
-                handleTextToSpeech={handleTextToSpeech}
-                languagePairs={languagePairs}
-              />
-            ) : (
-              <TextTranslation
-                sourceText={sourceText}
-                setSourceText={setSourceText}
-                translatedText={translatedText}
-                sourceLanguage={sourceLanguage}
-                setSourceLanguage={setSourceLanguage}
-                targetLanguage={targetLanguage}
-                setTargetLanguage={setTargetLanguage}
-                autoTranslate={autoTranslate}
-                setAutoTranslate={setAutoTranslate}
-                isTranslating={isTranslating}
-                handleTranslate={handleTranslate}
-                handleSwapLanguages={handleSwapLanguages}
-                handleTextToSpeech={handleTextToSpeech}
-                languagePairs={languagePairs}
-              />
-            )}
+          <Suspense fallback={<SimpleLoadingSpinner message="Načítání AI překladače..." />}>
+            <AIChatInterface onTextToSpeech={handleTextToSpeech} />
           </Suspense>
         );
     }
@@ -205,24 +162,24 @@ const Translator = () => {
     <PremiumCheck featureKey="translator">
       <div className={`container py-6 ${useMobileLayout ? 'pb-32' : ''} ${isSmallLandscape ? 'px-2' : ''}`}>
         <Helmet>
-          <title>Překladač | Pendler Buddy</title>
-          <meta name="description" content="Rychlý a přesný překladač pro češtinu, němčinu a další jazyky. Ideální pro pendlery a pracovníky v zahraničí." />
+          <title>AI Překladač | Pendler Buddy</title>
+          <meta name="description" content="Inteligentní AI asistent pro češtinu a němčinu. Překlady s kontextovým vysvětlením pro pendlery v Německu." />
           <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
         </Helmet>
         
         <div className={`flex items-center gap-3 mb-4 ${isSmallLandscape ? 'mb-2' : ''}`}>
           <div className="p-2 rounded-full bg-primary/10">
-            <Languages className="h-6 w-6 text-primary" />
+            <Bot className="h-6 w-6 text-primary" />
           </div>
           <h1 className={`${useMobileLayout ? 'text-2xl' : 'text-3xl'} font-bold`}>
-            Překladač
+            AI Překladač
           </h1>
         </div>
         
         <p className={`text-muted-foreground ${useMobileLayout ? 'text-base mb-4' : 'text-lg mb-6'} max-w-3xl ${isSmallLandscape ? 'mb-2 text-sm' : ''}`}>
           {useMobileLayout 
-            ? 'Přeložte texty mezi jazyky pro lepší komunikaci.'
-            : 'Přeložte texty mezi češtinou a němčinou pro lepší porozumění v práci a každodenní komunikaci.'
+            ? 'Inteligentní AI asistent pro překlady a výuku němčiny.'
+            : 'Váš inteligentní AI asistent pro překládání mezi češtinou a němčinou s kontextovým vysvětlením a praktickými radami.'
           }
         </p>
 

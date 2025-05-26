@@ -6,3 +6,6 @@ verify_jwt = true
 
 [functions.get_premium_features]
 verify_jwt = false
+
+[functions.ai-translator]
+verify_jwt = false
