@@ -1,4 +1,3 @@
-
 import React, { useState, Suspense } from 'react';
 import { Helmet } from "react-helmet";
 import PremiumCheck from "@/components/premium/PremiumCheck";
@@ -34,12 +33,7 @@ const Translator = () => {
   const [phrasesTab, setPhrasesTab] = useState("workplace");
   const { isMobile, isSmallLandscape } = useScreenOrientation();
   
-  usePerformanceOptimization({
-    enableImageOptimization: true,
-    enablePrefetching: true,
-    enableBundleSplitting: true,
-    prefetchDelay: 1500
-  });
+  usePerformanceOptimization();
   
   const {
     sourceText,
