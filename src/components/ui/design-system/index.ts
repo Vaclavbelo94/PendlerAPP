@@ -1,6 +1,6 @@
 
 // Design System Components Export
-export { default as Typography, Heading, Text, Label, Quote, Code } from './Typography';
+export { Heading, Text, Label, Quote, Code } from './Typography';
 export { default as IconBox } from './IconBox';
 export { default as InfoCard } from './InfoCard';
 export { default as TextAligned, useResponsiveAlignment } from './TextAlignment';
