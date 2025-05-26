@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -83,7 +84,6 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProp
     toast.success("Odhlášení proběhlo úspěšně");
   };
 
-  // Optimalizované rozměry pro různé mobile módy
   const navbarHeight = isLandscapeMobile ? 'h-12' : 'h-16';
   const menuButtonClass = isPortraitMobile 
     ? "p-3 min-h-[44px] min-w-[44px]" 
@@ -126,7 +126,7 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProp
               />
             </div>
             
-            {/* Mobile search button - optimalizovaný */}
+            {/* Mobile search button */}
             <Button 
               variant="ghost" 
               size={isLandscapeMobile ? "sm" : "icon"}
@@ -139,10 +139,8 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProp
           </div>
           
           <div className="flex items-center gap-2">
-            {/* Theme toggle button (viditelné pouze na desktop) */}
             {!isMobile && <ThemeToggle />}
             
-            {/* Right Content (e.g. notifications) - optimized for mobile */}
             <div className="flex items-center gap-1">
               {rightContent}
             </div>
