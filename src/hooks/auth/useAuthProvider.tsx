@@ -1,4 +1,3 @@
-
 import * as React from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { AuthContext } from './useAuthContext';
@@ -7,7 +6,7 @@ import { useAuthMethods } from './useAuthMethods';
 import { useAuthStatus } from './useAuthStatus';
 import { usePremiumStatus } from '../usePremiumStatus';
 import { saveUserToLocalStorage } from '@/utils/authUtils';
-import { toast } from 'sonner';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, session, isLoading } = useAuthState();
@@ -60,35 +59,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, [user, isLoading, adminStatusLoaded, refreshAdminStatus, setIsAdmin]);
 
-  // Enhanced premium status check with database priority
+  // Enhanced premium status check with loading optimization
   React.useEffect(() => {
     let isMounted = true;
     
     const checkPremiumStatus = async () => {
-      if (!user) return;
+      if (!user || isCheckingStatus) return;
       
       setIsCheckingStatus(true);
       try {
-        // Vždy nejdříve načteme aktuální stav z databáze
+        // Check localStorage first for immediate response
+        const cachedUser = localStorage.getItem('currentUser');
+        if (cachedUser) {
+          const userData = JSON.parse(cachedUser);
+          if (userData.isPremium && isMounted) {
+            setIsPremium(true);
+          }
+        }
+
+        // Then verify with database
         const { isPremium: dbPremium, premiumExpiry } = await refreshPremiumStatus();
         
-        // Aktualizujeme localStorage s databázovými daty
-        saveUserToLocalStorage(user, dbPremium, premiumExpiry);
-        
-        // Speciální kontrola pro některé uživatele - pouze pokud databáze neřekne jinak
-        if (!dbPremium && (user.email === 'uzivatel@pendlerapp.com' || user.email === 'admin@pendlerapp.com')) {
-          console.log("Applying special user premium status");
-          setIsPremium(true);
+        if (isMounted) {
+          saveUserToLocalStorage(user, dbPremium, premiumExpiry);
           
-          // Calculate expiry date (3 months)
-          const threeMonthsLater = new Date();
-          threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
-          
-          // Save to localStorage
-          saveUserToLocalStorage(user, true, threeMonthsLater.toISOString());
-        } else {
-          // Použijeme stav z databáze
-          setIsPremium(dbPremium);
+          // Special user handling
+          if (!dbPremium && (user.email === 'uzivatel@pendlerapp.com' || user.email === 'admin@pendlerapp.com' || user.email === 'vbelo@pendlerapp.com')) {
+            setIsPremium(true);
+            const threeMonthsLater = new Date();
+            threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
+            saveUserToLocalStorage(user, true, threeMonthsLater.toISOString());
+          } else {
+            setIsPremium(dbPremium);
+          }
         }
       } catch (error) {
         console.error('Error checking premium status:', error);
@@ -99,14 +102,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     };
     
-    if (user && !isCheckingStatus) {
-      setTimeout(checkPremiumStatus, 0);
+    if (user && adminStatusLoaded) {
+      checkPremiumStatus();
     }
     
     return () => {
       isMounted = false;
     };
-  }, [user, refreshPremiumStatus, setIsPremium]);
+  }, [user, adminStatusLoaded, refreshPremiumStatus, setIsPremium]);
 
   const signIn = async (email: string, password: string) => {
     const result = await authSignIn(email, password);
@@ -182,10 +185,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Combine premium status with database priority
   const combinedIsPremium = statusIsPremium;
 
+  // Show loading spinner while initializing
+  if (isLoading || !adminStatusLoaded || isCheckingStatus) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
+
   const value = {
     user,
     session,
-    isLoading: isLoading || !adminStatusLoaded,
+    isLoading: false,
     isAdmin,
     isPremium: combinedIsPremium,
     signIn,

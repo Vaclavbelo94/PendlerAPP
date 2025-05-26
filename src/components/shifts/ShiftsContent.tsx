@@ -5,13 +5,12 @@ import { Plus, Calendar, ListFilter, FileSpreadsheet } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { useStandardizedToast } from '@/hooks/useStandardizedToast';
 import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
 import { ShiftCalendar } from './ShiftCalendar';
 import ShiftsList from './ShiftsList';
 import ShiftForm from './ShiftForm';
 import ShiftStats from './ShiftStats';
 import ShiftFilters from './ShiftFilters';
-import EmptyShiftsState from '../shifts/EmptyShiftsState';
+import EmptyShiftsState from './EmptyShiftsState';
 import { ShiftType, AnalyticsPeriod } from './types';
 
 interface ShiftsContentProps {
@@ -56,29 +55,35 @@ const ShiftsContent = (props: ShiftsContentProps = {}) => {
   const currentShifts = props.shifts || shifts;
   
   useEffect(() => {
-    // Simulate loading shifts data
     const fetchShifts = async () => {
+      if (!user) {
+        setIsLoading(false);
+        return;
+      }
+
       try {
         setIsLoading(true);
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
         
-        // In a real implementation, we would fetch from storage/database
-        const storedShifts = localStorage.getItem('userShifts');
+        // For new users, don't load demo data - just show empty state
+        const storedShifts = localStorage.getItem(`userShifts_${user.id}`);
         if (storedShifts) {
-          setShifts(JSON.parse(storedShifts));
+          const parsedShifts = JSON.parse(storedShifts);
+          // Only show shifts if they exist and belong to this user
+          setShifts(parsedShifts.filter(shift => shift.userId === user.id));
         } else {
+          // New user - start with empty shifts array
           setShifts([]);
         }
       } catch (error) {
         console.error('Error fetching shifts:', error);
+        setShifts([]);
       } finally {
         setIsLoading(false);
       }
     };
     
     fetchShifts();
-  }, []);
+  }, [user]);
 
   const handleAddShift = async (shiftData) => {
     try {
@@ -276,6 +281,4 @@ const ShiftsContent = (props: ShiftsContentProps = {}) => {
   );
 };
 
-// Export both named and default
-export { ShiftsContent };
 export default ShiftsContent;

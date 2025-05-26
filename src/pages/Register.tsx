@@ -8,12 +8,15 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
+import PromoCodeField from "@/components/auth/PromoCodeField";
 
 const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [username, setUsername] = useState("");
+  const [promoCode, setPromoCode] = useState("");
+  const [isPromoValid, setIsPromoValid] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const navigate = useNavigate();
@@ -25,6 +28,11 @@ const Register = () => {
       navigate("/");
     }
   }, [user, navigate]);
+
+  const handlePromoCodeChange = (code: string, isValid: boolean) => {
+    setPromoCode(code);
+    setIsPromoValid(isValid);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,9 +57,15 @@ const Register = () => {
           description: error.message || "Zkontrolujte své údaje a zkuste to znovu.",
         });
       } else {
-        toast.success("Účet byl úspěšně vytvořen!", {
-          description: "Nyní se můžete přihlásit.",
-        });
+        let successMessage = "Účet byl úspěšně vytvořen!";
+        let description = "Nyní se můžete přihlásit.";
+        
+        if (isPromoValid && promoCode) {
+          successMessage = "Účet vytvořen s Premium přístupem!";
+          description = `Promo kód "${promoCode}" byl aktivován. Nyní se můžete přihlásit.`;
+        }
+        
+        toast.success(successMessage, { description });
         navigate("/login");
       }
     } catch (error: any) {
@@ -177,6 +191,9 @@ const Register = () => {
                 required
               />
             </div>
+            
+            <PromoCodeField onPromoCodeChange={handlePromoCodeChange} />
+            
             <Button
               type="submit"
               className="w-full"
