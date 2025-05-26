@@ -153,3 +153,49 @@ export const deleteDocument = async (id: string): Promise<boolean> => {
   await new Promise(resolve => setTimeout(resolve, 200));
   return true;
 };
+
+// Add the missing calculateConsumption function
+export const calculateConsumption = (fuelRecords: FuelRecord[]) => {
+  if (fuelRecords.length === 0) {
+    return {
+      averageConsumption: 0,
+      totalCost: 0,
+      totalDistance: 0
+    };
+  }
+
+  // Sort records by date
+  const sortedRecords = [...fuelRecords].sort((a, b) => 
+    new Date(a.date).getTime() - new Date(b.date).getTime()
+  );
+
+  let totalCost = 0;
+  let totalDistance = 0;
+  let totalLiters = 0;
+  let consumptionSamples = 0;
+
+  for (let i = 0; i < sortedRecords.length; i++) {
+    const record = sortedRecords[i];
+    totalCost += record.total_cost;
+
+    if (i > 0) {
+      const currentMileage = parseFloat(record.mileage);
+      const prevMileage = parseFloat(sortedRecords[i - 1].mileage);
+      
+      if (!isNaN(currentMileage) && !isNaN(prevMileage) && currentMileage > prevMileage) {
+        const distance = currentMileage - prevMileage;
+        totalDistance += distance;
+        totalLiters += sortedRecords[i - 1].amount_liters;
+        consumptionSamples++;
+      }
+    }
+  }
+
+  const averageConsumption = totalDistance > 0 ? (totalLiters / totalDistance) * 100 : 0;
+
+  return {
+    averageConsumption,
+    totalCost,
+    totalDistance
+  };
+};

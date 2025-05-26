@@ -37,10 +37,10 @@ export const saveVehicle = async (vehicleData: Partial<VehicleData>): Promise<Ve
     if (error) throw error;
     return data;
   } else {
-    // Create new vehicle
+    // Create new vehicle - fix the array issue by passing single object
     const { data, error } = await supabase
       .from('vehicles')
-      .insert([vehicleData])
+      .insert(vehicleData as any) // Cast to any to handle Partial types
       .select()
       .single();
     
