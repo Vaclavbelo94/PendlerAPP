@@ -6,20 +6,20 @@ export interface VehicleData {
   model: string;
   year: string;
   license_plate: string;
-  vin: string;
-  fuel_type: string;
-  color: string;
-  mileage: string;
-  engine: string;
-  power: string;
-  transmission: string;
-  next_inspection: string;
-  last_service: string;
-  average_consumption: string;
-  purchase_price: string;
-  insurance_monthly: string;
-  tax_yearly: string;
-  last_repair_cost: string;
+  vin?: string;
+  fuel_type?: string;
+  engine?: string;
+  power?: string;
+  transmission?: string;
+  color?: string;
+  mileage?: string;
+  purchase_price?: string;
+  average_consumption?: string;
+  insurance_monthly?: string;
+  tax_yearly?: string;
+  last_service?: string;
+  next_inspection?: string;
+  last_repair_cost?: string;
   created_at?: string;
   updated_at?: string;
 }
@@ -33,8 +33,6 @@ export interface ServiceRecord {
   mileage: string;
   cost: string;
   provider: string;
-  created_at?: string;
-  updated_at?: string;
 }
 
 export interface FuelRecord {
@@ -47,8 +45,6 @@ export interface FuelRecord {
   mileage: string;
   full_tank: boolean;
   station: string;
-  created_at?: string;
-  updated_at?: string;
 }
 
 export interface InsuranceRecord {
@@ -60,9 +56,7 @@ export interface InsuranceRecord {
   valid_until: string;
   monthly_cost: string;
   coverage_type: string;
-  notes: string;
-  created_at?: string;
-  updated_at?: string;
+  notes?: string;
 }
 
 export interface DocumentRecord {
@@ -71,17 +65,6 @@ export interface DocumentRecord {
   name: string;
   type: string;
   expiry_date?: string;
-  file_path?: string;
   notes?: string;
-  created_at?: string;
-  updated_at?: string;
-}
-
-export interface CalculationHistory {
-  id?: string;
-  user_id: string;
-  type: string;
-  inputs: Record<string, any>;
-  result: Record<string, any>;
-  created_at?: string;
+  file_path?: string;
 }

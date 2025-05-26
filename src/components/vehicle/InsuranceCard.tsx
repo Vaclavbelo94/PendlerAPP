@@ -1,153 +1,88 @@
 
-import React, { useState, useEffect } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { CardHeaderWithAction } from "@/components/ui/card-header-with-action";
-import { FlexContainer } from "@/components/ui/flex-container";
-import { Badge } from "@/components/ui/badge";
-import { Edit, Plus, Shield } from "lucide-react";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { cn } from "@/lib/utils";
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { InsuranceRecord } from '@/types/vehicle';
+import { fetchInsuranceRecords } from '@/services/vehicleService';
+import { Shield, Plus } from 'lucide-react';
 
 interface InsuranceCardProps {
-  vehicleId: string;
+  vehicleId?: string;
+  fullView?: boolean;
 }
 
-const InsuranceCard = ({ vehicleId }: InsuranceCardProps) => {
-  const isMobile = useIsMobile();
-  const [insurances, setInsurances] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = false }) => {
+  const [insuranceRecords, setInsuranceRecords] = useState<InsuranceRecord[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Mock data pro ukázku
   useEffect(() => {
-    setTimeout(() => {
-      setInsurances([
-        {
-          id: "1",
-          company: "Kooperativa",
-          type: "Povinné ručení",
-          status: "Platné",
-          validUntil: "2025-05-23",
-          validFrom: "2024-05-23",
-          daysRemaining: 363,
-          amount: 2400
-        }
-      ]);
-      setIsLoading(false);
-    }, 1000);
+    if (vehicleId) {
+      loadInsuranceRecords();
+    }
   }, [vehicleId]);
 
-  if (isLoading) {
-    return (
-      <Card>
-        <CardContent className="flex items-center justify-center p-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </CardContent>
-      </Card>
-    );
-  }
+  const loadInsuranceRecords = async () => {
+    if (!vehicleId) return;
+    
+    setIsLoading(true);
+    try {
+      const records = await fetchInsuranceRecords(vehicleId);
+      setInsuranceRecords(records);
+    } catch (error) {
+      console.error('Chyba při načítání pojištění:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Card>
-      <CardHeaderWithAction
-        title="Informace o pojištění vozidla"
-        action={{
-          label: "Přidat pojištění",
-          onClick: () => console.log("Add insurance"),
-          icon: <Plus className="h-4 w-4" />
-        }}
-      />
-      <CardContent className={cn("space-y-4", isMobile ? "px-4 pb-4" : "px-6 pb-6")}>
-        {insurances.length === 0 ? (
-          <FlexContainer direction="col" align="center" justify="center" className="py-8">
-            <Shield className={cn("text-muted-foreground mb-2", isMobile ? "h-8 w-8" : "h-10 w-10")} />
-            <p className={cn("text-muted-foreground text-center", isMobile ? "text-sm" : "text-base")}>
-              Nemáte přidané žádné pojištění
-            </p>
-          </FlexContainer>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <div>
+          <CardTitle className="text-xl font-bold">Pojištění</CardTitle>
+          <CardDescription>Přehled pojistných smluv a jejich platnosti</CardDescription>
+        </div>
+        <Button size="sm">
+          <Plus className="h-4 w-4 mr-2" /> Přidat pojištění
+        </Button>
+      </CardHeader>
+      <CardContent>
+        {isLoading ? (
+          <div className="flex justify-center py-8">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+          </div>
+        ) : insuranceRecords.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">
+            <Shield className="mx-auto h-12 w-12 mb-4 opacity-20" />
+            <p>Zatím zde nejsou žádné záznamy o pojištění</p>
+            <p className="text-sm mt-2">Klikněte na "Přidat pojištění" pro vytvoření prvního záznamu</p>
+          </div>
         ) : (
-          insurances.map((insurance: any) => (
-            <Card key={insurance.id} className="border-l-4 border-l-primary">
-              <CardContent className={cn("p-4", isMobile ? "p-3" : "")}>
-                <FlexContainer 
-                  direction={isMobile ? "col" : "row"} 
-                  justify="between" 
-                  align={isMobile ? "start" : "center"}
-                  gap="sm"
-                  className="mb-3"
-                >
-                  <div className="flex-1">
-                    <FlexContainer align="center" gap="sm" className="mb-1">
-                      <h4 className={cn("font-semibold", isMobile ? "text-sm" : "text-base")}>
-                        {insurance.company}
-                      </h4>
-                      <Badge 
-                        variant="secondary" 
-                        className={cn(
-                          "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-                          isMobile ? "text-xs" : "text-sm"
-                        )}
-                      >
-                        {insurance.status}
-                      </Badge>
-                    </FlexContainer>
-                    <p className={cn("text-muted-foreground", isMobile ? "text-xs" : "text-sm")}>
-                      {insurance.type}
+          <div className="space-y-4">
+            {(fullView ? insuranceRecords : insuranceRecords.slice(0, 2)).map((record) => (
+              <div key={record.id} className="border rounded-lg p-4">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="font-medium">{record.provider}</h3>
+                    <p className="text-sm text-muted-foreground">{record.policy_number}</p>
+                    <p className="text-sm">{record.coverage_type}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-medium">{record.monthly_cost} Kč/měs</p>
+                    <p className="text-sm text-muted-foreground">
+                      Platné do: {record.valid_until}
                     </p>
                   </div>
-                  
-                  <Button 
-                    variant="ghost" 
-                    size={isMobile ? "sm" : "default"}
-                    className="min-h-[44px]"
-                  >
-                    <Edit className="h-4 w-4" />
-                    {!isMobile && <span className="ml-2">Upravit</span>}
-                  </Button>
-                </FlexContainer>
-
-                <FlexContainer 
-                  direction={isMobile ? "col" : "row"} 
-                  justify="between" 
-                  gap="sm"
-                  className="text-sm"
-                >
-                  <FlexContainer direction="col" gap="xs">
-                    <span className={cn("text-muted-foreground", isMobile ? "text-xs" : "text-sm")}>
-                      Platnost
-                    </span>
-                    <span className={cn("font-medium", isMobile ? "text-sm" : "text-base")}>
-                      {new Date(insurance.validFrom).toLocaleDateString('cs-CZ')} - {' '}
-                      {new Date(insurance.validUntil).toLocaleDateString('cs-CZ')}
-                    </span>
-                    <span className={cn("text-muted-foreground", isMobile ? "text-xs" : "text-sm")}>
-                      Platné ({insurance.daysRemaining} dnů)
-                    </span>
-                  </FlexContainer>
-                  
-                  {!isMobile && (
-                    <FlexContainer direction="col" align="end" gap="xs">
-                      <span className="text-muted-foreground text-sm">
-                        Částka
-                      </span>
-                      <span className="font-bold text-lg">
-                        {insurance.amount.toLocaleString('cs-CZ')} Kč
-                      </span>
-                    </FlexContainer>
-                  )}
-                </FlexContainer>
-
-                {isMobile && (
-                  <FlexContainer justify="between" align="center" className="mt-3 pt-3 border-t">
-                    <span className="text-muted-foreground text-xs">Částka</span>
-                    <span className="font-bold text-base">
-                      {insurance.amount.toLocaleString('cs-CZ')} Kč
-                    </span>
-                  </FlexContainer>
-                )}
-              </CardContent>
-            </Card>
-          ))
+                </div>
+              </div>
+            ))}
+            
+            {!fullView && insuranceRecords.length > 2 && (
+              <div className="mt-4 text-center">
+                <Button variant="link">Zobrazit všechny záznamy</Button>
+              </div>
+            )}
+          </div>
         )}
       </CardContent>
     </Card>

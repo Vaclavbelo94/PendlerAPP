@@ -13,15 +13,15 @@ import { useVehicleManagement } from '@/hooks/vehicle/useVehicleManagement';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 
-// Simplify lazy loading - remove error catching to let Suspense handle it
-const VehicleForm = React.lazy(() => import('@/components/vehicle/VehicleForm'));
-const VehicleSelectorOptimized = React.lazy(() => import('@/components/vehicle/VehicleSelectorOptimized'));
-const VehicleNavigation = React.lazy(() => import('@/components/vehicle/VehicleNavigation'));
-const FuelConsumptionCard = React.lazy(() => import('@/components/vehicle/FuelConsumptionCard'));
-const ServiceRecordCard = React.lazy(() => import('@/components/vehicle/ServiceRecordCard'));
-const InsuranceCard = React.lazy(() => import('@/components/vehicle/InsuranceCard'));
-const DocumentsCard = React.lazy(() => import('@/components/vehicle/DocumentsCard'));
-const EmptyVehicleState = React.lazy(() => import('@/components/vehicle/EmptyVehicleState'));
+// Direct imports instead of lazy loading to avoid issues
+import VehicleForm from '@/components/vehicle/VehicleForm';
+import VehicleSelectorOptimized from '@/components/vehicle/VehicleSelectorOptimized';
+import VehicleNavigation from '@/components/vehicle/VehicleNavigation';
+import FuelConsumptionCard from '@/components/vehicle/FuelConsumptionCard';
+import ServiceRecordCard from '@/components/vehicle/ServiceRecordCard';
+import InsuranceCard from '@/components/vehicle/InsuranceCard';
+import DocumentsCard from '@/components/vehicle/DocumentsCard';
+import EmptyVehicleState from '@/components/vehicle/EmptyVehicleState';
 
 const Vehicle = () => {
   const { user, isInitialized } = useSimplifiedAuth();
@@ -55,56 +55,22 @@ const Vehicle = () => {
           <div className={cn("space-y-6", isMobile ? "space-y-4" : "")}>
             <div className={cn("grid gap-6", isMobile ? "grid-cols-1 gap-4" : "grid-cols-1 lg:grid-cols-2")}>
               <div className="space-y-6">
-                <ErrorBoundaryWithFallback>
-                  <React.Suspense fallback={<FastLoadingFallback minimal />}>
-                    <FuelConsumptionCard vehicleId={selectedVehicleId} />
-                  </React.Suspense>
-                </ErrorBoundaryWithFallback>
-                <ErrorBoundaryWithFallback>
-                  <React.Suspense fallback={<FastLoadingFallback minimal />}>
-                    <ServiceRecordCard vehicleId={selectedVehicleId} />
-                  </React.Suspense>
-                </ErrorBoundaryWithFallback>
+                <FuelConsumptionCard vehicleId={selectedVehicleId} />
+                <ServiceRecordCard vehicleId={selectedVehicleId} />
               </div>
               <div className="space-y-6">
-                <ErrorBoundaryWithFallback>
-                  <React.Suspense fallback={<FastLoadingFallback minimal />}>
-                    <InsuranceCard vehicleId={selectedVehicleId} />
-                  </React.Suspense>
-                </ErrorBoundaryWithFallback>
-                <ErrorBoundaryWithFallback>
-                  <React.Suspense fallback={<FastLoadingFallback minimal />}>
-                    <DocumentsCard vehicleId={selectedVehicleId} />
-                  </React.Suspense>
-                </ErrorBoundaryWithFallback>
+                <InsuranceCard vehicleId={selectedVehicleId} />
+                <DocumentsCard vehicleId={selectedVehicleId} />
               </div>
             </div>
           </div>
         );
       case "fuel":
-        return (
-          <ErrorBoundaryWithFallback>
-            <React.Suspense fallback={<FastLoadingFallback />}>
-              <FuelConsumptionCard vehicleId={selectedVehicleId} fullView />
-            </React.Suspense>
-          </ErrorBoundaryWithFallback>
-        );
+        return <FuelConsumptionCard vehicleId={selectedVehicleId} fullView />;
       case "service":
-        return (
-          <ErrorBoundaryWithFallback>
-            <React.Suspense fallback={<FastLoadingFallback />}>
-              <ServiceRecordCard vehicleId={selectedVehicleId} fullView />
-            </React.Suspense>
-          </ErrorBoundaryWithFallback>
-        );
+        return <ServiceRecordCard vehicleId={selectedVehicleId} fullView />;
       case "documents":
-        return (
-          <ErrorBoundaryWithFallback>
-            <React.Suspense fallback={<FastLoadingFallback />}>
-              <DocumentsCard vehicleId={selectedVehicleId} fullView />
-            </React.Suspense>
-          </ErrorBoundaryWithFallback>
-        );
+        return <DocumentsCard vehicleId={selectedVehicleId} fullView />;
       default:
         return null;
     }
@@ -124,107 +90,89 @@ const Vehicle = () => {
   return (
     <OptimizedPremiumCheck featureKey="vehicle_management">
       <ResponsivePage enableMobileSafeArea>
-        <ErrorBoundaryWithFallback>
-          <div className="container max-w-7xl mx-auto px-4">
-            <Helmet>
-              <title>Vozidlo | Pendlerův Pomocník</title>
-            </Helmet>
-            
-            {/* Header */}
-            <div className={cn("flex justify-between items-center mb-6", isMobile ? "flex-col gap-4 items-stretch mb-4" : "")}>
-              <div className={cn(isMobile ? "text-center" : "")}>
-                <h1 className={cn("font-bold tracking-tight", isMobile ? "text-2xl" : "text-3xl")}>
-                  Vozidlo
-                </h1>
-                <p className={cn("text-muted-foreground", isMobile ? "text-sm" : "text-base")}>
-                  Správa vašich vozidel, spotřeby a dokumentů
-                </p>
-              </div>
-              
-              <Button 
-                onClick={() => setIsAddSheetOpen(true)} 
-                className={cn("flex items-center gap-2", isMobile ? "w-full justify-center" : "")}
-              >
-                <Plus className="h-4 w-4" />
-                Přidat vozidlo
-              </Button>
+        <div className="container max-w-7xl mx-auto px-4">
+          <Helmet>
+            <title>Vozidlo | Pendlerův Pomocník</title>
+          </Helmet>
+          
+          {/* Header */}
+          <div className={cn("flex justify-between items-center mb-6", isMobile ? "flex-col gap-4 items-stretch mb-4" : "")}>
+            <div className={cn(isMobile ? "text-center" : "")}>
+              <h1 className={cn("font-bold tracking-tight", isMobile ? "text-2xl" : "text-3xl")}>
+                Vozidlo
+              </h1>
+              <p className={cn("text-muted-foreground", isMobile ? "text-sm" : "text-base")}>
+                Správa vašich vozidel, spotřeby a dokumentů
+              </p>
             </div>
             
-            {vehicles.length === 0 ? (
-              <ErrorBoundaryWithFallback>
-                <React.Suspense fallback={<FastLoadingFallback />}>
-                  <EmptyVehicleState onAddVehicle={() => setIsAddSheetOpen(true)} />
-                </React.Suspense>
-              </ErrorBoundaryWithFallback>
-            ) : (
-              <>
-                {/* Vehicle selector */}
-                {vehicles.length > 1 && (
-                  <div className="mb-6">
-                    <ErrorBoundaryWithFallback>
-                      <React.Suspense fallback={<div className="h-10 w-64 bg-muted animate-pulse rounded" />}>
-                        <VehicleSelectorOptimized
-                          vehicles={vehicles}
-                          selectedVehicleId={selectedVehicleId}
-                          onSelect={selectVehicle}
-                          className={isMobile ? "w-full" : ""}
-                        />
-                      </React.Suspense>
-                    </ErrorBoundaryWithFallback>
-                  </div>
-                )}
-                
-                {selectedVehicle && (
-                  <>
-                    {/* Navigation */}
-                    <div className="mb-6">
-                      <ErrorBoundaryWithFallback>
-                        <React.Suspense fallback={<FastLoadingFallback minimal />}>
-                          <VehicleNavigation
-                            activeTab={activeTab}
-                            onTabChange={setActiveTab}
-                          />
-                        </React.Suspense>
-                      </ErrorBoundaryWithFallback>
-                    </div>
-                    
-                    {/* Content */}
-                    <div className="pb-6">
-                      {renderTabContent()}
-                    </div>
-                  </>
-                )}
-              </>
-            )}
-            
-            {/* Add Vehicle Sheet */}
-            <Sheet open={isAddSheetOpen} onOpenChange={setIsAddSheetOpen}>
-              <SheetContent className={cn("overflow-y-auto", isMobile ? "w-full" : "sm:max-w-2xl")}>
-                <SheetHeader>
-                  <SheetTitle className="flex items-center gap-2">
-                    <Car className="h-5 w-5" />
-                    Přidat nové vozidlo
-                  </SheetTitle>
-                  <SheetDescription>
-                    Vyplňte údaje o vašem vozidle. Všechna pole označená * jsou povinná.
-                  </SheetDescription>
-                </SheetHeader>
-                
-                <div className="mt-6">
-                  <ErrorBoundaryWithFallback>
-                    <React.Suspense fallback={<FastLoadingFallback />}>
-                      <VehicleForm
-                        onSubmit={handleAddVehicle}
-                        onCancel={() => setIsAddSheetOpen(false)}
-                        isLoading={isSaving}
-                      />
-                    </React.Suspense>
-                  </ErrorBoundaryWithFallback>
-                </div>
-              </SheetContent>
-            </Sheet>
+            <Button 
+              onClick={() => setIsAddSheetOpen(true)} 
+              className={cn("flex items-center gap-2", isMobile ? "w-full justify-center" : "")}
+            >
+              <Plus className="h-4 w-4" />
+              Přidat vozidlo
+            </Button>
           </div>
-        </ErrorBoundaryWithFallback>
+          
+          {vehicles.length === 0 ? (
+            <EmptyVehicleState onAddVehicle={() => setIsAddSheetOpen(true)} />
+          ) : (
+            <>
+              {/* Vehicle selector */}
+              {vehicles.length > 1 && (
+                <div className="mb-6">
+                  <VehicleSelectorOptimized
+                    vehicles={vehicles}
+                    selectedVehicleId={selectedVehicleId}
+                    onSelect={selectVehicle}
+                    className={isMobile ? "w-full" : ""}
+                  />
+                </div>
+              )}
+              
+              {selectedVehicle && (
+                <>
+                  {/* Navigation */}
+                  <div className="mb-6">
+                    <VehicleNavigation
+                      activeTab={activeTab}
+                      onTabChange={setActiveTab}
+                    />
+                  </div>
+                  
+                  {/* Content */}
+                  <div className="pb-6">
+                    {renderTabContent()}
+                  </div>
+                </>
+              )}
+            </>
+          )}
+          
+          {/* Add Vehicle Sheet */}
+          <Sheet open={isAddSheetOpen} onOpenChange={setIsAddSheetOpen}>
+            <SheetContent className={cn("overflow-y-auto", isMobile ? "w-full" : "sm:max-w-2xl")}>
+              <SheetHeader>
+                <SheetTitle className="flex items-center gap-2">
+                  <Car className="h-5 w-5" />
+                  Přidat nové vozidlo
+                </SheetTitle>
+                <SheetDescription>
+                  Vyplňte údaje o vašem vozidle. Všechna pole označená * jsou povinná.
+                </SheetDescription>
+              </SheetHeader>
+              
+              <div className="mt-6">
+                <VehicleForm
+                  onSubmit={handleAddVehicle}
+                  onCancel={() => setIsAddSheetOpen(false)}
+                  isLoading={isSaving}
+                />
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
       </ResponsivePage>
     </OptimizedPremiumCheck>
   );
