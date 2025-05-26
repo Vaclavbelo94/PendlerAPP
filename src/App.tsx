@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -45,6 +44,11 @@ import Premium from "@/pages/Premium";
 import Pricing from "@/pages/Pricing";
 import Contact from "@/pages/Contact";
 import FAQ from "@/pages/FAQ";
+
+// Laws sub-pages
+import MinimumWage from "@/pages/laws/MinimumWage";
+import TaxClasses from "@/pages/laws/TaxClasses";
+import HealthInsurance from "@/pages/laws/HealthInsurance";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -107,6 +111,11 @@ function AppContent() {
             <Route path="/tax-advisor" element={<TaxAdvisor />} />
             <Route path="/laws" element={<Laws />} />
             <Route path="/travel-planning" element={<TravelPlanning />} />
+            
+            {/* Laws sub-pages */}
+            <Route path="/laws/minimum-wage" element={<MinimumWage />} />
+            <Route path="/laws/tax-classes" element={<TaxClasses />} />
+            <Route path="/laws/health-insurance" element={<HealthInsurance />} />
             
             {/* Auth pages */}
             <Route path="/login" element={<Login />} />
