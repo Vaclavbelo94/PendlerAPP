@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTitle, SheetDescription, SheetHeader } from '@/components/ui/sheet';
@@ -19,6 +18,7 @@ import EmptyVehicleState from '@/components/vehicle/EmptyVehicleState';
 import { UniversalMobileNavigation } from '@/components/navigation/UniversalMobileNavigation';
 import { useScreenOrientation } from '@/hooks/useScreenOrientation';
 import ResponsivePage from '@/components/layouts/ResponsivePage';
+import { cn } from '@/lib/utils';
 
 const Vehicle = () => {
   const { user } = useAuth();
