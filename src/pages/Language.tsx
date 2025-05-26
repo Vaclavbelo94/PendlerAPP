@@ -4,7 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import { useScreenOrientation } from "@/hooks/useScreenOrientation";
 import { UniversalMobileNavigation } from "@/components/navigation/UniversalMobileNavigation";
 import { ErrorBoundaryWithFallback } from "@/components/common/ErrorBoundaryWithFallback";
-import LoadingFallback from "@/components/common/LoadingFallback";
+import FastLoadingFallback from "@/components/common/FastLoadingFallback";
 import {
   BookOpenIcon,
   ListIcon,
@@ -12,32 +12,32 @@ import {
   FileTextIcon,
 } from "lucide-react";
 
-// Lazy load components with proper error handling
+// Optimized lazy loading
 const VocabularySection = React.lazy(() => 
   import("@/components/language/VocabularySection").catch(err => {
     console.error('Failed to load VocabularySection:', err);
-    return { default: () => <div>Chyba při načítání slovní zásoby</div> };
+    return { default: () => <div className="p-4 text-center text-muted-foreground">Slovní zásoba se nenačetla</div> };
   })
 );
 
 const GrammarTab = React.lazy(() => 
   import("@/components/language/tabs/GrammarTab").catch(err => {
     console.error('Failed to load GrammarTab:', err);
-    return { default: () => <div>Chyba při načítání gramatiky</div> };
+    return { default: () => <div className="p-4 text-center text-muted-foreground">Gramatika se nenačetla</div> };
   })
 );
 
 const PhrasesTab = React.lazy(() => 
   import("@/components/language/tabs/PhrasesTab").catch(err => {
     console.error('Failed to load PhrasesTab:', err);
-    return { default: () => <div>Chyba při načítání frází</div> };
+    return { default: () => <div className="p-4 text-center text-muted-foreground">Fráze se nenačetly</div> };
   })
 );
 
 const ExercisesTab = React.lazy(() => 
   import("@/components/language/tabs/ExercisesTab").catch(err => {
     console.error('Failed to load ExercisesTab:', err);
-    return { default: () => <div>Chyba při načítání cvičení</div> };
+    return { default: () => <div className="p-4 text-center text-muted-foreground">Cvičení se nenačetla</div> };
   })
 );
 
@@ -85,42 +85,37 @@ const Language = () => {
   const renderTabContent = () => {
     console.log('Language: Rendering tab content for:', activeTab);
     
-    try {
-      switch (activeTab) {
-        case "vocabulary":
-          return (
-            <React.Suspense fallback={<LoadingFallback message="Načítám slovní zásobu..." />}>
-              <VocabularySection />
-            </React.Suspense>
-          );
-        case "grammar":
-          return (
-            <React.Suspense fallback={<LoadingFallback message="Načítám gramatiku..." />}>
-              <GrammarTab />
-            </React.Suspense>
-          );
-        case "phrases":
-          return (
-            <React.Suspense fallback={<LoadingFallback message="Načítám fráze..." />}>
-              <PhrasesTab />
-            </React.Suspense>
-          );
-        case "exercises":
-          return (
-            <React.Suspense fallback={<LoadingFallback message="Načítám cvičení..." />}>
-              <ExercisesTab />
-            </React.Suspense>
-          );
-        default:
-          return (
-            <React.Suspense fallback={<LoadingFallback message="Načítám slovní zásobu..." />}>
-              <VocabularySection />
-            </React.Suspense>
-          );
-      }
-    } catch (error) {
-      console.error('Error rendering tab content:', error);
-      return <div>Chyba při načítání obsahu</div>;
+    switch (activeTab) {
+      case "vocabulary":
+        return (
+          <React.Suspense fallback={<FastLoadingFallback message="Načítám slovní zásobu..." />}>
+            <VocabularySection />
+          </React.Suspense>
+        );
+      case "grammar":
+        return (
+          <React.Suspense fallback={<FastLoadingFallback message="Načítám gramatiku..." />}>
+            <GrammarTab />
+          </React.Suspense>
+        );
+      case "phrases":
+        return (
+          <React.Suspense fallback={<FastLoadingFallback message="Načítám fráze..." />}>
+            <PhrasesTab />
+          </React.Suspense>
+        );
+      case "exercises":
+        return (
+          <React.Suspense fallback={<FastLoadingFallback message="Načítám cvičení..." />}>
+            <ExercisesTab />
+          </React.Suspense>
+        );
+      default:
+        return (
+          <React.Suspense fallback={<FastLoadingFallback message="Načítám slovní zásobu..." />}>
+            <VocabularySection />
+          </React.Suspense>
+        );
     }
   };
 

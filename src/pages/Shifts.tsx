@@ -1,27 +1,26 @@
 
 import React, { useState, useCallback, useMemo } from "react";
-import { useAuth } from "@/hooks/useAuth";
+import { useSimplifiedAuth } from "@/hooks/auth/useSimplifiedAuth";
 import { useScreenOrientation } from "@/hooks/useScreenOrientation";
 import { UniversalMobileNavigation } from "@/components/navigation/UniversalMobileNavigation";
-import PremiumCheck from '@/components/premium/PremiumCheck';
+import OptimizedPremiumCheck from '@/components/premium/OptimizedPremiumCheck';
 import ResponsivePage from "@/components/layouts/ResponsivePage";
 import { ErrorBoundaryWithFallback } from "@/components/common/ErrorBoundaryWithFallback";
-import LoadingFallback from "@/components/common/LoadingFallback";
+import FastLoadingFallback from "@/components/common/FastLoadingFallback";
 import { Calendar, BarChart3, FileText, Settings } from "lucide-react";
-import { useUnifiedShiftManagement } from "@/components/shifts/hooks/useUnifiedShiftManagement";
 
-// Lazy load components with proper error handling
+// Optimized lazy loading with better error handling
 const ShiftsHeader = React.lazy(() => 
   import("@/components/shifts/ShiftsHeader").then(module => ({ default: module.ShiftsHeader })).catch(err => {
     console.error('Failed to load ShiftsHeader:', err);
-    return { default: () => <div>Chyba při načítání hlavičky směn</div> };
+    return { default: () => <div className="p-4 text-center text-muted-foreground">Hlavička směn se nenačetla</div> };
   })
 );
 
 const ShiftsContent = React.lazy(() => 
   import("@/components/shifts/ShiftsContent").catch(err => {
     console.error('Failed to load ShiftsContent:', err);
-    return { default: () => <div>Chyba při načítání obsahu směn</div> };
+    return { default: () => <div className="p-4 text-center text-muted-foreground">Obsah směn se nenačetl</div> };
   })
 );
 
@@ -41,15 +40,12 @@ const ShiftWidgets = React.lazy(() =>
 
 const Shifts = () => {
   const [activeSection, setActiveSection] = useState("calendar");
-  const { user, isLoading: authLoading } = useAuth();
+  const { user, isLoading: authLoading, isInitialized } = useSimplifiedAuth();
   const { isMobile } = useScreenOrientation();
-
-  // Use the unified shift management hook
-  const shiftManagement = useUnifiedShiftManagement(user);
 
   console.log('Shifts page rendering, user:', user?.email, 'authLoading:', authLoading);
 
-  const shiftTabs = [
+  const shiftTabs = useMemo(() => [
     {
       id: "calendar",
       label: "Kalendář",
@@ -74,38 +70,42 @@ const Shifts = () => {
       icon: Settings,
       description: "Konfigurace směn"
     }
-  ];
+  ], []);
 
-  // Show loading while auth is loading
-  if (authLoading) {
+  const handleQuickAdd = useCallback(() => setActiveSection("calendar"), []);
+  const handleNotificationSettings = useCallback(() => setActiveSection("settings"), []);
+  const handleShareSchedule = useCallback(() => setActiveSection("reports"), []);
+
+  // Show loading only while auth is initializing
+  if (!isInitialized || authLoading) {
     return (
-      <PremiumCheck featureKey="shifts">
+      <OptimizedPremiumCheck featureKey="shifts">
         <ResponsivePage>
-          <LoadingFallback message="Načítání směn..." />
+          <FastLoadingFallback message="Načítání směn..." />
         </ResponsivePage>
-      </PremiumCheck>
+      </OptimizedPremiumCheck>
     );
   }
 
   return (
-    <PremiumCheck featureKey="shifts">
+    <OptimizedPremiumCheck featureKey="shifts">
       <ResponsivePage>
         <ErrorBoundaryWithFallback>
           <div className="container py-6 md:py-10 max-w-7xl mx-auto">
-            <React.Suspense fallback={<LoadingFallback message="Načítám hlavičku..." />}>
+            <React.Suspense fallback={<FastLoadingFallback message="Načítám hlavičku..." minimal />}>
               <ShiftsHeader />
             </React.Suspense>
 
             <React.Suspense fallback={<div />}>
               <MobileShiftActions
-                onQuickAdd={() => setActiveSection("calendar")}
-                onNotificationSettings={() => setActiveSection("settings")}
-                onShareSchedule={() => setActiveSection("reports")}
+                onQuickAdd={handleQuickAdd}
+                onNotificationSettings={handleNotificationSettings}
+                onShareSchedule={handleShareSchedule}
               />
             </React.Suspense>
 
             <React.Suspense fallback={<div />}>
-              <ShiftWidgets shifts={shiftManagement.shifts || []} />
+              <ShiftWidgets shifts={[]} />
             </React.Suspense>
 
             <UniversalMobileNavigation
@@ -114,13 +114,13 @@ const Shifts = () => {
               tabs={shiftTabs}
             />
 
-            <React.Suspense fallback={<LoadingFallback message="Načítám obsah směn..." />}>
+            <React.Suspense fallback={<FastLoadingFallback message="Načítám obsah směn..." />}>
               <ShiftsContent />
             </React.Suspense>
           </div>
         </ErrorBoundaryWithFallback>
       </ResponsivePage>
-    </PremiumCheck>
+    </OptimizedPremiumCheck>
   );
 };
 
