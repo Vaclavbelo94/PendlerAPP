@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -29,6 +28,7 @@ import { format } from 'date-fns';
 interface FuelConsumptionCardProps {
   vehicleId?: string;
   detailed?: boolean;
+  fullView?: boolean;
 }
 
 const fuelRecordSchema = z.object({
@@ -42,7 +42,7 @@ const fuelRecordSchema = z.object({
   station: z.string().optional(),
 });
 
-const FuelConsumptionCard: React.FC<FuelConsumptionCardProps> = ({ vehicleId, detailed = false }) => {
+const FuelConsumptionCard: React.FC<FuelConsumptionCardProps> = ({ vehicleId, detailed = false, fullView = false }) => {
   const [fuelRecords, setFuelRecords] = useState<FuelRecord[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -198,6 +198,9 @@ const FuelConsumptionCard: React.FC<FuelConsumptionCardProps> = ({ vehicleId, de
     return chartData;
   };
 
+  // Use fullView or detailed for showing full view
+  const showDetailedView = fullView || detailed;
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
@@ -238,7 +241,7 @@ const FuelConsumptionCard: React.FC<FuelConsumptionCardProps> = ({ vehicleId, de
               </div>
             </div>
 
-            {detailed && fuelRecords.length >= 2 && (
+            {showDetailedView && fuelRecords.length >= 2 && (
               <>
                 {/* Graf spotřeby */}
                 <div className="mt-8 border rounded-lg p-4">
@@ -300,10 +303,10 @@ const FuelConsumptionCard: React.FC<FuelConsumptionCardProps> = ({ vehicleId, de
             )}
 
             {/* Seznam tankování */}
-            <div className={detailed ? "mt-8" : ""}>
-              <h3 className="font-medium text-lg mb-4">{detailed ? "Historie tankování" : "Poslední tankování"}</h3>
+            <div className={showDetailedView ? "mt-8" : ""}>
+              <h3 className="font-medium text-lg mb-4">{showDetailedView ? "Historie tankování" : "Poslední tankování"}</h3>
               <div className="space-y-3">
-                {(detailed ? fuelRecords : fuelRecords.slice(0, 3)).map((record) => (
+                {(showDetailedView ? fuelRecords : fuelRecords.slice(0, 3)).map((record) => (
                   <div key={record.id} className="border rounded-lg p-4 flex flex-col md:flex-row justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
@@ -345,7 +348,7 @@ const FuelConsumptionCard: React.FC<FuelConsumptionCardProps> = ({ vehicleId, de
                 ))}
               </div>
               
-              {!detailed && fuelRecords.length > 3 && (
+              {!showDetailedView && fuelRecords.length > 3 && (
                 <div className="mt-4 text-center">
                   <Button variant="link">Zobrazit všechny záznamy</Button>
                 </div>

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -17,6 +16,7 @@ import { format } from 'date-fns';
 
 interface DocumentsCardProps {
   vehicleId?: string;
+  fullView?: boolean;
 }
 
 const documentSchema = z.object({
@@ -36,7 +36,7 @@ const documentTypes = [
   { value: 'other', label: 'Ostatní' },
 ];
 
-const DocumentsCard: React.FC<DocumentsCardProps> = ({ vehicleId }) => {
+const DocumentsCard: React.FC<DocumentsCardProps> = ({ vehicleId, fullView = false }) => {
   const [documents, setDocuments] = useState<DocumentRecord[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -163,7 +163,7 @@ const DocumentsCard: React.FC<DocumentsCardProps> = ({ vehicleId }) => {
           </div>
         ) : (
           <div className="space-y-4">
-            {documents.map((document) => (
+            {(fullView ? documents : documents.slice(0, 3)).map((document) => (
               <div key={document.id} className="border rounded-lg p-4 flex flex-col md:flex-row justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
@@ -191,6 +191,12 @@ const DocumentsCard: React.FC<DocumentsCardProps> = ({ vehicleId }) => {
                 </div>
               </div>
             ))}
+            
+            {!fullView && documents.length > 3 && (
+              <div className="mt-4 text-center">
+                <Button variant="link">Zobrazit všechny dokumenty</Button>
+              </div>
+            )}
           </div>
         )}
 

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -18,6 +17,7 @@ import { toast } from 'sonner';
 
 interface ServiceRecordCardProps {
   vehicleId?: string;
+  fullView?: boolean;
 }
 
 const serviceRecordSchema = z.object({
@@ -30,7 +30,7 @@ const serviceRecordSchema = z.object({
   provider: z.string().min(1, 'Zadejte poskytovatele'),
 });
 
-const ServiceRecordCard: React.FC<ServiceRecordCardProps> = ({ vehicleId }) => {
+const ServiceRecordCard: React.FC<ServiceRecordCardProps> = ({ vehicleId, fullView = false }) => {
   const [serviceRecords, setServiceRecords] = useState<ServiceRecord[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -155,7 +155,7 @@ const ServiceRecordCard: React.FC<ServiceRecordCardProps> = ({ vehicleId }) => {
           </div>
         ) : (
           <div className="space-y-4">
-            {serviceRecords.map((record) => (
+            {(fullView ? serviceRecords : serviceRecords.slice(0, 3)).map((record) => (
               <div key={record.id} className="border rounded-lg p-4 flex flex-col md:flex-row justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
@@ -184,6 +184,12 @@ const ServiceRecordCard: React.FC<ServiceRecordCardProps> = ({ vehicleId }) => {
                 </div>
               </div>
             ))}
+            
+            {!fullView && serviceRecords.length > 3 && (
+              <div className="mt-4 text-center">
+                <Button variant="link">Zobrazit všechny záznamy</Button>
+              </div>
+            )}
           </div>
         )}
 
