@@ -9,7 +9,7 @@ import { ShiftsErrorBoundary } from "@/components/shifts/ShiftsErrorBoundary";
 
 // Import refactored components
 import { ShiftsHeader } from "@/components/shifts/ShiftsHeader";
-import { ShiftsContent } from "@/components/shifts/ShiftsContent";
+import ShiftsContent from "@/components/shifts/ShiftsContent";
 import { useUnifiedShiftManagement } from "@/components/shifts/hooks/useUnifiedShiftManagement";
 import { LazyEditNoteDialog } from "@/components/shifts/lazy/LazyShiftComponents";
 import MobileShiftActions from "@/components/shifts/mobile/MobileShiftActions";
