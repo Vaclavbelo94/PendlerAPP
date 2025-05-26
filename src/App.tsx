@@ -41,6 +41,10 @@ import Laws from "@/pages/Laws";
 import TravelPlanning from "@/pages/TravelPlanning";
 import Admin from "@/pages/Admin";
 import NotFound from "@/pages/NotFound";
+import Premium from "@/pages/Premium";
+import Pricing from "@/pages/Pricing";
+import Contact from "@/pages/Contact";
+import FAQ from "@/pages/FAQ";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -116,6 +120,14 @@ function AppContent() {
             
             {/* Admin page */}
             <Route path="/admin" element={<Admin />} />
+            
+            {/* Premium and Pricing pages */}
+            <Route path="/premium" element={<Premium />} />
+            <Route path="/pricing" element={<Pricing />} />
+            
+            {/* Support pages */}
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/faq" element={<FAQ />} />
             
             {/* Legal pages */}
             <Route path="/terms-of-service" element={<TermsOfService />} />
