@@ -13,7 +13,6 @@ import { useAdminContext } from "@/components/admin/core/AdminProvider";
 import { UserManagement } from "@/components/admin/users";
 import { PromoCodesPanel } from "@/components/admin/PromoCodesPanel";
 import { PremiumFeaturesPanel } from "@/components/admin/PremiumFeaturesPanel";
-import SystemLogsPanel from "@/components/admin/logs/SystemLogsPanel";
 import SystemMonitoringPanel from "@/components/admin/monitoring/SystemMonitoringPanel";
 
 const AdminContent = () => {
@@ -27,8 +26,6 @@ const AdminContent = () => {
         return <PromoCodesPanel />;
       case 'premium-features':
         return <PremiumFeaturesPanel />;
-      case 'system-logs':
-        return <SystemLogsPanel />;
       case 'system-monitoring':
         return <SystemMonitoringPanel />;
       default:

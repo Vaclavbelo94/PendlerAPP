@@ -1,11 +1,10 @@
 
-import { Users, Settings, Crown, Key, BarChart3, FileText, Activity } from "lucide-react";
+import { Users, Settings, Crown, Key, BarChart3, Activity } from "lucide-react";
 import { UserAdminPanel } from "./UserAdminPanel";
 import { PromoCodesPanel } from "./PromoCodesPanel";
 import { PasswordResetPanel } from "./PasswordResetPanel";
 import { PremiumFeaturesPanel } from "./PremiumFeaturesPanel";
 import AdminAnalyticsDashboard from "./analytics/AdminAnalyticsDashboard";
-import SystemLogsPanel from "./logs/SystemLogsPanel";
 import SystemMonitoringPanel from "./monitoring/SystemMonitoringPanel";
 
 export const adminSections = [
@@ -52,15 +51,6 @@ export const adminSections = [
     icon: <BarChart3 className="h-6 w-6" />,
     component: <AdminAnalyticsDashboard />,
     variant: "primary" as const,
-    category: "monitoring"
-  },
-  {
-    id: "logs",
-    title: "Systémové logy",
-    description: "Monitoring a debugování systémových událostí",
-    icon: <FileText className="h-6 w-6" />,
-    component: <SystemLogsPanel />,
-    variant: "secondary" as const,
     category: "monitoring"
   },
   {
