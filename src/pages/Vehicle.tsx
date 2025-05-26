@@ -17,50 +17,31 @@ import { cn } from '@/lib/utils';
 const VehicleForm = React.lazy(() => import('@/components/vehicle/VehicleForm'));
 
 const VehicleSelectorOptimized = React.lazy(() => 
-  import('@/components/vehicle/VehicleSelectorOptimized').catch(() => ({
-    default: () => null
-  }))
+  import('@/components/vehicle/VehicleSelectorOptimized')
 );
 
 const VehicleNavigation = React.lazy(() => 
-  import('@/components/vehicle/VehicleNavigation').catch(() => ({
-    default: () => <div className="p-4 text-center text-muted-foreground">Navigace se nenačetla</div>
-  }))
+  import('@/components/vehicle/VehicleNavigation')
 );
 
 const FuelConsumptionCard = React.lazy(() => 
-  import('@/components/vehicle/FuelConsumptionCard').catch(() => ({
-    default: () => <div className="p-4 text-center text-muted-foreground">Spotřeba se nenačetla</div>
-  }))
+  import('@/components/vehicle/FuelConsumptionCard')
 );
 
 const ServiceRecordCard = React.lazy(() => 
-  import('@/components/vehicle/ServiceRecordCard').catch(() => ({
-    default: () => <div className="p-4 text-center text-muted-foreground">Servis se nenačetl</div>
-  }))
+  import('@/components/vehicle/ServiceRecordCard')
 );
 
 const InsuranceCard = React.lazy(() => 
-  import('@/components/vehicle/InsuranceCard').catch(() => ({
-    default: () => <div className="p-4 text-center text-muted-foreground">Pojištění se nenačetlo</div>
-  }))
+  import('@/components/vehicle/InsuranceCard')
 );
 
 const DocumentsCard = React.lazy(() => 
-  import('@/components/vehicle/DocumentsCard').catch(() => ({
-    default: () => <div className="p-4 text-center text-muted-foreground">Dokumenty se nenačetly</div>
-  }))
+  import('@/components/vehicle/DocumentsCard')
 );
 
 const EmptyVehicleState = React.lazy(() => 
-  import('@/components/vehicle/EmptyVehicleState').catch(() => ({
-    default: ({ onAddVehicle }: { onAddVehicle: () => void }) => (
-      <div className="text-center p-8">
-        <p className="text-muted-foreground mb-4">Nemáte ještě žádné vozidlo</p>
-        <Button onClick={onAddVehicle}>Přidat vozidlo</Button>
-      </div>
-    )
-  }))
+  import('@/components/vehicle/EmptyVehicleState')
 );
 
 const Vehicle = () => {
@@ -203,7 +184,7 @@ const Vehicle = () => {
                 {/* Vehicle selector */}
                 {vehicles.length > 1 && (
                   <div className="mb-6">
-                    <React.Suspense fallback={<div />}>
+                    <React.Suspense fallback={<div className="h-10 w-64 bg-muted animate-pulse rounded" />}>
                       <VehicleSelectorOptimized
                         vehicles={vehicles}
                         selectedVehicleId={selectedVehicleId}
