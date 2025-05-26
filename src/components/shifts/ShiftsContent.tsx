@@ -249,4 +249,6 @@ const ShiftsContent = () => {
   );
 };
 
+// Export both named and default
+export { ShiftsContent };
 export default ShiftsContent;

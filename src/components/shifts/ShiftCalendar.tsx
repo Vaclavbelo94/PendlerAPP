@@ -8,12 +8,16 @@ interface ShiftCalendarProps {
   selectedDate: Date | undefined;
   onSelectDate: (date: Date | undefined) => void;
   shifts: Shift[];
+  onUpdateShift?: (id: string, updatedData: any) => void;
+  onDeleteShift?: (id: string) => void;
 }
 
 export const ShiftCalendar = ({ 
   selectedDate, 
   onSelectDate, 
-  shifts 
+  shifts,
+  onUpdateShift,
+  onDeleteShift
 }: ShiftCalendarProps) => {
   // Gets modifiers for the calendar to highlight days with shifts
   const getCalendarModifiers = () => {
