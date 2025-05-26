@@ -3,28 +3,51 @@ import React, { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useScreenOrientation } from "@/hooks/useScreenOrientation";
 import { UniversalMobileNavigation } from "@/components/navigation/UniversalMobileNavigation";
+import { ErrorBoundaryWithFallback } from "@/components/common/ErrorBoundaryWithFallback";
+import LoadingFallback from "@/components/common/LoadingFallback";
 import {
   BookOpenIcon,
   ListIcon,
   MessageSquareIcon,
   FileTextIcon,
-  TrophyIcon,
-  BarChartIcon
 } from "lucide-react";
 
-// Import existing components
-import VocabularySection from "@/components/language/VocabularySection";
-import GrammarTab from "@/components/language/tabs/GrammarTab";
-import PhrasesTab from "@/components/language/tabs/PhrasesTab";
-import ExercisesTab from "@/components/language/tabs/ExercisesTab";
-import VocabularyProgressDashboard from "@/components/language/VocabularyProgressDashboard";
-import GamificationFeatures from "@/components/language/GamificationFeatures";
+// Lazy load components with proper error handling
+const VocabularySection = React.lazy(() => 
+  import("@/components/language/VocabularySection").catch(err => {
+    console.error('Failed to load VocabularySection:', err);
+    return { default: () => <div>Chyba při načítání slovní zásoby</div> };
+  })
+);
+
+const GrammarTab = React.lazy(() => 
+  import("@/components/language/tabs/GrammarTab").catch(err => {
+    console.error('Failed to load GrammarTab:', err);
+    return { default: () => <div>Chyba při načítání gramatiky</div> };
+  })
+);
+
+const PhrasesTab = React.lazy(() => 
+  import("@/components/language/tabs/PhrasesTab").catch(err => {
+    console.error('Failed to load PhrasesTab:', err);
+    return { default: () => <div>Chyba při načítání frází</div> };
+  })
+);
+
+const ExercisesTab = React.lazy(() => 
+  import("@/components/language/tabs/ExercisesTab").catch(err => {
+    console.error('Failed to load ExercisesTab:', err);
+    return { default: () => <div>Chyba při načítání cvičení</div> };
+  })
+);
 
 const Language = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialTab = searchParams.get('tab') || "vocabulary";
   const [activeTab, setActiveTab] = useState(initialTab);
   const { isMobile } = useScreenOrientation();
+
+  console.log('Language page rendering, activeTab:', activeTab);
 
   const languageTabs = [
     {
@@ -53,86 +76,77 @@ const Language = () => {
     }
   ];
 
-  // Mock data for components that need props
-  const mockVocabularyCount = 150;
-  const mockProgress = {
-    dailyStats: [
-      { 
-        date: new Date().toISOString(), 
-        wordsReviewed: 8, 
-        correctCount: 6, 
-        incorrectCount: 2 
-      },
-      { 
-        date: new Date(Date.now() - 86400000).toISOString(), 
-        wordsReviewed: 12, 
-        correctCount: 10, 
-        incorrectCount: 2 
-      },
-      { 
-        date: new Date(Date.now() - 172800000).toISOString(), 
-        wordsReviewed: 5, 
-        correctCount: 3, 
-        incorrectCount: 2 
-      }
-    ],
-    totalReviewed: 127,
-    streakDays: 5,
-    averageAccuracy: 87,
-    categoryDistribution: {
-      "Základy": 45,
-      "Práce": 32,
-      "Čísla": 28,
-      "Technika": 15
-    },
-    difficultyDistribution: {
-      easy: 68,
-      medium: 52,
-      hard: 23,
-      unspecified: 7
-    }
-  };
-
   const handleTabChange = (value: string) => {
+    console.log(`Language: Switching to tab: ${value}`);
     setActiveTab(value);
     setSearchParams({ tab: value });
-    console.log(`Switching to tab: ${value}`);
   };
 
   const renderTabContent = () => {
-    switch (activeTab) {
-      case "vocabulary":
-        return <VocabularySection />;
-      case "grammar":
-        return <GrammarTab />;
-      case "phrases":
-        return <PhrasesTab />;
-      case "exercises":
-        return <ExercisesTab />;
-      default:
-        return <VocabularySection />;
+    console.log('Language: Rendering tab content for:', activeTab);
+    
+    try {
+      switch (activeTab) {
+        case "vocabulary":
+          return (
+            <React.Suspense fallback={<LoadingFallback message="Načítám slovní zásobu..." />}>
+              <VocabularySection />
+            </React.Suspense>
+          );
+        case "grammar":
+          return (
+            <React.Suspense fallback={<LoadingFallback message="Načítám gramatiku..." />}>
+              <GrammarTab />
+            </React.Suspense>
+          );
+        case "phrases":
+          return (
+            <React.Suspense fallback={<LoadingFallback message="Načítám fráze..." />}>
+              <PhrasesTab />
+            </React.Suspense>
+          );
+        case "exercises":
+          return (
+            <React.Suspense fallback={<LoadingFallback message="Načítám cvičení..." />}>
+              <ExercisesTab />
+            </React.Suspense>
+          );
+        default:
+          return (
+            <React.Suspense fallback={<LoadingFallback message="Načítám slovní zásobu..." />}>
+              <VocabularySection />
+            </React.Suspense>
+          );
+      }
+    } catch (error) {
+      console.error('Error rendering tab content:', error);
+      return <div>Chyba při načítání obsahu</div>;
     }
   };
 
   return (
-    <div className="container py-6 md:py-10 max-w-7xl">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight mb-2">Němčina</h1>
-        <p className="text-muted-foreground">
-          Učte se německý jazyk efektivně s našimi interaktivními nástroji
-        </p>
-      </div>
+    <ErrorBoundaryWithFallback>
+      <div className="container py-6 md:py-10 max-w-7xl">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold tracking-tight mb-2">Němčina</h1>
+          <p className="text-muted-foreground">
+            Učte se německý jazyk efektivně s našimi interaktivními nástroji
+          </p>
+        </div>
 
-      <UniversalMobileNavigation
-        activeTab={activeTab}
-        onTabChange={handleTabChange}
-        tabs={languageTabs}
-      />
+        <UniversalMobileNavigation
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+          tabs={languageTabs}
+        />
 
-      <div className="space-y-6">
-        {renderTabContent()}
+        <div className="space-y-6">
+          <ErrorBoundaryWithFallback>
+            {renderTabContent()}
+          </ErrorBoundaryWithFallback>
+        </div>
       </div>
-    </div>
+    </ErrorBoundaryWithFallback>
   );
 };
 

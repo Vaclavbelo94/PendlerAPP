@@ -10,16 +10,17 @@ import { saveUserToLocalStorage } from '@/utils/authUtils';
 import LoadingSpinner from '@/components/LoadingSpinner';
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, session, isLoading } = useAuthState();
+  const { user, session, isLoading, error: authError } = useAuthState();
   const { isAdmin, isPremium: statusIsPremium, setIsAdmin, setIsPremium, refreshAdminStatus, refreshPremiumStatus } = 
     useAuthStatus(user?.id);
   const { signIn: authSignIn, signInWithGoogle: authSignInWithGoogle, signUp: authSignUp, signOut: authSignOut } = useAuthMethods();
   
   const [isInitialized, setIsInitialized] = React.useState(false);
+  const [initError, setInitError] = React.useState<string | null>(null);
   
   const premiumStatus = usePremiumStatus(user, refreshPremiumStatus, isAdmin);
 
-  // Simplified initialization effect
+  // Simplified initialization effect with error handling
   React.useEffect(() => {
     let isMounted = true;
     
@@ -27,6 +28,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (!user || isInitialized) return;
       
       try {
+        console.log('Starting auth initialization for user:', user.email);
+        
         // Handle admin status for special email
         if (user.email === 'admin@pendlerapp.com') {
           setIsAdmin(true);
@@ -35,8 +38,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           await refreshAdminStatus();
         }
         
-        // Handle premium status
-        const { isPremium, premiumExpiry } = await refreshPremiumStatus();
+        // Handle premium status with timeout
+        const premiumPromise = refreshPremiumStatus();
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Premium status check timeout')), 3000)
+        );
+        
+        const { isPremium, premiumExpiry } = await Promise.race([
+          premiumPromise,
+          timeoutPromise
+        ]) as any;
         
         // Special users handling
         if (user.email === 'uzivatel@pendlerapp.com' || user.email === 'admin@pendlerapp.com' || user.email === 'vbelo@pendlerapp.com') {
@@ -51,25 +62,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         if (isMounted) {
           setIsInitialized(true);
+          setInitError(null);
+          console.log('Auth initialization completed successfully');
         }
       } catch (error) {
         console.error('Error initializing auth:', error);
         if (isMounted) {
-          setIsInitialized(true);
+          setInitError(error instanceof Error ? error.message : 'Initialization failed');
+          setIsInitialized(true); // Still mark as initialized to prevent infinite loading
         }
       }
     };
     
-    if (user && !isLoading) {
+    if (user && !isLoading && !authError) {
       initializeAuth();
     } else if (!user && !isLoading) {
       setIsInitialized(true);
+      setInitError(null);
+    } else if (authError) {
+      setIsInitialized(true);
+      setInitError(authError);
     }
     
     return () => {
       isMounted = false;
     };
-  }, [user, isLoading]);
+  }, [user, isLoading, authError]);
 
   const signIn = async (email: string, password: string) => {
     const result = await authSignIn(email, password);
@@ -108,30 +126,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem('adminLoggedIn');
   };
 
-  const enhancedRefreshAdminStatus = async () => {
-    if (user?.email === 'admin@pendlerapp.com') {
-      setIsAdmin(true);
-      localStorage.setItem('adminLoggedIn', 'true');
-      return;
-    }
-    
-    await refreshAdminStatus();
-  };
-
-  const enhancedRefreshPremiumStatus = async () => {
-    if (!user) return { isPremium: false };
-    
-    const result = await refreshPremiumStatus();
-    saveUserToLocalStorage(user, result.isPremium, result.premiumExpiry);
-    
-    return result;
-  };
-
-  // Show loading only if auth is still loading or we haven't initialized
-  if (isLoading || (!isInitialized && user)) {
+  // Show loading with timeout fallback
+  if ((isLoading || (!isInitialized && user)) && !authError && !initError) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <LoadingSpinner size="lg" />
+        <div className="text-center">
+          <LoadingSpinner size="lg" />
+          <p className="mt-4 text-sm text-muted-foreground">Načítání...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (authError || initError) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center max-w-md mx-auto p-6">
+          <div className="text-destructive mb-4">
+            <h2 className="text-lg font-semibold">Chyba při načítání</h2>
+            <p className="text-sm mt-2">{authError || initError}</p>
+          </div>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="bg-primary text-primary-foreground px-4 py-2 rounded hover:bg-primary/90"
+          >
+            Obnovit stránku
+          </button>
+        </div>
       </div>
     );
   }
@@ -146,8 +168,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     signInWithGoogle,
     signUp,
     signOut,
-    refreshAdminStatus: enhancedRefreshAdminStatus,
-    refreshPremiumStatus: enhancedRefreshPremiumStatus
+    refreshAdminStatus,
+    refreshPremiumStatus
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

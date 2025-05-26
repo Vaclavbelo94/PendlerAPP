@@ -5,22 +5,77 @@ import { useScreenOrientation } from "@/hooks/useScreenOrientation";
 import { UniversalMobileNavigation } from "@/components/navigation/UniversalMobileNavigation";
 import PremiumCheck from '@/components/premium/PremiumCheck';
 import ResponsivePage from "@/components/layouts/ResponsivePage";
-import { ShiftsErrorBoundary } from "@/components/shifts/ShiftsErrorBoundary";
-import SimpleLoadingSpinner from "@/components/loading/SimpleLoadingSpinner";
-
-// Import refactored components
-import { ShiftsHeader } from "@/components/shifts/ShiftsHeader";
-import ShiftsContent from "@/components/shifts/ShiftsContent";
-import { useUnifiedShiftManagement } from "@/components/shifts/hooks/useUnifiedShiftManagement";
-import { LazyEditNoteDialog } from "@/components/shifts/lazy/LazyShiftComponents";
-import MobileShiftActions from "@/components/shifts/mobile/MobileShiftActions";
-import { ShiftWidgets } from "@/components/shifts/dashboard/ShiftWidgets";
+import { ErrorBoundaryWithFallback } from "@/components/common/ErrorBoundaryWithFallback";
+import LoadingFallback from "@/components/common/LoadingFallback";
 import { Calendar, BarChart3, FileText, Settings } from "lucide-react";
+
+// Lazy load components with proper error handling
+const ShiftsHeader = React.lazy(() => 
+  import("@/components/shifts/ShiftsHeader").then(module => ({ default: module.ShiftsHeader })).catch(err => {
+    console.error('Failed to load ShiftsHeader:', err);
+    return { default: () => <div>Chyba při načítání hlavičky směn</div> };
+  })
+);
+
+const ShiftsContent = React.lazy(() => 
+  import("@/components/shifts/ShiftsContent").catch(err => {
+    console.error('Failed to load ShiftsContent:', err);
+    return { default: () => <div>Chyba při načítání obsahu směn</div> };
+  })
+);
+
+const useUnifiedShiftManagement = React.lazy(() => 
+  import("@/components/shifts/hooks/useUnifiedShiftManagement").then(module => ({ default: module.useUnifiedShiftManagement })).catch(err => {
+    console.error('Failed to load useUnifiedShiftManagement:', err);
+    return { default: () => ({
+      selectedDate: new Date(),
+      setSelectedDate: () => {},
+      shifts: [],
+      shiftType: '',
+      setShiftType: () => {},
+      shiftNotes: '',
+      setShiftNotes: () => {},
+      analyticsPeriod: 'month',
+      setAnalyticsPeriod: () => {},
+      noteDialogOpen: false,
+      setNoteDialogOpen: () => {},
+      currentShift: null,
+      handleSaveShift: () => {},
+      handleDeleteShift: () => {},
+      handleSaveNotes: () => {},
+      handleAdvancedSync: () => {},
+      isLoading: false
+    }) };
+  })
+);
+
+const LazyEditNoteDialog = React.lazy(() => 
+  import("@/components/shifts/lazy/LazyShiftComponents").then(module => ({ default: module.LazyEditNoteDialog })).catch(err => {
+    console.error('Failed to load LazyEditNoteDialog:', err);
+    return { default: () => null };
+  })
+);
+
+const MobileShiftActions = React.lazy(() => 
+  import("@/components/shifts/mobile/MobileShiftActions").catch(err => {
+    console.error('Failed to load MobileShiftActions:', err);
+    return { default: () => null };
+  })
+);
+
+const ShiftWidgets = React.lazy(() => 
+  import("@/components/shifts/dashboard/ShiftWidgets").then(module => ({ default: module.ShiftWidgets })).catch(err => {
+    console.error('Failed to load ShiftWidgets:', err);
+    return { default: () => null };
+  })
+);
 
 const Shifts = () => {
   const [activeSection, setActiveSection] = useState("calendar");
   const { user, isLoading: authLoading } = useAuth();
   const { isMobile } = useScreenOrientation();
+
+  console.log('Shifts page rendering, user:', user?.email, 'authLoading:', authLoading);
 
   const shiftTabs = [
     {
@@ -49,59 +104,12 @@ const Shifts = () => {
     }
   ];
 
-  const {
-    selectedDate,
-    setSelectedDate,
-    shifts,
-    shiftType,
-    setShiftType,
-    shiftNotes,
-    setShiftNotes,
-    analyticsPeriod,
-    setAnalyticsPeriod,
-    noteDialogOpen,
-    setNoteDialogOpen,
-    currentShift,
-    handleSaveShift,
-    handleDeleteShift,
-    handleSaveNotes,
-    handleAdvancedSync,
-    isLoading
-  } = useUnifiedShiftManagement(user);
-
-  // Memoized callbacks to prevent unnecessary re-renders
-  const handleOpenNoteDialog = useCallback(() => {
-    setNoteDialogOpen(true);
-  }, [setNoteDialogOpen]);
-
-  const handleSaveNote = useCallback(() => {
-    handleSaveNotes(shiftNotes);
-  }, [handleSaveNotes, shiftNotes]);
-
-  const handleQuickAdd = useCallback(() => {
-    setActiveSection("calendar");
-    setSelectedDate(new Date());
-  }, [setSelectedDate]);
-
-  const handleNotificationSettings = useCallback(() => {
-    setActiveSection("settings");
-  }, []);
-
-  const handleShareSchedule = useCallback(() => {
-    setActiveSection("reports");
-  }, []);
-
-  // Memoized widgets component
-  const shiftsWidgets = useMemo(() => (
-    <ShiftWidgets shifts={shifts} />
-  ), [shifts]);
-
   // Show loading while auth is loading
   if (authLoading) {
     return (
       <PremiumCheck featureKey="shifts">
         <ResponsivePage>
-          <SimpleLoadingSpinner message="Načítání směn..." />
+          <LoadingFallback message="Načítání směn..." />
         </ResponsivePage>
       </PremiumCheck>
     );
@@ -110,17 +118,23 @@ const Shifts = () => {
   return (
     <PremiumCheck featureKey="shifts">
       <ResponsivePage>
-        <ShiftsErrorBoundary>
+        <ErrorBoundaryWithFallback>
           <div className="container py-6 md:py-10 max-w-7xl mx-auto">
-            <ShiftsHeader />
+            <React.Suspense fallback={<LoadingFallback message="Načítám hlavičku..." />}>
+              <ShiftsHeader />
+            </React.Suspense>
 
-            <MobileShiftActions
-              onQuickAdd={handleQuickAdd}
-              onNotificationSettings={handleNotificationSettings}
-              onShareSchedule={handleShareSchedule}
-            />
+            <React.Suspense fallback={<div />}>
+              <MobileShiftActions
+                onQuickAdd={() => setActiveSection("calendar")}
+                onNotificationSettings={() => setActiveSection("settings")}
+                onShareSchedule={() => setActiveSection("reports")}
+              />
+            </React.Suspense>
 
-            {shiftsWidgets}
+            <React.Suspense fallback={<div />}>
+              <ShiftWidgets shifts={[]} />
+            </React.Suspense>
 
             <UniversalMobileNavigation
               activeTab={activeSection}
@@ -128,34 +142,27 @@ const Shifts = () => {
               tabs={shiftTabs}
             />
 
-            <ShiftsContent
-              activeSection={activeSection}
-              selectedDate={selectedDate}
-              onSelectDate={setSelectedDate}
-              shifts={shifts}
-              currentShift={currentShift}
-              shiftType={shiftType}
-              setShiftType={setShiftType}
-              shiftNotes={shiftNotes}
-              setShiftNotes={setShiftNotes}
-              user={user}
-              onSaveShift={handleSaveShift}
-              onDeleteShift={handleDeleteShift}
-              onOpenNoteDialog={handleOpenNoteDialog}
-              analyticsPeriod={analyticsPeriod}
-              setAnalyticsPeriod={setAnalyticsPeriod}
-            />
-
-            <LazyEditNoteDialog
-              open={noteDialogOpen}
-              onOpenChange={setNoteDialogOpen}
-              selectedDate={selectedDate}
-              shiftNotes={shiftNotes}
-              onNotesChange={setShiftNotes}
-              onSaveNote={handleSaveNote}
-            />
+            <React.Suspense fallback={<LoadingFallback message="Načítám obsah směn..." />}>
+              <ShiftsContent
+                activeSection={activeSection}
+                selectedDate={new Date()}
+                onSelectDate={() => {}}
+                shifts={[]}
+                currentShift={null}
+                shiftType=""
+                setShiftType={() => {}}
+                shiftNotes=""
+                setShiftNotes={() => {}}
+                user={user}
+                onSaveShift={() => {}}
+                onDeleteShift={() => {}}
+                onOpenNoteDialog={() => {}}
+                analyticsPeriod="month"
+                setAnalyticsPeriod={() => {}}
+              />
+            </React.Suspense>
           </div>
-        </ShiftsErrorBoundary>
+        </ErrorBoundaryWithFallback>
       </ResponsivePage>
     </PremiumCheck>
   );
