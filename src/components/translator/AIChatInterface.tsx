@@ -44,7 +44,7 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ onTextToSpeech }) => 
 
   const quickActions = [
     "Přelož mi: Kde je nejbližší nemocnice?",
-    "Jak se řekně 'děkuji' formálně a neformálně?",
+    "Jak se řekne 'děkuji' formálně a neformálně?",
     "Pomoz mi s rozhovorem na úřadě",
     "Vysvětli mi němčí člen der, die, das",
     "Nauč mě základní fráze pro nákupy"
