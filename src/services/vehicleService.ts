@@ -1,160 +1,273 @@
 
 import { ServiceRecord, FuelRecord, InsuranceRecord, DocumentRecord } from '@/types/vehicle';
+import { supabase } from '@/integrations/supabase/client';
 
-// Mock data pro development - později nahradit skutečnými Supabase calls
-
+// Real Supabase implementations
 export const fetchServiceRecords = async (vehicleId: string): Promise<ServiceRecord[]> => {
-  // Simulace načítání
-  await new Promise(resolve => setTimeout(resolve, 500));
+  if (!vehicleId) {
+    throw new Error('Vehicle ID is required');
+  }
+
+  console.log('Fetching service records for vehicle:', vehicleId);
   
-  return [
-    {
-      id: '1',
-      vehicle_id: vehicleId,
-      service_date: '2024-03-15',
-      service_type: 'Výměna oleje',
-      description: 'Výměna motorového oleje a filtru',
-      mileage: '85000',
-      cost: '1500',
-      provider: 'Autoservis Novák'
-    }
-  ];
+  const { data, error } = await supabase
+    .from('service_records')
+    .select('*')
+    .eq('vehicle_id', vehicleId)
+    .order('service_date', { ascending: false });
+  
+  if (error) {
+    console.error('Error fetching service records:', error);
+    throw new Error(`Failed to fetch service records: ${error.message}`);
+  }
+  
+  return data || [];
 };
 
 export const saveServiceRecord = async (record: Partial<ServiceRecord>): Promise<ServiceRecord | null> => {
-  // Simulace ukládání
-  await new Promise(resolve => setTimeout(resolve, 300));
-  
-  return {
-    id: record.id || Math.random().toString(),
-    vehicle_id: record.vehicle_id!,
-    service_date: record.service_date!,
-    service_type: record.service_type!,
-    description: record.description!,
-    mileage: record.mileage!,
-    cost: record.cost!,
-    provider: record.provider!
-  };
+  try {
+    if (record.id) {
+      // Update existing record
+      const { data, error } = await supabase
+        .from('service_records')
+        .update(record)
+        .eq('id', record.id)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
+    } else {
+      // Create new record
+      const { data, error } = await supabase
+        .from('service_records')
+        .insert(record)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
+    }
+  } catch (error: any) {
+    console.error('Error saving service record:', error);
+    throw new Error(`Failed to save service record: ${error.message}`);
+  }
 };
 
 export const deleteServiceRecord = async (id: string): Promise<boolean> => {
-  // Simulace mazání
-  await new Promise(resolve => setTimeout(resolve, 200));
-  return true;
+  try {
+    const { error } = await supabase
+      .from('service_records')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw error;
+    return true;
+  } catch (error: any) {
+    console.error('Error deleting service record:', error);
+    throw new Error(`Failed to delete service record: ${error.message}`);
+  }
 };
 
 export const fetchFuelRecords = async (vehicleId: string): Promise<FuelRecord[]> => {
-  await new Promise(resolve => setTimeout(resolve, 500));
+  if (!vehicleId) {
+    throw new Error('Vehicle ID is required');
+  }
+
+  console.log('Fetching fuel records for vehicle:', vehicleId);
   
-  return [
-    {
-      id: '1',
-      vehicle_id: vehicleId,
-      date: '2024-04-20',
-      amount_liters: 45.5,
-      price_per_liter: 36.90,
-      total_cost: 1679.95,
-      mileage: '87500',
-      full_tank: true,
-      station: 'Shell'
-    }
-  ];
+  const { data, error } = await supabase
+    .from('fuel_records')
+    .select('*')
+    .eq('vehicle_id', vehicleId)
+    .order('date', { ascending: false });
+  
+  if (error) {
+    console.error('Error fetching fuel records:', error);
+    throw new Error(`Failed to fetch fuel records: ${error.message}`);
+  }
+  
+  return data || [];
 };
 
 export const saveFuelRecord = async (record: Partial<FuelRecord>): Promise<FuelRecord | null> => {
-  await new Promise(resolve => setTimeout(resolve, 300));
-  
-  return {
-    id: record.id || Math.random().toString(),
-    vehicle_id: record.vehicle_id!,
-    date: record.date!,
-    amount_liters: record.amount_liters!,
-    price_per_liter: record.price_per_liter!,
-    total_cost: record.total_cost!,
-    mileage: record.mileage!,
-    full_tank: record.full_tank!,
-    station: record.station!
-  };
+  try {
+    if (record.id) {
+      // Update existing record
+      const { data, error } = await supabase
+        .from('fuel_records')
+        .update(record)
+        .eq('id', record.id)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
+    } else {
+      // Create new record
+      const { data, error } = await supabase
+        .from('fuel_records')
+        .insert(record)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
+    }
+  } catch (error: any) {
+    console.error('Error saving fuel record:', error);
+    throw new Error(`Failed to save fuel record: ${error.message}`);
+  }
 };
 
 export const deleteFuelRecord = async (id: string): Promise<boolean> => {
-  await new Promise(resolve => setTimeout(resolve, 200));
-  return true;
+  try {
+    const { error } = await supabase
+      .from('fuel_records')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw error;
+    return true;
+  } catch (error: any) {
+    console.error('Error deleting fuel record:', error);
+    throw new Error(`Failed to delete fuel record: ${error.message}`);
+  }
 };
 
 export const fetchInsuranceRecords = async (vehicleId: string): Promise<InsuranceRecord[]> => {
-  await new Promise(resolve => setTimeout(resolve, 500));
+  if (!vehicleId) {
+    throw new Error('Vehicle ID is required');
+  }
+
+  console.log('Fetching insurance records for vehicle:', vehicleId);
   
-  return [
-    {
-      id: '1',
-      vehicle_id: vehicleId,
-      provider: 'Kooperativa',
-      policy_number: 'POL123456',
-      valid_from: '2024-01-01',
-      valid_until: '2024-12-31',
-      monthly_cost: '1200',
-      coverage_type: 'Plné pojištění',
-      notes: 'Zahrnuje povinné ručení a havarijní pojištění'
-    }
-  ];
+  const { data, error } = await supabase
+    .from('insurance_records')
+    .select('*')
+    .eq('vehicle_id', vehicleId)
+    .order('valid_from', { ascending: false });
+  
+  if (error) {
+    console.error('Error fetching insurance records:', error);
+    throw new Error(`Failed to fetch insurance records: ${error.message}`);
+  }
+  
+  return data || [];
 };
 
 export const saveInsuranceRecord = async (record: Partial<InsuranceRecord>): Promise<InsuranceRecord | null> => {
-  await new Promise(resolve => setTimeout(resolve, 300));
-  
-  return {
-    id: record.id || Math.random().toString(),
-    vehicle_id: record.vehicle_id!,
-    provider: record.provider!,
-    policy_number: record.policy_number!,
-    valid_from: record.valid_from!,
-    valid_until: record.valid_until!,
-    monthly_cost: record.monthly_cost!,
-    coverage_type: record.coverage_type!,
-    notes: record.notes || ''
-  };
+  try {
+    if (record.id) {
+      // Update existing record
+      const { data, error } = await supabase
+        .from('insurance_records')
+        .update(record)
+        .eq('id', record.id)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
+    } else {
+      // Create new record
+      const { data, error } = await supabase
+        .from('insurance_records')
+        .insert(record)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
+    }
+  } catch (error: any) {
+    console.error('Error saving insurance record:', error);
+    throw new Error(`Failed to save insurance record: ${error.message}`);
+  }
 };
 
 export const deleteInsuranceRecord = async (id: string): Promise<boolean> => {
-  await new Promise(resolve => setTimeout(resolve, 200));
-  return true;
+  try {
+    const { error } = await supabase
+      .from('insurance_records')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw error;
+    return true;
+  } catch (error: any) {
+    console.error('Error deleting insurance record:', error);
+    throw new Error(`Failed to delete insurance record: ${error.message}`);
+  }
 };
 
 export const fetchDocuments = async (vehicleId: string): Promise<DocumentRecord[]> => {
-  await new Promise(resolve => setTimeout(resolve, 500));
+  if (!vehicleId) {
+    throw new Error('Vehicle ID is required');
+  }
+
+  console.log('Fetching documents for vehicle:', vehicleId);
   
-  return [
-    {
-      id: '1',
-      vehicle_id: vehicleId,
-      name: 'Technický průkaz',
-      type: 'stk',
-      expiry_date: '2025-05-15',
-      notes: 'Platný technický průkaz vozidla'
-    }
-  ];
+  const { data, error } = await supabase
+    .from('vehicle_documents')
+    .select('*')
+    .eq('vehicle_id', vehicleId)
+    .order('created_at', { ascending: false });
+  
+  if (error) {
+    console.error('Error fetching documents:', error);
+    throw new Error(`Failed to fetch documents: ${error.message}`);
+  }
+  
+  return data || [];
 };
 
 export const saveDocument = async (document: Partial<DocumentRecord>): Promise<DocumentRecord | null> => {
-  await new Promise(resolve => setTimeout(resolve, 300));
-  
-  return {
-    id: document.id || Math.random().toString(),
-    vehicle_id: document.vehicle_id!,
-    name: document.name!,
-    type: document.type!,
-    expiry_date: document.expiry_date,
-    notes: document.notes
-  };
+  try {
+    if (document.id) {
+      // Update existing document
+      const { data, error } = await supabase
+        .from('vehicle_documents')
+        .update(document)
+        .eq('id', document.id)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
+    } else {
+      // Create new document
+      const { data, error } = await supabase
+        .from('vehicle_documents')
+        .insert(document)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
+    }
+  } catch (error: any) {
+    console.error('Error saving document:', error);
+    throw new Error(`Failed to save document: ${error.message}`);
+  }
 };
 
 export const deleteDocument = async (id: string): Promise<boolean> => {
-  await new Promise(resolve => setTimeout(resolve, 200));
-  return true;
+  try {
+    const { error } = await supabase
+      .from('vehicle_documents')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw error;
+    return true;
+  } catch (error: any) {
+    console.error('Error deleting document:', error);
+    throw new Error(`Failed to delete document: ${error.message}`);
+  }
 };
 
-// Add the missing calculateConsumption function
+// Helper function for calculating consumption
 export const calculateConsumption = (fuelRecords: FuelRecord[]) => {
   if (fuelRecords.length === 0) {
     return {

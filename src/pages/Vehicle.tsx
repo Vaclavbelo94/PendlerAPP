@@ -7,13 +7,12 @@ import { useSimplifiedAuth } from '@/hooks/auth/useSimplifiedAuth';
 import { Plus, Car } from 'lucide-react';
 import OptimizedPremiumCheck from '@/components/premium/OptimizedPremiumCheck';
 import ResponsivePage from '@/components/layouts/ResponsivePage';
-import { ErrorBoundaryWithFallback } from '@/components/common/ErrorBoundaryWithFallback';
 import FastLoadingFallback from '@/components/common/FastLoadingFallback';
 import { useVehicleManagement } from '@/hooks/vehicle/useVehicleManagement';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 
-// Direct imports instead of lazy loading to avoid issues
+// Direct imports
 import VehicleForm from '@/components/vehicle/VehicleForm';
 import VehicleSelectorOptimized from '@/components/vehicle/VehicleSelectorOptimized';
 import VehicleNavigation from '@/components/vehicle/VehicleNavigation';
@@ -22,6 +21,7 @@ import ServiceRecordCard from '@/components/vehicle/ServiceRecordCard';
 import InsuranceCard from '@/components/vehicle/InsuranceCard';
 import DocumentsCard from '@/components/vehicle/DocumentsCard';
 import EmptyVehicleState from '@/components/vehicle/EmptyVehicleState';
+import VehicleErrorBoundary from '@/components/vehicle/VehicleErrorBoundary';
 
 const Vehicle = () => {
   const { user, isInitialized } = useSimplifiedAuth();
@@ -35,8 +35,11 @@ const Vehicle = () => {
     selectedVehicleId,
     isLoading,
     isSaving,
+    error,
+    retryCount,
     addVehicle,
-    selectVehicle
+    selectVehicle,
+    retryLastOperation
   } = useVehicleManagement(user?.id);
 
   const handleAddVehicle = async (formData: any) => {
@@ -77,7 +80,35 @@ const Vehicle = () => {
   };
 
   // Show loading while auth is initializing
-  if (!isInitialized || isLoading) {
+  if (!isInitialized) {
+    return (
+      <OptimizedPremiumCheck featureKey="vehicle_management">
+        <ResponsivePage>
+          <FastLoadingFallback message="Inicializace..." />
+        </ResponsivePage>
+      </OptimizedPremiumCheck>
+    );
+  }
+
+  // Show error state if there's an error
+  if (error && !isLoading) {
+    return (
+      <OptimizedPremiumCheck featureKey="vehicle_management">
+        <ResponsivePage enableMobileSafeArea>
+          <div className="container max-w-7xl mx-auto px-4 py-8">
+            <VehicleErrorBoundary 
+              error={error} 
+              onRetry={retryLastOperation}
+              retryCount={retryCount}
+            />
+          </div>
+        </ResponsivePage>
+      </OptimizedPremiumCheck>
+    );
+  }
+
+  // Show loading while vehicles are loading
+  if (isLoading) {
     return (
       <OptimizedPremiumCheck featureKey="vehicle_management">
         <ResponsivePage>
