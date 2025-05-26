@@ -6,7 +6,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '
 import { useStandardizedToast } from '@/hooks/useStandardizedToast';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import ShiftCalendar from './ShiftCalendar';
+import { ShiftCalendar } from './ShiftCalendar';
 import ShiftsList from './ShiftsList';
 import ShiftForm from './ShiftForm';
 import ShiftStats from './ShiftStats';
