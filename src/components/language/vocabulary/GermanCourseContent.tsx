@@ -7,7 +7,8 @@ import { useVocabularyContext } from './VocabularyManager';
 import VocabularyReviewCard from '../VocabularyReviewCard';
 import { VocabularyItem } from '@/models/VocabularyItem';
 import { useVocabularyReviewSession } from '@/hooks/useVocabularyReviewSession';
-import { Volume2, CheckCircle, ArrowRight, PlayCircle, AlertCircle } from "lucide-react";
+import { useIsMobile } from '@/hooks/use-mobile';
+import { Volume2, CheckCircle, ArrowRight, PlayCircle, AlertCircle, Book, Users, MessageCircle } from "lucide-react";
 
 // Helper function to play audio for German pronunciation
 const pronounceWord = (word: string) => {
@@ -18,7 +19,7 @@ const pronounceWord = (word: string) => {
   }
 };
 
-// Vocabulary card component
+// Vocabulary card component using consistent design patterns
 const VocabularyCard = ({ german, czech, example, category }: { 
   german: string, 
   czech: string, 
@@ -26,53 +27,57 @@ const VocabularyCard = ({ german, czech, example, category }: {
   category?: string 
 }) => {
   const [showExample, setShowExample] = useState(false);
+  const isMobile = useIsMobile();
   
   return (
-    <Card className="mb-3">
-      <CardHeader className="pb-2">
-        <div className="flex justify-between items-center">
-          <CardTitle className="text-lg flex items-center">
-            {german} 
+    <div className="p-4 border rounded-lg bg-card hover:bg-accent/5 transition-colors">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-2">
+            <h4 className="font-medium text-base break-words">{german}</h4>
             <Button 
               variant="ghost" 
               size="sm" 
-              className="ml-2 p-0 h-8 w-8" 
+              className="flex-shrink-0 h-6 w-6 p-0 hover:bg-primary/10" 
               onClick={() => pronounceWord(german)}
             >
-              <Volume2 className="h-4 w-4" />
+              <Volume2 className="h-3 w-3" />
               <span className="sr-only">Přečíst</span>
             </Button>
-          </CardTitle>
-          {category && (
-            <Badge variant="outline">{category}</Badge>
-          )}
-        </div>
-        <CardDescription>{czech}</CardDescription>
-      </CardHeader>
-      {example && (
-        <CardContent className="pt-0">
-          <Button 
-            variant="link" 
-            className="p-0 h-auto text-sm" 
-            onClick={() => setShowExample(!showExample)}
-          >
-            {showExample ? 'Skrýt příklad' : 'Zobrazit příklad'}
-          </Button>
-          {showExample && (
-            <div className="mt-2 text-sm italic border-l-2 border-primary/20 pl-2">
-              {example}
+          </div>
+          <p className="text-sm text-muted-foreground mb-2 break-words">{czech}</p>
+          {example && (
+            <div className="mt-2">
+              <Button 
+                variant="link" 
+                className="p-0 h-auto text-xs" 
+                onClick={() => setShowExample(!showExample)}
+              >
+                {showExample ? 'Skrýt příklad' : 'Zobrazit příklad'}
+              </Button>
+              {showExample && (
+                <div className="mt-1 text-xs italic text-muted-foreground border-l-2 border-primary/20 pl-2">
+                  {example}
+                </div>
+              )}
             </div>
           )}
-        </CardContent>
-      )}
-    </Card>
+        </div>
+        {category && (
+          <Badge variant="outline" className="text-xs flex-shrink-0">
+            {category}
+          </Badge>
+        )}
+      </div>
+    </div>
   );
 };
 
-// Lesson section component
-const LessonSection = ({ title, description, items }: { 
+// Lesson section component using consistent card layout
+const LessonSection = ({ title, description, items, icon }: { 
   title: string, 
-  description?: string, 
+  description?: string,
+  icon?: React.ReactNode,
   items: {
     german: string,
     czech: string,
@@ -81,21 +86,35 @@ const LessonSection = ({ title, description, items }: {
   }[]
 }) => {
   return (
-    <div className="mb-6">
-      <h3 className="text-lg font-semibold mb-1">{title}</h3>
-      {description && <p className="text-muted-foreground mb-3 text-sm">{description}</p>}
-      <div className="space-y-3">
-        {items.map((item, index) => (
-          <VocabularyCard 
-            key={index} 
-            german={item.german} 
-            czech={item.czech} 
-            example={item.example}
-            category={item.category}
-          />
-        ))}
-      </div>
-    </div>
+    <Card className="mb-6">
+      <CardHeader className="pb-4">
+        <div className="flex items-center gap-3">
+          {icon && <div className="text-primary">{icon}</div>}
+          <div>
+            <CardTitle className="text-lg">{title}</CardTitle>
+            {description && (
+              <CardDescription className="mt-1">{description}</CardDescription>
+            )}
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="grid gap-3">
+          {items.map((item, index) => (
+            <VocabularyCard 
+              key={index} 
+              german={item.german} 
+              czech={item.czech} 
+              example={item.example}
+              category={item.category}
+            />
+          ))}
+        </div>
+      </CardContent>
+      <CardFooter className="text-sm text-muted-foreground">
+        {items.length} slovíček v této sekci
+      </CardFooter>
+    </Card>
   );
 };
 
@@ -140,21 +159,51 @@ export const WarehouseBasicsTab = () => {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Základy němčiny</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Book className="h-5 w-5" />
+            Základy němčiny
+          </CardTitle>
           <CardDescription>
             Naučte se základní fráze a pozdravy, které vám pomohou při každodenní komunikaci v práci
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <LessonSection title="Pozdravy" items={greetings} />
-          <LessonSection title="Základní fráze" items={basicPhrases} />
-          <LessonSection title="Představení se" items={introductions} />
-          <LessonSection title="Základy práce" items={workBasics} />
-        </CardContent>
-        <CardFooter className="flex justify-between pt-2">
-          <div className="text-sm text-muted-foreground">23 slovíček</div>
-          <Button className="flex gap-1" size="sm">
-            Procvičit <ArrowRight className="h-4 w-4" />
+      </Card>
+
+      <LessonSection 
+        title="Pozdravy" 
+        description="Základní pozdravy pro každodenní komunikaci"
+        icon={<MessageCircle className="h-5 w-5" />}
+        items={greetings} 
+      />
+      
+      <LessonSection 
+        title="Základní fráze" 
+        description="Užitečné fráze pro běžné situace"
+        icon={<Users className="h-5 w-5" />}
+        items={basicPhrases} 
+      />
+      
+      <LessonSection 
+        title="Představení se" 
+        description="Jak se představit novým kolegům"
+        icon={<Users className="h-5 w-5" />}
+        items={introductions} 
+      />
+      
+      <LessonSection 
+        title="Základy práce" 
+        description="Nejdůležitější pojmy pro práci"
+        icon={<Book className="h-5 w-5" />}
+        items={workBasics} 
+      />
+
+      <Card>
+        <CardFooter className="flex justify-between items-center pt-6">
+          <div className="text-sm text-muted-foreground">
+            Celkem {greetings.length + basicPhrases.length + introductions.length + workBasics.length} slovíček
+          </div>
+          <Button className="flex items-center gap-2">
+            Procvičit vše <ArrowRight className="h-4 w-4" />
           </Button>
         </CardFooter>
       </Card>
@@ -210,37 +259,47 @@ export const PackagingTermsTab = () => {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Balíkové centrum - rozšířená slovní zásoba</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Book className="h-5 w-5" />
+            Balíkové centrum - rozšířená slovní zásoba
+          </CardTitle>
           <CardDescription>
             Pokročilejší pojmy pro efektivní práci v logistickém centru
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <LessonSection 
-            title="Základní pojmy balíkového centra" 
-            description="Nejpoužívanější slova pro práci s balíky"
-            items={packagingTerms} 
-          />
-          <LessonSection 
-            title="Třídění a manipulace" 
-            description="Slovíčka spojená s tříděním a manipulací s balíky"
-            items={sortingTerms} 
-          />
-          <LessonSection 
-            title="Vybavení skladu" 
-            description="Pojmy pro orientaci ve skladu a práci s vybavením"
-            items={warehouseTerms} 
-          />
-          <LessonSection 
-            title="Kvalita a stav zboží" 
-            description="Popis stavu balíků a jejich priority"
-            items={qualityTerms} 
-          />
-        </CardContent>
-        <CardFooter className="flex justify-between pt-2">
-          <div className="text-sm text-muted-foreground">30 slovíček</div>
-          <Button className="flex gap-1" size="sm">
-            Procvičit <ArrowRight className="h-4 w-4" />
+      </Card>
+
+      <LessonSection 
+        title="Základní pojmy balíkového centra" 
+        description="Nejpoužívanější slova pro práci s balíky"
+        items={packagingTerms} 
+      />
+      
+      <LessonSection 
+        title="Třídění a manipulace" 
+        description="Slovíčka spojená s tříděním a manipulací s balíky"
+        items={sortingTerms} 
+      />
+      
+      <LessonSection 
+        title="Vybavení skladu" 
+        description="Pojmy pro orientaci ve skladu a práci s vybavením"
+        items={warehouseTerms} 
+      />
+      
+      <LessonSection 
+        title="Kvalita a stav zboží" 
+        description="Popis stavu balíků a jejich priority"
+        items={qualityTerms} 
+      />
+
+      <Card>
+        <CardFooter className="flex justify-between items-center pt-6">
+          <div className="text-sm text-muted-foreground">
+            Celkem {packagingTerms.length + sortingTerms.length + warehouseTerms.length + qualityTerms.length} slovíček
+          </div>
+          <Button className="flex items-center gap-2">
+            Procvičit vše <ArrowRight className="h-4 w-4" />
           </Button>
         </CardFooter>
       </Card>
