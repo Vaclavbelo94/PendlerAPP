@@ -34,7 +34,7 @@ export const useShiftOperations = (
       
       // Reload all shifts to ensure consistency
       const updatedShifts = await loadUserShifts(user.id);
-      setShifts(updatedShifts);
+      setShifts(updatedShifts); // Now types match - both use string dates
       
       // Update localStorage backup
       localStorage.setItem("shifts", JSON.stringify(updatedShifts));
@@ -58,7 +58,7 @@ export const useShiftOperations = (
       
       // Update local state
       const updatedShifts = await loadUserShifts(user.id);
-      setShifts(updatedShifts);
+      setShifts(updatedShifts); // Now types match
       
       // Update localStorage backup
       localStorage.setItem("shifts", JSON.stringify(updatedShifts));

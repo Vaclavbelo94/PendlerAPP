@@ -3,10 +3,13 @@ export type ShiftType = "morning" | "afternoon" | "night";
 
 export interface Shift {
   id: string;
-  date: Date;
+  date: string; // Changed from Date to string for database consistency
   type: ShiftType;
   notes: string;
   userId: string;
+  user_id?: string; // For database compatibility
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface ShiftData {

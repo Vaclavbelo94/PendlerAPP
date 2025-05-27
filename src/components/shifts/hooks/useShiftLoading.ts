@@ -20,7 +20,7 @@ export const useShiftLoading = (user: any) => {
       console.log("Loading shifts for user:", user.id);
       const formattedShifts = await loadUserShifts(user.id);
       console.log("Loaded shifts:", formattedShifts.length);
-      setShifts(formattedShifts);
+      setShifts(formattedShifts); // Now the types match - both expect string dates
       
       // Also save to localStorage as backup
       localStorage.setItem("shifts", JSON.stringify(formattedShifts));
@@ -36,10 +36,7 @@ export const useShiftLoading = (user: any) => {
       try {
         const savedShifts = localStorage.getItem("shifts");
         if (savedShifts) {
-          const parsedShifts = JSON.parse(savedShifts).map((shift: any) => ({
-            ...shift,
-            date: new Date(shift.date)
-          }));
+          const parsedShifts = JSON.parse(savedShifts); // Keep as string dates
           setShifts(parsedShifts);
           toast({
             title: "Data obnovena",

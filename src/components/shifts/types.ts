@@ -5,7 +5,7 @@ export interface Shift {
   id: string;
   userId: string;
   user_id?: string; // For database compatibility
-  date: Date;
+  date: string; // Changed from Date to string for consistency
   type: ShiftType;
   notes: string;
   created_at?: string;

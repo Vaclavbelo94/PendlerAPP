@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { Shift, ShiftType } from "./types";
 import { cs } from "date-fns/locale";
+import { dateFromDBString } from "./utils/dateUtils";
 
 interface ShiftCalendarProps {
   selectedDate: Date | undefined;
@@ -25,15 +26,15 @@ export const ShiftCalendar = ({
     
     const morningShifts = shifts
       .filter(shift => shift.type === "morning")
-      .map(shift => new Date(shift.date));
+      .map(shift => dateFromDBString(shift.date)); // Convert string to Date
     
     const afternoonShifts = shifts
       .filter(shift => shift.type === "afternoon")
-      .map(shift => new Date(shift.date));
+      .map(shift => dateFromDBString(shift.date)); // Convert string to Date
     
     const nightShifts = shifts
       .filter(shift => shift.type === "night")
-      .map(shift => new Date(shift.date));
+      .map(shift => dateFromDBString(shift.date)); // Convert string to Date
       
     return {
       morning: morningShifts,
