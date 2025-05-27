@@ -7,7 +7,7 @@ import { PremiumFeaturesPanel } from "./PremiumFeaturesPanel";
 import AdminAnalyticsDashboard from "./analytics/AdminAnalyticsDashboard";
 import SystemMonitoringPanel from "./monitoring/SystemMonitoringPanel";
 import { UserManagement } from "./users/UserManagement";
-import { UserActivityPanel } from "./users/UserActivityPanel";
+import UserActivityPanel from "./users/UserActivityPanel";
 import SystemLogsPanel from "./logs/SystemLogsPanel";
 import DatabasePanel from "./database/DatabasePanel";
 

@@ -290,7 +290,7 @@ export const BulkActionsDialog: React.FC<BulkActionsDialogProps> = ({
                     <Checkbox
                       id="confirmDangerous"
                       checked={confirmDangerousAction}
-                      onCheckedChange={setConfirmDangerousAction}
+                      onCheckedChange={(checked) => setConfirmDangerousAction(checked === true)}
                     />
                     <Label htmlFor="confirmDangerous" className="text-sm">
                       Potvrzuji, že rozumím důsledkům této akce

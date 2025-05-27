@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -11,7 +12,7 @@ import { AdminLayout } from "@/components/admin/core/AdminLayout";
 import { AdminDashboard } from "@/components/admin/core/AdminDashboard";
 import { useAdminContext } from "@/components/admin/core/AdminProvider";
 import { UserManagement } from "@/components/admin/users";
-import { UserActivityPanel } from "@/components/admin/users/UserActivityPanel";
+import UserActivityPanel from "@/components/admin/users/UserActivityPanel";
 import { PromoCodesPanel } from "@/components/admin/PromoCodesPanel";
 import { PremiumFeaturesPanel } from "@/components/admin/PremiumFeaturesPanel";
 import { PasswordResetPanel } from "@/components/admin/PasswordResetPanel";
