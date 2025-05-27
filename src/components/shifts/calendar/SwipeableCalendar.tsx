@@ -7,11 +7,13 @@ import type { DayPickerSingleProps } from 'react-day-picker';
 interface SwipeableCalendarProps extends Omit<DayPickerSingleProps, 'mode'> {
   onMonthChange?: (date: Date) => void;
   mode?: 'single';
+  className?: string;
 }
 
 export const SwipeableCalendar: React.FC<SwipeableCalendarProps> = ({
   onMonthChange,
   className,
+  mode = 'single',
   ...props
 }) => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -88,6 +90,7 @@ export const SwipeableCalendar: React.FC<SwipeableCalendarProps> = ({
       className="select-none"
     >
       <TouchCalendar
+        mode={mode}
         onSwipeLeft={handleSwipeLeft}
         onSwipeRight={handleSwipeRight}
         enableTouch={true}
