@@ -1,13 +1,14 @@
 
 import React from 'react';
 import { ErrorBoundaryWithFallback } from '@/components/common/ErrorBoundaryWithFallback';
-import GermanLessonsSection from './GermanLessonsSection';
+import PracticalGermanLessons from './PracticalGermanLessons';
 
-// Wrapper komponenta která zachovává kompatibilitu s existujícím kódem
+// Nová komponenta která nahrazuje původní složitou sekci
+// Zachovává kompatibilitu s existujícím kódem
 const VocabularySection = () => {
   return (
     <ErrorBoundaryWithFallback>
-      <GermanLessonsSection />
+      <PracticalGermanLessons />
     </ErrorBoundaryWithFallback>
   );
 };
