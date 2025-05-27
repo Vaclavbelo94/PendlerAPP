@@ -378,8 +378,8 @@ export const PracticeTab = () => {
     return (
       <VocabularyReviewCard
         item={currentItem}
-        onCorrect={handleCorrect}
-        onIncorrect={handleIncorrect}
+        onCorrect={() => handleCorrect(currentItem.id)}
+        onIncorrect={() => handleIncorrect(currentItem.id)}
         remainingItems={dueItems.length}
         totalItems={dueItems.length + sessionStats.correctCount + sessionStats.incorrectCount}
         currentStreak={currentStreak}

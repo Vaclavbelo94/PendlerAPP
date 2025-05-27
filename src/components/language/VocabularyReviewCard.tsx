@@ -41,7 +41,7 @@ const VocabularyReviewCard: React.FC<VocabularyReviewCardProps> = ({
   const handleIncorrect = () => {
     setShowAnswer(false);
     setUserAnswer('');
-    onIncorrected();
+    onIncorrect();
   };
 
   const progress = ((totalItems - remainingItems) / totalItems) * 100;
