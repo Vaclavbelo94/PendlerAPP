@@ -3,8 +3,9 @@ import { format } from "date-fns";
 import { cs } from "date-fns/locale";
 import { ShiftType } from "./types";
 
-// Format a shift date in a user-friendly format
-export const formatShiftDate = (date: Date) => {
+// Format a shift date in a user-friendly format - now accepts string date
+export const formatShiftDate = (dateString: string) => {
+  const date = new Date(dateString);
   return format(date, "EEEE, d. MMMM yyyy", { locale: cs });
 };
 

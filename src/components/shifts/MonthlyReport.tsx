@@ -1,3 +1,4 @@
+
 import { format } from "date-fns";
 import { cs } from "date-fns/locale";
 import { Card, CardContent } from "@/components/ui/card";
@@ -17,7 +18,6 @@ import {
   TableRow
 } from "@/components/ui/table";
 import { getShiftColor, getShiftTimeByType, formatShiftDate } from "./utils";
-import { dateFromDBString } from "./utils/dateUtils";
 
 interface MonthlyReportProps {
   shifts: Shift[];
@@ -103,7 +103,7 @@ export const MonthlyReport = ({ shifts, user, selectedMonth, onSelectDate }: Mon
                         variant="ghost"
                         size="sm"
                         onClick={() => {
-                          const dateObj = dateFromDBString(shift.date);
+                          const dateObj = new Date(shift.date);
                           onSelectDate(dateObj);
                         }}
                       >
