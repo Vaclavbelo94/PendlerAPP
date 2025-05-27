@@ -4,26 +4,23 @@ import autoTable from 'jspdf-autotable';
 import { DocumentData } from './types';
 import { getDocumentTitle } from './documentUtils';
 import { initializePDF, addDocumentHeader, addDocumentFooter } from '../pdf/pdfHelper';
+import { createStyledTable, addSection, addInfoBox } from '../pdf/enhancedPdfHelper';
 
-export const generateTaxDocument = (data: DocumentData): jsPDF => {
-  // Použijeme náš inicializátor pro PDF s českou diakritikou
+export const generateTaxDocument = async (data: DocumentData): Promise<jsPDF> => {
+  // Použijeme vylepšený inicializátor PDF
   const doc = initializePDF();
   
-  // Přidáme hlavičku dokumentu
+  // Přidáme moderní hlavičku
   const documentTitle = getDocumentTitle(data.documentType);
-  addDocumentHeader(doc, documentTitle);
+  const subtitle = `Zdaňovací období: ${data.yearOfTax}`;
+  addDocumentHeader(doc, documentTitle, subtitle);
   
-  // Přidáme informaci o zdaňovacím období
-  doc.setFontSize(12);
-  doc.text(`Zdaňovací období: ${data.yearOfTax}`, 14, 50);
+  let currentY = 85;
   
-  // Personal details section
-  doc.setFontSize(14);
-  doc.text('Osobní údaje', 14, 65);
+  // Osobní údaje sekce
+  currentY = addSection(doc, "Osobní údaje", currentY);
   
-  doc.setFontSize(11);
-  autoTable(doc, {
-    startY: 70,
+  await createStyledTable(doc, {
     head: [['Položka', 'Hodnota']],
     body: [
       ['Jméno a příjmení', data.name],
@@ -31,122 +28,132 @@ export const generateTaxDocument = (data: DocumentData): jsPDF => {
       ['Adresa trvalého bydliště', data.address],
       ['Datum narození', data.dateOfBirth || 'Neuvedeno'],
       ['Email', data.email],
-    ],
-    theme: 'grid',
-    headStyles: { fillColor: [255, 102, 0] }, // Orange color
-    // Nastavení pro správné zobrazení diakritiky v tabulkách
-    styles: {
-      font: 'helvetica',
-      fontStyle: 'normal'
-    },
-    didDrawCell: (data) => {
-      // Zde můžeme přidat další úpravy pro buňky, pokud by bylo potřeba
-    }
-  });
+    ]
+  }, currentY);
   
-  // Employment details section if applicable
+  // Údaje o zaměstnání (pokud jsou k dispozici)
   if (data.employerName || data.incomeAmount) {
-    const finalY = (doc as any).lastAutoTable.finalY + 10;
+    currentY = (doc as any).lastAutoTable.finalY + 15;
+    currentY = addSection(doc, "Údaje o zaměstnání", currentY);
     
-    doc.setFontSize(14);
-    doc.text('Údaje o zaměstnání', 14, finalY);
-    
-    doc.setFontSize(11);
-    autoTable(doc, {
-      startY: finalY + 5,
+    await createStyledTable(doc, {
       head: [['Položka', 'Hodnota']],
       body: [
         ['Zaměstnavatel', data.employerName || 'Neuvedeno'],
         ['Roční příjem (€)', data.incomeAmount || 'Neuvedeno'],
-      ],
-      theme: 'grid',
-      headStyles: { fillColor: [255, 102, 0] }, // Orange color
-      styles: {
-        font: 'helvetica',
-        fontStyle: 'normal'
-      }
-    });
+      ]
+    }, currentY);
   }
   
-  // Deduction items section
-  const deductionsY = (doc as any).lastAutoTable.finalY + 10;
-  
-  doc.setFontSize(14);
-  doc.text('Odpočitatelné položky', 14, deductionsY);
+  // Odpočitatelné položky
+  currentY = (doc as any).lastAutoTable.finalY + 15;
+  currentY = addSection(doc, "Odpočitatelné položky", currentY);
   
   const deductions = [];
+  let totalDeductions = 0;
   
   if (data.includeCommuteExpenses) {
     const commuteCostPerKm = 0.30;
     const totalCommuteDays = parseInt(data.commuteWorkDays || '220');
     const commuteDistance = parseInt(data.commuteDistance || '0');
     const totalCommuteCost = commuteCostPerKm * commuteDistance * totalCommuteDays;
+    totalDeductions += totalCommuteCost;
     
-    deductions.push(['Náklady na dojíždění', `${commuteDistance} km × ${totalCommuteDays} dní = ${totalCommuteCost.toFixed(2)} €`]);
+    deductions.push([
+      'Náklady na dojíždění', 
+      `${commuteDistance} km × ${totalCommuteDays} dní × 0.30€`,
+      `${totalCommuteCost.toFixed(2)} €`
+    ]);
   }
   
   if (data.includeSecondHome) {
-    deductions.push(['Druhé bydlení v Německu', 'Zahrnuto']);
+    const secondHomeCost = 1200; // Aproximativní roční náklad
+    totalDeductions += secondHomeCost;
+    deductions.push(['Druhé bydlení v Německu', 'Paušální náklad', `${secondHomeCost} €`]);
   }
   
   if (data.includeWorkClothes) {
-    deductions.push(['Pracovní oděvy a pomůcky', 'Zahrnuto']);
+    const workClothesCost = 400; // Aproximativní roční náklad
+    totalDeductions += workClothesCost;
+    deductions.push(['Pracovní oděvy a pomůcky', 'Paušální náklad', `${workClothesCost} €`]);
   }
   
   if (deductions.length > 0) {
-    autoTable(doc, {
-      startY: deductionsY + 5,
-      head: [['Položka', 'Údaje']],
-      body: deductions,
-      theme: 'grid',
-      headStyles: { fillColor: [255, 102, 0] }, // Orange color
-      styles: {
-        font: 'helvetica',
-        fontStyle: 'normal'
+    deductions.push(['', 'CELKEM', `${totalDeductions.toFixed(2)} €`]);
+    
+    await createStyledTable(doc, {
+      head: [['Položka', 'Výpočet', 'Částka']],
+      body: deductions
+    }, currentY, {
+      columnStyles: {
+        2: { fontStyle: 'bold', halign: 'right' }
       }
     });
+    
+    // Info box s odhadovanou úsporou
+    currentY = (doc as any).lastAutoTable.finalY + 10;
+    const estimatedSaving = totalDeductions * 0.25; // 25% daňová sazba
+    currentY = addInfoBox(
+      doc, 
+      `💰 Odhadovaná úspora na dani: ${estimatedSaving.toFixed(2)} € (při 25% sazbě)`, 
+      currentY, 
+      'success'
+    );
+  } else {
+    currentY = addInfoBox(
+      doc, 
+      "ℹ️ Nebyly vybrány žádné odpočitatelné položky", 
+      currentY, 
+      'warning'
+    );
   }
   
-  // Additional notes section
+  // Doplňující poznámky
   if (data.additionalNotes) {
-    const notesY = (doc as any).lastAutoTable.finalY + 10;
+    currentY = currentY + 15;
+    currentY = addSection(doc, "Doplňující poznámky", currentY);
     
-    doc.setFontSize(14);
-    doc.text('Doplňující poznámky', 14, notesY);
-    
-    doc.setFontSize(11);
-    autoTable(doc, {
-      startY: notesY + 5,
+    await createStyledTable(doc, {
       head: [['Poznámky']],
-      body: [[data.additionalNotes]],
-      theme: 'grid',
-      headStyles: { fillColor: [255, 102, 0] }, // Orange color
-      styles: {
-        font: 'helvetica',
-        fontStyle: 'normal'
-      }
-    });
+      body: [[data.additionalNotes]]
+    }, currentY);
   }
   
-  // Add signature area
-  const signatureY = (doc as any).lastAutoTable.finalY + 40;
+  // Podpisová sekce
+  const signatureY = Math.max((doc as any).lastAutoTable?.finalY + 40 || currentY + 40, 
+    doc.internal.pageSize.height - 80);
   
-  doc.line(20, signatureY, 90, signatureY);
-  doc.line(120, signatureY, 190, signatureY);
+  // Přidání nové stránky pokud není dost místa
+  if (signatureY > doc.internal.pageSize.height - 60) {
+    doc.addPage();
+    const newSignatureY = 50;
+    
+    doc.line(20, newSignatureY, 90, newSignatureY);
+    doc.line(120, newSignatureY, 190, newSignatureY);
+    
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text('Podpis daňového poplatníka', 55, newSignatureY + 7, { align: 'center' });
+    doc.text('Podpis finančního úředníka', 155, newSignatureY + 7, { align: 'center' });
+  } else {
+    doc.line(20, signatureY, 90, signatureY);
+    doc.line(120, signatureY, 190, signatureY);
+    
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text('Podpis daňového poplatníka', 55, signatureY + 7, { align: 'center' });
+    doc.text('Podpis finančního úředníka', 155, signatureY + 7, { align: 'center' });
+  }
   
-  doc.setFontSize(10);
-  doc.text('Podpis daňového poplatníka', 55, signatureY + 5, { align: 'center' });
-  doc.text('Podpis finančního úředníka', 155, signatureY + 5, { align: 'center' });
-  
-  // Přidání standardní patičky
+  // Přidání vylepšené patičky
   addDocumentFooter(doc);
   
   return doc;
 };
 
-// Pomocná funkce pro stažení PDF dokumentu
-export const downloadTaxDocument = (data: DocumentData): void => {
-  const doc = generateTaxDocument(data);
-  const filename = `${getDocumentTitle(data.documentType).replace(/\s+/g, '_').toLowerCase()}_${new Date().getFullYear()}.pdf`;
+// Funkce pro stažení PDF dokumentu s vylepšeným názvem
+export const downloadTaxDocument = async (data: DocumentData): Promise<void> => {
+  const doc = await generateTaxDocument(data);
+  const filename = `${getDocumentTitle(data.documentType).replace(/\s+/g, '_').toLowerCase()}_${new Date().getFullYear()}_enhanced.pdf`;
   doc.save(filename);
 };

@@ -1,5 +1,6 @@
 
 import { initializePDF, addDocumentHeader, addDocumentFooter } from "@/utils/pdf/pdfHelper";
+import { createStyledTable, addSection, addInfoBox } from "@/utils/pdf/enhancedPdfHelper";
 
 // Sample data - in a real application, this would be passed in
 const detailedData = [
@@ -9,50 +10,69 @@ const detailedData = [
   { name: '4. týden', auto: 32, mhd: 38 }
 ];
 
-export const generateComparisonPdf = () => {
-  // Inicializace PDF s českou diakritikou
+export const generateComparisonPdf = async () => {
+  // Inicializace vylepšeného PDF
   const doc = initializePDF();
   
-  // Přidání hlavičky s logem
-  addDocumentHeader(doc, "Analýza dojíždění");
+  // Přidání moderní hlavičky
+  addDocumentHeader(doc, "Analýza dojíždění", "Měsíční přehled nákladů a vzdáleností");
   
-  // Add summary data
-  doc.setFontSize(14);
-  doc.setTextColor(0);
-  doc.text("Souhrn za aktuální měsíc", 14, 50);
+  let currentY = 65;
   
-  // Import dynamicky jspdf-autotable
-  import("jspdf-autotable").then((autoTable) => {
-    // Create summary table
-    autoTable.default(doc, {
-      startY: 55,
-      head: [['Metrika', 'Hodnota']],
-      body: [
-        ['Celková vzdálenost', '128 km'],
-        ['Průměrně denně', '6.4 km'],
-        ['Celkové náklady', '712 Kč'],
-        ['Úspora oproti min. měsíci', '243 Kč (25%)'],
-        ['Auto', '63 km (49%)'],
-        ['MHD', '65 km (51%)'],
-        ['Úspora CO2', '8.2 kg']
-      ],
-    });
-    
-    // Add weekly data title
-    doc.setFontSize(14);
-    doc.text("Týdenní přehled", 14, (doc as any).lastAutoTable.finalY + 15);
-    
-    // Create weekly data table
-    autoTable.default(doc, {
-      startY: (doc as any).lastAutoTable.finalY + 20,
-      head: [['Týden', 'Automobil (km)', 'MHD (km)']],
-      body: detailedData.map(item => [item.name, item.auto, item.mhd]),
-    });
-    
-    // Přidání patičky
-    addDocumentFooter(doc);
-    
-    // Save the PDF
-    doc.save('analyza-dojizdeni.pdf');
-  });
+  // Sekce se shrnutím
+  currentY = addSection(doc, "Souhrn za aktuální měsíc", currentY);
+  
+  // Vytvoření moderní tabulky se shrnutím
+  await createStyledTable(doc, {
+    head: [['Metrika', 'Hodnota', 'Poznámka']],
+    body: [
+      ['Celková vzdálenost', '128 km', 'Měsíční součet'],
+      ['Průměrně denně', '6.4 km', 'Pracovní dny'],
+      ['Celkové náklady', '712 Kč', 'Auto + MHD'],
+      ['Úspora oproti min. měsíci', '243 Kč (25%)', 'Pozitivní trend'],
+      ['Automobil', '63 km (49%)', 'Snížení oproti průměru'],
+      ['MHD', '65 km (51%)', 'Zvýšení využití'],
+      ['Úspora CO2', '8.2 kg', 'Ekologický přínos']
+    ]
+  }, currentY);
+  
+  // Info box s tipy
+  currentY = (doc as any).lastAutoTable.finalY + 10;
+  currentY = addInfoBox(
+    doc, 
+    "💡 Tip: Zvýšením podílu MHD o dalších 10% můžete ušetřit až 150 Kč měsíčně!", 
+    currentY, 
+    'info'
+  );
+  
+  // Sekce s týdenními daty
+  currentY = addSection(doc, "Týdenní detailní přehled", currentY + 5);
+  
+  // Týdenní data tabulka
+  await createStyledTable(doc, {
+    head: [['Týden', 'Automobil (km)', 'MHD (km)', 'Celkem (km)', 'Náklady (Kč)']],
+    body: detailedData.map(item => [
+      item.name, 
+      item.auto.toString(), 
+      item.mhd.toString(),
+      (item.auto + item.mhd).toString(),
+      Math.round((item.auto * 8.5 + item.mhd * 3.2)).toString()
+    ])
+  }, currentY);
+  
+  // Ekologická sekce
+  currentY = (doc as any).lastAutoTable.finalY + 10;
+  currentY = addInfoBox(
+    doc, 
+    "🌱 Vaše rozhodnutí přispěla k úspoře 8.2 kg CO2 oproti čistě automobilové dopravě", 
+    currentY, 
+    'success'
+  );
+  
+  // Přidání vylepšené patičky
+  addDocumentFooter(doc);
+  
+  // Uložení s optimalizovaným názvem
+  const fileName = `analyza-dojizdeni-${new Date().toISOString().slice(0, 7)}.pdf`;
+  doc.save(fileName);
 };

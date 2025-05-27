@@ -5,6 +5,7 @@ import { cs } from 'date-fns/locale';
 import { toast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { initializePDF, addDocumentHeader, addDocumentFooter } from "@/utils/pdf/pdfHelper";
+import { createStyledTable, addSection, addInfoBox } from "@/utils/pdf/enhancedPdfHelper";
 
 export interface ShiftExportData {
   userId: string;
@@ -15,7 +16,7 @@ export interface ShiftExportData {
 }
 
 /**
- * Generate and download PDF report of shifts
+ * Generate and download enhanced PDF report of shifts
  */
 export const generateShiftsPdf = async (
   user: any, 
@@ -32,68 +33,111 @@ export const generateShiftsPdf = async (
       return shiftDate >= startOfMonth && shiftDate <= endOfMonth && shift.userId === user.id;
     });
 
-    // Create PDF document with proper initialization for Czech language
+    // Create enhanced PDF document
     const doc = initializePDF();
     
-    // Přidání standardní hlavičky s logem
-    const title = `Přehled směn - ${format(selectedMonth, "MMMM yyyy", { locale: cs })}`;
-    addDocumentHeader(doc, title);
+    const title = `Přehled směn`;
+    const subtitle = `${format(selectedMonth, "MMMM yyyy", { locale: cs })} | ${user.email || user.username || ""}`;
+    addDocumentHeader(doc, title, subtitle);
     
-    // Add user info
-    doc.setFontSize(12);
-    doc.text(`Uživatel: ${user.email || user.username || ""}`, 14, 50);
+    let currentY = 75;
 
-    // Add summary data
+    // Statistická sekce
     const morningShifts = filteredShifts.filter((s: any) => s.type === "morning").length;
     const afternoonShifts = filteredShifts.filter((s: any) => s.type === "afternoon").length;
     const nightShifts = filteredShifts.filter((s: any) => s.type === "night").length;
     const totalShifts = filteredShifts.length;
+    const totalHours = totalShifts * 8;
+    const averagePerWeek = Math.round((totalShifts / 4.33) * 10) / 10;
+
+    currentY = addSection(doc, "Statistický přehled", currentY);
     
-    doc.setFontSize(14);
-    doc.text("Souhrn směn:", 14, 60);
-    doc.setFontSize(12);
-    doc.text(`Ranní směny: ${morningShifts}`, 20, 70);
-    doc.text(`Odpolední směny: ${afternoonShifts}`, 20, 77);
-    doc.text(`Noční směny: ${nightShifts}`, 20, 84);
-    doc.text(`Celkem směn: ${totalShifts}`, 20, 91);
-    doc.text(`Celkem hodin: ${totalShifts * 8}`, 20, 98);
+    await createStyledTable(doc, {
+      head: [['Typ směny', 'Počet', 'Podíl', 'Hodiny']],
+      body: [
+        ['Ranní směny', morningShifts.toString(), `${Math.round((morningShifts/totalShifts)*100)}%`, `${morningShifts * 8}h`],
+        ['Odpolední směny', afternoonShifts.toString(), `${Math.round((afternoonShifts/totalShifts)*100)}%`, `${afternoonShifts * 8}h`],
+        ['Noční směny', nightShifts.toString(), `${Math.round((nightShifts/totalShifts)*100)}%`, `${nightShifts * 8}h`],
+        ['CELKEM', totalShifts.toString(), '100%', `${totalHours}h`]
+      ]
+    }, currentY);
 
-    // Create table data for detailed shifts
-    const tableData = filteredShifts.map((shift: any) => {
-      const shiftDate = new Date(shift.date);
-      let shiftTypeText = "";
-      switch(shift.type) {
-        case "morning": shiftTypeText = "Ranní"; break;
-        case "afternoon": shiftTypeText = "Odpolední"; break;
-        case "night": shiftTypeText = "Noční"; break;
-      }
-      return [
-        format(shiftDate, "dd.MM.yyyy", { locale: cs }),
-        shiftTypeText,
-        shift.notes || "-"
-      ];
-    });
+    // Info box s dodatečnými statistikami
+    currentY = (doc as any).lastAutoTable.finalY + 10;
+    currentY = addInfoBox(
+      doc, 
+      `📊 Průměr: ${averagePerWeek} směn týdně | Odpracováno: ${totalHours} hodin | Výdělek (est.): ${totalHours * 150} Kč`, 
+      currentY, 
+      'info'
+    );
 
-    // Generate a file name for the PDF
-    const fileName = `smeny_${format(selectedMonth, "MM_yyyy")}.pdf`;
+    // Detailní přehled směn
+    if (filteredShifts.length > 0) {
+      currentY = addSection(doc, "Detailní přehled všech směn", currentY + 5);
+      
+      const detailTableData = filteredShifts
+        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+        .map((shift: any, index: number) => {
+          const shiftDate = new Date(shift.date);
+          const dayName = format(shiftDate, "EEEE", { locale: cs });
+          let shiftTypeText = "";
+          let timeRange = "";
+          
+          switch(shift.type) {
+            case "morning": 
+              shiftTypeText = "Ranní"; 
+              timeRange = "06:00 - 14:00";
+              break;
+            case "afternoon": 
+              shiftTypeText = "Odpolední"; 
+              timeRange = "14:00 - 22:00";
+              break;
+            case "night": 
+              shiftTypeText = "Noční"; 
+              timeRange = "22:00 - 06:00";
+              break;
+          }
+          
+          return [
+            (index + 1).toString(),
+            format(shiftDate, "dd.MM.yyyy", { locale: cs }),
+            dayName,
+            shiftTypeText,
+            timeRange,
+            shift.notes || "-"
+          ];
+        });
 
-    // Add table to PDF
-    const autoTable = await import("jspdf-autotable");
-    autoTable.default(doc, {
-      startY: 110,
-      head: [["Datum", "Typ směny", "Poznámka"]],
-      body: tableData,
-      theme: 'grid',
-      headStyles: { fillColor: [220, 0, 0], textColor: [255, 255, 255] },
-    });
-    
-    // Přidání standardní patičky
+      await createStyledTable(doc, {
+        head: [['#', 'Datum', 'Den', 'Typ', 'Čas', 'Poznámka']],
+        body: detailTableData
+      }, currentY, {
+        styles: { fontSize: 9 },
+        columnStyles: {
+          0: { halign: 'center', cellWidth: 10 },
+          1: { cellWidth: 25 },
+          2: { cellWidth: 25 },
+          3: { cellWidth: 25 },
+          4: { cellWidth: 30 },
+          5: { cellWidth: 'auto' }
+        }
+      });
+    } else {
+      currentY = addInfoBox(
+        doc, 
+        "ℹ️ V tomto měsíci nejsou evidovány žádné směny", 
+        currentY + 5, 
+        'warning'
+      );
+    }
+
+    // Přidání vylepšené patičky
     addDocumentFooter(doc);
 
-    // Save the PDF
+    // Generate filename
+    const fileName = `smeny_${format(selectedMonth, "MM_yyyy")}_enhanced.pdf`;
     doc.save(fileName);
 
-    // Return filename for success message
     return fileName;
   } catch (error) {
     console.error("Chyba při exportu do PDF:", error);
