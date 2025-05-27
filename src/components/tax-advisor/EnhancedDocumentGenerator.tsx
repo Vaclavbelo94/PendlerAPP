@@ -5,19 +5,21 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { FileText, Download, Trash2, Calendar, Info } from 'lucide-react';
+import { FileText, Download, Calendar, Info, Eye } from 'lucide-react';
 import { useAuth } from '@/hooks/auth';
 import { useTaxManagement } from '@/hooks/useTaxManagement';
 import { DocumentData } from '@/utils/tax/types';
 import { downloadEnhancedTaxDocument } from '@/utils/tax/enhancedPdfGenerator';
 import DocumentGeneratorForm from './DocumentGeneratorForm';
 import TaxNotifications from './TaxNotifications';
+import DocumentExamplesDialog from './DocumentExamplesDialog';
 
 const EnhancedDocumentGenerator = () => {
   const { user } = useAuth();
   const { documents, saveDocument, loadDocuments } = useTaxManagement();
   const [isGenerating, setIsGenerating] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [showExamplesDialog, setShowExamplesDialog] = useState(false);
   const [formState, setFormState] = useState({
     name: '',
     taxId: '',
@@ -100,6 +102,28 @@ const EnhancedDocumentGenerator = () => {
           </CardContent>
         </Card>
         
+        {/* Vzory dokumentů section for non-logged users */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Eye className="h-5 w-5" />
+              Vzory dokumentů
+            </CardTitle>
+            <CardDescription>
+              Ukázky dokumentů budou brzy k dispozici
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button 
+              onClick={() => setShowExamplesDialog(true)}
+              className="flex items-center gap-2"
+            >
+              <Eye className="h-4 w-4" />
+              Zobrazit příklady
+            </Button>
+          </CardContent>
+        </Card>
+        
         <TaxNotifications />
       </div>
     );
@@ -130,66 +154,96 @@ const EnhancedDocumentGenerator = () => {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <FileText className="h-5 w-5" />
-              Historie dokumentů
-            </CardTitle>
-            <CardDescription>
-              Vaše vygenerované daňové dokumenty
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {documents.length === 0 ? (
-                <Alert>
-                  <Info className="h-4 w-4" />
-                  <AlertDescription>
-                    Zatím jste nevygenerovali žádné dokumenty
-                  </AlertDescription>
-                </Alert>
-              ) : (
-                documents.map((document) => (
-                  <div key={document.id} className="border rounded-lg p-4">
-                    <div className="flex items-start justify-between mb-2">
-                      <div>
-                        <h4 className="font-medium text-sm">
-                          {document.document_data.documentType === 'steuererklaerung' && 'Daňové přiznání'}
-                          {document.document_data.documentType === 'pendlerbescheinigung' && 'Potvrzení o dojíždění'}
-                          {document.document_data.documentType === 'antrag-lohnsteuerermassigung' && 'Žádost o snížení daně ze mzdy'}
-                          {document.document_data.documentType === 'arbeitsmittelnachweis' && 'Potvrzení o pracovních prostředcích'}
-                        </h4>
-                        <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
-                          <Calendar className="h-3 w-3" />
-                          {new Date(document.created_at!).toLocaleDateString('cs-CZ')}
-                        </p>
+        <div className="space-y-6">
+          {/* Vzory dokumentů section */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Eye className="h-5 w-5" />
+                Vzory dokumentů
+              </CardTitle>
+              <CardDescription>
+                Prohlédněte si vzorové dokumenty s ukázkovými daty
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button 
+                onClick={() => setShowExamplesDialog(true)}
+                className="flex items-center gap-2"
+              >
+                <Eye className="h-4 w-4" />
+                Zobrazit příklady
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Historie dokumentů */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                Historie dokumentů
+              </CardTitle>
+              <CardDescription>
+                Vaše vygenerované daňové dokumenty
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {documents.length === 0 ? (
+                  <Alert>
+                    <Info className="h-4 w-4" />
+                    <AlertDescription>
+                      Zatím jste nevygenerovali žádné dokumenty
+                    </AlertDescription>
+                  </Alert>
+                ) : (
+                  documents.map((document) => (
+                    <div key={document.id} className="border rounded-lg p-4">
+                      <div className="flex items-start justify-between mb-2">
+                        <div>
+                          <h4 className="font-medium text-sm">
+                            {document.document_data.documentType === 'steuererklaerung' && 'Daňové přiznání'}
+                            {document.document_data.documentType === 'pendlerbescheinigung' && 'Potvrzení o dojíždění'}
+                            {document.document_data.documentType === 'antrag-lohnsteuerermassigung' && 'Žádost o snížení daně ze mzdy'}
+                            {document.document_data.documentType === 'arbeitsmittelnachweis' && 'Potvrzení o pracovních prostředcích'}
+                          </h4>
+                          <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
+                            <Calendar className="h-3 w-3" />
+                            {new Date(document.created_at!).toLocaleDateString('cs-CZ')}
+                          </p>
+                        </div>
+                        <Badge variant="secondary" className="text-xs">
+                          {document.document_data.yearOfTax}
+                        </Badge>
                       </div>
-                      <Badge variant="secondary" className="text-xs">
-                        {document.document_data.yearOfTax}
-                      </Badge>
+                      
+                      <Separator className="my-2" />
+                      
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleDocumentRegenerate(document.document_data)}
+                          className="flex items-center gap-1"
+                        >
+                          <Download className="h-3 w-3" />
+                          Stáhnout
+                        </Button>
+                      </div>
                     </div>
-                    
-                    <Separator className="my-2" />
-                    
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleDocumentRegenerate(document.document_data)}
-                        className="flex items-center gap-1"
-                      >
-                        <Download className="h-3 w-3" />
-                        Stáhnout
-                      </Button>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </CardContent>
-        </Card>
+                  ))
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
+
+      <DocumentExamplesDialog 
+        open={showExamplesDialog}
+        onOpenChange={setShowExamplesDialog}
+      />
     </div>
   );
 };
