@@ -1,16 +1,8 @@
 
 import React, { useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
-  Settings as SettingsIcon, 
-  User, 
-  Bell, 
-  Palette, 
-  Globe, 
-  Database,
-  Shield,
-  Smartphone
+  Settings as SettingsIcon
 } from 'lucide-react';
 import ProfileAppearance from '@/components/profile/ProfileAppearance';
 import GeneralSettings from '@/components/settings/GeneralSettings';
@@ -21,6 +13,7 @@ import DataSettings from '@/components/settings/DataSettings';
 import PrivacySettings from '@/components/settings/PrivacySettings';
 import DeviceSettings from '@/components/settings/DeviceSettings';
 import SecuritySettings from '@/components/settings/SecuritySettings';
+import SettingsNavigation from '@/components/settings/SettingsNavigation';
 import { useSyncSettings } from '@/hooks/useSyncSettings';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -28,20 +21,6 @@ const Settings = () => {
   const { settings: syncSettings, updateSettings: updateSyncSettings } = useSyncSettings();
   const isMobile = useIsMobile();
   const [activeTab, setActiveTab] = useState("general");
-
-  const primaryTabs = [
-    { id: "general", label: "Obecné", icon: SettingsIcon },
-    { id: "account", label: "Účet", icon: User },
-    { id: "appearance", label: "Vzhled", icon: Palette },
-    { id: "notifications", label: isMobile ? "Notif" : "Oznámení", icon: Bell }
-  ];
-
-  const secondaryTabs = [
-    { id: "language", label: "Jazyk", icon: Globe },
-    { id: "security", label: "Bezpečnost", icon: Shield },
-    { id: "device", label: "Zařízení", icon: Smartphone },
-    { id: "data", label: "Data", icon: Database }
-  ];
 
   return (
     <div className="container py-6 md:py-10 max-w-7xl">
@@ -56,55 +35,28 @@ const Settings = () => {
       </div>
 
       <div className="space-y-6">
-        {/* Primary tabs for mobile and desktop */}
-        <div className={`grid gap-2 ${isMobile ? 'grid-cols-2' : 'grid-cols-4'}`}>
-          {primaryTabs.map((tab) => {
-            const Icon = tab.icon;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 p-4 rounded-lg border transition-colors ${
-                  activeTab === tab.id 
-                    ? 'bg-primary text-primary-foreground' 
-                    : 'bg-card hover:bg-accent'
-                } ${isMobile ? 'flex-col text-center' : ''}`}
-              >
-                <Icon className={`${isMobile ? 'h-5 w-5' : 'h-4 w-4'}`} />
-                <span className={`${isMobile ? 'text-xs' : 'text-sm'} font-medium`}>
-                  {tab.label}
-                </span>
-              </button>
-            );
-          })}
+        {/* Primary navigation */}
+        <div>
+          <h3 className="text-lg font-semibold mb-4">Hlavní nastavení</h3>
+          <SettingsNavigation
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            variant="primary"
+          />
         </div>
 
-        {/* Secondary tabs */}
+        {/* Secondary navigation */}
         <div>
-          <h3 className="text-sm font-medium mb-3 text-muted-foreground">Další nastavení</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-            {secondaryTabs.map((tab) => {
-              const Icon = tab.icon;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 p-3 rounded-lg border transition-colors ${
-                    activeTab === tab.id 
-                      ? 'bg-primary text-primary-foreground' 
-                      : 'bg-card hover:bg-accent'
-                  } ${isMobile ? 'justify-center' : 'justify-start'}`}
-                >
-                  <Icon className="h-4 w-4" />
-                  <span className="text-sm font-medium">{tab.label}</span>
-                </button>
-              );
-            })}
-          </div>
+          <h3 className="text-lg font-semibold mb-4">Další nastavení</h3>
+          <SettingsNavigation
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            variant="secondary"
+          />
         </div>
 
         {/* Tab content */}
-        <div className="mt-6">
+        <div className="mt-8">
           {activeTab === "general" && <GeneralSettings />}
           {activeTab === "account" && <AccountSettings />}
           {activeTab === "appearance" && <ProfileAppearance />}
