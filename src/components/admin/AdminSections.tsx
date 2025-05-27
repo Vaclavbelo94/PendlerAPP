@@ -8,7 +8,6 @@ import AdminAnalyticsDashboard from "./analytics/AdminAnalyticsDashboard";
 import SystemMonitoringPanel from "./monitoring/SystemMonitoringPanel";
 import { UserManagement } from "./users/UserManagement";
 import UserActivityPanel from "./users/UserActivityPanel";
-import SystemLogsPanel from "./logs/SystemLogsPanel";
 import DatabasePanel from "./database/DatabasePanel";
 
 export const adminSections = [
@@ -89,7 +88,7 @@ export const adminSections = [
     title: "Systémové logy",
     description: "Monitoring a analýza systémových událostí",
     icon: <FileText className="h-6 w-6" />,
-    component: <SystemLogsPanel />,
+    component: <div className="p-4">Systémové logy - zatím nedostupné</div>,
     variant: "secondary" as const,
     category: "system"
   },
