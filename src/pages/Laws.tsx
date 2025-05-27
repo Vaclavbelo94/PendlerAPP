@@ -1,11 +1,10 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import PremiumCheck from '@/components/premium/PremiumCheck';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import LawsNavigation from '@/components/laws/LawsNavigation';
 import { 
   BookOpen, 
   FileText, 
@@ -173,51 +172,33 @@ const LawCard = ({ law }: { law: typeof lawItems[0] }) => (
 const Laws = () => {
   const [activeCategory, setActiveCategory] = useState("all");
 
+  const getFilteredLaws = () => {
+    if (activeCategory === "all") {
+      return lawItems;
+    }
+    return lawItems.filter(law => law.category === activeCategory);
+  };
+
   return (
     <PremiumCheck featureKey="laws">
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6">Přehled zákonů</h1>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold mb-2">Přehled zákonů</h1>
+          <p className="text-muted-foreground">
+            Kompletní přehled německých zákonů pro zahraniční pracovníky
+          </p>
+        </div>
         
-        <Tabs defaultValue="all" value={activeCategory} onValueChange={setActiveCategory} className="w-full">
-          <TabsList className="mb-6 flex flex-wrap gap-2 h-auto">
-            <TabsTrigger value="all" className="flex items-center gap-2">
-              <BookOpen className="h-4 w-4" />
-              <span>Vše</span>
-            </TabsTrigger>
-            
-            {lawCategories.map((category) => (
-              <TabsTrigger 
-                key={category.id} 
-                value={category.id}
-                className="flex items-center gap-2"
-              >
-                {category.icon}
-                <span className="hidden sm:inline">{category.label}</span>
-              </TabsTrigger>
-            ))}
-          </TabsList>
-          
-          <TabsContent value="all" className="mt-0">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {lawItems.map((law) => (
-                <LawCard key={law.id} law={law} />
-              ))}
-            </div>
-          </TabsContent>
-          
-          {lawCategories.map((category) => (
-            <TabsContent key={category.id} value={category.id} className="mt-0">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {lawItems
-                  .filter(law => law.category === category.id)
-                  .map(law => (
-                    <LawCard key={law.id} law={law} />
-                  ))
-                }
-              </div>
-            </TabsContent>
+        <LawsNavigation
+          activeCategory={activeCategory}
+          onCategoryChange={setActiveCategory}
+        />
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {getFilteredLaws().map((law) => (
+            <LawCard key={law.id} law={law} />
           ))}
-        </Tabs>
+        </div>
       </div>
     </PremiumCheck>
   );
