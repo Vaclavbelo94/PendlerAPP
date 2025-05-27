@@ -1,7 +1,5 @@
 
 import React, { useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Activity, Crown, Award } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsMobile, useOrientation } from "@/hooks/use-mobile";
 
@@ -10,6 +8,7 @@ import ProfileHeader from "@/components/profile/unified/ProfileHeader";
 import ProfileOverviewSection from "@/components/profile/unified/ProfileOverviewSection";
 import ProfileActivitySection from "@/components/profile/unified/ProfileActivitySection";
 import SubscriptionManagement from "@/components/profile/SubscriptionManagement";
+import ProfileNavigation from "@/components/profile/ProfileNavigation";
 
 const Profile = () => {
   const { user, isPremium } = useAuth();
@@ -31,6 +30,19 @@ const Profile = () => {
     );
   }
 
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case "overview":
+        return <ProfileOverviewSection />;
+      case "subscription":
+        return <SubscriptionManagement />;
+      case "activity":
+        return <ProfileActivitySection />;
+      default:
+        return <ProfileOverviewSection />;
+    }
+  };
+
   return (
     <div className={`container max-w-6xl ${
       isLandscapeMobile 
@@ -39,38 +51,16 @@ const Profile = () => {
     }`}>
       <ProfileHeader />
       
-      <Tabs value={activeTab} onValueChange={setActiveTab} className={isLandscapeMobile ? "mt-4" : "mt-8"}>
-        <TabsList className={`grid w-full grid-cols-3 ${
-          isLandscapeMobile 
-            ? 'h-8 text-xs' // Menší výška a text pro landscape
-            : ''
-        }`}>
-          <TabsTrigger value="overview" className="flex items-center gap-2">
-            <User className={isLandscapeMobile ? "h-3 w-3" : "h-4 w-4"} />
-            {isLandscapeMobile ? "Přehled" : "Přehled"}
-          </TabsTrigger>
-          <TabsTrigger value="subscription" className="flex items-center gap-2">
-            <Crown className={isLandscapeMobile ? "h-3 w-3" : "h-4 w-4"} />
-            {isLandscapeMobile ? "Premium" : "Předplatné"}
-          </TabsTrigger>
-          <TabsTrigger value="activity" className="flex items-center gap-2">
-            <Activity className={isLandscapeMobile ? "h-3 w-3" : "h-4 w-4"} />
-            Aktivita
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="overview" className={isLandscapeMobile ? "mt-3" : "mt-6"}>
-          <ProfileOverviewSection />
-        </TabsContent>
-
-        <TabsContent value="subscription" className={isLandscapeMobile ? "mt-3" : "mt-6"}>
-          <SubscriptionManagement />
-        </TabsContent>
-
-        <TabsContent value="activity" className={isLandscapeMobile ? "mt-3" : "mt-6"}>
-          <ProfileActivitySection />
-        </TabsContent>
-      </Tabs>
+      <div className={isLandscapeMobile ? "mt-4" : "mt-8"}>
+        <ProfileNavigation
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
+        
+        <div className={isLandscapeMobile ? "mt-3" : "mt-6"}>
+          {renderTabContent()}
+        </div>
+      </div>
     </div>
   );
 };
