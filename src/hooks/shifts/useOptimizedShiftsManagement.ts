@@ -1,5 +1,5 @@
 
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { useStandardizedToast } from '@/hooks/useStandardizedToast';
 import { useOptimizedNetworkStatus } from '@/hooks/useOptimizedNetworkStatus';
 import { optimizedErrorHandler } from '@/utils/optimizedErrorHandler';
@@ -34,12 +34,16 @@ export const useOptimizedShiftsManagement = (userId: string | undefined): UseOpt
   const [error, setError] = useState<string | null>(null);
   const { isOnline } = useOptimizedNetworkStatus();
   const loadingTimeoutRef = useRef<NodeJS.Timeout>();
+  const hasLoadedRef = useRef(false);
 
   const { success, error: showError } = useStandardizedToast();
 
-  // Load shifts with optimization
+  // Memoize cache key to prevent recalculation
+  const cacheKey = useMemo(() => userId ? `shifts_${userId}` : null, [userId]);
+
+  // Load shifts with optimization and proper dependency management
   const loadShifts = useCallback(async () => {
-    if (!userId) {
+    if (!userId || !cacheKey || hasLoadedRef.current) {
       setIsLoading(false);
       return;
     }
@@ -51,10 +55,10 @@ export const useOptimizedShiftsManagement = (userId: string | undefined): UseOpt
       // Set loading timeout
       loadingTimeoutRef.current = setTimeout(() => {
         setError('Načítání trvá příliš dlouho. Zkontrolujte připojení.');
-      }, 15000);
+        setIsLoading(false);
+      }, 10000);
 
       // Try to load from cache first if offline
-      const cacheKey = `shifts_${userId}`;
       if (!isOnline) {
         const cachedData = localStorage.getItem(cacheKey);
         if (cachedData) {
@@ -63,7 +67,7 @@ export const useOptimizedShiftsManagement = (userId: string | undefined): UseOpt
             ...shift,
             type: shift.type as 'morning' | 'afternoon' | 'night'
           })));
-          setIsLoading(false);
+          hasLoadedRef.current = true;
           return;
         }
       }
@@ -80,7 +84,7 @@ export const useOptimizedShiftsManagement = (userId: string | undefined): UseOpt
           return data;
         },
         `loadShifts_${userId}`,
-        { maxRetries: isOnline ? 3 : 0 }
+        { maxRetries: isOnline ? 2 : 0 }
       );
 
       const typedShifts = (data || []).map(shift => ({
@@ -89,9 +93,12 @@ export const useOptimizedShiftsManagement = (userId: string | undefined): UseOpt
       }));
 
       setShifts(typedShifts);
+      hasLoadedRef.current = true;
       
       // Cache data
-      localStorage.setItem(cacheKey, JSON.stringify(typedShifts));
+      if (cacheKey) {
+        localStorage.setItem(cacheKey, JSON.stringify(typedShifts));
+      }
 
     } catch (err) {
       const errorMessage = !isOnline 
@@ -101,15 +108,13 @@ export const useOptimizedShiftsManagement = (userId: string | undefined): UseOpt
       setError(errorMessage);
       errorHandler.handleError(err, { operation: 'loadShifts', userId });
       
-      if (!isOnline) {
+      if (!isOnline && cacheKey) {
         // Try to load cached data
-        const cachedData = localStorage.getItem(`shifts_${userId}`);
+        const cachedData = localStorage.getItem(cacheKey);
         if (cachedData) {
           const parsed = JSON.parse(cachedData);
           setShifts(parsed);
         }
-      } else {
-        showError('Chyba při načítání', errorMessage);
       }
     } finally {
       setIsLoading(false);
@@ -117,9 +122,9 @@ export const useOptimizedShiftsManagement = (userId: string | undefined): UseOpt
         clearTimeout(loadingTimeoutRef.current);
       }
     }
-  }, [userId, isOnline, showError]);
+  }, [userId, cacheKey, isOnline]); // Removed showError to prevent loops
 
-  // Add new shift with deduplication
+  // Stabilized add shift function
   const addShift = useCallback(async (shiftData: Omit<Shift, 'id' | 'user_id' | 'created_at' | 'updated_at'>): Promise<Shift | null> => {
     if (!userId) {
       showError('Chyba', 'Uživatel není přihlášen');
@@ -137,12 +142,6 @@ export const useOptimizedShiftsManagement = (userId: string | undefined): UseOpt
       };
 
       setShifts(prev => [tempShift, ...prev]);
-      
-      // Add to offline queue
-      const queue = JSON.parse(localStorage.getItem('offline_shifts_queue') || '[]');
-      queue.push({ action: 'CREATE', data: tempShift });
-      localStorage.setItem('offline_shifts_queue', JSON.stringify(queue));
-
       showError('Offline režim', 'Směna bude synchronizována při obnovení připojení');
       return tempShift;
     }
@@ -182,7 +181,7 @@ export const useOptimizedShiftsManagement = (userId: string | undefined): UseOpt
     }
   }, [userId, isOnline, success, showError]);
 
-  // Update shift with optimization
+  // Stabilized update shift function
   const updateShift = useCallback(async (shiftData: Shift): Promise<Shift | null> => {
     if (!userId || !shiftData.id) {
       showError('Chyba', 'Neplatná data směny');
@@ -230,7 +229,7 @@ export const useOptimizedShiftsManagement = (userId: string | undefined): UseOpt
     }
   }, [userId, success, showError]);
 
-  // Delete shift with optimization
+  // Stabilized delete shift function
   const deleteShift = useCallback(async (shiftId: string): Promise<void> => {
     if (!userId) {
       showError('Chyba', 'Uživatel není přihlášen');
@@ -264,16 +263,17 @@ export const useOptimizedShiftsManagement = (userId: string | undefined): UseOpt
   }, [userId, success, showError]);
 
   const refreshShifts = useCallback(async () => {
+    hasLoadedRef.current = false;
     optimizedErrorHandler.clearCache();
     await loadShifts();
   }, [loadShifts]);
 
-  // Load shifts on mount and when userId changes
+  // Load shifts only once when userId is available
   useEffect(() => {
-    if (userId) {
+    if (userId && !hasLoadedRef.current) {
       loadShifts();
     }
-  }, [loadShifts, userId]);
+  }, [userId, loadShifts]);
 
   // Cleanup timeout on unmount
   useEffect(() => {

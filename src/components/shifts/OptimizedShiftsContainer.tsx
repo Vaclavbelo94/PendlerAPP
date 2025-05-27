@@ -1,15 +1,21 @@
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useSimplifiedAuth } from '@/hooks/auth/useSimplifiedAuth';
 import { useOptimizedShiftsManagement } from '@/hooks/shifts/useOptimizedShiftsManagement';
 import { useOptimizedNetworkStatus } from '@/hooks/useOptimizedNetworkStatus';
+import { useDebouncedNavigation } from '@/hooks/useDebouncedNavigation';
 import FastLoadingSkeleton from './FastLoadingSkeleton';
 import ShiftsPageHeader from './ShiftsPageHeader';
-import ShiftsPageContent from './ShiftsPageContent';
 import ShiftsFormSheets from './ShiftsFormSheets';
+import OptimizedShiftCalendar from './OptimizedShiftCalendar';
+import OptimizedShiftsAnalytics from './OptimizedShiftsAnalytics';
+import ShiftsReports from './ShiftsReports';
+import ShiftsSettings from './ShiftsSettings';
+import EmptyShiftsState from './EmptyShiftsState';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, AlertCircle, Wifi, WifiOff } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { RefreshCw, AlertCircle, Wifi, WifiOff, Calendar, BarChart3, FileText, Settings } from 'lucide-react';
 
 const OptimizedShiftsContainer: React.FC = () => {
   const { user, isInitialized } = useSimplifiedAuth();
@@ -30,14 +36,21 @@ const OptimizedShiftsContainer: React.FC = () => {
     refreshShifts
   } = useOptimizedShiftsManagement(user?.id);
 
-  const handleAddShift = async (formData) => {
+  // Use debounced navigation to prevent rapid switching
+  const { handleSectionChange, isChanging } = useDebouncedNavigation({
+    onSectionChange: setActiveSection,
+    debounceMs: 200
+  });
+
+  // Stabilized callbacks
+  const handleAddShift = useCallback(async (formData) => {
     const newShift = await addShift(formData);
     if (newShift !== null) {
       setIsAddSheetOpen(false);
     }
-  };
+  }, [addShift]);
 
-  const handleEditShift = async (formData) => {
+  const handleEditShift = useCallback(async (formData) => {
     if (!editingShift) return;
     
     const updatedShift = await updateShift({ ...formData, id: editingShift.id });
@@ -45,18 +58,22 @@ const OptimizedShiftsContainer: React.FC = () => {
       setIsEditSheetOpen(false);
       setEditingShift(null);
     }
-  };
+  }, [editingShift, updateShift]);
 
-  const openEditDialog = (shift) => {
+  const openEditDialog = useCallback((shift) => {
     setEditingShift(shift);
     setIsEditSheetOpen(true);
-  };
+  }, []);
 
-  const handleRetry = async () => {
+  const handleRetry = useCallback(async () => {
     await refreshShifts();
-  };
+  }, [refreshShifts]);
 
-  // Show skeleton during initial load with fast timeout
+  const handleOpenAddSheet = useCallback(() => {
+    setIsAddSheetOpen(true);
+  }, []);
+
+  // Show skeleton during initial load
   if (!isInitialized || (isLoading && shifts.length === 0)) {
     return <FastLoadingSkeleton onRetry={handleRetry} timeoutMs={8000} />;
   }
@@ -75,9 +92,64 @@ const OptimizedShiftsContainer: React.FC = () => {
     );
   }
 
+  // Show empty state for new users
+  if (shifts.length === 0 && !isLoading) {
+    return (
+      <div className="container max-w-7xl mx-auto px-4">
+        <EmptyShiftsState onAddShift={handleOpenAddSheet} />
+        <ShiftsFormSheets
+          isAddSheetOpen={isAddSheetOpen}
+          setIsAddSheetOpen={setIsAddSheetOpen}
+          isEditSheetOpen={false}
+          setIsEditSheetOpen={() => {}}
+          editingShift={null}
+          setEditingShift={() => {}}
+          onAddShift={handleAddShift}
+          onEditShift={handleEditShift}
+          isSaving={isSaving}
+        />
+      </div>
+    );
+  }
+
+  const renderContent = () => {
+    if (isChanging) {
+      return (
+        <div className="flex items-center justify-center py-8">
+          <RefreshCw className="h-6 w-6 animate-spin text-muted-foreground" />
+        </div>
+      );
+    }
+
+    switch (activeSection) {
+      case 'calendar':
+        return (
+          <OptimizedShiftCalendar
+            shifts={shifts}
+            onEditShift={openEditDialog}
+            onDeleteShift={deleteShift}
+          />
+        );
+      case 'analytics':
+        return <OptimizedShiftsAnalytics shifts={shifts} />;
+      case 'reports':
+        return <ShiftsReports shifts={shifts} />;
+      case 'settings':
+        return <ShiftsSettings />;
+      default:
+        return (
+          <OptimizedShiftCalendar
+            shifts={shifts}
+            onEditShift={openEditDialog}
+            onDeleteShift={deleteShift}
+          />
+        );
+    }
+  };
+
   return (
     <div className="container max-w-7xl mx-auto px-4">
-      {/* Network status indicator */}
+      {/* Network status indicators */}
       {!isOnline && (
         <Alert className="mb-4 border-orange-200 bg-orange-50">
           <WifiOff className="h-4 w-4 text-orange-600" />
@@ -96,13 +168,11 @@ const OptimizedShiftsContainer: React.FC = () => {
         </Alert>
       )}
 
-      {/* Error state with quick retry */}
+      {/* Error state */}
       {error && (
         <Alert variant="destructive" className="mb-4">
           <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            {error}
-          </AlertDescription>
+          <AlertDescription>{error}</AlertDescription>
           <div className="mt-2">
             <Button 
               onClick={handleRetry} 
@@ -117,16 +187,35 @@ const OptimizedShiftsContainer: React.FC = () => {
         </Alert>
       )}
 
-      <ShiftsPageHeader onAddShift={() => setIsAddSheetOpen(true)} />
+      <ShiftsPageHeader onAddShift={handleOpenAddSheet} />
 
-      <ShiftsPageContent
-        activeSection={activeSection}
-        setActiveSection={setActiveSection}
-        shifts={shifts}
-        onEditShift={openEditDialog}
-        onDeleteShift={deleteShift}
-        onAddShift={() => setIsAddSheetOpen(true)}
-      />
+      {/* Navigation with debouncing */}
+      <Tabs value={activeSection} onValueChange={handleSectionChange} className="w-full">
+        <div className="flex justify-between items-center mb-6">
+          <TabsList className="grid w-full grid-cols-4 lg:w-auto">
+            <TabsTrigger value="calendar" className="flex items-center gap-2">
+              <Calendar className="h-4 w-4" />
+              <span className="hidden sm:inline">Kalendář</span>
+            </TabsTrigger>
+            <TabsTrigger value="analytics" className="flex items-center gap-2">
+              <BarChart3 className="h-4 w-4" />
+              <span className="hidden sm:inline">Analytika</span>
+            </TabsTrigger>
+            <TabsTrigger value="reports" className="flex items-center gap-2">
+              <FileText className="h-4 w-4" />
+              <span className="hidden sm:inline">Reporty</span>
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="flex items-center gap-2">
+              <Settings className="h-4 w-4" />
+              <span className="hidden sm:inline">Nastavení</span>
+            </TabsTrigger>
+          </TabsList>
+        </div>
+
+        <TabsContent value={activeSection} className="mt-0">
+          {renderContent()}
+        </TabsContent>
+      </Tabs>
 
       <ShiftsFormSheets
         isAddSheetOpen={isAddSheetOpen}
