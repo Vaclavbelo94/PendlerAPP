@@ -23,18 +23,9 @@ import { allLessons, Lesson, LessonVocabularyItem } from '@/data/germanLessonsCo
 import { useScreenOrientation } from '@/hooks/useScreenOrientation';
 import GamificationSummary from './GamificationSummary';
 import DailyChallenge from './DailyChallenge';
+import { pronounceWord, pronouncePhrase } from './utils/pronunciationHelper';
 
-// Helper function pro přehrání výslovnosti
-const pronounceWord = (word: string) => {
-  if ('speechSynthesis' in window) {
-    const utterance = new SpeechSynthesisUtterance(word);
-    utterance.lang = 'de-DE';
-    utterance.rate = 0.8; // Pomalejší tempo pro lepší porozumění
-    speechSynthesis.speak(utterance);
-  }
-};
-
-// Komponenta pro zobrazení jednoho slovíčka
+// Komponenta pro zobrazení jednoho slovíčka s vylepšenou audio podporou
 const VocabularyCard: React.FC<{ item: LessonVocabularyItem }> = ({ item }) => {
   const [showExample, setShowExample] = useState(false);
   
@@ -64,7 +55,7 @@ const VocabularyCard: React.FC<{ item: LessonVocabularyItem }> = ({ item }) => {
                 onClick={() => pronounceWord(item.german)}
               >
                 <Volume2 className="h-4 w-4" />
-                <span className="sr-only">Přečíst</span>
+                <span className="sr-only">Přečíst německy</span>
               </Button>
             </CardTitle>
             <CardDescription className="mt-1">
@@ -98,7 +89,7 @@ const VocabularyCard: React.FC<{ item: LessonVocabularyItem }> = ({ item }) => {
               variant="ghost" 
               size="sm" 
               className="h-6 px-2 text-xs" 
-              onClick={() => pronounceWord(item.example)}
+              onClick={() => pronouncePhrase(item.example)}
             >
               <Volume2 className="h-3 w-3 mr-1" />
               Přečíst příklad
