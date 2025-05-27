@@ -41,7 +41,7 @@ const VocabularyReviewCard: React.FC<VocabularyReviewCardProps> = ({
   const handleIncorrect = () => {
     setShowAnswer(false);
     setUserAnswer('');
-    onIncorrect();
+    onIncorrected();
   };
 
   const progress = ((totalItems - remainingItems) / totalItems) * 100;
@@ -70,11 +70,11 @@ const VocabularyReviewCard: React.FC<VocabularyReviewCardProps> = ({
         <div className="text-center space-y-4">
           <div className="space-y-2">
             <div className="flex items-center justify-center gap-3">
-              <h3 className="text-2xl font-bold">{item.german}</h3>
+              <h3 className="text-2xl font-bold">{item.word}</h3>
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => pronounceWord(item.german)}
+                onClick={() => pronounceWord(item.word)}
                 className="text-blue-600 hover:text-blue-800"
               >
                 <Volume2 className="h-5 w-5" />
@@ -109,11 +109,11 @@ const VocabularyReviewCard: React.FC<VocabularyReviewCardProps> = ({
           <div className="space-y-4">
             <div className="p-4 bg-muted rounded-lg text-center space-y-2">
               <div className="flex items-center justify-center gap-3">
-                <p className="text-xl font-semibold">{item.czech}</p>
+                <p className="text-xl font-semibold">{item.translation}</p>
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => pronounceCzech(item.czech)}
+                  onClick={() => pronounceCzech(item.translation)}
                   className="text-blue-600 hover:text-blue-800"
                 >
                   <Volume2 className="h-5 w-5" />

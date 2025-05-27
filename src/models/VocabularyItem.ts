@@ -1,10 +1,11 @@
-
 // Typový model pro položku slovní zásoby
 
 export interface VocabularyItem {
   id: string;
   word: string;
   translation: string;
+  german?: string; // Add german property for compatibility
+  czech?: string;  // Add czech property for compatibility
   example?: string;
   notes?: string;
   category?: string;

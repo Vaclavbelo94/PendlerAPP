@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -11,7 +10,7 @@ import {
   Star,
   Medal,
   Crown,
-  Fire
+  Flame
 } from "lucide-react";
 
 const GamificationSummary: React.FC = () => {
@@ -77,7 +76,7 @@ const GamificationSummary: React.FC = () => {
           {/* Série dní */}
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <Fire className="h-4 w-4 text-orange-500" />
+              <Flame className="h-4 w-4 text-orange-500" />
               <div>
                 <div className={`${useMobileLayout ? 'text-sm' : 'text-base'} font-semibold`}>
                   {streak} dní
