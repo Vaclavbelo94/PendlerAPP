@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { PromoCode, PromoCodeDB } from "../types";
 import { mapDbToPromoCode } from "../utils/promoCodeMappers";
@@ -33,8 +34,8 @@ export const fetchPromoCodes = async (): Promise<PromoCode[]> => {
     return mappedData;
   } catch (error) {
     console.error("Chyba při načítání promo kódů:", error);
-    toast.error("Nepodařilo se načíst promo kódy");
-    return [];
+    // Don't show toast here - let the calling component handle user feedback
+    throw error; // Re-throw to let caller handle the error
   }
 };
 
@@ -43,6 +44,8 @@ export const fetchPromoCodes = async (): Promise<PromoCode[]> => {
  */
 export const createPromoCode = async (promoCode: Omit<PromoCode, 'id' | 'usedCount' | 'created_at' | 'updated_at'>): Promise<PromoCode | null> => {
   try {
+    console.log("Creating new promo code:", promoCode);
+    
     const { data, error } = await supabase
       .from('promo_codes')
       .insert({
@@ -56,8 +59,11 @@ export const createPromoCode = async (promoCode: Omit<PromoCode, 'id' | 'usedCou
       .select() as { data: PromoCodeDB[] | null, error: any };
     
     if (error) {
+      console.error("Error creating promo code:", error);
       throw error;
     }
+    
+    console.log("Created promo code:", data);
     
     // Transform to our frontend type
     return data && data[0] ? mapDbToPromoCode(data[0]) : null;
@@ -73,6 +79,8 @@ export const createPromoCode = async (promoCode: Omit<PromoCode, 'id' | 'usedCou
  */
 export const updatePromoCode = async (id: string, updates: Partial<PromoCode>): Promise<PromoCode | null> => {
   try {
+    console.log("Updating promo code:", id, updates);
+    
     // Format the data for the database
     const dbUpdates: Partial<PromoCodeDB> = {};
     
@@ -89,8 +97,11 @@ export const updatePromoCode = async (id: string, updates: Partial<PromoCode>): 
       .select() as { data: PromoCodeDB[] | null, error: any };
     
     if (error) {
+      console.error("Error updating promo code:", error);
       throw error;
     }
+    
+    console.log("Updated promo code:", data);
     
     return data && data[0] ? mapDbToPromoCode(data[0]) : null;
   } catch (error) {
@@ -105,15 +116,19 @@ export const updatePromoCode = async (id: string, updates: Partial<PromoCode>): 
  */
 export const deletePromoCode = async (id: string): Promise<boolean> => {
   try {
+    console.log("Deleting promo code:", id);
+    
     const { error } = await supabase
       .from('promo_codes')
       .delete()
       .eq('id', id);
     
     if (error) {
+      console.error("Error deleting promo code:", error);
       throw error;
     }
     
+    console.log("Deleted promo code successfully");
     return true;
   } catch (error) {
     console.error("Chyba při mazání promo kódu:", error);

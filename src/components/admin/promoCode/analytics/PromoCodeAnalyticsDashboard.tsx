@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { toast } from "sonner";
 import { 
   ChartContainer, 
@@ -22,23 +22,56 @@ export const PromoCodeAnalyticsDashboard = () => {
   const [analytics, setAnalytics] = useState<PromoCodeAnalytics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [timeframe, setTimeframe] = useState<"week" | "month" | "year">("month");
+  
+  // Use ref to track if component is mounted
+  const isMountedRef = useRef(true);
+  const isLoadingRef = useRef(false);
 
-  useEffect(() => {
-    const loadAnalytics = async () => {
-      setIsLoading(true);
-      try {
-        const data = await fetchPromoCodeAnalytics(timeframe);
+  const loadAnalytics = useCallback(async (selectedTimeframe: "week" | "month" | "year") => {
+    // Prevent multiple simultaneous loading attempts
+    if (isLoadingRef.current || !isMountedRef.current) {
+      console.log("Analytics: Skipping load - already loading or component unmounted");
+      return;
+    }
+
+    console.log("Loading analytics data for timeframe:", selectedTimeframe);
+    isLoadingRef.current = true;
+    setIsLoading(true);
+    
+    try {
+      const data = await fetchPromoCodeAnalytics(selectedTimeframe);
+      if (isMountedRef.current) {
         setAnalytics(data);
-      } catch (error) {
-        console.error("Error fetching analytics data:", error);
+      }
+    } catch (error) {
+      console.error("Error fetching analytics data:", error);
+      if (isMountedRef.current) {
         toast.error("Nepodařilo se načíst analytická data");
-      } finally {
+      }
+    } finally {
+      if (isMountedRef.current) {
         setIsLoading(false);
       }
-    };
+      isLoadingRef.current = false;
+    }
+  }, []);
 
-    loadAnalytics();
-  }, [timeframe]);
+  useEffect(() => {
+    isMountedRef.current = true;
+    loadAnalytics(timeframe);
+
+    // Cleanup function
+    return () => {
+      console.log("PromoCodeAnalyticsDashboard unmounting - cleaning up");
+      isMountedRef.current = false;
+    };
+  }, [timeframe, loadAnalytics]);
+
+  const handleTimeframeChange = useCallback((value: string) => {
+    const newTimeframe = value as "week" | "month" | "year";
+    console.log("Timeframe changed to:", newTimeframe);
+    setTimeframe(newTimeframe);
+  }, []);
 
   if (!analytics && isLoading) {
     return <AnalyticsLoadingSkeleton />;
@@ -50,7 +83,7 @@ export const PromoCodeAnalyticsDashboard = () => {
         <h2 className="text-2xl font-bold">Analýza promo kódů</h2>
         <Tabs 
           value={timeframe} 
-          onValueChange={(value) => setTimeframe(value as "week" | "month" | "year")}
+          onValueChange={handleTimeframeChange}
           className="w-full sm:w-auto"
         >
           <TabsList className="grid w-full grid-cols-3">

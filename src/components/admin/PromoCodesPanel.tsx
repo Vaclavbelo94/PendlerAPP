@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useStandardizedToast } from "@/hooks/useStandardizedToast";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -22,89 +22,117 @@ export const PromoCodesPanel = () => {
   const [showDialog, setShowDialog] = useState(false);
   const [activeTab, setActiveTab] = useState("manage");
   const { success: showSuccess, error: showError } = useStandardizedToast();
+  
+  // Use ref to track if component is mounted and prevent multiple simultaneous loads
+  const isMountedRef = useRef(true);
+  const isLoadingRef = useRef(false);
 
-  useEffect(() => {
-    const loadPromoCodesData = async () => {
-      console.log("Starting to load promo codes...");
-      setIsLoading(true);
-      setLoadingError(null);
-      
-      try {
-        // First check if we need to migrate data from localStorage
-        const localData = localStorage.getItem("promoCodes");
-        if (localData) {
-          console.log("Found local promo codes data, attempting migration...");
-          try {
-            const migrated = await migratePromoCodesFromLocalStorage();
-            if (migrated) {
-              showSuccess("Úspěšně jsme přenesli vaše promo kódy");
-            }
-          } catch (migrationError) {
-            console.error("Migration failed:", migrationError);
-            // Continue even if migration fails
-          }
-        }
+  const loadPromoCodesData = useCallback(async () => {
+    // Prevent multiple simultaneous loading attempts
+    if (isLoadingRef.current || !isMountedRef.current) {
+      console.log("Skipping load - already loading or component unmounted");
+      return;
+    }
 
-        // Then load from Supabase
-        console.log("Loading promo codes from Supabase...");
-        const codes = await fetchPromoCodes();
-        console.log("Loaded promo codes:", codes);
-        setPromoCodes(codes);
-        
-        if (codes.length === 0) {
-          console.log("No promo codes found in database");
-        }
-        
-      } catch (error) {
-        console.error("Chyba při načítání promo kódů:", error);
-        setLoadingError("Nepodařilo se načíst promo kódy z databáze");
-        showError("Nepodařilo se načíst promo kódy");
-        
-        // Try to load from localStorage as fallback
+    console.log("Starting to load promo codes...");
+    isLoadingRef.current = true;
+    setIsLoading(true);
+    setLoadingError(null);
+    
+    try {
+      // First check if we need to migrate data from localStorage
+      const localData = localStorage.getItem("promoCodes");
+      if (localData && isMountedRef.current) {
+        console.log("Found local promo codes data, attempting migration...");
         try {
-          const localData = localStorage.getItem("promoCodes");
-          if (localData) {
-            const localCodes = JSON.parse(localData);
-            setPromoCodes(localCodes);
-            showSuccess("Načteny promo kódy z lokálního úložiště");
+          const migrated = await migratePromoCodesFromLocalStorage();
+          if (migrated && isMountedRef.current) {
+            showSuccess("Úspěšně jsme přenesli vaše promo kódy");
           }
-        } catch (localError) {
-          console.error("Failed to load from localStorage:", localError);
+        } catch (migrationError) {
+          console.error("Migration failed:", migrationError);
+          // Continue even if migration fails
         }
-      } finally {
+      }
+
+      // Then load from Supabase
+      if (!isMountedRef.current) return;
+      
+      console.log("Loading promo codes from Supabase...");
+      const codes = await fetchPromoCodes();
+      
+      if (!isMountedRef.current) return;
+      
+      console.log("Loaded promo codes:", codes);
+      setPromoCodes(codes);
+      
+      if (codes.length === 0) {
+        console.log("No promo codes found in database");
+      }
+      
+    } catch (error) {
+      if (!isMountedRef.current) return;
+      
+      console.error("Chyba při načítání promo kódů:", error);
+      setLoadingError("Nepodařilo se načíst promo kódy z databáze");
+      showError("Nepodařilo se načíst promo kódy");
+      
+      // Try to load from localStorage as fallback
+      try {
+        const localData = localStorage.getItem("promoCodes");
+        if (localData && isMountedRef.current) {
+          const localCodes = JSON.parse(localData);
+          setPromoCodes(localCodes);
+          showSuccess("Načteny promo kódy z lokálního úložiště");
+        }
+      } catch (localError) {
+        console.error("Failed to load from localStorage:", localError);
+      }
+    } finally {
+      if (isMountedRef.current) {
         setIsLoading(false);
       }
-    };
+      isLoadingRef.current = false;
+    }
+  }, []); // Remove showSuccess and showError from dependencies
 
+  useEffect(() => {
+    isMountedRef.current = true;
     loadPromoCodesData();
-  }, [showSuccess, showError]);
 
-  const handleCreatePromoCode = (newCode: PromoCode) => {
+    // Cleanup function
+    return () => {
+      console.log("PromoCodesPanel unmounting - cleaning up");
+      isMountedRef.current = false;
+    };
+  }, [loadPromoCodesData]);
+
+  const handleCreatePromoCode = useCallback((newCode: PromoCode) => {
     setPromoCodes(prevCodes => [newCode, ...prevCodes]);
-  };
+  }, []);
 
-  const handleDeletePromoCode = async (id: string) => {
+  const handleDeletePromoCode = useCallback(async (id: string) => {
     const success = await deletePromoCode(id);
-    if (success) {
+    if (success && isMountedRef.current) {
       setPromoCodes(prevCodes => prevCodes.filter(code => code.id !== id));
       showSuccess("Promo kód byl úspěšně smazán");
     }
-  };
+  }, [showSuccess]);
 
-  const resetUsageCount = async (id: string) => {
+  const resetUsageCount = useCallback(async (id: string) => {
     const promoCode = promoCodes.find(code => code.id === id);
     if (!promoCode) return;
 
     const updatedCode = await updatePromoCode(id, { usedCount: 0 });
-    if (updatedCode) {
+    if (updatedCode && isMountedRef.current) {
       setPromoCodes(prevCodes =>
         prevCodes.map(code => (code.id === id ? updatedCode : code))
       );
       showSuccess("Počet použití byl resetován");
     }
-  };
+  }, [promoCodes, showSuccess]);
 
-  const extendValidity = async (id: string) => {
+  const extendValidity = useCallback(async (id: string) => {
     const promoCode = promoCodes.find(code => code.id === id);
     if (!promoCode) return;
 
@@ -112,13 +140,13 @@ export const PromoCodesPanel = () => {
     newValidUntil.setMonth(newValidUntil.getMonth() + 3); // Extend by 3 months
 
     const updatedCode = await updatePromoCode(id, { validUntil: newValidUntil.toISOString() });
-    if (updatedCode) {
+    if (updatedCode && isMountedRef.current) {
       setPromoCodes(prevCodes =>
         prevCodes.map(code => (code.id === id ? updatedCode : code))
       );
       showSuccess("Platnost promo kódu byla prodloužena");
     }
-  };
+  }, [promoCodes, showSuccess]);
 
   return (
     <div className="space-y-4">
@@ -170,7 +198,7 @@ export const PromoCodesPanel = () => {
         </TabsContent>
 
         <TabsContent value="analytics">
-          <PromoCodeAnalyticsDashboard />
+          {activeTab === "analytics" && <PromoCodeAnalyticsDashboard />}
         </TabsContent>
       </Tabs>
 
