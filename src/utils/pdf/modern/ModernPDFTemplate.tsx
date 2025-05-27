@@ -1,29 +1,29 @@
 
 import React from 'react';
-import { Document, Page, View, Text, StyleSheet } from '@react-pdf/renderer';
+import { Document, Page, View, Text, StyleSheet, Image } from '@react-pdf/renderer';
 
-// Moderní color palette - vylepšená paleta
+// Professional color palette according to specifications
 export const MODERN_COLORS = {
-  primary: '#2563eb',      // Blue-600
-  secondary: '#64748b',    // Slate-500  
-  accent: '#f59e0b',       // Amber-500
-  success: '#10b981',      // Emerald-500
-  warning: '#f59e0b',      // Amber-500
-  error: '#ef4444',        // Red-500
+  primary: '#0073e6',        // Blue for headings
+  primaryLight: '#e6f3ff',   // Light blue for backgrounds
+  secondary: '#64748b',      // Slate for secondary text
   neutral: {
-    50: '#f8fafc',
-    100: '#f1f5f9',
-    200: '#e2e8f0',
-    300: '#cbd5e1',
-    400: '#94a3b8',
-    500: '#64748b',
-    600: '#475569',
-    700: '#334155',
-    800: '#1e293b',
-    900: '#0f172a'
+    50: '#f8fafc',           // Light grey backgrounds
+    100: '#f1f5f9',          // Section backgrounds
+    200: '#e2e8f0',          // Borders
+    300: '#cbd5e1',          // Light borders
+    400: '#94a3b8',          // Medium grey
+    500: '#64748b',          // Secondary text
+    600: '#475569',          // Dark secondary
+    700: '#334155',          // Main text color
+    800: '#1e293b',          // Dark text
+    900: '#0f172a'           // Darkest text
   },
   white: '#ffffff',
-  black: '#000000'
+  black: '#000000',
+  success: '#10b981',
+  warning: '#f59e0b',
+  error: '#ef4444'
 };
 
 const styles = StyleSheet.create({
@@ -31,81 +31,74 @@ const styles = StyleSheet.create({
     fontFamily: 'Helvetica',
     fontSize: 11,
     paddingTop: 0,
-    paddingBottom: 30,
+    paddingBottom: 40,
     paddingHorizontal: 0,
     backgroundColor: MODERN_COLORS.white,
-    color: MODERN_COLORS.neutral[800],
-    lineHeight: 1.4
+    color: MODERN_COLORS.neutral[700],
+    lineHeight: 1.5
   },
   header: {
     backgroundColor: MODERN_COLORS.primary,
-    paddingVertical: 25,
-    paddingHorizontal: 40,
-    marginBottom: 35
-  },
-  headerContent: {
+    paddingVertical: 20,
+    paddingHorizontal: 30,
+    marginBottom: 30,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center'
   },
-  brandSection: {
-    flexDirection: 'column'
+  logoSection: {
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  logo: {
+    width: 40,
+    height: 40,
+    marginRight: 12
   },
   brandText: {
     color: MODERN_COLORS.white
   },
   brandTitle: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 4,
-    letterSpacing: '0.5px'
+    marginBottom: 2
   },
   brandSubtitle: {
-    fontSize: 11,
-    opacity: 0.9,
-    fontStyle: 'italic'
+    fontSize: 10,
+    opacity: 0.9
   },
   headerInfo: {
     color: MODERN_COLORS.white,
     textAlign: 'right'
   },
   dateText: {
-    fontSize: 10,
-    opacity: 0.85,
-    marginBottom: 3
-  },
-  timeText: {
-    fontSize: 10,
-    opacity: 0.85
+    fontSize: 9,
+    opacity: 0.9,
+    marginBottom: 2
   },
   titleSection: {
-    paddingHorizontal: 40,
-    marginBottom: 30,
+    paddingHorizontal: 30,
+    marginBottom: 25,
     textAlign: 'center'
   },
   documentTitle: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: 'bold',
-    color: MODERN_COLORS.neutral[900],
-    marginBottom: 10,
-    letterSpacing: '0.3px'
+    color: MODERN_COLORS.primary,
+    marginBottom: 8
   },
   documentSubtitle: {
-    fontSize: 13,
-    color: MODERN_COLORS.neutral[600],
-    fontStyle: 'italic'
+    fontSize: 12,
+    color: MODERN_COLORS.neutral[600]
   },
   separator: {
-    height: 3,
+    height: 2,
     backgroundColor: MODERN_COLORS.primary,
-    marginHorizontal: 40,
-    marginBottom: 30,
-    borderRadius: 2,
-    // Gradient effect simulation
-    boxShadow: `0 2px 4px ${MODERN_COLORS.primary}40`
+    marginHorizontal: 30,
+    marginBottom: 25
   },
   content: {
-    paddingHorizontal: 40,
+    paddingHorizontal: 30,
     flex: 1
   },
   footer: {
@@ -113,10 +106,10 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: MODERN_COLORS.neutral[50],
-    paddingVertical: 15,
-    paddingHorizontal: 40,
-    borderTopWidth: 2,
+    backgroundColor: MODERN_COLORS.neutral[100],
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderTopWidth: 1,
     borderTopColor: MODERN_COLORS.neutral[200]
   },
   footerContent: {
@@ -125,23 +118,27 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   footerText: {
-    fontSize: 9,
+    fontSize: 8,
     color: MODERN_COLORS.neutral[500]
   },
   pageNumber: {
-    fontSize: 9,
+    fontSize: 8,
     color: MODERN_COLORS.neutral[600],
     fontWeight: 'bold'
   },
-  watermark: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%) rotate(-45deg)',
-    fontSize: 60,
-    color: MODERN_COLORS.neutral[100],
-    opacity: 0.1,
-    zIndex: -1
+  signature: {
+    marginTop: 30,
+    padding: 15,
+    backgroundColor: MODERN_COLORS.neutral[50],
+    borderLeftWidth: 3,
+    borderLeftColor: MODERN_COLORS.primary,
+    borderRadius: 4
+  },
+  signatureText: {
+    fontSize: 9,
+    color: MODERN_COLORS.neutral[600],
+    lineHeight: 1.4,
+    textAlign: 'center'
   }
 });
 
@@ -149,14 +146,12 @@ interface ModernPDFTemplateProps {
   title: string;
   subtitle?: string;
   children: React.ReactNode;
-  showWatermark?: boolean;
 }
 
 export const ModernPDFTemplate: React.FC<ModernPDFTemplateProps> = ({ 
   title, 
   subtitle, 
-  children,
-  showWatermark = false
+  children
 }) => {
   const currentDate = new Date();
   const dateStr = currentDate.toLocaleDateString('cs-CZ', {
@@ -172,52 +167,53 @@ export const ModernPDFTemplate: React.FC<ModernPDFTemplateProps> = ({
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {/* Optional Watermark */}
-        {showWatermark && (
-          <Text style={styles.watermark}>PendlerApp</Text>
-        )}
-
-        {/* Modern Header */}
+        {/* Professional Header with Logo */}
         <View style={styles.header}>
-          <View style={styles.headerContent}>
-            <View style={styles.brandSection}>
-              <View style={styles.brandText}>
-                <Text style={styles.brandTitle}>PendlerApp</Text>
-                <Text style={styles.brandSubtitle}>Profesionální řešení pro české pendlery</Text>
-              </View>
+          <View style={styles.logoSection}>
+            <View style={styles.brandText}>
+              <Text style={styles.brandTitle}>PendlerApp</Text>
+              <Text style={styles.brandSubtitle}>Profesionální řešení pro české pendlery</Text>
             </View>
-            <View style={styles.headerInfo}>
-              <Text style={styles.dateText}>{dateStr}</Text>
-              <Text style={styles.timeText}>{timeStr}</Text>
-            </View>
+          </View>
+          <View style={styles.headerInfo}>
+            <Text style={styles.dateText}>{dateStr}</Text>
+            <Text style={styles.dateText}>{timeStr}</Text>
           </View>
         </View>
 
-        {/* Title Section */}
+        {/* Document Title */}
         <View style={styles.titleSection}>
           <Text style={styles.documentTitle}>{title}</Text>
           {subtitle && <Text style={styles.documentSubtitle}>{subtitle}</Text>}
         </View>
 
-        {/* Modern Separator */}
+        {/* Blue Separator */}
         <View style={styles.separator} />
 
         {/* Content */}
         <View style={styles.content}>
           {children}
+          
+          {/* Signature Note */}
+          <View style={styles.signature}>
+            <Text style={styles.signatureText}>
+              Tento dokument byl vygenerován systémem PendlerApp dne {dateStr}. {'\n'}
+              Pro dotazy kontaktujte www.pendlerapp.cz
+            </Text>
+          </View>
         </View>
 
-        {/* Enhanced Footer */}
+        {/* Professional Footer */}
         <View style={styles.footer}>
           <View style={styles.footerContent}>
             <Text style={styles.footerText}>
-              PendlerApp © {currentDate.getFullYear()} | www.pendlerapp.cz | info@pendlerapp.cz
+              PendlerApp © 2025 | www.pendlerapp.cz | info@pendlerapp.cz
             </Text>
             <Text style={styles.pageNumber} render={({ pageNumber, totalPages }) => 
               `Strana ${pageNumber} z ${totalPages}`
             } />
             <Text style={styles.footerText}>
-              Vygenerováno: {currentDate.toLocaleDateString('cs-CZ')} {currentDate.toLocaleTimeString('cs-CZ')}
+              Vygenerováno: {currentDate.toLocaleDateString('cs-CZ')}
             </Text>
           </View>
         </View>

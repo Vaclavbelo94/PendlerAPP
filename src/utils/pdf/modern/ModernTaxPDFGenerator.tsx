@@ -12,7 +12,7 @@ interface ModernTaxDocumentProps {
 
 const ModernTaxDocument: React.FC<ModernTaxDocumentProps> = ({ data }) => {
   const documentTitle = getDocumentTitle(data.documentType);
-  const subtitle = `Zdaňovací období: ${data.yearOfTax} • Profesionální příprava`;
+  const subtitle = `Zdaňovací období: ${data.yearOfTax}`;
 
   // Calculate deductions
   const deductions = [];
@@ -50,13 +50,13 @@ const ModernTaxDocument: React.FC<ModernTaxDocumentProps> = ({ data }) => {
     { label: 'Celkem odpočet', value: `${totalDeductions.toFixed(0)} €` },
     { label: 'Odhadovaná úspora', value: `${estimatedSaving.toFixed(0)} €` },
     { label: 'Daňová sazba', value: '25%' },
-    { label: 'Roční benefit', value: `${(estimatedSaving * 12).toFixed(0)} €` }
+    { label: 'Roční benefit', value: `${estimatedSaving.toFixed(0)} €` }
   ];
 
   return (
     <ModernPDFTemplate title={documentTitle} subtitle={subtitle}>
       {/* Personal Information */}
-      <ModernSection title="👤 Osobní údaje">
+      <ModernSection title="Osobní údaje">
         <ModernTable
           headers={['Položka', 'Hodnota']}
           data={[
@@ -71,7 +71,7 @@ const ModernTaxDocument: React.FC<ModernTaxDocumentProps> = ({ data }) => {
 
       {/* Employment Information */}
       {(data.employerName || data.incomeAmount) && (
-        <ModernSection title="💼 Údaje o zaměstnání">
+        <ModernSection title="Údaje o zaměstnání">
           <ModernTable
             headers={['Položka', 'Hodnota']}
             data={[
@@ -83,42 +83,37 @@ const ModernTaxDocument: React.FC<ModernTaxDocumentProps> = ({ data }) => {
       )}
 
       {/* Deductible Items */}
-      <ModernSection title="💰 Odpočitatelné položky">
+      <ModernSection title="Odpočitatelné položky">
         {deductions.length > 0 ? (
           <>
             <ModernTable
               headers={['Položka', 'Výpočet', 'Částka (€)']}
-              data={[...deductions, ['', 'CELKEM ODPOČET', `${totalDeductions.toFixed(2)} €`]]}
+              data={[...deductions, ['CELKEM ODPOČET', '', `${totalDeductions.toFixed(2)} €`]]}
             />
             
             <ModernStatsGrid stats={statsData} />
             
             <ModernInfoBox type="success">
-              🎯 Profesionální tip: S těmito odpočty můžete ušetřit až {estimatedSaving.toFixed(2)} € ročně na dani. 
+              S těmito odpočty můžete ušetřit až {estimatedSaving.toFixed(2)} € ročně na dani. 
               Nezapomeňte si připravit všechny potřebné doklady před podáním daňového přiznání.
             </ModernInfoBox>
           </>
         ) : (
           <ModernInfoBox type="warning">
-            ℹ️ Nebyly vybrány žádné odpočitatelné položky. Pro optimalizaci daní zvažte využití dostupných odpočtů.
+            Nebyly vybrány žádné odpočitatelné položky. Pro optimalizaci daní zvažte využití dostupných odpočtů.
           </ModernInfoBox>
         )}
       </ModernSection>
 
       {/* Additional Notes */}
       {data.additionalNotes && (
-        <ModernSection title="📝 Doplňující poznámky">
+        <ModernSection title="Doplňující poznámky">
           <ModernTable
             headers={['Poznámky a dodatečné informace']}
             data={[[data.additionalNotes]]}
           />
         </ModernSection>
       )}
-
-      <ModernInfoBox>
-        📋 Dokument byl vygenerován systémem PendlerApp dne {new Date().toLocaleDateString('cs-CZ')} v {new Date().toLocaleTimeString('cs-CZ')}.
-        Pro jakékoliv dotazy kontaktujte náš tým na www.pendlerapp.cz
-      </ModernInfoBox>
     </ModernPDFTemplate>
   );
 };
@@ -149,12 +144,9 @@ export const downloadModernTaxDocument = async (data: DocumentData): Promise<voi
     
     console.log('Stahování souboru:', filename);
     
-    // Přidáme link do DOM, klikneme a odstraníme
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    
-    // Vyčistíme URL
     URL.revokeObjectURL(url);
     
     console.log('PDF dokument úspěšně stažen');

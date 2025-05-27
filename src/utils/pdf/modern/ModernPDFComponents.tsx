@@ -6,61 +6,72 @@ import { MODERN_COLORS } from './ModernPDFTemplate';
 const styles = StyleSheet.create({
   section: {
     marginBottom: 20,
-    pageBreakInside: false
+    backgroundColor: MODERN_COLORS.neutral[50],
+    padding: 15,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: MODERN_COLORS.neutral[200]
   },
   sectionTitle: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
     color: MODERN_COLORS.primary,
     marginBottom: 12,
-    paddingBottom: 4,
+    paddingBottom: 6,
     borderBottomWidth: 1,
-    borderBottomColor: MODERN_COLORS.neutral[200]
+    borderBottomColor: MODERN_COLORS.primary
   },
   table: {
-    marginBottom: 12
+    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: MODERN_COLORS.neutral[200],
+    borderRadius: 4
   },
   tableHeader: {
     flexDirection: 'row',
-    backgroundColor: MODERN_COLORS.neutral[100],
-    borderBottomWidth: 1,
-    borderBottomColor: MODERN_COLORS.neutral[300],
-    paddingVertical: 8,
-    paddingHorizontal: 10
+    backgroundColor: MODERN_COLORS.primary,
+    paddingVertical: 10,
+    paddingHorizontal: 12
   },
   tableHeaderCell: {
     flex: 1,
     fontSize: 10,
     fontWeight: 'bold',
-    color: MODERN_COLORS.neutral[700]
+    color: MODERN_COLORS.white,
+    textAlign: 'center'
   },
   tableRow: {
     flexDirection: 'row',
     borderBottomWidth: 0.5,
     borderBottomColor: MODERN_COLORS.neutral[200],
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    minHeight: 24
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    minHeight: 28
+  },
+  tableRowEven: {
+    backgroundColor: MODERN_COLORS.neutral[50]
   },
   tableCell: {
     flex: 1,
     fontSize: 10,
     color: MODERN_COLORS.neutral[700],
-    paddingRight: 8
+    paddingRight: 8,
+    textAlign: 'center'
   },
   tableCellBold: {
     flex: 1,
     fontSize: 10,
     fontWeight: 'bold',
     color: MODERN_COLORS.neutral[800],
-    paddingRight: 8
+    paddingRight: 8,
+    textAlign: 'center'
   },
   infoBox: {
-    backgroundColor: MODERN_COLORS.neutral[50],
+    backgroundColor: MODERN_COLORS.primaryLight,
     borderLeftWidth: 4,
     borderLeftColor: MODERN_COLORS.primary,
     padding: 12,
-    marginVertical: 8,
+    marginVertical: 10,
     borderRadius: 4
   },
   infoBoxSuccess: {
@@ -79,8 +90,8 @@ const styles = StyleSheet.create({
   statsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginVertical: 12,
-    gap: 8
+    marginVertical: 15,
+    gap: 10
   },
   statCard: {
     flex: 1,
@@ -88,15 +99,19 @@ const styles = StyleSheet.create({
     backgroundColor: MODERN_COLORS.white,
     borderWidth: 1,
     borderColor: MODERN_COLORS.neutral[200],
-    padding: 12,
-    borderRadius: 4,
-    alignItems: 'center'
+    padding: 15,
+    borderRadius: 6,
+    alignItems: 'center',
+    shadowColor: MODERN_COLORS.neutral[400],
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2
   },
   statValue: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
     color: MODERN_COLORS.primary,
-    marginBottom: 4
+    marginBottom: 6
   },
   statLabel: {
     fontSize: 9,
@@ -139,12 +154,18 @@ export const ModernTable: React.FC<ModernTableProps> = ({ headers, data, columnW
       ))}
     </View>
     {data.map((row, rowIndex) => (
-      <View key={rowIndex} style={styles.tableRow}>
+      <View 
+        key={rowIndex} 
+        style={[
+          styles.tableRow,
+          rowIndex % 2 === 1 && styles.tableRowEven
+        ]}
+      >
         {row.map((cell, cellIndex) => (
           <Text 
             key={cellIndex} 
             style={[
-              rowIndex === data.length - 1 && cell.toString().includes('CELKEM') ? styles.tableCellBold : styles.tableCell,
+              cell.toString().includes('CELKEM') ? styles.tableCellBold : styles.tableCell,
               columnWidths && { width: columnWidths[cellIndex] }
             ]}
           >

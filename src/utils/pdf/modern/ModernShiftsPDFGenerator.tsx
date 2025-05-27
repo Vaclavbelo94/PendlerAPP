@@ -53,61 +53,30 @@ const ModernShiftsDocument: React.FC<ModernShiftsDocumentProps> = ({ user, selec
   ];
 
   const breakdownData = [
-    ['🌅 Ranní směny', morningShifts.toString(), `${totalShifts > 0 ? Math.round((morningShifts/totalShifts)*100) : 0}%`, `${morningShifts * 8}h`],
-    ['☀️ Odpolední směny', afternoonShifts.toString(), `${totalShifts > 0 ? Math.round((afternoonShifts/totalShifts)*100) : 0}%`, `${afternoonShifts * 8}h`],
-    ['🌙 Noční směny', nightShifts.toString(), `${totalShifts > 0 ? Math.round((nightShifts/totalShifts)*100) : 0}%`, `${nightShifts * 8}h`],
-    ['', '', '', ''],
-    ['📊 CELKEM', totalShifts.toString(), '100%', `${totalHours}h`]
+    ['Ranní směny', morningShifts.toString(), `${totalShifts > 0 ? Math.round((morningShifts/totalShifts)*100) : 0}%`, `${morningShifts * 8}h`],
+    ['Odpolední směny', afternoonShifts.toString(), `${totalShifts > 0 ? Math.round((afternoonShifts/totalShifts)*100) : 0}%`, `${afternoonShifts * 8}h`],
+    ['Noční směny', nightShifts.toString(), `${totalShifts > 0 ? Math.round((nightShifts/totalShifts)*100) : 0}%`, `${nightShifts * 8}h`],
+    ['CELKEM', totalShifts.toString(), '100%', `${totalHours}h`]
   ];
-
-  // Group shifts by weeks for better overview
-  const shiftsByWeek = filteredShifts.reduce((acc, shift) => {
-    const shiftDate = new Date(shift.date);
-    const weekStart = new Date(shiftDate);
-    weekStart.setDate(shiftDate.getDate() - shiftDate.getDay() + 1); // Monday as start
-    const weekKey = format(weekStart, 'yyyy-MM-dd');
-    
-    if (!acc[weekKey]) {
-      acc[weekKey] = [];
-    }
-    acc[weekKey].push(shift);
-    return acc;
-  }, {} as Record<string, Shift[]>);
-
-  const weeklyData = Object.entries(shiftsByWeek).map(([weekStart, weekShifts]) => {
-    const weekStartDate = new Date(weekStart);
-    const weekEndDate = new Date(weekStartDate);
-    weekEndDate.setDate(weekStartDate.getDate() + 6);
-    
-    return [
-      `${format(weekStartDate, 'dd.MM')} - ${format(weekEndDate, 'dd.MM')}`,
-      weekShifts.length.toString(),
-      `${weekShifts.length * 8}h`,
-      `${weekShifts.length * 18 * 8}€`
-    ];
-  });
 
   let performanceMessage = "";
   let performanceType: 'success' | 'warning' | 'default' = 'default';
   
   if (averagePerWeek >= 4.5) {
-    performanceMessage = `🎯 Výjimečný výkon! S průměrem ${averagePerWeek} směn týdně dosahujete nadstandardních výsledků. Pokračujte v tomto tempu!`;
+    performanceMessage = `Výjimečný výkon! S průměrem ${averagePerWeek} směn týdně dosahujete nadstandardních výsledků.`;
     performanceType = 'success';
   } else if (averagePerWeek >= 3.5) {
-    performanceMessage = `👍 Dobrý pracovní rytmus! Průměr ${averagePerWeek} směn týdně je solidní základ pro stabilní příjem.`;
+    performanceMessage = `Dobrý pracovní rytmus! Průměr ${averagePerWeek} směn týdně je solidní základ.`;
     performanceType = 'default';
-  } else if (averagePerWeek >= 2) {
-    performanceMessage = `📈 Prostor pro zlepšení. Zvážte zvýšení počtu směn pro optimalizaci příjmů a kariérního růstu.`;
-    performanceType = 'warning';
   } else {
-    performanceMessage = `🚀 Začínáte? Postupně zvyšujte počet směn pro dosažení stabilního měsíčního příjmu.`;
+    performanceMessage = `Prostor pro zlepšení. Zvažte zvýšení počtu směn pro optimalizaci příjmů.`;
     performanceType = 'warning';
   }
 
   return (
     <ModernPDFTemplate title={title} subtitle={subtitle}>
-      {/* Executive Summary */}
-      <ModernSection title="📈 Exekutivní souhrn">
+      {/* Statistiky */}
+      <ModernSection title="Souhrn měsíce">
         <ModernStatsGrid stats={statsData} />
         
         <ModernInfoBox type={performanceType}>
@@ -115,62 +84,36 @@ const ModernShiftsDocument: React.FC<ModernShiftsDocumentProps> = ({ user, selec
         </ModernInfoBox>
       </ModernSection>
 
-      {/* Shift Distribution Analysis */}
-      <ModernSection title="📊 Analýza rozložení směn">
+      {/* Rozložení směn */}
+      <ModernSection title="Analýza směn">
         <ModernTable
           headers={['Typ směny', 'Počet', 'Podíl (%)', 'Celkem hodin']}
           data={breakdownData}
         />
       </ModernSection>
 
-      {/* Weekly Breakdown */}
-      {weeklyData.length > 0 && (
-        <ModernSection title="📅 Týdenní přehled">
-          <ModernTable
-            headers={['Týden', 'Směny', 'Hodiny', 'Odhadovaný výdělek']}
-            data={weeklyData}
-          />
-        </ModernSection>
-      )}
-
-      {/* Detailed Shifts Timeline */}
+      {/* Detail směn */}
       {filteredShifts.length > 0 ? (
-        <ModernSection title="🗓️ Chronologický přehled směn">
+        <ModernSection title="Chronologický přehled směn">
           <ModernTable
-            headers={['Datum', 'Den', 'Typ směny', 'Pracovní doba', 'Poznámka']}
+            headers={['Datum', 'Den', 'Typ směny', 'Poznámka']}
             data={filteredShifts
               .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
               .map((shift: Shift) => {
                 const shiftDate = new Date(shift.date);
                 const dayName = format(shiftDate, "EEEE", { locale: cs });
                 
-                let shiftIcon = "";
                 let shiftLabel = "";
-                let timeRange = "";
-                
                 switch(shift.type) {
-                  case "morning": 
-                    shiftIcon = "🌅";
-                    shiftLabel = "Ranní"; 
-                    timeRange = "06:00 - 14:00";
-                    break;
-                  case "afternoon": 
-                    shiftIcon = "☀️";
-                    shiftLabel = "Odpolední"; 
-                    timeRange = "14:00 - 22:00";
-                    break;
-                  case "night": 
-                    shiftIcon = "🌙";
-                    shiftLabel = "Noční"; 
-                    timeRange = "22:00 - 06:00";
-                    break;
+                  case "morning": shiftLabel = "Ranní"; break;
+                  case "afternoon": shiftLabel = "Odpolední"; break;
+                  case "night": shiftLabel = "Noční"; break;
                 }
                 
                 return [
                   format(shiftDate, "dd.MM.yyyy", { locale: cs }),
                   dayName,
-                  `${shiftIcon} ${shiftLabel}`,
-                  timeRange,
+                  shiftLabel,
                   shift.notes || "—"
                 ];
               })
@@ -178,31 +121,17 @@ const ModernShiftsDocument: React.FC<ModernShiftsDocumentProps> = ({ user, selec
           />
           
           <ModernInfoBox type="success">
-            📋 Zobrazeno celkem {filteredShifts.length} směn za období {format(selectedMonth, "LLLL yyyy", { locale: cs })}. 
-            Průměrná denní pracovní doba: 8 hodin. Celkový objem práce: {totalHours} hodin.
+            Zobrazeno celkem {filteredShifts.length} směn za období {format(selectedMonth, "LLLL yyyy", { locale: cs })}. 
+            Celkový objem práce: {totalHours} hodin.
           </ModernInfoBox>
         </ModernSection>
       ) : (
-        <ModernSection title="🗓️ Přehled směn">
+        <ModernSection title="Přehled směn">
           <ModernInfoBox type="warning">
-            📭 Pro vybrané období {format(selectedMonth, "LLLL yyyy", { locale: cs })} nejsou evidovány žádné směny. 
-            Použijte aplikaci PendlerApp pro plánování a evidenci vašich pracovních směn.
+            Pro vybrané období {format(selectedMonth, "LLLL yyyy", { locale: cs })} nejsou evidovány žádné směny.
           </ModernInfoBox>
         </ModernSection>
       )}
-
-      {/* Recommendations */}
-      <ModernSection title="💡 Doporučení a tipy">
-        <ModernInfoBox>
-          🎯 <strong>Optimalizace výkonu:</strong> Pro maximální efektivitu doporučujeme udržovat pravidelný rytmus 4-5 směn týdně. 
-          Kombinace různých typů směn pomáhá udržet flexibilitu a vyšší celkový příjem.
-        </ModernInfoBox>
-        
-        <ModernInfoBox>
-          📊 <strong>Sledování trendů:</strong> Pravidelně kontrolujte své statistiky v aplikaci PendlerApp. 
-          Měsíční reporty vám pomohou identifikovat nejproduktivnější období a optimalizovat plánování.
-        </ModernInfoBox>
-      </ModernSection>
     </ModernPDFTemplate>
   );
 };
