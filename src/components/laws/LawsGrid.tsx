@@ -8,7 +8,8 @@ interface LawItem {
   description: string;
   category: string;
   updated: string;
-  icon: React.ReactNode;
+  iconName: string;
+  iconColor: string;
   path: string;
 }
 
