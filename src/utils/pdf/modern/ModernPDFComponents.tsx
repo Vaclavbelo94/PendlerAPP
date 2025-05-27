@@ -5,87 +5,96 @@ import { MODERN_COLORS } from './ModernPDFTemplate';
 
 const styles = StyleSheet.create({
   section: {
-    marginBottom: 20
-  },
-  sectionHeader: {
-    backgroundColor: MODERN_COLORS.neutral[100],
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    marginBottom: 12,
-    borderRadius: 4,
-    borderLeftWidth: 4,
-    borderLeftColor: MODERN_COLORS.primary
+    marginBottom: 20,
+    pageBreakInside: false
   },
   sectionTitle: {
-    fontSize: 14,
-    fontWeight: 600,
-    color: MODERN_COLORS.neutral[800]
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: MODERN_COLORS.primary,
+    marginBottom: 12,
+    paddingBottom: 4,
+    borderBottomWidth: 1,
+    borderBottomColor: MODERN_COLORS.neutral[200]
   },
   table: {
-    marginBottom: 15
+    marginBottom: 12
+  },
+  tableHeader: {
+    flexDirection: 'row',
+    backgroundColor: MODERN_COLORS.neutral[100],
+    borderBottomWidth: 1,
+    borderBottomColor: MODERN_COLORS.neutral[300],
+    paddingVertical: 8,
+    paddingHorizontal: 10
+  },
+  tableHeaderCell: {
+    flex: 1,
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: MODERN_COLORS.neutral[700]
   },
   tableRow: {
     flexDirection: 'row',
-    borderBottomWidth: 1,
+    borderBottomWidth: 0.5,
     borderBottomColor: MODERN_COLORS.neutral[200],
-    paddingVertical: 8
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    minHeight: 24
   },
-  tableHeader: {
-    backgroundColor: MODERN_COLORS.primary,
-    paddingVertical: 10
-  },
-  tableHeaderText: {
-    color: MODERN_COLORS.white,
-    fontWeight: 600,
-    fontSize: 10
-  },
-  tableCellText: {
+  tableCell: {
+    flex: 1,
     fontSize: 10,
     color: MODERN_COLORS.neutral[700],
-    paddingHorizontal: 8
+    paddingRight: 8
+  },
+  tableCellBold: {
+    flex: 1,
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: MODERN_COLORS.neutral[800],
+    paddingRight: 8
   },
   infoBox: {
     backgroundColor: MODERN_COLORS.neutral[50],
-    borderWidth: 1,
-    borderColor: MODERN_COLORS.neutral[200],
-    borderRadius: 6,
+    borderLeftWidth: 4,
+    borderLeftColor: MODERN_COLORS.primary,
     padding: 12,
-    marginVertical: 10
+    marginVertical: 8,
+    borderRadius: 4
   },
   infoBoxSuccess: {
     backgroundColor: '#f0fdf4',
-    borderColor: MODERN_COLORS.success
+    borderLeftColor: MODERN_COLORS.success
   },
   infoBoxWarning: {
     backgroundColor: '#fffbeb',
-    borderColor: MODERN_COLORS.warning
+    borderLeftColor: MODERN_COLORS.warning
   },
-  infoBoxError: {
-    backgroundColor: '#fef2f2',
-    borderColor: MODERN_COLORS.error
-  },
-  infoText: {
+  infoBoxText: {
     fontSize: 10,
-    lineHeight: 1.5
+    color: MODERN_COLORS.neutral[700],
+    lineHeight: 1.4
   },
   statsGrid: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginVertical: 15,
-    gap: 10
+    flexWrap: 'wrap',
+    marginVertical: 12,
+    gap: 8
   },
   statCard: {
+    flex: 1,
+    minWidth: '45%',
     backgroundColor: MODERN_COLORS.white,
     borderWidth: 1,
     borderColor: MODERN_COLORS.neutral[200],
-    borderRadius: 6,
     padding: 12,
-    flex: 1,
+    borderRadius: 4,
     alignItems: 'center'
   },
   statValue: {
-    fontSize: 16,
-    fontWeight: 700,
+    fontSize: 18,
+    fontWeight: 'bold',
     color: MODERN_COLORS.primary,
     marginBottom: 4
   },
@@ -103,76 +112,66 @@ interface ModernSectionProps {
 
 export const ModernSection: React.FC<ModernSectionProps> = ({ title, children }) => (
   <View style={styles.section}>
-    <View style={styles.sectionHeader}>
-      <Text style={styles.sectionTitle}>{title}</Text>
-    </View>
+    <Text style={styles.sectionTitle}>{title}</Text>
     {children}
   </View>
 );
 
 interface ModernTableProps {
   headers: string[];
-  data: string[][];
-  columnWidths?: string[];
+  data: (string | number)[][];
 }
 
-export const ModernTable: React.FC<ModernTableProps> = ({ headers, data, columnWidths }) => {
-  const defaultWidth = `${100 / headers.length}%`;
-  
-  return (
-    <View style={styles.table}>
-      {/* Header */}
-      <View style={[styles.tableRow, styles.tableHeader]}>
-        {headers.map((header, index) => (
-          <View key={index} style={{ width: columnWidths?.[index] || defaultWidth }}>
-            <Text style={styles.tableHeaderText}>{header}</Text>
-          </View>
-        ))}
-      </View>
-      
-      {/* Data rows */}
-      {data.map((row, rowIndex) => (
-        <View key={rowIndex} style={styles.tableRow}>
-          {row.map((cell, cellIndex) => (
-            <View key={cellIndex} style={{ width: columnWidths?.[cellIndex] || defaultWidth }}>
-              <Text style={styles.tableCellText}>{cell}</Text>
-            </View>
-          ))}
-        </View>
+export const ModernTable: React.FC<ModernTableProps> = ({ headers, data }) => (
+  <View style={styles.table}>
+    <View style={styles.tableHeader}>
+      {headers.map((header, index) => (
+        <Text key={index} style={styles.tableHeaderCell}>
+          {header}
+        </Text>
       ))}
     </View>
-  );
-};
+    {data.map((row, rowIndex) => (
+      <View key={rowIndex} style={styles.tableRow}>
+        {row.map((cell, cellIndex) => (
+          <Text 
+            key={cellIndex} 
+            style={rowIndex === data.length - 1 && cell.toString().includes('CELKEM') ? styles.tableCellBold : styles.tableCell}
+          >
+            {cell?.toString() || ''}
+          </Text>
+        ))}
+      </View>
+    ))}
+  </View>
+);
 
 interface ModernInfoBoxProps {
   children: React.ReactNode;
-  type?: 'default' | 'success' | 'warning' | 'error';
+  type?: 'default' | 'success' | 'warning';
 }
 
 export const ModernInfoBox: React.FC<ModernInfoBoxProps> = ({ children, type = 'default' }) => {
-  const getBoxStyle = () => {
-    switch (type) {
-      case 'success': return [styles.infoBox, styles.infoBoxSuccess];
-      case 'warning': return [styles.infoBox, styles.infoBoxWarning];
-      case 'error': return [styles.infoBox, styles.infoBoxError];
-      default: return styles.infoBox;
-    }
-  };
+  const boxStyle = [
+    styles.infoBox,
+    type === 'success' && styles.infoBoxSuccess,
+    type === 'warning' && styles.infoBoxWarning
+  ].filter(Boolean);
 
   return (
-    <View style={getBoxStyle()}>
-      <Text style={styles.infoText}>{children}</Text>
+    <View style={boxStyle}>
+      <Text style={styles.infoBoxText}>{children}</Text>
     </View>
   );
 };
 
-interface StatCardData {
+interface StatItem {
   label: string;
   value: string;
 }
 
 interface ModernStatsGridProps {
-  stats: StatCardData[];
+  stats: StatItem[];
 }
 
 export const ModernStatsGrid: React.FC<ModernStatsGridProps> = ({ stats }) => (

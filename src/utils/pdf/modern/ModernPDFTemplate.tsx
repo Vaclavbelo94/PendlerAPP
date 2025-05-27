@@ -1,16 +1,6 @@
 
 import React from 'react';
-import { Document, Page, View, Text, Image, StyleSheet, Font } from '@react-pdf/renderer';
-
-// Registrace fontů pro lepší podporu češtiny
-Font.register({
-  family: 'Inter',
-  fonts: [
-    { src: 'https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2' },
-    { src: 'https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuGKYAZ9hiA.woff2', fontWeight: 600 },
-    { src: 'https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuFuYAZ9hiA.woff2', fontWeight: 700 }
-  ]
-});
+import { Document, Page, View, Text, StyleSheet } from '@react-pdf/renderer';
 
 // Moderní color palette
 export const MODERN_COLORS = {
@@ -38,7 +28,7 @@ export const MODERN_COLORS = {
 
 const styles = StyleSheet.create({
   page: {
-    fontFamily: 'Inter',
+    fontFamily: 'Helvetica',
     fontSize: 11,
     paddingTop: 0,
     paddingBottom: 20,
@@ -57,21 +47,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center'
   },
-  logoSection: {
-    flexDirection: 'row',
-    alignItems: 'center'
-  },
-  logo: {
-    width: 40,
-    height: 40,
-    marginRight: 12
-  },
   brandText: {
     color: MODERN_COLORS.white
   },
   brandTitle: {
     fontSize: 20,
-    fontWeight: 700,
+    fontWeight: 'bold',
     marginBottom: 2
   },
   brandSubtitle: {
@@ -98,7 +79,7 @@ const styles = StyleSheet.create({
   },
   documentTitle: {
     fontSize: 24,
-    fontWeight: 700,
+    fontWeight: 'bold',
     color: MODERN_COLORS.neutral[900],
     marginBottom: 8
   },
@@ -154,7 +135,7 @@ export const ModernPDFTemplate: React.FC<ModernPDFTemplateProps> = ({
   title, 
   subtitle, 
   children,
-  showLogo = true 
+  showLogo = false // Vypnuto kvůli problémům s obrázky
 }) => {
   const currentDate = new Date();
   const dateStr = currentDate.toLocaleDateString('cs-CZ', {
@@ -173,17 +154,9 @@ export const ModernPDFTemplate: React.FC<ModernPDFTemplateProps> = ({
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerContent}>
-            <View style={styles.logoSection}>
-              {showLogo && (
-                <Image 
-                  src="https://images.unsplash.com/photo-1572044162444-ad60f128bdea?w=100&h=100&fit=crop&crop=center"
-                  style={styles.logo}
-                />
-              )}
-              <View style={styles.brandText}>
-                <Text style={styles.brandTitle}>PendlerApp</Text>
-                <Text style={styles.brandSubtitle}>Profesionální řešení pro české pendlery</Text>
-              </View>
+            <View style={styles.brandText}>
+              <Text style={styles.brandTitle}>PendlerApp</Text>
+              <Text style={styles.brandSubtitle}>Profesionální řešení pro české pendlery</Text>
             </View>
             <View style={styles.headerInfo}>
               <Text style={styles.dateText}>{dateStr}</Text>
