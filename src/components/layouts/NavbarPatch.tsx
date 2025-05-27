@@ -4,7 +4,6 @@ import { NotificationIndicator } from "@/components/notifications/NotificationIn
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import ShiftNotificationDialog from "@/components/notifications/ShiftNotificationDialog";
 import ScheduleShareDialog from "@/components/sharing/ScheduleShareDialog";
-import AdminPanelDialog from "@/components/admin/AdminPanelDialog";
 import { useAuth } from "@/hooks/useAuth";
 
 export const NavbarRightContent = () => {
@@ -19,7 +18,6 @@ export const NavbarRightContent = () => {
         <>
           <ShiftNotificationDialog />
           <ScheduleShareDialog />
-          <AdminPanelDialog />
         </>
       )}
       
