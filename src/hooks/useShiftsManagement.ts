@@ -4,7 +4,7 @@ import { useShiftOperations } from './shifts/useShiftOperations';
 import { useShiftLoader } from './shifts/useShiftLoader';
 import { UseShiftsManagementReturn } from './shifts/types';
 
-export { Shift } from './shifts/types';
+export type { Shift } from './shifts/types';
 
 export const useShiftsManagement = (userId: string | undefined): UseShiftsManagementReturn => {
   const {

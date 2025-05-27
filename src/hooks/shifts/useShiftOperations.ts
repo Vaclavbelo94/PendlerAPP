@@ -71,7 +71,7 @@ export const useShiftOperations = ({
       }
     };
 
-    setLastOperation(() => operation);
+    setLastOperation(operation);
     await operation();
     return null;
   }, [userId, shifts.length, success, showError, setShifts, setSelectedShift, setIsSaving, setLastOperation]);
@@ -121,7 +121,7 @@ export const useShiftOperations = ({
       }
     };
 
-    setLastOperation(() => operation);
+    setLastOperation(operation);
     await operation();
     return null;
   }, [userId, selectedShift, success, showError, setShifts, setSelectedShift, setIsSaving, setLastOperation]);
@@ -161,7 +161,7 @@ export const useShiftOperations = ({
       }
     };
 
-    setLastOperation(() => operation);
+    setLastOperation(operation);
     await operation();
   }, [userId, selectedShift, shifts, success, showError, setShifts, setSelectedShift, setIsSaving, setLastOperation]);
 
