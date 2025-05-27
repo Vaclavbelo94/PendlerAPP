@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import ResponsivePage from "@/components/layouts/ResponsivePage";
 import AccessibleButton from "@/components/ui/accessible-button";
-import { MobileTravelNavigation } from "@/components/travel/MobileTravelNavigation";
+import TravelNavigation from "@/components/travel/TravelNavigation";
 import { 
   CommuteOptimizerLazy,
   RideSharingLazy, 
@@ -114,10 +114,9 @@ const TravelPlanning = () => {
         </section>
         
         {/* Navigation */}
-        <MobileTravelNavigation
+        <TravelNavigation
           activeTab={activeTab}
           onTabChange={handleTabChange}
-          isMobile={isMobile}
         />
         
         {/* Tab content with suspense */}
