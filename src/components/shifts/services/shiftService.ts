@@ -23,7 +23,7 @@ export const loadUserShifts = async (userId: string) => {
 
   return data?.map(shift => ({
     id: shift.id,
-    date: new Date(shift.date),
+    date: shift.date, // Ponecháváme jako string pro konzistenci s databází
     type: shift.type as ShiftType,
     notes: shift.notes || "",
     userId: shift.user_id

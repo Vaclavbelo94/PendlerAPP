@@ -1,10 +1,10 @@
-
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { useStandardizedToast } from '@/hooks/useStandardizedToast';
 import { useOptimizedNetworkStatus } from '@/hooks/useOptimizedNetworkStatus';
 import { optimizedErrorHandler } from '@/utils/optimizedErrorHandler';
 import { supabase } from '@/integrations/supabase/client';
 import { errorHandler } from '@/utils/errorHandler';
+import { formatDateForDB } from '@/components/shifts/utils/dateUtils';
 
 export interface Shift {
   id?: string;
@@ -122,7 +122,7 @@ export const useOptimizedShiftsManagement = (userId: string | undefined): UseOpt
         clearTimeout(loadingTimeoutRef.current);
       }
     }
-  }, [userId, cacheKey, isOnline]); // Removed showError to prevent loops
+  }, [userId, cacheKey, isOnline]);
 
   // Stabilized add shift function
   const addShift = useCallback(async (shiftData: Omit<Shift, 'id' | 'user_id' | 'created_at' | 'updated_at'>): Promise<Shift | null> => {
@@ -148,11 +148,19 @@ export const useOptimizedShiftsManagement = (userId: string | undefined): UseOpt
 
     setIsSaving(true);
     try {
+      // Oprava: Zajistíme správné formátování data
+      const formattedShiftData = {
+        ...shiftData,
+        user_id: userId
+      };
+
+      console.log('Adding shift with data:', formattedShiftData);
+
       const data = await optimizedErrorHandler.executeWithRetry(
         async () => {
           const { data, error: insertError } = await supabase
             .from('shifts')
-            .insert([{ ...shiftData, user_id: userId }])
+            .insert([formattedShiftData])
             .select()
             .single();
 

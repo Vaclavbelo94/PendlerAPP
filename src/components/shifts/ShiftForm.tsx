@@ -11,7 +11,7 @@ import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { cs } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
-import { Shift } from '@/hooks/useShiftsManagement';
+import { Shift } from '@/hooks/shifts/useOptimizedShiftsManagement';
 
 interface ShiftFormProps {
   onSubmit: (data: any) => void;
@@ -45,8 +45,17 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
     
     if (!date) return;
     
+    // Oprava: Zajišťujeme správné formátování data pro databázi
+    // Používáme lokální datum bez konverze na UTC, která by mohla posunout datum
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const formattedDate = `${year}-${month}-${day}`;
+    
+    console.log('Submitting shift for date:', formattedDate, 'from selected date:', date);
+    
     onSubmit({
-      date: date.toISOString().split('T')[0],
+      date: formattedDate,
       type,
       notes: notes.trim()
     });
@@ -79,6 +88,7 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
               selected={date}
               onSelect={setDate}
               initialFocus
+              className="p-3 pointer-events-auto"
             />
           </PopoverContent>
         </Popover>
