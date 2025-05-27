@@ -1,8 +1,8 @@
 
 import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Calendar, Plus, Clock } from 'lucide-react';
+import { Calendar, Plus } from 'lucide-react';
 
 interface EmptyShiftsStateProps {
   onAddShift: () => void;
@@ -10,46 +10,19 @@ interface EmptyShiftsStateProps {
 
 const EmptyShiftsState: React.FC<EmptyShiftsStateProps> = ({ onAddShift }) => {
   return (
-    <div className="flex items-center justify-center min-h-[500px]">
-      <Card className="w-full max-w-md text-center">
-        <CardHeader>
-          <div className="flex justify-center mb-4">
-            <div className="p-3 rounded-full bg-primary/10">
-              <Calendar className="h-8 w-8 text-primary" />
-            </div>
-          </div>
-          <CardTitle className="text-2xl">Vítejte v evidenci směn!</CardTitle>
-          <CardDescription>
-            Zatím nemáte žádné směny. Začněte sledovat svou pracovní dobu přidáním první směny.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="text-left space-y-3 mb-6">
-            <div className="flex items-center gap-3">
-              <Clock className="h-5 w-5 text-muted-foreground" />
-              <span className="text-sm">Sledujte pracovní hodiny</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <Calendar className="h-5 w-5 text-muted-foreground" />
-              <span className="text-sm">Plánujte směny v kalendáři</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <Plus className="h-5 w-5 text-muted-foreground" />
-              <span className="text-sm">Exportujte data pro daně</span>
-            </div>
-          </div>
-          
-          <Button onClick={onAddShift} className="w-full">
-            <Plus className="h-4 w-4 mr-2" />
-            Přidat první směnu
-          </Button>
-          
-          <p className="text-xs text-muted-foreground mt-4">
-            Tip: Můžete také importovat stávající data ze souboru Excel
-          </p>
-        </CardContent>
-      </Card>
-    </div>
+    <Card className="border-dashed border-2 border-muted-foreground/25">
+      <CardContent className="flex flex-col items-center justify-center py-16 text-center">
+        <Calendar className="h-16 w-16 text-muted-foreground mb-4" />
+        <h3 className="text-lg font-semibold mb-2">Žádné směny</h3>
+        <p className="text-muted-foreground mb-6 max-w-sm">
+          Zatím nemáte žádné směny naplánované. Začněte přidáním své první směny.
+        </p>
+        <Button onClick={onAddShift} className="flex items-center gap-2">
+          <Plus className="h-4 w-4" />
+          Přidat první směnu
+        </Button>
+      </CardContent>
+    </Card>
   );
 };
 

@@ -1,8 +1,12 @@
 
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Calendar } from '@/components/ui/calendar';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Calendar, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
+import { Edit, Trash, Calendar as CalendarIcon } from 'lucide-react';
+import { format } from 'date-fns';
+import { cs } from 'date-fns/locale';
 import { Shift } from '@/hooks/useShiftsManagement';
 import { cn } from '@/lib/utils';
 
@@ -17,196 +21,134 @@ const ShiftsCalendar: React.FC<ShiftsCalendarProps> = ({
   onEditShift,
   onDeleteShift
 }) => {
-  const [currentDate, setCurrentDate] = useState(new Date());
-
-  const getDaysInMonth = (date: Date) => {
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const daysInMonth = lastDay.getDate();
-    const startingDayOfWeek = firstDay.getDay();
-
-    const days = [];
-    
-    // Add empty days for previous month
-    for (let i = 0; i < startingDayOfWeek; i++) {
-      days.push(null);
-    }
-    
-    // Add days of current month
-    for (let day = 1; day <= daysInMonth; day++) {
-      days.push(new Date(year, month, day));
-    }
-    
-    return days;
-  };
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
 
   const getShiftsForDate = (date: Date) => {
-    const dateStr = date.toISOString().split('T')[0];
-    return shifts.filter(shift => shift.date === dateStr);
-  };
-
-  const navigateMonth = (direction: 'prev' | 'next') => {
-    setCurrentDate(prev => {
-      const newDate = new Date(prev);
-      if (direction === 'prev') {
-        newDate.setMonth(prev.getMonth() - 1);
-      } else {
-        newDate.setMonth(prev.getMonth() + 1);
-      }
-      return newDate;
+    return shifts.filter(shift => {
+      const shiftDate = new Date(shift.date);
+      return shiftDate.toDateString() === date.toDateString();
     });
   };
 
-  const days = getDaysInMonth(currentDate);
-  const monthYear = currentDate.toLocaleDateString('cs-CZ', { 
-    month: 'long', 
-    year: 'numeric' 
-  });
+  const getDatesWithShifts = () => {
+    return shifts.map(shift => new Date(shift.date));
+  };
 
-  const weekDays = ['Ne', 'Po', 'Út', 'St', 'Čt', 'Pá', 'So'];
+  const selectedShifts = selectedDate ? getShiftsForDate(selectedDate) : [];
+  const datesWithShifts = getDatesWithShifts();
+
+  const getShiftTypeLabel = (type: string) => {
+    switch (type) {
+      case 'morning':
+        return 'Ranní směna';
+      case 'afternoon':
+        return 'Odpolední směna';
+      case 'night':
+        return 'Noční směna';
+      default:
+        return type;
+    }
+  };
+
+  const getShiftTypeColor = (type: string) => {
+    switch (type) {
+      case 'morning':
+        return 'bg-orange-500';
+      case 'afternoon':
+        return 'bg-blue-500';
+      case 'night':
+        return 'bg-purple-500';
+      default:
+        return 'bg-gray-500';
+    }
+  };
 
   return (
-    <div className="space-y-6">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                <Calendar className="h-5 w-5" />
-                Kalendář směn
-              </CardTitle>
-              <CardDescription>
-                Přehled vašich směn v kalendáři
-              </CardDescription>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => navigateMonth('prev')}
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <span className="text-lg font-medium min-w-[180px] text-center">
-                {monthYear}
-              </span>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => navigateMonth('next')}
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-7 gap-1 mb-4">
-            {weekDays.map(day => (
-              <div 
-                key={day}
-                className="p-2 text-center text-sm font-medium text-muted-foreground"
-              >
-                {day}
-              </div>
-            ))}
-          </div>
-          
-          <div className="grid grid-cols-7 gap-1">
-            {days.map((date, index) => {
-              if (!date) {
-                return <div key={index} className="p-2 h-24" />;
-              }
-              
-              const dayShifts = getShiftsForDate(date);
-              const isToday = date.toDateString() === new Date().toDateString();
-              
-              return (
-                <div
-                  key={date.toISOString()}
-                  className={cn(
-                    "p-2 h-24 border rounded-lg hover:bg-accent/50 transition-colors",
-                    isToday && "ring-2 ring-primary"
-                  )}
-                >
-                  <div className="flex justify-between items-start mb-1">
-                    <span className={cn(
-                      "text-sm",
-                      isToday ? "font-bold text-primary" : "text-muted-foreground"
-                    )}>
-                      {date.getDate()}
-                    </span>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    {dayShifts.map(shift => (
-                      <div
-                        key={shift.id}
-                        className={cn(
-                          "text-xs px-1 py-0.5 rounded cursor-pointer",
-                          shift.type === 'morning' ? 'bg-orange-100 text-orange-800' :
-                          shift.type === 'afternoon' ? 'bg-blue-100 text-blue-800' :
-                          'bg-purple-100 text-purple-800'
-                        )}
-                        onClick={() => onEditShift(shift)}
-                      >
-                        {shift.type === 'morning' ? 'Ranní' :
-                         shift.type === 'afternoon' ? 'Odpoledne' : 'Noční'}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Recent shifts list */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Nadcházející směny</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <CalendarIcon className="h-5 w-5" />
+            Kalendář směn
+          </CardTitle>
           <CardDescription>
-            Seznam vašich příštích pracovních směn
+            Vyberte datum pro zobrazení směn
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {shifts.length === 0 ? (
+          <Calendar
+            mode="single"
+            selected={selectedDate}
+            onSelect={setSelectedDate}
+            modifiers={{
+              hasShift: datesWithShifts
+            }}
+            modifiersStyles={{
+              hasShift: {
+                backgroundColor: 'hsl(var(--primary))',
+                color: 'white',
+                fontWeight: 'bold'
+              }
+            }}
+            className="rounded-md border"
+          />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>
+            {selectedDate ? format(selectedDate, 'EEEE, d. MMMM yyyy', { locale: cs }) : 'Vyberte datum'}
+          </CardTitle>
+          <CardDescription>
+            {selectedShifts.length > 0 
+              ? `${selectedShifts.length} směna${selectedShifts.length > 1 ? 'y' : ''}`
+              : 'Žádné směny'
+            }
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {selectedShifts.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
-              <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>Zatím nemáte naplánované žádné směny</p>
+              <CalendarIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p>Na tento den nemáte naplánované žádné směny</p>
             </div>
           ) : (
-            <div className="space-y-3">
-              {shifts.slice(0, 5).map(shift => (
+            <div className="space-y-4">
+              {selectedShifts.map((shift) => (
                 <div
                   key={shift.id}
-                  className="flex items-center justify-between p-3 border rounded-lg hover:bg-accent/50 transition-colors cursor-pointer"
-                  onClick={() => onEditShift(shift)}
+                  className="flex items-center justify-between p-4 border rounded-lg"
                 >
                   <div className="flex items-center space-x-3">
-                    <div className={cn(
-                      "w-3 h-3 rounded-full",
-                      shift.type === 'morning' ? 'bg-orange-500' :
-                      shift.type === 'afternoon' ? 'bg-blue-500' : 'bg-purple-500'
-                    )} />
+                    <div className={cn("w-3 h-3 rounded-full", getShiftTypeColor(shift.type))} />
                     <div>
-                      <p className="font-medium">
-                        {new Date(shift.date).toLocaleDateString('cs-CZ')}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {shift.type === 'morning' ? 'Ranní směna' :
-                         shift.type === 'afternoon' ? 'Odpolední směna' : 'Noční směna'}
-                      </p>
+                      <Badge variant="secondary">
+                        {getShiftTypeLabel(shift.type)}
+                      </Badge>
+                      {shift.notes && (
+                        <p className="text-sm text-muted-foreground mt-1">
+                          {shift.notes}
+                        </p>
+                      )}
                     </div>
                   </div>
-                  {shift.notes && (
-                    <p className="text-sm text-muted-foreground max-w-xs truncate">
-                      {shift.notes}
-                    </p>
-                  )}
+                  <div className="flex space-x-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => onEditShift(shift)}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => shift.id && onDeleteShift(shift.id)}
+                    >
+                      <Trash className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
