@@ -12,7 +12,7 @@ import Index from "./pages/Index";
 const About = lazy(() => import("./pages/About"));
 const Premium = lazy(() => import("./pages/Premium"));
 const Contact = lazy(() => import("./pages/Contact"));
-const Auth = lazy(() => import("./pages/Auth"));
+const Login = lazy(() => import("./pages/Login"));
 const Settings = lazy(() => import("./pages/Settings"));
 const OptimizedShifts = lazy(() => import("./pages/OptimizedShifts"));
 
@@ -20,7 +20,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 5 * 60 * 1000, // 5 minutes
-      cacheTime: 10 * 60 * 1000, // 10 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes (renamed from cacheTime)
     },
   },
 });
@@ -40,7 +40,7 @@ const App = () => (
               <Route path="/about" element={<About />} />
               <Route path="/premium" element={<Premium />} />
               <Route path="/contact" element={<Contact />} />
-              <Route path="/auth" element={<Auth />} />
+              <Route path="/auth" element={<Login />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/shifts" element={<OptimizedShifts />} />
             </Routes>
