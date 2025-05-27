@@ -2,16 +2,18 @@
 import React, { useState } from 'react';
 import { useSimplifiedAuth } from '@/hooks/auth/useSimplifiedAuth';
 import { useOptimizedShiftsManagement } from '@/hooks/shifts/useOptimizedShiftsManagement';
-import ShiftsLoadingSkeleton from './ShiftsLoadingSkeleton';
+import { useOptimizedNetworkStatus } from '@/hooks/useOptimizedNetworkStatus';
+import FastLoadingSkeleton from './FastLoadingSkeleton';
 import ShiftsPageHeader from './ShiftsPageHeader';
 import ShiftsPageContent from './ShiftsPageContent';
 import ShiftsFormSheets from './ShiftsFormSheets';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, AlertCircle } from 'lucide-react';
+import { RefreshCw, AlertCircle, Wifi, WifiOff } from 'lucide-react';
 
 const OptimizedShiftsContainer: React.FC = () => {
   const { user, isInitialized } = useSimplifiedAuth();
+  const { isOnline, isSlowConnection } = useOptimizedNetworkStatus();
   const [activeSection, setActiveSection] = useState('calendar');
   const [isAddSheetOpen, setIsAddSheetOpen] = useState(false);
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
@@ -54,9 +56,9 @@ const OptimizedShiftsContainer: React.FC = () => {
     await refreshShifts();
   };
 
-  // Show skeleton during initial load
+  // Show skeleton during initial load with fast timeout
   if (!isInitialized || (isLoading && shifts.length === 0)) {
-    return <ShiftsLoadingSkeleton />;
+    return <FastLoadingSkeleton onRetry={handleRetry} timeoutMs={8000} />;
   }
 
   // Show auth required message
@@ -73,28 +75,48 @@ const OptimizedShiftsContainer: React.FC = () => {
     );
   }
 
-  // Show error state
-  if (error) {
-    return (
-      <div className="container max-w-7xl mx-auto px-4 py-8">
-        <Alert variant="destructive">
+  return (
+    <div className="container max-w-7xl mx-auto px-4">
+      {/* Network status indicator */}
+      {!isOnline && (
+        <Alert className="mb-4 border-orange-200 bg-orange-50">
+          <WifiOff className="h-4 w-4 text-orange-600" />
+          <AlertDescription className="text-orange-700">
+            Offline režim - změny budou synchronizovány při obnovení připojení
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {isSlowConnection && isOnline && (
+        <Alert className="mb-4 border-yellow-200 bg-yellow-50">
+          <Wifi className="h-4 w-4 text-yellow-600" />
+          <AlertDescription className="text-yellow-700">
+            Pomalé připojení detekováno - načítání může trvat déle
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* Error state with quick retry */}
+      {error && (
+        <Alert variant="destructive" className="mb-4">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
             {error}
           </AlertDescription>
+          <div className="mt-2">
+            <Button 
+              onClick={handleRetry} 
+              size="sm"
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <RefreshCw className="h-4 w-4" />
+              Zkusit znovu
+            </Button>
+          </div>
         </Alert>
-        <div className="mt-4">
-          <Button onClick={handleRetry} className="flex items-center gap-2">
-            <RefreshCw className="h-4 w-4" />
-            Zkusit znovu
-          </Button>
-        </div>
-      </div>
-    );
-  }
+      )}
 
-  return (
-    <div className="container max-w-7xl mx-auto px-4">
       <ShiftsPageHeader onAddShift={() => setIsAddSheetOpen(true)} />
 
       <ShiftsPageContent
