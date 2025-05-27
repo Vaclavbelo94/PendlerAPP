@@ -1,5 +1,7 @@
+
 import { Shift } from '../types';
 import { notificationService } from './NotificationService';
+import { dateFromDBString } from '../utils/dateUtils';
 
 export interface ConflictData {
   localShift: Shift;
@@ -66,7 +68,7 @@ export class ConflictResolutionService {
     return (
       local.type !== remote.type ||
       local.notes !== remote.notes ||
-      local.date.getTime() !== remote.date.getTime()
+      local.date !== remote.date // Compare as strings
     );
   }
 

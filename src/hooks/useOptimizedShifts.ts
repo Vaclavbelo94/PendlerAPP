@@ -6,6 +6,7 @@ import { Shift, ShiftType } from '@/components/shifts/types';
 import { supabase } from '@/integrations/supabase/client';
 import { errorHandler } from '@/utils/errorHandler';
 import { toast } from '@/hooks/use-toast';
+import { formatDateForDB, dateFromDBString } from '@/components/shifts/utils/dateUtils';
 
 interface UseOptimizedShiftsReturn {
   shifts: Shift[];
@@ -28,8 +29,7 @@ export const useOptimizedShifts = (): UseOptimizedShiftsReturn => {
   const shiftsLookup = useMemo(() => {
     const lookup = new Map<string, Shift>();
     shifts.forEach(shift => {
-      const dateKey = shift.date.toISOString().split('T')[0];
-      lookup.set(dateKey, shift);
+      lookup.set(shift.date, shift); // Use date string directly
     });
     return lookup;
   }, [shifts]);
@@ -49,10 +49,7 @@ export const useOptimizedShifts = (): UseOptimizedShiftsReturn => {
         const cachedShifts = localStorage.getItem(`shifts_cache_${user.id}`);
         if (cachedShifts) {
           const parsed = JSON.parse(cachedShifts);
-          shiftsData = parsed.map((shift: any) => ({
-            ...shift,
-            date: new Date(shift.date)
-          }));
+          shiftsData = parsed; // Keep dates as strings
         }
       } else {
         // Load from Supabase when online
@@ -68,7 +65,7 @@ export const useOptimizedShifts = (): UseOptimizedShiftsReturn => {
           id: shift.id,
           userId: shift.user_id,
           user_id: shift.user_id,
-          date: new Date(shift.date),
+          date: shift.date, // Keep as string from database
           type: shift.type as ShiftType,
           notes: shift.notes || '',
           created_at: shift.created_at,
@@ -101,7 +98,7 @@ export const useOptimizedShifts = (): UseOptimizedShiftsReturn => {
   const saveShift = useCallback(async (date: Date, type: ShiftType, notes: string) => {
     if (!user) throw new Error('Uživatel není přihlášen');
 
-    const dateString = date.toISOString().split('T')[0];
+    const dateString = formatDateForDB(date);
     const existingShift = shiftsLookup.get(dateString);
 
     try {
@@ -121,7 +118,7 @@ export const useOptimizedShifts = (): UseOptimizedShiftsReturn => {
           id: tempId,
           userId: user.id,
           user_id: user.id,
-          date,
+          date: dateString, // Keep as string
           type,
           notes: notes.trim(),
           created_at: new Date().toISOString(),
@@ -173,7 +170,7 @@ export const useOptimizedShifts = (): UseOptimizedShiftsReturn => {
             id: data.id,
             userId: user.id,
             user_id: user.id,
-            date,
+            date: dateString, // Keep as string
             type,
             notes: notes.trim(),
             created_at: data.created_at,
@@ -190,7 +187,7 @@ export const useOptimizedShifts = (): UseOptimizedShiftsReturn => {
       // Update local state
       setShifts(prev => {
         const updated = prev.filter(s => s.id !== savedShift.id);
-        return [...updated, savedShift].sort((a, b) => b.date.getTime() - a.date.getTime());
+        return [...updated, savedShift].sort((a, b) => b.date.localeCompare(a.date));
       });
 
       // Update cache

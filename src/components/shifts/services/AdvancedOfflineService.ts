@@ -1,8 +1,10 @@
+
 import { Shift, ShiftType } from '../types';
 import { ConflictResolutionService, ConflictData, ConflictResolution } from './ConflictResolutionService';
 import { ShiftOfflineService } from './ShiftOfflineService';
 import { supabase } from '@/integrations/supabase/client';
 import { errorHandler } from '@/utils/errorHandler';
+import { formatDateForDB, dateFromDBString } from '../utils/dateUtils';
 
 export class AdvancedOfflineService extends ShiftOfflineService {
   private static advancedInstance: AdvancedOfflineService;
@@ -70,8 +72,8 @@ export class AdvancedOfflineService extends ShiftOfflineService {
         id: shift.id,
         userId: shift.user_id,
         user_id: shift.user_id,
-        date: new Date(shift.date),
-        type: shift.type as ShiftType, // Cast to ShiftType
+        date: shift.date, // Keep as string from database
+        type: shift.type as ShiftType,
         notes: shift.notes || '',
         created_at: shift.created_at,
         updated_at: shift.updated_at
@@ -124,7 +126,7 @@ export class AdvancedOfflineService extends ShiftOfflineService {
       .update({
         type: shift.type,
         notes: shift.notes,
-        date: shift.date.toISOString().split('T')[0],
+        date: shift.date, // Already a string
         updated_at: new Date().toISOString()
       })
       .eq('id', shift.id);

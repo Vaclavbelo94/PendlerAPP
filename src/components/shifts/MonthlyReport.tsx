@@ -18,6 +18,7 @@ import {
   TableRow
 } from "@/components/ui/table";
 import { getShiftColor, getShiftTimeByType, formatShiftDate } from "./utils";
+import { dateFromDBString } from "./utils/dateUtils";
 
 interface MonthlyReportProps {
   shifts: Shift[];
@@ -102,7 +103,7 @@ export const MonthlyReport = ({ shifts, user, selectedMonth, onSelectDate }: Mon
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => onSelectDate(shift.date)}
+                        onClick={() => onSelectDate(dateFromDBString(shift.date))}
                       >
                         Zobrazit
                       </Button>
