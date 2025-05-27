@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { memo } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -56,14 +56,14 @@ const formatDate = (dateString: string) => {
   }).format(date);
 };
 
-export const LawCard: React.FC<LawCardProps> = ({ law }) => {
+export const LawCard: React.FC<LawCardProps> = memo(({ law }) => {
   const IconComponent = iconMap[law.iconName as keyof typeof iconMap];
   
   return (
-    <Card className="h-full transition-all hover:shadow-md">
+    <Card className="h-full transition-all hover:shadow-md hover:scale-[1.02] duration-200">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
-          <div className="p-2 rounded-full bg-slate-100">
+          <div className="p-2 rounded-full bg-slate-100 dark:bg-slate-800">
             {IconComponent && <IconComponent className={`h-5 w-5 ${law.iconColor}`} />}
           </div>
           <Badge variant="outline" className="text-xs">
@@ -80,6 +80,8 @@ export const LawCard: React.FC<LawCardProps> = ({ law }) => {
       </CardFooter>
     </Card>
   );
-};
+});
+
+LawCard.displayName = 'LawCard';
 
 export default LawCard;
