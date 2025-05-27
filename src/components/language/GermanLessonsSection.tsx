@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,10 +15,14 @@ import {
   Trophy,
   Target,
   Brain,
-  Zap
+  Zap,
+  Star,
+  Gift
 } from "lucide-react";
 import { allLessons, Lesson, LessonVocabularyItem } from '@/data/germanLessonsContent';
 import { useScreenOrientation } from '@/hooks/useScreenOrientation';
+import GamificationSummary from './GamificationSummary';
+import DailyChallenge from './DailyChallenge';
 
 // Helper function pro přehrání výslovnosti
 const pronounceWord = (word: string) => {
@@ -107,13 +110,14 @@ const VocabularyCard: React.FC<{ item: LessonVocabularyItem }> = ({ item }) => {
   );
 };
 
-// Komponenta pro jednu lekci
+// Komponenta pro jednu lekci s gamifikací
 const LessonCard: React.FC<{ 
   lesson: Lesson; 
   onStartLesson: (lesson: Lesson) => void;
+  onCompleteLesson?: (lesson: Lesson) => void;
   isCompleted?: boolean;
   progress?: number;
-}> = ({ lesson, onStartLesson, isCompleted = false, progress = 0 }) => {
+}> = ({ lesson, onStartLesson, onCompleteLesson, isCompleted = false, progress = 0 }) => {
   const { isMobile } = useScreenOrientation();
   
   const difficultyColors = {
@@ -128,6 +132,20 @@ const LessonCard: React.FC<{
     advanced: 'Pokročilý'
   };
 
+  const handleCompleteLesson = () => {
+    if (onCompleteLesson) {
+      onCompleteLesson(lesson);
+    }
+  };
+
+  // Calculate XP reward based on lesson difficulty and content
+  const getXpReward = () => {
+    const baseXp = lesson.difficulty === 'beginner' ? 20 : 
+                   lesson.difficulty === 'intermediate' ? 30 : 40;
+    const vocabularyBonus = Math.min(lesson.vocabulary.length * 2, 20);
+    return baseXp + vocabularyBonus;
+  };
+
   return (
     <Card className={`${difficultyColors[lesson.difficulty]} ${isMobile ? 'mb-3' : 'mb-4'}`}>
       <CardHeader className={isMobile ? 'pb-2' : 'pb-3'}>
@@ -136,6 +154,9 @@ const LessonCard: React.FC<{
             <CardTitle className={`${isMobile ? 'text-base' : 'text-lg'} flex items-center gap-2`}>
               {isCompleted && <CheckCircle className="h-5 w-5 text-green-500" />}
               {lesson.title}
+              <Badge variant="secondary" className="text-xs">
+                +{getXpReward()} XP
+              </Badge>
             </CardTitle>
             <CardDescription className={`${isMobile ? 'text-xs' : 'text-sm'} mt-1`}>
               {lesson.description}
@@ -187,9 +208,20 @@ const LessonCard: React.FC<{
               <PlayCircle className="h-4 w-4 mr-1" />
               {isCompleted ? 'Opakovat' : progress > 0 ? 'Pokračovat' : 'Začít'}
             </Button>
-            {lesson.vocabulary.length > 0 && (
+            {!isCompleted && progress >= 80 && (
               <Button 
                 variant="outline" 
+                size={isMobile ? "sm" : "default"}
+                onClick={handleCompleteLesson}
+                className="text-green-600 border-green-200"
+              >
+                <CheckCircle className="h-4 w-4 mr-1" />
+                Dokončit
+              </Button>
+            )}
+            {lesson.vocabulary.length > 0 && (
+              <Button 
+                variant="ghost" 
                 size={isMobile ? "sm" : "default"}
                 onClick={() => pronounceWord(lesson.vocabulary[0].german)}
               >
@@ -329,19 +361,61 @@ const LessonDetail: React.FC<{
   );
 };
 
-// Hlavní komponenta
+// Hlavní komponenta s gamifikací
 const GermanLessonsSection: React.FC = () => {
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
+  const [lessonProgress, setLessonProgress] = useState<{[key: string]: number}>({});
+  const [currentXp, setCurrentXp] = useState(0);
+  const [currentLevel, setCurrentLevel] = useState(1);
+  const [activeTab, setActiveTab] = useState('lessons');
   const { isMobile, isSmallLandscape } = useScreenOrientation();
   const useMobileLayout = isMobile || isSmallLandscape;
 
   const handleStartLesson = (lesson: Lesson) => {
     setSelectedLesson(lesson);
+    // Simulace postupu v lekci
+    if (!lessonProgress[lesson.id]) {
+      setLessonProgress(prev => ({
+        ...prev,
+        [lesson.id]: Math.floor(Math.random() * 40) + 10 // 10-50% pokrok
+      }));
+    }
+  };
+
+  const handleCompleteLesson = (lesson: Lesson) => {
+    if (!completedLessons.includes(lesson.id)) {
+      setCompletedLessons(prev => [...prev, lesson.id]);
+      setLessonProgress(prev => ({
+        ...prev,
+        [lesson.id]: 100
+      }));
+      
+      // Přidat XP
+      const xpReward = lesson.difficulty === 'beginner' ? 20 : 
+                       lesson.difficulty === 'intermediate' ? 30 : 40;
+      const vocabularyBonus = Math.min(lesson.vocabulary.length * 2, 20);
+      const totalXp = xpReward + vocabularyBonus;
+      
+      setCurrentXp(prev => {
+        const newXp = prev + totalXp;
+        // Check level up
+        const xpForNextLevel = currentLevel * 100;
+        if (newXp >= xpForNextLevel) {
+          setCurrentLevel(prev => prev + 1);
+          return newXp - xpForNextLevel;
+        }
+        return newXp;
+      });
+    }
   };
 
   const handleBackToLessons = () => {
     setSelectedLesson(null);
+  };
+
+  const handleChallengeComplete = () => {
+    setCurrentXp(prev => prev + 25); // Bonus XP za výzvu
   };
 
   // Pokud je vybrána lekce, zobraz detail
@@ -353,93 +427,161 @@ const GermanLessonsSection: React.FC = () => {
     );
   }
 
-  // Výchozí zobrazení se seznamem lekcí
+  // Hlavní zobrazení s gamifikací
   return (
     <div className={`space-y-4 ${useMobileLayout ? 'px-2' : ''}`}>
-      {/* Header s přehledem */}
-      <Card>
-        <CardHeader>
-          <CardTitle className={`${useMobileLayout ? 'text-lg' : 'text-xl'} flex items-center gap-2`}>
-            <Trophy className="h-5 w-5 text-yellow-500" />
-            Lekce němčiny pro balíkové centrum
-          </CardTitle>
-          <CardDescription className={useMobileLayout ? 'text-sm' : ''}>
-            Praktické německé výrazy a komunikace pro práci v logistickém centru. 
-            Speciálně navrženo pro český a polské zaměstnance.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className={`grid ${useMobileLayout ? 'grid-cols-2' : 'grid-cols-4'} gap-4 text-center`}>
-            <div>
-              <div className={`${useMobileLayout ? 'text-lg' : 'text-2xl'} font-bold text-blue-600`}>
-                {allLessons.length}
-              </div>
-              <div className={`${useMobileLayout ? 'text-xs' : 'text-sm'} text-muted-foreground`}>
-                Celkem lekcí
-              </div>
-            </div>
-            <div>
-              <div className={`${useMobileLayout ? 'text-lg' : 'text-2xl'} font-bold text-green-600`}>
-                {completedLessons.length}
-              </div>
-              <div className={`${useMobileLayout ? 'text-xs' : 'text-sm'} text-muted-foreground`}>
-                Dokončeno
-              </div>
-            </div>
-            {!useMobileLayout && (
-              <>
+      {/* Gamifikační souhrn */}
+      <GamificationSummary />
+
+      {/* Taby pro organizaci obsahu */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className={`grid w-full ${useMobileLayout ? 'grid-cols-2' : 'grid-cols-3'}`}>
+          <TabsTrigger value="lessons" className={useMobileLayout ? 'text-xs' : ''}>
+            <BookOpen className="h-4 w-4 mr-1" />
+            Lekce
+          </TabsTrigger>
+          <TabsTrigger value="challenges" className={useMobileLayout ? 'text-xs' : ''}>
+            <Target className="h-4 w-4 mr-1" />
+            Výzvy
+          </TabsTrigger>
+          {!useMobileLayout && (
+            <TabsTrigger value="achievements" className="text-sm">
+              <Trophy className="h-4 w-4 mr-1" />
+              Úspěchy
+            </TabsTrigger>
+          )}
+        </TabsList>
+
+        <TabsContent value="lessons" className="mt-4">
+          {/* Header s přehledem */}
+          <Card className="mb-4">
+            <CardHeader>
+              <CardTitle className={`${useMobileLayout ? 'text-lg' : 'text-xl'} flex items-center gap-2`}>
+                <Trophy className="h-5 w-5 text-yellow-500" />
+                Lekce němčiny pro balíkové centrum
+              </CardTitle>
+              <CardDescription className={useMobileLayout ? 'text-sm' : ''}>
+                Praktické německé výrazy a komunikace pro práci v logistickém centru. 
+                Speciálně navrženo pro český a polské zaměstnance.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className={`grid ${useMobileLayout ? 'grid-cols-2' : 'grid-cols-4'} gap-4 text-center`}>
                 <div>
-                  <div className="text-2xl font-bold text-orange-600">
-                    {allLessons.reduce((sum, lesson) => sum + lesson.vocabulary.length, 0)}
+                  <div className={`${useMobileLayout ? 'text-lg' : 'text-2xl'} font-bold text-blue-600`}>
+                    {allLessons.length}
                   </div>
-                  <div className="text-sm text-muted-foreground">Slovíček</div>
+                  <div className={`${useMobileLayout ? 'text-xs' : 'text-sm'} text-muted-foreground`}>
+                    Celkem lekcí
+                  </div>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-purple-600">
-                    {allLessons.reduce((sum, lesson) => sum + lesson.estimatedTime, 0)}
+                  <div className={`${useMobileLayout ? 'text-lg' : 'text-2xl'} font-bold text-green-600`}>
+                    {completedLessons.length}
                   </div>
-                  <div className="text-sm text-muted-foreground">Minut</div>
+                  <div className={`${useMobileLayout ? 'text-xs' : 'text-sm'} text-muted-foreground`}>
+                    Dokončeno
+                  </div>
                 </div>
-              </>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+                {!useMobileLayout && (
+                  <>
+                    <div>
+                      <div className="text-2xl font-bold text-orange-600">
+                        {allLessons.reduce((sum, lesson) => sum + lesson.vocabulary.length, 0)}
+                      </div>
+                      <div className="text-sm text-muted-foreground">Slovíček</div>
+                    </div>
+                    <div>
+                      <div className="text-2xl font-bold text-purple-600">
+                        {allLessons.reduce((sum, lesson) => sum + lesson.estimatedTime, 0)}
+                      </div>
+                      <div className="text-sm text-muted-foreground">Minut</div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </CardContent>
+          </Card>
 
-      {/* Seznam lekcí */}
-      <div className="space-y-4">
-        <h3 className={`${useMobileLayout ? 'text-base' : 'text-lg'} font-semibold`}>
-          Dostupné lekce
-        </h3>
-        
-        {allLessons.map((lesson) => (
-          <LessonCard 
-            key={lesson.id}
-            lesson={lesson}
-            onStartLesson={handleStartLesson}
-            isCompleted={completedLessons.includes(lesson.id)}
-            progress={0} // TODO: Implementovat tracking pokroku
-          />
-        ))}
-      </div>
-
-      {/* Tip pro začátečníky */}
-      <Card className="border-blue-200 bg-blue-50">
-        <CardContent className="pt-4">
-          <div className="flex items-start gap-3">
-            <Brain className="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" />
-            <div>
-              <h4 className={`${useMobileLayout ? 'text-sm' : 'text-base'} font-medium mb-1`}>
-                Tip pro efektivní učení
-              </h4>
-              <p className={`${useMobileLayout ? 'text-xs' : 'text-sm'} text-muted-foreground`}>
-                Doporučujeme procházet lekce postupně a pravidelně opakovat naučené slovíčko. 
-                Každá lekce obsahuje praktické příklady z reálného pracovního prostředí.
-              </p>
-            </div>
+          {/* Seznam lekcí */}
+          <div className="space-y-4">
+            <h3 className={`${useMobileLayout ? 'text-base' : 'text-lg'} font-semibold`}>
+              Dostupné lekce
+            </h3>
+            
+            {allLessons.map((lesson) => (
+              <LessonCard 
+                key={lesson.id}
+                lesson={lesson}
+                onStartLesson={handleStartLesson}
+                onCompleteLesson={handleCompleteLesson}
+                isCompleted={completedLessons.includes(lesson.id)}
+                progress={lessonProgress[lesson.id] || 0}
+              />
+            ))}
           </div>
-        </CardContent>
-      </Card>
+
+          {/* Tip pro začátečníky */}
+          <Card className="border-blue-200 bg-blue-50 mt-6">
+            <CardContent className="pt-4">
+              <div className="flex items-start gap-3">
+                <Brain className="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" />
+                <div>
+                  <h4 className={`${useMobileLayout ? 'text-sm' : 'text-base'} font-medium mb-1`}>
+                    Tip pro efektivní učení
+                  </h4>
+                  <p className={`${useMobileLayout ? 'text-xs' : 'text-sm'} text-muted-foreground`}>
+                    Doporučujeme procházet lekce postupně a pravidelně opakovat naučené slovíčko. 
+                    Každá lekce obsahuje praktické příklady z reálného pracovního prostředí.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="challenges" className="mt-4">
+          <DailyChallenge onComplete={handleChallengeComplete} />
+        </TabsContent>
+
+        {!useMobileLayout && (
+          <TabsContent value="achievements" className="mt-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Trophy className="h-5 w-5 text-yellow-500" />
+                  Úspěchy a odznaky
+                </CardTitle>
+                <CardDescription>
+                  Odemkněte odznaky za splnění výzev a dosažení milníků
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-4">
+                  {/* Placeholder pro úspěchy */}
+                  <div className="border rounded-md p-3 bg-green-50 border-green-200">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Star className="h-5 w-5 text-yellow-500" />
+                      <span className="font-medium">První lekce</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground">Dokončili jste svou první lekci</p>
+                    <Badge className="mt-2 bg-green-500">Odemčeno</Badge>
+                  </div>
+                  
+                  <div className="border rounded-md p-3 opacity-60">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Trophy className="h-5 w-5 text-muted-foreground" />
+                      <span className="font-medium">Týdenní série</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground">Učte se 7 dní v řadě</p>
+                    <Badge variant="outline" className="mt-2">Zamčeno</Badge>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        )}
+      </Tabs>
     </div>
   );
 };
