@@ -1028,72 +1028,72 @@ export type Database = {
       }
       vehicles: {
         Row: {
-          average_consumption: string
+          average_consumption: string | null
           brand: string
-          color: string
+          color: string | null
           created_at: string
-          engine: string
-          fuel_type: string
+          engine: string | null
+          fuel_type: string | null
           id: string
-          insurance_monthly: string
-          last_repair_cost: string
-          last_service: string
+          insurance_monthly: string | null
+          last_repair_cost: string | null
+          last_service: string | null
           license_plate: string
-          mileage: string
+          mileage: string | null
           model: string
-          next_inspection: string
-          power: string
-          purchase_price: string
-          tax_yearly: string
-          transmission: string
+          next_inspection: string | null
+          power: string | null
+          purchase_price: string | null
+          tax_yearly: string | null
+          transmission: string | null
           updated_at: string
           user_id: string
           vin: string
           year: string
         }
         Insert: {
-          average_consumption: string
+          average_consumption?: string | null
           brand: string
-          color: string
+          color?: string | null
           created_at?: string
-          engine: string
-          fuel_type: string
+          engine?: string | null
+          fuel_type?: string | null
           id?: string
-          insurance_monthly: string
-          last_repair_cost: string
-          last_service: string
+          insurance_monthly?: string | null
+          last_repair_cost?: string | null
+          last_service?: string | null
           license_plate: string
-          mileage: string
+          mileage?: string | null
           model: string
-          next_inspection: string
-          power: string
-          purchase_price: string
-          tax_yearly: string
-          transmission: string
+          next_inspection?: string | null
+          power?: string | null
+          purchase_price?: string | null
+          tax_yearly?: string | null
+          transmission?: string | null
           updated_at?: string
           user_id: string
           vin: string
           year: string
         }
         Update: {
-          average_consumption?: string
+          average_consumption?: string | null
           brand?: string
-          color?: string
+          color?: string | null
           created_at?: string
-          engine?: string
-          fuel_type?: string
+          engine?: string | null
+          fuel_type?: string | null
           id?: string
-          insurance_monthly?: string
-          last_repair_cost?: string
-          last_service?: string
+          insurance_monthly?: string | null
+          last_repair_cost?: string | null
+          last_service?: string | null
           license_plate?: string
-          mileage?: string
+          mileage?: string | null
           model?: string
-          next_inspection?: string
-          power?: string
-          purchase_price?: string
-          tax_yearly?: string
-          transmission?: string
+          next_inspection?: string | null
+          power?: string | null
+          purchase_price?: string | null
+          tax_yearly?: string | null
+          transmission?: string | null
           updated_at?: string
           user_id?: string
           vin?: string
