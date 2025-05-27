@@ -1,11 +1,19 @@
 
-import { jsPDF } from 'jspdf';
+import { 
+  initializeProfessionalPDF, 
+  addProfessionalHeader, 
+  addProfessionalFooter,
+  createProfessionalTable,
+  addProfessionalSection,
+  addProfessionalInfoBox,
+  addProfessionalStatsCard,
+  PROFESSIONAL_COLORS,
+  SPACING
+} from "@/utils/pdf/professionalPdfHelper";
 import { format } from 'date-fns';
 import { cs } from 'date-fns/locale';
 import { toast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { initializePDF, addDocumentHeader, addDocumentFooter } from "@/utils/pdf/pdfHelper";
-import { createStyledTable, addSection, addInfoBox } from "@/utils/pdf/enhancedPdfHelper";
 
 export interface ShiftExportData {
   userId: string;
@@ -16,7 +24,7 @@ export interface ShiftExportData {
 }
 
 /**
- * Generate and download enhanced PDF report of shifts
+ * Generate professional PDF report of shifts
  */
 export const generateShiftsPdf = async (
   user: any, 
@@ -33,16 +41,16 @@ export const generateShiftsPdf = async (
       return shiftDate >= startOfMonth && shiftDate <= endOfMonth && shift.userId === user.id;
     });
 
-    // Create enhanced PDF document
-    const doc = initializePDF();
+    // Create professional PDF document
+    const doc = initializeProfessionalPDF();
     
     const title = `Přehled směn`;
-    const subtitle = `${format(selectedMonth, "MMMM yyyy", { locale: cs })} | ${user.email || user.username || ""}`;
-    addDocumentHeader(doc, title, subtitle);
+    const subtitle = `${format(selectedMonth, "MMMM yyyy", { locale: cs })} • ${user.email || user.username || ""}`;
+    addProfessionalHeader(doc, title, subtitle, 'primary');
     
     let currentY = 75;
 
-    // Statistická sekce
+    // Professional statistics section
     const morningShifts = filteredShifts.filter((s: any) => s.type === "morning").length;
     const afternoonShifts = filteredShifts.filter((s: any) => s.type === "afternoon").length;
     const nightShifts = filteredShifts.filter((s: any) => s.type === "night").length;
@@ -50,30 +58,45 @@ export const generateShiftsPdf = async (
     const totalHours = totalShifts * 8;
     const averagePerWeek = Math.round((totalShifts / 4.33) * 10) / 10;
 
-    currentY = addSection(doc, "Statistický přehled", currentY);
+    // Stats cards
+    const stats = [
+      { label: 'Celkem směn', value: totalShifts.toString(), color: PROFESSIONAL_COLORS.primary.main },
+      { label: 'Celkem hodin', value: `${totalHours}h`, color: PROFESSIONAL_COLORS.accent.main },
+      { label: 'Týdenní průměr', value: `${averagePerWeek}`, color: PROFESSIONAL_COLORS.success },
+      { label: 'Odhadovaný výdělek', value: `${totalHours * 150} Kč`, color: PROFESSIONAL_COLORS.secondary.main }
+    ];
     
-    await createStyledTable(doc, {
-      head: [['Typ směny', 'Počet', 'Podíl', 'Hodiny']],
+    currentY = addProfessionalStatsCard(doc, stats, currentY);
+    
+    // Breakdown section
+    currentY = addProfessionalSection(doc, "📊 Rozdělení podle typů směn", currentY, 'primary');
+    
+    await createProfessionalTable(doc, {
+      head: [['Typ směny', 'Počet', 'Podíl', 'Celkem hodin', 'Časové pásmo']],
       body: [
-        ['Ranní směny', morningShifts.toString(), `${Math.round((morningShifts/totalShifts)*100)}%`, `${morningShifts * 8}h`],
-        ['Odpolední směny', afternoonShifts.toString(), `${Math.round((afternoonShifts/totalShifts)*100)}%`, `${afternoonShifts * 8}h`],
-        ['Noční směny', nightShifts.toString(), `${Math.round((nightShifts/totalShifts)*100)}%`, `${nightShifts * 8}h`],
-        ['CELKEM', totalShifts.toString(), '100%', `${totalHours}h`]
+        ['Ranní směny', morningShifts.toString(), `${Math.round((morningShifts/totalShifts)*100)}%`, `${morningShifts * 8}h`, '06:00 - 14:00'],
+        ['Odpolední směny', afternoonShifts.toString(), `${Math.round((afternoonShifts/totalShifts)*100)}%`, `${afternoonShifts * 8}h`, '14:00 - 22:00'],
+        ['Noční směny', nightShifts.toString(), `${Math.round((nightShifts/totalShifts)*100)}%`, `${nightShifts * 8}h`, '22:00 - 06:00']
       ]
     }, currentY);
 
-    // Info box s dodatečnými statistikami
-    currentY = (doc as any).lastAutoTable.finalY + 10;
-    currentY = addInfoBox(
-      doc, 
-      `📊 Průměr: ${averagePerWeek} směn týdně | Odpracováno: ${totalHours} hodin | Výdělek (est.): ${totalHours * 150} Kč`, 
-      currentY, 
-      'info'
-    );
+    // Performance insights
+    currentY = (doc as any).lastAutoTable.finalY + SPACING.lg;
+    
+    let performanceMessage = "";
+    if (averagePerWeek >= 4) {
+      performanceMessage = `🎯 Výborné tempo! Průměr ${averagePerWeek} směn týdně překračuje standardní požadavky.`;
+    } else if (averagePerWeek >= 3) {
+      performanceMessage = `👍 Dobrý výkon! Průměr ${averagePerWeek} směn týdně je v normálu.`;
+    } else {
+      performanceMessage = `📈 Prostor pro zlepšení. Zvažte zvýšení počtu směn pro optimální výdělek.`;
+    }
+    
+    currentY = addProfessionalInfoBox(doc, performanceMessage, currentY, 'info');
 
-    // Detailní přehled směn
+    // Detailed shifts table if any exist
     if (filteredShifts.length > 0) {
-      currentY = addSection(doc, "Detailní přehled všech směn", currentY + 5);
+      currentY = addProfessionalSection(doc, "📅 Detailní přehled všech směn", currentY, 'secondary');
       
       const detailTableData = filteredShifts
         .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
@@ -104,15 +127,14 @@ export const generateShiftsPdf = async (
             dayName,
             shiftTypeText,
             timeRange,
-            shift.notes || "-"
+            shift.notes || "—"
           ];
         });
 
-      await createStyledTable(doc, {
-        head: [['#', 'Datum', 'Den', 'Typ', 'Čas', 'Poznámka']],
+      await createProfessionalTable(doc, {
+        head: [['#', 'Datum', 'Den v týdnu', 'Typ směny', 'Časové pásmo', 'Poznámka']],
         body: detailTableData
       }, currentY, {
-        styles: { fontSize: 9 },
         columnStyles: {
           0: { halign: 'center', cellWidth: 10 },
           1: { cellWidth: 25 },
@@ -122,20 +144,26 @@ export const generateShiftsPdf = async (
           5: { cellWidth: 'auto' }
         }
       });
+      
+      // Summary insight
+      currentY = (doc as any).lastAutoTable.finalY + SPACING.lg;
+      const summaryText = `📋 Celkem zobrazeno ${filteredShifts.length} směn za období ${format(selectedMonth, "MMMM yyyy", { locale: cs })}. Dokument vygenerován ${new Date().toLocaleString('cs-CZ')}.`;
+      currentY = addProfessionalInfoBox(doc, summaryText, currentY, 'success');
+      
     } else {
-      currentY = addInfoBox(
+      currentY = addProfessionalInfoBox(
         doc, 
-        "ℹ️ V tomto měsíci nejsou evidovány žádné směny", 
-        currentY + 5, 
+        "📭 V tomto měsíci nejsou evidovány žádné směny. Pro přidání nových směn použijte aplikaci PendlerApp.", 
+        currentY, 
         'warning'
       );
     }
 
-    // Přidání vylepšené patičky
-    addDocumentFooter(doc);
+    // Add professional footer
+    addProfessionalFooter(doc);
 
-    // Generate filename
-    const fileName = `smeny_${format(selectedMonth, "MM_yyyy")}_enhanced.pdf`;
+    // Generate filename with professional naming
+    const fileName = `PendlerApp_Smeny_${format(selectedMonth, "MM_yyyy")}.pdf`;
     doc.save(fileName);
 
     return fileName;

@@ -1,78 +1,121 @@
 
-import { initializePDF, addDocumentHeader, addDocumentFooter } from "@/utils/pdf/pdfHelper";
-import { createStyledTable, addSection, addInfoBox } from "@/utils/pdf/enhancedPdfHelper";
+import { 
+  initializeProfessionalPDF, 
+  addProfessionalHeader, 
+  addProfessionalFooter,
+  createProfessionalTable,
+  addProfessionalSection,
+  addProfessionalInfoBox,
+  addProfessionalStatsCard,
+  PROFESSIONAL_COLORS,
+  SPACING
+} from "@/utils/pdf/professionalPdfHelper";
 
-// Sample data - in a real application, this would be passed in
+// Enhanced sample data with more realistic values
 const detailedData = [
-  { name: '1. týden', auto: 42, mhd: 32 },
-  { name: '2. týden', auto: 36, mhd: 28 },
-  { name: '3. týden', auto: 38, mhd: 30 },
-  { name: '4. týden', auto: 32, mhd: 38 }
+  { name: '1. týden', auto: 42, mhd: 32, cost: 356 },
+  { name: '2. týden', auto: 36, mhd: 28, cost: 306 },
+  { name: '3. týden', auto: 38, mhd: 30, cost: 323 },
+  { name: '4. týden', auto: 32, mhd: 38, cost: 272 }
 ];
 
 export const generateComparisonPdf = async () => {
-  // Inicializace vylepšeného PDF
-  const doc = initializePDF();
+  // Initialize professional PDF
+  const doc = initializeProfessionalPDF();
   
-  // Přidání moderní hlavičky
-  addDocumentHeader(doc, "Analýza dojíždění", "Měsíční přehled nákladů a vzdáleností");
+  // Add professional header
+  addProfessionalHeader(doc, "Analýza dojíždění", "Měsíční přehled nákladů a vzdáleností • PendlerApp Professional", 'accent');
   
-  let currentY = 65;
+  let currentY = 75;
   
-  // Sekce se shrnutím
-  currentY = addSection(doc, "Souhrn za aktuální měsíc", currentY);
+  // Professional statistics overview
+  const totalDistance = detailedData.reduce((sum, item) => sum + item.auto + item.mhd, 0);
+  const totalCost = detailedData.reduce((sum, item) => sum + item.cost, 0);
+  const averageDaily = totalDistance / 20; // 20 working days
+  const co2Saved = 8.2;
   
-  // Vytvoření moderní tabulky se shrnutím
-  await createStyledTable(doc, {
-    head: [['Metrika', 'Hodnota', 'Poznámka']],
+  const stats = [
+    { label: 'Celková vzdálenost', value: `${totalDistance} km`, color: PROFESSIONAL_COLORS.primary.main },
+    { label: 'Celkové náklady', value: `${totalCost} Kč`, color: PROFESSIONAL_COLORS.accent.main },
+    { label: 'Denní průměr', value: `${averageDaily.toFixed(1)} km`, color: PROFESSIONAL_COLORS.secondary.main },
+    { label: 'Úspora CO₂', value: `${co2Saved} kg`, color: PROFESSIONAL_COLORS.success }
+  ];
+  
+  currentY = addProfessionalStatsCard(doc, stats, currentY);
+  
+  // Transport mode breakdown
+  currentY = addProfessionalSection(doc, "🚗 Analýza dopravních prostředků", currentY, 'primary');
+  
+  const autoTotal = detailedData.reduce((sum, item) => sum + item.auto, 0);
+  const mhdTotal = detailedData.reduce((sum, item) => sum + item.mhd, 0);
+  const autoPercent = Math.round((autoTotal / totalDistance) * 100);
+  const mhdPercent = 100 - autoPercent;
+  
+  await createProfessionalTable(doc, {
+    head: [['Dopravní prostředek', 'Vzdálenost (km)', 'Podíl (%)', 'Náklady na km', 'Celkové náklady']],
     body: [
-      ['Celková vzdálenost', '128 km', 'Měsíční součet'],
-      ['Průměrně denně', '6.4 km', 'Pracovní dny'],
-      ['Celkové náklady', '712 Kč', 'Auto + MHD'],
-      ['Úspora oproti min. měsíci', '243 Kč (25%)', 'Pozitivní trend'],
-      ['Automobil', '63 km (49%)', 'Snížení oproti průměru'],
-      ['MHD', '65 km (51%)', 'Zvýšení využití'],
-      ['Úspora CO2', '8.2 kg', 'Ekologický přínos']
+      ['Automobil', autoTotal.toString(), `${autoPercent}%`, '8,50 Kč', `${Math.round(autoTotal * 8.5)} Kč`],
+      ['MHD', mhdTotal.toString(), `${mhdPercent}%`, '3,20 Kč', `${Math.round(mhdTotal * 3.2)} Kč`],
+      ['CELKEM', totalDistance.toString(), '100%', '—', `${totalCost} Kč`]
     ]
   }, currentY);
   
-  // Info box s tipy
-  currentY = (doc as any).lastAutoTable.finalY + 10;
-  currentY = addInfoBox(
+  // Environmental impact
+  currentY = (doc as any).lastAutoTable.finalY + SPACING.lg;
+  currentY = addProfessionalInfoBox(
     doc, 
-    "💡 Tip: Zvýšením podílu MHD o dalších 10% můžete ušetřit až 150 Kč měsíčně!", 
+    `🌱 Ekologický dopad: Vaše rozhodnutí zvýšit podíl MHD přispěla k úspoře ${co2Saved} kg CO₂ oproti čistě automobilové dopravě. To odpovídá absorpci CO₂ jedním stromem za 4 měsíce.`, 
     currentY, 
-    'info'
+    'success'
   );
   
-  // Sekce s týdenními daty
-  currentY = addSection(doc, "Týdenní detailní přehled", currentY + 5);
+  // Weekly detailed breakdown
+  currentY = addProfessionalSection(doc, "📊 Týdenní detailní přehled", currentY, 'secondary');
   
-  // Týdenní data tabulka
-  await createStyledTable(doc, {
-    head: [['Týden', 'Automobil (km)', 'MHD (km)', 'Celkem (km)', 'Náklady (Kč)']],
+  await createProfessionalTable(doc, {
+    head: [['Týden', 'Automobil (km)', 'MHD (km)', 'Celkem (km)', 'Náklady (Kč)', 'Efektivita']],
     body: detailedData.map(item => [
       item.name, 
       item.auto.toString(), 
       item.mhd.toString(),
       (item.auto + item.mhd).toString(),
-      Math.round((item.auto * 8.5 + item.mhd * 3.2)).toString()
+      item.cost.toString(),
+      item.mhd > item.auto ? '🟢 Optimální' : '🟡 Dobrá'
     ])
   }, currentY);
   
-  // Ekologická sekce
-  currentY = (doc as any).lastAutoTable.finalY + 10;
-  currentY = addInfoBox(
+  // Optimization recommendations
+  currentY = (doc as any).lastAutoTable.finalY + SPACING.lg;
+  currentY = addProfessionalSection(doc, "💡 Doporučení pro optimalizaci", currentY, 'accent');
+  
+  const recommendations = [
+    'Zvýšení podílu MHD o dalších 10% = úspora 150 Kč měsíčně',
+    'Využití park & ride systému pro dlouhé trasy',
+    'Plánování cest mimo špičku pro rychlejší MHD',
+    'Kombinace kola + MHD pro krátké úseky'
+  ];
+  
+  await createProfessionalTable(doc, {
+    head: [['Doporučení', 'Potenciální přínos']],
+    body: recommendations.map((rec, index) => [
+      `${index + 1}. ${rec.split(' = ')[0]}`,
+      rec.includes(' = ') ? rec.split(' = ')[1] : 'Ekologický a zdravotní benefit'
+    ])
+  }, currentY);
+  
+  // Final summary
+  currentY = (doc as any).lastAutoTable.finalY + SPACING.lg;
+  currentY = addProfessionalInfoBox(
     doc, 
-    "🌱 Vaše rozhodnutí přispěla k úspoře 8.2 kg CO2 oproti čistě automobilové dopravě", 
+    `📈 Shrnutí: Váš současný mix dopravy je ${mhdPercent}% ekologický. Optimalizací můžete dosáhnout až 20% úspory nákladů při zachování komfortu dojíždění.`, 
     currentY, 
-    'success'
+    'info'
   );
   
-  // Přidání vylepšené patičky
-  addDocumentFooter(doc);
+  // Add professional footer
+  addProfessionalFooter(doc);
   
-  // Uložení s optimalizovaným názvem
-  const fileName = `analyza-dojizdeni-${new Date().toISOString().slice(0, 7)}.pdf`;
+  // Save with professional filename
+  const fileName = `PendlerApp_Analyza_Dojizdeni_${new Date().toISOString().slice(0, 7)}.pdf`;
   doc.save(fileName);
 };
