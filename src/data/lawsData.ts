@@ -1,23 +1,9 @@
 
-import { 
-  Euro, 
-  FileText, 
-  Briefcase, 
-  Heart, 
-  Clock,
-  Users,
-  Baby,
-  CalendarDays,
-  BabyIcon,
-  UserCheck,
-  Scale
-} from "lucide-react";
-
 export const lawCategories = [
-  { id: "work", label: "Pracovní právo", icon: <Briefcase className="h-5 w-5" /> },
-  { id: "tax", label: "Daně", icon: <Euro className="h-5 w-5" /> },
-  { id: "social", label: "Sociální zabezpečení", icon: <Users className="h-5 w-5" /> },
-  { id: "health", label: "Zdravotní pojištění", icon: <Heart className="h-5 w-5" /> },
+  { id: "work", label: "Pracovní právo", iconName: "Briefcase" },
+  { id: "tax", label: "Daně", iconName: "Euro" },
+  { id: "social", label: "Sociální zabezpečení", iconName: "Users" },
+  { id: "health", label: "Zdravotní pojištění", iconName: "Heart" },
 ];
 
 export const lawItems = [
@@ -27,7 +13,8 @@ export const lawItems = [
     description: "Informace o minimální mzdě v Německu",
     category: "work",
     updated: "2025-04-15",
-    icon: <Euro className="h-5 w-5 text-green-600" />,
+    iconName: "Euro",
+    iconColor: "text-green-600",
     path: "/laws/minimum-wage"
   },
   {
@@ -36,7 +23,8 @@ export const lawItems = [
     description: "Vysvětlení daňových tříd v Německu",
     category: "tax",
     updated: "2025-03-28",
-    icon: <FileText className="h-5 w-5 text-yellow-600" />,
+    iconName: "FileText",
+    iconColor: "text-yellow-600",
     path: "/laws/tax-classes"
   },
   {
@@ -45,7 +33,8 @@ export const lawItems = [
     description: "Jak funguje zdravotní pojištění v Německu",
     category: "health", 
     updated: "2025-04-02",
-    icon: <Heart className="h-5 w-5 text-red-600" />,
+    iconName: "Heart",
+    iconColor: "text-red-600",
     path: "/laws/health-insurance"
   },
   {
@@ -54,7 +43,8 @@ export const lawItems = [
     description: "Náležitosti pracovní smlouvy v Německu",
     category: "work",
     updated: "2025-03-18",
-    icon: <Briefcase className="h-5 w-5 text-blue-600" />,
+    iconName: "Briefcase",
+    iconColor: "text-blue-600",
     path: "/laws/work-contract"
   },
   {
@@ -63,7 +53,8 @@ export const lawItems = [
     description: "Jak podat daňové přiznání v Německu",
     category: "tax",
     updated: "2025-04-10",
-    icon: <FileText className="h-5 w-5 text-yellow-600" />,
+    iconName: "FileText",
+    iconColor: "text-yellow-600",
     path: "/laws/tax-return"
   },
   {
@@ -72,7 +63,8 @@ export const lawItems = [
     description: "Systém důchodového pojištění v Německu",
     category: "social",
     updated: "2025-03-25",
-    icon: <Clock className="h-5 w-5 text-purple-600" />,
+    iconName: "Clock",
+    iconColor: "text-purple-600",
     path: "/laws/pension-insurance"
   },
   {
@@ -81,7 +73,8 @@ export const lawItems = [
     description: "Práva zaměstnanců a ochranné zákony",
     category: "work",
     updated: "2025-03-30",
-    icon: <UserCheck className="h-5 w-5 text-blue-600" />,
+    iconName: "UserCheck",
+    iconColor: "text-blue-600",
     path: "/laws/employee-protection"
   },
   {
@@ -90,7 +83,8 @@ export const lawItems = [
     description: "Informace o příspěvku Kindergeld",
     category: "social",
     updated: "2025-04-05",
-    icon: <Baby className="h-5 w-5 text-pink-600" />,
+    iconName: "Baby",
+    iconColor: "text-pink-600",
     path: "/laws/child-benefits"
   },
   {
@@ -99,7 +93,8 @@ export const lawItems = [
     description: "Pravidla pracovní doby v Německu",
     category: "work", 
     updated: "2025-05-10",
-    icon: <Clock className="h-5 w-5 text-blue-600" />,
+    iconName: "Clock",
+    iconColor: "text-blue-600",
     path: "/laws/working-hours"
   },
   {
@@ -108,7 +103,8 @@ export const lawItems = [
     description: "Zákonný nárok na dovolenou v Německu",
     category: "work",
     updated: "2025-05-12",
-    icon: <CalendarDays className="h-5 w-5 text-green-600" />,
+    iconName: "CalendarDays",
+    iconColor: "text-green-600",
     path: "/laws/minimum-holidays"
   },
   {
@@ -117,7 +113,8 @@ export const lawItems = [
     description: "Informace o příspěvku Elterngeld",
     category: "social",
     updated: "2025-05-15",
-    icon: <BabyIcon className="h-5 w-5 text-pink-600" />,
+    iconName: "BabyIcon",
+    iconColor: "text-pink-600",
     path: "/laws/parental-allowance"
   },
   {
@@ -126,7 +123,8 @@ export const lawItems = [
     description: "Možnosti právní pomoci pro zahraniční pracovníky",
     category: "work",
     updated: "2025-05-08",
-    icon: <Scale className="h-5 w-5 text-indigo-600" />,
+    iconName: "Scale",
+    iconColor: "text-indigo-600",
     path: "/laws/legal-aid"
   },
 ];
