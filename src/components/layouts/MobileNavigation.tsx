@@ -7,7 +7,7 @@ import { useAuth } from '@/hooks/useAuth';
 import {
   Home,
   BarChart3,
-  Languages,
+  GraduationCap,
   Calendar,
   Calculator,
   Car,
@@ -42,7 +42,7 @@ const MobileNavigation = ({ onClose }: { onClose: () => void }) => {
   const navigationItems = [
     { label: 'Domů', href: '/', icon: Home },
     { label: 'Dashboard', href: '/dashboard', icon: BarChart3, authRequired: true },
-    { label: 'Výuka němčiny', href: '/language', icon: Languages },
+    { label: 'Lekce němčiny', href: '/vocabulary', icon: GraduationCap },
     { label: 'Směny', href: '/shifts', icon: Calendar, authRequired: true },
     { label: 'Kalkulačka', href: '/calculator', icon: Calculator },
     { label: 'Vozidlo', href: '/vehicle', icon: Car, authRequired: true },

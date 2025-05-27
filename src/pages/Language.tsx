@@ -16,7 +16,7 @@ import {
 const VocabularySection = React.lazy(() => 
   import("@/components/language/VocabularySection").catch(err => {
     console.error('Failed to load VocabularySection:', err);
-    return { default: () => <div className="p-4 text-center text-muted-foreground">Slovní zásoba se nenačetla</div> };
+    return { default: () => <div className="p-4 text-center text-muted-foreground">Lekce se nenačetly</div> };
   })
 );
 
@@ -52,9 +52,9 @@ const Language = () => {
   const languageTabs = [
     {
       id: "vocabulary",
-      label: "Slovíčka",
+      label: "Lekce",
       icon: BookOpenIcon,
-      description: "Učení německých slov"
+      description: "Interaktivní lekce němčiny"
     },
     {
       id: "grammar",
@@ -123,7 +123,7 @@ const Language = () => {
     <ErrorBoundaryWithFallback>
       <div className="container py-6 md:py-10 max-w-7xl">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight mb-2">Němčina</h1>
+          <h1 className="text-3xl font-bold tracking-tight mb-2">Lekce němčiny</h1>
           <p className="text-muted-foreground">
             Učte se německý jazyk efektivně s našimi interaktivními nástroji
           </p>

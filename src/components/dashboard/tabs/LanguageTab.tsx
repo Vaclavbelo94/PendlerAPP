@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Book, Target, Trophy, Calendar } from "lucide-react";
+import { GraduationCap, Target, Trophy, Calendar } from "lucide-react";
 
 const LanguageTab = () => {
   const navigate = useNavigate();
@@ -28,13 +28,13 @@ const LanguageTab = () => {
 
   const achievements = [
     { name: "7denní série", icon: Trophy, earned: true },
-    { name: "100 slov", icon: Book, earned: true },
+    { name: "100 slov", icon: GraduationCap, earned: true },
     { name: "První týden", icon: Calendar, earned: true },
     { name: "Perfekcionista", icon: Target, earned: false }
   ];
 
-  const handleNavigateToVocabulary = () => {
-    navigate('/language?tab=vocabulary');
+  const handleNavigateToLessons = () => {
+    navigate('/vocabulary');
   };
 
   const handleNavigateToExercises = () => {
@@ -99,10 +99,10 @@ const LanguageTab = () => {
             <Button 
               variant="outline" 
               className="w-full justify-start"
-              onClick={handleNavigateToVocabulary}
+              onClick={handleNavigateToLessons}
             >
-              <Book className="h-4 w-4 mr-2" />
-              Učit se slovíčka
+              <GraduationCap className="h-4 w-4 mr-2" />
+              Lekce němčiny
             </Button>
             <Button 
               variant="outline" 

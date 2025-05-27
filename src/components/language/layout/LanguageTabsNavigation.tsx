@@ -30,8 +30,8 @@ const LanguageTabsNavigation: React.FC<LanguageTabsNavigationProps> = ({
         </TabsTrigger>
         <TabsTrigger value="vocabulary" className="flex-1 py-1 sm:py-1.5 px-0.5 sm:px-1.5">
           <Bookmark className="h-3 w-3 sm:h-3.5 sm:w-3.5 sm:mr-1.5" />
-          <span className={isMobile ? "sr-only" : "hidden sm:inline text-xs"}>Slovní zásoba</span>
-          <span className={isMobile ? "text-[10px] mt-0.5" : "sm:hidden text-xs"}>Slovíčka</span>
+          <span className={isMobile ? "sr-only" : "hidden sm:inline text-xs"}>Lekce</span>
+          <span className={isMobile ? "text-[10px] mt-0.5" : "sm:hidden text-xs"}>Lekce</span>
           {renderBadge && renderBadge("vocabulary")}
         </TabsTrigger>
         <TabsTrigger value="phrases" className="flex-1 py-1 sm:py-1.5 px-0.5 sm:px-1.5">
