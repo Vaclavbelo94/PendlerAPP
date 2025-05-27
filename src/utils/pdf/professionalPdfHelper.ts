@@ -1,43 +1,43 @@
 
 import { jsPDF } from 'jspdf';
 
-// Profesionální brand colors
+// Profesionální brand colors s RGB hodnotami
 export const PROFESSIONAL_COLORS = {
   primary: {
-    main: '#2563eb', // Modern blue
-    light: '#3b82f6',
-    dark: '#1e40af',
-    50: '#eff6ff',
-    100: '#dbeafe',
-    500: '#3b82f6',
-    900: '#1e3a8a'
+    main: [37, 99, 235], // Modern blue RGB
+    light: [59, 130, 246],
+    dark: [30, 64, 175],
+    50: [239, 246, 255],
+    100: [219, 234, 254],
+    500: [59, 130, 246],
+    900: [30, 58, 138]
   },
   secondary: {
-    main: '#64748b', // Slate
-    light: '#94a3b8',
-    dark: '#475569'
+    main: [100, 116, 139], // Slate RGB
+    light: [148, 163, 184],
+    dark: [71, 85, 105]
   },
   accent: {
-    main: '#f59e0b', // Amber
-    light: '#fbbf24',
-    dark: '#d97706'
+    main: [245, 158, 11], // Amber RGB
+    light: [251, 191, 36],
+    dark: [217, 119, 6]
   },
   neutral: {
-    50: '#f8fafc',
-    100: '#f1f5f9',
-    200: '#e2e8f0',
-    300: '#cbd5e1',
-    400: '#94a3b8',
-    500: '#64748b',
-    600: '#475569',
-    700: '#334155',
-    800: '#1e293b',
-    900: '#0f172a'
+    50: [248, 250, 252],
+    100: [241, 245, 249],
+    200: [226, 232, 240],
+    300: [203, 213, 225],
+    400: [148, 163, 184],
+    500: [100, 116, 139],
+    600: [71, 85, 105],
+    700: [51, 65, 85],
+    800: [30, 41, 59],
+    900: [15, 23, 42]
   },
-  success: '#10b981',
-  warning: '#f59e0b',
-  error: '#ef4444',
-  white: '#ffffff'
+  success: [16, 185, 129],
+  warning: [245, 158, 11],
+  error: [239, 68, 68],
+  white: [255, 255, 255]
 };
 
 // Typography scale
@@ -98,7 +98,7 @@ export const addProfessionalHeader = (
   
   // Modern gradient header
   const color = PROFESSIONAL_COLORS[variant];
-  doc.setFillColor(color.main);
+  doc.setFillColor(color.main[0], color.main[1], color.main[2]);
   doc.rect(0, 0, pageWidth, headerHeight, 'F');
   
   // Add subtle overlay for depth
@@ -123,7 +123,7 @@ export const addProfessionalHeader = (
     // Modern fallback logo
     doc.setFillColor(255, 255, 255, 0.9);
     doc.roundedRect(logoX, logoY, logoSize, logoSize, 3, 3, 'F');
-    doc.setTextColor(color.main);
+    doc.setTextColor(color.main[0], color.main[1], color.main[2]);
     doc.setFontSize(12);
     doc.setFont("helvetica", "bold");
     doc.text("PA", logoX + logoSize/2, logoY + logoSize/2 + 2, { align: "center" });
@@ -157,7 +157,7 @@ export const addProfessionalHeader = (
   doc.text(timeStr, pageWidth - SPACING.lg, 22, { align: "right" });
   
   // Document title
-  doc.setTextColor(PROFESSIONAL_COLORS.neutral[900]);
+  doc.setTextColor(PROFESSIONAL_COLORS.neutral[900][0], PROFESSIONAL_COLORS.neutral[900][1], PROFESSIONAL_COLORS.neutral[900][2]);
   doc.setFontSize(TYPOGRAPHY.h1.size);
   doc.setFont("helvetica", "bold");
   doc.text(title, pageWidth / 2, headerHeight + 20, { align: "center" });
@@ -166,18 +166,18 @@ export const addProfessionalHeader = (
   if (subtitle) {
     doc.setFontSize(TYPOGRAPHY.body.size);
     doc.setFont("helvetica", "normal");
-    doc.setTextColor(PROFESSIONAL_COLORS.neutral[600]);
+    doc.setTextColor(PROFESSIONAL_COLORS.neutral[600][0], PROFESSIONAL_COLORS.neutral[600][1], PROFESSIONAL_COLORS.neutral[600][2]);
     doc.text(subtitle, pageWidth / 2, headerHeight + 28, { align: "center" });
   }
   
   // Modern separator line with gradient effect
   const separatorY = headerHeight + (subtitle ? 34 : 28);
-  doc.setDrawColor(PROFESSIONAL_COLORS.primary.main);
+  doc.setDrawColor(PROFESSIONAL_COLORS.primary.main[0], PROFESSIONAL_COLORS.primary.main[1], PROFESSIONAL_COLORS.primary.main[2]);
   doc.setLineWidth(2);
   doc.line(SPACING.xl, separatorY, pageWidth - SPACING.xl, separatorY);
   
   // Add subtle shadow
-  doc.setDrawColor(PROFESSIONAL_COLORS.neutral[200]);
+  doc.setDrawColor(PROFESSIONAL_COLORS.neutral[200][0], PROFESSIONAL_COLORS.neutral[200][1], PROFESSIONAL_COLORS.neutral[200][2]);
   doc.setLineWidth(0.5);
   doc.line(SPACING.xl, separatorY + 1, pageWidth - SPACING.xl, separatorY + 1);
 };
@@ -193,17 +193,17 @@ export const addProfessionalFooter = (doc: jsPDF): void => {
     doc.setPage(i);
     
     // Footer background
-    doc.setFillColor(PROFESSIONAL_COLORS.neutral[50]);
+    doc.setFillColor(PROFESSIONAL_COLORS.neutral[50][0], PROFESSIONAL_COLORS.neutral[50][1], PROFESSIONAL_COLORS.neutral[50][2]);
     doc.rect(0, pageHeight - footerHeight, pageWidth, footerHeight, 'F');
     
     // Top border
-    doc.setDrawColor(PROFESSIONAL_COLORS.neutral[200]);
+    doc.setDrawColor(PROFESSIONAL_COLORS.neutral[200][0], PROFESSIONAL_COLORS.neutral[200][1], PROFESSIONAL_COLORS.neutral[200][2]);
     doc.setLineWidth(0.5);
     doc.line(0, pageHeight - footerHeight, pageWidth, pageHeight - footerHeight);
     
     // Page number
     doc.setFontSize(TYPOGRAPHY.small.size);
-    doc.setTextColor(PROFESSIONAL_COLORS.neutral[600]);
+    doc.setTextColor(PROFESSIONAL_COLORS.neutral[600][0], PROFESSIONAL_COLORS.neutral[600][1], PROFESSIONAL_COLORS.neutral[600][2]);
     doc.setFont("helvetica", "normal");
     doc.text(`Strana ${i} z ${pageCount}`, SPACING.lg, pageHeight - 8);
     
@@ -217,7 +217,7 @@ export const addProfessionalFooter = (doc: jsPDF): void => {
     
     // Generated timestamp
     doc.setFontSize(TYPOGRAPHY.caption.size);
-    doc.setTextColor(PROFESSIONAL_COLORS.neutral[400]);
+    doc.setTextColor(PROFESSIONAL_COLORS.neutral[400][0], PROFESSIONAL_COLORS.neutral[400][1], PROFESSIONAL_COLORS.neutral[400][2]);
     doc.text(
       `Vygenerováno: ${new Date().toLocaleString('cs-CZ')}`,
       pageWidth - SPACING.lg,
@@ -240,7 +240,7 @@ export const createProfessionalTable = async (
     startY,
     theme: 'grid',
     headStyles: {
-      fillColor: [PROFESSIONAL_COLORS.primary.main.slice(1, 3), PROFESSIONAL_COLORS.primary.main.slice(3, 5), PROFESSIONAL_COLORS.primary.main.slice(5, 7)].map(hex => parseInt(hex, 16)),
+      fillColor: PROFESSIONAL_COLORS.primary.main,
       textColor: [255, 255, 255],
       fontStyle: 'bold',
       fontSize: TYPOGRAPHY.body.size,
@@ -250,14 +250,14 @@ export const createProfessionalTable = async (
     bodyStyles: {
       fontSize: TYPOGRAPHY.body.size,
       cellPadding: { top: 5, right: 8, bottom: 5, left: 8 },
-      textColor: [PROFESSIONAL_COLORS.neutral[800].slice(1, 3), PROFESSIONAL_COLORS.neutral[800].slice(3, 5), PROFESSIONAL_COLORS.neutral[800].slice(5, 7)].map(hex => parseInt(hex, 16))
+      textColor: PROFESSIONAL_COLORS.neutral[800]
     },
     alternateRowStyles: {
-      fillColor: [PROFESSIONAL_COLORS.neutral[50].slice(1, 3), PROFESSIONAL_COLORS.neutral[50].slice(3, 5), PROFESSIONAL_COLORS.neutral[50].slice(5, 7)].map(hex => parseInt(hex, 16))
+      fillColor: PROFESSIONAL_COLORS.neutral[50]
     },
     styles: {
       font: 'helvetica',
-      lineColor: [PROFESSIONAL_COLORS.neutral[200].slice(1, 3), PROFESSIONAL_COLORS.neutral[200].slice(3, 5), PROFESSIONAL_COLORS.neutral[200].slice(5, 7)].map(hex => parseInt(hex, 16)),
+      lineColor: PROFESSIONAL_COLORS.neutral[200],
       lineWidth: 0.5
     },
     margin: { left: SPACING.lg, right: SPACING.lg },
@@ -283,19 +283,17 @@ export const addProfessionalSection = (
   
   // Section background with rounded corners
   const color = PROFESSIONAL_COLORS[variant];
-  doc.setFillColor(color.light);
-  doc.setFillColor(color.main.slice(1, 3), color.main.slice(3, 5), color.main.slice(5, 7));
-  doc.setFillColor(255, 255, 255, 0.05);
+  doc.setFillColor(color.light[0], color.light[1], color.light[2], 0.1);
   doc.roundedRect(SPACING.lg, yPosition, pageWidth - (SPACING.lg * 2), sectionHeight, 2, 2, 'F');
   
   // Section title
   doc.setFontSize(TYPOGRAPHY.h3.size);
   doc.setFont("helvetica", "bold");
-  doc.setTextColor(PROFESSIONAL_COLORS.neutral[800]);
+  doc.setTextColor(PROFESSIONAL_COLORS.neutral[800][0], PROFESSIONAL_COLORS.neutral[800][1], PROFESSIONAL_COLORS.neutral[800][2]);
   doc.text(title, SPACING.lg + 4, yPosition + 9);
   
   // Accent line
-  doc.setDrawColor(color.main.slice(1, 3), color.main.slice(3, 5), color.main.slice(5, 7));
+  doc.setDrawColor(color.main[0], color.main[1], color.main[2]);
   doc.setLineWidth(3);
   doc.line(SPACING.lg + 4, yPosition + 11, SPACING.lg + 40, yPosition + 11);
   
@@ -325,24 +323,23 @@ export const addProfessionalInfoBox = (
   const boxHeight = Math.max(16, textHeight + boxPadding);
   
   // Box background with opacity
-  doc.setFillColor(config.bg.slice(1, 3), config.bg.slice(3, 5), config.bg.slice(5, 7));
-  doc.setFillColor(255, 255, 255, 0.1);
+  doc.setFillColor(config.bg[0], config.bg[1], config.bg[2], 0.1);
   doc.roundedRect(SPACING.lg, yPosition, pageWidth - (SPACING.lg * 2), boxHeight, 4, 4, 'F');
   
   // Border
-  doc.setDrawColor(config.bg.slice(1, 3), config.bg.slice(3, 5), config.bg.slice(5, 7));
+  doc.setDrawColor(config.bg[0], config.bg[1], config.bg[2]);
   doc.setLineWidth(1);
   doc.roundedRect(SPACING.lg, yPosition, pageWidth - (SPACING.lg * 2), boxHeight, 4, 4, 'S');
   
   // Icon (simplified as text)
   doc.setFontSize(12);
-  doc.setTextColor(config.bg.slice(1, 3), config.bg.slice(3, 5), config.bg.slice(5, 7));
+  doc.setTextColor(config.bg[0], config.bg[1], config.bg[2]);
   doc.text(config.icon, SPACING.lg + 4, yPosition + 8);
   
   // Text content
   doc.setFontSize(TYPOGRAPHY.body.size);
   doc.setFont("helvetica", "normal");
-  doc.setTextColor(PROFESSIONAL_COLORS.neutral[700]);
+  doc.setTextColor(PROFESSIONAL_COLORS.neutral[700][0], PROFESSIONAL_COLORS.neutral[700][1], PROFESSIONAL_COLORS.neutral[700][2]);
   doc.text(text, SPACING.lg + 12, yPosition + 8, { 
     maxWidth: pageWidth - (SPACING.lg * 2) - 12
   });
@@ -353,7 +350,7 @@ export const addProfessionalInfoBox = (
 // Professional stats card
 export const addProfessionalStatsCard = (
   doc: jsPDF,
-  stats: Array<{ label: string; value: string; color?: string }>,
+  stats: Array<{ label: string; value: string; color?: number[] }>,
   yPosition: number
 ): number => {
   const pageWidth = doc.internal.pageSize.width;
@@ -364,37 +361,27 @@ export const addProfessionalStatsCard = (
     const x = SPACING.lg + (index * (cardWidth + SPACING.md));
     
     // Card background
-    doc.setFillColor(PROFESSIONAL_COLORS.neutral[50]);
+    doc.setFillColor(PROFESSIONAL_COLORS.neutral[50][0], PROFESSIONAL_COLORS.neutral[50][1], PROFESSIONAL_COLORS.neutral[50][2]);
     doc.roundedRect(x, yPosition, cardWidth, cardHeight, 3, 3, 'F');
     
     // Card border
-    doc.setDrawColor(PROFESSIONAL_COLORS.neutral[200]);
+    doc.setDrawColor(PROFESSIONAL_COLORS.neutral[200][0], PROFESSIONAL_COLORS.neutral[200][1], PROFESSIONAL_COLORS.neutral[200][2]);
     doc.setLineWidth(0.5);
     doc.roundedRect(x, yPosition, cardWidth, cardHeight, 3, 3, 'S');
     
     // Value
     doc.setFontSize(16);
     doc.setFont("helvetica", "bold");
-    doc.setTextColor(stat.color || PROFESSIONAL_COLORS.primary.main);
+    const color = stat.color || PROFESSIONAL_COLORS.primary.main;
+    doc.setTextColor(color[0], color[1], color[2]);
     doc.text(stat.value, x + cardWidth/2, yPosition + 10, { align: "center" });
     
     // Label
     doc.setFontSize(TYPOGRAPHY.small.size);
     doc.setFont("helvetica", "normal");
-    doc.setTextColor(PROFESSIONAL_COLORS.neutral[600]);
+    doc.setTextColor(PROFESSIONAL_COLORS.neutral[600][0], PROFESSIONAL_COLORS.neutral[600][1], PROFESSIONAL_COLORS.neutral[600][2]);
     doc.text(stat.label, x + cardWidth/2, yPosition + 18, { align: "center" });
   });
   
   return yPosition + cardHeight + SPACING.lg;
-};
-
-// Export all functions
-export {
-  initializeProfessionalPDF,
-  addProfessionalHeader,
-  addProfessionalFooter,
-  createProfessionalTable,
-  addProfessionalSection,
-  addProfessionalInfoBox,
-  addProfessionalStatsCard
 };
