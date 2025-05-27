@@ -2,7 +2,7 @@
 import React from 'react';
 import { Document, Page, View, Text, StyleSheet } from '@react-pdf/renderer';
 
-// Moderní color palette
+// Moderní color palette - vylepšená paleta
 export const MODERN_COLORS = {
   primary: '#2563eb',      // Blue-600
   secondary: '#64748b',    // Slate-500  
@@ -31,71 +31,81 @@ const styles = StyleSheet.create({
     fontFamily: 'Helvetica',
     fontSize: 11,
     paddingTop: 0,
-    paddingBottom: 20,
+    paddingBottom: 30,
     paddingHorizontal: 0,
     backgroundColor: MODERN_COLORS.white,
-    color: MODERN_COLORS.neutral[800]
+    color: MODERN_COLORS.neutral[800],
+    lineHeight: 1.4
   },
   header: {
     backgroundColor: MODERN_COLORS.primary,
-    paddingVertical: 20,
-    paddingHorizontal: 30,
-    marginBottom: 30
+    paddingVertical: 25,
+    paddingHorizontal: 40,
+    marginBottom: 35
   },
   headerContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center'
   },
+  brandSection: {
+    flexDirection: 'column'
+  },
   brandText: {
     color: MODERN_COLORS.white
   },
   brandTitle: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 2
+    marginBottom: 4,
+    letterSpacing: '0.5px'
   },
   brandSubtitle: {
-    fontSize: 10,
-    opacity: 0.9
+    fontSize: 11,
+    opacity: 0.9,
+    fontStyle: 'italic'
   },
   headerInfo: {
     color: MODERN_COLORS.white,
     textAlign: 'right'
   },
   dateText: {
-    fontSize: 9,
-    opacity: 0.8,
-    marginBottom: 2
+    fontSize: 10,
+    opacity: 0.85,
+    marginBottom: 3
   },
   timeText: {
-    fontSize: 9,
-    opacity: 0.8
+    fontSize: 10,
+    opacity: 0.85
   },
   titleSection: {
-    paddingHorizontal: 30,
-    marginBottom: 25,
+    paddingHorizontal: 40,
+    marginBottom: 30,
     textAlign: 'center'
   },
   documentTitle: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
     color: MODERN_COLORS.neutral[900],
-    marginBottom: 8
+    marginBottom: 10,
+    letterSpacing: '0.3px'
   },
   documentSubtitle: {
-    fontSize: 12,
-    color: MODERN_COLORS.neutral[600]
+    fontSize: 13,
+    color: MODERN_COLORS.neutral[600],
+    fontStyle: 'italic'
   },
   separator: {
-    height: 2,
+    height: 3,
     backgroundColor: MODERN_COLORS.primary,
-    marginHorizontal: 30,
-    marginBottom: 25,
-    borderRadius: 1
+    marginHorizontal: 40,
+    marginBottom: 30,
+    borderRadius: 2,
+    // Gradient effect simulation
+    boxShadow: `0 2px 4px ${MODERN_COLORS.primary}40`
   },
   content: {
-    paddingHorizontal: 30,
+    paddingHorizontal: 40,
     flex: 1
   },
   footer: {
@@ -104,9 +114,9 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     backgroundColor: MODERN_COLORS.neutral[50],
-    paddingVertical: 12,
-    paddingHorizontal: 30,
-    borderTopWidth: 1,
+    paddingVertical: 15,
+    paddingHorizontal: 40,
+    borderTopWidth: 2,
     borderTopColor: MODERN_COLORS.neutral[200]
   },
   footerContent: {
@@ -115,12 +125,23 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   footerText: {
-    fontSize: 8,
+    fontSize: 9,
     color: MODERN_COLORS.neutral[500]
   },
   pageNumber: {
-    fontSize: 8,
-    color: MODERN_COLORS.neutral[600]
+    fontSize: 9,
+    color: MODERN_COLORS.neutral[600],
+    fontWeight: 'bold'
+  },
+  watermark: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%) rotate(-45deg)',
+    fontSize: 60,
+    color: MODERN_COLORS.neutral[100],
+    opacity: 0.1,
+    zIndex: -1
   }
 });
 
@@ -128,14 +149,14 @@ interface ModernPDFTemplateProps {
   title: string;
   subtitle?: string;
   children: React.ReactNode;
-  showLogo?: boolean;
+  showWatermark?: boolean;
 }
 
 export const ModernPDFTemplate: React.FC<ModernPDFTemplateProps> = ({ 
   title, 
   subtitle, 
   children,
-  showLogo = false // Vypnuto kvůli problémům s obrázky
+  showWatermark = false
 }) => {
   const currentDate = new Date();
   const dateStr = currentDate.toLocaleDateString('cs-CZ', {
@@ -151,12 +172,19 @@ export const ModernPDFTemplate: React.FC<ModernPDFTemplateProps> = ({
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {/* Header */}
+        {/* Optional Watermark */}
+        {showWatermark && (
+          <Text style={styles.watermark}>PendlerApp</Text>
+        )}
+
+        {/* Modern Header */}
         <View style={styles.header}>
           <View style={styles.headerContent}>
-            <View style={styles.brandText}>
-              <Text style={styles.brandTitle}>PendlerApp</Text>
-              <Text style={styles.brandSubtitle}>Profesionální řešení pro české pendlery</Text>
+            <View style={styles.brandSection}>
+              <View style={styles.brandText}>
+                <Text style={styles.brandTitle}>PendlerApp</Text>
+                <Text style={styles.brandSubtitle}>Profesionální řešení pro české pendlery</Text>
+              </View>
             </View>
             <View style={styles.headerInfo}>
               <Text style={styles.dateText}>{dateStr}</Text>
@@ -171,7 +199,7 @@ export const ModernPDFTemplate: React.FC<ModernPDFTemplateProps> = ({
           {subtitle && <Text style={styles.documentSubtitle}>{subtitle}</Text>}
         </View>
 
-        {/* Separator */}
+        {/* Modern Separator */}
         <View style={styles.separator} />
 
         {/* Content */}
@@ -179,17 +207,17 @@ export const ModernPDFTemplate: React.FC<ModernPDFTemplateProps> = ({
           {children}
         </View>
 
-        {/* Footer */}
+        {/* Enhanced Footer */}
         <View style={styles.footer}>
           <View style={styles.footerContent}>
             <Text style={styles.footerText}>
-              PendlerApp © {currentDate.getFullYear()} | www.pendlerapp.cz
+              PendlerApp © {currentDate.getFullYear()} | www.pendlerapp.cz | info@pendlerapp.cz
             </Text>
             <Text style={styles.pageNumber} render={({ pageNumber, totalPages }) => 
               `Strana ${pageNumber} z ${totalPages}`
             } />
             <Text style={styles.footerText}>
-              Vygenerováno: {currentDate.toLocaleString('cs-CZ')}
+              Vygenerováno: {currentDate.toLocaleDateString('cs-CZ')} {currentDate.toLocaleTimeString('cs-CZ')}
             </Text>
           </View>
         </View>

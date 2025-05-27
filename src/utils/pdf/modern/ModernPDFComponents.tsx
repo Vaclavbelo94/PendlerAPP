@@ -120,13 +120,20 @@ export const ModernSection: React.FC<ModernSectionProps> = ({ title, children })
 interface ModernTableProps {
   headers: string[];
   data: (string | number)[][];
+  columnWidths?: string[];
 }
 
-export const ModernTable: React.FC<ModernTableProps> = ({ headers, data }) => (
+export const ModernTable: React.FC<ModernTableProps> = ({ headers, data, columnWidths }) => (
   <View style={styles.table}>
     <View style={styles.tableHeader}>
       {headers.map((header, index) => (
-        <Text key={index} style={styles.tableHeaderCell}>
+        <Text 
+          key={index} 
+          style={[
+            styles.tableHeaderCell,
+            columnWidths && { width: columnWidths[index] }
+          ]}
+        >
           {header}
         </Text>
       ))}
@@ -136,7 +143,10 @@ export const ModernTable: React.FC<ModernTableProps> = ({ headers, data }) => (
         {row.map((cell, cellIndex) => (
           <Text 
             key={cellIndex} 
-            style={rowIndex === data.length - 1 && cell.toString().includes('CELKEM') ? styles.tableCellBold : styles.tableCell}
+            style={[
+              rowIndex === data.length - 1 && cell.toString().includes('CELKEM') ? styles.tableCellBold : styles.tableCell,
+              columnWidths && { width: columnWidths[cellIndex] }
+            ]}
           >
             {cell?.toString() || ''}
           </Text>
