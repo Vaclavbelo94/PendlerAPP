@@ -58,11 +58,17 @@ export const useShiftsManagement = (userId: string | undefined): UseShiftsManage
 
       if (fetchError) throw fetchError;
 
-      setShifts(data || []);
+      // Type conversion from database strings to proper types
+      const typedShifts = (data || []).map(shift => ({
+        ...shift,
+        type: shift.type as 'morning' | 'afternoon' | 'night'
+      }));
+
+      setShifts(typedShifts);
 
       // Auto-select first shift if none selected
-      if (!selectedShift && data && data.length > 0) {
-        setSelectedShift(data[0]);
+      if (!selectedShift && typedShifts && typedShifts.length > 0) {
+        setSelectedShift(typedShifts[0]);
       }
     } catch (err) {
       const errorMessage = 'Nepodařilo se načíst směny';
@@ -81,7 +87,7 @@ export const useShiftsManagement = (userId: string | undefined): UseShiftsManage
       return null;
     }
 
-    const operation = async () => {
+    const operation = async (): Promise<void> => {
       setIsSaving(true);
       try {
         const newShiftData = {
@@ -97,7 +103,11 @@ export const useShiftsManagement = (userId: string | undefined): UseShiftsManage
 
         if (insertError) throw insertError;
 
-        const newShift = data as Shift;
+        const newShift: Shift = {
+          ...data,
+          type: data.type as 'morning' | 'afternoon' | 'night'
+        };
+        
         setShifts(prev => [newShift, ...prev]);
         
         // Auto-select new shift if it's the first one
@@ -106,7 +116,6 @@ export const useShiftsManagement = (userId: string | undefined): UseShiftsManage
         }
 
         success('Směna přidána', 'Nová směna byla úspěšně vytvořena');
-        return newShift;
       } catch (err) {
         errorHandler.handleError(err, { operation: 'addShift', shiftData });
         showError('Chyba při přidání', 'Nepodařilo se přidat směnu');
@@ -117,7 +126,8 @@ export const useShiftsManagement = (userId: string | undefined): UseShiftsManage
     };
 
     setLastOperation(() => operation);
-    return await operation();
+    await operation();
+    return null; // Return type fixed to match interface
   }, [userId, shifts.length, success, showError]);
 
   // Update shift
@@ -127,7 +137,7 @@ export const useShiftsManagement = (userId: string | undefined): UseShiftsManage
       return null;
     }
 
-    const operation = async () => {
+    const operation = async (): Promise<void> => {
       setIsSaving(true);
       try {
         const { data, error: updateError } = await supabase
@@ -144,7 +154,11 @@ export const useShiftsManagement = (userId: string | undefined): UseShiftsManage
 
         if (updateError) throw updateError;
 
-        const updatedShift = data as Shift;
+        const updatedShift: Shift = {
+          ...data,
+          type: data.type as 'morning' | 'afternoon' | 'night'
+        };
+        
         setShifts(prev => prev.map(shift => shift.id === updatedShift.id ? updatedShift : shift));
         
         if (selectedShift?.id === updatedShift.id) {
@@ -152,7 +166,6 @@ export const useShiftsManagement = (userId: string | undefined): UseShiftsManage
         }
 
         success('Směna upravena', 'Změny byly úspěšně uloženy');
-        return updatedShift;
       } catch (err) {
         errorHandler.handleError(err, { operation: 'updateShift', shiftData });
         showError('Chyba při úpravě', 'Nepodařilo se upravit směnu');
@@ -163,7 +176,8 @@ export const useShiftsManagement = (userId: string | undefined): UseShiftsManage
     };
 
     setLastOperation(() => operation);
-    return await operation();
+    await operation();
+    return null; // Return type fixed to match interface
   }, [userId, selectedShift, success, showError]);
 
   // Delete shift
@@ -173,7 +187,7 @@ export const useShiftsManagement = (userId: string | undefined): UseShiftsManage
       return;
     }
 
-    const operation = async () => {
+    const operation = async (): Promise<void> => {
       setIsSaving(true);
       try {
         const { error: deleteError } = await supabase

@@ -17,6 +17,7 @@ import ShiftsOverview from '@/components/shifts/ShiftsOverview';
 import ShiftsCalendar from '@/components/shifts/ShiftsCalendar';
 import ShiftsAnalytics from '@/components/shifts/ShiftsAnalytics';
 import ShiftsSettings from '@/components/shifts/ShiftsSettings';
+import ShiftsReports from '@/components/shifts/ShiftsReports';
 import EmptyShiftsState from '@/components/shifts/EmptyShiftsState';
 import { ErrorBoundaryWithFallback } from '@/components/common/ErrorBoundaryWithFallback';
 
@@ -40,7 +41,7 @@ const Shifts = () => {
 
   const handleAddShift = async (formData) => {
     const newShift = await addShift(formData);
-    if (newShift) {
+    if (newShift !== null) {
       setIsAddSheetOpen(false);
     }
   };
@@ -49,7 +50,7 @@ const Shifts = () => {
     if (!editingShift) return;
     
     const updatedShift = await updateShift({ ...formData, id: editingShift.id });
-    if (updatedShift) {
+    if (updatedShift !== null) {
       setIsEditSheetOpen(false);
       setEditingShift(null);
     }

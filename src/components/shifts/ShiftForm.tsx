@@ -29,7 +29,7 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
   const [date, setDate] = useState<Date | undefined>(
     shift ? new Date(shift.date) : new Date()
   );
-  const [type, setType] = useState(shift?.type || 'morning');
+  const [type, setType] = useState<'morning' | 'afternoon' | 'night'>(shift?.type || 'morning');
   const [notes, setNotes] = useState(shift?.notes || '');
 
   useEffect(() => {
@@ -50,6 +50,10 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
       type,
       notes: notes.trim()
     });
+  };
+
+  const handleTypeChange = (value: string) => {
+    setType(value as 'morning' | 'afternoon' | 'night');
   };
 
   return (
@@ -82,7 +86,7 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
 
       <div className="space-y-2">
         <Label htmlFor="type">Typ směny *</Label>
-        <Select value={type} onValueChange={setType}>
+        <Select value={type} onValueChange={handleTypeChange}>
           <SelectTrigger>
             <SelectValue placeholder="Vyberte typ směny" />
           </SelectTrigger>
