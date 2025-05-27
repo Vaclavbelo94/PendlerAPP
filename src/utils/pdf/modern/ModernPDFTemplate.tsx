@@ -176,7 +176,7 @@ export const ModernPDFTemplate: React.FC<ModernPDFTemplateProps> = ({
             <View style={styles.logoSection}>
               {showLogo && (
                 <Image 
-                  src="/lovable-uploads/88ef4e0f-4d33-458c-98f4-7b644e5b8588.png"
+                  src="https://images.unsplash.com/photo-1572044162444-ad60f128bdea?w=100&h=100&fit=crop&crop=center"
                   style={styles.logo}
                 />
               )}

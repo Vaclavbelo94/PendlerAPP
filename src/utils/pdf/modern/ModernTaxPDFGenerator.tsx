@@ -124,18 +124,42 @@ const ModernTaxDocument: React.FC<ModernTaxDocumentProps> = ({ data }) => {
 };
 
 export const generateModernTaxDocument = async (data: DocumentData): Promise<Blob> => {
-  const blob = await pdf(<ModernTaxDocument data={data} />).toBlob();
-  return blob;
+  try {
+    console.log('Generování PDF dokumentu...', data);
+    const blob = await pdf(<ModernTaxDocument data={data} />).toBlob();
+    console.log('PDF dokument úspěšně vygenerován');
+    return blob;
+  } catch (error) {
+    console.error('Chyba při generování PDF:', error);
+    throw new Error('Nepodařilo se vygenerovat PDF dokument: ' + (error as Error).message);
+  }
 };
 
 export const downloadModernTaxDocument = async (data: DocumentData): Promise<void> => {
-  const blob = await generateModernTaxDocument(data);
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = `PendlerApp_${getDocumentTitle(data.documentType).replace(/\s+/g, '_').toLowerCase()}_${data.yearOfTax}_modern.pdf`;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
+  try {
+    console.log('Zahajování stahování PDF dokumentu...');
+    const blob = await generateModernTaxDocument(data);
+    
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    
+    const filename = `PendlerApp_${getDocumentTitle(data.documentType).replace(/\s+/g, '_').toLowerCase()}_${data.yearOfTax}_modern.pdf`;
+    link.download = filename;
+    
+    console.log('Stahování souboru:', filename);
+    
+    // Přidáme link do DOM, klikneme a odstraníme
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Vyčistíme URL
+    URL.revokeObjectURL(url);
+    
+    console.log('PDF dokument úspěšně stažen');
+  } catch (error) {
+    console.error('Chyba při stahování PDF:', error);
+    throw error;
+  }
 };

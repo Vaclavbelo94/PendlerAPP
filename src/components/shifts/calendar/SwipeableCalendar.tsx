@@ -1,6 +1,6 @@
 
 import React, { useRef, useState } from 'react';
-import { TouchCalendar } from '@/components/ui/touch-calendar';
+import { Calendar } from '@/components/ui/calendar';
 import { addMonths, subMonths } from 'date-fns';
 import type { DayPickerSingleProps } from 'react-day-picker';
 
@@ -89,11 +89,8 @@ export const SwipeableCalendar: React.FC<SwipeableCalendarProps> = ({
       onTouchEnd={handleTouchEnd}
       className="select-none"
     >
-      <TouchCalendar
+      <Calendar
         mode={mode}
-        onSwipeLeft={handleSwipeLeft}
-        onSwipeRight={handleSwipeRight}
-        enableTouch={true}
         className={className}
         {...props}
       />
