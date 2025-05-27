@@ -12,10 +12,10 @@ import OptimizedShiftsAnalytics from './OptimizedShiftsAnalytics';
 import ShiftsReports from './ShiftsReports';
 import ShiftsSettings from './ShiftsSettings';
 import EmptyShiftsState from './EmptyShiftsState';
+import { ShiftsNavigation } from './ShiftsNavigation';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { RefreshCw, AlertCircle, Wifi, WifiOff, Calendar, BarChart3, FileText, Settings } from 'lucide-react';
+import { RefreshCw, AlertCircle, Wifi, WifiOff } from 'lucide-react';
 
 const OptimizedShiftsContainer: React.FC = () => {
   const { user, isInitialized } = useSimplifiedAuth();
@@ -189,33 +189,16 @@ const OptimizedShiftsContainer: React.FC = () => {
 
       <ShiftsPageHeader onAddShift={handleOpenAddSheet} />
 
-      {/* Navigation with debouncing */}
-      <Tabs value={activeSection} onValueChange={handleSectionChange} className="w-full">
-        <div className="flex justify-between items-center mb-6">
-          <TabsList className="grid w-full grid-cols-4 lg:w-auto">
-            <TabsTrigger value="calendar" className="flex items-center gap-2">
-              <Calendar className="h-4 w-4" />
-              <span className="hidden sm:inline">Kalendář</span>
-            </TabsTrigger>
-            <TabsTrigger value="analytics" className="flex items-center gap-2">
-              <BarChart3 className="h-4 w-4" />
-              <span className="hidden sm:inline">Analytika</span>
-            </TabsTrigger>
-            <TabsTrigger value="reports" className="flex items-center gap-2">
-              <FileText className="h-4 w-4" />
-              <span className="hidden sm:inline">Reporty</span>
-            </TabsTrigger>
-            <TabsTrigger value="settings" className="flex items-center gap-2">
-              <Settings className="h-4 w-4" />
-              <span className="hidden sm:inline">Nastavení</span>
-            </TabsTrigger>
-          </TabsList>
-        </div>
+      {/* Category Navigation - same style as Vehicles section */}
+      <ShiftsNavigation
+        activeSection={activeSection}
+        onSectionChange={handleSectionChange}
+      />
 
-        <TabsContent value={activeSection} className="mt-0">
-          {renderContent()}
-        </TabsContent>
-      </Tabs>
+      {/* Content */}
+      <div className="mt-6">
+        {renderContent()}
+      </div>
 
       <ShiftsFormSheets
         isAddSheetOpen={isAddSheetOpen}
