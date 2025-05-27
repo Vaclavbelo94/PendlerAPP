@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -17,7 +16,6 @@ import { PromoCodesPanel } from "@/components/admin/PromoCodesPanel";
 import { PremiumFeaturesPanel } from "@/components/admin/PremiumFeaturesPanel";
 import { PasswordResetPanel } from "@/components/admin/PasswordResetPanel";
 import SystemMonitoringPanel from "@/components/admin/monitoring/SystemMonitoringPanel";
-import SystemLogsPanel from "@/components/admin/logs/SystemLogsPanel";
 import DatabasePanel from "@/components/admin/database/DatabasePanel";
 
 const AdminContent = () => {
@@ -36,7 +34,7 @@ const AdminContent = () => {
       case 'premium-features':
         return <PremiumFeaturesPanel />;
       case 'system-logs':
-        return <SystemLogsPanel />;
+        return <div className="p-4">Systémové logy - zatím nedostupné</div>;
       case 'system-monitoring':
         return <SystemMonitoringPanel />;
       case 'database':
