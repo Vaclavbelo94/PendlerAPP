@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -12,10 +11,13 @@ import { AdminLayout } from "@/components/admin/core/AdminLayout";
 import { AdminDashboard } from "@/components/admin/core/AdminDashboard";
 import { useAdminContext } from "@/components/admin/core/AdminProvider";
 import { UserManagement } from "@/components/admin/users";
+import { UserActivityPanel } from "@/components/admin/users/UserActivityPanel";
 import { PromoCodesPanel } from "@/components/admin/PromoCodesPanel";
 import { PremiumFeaturesPanel } from "@/components/admin/PremiumFeaturesPanel";
 import { PasswordResetPanel } from "@/components/admin/PasswordResetPanel";
 import SystemMonitoringPanel from "@/components/admin/monitoring/SystemMonitoringPanel";
+import SystemLogsPanel from "@/components/admin/logs/SystemLogsPanel";
+import DatabasePanel from "@/components/admin/database/DatabasePanel";
 
 const AdminContent = () => {
   const { currentSection } = useAdminContext();
@@ -27,17 +29,17 @@ const AdminContent = () => {
       case 'users-roles':
         return <div className="p-4">Role a oprávnění - zatím nedostupné</div>;
       case 'users-activity':
-        return <div className="p-4">Aktivita uživatelů - zatím nedostupné</div>;
+        return <UserActivityPanel />;
       case 'promo-codes':
         return <PromoCodesPanel />;
       case 'premium-features':
         return <PremiumFeaturesPanel />;
       case 'system-logs':
-        return <div className="p-4">Systémové logy - zatím nedostupné</div>;
+        return <SystemLogsPanel />;
       case 'system-monitoring':
         return <SystemMonitoringPanel />;
       case 'database':
-        return <div className="p-4">Databáze - zatím nedostupné</div>;
+        return <DatabasePanel />;
       case 'password-reset':
         return <PasswordResetPanel />;
       default:

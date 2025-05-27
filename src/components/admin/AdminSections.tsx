@@ -1,11 +1,15 @@
 
-import { Users, Settings, Crown, Key, BarChart3, Activity } from "lucide-react";
+import { Users, Settings, Crown, Key, BarChart3, Activity, Database, FileText, Shield, RefreshCw } from "lucide-react";
 import { UserAdminPanel } from "./UserAdminPanel";
 import { PromoCodesPanel } from "./PromoCodesPanel";
 import { PasswordResetPanel } from "./PasswordResetPanel";
 import { PremiumFeaturesPanel } from "./PremiumFeaturesPanel";
 import AdminAnalyticsDashboard from "./analytics/AdminAnalyticsDashboard";
 import SystemMonitoringPanel from "./monitoring/SystemMonitoringPanel";
+import { UserManagement } from "./users/UserManagement";
+import { UserActivityPanel } from "./users/UserActivityPanel";
+import SystemLogsPanel from "./logs/SystemLogsPanel";
+import DatabasePanel from "./database/DatabasePanel";
 
 export const adminSections = [
   {
@@ -18,16 +22,34 @@ export const adminSections = [
     category: "user-management"
   },
   {
-    id: "reset",
+    id: "users-list",
+    title: "Seznam uživatelů",
+    description: "Kompletní přehled a správa všech uživatelů",
+    icon: <Users className="h-6 w-6" />,
+    component: <UserManagement />,
+    variant: "primary" as const,
+    category: "user-management"
+  },
+  {
+    id: "users-activity",
+    title: "Aktivita uživatelů",
+    description: "Monitoring a audit uživatelských akcí",
+    icon: <Activity className="h-6 w-6" />,
+    component: <UserActivityPanel />,
+    variant: "secondary" as const,
+    category: "user-management"
+  },
+  {
+    id: "password-reset",
     title: "Reset hesla",
     description: "Generování a správa odkazů pro reset hesla uživatelů",
-    icon: <Settings className="h-6 w-6" />,
+    icon: <RefreshCw className="h-6 w-6" />,
     component: <PasswordResetPanel />,
     variant: "secondary" as const,
     category: "user-management"
   },
   {
-    id: "premium",
+    id: "premium-features",
     title: "Premium funkce",
     description: "Konfigurace a správa prémiových funkcí aplikace",
     icon: <Crown className="h-6 w-6" />,
@@ -36,7 +58,7 @@ export const adminSections = [
     category: "features"
   },
   {
-    id: "promo",
+    id: "promo-codes",
     title: "Promo kódy",
     description: "Vytváření, správa a analýza promocijních kódů",
     icon: <Key className="h-6 w-6" />,
@@ -54,12 +76,30 @@ export const adminSections = [
     category: "monitoring"
   },
   {
-    id: "monitoring",
+    id: "system-monitoring",
     title: "Systémové monitorování",
     description: "Real-time metriky výkonu a zdraví systému",
     icon: <Activity className="h-6 w-6" />,
     component: <SystemMonitoringPanel />,
     variant: "accent" as const,
     category: "monitoring"
+  },
+  {
+    id: "system-logs",
+    title: "Systémové logy",
+    description: "Monitoring a analýza systémových událostí",
+    icon: <FileText className="h-6 w-6" />,
+    component: <SystemLogsPanel />,
+    variant: "secondary" as const,
+    category: "system"
+  },
+  {
+    id: "database",
+    title: "Správa databáze",
+    description: "Statistiky, backup a SQL runner",
+    icon: <Database className="h-6 w-6" />,
+    component: <DatabasePanel />,
+    variant: "accent" as const,
+    category: "system"
   }
 ];
