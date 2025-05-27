@@ -11,11 +11,11 @@ const Laws = () => {
   const [activeCategory, setActiveCategory] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
 
-  // Simulate initial loading
+  // Simulate initial loading with shorter duration
   React.useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 300);
+    }, 100); // Reduced loading time
     
     return () => clearTimeout(timer);
   }, []);

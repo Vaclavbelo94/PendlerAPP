@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { ShieldIcon, LockIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,18 +11,44 @@ interface PremiumCheckProps {
 }
 
 const PremiumCheck: React.FC<PremiumCheckProps> = ({ featureKey, children }) => {
-  const { isVerifying, canAccess } = useUnifiedPremiumStatus(featureKey);
   const navigate = useNavigate();
+  const { isVerifying, canAccess, isSpecialUser } = useUnifiedPremiumStatus(featureKey);
 
-  if (isVerifying) {
+  // Memoize the premium check result to prevent unnecessary re-renders
+  const premiumCheckResult = useMemo(() => {
+    // Special users (admin, etc.) get immediate access
+    if (isSpecialUser) {
+      return { shouldRender: true, showPremiumPrompt: false };
+    }
+
+    // If still verifying, show loading
+    if (isVerifying) {
+      return { shouldRender: false, showPremiumPrompt: false };
+    }
+
+    // If can access, show content
+    if (canAccess) {
+      return { shouldRender: true, showPremiumPrompt: false };
+    }
+
+    // Otherwise show premium prompt
+    return { shouldRender: false, showPremiumPrompt: true };
+  }, [isVerifying, canAccess, isSpecialUser]);
+
+  // Show loading state with timeout fallback
+  if (isVerifying && !isSpecialUser) {
     return (
       <div className="flex justify-center items-center w-full p-12">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+        <div className="text-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent mx-auto mb-4"></div>
+          <p className="text-sm text-muted-foreground">Ověřuji přístup...</p>
+        </div>
       </div>
     );
   }
 
-  if (!canAccess) {
+  // Show premium prompt
+  if (premiumCheckResult.showPremiumPrompt) {
     return (
       <div className="container py-8">
         <Card className="text-center">
@@ -57,6 +82,7 @@ const PremiumCheck: React.FC<PremiumCheckProps> = ({ featureKey, children }) => 
     );
   }
 
+  // Render children if access is granted
   return <>{children}</>;
 };
 
