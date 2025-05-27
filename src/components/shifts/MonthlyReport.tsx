@@ -103,7 +103,10 @@ export const MonthlyReport = ({ shifts, user, selectedMonth, onSelectDate }: Mon
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => onSelectDate(dateFromDBString(shift.date))}
+                        onClick={() => {
+                          const dateObj = dateFromDBString(shift.date);
+                          onSelectDate(dateObj);
+                        }}
                       >
                         Zobrazit
                       </Button>
