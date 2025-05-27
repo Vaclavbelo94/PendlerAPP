@@ -6,10 +6,21 @@ import { cs } from 'date-fns/locale';
 import { ModernPDFTemplate } from './ModernPDFTemplate';
 import { ModernSection, ModernTable, ModernInfoBox, ModernStatsGrid } from './ModernPDFComponents';
 
+interface Shift {
+  id: string;
+  date: string;
+  type: 'morning' | 'afternoon' | 'night';
+  notes: string;
+  userId: string;
+  user_id?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
 interface ModernShiftsDocumentProps {
   user: any;
   selectedMonth: Date;
-  shifts: any[];
+  shifts: Shift[];
 }
 
 const ModernShiftsDocument: React.FC<ModernShiftsDocumentProps> = ({ user, selectedMonth, shifts }) => {
@@ -20,15 +31,15 @@ const ModernShiftsDocument: React.FC<ModernShiftsDocumentProps> = ({ user, selec
   const startOfMonth = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth(), 1);
   const endOfMonth = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + 1, 0);
   
-  const filteredShifts = shifts.filter((shift: any) => {
+  const filteredShifts = shifts.filter((shift: Shift) => {
     const shiftDate = new Date(shift.date);
     return shiftDate >= startOfMonth && shiftDate <= endOfMonth && shift.userId === user.id;
   });
 
   // Calculate comprehensive statistics
-  const morningShifts = filteredShifts.filter((s: any) => s.type === "morning").length;
-  const afternoonShifts = filteredShifts.filter((s: any) => s.type === "afternoon").length;
-  const nightShifts = filteredShifts.filter((s: any) => s.type === "night").length;
+  const morningShifts = filteredShifts.filter((s: Shift) => s.type === "morning").length;
+  const afternoonShifts = filteredShifts.filter((s: Shift) => s.type === "afternoon").length;
+  const nightShifts = filteredShifts.filter((s: Shift) => s.type === "night").length;
   const totalShifts = filteredShifts.length;
   const totalHours = totalShifts * 8;
   const averagePerWeek = Math.round((totalShifts / 4.33) * 10) / 10;
@@ -61,7 +72,7 @@ const ModernShiftsDocument: React.FC<ModernShiftsDocumentProps> = ({ user, selec
     }
     acc[weekKey].push(shift);
     return acc;
-  }, {} as Record<string, any[]>);
+  }, {} as Record<string, Shift[]>);
 
   const weeklyData = Object.entries(shiftsByWeek).map(([weekStart, weekShifts]) => {
     const weekStartDate = new Date(weekStart);
@@ -129,7 +140,7 @@ const ModernShiftsDocument: React.FC<ModernShiftsDocumentProps> = ({ user, selec
             headers={['Datum', 'Den', 'Typ směny', 'Pracovní doba', 'Poznámka']}
             data={filteredShifts
               .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-              .map((shift: any) => {
+              .map((shift: Shift) => {
                 const shiftDate = new Date(shift.date);
                 const dayName = format(shiftDate, "EEEE", { locale: cs });
                 
@@ -196,7 +207,7 @@ const ModernShiftsDocument: React.FC<ModernShiftsDocumentProps> = ({ user, selec
   );
 };
 
-export const generateModernShiftsDocument = async (user: any, selectedMonth: Date, shifts: any[]): Promise<Blob> => {
+export const generateModernShiftsDocument = async (user: any, selectedMonth: Date, shifts: Shift[]): Promise<Blob> => {
   try {
     console.log('🔄 Generování moderního PDF dokumentu směn...', { month: format(selectedMonth, 'LLLL yyyy', { locale: cs }), shiftsCount: shifts.length });
     const blob = await pdf(<ModernShiftsDocument user={user} selectedMonth={selectedMonth} shifts={shifts} />).toBlob();
@@ -208,7 +219,7 @@ export const generateModernShiftsDocument = async (user: any, selectedMonth: Dat
   }
 };
 
-export const downloadModernShiftsDocument = async (user: any, selectedMonth: Date, shifts: any[]): Promise<void> => {
+export const downloadModernShiftsDocument = async (user: any, selectedMonth: Date, shifts: Shift[]): Promise<void> => {
   try {
     console.log('📥 Zahajování stahování moderního PDF dokumentu směn...');
     const blob = await generateModernShiftsDocument(user, selectedMonth, shifts);
