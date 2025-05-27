@@ -150,35 +150,35 @@ export const generateTaxDocument = async (data: DocumentData): Promise<jsPDF> =>
     const newSignatureY = 50;
     
     // Signature lines with professional styling
-    doc.setDrawColor(PROFESSIONAL_COLORS.neutral[300]);
+    doc.setDrawColor(...PROFESSIONAL_COLORS.neutral[300]);
     doc.setLineWidth(1);
     doc.line(20, newSignatureY, 90, newSignatureY);
     doc.line(120, newSignatureY, 190, newSignatureY);
     
     doc.setFontSize(9);
     doc.setFont("helvetica", "normal");
-    doc.setTextColor(PROFESSIONAL_COLORS.neutral[600]);
+    doc.setTextColor(...PROFESSIONAL_COLORS.neutral[600]);
     doc.text('Podpis daňového poplatníka', 55, newSignatureY + 7, { align: 'center' });
     doc.text('Podpis finančního úředníka', 155, newSignatureY + 7, { align: 'center' });
     
     doc.setFontSize(8);
-    doc.setTextColor(PROFESSIONAL_COLORS.neutral[400]);
+    doc.setTextColor(...PROFESSIONAL_COLORS.neutral[400]);
     doc.text('Datum: _______________', 55, newSignatureY + 15, { align: 'center' });
     doc.text('Datum: _______________', 155, newSignatureY + 15, { align: 'center' });
   } else {
-    doc.setDrawColor(PROFESSIONAL_COLORS.neutral[300]);
+    doc.setDrawColor(...PROFESSIONAL_COLORS.neutral[300]);
     doc.setLineWidth(1);
     doc.line(20, signatureY, 90, signatureY);
     doc.line(120, signatureY, 190, signatureY);
     
     doc.setFontSize(9);
     doc.setFont("helvetica", "normal");
-    doc.setTextColor(PROFESSIONAL_COLORS.neutral[600]);
+    doc.setTextColor(...PROFESSIONAL_COLORS.neutral[600]);
     doc.text('Podpis daňového poplatníka', 55, signatureY + 7, { align: 'center' });
     doc.text('Podpis finančního úředníka', 155, signatureY + 7, { align: 'center' });
     
     doc.setFontSize(8);
-    doc.setTextColor(PROFESSIONAL_COLORS.neutral[400]);
+    doc.setTextColor(...PROFESSIONAL_COLORS.neutral[400]);
     doc.text('Datum: _______________', 55, signatureY + 15, { align: 'center' });
     doc.text('Datum: _______________', 155, signatureY + 15, { align: 'center' });
   }
