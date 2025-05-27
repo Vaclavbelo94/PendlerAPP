@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useStandardizedToast } from "@/hooks/useStandardizedToast";
 import { Button } from "@/components/ui/button";
@@ -17,29 +18,59 @@ import {
 export const PromoCodesPanel = () => {
   const [promoCodes, setPromoCodes] = useState<PromoCode[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadingError, setLoadingError] = useState<string | null>(null);
   const [showDialog, setShowDialog] = useState(false);
   const [activeTab, setActiveTab] = useState("manage");
   const { success: showSuccess, error: showError } = useStandardizedToast();
 
   useEffect(() => {
     const loadPromoCodesData = async () => {
+      console.log("Starting to load promo codes...");
       setIsLoading(true);
+      setLoadingError(null);
+      
       try {
         // First check if we need to migrate data from localStorage
         const localData = localStorage.getItem("promoCodes");
         if (localData) {
-          const migrated = await migratePromoCodesFromLocalStorage();
-          if (migrated) {
-            showSuccess("Úspěšně jsme přenesli vaše promo kódy");
+          console.log("Found local promo codes data, attempting migration...");
+          try {
+            const migrated = await migratePromoCodesFromLocalStorage();
+            if (migrated) {
+              showSuccess("Úspěšně jsme přenesli vaše promo kódy");
+            }
+          } catch (migrationError) {
+            console.error("Migration failed:", migrationError);
+            // Continue even if migration fails
           }
         }
 
         // Then load from Supabase
+        console.log("Loading promo codes from Supabase...");
         const codes = await fetchPromoCodes();
+        console.log("Loaded promo codes:", codes);
         setPromoCodes(codes);
+        
+        if (codes.length === 0) {
+          console.log("No promo codes found in database");
+        }
+        
       } catch (error) {
         console.error("Chyba při načítání promo kódů:", error);
+        setLoadingError("Nepodařilo se načíst promo kódy z databáze");
         showError("Nepodařilo se načíst promo kódy");
+        
+        // Try to load from localStorage as fallback
+        try {
+          const localData = localStorage.getItem("promoCodes");
+          if (localData) {
+            const localCodes = JSON.parse(localData);
+            setPromoCodes(localCodes);
+            showSuccess("Načteny promo kódy z lokálního úložiště");
+          }
+        } catch (localError) {
+          console.error("Failed to load from localStorage:", localError);
+        }
       } finally {
         setIsLoading(false);
       }
@@ -111,6 +142,19 @@ export const PromoCodesPanel = () => {
               <div className="flex flex-col items-center gap-2">
                 <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
                 <p className="text-sm text-muted-foreground">Načítání promo kódů...</p>
+              </div>
+            </div>
+          ) : loadingError ? (
+            <div className="flex flex-col items-center justify-center p-8 space-y-4">
+              <div className="text-center">
+                <h3 className="text-lg font-medium text-destructive mb-2">Chyba při načítání</h3>
+                <p className="text-sm text-muted-foreground mb-4">{loadingError}</p>
+                <Button 
+                  onClick={() => window.location.reload()} 
+                  variant="outline"
+                >
+                  Zkusit znovu
+                </Button>
               </div>
             </div>
           ) : promoCodes.length === 0 ? (

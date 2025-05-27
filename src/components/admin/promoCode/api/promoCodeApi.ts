@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { PromoCode, PromoCodeDB } from "../types";
 import { mapDbToPromoCode } from "../utils/promoCodeMappers";
@@ -9,16 +8,29 @@ import { toast } from "sonner";
  */
 export const fetchPromoCodes = async (): Promise<PromoCode[]> => {
   try {
+    console.log("Fetching promo codes from database...");
+    
     const { data, error } = await supabase
       .from('promo_codes')
       .select('*')
-      .order('created_at', { ascending: false }) as { data: PromoCodeDB[] | null, error: any };
+      .order('created_at', { ascending: false });
     
     if (error) {
+      console.error("Database error:", error);
       throw error;
     }
     
-    return (data || []).map(mapDbToPromoCode);
+    console.log("Raw promo codes data:", data);
+    
+    if (!data) {
+      console.log("No promo codes found");
+      return [];
+    }
+    
+    const mappedData = data.map(mapDbToPromoCode);
+    console.log("Mapped promo codes:", mappedData);
+    
+    return mappedData;
   } catch (error) {
     console.error("Chyba při načítání promo kódů:", error);
     toast.error("Nepodařilo se načíst promo kódy");
