@@ -1,11 +1,12 @@
+
 import React, { useState, Suspense } from 'react';
 import { Helmet } from "react-helmet";
 import PremiumCheck from "@/components/premium/PremiumCheck";
-import { Bot, Languages, Clock, BookOpen } from "lucide-react";
+import { Bot } from "lucide-react";
 import { useTranslator } from "@/hooks/useTranslator";
 import { useScreenOrientation } from "@/hooks/useScreenOrientation";
 import { usePerformanceOptimization } from "@/hooks/usePerformanceOptimization";
-import { UniversalMobileNavigation } from "@/components/navigation/UniversalMobileNavigation";
+import TranslatorNavigation from "@/components/translator/TranslatorNavigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { workPhrases } from "@/data/translatorData";
 import SimpleLoadingSpinner from "@/components/loading/SimpleLoadingSpinner";
@@ -62,33 +63,6 @@ const Translator = () => {
     { code: "en", name: "Angličtina" },
     { code: "sk", name: "Slovenština" },
     { code: "pl", name: "Polština" }
-  ];
-
-  const translatorTabs = [
-    {
-      id: "ai-chat",
-      label: "AI Chat",
-      icon: Bot,
-      description: "Inteligentní AI asistent pro překlady"
-    },
-    {
-      id: "quick-translate",
-      label: "Rychlé překlady",
-      icon: Languages,
-      description: "Klasický překladač"
-    },
-    {
-      id: "phrasebook",
-      label: "Frázovník",
-      icon: BookOpen,
-      description: "Užitečné fráze pro práci"
-    },
-    {
-      id: "history",
-      label: "Historie",
-      icon: Clock,
-      description: "Předchozí překlady"
-    }
   ];
 
   const useMobileLayout = isMobile || isSmallLandscape;
@@ -177,10 +151,9 @@ const Translator = () => {
           }
         </p>
 
-        <UniversalMobileNavigation
+        <TranslatorNavigation
           activeTab={activeTab}
           onTabChange={setActiveTab}
-          tabs={translatorTabs}
         />
 
         <div className="space-y-6">
