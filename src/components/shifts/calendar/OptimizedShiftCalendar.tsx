@@ -62,45 +62,21 @@ export const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
     return shiftsByDate.get(dateKey);
   }, [shiftsByDate]);
 
-  // Custom day renderer without memoization to avoid type conflicts
-  const DayContent = ({ date }: { date: Date }) => {
-    const shift = getShiftForDate(date);
-    const isSelected = selectedDate && isSameDay(date, selectedDate);
-    
-    return (
-      <div 
-        className={`
-          relative w-full h-full min-h-[40px] p-1 rounded-md cursor-pointer transition-colors
-          ${isSelected ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'}
-        `}
-        onClick={() => onSelectDate(date)}
-        role="button"
-        tabIndex={0}
-        aria-label={`${format(date, 'dd.MM.yyyy', { locale: cs })}${shift ? `, ${SHIFT_TYPE_LABELS[shift.type as ShiftType]} směna` : ''}`}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            onSelectDate(date);
-          }
-        }}
-      >
-        <div className="text-sm font-medium">
-          {format(date, 'd')}
-        </div>
-        
-        {shift && (
-          <div className="mt-1">
-            <Badge 
-              variant="secondary" 
-              className={`text-xs px-1 py-0 h-4 ${SHIFT_TYPE_COLORS[shift.type as ShiftType]}`}
-            >
-              {SHIFT_TYPE_LABELS[shift.type as ShiftType][0]}
-            </Badge>
-          </div>
-        )}
-      </div>
-    );
-  };
+  // Memoized modifiers for calendar styling
+  const modifiers = useMemo(() => {
+    const datesWithShifts = shifts.map(shift => new Date(shift.date));
+    return {
+      hasShift: datesWithShifts
+    };
+  }, [shifts]);
+
+  const modifiersStyles = useMemo(() => ({
+    hasShift: {
+      backgroundColor: 'hsl(var(--primary))',
+      color: 'white',
+      fontWeight: 'bold'
+    }
+  }), []);
 
   const handlePreviousMonth = useCallback(() => {
     setCurrentMonth(prev => new Date(prev.getFullYear(), prev.getMonth() - 1));
@@ -161,13 +137,10 @@ export const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
           mode="single"
           selected={selectedDate}
           onSelect={onSelectDate}
-          month={currentMonth}
-          onMonthChange={setCurrentMonth}
+          modifiers={modifiers}
+          modifiersStyles={modifiersStyles}
           locale={cs}
           className="w-full"
-          components={{
-            DayContent
-          }}
         />
         
         {/* Legend */}

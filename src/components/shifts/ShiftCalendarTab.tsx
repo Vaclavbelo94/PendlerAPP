@@ -49,18 +49,10 @@ export const ShiftCalendarTab = React.memo<ShiftCalendarTabProps>(({
     });
   }, [shifts]);
 
-  // Memoized calendar modifiers
-  const modifiers = useMemo(() => ({
-    hasShift: (date: Date) => getShiftsForDate(date).length > 0,
-  }), [getShiftsForDate]);
-
-  const modifiersStyles = useMemo(() => ({
-    hasShift: {
-      backgroundColor: 'var(--primary)',
-      color: 'white',
-      borderRadius: '50%'
-    }
-  }), []);
+  // Create styled dates for calendar
+  const styledDates = useMemo(() => {
+    return shifts.map(shift => new Date(shift.date));
+  }, [shifts]);
 
   const handleMonthChange = useCallback((date: Date) => {
     console.log('Měsíc změněn na:', format(date, 'MMMM yyyy', { locale: cs }));
@@ -134,8 +126,6 @@ export const ShiftCalendarTab = React.memo<ShiftCalendarTabProps>(({
             mode="single"
             selected={selectedDate}
             onSelect={onSelectDate}
-            modifiers={modifiers}
-            modifiersStyles={modifiersStyles}
             onMonthChange={handleMonthChange}
             className="rounded-md border"
           />

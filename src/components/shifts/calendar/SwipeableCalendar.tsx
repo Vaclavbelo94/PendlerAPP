@@ -4,17 +4,15 @@ import { TouchCalendar } from '@/components/ui/touch-calendar';
 import { addMonths, subMonths } from 'date-fns';
 import type { DayPickerSingleProps } from 'react-day-picker';
 
-interface SwipeableCalendarProps extends Omit<DayPickerSingleProps, 'month'> {
-  month?: Date;
+interface SwipeableCalendarProps extends DayPickerSingleProps {
   onMonthChange?: (date: Date) => void;
 }
 
 export const SwipeableCalendar: React.FC<SwipeableCalendarProps> = ({
-  month,
   onMonthChange,
   ...props
 }) => {
-  const [currentMonth, setCurrentMonth] = useState(month || new Date());
+  const [currentMonth, setCurrentMonth] = useState(new Date());
   const touchStartX = useRef<number>(0);
   const touchStartY = useRef<number>(0);
   const [isDragging, setIsDragging] = useState(false);
@@ -88,7 +86,6 @@ export const SwipeableCalendar: React.FC<SwipeableCalendarProps> = ({
       className="select-none"
     >
       <TouchCalendar
-        month={currentMonth}
         onSwipeLeft={handleSwipeLeft}
         onSwipeRight={handleSwipeRight}
         enableTouch={true}
