@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -18,7 +17,7 @@ interface TaxCalculatorProps {
   calculationHistory?: Array<{
     id?: string;
     inputs: Record<string, any>;
-    result: Record<string, any>;
+    results: Record<string, any>; // Changed from 'result' to 'results'
     created_at?: string;
   }>;
 }
@@ -84,8 +83,8 @@ const TaxCalculator: React.FC<TaxCalculatorProps> = ({ onCalculate, calculationH
       1: 0.25, // Svobodní, rozvedení
       2: 0.23, // Samoživitelé
       3: 0.20, // Vdaní/ženatí s nižším příjmem
-      4: 0.22, // Vdaní/ženatí se srovnatelným příjmem
-      5: 0.27, // Vdaní/ženatí s vyšším příjmem
+      4: 0.22, // Vdaní/ženatí se srovnatelným příjemem
+      5: 0.27, // Vdaní/ženatí s vyšším příjemem
       6: 0.30, // Další příjmy
     };
 
@@ -137,7 +136,7 @@ const TaxCalculator: React.FC<TaxCalculatorProps> = ({ onCalculate, calculationH
   const loadFromHistory = (historyItem: any) => {
     if (historyItem?.inputs) {
       form.reset(historyItem.inputs);
-      setResults(historyItem.result);
+      setResults(historyItem.results); // Changed from historyItem.result to historyItem.results
       setIsCalculated(true);
     }
   };
@@ -422,8 +421,8 @@ const TaxCalculator: React.FC<TaxCalculatorProps> = ({ onCalculate, calculationH
                     </p>
                   </div>
                   <div className="text-right">
-                    <p>Čistý příjem: <span className="font-medium">{item.result.netIncome?.toFixed(2)} EUR</span></p>
-                    <p className="text-sm text-muted-foreground">Daň: {item.result.taxRate?.toFixed(2)}%</p>
+                    <p>Čistý příjem: <span className="font-medium">{item.results.netIncome?.toFixed(2)} EUR</span></p>
+                    <p className="text-sm text-muted-foreground">Daň: {item.results.taxRate?.toFixed(2)}%</p>
                   </div>
                 </div>
               ))}
