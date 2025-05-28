@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -58,6 +59,7 @@ const PhraseCard: React.FC<{ phrase: ExtendedPhrase }> = ({ phrase }) => {
                 />
               </Button>
             </div>
+            
             <p className={`${isMobile ? 'text-sm' : 'text-base'} text-gray-700 dark:text-gray-300 mt-1`}>
               {getTranslation()}
             </p>
@@ -105,38 +107,6 @@ const PhraseCard: React.FC<{ phrase: ExtendedPhrase }> = ({ phrase }) => {
               </div>
             </div>
           </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-};
-
-// Language selector component
-const LanguageSelector: React.FC = () => {
-  const { currentLanguage, changeLanguage, availableLanguages } = useGermanLessonsTranslation();
-  const { isMobile } = useScreenOrientation();
-
-  return (
-    <Card className="mb-4">
-      <CardHeader className="pb-3">
-        <CardTitle className={`${isMobile ? 'text-base' : 'text-lg'}`}>
-          Jazyk rozhraní / Interface Language
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} gap-2`}>
-          {availableLanguages.map((lang) => (
-            <Button
-              key={lang.code}
-              variant={currentLanguage === lang.code ? "default" : "outline"}
-              onClick={() => changeLanguage(lang.code)}
-              className={`${isMobile ? 'text-xs py-2' : 'text-sm'} justify-start`}
-              size={isMobile ? "sm" : "default"}
-            >
-              <span className="mr-2">{lang.flag}</span>
-              {lang.name}
-            </Button>
-          ))}
         </div>
       </CardContent>
     </Card>
@@ -197,9 +167,6 @@ const PracticalGermanLessons: React.FC = () => {
           </p>
         </CardHeader>
       </Card>
-
-      {/* Language selector */}
-      <LanguageSelector />
 
       {/* Search and filter */}
       <SearchAndFilter
