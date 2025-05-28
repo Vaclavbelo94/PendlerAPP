@@ -12,13 +12,15 @@ export const STORES = {
   vocabulary: 'vocabulary', // Add vocabulary store
   testHistory: 'testHistory', // Add test history store
   vehicles: 'vehicles', // Add vehicles store
-  calculation_history: 'calculation_history' // Add calculation history store
+  calculation_history: 'calculation_history', // Add calculation history store
+  language_pack_german_basic: 'language_pack_german_basic',
+  language_pack_german_work: 'language_pack_german_work'
 };
 
 // Inicializace IndexedDB
 const initDB = () => {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open('pendlerAppDB', 3); // Increase version to update schema
+    const request = indexedDB.open('pendlerAppDB', 4); // Increase version for new stores
     
     request.onerror = (event) => {
       reject("Nepodařilo se otevřít databázi.");
@@ -62,6 +64,15 @@ const initDB = () => {
       // Add calculation history store
       if (!db.objectStoreNames.contains(STORES.calculation_history)) {
         db.createObjectStore(STORES.calculation_history, { keyPath: 'id' });
+      }
+      
+      // Add language pack stores
+      if (!db.objectStoreNames.contains(STORES.language_pack_german_basic)) {
+        db.createObjectStore(STORES.language_pack_german_basic, { keyPath: 'id' });
+      }
+      
+      if (!db.objectStoreNames.contains(STORES.language_pack_german_work)) {
+        db.createObjectStore(STORES.language_pack_german_work, { keyPath: 'id' });
       }
     };
     
