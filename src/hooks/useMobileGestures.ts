@@ -48,9 +48,9 @@ export const useMobileGestures = (
   const lastPinchDistance = useRef<number | null>(null);
 
   const handleTouchStart = useCallback((e: TouchEvent) => {
-    setIsGestureActive(true);
-    
+    // Prevent scrolling interference
     if (enableSwipe && e.touches.length === 1) {
+      setIsGestureActive(true);
       const touch = e.touches[0];
       touchStart.current = {
         x: touch.clientX,
@@ -143,8 +143,9 @@ export const useMobileGestures = (
     const element = containerRef.current;
     if (!element) return;
 
-    element.addEventListener('touchstart', handleTouchStart, { passive: true });
-    element.addEventListener('touchmove', handleTouchMove, { passive: true });
+    // Use passive listeners for better performance
+    element.addEventListener('touchstart', handleTouchStart, { passive: false });
+    element.addEventListener('touchmove', handleTouchMove, { passive: false });
     element.addEventListener('touchend', handleTouchEnd, { passive: true });
 
     return () => {

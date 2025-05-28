@@ -1,18 +1,18 @@
-
 import React, { useState, useEffect } from "react";
 import { Helmet } from "react-helmet";
 import { useAuth } from "@/hooks/useAuth";
 import { useStandardizedToast } from "@/hooks/useStandardizedToast";
 import WelcomeSection from "@/components/dashboard/WelcomeSection";
-import DashboardCard from "@/components/dashboard/DashboardCard";
 import LoadingOverview from "@/components/dashboard/LoadingOverview";
-import EducationWidget from "@/components/dashboard/EducationWidget";
-import LanguageStatsWidget from "@/components/dashboard/LanguageStatsWidget";
-import ShiftsProgress from "@/components/dashboard/ShiftsProgress";
-import CommuteComparison from "@/components/dashboard/CommuteComparison";
+import { DashboardLayoutManager } from "@/components/dashboard/widgets/DashboardLayoutManager";
+import { MobileDashboardCarousel } from "@/components/dashboard/widgets/MobileDashboardCarousel";
+import { DesktopDashboardGrid } from "@/components/dashboard/widgets/DesktopDashboardGrid";
+import { DashboardControls } from "@/components/dashboard/widgets/DashboardControls";
+import { useScreenOrientation } from "@/hooks/useScreenOrientation";
 
 const Dashboard = () => {
   const { user } = useAuth();
+  const { isMobile } = useScreenOrientation();
   const [isLoading, setIsLoading] = useState(true);
   const [isFirstVisit, setIsFirstVisit] = useState(false);
   const { toast } = useStandardizedToast();
@@ -56,42 +56,42 @@ const Dashboard = () => {
       {/* Welcome or Quick Start Section */}
       <WelcomeSection />
 
-      {/* Main dashboard grid */}
-      <div className="grid gap-6 mt-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-        {/* Shifts Progress */}
-        <DashboardCard
-          title="Směny tento měsíc"
-          description="Přehled vašich naplánovaných směn"
-          className="lg:col-span-2"
-        >
-          <ShiftsProgress />
-        </DashboardCard>
+      {/* Dashboard Controls - only on desktop */}
+      {!isMobile && (
+        <div className="flex justify-end mb-6">
+          <DashboardLayoutManager>
+            {(widgets, onReorder) => (
+              <DashboardControls
+                onResetLayout={() => {
+                  localStorage.removeItem('dashboard_layout');
+                  window.location.reload();
+                }}
+                onOpenSettings={() => {
+                  toast({
+                    title: "Nastavení widgetů",
+                    description: "Přetáhněte widgety pro změnu pořadí",
+                    variant: "info"
+                  });
+                }}
+              />
+            )}
+          </DashboardLayoutManager>
+        </div>
+      )}
 
-        {/* Language Learning Stats */}
-        <DashboardCard
-          title="Jazykový pokrok"
-          description="Váš pokrok v učení německého jazyka"
-        >
-          <LanguageStatsWidget />
-        </DashboardCard>
-
-        {/* Commute Comparison */}
-        <DashboardCard
-          title="Náklady na dopravu"
-          description="Porovnání nákladů na dojíždění"
-          className="md:col-span-2 lg:col-span-1"
-        >
-          <CommuteComparison />
-        </DashboardCard>
-
-        {/* Education Widget */}
-        <DashboardCard
-          title="Vzdělávací tipy"
-          description="Tipy pro efektivní práci v zahraničí"
-          className="lg:col-span-2"
-        >
-          <EducationWidget />
-        </DashboardCard>
+      {/* Main dashboard content */}
+      <div className="mt-8">
+        <DashboardLayoutManager>
+          {(widgets, onReorder) => (
+            <>
+              {isMobile ? (
+                <MobileDashboardCarousel widgets={widgets} />
+              ) : (
+                <DesktopDashboardGrid widgets={widgets} />
+              )}
+            </>
+          )}
+        </DashboardLayoutManager>
       </div>
     </div>
   );
