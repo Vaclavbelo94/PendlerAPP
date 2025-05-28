@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,12 +7,16 @@ import { Switch } from '@/components/ui/switch';
 import { Globe, Shield, Zap, Database } from 'lucide-react';
 import { useInternationalization } from '@/hooks/useInternationalization';
 import HealthMonitor from '@/components/monitoring/HealthMonitor';
+import AudioSettings from '@/components/profile/settings/AudioSettings';
 
 const SystemSettings = () => {
   const { currentLanguage, changeLanguage, availableLanguages, t } = useInternationalization();
 
   return (
     <div className="space-y-6">
+      {/* Audio Settings */}
+      <AudioSettings />
+
       {/* Language Settings */}
       <Card>
         <CardHeader>

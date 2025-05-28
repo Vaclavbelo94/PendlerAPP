@@ -1,45 +1,21 @@
-
 import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Volume2, VolumeX, Info, Heart, Search as SearchIcon } from "lucide-react";
+import { Info, Heart, Search as SearchIcon } from "lucide-react";
 import { extendedGermanLessons, ExtendedPhrase, searchPhrases } from '@/data/extendedGermanLessons';
 import { useGermanLessonsTranslation } from '@/hooks/useGermanLessonsTranslation';
 import { useScreenOrientation } from '@/hooks/useScreenOrientation';
 import { useFavorites } from '@/hooks/useFavorites';
 import SearchAndFilter from '@/components/language/SearchAndFilter';
+import AudioButton from '@/components/language/AudioButton';
 
-// Enhanced audio with better error handling
-const playGermanAudio = (text: string, isSlowSpeed: boolean = false) => {
-  if ('speechSynthesis' in window) {
-    try {
-      speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'de-DE';
-      utterance.rate = isSlowSpeed ? 0.6 : 0.8;
-      utterance.pitch = 1;
-      utterance.volume = 1;
-      
-      // Error handling
-      utterance.onerror = (event) => {
-        console.warn('Speech synthesis error:', event.error);
-      };
-      
-      speechSynthesis.speak(utterance);
-    } catch (error) {
-      console.error('Error playing audio:', error);
-    }
-  }
-};
-
-// Enhanced phrase card with favorites and improved UX
+// Enhanced phrase card with new audio buttons
 const PhraseCard: React.FC<{ phrase: ExtendedPhrase }> = ({ phrase }) => {
   const { currentLanguage, t } = useGermanLessonsTranslation();
   const { isMobile } = useScreenOrientation();
   const { toggleFavorite, isFavorite } = useFavorites();
-  const [isPlaying, setIsPlaying] = useState(false);
 
   const getTranslation = () => {
     switch (currentLanguage) {
@@ -60,18 +36,6 @@ const PhraseCard: React.FC<{ phrase: ExtendedPhrase }> = ({ phrase }) => {
     critical: 'bg-red-500 text-white',
     important: 'bg-orange-500 text-white',
     useful: 'bg-blue-500 text-white'
-  };
-
-  const handlePlayAudio = async (isSlowSpeed: boolean = false) => {
-    setIsPlaying(true);
-    try {
-      playGermanAudio(phrase.german, isSlowSpeed);
-      // Reset playing state after estimated duration
-      setTimeout(() => setIsPlaying(false), 3000);
-    } catch (error) {
-      setIsPlaying(false);
-      console.error('Audio playback failed:', error);
-    }
   };
 
   return (
@@ -114,25 +78,20 @@ const PhraseCard: React.FC<{ phrase: ExtendedPhrase }> = ({ phrase }) => {
       <CardContent className="pt-0">
         <div className="space-y-3">
           <div className={`flex ${isMobile ? 'flex-col gap-2' : 'flex-row gap-3'}`}>
-            <Button 
-              onClick={() => handlePlayAudio(false)}
-              disabled={isPlaying}
+            <AudioButton
+              text={phrase.german}
+              language="de"
+              variant="default"
+              size={isMobile ? "default" : "lg"}
               className={`${isMobile ? 'w-full' : 'flex-1'} bg-green-600 hover:bg-green-700 text-white font-medium`}
-              size={isMobile ? "default" : "lg"}
-            >
-              <Volume2 className="h-5 w-5 mr-2" />
-              {isPlaying ? 'Přehrává...' : t('action.normalSpeech')}
-            </Button>
-            <Button 
-              onClick={() => handlePlayAudio(true)}
-              disabled={isPlaying}
+            />
+            <AudioButton
+              text={getTranslation()}
+              language={currentLanguage === 'en' ? 'en' : currentLanguage === 'sk' ? 'sk' : 'cs'}
               variant="outline"
-              className={`${isMobile ? 'w-full' : 'flex-1'} border-green-200 text-green-700 hover:bg-green-50`}
               size={isMobile ? "default" : "lg"}
-            >
-              <VolumeX className="h-5 w-5 mr-2" />
-              {t('action.slowSpeech')}
-            </Button>
+              className={`${isMobile ? 'w-full' : 'flex-1'} border-green-200 text-green-700 hover:bg-green-50`}
+            />
           </div>
           
           <div className="bg-white/70 dark:bg-gray-800/70 rounded-md p-3 border-l-4 border-l-blue-500">
@@ -184,7 +143,7 @@ const LanguageSelector: React.FC = () => {
   );
 };
 
-// Main component with enhanced search and filtering
+// Main component with enhanced audio integration
 const PracticalGermanLessons: React.FC = () => {
   const { t } = useGermanLessonsTranslation();
   const { isMobile, isSmallLandscape } = useScreenOrientation();

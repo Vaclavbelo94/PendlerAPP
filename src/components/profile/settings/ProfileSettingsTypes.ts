@@ -10,3 +10,6 @@ export interface UserProfileSettings {
   languageReminders: boolean;
   preferredLanguage: string;
 }
+
+// Audio settings are handled separately via useAudioSettings hook
+// to avoid conflicts with existing profile system and provide better modularity
