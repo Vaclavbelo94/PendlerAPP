@@ -3,12 +3,11 @@ import React, { useState, Suspense } from 'react';
 import { Helmet } from "react-helmet";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { Map, ArrowLeft } from "lucide-react";
+import { Map } from "lucide-react";
 import PremiumCheck from "@/components/premium/PremiumCheck";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import ResponsivePage from "@/components/layouts/ResponsivePage";
-import AccessibleButton from "@/components/ui/accessible-button";
 import TravelNavigation from "@/components/travel/TravelNavigation";
 import { 
   CommuteOptimizerLazy,
@@ -53,10 +52,6 @@ const TravelPlanning = () => {
     }
   };
 
-  const handleNavigateBack = () => {
-    navigate(-1);
-  };
-
   const renderTabContent = () => {
     switch (activeTab) {
       case "optimizer":
@@ -80,19 +75,6 @@ const TravelPlanning = () => {
         <Helmet>
           <title>Plánování cest | Pendlerův Pomocník</title>
         </Helmet>
-        
-        {/* Back button */}
-        <AccessibleButton 
-          variant="outline" 
-          onClick={handleNavigateBack} 
-          className={`mb-4 ${isMobile ? 'h-8 px-2' : ''}`}
-          size={isMobile ? "sm" : "default"}
-          ariaLabel="Návrat na předchozí stránku"
-          keyboardShortcut="Escape"
-        >
-          <ArrowLeft className={`${isMobile ? 'h-3 w-3 mr-1' : 'h-4 w-4 mr-2'}`} />
-          {isMobile ? 'Zpět' : 'Zpět'}
-        </AccessibleButton>
         
         {/* Header section */}
         <section className={`mb-${isMobile ? '4' : '6'}`} role="banner">
