@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar } from '@/components/ui/calendar';
@@ -24,17 +25,6 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = React.memo
 }) => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const { isMobile } = useScreenOrientation();
-
-  // Use mobile calendar for mobile devices
-  if (isMobile) {
-    return (
-      <MobileShiftCalendar
-        shifts={shifts}
-        onEditShift={onEditShift}
-        onDeleteShift={onDeleteShift}
-      />
-    );
-  }
 
   // Memoize shifts for selected date to prevent unnecessary recalculations
   const selectedShifts = useMemo(() => {
@@ -102,6 +92,17 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = React.memo
         return 'bg-gray-500';
     }
   }, []);
+
+  // Use mobile calendar for mobile devices - moved after all hooks
+  if (isMobile) {
+    return (
+      <MobileShiftCalendar
+        shifts={shifts}
+        onEditShift={onEditShift}
+        onDeleteShift={onDeleteShift}
+      />
+    );
+  }
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
