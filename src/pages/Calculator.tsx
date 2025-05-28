@@ -1,16 +1,11 @@
 
 import React, { useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { motion } from "framer-motion";
 import PremiumCheck from '@/components/premium/PremiumCheck';
-import {
-  CalculatorIcon,
-  TrendingUpIcon,
-  FileTextIcon,
-  FunctionSquareIcon
-} from "lucide-react";
 
-// Import existing components
+// Import components
+import CalculatorWelcomeSection from "@/components/calculator/CalculatorWelcomeSection";
+import CalculatorNavigation from "@/components/calculator/CalculatorNavigation";
 import BasicCalculator from "@/components/calculator/BasicCalculator";
 import TaxCalculator from "@/components/calculator/TaxCalculator";
 import CrossBorderTaxCalculator from "@/components/calculator/CrossBorderTaxCalculator";
@@ -18,58 +13,61 @@ import ScientificCalculator from "@/components/calculator/ScientificCalculator";
 
 const Calculator = () => {
   const [activeTab, setActiveTab] = useState("basic");
-  const isMobile = useIsMobile();
+
+  const handleQuickAccess = (calculatorType: string) => {
+    setActiveTab(calculatorType);
+  };
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case "basic":
+        return <BasicCalculator />;
+      case "tax":
+        return <TaxCalculator />;
+      case "crossborder":
+        return <CrossBorderTaxCalculator />;
+      case "scientific":
+        return <ScientificCalculator />;
+      default:
+        return <BasicCalculator />;
+    }
+  };
 
   return (
     <PremiumCheck featureKey="calculator">
-      <div className="container py-6 md:py-10 max-w-7xl">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight mb-2">Kalkulačky</h1>
-          <p className="text-muted-foreground">
-            Užitečné kalkulátory pro práci i osobní finance
-          </p>
+      <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-secondary/5">
+        {/* Animated background elements */}
+        <div className="fixed inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 right-10 w-32 h-32 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-full blur-xl animate-pulse" />
+          <div className="absolute bottom-20 left-20 w-24 h-24 bg-gradient-to-r from-green-500/20 to-purple-500/20 rounded-full blur-xl animate-pulse delay-1000" />
         </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} ${isMobile ? 'max-w-full' : 'max-w-4xl'} h-auto`}>
-            <TabsTrigger value="basic" className="flex flex-col items-center gap-1 py-3 px-4">
-              <CalculatorIcon className="h-5 w-5" />
-              <span className="text-sm font-medium">Základní</span>
-              <span className="text-xs text-muted-foreground hidden sm:block">Běžné výpočty</span>
-            </TabsTrigger>
-            <TabsTrigger value="tax" className="flex flex-col items-center gap-1 py-3 px-4">
-              <FileTextIcon className="h-5 w-5" />
-              <span className="text-sm font-medium">Daně</span>
-              <span className="text-xs text-muted-foreground hidden sm:block">Daňové výpočty</span>
-            </TabsTrigger>
-            <TabsTrigger value="crossborder" className="flex flex-col items-center gap-1 py-3 px-4">
-              <TrendingUpIcon className="h-5 w-5" />
-              <span className="text-sm font-medium">Zahraniční</span>
-              <span className="text-xs text-muted-foreground hidden sm:block">Hraniční práce</span>
-            </TabsTrigger>
-            <TabsTrigger value="scientific" className="flex flex-col items-center gap-1 py-3 px-4">
-              <FunctionSquareIcon className="h-5 w-5" />
-              <span className="text-sm font-medium">Vědecká</span>
-              <span className="text-xs text-muted-foreground hidden sm:block">Pokročilé funkce</span>
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="basic" className="space-y-6">
-            <BasicCalculator />
-          </TabsContent>
-
-          <TabsContent value="tax" className="space-y-6">
-            <TaxCalculator />
-          </TabsContent>
-
-          <TabsContent value="crossborder" className="space-y-6">
-            <CrossBorderTaxCalculator />
-          </TabsContent>
-
-          <TabsContent value="scientific" className="space-y-6">
-            <ScientificCalculator />
-          </TabsContent>
-        </Tabs>
+        <div className="relative z-10">
+          <CalculatorWelcomeSection onQuickAccess={handleQuickAccess} />
+          
+          <div className="container max-w-6xl py-8 px-4">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="mt-8"
+            >
+              <CalculatorNavigation
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+              />
+              
+              <motion.div 
+                className="mt-6"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.5 }}
+              >
+                {renderTabContent()}
+              </motion.div>
+            </motion.div>
+          </div>
+        </div>
       </div>
     </PremiumCheck>
   );

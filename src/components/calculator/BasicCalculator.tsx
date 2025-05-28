@@ -1,12 +1,12 @@
 
 import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calculator } from "lucide-react";
 import { useState } from "react";
+import DashboardCard from "@/components/dashboard/DashboardCard";
 import CrossBorderTaxCalculator from "./CrossBorderTaxCalculator";
 import { useToast } from '@/components/ui/use-toast';
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -70,17 +70,12 @@ const BasicCalculator = () => {
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
-      <Card className="h-auto">
-        <CardHeader className="space-y-1">
-          <div className="flex items-center gap-2">
-            <Calculator className="h-5 w-5 text-primary" />
-            <CardTitle>Základní kalkulačka</CardTitle>
-          </div>
-          <CardDescription>
-            Jednoduchá kalkulačka pro základní matematické operace
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <DashboardCard
+        title="Základní kalkulačka"
+        description="Jednoduchá kalkulačka pro základní matematické operace"
+        index={0}
+      >
+        <div className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="num1">První číslo</Label>
             <Input
@@ -135,10 +130,16 @@ const BasicCalculator = () => {
               {result}
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </DashboardCard>
       
-      <CrossBorderTaxCalculator />
+      <DashboardCard
+        title="Daňová kalkulačka pro pendlery"
+        description="Speciální výpočty pro hraniční práci"
+        index={1}
+      >
+        <CrossBorderTaxCalculator />
+      </DashboardCard>
     </div>
   );
 };
