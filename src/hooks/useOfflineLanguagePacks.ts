@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { VocabularyItem } from '@/models/VocabularyItem';
 import { PracticalPhrase } from '@/data/practicalGermanLessons';
 import { saveData, getAllData, clearStore, bulkSaveData } from '@/utils/offlineStorage';
+import { defaultGermanVocabulary } from '@/data/defaultGermanVocabulary';
 import { toast } from 'sonner';
 
 export interface LanguagePack {
@@ -51,8 +52,13 @@ export const useOfflineLanguagePacks = () => {
 
   const checkDownloadedPacks = async () => {
     try {
+      console.log('Checking downloaded packs...');
+      
       const germanBasic = await getAllData<VocabularyItem>('language_pack_german_basic');
       const germanWork = await getAllData<PracticalPhrase>('language_pack_german_work');
+      
+      console.log('German basic pack items:', germanBasic.length);
+      console.log('German work pack items:', germanWork.length);
       
       setPacks(prev => prev.map(pack => {
         if (pack.id === 'german-basic') {
@@ -60,7 +66,8 @@ export const useOfflineLanguagePacks = () => {
             ...pack,
             downloadedItems: germanBasic.length,
             isDownloaded: germanBasic.length > 0,
-            lastUpdated: germanBasic.length > 0 ? new Date() : undefined
+            lastUpdated: germanBasic.length > 0 ? new Date() : undefined,
+            totalItems: germanBasic.length > 0 ? germanBasic.length : defaultGermanVocabulary.length
           };
         }
         if (pack.id === 'german-work') {
@@ -75,12 +82,17 @@ export const useOfflineLanguagePacks = () => {
       }));
     } catch (error) {
       console.error('Error checking downloaded packs:', error);
+      toast.error('Chyba při kontrole stažených balíčků');
     }
   };
 
   const downloadPack = async (packId: string) => {
-    if (isDownloading) return;
+    if (isDownloading) {
+      console.log('Already downloading, skipping...');
+      return;
+    }
     
+    console.log(`Starting download of pack: ${packId}`);
     setIsDownloading(packId);
     setDownloadProgress(0);
 
@@ -103,38 +115,64 @@ export const useOfflineLanguagePacks = () => {
   };
 
   const downloadGermanBasicPack = async () => {
-    // Load from existing vocabulary
+    console.log('Downloading German basic pack...');
+    setDownloadProgress(10);
+    
+    // First try to load from existing vocabulary
     const existingVocab = localStorage.getItem('vocabulary_items');
     let items: VocabularyItem[] = [];
     
     if (existingVocab) {
-      items = JSON.parse(existingVocab);
+      try {
+        const parsedItems = JSON.parse(existingVocab);
+        items = parsedItems.filter((item: VocabularyItem) => 
+          item.german && item.german.trim() !== ''
+        );
+        console.log('Loaded from localStorage:', items.length, 'items');
+      } catch (e) {
+        console.error('Error parsing localStorage vocabulary:', e);
+      }
     }
     
-    // Filter German items
-    const germanItems = items.filter(item => 
-      item.german && item.german.trim() !== ''
-    );
+    // If no items, use default vocabulary
+    if (items.length === 0) {
+      console.log('No existing vocabulary found, using default German vocabulary');
+      items = defaultGermanVocabulary.map((item, index) => ({
+        ...item,
+        id: item.id || `default-${index}`
+      }));
+    }
     
-    setDownloadProgress(25);
+    // Ensure all items have IDs
+    items = items.map((item, index) => ({
+      ...item,
+      id: item.id || `vocab-${index}-${Date.now()}`
+    }));
+    
+    setDownloadProgress(50);
     
     // Update pack info
     setPacks(prev => prev.map(pack => 
       pack.id === 'german-basic' 
-        ? { ...pack, totalItems: germanItems.length }
+        ? { ...pack, totalItems: items.length }
         : pack
     ));
     
-    setDownloadProgress(50);
+    setDownloadProgress(75);
     
     // Save to IndexedDB
+    console.log('Saving to IndexedDB:', items.length, 'items');
     await clearStore('language_pack_german_basic');
-    await bulkSaveData('language_pack_german_basic', germanItems);
+    await bulkSaveData('language_pack_german_basic', items);
     
     setDownloadProgress(100);
+    console.log('German basic pack download completed');
   };
 
   const downloadGermanWorkPack = async () => {
+    console.log('Downloading German work pack...');
+    setDownloadProgress(10);
+    
     // Import practical German lessons
     const { practicalGermanLessons } = await import('@/data/practicalGermanLessons');
     
@@ -143,7 +181,7 @@ export const useOfflineLanguagePacks = () => {
       allPhrases.push(...category.phrases);
     });
     
-    setDownloadProgress(25);
+    setDownloadProgress(50);
     
     // Update pack info
     setPacks(prev => prev.map(pack => 
@@ -152,17 +190,21 @@ export const useOfflineLanguagePacks = () => {
         : pack
     ));
     
-    setDownloadProgress(50);
+    setDownloadProgress(75);
     
     // Save to IndexedDB
+    console.log('Saving work phrases to IndexedDB:', allPhrases.length, 'items');
     await clearStore('language_pack_german_work');
     await bulkSaveData('language_pack_german_work', allPhrases);
     
     setDownloadProgress(100);
+    console.log('German work pack download completed');
   };
 
   const deletePack = async (packId: string) => {
     try {
+      console.log(`Deleting pack: ${packId}`);
+      
       if (packId === 'german-basic') {
         await clearStore('language_pack_german_basic');
       } else if (packId === 'german-work') {
