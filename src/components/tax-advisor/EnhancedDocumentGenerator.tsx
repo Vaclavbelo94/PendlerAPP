@@ -5,7 +5,26 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { FileText, Download, Calendar, Info, Eye } from 'lucide-react';
+import { 
+  FileText, 
+  Download, 
+  Calendar, 
+  Info, 
+  Eye, 
+  Trash2,
+  AlertTriangle
+} from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { useAuth } from '@/hooks/auth';
 import { useTaxManagement } from '@/hooks/useTaxManagement';
 import { DocumentData } from '@/utils/tax/types';
@@ -13,13 +32,16 @@ import { downloadEnhancedTaxDocument } from '@/utils/tax/enhancedPdfGenerator';
 import DocumentGeneratorForm from './DocumentGeneratorForm';
 import TaxNotifications from './TaxNotifications';
 import DocumentExamplesDialog from './DocumentExamplesDialog';
+import { useToast } from '@/hooks/use-toast';
 
 const EnhancedDocumentGenerator = () => {
   const { user } = useAuth();
-  const { documents, saveDocument, loadDocuments } = useTaxManagement();
+  const { documents, saveDocument, loadDocuments, deleteDocument } = useTaxManagement();
   const [isGenerating, setIsGenerating] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [showExamplesDialog, setShowExamplesDialog] = useState(false);
+  const [deletingDocumentId, setDeletingDocumentId] = useState<string | null>(null);
+  const { toast } = useToast();
   const [formState, setFormState] = useState({
     name: '',
     taxId: '',
@@ -82,6 +104,35 @@ const EnhancedDocumentGenerator = () => {
 
   const handleDownloadDocument = () => {
     downloadEnhancedTaxDocument(formState as DocumentData);
+  };
+
+  const handleDeleteDocument = async (documentId: string) => {
+    if (!deleteDocument) {
+      toast({
+        title: "Chyba",
+        description: "Funkce mazání není k dispozici",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setDeletingDocumentId(documentId);
+    try {
+      await deleteDocument(documentId);
+      toast({
+        title: "Úspěch",
+        description: "Dokument byl úspěšně smazán",
+      });
+    } catch (error) {
+      console.error('Error deleting document:', error);
+      toast({
+        title: "Chyba",
+        description: "Nepodařilo se smazat dokument",
+        variant: "destructive",
+      });
+    } finally {
+      setDeletingDocumentId(null);
+    }
   };
 
   if (!user) {
@@ -201,7 +252,7 @@ const EnhancedDocumentGenerator = () => {
                   documents.map((document) => (
                     <div key={document.id} className="border rounded-lg p-4">
                       <div className="flex items-start justify-between mb-2">
-                        <div>
+                        <div className="flex-1">
                           <h4 className="font-medium text-sm">
                             {document.document_data.documentType === 'steuererklaerung' && 'Daňové přiznání'}
                             {document.document_data.documentType === 'pendlerbescheinigung' && 'Potvrzení o dojíždění'}
@@ -230,6 +281,42 @@ const EnhancedDocumentGenerator = () => {
                           <Download className="h-3 w-3" />
                           Stáhnout
                         </Button>
+                        
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="flex items-center gap-1 text-destructive hover:text-destructive"
+                              disabled={deletingDocumentId === document.id}
+                            >
+                              <Trash2 className="h-3 w-3" />
+                              {deletingDocumentId === document.id ? 'Maže se...' : 'Smazat'}
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle className="flex items-center gap-2">
+                                <AlertTriangle className="h-5 w-5 text-destructive" />
+                                Potvrdit smazání
+                              </AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Opravdu chcete smazat tento dokument? Tato akce je nevratná.
+                                <br />
+                                <strong>Dokument:</strong> {document.file_name}
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Zrušit</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => handleDeleteDocument(document.id!)}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              >
+                                Smazat dokument
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </div>
                     </div>
                   ))

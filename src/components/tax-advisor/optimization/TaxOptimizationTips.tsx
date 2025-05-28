@@ -205,37 +205,50 @@ const TaxOptimizationTips = () => {
             </TabsList>
 
             <TabsContent value={selectedCategory} className="mt-6">
-              <div className="grid gap-4">
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {filteredTips.map((tip) => {
                   const IconComponent = tip.icon;
                   return (
-                    <Card key={tip.id} className="hover:shadow-md transition-shadow cursor-pointer"
-                          onClick={() => setSelectedTip(tip)}>
-                      <CardContent className="p-6">
-                        <div className="flex items-start justify-between">
-                          <div className="flex items-start gap-4 flex-1">
-                            <div className="p-2 bg-primary/10 rounded-lg">
-                              <IconComponent className="h-5 w-5 text-primary" />
-                            </div>
-                            <div className="flex-1">
-                              <h3 className="font-semibold text-lg">{tip.title}</h3>
-                              <p className="text-muted-foreground text-sm mt-1">
-                                {tip.description}
-                              </p>
-                              <div className="flex items-center gap-2 mt-3">
-                                <Badge className={getDifficultyColor(tip.difficulty)}>
-                                  {getDifficultyText(tip.difficulty)}
-                                </Badge>
-                                <Badge variant="outline" className="flex items-center gap-1">
-                                  <Euro className="h-3 w-3" />
-                                  {tip.potentialSaving}
-                                </Badge>
-                              </div>
-                            </div>
+                    <Card 
+                      key={tip.id} 
+                      className="h-full flex flex-col hover:shadow-md transition-shadow cursor-pointer"
+                      onClick={() => setSelectedTip(tip)}
+                    >
+                      <CardContent className="p-4 flex flex-col h-full">
+                        <div className="flex items-start gap-3 mb-3">
+                          <div className="p-2 bg-primary/10 rounded-lg flex-shrink-0">
+                            <IconComponent className="h-4 w-4 text-primary" />
                           </div>
-                          <Button variant="ghost" size="sm">
-                            Detail →
-                          </Button>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-sm leading-tight mb-1">
+                              {tip.title}
+                            </h3>
+                          </div>
+                        </div>
+                        
+                        <p className="text-xs text-muted-foreground mb-3 flex-1 line-clamp-3">
+                          {tip.description}
+                        </p>
+                        
+                        <div className="space-y-2 mt-auto">
+                          <div className="flex flex-wrap gap-1">
+                            <Badge 
+                              variant="secondary"
+                              className={`text-xs px-2 py-1 ${getDifficultyColor(tip.difficulty)}`}
+                            >
+                              {getDifficultyText(tip.difficulty)}
+                            </Badge>
+                          </div>
+                          
+                          <div className="flex items-center justify-between">
+                            <Badge variant="outline" className="flex items-center gap-1 text-xs">
+                              <Euro className="h-3 w-3" />
+                              {tip.potentialSaving}
+                            </Badge>
+                            <Button variant="ghost" size="sm" className="text-xs h-6 px-2">
+                              Detail →
+                            </Button>
+                          </div>
                         </div>
                       </CardContent>
                     </Card>

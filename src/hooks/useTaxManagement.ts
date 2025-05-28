@@ -121,6 +121,26 @@ export const useTaxManagement = () => {
     }
   };
 
+  const deleteDocument = async (id: string) => {
+    try {
+      await taxService.deleteTaxDocument(id);
+      setDocuments(prev => prev.filter(doc => doc.id !== id));
+      
+      toast({
+        title: "Úspěch",
+        description: "Dokument byl smazán",
+      });
+    } catch (error) {
+      console.error('Error deleting document:', error);
+      toast({
+        title: "Chyba",
+        description: "Nepodařilo se smazat dokument",
+        variant: "destructive",
+      });
+      throw error;
+    }
+  };
+
   const saveFormDraft = async (formType: string, formData: Record<string, any>) => {
     if (!user?.id) return;
 
@@ -162,6 +182,7 @@ export const useTaxManagement = () => {
     deleteCalculation,
     loadDocuments,
     saveDocument,
+    deleteDocument,
     saveFormDraft,
     loadFormDraft,
   };
