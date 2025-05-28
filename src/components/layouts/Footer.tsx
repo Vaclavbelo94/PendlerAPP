@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { 
   Calendar, 
@@ -138,15 +139,15 @@ const Footer = () => {
             © {currentYear} Pendlerův Pomocník. Všechna práva vyhrazena.
           </p>
           <div className="flex flex-wrap gap-4 text-sm text-gray-500">
-            <Link to="/terms-of-service" className="hover:text-blue-400 transition-colors">
+            <Link to="/terms" className="hover:text-blue-400 transition-colors">
               Podmínky použití
             </Link>
-            <Link to="/privacy-policy" className="hover:text-blue-400 transition-colors">
+            <Link to="/privacy" className="hover:text-blue-400 transition-colors">
               Ochrana soukromí
             </Link>
-            <span className="hover:text-blue-400 transition-colors cursor-pointer">
+            <Link to="/cookies" className="hover:text-blue-400 transition-colors">
               Cookies
-            </span>
+            </Link>
           </div>
         </div>
       </div>

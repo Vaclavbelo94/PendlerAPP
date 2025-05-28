@@ -34,6 +34,9 @@ import UnifiedProfile from "@/pages/UnifiedProfile";
 import ProfileExtended from "@/pages/ProfileExtended";
 import TermsOfService from "@/pages/TermsOfService";
 import PrivacyPolicy from "@/pages/PrivacyPolicy";
+import Privacy from "@/pages/Privacy";
+import Terms from "@/pages/Terms";
+import Cookies from "@/pages/Cookies";
 import TaxAdvisor from "@/pages/TaxAdvisor";
 import Vocabulary from "@/pages/Vocabulary";
 import Translator from "@/pages/Translator";
@@ -159,7 +162,10 @@ function AppContent() {
             
             {/* Legal pages */}
             <Route path="/terms-of-service" element={<TermsOfService />} />
+            <Route path="/terms" element={<Terms />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/cookies" element={<Cookies />} />
             
             {/* Lazy loaded routes */}
             <Route 
