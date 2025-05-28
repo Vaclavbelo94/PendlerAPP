@@ -1,8 +1,9 @@
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
-import { User, LogOut, Crown } from "lucide-react";
+import { User, LogOut, Crown, Sparkles } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
 interface SidebarUserSectionProps {
@@ -26,12 +27,12 @@ const SidebarUserSection = ({ closeSidebar, isCompact = false }: SidebarUserSect
 
   if (!user) {
     return (
-      <div className={`${isCompact ? 'p-2' : 'p-4'} space-y-2 border-t border-sidebar-border`}>
+      <div className={`${isCompact ? 'p-2' : 'p-4'} space-y-2 border-t border-sidebar-border/30`}>
         <Button 
           variant="outline" 
           size={isCompact ? "sm" : "default"}
           onClick={() => handleNavigation('/login')}
-          className="w-full"
+          className="w-full bg-gradient-to-r from-sidebar-accent/20 to-sidebar-accent/10 border-sidebar-border/50 hover:from-primary/20 hover:to-accent/20 hover:border-primary/30 transition-all duration-300"
         >
           Přihlášení
         </Button>
@@ -39,7 +40,7 @@ const SidebarUserSection = ({ closeSidebar, isCompact = false }: SidebarUserSect
           variant="default" 
           size={isCompact ? "sm" : "default"}
           onClick={() => handleNavigation('/register')}
-          className="w-full"
+          className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-lg transition-all duration-300 hover:scale-[1.02]"
         >
           Registrace
         </Button>
@@ -51,9 +52,9 @@ const SidebarUserSection = ({ closeSidebar, isCompact = false }: SidebarUserSect
   if (isCompact) {
     return (
       <div className="space-y-2">
-        <div className="flex items-center gap-2 p-2 bg-sidebar-accent/50 rounded-md">
-          <Avatar className="h-6 w-6">
-            <AvatarFallback className="text-xs">
+        <div className="flex items-center gap-2 p-2 bg-gradient-to-r from-sidebar-accent/30 to-sidebar-accent/10 rounded-lg border border-sidebar-border/30 backdrop-blur-sm">
+          <Avatar className="h-6 w-6 ring-2 ring-primary/30">
+            <AvatarFallback className="text-xs bg-gradient-to-br from-primary/20 to-accent/20 font-medium">
               {user.email?.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
@@ -63,8 +64,9 @@ const SidebarUserSection = ({ closeSidebar, isCompact = false }: SidebarUserSect
             </p>
             {isPremium && (
               <div className="flex items-center gap-1">
-                <Crown className="h-3 w-3 text-amber-500" />
-                <span className="text-xs text-amber-600 dark:text-amber-400">Premium</span>
+                <Crown className="h-3 w-3 text-amber-500 animate-pulse" />
+                <Sparkles className="h-3 w-3 text-amber-400" />
+                <span className="text-xs text-amber-600 dark:text-amber-400 font-medium">Premium</span>
               </div>
             )}
           </div>
@@ -75,7 +77,7 @@ const SidebarUserSection = ({ closeSidebar, isCompact = false }: SidebarUserSect
             variant="ghost"
             size="sm"
             onClick={() => handleNavigation('/profile')}
-            className="text-xs h-7"
+            className="text-xs h-7 hover:bg-gradient-to-r hover:from-blue-500/20 hover:to-blue-600/20 transition-all duration-300"
           >
             <User className="h-3 w-3 mr-1" />
             Profil
@@ -84,7 +86,7 @@ const SidebarUserSection = ({ closeSidebar, isCompact = false }: SidebarUserSect
             variant="ghost"
             size="sm"
             onClick={handleLogout}
-            className="text-xs h-7"
+            className="text-xs h-7 hover:bg-gradient-to-r hover:from-red-500/20 hover:to-red-600/20 transition-all duration-300"
           >
             <LogOut className="h-3 w-3 mr-1" />
             Odhlásit
@@ -94,12 +96,12 @@ const SidebarUserSection = ({ closeSidebar, isCompact = false }: SidebarUserSect
     );
   }
 
-  // Původní layout
+  // Původní layout s vylepšeným stylingem
   return (
-    <div className="p-4 border-t border-sidebar-border">
-      <div className="flex items-center gap-3 mb-3">
-        <Avatar className="h-8 w-8">
-          <AvatarFallback>
+    <div className="p-4 border-t border-sidebar-border/30">
+      <div className="flex items-center gap-3 mb-3 p-3 bg-gradient-to-r from-sidebar-accent/30 to-sidebar-accent/10 rounded-lg border border-sidebar-border/30 backdrop-blur-sm">
+        <Avatar className="h-8 w-8 ring-2 ring-primary/30 transition-all duration-300 hover:ring-primary/50 hover:scale-110">
+          <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20 font-medium">
             {user.email?.charAt(0).toUpperCase()}
           </AvatarFallback>
         </Avatar>
@@ -108,9 +110,10 @@ const SidebarUserSection = ({ closeSidebar, isCompact = false }: SidebarUserSect
             {user.email}
           </p>
           {isPremium && (
-            <div className="flex items-center gap-1">
-              <Crown className="h-3 w-3 text-amber-500" />
-              <span className="text-xs text-amber-600 dark:text-amber-400">Premium</span>
+            <div className="flex items-center gap-1 mt-1">
+              <Crown className="h-3 w-3 text-amber-500 animate-pulse" />
+              <Sparkles className="h-3 w-3 text-amber-400" />
+              <span className="text-xs text-amber-600 dark:text-amber-400 font-medium">Premium účet</span>
             </div>
           )}
         </div>
@@ -121,19 +124,19 @@ const SidebarUserSection = ({ closeSidebar, isCompact = false }: SidebarUserSect
           variant="ghost"
           size="sm"
           onClick={() => handleNavigation('/profile')}
-          className="w-full justify-start text-sidebar-foreground"
+          className="w-full justify-start text-sidebar-foreground hover:bg-gradient-to-r hover:from-blue-500/20 hover:to-blue-600/20 hover:scale-[1.02] transition-all duration-300 group"
         >
-          <User className="h-4 w-4 mr-3" />
-          Profil
+          <User className="h-4 w-4 mr-3 transition-all duration-300 group-hover:rotate-6 group-hover:scale-110" />
+          <span className="font-medium">Profil</span>
         </Button>
         <Button
           variant="ghost"
           size="sm"
           onClick={handleLogout}
-          className="w-full justify-start text-sidebar-foreground"
+          className="w-full justify-start text-sidebar-foreground hover:bg-gradient-to-r hover:from-red-500/20 hover:to-red-600/20 hover:scale-[1.02] transition-all duration-300 group"
         >
-          <LogOut className="h-4 w-4 mr-3" />
-          Odhlásit se
+          <LogOut className="h-4 w-4 mr-3 transition-all duration-300 group-hover:rotate-6 group-hover:scale-110" />
+          <span className="font-medium">Odhlásit se</span>
         </Button>
       </div>
     </div>
