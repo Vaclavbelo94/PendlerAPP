@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -187,7 +186,7 @@ const TaxOptimizationTips = () => {
             Daňové optimalizace pro 2024
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-6">
           <Alert className="mb-6">
             <FileText className="h-4 w-4" />
             <AlertDescription>
@@ -195,23 +194,25 @@ const TaxOptimizationTips = () => {
             </AlertDescription>
           </Alert>
 
-          <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
-            <TabsList className="grid w-full grid-cols-5">
-              <TabsTrigger value="all">Všechny</TabsTrigger>
-              <TabsTrigger value="deductions">Odpočty</TabsTrigger>
-              <TabsTrigger value="income">Příjmy</TabsTrigger>
-              <TabsTrigger value="timing">Načasování</TabsTrigger>
-              <TabsTrigger value="family">Rodina</TabsTrigger>
-            </TabsList>
+          <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
+            <div className="w-full overflow-x-auto">
+              <TabsList className="grid w-full min-w-fit grid-cols-5 h-auto p-1">
+                <TabsTrigger value="all" className="text-xs px-2 py-2">Všechny</TabsTrigger>
+                <TabsTrigger value="deductions" className="text-xs px-2 py-2">Odpočty</TabsTrigger>
+                <TabsTrigger value="income" className="text-xs px-2 py-2">Příjmy</TabsTrigger>
+                <TabsTrigger value="timing" className="text-xs px-2 py-2">Načasování</TabsTrigger>
+                <TabsTrigger value="family" className="text-xs px-2 py-2">Rodina</TabsTrigger>
+              </TabsList>
+            </div>
 
-            <TabsContent value={selectedCategory} className="mt-6">
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <TabsContent value={selectedCategory} className="mt-6 space-y-4">
+              <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                 {filteredTips.map((tip) => {
                   const IconComponent = tip.icon;
                   return (
                     <Card 
                       key={tip.id} 
-                      className="h-full flex flex-col hover:shadow-md transition-shadow cursor-pointer"
+                      className="h-full flex flex-col hover:shadow-md transition-shadow cursor-pointer min-h-[280px]"
                       onClick={() => setSelectedTip(tip)}
                     >
                       <CardContent className="p-4 flex flex-col h-full">
@@ -226,11 +227,11 @@ const TaxOptimizationTips = () => {
                           </div>
                         </div>
                         
-                        <p className="text-xs text-muted-foreground mb-3 flex-1 line-clamp-3">
+                        <p className="text-xs text-muted-foreground mb-4 flex-1 line-clamp-3">
                           {tip.description}
                         </p>
                         
-                        <div className="space-y-2 mt-auto">
+                        <div className="space-y-3 mt-auto">
                           <div className="flex flex-wrap gap-1">
                             <Badge 
                               variant="secondary"
@@ -245,7 +246,7 @@ const TaxOptimizationTips = () => {
                               <Euro className="h-3 w-3" />
                               {tip.potentialSaving}
                             </Badge>
-                            <Button variant="ghost" size="sm" className="text-xs h-6 px-2">
+                            <Button variant="ghost" size="sm" className="text-xs h-7 px-3">
                               Detail →
                             </Button>
                           </div>
