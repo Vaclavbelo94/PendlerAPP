@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -13,7 +14,11 @@ import {
   Calculator,
   FileText,
   TrendingDown,
-  Euro
+  Euro,
+  Minus,
+  DollarSign,
+  Clock,
+  Users
 } from 'lucide-react';
 
 interface OptimizationTip {
@@ -177,6 +182,14 @@ const TaxOptimizationTips = () => {
     }
   };
 
+  const categories = [
+    { id: 'all', label: 'Všechny', icon: Lightbulb, shortLabel: 'Vše' },
+    { id: 'deductions', label: 'Odpočty', icon: Minus, shortLabel: 'Odpočty' },
+    { id: 'income', label: 'Příjmy', icon: DollarSign, shortLabel: 'Příjmy' },
+    { id: 'timing', label: 'Načasování', icon: Clock, shortLabel: 'Čas' },
+    { id: 'family', label: 'Rodina', icon: Users, shortLabel: 'Rodina' }
+  ];
+
   return (
     <div className="space-y-6">
       <Card>
@@ -195,13 +208,48 @@ const TaxOptimizationTips = () => {
           </Alert>
 
           <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
-            <div className="w-full overflow-x-auto">
-              <TabsList className="grid w-full min-w-fit grid-cols-5 h-auto p-1">
-                <TabsTrigger value="all" className="text-xs px-2 py-2">Všechny</TabsTrigger>
-                <TabsTrigger value="deductions" className="text-xs px-2 py-2">Odpočty</TabsTrigger>
-                <TabsTrigger value="income" className="text-xs px-2 py-2">Příjmy</TabsTrigger>
-                <TabsTrigger value="timing" className="text-xs px-2 py-2">Načasování</TabsTrigger>
-                <TabsTrigger value="family" className="text-xs px-2 py-2">Rodina</TabsTrigger>
+            {/* Mobile: Horizontal scroll with icons and shorter text */}
+            <div className="block md:hidden mb-6">
+              <div className="flex overflow-x-auto scrollbar-hide pb-2 gap-2">
+                {categories.map((category) => {
+                  const IconComponent = category.icon;
+                  return (
+                    <button
+                      key={category.id}
+                      onClick={() => setSelectedCategory(category.id)}
+                      className={`
+                        flex flex-col items-center gap-1 min-w-[70px] px-3 py-3 rounded-lg border text-xs font-medium transition-all whitespace-nowrap
+                        ${selectedCategory === category.id 
+                          ? 'bg-primary text-primary-foreground border-primary shadow-sm' 
+                          : 'bg-background text-muted-foreground border-border hover:bg-muted'
+                        }
+                      `}
+                    >
+                      <IconComponent className="h-4 w-4" />
+                      <span>{category.shortLabel}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Desktop: Standard tabs */}
+            <div className="hidden md:block">
+              <TabsList className="grid w-full grid-cols-5 h-12">
+                {categories.map((category) => {
+                  const IconComponent = category.icon;
+                  return (
+                    <TabsTrigger 
+                      key={category.id}
+                      value={category.id} 
+                      className="flex items-center gap-2 text-sm px-4 py-2"
+                    >
+                      <IconComponent className="h-4 w-4" />
+                      <span className="hidden lg:inline">{category.label}</span>
+                      <span className="lg:hidden">{category.shortLabel}</span>
+                    </TabsTrigger>
+                  );
+                })}
               </TabsList>
             </div>
 
