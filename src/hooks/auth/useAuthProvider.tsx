@@ -1,4 +1,3 @@
-
 import * as React from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { AuthContext } from './useAuthContext';
@@ -50,7 +49,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         ]) as any;
         
         // Special users handling
-        if (user.email === 'uzivatel@pendlerapp.com' || user.email === 'admin@pendlerapp.com' || user.email === 'vbelo@pendlerapp.com') {
+        if (user.email === 'uzivatel@pendlerapp.com' || user.email === 'admin@pendlerapp.com') {
           setIsPremium(true);
           const threeMonthsLater = new Date();
           threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -42,7 +41,7 @@ export const WelcomeSection = () => {
       <div>
         <h2 className="text-3xl font-bold tracking-tight">Vítejte, {username}!</h2>
         <p className="text-muted-foreground mt-1">
-          Začněte používat Pendlerův Pomocník pro efektivnější práci v zahraničí
+          Začněte používat Pendler Pomocník pro efektivnější práci v zahraničí
         </p>
       </div>
 

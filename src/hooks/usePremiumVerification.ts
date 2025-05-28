@@ -1,4 +1,3 @@
-
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useAuth } from './useAuth';
 
@@ -18,7 +17,7 @@ export const usePremiumVerification = () => {
         (localStorage.getItem("currentUser") ? 
           JSON.parse(localStorage.getItem("currentUser") || "{}").email : null);
       
-      const specialEmails = ['uzivatel@pendlerapp.com', 'admin@pendlerapp.com', 'vbelo@pendlerapp.com'];
+      const specialEmails = ['uzivatel@pendlerapp.com', 'admin@pendlerapp.com'];
       return specialEmails.includes(userEmail);
     } catch (e) {
       console.error('Error in special user check:', e);

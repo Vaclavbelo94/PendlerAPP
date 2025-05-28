@@ -65,7 +65,7 @@ const PremiumCheck: React.FC<PremiumCheckProps> = ({ featureKey, children }) => 
           </CardHeader>
           <CardContent>
             <p className="mb-6">
-              Získejte Premium pro přístup ke všem funkcím aplikace Pendler Buddy a usnadněte si práci v Německu.
+              Získejte Premium pro přístup ke všem funkcím aplikace Pendler Pomocník a usnadněte si práci v Německu.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button onClick={() => navigate("/premium")} className="bg-amber-500 hover:bg-amber-600">

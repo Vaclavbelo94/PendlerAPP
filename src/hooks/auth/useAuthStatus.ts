@@ -44,7 +44,7 @@ export const useAuthStatus = (userId: string | undefined) => {
       if (userError) throw userError;
       
       // If this is the specific user we want to give premium to
-      if (userData?.email === 'uzivatel@pendlerapp.com') {
+      if (userData?.email === 'uzivatel@pendlerapp.com' || userData?.email === 'admin@pendlerapp.com') {
         // Set premium status and calculate expiry date (3 months from now)
         const threeMonthsLater = new Date();
         threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);

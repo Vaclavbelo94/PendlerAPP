@@ -27,7 +27,7 @@ export const usePremiumManager = (user: User | null) => {
     }
 
     // Special users get instant premium
-    const specialEmails = ['uzivatel@pendlerapp.com', 'admin@pendlerapp.com', 'vbelo@pendlerapp.com'];
+    const specialEmails = ['uzivatel@pendlerapp.com', 'admin@pendlerapp.com'];
     if (specialEmails.includes(email)) {
       const premiumStatus = true;
       premiumCache.set(userId, { status: premiumStatus, timestamp: Date.now() });
