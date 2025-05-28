@@ -31,7 +31,6 @@ import Register from "@/pages/Register";
 import Profile from "@/pages/Profile";
 import UnifiedProfile from "@/pages/UnifiedProfile";
 import ProfileExtended from "@/pages/ProfileExtended";
-import TermsOfService from "@/pages/TermsOfService";
 import Privacy from "@/pages/Privacy";
 import Terms from "@/pages/Terms";
 import Cookies from "@/pages/Cookies";
@@ -159,7 +158,6 @@ function AppContent() {
             <Route path="/faq" element={<FAQ />} />
             
             {/* Legal pages */}
-            <Route path="/terms-of-service" element={<TermsOfService />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/cookies" element={<Cookies />} />
