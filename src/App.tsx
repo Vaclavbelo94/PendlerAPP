@@ -24,7 +24,7 @@ import {
 } from '@/utils/performanceOptimizer';
 
 // Standard pages
-import Index from "@/pages/Index";
+import UnifiedHomePage from "@/pages/UnifiedHomePage";
 import Dashboard from "@/pages/Dashboard";
 import Language from "@/pages/Language";
 import Login from "@/pages/Login";
@@ -113,7 +113,7 @@ function AppContent() {
         <LayoutWrapper>
           <Routes>
             {/* Main pages */}
-            <Route path="/" element={<Index />} />
+            <Route path="/" element={<UnifiedHomePage />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/language" element={<Language />} />
             <Route path="/vocabulary" element={<Vocabulary />} />
