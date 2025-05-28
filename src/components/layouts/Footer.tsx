@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { 
   Calendar, 
@@ -21,9 +20,9 @@ const Footer = () => {
           <div className="col-span-1 md:col-span-4">
             <Link to="/" className="inline-flex items-center gap-3 mb-6">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white font-bold">
-                PH
+                PP
               </div>
-              <span className="font-bold text-xl">Pendler Helper</span>
+              <span className="font-bold text-xl">Pendlerův Pomocník</span>
             </Link>
             <p className="text-gray-400 mb-6 max-w-md">
               Komplexní průvodce a pomocník pro české pendlery pracující v Německu. Usnadňujeme každodenní život a překonáváme jazykové i administrativní výzvy.
@@ -107,7 +106,7 @@ const Footer = () => {
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Email</p>
-                  <p className="text-gray-300">info@pendlerhelper.cz</p>
+                  <p className="text-gray-300">info@pendleruvpomocnik.cz</p>
                 </div>
               </div>
               
@@ -127,7 +126,7 @@ const Footer = () => {
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Web</p>
-                  <p className="text-gray-300">www.pendlerhelper.cz</p>
+                  <p className="text-gray-300">www.pendleruvpomocnik.cz</p>
                 </div>
               </div>
             </div>
@@ -136,7 +135,7 @@ const Footer = () => {
         
         <div className="mt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-500 text-sm mb-4 md:mb-0">
-            © {currentYear} Pendler Helper. Všechna práva vyhrazena.
+            © {currentYear} Pendlerův Pomocník. Všechna práva vyhrazena.
           </p>
           <div className="flex flex-wrap gap-4 text-sm text-gray-500">
             <Link to="/terms-of-service" className="hover:text-blue-400 transition-colors">

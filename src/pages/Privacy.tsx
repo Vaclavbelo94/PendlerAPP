@@ -1,4 +1,3 @@
-
 const Privacy = () => {
   return (
     <div className="py-12 bg-slate-50">
@@ -8,7 +7,7 @@ const Privacy = () => {
         <div className="prose prose-slate max-w-none">
           <section className="mb-8">
             <h2 className="text-xl font-semibold mb-4">1. Úvod</h2>
-            <p>Společnost Pendler Helper s.r.o., IČO: 12345678, se sídlem Hlavní 123, 150 00 Praha 5 (dále jen „správce"), jako správce osobních údajů, tímto informuje o způsobu a rozsahu zpracování osobních údajů uživatelů aplikace Pendler Helper (dále jen „aplikace").</p>
+            <p>Společnost Pendlerův Pomocník s.r.o., IČO: 12345678, se sídlem Hlavní 123, 150 00 Praha 5 (dále jen „správce"), jako správce osobních údajů, tímto informuje o způsobu a rozsahu zpracování osobních údajů uživatelů aplikace Pendlerův Pomocník (dále jen „aplikace").</p>
             <p>Ochrana vašich osobních údajů je pro nás velmi důležitá. Tato pravidla ochrany soukromí vysvětlují, jaké údaje shromažďujeme, jak je používáme a jak je chráníme.</p>
           </section>
           
@@ -70,7 +69,7 @@ const Privacy = () => {
               <li>Právo odvolat souhlas se zpracováním</li>
               <li>Právo podat stížnost u dozorového úřadu</li>
             </ul>
-            <p>Pro uplatnění těchto práv nás můžete kontaktovat na e-mailové adrese info@pendlerhelper.cz.</p>
+            <p>Pro uplatnění těchto práv nás můžete kontaktovat na e-mailové adrese info@pendleruvpomocnik.cz.</p>
           </section>
           
           <section className="mb-8">

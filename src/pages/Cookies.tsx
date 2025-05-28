@@ -1,4 +1,3 @@
-
 const Cookies = () => {
   return (
     <div className="py-12 bg-slate-50">
@@ -14,7 +13,7 @@ const Cookies = () => {
           
           <section className="mb-8">
             <h2 className="text-xl font-semibold mb-4">2. Jaké cookies používáme</h2>
-            <p>V naší aplikaci Pendler Helper používáme následující typy cookies:</p>
+            <p>V naší aplikaci Pendlerův Pomocník používáme následující typy cookies:</p>
             
             <h3 className="text-lg font-medium mt-4 mb-2">Nezbytné cookies</h3>
             <p>Tyto cookies jsou nezbytné pro fungování aplikace. Umožňují základní funkce jako navigaci na stránce a přístup k zabezpečeným oblastem aplikace. Tyto cookies neukládají žádné informace, které by mohly být použity pro marketingové účely.</p>

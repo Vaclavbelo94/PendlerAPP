@@ -8,7 +8,7 @@ const Terms = () => {
         <div className="prose prose-slate max-w-none">
           <section className="mb-8">
             <h2 className="text-xl font-semibold mb-4">1. Úvodní ustanovení</h2>
-            <p>Tyto podmínky použití upravují práva a povinnosti uživatelů webové aplikace Pendler Helper (dále jen „aplikace") provozované společností Pendler Helper s.r.o., IČO: 12345678, se sídlem Hlavní 123, 150 00 Praha 5 (dále jen „provozovatel").</p>
+            <p>Tyto podmínky použití upravují práva a povinnosti uživatelů webové aplikace Pendlerův Pomocník (dále jen „aplikace") provozované společností Pendlerův Pomocník s.r.o., IČO: 12345678, se sídlem Hlavní 123, 150 00 Praha 5 (dále jen „provozovatel").</p>
             <p>Používáním aplikace vyjadřujete souhlas s těmito podmínkami. Pokud s podmínkami nesouhlasíte, není možné aplikaci používat.</p>
           </section>
           

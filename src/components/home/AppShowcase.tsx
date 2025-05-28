@@ -39,7 +39,7 @@ const AppShowcase = () => {
         <AnimatedSection className="text-center mb-12" type="fade">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Ukázka aplikace</h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Podívejte se, jak Pendler Helper funguje v praxi a jak vám může usnadnit život.
+            Podívejte se, jak Pendlerův Pomocník funguje v praxi a jak vám může usnadnit život.
           </p>
         </AnimatedSection>
         

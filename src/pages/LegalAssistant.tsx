@@ -1,4 +1,3 @@
-
 import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
 import { 
@@ -65,7 +64,7 @@ const LegalAssistant = () => {
     <PremiumCheck featureKey="legal-assistant">
       <div className="container py-8">
         <Helmet>
-          <title>Právní asistent | Pendler Buddy</title>
+          <title>Právní asistent | Pendlerův Pomocník</title>
         </Helmet>
         
         {/* Header section */}

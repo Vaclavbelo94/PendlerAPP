@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -49,7 +48,7 @@ const Contact = () => {
                   <Mail className="w-5 h-5 text-primary mr-3 mt-1" />
                   <div>
                     <h3 className="font-semibold">Email</h3>
-                    <p>info@pendlerhelper.cz</p>
+                    <p>info@pendleruvpomocnik.cz</p>
                   </div>
                 </div>
                 
@@ -66,7 +65,7 @@ const Contact = () => {
                   <MapPin className="w-5 h-5 text-primary mr-3 mt-1" />
                   <div>
                     <h3 className="font-semibold">Adresa</h3>
-                    <p>Pendler Helper s.r.o.</p>
+                    <p>Pendlerův Pomocník s.r.o.</p>
                     <p>Hlavní 123</p>
                     <p>150 00 Praha 5</p>
                   </div>

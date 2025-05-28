@@ -78,7 +78,7 @@ const TravelPlanning = () => {
     <PremiumCheck featureKey="travel_planning">
       <ResponsivePage enableLandscapeOptimization={true}>
         <Helmet>
-          <title>Plánování cest | Pendler Buddy</title>
+          <title>Plánování cest | Pendlerův Pomocník</title>
         </Helmet>
         
         {/* Back button */}

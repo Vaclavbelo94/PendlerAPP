@@ -28,7 +28,7 @@ const CommutingMap = () => {
     <PremiumCheck featureKey="commuting_map">
       <ResponsiveContainer className={`py-4 ${isMobile ? 'px-2' : 'py-8'}`}>
         <Helmet>
-          <title>Mapa pendlerů | Pendler Buddy</title>
+          <title>Mapa pendlerů | Pendlerův Pomocník</title>
         </Helmet>
         
         {/* Back button */}

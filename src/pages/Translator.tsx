@@ -1,4 +1,3 @@
-
 import React, { useState, Suspense } from 'react';
 import { Helmet } from "react-helmet";
 import PremiumCheck from "@/components/premium/PremiumCheck";
@@ -130,7 +129,7 @@ const Translator = () => {
     <PremiumCheck featureKey="translator">
       <div className={`container py-6 ${useMobileLayout ? 'pb-32' : ''} ${isSmallLandscape ? 'px-2' : ''}`}>
         <Helmet>
-          <title>AI Překladač | Pendler Buddy</title>
+          <title>AI Překladač | Pendlerův Pomocník</title>
           <meta name="description" content="Inteligentní AI asistent pro češtinu a němčinu. Překlady s kontextovým vysvětlením pro pendlery v Německu." />
           <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
         </Helmet>
