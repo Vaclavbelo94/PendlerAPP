@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -6,12 +7,16 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Globe, Download, Trash2 } from 'lucide-react';
 import { toast } from "sonner";
-import InterfaceLanguageSettings from "@/components/profile/settings/InterfaceLanguageSettings";
+import { useInternationalization } from "@/hooks/useInternationalization";
+import { useGermanLessonsTranslation } from "@/hooks/useGermanLessonsTranslation";
 
 const LanguageSettings = () => {
-  const [appLanguage, setAppLanguage] = useState("cs");
   const [learningLanguage, setLearningLanguage] = useState("de");
   const [region, setRegion] = useState("cz");
+  
+  // Hooks pro správu jazyků
+  const { currentLanguage: systemLanguage, changeLanguage: changeSystemLanguage, availableLanguages: systemLanguages } = useInternationalization();
+  const { currentLanguage: lessonsLanguage, changeLanguage: changeLessonsLanguage, availableLanguages: lessonsLanguages } = useGermanLessonsTranslation();
 
   const handleSaveSettings = () => {
     toast.success("Jazykové nastavení bylo uloženo");
@@ -23,36 +28,87 @@ const LanguageSettings = () => {
 
   return (
     <div className="space-y-6">
-      {/* Interface Language Settings */}
-      <InterfaceLanguageSettings />
-
+      {/* System Language Settings */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Globe className="h-5 w-5" />
-            Jazykové nastavení aplikace
+            Hlavní jazyk aplikace
           </CardTitle>
           <CardDescription>
-            Nastavte preferovaný jazyk aplikace a učení
+            Nastavte jazyk pro celé uživatelské rozhraní aplikace
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="appLanguage">Jazyk aplikace</Label>
-            <Select value={appLanguage} onValueChange={setAppLanguage}>
-              <SelectTrigger>
+            <Label htmlFor="systemLanguage">Jazyk aplikace</Label>
+            <Select value={systemLanguage} onValueChange={changeSystemLanguage}>
+              <SelectTrigger id="systemLanguage">
                 <SelectValue placeholder="Vyberte jazyk aplikace" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="cs">🇨🇿 Čeština</SelectItem>
-                <SelectItem value="de">🇩🇪 Němčina</SelectItem>
-                <SelectItem value="en">🇬🇧 Angličtina</SelectItem>
+                {systemLanguages.map((lang) => (
+                  <SelectItem key={lang.code} value={lang.code}>
+                    {lang.name}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
+            <p className="text-xs text-muted-foreground">
+              Ovlivňuje jazyk menu, tlačítek a všech obecných textů v aplikaci
+            </p>
           </div>
+        </CardContent>
+      </Card>
 
-          <Separator />
+      {/* German Lessons Interface Language */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Globe className="h-5 w-5" />
+            Jazyk rozhraní pro lekce němčiny
+          </CardTitle>
+          <CardDescription>
+            Nastavte jazyk pro instrukce a popisky v sekcích výuky němčiny
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            <Label>Vyberte jazyk rozhraní pro lekce:</Label>
+            <div className="grid grid-cols-2 gap-2">
+              {lessonsLanguages.map((lang) => (
+                <Button
+                  key={lang.code}
+                  variant={lessonsLanguage === lang.code ? "default" : "outline"}
+                  onClick={() => changeLessonsLanguage(lang.code)}
+                  className="justify-start h-auto p-3"
+                >
+                  <span className="mr-2 text-base">{lang.flag}</span>
+                  <span className="text-sm font-medium">{lang.name}</span>
+                </Button>
+              ))}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Aktuální jazyk: {lessonsLanguages.find(l => l.code === lessonsLanguage)?.name}
+            </p>
+          </div>
+        </CardContent>
+      </Card>
 
+      <Separator />
+
+      {/* Learning Preferences */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Globe className="h-5 w-5" />
+            Preference učení
+          </CardTitle>
+          <CardDescription>
+            Nastavte jaký jazyk se učíte a vaší region
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="learningLanguage">Jazyk, který se učíte</Label>
             <Select value={learningLanguage} onValueChange={setLearningLanguage}>
@@ -85,6 +141,7 @@ const LanguageSettings = () => {
         </CardContent>
       </Card>
 
+      {/* Offline Language Packs */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">

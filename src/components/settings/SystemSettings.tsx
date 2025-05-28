@@ -1,51 +1,18 @@
+
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Globe, Shield, Zap, Database } from 'lucide-react';
-import { useInternationalization } from '@/hooks/useInternationalization';
+import { Shield, Zap, Database } from 'lucide-react';
 import HealthMonitor from '@/components/monitoring/HealthMonitor';
 import AudioSettings from '@/components/profile/settings/AudioSettings';
 
 const SystemSettings = () => {
-  const { currentLanguage, changeLanguage, availableLanguages, t } = useInternationalization();
-
   return (
     <div className="space-y-6">
       {/* Audio Settings */}
       <AudioSettings />
-
-      {/* Language Settings */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Globe className="h-5 w-5" />
-            Jazyk a lokalizace
-          </CardTitle>
-          <CardDescription>
-            Nastavení jazyka a regionálních preferencí
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="language-select">Jazyk aplikace</Label>
-            <Select value={currentLanguage} onValueChange={changeLanguage}>
-              <SelectTrigger id="language-select" className="w-full sm:w-[200px]">
-                <SelectValue placeholder="Vyberte jazyk" />
-              </SelectTrigger>
-              <SelectContent>
-                {availableLanguages.map((lang) => (
-                  <SelectItem key={lang.code} value={lang.code}>
-                    {lang.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Security Settings */}
       <Card>
