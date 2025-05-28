@@ -1,17 +1,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon } from 'lucide-react';
-import { format } from 'date-fns';
-import { cs } from 'date-fns/locale';
-import { cn } from '@/lib/utils';
 import { Shift } from '@/hooks/shifts/useOptimizedShiftsManagement';
+import DateSelector from './DateSelector';
 
 interface ShiftFormProps {
   onSubmit: (data: any) => void;
@@ -67,56 +61,12 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="space-y-2">
-        <Label htmlFor="date">Datum směny *</Label>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className={cn(
-                "w-full justify-start text-left font-normal",
-                !date && "text-muted-foreground"
-              )}
-            >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {date ? format(date, 'PPP', { locale: cs }) : 'Vyberte datum'}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <Calendar
-              mode="single"
-              selected={date}
-              onSelect={setDate}
-              initialFocus
-              locale={cs}
-              className="p-3 pointer-events-auto"
-              classNames={{
-                months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-                month: "space-y-4 w-full",
-                caption: "flex justify-center pt-1 relative items-center mb-2",
-                caption_label: "text-sm font-medium",
-                nav: "space-x-1 flex items-center",
-                nav_button: "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100",
-                nav_button_previous: "absolute left-1",
-                nav_button_next: "absolute right-1",
-                table: "w-full border-collapse",
-                head_row: "grid grid-cols-7 w-full mb-1",
-                head_cell: "text-muted-foreground text-center text-xs font-medium h-8 flex items-center justify-center",
-                row: "grid grid-cols-7 w-full",
-                cell: "relative text-center text-sm h-10 w-full flex items-center justify-center",
-                day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100 flex items-center justify-center rounded-md hover:bg-accent hover:text-accent-foreground transition-colors",
-                day_range_end: "day-range-end",
-                day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
-                day_today: "bg-accent text-accent-foreground font-semibold",
-                day_outside: "text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30",
-                day_disabled: "text-muted-foreground opacity-50",
-                day_range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
-                day_hidden: "invisible",
-              }}
-            />
-          </PopoverContent>
-        </Popover>
-      </div>
+      <DateSelector
+        value={date}
+        onChange={setDate}
+        label="Datum směny"
+        required
+      />
 
       <div className="space-y-2">
         <Label htmlFor="type">Typ směny *</Label>
