@@ -1,4 +1,3 @@
-
 export interface ExtendedPhrase {
   id: string;
   german: string;
@@ -8,7 +7,7 @@ export interface ExtendedPhrase {
   phonetic: string;
   situation: string;
   importance: 'critical' | 'important' | 'useful';
-  category: 'greeting' | 'work' | 'emergency' | 'time' | 'numbers' | 'directions' | 'tools' | 'problems';
+  category: 'greeting' | 'work' | 'emergency' | 'time' | 'numbers' | 'directions' | 'tools' | 'problems' | 'technical' | 'shifts' | 'evaluation';
   difficulty: 'beginner' | 'intermediate' | 'advanced';
   audioUrl?: string;
 }
@@ -125,6 +124,42 @@ export const extendedGermanLessons: ExtendedLessonCategory[] = [
         importance: 'critical',
         category: 'greeting',
         difficulty: 'beginner'
+      },
+      {
+        id: 'fd9',
+        german: 'Wo ist die Umkleidekabine?',
+        czech: 'Kde je šatna?',
+        english: 'Where is the changing room?',
+        slovak: 'Kde je šatňa?',
+        phonetic: 'vo ist dí umklajdekabiné',
+        situation: 'Hledání šatny první den',
+        importance: 'important',
+        category: 'directions',
+        difficulty: 'beginner'
+      },
+      {
+        id: 'fd10',
+        german: 'Wann beginnt meine Schicht?',
+        czech: 'Kdy začíná moje směna?',
+        english: 'When does my shift start?',
+        slovak: 'Kedy začína moja zmena?',
+        phonetic: 'van beginnt majné šicht',
+        situation: 'Dotaz na začátek směny',
+        importance: 'critical',
+        category: 'time',
+        difficulty: 'beginner'
+      },
+      {
+        id: 'fd11',
+        german: 'Wo bekomme ich meine Arbeitskleidung?',
+        czech: 'Kde dostanu pracovní oblečení?',
+        english: 'Where do I get my work clothes?',
+        slovak: 'Kde dostanem pracovné oblečenie?',
+        phonetic: 'vo bekomé ich majné arbajtsklajdung',
+        situation: 'Žádost o pracovní oblečení',
+        importance: 'important',
+        category: 'work',
+        difficulty: 'intermediate'
       }
     ]
   },
@@ -229,6 +264,513 @@ export const extendedGermanLessons: ExtendedLessonCategory[] = [
         situation: 'Nabídka pomoci kolegovi',
         importance: 'useful',
         category: 'work',
+        difficulty: 'intermediate'
+      },
+      {
+        id: 'dc9',
+        german: 'Ich bin mit dieser Aufgabe fertig',
+        czech: 'Dokončil/a jsem tento úkol',
+        english: 'I finished this task',
+        slovak: 'Dokončil/a som túto úlohu',
+        phonetic: 'ich bin mit dízer aufgabé fertig',
+        situation: 'Hlášení dokončení úkolu',
+        importance: 'important',
+        category: 'work',
+        difficulty: 'intermediate'
+      },
+      {
+        id: 'dc10',
+        german: 'Was soll ich als nächstes machen?',
+        czech: 'Co mám dělat dál?',
+        english: 'What should I do next?',
+        slovak: 'Čo mám robiť ďalej?',
+        phonetic: 'vas zol ich als nächstes machen',
+        situation: 'Žádost o další úkol',
+        importance: 'important',
+        category: 'work',
+        difficulty: 'intermediate'
+      },
+      {
+        id: 'dc11',
+        german: 'Können Sie mir das erklären?',
+        czech: 'Můžete mi to vysvětlit?',
+        english: 'Can you explain that to me?',
+        slovak: 'Môžete mi to vysvetliť?',
+        phonetic: 'könen zí mír das erkléren',
+        situation: 'Žádost o vysvětlení',
+        importance: 'important',
+        category: 'problems',
+        difficulty: 'intermediate'
+      },
+      {
+        id: 'dc12',
+        german: 'Wo ist der nächste Container?',
+        czech: 'Kde je další kontejner?',
+        english: 'Where is the next container?',
+        slovak: 'Kde je ďalší kontajner?',
+        phonetic: 'vo ist der nächsté kontajner',
+        situation: 'Hledání kontejneru',
+        importance: 'useful',
+        category: 'directions',
+        difficulty: 'intermediate'
+      }
+    ]
+  },
+  {
+    id: 'technical-terms',
+    titleKey: 'nav.technicalTerms',
+    icon: '🔧',
+    description: 'Technické termíny a vybavení skladu',
+    estimatedTime: 20,
+    phrases: [
+      {
+        id: 'tt1',
+        german: 'das Betriebssystem',
+        czech: 'operační systém',
+        english: 'operating system',
+        slovak: 'operačný systém',
+        phonetic: 'das betrípssystém',
+        situation: 'Práce s počítačem',
+        importance: 'useful',
+        category: 'technical',
+        difficulty: 'intermediate'
+      },
+      {
+        id: 'tt2',
+        german: 'der Handscanner',
+        czech: 'ruční skener',
+        english: 'handheld scanner',
+        slovak: 'ručný skener',
+        phonetic: 'der hantskanr',
+        situation: 'Používání skeneru',
+        importance: 'critical',
+        category: 'technical',
+        difficulty: 'intermediate'
+      },
+      {
+        id: 'tt3',
+        german: 'die Sortieranlage',
+        czech: 'třídící zařízení',
+        english: 'sorting facility',
+        slovak: 'triedidciace zariadenie',
+        phonetic: 'dí sortíranlagé',
+        situation: 'Popis zařízení',
+        importance: 'important',
+        category: 'technical',
+        difficulty: 'advanced'
+      },
+      {
+        id: 'tt4',
+        german: 'der Barcode',
+        czech: 'čárový kód',
+        english: 'barcode',
+        slovak: 'čiarový kód',
+        phonetic: 'der barkódé',
+        situation: 'Skenování balíků',
+        importance: 'critical',
+        category: 'technical',
+        difficulty: 'beginner'
+      },
+      {
+        id: 'tt5',
+        german: 'die Waage',
+        czech: 'váha',
+        english: 'scale',
+        slovak: 'váha',
+        phonetic: 'dí vágé',
+        situation: 'Vážení balíků',
+        importance: 'important',
+        category: 'technical',
+        difficulty: 'beginner'
+      },
+      {
+        id: 'tt6',
+        german: 'das Terminal',
+        czech: 'terminál',
+        english: 'terminal',
+        slovak: 'terminál',
+        phonetic: 'das terminál',
+        situation: 'Práce s počítačem',
+        importance: 'important',
+        category: 'technical',
+        difficulty: 'intermediate'
+      },
+      {
+        id: 'tt7',
+        german: 'die Datenbank',
+        czech: 'databáze',
+        english: 'database',
+        slovak: 'databáza',
+        phonetic: 'dí dátenbánk',
+        situation: 'Práce se systémem',
+        importance: 'useful',
+        category: 'technical',
+        difficulty: 'advanced'
+      },
+      {
+        id: 'tt8',
+        german: 'das Netzwerk',
+        czech: 'síť',
+        english: 'network',
+        slovak: 'sieť',
+        phonetic: 'das netverk',
+        situation: 'Technické problémy',
+        importance: 'useful',
+        category: 'technical',
+        difficulty: 'intermediate'
+      },
+      {
+        id: 'tt9',
+        german: 'die Software',
+        czech: 'software',
+        english: 'software',
+        slovak: 'softvér',
+        phonetic: 'dí softvér',
+        situation: 'Práce s programy',
+        importance: 'useful',
+        category: 'technical',
+        difficulty: 'intermediate'
+      },
+      {
+        id: 'tt10',
+        german: 'der Server',
+        czech: 'server',
+        english: 'server',
+        slovak: 'server',
+        phonetic: 'der servr',
+        situation: 'Technické problémy',
+        importance: 'useful',
+        category: 'technical',
+        difficulty: 'intermediate'
+      },
+      {
+        id: 'tt11',
+        german: 'die Automatisierung',
+        czech: 'automatizace',
+        english: 'automation',
+        slovak: 'automatizácia',
+        phonetic: 'dí automatizírung',
+        situation: 'Modernizace skladu',
+        importance: 'useful',
+        category: 'technical',
+        difficulty: 'advanced'
+      },
+      {
+        id: 'tt12',
+        german: 'die Kalibrierung',
+        czech: 'kalibrace',
+        english: 'calibration',
+        slovak: 'kalibrácia',
+        phonetic: 'dí kalibírung',
+        situation: 'Nastavení zařízení',
+        importance: 'useful',
+        category: 'technical',
+        difficulty: 'advanced'
+      }
+    ]
+  },
+  {
+    id: 'shift-work',
+    titleKey: 'nav.shiftWork',
+    icon: '⏰',
+    description: 'Směnová práce a organizace času',
+    estimatedTime: 18,
+    phrases: [
+      {
+        id: 'sw1',
+        german: 'Ich arbeite in der Frühschicht',
+        czech: 'Pracuji v ranní směně',
+        english: 'I work the morning shift',
+        slovak: 'Pracujem v rannej zmene',
+        phonetic: 'ich arbajté in der früšicht',
+        situation: 'Informace o směně',
+        importance: 'important',
+        category: 'shifts',
+        difficulty: 'intermediate'
+      },
+      {
+        id: 'sw2',
+        german: 'Wann ist Schichtwechsel?',
+        czech: 'Kdy je střídání směn?',
+        english: 'When is the shift change?',
+        slovak: 'Kedy je striedanie zmien?',
+        phonetic: 'van ist šichtvechsl',
+        situation: 'Dotaz na střídání',
+        importance: 'important',
+        category: 'shifts',
+        difficulty: 'intermediate'
+      },
+      {
+        id: 'sw3',
+        german: 'Ich mache Überstunden',
+        czech: 'Dělám přesčas',
+        english: 'I\'m working overtime',
+        slovak: 'Robím nadčas',
+        phonetic: 'ich machó überstundén',
+        situation: 'Hlášení přesčasů',
+        importance: 'important',
+        category: 'shifts',
+        difficulty: 'intermediate'
+      },
+      {
+        id: 'sw4',
+        german: 'Kann ich früher gehen?',
+        czech: 'Mohu odejít dříve?',
+        english: 'Can I leave early?',
+        slovak: 'Môžem odísť skôr?',
+        phonetic: 'kan ich früher géhen',
+        situation: 'Žádost o předčasný odchod',
+        importance: 'useful',
+        category: 'shifts',
+        difficulty: 'intermediate'
+      },
+      {
+        id: 'sw5',
+        german: 'Ich bin krank und kann nicht kommen',
+        czech: 'Jsem nemocný/á a nemohu přijít',
+        english: 'I\'m sick and can\'t come',
+        slovak: 'Som chorý/á a nemôžem prísť',
+        phonetic: 'ich bin krank unt kan nicht komén',
+        situation: 'Hlášení nemoci',
+        importance: 'critical',
+        category: 'shifts',
+        difficulty: 'intermediate'
+      },
+      {
+        id: 'sw6',
+        german: 'Wer übernimmt meine Schicht?',
+        czech: 'Kdo převezme moji směnu?',
+        english: 'Who will take over my shift?',
+        slovak: 'Kto prevezme moju zmenu?',
+        phonetic: 'vér übernijmt majné šicht',
+        situation: 'Předání směny',
+        importance: 'important',
+        category: 'shifts',
+        difficulty: 'intermediate'
+      },
+      {
+        id: 'sw7',
+        german: 'Die Nachtschicht ist anstrengend',
+        czech: 'Noční směna je náročná',
+        english: 'The night shift is exhausting',
+        slovak: 'Nočná zmena je náročná',
+        phonetic: 'dí nachtšicht ist anštrengent',
+        situation: 'Komentář o směně',
+        importance: 'useful',
+        category: 'shifts',
+        difficulty: 'intermediate'
+      },
+      {
+        id: 'sw8',
+        german: 'Ich bevorzuge die Tagschicht',
+        czech: 'Preferuji denní směnu',
+        english: 'I prefer the day shift',
+        slovak: 'Preferujem dennú zmenu',
+        phonetic: 'ich befertsugé dí tágšicht',
+        situation: 'Preference směny',
+        importance: 'useful',
+        category: 'shifts',
+        difficulty: 'intermediate'
+      },
+      {
+        id: 'sw9',
+        german: 'Können wir die Schichten tauschen?',
+        czech: 'Můžeme si vyměnit směny?',
+        english: 'Can we swap shifts?',
+        slovak: 'Môžeme si vymeniť zmeny?',
+        phonetic: 'könen vír dí šichtén tauščen',
+        situation: 'Výměna směn',
+        importance: 'useful',
+        category: 'shifts',
+        difficulty: 'intermediate'
+      },
+      {
+        id: 'sw10',
+        german: 'Ich habe Bereitschaftsdienst',
+        czech: 'Mám pohotovost',
+        english: 'I\'m on standby duty',
+        slovak: 'Mám pohotovosť',
+        phonetic: 'ich habé berajtšaftsdínst',
+        situation: 'Informace o službě',
+        importance: 'useful',
+        category: 'shifts',
+        difficulty: 'advanced'
+      },
+      {
+        id: 'sw11',
+        german: 'Der Schichtplan hat sich geändert',
+        czech: 'Plán směn se změnil',
+        english: 'The shift schedule has changed',
+        slovak: 'Plán zmien sa zmenil',
+        phonetic: 'der šichtplán hat zich geändert',
+        situation: 'Změna rozvrhu',
+        importance: 'important',
+        category: 'shifts',
+        difficulty: 'intermediate'
+      },
+      {
+        id: 'sw12',
+        german: 'Ich brauche einen freien Tag',
+        czech: 'Potřebuji volný den',
+        english: 'I need a day off',
+        slovak: 'Potrebujem voľný deň',
+        phonetic: 'ich brauché ajnen frajén tág',
+        situation: 'Žádost o volno',
+        importance: 'important',
+        category: 'shifts',
+        difficulty: 'intermediate'
+      }
+    ]
+  },
+  {
+    id: 'work-evaluation',
+    titleKey: 'nav.workEvaluation',
+    icon: '📊',
+    description: 'Hodnocení práce a zpětná vazba',
+    estimatedTime: 15,
+    phrases: [
+      {
+        id: 'we1',
+        german: 'Das habe ich gut gemacht',
+        czech: 'To jsem udělal/a dobře',
+        english: 'I did that well',
+        slovak: 'To som urobil/a dobre',
+        phonetic: 'das habé ich gút gemacht',
+        situation: 'Sebehodnocení',
+        importance: 'useful',
+        category: 'evaluation',
+        difficulty: 'intermediate'
+      },
+      {
+        id: 'we2',
+        german: 'Ich muss das verbessern',
+        czech: 'Musím to zlepšit',
+        english: 'I need to improve this',
+        slovak: 'Musím to zlepšiť',
+        phonetic: 'ich mus das ferbésern',
+        situation: 'Sebekritika',
+        importance: 'useful',
+        category: 'evaluation',
+        difficulty: 'intermediate'
+      },
+      {
+        id: 'we3',
+        german: 'Meine Leistung ist gestiegen',
+        czech: 'Mój výkon se zvýšil',
+        english: 'My performance has improved',
+        slovak: 'Môj výkon sa zvýšil',
+        phonetic: 'majné lajtung ist geštígén',
+        situation: 'Pozitivní hodnocení',
+        importance: 'useful',
+        category: 'evaluation',
+        difficulty: 'intermediate'
+      },
+      {
+        id: 'we4',
+        german: 'Können Sie mir Feedback geben?',
+        czech: 'Můžete mi dát zpětnou vazbu?',
+        english: 'Can you give me feedback?',
+        slovak: 'Môžete mi dať spätnú väzbu?',
+        phonetic: 'könen zí mír fídbek gében',
+        situation: 'Žádost o hodnocení',
+        importance: 'important',
+        category: 'evaluation',
+        difficulty: 'intermediate'
+      },
+      {
+        id: 'we5',
+        german: 'Ich arbeite effizienter',
+        czech: 'Pracuji efektivněji',
+        english: 'I work more efficiently',
+        slovak: 'Pracujem efektívnejšie',
+        phonetic: 'ich arbajté eficiénter',
+        situation: 'Zlepšení výkonu',
+        importance: 'useful',
+        category: 'evaluation',
+        difficulty: 'intermediate'
+      },
+      {
+        id: 'we6',
+        german: 'Das war ein Fehler',
+        czech: 'To byla chyba',
+        english: 'That was a mistake',
+        slovak: 'To bola chyba',
+        phonetic: 'das vár ajn féler',
+        situation: 'Přiznání chyby',
+        importance: 'important',
+        category: 'evaluation',
+        difficulty: 'beginner'
+      },
+      {
+        id: 'we7',
+        german: 'Ich lerne schnell',
+        czech: 'Učím se rychle',
+        english: 'I learn quickly',
+        slovak: 'Učím sa rýchlo',
+        phonetic: 'ich lerné šnel',
+        situation: 'Pozitivní sebehodnocení',
+        importance: 'useful',
+        category: 'evaluation',
+        difficulty: 'intermediate'
+      },
+      {
+        id: 'we8',
+        german: 'Das Team arbeitet gut zusammen',
+        czech: 'Tým dobře spolupracuje',
+        english: 'The team works well together',
+        slovak: 'Tím dobre spolupracuje',
+        phonetic: 'das tím arbajtet gút cusamen',
+        situation: 'Hodnocení týmu',
+        importance: 'useful',
+        category: 'evaluation',
+        difficulty: 'intermediate'
+      },
+      {
+        id: 'we9',
+        german: 'Ich bin pünktlich',
+        czech: 'Jsem dochvilný/á',
+        english: 'I am punctual',
+        slovak: 'Som dochvíľny/á',
+        phonetic: 'ich bin pünktlich',
+        situation: 'Pozitivní vlastnost',
+        importance: 'useful',
+        category: 'evaluation',
+        difficulty: 'beginner'
+      },
+      {
+        id: 'we10',
+        german: 'Ich bin motiviert',
+        czech: 'Jsem motivovaný/á',
+        english: 'I am motivated',
+        slovak: 'Som motivovaný/á',
+        phonetic: 'ich bin motivírt',
+        situation: 'Popis postoju',
+        importance: 'useful',
+        category: 'evaluation',
+        difficulty: 'intermediate'
+      },
+      {
+        id: 'we11',
+        german: 'Das Ziel wurde erreicht',
+        czech: 'Cíl byl dosažen',
+        english: 'The goal was achieved',
+        slovak: 'Cieľ bol dosiahnutý',
+        phonetic: 'das cíl vurdé erajcht',
+        situation: 'Úspěšné dokončení',
+        importance: 'useful',
+        category: 'evaluation',
+        difficulty: 'intermediate'
+      },
+      {
+        id: 'we12',
+        german: 'Ich brauche mehr Training',
+        czech: 'Potřebuji více tréninku',
+        english: 'I need more training',
+        slovak: 'Potrebujem viac tréningu',
+        phonetic: 'ich brauché mér tréning',
+        situation: 'Žádost o školení',
+        importance: 'important',
+        category: 'evaluation',
         difficulty: 'intermediate'
       }
     ]

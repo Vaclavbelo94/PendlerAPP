@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 
 type Language = 'cs' | 'en' | 'de' | 'sk';
@@ -36,6 +35,24 @@ const lessonsTranslations: LessonsTranslations = {
     en: 'Daily Communication',
     de: 'Tägliche Kommunikation',
     sk: 'Každodenná komunikácia'
+  },
+  'nav.technicalTerms': {
+    cs: 'Technické termíny',
+    en: 'Technical Terms',
+    de: 'Technische Begriffe',
+    sk: 'Technické termíny'
+  },
+  'nav.shiftWork': {
+    cs: 'Směnová práce',
+    en: 'Shift Work',
+    de: 'Schichtarbeit',
+    sk: 'Zmenová práca'
+  },
+  'nav.workEvaluation': {
+    cs: 'Hodnocení práce',
+    en: 'Work Evaluation',
+    de: 'Arbeitsbeurteilung',
+    sk: 'Hodnotenie práce'
   },
   'nav.numbersTime': {
     cs: 'Čísla a čas',
