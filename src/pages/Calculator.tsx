@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import PremiumCheck from '@/components/premium/PremiumCheck';
 
 // Import components
-import CalculatorWelcomeSection from "@/components/calculator/CalculatorWelcomeSection";
 import CalculatorNavigation from "@/components/calculator/CalculatorNavigation";
 import BasicCalculator from "@/components/calculator/BasicCalculator";
 import TaxCalculator from "@/components/calculator/TaxCalculator";
@@ -13,10 +12,6 @@ import ScientificCalculator from "@/components/calculator/ScientificCalculator";
 
 const Calculator = () => {
   const [activeTab, setActiveTab] = useState("basic");
-
-  const handleQuickAccess = (calculatorType: string) => {
-    setActiveTab(calculatorType);
-  };
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -43,14 +38,25 @@ const Calculator = () => {
         </div>
 
         <div className="relative z-10">
-          <CalculatorWelcomeSection onQuickAccess={handleQuickAccess} />
-          
           <div className="container max-w-6xl py-8 px-4">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="mb-8"
+            >
+              <h1 className="text-3xl md:text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-4">
+                Kalkulačky
+              </h1>
+              <p className="text-lg text-muted-foreground">
+                Užitečné nástroje pro výpočty a plánování
+              </p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="mt-8"
             >
               <CalculatorNavigation
                 activeTab={activeTab}
