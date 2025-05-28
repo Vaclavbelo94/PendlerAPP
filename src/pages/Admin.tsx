@@ -17,11 +17,47 @@ import { PremiumFeaturesPanel } from "@/components/admin/PremiumFeaturesPanel";
 import { PasswordResetPanel } from "@/components/admin/PasswordResetPanel";
 import SystemMonitoringPanel from "@/components/admin/monitoring/SystemMonitoringPanel";
 import DatabasePanel from "@/components/admin/database/DatabasePanel";
+import AdminNavigation from "@/components/admin/AdminNavigation";
 
 const AdminContent = () => {
-  const { currentSection } = useAdminContext();
+  const { currentSection, setCurrentSection } = useAdminContext();
+  const [showNavigation, setShowNavigation] = useState(true);
 
   const renderContent = () => {
+    if (showNavigation && currentSection === 'dashboard') {
+      return (
+        <div className="space-y-8">
+          <div className="text-center space-y-4">
+            <h1 className="text-3xl font-bold tracking-tight">Administrace</h1>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Kompletní správa aplikace s pokročilými funkcemi pro monitoring, analytics a správu uživatelů
+            </p>
+          </div>
+          
+          <AdminNavigation
+            activeSection={currentSection}
+            onSectionChange={(section) => {
+              setCurrentSection(section);
+              setShowNavigation(false);
+            }}
+            variant="primary"
+          />
+          
+          <div className="mt-12">
+            <h2 className="text-xl font-semibold mb-6">Další nástroje</h2>
+            <AdminNavigation
+              activeSection={currentSection}
+              onSectionChange={(section) => {
+                setCurrentSection(section);
+                setShowNavigation(false);
+              }}
+              variant="secondary"
+            />
+          </div>
+        </div>
+      );
+    }
+
     switch (currentSection) {
       case 'users-list':
         return <UserManagement />;
@@ -46,7 +82,23 @@ const AdminContent = () => {
     }
   };
 
-  return renderContent();
+  return (
+    <div className="space-y-6">
+      {!showNavigation && currentSection !== 'dashboard' && (
+        <Button
+          variant="outline"
+          onClick={() => {
+            setCurrentSection('dashboard');
+            setShowNavigation(true);
+          }}
+          className="mb-4"
+        >
+          ← Zpět na přehled
+        </Button>
+      )}
+      {renderContent()}
+    </div>
+  );
 };
 
 const Admin = () => {
