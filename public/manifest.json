@@ -1,13 +1,15 @@
 
 {
-  "name": "Shift Tracker - Správa směn",
-  "short_name": "Shift Tracker",
-  "description": "Aplikace pro správu pracovních směn s offline podporou",
+  "name": "Pendlerův Pomocník - Průvodce pro pracovníky v Německu",
+  "short_name": "Pendlerův Pomocník",
+  "description": "Komplexní průvodce pro Čechy pracující v Německu. Výuka němčiny, kalkulačky, správa směn a vozidel s offline podporou.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#8b5cf6",
+  "theme_color": "#3b82f6",
   "orientation": "portrait-primary",
+  "scope": "/",
+  "id": "pendleruv-pomocnik",
   "icons": [
     {
       "src": "/icon-192x192.png",
@@ -20,48 +22,87 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable any"
+    },
+    {
+      "src": "/lovable-uploads/88ef4e0f-4d33-458c-98f4-7b644e5b8588.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any"
     }
   ],
-  "categories": ["productivity", "business"],
+  "categories": ["productivity", "business", "education", "utilities"],
   "lang": "cs",
+  "dir": "ltr",
   "screenshots": [
     {
       "src": "/screenshot-wide.png",
       "sizes": "1280x720",
       "type": "image/png",
-      "form_factor": "wide"
+      "form_factor": "wide",
+      "label": "Dashboard s přehledem funkcí"
     },
     {
       "src": "/screenshot-narrow.png",
       "sizes": "640x1136",
       "type": "image/png",
-      "form_factor": "narrow"
+      "form_factor": "narrow",
+      "label": "Mobilní rozhraní aplikace"
     }
   ],
   "shortcuts": [
     {
       "name": "Přidat směnu",
       "short_name": "Nová směna",
-      "description": "Rychle přidat novou směnu",
+      "description": "Rychle přidat novou pracovní směnu",
       "url": "/shifts?action=add",
       "icons": [
         {
           "src": "/icon-96x96.png",
-          "sizes": "96x96"
+          "sizes": "96x96",
+          "type": "image/png"
         }
       ]
     },
     {
-      "name": "Offline režim",
-      "short_name": "Offline",
-      "description": "Zobrazit offline správce",
-      "url": "/offline",
+      "name": "Slovní zásoba",
+      "short_name": "Slovníček",
+      "description": "Procvičování německých slov",
+      "url": "/vocabulary",
       "icons": [
         {
           "src": "/icon-96x96.png",
-          "sizes": "96x96"
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Překladač",
+      "short_name": "Překladač",
+      "description": "Rychlý překlad textu",
+      "url": "/translator",
+      "icons": [
+        {
+          "src": "/icon-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Kalkulačka mezd",
+      "short_name": "Kalkulačka",
+      "description": "Výpočet čisté mzdy",
+      "url": "/calculator",
+      "icons": [
+        {
+          "src": "/icon-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
         }
       ]
     }
-  ]
+  ],
+  "prefer_related_applications": false,
+  "iarc_rating_id": "e58c174a-81d2-5c3c-32cc-34b8de4a52e9"
 }

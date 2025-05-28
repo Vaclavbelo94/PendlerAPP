@@ -1,0 +1,116 @@
+
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline - Pendlerův Pomocník</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        .offline-container {
+            max-width: 400px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        .offline-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+        h1 {
+            margin: 0 0 20px;
+            font-size: 28px;
+            font-weight: 600;
+        }
+        p {
+            margin: 0 0 30px;
+            font-size: 16px;
+            line-height: 1.5;
+            opacity: 0.9;
+        }
+        .retry-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .retry-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+        .features-list {
+            text-align: left;
+            margin: 30px 0;
+            opacity: 0.8;
+        }
+        .features-list li {
+            margin: 8px 0;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-container">
+        <div class="offline-icon">📶</div>
+        <h1>Jste offline</h1>
+        <p>
+            Připojení k internetu není k dispozici. Některé funkce aplikace 
+            Pendlerův Pomocník fungují i offline.
+        </p>
+        
+        <ul class="features-list">
+            <li>📚 Prohlížení uložené slovní zásoby</li>
+            <li>📊 Základní kalkulačky</li>
+            <li>⏰ Zobrazení naplánovaných směn</li>
+            <li>🚗 Informace o vozidlech</li>
+        </ul>
+        
+        <button class="retry-button" onclick="location.reload()">
+            Zkusit znovu
+        </button>
+    </div>
+
+    <script>
+        // Auto-retry when connection is restored
+        window.addEventListener('online', function() {
+            location.reload();
+        });
+        
+        // Check connection periodically
+        setInterval(function() {
+            if (navigator.onLine) {
+                fetch('/', { method: 'HEAD', mode: 'no-cors' })
+                    .then(() => location.reload())
+                    .catch(() => {});
+            }
+        }, 30000);
+    </script>
+</body>
+</html>

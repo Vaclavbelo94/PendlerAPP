@@ -12,10 +12,13 @@
     
     <!-- Prefetch pravděpodobných dalších stránek -->
     <link rel="prefetch" href="/dashboard" />
-    <link rel="prefetch" href="/language" />
+    <link rel="prefetch" href="/vocabulary" />
     <link rel="prefetch" href="/calculator" />
     <link rel="prefetch" href="/vehicle" />
     <link rel="prefetch" href="/shifts" />
+    <link rel="prefetch" href="/travel-planning" />
+    <link rel="prefetch" href="/tax-advisor" />
+    <link rel="prefetch" href="/translator" />
     
     <!-- DNS prefetch pro externí zdroje -->
     <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
@@ -25,42 +28,105 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     
-    <title>PendlerApp - Průvodce pro pracovníky v Německu</title>
-    <meta name="description" content="Komplexní průvodce pro Čechy pracující v Německu. Jazykové kurzy, kalkulačky, správa směn a vozidel." />
-    <meta name="author" content="PendlerApp" />
+    <title>Pendlerův Pomocník - Komplexní průvodce pro pracovníky v Německu</title>
+    <meta name="description" content="Kompletní průvodce pro Čechy pracující v Německu. Výuka němčiny, kalkulačky mezd, správa směn, vozidel a právní poradenství pro pendlery." />
+    <meta name="keywords" content="pendler, práce v Německu, výuka němčiny, daňová kalkulačka, směny, vozidla, přeshraniční práce, čeští pracovníci" />
+    <meta name="author" content="Pendlerův Pomocník" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://43a9f196-fcd9-4f8d-b60a-9c37d14325e5.lovableproject.com" />
+    
+    <!-- Hreflang for Czech-German target audience -->
+    <link rel="alternate" hreflang="cs" href="https://43a9f196-fcd9-4f8d-b60a-9c37d14325e5.lovableproject.com" />
+    <link rel="alternate" hreflang="de" href="https://43a9f196-fcd9-4f8d-b60a-9c37d14325e5.lovableproject.com/de" />
+    
+    <!-- Geo targeting -->
+    <meta name="geo.region" content="CZ" />
+    <meta name="geo.placename" content="Czech Republic" />
+    <meta name="geo.position" content="49.75;15.5" />
+    <meta name="ICBM" content="49.75, 15.5" />
 
     <!-- Performance optimizations -->
-    <meta name="theme-color" content="#ff6600" />
+    <meta name="theme-color" content="#3b82f6" />
     <meta name="color-scheme" content="light dark" />
     
-    <!-- Bundle optimalizace -->
+    <!-- Mobile optimizations -->
     <meta name="format-detection" content="telephone=no" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Pendlerův Pomocník" />
     
     <!-- Resource hints pro rychlejší načítání -->
     <link rel="modulepreload" href="/src/main.tsx" />
     <link rel="modulepreload" href="/src/App.tsx" />
     
-    <!-- Optimized Open Graph -->
-    <meta property="og:title" content="PendlerApp - Průvodce pro pracovníky v Německu" />
-    <meta property="og:description" content="Komplexní průvodce pro Čechy pracující v Německu" />
+    <!-- Open Graph for social sharing -->
+    <meta property="og:title" content="Pendlerův Pomocník - Průvodce pro pracovníky v Německu" />
+    <meta property="og:description" content="Komplexní průvodce pro Čechy pracující v Německu. Výuka němčiny, kalkulačky, správa směn a vozidel." />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="/lovable-uploads/88ef4e0f-4d33-458c-98f4-7b644e5b8588.png" />
+    <meta property="og:url" content="https://43a9f196-fcd9-4f8d-b60a-9c37d14325e5.lovableproject.com" />
+    <meta property="og:image" content="https://43a9f196-fcd9-4f8d-b60a-9c37d14325e5.lovableproject.com/lovable-uploads/88ef4e0f-4d33-458c-98f4-7b644e5b8588.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="cs_CZ" />
+    <meta property="og:site_name" content="Pendlerův Pomocník" />
 
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="PendlerApp" />
-    <meta name="twitter:description" content="Průvodce pro pracovníky v Německu" />
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Pendlerův Pomocník" />
+    <meta name="twitter:description" content="Komplexní průvodce pro Čechy pracující v Německu" />
+    <meta name="twitter:image" content="https://43a9f196-fcd9-4f8d-b60a-9c37d14325e5.lovableproject.com/lovable-uploads/88ef4e0f-4d33-458c-98f4-7b644e5b8588.png" />
     
-    <!-- Favicon using new logo -->
+    <!-- Favicon -->
     <link rel="icon" type="image/png" href="/lovable-uploads/88ef4e0f-4d33-458c-98f4-7b644e5b8588.png" />
     <link rel="apple-touch-icon" href="/lovable-uploads/88ef4e0f-4d33-458c-98f4-7b644e5b8588.png" />
     
-    <!-- Critical CSS inlining připraven -->
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Pendlerův Pomocník",
+      "description": "Komplexní průvodce pro Čechy pracující v Německu",
+      "url": "https://43a9f196-fcd9-4f8d-b60a-9c37d14325e5.lovableproject.com",
+      "logo": "https://43a9f196-fcd9-4f8d-b60a-9c37d14325e5.lovableproject.com/lovable-uploads/88ef4e0f-4d33-458c-98f4-7b644e5b8588.png",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+420-725-458-395",
+        "contactType": "customer service",
+        "email": "info@pendleruvpomocnik.cz"
+      },
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "CZ"
+      },
+      "sameAs": [
+        "https://www.facebook.com/pendleruvpomocnik",
+        "https://www.instagram.com/pendleruvpomocnik"
+      ]
+    }
+    </script>
+    
+    <!-- Critical CSS inlining -->
     <style id="critical-css">
-      /* Zde by byl critical CSS pro above-the-fold content */
-      .route-optimizer {
-        contain: layout style paint;
+      /* Critical above-the-fold styles */
+      body { margin: 0; font-family: system-ui, -apple-system, sans-serif; }
+      .route-optimizer { contain: layout style paint; }
+      .mobile-translator-container { contain: layout style; }
+      .mobile-safe-area { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
+      .desktop-stable { min-height: 100vh; }
+      
+      /* Loading state styles */
+      .loading-skeleton {
+        background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+        background-size: 200% 100%;
+        animation: shimmer 2s infinite;
+      }
+      
+      @keyframes shimmer {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
       }
     </style>
   </head>
