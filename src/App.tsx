@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -25,7 +26,7 @@ import {
 // Standard pages
 import UnifiedHomePage from "@/pages/UnifiedHomePage";
 import Dashboard from "@/pages/Dashboard";
-import Language from "@/pages/Language";
+import Vocabulary from "@/pages/Vocabulary";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import Profile from "@/pages/Profile";
@@ -35,7 +36,6 @@ import Privacy from "@/pages/Privacy";
 import Terms from "@/pages/Terms";
 import Cookies from "@/pages/Cookies";
 import TaxAdvisor from "@/pages/TaxAdvisor";
-import Vocabulary from "@/pages/Vocabulary";
 import Translator from "@/pages/Translator";
 import Laws from "@/pages/Laws";
 import TravelPlanning from "@/pages/TravelPlanning";
@@ -115,7 +115,6 @@ function AppContent() {
             {/* Main pages */}
             <Route path="/" element={<UnifiedHomePage />} />
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/language" element={<Language />} />
             <Route path="/vocabulary" element={<Vocabulary />} />
             <Route path="/translator" element={<Translator />} />
             <Route path="/tax-advisor" element={<TaxAdvisor />} />

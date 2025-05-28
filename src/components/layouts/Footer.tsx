@@ -48,7 +48,7 @@ const Footer = () => {
             <h3 className="font-semibold text-lg mb-4 text-white">Funkce</h3>
             <ul className="space-y-3">
               <li>
-                <Link to="/language" className="text-gray-400 hover:text-blue-400 transition-colors flex items-center gap-2">
+                <Link to="/vocabulary" className="text-gray-400 hover:text-blue-400 transition-colors flex items-center gap-2">
                   <span className="w-1 h-1 bg-gray-400 rounded-full"></span>
                   Výuka němčiny
                 </Link>
