@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar } from '@/components/ui/calendar';
@@ -9,6 +8,8 @@ import { format } from 'date-fns';
 import { cs } from 'date-fns/locale';
 import { Shift } from '@/hooks/shifts/useOptimizedShiftsManagement';
 import { cn } from '@/lib/utils';
+import { useScreenOrientation } from '@/hooks/useScreenOrientation';
+import { MobileShiftCalendar } from './mobile/MobileShiftCalendar';
 
 interface OptimizedShiftCalendarProps {
   shifts: Shift[];
@@ -22,6 +23,18 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = React.memo
   onDeleteShift
 }) => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const { isMobile } = useScreenOrientation();
+
+  // Use mobile calendar for mobile devices
+  if (isMobile) {
+    return (
+      <MobileShiftCalendar
+        shifts={shifts}
+        onEditShift={onEditShift}
+        onDeleteShift={onDeleteShift}
+      />
+    );
+  }
 
   // Memoize shifts for selected date to prevent unnecessary recalculations
   const selectedShifts = useMemo(() => {
