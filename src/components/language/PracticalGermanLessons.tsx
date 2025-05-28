@@ -112,107 +112,11 @@ const PhraseCard: React.FC<{ phrase: ExtendedPhrase }> = ({ phrase }) => {
   );
 };
 
-// Simple filter component without search
-const SimpleFilter: React.FC<{
-  selectedImportance: string;
-  onImportanceChange: (importance: string) => void;
-  showFavoritesOnly: boolean;
-  onToggleFavoritesOnly: () => void;
-  favorites: string[];
-  totalPhrases: number;
-  filteredCount: number;
-}> = ({
-  selectedImportance,
-  onImportanceChange,
-  showFavoritesOnly,
-  onToggleFavoritesOnly,
-  favorites,
-  totalPhrases,
-  filteredCount
-}) => {
-  const { t } = useGermanLessonsTranslation();
-
-  const importanceOptions = [
-    { value: 'all', labelKey: 'filter.all' },
-    { value: 'critical', labelKey: 'filter.critical' },
-    { value: 'important', labelKey: 'filter.important' },
-    { value: 'useful', labelKey: 'filter.useful' }
-  ];
-
-  return (
-    <Card className="mb-4">
-      <CardContent className="pt-4">
-        <div className="space-y-4">
-          {/* Filter controls */}
-          <div className="flex flex-wrap items-center gap-2">
-            <Button
-              variant={showFavoritesOnly ? "default" : "outline"}
-              size="sm"
-              onClick={onToggleFavoritesOnly}
-              className="flex items-center gap-2"
-            >
-              <Heart className={`h-4 w-4 ${showFavoritesOnly ? 'fill-current' : ''}`} />
-              {t('instruction.favorites')} ({favorites.length})
-            </Button>
-
-            <div className="text-sm text-muted-foreground ml-auto">
-              {filteredCount} z {totalPhrases} frází
-            </div>
-          </div>
-
-          {/* Importance filters */}
-          <div>
-            <h4 className="text-sm font-medium mb-2">Důležitost</h4>
-            <div className="flex flex-wrap gap-2">
-              {importanceOptions.map((option) => (
-                <Badge
-                  key={option.value}
-                  variant={selectedImportance === option.value ? "default" : "outline"}
-                  className="cursor-pointer"
-                  onClick={() => onImportanceChange(option.value)}
-                >
-                  {t(option.labelKey)}
-                </Badge>
-              ))}
-            </div>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-};
-
 // Main component with enhanced audio integration
 const PracticalGermanLessons: React.FC = () => {
   const { t } = useGermanLessonsTranslation();
   const { isMobile, isSmallLandscape } = useScreenOrientation();
-  const { favorites } = useFavorites();
   const useMobileLayout = isMobile || isSmallLandscape;
-
-  const [selectedImportance, setSelectedImportance] = useState('all');
-  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
-
-  // Filtered phrases logic (removed search functionality)
-  const filteredLessons = useMemo(() => {
-    return extendedGermanLessons.map(category => {
-      let phrases = category.phrases;
-
-      // Importance filter
-      if (selectedImportance !== 'all') {
-        phrases = phrases.filter(phrase => phrase.importance === selectedImportance);
-      }
-
-      // Favorites filter
-      if (showFavoritesOnly) {
-        phrases = phrases.filter(phrase => favorites.includes(phrase.id));
-      }
-
-      return { ...category, phrases };
-    }).filter(category => category.phrases.length > 0);
-  }, [selectedImportance, showFavoritesOnly, favorites]);
-
-  const totalPhrasesCount = extendedGermanLessons.reduce((sum, cat) => sum + cat.phrases.length, 0);
-  const filteredPhrasesCount = filteredLessons.reduce((sum, cat) => sum + cat.phrases.length, 0);
 
   return (
     <div className={`space-y-4 ${useMobileLayout ? 'px-2 pb-24' : 'px-4'}`}>
@@ -229,21 +133,10 @@ const PracticalGermanLessons: React.FC = () => {
         </CardHeader>
       </Card>
 
-      {/* Simple filter without search */}
-      <SimpleFilter
-        selectedImportance={selectedImportance}
-        onImportanceChange={setSelectedImportance}
-        favorites={favorites}
-        showFavoritesOnly={showFavoritesOnly}
-        onToggleFavoritesOnly={() => setShowFavoritesOnly(!showFavoritesOnly)}
-        totalPhrases={totalPhrasesCount}
-        filteredCount={filteredPhrasesCount}
-      />
-
       {/* Lessons by categories */}
       <Tabs defaultValue="first-day" className="w-full">
         <TabsList className={`grid w-full ${useMobileLayout ? 'grid-cols-2 h-auto' : 'grid-cols-5'}`}>
-          {filteredLessons.map((category) => (
+          {extendedGermanLessons.map((category) => (
             <TabsTrigger 
               key={category.id} 
               value={category.id}
@@ -259,7 +152,7 @@ const PracticalGermanLessons: React.FC = () => {
           ))}
         </TabsList>
 
-        {filteredLessons.map((category) => (
+        {extendedGermanLessons.map((category) => (
           <TabsContent key={category.id} value={category.id} className="mt-4">
             <Card>
               <CardHeader className="pb-3">
@@ -281,29 +174,6 @@ const PracticalGermanLessons: React.FC = () => {
           </TabsContent>
         ))}
       </Tabs>
-
-      {/* No results message */}
-      {filteredPhrasesCount === 0 && (
-        <Card className="text-center py-8">
-          <CardContent>
-            <SearchIcon className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-medium mb-2">Žádné výsledky</h3>
-            <p className="text-muted-foreground">
-              Zkuste změnit filtry.
-            </p>
-            <Button 
-              variant="outline" 
-              onClick={() => {
-                setSelectedImportance('all');
-                setShowFavoritesOnly(false);
-              }}
-              className="mt-4"
-            >
-              Vymazat filtry
-            </Button>
-          </CardContent>
-        </Card>
-      )}
 
       {/* Learning tip */}
       <Card className="border-blue-200 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-800">
