@@ -261,6 +261,10 @@ export const BulkActionsDialog: React.FC<BulkActionsDialogProps> = ({
 
   const selectedActionData = bulkActions.find(a => a.id === selectedAction);
 
+  const handleConfirmationChange = (checked: boolean | "indeterminate") => {
+    setConfirmationChecked(checked === true);
+  };
+
   return (
     <Dialog open onOpenChange={onClose}>
       <DialogContent className="max-w-2xl">
@@ -309,7 +313,7 @@ export const BulkActionsDialog: React.FC<BulkActionsDialogProps> = ({
                   <Checkbox
                     id="confirm"
                     checked={confirmationChecked}
-                    onCheckedChange={setConfirmationChecked}
+                    onCheckedChange={handleConfirmationChange}
                   />
                   <label
                     htmlFor="confirm"

@@ -42,11 +42,7 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
       
       <div className="flex-1 flex flex-col min-w-0 relative">
         <div className="mobile-navbar-fixed">
-          <Navbar 
-            toggleSidebar={() => setSidebarOpen(!sidebarOpen)} 
-            rightContent={navbarRightContent}
-            sidebarOpen={sidebarOpen}
-          />
+          <Navbar />
         </div>
         
         <div className="flex-1 mobile-content-wrapper">
@@ -62,11 +58,7 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
   const MobileLandscapeLayout = () => (
     <div className="flex min-h-screen bg-background">
       <div className="flex-1 flex flex-col min-w-0">
-        <Navbar 
-          toggleSidebar={() => setSidebarOpen(!sidebarOpen)} 
-          rightContent={navbarRightContent}
-          sidebarOpen={sidebarOpen}
-        />
+        <Navbar />
         
         <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
           <SheetContent 
@@ -97,11 +89,7 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
       </div>
       
       <div className="flex-1 flex flex-col min-w-0">
-        <Navbar 
-          toggleSidebar={() => setSidebarOpen(!sidebarOpen)} 
-          rightContent={navbarRightContent}
-          sidebarOpen={sidebarOpen}
-        />
+        <Navbar />
         
         <ScrollArea className="flex-1">
           <main className="flex-1 px-4 py-4">

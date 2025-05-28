@@ -33,14 +33,14 @@ interface UserDetailsDialogProps {
 
 interface UserDetails {
   id: string;
-  email: string;
+  email: string | null;
   username: string | null;
-  is_premium: boolean;
-  is_admin: boolean;
+  is_premium: boolean | null;
+  is_admin: boolean | null;
   created_at: string;
   premium_expiry: string | null;
   last_login: string | null;
-  profile_data: any;
+  profile_data?: any;
 }
 
 interface UserActivity {
@@ -81,22 +81,22 @@ export const UserDetailsDialog: React.FC<UserDetailsDialogProps> = ({ userId, on
         .single();
 
       // Fetch activity data
-      const [shiftsResult, vehiclesResult, vocabularyResult] = await Promise.all([
+      const [shiftsResult, vehiclesResult] = await Promise.all([
         supabase.from('shifts').select('*', { count: 'exact', head: true }).eq('user_id', userId),
-        supabase.from('vehicles').select('*', { count: 'exact', head: true }).eq('user_id', userId),
-        supabase.from('vocabulary_progress').select('*').eq('user_id', userId)
+        supabase.from('vehicles').select('*', { count: 'exact', head: true }).eq('user_id', userId)
       ]);
 
       setUserDetails({
         ...profile,
-        last_login: stats?.last_login || null
+        last_login: stats?.last_login || null,
+        profile_data: null
       });
 
       setUserActivity({
         shifts_count: shiftsResult.count || 0,
         vehicles_count: vehiclesResult.count || 0,
-        vocabulary_progress: vocabularyResult.data?.length || 0,
-        calculator_usage: stats?.calculator_usage_count || 0,
+        vocabulary_progress: 0, // Will be implemented when vocabulary table exists
+        calculator_usage: stats?.login_count || 0, // Using login_count as proxy for calculator usage
         last_active: stats?.last_login || null
       });
 
@@ -269,12 +269,12 @@ export const UserDetailsDialog: React.FC<UserDetailsDialogProps> = ({ userId, on
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm flex items-center gap-2">
                       <Calculator className="h-4 w-4" />
-                      Kalkulačky
+                      Aktivita
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">{userActivity.calculator_usage}</div>
-                    <p className="text-xs text-muted-foreground">Použití kalkulaček</p>
+                    <p className="text-xs text-muted-foreground">Počet přihlášení</p>
                   </CardContent>
                 </Card>
               </div>
