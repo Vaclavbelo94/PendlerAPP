@@ -37,6 +37,12 @@ const lessonsTranslations: LessonsTranslations = {
     de: 'Tägliche Kommunikation',
     sk: 'Každodenná komunikácia'
   },
+  'nav.numbersTime': {
+    cs: 'Čísla a čas',
+    en: 'Numbers & Time',
+    de: 'Zahlen & Zeit',
+    sk: 'Čísla a čas'
+  },
   'nav.problemsHelp': {
     cs: 'Problémy a pomoc',
     en: 'Problems & Help',
@@ -69,31 +75,55 @@ const lessonsTranslations: LessonsTranslations = {
     de: 'Normale Geschwindigkeit',
     sk: 'Normálne tempo'
   },
+  'action.search': {
+    cs: 'Hledat fráze',
+    en: 'Search phrases',
+    de: 'Phrasen suchen',
+    sk: 'Hľadať frázy'
+  },
+  'action.addToFavorites': {
+    cs: 'Přidat k oblíbeným',
+    en: 'Add to favorites',
+    de: 'Zu Favoriten hinzufügen',
+    sk: 'Pridať k obľúbeným'
+  },
+  'action.removeFromFavorites': {
+    cs: 'Odebrat z oblíbených',
+    en: 'Remove from favorites',
+    de: 'Aus Favoriten entfernen',
+    sk: 'Odstrániť z obľúbených'
+  },
   
-  // Categories
-  'category.greetings': {
-    cs: 'Pozdravy',
-    en: 'Greetings',
-    de: 'Begrüßungen',
-    sk: 'Pozdravy'
+  // Search and filters
+  'search.placeholder': {
+    cs: 'Hledat fráze...',
+    en: 'Search phrases...',
+    de: 'Phrasen suchen...',
+    sk: 'Hľadať frázy...'
   },
-  'category.workTasks': {
-    cs: 'Pracovní úkoly',
-    en: 'Work Tasks',
-    de: 'Arbeitsaufgaben',
-    sk: 'Pracovné úlohy'
+  'filter.all': {
+    cs: 'Všechny',
+    en: 'All',
+    de: 'Alle',
+    sk: 'Všetky'
   },
-  'category.breaks': {
-    cs: 'Přestávky',
-    en: 'Breaks',
-    de: 'Pausen',
-    sk: 'Prestávky'
+  'filter.critical': {
+    cs: 'Klíčové',
+    en: 'Critical',
+    de: 'Kritisch',
+    sk: 'Kľúčové'
   },
-  'category.help': {
-    cs: 'Potřebuji pomoc',
-    en: 'Need Help',
-    de: 'Brauche Hilfe',
-    sk: 'Potrebujem pomoc'
+  'filter.important': {
+    cs: 'Důležité',
+    en: 'Important',
+    de: 'Wichtig',
+    sk: 'Dôležité'
+  },
+  'filter.useful': {
+    cs: 'Užitečné',
+    en: 'Useful',
+    de: 'Nützlich',
+    sk: 'Užitočné'
   },
   
   // Instructions
@@ -108,6 +138,66 @@ const lessonsTranslations: LessonsTranslations = {
     en: 'Phonetic notation',
     de: 'Phonetische Notation',
     sk: 'Fonetický zápis'
+  },
+  'instruction.favorites': {
+    cs: 'Oblíbené fráze',
+    en: 'Favorite phrases',
+    de: 'Lieblingsphrases',
+    sk: 'Obľúbené frázy'
+  },
+  
+  // Tips and help
+  'tip.learning': {
+    cs: 'Tip pro efektivní učení',
+    en: 'Tip for effective learning',
+    de: 'Tipp für effektives Lernen',
+    sk: 'Tip na efektívne učenie'
+  },
+  'tip.description': {
+    cs: 'Používejte fráze aktivně v práci. Opakujte si je každý den a nebojte se chyb.',
+    en: 'Use phrases actively at work. Repeat them every day and don\'t be afraid of mistakes.',
+    de: 'Verwenden Sie Phrasen aktiv bei der Arbeit. Wiederholen Sie sie jeden Tag und haben Sie keine Angst vor Fehlern.',
+    sk: 'Používajte frázy aktívne v práci. Opakujte si ich každý deň a nebojte sa chýb.'
+  },
+  
+  // Audio status
+  'audio.loading': {
+    cs: 'Načítám audio...',
+    en: 'Loading audio...',
+    de: 'Audio wird geladen...',
+    sk: 'Načítavam audio...'
+  },
+  'audio.error': {
+    cs: 'Chyba přehrávání',
+    en: 'Playback error',
+    de: 'Wiedergabefehler',
+    sk: 'Chyba prehrávania'
+  },
+  'audio.notSupported': {
+    cs: 'Audio není podporováno',
+    en: 'Audio not supported',
+    de: 'Audio nicht unterstützt',
+    sk: 'Audio nie je podporované'
+  },
+  
+  // Progress and stats
+  'stats.phrasesLearned': {
+    cs: 'frází naučeno',
+    en: 'phrases learned',
+    de: 'Phrasen gelernt',
+    sk: 'fráz naučených'
+  },
+  'stats.timeSpent': {
+    cs: 'minut stráveno učením',
+    en: 'minutes spent learning',
+    de: 'Minuten mit Lernen verbracht',
+    sk: 'minút strávených učením'
+  },
+  'stats.totalPhrases': {
+    cs: 'celkem frází',
+    en: 'total phrases',
+    de: 'Phrasen insgesamt',
+    sk: 'celkom fráz'
   }
 };
 

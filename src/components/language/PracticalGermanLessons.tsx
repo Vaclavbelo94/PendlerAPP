@@ -1,32 +1,45 @@
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Volume2, VolumeX, Info } from "lucide-react";
-import { practicalGermanLessons, PracticalPhrase } from '@/data/practicalGermanLessons';
+import { Volume2, VolumeX, Info, Heart, Search as SearchIcon } from "lucide-react";
+import { extendedGermanLessons, ExtendedPhrase, searchPhrases } from '@/data/extendedGermanLessons';
 import { useGermanLessonsTranslation } from '@/hooks/useGermanLessonsTranslation';
 import { useScreenOrientation } from '@/hooks/useScreenOrientation';
+import { useFavorites } from '@/hooks/useFavorites';
+import SearchAndFilter from '@/components/language/SearchAndFilter';
 
-// Audio enhancement s německým hlasem
+// Enhanced audio with better error handling
 const playGermanAudio = (text: string, isSlowSpeed: boolean = false) => {
   if ('speechSynthesis' in window) {
-    speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'de-DE';
-    utterance.rate = isSlowSpeed ? 0.6 : 0.8;
-    utterance.pitch = 1;
-    utterance.volume = 1;
-    speechSynthesis.speak(utterance);
+    try {
+      speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'de-DE';
+      utterance.rate = isSlowSpeed ? 0.6 : 0.8;
+      utterance.pitch = 1;
+      utterance.volume = 1;
+      
+      // Error handling
+      utterance.onerror = (event) => {
+        console.warn('Speech synthesis error:', event.error);
+      };
+      
+      speechSynthesis.speak(utterance);
+    } catch (error) {
+      console.error('Error playing audio:', error);
+    }
   }
 };
 
-// Komponenta pro jednu frázi
-const PhraseCard: React.FC<{ phrase: PracticalPhrase }> = ({ phrase }) => {
+// Enhanced phrase card with favorites and improved UX
+const PhraseCard: React.FC<{ phrase: ExtendedPhrase }> = ({ phrase }) => {
   const { currentLanguage, t } = useGermanLessonsTranslation();
   const { isMobile } = useScreenOrientation();
-  const [isSlowSpeed, setIsSlowSpeed] = useState(false);
+  const { toggleFavorite, isFavorite } = useFavorites();
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const getTranslation = () => {
     switch (currentLanguage) {
@@ -49,20 +62,38 @@ const PhraseCard: React.FC<{ phrase: PracticalPhrase }> = ({ phrase }) => {
     useful: 'bg-blue-500 text-white'
   };
 
-  const importanceLabels = {
-    critical: 'Klíčové',
-    important: 'Důležité',
-    useful: 'Užitečné'
+  const handlePlayAudio = async (isSlowSpeed: boolean = false) => {
+    setIsPlaying(true);
+    try {
+      playGermanAudio(phrase.german, isSlowSpeed);
+      // Reset playing state after estimated duration
+      setTimeout(() => setIsPlaying(false), 3000);
+    } catch (error) {
+      setIsPlaying(false);
+      console.error('Audio playback failed:', error);
+    }
   };
 
   return (
-    <Card className={`${importanceColors[phrase.importance]} ${isMobile ? 'mb-3' : 'mb-4'}`}>
+    <Card className={`${importanceColors[phrase.importance]} ${isMobile ? 'mb-3' : 'mb-4'} transition-all hover:shadow-md`}>
       <CardHeader className={`${isMobile ? 'pb-2' : 'pb-3'}`}>
         <div className="flex justify-between items-start gap-3">
           <div className="flex-1 min-w-0">
-            <CardTitle className={`${isMobile ? 'text-base' : 'text-lg'} font-bold text-gray-900 dark:text-gray-100`}>
-              {phrase.german}
-            </CardTitle>
+            <div className="flex items-center gap-2 mb-2">
+              <CardTitle className={`${isMobile ? 'text-base' : 'text-lg'} font-bold text-gray-900 dark:text-gray-100`}>
+                {phrase.german}
+              </CardTitle>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => toggleFavorite(phrase.id)}
+                className="flex-shrink-0 h-6 w-6 p-0 hover:bg-primary/10"
+              >
+                <Heart 
+                  className={`h-3 w-3 ${isFavorite(phrase.id) ? 'fill-red-500 text-red-500' : 'text-gray-400'}`} 
+                />
+              </Button>
+            </div>
             <p className={`${isMobile ? 'text-sm' : 'text-base'} text-gray-700 dark:text-gray-300 mt-1`}>
               {getTranslation()}
             </p>
@@ -70,24 +101,31 @@ const PhraseCard: React.FC<{ phrase: PracticalPhrase }> = ({ phrase }) => {
               [{phrase.phonetic}]
             </p>
           </div>
-          <Badge className={`${importanceBadgeColors[phrase.importance]} text-xs flex-shrink-0`}>
-            {importanceLabels[phrase.importance]}
-          </Badge>
+          <div className="flex flex-col gap-1">
+            <Badge className={`${importanceBadgeColors[phrase.importance]} text-xs flex-shrink-0`}>
+              {t(`filter.${phrase.importance}`)}
+            </Badge>
+            <Badge variant="outline" className="text-xs">
+              {phrase.difficulty}
+            </Badge>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="pt-0">
         <div className="space-y-3">
           <div className={`flex ${isMobile ? 'flex-col gap-2' : 'flex-row gap-3'}`}>
             <Button 
-              onClick={() => playGermanAudio(phrase.german, false)}
+              onClick={() => handlePlayAudio(false)}
+              disabled={isPlaying}
               className={`${isMobile ? 'w-full' : 'flex-1'} bg-green-600 hover:bg-green-700 text-white font-medium`}
               size={isMobile ? "default" : "lg"}
             >
               <Volume2 className="h-5 w-5 mr-2" />
-              {t('action.normalSpeech')}
+              {isPlaying ? 'Přehrává...' : t('action.normalSpeech')}
             </Button>
             <Button 
-              onClick={() => playGermanAudio(phrase.german, true)}
+              onClick={() => handlePlayAudio(true)}
+              disabled={isPlaying}
               variant="outline"
               className={`${isMobile ? 'w-full' : 'flex-1'} border-green-200 text-green-700 hover:bg-green-50`}
               size={isMobile ? "default" : "lg"}
@@ -114,7 +152,7 @@ const PhraseCard: React.FC<{ phrase: PracticalPhrase }> = ({ phrase }) => {
   );
 };
 
-// Komponenta pro výběr jazyka
+// Language selector component
 const LanguageSelector: React.FC = () => {
   const { currentLanguage, changeLanguage, availableLanguages } = useGermanLessonsTranslation();
   const { isMobile } = useScreenOrientation();
@@ -146,11 +184,45 @@ const LanguageSelector: React.FC = () => {
   );
 };
 
-// Hlavní komponenta
+// Main component with enhanced search and filtering
 const PracticalGermanLessons: React.FC = () => {
   const { t } = useGermanLessonsTranslation();
   const { isMobile, isSmallLandscape } = useScreenOrientation();
+  const { favorites } = useFavorites();
   const useMobileLayout = isMobile || isSmallLandscape;
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedImportance, setSelectedImportance] = useState('all');
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+
+  // Filtered phrases logic
+  const filteredLessons = useMemo(() => {
+    return extendedGermanLessons.map(category => {
+      let phrases = category.phrases;
+
+      // Search filter
+      if (searchTerm) {
+        phrases = searchPhrases(searchTerm).filter(phrase => 
+          category.phrases.some(p => p.id === phrase.id)
+        );
+      }
+
+      // Importance filter
+      if (selectedImportance !== 'all') {
+        phrases = phrases.filter(phrase => phrase.importance === selectedImportance);
+      }
+
+      // Favorites filter
+      if (showFavoritesOnly) {
+        phrases = phrases.filter(phrase => favorites.includes(phrase.id));
+      }
+
+      return { ...category, phrases };
+    }).filter(category => category.phrases.length > 0);
+  }, [searchTerm, selectedImportance, showFavoritesOnly, favorites]);
+
+  const totalPhrasesCount = extendedGermanLessons.reduce((sum, cat) => sum + cat.phrases.length, 0);
+  const filteredPhrasesCount = filteredLessons.reduce((sum, cat) => sum + cat.phrases.length, 0);
 
   return (
     <div className={`space-y-4 ${useMobileLayout ? 'px-2 pb-24' : 'px-4'}`}>
@@ -167,13 +239,26 @@ const PracticalGermanLessons: React.FC = () => {
         </CardHeader>
       </Card>
 
-      {/* Výběr jazyka */}
+      {/* Language selector */}
       <LanguageSelector />
 
-      {/* Lekce podle kategorií */}
+      {/* Search and filter */}
+      <SearchAndFilter
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        selectedImportance={selectedImportance}
+        onImportanceChange={setSelectedImportance}
+        favorites={favorites}
+        showFavoritesOnly={showFavoritesOnly}
+        onToggleFavoritesOnly={() => setShowFavoritesOnly(!showFavoritesOnly)}
+        totalPhrases={totalPhrasesCount}
+        filteredCount={filteredPhrasesCount}
+      />
+
+      {/* Lessons by categories */}
       <Tabs defaultValue="first-day" className="w-full">
-        <TabsList className={`grid w-full ${useMobileLayout ? 'grid-cols-2 h-auto' : 'grid-cols-4'}`}>
-          {practicalGermanLessons.map((category) => (
+        <TabsList className={`grid w-full ${useMobileLayout ? 'grid-cols-2 h-auto' : 'grid-cols-5'}`}>
+          {filteredLessons.map((category) => (
             <TabsTrigger 
               key={category.id} 
               value={category.id}
@@ -189,7 +274,7 @@ const PracticalGermanLessons: React.FC = () => {
           ))}
         </TabsList>
 
-        {practicalGermanLessons.map((category) => (
+        {filteredLessons.map((category) => (
           <TabsContent key={category.id} value={category.id} className="mt-4">
             <Card>
               <CardHeader className="pb-3">
@@ -198,7 +283,7 @@ const PracticalGermanLessons: React.FC = () => {
                   {t(category.titleKey)}
                 </CardTitle>
                 <p className={`${useMobileLayout ? 'text-xs' : 'text-sm'} text-muted-foreground`}>
-                  {category.phrases.length} frází pro tuto situaci
+                  {category.phrases.length} frází • {category.estimatedTime} min • {category.description}
                 </p>
               </CardHeader>
             </Card>
@@ -212,18 +297,41 @@ const PracticalGermanLessons: React.FC = () => {
         ))}
       </Tabs>
 
-      {/* Tip na konci */}
+      {/* No results message */}
+      {filteredPhrasesCount === 0 && (
+        <Card className="text-center py-8">
+          <CardContent>
+            <SearchIcon className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+            <h3 className="text-lg font-medium mb-2">Žádné výsledky</h3>
+            <p className="text-muted-foreground">
+              Zkuste změnit vyhledávací kritéria nebo filtry.
+            </p>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setSearchTerm('');
+                setSelectedImportance('all');
+                setShowFavoritesOnly(false);
+              }}
+              className="mt-4"
+            >
+              Vymazat filtry
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Learning tip */}
       <Card className="border-blue-200 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-800">
         <CardContent className="pt-4">
           <div className="flex items-start gap-3">
             <span className="text-2xl">💡</span>
             <div>
               <h4 className={`${useMobileLayout ? 'text-sm' : 'text-base'} font-medium mb-1`}>
-                Tip pro efektivní učení
+                {t('tip.learning')}
               </h4>
               <p className={`${useMobileLayout ? 'text-xs' : 'text-sm'} text-muted-foreground`}>
-                Používejte fráze aktivně v práci. Opakujte si je každý den a nebojte se chyb. 
-                Němečtí kolegové ocení vaši snahu mluvit jejich jazykem.
+                {t('tip.description')}
               </p>
             </div>
           </div>
