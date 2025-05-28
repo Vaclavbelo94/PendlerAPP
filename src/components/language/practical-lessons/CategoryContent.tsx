@@ -2,13 +2,13 @@
 import React from 'react';
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { TabsContent } from "@/components/ui/tabs";
-import { LessonCategory } from '@/data/extendedGermanLessons';
+import { ExtendedLessonCategory } from '@/data/extendedGermanLessons';
 import { useGermanLessonsTranslation } from '@/hooks/useGermanLessonsTranslation';
 import { useScreenOrientation } from '@/hooks/useScreenOrientation';
 import PhraseCard from './PhraseCard';
 
 interface CategoryContentProps {
-  category: LessonCategory;
+  category: ExtendedLessonCategory;
 }
 
 const CategoryContent: React.FC<CategoryContentProps> = ({ category }) => {
