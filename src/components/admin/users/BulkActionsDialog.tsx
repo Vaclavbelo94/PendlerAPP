@@ -1,24 +1,25 @@
 
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Separator } from '@/components/ui/separator';
 import { 
-  Users, 
   Crown, 
   Shield, 
+  Trash2, 
   Mail, 
-  Ban, 
-  Download, 
-  AlertTriangle,
-  CheckCircle
+  Download,
+  AlertTriangle
 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 interface BulkActionsDialogProps {
@@ -27,309 +28,312 @@ interface BulkActionsDialogProps {
   onComplete: () => void;
 }
 
-export const BulkActionsDialog: React.FC<BulkActionsDialogProps> = ({ 
-  selectedUsers, 
-  onClose, 
-  onComplete 
+interface BulkAction {
+  id: string;
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  variant: 'default' | 'destructive';
+  requiresConfirmation: boolean;
+}
+
+const bulkActions: BulkAction[] = [
+  {
+    id: 'add-premium',
+    title: 'Přidat Premium',
+    description: 'Aktivovat Premium status pro vybrané uživatele (90 dní)',
+    icon: <Crown className="h-4 w-4" />,
+    variant: 'default',
+    requiresConfirmation: true
+  },
+  {
+    id: 'remove-premium',
+    title: 'Odebrat Premium',
+    description: 'Deaktivovat Premium status pro vybrané uživatele',
+    icon: <Crown className="h-4 w-4" />,
+    variant: 'default',
+    requiresConfirmation: true
+  },
+  {
+    id: 'add-admin',
+    title: 'Přidat Admin práva',
+    description: 'Udělit administrátorská oprávnění vybraným uživatelům',
+    icon: <Shield className="h-4 w-4" />,
+    variant: 'destructive',
+    requiresConfirmation: true
+  },
+  {
+    id: 'remove-admin',
+    title: 'Odebrat Admin práva',
+    description: 'Odebrat administrátorská oprávnění vybraným uživatelům',
+    icon: <Shield className="h-4 w-4" />,
+    variant: 'default',
+    requiresConfirmation: true
+  },
+  {
+    id: 'export-data',
+    title: 'Exportovat data',
+    description: 'Stáhnout CSV soubor s údaji vybraných uživatelů',
+    icon: <Download className="h-4 w-4" />,
+    variant: 'default',
+    requiresConfirmation: false
+  },
+  {
+    id: 'send-notification',
+    title: 'Odeslat notifikaci',
+    description: 'Odeslat email notifikaci vybraným uživatelům',
+    icon: <Mail className="h-4 w-4" />,
+    variant: 'default',
+    requiresConfirmation: false
+  },
+  {
+    id: 'delete-users',
+    title: 'Smazat uživatele',
+    description: 'POZOR: Permanentně smazat vybrané uživatele včetně všech dat',
+    icon: <Trash2 className="h-4 w-4" />,
+    variant: 'destructive',
+    requiresConfirmation: true
+  }
+];
+
+export const BulkActionsDialog: React.FC<BulkActionsDialogProps> = ({
+  selectedUsers,
+  onClose,
+  onComplete
 }) => {
   const [selectedAction, setSelectedAction] = useState<string>('');
   const [isProcessing, setIsProcessing] = useState(false);
-  const [emailSubject, setEmailSubject] = useState('');
-  const [emailMessage, setEmailMessage] = useState('');
-  const [confirmDangerousAction, setConfirmDangerousAction] = useState(false);
-
-  const bulkActions = [
-    {
-      id: 'grant_premium',
-      title: 'Udělit Premium',
-      description: 'Přidat Premium status vybraným uživatelům',
-      icon: <Crown className="h-5 w-5 text-amber-600" />,
-      danger: false
-    },
-    {
-      id: 'revoke_premium',
-      title: 'Odebrat Premium',
-      description: 'Odebrat Premium status vybraným uživatelům',
-      icon: <Crown className="h-5 w-5 text-gray-600" />,
-      danger: true
-    },
-    {
-      id: 'grant_admin',
-      title: 'Udělit Admin práva',
-      description: 'Přidat administrátorská oprávnění',
-      icon: <Shield className="h-5 w-5 text-red-600" />,
-      danger: true
-    },
-    {
-      id: 'revoke_admin',
-      title: 'Odebrat Admin práva',
-      description: 'Odebrat administrátorská oprávnění',
-      icon: <Shield className="h-5 w-5 text-gray-600" />,
-      danger: true
-    },
-    {
-      id: 'send_email',
-      title: 'Poslat hromadný email',
-      description: 'Odeslat email všem vybraným uživatelům',
-      icon: <Mail className="h-5 w-5 text-blue-600" />,
-      danger: false
-    },
-    {
-      id: 'export_data',
-      title: 'Exportovat data',
-      description: 'Stáhnout data vybraných uživatelů',
-      icon: <Download className="h-5 w-5 text-green-600" />,
-      danger: false
-    },
-    {
-      id: 'delete_users',
-      title: 'Smazat uživatele',
-      description: 'Trvale smazat vybrané uživatele',
-      icon: <Ban className="h-5 w-5 text-red-600" />,
-      danger: true
-    }
-  ];
+  const [confirmationChecked, setConfirmationChecked] = useState(false);
 
   const handleActionSelect = (actionId: string) => {
     setSelectedAction(actionId);
-    setConfirmDangerousAction(false);
+    setConfirmationChecked(false);
   };
 
   const executeAction = async () => {
-    if (!selectedAction) {
-      toast.error('Vyberte akci k provedení');
-      return;
-    }
+    if (!selectedAction) return;
 
     const action = bulkActions.find(a => a.id === selectedAction);
     if (!action) return;
 
-    if (action.danger && !confirmDangerousAction) {
-      toast.error('Potvrďte provedení nebezpečné akce');
-      return;
-    }
-
-    if (selectedAction === 'send_email' && (!emailSubject || !emailMessage)) {
-      toast.error('Vyplňte předmět a obsah emailu');
+    if (action.requiresConfirmation && !confirmationChecked) {
+      toast.error('Potvrďte prosím akci zaškrtnutím políčka');
       return;
     }
 
     setIsProcessing(true);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
       switch (selectedAction) {
-        case 'grant_premium':
-          toast.success(`Premium status udělen ${selectedUsers.length} uživatelům`);
+        case 'add-premium':
+          await updateUsersPremium(true);
           break;
-        case 'revoke_premium':
-          toast.success(`Premium status odebrán ${selectedUsers.length} uživatelům`);
+        case 'remove-premium':
+          await updateUsersPremium(false);
           break;
-        case 'grant_admin':
-          toast.success(`Admin práva udělena ${selectedUsers.length} uživatelům`);
+        case 'add-admin':
+          await updateUsersAdmin(true);
           break;
-        case 'revoke_admin':
-          toast.success(`Admin práva odebrána ${selectedUsers.length} uživatelům`);
+        case 'remove-admin':
+          await updateUsersAdmin(false);
           break;
-        case 'send_email':
-          toast.success(`Email odeslán ${selectedUsers.length} uživatelům`);
+        case 'export-data':
+          await exportSelectedUsers();
           break;
-        case 'export_data':
-          // Simulate file download
-          const csvContent = selectedUsers.map(id => `user-${id},data`).join('\n');
-          const blob = new Blob([csvContent], { type: 'text/csv' });
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = url;
-          link.download = `bulk-export-${new Date().toISOString().split('T')[0]}.csv`;
-          link.click();
-          URL.revokeObjectURL(url);
-          toast.success('Data exportována');
+        case 'send-notification':
+          await sendNotificationToUsers();
           break;
-        case 'delete_users':
-          toast.success(`${selectedUsers.length} uživatelů smazáno`);
+        case 'delete-users':
+          await deleteSelectedUsers();
           break;
         default:
-          toast.success('Akce dokončena');
+          toast.error('Neznámá akce');
       }
-
+      
       onComplete();
     } catch (error) {
-      console.error('Bulk action error:', error);
-      toast.error('Nastala chyba při provádění akce');
+      console.error('Error executing bulk action:', error);
+      toast.error('Nepodařilo se provést akci');
     } finally {
       setIsProcessing(false);
     }
   };
 
-  const selectedActionDetails = bulkActions.find(a => a.id === selectedAction);
+  const updateUsersPremium = async (isPremium: boolean) => {
+    const premiumExpiry = isPremium 
+      ? new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString()
+      : null;
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({ 
+        is_premium: isPremium,
+        premium_expiry: premiumExpiry
+      })
+      .in('id', selectedUsers);
+
+    if (error) throw error;
+
+    toast.success(`Premium status ${isPremium ? 'aktivován' : 'deaktivován'} pro ${selectedUsers.length} uživatelů`);
+  };
+
+  const updateUsersAdmin = async (isAdmin: boolean) => {
+    const { error } = await supabase
+      .from('profiles')
+      .update({ is_admin: isAdmin })
+      .in('id', selectedUsers);
+
+    if (error) throw error;
+
+    toast.success(`Admin práva ${isAdmin ? 'udělena' : 'odebrána'} pro ${selectedUsers.length} uživatelů`);
+  };
+
+  const exportSelectedUsers = async () => {
+    const { data: users, error } = await supabase
+      .from('profiles')
+      .select('email, username, is_premium, is_admin, created_at')
+      .in('id', selectedUsers);
+
+    if (error) throw error;
+
+    const csvContent = [
+      ['Email', 'Username', 'Premium', 'Admin', 'Registrace'].join(','),
+      ...users.map(user => [
+        user.email,
+        user.username || '',
+        user.is_premium ? 'Ano' : 'Ne',
+        user.is_admin ? 'Ano' : 'Ne',
+        new Date(user.created_at).toLocaleDateString('cs-CZ')
+      ].join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `vybrani_uzivatele_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+
+    toast.success('Export dokončen');
+  };
+
+  const sendNotificationToUsers = async () => {
+    toast.info('Funkce odesílání notifikací bude implementována v další verzi');
+  };
+
+  const deleteSelectedUsers = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      toast.error('Nejste přihlášeni');
+      return;
+    }
+
+    let successCount = 0;
+    let errorCount = 0;
+
+    for (const userId of selectedUsers) {
+      try {
+        const response = await fetch('/functions/v1/delete-user', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`
+          },
+          body: JSON.stringify({ userId })
+        });
+
+        if (response.ok) {
+          successCount++;
+        } else {
+          errorCount++;
+        }
+      } catch (error) {
+        errorCount++;
+      }
+    }
+
+    if (successCount > 0) {
+      toast.success(`Úspěšně smazáno ${successCount} uživatelů`);
+    }
+    if (errorCount > 0) {
+      toast.error(`Nepodařilo se smazat ${errorCount} uživatelů`);
+    }
+  };
+
+  const selectedActionData = bulkActions.find(a => a.id === selectedAction);
 
   return (
-    <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+    <Dialog open onOpenChange={onClose}>
+      <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5" />
-            Hromadné akce
-          </DialogTitle>
+          <DialogTitle>Hromadné akce</DialogTitle>
           <DialogDescription>
-            Provedení akce na {selectedUsers.length} vybraných uživatelích
+            Provést akci pro {selectedUsers.length} vybraných uživatelů
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6">
-          {/* Selected Users Info */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Vybraní uživatelé</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-2">
-                <Badge variant="secondary" className="flex items-center gap-1">
-                  <Users className="h-3 w-3" />
-                  {selectedUsers.length} uživatelů
-                </Badge>
-                <span className="text-sm text-muted-foreground">
-                  ID: {selectedUsers.slice(0, 3).join(', ')}
-                  {selectedUsers.length > 3 && ` +${selectedUsers.length - 3} dalších`}
-                </span>
-              </div>
-            </CardContent>
-          </Card>
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {bulkActions.map((action) => (
+              <Card 
+                key={action.id}
+                className={`cursor-pointer transition-colors hover:bg-accent ${
+                  selectedAction === action.id ? 'ring-2 ring-primary' : ''
+                }`}
+                onClick={() => handleActionSelect(action.id)}
+              >
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    {action.icon}
+                    {action.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-xs">
+                    {action.description}
+                  </CardDescription>
+                  {action.variant === 'destructive' && (
+                    <Badge variant="destructive" className="mt-2 text-xs">
+                      <AlertTriangle className="h-3 w-3 mr-1" />
+                      Nebezpečná akce
+                    </Badge>
+                  )}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
 
-          {/* Action Selection */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Vyberte akci</CardTitle>
-              <CardDescription>
-                Klikněte na akci, kterou chcete provést
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 gap-3">
-                {bulkActions.map((action) => (
-                  <div
-                    key={action.id}
-                    className={`p-3 border rounded-lg cursor-pointer transition-colors ${
-                      selectedAction === action.id
-                        ? 'border-primary bg-primary/5'
-                        : 'border-border hover:border-primary/50'
-                    }`}
-                    onClick={() => handleActionSelect(action.id)}
+          {selectedActionData?.requiresConfirmation && (
+            <Card className="border-amber-200 bg-amber-50">
+              <CardContent className="pt-4">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="confirm"
+                    checked={confirmationChecked}
+                    onCheckedChange={setConfirmationChecked}
+                  />
+                  <label
+                    htmlFor="confirm"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                   >
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-2">
-                        {action.icon}
-                        <span className="font-medium">{action.title}</span>
-                      </div>
-                      {action.danger && (
-                        <Badge variant="destructive" className="text-xs">
-                          <AlertTriangle className="h-3 w-3 mr-1" />
-                          Nebezpečné
-                        </Badge>
-                      )}
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-1">{action.description}</p>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Action Details */}
-          {selectedActionDetails && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  {selectedActionDetails.icon}
-                  {selectedActionDetails.title}
-                </CardTitle>
-                <CardDescription>
-                  Konfigurace vybrané akce
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {selectedActionDetails.danger && (
-                  <Alert>
-                    <AlertTriangle className="h-4 w-4" />
-                    <AlertDescription>
-                      Tato akce je nevratná a může mít vážné následky. Ujistěte se, že rozumíte důsledkům.
-                    </AlertDescription>
-                  </Alert>
-                )}
-
-                {selectedAction === 'send_email' && (
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="emailSubject">Předmět emailu</Label>
-                      <input
-                        id="emailSubject"
-                        className="w-full p-2 border rounded-md"
-                        placeholder="Zadejte předmět emailu..."
-                        value={emailSubject}
-                        onChange={(e) => setEmailSubject(e.target.value)}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="emailMessage">Obsah emailu</Label>
-                      <Textarea
-                        id="emailMessage"
-                        placeholder="Zadejte obsah emailu..."
-                        value={emailMessage}
-                        onChange={(e) => setEmailMessage(e.target.value)}
-                        rows={6}
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {selectedActionDetails.danger && (
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="confirmDangerous"
-                      checked={confirmDangerousAction}
-                      onCheckedChange={(checked) => setConfirmDangerousAction(checked === true)}
-                    />
-                    <Label htmlFor="confirmDangerous" className="text-sm">
-                      Potvrzuji, že rozumím důsledkům této akce
-                    </Label>
-                  </div>
-                )}
-
-                <Separator />
-
-                <div className="flex items-center justify-between">
-                  <div className="text-sm text-muted-foreground">
-                    Akce bude provedena na {selectedUsers.length} uživatelích
-                  </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" onClick={onClose}>
-                      Zrušit
-                    </Button>
-                    <Button 
-                      onClick={executeAction} 
-                      disabled={isProcessing}
-                      variant={selectedActionDetails.danger ? "destructive" : "default"}
-                    >
-                      {isProcessing ? (
-                        <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                          Provádí se...
-                        </>
-                      ) : (
-                        <>
-                          <CheckCircle className="h-4 w-4 mr-2" />
-                          Provést akci
-                        </>
-                      )}
-                    </Button>
-                  </div>
+                    Potvrzuji, že chci provést akci "{selectedActionData.title}" pro {selectedUsers.length} uživatelů
+                  </label>
                 </div>
               </CardContent>
             </Card>
           )}
+        </div>
+
+        <div className="flex justify-end gap-2 pt-4 border-t">
+          <Button variant="outline" onClick={onClose} disabled={isProcessing}>
+            Zrušit
+          </Button>
+          <Button 
+            onClick={executeAction} 
+            disabled={!selectedAction || isProcessing}
+            variant={selectedActionData?.variant === 'destructive' ? 'destructive' : 'default'}
+          >
+            {isProcessing ? 'Zpracovávám...' : 'Provést akci'}
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

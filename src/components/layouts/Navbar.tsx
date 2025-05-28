@@ -1,15 +1,9 @@
 
-import { useState, useEffect } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { 
-  Menu,
-  UserIcon, 
-  LogOutIcon, 
-  SearchIcon,
-  Settings as SettingsIcon,
-  Shield
-} from "lucide-react";
+import React, { useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,236 +11,231 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import { useAuth } from "@/hooks/useAuth";
-import { Badge } from "@/components/ui/badge";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { toast } from "sonner";
-import GlobalSearch from "@/components/search/GlobalSearch";
-import { useIsMobile, useOrientation } from "@/hooks/use-mobile";
+} from '@/components/ui/dropdown-menu';
+import { 
+  Menu, 
+  X, 
+  User, 
+  Settings, 
+  Crown, 
+  LogOut, 
+  CreditCard,
+  Shield
+} from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { cn } from '@/lib/utils';
 
-interface NavbarProps {
-  toggleSidebar: () => void;
-  rightContent?: React.ReactNode;
-  sidebarOpen?: boolean;
-}
-
-const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProps) => {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const navigate = useNavigate();
+const Navbar = () => {
+  const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
-  const { user, isPremium, isAdmin, signOut, refreshAdminStatus } = useAuth();
+  const navigate = useNavigate();
+  const { user, signOut, isPremium, isAdmin } = useAuth();
   const isMobile = useIsMobile();
-  const orientation = useOrientation();
-  
-  const isLandscapeMobile = isMobile && orientation === "landscape";
-  const isPortraitMobile = isMobile && orientation === "portrait";
 
-  // Add scroll event listener
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 20) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
-    };
+  const navigationItems = [
+    { name: 'Dashboard', href: '/dashboard', requiresAuth: true },
+    { name: 'Slovní zásoba', href: '/vocabulary' },
+    { name: 'Překladač', href: '/translator' },
+    { name: 'Daňový poradce', href: '/tax-advisor' },
+    { name: 'Kalkulačky', href: '/calculator' },
+    { name: 'Právní přehled', href: '/laws' },
+    { name: 'Směny', href: '/shifts', requiresAuth: true },
+    { name: 'Vozidla', href: '/vehicle', requiresAuth: true },
+    { name: 'Plánování cest', href: '/travel-planning' },
+  ];
 
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (user) {
-      refreshAdminStatus();
-    }
-  }, [user, refreshAdminStatus]);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault();
-        setSearchOpen(true);
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, []);
-
-  const handleLogout = async () => {
+  const handleSignOut = async () => {
     await signOut();
-    navigate("/");
-    toast.success("Odhlášení proběhlo úspěšně");
+    navigate('/');
+    setIsOpen(false);
   };
 
-  const navbarHeight = isLandscapeMobile ? 'h-12' : 'h-16';
-  const menuButtonClass = isPortraitMobile 
-    ? "p-3 min-h-[44px] min-w-[44px]" 
-    : isLandscapeMobile 
-      ? "p-2 min-h-[36px] min-w-[36px]" 
-      : "";
+  const isActiveRoute = (href: string) => {
+    return location.pathname === href || location.pathname.startsWith(href + '/');
+  };
+
+  const visibleItems = navigationItems.filter(item => 
+    !item.requiresAuth || (item.requiresAuth && user)
+  );
 
   return (
-    <>
-      <header className={`sticky top-0 z-30 w-full transition-all duration-300 ${isScrolled ? 'bg-card shadow-sm' : 'bg-card'} border-b border-border`}>
-        <div className={`${navbarHeight} px-4 flex items-center justify-between`}>
-          <div className="flex items-center gap-3">
-            <Button 
-              variant="ghost" 
-              size={isLandscapeMobile ? "sm" : "icon"}
-              className={`lg:hidden ${menuButtonClass}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleSidebar();
-              }}
-              data-menu-trigger="true"
-            >
-              <Menu className={isLandscapeMobile ? "h-4 w-4" : "h-5 w-5"} />
-              <span className="sr-only">Toggle menu</span>
-            </Button>
-            
-            {/* Desktop search bar */}
-            <div className="relative hidden md:flex items-center">
-              <SearchIcon className={`absolute left-2.5 text-muted-foreground ${isLandscapeMobile ? 'h-3 w-3' : 'h-4 w-4'}`} />
-              <Input
-                type="search"
-                placeholder="Hledat... (Ctrl+K)"
-                className={`pl-8 bg-muted border-none cursor-pointer ${
-                  isLandscapeMobile 
-                    ? 'w-[150px] lg:w-[200px] h-8 text-sm' 
-                    : 'w-[200px] lg:w-[300px]'
-                }`}
-                onClick={() => setSearchOpen(true)}
-                readOnly
-              />
+    <nav className="bg-white/95 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          {/* Logo */}
+          <Link to="/" className="flex items-center space-x-3">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white font-bold text-sm">
+              PP
             </div>
+            <span className="font-bold text-xl text-gray-900 hidden sm:block">
+              Pendlerův Pomocník
+            </span>
+            <span className="font-bold text-lg text-gray-900 sm:hidden">
+              PP
+            </span>
+          </Link>
+
+          {/* Desktop Navigation */}
+          <div className="hidden lg:flex items-center space-x-1">
+            {visibleItems.slice(0, 6).map((item) => (
+              <Link
+                key={item.name}
+                to={item.href}
+                className={cn(
+                  "px-3 py-2 text-sm font-medium rounded-md transition-colors",
+                  isActiveRoute(item.href)
+                    ? "bg-blue-100 text-blue-700"
+                    : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                )}
+              >
+                {item.name}
+              </Link>
+            ))}
             
-            {/* Mobile search button */}
-            <Button 
-              variant="ghost" 
-              size={isLandscapeMobile ? "sm" : "icon"}
-              className={`md:hidden ${isPortraitMobile ? "min-h-[44px] min-w-[44px] p-2" : "p-1"}`}
-              onClick={() => setSearchOpen(true)}
-            >
-              <SearchIcon className={isLandscapeMobile ? "h-4 w-4" : "h-5 w-5"} />
-              <span className="sr-only">Hledat</span>
-            </Button>
+            {visibleItems.length > 6 && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="text-sm font-medium">
+                    Více
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  {visibleItems.slice(6).map((item) => (
+                    <DropdownMenuItem key={item.name} asChild>
+                      <Link to={item.href}>{item.name}</Link>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
-          
-          <div className="flex items-center gap-2">
-            {!isMobile && <ThemeToggle />}
-            
-            <div className="flex items-center gap-1">
-              {rightContent}
-            </div>
-            
+
+          {/* User Menu */}
+          <div className="flex items-center space-x-4">
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button 
-                    variant="ghost" 
-                    className={`${
-                      isMobile 
-                        ? isLandscapeMobile 
-                          ? 'p-1 min-h-[36px] min-w-[36px]' 
-                          : 'p-2 min-h-[44px] min-w-[44px]'
-                        : 'gap-2 px-3'
-                    }`}
-                  >
-                    <div className={`rounded-full bg-primary/20 flex items-center justify-center text-foreground ${
-                      isLandscapeMobile ? 'w-5 h-5' : isPortraitMobile ? 'w-7 h-7' : 'w-8 h-8'
-                    }`}>
-                      <UserIcon className={isLandscapeMobile ? "h-3 w-3" : isPortraitMobile ? "h-4 w-4" : "h-4 w-4"} />
-                    </div>
-                    
+                  <Button variant="ghost" className="flex items-center space-x-2 h-10">
+                    <Avatar className="h-8 w-8">
+                      <AvatarFallback>
+                        {user.email?.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
                     {!isMobile && (
-                      <>
-                        <span className="hidden sm:inline font-medium text-sm">
-                          {user.user_metadata?.username || user.email?.split('@')[0] || 'Uživatel'}
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm font-medium max-w-24 truncate">
+                          {user.email?.split('@')[0]}
                         </span>
-                        {isPremium && <Badge className="bg-amber-500 text-xs">Premium</Badge>}
-                        {isAdmin && <Badge className="bg-red-500 text-xs">Admin</Badge>}
-                      </>
+                        {isPremium && (
+                          <Badge variant="default" className="bg-amber-100 text-amber-800 text-xs">
+                            <Crown className="h-3 w-3 mr-1" />
+                            Premium
+                          </Badge>
+                        )}
+                      </div>
                     )}
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 z-50 bg-background border">
-                  <DropdownMenuLabel className="flex flex-col">
-                    <span className="font-medium">
-                      {user.user_metadata?.username || user.email?.split('@')[0] || 'Uživatel'}
-                    </span>
-                    <span className="text-xs text-muted-foreground truncate">
-                      {user.email}
-                    </span>
-                    {isMobile && (
-                      <div className="flex gap-1 mt-1">
-                        {isPremium && <Badge className="bg-amber-500 text-xs">Premium</Badge>}
-                        {isAdmin && <Badge className="bg-red-500 text-xs">Admin</Badge>}
-                      </div>
-                    )}
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium">{user.email?.split('@')[0]}</p>
+                      <p className="text-xs text-muted-foreground">{user.email}</p>
+                      {isPremium && (
+                        <Badge variant="default" className="bg-amber-100 text-amber-800 text-xs w-fit">
+                          <Crown className="h-3 w-3 mr-1" />
+                          Premium účet
+                        </Badge>
+                      )}
+                    </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  
-                  {isMobile && (
-                    <>
-                      <DropdownMenuItem onClick={(e) => e.preventDefault()}>
-                        <SettingsIcon className="mr-2 h-4 w-4" />
-                        <span className="flex-1">Vzhled</span>
-                        <ThemeToggle alwaysShow={true} size="sm" variant="ghost" />
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                    </>
-                  )}
-                  
-                  <DropdownMenuItem onClick={() => navigate("/profile")}>
-                    <UserIcon className="mr-2 h-4 w-4" />
-                    <span>Profil</span>
+                  <DropdownMenuItem asChild>
+                    <Link to="/profile" className="flex items-center">
+                      <User className="mr-2 h-4 w-4" />
+                      Profil
+                    </Link>
                   </DropdownMenuItem>
-                  
-                  {isAdmin && (
-                    <DropdownMenuItem onClick={() => navigate("/admin")}>
-                      <Shield className="mr-2 h-4 w-4" />
-                      <span>Administrace</span>
+                  <DropdownMenuItem asChild>
+                    <Link to="/settings" className="flex items-center">
+                      <Settings className="mr-2 h-4 w-4" />
+                      Nastavení
+                    </Link>
+                  </DropdownMenuItem>
+                  {!isPremium && (
+                    <DropdownMenuItem asChild>
+                      <Link to="/premium" className="flex items-center">
+                        <CreditCard className="mr-2 h-4 w-4" />
+                        Upgradovat na Premium
+                      </Link>
                     </DropdownMenuItem>
                   )}
-                  
+                  {isAdmin && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem asChild>
+                        <Link to="/admin" className="flex items-center text-blue-600">
+                          <Shield className="mr-2 h-4 w-4" />
+                          Administrace
+                        </Link>
+                      </DropdownMenuItem>
+                    </>
+                  )}
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout}>
-                    <LogOutIcon className="mr-2 h-4 w-4" />
-                    <span>Odhlásit se</span>
+                  <DropdownMenuItem onClick={handleSignOut} className="text-red-600">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Odhlásit se
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <div className="flex items-center gap-2">
-                <Button 
-                  variant="ghost" 
-                  asChild 
-                  size={isLandscapeMobile ? "sm" : "default"}
-                  className={isPortraitMobile ? "text-sm px-3" : ""}
-                >
+              <div className="flex items-center space-x-2">
+                <Button variant="ghost" asChild>
                   <Link to="/login">Přihlásit se</Link>
                 </Button>
-                <Button 
-                  asChild 
-                  size={isLandscapeMobile ? "sm" : "default"}
-                  className={isPortraitMobile ? "text-sm px-3" : ""}
-                >
+                <Button asChild>
                   <Link to="/register">Registrovat se</Link>
                 </Button>
               </div>
             )}
+
+            {/* Mobile menu button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="lg:hidden"
+              onClick={() => setIsOpen(!isOpen)}
+            >
+              {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </Button>
           </div>
         </div>
-      </header>
-      
-      <GlobalSearch open={searchOpen} onOpenChange={setSearchOpen} />
-    </>
+
+        {/* Mobile Navigation */}
+        {isOpen && (
+          <div className="lg:hidden py-4 border-t border-gray-200">
+            <div className="flex flex-col space-y-2">
+              {visibleItems.map((item) => (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  className={cn(
+                    "px-3 py-2 text-base font-medium rounded-md transition-colors",
+                    isActiveRoute(item.href)
+                      ? "bg-blue-100 text-blue-700"
+                      : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                  )}
+                  onClick={() => setIsOpen(false)}
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </nav>
   );
 };
 
