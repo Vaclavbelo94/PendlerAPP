@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -7,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Globe, Download, Trash2 } from 'lucide-react';
 import { toast } from "sonner";
+import InterfaceLanguageSettings from "@/components/profile/settings/InterfaceLanguageSettings";
 
 const LanguageSettings = () => {
   const [appLanguage, setAppLanguage] = useState("cs");
@@ -23,14 +23,17 @@ const LanguageSettings = () => {
 
   return (
     <div className="space-y-6">
+      {/* Interface Language Settings */}
+      <InterfaceLanguageSettings />
+
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Globe className="h-5 w-5" />
-            Jazykové nastavení
+            Jazykové nastavení aplikace
           </CardTitle>
           <CardDescription>
-            Nastavte preferovaný jazyk rozhraní a učení
+            Nastavte preferovaný jazyk aplikace a učení
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
