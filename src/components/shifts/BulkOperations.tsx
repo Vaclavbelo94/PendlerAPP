@@ -10,7 +10,7 @@ import {
   Calendar, 
   Upload, 
   Download,
-  SelectAll,
+  CheckSquare,
   X
 } from 'lucide-react';
 import { Shift } from '@/hooks/shifts/useOptimizedShiftsManagement';
@@ -88,7 +88,7 @@ const BulkOperations: React.FC<BulkOperationsProps> = ({
                   onClick={onSelectAll}
                   className="flex items-center gap-2"
                 >
-                  <SelectAll className="h-4 w-4" />
+                  <CheckSquare className="h-4 w-4" />
                   Vybrat vše
                 </Button>
               ) : (
