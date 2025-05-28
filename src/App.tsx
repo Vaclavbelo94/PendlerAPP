@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -33,7 +32,6 @@ import Profile from "@/pages/Profile";
 import UnifiedProfile from "@/pages/UnifiedProfile";
 import ProfileExtended from "@/pages/ProfileExtended";
 import TermsOfService from "@/pages/TermsOfService";
-import PrivacyPolicy from "@/pages/PrivacyPolicy";
 import Privacy from "@/pages/Privacy";
 import Terms from "@/pages/Terms";
 import Cookies from "@/pages/Cookies";
@@ -163,7 +161,6 @@ function AppContent() {
             {/* Legal pages */}
             <Route path="/terms-of-service" element={<TermsOfService />} />
             <Route path="/terms" element={<Terms />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/cookies" element={<Cookies />} />
             
