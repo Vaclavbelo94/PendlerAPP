@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { CalendarIcon, BarChartIcon, FileTextIcon, SettingsIcon } from 'lucide-react';
+import { CalendarIcon, BarChartIcon, FileTextIcon, SettingsIcon, DownloadIcon } from 'lucide-react';
 import CategoryNavigation, { CategoryTab } from '@/components/navigation/CategoryNavigation';
 
 interface ShiftsNavigationProps {
@@ -26,6 +26,12 @@ const shiftTabs: CategoryTab[] = [
     icon: FileTextIcon,
     label: 'Reporty',
     description: 'Měsíční přehledy'
+  },
+  {
+    id: 'export',
+    icon: DownloadIcon,
+    label: 'Export',
+    description: 'Kalendáře a soubory'
   },
   {
     id: 'settings',
