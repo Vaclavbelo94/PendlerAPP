@@ -36,6 +36,42 @@ export type Database = {
         }
         Relationships: []
       }
+      email_logs: {
+        Row: {
+          email_type: string
+          error_message: string | null
+          id: string
+          metadata: Json | null
+          recipient_email: string
+          sent_at: string | null
+          status: string
+          subject: string
+          user_id: string | null
+        }
+        Insert: {
+          email_type: string
+          error_message?: string | null
+          id?: string
+          metadata?: Json | null
+          recipient_email: string
+          sent_at?: string | null
+          status: string
+          subject: string
+          user_id?: string | null
+        }
+        Update: {
+          email_type?: string
+          error_message?: string | null
+          id?: string
+          metadata?: Json | null
+          recipient_email?: string
+          sent_at?: string | null
+          status?: string
+          subject?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       fuel_records: {
         Row: {
           amount_liters: number
@@ -135,6 +171,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          metadata: Json | null
+          read: boolean
+          related_to: Json | null
+          title: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          metadata?: Json | null
+          read?: boolean
+          related_to?: Json | null
+          title: string
+          type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          metadata?: Json | null
+          read?: boolean
+          related_to?: Json | null
+          title?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       orders: {
         Row: {
@@ -871,6 +946,45 @@ export type Database = {
         }
         Relationships: []
       }
+      user_notification_preferences: {
+        Row: {
+          created_at: string
+          email_notifications: boolean
+          id: string
+          push_notifications: boolean
+          reminder_time: string
+          shift_reminders: boolean
+          system_updates: boolean
+          updated_at: string
+          user_id: string
+          weekly_summaries: boolean
+        }
+        Insert: {
+          created_at?: string
+          email_notifications?: boolean
+          id?: string
+          push_notifications?: boolean
+          reminder_time?: string
+          shift_reminders?: boolean
+          system_updates?: boolean
+          updated_at?: string
+          user_id: string
+          weekly_summaries?: boolean
+        }
+        Update: {
+          created_at?: string
+          email_notifications?: boolean
+          id?: string
+          push_notifications?: boolean
+          reminder_time?: string
+          shift_reminders?: boolean
+          system_updates?: boolean
+          updated_at?: string
+          user_id?: string
+          weekly_summaries?: boolean
+        }
+        Relationships: []
+      }
       user_social_links: {
         Row: {
           created_at: string
@@ -1175,6 +1289,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_notification: {
+        Args: {
+          p_user_id: string
+          p_title: string
+          p_message: string
+          p_type?: string
+          p_related_to?: Json
+        }
+        Returns: string
+      }
       get_current_user_admin_status: {
         Args: Record<PropertyKey, never>
         Returns: boolean

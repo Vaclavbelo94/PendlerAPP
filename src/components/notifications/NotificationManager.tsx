@@ -1,25 +1,15 @@
 
 import React, { useEffect } from 'react';
-import { useNotificationPermission } from '@/hooks/useNotificationPermission';
 import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { useNotifications } from '@/hooks/useNotifications';
 
 export const NotificationManager: React.FC = () => {
-  const { showNotification, requestPermission, permission } = useNotificationPermission();
   const { user } = useAuth();
-  const { toast } = useToast();
-
-  // Request permission on mount if not already granted
-  useEffect(() => {
-    if (permission === 'default') {
-      requestPermission();
-    }
-  }, [permission, requestPermission]);
+  const { addNotification, preferences } = useNotifications();
 
   // Check for upcoming shifts and send notifications
   useEffect(() => {
-    if (!user || permission !== 'granted') return;
+    if (!user || !preferences?.shift_reminders) return;
 
     const checkUpcomingShifts = async () => {
       try {
@@ -44,10 +34,14 @@ export const NotificationManager: React.FC = () => {
           const timeText = shift.type === 'morning' ? '6:00' : 
                          shift.type === 'afternoon' ? '14:00' : '22:00';
 
-          showNotification('Zítřejší směna', {
-            body: `${shiftTypeText} směna začíná zítra v ${timeText}${shift.notes ? ` - ${shift.notes}` : ''}`,
-            tag: `shift-${shift.id}`,
-            requireInteraction: false
+          addNotification({
+            title: 'Zítřejší směna',
+            message: `${shiftTypeText} směna začíná zítra v ${timeText}${shift.notes ? ` - ${shift.notes}` : ''}`,
+            type: 'warning',
+            related_to: {
+              type: 'shift',
+              id: shift.id
+            }
           });
         });
       } catch (error) {
@@ -60,9 +54,9 @@ export const NotificationManager: React.FC = () => {
     const intervalId = setInterval(checkUpcomingShifts, 60 * 60 * 1000);
 
     return () => clearInterval(intervalId);
-  }, [user, permission, showNotification]);
+  }, [user, preferences, addNotification]);
 
-  // Listen for real-time shift changes
+  // Listen for real-time shift changes to send notifications
   useEffect(() => {
     if (!user) return;
 
@@ -77,16 +71,14 @@ export const NotificationManager: React.FC = () => {
           filter: `user_id=eq.${user.id}`
         },
         (payload) => {
-          if (permission === 'granted') {
-            showNotification('Nová směna přidána', {
-              body: 'Byla přidána nová směna do vašeho kalendáře',
-              tag: 'shift-added'
-            });
-          }
-          
-          toast({
-            title: "Nová směna",
-            description: "Byla přidána nová směna do vašeho kalendáře"
+          addNotification({
+            title: 'Nová směna přidána',
+            message: 'Byla přidána nová směna do vašeho kalendáře',
+            type: 'success',
+            related_to: {
+              type: 'shift',
+              id: payload.new.id
+            }
           });
         }
       )
@@ -99,12 +91,15 @@ export const NotificationManager: React.FC = () => {
           filter: `user_id=eq.${user.id}`
         },
         (payload) => {
-          if (permission === 'granted') {
-            showNotification('Směna aktualizována', {
-              body: 'Jedna z vašich směn byla upravena',
-              tag: 'shift-updated'
-            });
-          }
+          addNotification({
+            title: 'Směna aktualizována',
+            message: 'Jedna z vašich směn byla upravena',
+            type: 'info',
+            related_to: {
+              type: 'shift',
+              id: payload.new.id
+            }
+          });
         }
       )
       .subscribe();
@@ -112,7 +107,7 @@ export const NotificationManager: React.FC = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user, permission, showNotification, toast]);
+  }, [user, addNotification]);
 
   return null; // This component doesn't render anything visible
 };

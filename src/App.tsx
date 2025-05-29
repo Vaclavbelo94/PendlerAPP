@@ -1,4 +1,3 @@
-
 import React, { Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -63,6 +62,8 @@ import Terms from '@/pages/Terms';
 import Cookies from '@/pages/Cookies';
 import Pricing from '@/pages/Pricing';
 
+import { NotificationManager } from '@/components/notifications/NotificationManager';
+
 const queryClient = new QueryClient();
 
 function App() {
@@ -74,6 +75,7 @@ function App() {
           <AuthProvider>
             <AccessibilityProvider>
               <ErrorBoundaryWithFallback>
+                <NotificationManager />
                 <Suspense fallback={<LoadingFallback />}>
                   <Routes>
                     {/* Main routes */}
