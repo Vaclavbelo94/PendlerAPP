@@ -10,16 +10,28 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckIcon } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { CheckIcon, CreditCard, Settings, RefreshCw, Crown } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useStripePayments } from "@/hooks/useStripePayments";
 import PromoCodeRedemption from "@/components/premium/PromoCodeRedemption";
+import { toast } from "sonner";
 
 const Premium = () => {
   const { user, isPremium } = useAuth();
+  const { 
+    isLoading, 
+    isCheckingSubscription, 
+    handleCheckout, 
+    checkSubscriptionStatus, 
+    openCustomerPortal 
+  } = useStripePayments();
+  
+  const [subscriptionData, setSubscriptionData] = useState<any>(null);
   const [premiumUntil, setPremiumUntil] = useState<string | null>(null);
 
   useEffect(() => {
-    // Get premium expiry from localStorage
+    // Get premium expiry from localStorage as fallback
     try {
       const userStr = localStorage.getItem("currentUser");
       if (userStr) {
@@ -31,15 +43,37 @@ const Premium = () => {
     } catch (e) {
       console.error('Error checking premium status expiry:', e);
     }
-  }, [isPremium]);
+
+    // Check subscription status on mount
+    if (user && isPremium) {
+      handleRefreshSubscription();
+    }
+  }, [isPremium, user]);
+
+  const handleRefreshSubscription = async () => {
+    const data = await checkSubscriptionStatus();
+    if (data) {
+      setSubscriptionData(data);
+    }
+  };
 
   const formatDate = (dateString: string) => {
     try {
       const date = new Date(dateString);
-      return date.toLocaleDateString();
+      return date.toLocaleDateString('cs-CZ');
     } catch (e) {
       return 'Neznámé datum';
     }
+  };
+
+  const getSubscriptionEndDate = () => {
+    if (subscriptionData?.subscription_end) {
+      return formatDate(subscriptionData.subscription_end);
+    }
+    if (premiumUntil) {
+      return formatDate(premiumUntil);
+    }
+    return null;
   };
 
   return (
@@ -53,16 +87,46 @@ const Premium = () => {
         </div>
         
         {isPremium && (
-          <div className="bg-green-500/10 border border-green-500/20 p-4 rounded-lg text-center">
-            <h2 className="text-xl font-medium text-green-600 dark:text-green-400">
-              Máte aktivní premium předplatné!
-            </h2>
-            {premiumUntil && (
-              <p className="text-sm text-muted-foreground mt-1">
-                Platné do: {formatDate(premiumUntil)}
-              </p>
-            )}
-          </div>
+          <Alert className="border-green-500/20 bg-green-50 dark:bg-green-900/10">
+            <Crown className="h-4 w-4 text-green-600" />
+            <AlertDescription className="text-green-800 dark:text-green-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <strong>Máte aktivní premium předplatné!</strong>
+                  {getSubscriptionEndDate() && (
+                    <p className="text-sm mt-1">
+                      Platné do: {getSubscriptionEndDate()}
+                    </p>
+                  )}
+                  {subscriptionData?.subscription_tier && (
+                    <Badge variant="secondary" className="mt-1">
+                      {subscriptionData.subscription_tier}
+                    </Badge>
+                  )}
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleRefreshSubscription}
+                    disabled={isCheckingSubscription}
+                  >
+                    <RefreshCw className={`h-4 w-4 mr-1 ${isCheckingSubscription ? 'animate-spin' : ''}`} />
+                    Obnovit
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={openCustomerPortal}
+                    disabled={isLoading}
+                  >
+                    <Settings className="h-4 w-4 mr-1" />
+                    Spravovat
+                  </Button>
+                </div>
+              </div>
+            </AlertDescription>
+          </Alert>
         )}
 
         {!isPremium && user && (
@@ -97,6 +161,8 @@ const Premium = () => {
             ]}
             current={isPremium}
             recommended
+            onUpgrade={user && !isPremium ? handleCheckout : undefined}
+            isLoading={isLoading}
           />
           
           <PremiumFeatureCard 
@@ -114,6 +180,14 @@ const Premium = () => {
             contactSales
           />
         </div>
+
+        {!user && (
+          <Alert>
+            <AlertDescription>
+              Pro nákup premium předplatného se prosím nejdříve přihlaste.
+            </AlertDescription>
+          </Alert>
+        )}
       </div>
     </div>
   );
@@ -127,6 +201,8 @@ interface PremiumFeatureCardProps {
   current?: boolean;
   recommended?: boolean;
   contactSales?: boolean;
+  onUpgrade?: () => void;
+  isLoading?: boolean;
 }
 
 const PremiumFeatureCard = ({
@@ -137,13 +213,23 @@ const PremiumFeatureCard = ({
   current,
   recommended,
   contactSales,
+  onUpgrade,
+  isLoading,
 }: PremiumFeatureCardProps) => {
   return (
-    <Card className={`relative ${recommended ? 'border-primary shadow-md' : ''}`}>
+    <Card className={`relative ${recommended ? 'border-primary shadow-md' : ''} ${current ? 'bg-accent/50' : ''}`}>
       {recommended && (
         <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
           <Badge variant="default" className="bg-primary text-primary-foreground">
             Doporučeno
+          </Badge>
+        </div>
+      )}
+      
+      {current && (
+        <div className="absolute -top-3 right-4">
+          <Badge variant="secondary">
+            Váš plán
           </Badge>
         </div>
       )}
@@ -176,9 +262,18 @@ const PremiumFeatureCard = ({
           <Button variant="outline" className="w-full">
             Kontaktujte nás
           </Button>
+        ) : onUpgrade ? (
+          <Button 
+            className="w-full" 
+            onClick={onUpgrade}
+            disabled={isLoading}
+          >
+            <CreditCard className="w-4 h-4 mr-2" />
+            {isLoading ? 'Načítání...' : 'Vybrat plán'}
+          </Button>
         ) : (
-          <Button className="w-full">
-            Vybrat plán
+          <Button variant="outline" className="w-full" disabled>
+            Vyžaduje přihlášení
           </Button>
         )}
       </CardFooter>
