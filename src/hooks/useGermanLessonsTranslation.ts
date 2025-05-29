@@ -17,7 +17,18 @@ const translations: Record<string, Record<string, string>> = {
     'directions-transport': 'Směry a doprava',
     'workplace-communication': 'Komunikace na pracovišti',
     'learning-tip': 'Tip k učení',
-    'practical-german': 'Praktická němčina'
+    'practical-german': 'Praktická němčina',
+    
+    // Hlavní nadpisy
+    'lessons.title': 'Lekce němčiny',
+    'lessons.subtitle': 'Interaktivní výuka němčiny pro české a polské pracovníky v balíkovém centru',
+    
+    // Navigace kategorií
+    'nav.first-day': 'První den',
+    'nav.daily-conversations': 'Denní konverzace',
+    'nav.at-work': 'V práci',
+    'nav.shopping': 'Nakupování',
+    'nav.transportation': 'Doprava'
   },
   en: {
     'basic-greetings': 'Basic Greetings',
@@ -27,7 +38,18 @@ const translations: Record<string, Record<string, string>> = {
     'directions-transport': 'Directions and Transport',
     'workplace-communication': 'Workplace Communication',
     'learning-tip': 'Learning Tip',
-    'practical-german': 'Practical German'
+    'practical-german': 'Practical German',
+    
+    // Hlavní nadpisy
+    'lessons.title': 'German Lessons',
+    'lessons.subtitle': 'Interactive German learning for Czech and Polish workers in package center',
+    
+    // Navigace kategorií
+    'nav.first-day': 'First Day',
+    'nav.daily-conversations': 'Daily Conversations',
+    'nav.at-work': 'At Work',
+    'nav.shopping': 'Shopping',
+    'nav.transportation': 'Transportation'
   },
   sk: {
     'basic-greetings': 'Základné pozdravy',
@@ -37,7 +59,18 @@ const translations: Record<string, Record<string, string>> = {
     'directions-transport': 'Smery a doprava',
     'workplace-communication': 'Komunikácia na pracovisku',
     'learning-tip': 'Tip na učenie',
-    'practical-german': 'Praktická nemčina'
+    'practical-german': 'Praktická nemčina',
+    
+    // Hlavní nadpisy
+    'lessons.title': 'Lekcie nemčiny',
+    'lessons.subtitle': 'Interaktívna výuka nemčiny pre českých a poľských pracovníkov v balíkovom centre',
+    
+    // Navigace kategorií
+    'nav.first-day': 'Prvý deň',
+    'nav.daily-conversations': 'Denné rozhovory',
+    'nav.at-work': 'V práci',
+    'nav.shopping': 'Nakupovanie',
+    'nav.transportation': 'Doprava'
   }
 };
 

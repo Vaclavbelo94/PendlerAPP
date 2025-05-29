@@ -26,9 +26,9 @@ const LessonsTabsNavigation: React.FC<LessonsTabsNavigationProps> = ({ defaultVa
           >
             <span className={useMobileLayout ? 'text-sm' : 'text-base'}>{category.icon}</span>
             {useMobileLayout ? (
-              <span className="truncate">{t(category.titleKey).split(' ')[0]}</span>
+              <span className="truncate">{t(`nav.${category.id}`) || t(category.titleKey).split(' ')[0]}</span>
             ) : (
-              t(category.titleKey)
+              t(`nav.${category.id}`) || t(category.titleKey)
             )}
           </TabsTrigger>
         ))}
