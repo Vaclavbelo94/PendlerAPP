@@ -75,7 +75,7 @@ function App() {
               <Suspense fallback={<LoadingFallback />}>
                 <Routes>
                   {/* Main routes */}
-                  <Route path="/" element={<UnifiedHomePage />} />
+                  <Route path="/" element={<LayoutWrapper><UnifiedHomePage /></LayoutWrapper>} />
                   <Route path="/dashboard" element={<LayoutWrapper><Dashboard /></LayoutWrapper>} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
