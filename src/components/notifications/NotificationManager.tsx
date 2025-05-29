@@ -2,6 +2,7 @@
 import React, { useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNotifications } from '@/hooks/useNotifications';
+import { supabase } from '@/integrations/supabase/client';
 
 export const NotificationManager: React.FC = () => {
   const { user } = useAuth();

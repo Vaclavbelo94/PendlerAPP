@@ -46,8 +46,8 @@ export const ShiftNotifications = () => {
         shifts?.forEach(shift => {
           // Check if notification already exists
           const notificationExists = notifications.some(notif => 
-            notif.relatedTo?.type === 'shift' && 
-            notif.relatedTo.id === shift.id &&
+            notif.related_to?.type === 'shift' && 
+            notif.related_to.id === shift.id &&
             notif.title.includes('Zítra')
           );
           
@@ -61,7 +61,7 @@ export const ShiftNotifications = () => {
               title: 'Zítra začíná směna',
               message: `${shiftTypeText} směna začíná zítra v ${timeText}${shift.notes ? ` - ${shift.notes}` : ''}`,
               type: 'warning',
-              relatedTo: {
+              related_to: {
                 type: 'shift',
                 id: shift.id
               }

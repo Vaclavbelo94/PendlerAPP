@@ -20,8 +20,8 @@ export const NotificationItem = ({ notification, onClose }: NotificationItemProp
     markAsRead(notification.id);
     
     // Navigate to related content if applicable
-    if (notification.relatedTo) {
-      if (notification.relatedTo.type === 'shift') {
+    if (notification.related_to) {
+      if (notification.related_to.type === 'shift') {
         navigate('/shifts');
       }
       // Add other navigation options as needed
@@ -77,7 +77,7 @@ export const NotificationItem = ({ notification, onClose }: NotificationItemProp
           <div className="font-medium">{notification.title}</div>
           <p className="text-sm text-muted-foreground">{notification.message}</p>
           <p className="text-xs text-muted-foreground">
-            {formatRelativeDate(notification.date)}
+            {formatRelativeDate(notification.created_at)}
           </p>
         </div>
         <Button 
