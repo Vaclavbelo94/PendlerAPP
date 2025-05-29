@@ -171,7 +171,7 @@ export class CrossDeviceSyncService {
     }
   }
 
-  // Sync with conflict resolution
+  // Sync with conflict resolution - using type assertion for dynamic table access
   async syncWithConflictResolution(
     localData: any[], 
     entityType: string
@@ -184,7 +184,8 @@ export class CrossDeviceSyncService {
     };
 
     return await advancedErrorHandler.executeWithRetry(async () => {
-      const { data: remoteData, error } = await supabase
+      // Use type assertion to handle dynamic table names
+      const { data: remoteData, error } = await (supabase as any)
         .from(entityType)
         .select('*')
         .gte('updated_at', this.getLastSyncTime(entityType).toISOString());
@@ -196,7 +197,7 @@ export class CrossDeviceSyncService {
 
       // Detect conflicts
       for (const localItem of localData) {
-        const remoteItem = remoteData?.find(r => r.id === localItem.id);
+        const remoteItem = remoteData?.find((r: any) => r.id === localItem.id);
         
         if (remoteItem && this.hasConflict(localItem, remoteItem)) {
           const conflict = await this.resolveConflict(entityType, localItem, remoteItem);
@@ -287,9 +288,9 @@ export class CrossDeviceSyncService {
     };
   }
 
-  // Sync single item
+  // Sync single item - using type assertion for dynamic table access
   private async syncSingleItem(entityType: string, item: any): Promise<void> {
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from(entityType)
       .upsert(item);
     

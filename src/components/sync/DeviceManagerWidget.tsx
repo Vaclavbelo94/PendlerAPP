@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,7 +9,7 @@ import {
   Tablet, 
   Wifi, 
   WifiOff, 
-  Sync,
+  RotateCw,
   Clock,
   CheckCircle
 } from 'lucide-react';
@@ -122,7 +123,7 @@ const DeviceManagerWidget: React.FC = () => {
             <div className="flex items-center gap-2">
               {isSyncing ? (
                 <>
-                  <Sync className="h-4 w-4 animate-spin text-blue-500" />
+                  <RotateCw className="h-4 w-4 animate-spin text-blue-500" />
                   <span className="text-sm">Synchronizace...</span>
                 </>
               ) : (
