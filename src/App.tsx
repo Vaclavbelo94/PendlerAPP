@@ -1,10 +1,11 @@
+
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'sonner';
 import { AuthProvider } from '@/hooks/useAuth';
-import { AccessibilityProvider } from '@/components/ui/AccessibilityContext';
-import { ErrorBoundaryWithFallback } from '@/components/ui/ErrorBoundary';
+import { AccessibilityProvider } from '@/components/common/AccessibilityProvider';
+import { ErrorBoundaryWithFallback } from '@/components/common/ErrorBoundaryWithFallback';
 import Dashboard from '@/pages/Dashboard';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';

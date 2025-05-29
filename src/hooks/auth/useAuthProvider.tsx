@@ -1,3 +1,4 @@
+
 import * as React from 'react';
 import { useState, useEffect, useCallback } from 'react';
 import { AuthContext } from './useAuthContext';
@@ -16,8 +17,77 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const authState = useAuthState();
   const { user, session, isLoading, error } = authState;
   const [isAdmin, setIsAdmin] = useState(false);
-  const { isPremium, setIsPremium, isSpecialUser } = usePremiumStatus(user, refreshPremiumStatus, isAdmin);
   const navigate = useNavigate();
+
+  const refreshPremiumStatus = useCallback(async (): Promise<{ isPremium: boolean; premiumExpiry?: string }> => {
+    if (!user) {
+      console.log("No user for premium status refresh");
+      return { isPremium: false };
+    }
+
+    try {
+      // First check from subscribers table
+      const { data: subscriberData, error: subscriberError } = await supabase
+        .from('subscribers')
+        .select('subscribed, subscription_end')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (!subscriberError && subscriberData?.subscribed) {
+        const premiumExpiry = subscriberData.subscription_end;
+        const isActive = premiumExpiry ? new Date(premiumExpiry) > new Date() : true;
+        
+        if (isActive) {
+          console.log("User has active Stripe subscription");
+          setIsPremium(true);
+          if (user) {
+            saveUserToLocalStorage(user, true, premiumExpiry);
+          }
+          return { isPremium: true, premiumExpiry };
+        }
+      }
+
+      // Fallback to profiles table check
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('is_premium, premium_expiry')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      if (profileError) {
+        console.error('Error fetching profile premium status:', profileError);
+        return { isPremium: false };
+      }
+
+      const profilePremium = profileData?.is_premium || false;
+      const profileExpiry = profileData?.premium_expiry;
+      
+      let isActive = profilePremium;
+      if (profileExpiry) {
+        isActive = profilePremium && new Date(profileExpiry) > new Date();
+      }
+
+      // Check for special users
+      if (!isActive && isSpecialUser()) {
+        console.log("Setting premium for special user");
+        isActive = true;
+      }
+
+      console.log("Premium status from profile:", { profilePremium, profileExpiry, isActive });
+      setIsPremium(isActive);
+      
+      if (user && isActive) {
+        saveUserToLocalStorage(user, true, profileExpiry);
+      }
+
+      return { isPremium: isActive, premiumExpiry: profileExpiry };
+    } catch (error) {
+      console.error('Error refreshing premium status:', error);
+      return { isPremium: false };
+    }
+  }, [user]);
+
+  const { isPremium, setIsPremium, isSpecialUser } = usePremiumStatus(user, refreshPremiumStatus, isAdmin);
 
   useEffect(() => {
     const checkAdminStatus = async () => {
@@ -153,74 +223,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } catch (error) {
       console.error('Error checking admin status:', error);
       setIsAdmin(false);
-    }
-  };
-
-  const refreshPremiumStatus = async (): Promise<{ isPremium: boolean; premiumExpiry?: string }> => {
-    if (!user) {
-      console.log("No user for premium status refresh");
-      return { isPremium: false };
-    }
-
-    try {
-      // First check from subscribers table
-      const { data: subscriberData, error: subscriberError } = await supabase
-        .from('subscribers')
-        .select('subscribed, subscription_end')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (!subscriberError && subscriberData?.subscribed) {
-        const premiumExpiry = subscriberData.subscription_end;
-        const isActive = premiumExpiry ? new Date(premiumExpiry) > new Date() : true;
-        
-        if (isActive) {
-          console.log("User has active Stripe subscription");
-          setIsPremium(true);
-          if (user) {
-            saveUserToLocalStorage(user, true, premiumExpiry);
-          }
-          return { isPremium: true, premiumExpiry };
-        }
-      }
-
-      // Fallback to profiles table check
-      const { data: profileData, error: profileError } = await supabase
-        .from('profiles')
-        .select('is_premium, premium_expiry')
-        .eq('id', user.id)
-        .maybeSingle();
-
-      if (profileError) {
-        console.error('Error fetching profile premium status:', profileError);
-        return { isPremium: false };
-      }
-
-      const profilePremium = profileData?.is_premium || false;
-      const profileExpiry = profileData?.premium_expiry;
-      
-      let isActive = profilePremium;
-      if (profileExpiry) {
-        isActive = profilePremium && new Date(profileExpiry) > new Date();
-      }
-
-      // Check for special users
-      if (!isActive && isSpecialUser()) {
-        console.log("Setting premium for special user");
-        isActive = true;
-      }
-
-      console.log("Premium status from profile:", { profilePremium, profileExpiry, isActive });
-      setIsPremium(isActive);
-      
-      if (user && isActive) {
-        saveUserToLocalStorage(user, true, profileExpiry);
-      }
-
-      return { isPremium: isActive, premiumExpiry: profileExpiry };
-    } catch (error) {
-      console.error('Error refreshing premium status:', error);
-      return { isPremium: false };
     }
   };
 
