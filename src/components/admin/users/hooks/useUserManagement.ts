@@ -35,6 +35,7 @@ export const useUserManagement = () => {
     try {
       setIsLoading(true);
 
+      // Fetch all profiles with user statistics
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
         .select(`
@@ -50,12 +51,14 @@ export const useUserManagement = () => {
 
       if (profilesError) throw profilesError;
 
+      // Fetch user statistics for last login
       const { data: userStats, error: statsError } = await supabase
         .from('user_statistics')
         .select('user_id, last_login');
 
       if (statsError) console.warn('Could not fetch user statistics:', statsError);
 
+      // Combine data
       const enrichedUsers: User[] = profiles.map(profile => {
         const userStat = userStats?.find(stat => stat.user_id === profile.id);
         return {
@@ -66,10 +69,12 @@ export const useUserManagement = () => {
 
       setUsers(enrichedUsers);
 
+      // Calculate stats
       const totalUsers = enrichedUsers.length;
       const premiumUsers = enrichedUsers.filter(u => u.is_premium).length;
       const adminUsers = enrichedUsers.filter(u => u.is_admin).length;
       
+      // Active users = users who logged in within last 30 days
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
       const activeUsers = enrichedUsers.filter(u => 
@@ -112,6 +117,7 @@ export const useUserManagement = () => {
 
       if (error) throw error;
 
+      // Update local state
       setUsers(prev => prev.map(u => 
         u.id === userId 
           ? { ...u, is_premium: newPremiumStatus, premium_expiry: premiumExpiry }
@@ -139,6 +145,7 @@ export const useUserManagement = () => {
 
       if (error) throw error;
 
+      // Update local state
       setUsers(prev => prev.map(u => 
         u.id === userId 
           ? { ...u, is_admin: newAdminStatus }
@@ -157,36 +164,23 @@ export const useUserManagement = () => {
       const user = users.find(u => u.id === userId);
       if (!user) return;
 
-      if (!confirm(`Opravdu chcete smazat uživatele ${user.email}? Tato akce je nevratná.`)) return;
+      if (!confirm(`Opravdu chcete smazat uživatele ${user.email}?`)) return;
 
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        toast.error('Nejste přihlášeni');
-        return;
-      }
+      // First delete from profiles table (cascade will handle related data)
+      const { error } = await supabase
+        .from('profiles')
+        .delete()
+        .eq('id', userId);
 
-      const response = await fetch('/functions/v1/delete-user', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`
-        },
-        body: JSON.stringify({ userId })
-      });
+      if (error) throw error;
 
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || 'Nepodařilo se smazat uživatele');
-      }
-
+      // Update local state
       setUsers(prev => prev.filter(u => u.id !== userId));
-      setStats(prev => ({ ...prev, totalUsers: prev.totalUsers - 1 }));
       
-      toast.success('Uživatel byl úspěšně smazán');
+      toast.success('Uživatel byl smazán');
     } catch (error) {
       console.error('Error deleting user:', error);
-      toast.error(error instanceof Error ? error.message : 'Nepodařilo se smazat uživatele');
+      toast.error('Nepodařilo se smazat uživatele');
     }
   };
 

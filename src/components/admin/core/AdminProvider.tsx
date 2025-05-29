@@ -1,23 +1,23 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 
 interface AdminStats {
   totalUsers: number;
   premiumUsers: number;
-  adminUsers: number;
   activeUsers: number;
   systemHealth: number;
-  todaySignups: number;
-  monthlyRevenue: number;
+  totalVehicles: number;
+  totalShifts: number;
 }
 
 interface AdminContextType {
-  currentSection: string;
-  setCurrentSection: (section: string) => void;
   stats: AdminStats;
-  refreshStats: () => void;
   isLoading: boolean;
+  refreshStats: () => Promise<void>;
+  currentSection: string | null;
+  setCurrentSection: (section: string | null) => void;
 }
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
@@ -35,91 +35,72 @@ interface AdminProviderProps {
 }
 
 export const AdminProvider: React.FC<AdminProviderProps> = ({ children }) => {
-  const [currentSection, setCurrentSection] = useState('dashboard');
-  const [isLoading, setIsLoading] = useState(true);
+  const { isAdmin } = useAuth();
   const [stats, setStats] = useState<AdminStats>({
     totalUsers: 0,
     premiumUsers: 0,
-    adminUsers: 0,
     activeUsers: 0,
-    systemHealth: 98,
-    todaySignups: 0,
-    monthlyRevenue: 0
+    systemHealth: 99.8,
+    totalVehicles: 0,
+    totalShifts: 0
   });
+  const [isLoading, setIsLoading] = useState(true);
+  const [currentSection, setCurrentSection] = useState<string | null>(null);
 
-  const fetchStats = async () => {
+  const refreshStats = async () => {
+    if (!isAdmin) return;
+    
+    setIsLoading(true);
     try {
-      setIsLoading(true);
+      // Načtení statistik z databáze
+      const [usersResult, vehiclesResult, shiftsResult] = await Promise.all([
+        supabase.from('profiles').select('id, is_premium, created_at'),
+        supabase.from('vehicles').select('id'),
+        supabase.from('shifts').select('id')
+      ]);
 
-      // Fetch user statistics
-      const { data: profiles, error: profilesError } = await supabase
-        .from('profiles')
-        .select('is_premium, is_admin, created_at');
-
-      if (profilesError) throw profilesError;
-
-      // Fetch user activity statistics  
-      const { data: userStats, error: statsError } = await supabase
-        .from('user_statistics')
-        .select('last_login');
-
-      if (statsError) console.warn('Could not fetch user activity:', statsError);
-
-      // Calculate statistics
-      const totalUsers = profiles.length;
-      const premiumUsers = profiles.filter(p => p.is_premium).length;
-      const adminUsers = profiles.filter(p => p.is_admin).length;
-
-      // Active users in last 30 days
+      const users = usersResult.data || [];
+      const totalUsers = users.length;
+      const premiumUsers = users.filter(u => u.is_premium).length;
+      
+      // Aktivní uživatelé (registrovaní za posledních 30 dní)
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      const activeUsers = userStats?.filter(s => 
-        s.last_login && new Date(s.last_login) > thirtyDaysAgo
-      ).length || 0;
-
-      // Today's signups
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const todaySignups = profiles.filter(p => 
-        new Date(p.created_at) >= today
+      const activeUsers = users.filter(u => 
+        new Date(u.created_at) > thirtyDaysAgo
       ).length;
-
-      // Monthly revenue calculation (simplified)
-      const monthlyRevenue = premiumUsers * 15; // Assuming 15 EUR per premium user
 
       setStats({
         totalUsers,
         premiumUsers,
-        adminUsers,
         activeUsers,
-        systemHealth: Math.min(98 + Math.random() * 2, 100), // Simulated system health
-        todaySignups,
-        monthlyRevenue
+        systemHealth: 99.8,
+        totalVehicles: vehiclesResult.data?.length || 0,
+        totalShifts: shiftsResult.data?.length || 0
       });
-
     } catch (error) {
-      console.error('Error fetching admin stats:', error);
+      console.error('Chyba při načítání admin statistik:', error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const refreshStats = () => {
-    fetchStats();
+  useEffect(() => {
+    if (isAdmin) {
+      refreshStats();
+    }
+  }, [isAdmin]);
+
+  const value = {
+    stats,
+    isLoading,
+    refreshStats,
+    currentSection,
+    setCurrentSection
   };
 
-  useEffect(() => {
-    fetchStats();
-  }, []);
-
   return (
-    <AdminContext.Provider value={{
-      currentSection,
-      setCurrentSection,
-      stats,
-      refreshStats,
-      isLoading
-    }}>
+    <AdminContext.Provider value={value}>
       {children}
     </AdminContext.Provider>
   );
