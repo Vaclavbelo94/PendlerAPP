@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, User, LogOut, Crown } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { NavbarRightContent } from "./NavbarPatch";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,7 +14,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
-const Navbar = () => {
+interface NavbarProps {
+  toggleSidebar?: () => void;
+  rightContent?: React.ReactNode;
+  sidebarOpen?: boolean;
+}
+
+const Navbar = ({ toggleSidebar, rightContent, sidebarOpen }: NavbarProps) => {
   const { user, signOut, isPremium } = useAuth();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
@@ -94,7 +99,7 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center space-x-4">
-            <NavbarRightContent />
+            {rightContent}
             
             {user ? (
               <>
