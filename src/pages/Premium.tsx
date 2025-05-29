@@ -90,7 +90,7 @@ const Premium = () => {
           <Alert className="border-green-500/20 bg-green-50 dark:bg-green-900/10">
             <Crown className="h-4 w-4 text-green-600" />
             <AlertDescription className="text-green-800 dark:text-green-200">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col space-y-4">
                 <div>
                   <strong>Máte aktivní premium předplatné!</strong>
                   {getSubscriptionEndDate() && (
@@ -104,14 +104,15 @@ const Premium = () => {
                     </Badge>
                   )}
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={handleRefreshSubscription}
                     disabled={isCheckingSubscription}
+                    className="flex items-center justify-center"
                   >
-                    <RefreshCw className={`h-4 w-4 mr-1 ${isCheckingSubscription ? 'animate-spin' : ''}`} />
+                    <RefreshCw className={`h-4 w-4 mr-2 ${isCheckingSubscription ? 'animate-spin' : ''}`} />
                     Obnovit
                   </Button>
                   <Button
@@ -119,8 +120,9 @@ const Premium = () => {
                     size="sm"
                     onClick={openCustomerPortal}
                     disabled={isLoading}
+                    className="flex items-center justify-center"
                   >
-                    <Settings className="h-4 w-4 mr-1" />
+                    <Settings className="h-4 w-4 mr-2" />
                     Spravovat
                   </Button>
                 </div>
