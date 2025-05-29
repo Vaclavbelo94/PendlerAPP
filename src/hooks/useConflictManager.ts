@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useStandardizedToast } from '@/hooks/useStandardizedToast';
@@ -138,30 +139,41 @@ export const useConflictManager = () => {
       user_id: user.id
     }));
 
-    let tableName: string;
+    // Type-safe table name mapping
     switch (entityType) {
-      case 'shifts':
-        tableName = 'shifts';
+      case 'shifts': {
+        const { error } = await supabase
+          .from('shifts')
+          .upsert(updates, { 
+            onConflict: 'id',
+            ignoreDuplicates: false 
+          });
+        if (error) throw error;
         break;
-      case 'vehicles':
-        tableName = 'vehicles';
+      }
+      case 'vehicles': {
+        const { error } = await supabase
+          .from('vehicles')
+          .upsert(updates, { 
+            onConflict: 'id',
+            ignoreDuplicates: false 
+          });
+        if (error) throw error;
         break;
-      case 'calculations':
-        tableName = 'calculation_history';
+      }
+      case 'calculations': {
+        const { error } = await supabase
+          .from('calculation_history')
+          .upsert(updates, { 
+            onConflict: 'id',
+            ignoreDuplicates: false 
+          });
+        if (error) throw error;
         break;
+      }
       default:
         throw new Error(`Unsupported entity type: ${entityType}`);
     }
-
-    // Use upsert to handle both inserts and updates
-    const { error } = await supabase
-      .from(tableName)
-      .upsert(updates, { 
-        onConflict: 'id',
-        ignoreDuplicates: false 
-      });
-
-    if (error) throw error;
   };
 
   const closeConflictDialog = useCallback(() => {
