@@ -6,6 +6,7 @@ import { Toaster } from 'sonner';
 import { AuthProvider } from '@/hooks/useAuth';
 import { AccessibilityProvider } from '@/components/common/AccessibilityProvider';
 import { ErrorBoundaryWithFallback } from '@/components/common/ErrorBoundaryWithFallback';
+import Home from '@/pages/Home';
 import Dashboard from '@/pages/Dashboard';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
@@ -25,7 +26,7 @@ function App() {
           <AccessibilityProvider>
             <ErrorBoundaryWithFallback>
               <Routes>
-                <Route path="/" element={<Dashboard />} />
+                <Route path="/" element={<Home />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
