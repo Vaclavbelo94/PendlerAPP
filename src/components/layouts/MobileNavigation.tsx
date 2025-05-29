@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -48,7 +47,7 @@ const MobileNavigation = ({ onClose }: { onClose: () => void }) => {
     { label: 'Vozidlo', href: '/vehicle', icon: Car, authRequired: true },
     { label: 'Daňový poradce', href: '/tax-advisor', icon: FileText },
     { label: 'Překladač', href: '/translator', icon: Globe },
-    { label: 'Plánování cest', href: '/travel-planning', icon: Map },
+    { label: 'Plánování cest', href: '/travel', icon: Map },
     { label: 'Nastavení', href: '/settings', icon: Settings, authRequired: true }
   ];
 

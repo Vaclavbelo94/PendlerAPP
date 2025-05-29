@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -37,7 +36,7 @@ const SidebarNavigation = ({ closeSidebar, isHorizontal = false }: SidebarNaviga
     { name: "Lekce němčiny", path: "/vocabulary", icon: GraduationCap, category: "learning" },
     { name: "Překladač", path: "/translator", icon: Languages, category: "learning" },
     { name: "Zákony", path: "/laws", icon: Scale, category: "legal" },
-    { name: "Cesty", path: "/travel-planning", icon: MapPin, category: "planning" },
+    { name: "Cesty", path: "/travel", icon: MapPin, category: "planning" },
     { name: "Nastavení", path: "/settings", icon: Settings, category: "system" },
     ...(isAdmin ? [{ name: "Administrace", path: "/admin", icon: Shield, category: "admin" }] : []),
   ];

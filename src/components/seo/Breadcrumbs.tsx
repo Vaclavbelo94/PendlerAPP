@@ -24,7 +24,7 @@ const routeNames: Record<string, string> = {
   '/laws': 'Právní přehled',
   '/shifts': 'Správa směn',
   '/vehicle': 'Vozidla',
-  '/travel-planning': 'Plánování cest',
+  '/travel': 'Plánování cest',
   '/settings': 'Nastavení',
   '/profile': 'Profil',
   '/premium': 'Premium',
