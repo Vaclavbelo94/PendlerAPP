@@ -50,7 +50,7 @@ export class AdvancedNotificationService {
   private notifications: Map<string, AdvancedNotification> = new Map();
   private batches: Map<string, NotificationBatch> = new Map();
   private behaviorPatterns: Map<string, UserBehaviorPattern> = new Map();
-  private scheduledJobs: Map<string, number> = new Map();
+  private scheduledJobs: Map<string, ReturnType<typeof setTimeout>> = new Map();
   private isInitialized = false;
 
   static getInstance(): AdvancedNotificationService {
