@@ -23,8 +23,17 @@ const translations: Record<string, Record<string, string>> = {
     'lessons.title': 'Lekce němčiny',
     'lessons.subtitle': 'Interaktivní výuka němčiny pro české a polské pracovníky v balíkovém centru',
     
-    // Navigace kategorií
+    // Navigace kategorií - všechny kategorie z extendedGermanLessons
     'nav.first-day': 'První den',
+    'nav.daily-communication': 'Denní komunikace',
+    'nav.technical-terms': 'Technické termíny',
+    'nav.shift-work': 'Směnová práce',
+    'nav.work-evaluation': 'Hodnocení práce',
+    'nav.numbers-time': 'Čísla a čas',
+    'nav.problems-help': 'Problémy a pomoc',
+    'nav.end-of-shift': 'Konec směny',
+    
+    // Legacy klíče pro zpětnou kompatibilitu
     'nav.daily-conversations': 'Denní konverzace',
     'nav.at-work': 'V práci',
     'nav.shopping': 'Nakupování',
@@ -44,8 +53,17 @@ const translations: Record<string, Record<string, string>> = {
     'lessons.title': 'German Lessons',
     'lessons.subtitle': 'Interactive German learning for Czech and Polish workers in package center',
     
-    // Navigace kategorií
+    // Navigace kategorií - všechny kategorie z extendedGermanLessons
     'nav.first-day': 'First Day',
+    'nav.daily-communication': 'Daily Communication',
+    'nav.technical-terms': 'Technical Terms',
+    'nav.shift-work': 'Shift Work',
+    'nav.work-evaluation': 'Work Evaluation',
+    'nav.numbers-time': 'Numbers and Time',
+    'nav.problems-help': 'Problems and Help',
+    'nav.end-of-shift': 'End of Shift',
+    
+    // Legacy klíče pro zpětnou kompatibilitu
     'nav.daily-conversations': 'Daily Conversations',
     'nav.at-work': 'At Work',
     'nav.shopping': 'Shopping',
@@ -65,8 +83,17 @@ const translations: Record<string, Record<string, string>> = {
     'lessons.title': 'Lekcie nemčiny',
     'lessons.subtitle': 'Interaktívna výuka nemčiny pre českých a poľských pracovníkov v balíkovom centre',
     
-    // Navigace kategorií
+    // Navigace kategorií - všechny kategorie z extendedGermanLessons
     'nav.first-day': 'Prvý deň',
+    'nav.daily-communication': 'Denná komunikácia',
+    'nav.technical-terms': 'Technické termíny',
+    'nav.shift-work': 'Zmenová práca',
+    'nav.work-evaluation': 'Hodnotenie práce',
+    'nav.numbers-time': 'Čísla a čas',
+    'nav.problems-help': 'Problémy a pomoc',
+    'nav.end-of-shift': 'Koniec zmeny',
+    
+    // Legacy klíče pro zpětnou kompatibilitu
     'nav.daily-conversations': 'Denné rozhovory',
     'nav.at-work': 'V práci',
     'nav.shopping': 'Nakupovanie',
