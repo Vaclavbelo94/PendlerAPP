@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { WidgetConfig } from './types';
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 import DashboardCard from '../DashboardCard';
-import { getWidgetComponent } from './WidgetRegistry';
+import { getWidgetComponent } from './EnhancedWidgetRegistry';
 
 interface MobileDashboardCarouselProps {
   widgets: WidgetConfig[];
@@ -91,7 +91,7 @@ export const MobileDashboardCarousel: React.FC<MobileDashboardCarouselProps> = (
               title={currentWidget.title}
               description={currentWidget.description}
             >
-              <WidgetComponent />
+              {WidgetComponent && <WidgetComponent />}
             </DashboardCard>
           </motion.div>
         </AnimatePresence>

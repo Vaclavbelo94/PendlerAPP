@@ -4,7 +4,7 @@ import { Droppable, Draggable } from 'react-beautiful-dnd';
 import { GripVertical } from 'lucide-react';
 import { WidgetConfig } from './types';
 import DashboardCard from '../DashboardCard';
-import { getWidgetComponent } from './WidgetRegistry';
+import { getWidgetComponent } from './EnhancedWidgetRegistry';
 
 interface DesktopDashboardGridProps {
   widgets: WidgetConfig[];
@@ -63,7 +63,7 @@ export const DesktopDashboardGrid: React.FC<DesktopDashboardGridProps> = ({ widg
                         <GripVertical className="h-4 w-4 text-muted-foreground" />
                       </div>
                       
-                      <WidgetComponent />
+                      {WidgetComponent && <WidgetComponent />}
                     </DashboardCard>
                   </div>
                 )}

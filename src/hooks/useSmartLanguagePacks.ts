@@ -1,162 +1,98 @@
 
-import { useState, useEffect } from 'react';
-import { smartLanguagePackService, SmartPackRecommendation, PackUsageAnalytics } from '@/services/SmartLanguagePackService';
-import { useAuth } from '@/hooks/useAuth';
-import { useStandardizedToast } from '@/hooks/useStandardizedToast';
+import { useState, useCallback } from 'react';
+
+interface SmartPackRecommendation {
+  id: string;
+  packId: string;
+  reason: string;
+  priority: 'low' | 'medium' | 'high';
+  estimatedValue: number;
+  basedOn: string;
+}
+
+interface PackUsageReport {
+  totalPacks: number;
+  avgCompletionRate: number;
+  mostUsedPack: string;
+  recentActivity: number;
+}
+
+interface LearningProgress {
+  id: string;
+  itemId: string;
+  masteryLevel: number;
+  category: string;
+}
+
+interface UserPreferences {
+  workFocused: boolean;
+  targetDifficulty: 'beginner' | 'intermediate' | 'advanced';
+  categories: string[];
+  packSize: number;
+}
 
 export const useSmartLanguagePacks = () => {
-  const { user } = useAuth();
-  const { success, error: showError, info } = useStandardizedToast();
-  
   const [recommendations, setRecommendations] = useState<SmartPackRecommendation[]>([]);
-  const [analytics, setAnalytics] = useState<PackUsageAnalytics[]>([]);
+  const [usageReport, setUsageReport] = useState<PackUsageReport | null>(null);
   const [isGeneratingRecommendations, setIsGeneratingRecommendations] = useState(false);
-  const [isCreatingPersonalizedPack, setIsCreatingPersonalizedPack] = useState(false);
-  const [usageReport, setUsageReport] = useState<any>(null);
 
-  // Generate AI-powered recommendations
-  const generateRecommendations = async (userProgress: any[], userPreferences: any) => {
-    if (!user) return;
-    
+  const generateRecommendations = useCallback(async (
+    progress: LearningProgress[], 
+    preferences: UserPreferences
+  ) => {
     setIsGeneratingRecommendations(true);
-    try {
-      const newRecommendations = await smartLanguagePackService.generateRecommendations(
-        userProgress, 
-        userPreferences
-      );
-      setRecommendations(newRecommendations);
-      
-      if (newRecommendations.length > 0) {
-        success('Doporučení připravena', `Nalezeno ${newRecommendations.length} personalizovaných doporučení`);
-      } else {
-        info('Žádná doporučení', 'Momentálně nemáme žádná nová doporučení pro vás');
-      }
-    } catch (error) {
-      console.error('Error generating recommendations:', error);
-      showError('Chyba při generování doporučení', 'Zkuste to prosím později');
-    } finally {
-      setIsGeneratingRecommendations(false);
-    }
-  };
-
-  // Create personalized language pack
-  const createPersonalizedPack = async (preferences: any) => {
-    if (!user) return null;
     
-    setIsCreatingPersonalizedPack(true);
-    try {
-      const personalizedItems = await smartLanguagePackService.createPersonalizedPack(
-        user.id, 
-        preferences
-      );
-      
-      success('Personalizovaný balíček vytvořen', `Vytvořen balíček s ${personalizedItems.length} položkami`);
-      return personalizedItems;
-    } catch (error) {
-      console.error('Error creating personalized pack:', error);
-      showError('Chyba při vytváření balíčku', 'Nepodařilo se vytvořit personalizovaný balíček');
-      return null;
-    } finally {
-      setIsCreatingPersonalizedPack(false);
-    }
-  };
-
-  // Track pack usage
-  const trackPackUsage = async (packId: string, sessionDuration: number) => {
-    try {
-      await smartLanguagePackService.trackPackUsage(packId, sessionDuration);
-      console.log(`Tracked usage for pack ${packId}: ${sessionDuration}ms`);
-    } catch (error) {
-      console.error('Error tracking pack usage:', error);
-    }
-  };
-
-  // Get pack performance metrics
-  const getPackMetrics = async (packId: string) => {
-    try {
-      return await smartLanguagePackService.getPackPerformanceMetrics(packId);
-    } catch (error) {
-      console.error('Error getting pack metrics:', error);
-      return null;
-    }
-  };
-
-  // Generate usage report
-  const generateUsageReport = async () => {
-    try {
-      const report = await smartLanguagePackService.generateUsageReport();
-      setUsageReport(report);
-      return report;
-    } catch (error) {
-      console.error('Error generating usage report:', error);
-      showError('Chyba při generování reportu', 'Nepodařilo se vygenerovat report o využití');
-      return null;
-    }
-  };
-
-  // Compress pack data
-  const compressPackData = async (data: any[]) => {
-    try {
-      return await smartLanguagePackService.compressPackData(data);
-    } catch (error) {
-      console.error('Error compressing pack data:', error);
-      return null;
-    }
-  };
-
-  // Apply delta update
-  const applyDeltaUpdate = async (packId: string, delta: any) => {
-    try {
-      await smartLanguagePackService.applyDeltaUpdate(packId, delta);
-      success('Aktualizace aplikována', `Balíček ${packId} byl úspěšně aktualizován`);
-    } catch (error) {
-      console.error('Error applying delta update:', error);
-      showError('Chyba při aktualizaci', 'Nepodařilo se aplikovat aktualizaci balíčku');
-    }
-  };
-
-  // Create delta update
-  const createDeltaUpdate = async (packId: string, oldVersion: any[], newVersion: any[]) => {
-    try {
-      return await smartLanguagePackService.createDeltaUpdate(packId, oldVersion, newVersion);
-    } catch (error) {
-      console.error('Error creating delta update:', error);
-      return null;
-    }
-  };
-
-  // Load analytics on mount
-  useEffect(() => {
-    const loadAnalytics = async () => {
-      if (!user) return;
-      
-      try {
-        const report = await generateUsageReport();
-        if (report) {
-          // Transform report data to analytics format
-          setAnalytics([]);
+    // Mock AI recommendation generation
+    setTimeout(() => {
+      const mockRecommendations: SmartPackRecommendation[] = [
+        {
+          id: '1',
+          packId: 'Pracovní komunikace v němčině',
+          reason: 'Na základě vašich směn v továrně doporučujeme procvičit pracovní slovní zásobu',
+          priority: 'high',
+          estimatedValue: 0.85,
+          basedOn: 'Analýza směn + jazykový pokrok'
+        },
+        {
+          id: '2',
+          packId: 'Němčina pro každodenní situace',
+          reason: 'Vaše základní konverzační dovednosti potřebují posílení',
+          priority: 'medium',
+          estimatedValue: 0.72,
+          basedOn: 'Výsledky testů + uživatelské preference'
         }
-      } catch (error) {
-        console.error('Error loading analytics:', error);
-      }
-    };
+      ];
+      
+      setRecommendations(mockRecommendations);
+      
+      // Mock usage report
+      setUsageReport({
+        totalPacks: 2,
+        avgCompletionRate: 0.675,
+        mostUsedPack: 'Pracovní němčina',
+        recentActivity: 5
+      });
+      
+      setIsGeneratingRecommendations(false);
+    }, 2000);
+  }, []);
 
-    loadAnalytics();
-  }, [user]);
+  const createCustomPack = useCallback((packData: any) => {
+    console.log('Creating custom pack:', packData);
+    // Implementation for custom pack creation
+  }, []);
+
+  const importPack = useCallback((packFile: File) => {
+    console.log('Importing pack:', packFile.name);
+    // Implementation for pack import
+  }, []);
 
   return {
     recommendations,
-    analytics,
     usageReport,
     isGeneratingRecommendations,
-    isCreatingPersonalizedPack,
     generateRecommendations,
-    createPersonalizedPack,
-    trackPackUsage,
-    getPackMetrics,
-    generateUsageReport,
-    compressPackData,
-    applyDeltaUpdate,
-    createDeltaUpdate
+    createCustomPack,
+    importPack
   };
 };

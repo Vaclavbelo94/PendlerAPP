@@ -14,7 +14,7 @@ interface DataSubscription {
   dataTypes: string[];
 }
 
-interface CrossModuleInsight {
+export interface CrossModuleInsight {
   id: string;
   type: 'recommendation' | 'optimization' | 'prediction' | 'warning';
   title: string;

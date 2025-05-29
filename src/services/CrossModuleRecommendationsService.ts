@@ -7,7 +7,7 @@ interface RecommendationContext {
   recentActivity: any[];
 }
 
-interface SmartRecommendation {
+export interface SmartRecommendation {
   id: string;
   type: 'vocabulary' | 'schedule' | 'optimization' | 'feature' | 'workflow';
   title: string;
