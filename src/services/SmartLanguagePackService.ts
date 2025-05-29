@@ -29,6 +29,17 @@ export interface DeltaUpdate {
   size: number;
 }
 
+interface UserProgressItem {
+  id: string;
+  itemId: string;
+  masteryLevel: number;
+  category?: string;
+}
+
+interface ExtendedVocabularyItem extends VocabularyItem {
+  usageFrequency?: number;
+}
+
 export class SmartLanguagePackService {
   private static instance: SmartLanguagePackService;
   private analytics: Map<string, PackUsageAnalytics> = new Map();
@@ -41,7 +52,7 @@ export class SmartLanguagePackService {
   }
 
   // AI-Powered Pack Recommendations
-  async generateRecommendations(userProgress: any[], userPreferences: any): Promise<SmartPackRecommendation[]> {
+  async generateRecommendations(userProgress: UserProgressItem[], userPreferences: any): Promise<SmartPackRecommendation[]> {
     const recommendations: SmartPackRecommendation[] = [];
     
     // Analyze user progress patterns
@@ -106,15 +117,15 @@ export class SmartLanguagePackService {
   // Delta Updates Implementation
   async createDeltaUpdate(packId: string, oldVersion: any[], newVersion: any[]): Promise<DeltaUpdate> {
     const addedItems = newVersion.filter(newItem => 
-      !oldVersion.some(oldItem => oldItem.id === newItem.id)
+      !oldVersion.some(oldItem => this.getItemId(oldItem) === this.getItemId(newItem))
     );
     
     const removedItems = oldVersion
-      .filter(oldItem => !newVersion.some(newItem => newItem.id === oldItem.id))
-      .map(item => item.id);
+      .filter(oldItem => !newVersion.some(newItem => this.getItemId(newItem) === this.getItemId(oldItem)))
+      .map(item => this.getItemId(item));
     
     const modifiedItems = newVersion.filter(newItem => {
-      const oldItem = oldVersion.find(old => old.id === newItem.id);
+      const oldItem = oldVersion.find(old => this.getItemId(old) === this.getItemId(newItem));
       return oldItem && JSON.stringify(oldItem) !== JSON.stringify(newItem);
     });
     
@@ -133,7 +144,7 @@ export class SmartLanguagePackService {
     
     // Remove items
     let updatedData = currentData.filter(item => 
-      !delta.removedItems.includes(item.id)
+      !delta.removedItems.includes(this.getItemId(item))
     );
     
     // Add new items
@@ -141,7 +152,7 @@ export class SmartLanguagePackService {
     
     // Update modified items
     delta.modifiedItems.forEach(modifiedItem => {
-      const index = updatedData.findIndex(item => item.id === modifiedItem.id);
+      const index = updatedData.findIndex(item => this.getItemId(item) === this.getItemId(modifiedItem));
       if (index !== -1) {
         updatedData[index] = modifiedItem;
       }
@@ -189,7 +200,7 @@ export class SmartLanguagePackService {
     
     // Sort by relevance and limit to optimal pack size
     return filteredItems
-      .sort((a, b) => this.calculateRelevanceScore(b, preferences) - this.calculateRelevanceScore(a, preferences))
+      .sort((a, b) => this.calculateRelevanceScore(b as ExtendedVocabularyItem, preferences) - this.calculateRelevanceScore(a as ExtendedVocabularyItem, preferences))
       .slice(0, preferences.packSize || 50);
   }
 
@@ -240,19 +251,23 @@ export class SmartLanguagePackService {
   }
 
   // Private helper methods
-  private calculateOverallCompletionRate(userProgress: any[]): number {
+  private getItemId(item: any): string {
+    return item.id || item._id || String(item);
+  }
+
+  private calculateOverallCompletionRate(userProgress: UserProgressItem[]): number {
     if (userProgress.length === 0) return 0;
     return userProgress.reduce((sum, progress) => sum + (progress.masteryLevel || 0), 0) / userProgress.length;
   }
 
-  private inferPreferredDifficulty(userProgress: any[]): 'beginner' | 'intermediate' | 'advanced' {
+  private inferPreferredDifficulty(userProgress: UserProgressItem[]): 'beginner' | 'intermediate' | 'advanced' {
     const avgMastery = this.calculateOverallCompletionRate(userProgress);
     if (avgMastery < 0.3) return 'beginner';
     if (avgMastery < 0.7) return 'intermediate';
     return 'advanced';
   }
 
-  private identifyWeakAreas(userProgress: any[]): string[] {
+  private identifyWeakAreas(userProgress: UserProgressItem[]): string[] {
     const categoryPerformance = new Map<string, number[]>();
     
     userProgress.forEach(progress => {
@@ -310,7 +325,7 @@ export class SmartLanguagePackService {
     return JSON.stringify({ added, removed, modified }).length;
   }
 
-  private async getUserProgress(userId: string): Promise<any[]> {
+  private async getUserProgress(userId: string): Promise<UserProgressItem[]> {
     return await getAllData(`user_progress_${userId}`) || [];
   }
 
@@ -322,7 +337,7 @@ export class SmartLanguagePackService {
     return 'advanced';
   }
 
-  private calculateRelevanceScore(item: VocabularyItem, preferences: any): number {
+  private calculateRelevanceScore(item: ExtendedVocabularyItem, preferences: any): number {
     let score = 0;
     
     // Category relevance

@@ -1,4 +1,3 @@
-
 import { saveData, getAllData, deleteItemById } from '@/utils/offlineStorage';
 
 export interface AdvancedNotification {
@@ -39,6 +38,7 @@ export interface NotificationBatch {
 }
 
 export interface UserBehaviorPattern {
+  id: string;
   userId: string;
   preferredTimes: { hour: number; score: number }[];
   responseRates: { type: string; rate: number }[];
@@ -127,6 +127,7 @@ export class AdvancedNotificationService {
 
   async analyzeUserBehavior(userId: string, interactions: any[]): Promise<UserBehaviorPattern> {
     const pattern: UserBehaviorPattern = {
+      id: `pattern_${userId}_${Date.now()}`,
       userId,
       preferredTimes: this.calculatePreferredTimes(interactions),
       responseRates: this.calculateResponseRates(interactions),
@@ -176,13 +177,10 @@ export class AdvancedNotificationService {
           badge: '/badge-icon.png',
           tag: notification.category,
           requireInteraction: notification.priority === 'urgent',
-          actions: notification.actions?.map(action => ({
-            action: action.id,
-            title: action.label
-          })) || [],
           data: {
             notificationId: notification.id,
-            metadata: notification.metadata
+            metadata: notification.metadata,
+            actions: notification.actions // Store actions in data for later processing
           }
         };
 
