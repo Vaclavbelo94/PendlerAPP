@@ -1,10 +1,10 @@
-
 import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { 
   BarChart, 
   Bar, 
@@ -37,14 +37,14 @@ import {
   Car,
   BookOpen
 } from 'lucide-react';
-import { predictiveAnalyticsService } from '@/services/PredictiveAnalyticsService';
-import { dataSharingService } from '@/services/DataSharingService';
 
 interface AdvancedAnalyticsDashboardProps {
   userId: string;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-export const AdvancedAnalyticsDashboard: React.FC<AdvancedAnalyticsDashboardProps> = ({ userId }) => {
+export const AdvancedAnalyticsDashboard: React.FC<AdvancedAnalyticsDashboardProps> = ({ userId, isOpen, onClose }) => {
   const [selectedTimeRange, setSelectedTimeRange] = useState<'week' | 'month' | 'quarter'>('month');
   const [predictions, setPredictions] = useState<any[]>([]);
   const [userPattern, setUserPattern] = useState<any>(null);
@@ -179,250 +179,257 @@ export const AdvancedAnalyticsDashboard: React.FC<AdvancedAnalyticsDashboardProp
   );
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold">Pokročilá analytika</h2>
-          <p className="text-muted-foreground">Detailní přehled vašeho pokroku a výkonu</p>
-        </div>
-        <div className="flex gap-2">
-          {(['week', 'month', 'quarter'] as const).map((range) => (
-            <Button
-              key={range}
-              variant={selectedTimeRange === range ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setSelectedTimeRange(range)}
-            >
-              {range === 'week' ? 'Týden' : range === 'month' ? 'Měsíc' : 'Kvartál'}
-            </Button>
-          ))}
-        </div>
-      </div>
-
-      {/* Key Metrics */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <MetricCard
-          title="Studium (hodiny)"
-          value={analyticsData.learning.totalHours}
-          change={12}
-          trend="up"
-          icon={<BookOpen className="h-4 w-4" />}
-        />
-        <MetricCard
-          title="Přesnost (%)"
-          value={analyticsData.learning.accuracy}
-          change={5}
-          trend="up"
-          icon={<Target className="h-4 w-4" />}
-        />
-        <MetricCard
-          title="Pracovní hodiny"
-          value={analyticsData.work.totalHours}
-          change={2}
-          trend="up"
-          icon={<Clock className="h-4 w-4" />}
-        />
-        <MetricCard
-          title="Čistý příjem"
-          value={`${analyticsData.financial.netIncome}€`}
-          change={8}
-          trend="up"
-          icon={<DollarSign className="h-4 w-4" />}
-        />
-      </div>
-
-      <Tabs defaultValue="learning" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="learning">Učení</TabsTrigger>
-          <TabsTrigger value="work">Práce</TabsTrigger>
-          <TabsTrigger value="financial">Finance</TabsTrigger>
-          <TabsTrigger value="predictions">Predikce</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="learning" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Weekly Progress Chart */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Týdenní pokrok</CardTitle>
-                <CardDescription>Studijní hodiny a přesnost podle dní</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={200}>
-                  <BarChart data={analyticsData.learning.weeklyProgress}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="day" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="hours" fill="#8884d8" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-
-            {/* Skill Distribution */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Distribuce dovedností</CardTitle>
-                <CardDescription>Pokrok v jednotlivých oblastech</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={200}>
-                  <RadarChart data={analyticsData.learning.skillDistribution}>
-                    <PolarGrid />
-                    <PolarAngleAxis dataKey="skill" />
-                    <PolarRadiusAxis angle={90} domain={[0, 100]} />
-                    <Radar name="Pokrok" dataKey="value" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
-                  </RadarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Pokročilá analytika</DialogTitle>
+        </DialogHeader>
+        
+        <div className="space-y-6">
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-muted-foreground">Detailní přehled vašeho pokroku a výkonu</p>
+            </div>
+            <div className="flex gap-2">
+              {(['week', 'month', 'quarter'] as const).map((range) => (
+                <Button
+                  key={range}
+                  variant={selectedTimeRange === range ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setSelectedTimeRange(range)}
+                >
+                  {range === 'week' ? 'Týden' : range === 'month' ? 'Měsíc' : 'Kvartál'}
+                </Button>
+              ))}
+            </div>
           </div>
 
-          {/* Learning Streak */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Award className="h-5 w-5 text-yellow-500" />
-                Studijní série
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-yellow-500 mb-2">
-                {analyticsData.learning.streak} dní
+          {/* Key Metrics */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <MetricCard
+              title="Studium (hodiny)"
+              value={analyticsData.learning.totalHours}
+              change={12}
+              trend="up"
+              icon={<BookOpen className="h-4 w-4" />}
+            />
+            <MetricCard
+              title="Přesnost (%)"
+              value={analyticsData.learning.accuracy}
+              change={5}
+              trend="up"
+              icon={<Target className="h-4 w-4" />}
+            />
+            <MetricCard
+              title="Pracovní hodiny"
+              value={analyticsData.work.totalHours}
+              change={2}
+              trend="up"
+              icon={<Clock className="h-4 w-4" />}
+            />
+            <MetricCard
+              title="Čistý příjem"
+              value={`${analyticsData.financial.netIncome}€`}
+              change={8}
+              trend="up"
+              icon={<DollarSign className="h-4 w-4" />}
+            />
+          </div>
+
+          <Tabs defaultValue="learning" className="space-y-4">
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="learning">Učení</TabsTrigger>
+              <TabsTrigger value="work">Práce</TabsTrigger>
+              <TabsTrigger value="financial">Finance</TabsTrigger>
+              <TabsTrigger value="predictions">Predikce</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="learning" className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Weekly Progress Chart */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Týdenní pokrok</CardTitle>
+                    <CardDescription>Studijní hodiny a přesnost podle dní</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={200}>
+                      <BarChart data={analyticsData.learning.weeklyProgress}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="day" />
+                        <YAxis />
+                        <Tooltip />
+                        <Bar dataKey="hours" fill="#8884d8" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
+
+                {/* Skill Distribution */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Distribuce dovedností</CardTitle>
+                    <CardDescription>Pokrok v jednotlivých oblastech</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={200}>
+                      <RadarChart data={analyticsData.learning.skillDistribution}>
+                        <PolarGrid />
+                        <PolarAngleAxis dataKey="skill" />
+                        <PolarRadiusAxis angle={90} domain={[0, 100]} />
+                        <Radar name="Pokrok" dataKey="value" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
+                      </RadarChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
               </div>
-              <Progress value={(analyticsData.learning.streak / 30) * 100} className="mb-2" />
-              <p className="text-sm text-muted-foreground">
-                Cíl: 30 dní v řadě (zbývá {30 - analyticsData.learning.streak} dní)
-              </p>
-            </CardContent>
-          </Card>
-        </TabsContent>
 
-        <TabsContent value="work" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Monthly Trend */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Měsíční trend</CardTitle>
-                <CardDescription>Pracovní hodiny a efektivita</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={200}>
-                  <LineChart data={analyticsData.work.monthlyTrend}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
-                    <YAxis />
-                    <Tooltip />
-                    <Line type="monotone" dataKey="hours" stroke="#8884d8" />
-                    <Line type="monotone" dataKey="efficiency" stroke="#82ca9d" />
-                  </LineChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
+              {/* Learning Streak */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Award className="h-5 w-5 text-yellow-500" />
+                    Studijní série
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-yellow-500 mb-2">
+                    {analyticsData.learning.streak} dní
+                  </div>
+                  <Progress value={(analyticsData.learning.streak / 30) * 100} className="mb-2" />
+                  <p className="text-sm text-muted-foreground">
+                    Cíl: 30 dní v řadě (zbývá {30 - analyticsData.learning.streak} dní)
+                  </p>
+                </CardContent>
+              </Card>
+            </TabsContent>
 
-            {/* Work Summary */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Přehled práce</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex justify-between">
-                  <span>Celkem směn:</span>
-                  <span className="font-semibold">{analyticsData.work.totalShifts}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Průměrné dojíždění:</span>
-                  <span className="font-semibold">{analyticsData.work.averageCommute} min</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Efektivita:</span>
-                  <span className="font-semibold">{analyticsData.work.efficiency}%</span>
-                </div>
-                <Progress value={analyticsData.work.efficiency} className="mt-2" />
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
+            <TabsContent value="work" className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Monthly Trend */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Měsíční trend</CardTitle>
+                    <CardDescription>Pracovní hodiny a efektivita</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={200}>
+                      <LineChart data={analyticsData.work.monthlyTrend}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="month" />
+                        <YAxis />
+                        <Tooltip />
+                        <Line type="monotone" dataKey="hours" stroke="#8884d8" />
+                        <Line type="monotone" dataKey="efficiency" stroke="#82ca9d" />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
 
-        <TabsContent value="financial" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Expense Breakdown */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Rozpis výdajů</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={200}>
-                  <PieChart>
-                    <Pie
-                      data={analyticsData.financial.expenseBreakdown}
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="amount"
-                      label={({ category, amount }) => `${category}: ${amount}€`}
-                    >
-                      {analyticsData.financial.expenseBreakdown.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
+                {/* Work Summary */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Přehled práce</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex justify-between">
+                      <span>Celkem směn:</span>
+                      <span className="font-semibold">{analyticsData.work.totalShifts}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Průměrné dojíždění:</span>
+                      <span className="font-semibold">{analyticsData.work.averageCommute} min</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Efektivita:</span>
+                      <span className="font-semibold">{analyticsData.work.efficiency}%</span>
+                    </div>
+                    <Progress value={analyticsData.work.efficiency} className="mt-2" />
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
 
-            {/* Financial Summary */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Finanční přehled</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex justify-between">
-                  <span>Celkové příjmy:</span>
-                  <span className="font-semibold text-green-600">{analyticsData.financial.totalEarnings}€</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Celkové výdaje:</span>
-                  <span className="font-semibold text-red-600">{analyticsData.financial.expenses}€</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Čistý příjem:</span>
-                  <span className="font-semibold">{analyticsData.financial.netIncome}€</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Míra úspor:</span>
-                  <span className="font-semibold">{analyticsData.financial.savingsRate}%</span>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
+            <TabsContent value="financial" className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Expense Breakdown */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Rozpis výdajů</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={200}>
+                      <PieChart>
+                        <Pie
+                          data={analyticsData.financial.expenseBreakdown}
+                          cx="50%"
+                          cy="50%"
+                          outerRadius={80}
+                          fill="#8884d8"
+                          dataKey="amount"
+                          label={({ category, amount }) => `${category}: ${amount}€`}
+                        >
+                          {analyticsData.financial.expenseBreakdown.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
 
-        <TabsContent value="predictions" className="space-y-4">
-          <div className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Brain className="h-5 w-5 text-blue-500" />
-                  AI Predikce a doporučení
-                </CardTitle>
-                <CardDescription>
-                  Inteligentní insights založené na analýze vašich dat
-                </CardDescription>
-              </CardHeader>
-            </Card>
+                {/* Financial Summary */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Finanční přehled</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex justify-between">
+                      <span>Celkové příjmy:</span>
+                      <span className="font-semibold text-green-600">{analyticsData.financial.totalEarnings}€</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Celkové výdaje:</span>
+                      <span className="font-semibold text-red-600">{analyticsData.financial.expenses}€</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Čistý příjem:</span>
+                      <span className="font-semibold">{analyticsData.financial.netIncome}€</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Míra úspor:</span>
+                      <span className="font-semibold">{analyticsData.financial.savingsRate}%</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
 
-            {analyticsData.predictions.map((prediction, index) => (
-              <PredictionCard key={index} prediction={prediction} />
-            ))}
-          </div>
-        </TabsContent>
-      </Tabs>
-    </div>
+            <TabsContent value="predictions" className="space-y-4">
+              <div className="space-y-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Brain className="h-5 w-5 text-blue-500" />
+                      AI Predikce a doporučení
+                    </CardTitle>
+                    <CardDescription>
+                      Inteligentní insights založené na analýze vašich dat
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
+
+                {analyticsData.predictions.map((prediction, index) => (
+                  <PredictionCard key={index} prediction={prediction} />
+                ))}
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -214,6 +213,7 @@ const AdvancedAnalyticsWidget: React.FC = () => {
       </Card>
 
       <AdvancedAnalyticsDashboard 
+        userId="current-user-id"
         isOpen={showDashboard}
         onClose={() => setShowDashboard(false)}
       />
