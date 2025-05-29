@@ -142,16 +142,31 @@ export class SmartLanguagePackService {
   async applyDeltaUpdate(packId: string, delta: DeltaUpdate): Promise<void> {
     const currentData = await getAllData(packId) || [];
     
+    // Ensure currentData is properly typed and has id property
+    const typedCurrentData = (currentData as any[]).map(item => ({
+      ...item,
+      id: this.getItemId(item)
+    }));
+    
     // Remove items
-    let updatedData = currentData.filter(item => 
+    let updatedData = typedCurrentData.filter(item => 
       !delta.removedItems.includes(this.getItemId(item))
     );
     
-    // Add new items
-    updatedData = [...updatedData, ...delta.addedItems];
+    // Add new items (ensure they have id property)
+    const newItemsWithId = delta.addedItems.map(item => ({
+      ...item,
+      id: this.getItemId(item)
+    }));
+    updatedData = [...updatedData, ...newItemsWithId];
     
-    // Update modified items
-    delta.modifiedItems.forEach(modifiedItem => {
+    // Update modified items (ensure they have id property)
+    const modifiedItemsWithId = delta.modifiedItems.map(item => ({
+      ...item,
+      id: this.getItemId(item)
+    }));
+    
+    modifiedItemsWithId.forEach(modifiedItem => {
       const index = updatedData.findIndex(item => this.getItemId(item) === this.getItemId(modifiedItem));
       if (index !== -1) {
         updatedData[index] = modifiedItem;
