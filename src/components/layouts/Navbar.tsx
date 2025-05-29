@@ -1,252 +1,197 @@
 
-import { useState, useEffect } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { 
-  Menu,
-  UserIcon, 
-  LogOutIcon, 
-  SearchIcon,
-  Settings as SettingsIcon,
-  Shield
-} from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Menu, User, LogOut, Crown } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { NavbarRightContent } from "./NavbarPatch";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import { useAuth } from "@/hooks/useAuth";
-import { Badge } from "@/components/ui/badge";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { toast } from "sonner";
-import GlobalSearch from "@/components/search/GlobalSearch";
-import { useIsMobile, useOrientation } from "@/hooks/use-mobile";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
-interface NavbarProps {
-  toggleSidebar: () => void;
-  rightContent?: React.ReactNode;
-  sidebarOpen?: boolean;
-}
-
-const Navbar = ({ toggleSidebar, rightContent, sidebarOpen = false }: NavbarProps) => {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
+const Navbar = () => {
+  const { user, signOut, isPremium } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
-  const { user, isPremium, isAdmin, signOut, refreshAdminStatus } = useAuth();
-  const isMobile = useIsMobile();
-  const orientation = useOrientation();
-  
-  const isLandscapeMobile = isMobile && orientation === "landscape";
-  const isPortraitMobile = isMobile && orientation === "portrait";
+  const [isOpen, setIsOpen] = useState(false);
 
-  // Add scroll event listener
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 20) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (user) {
-      refreshAdminStatus();
-    }
-  }, [user, refreshAdminStatus]);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault();
-        setSearchOpen(true);
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, []);
-
-  const handleLogout = async () => {
+  const handleSignOut = async () => {
     await signOut();
     navigate("/");
-    toast.success("Odhlášení proběhlo úspěšně");
   };
 
-  const navbarHeight = isLandscapeMobile ? 'h-12' : 'h-16';
-  const menuButtonClass = isPortraitMobile 
-    ? "p-3 min-h-[44px] min-w-[44px]" 
-    : isLandscapeMobile 
-      ? "p-2 min-h-[36px] min-w-[36px]" 
-      : "";
+  const NavLinks = ({ mobile = false, onLinkClick = () => {} }) => (
+    <>
+      <Link
+        to="/dashboard"
+        className={`${mobile ? 'block py-2' : ''} text-foreground hover:text-primary transition-colors`}
+        onClick={onLinkClick}
+      >
+        Dashboard
+      </Link>
+      <Link
+        to="/vocabulary"
+        className={`${mobile ? 'block py-2' : ''} text-foreground hover:text-primary transition-colors`}
+        onClick={onLinkClick}
+      >
+        Slovní zásoba
+      </Link>
+      <Link
+        to="/calculator"
+        className={`${mobile ? 'block py-2' : ''} text-foreground hover:text-primary transition-colors`}
+        onClick={onLinkClick}
+      >
+        Kalkulačky
+      </Link>
+      <Link
+        to="/translator"
+        className={`${mobile ? 'block py-2' : ''} text-foreground hover:text-primary transition-colors`}
+        onClick={onLinkClick}
+      >
+        Překladač
+      </Link>
+      <Link
+        to="/lessons"
+        className={`${mobile ? 'block py-2' : ''} text-foreground hover:text-primary transition-colors`}
+        onClick={onLinkClick}
+      >
+        Lekce
+      </Link>
+      <Link
+        to="/premium"
+        className={`${mobile ? 'block py-2' : ''} text-foreground hover:text-primary transition-colors flex items-center gap-1`}
+        onClick={onLinkClick}
+      >
+        <Crown className="h-4 w-4 text-yellow-500" />
+        Premium
+        {isPremium && <span className="text-xs bg-green-100 text-green-800 px-1 rounded">Active</span>}
+      </Link>
+    </>
+  );
 
   return (
-    <>
-      <header className={`sticky top-0 z-30 w-full transition-all duration-300 ${isScrolled ? 'bg-card shadow-sm' : 'bg-card'} border-b border-border`}>
-        <div className={`${navbarHeight} px-4 flex items-center justify-between`}>
-          <div className="flex items-center gap-3">
-            <Button 
-              variant="ghost" 
-              size={isLandscapeMobile ? "sm" : "icon"}
-              className={`lg:hidden ${menuButtonClass}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleSidebar();
-              }}
-              data-menu-trigger="true"
-            >
-              <Menu className={isLandscapeMobile ? "h-4 w-4" : "h-5 w-5"} />
-              <span className="sr-only">Toggle menu</span>
-            </Button>
-            
-            {/* Desktop search bar */}
-            <div className="relative hidden md:flex items-center">
-              <SearchIcon className={`absolute left-2.5 text-muted-foreground ${isLandscapeMobile ? 'h-3 w-3' : 'h-4 w-4'}`} />
-              <Input
-                type="search"
-                placeholder="Hledat... (Ctrl+K)"
-                className={`pl-8 bg-muted border-none cursor-pointer ${
-                  isLandscapeMobile 
-                    ? 'w-[150px] lg:w-[200px] h-8 text-sm' 
-                    : 'w-[200px] lg:w-[300px]'
-                }`}
-                onClick={() => setSearchOpen(true)}
-                readOnly
-              />
-            </div>
-            
-            {/* Mobile search button */}
-            <Button 
-              variant="ghost" 
-              size={isLandscapeMobile ? "sm" : "icon"}
-              className={`md:hidden ${isPortraitMobile ? "min-h-[44px] min-w-[44px] p-2" : "p-1"}`}
-              onClick={() => setSearchOpen(true)}
-            >
-              <SearchIcon className={isLandscapeMobile ? "h-4 w-4" : "h-5 w-5"} />
-              <span className="sr-only">Hledat</span>
-            </Button>
+    <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
+          <div className="flex items-center space-x-8">
+            <Link to="/" className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                <span className="text-primary-foreground font-bold text-sm">PA</span>
+              </div>
+              <span className="font-semibold text-lg">PendlerApp</span>
+            </Link>
+
+            {user && (
+              <div className="hidden md:flex items-center space-x-6">
+                <NavLinks />
+              </div>
+            )}
           </div>
-          
-          <div className="flex items-center gap-2">
-            {!isMobile && <ThemeToggle />}
-            
-            <div className="flex items-center gap-1">
-              {rightContent}
-            </div>
+
+          <div className="flex items-center space-x-4">
+            <NavbarRightContent />
             
             {user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button 
-                    variant="ghost" 
-                    className={`${
-                      isMobile 
-                        ? isLandscapeMobile 
-                          ? 'p-1 min-h-[36px] min-w-[36px]' 
-                          : 'p-2 min-h-[44px] min-w-[44px]'
-                        : 'gap-2 px-3'
-                    }`}
-                  >
-                    <div className={`rounded-full bg-primary/20 flex items-center justify-center text-foreground ${
-                      isLandscapeMobile ? 'w-5 h-5' : isPortraitMobile ? 'w-7 h-7' : 'w-8 h-8'
-                    }`}>
-                      <UserIcon className={isLandscapeMobile ? "h-3 w-3" : isPortraitMobile ? "h-4 w-4" : "h-4 w-4"} />
-                    </div>
-                    
-                    {!isMobile && (
-                      <>
-                        <span className="hidden sm:inline font-medium text-sm">
-                          {user.user_metadata?.username || user.email?.split('@')[0] || 'Uživatel'}
-                        </span>
-                        {isPremium && <Badge className="bg-amber-500 text-xs">Premium</Badge>}
-                        {isAdmin && <Badge className="bg-red-500 text-xs">Admin</Badge>}
-                      </>
-                    )}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 z-50 bg-background border">
-                  <DropdownMenuLabel className="flex flex-col">
-                    <span className="font-medium">
-                      {user.user_metadata?.username || user.email?.split('@')[0] || 'Uživatel'}
-                    </span>
-                    <span className="text-xs text-muted-foreground truncate">
-                      {user.email}
-                    </span>
-                    {isMobile && (
-                      <div className="flex gap-1 mt-1">
-                        {isPremium && <Badge className="bg-amber-500 text-xs">Premium</Badge>}
-                        {isAdmin && <Badge className="bg-red-500 text-xs">Admin</Badge>}
+              <>
+                <div className="hidden md:block">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                        <Avatar className="h-8 w-8">
+                          <AvatarFallback>
+                            {user.email?.charAt(0).toUpperCase() || 'U'}
+                          </AvatarFallback>
+                        </Avatar>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-56" align="end" forceMount>
+                      <div className="flex items-center justify-start gap-2 p-2">
+                        <div className="flex flex-col space-y-1 leading-none">
+                          <p className="font-medium">{user.email}</p>
+                          {isPremium && (
+                            <div className="flex items-center gap-1">
+                              <Crown className="h-3 w-3 text-yellow-500" />
+                              <span className="text-xs text-muted-foreground">Premium</span>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    )}
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  
-                  {isMobile && (
-                    <>
-                      <DropdownMenuItem onClick={(e) => e.preventDefault()}>
-                        <SettingsIcon className="mr-2 h-4 w-4" />
-                        <span className="flex-1">Vzhled</span>
-                        <ThemeToggle alwaysShow={true} size="sm" variant="ghost" />
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => navigate('/profile')}>
+                        <User className="mr-2 h-4 w-4" />
+                        Profil
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => navigate('/premium')}>
+                        <Crown className="mr-2 h-4 w-4 text-yellow-500" />
+                        Premium
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                    </>
-                  )}
-                  
-                  <DropdownMenuItem onClick={() => navigate("/profile")}>
-                    <UserIcon className="mr-2 h-4 w-4" />
-                    <span>Profil</span>
-                  </DropdownMenuItem>
-                  
-                  {isAdmin && (
-                    <DropdownMenuItem onClick={() => navigate("/admin")}>
-                      <Shield className="mr-2 h-4 w-4" />
-                      <span>Administrace</span>
-                    </DropdownMenuItem>
-                  )}
-                  
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout}>
-                    <LogOutIcon className="mr-2 h-4 w-4" />
-                    <span>Odhlásit se</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                      <DropdownMenuItem onClick={handleSignOut}>
+                        <LogOut className="mr-2 h-4 w-4" />
+                        Odhlásit se
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+
+                <div className="md:hidden">
+                  <Sheet open={isOpen} onOpenChange={setIsOpen}>
+                    <SheetTrigger asChild>
+                      <Button variant="ghost" size="icon">
+                        <Menu className="h-5 w-5" />
+                      </Button>
+                    </SheetTrigger>
+                    <SheetContent>
+                      <div className="flex flex-col space-y-4 mt-4">
+                        <div className="flex items-center gap-2 pb-4 border-b">
+                          <Avatar className="h-8 w-8">
+                            <AvatarFallback>
+                              {user.email?.charAt(0).toUpperCase() || 'U'}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="font-medium text-sm">{user.email}</p>
+                            {isPremium && (
+                              <div className="flex items-center gap-1">
+                                <Crown className="h-3 w-3 text-yellow-500" />
+                                <span className="text-xs text-muted-foreground">Premium</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        <NavLinks mobile onLinkClick={() => setIsOpen(false)} />
+                        <Button variant="outline" onClick={() => { navigate('/profile'); setIsOpen(false); }}>
+                          <User className="mr-2 h-4 w-4" />
+                          Profil
+                        </Button>
+                        <Button variant="outline" onClick={handleSignOut}>
+                          <LogOut className="mr-2 h-4 w-4" />
+                          Odhlásit se
+                        </Button>
+                      </div>
+                    </SheetContent>
+                  </Sheet>
+                </div>
+              </>
             ) : (
-              <div className="flex items-center gap-2">
-                <Button 
-                  variant="ghost" 
-                  asChild 
-                  size={isLandscapeMobile ? "sm" : "default"}
-                  className={isPortraitMobile ? "text-sm px-3" : ""}
-                >
-                  <Link to="/login">Přihlásit se</Link>
+              <div className="flex items-center space-x-2">
+                <Button variant="ghost" onClick={() => navigate("/login")}>
+                  Přihlásit se
                 </Button>
-                <Button 
-                  asChild 
-                  size={isLandscapeMobile ? "sm" : "default"}
-                  className={isPortraitMobile ? "text-sm px-3" : ""}
-                >
-                  <Link to="/register">Registrovat se</Link>
+                <Button onClick={() => navigate("/register")}>
+                  Registrovat se
                 </Button>
               </div>
             )}
           </div>
         </div>
-      </header>
-      
-      <GlobalSearch open={searchOpen} onOpenChange={setSearchOpen} />
-    </>
+      </div>
+    </nav>
   );
 };
 

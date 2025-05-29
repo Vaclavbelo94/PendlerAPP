@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { CheckIcon, CreditCard, Settings, RefreshCw, Crown } from "lucide-react";
+import { CheckIcon, CreditCard, Settings, RefreshCw, Crown, AlertCircle } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useStripePayments } from "@/hooks/useStripePayments";
 import PromoCodeRedemption from "@/components/premium/PromoCodeRedemption";
@@ -132,6 +132,26 @@ const Premium = () => {
         {!isPremium && user && (
           <PromoCodeRedemption />
         )}
+
+        {!user && (
+          <Alert className="border-blue-500/20 bg-blue-50 dark:bg-blue-900/10">
+            <AlertCircle className="h-4 w-4 text-blue-600" />
+            <AlertDescription className="text-blue-800 dark:text-blue-200">
+              <strong>Přihlašte se pro aktivaci premium funkcí</strong>
+              <p className="text-sm mt-1">
+                Pro nákup premium předplatného nebo uplatnění promo kódu se prosím nejdříve přihlaste.
+              </p>
+              <div className="flex gap-2 mt-3">
+                <Button size="sm" onClick={() => window.location.href = '/login'}>
+                  Přihlásit se
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => window.location.href = '/register'}>
+                  Registrovat se
+                </Button>
+              </div>
+            </AlertDescription>
+          </Alert>
+        )}
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <PremiumFeatureCard 
@@ -181,13 +201,38 @@ const Premium = () => {
           />
         </div>
 
-        {!user && (
-          <Alert>
-            <AlertDescription>
-              Pro nákup premium předplatného se prosím nejdříve přihlaste.
-            </AlertDescription>
-          </Alert>
-        )}
+        {/* Přehled výhod Premium */}
+        <Card className="mt-8">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Crown className="h-5 w-5 text-yellow-500" />
+              Proč si vybrat Premium?
+            </CardTitle>
+            <CardDescription>
+              Získejte maximum ze své cesty za prací v Německu
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-3">
+                <h4 className="font-semibold">🚀 Produktivita</h4>
+                <ul className="text-sm text-muted-foreground space-y-1">
+                  <li>• Rychlejší překlady bez omezení</li>
+                  <li>• Pokročilé kalkulačky pro plánování</li>
+                  <li>• Offline přístup k důležitým funkcím</li>
+                </ul>
+              </div>
+              <div className="space-y-3">
+                <h4 className="font-semibold">📈 Analýzy</h4>
+                <ul className="text-sm text-muted-foreground space-y-1">
+                  <li>• Detailní statistiky vašich cest</li>
+                  <li>• Grafy úspor a výdajů</li>
+                  <li>• Sledování pokroku v němčině</li>
+                </ul>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
