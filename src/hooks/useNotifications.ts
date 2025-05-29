@@ -9,8 +9,22 @@ interface NotificationPreferences {
   reminder_time: string;
 }
 
+export interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  type: 'info' | 'warning' | 'success' | 'error';
+  created_at: string;
+  read: boolean;
+  related_to?: {
+    type: string;
+    id: string;
+  };
+}
+
 export const useNotifications = () => {
   const [preferences, setPreferences] = useState<NotificationPreferences | null>(null);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -31,7 +45,16 @@ export const useNotifications = () => {
       setLoading(false);
     };
 
+    // Load notifications from localStorage
+    const loadNotifications = () => {
+      const saved = localStorage.getItem('notifications');
+      if (saved) {
+        setNotifications(JSON.parse(saved));
+      }
+    };
+
     loadPreferences();
+    loadNotifications();
   }, []);
 
   const updatePreferences = async (newPreferences: NotificationPreferences) => {
@@ -40,9 +63,59 @@ export const useNotifications = () => {
     // In real app, this would save to backend
   };
 
+  const saveNotifications = (updatedNotifications: Notification[]) => {
+    setNotifications(updatedNotifications);
+    localStorage.setItem('notifications', JSON.stringify(updatedNotifications));
+  };
+
+  const addNotification = (notification: Omit<Notification, 'id' | 'created_at' | 'read'>) => {
+    const newNotification: Notification = {
+      id: `notif-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
+      created_at: new Date().toISOString(),
+      read: false,
+      ...notification
+    };
+
+    const updatedNotifications = [newNotification, ...notifications];
+    saveNotifications(updatedNotifications);
+  };
+
+  const markAsRead = (id: string) => {
+    const updatedNotifications = notifications.map(notification => 
+      notification.id === id ? { ...notification, read: true } : notification
+    );
+    saveNotifications(updatedNotifications);
+  };
+
+  const markAllAsRead = () => {
+    const updatedNotifications = notifications.map(notification => ({
+      ...notification,
+      read: true
+    }));
+    saveNotifications(updatedNotifications);
+  };
+
+  const deleteNotification = (id: string) => {
+    const updatedNotifications = notifications.filter(notification => notification.id !== id);
+    saveNotifications(updatedNotifications);
+  };
+
+  const clearNotifications = () => {
+    saveNotifications([]);
+  };
+
+  const unreadCount = notifications.filter(n => !n.read).length;
+
   return {
     preferences,
     updatePreferences,
-    loading
+    loading,
+    notifications,
+    unreadCount,
+    addNotification,
+    markAsRead,
+    markAllAsRead,
+    deleteNotification,
+    clearNotifications
   };
 };
