@@ -1,4 +1,3 @@
-
 import { VocabularyItem } from '@/models/VocabularyItem';
 import { PracticalPhrase } from '@/data/practicalGermanLessons';
 import { getAllData, saveData, bulkSaveData, clearStore } from '@/utils/offlineStorage';
@@ -198,7 +197,7 @@ export class SmartLanguagePackService {
     // Filter based on categories of interest
     if (preferences.categories?.length > 0) {
       filteredItems = filteredItems.filter(item =>
-        preferences.categories.some(category => 
+        preferences.categories.some((category: string) => 
           item.category?.toLowerCase().includes(category.toLowerCase())
         )
       );
@@ -267,7 +266,7 @@ export class SmartLanguagePackService {
 
   // Private helper methods
   private getItemId(item: any): string {
-    return item.id || item._id || String(item);
+    return item.id || item._id || `${item.german || item.czech || Math.random().toString(36)}`;
   }
 
   private calculateOverallCompletionRate(userProgress: UserProgressItem[]): number {

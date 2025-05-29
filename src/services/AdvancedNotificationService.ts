@@ -1,57 +1,57 @@
-import { saveData, getAllData, deleteItemById } from '@/utils/offlineStorage';
-
-export interface AdvancedNotification {
-  id: string;
-  title: string;
-  message: string;
-  type: 'info' | 'warning' | 'error' | 'success' | 'reminder';
-  priority: 'low' | 'medium' | 'high' | 'urgent';
-  category: 'shift' | 'learning' | 'system' | 'social' | 'achievement';
-  scheduledFor?: Date;
-  contexts: NotificationContext[];
-  actions?: NotificationAction[];
-  metadata: any;
-  retryCount: number;
-  maxRetries: number;
-  createdAt: Date;
-  status: 'pending' | 'sent' | 'failed' | 'cancelled';
-}
 
 export interface NotificationContext {
-  type: 'location' | 'time' | 'activity' | 'device' | 'mood';
-  conditions: any;
+  type: 'time' | 'location' | 'activity' | 'device' | 'app_usage';
+  conditions: Record<string, any>;
   weight: number;
 }
 
 export interface NotificationAction {
   id: string;
   label: string;
-  action: string;
-  data?: any;
+  action: 'navigate' | 'dismiss' | 'snooze' | 'external';
+  data?: Record<string, any>;
+}
+
+export interface AdvancedNotification {
+  id: string;
+  title: string;
+  message: string;
+  type: 'reminder' | 'achievement' | 'social' | 'system' | 'learning';
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  category: string;
+  scheduledFor?: Date;
+  contexts: NotificationContext[];
+  actions: NotificationAction[];
+  metadata: Record<string, any>;
+  createdAt: Date;
+  status: 'pending' | 'sent' | 'delivered' | 'failed' | 'cancelled';
+  retryCount: number;
+  maxRetries: number;
 }
 
 export interface NotificationBatch {
   id: string;
   notifications: AdvancedNotification[];
-  type: 'digest' | 'related' | 'similar';
-  scheduledFor: Date;
+  type: 'scheduled' | 'triggered' | 'emergency';
+  createdAt: Date;
+  processedAt?: Date;
 }
 
 export interface UserBehaviorPattern {
-  id: string;
-  userId: string;
-  preferredTimes: { hour: number; score: number }[];
-  responseRates: { type: string; rate: number }[];
-  quietHours: { start: number; end: number };
+  preferredTimes: Array<{ hour: number; score: number }>;
+  responseRates: Array<{ type: string; rate: number }>;
   devicePreferences: string[];
   engagementScore: number;
+  lastAnalyzed: Date;
 }
 
 export class AdvancedNotificationService {
   private static instance: AdvancedNotificationService;
-  private queue: AdvancedNotification[] = [];
+  private notifications: Map<string, AdvancedNotification> = new Map();
+  private batches: Map<string, NotificationBatch> = new Map();
   private behaviorPatterns: Map<string, UserBehaviorPattern> = new Map();
-  private processingInterval?: number;
+  private scheduledJobs: Map<string, number> = new Map();
+  private isInitialized = false;
 
   static getInstance(): AdvancedNotificationService {
     if (!AdvancedNotificationService.instance) {
@@ -61,505 +61,336 @@ export class AdvancedNotificationService {
   }
 
   async initialize(): Promise<void> {
-    await this.loadQueue();
-    await this.loadBehaviorPatterns();
-    this.startProcessing();
+    if (this.isInitialized) return;
+
+    // Load persisted notifications and patterns
+    await this.loadPersistedData();
+    
+    // Start background processors
+    this.startBackgroundProcessors();
+    
+    this.isInitialized = true;
+    console.log('Advanced notification service initialized');
   }
 
-  // Advanced Queue Management
   async addNotification(notification: Omit<AdvancedNotification, 'id' | 'createdAt' | 'status' | 'retryCount'>): Promise<string> {
+    const id = `notif_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
     const fullNotification: AdvancedNotification = {
+      id,
       ...notification,
-      id: `notif_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
       createdAt: new Date(),
       status: 'pending',
-      retryCount: 0,
-      maxRetries: notification.maxRetries || 3
+      retryCount: 0
     };
 
-    // Check for duplicates and merge if necessary
-    const duplicate = this.findDuplicate(fullNotification);
-    if (duplicate) {
-      await this.mergeDuplicateNotifications(duplicate, fullNotification);
-      return duplicate.id;
+    this.notifications.set(id, fullNotification);
+    await this.persistNotification(fullNotification);
+    
+    console.log('Added advanced notification:', id);
+    return id;
+  }
+
+  async scheduleNotification(notification: AdvancedNotification, userId: string): Promise<void> {
+    const pattern = this.behaviorPatterns.get(userId);
+    
+    if (pattern) {
+      const optimalTime = this.calculateOptimalTime(notification, pattern);
+      notification.scheduledFor = optimalTime;
     }
 
-    // Insert based on priority
-    this.insertByPriority(fullNotification);
-    await this.persistQueue();
-    
-    console.log('Added notification to queue:', fullNotification.id);
-    return fullNotification.id;
+    // Schedule the notification
+    const delay = notification.scheduledFor ? 
+      notification.scheduledFor.getTime() - Date.now() : 0;
+
+    if (delay > 0) {
+      const timeoutId = setTimeout(() => {
+        this.sendNotification(notification);
+      }, delay);
+      
+      this.scheduledJobs.set(notification.id, timeoutId);
+    } else {
+      await this.sendNotification(notification);
+    }
   }
 
   async createBatch(notifications: AdvancedNotification[], type: NotificationBatch['type']): Promise<string> {
+    const batchId = `batch_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
     const batch: NotificationBatch = {
-      id: `batch_${Date.now()}`,
+      id: batchId,
       notifications,
       type,
-      scheduledFor: this.calculateOptimalBatchTime(notifications)
+      createdAt: new Date()
     };
 
-    await saveData('notification_batches', batch);
-    console.log('Created notification batch:', batch.id);
-    return batch.id;
-  }
-
-  // Intelligent Scheduling
-  async scheduleNotification(notification: AdvancedNotification, userId: string): Promise<void> {
-    const behaviorPattern = this.behaviorPatterns.get(userId);
-    if (!behaviorPattern) {
-      // Schedule immediately if no pattern data
-      notification.scheduledFor = new Date();
-      await this.addNotification(notification);
-      return;
+    this.batches.set(batchId, batch);
+    
+    // Process batch based on type
+    if (type === 'emergency') {
+      await this.processBatchImmediately(batch);
+    } else {
+      await this.scheduleBatch(batch);
     }
 
-    const optimalTime = this.calculateOptimalTime(notification, behaviorPattern);
-    notification.scheduledFor = optimalTime;
-    
-    // Apply context-aware adjustments
-    const adjustedTime = await this.applyContextualAdjustments(notification, userId);
-    notification.scheduledFor = adjustedTime;
-    
-    await this.addNotification(notification);
+    return batchId;
   }
 
-  async analyzeUserBehavior(userId: string, interactions: any[]): Promise<UserBehaviorPattern> {
+  async analyzeUserBehavior(userId: string, interactions: Array<{
+    timestamp: Date;
+    type: string;
+    responded: boolean;
+    device: string;
+  }>): Promise<UserBehaviorPattern> {
+    const hourlyEngagement = new Array(24).fill(0).map((_, hour) => ({ hour, count: 0, responses: 0 }));
+    const typeEngagement = new Map<string, { sent: number; responded: number }>();
+    const deviceUsage = new Map<string, number>();
+
+    // Analyze interactions
+    interactions.forEach(interaction => {
+      const hour = interaction.timestamp.getHours();
+      hourlyEngagement[hour].count++;
+      if (interaction.responded) {
+        hourlyEngagement[hour].responses++;
+      }
+
+      // Track by type
+      const typeData = typeEngagement.get(interaction.type) || { sent: 0, responded: 0 };
+      typeData.sent++;
+      if (interaction.responded) typeData.responded++;
+      typeEngagement.set(interaction.type, typeData);
+
+      // Track device usage
+      deviceUsage.set(interaction.device, (deviceUsage.get(interaction.device) || 0) + 1);
+    });
+
+    // Calculate preferred times
+    const preferredTimes = hourlyEngagement.map(({ hour, count, responses }) => ({
+      hour,
+      score: count > 0 ? responses / count : 0
+    }));
+
+    // Calculate response rates by type
+    const responseRates = Array.from(typeEngagement.entries()).map(([type, data]) => ({
+      type,
+      rate: data.sent > 0 ? data.responded / data.sent : 0
+    }));
+
+    // Calculate device preferences
+    const devicePreferences = Array.from(deviceUsage.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([device]) => device);
+
+    // Calculate overall engagement score
+    const totalResponses = interactions.filter(i => i.responded).length;
+    const engagementScore = interactions.length > 0 ? totalResponses / interactions.length : 0;
+
     const pattern: UserBehaviorPattern = {
-      id: `pattern_${userId}_${Date.now()}`,
-      userId,
-      preferredTimes: this.calculatePreferredTimes(interactions),
-      responseRates: this.calculateResponseRates(interactions),
-      quietHours: this.detectQuietHours(interactions),
-      devicePreferences: this.detectDevicePreferences(interactions),
-      engagementScore: this.calculateEngagementScore(interactions)
+      preferredTimes,
+      responseRates,
+      devicePreferences,
+      engagementScore,
+      lastAnalyzed: new Date()
     };
 
     this.behaviorPatterns.set(userId, pattern);
-    await saveData('user_behavior_patterns', pattern);
-    
+    await this.persistBehaviorPattern(userId, pattern);
+
     return pattern;
   }
 
-  // Context-Aware Features
-  async checkContextConditions(notification: AdvancedNotification): Promise<boolean> {
-    for (const context of notification.contexts) {
-      const conditionMet = await this.evaluateContext(context);
-      if (!conditionMet && context.weight > 0.5) {
-        return false; // High-weight context not met
-      }
-    }
-    return true;
-  }
-
   async updateLocation(userId: string, location: { lat: number; lng: number }): Promise<void> {
-    await saveData(`user_location_${userId}`, {
-      id: userId,
-      location,
-      timestamp: new Date()
-    });
-    
-    // Check for location-based notifications
-    await this.processLocationBasedNotifications(userId, location);
-  }
-
-  // Enhanced Push Capabilities
-  async sendRichNotification(notification: AdvancedNotification): Promise<boolean> {
-    try {
-      // Check if browser supports rich notifications
-      if ('Notification' in window && 'serviceWorker' in navigator) {
-        const registration = await navigator.serviceWorker.ready;
-        
-        const notificationOptions: NotificationOptions = {
-          body: notification.message,
-          icon: this.getIconForType(notification.type),
-          badge: '/badge-icon.png',
-          tag: notification.category,
-          requireInteraction: notification.priority === 'urgent',
-          data: {
-            notificationId: notification.id,
-            metadata: notification.metadata,
-            actions: notification.actions // Store actions in data for later processing
-          }
-        };
-
-        await registration.showNotification(notification.title, notificationOptions);
-        
-        // Track successful send
-        await this.trackNotificationEvent(notification.id, 'sent');
-        return true;
-      }
-      
-      // Fallback to basic notification
-      return this.sendBasicNotification(notification);
-    } catch (error) {
-      console.error('Failed to send rich notification:', error);
-      await this.trackNotificationEvent(notification.id, 'failed', error);
-      return false;
-    }
+    // Store location for context-aware notifications
+    localStorage.setItem(`user_location_${userId}`, JSON.stringify({
+      ...location,
+      timestamp: new Date().toISOString()
+    }));
   }
 
   async syncAcrossDevices(userId: string): Promise<void> {
-    const userNotifications = this.queue.filter(n => 
-      n.metadata?.userId === userId && n.status === 'pending'
-    );
+    // Implementation for cross-device sync
+    const notifications = Array.from(this.notifications.values())
+      .filter(n => n.metadata.userId === userId);
     
-    // In production, sync with server
-    await saveData(`notifications_sync_${userId}`, {
-      id: userId,
-      notifications: userNotifications,
-      lastSync: new Date()
-    });
+    // Sync via localStorage for demo
+    localStorage.setItem(`synced_notifications_${userId}`, JSON.stringify(notifications));
     
-    console.log(`Synced ${userNotifications.length} notifications for user ${userId}`);
-  }
-
-  // Queue Processing
-  private async processQueue(): Promise<void> {
-    const now = new Date();
-    const readyNotifications = this.queue.filter(n => 
-      n.status === 'pending' && 
-      (!n.scheduledFor || n.scheduledFor <= now)
-    );
-
-    for (const notification of readyNotifications) {
-      try {
-        const contextOk = await this.checkContextConditions(notification);
-        if (!contextOk) {
-          continue; // Skip this cycle
-        }
-
-        const success = await this.sendRichNotification(notification);
-        if (success) {
-          notification.status = 'sent';
-          await this.removeFromQueue(notification.id);
-        } else {
-          await this.handleFailedNotification(notification);
-        }
-      } catch (error) {
-        console.error('Error processing notification:', notification.id, error);
-        await this.handleFailedNotification(notification);
-      }
-    }
-
-    await this.persistQueue();
-  }
-
-  private async handleFailedNotification(notification: AdvancedNotification): Promise<void> {
-    notification.retryCount++;
-    
-    if (notification.retryCount >= notification.maxRetries) {
-      notification.status = 'failed';
-      await this.removeFromQueue(notification.id);
-      console.log('Notification failed permanently:', notification.id);
-    } else {
-      // Exponential backoff
-      const delay = Math.pow(2, notification.retryCount) * 1000;
-      notification.scheduledFor = new Date(Date.now() + delay);
-      console.log(`Retrying notification ${notification.id} in ${delay}ms`);
-    }
-  }
-
-  // Private helper methods
-  private findDuplicate(notification: AdvancedNotification): AdvancedNotification | null {
-    return this.queue.find(existing => 
-      existing.category === notification.category &&
-      existing.type === notification.type &&
-      JSON.stringify(existing.metadata) === JSON.stringify(notification.metadata)
-    ) || null;
-  }
-
-  private async mergeDuplicateNotifications(existing: AdvancedNotification, newNotification: AdvancedNotification): Promise<void> {
-    // Merge logic - combine messages, update priority, etc.
-    existing.message = `${existing.message}\n${newNotification.message}`;
-    existing.priority = this.getHigherPriority(existing.priority, newNotification.priority);
-    existing.actions = [...(existing.actions || []), ...(newNotification.actions || [])];
-  }
-
-  private insertByPriority(notification: AdvancedNotification): void {
-    const priorityOrder = { urgent: 0, high: 1, medium: 2, low: 3 };
-    const insertIndex = this.queue.findIndex(n => 
-      priorityOrder[n.priority] > priorityOrder[notification.priority]
-    );
-    
-    if (insertIndex === -1) {
-      this.queue.push(notification);
-    } else {
-      this.queue.splice(insertIndex, 0, notification);
-    }
+    console.log(`Synced ${notifications.length} notifications across devices for user ${userId}`);
   }
 
   private calculateOptimalTime(notification: AdvancedNotification, pattern: UserBehaviorPattern): Date {
-    const now = new Date();
-    const currentHour = now.getHours();
-    
-    // Check if current time is in quiet hours
-    if (currentHour >= pattern.quietHours.start || currentHour <= pattern.quietHours.end) {
-      // Schedule for next preferred time
-      const nextPreferredHour = pattern.preferredTimes
-        .filter(pt => pt.hour > currentHour)
-        .sort((a, b) => b.score - a.score)[0];
-      
-      if (nextPreferredHour) {
-        const optimalTime = new Date(now);
-        optimalTime.setHours(nextPreferredHour.hour, 0, 0, 0);
-        return optimalTime;
-      }
+    // Find best hour based on user pattern
+    const currentHour = new Date().getHours();
+    const bestHours = pattern.preferredTimes
+      .filter(time => time.score > 0.3)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3);
+
+    let targetHour = currentHour;
+    if (bestHours.length > 0) {
+      // Find next available preferred hour
+      const nextBestHour = bestHours.find(h => h.hour > currentHour);
+      targetHour = nextBestHour ? nextBestHour.hour : bestHours[0].hour;
     }
+
+    const targetTime = new Date();
+    targetTime.setHours(targetHour, 0, 0, 0);
     
-    // If urgent or current time is good, send now
-    if (notification.priority === 'urgent' || 
-        pattern.preferredTimes.some(pt => pt.hour === currentHour && pt.score > 0.7)) {
-      return now;
+    // If target time is in the past, move to next day
+    if (targetTime.getTime() <= Date.now()) {
+      targetTime.setDate(targetTime.getDate() + 1);
     }
-    
-    // Default to next high-score preferred time
-    const bestTime = pattern.preferredTimes.sort((a, b) => b.score - a.score)[0];
-    const optimalTime = new Date(now);
-    optimalTime.setHours(bestTime.hour, 0, 0, 0);
-    
-    if (optimalTime <= now) {
-      optimalTime.setDate(optimalTime.getDate() + 1);
-    }
-    
-    return optimalTime;
+
+    return targetTime;
   }
 
-  private async applyContextualAdjustments(notification: AdvancedNotification, userId: string): Promise<Date> {
-    let adjustedTime = notification.scheduledFor || new Date();
-    
-    // Check location context
-    const userLocation = await getAllData(`user_location_${userId}`);
-    if (userLocation && notification.contexts.some(c => c.type === 'location')) {
-      // Adjust based on location-specific preferences
-      // Implementation depends on specific requirements
-    }
-    
-    // Check activity context
-    if (notification.contexts.some(c => c.type === 'activity')) {
-      // Delay if user is likely busy (heuristic-based)
-      const busyHours = [9, 10, 11, 14, 15, 16]; // Work hours
-      if (busyHours.includes(adjustedTime.getHours())) {
-        adjustedTime.setHours(adjustedTime.getHours() + 2);
-      }
-    }
-    
-    return adjustedTime;
-  }
-
-  private calculatePreferredTimes(interactions: any[]): { hour: number; score: number }[] {
-    const hourCounts = new Array(24).fill(0);
-    
-    interactions.forEach(interaction => {
-      if (interaction.timestamp) {
-        const hour = new Date(interaction.timestamp).getHours();
-        hourCounts[hour]++;
-      }
-    });
-    
-    const maxCount = Math.max(...hourCounts);
-    return hourCounts.map((count, hour) => ({
-      hour,
-      score: maxCount > 0 ? count / maxCount : 0
-    }));
-  }
-
-  private calculateResponseRates(interactions: any[]): { type: string; rate: number }[] {
-    const typeStats = new Map<string, { sent: number; responded: number }>();
-    
-    interactions.forEach(interaction => {
-      const type = interaction.type || 'general';
-      if (!typeStats.has(type)) {
-        typeStats.set(type, { sent: 0, responded: 0 });
-      }
-      
-      const stats = typeStats.get(type)!;
-      stats.sent++;
-      if (interaction.responded) {
-        stats.responded++;
-      }
-    });
-    
-    return Array.from(typeStats.entries()).map(([type, stats]) => ({
-      type,
-      rate: stats.sent > 0 ? stats.responded / stats.sent : 0
-    }));
-  }
-
-  private detectQuietHours(interactions: any[]): { start: number; end: number } {
-    const hourActivity = new Array(24).fill(0);
-    
-    interactions.forEach(interaction => {
-      if (interaction.timestamp) {
-        const hour = new Date(interaction.timestamp).getHours();
-        hourActivity[hour]++;
-      }
-    });
-    
-    // Find period with consistently low activity
-    const avgActivity = hourActivity.reduce((sum, count) => sum + count, 0) / 24;
-    const quietThreshold = avgActivity * 0.3;
-    
-    let quietStart = 22; // Default quiet hours
-    let quietEnd = 7;
-    
-    for (let hour = 0; hour < 24; hour++) {
-      if (hourActivity[hour] < quietThreshold) {
-        if (hour > 20 || hour < 8) { // Likely night hours
-          if (hour > 20) quietStart = Math.min(quietStart, hour);
-          if (hour < 8) quietEnd = Math.max(quietEnd, hour);
-        }
-      }
-    }
-    
-    return { start: quietStart, end: quietEnd };
-  }
-
-  private detectDevicePreferences(interactions: any[]): string[] {
-    const deviceCounts = new Map<string, number>();
-    
-    interactions.forEach(interaction => {
-      const device = interaction.device || 'unknown';
-      deviceCounts.set(device, (deviceCounts.get(device) || 0) + 1);
-    });
-    
-    return Array.from(deviceCounts.entries())
-      .sort(([, a], [, b]) => b - a)
-      .map(([device]) => device);
-  }
-
-  private calculateEngagementScore(interactions: any[]): number {
-    if (interactions.length === 0) return 0;
-    
-    const responses = interactions.filter(i => i.responded).length;
-    const opens = interactions.filter(i => i.opened).length;
-    const total = interactions.length;
-    
-    return (responses * 1.0 + opens * 0.5) / total;
-  }
-
-  private async evaluateContext(context: NotificationContext): Promise<boolean> {
-    switch (context.type) {
-      case 'time':
-        const now = new Date();
-        return context.conditions.allowedHours?.includes(now.getHours()) ?? true;
-      
-      case 'location':
-        // Implement location-based logic
-        return true; // Simplified for demo
-      
-      case 'activity':
-        // Implement activity-based logic
-        return true; // Simplified for demo
-      
-      default:
-        return true;
-    }
-  }
-
-  private calculateOptimalBatchTime(notifications: AdvancedNotification[]): Date {
-    // Find the median preferred time among all notifications
-    const times = notifications
-      .map(n => n.scheduledFor)
-      .filter(time => time)
-      .sort((a, b) => a!.getTime() - b!.getTime());
-    
-    if (times.length === 0) return new Date();
-    
-    const medianIndex = Math.floor(times.length / 2);
-    return times[medianIndex]!;
-  }
-
-  private getHigherPriority(a: AdvancedNotification['priority'], b: AdvancedNotification['priority']): AdvancedNotification['priority'] {
-    const order = { urgent: 3, high: 2, medium: 1, low: 0 };
-    return order[a] >= order[b] ? a : b;
-  }
-
-  private async processLocationBasedNotifications(userId: string, location: { lat: number; lng: number }): Promise<void> {
-    const locationNotifications = this.queue.filter(n => 
-      n.metadata?.userId === userId &&
-      n.contexts.some(c => c.type === 'location')
-    );
-    
-    // Process location-based triggers
-    for (const notification of locationNotifications) {
-      // Implementation depends on specific location logic
-      console.log('Processing location-based notification:', notification.id);
-    }
-  }
-
-  private getIconForType(type: AdvancedNotification['type']): string {
-    const icons = {
-      info: '/icons/info.png',
-      warning: '/icons/warning.png',
-      error: '/icons/error.png',
-      success: '/icons/success.png',
-      reminder: '/icons/reminder.png'
-    };
-    return icons[type] || icons.info;
-  }
-
-  private async sendBasicNotification(notification: AdvancedNotification): Promise<boolean> {
+  private async sendNotification(notification: AdvancedNotification): Promise<void> {
     try {
       if ('Notification' in window && Notification.permission === 'granted') {
-        new Notification(notification.title, {
+        const nativeNotification = new Notification(notification.title, {
           body: notification.message,
-          icon: this.getIconForType(notification.type)
+          icon: '/icon-192x192.png',
+          badge: '/icon-192x192.png',
+          tag: notification.id,
+          data: notification.metadata
         });
-        return true;
+
+        nativeNotification.onclick = () => {
+          if (notification.actions.length > 0) {
+            const primaryAction = notification.actions[0];
+            this.handleNotificationAction(primaryAction);
+          }
+        };
       }
-      return false;
+
+      notification.status = 'sent';
+      await this.persistNotification(notification);
+      
+      console.log('Notification sent:', notification.id);
     } catch (error) {
-      console.error('Failed to send basic notification:', error);
-      return false;
+      console.error('Error sending notification:', error);
+      notification.status = 'failed';
+      notification.retryCount++;
+      
+      if (notification.retryCount < notification.maxRetries) {
+        // Retry after delay
+        setTimeout(() => this.sendNotification(notification), 5000);
+      }
     }
   }
 
-  private async trackNotificationEvent(notificationId: string, event: string, data?: any): Promise<void> {
-    await saveData('notification_events', {
-      id: `${notificationId}_${event}_${Date.now()}`,
-      notificationId,
-      event,
-      data,
-      timestamp: new Date()
-    });
+  private handleNotificationAction(action: NotificationAction): void {
+    switch (action.action) {
+      case 'navigate':
+        if (action.data?.route) {
+          window.location.href = action.data.route;
+        }
+        break;
+      case 'external':
+        if (action.data?.url) {
+          window.open(action.data.url, '_blank');
+        }
+        break;
+      default:
+        console.log('Notification action handled:', action.id);
+    }
   }
 
-  private async removeFromQueue(notificationId: string): Promise<void> {
-    this.queue = this.queue.filter(n => n.id !== notificationId);
-  }
-
-  private async loadQueue(): Promise<void> {
-    const queueData = await getAllData<AdvancedNotification>('notification_queue');
-    this.queue = queueData || [];
-  }
-
-  private async persistQueue(): Promise<void> {
-    await saveData('notification_queue', { id: 'main', notifications: this.queue });
-  }
-
-  private async loadBehaviorPatterns(): Promise<void> {
-    const patterns = await getAllData<UserBehaviorPattern>('user_behavior_patterns');
-    patterns?.forEach(pattern => {
-      this.behaviorPatterns.set(pattern.userId, pattern);
-    });
-  }
-
-  private startProcessing(): void {
-    if (this.processingInterval) {
-      clearInterval(this.processingInterval);
+  private async processBatchImmediately(batch: NotificationBatch): Promise<void> {
+    for (const notification of batch.notifications) {
+      await this.sendNotification(notification);
     }
     
-    this.processingInterval = window.setInterval(() => {
-      this.processQueue();
-    }, 10000); // Process every 10 seconds
+    batch.processedAt = new Date();
+    console.log('Emergency batch processed:', batch.id);
+  }
+
+  private async scheduleBatch(batch: NotificationBatch): Promise<void> {
+    // Schedule batch for optimal delivery time
+    const delay = 5000; // 5 second delay for demo
+    
+    setTimeout(async () => {
+      await this.processBatchImmediately(batch);
+    }, delay);
+  }
+
+  private startBackgroundProcessors(): void {
+    // Clean up old notifications every hour
+    setInterval(() => {
+      this.cleanupOldNotifications();
+    }, 3600000);
+
+    // Process pending notifications every minute
+    setInterval(() => {
+      this.processPendingNotifications();
+    }, 60000);
+  }
+
+  private cleanupOldNotifications(): void {
+    const now = Date.now();
+    const maxAge = 7 * 24 * 60 * 60 * 1000; // 7 days
+
+    for (const [id, notification] of this.notifications.entries()) {
+      if (now - notification.createdAt.getTime() > maxAge) {
+        this.notifications.delete(id);
+      }
+    }
+  }
+
+  private async processPendingNotifications(): Promise<void> {
+    const pendingNotifications = Array.from(this.notifications.values())
+      .filter(n => n.status === 'pending' && 
+                   (!n.scheduledFor || n.scheduledFor.getTime() <= Date.now()));
+
+    for (const notification of pendingNotifications) {
+      await this.sendNotification(notification);
+    }
+  }
+
+  private async loadPersistedData(): Promise<void> {
+    try {
+      const storedNotifications = localStorage.getItem('advanced_notifications');
+      if (storedNotifications) {
+        const notifications = JSON.parse(storedNotifications);
+        notifications.forEach((n: AdvancedNotification) => {
+          this.notifications.set(n.id, {
+            ...n,
+            createdAt: new Date(n.createdAt),
+            scheduledFor: n.scheduledFor ? new Date(n.scheduledFor) : undefined
+          });
+        });
+      }
+    } catch (error) {
+      console.error('Error loading persisted notifications:', error);
+    }
+  }
+
+  private async persistNotification(notification: AdvancedNotification): Promise<void> {
+    try {
+      const notifications = Array.from(this.notifications.values());
+      localStorage.setItem('advanced_notifications', JSON.stringify(notifications));
+    } catch (error) {
+      console.error('Error persisting notification:', error);
+    }
+  }
+
+  private async persistBehaviorPattern(userId: string, pattern: UserBehaviorPattern): Promise<void> {
+    try {
+      localStorage.setItem(`behavior_pattern_${userId}`, JSON.stringify(pattern));
+    } catch (error) {
+      console.error('Error persisting behavior pattern:', error);
+    }
   }
 
   destroy(): void {
-    if (this.processingInterval) {
-      clearInterval(this.processingInterval);
+    // Clear all scheduled jobs
+    for (const timeoutId of this.scheduledJobs.values()) {
+      clearTimeout(timeoutId);
     }
+    this.scheduledJobs.clear();
+    
+    this.isInitialized = false;
+    console.log('Advanced notification service destroyed');
   }
 }
 
