@@ -36,14 +36,15 @@ const VocabularyContext = createContext<VocabularyContextType | null>(null);
 export const VocabularyProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [initialItems, setInitialItems] = useState<VocabularyItem[]>([]);
-  const [dataError, setDataError] = useState<string | null>(null);
+  const [initialized, setInitialized] = useState(false);
   
+  // Initialize data only once
   useEffect(() => {
-    const initializeData = async () => {
+    const initializeData = () => {
       try {
         console.log('Initializing vocabulary data...');
         
-        // Nejprve zkusíme načíst data z localStorage
+        // Try to load from localStorage first
         const storedData = localStorage.getItem('vocabulary_items');
         if (storedData) {
           try {
@@ -51,22 +52,21 @@ export const VocabularyProvider: React.FC<{ children: React.ReactNode }> = ({ ch
             if (Array.isArray(parsedData) && parsedData.length > 0) {
               console.log('Loaded vocabulary from localStorage:', parsedData.length, 'items');
               setInitialItems(parsedData);
-              setDataError(null);
+              setInitialized(true);
+              setIsLoading(false);
               return;
             }
           } catch (error) {
             console.warn('Error parsing stored vocabulary data:', error);
-            setDataError('Chyba při načítání uložených dat');
           }
         }
         
-        // Fallback na defaultní data
+        // Fallback to default data
         if (defaultGermanVocabulary && defaultGermanVocabulary.length > 0) {
           console.log('Using default German vocabulary:', defaultGermanVocabulary.length, 'items');
           setInitialItems(defaultGermanVocabulary);
-          setDataError(null);
           
-          // Uložíme defaultní data do localStorage pro příště
+          // Save default data to localStorage
           try {
             localStorage.setItem('vocabulary_items', JSON.stringify(defaultGermanVocabulary));
           } catch (error) {
@@ -74,39 +74,50 @@ export const VocabularyProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           }
         } else {
           console.error('No default vocabulary data available');
-          setDataError('Nepodařilo se načíst slovní zásobu');
           setInitialItems([]);
         }
         
+        setInitialized(true);
+        setIsLoading(false);
+        
       } catch (error) {
         console.error('Error initializing vocabulary:', error);
-        setDataError('Chyba při inicializaci slovní zásoby');
         setInitialItems([]);
-      } finally {
+        setInitialized(true);
         setIsLoading(false);
       }
     };
     
-    initializeData();
-  }, []);
+    if (!initialized) {
+      initializeData();
+    }
+  }, [initialized]);
   
-  const spacedRepetition = useSpacedRepetition(initialItems);
+  // Only initialize spaced repetition after we have initial data
+  const spacedRepetition = useSpacedRepetition(initialized ? initialItems : []);
   
-  // State pro UI
+  // State for UI
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [currentEditItem, setCurrentEditItem] = useState<VocabularyItem | null>(null);
   const [testHistory, setTestHistory] = useState<TestResult[]>([]);
   
-  // Uložení změn při aktualizaci položek
+  // Save changes only when items actually change and we're initialized
   useEffect(() => {
-    if (!isLoading && spacedRepetition.items.length > 0) {
+    if (initialized && !isLoading && spacedRepetition.items.length > 0) {
       try {
-        localStorage.setItem('vocabulary_items', JSON.stringify(spacedRepetition.items));
+        // Only save if items are different from what's stored
+        const storedData = localStorage.getItem('vocabulary_items');
+        const currentData = JSON.stringify(spacedRepetition.items);
+        
+        if (storedData !== currentData) {
+          localStorage.setItem('vocabulary_items', currentData);
+          console.log('Vocabulary items saved to localStorage');
+        }
       } catch (error) {
         console.warn('Could not save vocabulary items to localStorage:', error);
       }
     }
-  }, [spacedRepetition.items, isLoading]);
+  }, [spacedRepetition.items, initialized, isLoading]);
   
   const addTestResult = (result: TestResult) => {
     setTestHistory(prev => [...prev, result]);
@@ -141,33 +152,14 @@ export const VocabularyProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     averageAccuracy: 0
   };
 
-  // Loading state s error handling
-  if (isLoading) {
+  // Show loading state
+  if (isLoading || !initialized) {
     return (
       <VocabularyContext.Provider value={null}>
         <div className="flex items-center justify-center p-8">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
             <p className="text-muted-foreground">Načítání slovní zásoby...</p>
-          </div>
-        </div>
-      </VocabularyContext.Provider>
-    );
-  }
-
-  // Error state
-  if (dataError) {
-    return (
-      <VocabularyContext.Provider value={null}>
-        <div className="flex items-center justify-center p-8">
-          <div className="text-center">
-            <p className="text-destructive mb-4">{dataError}</p>
-            <button 
-              onClick={() => window.location.reload()} 
-              className="px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90"
-            >
-              Zkusit znovu
-            </button>
           </div>
         </div>
       </VocabularyContext.Provider>
@@ -188,7 +180,7 @@ export const VocabularyProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       handleDeleteItem,
       handleBulkDeleteItems,
       handleBulkUpdateItems,
-      isLoading
+      isLoading: false
     }}>
       {children}
     </VocabularyContext.Provider>
