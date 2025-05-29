@@ -107,7 +107,7 @@ const Footer = () => {
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Email</p>
-                  <p className="text-gray-300">info@pendleruvpomocnik.cz</p>
+                  <p className="text-gray-300">admin@pendlerapp.cz</p>
                 </div>
               </div>
               
@@ -127,7 +127,7 @@ const Footer = () => {
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Web</p>
-                  <p className="text-gray-300">www.pendleruvpomocnik.cz</p>
+                  <p className="text-gray-300">www.pendlerapp.cz</p>
                 </div>
               </div>
             </div>
