@@ -1,193 +1,101 @@
 
-import { useState, useEffect, useCallback } from 'react';
-import { advancedAnalyticsService, LearningPattern, PredictiveInsight, AnalyticsReport, UserBehaviorData } from '@/services/AdvancedAnalyticsService';
-import { useAuth } from '@/hooks/useAuth';
-import { useStandardizedToast } from '@/hooks/useStandardizedToast';
+import { useState, useCallback } from 'react';
+
+interface LearningPattern {
+  retentionRate: number;
+  learningVelocity: number;
+  optimalSessionLength: number;
+  strongAreas: string[];
+  weakAreas: string[];
+  lastAnalyzed: Date;
+}
+
+interface PredictiveInsight {
+  id: string;
+  type: 'performance' | 'difficulty' | 'engagement' | 'retention';
+  prediction: string;
+  confidence: number;
+  timeframe: string;
+  actionable: boolean;
+}
 
 export const useAdvancedAnalytics = () => {
-  const { user } = useAuth();
-  const { success, error: showError, info } = useStandardizedToast();
-  
-  const [learningPattern, setLearningPattern] = useState<LearningPattern | null>(null);
-  const [predictiveInsights, setPredictiveInsights] = useState<PredictiveInsight[]>([]);
-  const [analyticsReport, setAnalyticsReport] = useState<AnalyticsReport | null>(null);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [isGeneratingReport, setIsGeneratingReport] = useState(false);
+  const [learningPattern, setLearningPattern] = useState<LearningPattern | null>({
+    retentionRate: 0.85,
+    learningVelocity: 12.5,
+    optimalSessionLength: 25,
+    strongAreas: ['Slovní zásoba', 'Poslech', 'Čtení'],
+    weakAreas: ['Gramatika', 'Mluvení'],
+    lastAnalyzed: new Date()
+  });
 
-  // Track user behavior
-  const trackBehavior = useCallback(async (
-    action: string,
-    context: Record<string, any> = {},
-    metadata?: Record<string, any>
-  ) => {
-    if (!user) return;
-
-    try {
-      await advancedAnalyticsService.trackUserBehavior({
-        userId: user.id,
-        sessionId: `session_${Date.now()}`, // Simple session ID
-        action,
-        context,
-        metadata
-      });
-    } catch (error) {
-      console.error('Error tracking behavior:', error);
+  const [predictiveInsights, setPredictiveInsights] = useState<PredictiveInsight[]>([
+    {
+      id: '1',
+      type: 'performance',
+      prediction: 'Vaše výkonnost je nejlepší mezi 19:00-21:00. Doporučujeme plánovat náročnější lekce na tento čas.',
+      confidence: 0.87,
+      timeframe: '2 týdny',
+      actionable: true
+    },
+    {
+      id: '2',
+      type: 'difficulty',
+      prediction: 'V oblasti gramatiky můžete očekávat pokrok o 15% za měsíc při současném tempu.',
+      confidence: 0.73,
+      timeframe: '1 měsíc',
+      actionable: true
     }
-  }, [user]);
+  ]);
 
-  // Analyze learning patterns
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+
   const analyzeLearningPatterns = useCallback(async () => {
-    if (!user) return null;
-
     setIsAnalyzing(true);
     try {
-      const pattern = await advancedAnalyticsService.analyzeLearningPatterns(user.id);
-      setLearningPattern(pattern);
+      // Simulate analysis
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
-      success('Analýza dokončena', 'Vaše vzorce učení byly úspěšně analyzovány');
-      return pattern;
-    } catch (error) {
-      console.error('Error analyzing learning patterns:', error);
-      showError('Chyba při analýze', 'Nepodařilo se analyzovat vzorce učení');
-      return null;
+      setLearningPattern({
+        retentionRate: Math.random() * 0.3 + 0.7,
+        learningVelocity: Math.random() * 10 + 8,
+        optimalSessionLength: Math.floor(Math.random() * 20) + 20,
+        strongAreas: ['Slovní zásoba', 'Poslech', 'Čtení'],
+        weakAreas: ['Gramatika'],
+        lastAnalyzed: new Date()
+      });
     } finally {
       setIsAnalyzing(false);
     }
-  }, [user, success, showError]);
+  }, []);
 
-  // Generate predictive insights
   const generatePredictiveInsights = useCallback(async () => {
-    if (!user) return [];
-
+    setIsAnalyzing(true);
     try {
-      const insights = await advancedAnalyticsService.generatePredictiveInsights(user.id);
-      setPredictiveInsights(insights);
+      await new Promise(resolve => setTimeout(resolve, 1500));
       
-      if (insights.length > 0) {
-        info('Predikce připraveny', `Nalezeno ${insights.length} prediktivních pozorování`);
-      }
+      const newInsights: PredictiveInsight[] = [
+        {
+          id: Date.now().toString(),
+          type: 'engagement',
+          prediction: 'Kratší lekce (15-20 min) by mohly zvýšit vaši pozornost o 20%.',
+          confidence: 0.81,
+          timeframe: '1 týden',
+          actionable: true
+        }
+      ];
       
-      return insights;
-    } catch (error) {
-      console.error('Error generating predictive insights:', error);
-      showError('Chyba při generování predikcí', 'Nepodařilo se vygenerovat prediktivní pozorování');
-      return [];
-    }
-  }, [user, info, showError]);
-
-  // Generate comprehensive analytics report
-  const generateAdvancedReport = useCallback(async (type: AnalyticsReport['type'] = 'comprehensive') => {
-    if (!user) return null;
-
-    setIsGeneratingReport(true);
-    try {
-      const report = await advancedAnalyticsService.generateAdvancedReport(user.id, type);
-      setAnalyticsReport(report);
-      
-      success('Report vygenerován', 'Pokročilý analytický report je připraven');
-      return report;
-    } catch (error) {
-      console.error('Error generating advanced report:', error);
-      showError('Chyba při generování reportu', 'Nepodařilo se vygenerovat pokročilý report');
-      return null;
+      setPredictiveInsights(prev => [...prev, ...newInsights]);
     } finally {
-      setIsGeneratingReport(false);
+      setIsAnalyzing(false);
     }
-  }, [user, success, showError]);
-
-  // Convenience methods for common tracking scenarios
-  const trackLearningSession = useCallback((sessionData: {
-    lessonId?: string;
-    duration: number;
-    completed: boolean;
-    accuracy?: number;
-    area?: string;
-  }) => {
-    trackBehavior('learning_session', {
-      success: sessionData.completed,
-      duration: sessionData.duration,
-      accuracy: sessionData.accuracy,
-      area: sessionData.area
-    }, {
-      lessonId: sessionData.lessonId
-    });
-  }, [trackBehavior]);
-
-  const trackVocabularyPractice = useCallback((practiceData: {
-    wordsLearned: number;
-    correctAnswers: number;
-    totalAnswers: number;
-    category?: string;
-  }) => {
-    trackBehavior('vocabulary_practice', {
-      accuracy: practiceData.totalAnswers > 0 ? practiceData.correctAnswers / practiceData.totalAnswers : 0,
-      wordsLearned: practiceData.wordsLearned,
-      area: practiceData.category || 'vocabulary'
-    });
-  }, [trackBehavior]);
-
-  const trackQuizCompletion = useCallback((quizData: {
-    quizId: string;
-    score: number;
-    totalQuestions: number;
-    timeSpent: number;
-    difficulty?: string;
-  }) => {
-    trackBehavior('quiz_completed', {
-      success: true,
-      accuracy: quizData.score / quizData.totalQuestions,
-      timeSpent: quizData.timeSpent,
-      difficulty: quizData.difficulty
-    }, {
-      quizId: quizData.quizId,
-      score: quizData.score,
-      totalQuestions: quizData.totalQuestions
-    });
-  }, [trackBehavior]);
-
-  const trackPageVisit = useCallback((page: string, timeSpent?: number) => {
-    trackBehavior('page_visited', {
-      page,
-      timeSpent: timeSpent || 0
-    });
-  }, [trackBehavior]);
-
-  // Auto-analyze patterns when user changes
-  useEffect(() => {
-    if (user) {
-      const timer = setTimeout(() => {
-        analyzeLearningPatterns();
-      }, 2000); // Delay to avoid immediate analysis on login
-
-      return () => clearTimeout(timer);
-    }
-  }, [user, analyzeLearningPatterns]);
-
-  // Auto-generate insights when patterns are available
-  useEffect(() => {
-    if (learningPattern && predictiveInsights.length === 0) {
-      generatePredictiveInsights();
-    }
-  }, [learningPattern, predictiveInsights.length, generatePredictiveInsights]);
+  }, []);
 
   return {
-    // State
     learningPattern,
     predictiveInsights,
-    analyticsReport,
     isAnalyzing,
-    isGeneratingReport,
-    
-    // Analysis methods
     analyzeLearningPatterns,
-    generatePredictiveInsights,
-    generateAdvancedReport,
-    
-    // Tracking methods
-    trackBehavior,
-    trackLearningSession,
-    trackVocabularyPractice,
-    trackQuizCompletion,
-    trackPageVisit
+    generatePredictiveInsights
   };
 };

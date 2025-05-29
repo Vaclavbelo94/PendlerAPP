@@ -1,76 +1,95 @@
 
 import React from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Battery } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { RefreshCw, Cloud } from 'lucide-react';
 import { SyncSettings } from '@/hooks/useSyncSettings';
 
 interface SyncSettingsCardProps {
   syncSettings: SyncSettings;
   updateSyncSettings: (settings: Partial<SyncSettings>) => void;
   syncLoading: boolean;
-  formatLastSyncTime: (lastSyncTime?: string) => string;
+  formatLastSyncTime: (time?: string) => string;
 }
 
-const SyncSettingsCard = ({
+const SyncSettingsCard: React.FC<SyncSettingsCardProps> = ({
   syncSettings,
   updateSyncSettings,
   syncLoading,
   formatLastSyncTime
-}: SyncSettingsCardProps) => {
+}) => {
+  const handleManualSync = () => {
+    // Trigger manual sync
+    console.log('Manual sync triggered');
+  };
+
   return (
-    <div className="p-4 bg-muted rounded-lg">
-      <div className="flex items-center gap-2 mb-2">
-        <Battery className="h-4 w-4" />
-        <span className="font-medium">Synchronizace</span>
-      </div>
-      <p className="text-sm text-muted-foreground mb-3">
-        Nastavení synchronizace dat mezi zařízeními
-      </p>
-      
-      <div className="space-y-3">
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Cloud className="h-5 w-5" />
+          Synchronizace dat
+        </CardTitle>
+        <CardDescription>
+          Nastavení synchronizace mezi zařízeními
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-6">
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label htmlFor="enableBackgroundSync">Synchronizace na pozadí</Label>
-            <p className="text-xs text-muted-foreground">
-              Automaticky synchronizuje data na pozadí
+            <Label htmlFor="backgroundSync">Synchronizace na pozadí</Label>
+            <p className="text-sm text-muted-foreground">
+              Automaticky synchronizovat data i když aplikace není aktivní
             </p>
           </div>
           <Switch
-            id="enableBackgroundSync"
+            id="backgroundSync"
             checked={syncSettings.enableBackgroundSync}
-            onCheckedChange={(checked) => 
-              updateSyncSettings({ enableBackgroundSync: checked })
-            }
-            disabled={syncLoading}
+            onCheckedChange={(checked) => updateSyncSettings({ enableBackgroundSync: checked })}
           />
         </div>
 
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label htmlFor="showSyncNotifications">Oznámení synchronizace</Label>
-            <p className="text-xs text-muted-foreground">
-              Zobrazuje oznámení o stavu synchronizace
+            <Label htmlFor="syncNotifications">Oznámení o synchronizaci</Label>
+            <p className="text-sm text-muted-foreground">
+              Zobrazovat oznámení o stavu synchronizace
             </p>
           </div>
           <Switch
-            id="showSyncNotifications"
+            id="syncNotifications"
             checked={syncSettings.showSyncNotifications}
-            onCheckedChange={(checked) => 
-              updateSyncSettings({ showSyncNotifications: checked })
-            }
-            disabled={syncLoading}
+            onCheckedChange={(checked) => updateSyncSettings({ showSyncNotifications: checked })}
           />
         </div>
 
-        <div className="flex items-center justify-between">
-          <span className="text-sm">Poslední synchronizace</span>
-          <span className="text-sm text-muted-foreground">
-            {formatLastSyncTime(syncSettings.lastSyncTime)}
-          </span>
+        <div className="flex items-center justify-between p-4 border rounded-lg">
+          <div>
+            <p className="font-medium">Poslední synchronizace</p>
+            <p className="text-sm text-muted-foreground">
+              {formatLastSyncTime(syncSettings.lastSyncTime)}
+            </p>
+            <div className="flex items-center gap-2 mt-1">
+              <Badge variant="secondary">
+                {syncSettings.enableBackgroundSync ? 'Aktivní' : 'Neaktivní'}
+              </Badge>
+            </div>
+          </div>
+          <Button 
+            onClick={handleManualSync} 
+            disabled={syncLoading}
+            size="sm"
+            className="gap-2"
+          >
+            <RefreshCw className={`h-4 w-4 ${syncLoading ? 'animate-spin' : ''}`} />
+            {syncLoading ? 'Synchronizuji...' : 'Synchronizovat'}
+          </Button>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 

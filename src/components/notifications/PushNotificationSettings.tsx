@@ -1,33 +1,22 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Bell } from 'lucide-react';
-import { toast } from "sonner";
+import { Bell, AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export const PushNotificationSettings = () => {
   const [pushEnabled, setPushEnabled] = useState(false);
-  const [permission, setPermission] = useState<NotificationPermission>('default');
-
-  useEffect(() => {
-    if ('Notification' in window) {
-      setPermission(Notification.permission);
-      setPushEnabled(Notification.permission === 'granted');
-    }
-  }, []);
+  const [permission, setPermission] = useState<'default' | 'granted' | 'denied'>('default');
 
   const requestPermission = async () => {
     if ('Notification' in window) {
       const result = await Notification.requestPermission();
       setPermission(result);
-      setPushEnabled(result === 'granted');
-      
       if (result === 'granted') {
-        toast.success("Push notifikace byly povoleny");
-      } else {
-        toast.error("Push notifikace byly zamítnuty");
+        setPushEnabled(true);
       }
     }
   };
@@ -40,43 +29,35 @@ export const PushNotificationSettings = () => {
           Push notifikace
         </CardTitle>
         <CardDescription>
-          Nastavení push notifikací v prohlížeči
+          Nastavte push notifikace pro důležité události
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="space-y-0.5">
-            <Label htmlFor="pushNotifications">Push notifikace</Label>
-            <p className="text-sm text-muted-foreground">
-              Povolit oznámení v prohlížeči
-            </p>
-          </div>
-          <Switch
-            id="pushNotifications"
-            checked={pushEnabled}
-            onCheckedChange={(checked) => {
-              if (checked && permission !== 'granted') {
-                requestPermission();
-              } else {
-                setPushEnabled(checked);
-              }
-            }}
-          />
-        </div>
-
+      <CardContent className="space-y-4">
         {permission === 'denied' && (
-          <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
-            <p className="text-sm text-yellow-800 dark:text-yellow-200">
-              Push notifikace jsou zakázané. Pro jejich povolení je potřeba změnit nastavení v prohlížeči.
-            </p>
+          <Alert>
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              Push notifikace jsou zakázané. Povolte je v nastavení prohlížeče.
+            </AlertDescription>
+          </Alert>
+        )}
+        
+        <div className="flex items-center justify-between">
+          <Label htmlFor="push-enabled">Povolit push notifikace</Label>
+          <div className="flex items-center gap-2">
+            {permission === 'default' && (
+              <Button onClick={requestPermission} size="sm">
+                Povolit
+              </Button>
+            )}
+            <Switch
+              id="push-enabled"
+              checked={pushEnabled && permission === 'granted'}
+              onCheckedChange={setPushEnabled}
+              disabled={permission !== 'granted'}
+            />
           </div>
-        )}
-
-        {permission === 'default' && (
-          <Button onClick={requestPermission} variant="outline" className="w-full">
-            Povolit push notifikace
-          </Button>
-        )}
+        </div>
       </CardContent>
     </Card>
   );

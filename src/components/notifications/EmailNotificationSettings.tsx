@@ -3,20 +3,12 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Mail } from 'lucide-react';
-import { toast } from "sonner";
 
 export const EmailNotificationSettings = () => {
   const [emailEnabled, setEmailEnabled] = useState(true);
-  const [shiftReminders, setShiftReminders] = useState(true);
-  const [weeklyReports, setWeeklyReports] = useState(false);
-  const [emailAddress, setEmailAddress] = useState('');
-
-  const handleSave = () => {
-    toast.success("E-mailová nastavení byla uložena");
-  };
+  const [frequency, setFrequency] = useState('daily');
 
   return (
     <Card>
@@ -26,69 +18,33 @@ export const EmailNotificationSettings = () => {
           E-mailová oznámení
         </CardTitle>
         <CardDescription>
-          Nastavení e-mailových notifikací a jejich frekvence
+          Nastavte, jak často chcete dostávat e-mailová oznámení
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-4">
         <div className="flex items-center justify-between">
-          <div className="space-y-0.5">
-            <Label htmlFor="emailNotifications">E-mailová oznámení</Label>
-            <p className="text-sm text-muted-foreground">
-              Povolit zasílání oznámení e-mailem
-            </p>
-          </div>
+          <Label htmlFor="email-enabled">Povolit e-mailová oznámení</Label>
           <Switch
-            id="emailNotifications"
+            id="email-enabled"
             checked={emailEnabled}
             onCheckedChange={setEmailEnabled}
           />
         </div>
-
+        
         {emailEnabled && (
-          <>
-            <div className="space-y-2">
-              <Label htmlFor="emailAddress">E-mailová adresa</Label>
-              <Input
-                id="emailAddress"
-                type="email"
-                placeholder="vas@email.cz"
-                value={emailAddress}
-                onChange={(e) => setEmailAddress(e.target.value)}
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label htmlFor="shiftReminders">Připomenutí směn</Label>
-                <p className="text-sm text-muted-foreground">
-                  Dostávat e-maily před začátkem směny
-                </p>
-              </div>
-              <Switch
-                id="shiftReminders"
-                checked={shiftReminders}
-                onCheckedChange={setShiftReminders}
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label htmlFor="weeklyReports">Týdenní přehledy</Label>
-                <p className="text-sm text-muted-foreground">
-                  Dostávat týdenní souhrn směn a statistik
-                </p>
-              </div>
-              <Switch
-                id="weeklyReports"
-                checked={weeklyReports}
-                onCheckedChange={setWeeklyReports}
-              />
-            </div>
-
-            <Button onClick={handleSave} className="w-full">
-              Uložit e-mailová nastavení
-            </Button>
-          </>
+          <div className="space-y-2">
+            <Label>Frekvence oznámení</Label>
+            <Select value={frequency} onValueChange={setFrequency}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="immediate">Okamžitě</SelectItem>
+                <SelectItem value="daily">Denní souhrn</SelectItem>
+                <SelectItem value="weekly">Týdenní souhrn</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         )}
       </CardContent>
     </Card>

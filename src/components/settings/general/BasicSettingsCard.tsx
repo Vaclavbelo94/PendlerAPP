@@ -4,8 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
-import { Settings, Smartphone, Wifi } from 'lucide-react';
+import { Settings } from 'lucide-react';
 
 interface BasicSettingsCardProps {
   autoSave: boolean;
@@ -18,7 +17,7 @@ interface BasicSettingsCardProps {
   setDefaultView: (value: string) => void;
 }
 
-const BasicSettingsCard = ({
+const BasicSettingsCard: React.FC<BasicSettingsCardProps> = ({
   autoSave,
   setAutoSave,
   compactMode,
@@ -27,16 +26,16 @@ const BasicSettingsCard = ({
   setAutoRefresh,
   defaultView,
   setDefaultView
-}: BasicSettingsCardProps) => {
+}) => {
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Settings className="h-5 w-5" />
-          Obecná nastavení
+          Základní nastavení
         </CardTitle>
         <CardDescription>
-          Základní předvolby aplikace
+          Obecné nastavení chování aplikace
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -44,7 +43,7 @@ const BasicSettingsCard = ({
           <div className="space-y-0.5">
             <Label htmlFor="autoSave">Automatické ukládání</Label>
             <p className="text-sm text-muted-foreground">
-              Automaticky ukládá změny při editaci
+              Automaticky ukládat změny bez potvrzení
             </p>
           </div>
           <Switch
@@ -54,16 +53,11 @@ const BasicSettingsCard = ({
           />
         </div>
 
-        <Separator />
-
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label htmlFor="compactMode" className="flex items-center gap-2">
-              <Smartphone className="h-4 w-4" />
-              Kompaktní režim
-            </Label>
+            <Label htmlFor="compactMode">Kompaktní režim</Label>
             <p className="text-sm text-muted-foreground">
-              Zmenší rozložení pro lepší využití prostoru
+              Menší rozestupy a kompaktnější UI prvky
             </p>
           </div>
           <Switch
@@ -73,16 +67,11 @@ const BasicSettingsCard = ({
           />
         </div>
 
-        <Separator />
-
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label htmlFor="autoRefresh" className="flex items-center gap-2">
-              <Wifi className="h-4 w-4" />
-              Automatické obnovování
-            </Label>
+            <Label htmlFor="autoRefresh">Automatické obnovování</Label>
             <p className="text-sm text-muted-foreground">
-              Pravidelně aktualizuje data v pozadí
+              Automaticky obnovovat data v pravidelných intervalech
             </p>
           </div>
           <Switch
@@ -92,8 +81,6 @@ const BasicSettingsCard = ({
           />
         </div>
 
-        <Separator />
-
         <div className="space-y-2">
           <Label htmlFor="defaultView">Výchozí zobrazení</Label>
           <Select value={defaultView} onValueChange={setDefaultView}>
@@ -102,9 +89,9 @@ const BasicSettingsCard = ({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="dashboard">Dashboard</SelectItem>
-              <SelectItem value="shifts">Moje směny</SelectItem>
-              <SelectItem value="vocabulary">Slovník</SelectItem>
-              <SelectItem value="profile">Profil</SelectItem>
+              <SelectItem value="shifts">Směny</SelectItem>
+              <SelectItem value="vehicles">Vozidla</SelectItem>
+              <SelectItem value="language">Výuka němčiny</SelectItem>
             </SelectContent>
           </Select>
         </div>
