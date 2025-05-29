@@ -23,6 +23,16 @@ const translations: Record<string, Record<string, string>> = {
     'lessons.title': 'Lekce němčiny',
     'lessons.subtitle': 'Interaktivní výuka němčiny pro české a polské pracovníky v balíkovém centru',
     
+    // Title keys pro kategorie - používají se přímo
+    'first-day.title': 'První den',
+    'daily-communication.title': 'Denní komunikace', 
+    'technical-terms.title': 'Technické termíny',
+    'shift-work.title': 'Směnová práce',
+    'work-evaluation.title': 'Hodnocení práce',
+    'numbers-time.title': 'Čísla a čas',
+    'problems-help.title': 'Problémy a pomoc',
+    'end-of-shift.title': 'Konec směny',
+    
     // Navigace kategorií - všechny kategorie z extendedGermanLessons
     'nav.first-day': 'První den',
     'nav.daily-communication': 'Denní komunikace',
@@ -53,6 +63,16 @@ const translations: Record<string, Record<string, string>> = {
     'lessons.title': 'German Lessons',
     'lessons.subtitle': 'Interactive German learning for Czech and Polish workers in package center',
     
+    // Title keys pro kategorie
+    'first-day.title': 'First Day',
+    'daily-communication.title': 'Daily Communication',
+    'technical-terms.title': 'Technical Terms',
+    'shift-work.title': 'Shift Work',
+    'work-evaluation.title': 'Work Evaluation',
+    'numbers-time.title': 'Numbers and Time',
+    'problems-help.title': 'Problems and Help',
+    'end-of-shift.title': 'End of Shift',
+    
     // Navigace kategorií - všechny kategorie z extendedGermanLessons
     'nav.first-day': 'First Day',
     'nav.daily-communication': 'Daily Communication',
@@ -82,6 +102,16 @@ const translations: Record<string, Record<string, string>> = {
     // Hlavní nadpisy
     'lessons.title': 'Lekcie nemčiny',
     'lessons.subtitle': 'Interaktívna výuka nemčiny pre českých a poľských pracovníkov v balíkovom centre',
+    
+    // Title keys pro kategorie
+    'first-day.title': 'Prvý deň',
+    'daily-communication.title': 'Denná komunikácia',
+    'technical-terms.title': 'Technické termíny',
+    'shift-work.title': 'Zmenová práca',
+    'work-evaluation.title': 'Hodnotenie práce',
+    'numbers-time.title': 'Čísla a čas',
+    'problems-help.title': 'Problémy a pomoc',
+    'end-of-shift.title': 'Koniec zmeny',
     
     // Navigace kategorií - všechny kategorie z extendedGermanLessons
     'nav.first-day': 'Prvý deň',
