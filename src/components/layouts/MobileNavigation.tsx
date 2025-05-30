@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -22,7 +23,8 @@ import {
   UserPlus,
   LogOut,
   User,
-  Shield
+  Shield,
+  Scale
 } from 'lucide-react';
 
 const MobileNavigation = ({ onClose }: { onClose: () => void }) => {
@@ -48,6 +50,7 @@ const MobileNavigation = ({ onClose }: { onClose: () => void }) => {
     { label: 'Daňový poradce', href: '/tax-advisor', icon: FileText },
     { label: 'Překladač', href: '/translator', icon: Globe },
     { label: 'Plánování cest', href: '/travel', icon: Map },
+    { label: 'Zákony', href: '/laws', icon: Scale },
     { label: 'Nastavení', href: '/settings', icon: Settings, authRequired: true }
   ];
 
