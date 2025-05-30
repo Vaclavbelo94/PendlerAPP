@@ -41,6 +41,16 @@ serve(async (req) => {
     if (!user?.email) throw new Error("User not authenticated or email not available");
     logStep("User authenticated", { userId: user.id, email: user.email });
 
+    // Parse request body to get period
+    let period = 'monthly';
+    try {
+      const body = await req.json();
+      period = body.period || 'monthly';
+      logStep("Period selected", { period });
+    } catch (e) {
+      logStep("No body or period provided, using default monthly");
+    }
+
     const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
     
     // Check if customer already exists
@@ -55,6 +65,23 @@ serve(async (req) => {
 
     const origin = req.headers.get("origin") || "http://localhost:3000";
     
+    // Define pricing based on period
+    const pricing = {
+      monthly: {
+        amount: 9900, // 99 CZK
+        interval: "month" as const,
+        description: "Měsíční Premium předplatné"
+      },
+      yearly: {
+        amount: 99000, // 990 CZK
+        interval: "year" as const,
+        description: "Roční Premium předplatné (17% úspora)"
+      }
+    };
+
+    const selectedPricing = pricing[period as keyof typeof pricing] || pricing.monthly;
+    logStep("Pricing selected", { period, pricing: selectedPricing });
+
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
@@ -64,10 +91,10 @@ serve(async (req) => {
             currency: "czk",
             product_data: { 
               name: "Premium Předplatné",
-              description: "Přístup ke všem premium funkcím PendlerApp"
+              description: selectedPricing.description
             },
-            unit_amount: 9900, // 99 CZK
-            recurring: { interval: "month" },
+            unit_amount: selectedPricing.amount,
+            recurring: { interval: selectedPricing.interval },
           },
           quantity: 1,
         },
@@ -77,11 +104,12 @@ serve(async (req) => {
       cancel_url: `${origin}/premium?canceled=true`,
       metadata: {
         user_id: user.id,
-        user_email: user.email
+        user_email: user.email,
+        period: period
       }
     });
 
-    logStep("Checkout session created", { sessionId: session.id, url: session.url });
+    logStep("Checkout session created", { sessionId: session.id, url: session.url, period });
 
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

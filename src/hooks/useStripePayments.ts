@@ -3,15 +3,19 @@ import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
+export type PaymentPeriod = 'monthly' | 'yearly';
+
 export const useStripePayments = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isCheckingSubscription, setIsCheckingSubscription] = useState(false);
 
-  const handleCheckout = async () => {
+  const handleCheckout = async (period: PaymentPeriod = 'monthly') => {
     setIsLoading(true);
     try {
-      console.log('Starting checkout process...');
-      const { data, error } = await supabase.functions.invoke('create-checkout');
+      console.log('Starting checkout process with period:', period);
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: { period }
+      });
       
       if (error) {
         console.error('Checkout error:', error);

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +14,7 @@ import { CheckIcon, CreditCard, Settings, RefreshCw, Crown, AlertCircle } from "
 import { useAuth } from "@/hooks/useAuth";
 import { useStripePayments } from "@/hooks/useStripePayments";
 import PromoCodeRedemption from "@/components/premium/PromoCodeRedemption";
+import PeriodSelector, { PaymentPeriod } from "@/components/premium/PeriodSelector";
 import { toast } from "sonner";
 
 const Premium = () => {
@@ -29,6 +29,7 @@ const Premium = () => {
   
   const [subscriptionData, setSubscriptionData] = useState<any>(null);
   const [premiumUntil, setPremiumUntil] = useState<string | null>(null);
+  const [selectedPeriod, setSelectedPeriod] = useState<PaymentPeriod>('yearly');
 
   useEffect(() => {
     // Get premium expiry from localStorage as fallback
@@ -55,6 +56,10 @@ const Premium = () => {
     if (data) {
       setSubscriptionData(data);
     }
+  };
+
+  const handleUpgrade = () => {
+    handleCheckout(selectedPeriod);
   };
 
   const formatDate = (dateString: string) => {
@@ -132,7 +137,13 @@ const Premium = () => {
         )}
 
         {!isPremium && user && (
-          <PromoCodeRedemption />
+          <div className="space-y-6">
+            <PeriodSelector 
+              selectedPeriod={selectedPeriod}
+              onPeriodChange={setSelectedPeriod}
+            />
+            <PromoCodeRedemption />
+          </div>
         )}
 
         {!user && (
@@ -172,7 +183,7 @@ const Premium = () => {
           <PremiumFeatureCard 
             title="Premium"
             description="Rozšířené funkce pro náročné uživatele"
-            price="99 Kč / měsíc"
+            price={selectedPeriod === 'yearly' ? "990 Kč / rok" : "99 Kč / měsíc"}
             features={[
               "Neomezený překladač",
               "Pokročilé kalkulačky",
@@ -183,8 +194,9 @@ const Premium = () => {
             ]}
             current={isPremium}
             recommended
-            onUpgrade={user && !isPremium ? handleCheckout : undefined}
+            onUpgrade={user && !isPremium ? handleUpgrade : undefined}
             isLoading={isLoading}
+            periodBadge={selectedPeriod === 'yearly' ? "17% úspora" : undefined}
           />
           
           <PremiumFeatureCard 
@@ -250,6 +262,7 @@ interface PremiumFeatureCardProps {
   contactSales?: boolean;
   onUpgrade?: () => void;
   isLoading?: boolean;
+  periodBadge?: string;
 }
 
 const PremiumFeatureCard = ({
@@ -262,6 +275,7 @@ const PremiumFeatureCard = ({
   contactSales,
   onUpgrade,
   isLoading,
+  periodBadge,
 }: PremiumFeatureCardProps) => {
   return (
     <Card className={`relative ${recommended ? 'border-primary shadow-md' : ''} ${current ? 'bg-accent/50' : ''}`}>
@@ -284,8 +298,13 @@ const PremiumFeatureCard = ({
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
-        <div className="mt-2">
+        <div className="mt-2 flex items-center gap-2">
           <span className="text-2xl font-bold">{price}</span>
+          {periodBadge && (
+            <Badge variant="secondary" className="bg-green-100 text-green-800 text-xs">
+              {periodBadge}
+            </Badge>
+          )}
         </div>
       </CardHeader>
       
