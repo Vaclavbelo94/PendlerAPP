@@ -6,7 +6,7 @@ import { useAuthState } from './useAuthState';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { cleanupAuthState, saveUserToLocalStorage } from '@/utils/authUtils';
+import { cleanupAuthState, saveUserToLocalStorage, checkLocalStorageSpace } from '@/utils/authUtils';
 import { usePremiumStatus } from '@/hooks/usePremiumStatus';
 
 interface AuthProviderProps {
@@ -40,7 +40,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         if (isActive) {
           console.log("User has active Stripe subscription");
           setIsPremium(true);
-          if (user) {
+          if (user && checkLocalStorageSpace()) {
             saveUserToLocalStorage(user, true, premiumExpiry);
           }
           return { isPremium: true, premiumExpiry };
@@ -76,7 +76,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.log("Premium status from profile:", { profilePremium, profileExpiry, isActive });
       setIsPremium(isActive);
       
-      if (user && isActive) {
+      if (user && isActive && checkLocalStorageSpace()) {
         saveUserToLocalStorage(user, true, profileExpiry);
       }
 
@@ -118,19 +118,36 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const signIn = async (email: string, password: string) => {
     try {
+      // Check storage space first
+      if (!checkLocalStorageSpace()) {
+        cleanupAuthState();
+      }
+
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
       toast.success('Přihlášení proběhlo úspěšně');
       return { error: null };
     } catch (error: any) {
       console.error('Error signing in:', error);
-      toast.error('Nepodařilo se přihlásit');
+      
+      let errorMessage = 'Nepodařilo se přihlásit';
+      if (error.message?.includes('quota') || error.message?.includes('storage')) {
+        errorMessage = 'Problém s úložištěm prohlížeče. Zkuste vyčistit cache.';
+        cleanupAuthState();
+      }
+      
+      toast.error(errorMessage);
       return { error: error.message || error.error_description };
     }
   };
 
   const signInWithGoogle = async () => {
     try {
+      // Check storage space first
+      if (!checkLocalStorageSpace()) {
+        cleanupAuthState();
+      }
+
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -155,6 +172,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const signUp = async (email: string, password: string, username?: string) => {
     try {
+      // Check storage space first
+      if (!checkLocalStorageSpace()) {
+        cleanupAuthState();
+      }
+
       const { data, error } = await supabase.auth.signUp({
         email: email,
         password: password,
@@ -172,7 +194,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return { error: error.message };
       }
 
-      if (data.user) {
+      if (data.user && checkLocalStorageSpace()) {
         saveUserToLocalStorage(data.user, false);
       }
 

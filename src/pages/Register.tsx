@@ -9,6 +9,9 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
 import PromoCodeField from "@/components/auth/PromoCodeField";
+import { cleanupAuthState, checkLocalStorageSpace } from "@/utils/authUtils";
+import { AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -19,6 +22,7 @@ const Register = () => {
   const [isPromoValid, setIsPromoValid] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [storageWarning, setStorageWarning] = useState(false);
   const navigate = useNavigate();
   const { signUp, signInWithGoogle, user } = useAuth();
   
@@ -27,11 +31,23 @@ const Register = () => {
     if (user) {
       navigate("/");
     }
+    
+    // Check localStorage space and clean up if needed
+    if (!checkLocalStorageSpace()) {
+      setStorageWarning(true);
+      cleanupAuthState();
+    }
   }, [user, navigate]);
 
   const handlePromoCodeChange = (code: string, isValid: boolean) => {
     setPromoCode(code);
     setIsPromoValid(isValid);
+  };
+
+  const handleStorageCleanup = () => {
+    cleanupAuthState();
+    setStorageWarning(false);
+    toast.success("Úložiště bylo vyčištěno");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -47,14 +63,37 @@ const Register = () => {
       return;
     }
     
+    // Check storage space before attempting registration
+    if (!checkLocalStorageSpace()) {
+      toast.error("Nedostatek místa v úložišti", {
+        description: "Zkuste vyčistit úložiště prohlížeče nebo použijte jiný prohlížeč"
+      });
+      return;
+    }
+    
     setIsLoading(true);
     
     try {
+      // Clean up any existing auth state before registration
+      cleanupAuthState();
+      
       const { error } = await signUp(email, password, username);
       
       if (error) {
+        let errorMessage = "Zkontrolujte své údaje a zkuste to znovu.";
+        
+        if (error.message?.includes("User already registered") || error.code === "user_already_exists") {
+          errorMessage = "Uživatel s tímto emailem již existuje. Zkuste se přihlásit.";
+        } else if (error.message?.includes("Invalid email")) {
+          errorMessage = "Neplatný formát emailu.";
+        } else if (error.message?.includes("Password")) {
+          errorMessage = "Heslo nesplňuje požadavky.";
+        } else if (error.message?.includes("quota") || error.message?.includes("storage")) {
+          errorMessage = "Problém s úložištěm prohlížeče. Zkuste vyčistit cache.";
+        }
+        
         toast.error("Registrace selhala", {
-          description: error.message || "Zkontrolujte své údaje a zkuste to znovu.",
+          description: errorMessage,
         });
       } else {
         let successMessage = "Účet byl úspěšně vytvořen!";
@@ -69,8 +108,14 @@ const Register = () => {
         navigate("/login");
       }
     } catch (error: any) {
+      let errorMessage = "Nastala neznámá chyba. Zkuste to prosím později.";
+      
+      if (error?.message?.includes("quota") || error?.message?.includes("storage")) {
+        errorMessage = "Nedostatek místa v úložišti prohlížeče. Zkuste vyčistit cache nebo použít jiný prohlížeč.";
+      }
+      
       toast.error("Chyba při registraci", {
-        description: error?.message || "Nastala neznámá chyba. Zkuste to prosím později.",
+        description: errorMessage,
       });
     } finally {
       setIsLoading(false);
@@ -78,9 +123,19 @@ const Register = () => {
   };
 
   const handleGoogleRegister = async () => {
+    if (!checkLocalStorageSpace()) {
+      toast.error("Nedostatek místa v úložišti", {
+        description: "Zkuste vyčistit úložiště prohlížeče"
+      });
+      return;
+    }
+    
     setIsGoogleLoading(true);
     
     try {
+      // Clean up any existing auth state
+      cleanupAuthState();
+      
       const { error, url } = await signInWithGoogle();
       
       if (error) {
@@ -111,6 +166,25 @@ const Register = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
+          {storageWarning && (
+            <Alert className="border-yellow-500/20 bg-yellow-50 dark:bg-yellow-900/10">
+              <AlertCircle className="h-4 w-4 text-yellow-600" />
+              <AlertDescription className="text-yellow-800 dark:text-yellow-200">
+                <div className="flex flex-col space-y-2">
+                  <span>Úložiště prohlížeče je plné. To může způsobit problémy při registraci.</span>
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    onClick={handleStorageCleanup}
+                    className="w-fit"
+                  >
+                    Vyčistit úložiště
+                  </Button>
+                </div>
+              </AlertDescription>
+            </Alert>
+          )}
+          
           {/* Google Register Button */}
           <Button 
             type="button" 
