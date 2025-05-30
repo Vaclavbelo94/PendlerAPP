@@ -26,6 +26,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
 
     try {
+      console.log("Refreshing premium status for user:", user.id);
+      
       // First check from subscribers table
       const { data: subscriberData, error: subscriberError } = await supabase
         .from('subscribers')
