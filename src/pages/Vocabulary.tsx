@@ -2,6 +2,7 @@
 import React from 'react';
 import { ErrorBoundaryWithFallback } from '@/components/common/ErrorBoundaryWithFallback';
 import FastLoadingFallback from '@/components/common/FastLoadingFallback';
+import PublicPageWithPremiumCheck from '@/components/premium/PublicPageWithPremiumCheck';
 import { useScreenOrientation } from '@/hooks/useScreenOrientation';
 
 // Optimized lazy loading
@@ -26,28 +27,30 @@ const GermanLessons = () => {
   console.log('German Lessons page rendering');
 
   return (
-    <ErrorBoundaryWithFallback>
-      <React.Suspense fallback={<FastLoadingFallback message="Načítám správce jazykových lekcí..." />}>
-        <LanguageManager>
-          <div className={`container py-6 md:py-10 max-w-7xl ${useMobileLayout ? 'pb-32' : ''} ${isSmallLandscape ? 'px-2' : ''}`}>
-            <div className={`mb-8 ${isSmallLandscape ? 'mb-4' : ''}`}>
-              <h1 className={`${useMobileLayout ? 'text-2xl' : 'text-3xl'} font-bold tracking-tight mb-2`}>
-                Lekce němčiny
-              </h1>
-              <p className={`text-muted-foreground ${useMobileLayout ? 'text-sm' : ''}`}>
-                Interaktivní výuka němčiny pro české a polské pracovníky v balíkovém centru
-              </p>
-            </div>
+    <PublicPageWithPremiumCheck featureName="Lekce němčiny" allowPublicAccess={true}>
+      <ErrorBoundaryWithFallback>
+        <React.Suspense fallback={<FastLoadingFallback message="Načítám správce jazykových lekcí..." />}>
+          <LanguageManager>
+            <div className={`container py-6 md:py-10 max-w-7xl ${useMobileLayout ? 'pb-32' : ''} ${isSmallLandscape ? 'px-2' : ''}`}>
+              <div className={`mb-8 ${isSmallLandscape ? 'mb-4' : ''}`}>
+                <h1 className={`${useMobileLayout ? 'text-2xl' : 'text-3xl'} font-bold tracking-tight mb-2`}>
+                  Lekce němčiny
+                </h1>
+                <p className={`text-muted-foreground ${useMobileLayout ? 'text-sm' : ''}`}>
+                  Interaktivní výuka němčiny pro české a polské pracovníky v balíkovém centru
+                </p>
+              </div>
 
-            <ErrorBoundaryWithFallback>
-              <React.Suspense fallback={<FastLoadingFallback message="Načítám jazykové lekce..." />}>
-                <VocabularySection />
-              </React.Suspense>
-            </ErrorBoundaryWithFallback>
-          </div>
-        </LanguageManager>
-      </React.Suspense>
-    </ErrorBoundaryWithFallback>
+              <ErrorBoundaryWithFallback>
+                <React.Suspense fallback={<FastLoadingFallback message="Načítám jazykové lekce..." />}>
+                  <VocabularySection />
+                </React.Suspense>
+              </ErrorBoundaryWithFallback>
+            </div>
+          </LanguageManager>
+        </React.Suspense>
+      </ErrorBoundaryWithFallback>
+    </PublicPageWithPremiumCheck>
   );
 };
 

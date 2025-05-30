@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo } from 'react';
-import PremiumCheck from '@/components/premium/PremiumCheck';
+import PublicPageWithPremiumCheck from '@/components/premium/PublicPageWithPremiumCheck';
 import LawsNavigation from '@/components/laws/LawsNavigation';
 import LawsHeader from '@/components/laws/LawsHeader';
 import LawsGrid from '@/components/laws/LawsGrid';
@@ -29,14 +29,14 @@ const Laws = () => {
 
   if (isLoading) {
     return (
-      <PremiumCheck featureKey="laws">
+      <PublicPageWithPremiumCheck featureName="Zákony" allowPublicAccess={true}>
         <LawsLoadingSkeleton />
-      </PremiumCheck>
+      </PublicPageWithPremiumCheck>
     );
   }
 
   return (
-    <PremiumCheck featureKey="laws">
+    <PublicPageWithPremiumCheck featureName="Zákony" allowPublicAccess={true}>
       <div className="container mx-auto px-4 py-8 animate-fade-in">
         <LawsHeader />
         
@@ -47,7 +47,7 @@ const Laws = () => {
         
         <LawsGrid laws={filteredLaws} />
       </div>
-    </PremiumCheck>
+    </PublicPageWithPremiumCheck>
   );
 };
 

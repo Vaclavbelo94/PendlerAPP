@@ -1,4 +1,5 @@
 
+
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -24,7 +25,8 @@ import {
   LogOut,
   User,
   Shield,
-  Scale
+  Scale,
+  Lock
 } from 'lucide-react';
 
 const MobileNavigation = ({ onClose }: { onClose: () => void }) => {
@@ -41,17 +43,17 @@ const MobileNavigation = ({ onClose }: { onClose: () => void }) => {
   };
 
   const navigationItems = [
-    { label: 'Domů', href: '/', icon: Home },
-    { label: 'Dashboard', href: '/dashboard', icon: BarChart3, authRequired: true },
-    { label: 'Lekce němčiny', href: '/vocabulary', icon: GraduationCap },
-    { label: 'Směny', href: '/shifts', icon: Calendar, authRequired: true },
-    { label: 'Kalkulačka', href: '/calculator', icon: Calculator },
-    { label: 'Vozidlo', href: '/vehicle', icon: Car, authRequired: true },
-    { label: 'Daňový poradce', href: '/tax-advisor', icon: FileText },
-    { label: 'Překladač', href: '/translator', icon: Globe },
-    { label: 'Plánování cest', href: '/travel', icon: Map },
-    { label: 'Zákony', href: '/laws', icon: Scale },
-    { label: 'Nastavení', href: '/settings', icon: Settings, authRequired: true }
+    { label: 'Domů', href: '/', icon: Home, isPublic: true },
+    { label: 'Dashboard', href: '/dashboard', icon: BarChart3, isPremium: true },
+    { label: 'Lekce němčiny', href: '/vocabulary', icon: GraduationCap, isPublic: true },
+    { label: 'Směny', href: '/shifts', icon: Calendar, isPremium: true },
+    { label: 'Kalkulačka', href: '/calculator', icon: Calculator, isPublic: true },
+    { label: 'Vozidlo', href: '/vehicle', icon: Car, isPremium: true },
+    { label: 'Daňový poradce', href: '/tax-advisor', icon: FileText, isPremium: true },
+    { label: 'Překladač', href: '/translator', icon: Globe, isPublic: true },
+    { label: 'Plánování cest', href: '/travel', icon: Map, isPremium: true },
+    { label: 'Zákony', href: '/laws', icon: Scale, isPublic: true },
+    { label: 'Nastavení', href: '/settings', icon: Settings, isPremium: true }
   ];
 
   const supportItems = [
@@ -109,10 +111,9 @@ const MobileNavigation = ({ onClose }: { onClose: () => void }) => {
           <h3 className="text-sm font-medium text-muted-foreground mb-3">Hlavní funkce</h3>
           <nav className="space-y-1">
             {navigationItems.map((item) => {
-              if (item.authRequired && !user) return null;
-              
               const isActive = location.pathname === item.href;
               const Icon = item.icon;
+              const needsPremium = item.isPremium && !isPremium && !isAdmin;
               
               return (
                 <Button
@@ -124,7 +125,10 @@ const MobileNavigation = ({ onClose }: { onClose: () => void }) => {
                 >
                   <Link to={item.href}>
                     <Icon className="h-4 w-4 mr-3" />
-                    {item.label}
+                    <span className="flex-1 text-left">{item.label}</span>
+                    {needsPremium && (
+                      <Lock className="h-3 w-3 text-muted-foreground ml-2" />
+                    )}
                   </Link>
                 </Button>
               );
@@ -194,3 +198,4 @@ const MobileNavigation = ({ onClose }: { onClose: () => void }) => {
 };
 
 export default MobileNavigation;
+
