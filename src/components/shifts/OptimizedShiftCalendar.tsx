@@ -1,16 +1,13 @@
 
-import React, { useState, useMemo, useCallback } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useState, useMemo } from 'react';
 import { Calendar } from '@/components/ui/calendar';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Edit, Trash, Calendar as CalendarIcon } from 'lucide-react';
-import { format } from 'date-fns';
+import { CalendarDays, Edit, Trash2 } from 'lucide-react';
+import { format, isSameDay } from 'date-fns';
 import { cs } from 'date-fns/locale';
-import { Shift } from '@/hooks/shifts/useOptimizedShiftsManagement';
-import { cn } from '@/lib/utils';
-import { useScreenOrientation } from '@/hooks/useScreenOrientation';
-import { MobileShiftCalendar } from './mobile/MobileShiftCalendar';
+import { Shift } from '@/hooks/shifts/useShiftsCRUD';
 
 interface OptimizedShiftCalendarProps {
   shifts: Shift[];
@@ -18,111 +15,80 @@ interface OptimizedShiftCalendarProps {
   onDeleteShift: (shiftId: string) => void;
 }
 
-const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = React.memo(({
+const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
   shifts,
   onEditShift,
   onDeleteShift
 }) => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
-  const { isMobile } = useScreenOrientation();
 
-  // Memoize shifts for selected date to prevent unnecessary recalculations
-  const selectedShifts = useMemo(() => {
-    if (!selectedDate) return [];
-    return shifts.filter(shift => {
-      const shiftDate = new Date(shift.date);
-      return shiftDate.toDateString() === selectedDate.toDateString();
+  const shiftsMap = useMemo(() => {
+    const map = new Map<string, Shift[]>();
+    shifts.forEach(shift => {
+      const dateKey = format(new Date(shift.date), 'yyyy-MM-dd');
+      if (!map.has(dateKey)) {
+        map.set(dateKey, []);
+      }
+      map.get(dateKey)?.push(shift);
     });
-  }, [shifts, selectedDate]);
-
-  // Memoize dates with shifts for calendar modifiers
-  const datesWithShifts = useMemo(() => {
-    return shifts.map(shift => new Date(shift.date));
+    return map;
   }, [shifts]);
 
-  // Memoize calendar modifiers
-  const calendarModifiers = useMemo(() => ({
-    hasShift: datesWithShifts
-  }), [datesWithShifts]);
+  const selectedDateShifts = useMemo(() => {
+    if (!selectedDate) return [];
+    const dateKey = format(selectedDate, 'yyyy-MM-dd');
+    return shiftsMap.get(dateKey) || [];
+  }, [selectedDate, shiftsMap]);
 
-  // Memoize modifiers styles
-  const modifiersStyles = useMemo(() => ({
-    hasShift: {
-      backgroundColor: 'hsl(var(--primary))',
-      color: 'white',
-      fontWeight: 'bold'
-    }
-  }), []);
-
-  // Stabilized callbacks
-  const handleDateSelect = useCallback((date: Date | undefined) => {
-    setSelectedDate(date);
-  }, []);
-
-  const handleEditShift = useCallback((shift: Shift) => {
-    onEditShift(shift);
-  }, [onEditShift]);
-
-  const handleDeleteShift = useCallback((shiftId: string) => {
-    onDeleteShift(shiftId);
-  }, [onDeleteShift]);
-
-  const getShiftTypeLabel = useCallback((type: string) => {
+  const getShiftTypeLabel = (type: string) => {
     switch (type) {
-      case 'morning':
-        return 'Ranní směna';
-      case 'afternoon':
-        return 'Odpolední směna';
-      case 'night':
-        return 'Noční směna';
-      default:
-        return type;
+      case 'morning': return 'Ranní';
+      case 'afternoon': return 'Odpolední';
+      case 'night': return 'Noční';
+      default: return type;
     }
-  }, []);
+  };
 
-  const getShiftTypeColor = useCallback((type: string) => {
+  const getShiftTypeColor = (type: string) => {
     switch (type) {
-      case 'morning':
-        return 'bg-orange-500';
-      case 'afternoon':
-        return 'bg-blue-500';
-      case 'night':
-        return 'bg-purple-500';
-      default:
-        return 'bg-gray-500';
+      case 'morning': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300';
+      case 'afternoon': return 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300';
+      case 'night': return 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300';
+      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300';
     }
-  }, []);
+  };
 
-  // Use mobile calendar for mobile devices - moved after all hooks
-  if (isMobile) {
-    return (
-      <MobileShiftCalendar
-        shifts={shifts}
-        onEditShift={onEditShift}
-        onDeleteShift={onDeleteShift}
-      />
-    );
-  }
+  const modifiers = useMemo(() => ({
+    hasShift: (date: Date) => {
+      const dateKey = format(date, 'yyyy-MM-dd');
+      return shiftsMap.has(dateKey);
+    }
+  }), [shiftsMap]);
+
+  const modifiersClassNames = {
+    hasShift: 'bg-primary/20 font-bold'
+  };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <CalendarIcon className="h-5 w-5" />
+            <CalendarDays className="h-5 w-5" />
             Kalendář směn
           </CardTitle>
           <CardDescription>
-            Vyberte datum pro zobrazení směn
+            Klikněte na datum pro zobrazení směn
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Calendar
             mode="single"
             selected={selectedDate}
-            onSelect={handleDateSelect}
-            modifiers={calendarModifiers}
-            modifiersStyles={modifiersStyles}
+            onSelect={setSelectedDate}
+            locale={cs}
+            modifiers={modifiers}
+            modifiersClassNames={modifiersClassNames}
             className="rounded-md border"
           />
         </CardContent>
@@ -131,55 +97,49 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = React.memo
       <Card>
         <CardHeader>
           <CardTitle>
-            {selectedDate ? format(selectedDate, 'EEEE, d. MMMM yyyy', { locale: cs }) : 'Vyberte datum'}
+            Směny pro {selectedDate ? format(selectedDate, 'dd. MMMM yyyy', { locale: cs }) : 'vybraný den'}
           </CardTitle>
           <CardDescription>
-            {selectedShifts.length > 0 
-              ? `${selectedShifts.length} směna${selectedShifts.length > 1 ? 'y' : ''}`
-              : 'Žádné směny'
+            {selectedDateShifts.length === 0 
+              ? 'Žádné směny pro tento den'
+              : `${selectedDateShifts.length} směn${selectedDateShifts.length > 1 ? 'y' : 'a'}`
             }
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {selectedShifts.length === 0 ? (
+          {selectedDateShifts.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
-              <CalendarIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>Na tento den nemáte naplánované žádné směny</p>
+              <CalendarDays className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p>Pro tento den nejsou naplánované žádné směny</p>
             </div>
           ) : (
-            <div className="space-y-4">
-              {selectedShifts.map((shift) => (
-                <div
-                  key={shift.id}
-                  className="flex items-center justify-between p-4 border rounded-lg"
-                >
-                  <div className="flex items-center space-x-3">
-                    <div className={cn("w-3 h-3 rounded-full", getShiftTypeColor(shift.type))} />
-                    <div>
-                      <Badge variant="secondary">
-                        {getShiftTypeLabel(shift.type)}
-                      </Badge>
-                      {shift.notes && (
-                        <p className="text-sm text-muted-foreground mt-1">
-                          {shift.notes}
-                        </p>
-                      )}
-                    </div>
+            <div className="space-y-3">
+              {selectedDateShifts.map((shift) => (
+                <div key={shift.id} className="flex items-center justify-between p-4 border rounded-lg bg-muted/30">
+                  <div className="flex items-center gap-3">
+                    <Badge className={getShiftTypeColor(shift.type)}>
+                      {getShiftTypeLabel(shift.type)}
+                    </Badge>
+                    {shift.notes && (
+                      <span className="text-sm text-muted-foreground">
+                        {shift.notes}
+                      </span>
+                    )}
                   </div>
-                  <div className="flex space-x-2">
+                  <div className="flex items-center gap-2">
                     <Button
+                      variant="ghost"
                       size="sm"
-                      variant="outline"
-                      onClick={() => handleEditShift(shift)}
+                      onClick={() => onEditShift(shift)}
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
                     <Button
+                      variant="ghost"
                       size="sm"
-                      variant="destructive"
-                      onClick={() => shift.id && handleDeleteShift(shift.id)}
+                      onClick={() => shift.id && onDeleteShift(shift.id)}
                     >
-                      <Trash className="h-4 w-4" />
+                      <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
@@ -190,8 +150,6 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = React.memo
       </Card>
     </div>
   );
-});
-
-OptimizedShiftCalendar.displayName = 'OptimizedShiftCalendar';
+};
 
 export default OptimizedShiftCalendar;

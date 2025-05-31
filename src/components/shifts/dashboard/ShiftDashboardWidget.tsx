@@ -2,126 +2,114 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
-import { format, addDays, isSameDay, startOfWeek, endOfWeek } from 'date-fns';
+import { Badge } from '@/components/ui/badge';
+import { Calendar, Clock, Plus } from 'lucide-react';
+import { format, isToday, isTomorrow, addDays } from 'date-fns';
 import { cs } from 'date-fns/locale';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { Shift } from '@/hooks/shifts/useShiftsCRUD';
 
 interface ShiftDashboardWidgetProps {
-  shifts: Array<{
-    date: Date;
-    type: string;
-    notes?: string;
-  }>;
+  shifts: Shift[];
 }
 
 export const ShiftDashboardWidget: React.FC<ShiftDashboardWidgetProps> = ({ shifts }) => {
-  const [currentWeek, setCurrentWeek] = React.useState(new Date());
-  
-  const weekStart = startOfWeek(currentWeek, { weekStartsOn: 1 });
-  const weekEnd = endOfWeek(currentWeek, { weekStartsOn: 1 });
-  
-  const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
-  
-  const getShiftForDay = (date: Date) => {
-    return shifts.find(shift => isSameDay(shift.date, date));
-  };
+  const navigate = useNavigate();
 
-  const getShiftTypeIcon = (type: string) => {
+  const upcomingShifts = React.useMemo(() => {
+    const today = new Date();
+    const nextWeek = addDays(today, 7);
+    
+    return shifts
+      .filter(shift => {
+        const shiftDate = new Date(shift.date);
+        return shiftDate >= today && shiftDate <= nextWeek;
+      })
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+      .slice(0, 3);
+  }, [shifts]);
+
+  const getShiftTypeLabel = (type: string) => {
     switch (type) {
-      case 'morning': return '🌅';
-      case 'afternoon': return '☀️';
-      case 'night': return '🌙';
-      default: return '⏰';
+      case 'morning': return 'Ranní';
+      case 'afternoon': return 'Odpolední';
+      case 'night': return 'Noční';
+      default: return type;
     }
   };
 
-  const navigateWeek = (direction: 'prev' | 'next') => {
-    setCurrentWeek(prev => addDays(prev, direction === 'next' ? 7 : -7));
+  const getShiftTypeColor = (type: string) => {
+    switch (type) {
+      case 'morning': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300';
+      case 'afternoon': return 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300';
+      case 'night': return 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300';
+      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300';
+    }
   };
 
+  const getDateLabel = (dateStr: string) => {
+    const date = new Date(dateStr);
+    if (isToday(date)) return 'Dnes';
+    if (isTomorrow(date)) return 'Zítra';
+    return format(date, 'dd.MM.', { locale: cs });
+  };
+
+  if (upcomingShifts.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Calendar className="h-5 w-5" />
+            Nadcházející směny
+          </CardTitle>
+          <CardDescription>Vaše směny na příští týden</CardDescription>
+        </CardHeader>
+        <CardContent className="text-center py-6">
+          <p className="text-muted-foreground mb-4">Žádné nadcházející směny</p>
+          <Button onClick={() => navigate('/shifts')} size="sm">
+            <Plus className="mr-2 h-4 w-4" />
+            Přidat směnu
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
-    <Card className="h-full">
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Calendar className="h-5 w-5" />
-              Týdenní rozvrh
-            </CardTitle>
-            <CardDescription>
-              {format(weekStart, 'd. MMM', { locale: cs })} - {format(weekEnd, 'd. MMM yyyy', { locale: cs })}
-            </CardDescription>
-          </div>
-          <div className="flex gap-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigateWeek('prev')}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigateWeek('next')}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Calendar className="h-5 w-5" />
+          Nadcházející směny
+        </CardTitle>
+        <CardDescription>Vaše směny na příští týden</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-2">
-        {weekDays.map((day, index) => {
-          const shift = getShiftForDay(day);
-          const isToday = isSameDay(day, new Date());
-          
-          return (
-            <div
-              key={index}
-              className={`flex items-center justify-between p-2 rounded-lg transition-colors ${
-                isToday ? 'bg-primary/10 border border-primary/20' : 'bg-muted/30'
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <div className="text-center min-w-[3rem]">
-                  <div className={`text-sm font-medium ${isToday ? 'text-primary' : ''}`}>
-                    {format(day, 'EEE', { locale: cs })}
-                  </div>
-                  <div className={`text-lg ${isToday ? 'text-primary font-bold' : ''}`}>
-                    {format(day, 'd')}
-                  </div>
-                </div>
-                <div className="flex-1">
-                  {shift ? (
-                    <div className="flex items-center gap-2">
-                      <span className="text-lg">{getShiftTypeIcon(shift.type)}</span>
-                      <div>
-                        <div className="font-medium text-sm">
-                          {shift.type === 'morning' ? 'Ranní (6:00)' : 
-                           shift.type === 'afternoon' ? 'Odpolední (14:00)' : 'Noční (22:00)'}
-                        </div>
-                        {shift.notes && (
-                          <div className="text-xs text-muted-foreground truncate max-w-[120px]">
-                            {shift.notes}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ) : (
-                    <span className="text-sm text-muted-foreground">Volno</span>
-                  )}
-                </div>
+      <CardContent className="space-y-3">
+        {upcomingShifts.map((shift) => (
+          <div key={shift.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+            <div className="flex items-center gap-3">
+              <div className="text-sm font-medium">
+                {getDateLabel(shift.date)}
               </div>
+              <Badge className={getShiftTypeColor(shift.type)}>
+                {getShiftTypeLabel(shift.type)}
+              </Badge>
             </div>
-          );
-        })}
+            <div className="flex items-center gap-1 text-sm text-muted-foreground">
+              <Clock className="h-3 w-3" />
+              8h
+            </div>
+          </div>
+        ))}
         
-        <div className="pt-2 border-t">
-          <Button asChild variant="outline" size="sm" className="w-full">
-            <Link to="/shifts">
-              Zobrazit celý kalendář
-            </Link>
+        <div className="pt-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="w-full"
+            onClick={() => navigate('/shifts')}
+          >
+            Zobrazit všechny směny
           </Button>
         </div>
       </CardContent>

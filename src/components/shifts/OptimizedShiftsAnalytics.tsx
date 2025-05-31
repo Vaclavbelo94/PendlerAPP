@@ -1,114 +1,105 @@
 
-import React, { useMemo, lazy, Suspense } from 'react';
+import React, { useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Calendar, Clock, TrendingUp } from 'lucide-react';
-import { Shift } from '@/hooks/shifts/useOptimizedShiftsManagement';
-
-// Lazy load chart components
-const PieChart = lazy(() => import('recharts').then(module => ({ default: module.PieChart })));
-const Pie = lazy(() => import('recharts').then(module => ({ default: module.Pie })));
-const Cell = lazy(() => import('recharts').then(module => ({ default: module.Cell })));
-const ResponsiveContainer = lazy(() => import('recharts').then(module => ({ default: module.ResponsiveContainer })));
-const BarChart = lazy(() => import('recharts').then(module => ({ default: module.BarChart })));
-const Bar = lazy(() => import('recharts').then(module => ({ default: module.Bar })));
-const XAxis = lazy(() => import('recharts').then(module => ({ default: module.XAxis })));
-const YAxis = lazy(() => import('recharts').then(module => ({ default: module.YAxis })));
-const CartesianGrid = lazy(() => import('recharts').then(module => ({ default: module.CartesianGrid })));
-const Tooltip = lazy(() => import('recharts').then(module => ({ default: module.Tooltip })));
+import { Badge } from '@/components/ui/badge';
+import { BarChart3, Clock, TrendingUp, Calendar } from 'lucide-react';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, endOfWeek } from 'date-fns';
+import { cs } from 'date-fns/locale';
+import { Shift } from '@/hooks/shifts/useShiftsCRUD';
 
 interface OptimizedShiftsAnalyticsProps {
   shifts: Shift[];
 }
 
-const ChartSkeleton = () => (
-  <div className="space-y-4">
-    <Skeleton className="h-6 w-32" />
-    <Skeleton className="h-64 w-full" />
-  </div>
-);
+const OptimizedShiftsAnalytics: React.FC<OptimizedShiftsAnalyticsProps> = ({ shifts }) => {
+  const analytics = useMemo(() => {
+    const now = new Date();
+    const currentMonth = {
+      start: startOfMonth(now),
+      end: endOfMonth(now)
+    };
+    
+    const currentWeek = {
+      start: startOfWeek(now, { weekStartsOn: 1 }),
+      end: endOfWeek(now, { weekStartsOn: 1 })
+    };
 
-const OptimizedShiftsAnalytics: React.FC<OptimizedShiftsAnalyticsProps> = React.memo(({ shifts }) => {
-  // Memoize shift type data to prevent recalculation
-  const shiftTypeData = useMemo(() => {
-    const types = shifts.reduce((acc, shift) => {
+    const thisMonthShifts = shifts.filter(shift => {
+      const shiftDate = new Date(shift.date);
+      return shiftDate >= currentMonth.start && shiftDate <= currentMonth.end;
+    });
+
+    const thisWeekShifts = shifts.filter(shift => {
+      const shiftDate = new Date(shift.date);
+      return shiftDate >= currentWeek.start && shiftDate <= currentWeek.end;
+    });
+
+    const shiftTypeCount = shifts.reduce((acc, shift) => {
       acc[shift.type] = (acc[shift.type] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
 
-    return [
-      { name: 'Ranní', value: types.morning || 0, color: '#f59e0b' },
-      { name: 'Odpolední', value: types.afternoon || 0, color: '#3b82f6' },
-      { name: 'Noční', value: types.night || 0, color: '#8b5cf6' }
-    ].filter(item => item.value > 0);
-  }, [shifts]);
+    const totalHours = shifts.length * 8; // Předpokládáme 8h směny
+    const monthlyHours = thisMonthShifts.length * 8;
+    const weeklyHours = thisWeekShifts.length * 8;
 
-  // Memoize monthly data
-  const monthlyData = useMemo(() => {
-    const monthly = shifts.reduce((acc, shift) => {
-      const month = new Date(shift.date).toLocaleDateString('cs-CZ', { month: 'long', year: 'numeric' });
-      acc[month] = (acc[month] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
-
-    return Object.entries(monthly).map(([month, count]) => ({
-      month,
-      count
-    }));
-  }, [shifts]);
-
-  // Memoize stats
-  const stats = useMemo(() => {
-    const totalShifts = shifts.length;
-    const maxType = shiftTypeData.reduce((max, current) => 
-      current.value > max.value ? current : max, shiftTypeData[0]
-    );
-    const thisMonthShifts = shifts.filter(shift => {
-      const shiftDate = new Date(shift.date);
-      const now = new Date();
-      return shiftDate.getMonth() === now.getMonth() && 
-             shiftDate.getFullYear() === now.getFullYear();
-    }).length;
+    // Průměrné směny za týden
+    const weeksWithShifts = Math.max(1, Math.ceil(shifts.length / 4)); // Hrubý odhad
+    const avgShiftsPerWeek = shifts.length / weeksWithShifts;
 
     return {
-      totalShifts,
-      mostCommonType: maxType?.name || 'Žádná',
-      thisMonthShifts
+      total: {
+        shifts: shifts.length,
+        hours: totalHours
+      },
+      thisMonth: {
+        shifts: thisMonthShifts.length,
+        hours: monthlyHours
+      },
+      thisWeek: {
+        shifts: thisWeekShifts.length,
+        hours: weeklyHours
+      },
+      byType: shiftTypeCount,
+      averages: {
+        shiftsPerWeek: avgShiftsPerWeek,
+        hoursPerWeek: avgShiftsPerWeek * 8
+      }
     };
-  }, [shifts, shiftTypeData]);
+  }, [shifts]);
 
-  if (shifts.length === 0) {
-    return (
-      <Card>
-        <CardContent className="text-center py-8">
-          <Calendar className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-          <p className="text-muted-foreground">Žádná data pro analýzu</p>
-        </CardContent>
-      </Card>
-    );
-  }
+  const getShiftTypeLabel = (type: string) => {
+    switch (type) {
+      case 'morning': return 'Ranní';
+      case 'afternoon': return 'Odpolední';
+      case 'night': return 'Noční';
+      default: return type;
+    }
+  };
+
+  const getShiftTypeColor = (type: string) => {
+    switch (type) {
+      case 'morning': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300';
+      case 'afternoon': return 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300';
+      case 'night': return 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300';
+      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300';
+    }
+  };
 
   return (
     <div className="space-y-6">
-      {/* Summary Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* Celkové statistiky */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Celkem směn</CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalShifts}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Nejčastější typ</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.mostCommonType}</div>
+            <div className="text-2xl font-bold">{analytics.total.shifts}</div>
+            <p className="text-xs text-muted-foreground">
+              {analytics.total.hours} hodin celkem
+            </p>
           </CardContent>
         </Card>
 
@@ -118,75 +109,118 @@ const OptimizedShiftsAnalytics: React.FC<OptimizedShiftsAnalyticsProps> = React.
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.thisMonthShifts}</div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Charts with lazy loading */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Rozdělení typů směn</CardTitle>
-            <CardDescription>
-              Poměr jednotlivých typů směn
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Suspense fallback={<ChartSkeleton />}>
-              <div className="h-[300px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={shiftTypeData}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, value }) => `${name}: ${value}`}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {shiftTypeData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-            </Suspense>
+            <div className="text-2xl font-bold">{analytics.thisMonth.shifts}</div>
+            <p className="text-xs text-muted-foreground">
+              {analytics.thisMonth.hours} hodin
+            </p>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader>
-            <CardTitle>Směny podle měsíců</CardTitle>
-            <CardDescription>
-              Počet směn v jednotlivých měsících
-            </CardDescription>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Tento týden</CardTitle>
+            <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <Suspense fallback={<ChartSkeleton />}>
-              <div className="h-[300px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={monthlyData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="count" fill="#3b82f6" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </Suspense>
+            <div className="text-2xl font-bold">{analytics.thisWeek.shifts}</div>
+            <p className="text-xs text-muted-foreground">
+              {analytics.thisWeek.hours} hodin
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Průměr/týden</CardTitle>
+            <BarChart3 className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{analytics.averages.shiftsPerWeek.toFixed(1)}</div>
+            <p className="text-xs text-muted-foreground">
+              {analytics.averages.hoursPerWeek.toFixed(0)} hodin/týden
+            </p>
           </CardContent>
         </Card>
       </div>
+
+      {/* Analýza podle typu směn */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Rozdělení podle typu směn</CardTitle>
+          <CardDescription>
+            Přehled vašich směn podle typu
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {Object.keys(analytics.byType).length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {Object.entries(analytics.byType).map(([type, count]) => (
+                <div key={type} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <Badge className={getShiftTypeColor(type)}>
+                      {getShiftTypeLabel(type)}
+                    </Badge>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-2xl font-bold">{count}</div>
+                    <div className="text-sm text-muted-foreground">
+                      {((count / analytics.total.shifts) * 100).toFixed(0)}%
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p>Žádná data pro analýzu</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Nedávná aktivita */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Nedávné směny</CardTitle>
+          <CardDescription>
+            Vaše poslední směny
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {shifts.length > 0 ? (
+            <div className="space-y-3">
+              {shifts
+                .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                .slice(0, 5)
+                .map((shift) => (
+                  <div key={shift.id} className="flex items-center justify-between p-3 border rounded-lg bg-muted/30">
+                    <div className="flex items-center gap-3">
+                      <Badge className={getShiftTypeColor(shift.type)}>
+                        {getShiftTypeLabel(shift.type)}
+                      </Badge>
+                      <span className="text-sm">
+                        {format(new Date(shift.date), 'dd.MM.yyyy', { locale: cs })}
+                      </span>
+                    </div>
+                    {shift.notes && (
+                      <span className="text-sm text-muted-foreground">
+                        {shift.notes}
+                      </span>
+                    )}
+                  </div>
+                ))}
+            </div>
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p>Žádné směny k zobrazení</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
-});
-
-OptimizedShiftsAnalytics.displayName = 'OptimizedShiftsAnalytics';
+};
 
 export default OptimizedShiftsAnalytics;

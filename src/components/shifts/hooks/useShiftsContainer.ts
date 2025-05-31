@@ -1,54 +1,55 @@
 
-import { useState, useCallback } from 'react';
-import { useSimplifiedAuth } from '@/hooks/auth/useSimplifiedAuth';
-import { useOptimizedShiftsManagement } from '@/hooks/shifts/useOptimizedShiftsManagement';
+import { useState, useCallback, useMemo } from 'react';
+import { useAuth } from '@/hooks/useAuth';
 import { useOptimizedNetworkStatus } from '@/hooks/useOptimizedNetworkStatus';
-import { useDebouncedNavigation } from '@/hooks/useDebouncedNavigation';
+import { useRefactoredShiftsManagement } from '@/hooks/shifts/useRefactoredShiftsManagement';
+import { Shift } from '@/hooks/shifts/useShiftsCRUD';
 
 export const useShiftsContainer = () => {
-  const { user, isInitialized } = useSimplifiedAuth();
+  const { user } = useAuth();
   const { isOnline, isSlowConnection } = useOptimizedNetworkStatus();
+  const [isInitialized, setIsInitialized] = useState(true);
   const [activeSection, setActiveSection] = useState('calendar');
+  const [isChanging, setIsChanging] = useState(false);
   const [isAddSheetOpen, setIsAddSheetOpen] = useState(false);
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
-  const [editingShift, setEditingShift] = useState(null);
+  const [editingShift, setEditingShift] = useState<Shift | null>(null);
 
   const {
     shifts,
     isLoading,
+    isSaving,
     error,
     addShift,
     updateShift,
     deleteShift,
-    isSaving,
     refreshShifts
-  } = useOptimizedShiftsManagement(user?.id);
+  } = useRefactoredShiftsManagement(user?.id);
 
-  // Use debounced navigation to prevent rapid switching
-  const { handleSectionChange, isChanging } = useDebouncedNavigation({
-    onSectionChange: setActiveSection,
-    debounceMs: 200
-  });
+  const handleSectionChange = useCallback((section: string) => {
+    setIsChanging(true);
+    setActiveSection(section);
+    setTimeout(() => setIsChanging(false), 150);
+  }, []);
 
-  // Stabilized callbacks
-  const handleAddShift = useCallback(async (formData) => {
-    const newShift = await addShift(formData);
-    if (newShift !== null) {
+  const handleAddShift = useCallback(async (shiftData: Omit<Shift, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
+    const result = await addShift(shiftData);
+    if (result) {
       setIsAddSheetOpen(false);
     }
+    return result;
   }, [addShift]);
 
-  const handleEditShift = useCallback(async (formData) => {
-    if (!editingShift) return;
-    
-    const updatedShift = await updateShift({ ...formData, id: editingShift.id });
-    if (updatedShift !== null) {
+  const handleEditShift = useCallback(async (shiftData: Shift) => {
+    const result = await updateShift(shiftData);
+    if (result) {
       setIsEditSheetOpen(false);
       setEditingShift(null);
     }
-  }, [editingShift, updateShift]);
+    return result;
+  }, [updateShift]);
 
-  const openEditDialog = useCallback((shift) => {
+  const openEditDialog = useCallback((shift: Shift) => {
     setEditingShift(shift);
     setIsEditSheetOpen(true);
   }, []);
@@ -62,13 +63,10 @@ export const useShiftsContainer = () => {
   }, []);
 
   return {
-    // Auth & Network
     user,
     isInitialized,
     isOnline,
     isSlowConnection,
-    
-    // State
     activeSection,
     isAddSheetOpen,
     setIsAddSheetOpen,
@@ -76,15 +74,11 @@ export const useShiftsContainer = () => {
     setIsEditSheetOpen,
     editingShift,
     setEditingShift,
-    
-    // Shifts data
     shifts,
     isLoading,
     error,
     isSaving,
     isChanging,
-    
-    // Handlers
     handleSectionChange,
     handleAddShift,
     handleEditShift,
