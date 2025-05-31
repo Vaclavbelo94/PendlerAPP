@@ -18,7 +18,7 @@ export interface Shift {
 interface UseShiftsCRUDOptions {
   userId: string | undefined;
   isOnline: boolean;
-  onShiftChange?: (shifts: Shift[]) => void;
+  onShiftChange?: (updater: (prev: Shift[]) => Shift[]) => void;
 }
 
 export const useShiftsCRUD = ({ userId, isOnline, onShiftChange }: UseShiftsCRUDOptions) => {
