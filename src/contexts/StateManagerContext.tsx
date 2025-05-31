@@ -20,11 +20,11 @@ interface StateManagerContextType {
   
   // Actions
   syncData: (entity: string, action: 'create' | 'update' | 'delete', data: any) => Promise<void>;
-  performOptimisticAction: <T>(
+  performOptimisticAction: (
     queryKey: any[],
-    action: () => Promise<T>,
+    action: () => Promise<any>,
     optimisticUpdater: (old: any) => any
-  ) => Promise<T>;
+  ) => Promise<any>;
   
   // Status
   isOnline: boolean;
@@ -174,11 +174,11 @@ export const StateManagerProvider: React.FC<StateManagerProviderProps> = ({ chil
   };
 
   // Perform optimistic action
-  const performOptimisticAction = async <T>(
+  const performOptimisticAction = async (
     queryKey: any[],
-    action: () => Promise<T>,
+    action: () => Promise<any>,
     optimisticUpdater: (old: any) => any
-  ): Promise<T> => {
+  ): Promise<any> => {
     const mutation = optimisticUpdates.createOptimisticMutation(
       action,
       {
