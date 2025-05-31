@@ -83,6 +83,9 @@ export const useOptimizedQuery = <T>(options: OptimizedQueryOptions<T>) => {
   const wrappedQueryFn = useMemo(() => {
     if (!options.queryFn || typeof options.queryFn !== 'function') return undefined;
 
+    // Type assertion to ensure TypeScript knows this is a function
+    const queryFunction = options.queryFn as (...args: any[]) => Promise<T>;
+
     return async (...args: any[]) => {
       const startTime = performance.now();
       const wasInCache = !!options.queryKey && 
@@ -90,7 +93,7 @@ export const useOptimizedQuery = <T>(options: OptimizedQueryOptions<T>) => {
         !!localStorage.getItem(`query_${JSON.stringify(options.queryKey)}`);
 
       try {
-        const result = await options.queryFn(...args);
+        const result = await queryFunction(...args);
         
         // Update metrics
         metricsRef.current = {
