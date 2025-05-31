@@ -119,7 +119,9 @@ export const StateManagerProvider: React.FC<StateManagerProviderProps> = ({ chil
       
       // Predictive preload based on current route
       const currentPath = window.location.pathname;
-      queryManager.predictivePreload(currentPath, user.is_premium ? 'premium' : 'free');
+      // Get premium status from user metadata or use default
+      const isPremium = user.user_metadata?.is_premium || false;
+      queryManager.predictivePreload(currentPath, isPremium ? 'premium' : 'free');
     }
 
     return () => {

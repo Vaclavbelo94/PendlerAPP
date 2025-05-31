@@ -1,3 +1,4 @@
+
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { Toaster } from '@/components/ui/toaster'
@@ -8,6 +9,7 @@ import { AnalyticsProvider } from '@/components/analytics/AnalyticsProvider'
 import LayoutWrapper from '@/components/layouts/LayoutWrapper'
 import { RouteOptimizer } from '@/components/optimized/RouteOptimizer'
 import { DatabaseOptimizer } from '@/components/optimized/DatabaseOptimizer'
+import { StateManagerProvider } from '@/contexts/StateManagerContext'
 import Index from '@/pages/Index'
 import Dashboard from '@/pages/Dashboard'
 import Vocabulary from '@/pages/Vocabulary'
@@ -26,7 +28,6 @@ import FAQ from '@/pages/FAQ'
 import Login from '@/pages/Login'
 import Register from '@/pages/Register'
 import Admin from '@/pages/Admin'
-import { StateManagerProvider } from '@/contexts/StateManagerContext'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -42,8 +43,8 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Router>
-          <StateManagerProvider>
-            <AuthProvider>
+          <AuthProvider>
+            <StateManagerProvider>
               <AnalyticsProvider>
                 <DatabaseOptimizer />
                 <RouteOptimizer>
@@ -73,8 +74,8 @@ function App() {
                 <Toaster />
                 <Sonner />
               </AnalyticsProvider>
-            </AuthProvider>
-          </StateManagerProvider>
+            </StateManagerProvider>
+          </AuthProvider>
         </Router>
       </TooltipProvider>
     </QueryClientProvider>

@@ -87,7 +87,7 @@ export const useOptimizedQuery = <T>(options: OptimizedQueryOptions<T>) => {
       const startTime = performance.now();
       const wasInCache = !!options.queryKey && 
         typeof window !== 'undefined' && 
-        localStorage.getItem(`query_${JSON.stringify(options.queryKey)}`);
+        !!localStorage.getItem(`query_${JSON.stringify(options.queryKey)}`);
 
       try {
         const result = await options.queryFn!(...args);
