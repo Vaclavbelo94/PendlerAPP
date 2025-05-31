@@ -81,7 +81,7 @@ export const useOptimizedQuery = <T>(options: OptimizedQueryOptions<T>) => {
 
   // Performance monitoring wrapper
   const wrappedQueryFn = useMemo(() => {
-    if (!options.queryFn) return undefined;
+    if (!options.queryFn || typeof options.queryFn !== 'function') return undefined;
 
     return async (...args: any[]) => {
       const startTime = performance.now();
@@ -90,7 +90,7 @@ export const useOptimizedQuery = <T>(options: OptimizedQueryOptions<T>) => {
         !!localStorage.getItem(`query_${JSON.stringify(options.queryKey)}`);
 
       try {
-        const result = await options.queryFn!(...args);
+        const result = await options.queryFn(...args);
         
         // Update metrics
         metricsRef.current = {
