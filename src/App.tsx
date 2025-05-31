@@ -41,10 +41,10 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <AuthProvider>
-          <AnalyticsProvider>
-            <DatabaseOptimizer />
-            <Router>
+        <Router>
+          <AuthProvider>
+            <AnalyticsProvider>
+              <DatabaseOptimizer />
               <RouteOptimizer>
                 <LayoutWrapper>
                   <Routes>
@@ -69,11 +69,11 @@ function App() {
                   </Routes>
                 </LayoutWrapper>
               </RouteOptimizer>
-            </Router>
-            <Toaster />
-            <Sonner />
-          </AnalyticsProvider>
-        </AuthProvider>
+              <Toaster />
+              <Sonner />
+            </AnalyticsProvider>
+          </AuthProvider>
+        </Router>
       </TooltipProvider>
     </QueryClientProvider>
   )
