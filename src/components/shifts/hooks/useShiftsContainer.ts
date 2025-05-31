@@ -20,8 +20,8 @@ export const useShiftsContainer = () => {
     isLoading,
     isSaving,
     error,
-    addShift,
-    updateShift,
+    addShift: addShiftOriginal,
+    updateShift: updateShiftOriginal,
     deleteShift,
     refreshShifts
   } = useRefactoredShiftsManagement(user?.id);
@@ -32,22 +32,20 @@ export const useShiftsContainer = () => {
     setTimeout(() => setIsChanging(false), 150);
   }, []);
 
-  const handleAddShift = useCallback(async (shiftData: Omit<Shift, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
-    const result = await addShift(shiftData);
+  const handleAddShift = useCallback(async (shiftData: Omit<Shift, 'id' | 'user_id' | 'created_at' | 'updated_at'>): Promise<void> => {
+    const result = await addShiftOriginal(shiftData);
     if (result) {
       setIsAddSheetOpen(false);
     }
-    return result;
-  }, [addShift]);
+  }, [addShiftOriginal]);
 
-  const handleEditShift = useCallback(async (shiftData: Shift) => {
-    const result = await updateShift(shiftData);
+  const handleEditShift = useCallback(async (shiftData: Shift): Promise<void> => {
+    const result = await updateShiftOriginal(shiftData);
     if (result) {
       setIsEditSheetOpen(false);
       setEditingShift(null);
     }
-    return result;
-  }, [updateShift]);
+  }, [updateShiftOriginal]);
 
   const openEditDialog = useCallback((shift: Shift) => {
     setEditingShift(shift);
