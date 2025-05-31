@@ -1,10 +1,10 @@
 
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import UserAdminPanel from './UserAdminPanel';
-import PremiumFeaturesPanel from './PremiumFeaturesPanel';
-import PromoCodesPanel from './PromoCodesPanel';
-import PasswordResetPanel from './PasswordResetPanel';
+import { UserAdminPanel } from './UserAdminPanel';
+import { PremiumFeaturesPanel } from './PremiumFeaturesPanel';
+import { PromoCodesPanel } from './PromoCodesPanel';
+import { PasswordResetPanel } from './PasswordResetPanel';
 import DatabasePanel from './database/DatabasePanel';
 import SystemMonitoringPanel from './monitoring/SystemMonitoringPanel';
 import PerformanceDashboard from './analytics/PerformanceDashboard';

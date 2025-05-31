@@ -1,9 +1,10 @@
+
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { Toaster } from '@/components/ui/toaster'
 import { Toaster as Sonner } from 'sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
-import { AuthProvider } from '@/contexts/AuthContext'
+import { AuthProvider } from '@/hooks/useAuth'
 import { AnalyticsProvider } from '@/components/analytics/AnalyticsProvider'
 import LayoutWrapper from '@/components/layouts/LayoutWrapper'
 import { RouteOptimizer } from '@/components/optimized/RouteOptimizer'
@@ -16,7 +17,7 @@ import Calculator from '@/pages/Calculator'
 import Translator from '@/pages/Translator'
 import Vehicle from '@/pages/Vehicle'
 import TaxAdvisor from '@/pages/TaxAdvisor'
-import Travel from '@/pages/Travel'
+import TravelPlanning from '@/pages/TravelPlanning'
 import Laws from '@/pages/Laws'
 import Settings from '@/pages/Settings'
 import Premium from '@/pages/Premium'
@@ -55,7 +56,7 @@ function App() {
                     <Route path="/translator" element={<Translator />} />
                     <Route path="/vehicle" element={<Vehicle />} />
                     <Route path="/tax-advisor" element={<TaxAdvisor />} />
-                    <Route path="/travel" element={<Travel />} />
+                    <Route path="/travel" element={<TravelPlanning />} />
                     <Route path="/laws" element={<Laws />} />
                     <Route path="/settings" element={<Settings />} />
                     <Route path="/premium" element={<Premium />} />
