@@ -1,0 +1,60 @@
+
+/* Capacitor-specific mobile optimizations */
+.capacitor-android {
+  --safe-area-inset-top: env(safe-area-inset-top, 24px);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-inset-left: env(safe-area-inset-left, 0px);
+  --safe-area-inset-right: env(safe-area-inset-right, 0px);
+}
+
+.capacitor-ios {
+  --safe-area-inset-top: env(safe-area-inset-top, 44px);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom, 34px);
+  --safe-area-inset-left: env(safe-area-inset-left, 0px);
+  --safe-area-inset-right: env(safe-area-inset-right, 0px);
+}
+
+/* Native app specific styles */
+.native-app {
+  padding-top: var(--safe-area-inset-top);
+  padding-bottom: var(--safe-area-inset-bottom);
+  padding-left: var(--safe-area-inset-left);
+  padding-right: var(--safe-area-inset-right);
+}
+
+/* Hide web-only elements in native */
+.native-app .web-only {
+  display: none !important;
+}
+
+/* Native-specific button styles */
+.native-button {
+  min-height: 44px; /* iOS HIG recommendation */
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Haptic feedback indication */
+.haptic-feedback {
+  transition: transform 0.1s ease;
+}
+
+.haptic-feedback:active {
+  transform: scale(0.95);
+}
+
+/* Native keyboard handling */
+.keyboard-adjust {
+  transition: transform 0.3s ease;
+}
+
+/* Status bar handling */
+.status-bar-safe {
+  padding-top: var(--safe-area-inset-top);
+}
+
+/* Navigation bar safe area */
+.nav-bar-safe {
+  padding-bottom: var(--safe-area-inset-bottom);
+}

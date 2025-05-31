@@ -10,6 +10,7 @@
   "orientation": "portrait-primary",
   "scope": "/",
   "id": "pendleruv-pomocnik",
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/icon-192x192.png",
@@ -103,6 +104,5 @@
       ]
     }
   ],
-  "prefer_related_applications": false,
   "iarc_rating_id": "e58c174a-81d2-5c3c-32cc-34b8de4a52e9"
 }
