@@ -1,4 +1,3 @@
-
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { Toaster } from '@/components/ui/toaster'
@@ -27,6 +26,7 @@ import FAQ from '@/pages/FAQ'
 import Login from '@/pages/Login'
 import Register from '@/pages/Register'
 import Admin from '@/pages/Admin'
+import { StateManagerProvider } from '@/contexts/StateManagerContext'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -42,37 +42,39 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Router>
-          <AuthProvider>
-            <AnalyticsProvider>
-              <DatabaseOptimizer />
-              <RouteOptimizer>
-                <LayoutWrapper>
-                  <Routes>
-                    <Route path="/" element={<Index />} />
-                    <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/vocabulary" element={<Vocabulary />} />
-                    <Route path="/shifts" element={<Shifts />} />
-                    <Route path="/calculator" element={<Calculator />} />
-                    <Route path="/translator" element={<Translator />} />
-                    <Route path="/vehicle" element={<Vehicle />} />
-                    <Route path="/tax-advisor" element={<TaxAdvisor />} />
-                    <Route path="/travel" element={<TravelPlanning />} />
-                    <Route path="/laws" element={<Laws />} />
-                    <Route path="/settings" element={<Settings />} />
-                    <Route path="/premium" element={<Premium />} />
-                    <Route path="/pricing" element={<Pricing />} />
-                    <Route path="/contact" element={<Contact />} />
-                    <Route path="/faq" element={<FAQ />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route path="/admin" element={<Admin />} />
-                  </Routes>
-                </LayoutWrapper>
-              </RouteOptimizer>
-              <Toaster />
-              <Sonner />
-            </AnalyticsProvider>
-          </AuthProvider>
+          <StateManagerProvider>
+            <AuthProvider>
+              <AnalyticsProvider>
+                <DatabaseOptimizer />
+                <RouteOptimizer>
+                  <LayoutWrapper>
+                    <Routes>
+                      <Route path="/" element={<Index />} />
+                      <Route path="/dashboard" element={<Dashboard />} />
+                      <Route path="/vocabulary" element={<Vocabulary />} />
+                      <Route path="/shifts" element={<Shifts />} />
+                      <Route path="/calculator" element={<Calculator />} />
+                      <Route path="/translator" element={<Translator />} />
+                      <Route path="/vehicle" element={<Vehicle />} />
+                      <Route path="/tax-advisor" element={<TaxAdvisor />} />
+                      <Route path="/travel" element={<TravelPlanning />} />
+                      <Route path="/laws" element={<Laws />} />
+                      <Route path="/settings" element={<Settings />} />
+                      <Route path="/premium" element={<Premium />} />
+                      <Route path="/pricing" element={<Pricing />} />
+                      <Route path="/contact" element={<Contact />} />
+                      <Route path="/faq" element={<FAQ />} />
+                      <Route path="/login" element={<Login />} />
+                      <Route path="/register" element={<Register />} />
+                      <Route path="/admin" element={<Admin />} />
+                    </Routes>
+                  </LayoutWrapper>
+                </RouteOptimizer>
+                <Toaster />
+                <Sonner />
+              </AnalyticsProvider>
+            </AuthProvider>
+          </StateManagerProvider>
         </Router>
       </TooltipProvider>
     </QueryClientProvider>
