@@ -4,7 +4,7 @@ const config = {
   stories: ['../src/**/*.stories.@(js|jsx|ts|tsx|mdx)'],
   addons: [
     '@storybook/addon-essentials',
-    '@storybook/addon-interactions',
+    // Removed @storybook/addon-interactions as it's integrated in v9
   ],
   framework: {
     name: '@storybook/react-vite',
