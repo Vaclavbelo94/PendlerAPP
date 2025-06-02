@@ -1,26 +1,23 @@
 
 import React from 'react';
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { useGermanLessonsTranslation } from '@/hooks/useGermanLessonsTranslation';
 import { useScreenOrientation } from '@/hooks/useScreenOrientation';
 
 const LessonsHeader: React.FC = () => {
-  const { t } = useGermanLessonsTranslation();
   const { isMobile, isSmallLandscape } = useScreenOrientation();
   const useMobileLayout = isMobile || isSmallLandscape;
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className={`${useMobileLayout ? 'text-lg' : 'text-xl'} flex items-center gap-3`}>
-          <span className="text-2xl">🇩🇪</span>
-          {t('lessons.title')}
-        </CardTitle>
-        <p className={`${useMobileLayout ? 'text-sm' : 'text-base'} text-muted-foreground`}>
-          {t('lessons.subtitle')}
-        </p>
-      </CardHeader>
-    </Card>
+    <div className={`text-center mb-6 ${isSmallLandscape ? 'mb-4' : ''}`}>
+      <div className="flex items-center justify-center gap-3 mb-4">
+        <span className="text-4xl">🇩🇪</span>
+        <h1 className={`${useMobileLayout ? 'text-2xl' : 'text-3xl'} font-bold`}>
+          Lekce němčiny
+        </h1>
+      </div>
+      <p className={`text-muted-foreground max-w-3xl mx-auto ${useMobileLayout ? 'text-sm' : 'text-lg'}`}>
+        Interaktivní výuka němčiny pro české a polské pracovníky v balíkovém centru
+      </p>
+    </div>
   );
 };
 

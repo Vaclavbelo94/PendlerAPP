@@ -1,114 +1,157 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Info, Heart } from "lucide-react";
-import { ExtendedPhrase } from '@/data/extendedGermanLessons';
-import { useGermanLessonsTranslation } from '@/hooks/useGermanLessonsTranslation';
+import { Button } from "@/components/ui/button";
+import { Volume2, Heart, BookOpen } from "lucide-react";
+import { PracticalPhrase } from '@/data/extendedGermanLessons';
 import { useScreenOrientation } from '@/hooks/useScreenOrientation';
-import { useFavorites } from '@/hooks/useFavorites';
-import AudioButton from '@/components/language/AudioButton';
+import { cn } from '@/lib/utils';
 
 interface PhraseCardProps {
-  phrase: ExtendedPhrase;
+  phrase: PracticalPhrase;
 }
 
 const PhraseCard: React.FC<PhraseCardProps> = ({ phrase }) => {
-  const { currentLanguage, t } = useGermanLessonsTranslation();
-  const { isMobile } = useScreenOrientation();
-  const { toggleFavorite, isFavorite } = useFavorites();
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [isLearned, setIsLearned] = useState(false);
+  const { isMobile, isSmallLandscape } = useScreenOrientation();
+  const useMobileLayout = isMobile || isSmallLandscape;
 
-  const getTranslation = () => {
-    switch (currentLanguage) {
-      case 'en': return phrase.english;
-      case 'de': return phrase.german;
-      case 'sk': return phrase.slovak;
-      default: return phrase.czech;
+  const handleAudioPlay = () => {
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(phrase.german);
+      utterance.lang = 'de-DE';
+      speechSynthesis.speak(utterance);
     }
   };
 
-  const importanceColors = {
-    critical: 'bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-800',
-    important: 'bg-orange-50 border-orange-200 dark:bg-orange-900/20 dark:border-orange-800',
-    useful: 'bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800'
+  const getImportanceBadgeColor = (importance: string) => {
+    switch (importance) {
+      case 'critical': return 'bg-red-500 text-white';
+      case 'important': return 'bg-amber-500 text-white';
+      case 'useful': return 'bg-blue-500 text-white';
+      default: return 'bg-gray-500 text-white';
+    }
   };
 
-  const importanceBadgeColors = {
-    critical: 'bg-red-500 text-white',
-    important: 'bg-orange-500 text-white',
-    useful: 'bg-blue-500 text-white'
+  const getImportanceLabel = (importance: string) => {
+    switch (importance) {
+      case 'critical': return 'Kritické';
+      case 'important': return 'Důležité';
+      case 'useful': return 'Užitečné';
+      default: return 'Základní';
+    }
   };
 
   return (
-    <Card className={`${importanceColors[phrase.importance]} ${isMobile ? 'mb-3' : 'mb-4'} transition-all hover:shadow-md`}>
-      <CardHeader className={`${isMobile ? 'pb-2' : 'pb-3'}`}>
-        <div className="flex justify-between items-start gap-3">
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-2">
-              <CardTitle className={`${isMobile ? 'text-base' : 'text-lg'} font-bold text-gray-900 dark:text-gray-100`}>
-                {phrase.german}
-              </CardTitle>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => toggleFavorite(phrase.id)}
-                className="flex-shrink-0 h-6 w-6 p-0 hover:bg-primary/10"
-              >
-                <Heart 
-                  className={`h-3 w-3 ${isFavorite(phrase.id) ? 'fill-red-500 text-red-500' : 'text-gray-400'}`} 
-                />
-              </Button>
-            </div>
-            
-            <p className={`${isMobile ? 'text-sm' : 'text-base'} text-gray-700 dark:text-gray-300 mt-1`}>
-              {getTranslation()}
-            </p>
-            <p className={`${isMobile ? 'text-xs' : 'text-sm'} text-gray-500 dark:text-gray-400 mt-1 italic`}>
-              [{phrase.phonetic}]
-            </p>
+    <Card className={cn(
+      "h-full transition-all duration-200 hover:shadow-md border-l-4",
+      phrase.importance === 'critical' && "border-l-red-500",
+      phrase.importance === 'important' && "border-l-amber-500",
+      phrase.importance === 'useful' && "border-l-blue-500"
+    )}>
+      <CardHeader className={cn("pb-3", useMobileLayout && "pb-2")}>
+        <div className="flex items-start justify-between gap-2">
+          <CardTitle className={cn(
+            "font-bold text-primary leading-tight flex-1",
+            useMobileLayout ? "text-lg" : "text-xl"
+          )}>
+            {phrase.german}
+          </CardTitle>
+          <div className="flex gap-1 flex-shrink-0">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={handleAudioPlay}
+              className="h-8 w-8 p-0"
+            >
+              <Volume2 className="h-4 w-4" />
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => setIsFavorite(!isFavorite)}
+              className={cn("h-8 w-8 p-0", isFavorite && "text-red-500")}
+            >
+              <Heart className={cn("h-4 w-4", isFavorite && "fill-current")} />
+            </Button>
           </div>
-          <div className="flex flex-col gap-1">
-            <Badge className={`${importanceBadgeColors[phrase.importance]} text-xs flex-shrink-0`}>
-              {t(`filter.${phrase.importance}`)}
-            </Badge>
-            <Badge variant="outline" className="text-xs">
-              {phrase.difficulty}
-            </Badge>
-          </div>
+        </div>
+        
+        <div className="flex items-center gap-2 mt-2">
+          <Badge className={cn(
+            "text-xs font-medium",
+            getImportanceBadgeColor(phrase.importance)
+          )}>
+            {getImportanceLabel(phrase.importance)}
+          </Badge>
+          <span className={cn(
+            "text-muted-foreground text-xs",
+            useMobileLayout && "text-xs"
+          )}>
+            {phrase.situation}
+          </span>
         </div>
       </CardHeader>
-      <CardContent className="pt-0">
-        <div className="space-y-3">
-          <div className={`flex ${isMobile ? 'flex-col gap-2' : 'flex-row gap-3'}`}>
-            <AudioButton
-              text={phrase.german}
-              language="de"
-              variant="default"
-              size={isMobile ? "default" : "lg"}
-              className={`${isMobile ? 'w-full' : 'flex-1'} bg-green-600 hover:bg-green-700 text-white font-medium`}
-            />
-            <AudioButton
-              text={getTranslation()}
-              language={currentLanguage === 'en' ? 'en' : currentLanguage === 'sk' ? 'sk' : 'cs'}
-              variant="outline"
-              size={isMobile ? "default" : "lg"}
-              className={`${isMobile ? 'w-full' : 'flex-1'} border-green-200 text-green-700 hover:bg-green-50`}
-            />
+      
+      <CardContent className={cn("space-y-3", useMobileLayout && "space-y-2")}>
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <span className="text-lg">🇨🇿</span>
+            <span className={cn(
+              "font-medium text-foreground",
+              useMobileLayout ? "text-sm" : "text-base"
+            )}>
+              {phrase.czech}
+            </span>
           </div>
           
-          <div className="bg-white/70 dark:bg-gray-800/70 rounded-md p-3 border-l-4 border-l-blue-500">
-            <div className="flex items-start gap-2">
-              <Info className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-xs font-medium text-blue-700 dark:text-blue-300 mb-1">Situace:</p>
-                <p className={`${isMobile ? 'text-xs' : 'text-sm'} text-gray-600 dark:text-gray-400`}>
-                  {phrase.situation}
-                </p>
-              </div>
-            </div>
+          <div className="flex items-center gap-2">
+            <span className="text-lg">🇸🇰</span>
+            <span className={cn(
+              "text-muted-foreground",
+              useMobileLayout ? "text-sm" : "text-base"
+            )}>
+              {phrase.slovak}
+            </span>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <span className="text-lg">🇬🇧</span>
+            <span className={cn(
+              "text-muted-foreground",
+              useMobileLayout ? "text-sm" : "text-base"
+            )}>
+              {phrase.english}
+            </span>
           </div>
         </div>
+        
+        <div className={cn(
+          "p-3 bg-muted/50 rounded-lg",
+          useMobileLayout && "p-2"
+        )}>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-sm font-medium text-muted-foreground">Výslovnost:</span>
+          </div>
+          <span className={cn(
+            "font-mono text-primary",
+            useMobileLayout ? "text-sm" : "text-base"
+          )}>
+            [{phrase.phonetic}]
+          </span>
+        </div>
+
+        <Button 
+          variant={isLearned ? "default" : "outline"}
+          size="sm"
+          onClick={() => setIsLearned(!isLearned)}
+          className="w-full"
+        >
+          <BookOpen className="h-4 w-4 mr-2" />
+          {isLearned ? "Naučeno" : "Označit jako naučené"}
+        </Button>
       </CardContent>
     </Card>
   );
