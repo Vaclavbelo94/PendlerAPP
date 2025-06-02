@@ -52,16 +52,16 @@ const Sidebar = ({ closeSidebar, isLandscapeSheet = false }: SidebarProps) => {
 
   const navigationItems = [
     { label: 'Domů', href: '/', icon: Home, isPublic: true },
-    { label: 'Dashboard', href: '/dashboard', icon: BarChart3, isPremium: true },
-    { label: 'Lekce němčiny', href: '/vocabulary', icon: GraduationCap, isPublic: true },
+    { label: 'Dashboard', href: '/dashboard', icon: BarChart3, requiresAuth: true },
+    { label: 'Slovní zásoba', href: '/vocabulary', icon: GraduationCap, isPublic: true },
     { label: 'Směny', href: '/shifts', icon: Calendar, isPremium: true },
-    { label: 'Kalkulačka', href: '/calculator', icon: Calculator, isPublic: true },
+    { label: 'Kalkulačky', href: '/calculator', icon: Calculator, isPublic: true },
+    { label: 'Překladač', href: '/translator', icon: Globe, isPublic: true },
     { label: 'Vozidlo', href: '/vehicle', icon: Car, isPremium: true },
     { label: 'Daňový poradce', href: '/tax-advisor', icon: FileText, isPremium: true },
-    { label: 'Překladač', href: '/translator', icon: Globe, isPublic: true },
     { label: 'Plánování cest', href: '/travel', icon: Map, isPremium: true },
     { label: 'Zákony', href: '/laws', icon: Scale, isPublic: true },
-    { label: 'Nastavení', href: '/settings', icon: Settings, isPremium: true }
+    { label: 'Nastavení', href: '/settings', icon: Settings, requiresAuth: true }
   ];
 
   const supportItems = [
@@ -77,7 +77,7 @@ const Sidebar = ({ closeSidebar, isLandscapeSheet = false }: SidebarProps) => {
       <div className="flex flex-col h-full p-4">
         {/* Compact header */}
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold">Pendler App</h2>
+          <h2 className="text-lg font-semibold">PendlerApp</h2>
         </div>
 
         {/* User section */}
@@ -124,6 +124,9 @@ const Sidebar = ({ closeSidebar, isLandscapeSheet = false }: SidebarProps) => {
               const isActive = location.pathname === item.href;
               const Icon = item.icon;
               const needsPremium = item.isPremium && !isPremium && !isAdmin;
+              const showItem = item.isPublic || (item.requiresAuth && user) || (item.isPremium && (user || !item.requiresAuth));
+              
+              if (!showItem) return null;
               
               return (
                 <Button
@@ -131,7 +134,7 @@ const Sidebar = ({ closeSidebar, isLandscapeSheet = false }: SidebarProps) => {
                   asChild
                   variant={isActive ? "secondary" : "ghost"}
                   size="sm"
-                  className="h-16 flex flex-col text-xs p-1"
+                  className="h-16 flex flex-col text-xs p-1 relative"
                   onClick={handleLinkClick}
                 >
                   <Link to={item.href}>
@@ -197,7 +200,7 @@ const Sidebar = ({ closeSidebar, isLandscapeSheet = false }: SidebarProps) => {
       {/* Header with collapse toggle */}
       <div className="flex items-center justify-between p-4 border-b border-border">
         {!isCollapsed && (
-          <h2 className="text-lg font-semibold">Pendler App</h2>
+          <h2 className="text-lg font-semibold">PendlerApp</h2>
         )}
         <Button
           variant="ghost"
@@ -283,6 +286,9 @@ const Sidebar = ({ closeSidebar, isLandscapeSheet = false }: SidebarProps) => {
               const isActive = location.pathname === item.href;
               const Icon = item.icon;
               const needsPremium = item.isPremium && !isPremium && !isAdmin;
+              const showItem = item.isPublic || (item.requiresAuth && user) || (item.isPremium && (user || !item.requiresAuth));
+              
+              if (!showItem) return null;
               
               return (
                 <Button
@@ -290,7 +296,7 @@ const Sidebar = ({ closeSidebar, isLandscapeSheet = false }: SidebarProps) => {
                   asChild
                   variant={isActive ? "secondary" : "ghost"}
                   className={cn(
-                    "w-full",
+                    "w-full relative",
                     isCollapsed ? "justify-center p-2" : "justify-start"
                   )}
                   title={isCollapsed ? item.label : undefined}
@@ -305,6 +311,9 @@ const Sidebar = ({ closeSidebar, isLandscapeSheet = false }: SidebarProps) => {
                           <Lock className="h-3 w-3 text-muted-foreground ml-2" />
                         )}
                       </>
+                    )}
+                    {isCollapsed && needsPremium && (
+                      <Lock className="h-2 w-2 text-muted-foreground absolute top-1 right-1" />
                     )}
                   </Link>
                 </Button>
@@ -344,7 +353,7 @@ const Sidebar = ({ closeSidebar, isLandscapeSheet = false }: SidebarProps) => {
           </nav>
         </div>
 
-        {/* Admin section */}
+        {/* Admin section - only for admin users */}
         {user && isAdmin && (
           <div className="p-4 border-t border-border">
             {!isCollapsed && (
@@ -362,7 +371,7 @@ const Sidebar = ({ closeSidebar, isLandscapeSheet = false }: SidebarProps) => {
             >
               <Link to="/admin">
                 <Shield className={cn("h-4 w-4", !isCollapsed && "mr-3")} />
-                {!isCollapsed && "Admin panel"}
+                {!isCollapsed && "Administrace"}
               </Link>
             </Button>
           </div>
