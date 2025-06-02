@@ -77,6 +77,7 @@ const ShiftsContentRenderer: React.FC<ShiftsContentRendererProps> = ({
             <TabsTrigger value="bulk">Hromadné operace</TabsTrigger>
           </TabsList>
           <TabsContent value="calendar" className="mt-6">
+            {/* Use the standard optimized calendar for all devices */}
             <OptimizedShiftCalendar
               shifts={shifts}
               onEditShift={onEditShift}
