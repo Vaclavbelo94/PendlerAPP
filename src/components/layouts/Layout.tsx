@@ -21,12 +21,6 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
   const location = useLocation();
   const { user, isAdmin } = useAuth();
   
-  // Debug admin status
-  useEffect(() => {
-    console.log('Layout Debug - User:', user?.email);
-    console.log('Layout Debug - isAdmin:', isAdmin);
-  }, [user, isAdmin]);
-  
   // Zavřít sidebar při změně cesty
   useEffect(() => {
     setSidebarOpen(false);
@@ -99,14 +93,16 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
   );
 
   const DesktopLayout = () => (
-    <div className="flex min-h-screen bg-background">
-      <div className="w-64 flex-shrink-0">
-        <div className="fixed top-0 left-0 h-full w-64 z-40">
+    <div className="flex min-h-screen bg-background w-full">
+      {/* Sidebar - now dynamically sized */}
+      <div className="flex-shrink-0">
+        <div className="fixed top-0 left-0 h-full z-40">
           <Sidebar closeSidebar={() => setSidebarOpen(false)} />
         </div>
       </div>
       
-      <div className="flex-1 flex flex-col min-w-0">
+      {/* Main content area with proper left margin */}
+      <div className="flex-1 flex flex-col min-w-0" style={{ marginLeft: '64px' }}>
         <Navbar 
           toggleSidebar={() => setSidebarOpen(!sidebarOpen)} 
           rightContent={navbarRightContent}
