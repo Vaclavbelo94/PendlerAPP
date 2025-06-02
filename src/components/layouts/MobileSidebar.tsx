@@ -61,10 +61,10 @@ const MobileSidebar: React.FC<MobileSidebarProps> = ({ closeSidebar }) => {
   ];
 
   const supportItems = [
-    { label: 'Premium', href: '/premium', icon: Crown },
-    { label: 'Ceník', href: '/pricing', icon: CreditCard },
-    { label: 'Kontakt', href: '/contact', icon: Contact },
-    { label: 'FAQ', href: '/faq', icon: HelpCircle }
+    { label: 'Premium', href: '/premium', icon: Crown, isPublic: true },
+    { label: 'Ceník', href: '/pricing', icon: CreditCard, isPublic: true },
+    { label: 'Kontakt', href: '/contact', icon: Contact, isPublic: true },
+    { label: 'FAQ', href: '/faq', icon: HelpCircle, isPublic: true }
   ];
 
   // Filter items based on user status
