@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,6 +8,8 @@ import { format, isSameDay } from 'date-fns';
 import { cs } from 'date-fns/locale';
 import { Shift } from '@/hooks/shifts/useShiftsCRUD';
 import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { MobileShiftCalendarGrid } from './mobile/MobileShiftCalendarGrid';
 
 interface OptimizedShiftCalendarProps {
   shifts: Shift[];
@@ -22,7 +23,20 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
   onDeleteShift
 }) => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const isMobile = useIsMobile();
 
+  // If mobile, use the mobile calendar grid
+  if (isMobile) {
+    return (
+      <MobileShiftCalendarGrid
+        shifts={shifts}
+        onEditShift={onEditShift}
+        onDeleteShift={onDeleteShift}
+      />
+    );
+  }
+
+  // Desktop calendar (keep existing desktop code)
   const shiftsMap = useMemo(() => {
     const map = new Map<string, Shift[]>();
     shifts.forEach(shift => {
@@ -72,7 +86,7 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
-      {/* Kalendář */}
+      {/* Desktop Calendar */}
       <Card>
         <CardHeader className="pb-4">
           <CardTitle className="flex items-center gap-2 text-lg">
@@ -91,18 +105,12 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
             locale={cs}
             modifiers={modifiers}
             modifiersClassNames={modifiersClassNames}
-            className={cn(
-              "rounded-md border w-full",
-              // Mobile optimizations
-              "text-sm md:text-base",
-              "[&_.rdp-day]:h-8 [&_.rdp-day]:w-8 md:[&_.rdp-day]:h-10 md:[&_.rdp-day]:w-10",
-              "[&_.rdp-day]:text-xs md:[&_.rdp-day]:text-sm"
-            )}
+            className="rounded-md border w-full"
           />
         </CardContent>
       </Card>
 
-      {/* Detail směny */}
+      {/* Desktop Shift Details */}
       <Card>
         <CardHeader className="pb-4">
           <CardTitle className="text-lg">
