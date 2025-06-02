@@ -1,6 +1,7 @@
 
 import React from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 import { Navigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,10 +13,15 @@ import { useAds } from "@/components/ads/AdProvider";
 const Dashboard = () => {
   const { user, isPremium } = useAuth();
   const { shouldShowAds } = useAds();
+  const navigate = useNavigate();
 
   if (!user) {
     return <Navigate to="/login" replace />;
   }
+
+  const handleQuickAction = (route: string) => {
+    navigate(route);
+  };
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -103,19 +109,35 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
-              <Button variant="outline" className="h-auto p-4 flex flex-col items-center gap-2">
+              <Button 
+                variant="outline" 
+                className="h-auto p-4 flex flex-col items-center gap-2"
+                onClick={() => handleQuickAction('/shifts')}
+              >
                 <Clock className="h-6 w-6" />
                 <span>Přidat směnu</span>
               </Button>
-              <Button variant="outline" className="h-auto p-4 flex flex-col items-center gap-2">
+              <Button 
+                variant="outline" 
+                className="h-auto p-4 flex flex-col items-center gap-2"
+                onClick={() => handleQuickAction('/calculator')}
+              >
                 <Calculator className="h-6 w-6" />
                 <span>Kalkulačka</span>
               </Button>
-              <Button variant="outline" className="h-auto p-4 flex flex-col items-center gap-2">
+              <Button 
+                variant="outline" 
+                className="h-auto p-4 flex flex-col items-center gap-2"
+                onClick={() => handleQuickAction('/language')}
+              >
                 <BookOpen className="h-6 w-6" />
                 <span>Němčina</span>
               </Button>
-              <Button variant="outline" className="h-auto p-4 flex flex-col items-center gap-2">
+              <Button 
+                variant="outline" 
+                className="h-auto p-4 flex flex-col items-center gap-2"
+                onClick={() => {/* Stay on dashboard - just scroll to stats */}}
+              >
                 <TrendingUp className="h-6 w-6" />
                 <span>Statistiky</span>
               </Button>
@@ -136,9 +158,25 @@ const Dashboard = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Button className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600">
-                  Upgradovat nyní
-                </Button>
+                <div className="space-y-3">
+                  <div className="text-sm space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs">🚫</span>
+                      <span className="text-xs">Bez reklam</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs">📚</span>
+                      <span className="text-xs">Všechny lekce</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs">📊</span>
+                      <span className="text-xs">Pokročilé statistiky</span>
+                    </div>
+                  </div>
+                  <Button className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600">
+                    Upgradovat nyní
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           )}

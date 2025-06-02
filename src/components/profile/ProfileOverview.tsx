@@ -41,48 +41,64 @@ const ProfileOverview: React.FC<ProfileOverviewProps> = ({ userId }) => {
   }, [isPremium, userId]);
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold tracking-tight">Profil</h2>
-      
-      {user && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="md:col-span-1">
-            <ProfileBio />
-          </div>
-          
-          <div className="md:col-span-2 space-y-6">
-            <Card className="p-6">
-              <div className="space-y-4">
-                {isPremium ? (
-                  <div className="bg-green-500/10 border border-green-500/20 p-4 rounded-lg">
-                    <h3 className="font-medium text-green-600 dark:text-green-400">
-                      Premium status aktivní
-                    </h3>
-                    {premiumUntil && (
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Platné do: {formatDate(premiumUntil)}
-                      </p>
-                    )}
-                  </div>
-                ) : (
-                  <PromoCodeRedemption />
-                )}
-              </div>
-            </Card>
-
-            <ProfileInfo 
-              formatDate={formatDate} 
-              createdAt={user?.created_at} 
-            />
-            
-            <ProfileCards 
-              workPreferences={workPreferences} 
-              certificatesCount={certificatesCount} 
-              getShiftTypeLabel={getShiftTypeLabel} 
-            />
-          </div>
+    <div className="container mx-auto p-4 max-w-6xl">
+      <div className="space-y-6">
+        <div className="text-left">
+          <h2 className="text-2xl font-bold tracking-tight">Profil</h2>
         </div>
-      )}
+        
+        {user && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-1">
+              <ProfileBio />
+            </div>
+            
+            <div className="lg:col-span-2 space-y-6">
+              <Card className="p-6">
+                <div className="space-y-4">
+                  {isPremium ? (
+                    <div className="bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/20 p-4 rounded-lg">
+                      <h3 className="font-medium text-green-600 dark:text-green-400 mb-2">
+                        Premium status aktivní
+                      </h3>
+                      <div className="space-y-2 text-sm">
+                        {premiumUntil && (
+                          <p className="text-muted-foreground">
+                            Platné do: {formatDate(premiumUntil)}
+                          </p>
+                        )}
+                        <div className="bg-white/50 dark:bg-gray-800/50 p-3 rounded border">
+                          <h4 className="font-medium mb-2">Premium výhody:</h4>
+                          <ul className="space-y-1 text-xs">
+                            <li>✨ Bez reklam v celé aplikaci</li>
+                            <li>📚 Přístup ke všem jazykovým lekcím</li>
+                            <li>📊 Pokročilé statistiky a analýzy</li>
+                            <li>🔄 Neomezená synchronizace</li>
+                            <li>⭐ Prioritní podpora</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <PromoCodeRedemption />
+                  )}
+                </div>
+              </Card>
+
+              <ProfileInfo 
+                formatDate={formatDate} 
+                createdAt={user?.created_at} 
+              />
+              
+              <ProfileCards 
+                workPreferences={workPreferences} 
+                certificatesCount={certificatesCount} 
+                getShiftTypeLabel={getShiftTypeLabel} 
+              />
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

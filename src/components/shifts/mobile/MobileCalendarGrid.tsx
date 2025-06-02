@@ -50,11 +50,11 @@ export const MobileCalendarGrid: React.FC<MobileCalendarGridProps> = ({
   return (
     <div className="w-full">
       {/* Week days header */}
-      <div className="grid grid-cols-7 gap-1 mb-2">
+      <div className="grid grid-cols-7 gap-0.5 mb-1">
         {weekDays.map((day, index) => (
           <div
             key={index}
-            className="h-8 flex items-center justify-center text-xs font-medium text-muted-foreground"
+            className="h-6 flex items-center justify-center text-xs font-medium text-muted-foreground"
           >
             {day}
           </div>
@@ -62,7 +62,7 @@ export const MobileCalendarGrid: React.FC<MobileCalendarGridProps> = ({
       </div>
 
       {/* Calendar grid */}
-      <div className="grid grid-cols-7 gap-1">
+      <div className="grid grid-cols-7 gap-0.5">
         {calendarDays.map((day, index) => {
           const isCurrentMonth = isSameMonth(day, currentDate);
           const isSelected = selectedDate && isSameDay(day, selectedDate);
@@ -74,8 +74,8 @@ export const MobileCalendarGrid: React.FC<MobileCalendarGridProps> = ({
               key={index}
               onClick={() => onDateSelect(day)}
               className={cn(
-                "relative h-12 w-full flex items-center justify-center text-sm font-medium rounded-lg transition-all duration-200 touch-manipulation",
-                "min-h-[48px]", // Ensure minimum touch target size
+                "relative aspect-square w-full flex flex-col items-center justify-center text-xs font-medium rounded transition-all duration-200 touch-manipulation",
+                "min-h-[40px] p-1", // Reduced height for mobile
                 isCurrentMonth 
                   ? "text-foreground hover:bg-accent" 
                   : "text-muted-foreground/50",
@@ -84,7 +84,7 @@ export const MobileCalendarGrid: React.FC<MobileCalendarGridProps> = ({
                 !isCurrentMonth && "opacity-40"
               )}
             >
-              <span className="relative z-10">
+              <span className="relative z-10 leading-none">
                 {format(day, 'd')}
               </span>
               
@@ -92,7 +92,7 @@ export const MobileCalendarGrid: React.FC<MobileCalendarGridProps> = ({
               {shift && (
                 <div
                   className={cn(
-                    "absolute bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 rounded-full",
+                    "absolute bottom-0.5 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 rounded-full",
                     getShiftTypeColor(shift.type),
                     isSelected && "bg-primary-foreground"
                   )}

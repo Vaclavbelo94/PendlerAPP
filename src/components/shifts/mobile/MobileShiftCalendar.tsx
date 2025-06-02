@@ -1,13 +1,11 @@
 
 import React, { useState, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Edit, Trash, Calendar as CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
-import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay } from 'date-fns';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { format, addMonths, subMonths, startOfMonth, endOfMonth, isSameDay } from 'date-fns';
 import { cs } from 'date-fns/locale';
 import { Shift } from '@/hooks/shifts/useOptimizedShiftsManagement';
-import { cn } from '@/lib/utils';
 import { MobileCalendarGrid } from './MobileCalendarGrid';
 import { MobileShiftDetails } from './MobileShiftDetails';
 
@@ -95,10 +93,10 @@ export const MobileShiftCalendar: React.FC<MobileShiftCalendarProps> = React.mem
   }, []);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {/* Mobile Calendar Header */}
       <Card>
-        <CardHeader className="pb-3">
+        <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <Button
               variant="ghost"
@@ -109,7 +107,7 @@ export const MobileShiftCalendar: React.FC<MobileShiftCalendarProps> = React.mem
               <ChevronLeft className="h-4 w-4" />
             </Button>
             
-            <CardTitle className="text-lg text-center">
+            <CardTitle className="text-base text-center">
               {format(currentDate, 'MMMM yyyy', { locale: cs })}
             </CardTitle>
             
@@ -125,7 +123,7 @@ export const MobileShiftCalendar: React.FC<MobileShiftCalendarProps> = React.mem
         </CardHeader>
         
         <CardContent
-          className="px-2 pb-4"
+          className="px-3 pb-3"
           onTouchStart={onTouchStart}
           onTouchMove={onTouchMove}
           onTouchEnd={onTouchEnd}

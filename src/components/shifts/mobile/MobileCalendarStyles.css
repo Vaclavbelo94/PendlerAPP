@@ -17,8 +17,8 @@
 
 /* Enhanced touch targets */
 .touch-target {
-  min-height: 44px;
-  min-width: 44px;
+  min-height: 40px; /* Reduced for mobile portrait */
+  min-width: 40px;
 }
 
 /* Smooth scrolling for mobile */
@@ -35,13 +35,33 @@
   }
 }
 
-/* Landscape orientation adjustments */
-@media screen and (orientation: landscape) and (max-height: 500px) {
+/* Portrait orientation adjustments */
+@media screen and (orientation: portrait) and (max-width: 768px) {
   .mobile-calendar {
-    font-size: 0.875rem;
+    font-size: 0.75rem;
   }
   
   .mobile-calendar-day {
+    min-height: 40px;
+    padding: 0.25rem;
+  }
+}
+
+/* Landscape orientation adjustments */
+@media screen and (orientation: landscape) and (max-height: 500px) {
+  .mobile-calendar {
+    font-size: 0.75rem;
+  }
+  
+  .mobile-calendar-day {
+    min-height: 32px;
+  }
+}
+
+/* Ultra small screens */
+@media screen and (max-width: 360px) {
+  .mobile-calendar-day {
     min-height: 36px;
+    font-size: 0.7rem;
   }
 }
