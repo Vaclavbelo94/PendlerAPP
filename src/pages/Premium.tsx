@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { CheckIcon, CreditCard, Settings, RefreshCw, Crown, AlertCircle } from "lucide-react";
+import { CheckIcon, CreditCard, Settings, RefreshCw, Crown, AlertCircle, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useStripePayments } from "@/hooks/useStripePayments";
 import PromoCodeRedemption from "@/components/premium/PromoCodeRedemption";
@@ -136,6 +137,21 @@ const Premium = () => {
           </Alert>
         )}
 
+        {!isPremium && (
+          <Alert className="border-amber-500/20 bg-amber-50 dark:bg-amber-900/10">
+            <Eye className="h-4 w-4 text-amber-600" />
+            <AlertDescription className="text-amber-800 dark:text-amber-200">
+              <div className="space-y-2">
+                <strong>Reklamy v základní verzi</strong>
+                <p className="text-sm">
+                  Základní verze aplikace obsahuje reklamy, které pomáhají financovat vývoj aplikace. 
+                  S Premium předplatným získáte aplikaci zcela bez reklam.
+                </p>
+              </div>
+            </AlertDescription>
+          </Alert>
+        )}
+
         {!isPremium && user && (
           <div className="space-y-6">
             <PeriodSelector 
@@ -169,20 +185,22 @@ const Premium = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <PremiumFeatureCard 
             title="Základní"
-            description="Základní funkce pro všechny uživatele"
+            description="Základní funkce s reklamami"
             price="Zdarma"
             features={[
               "Základní překladač",
               "Jednoduchá kalkulačka",
               "Kalendář směn",
-              "Omezený počet slovíček"
+              "Omezený počet slovíček",
+              "Zobrazení reklam"
             ]}
             current={!isPremium}
+            adNote="S reklamami"
           />
           
           <PremiumFeatureCard 
             title="Premium"
-            description="Rozšířené funkce pro náročné uživatele"
+            description="Rozšířené funkce bez reklam"
             price={selectedPeriod === 'yearly' ? "990 Kč / rok" : "99 Kč / měsíc"}
             features={[
               "Neomezený překladač",
@@ -190,6 +208,7 @@ const Premium = () => {
               "Neomezený počet slovíček",
               "Offline přístup ke slovíčkům",
               "Pokročilé grafy a statistiky",
+              "Žádné reklamy",
               "Přednostní podpora"
             ]}
             current={isPremium}
@@ -197,6 +216,7 @@ const Premium = () => {
             onUpgrade={user && !isPremium ? handleUpgrade : undefined}
             isLoading={isLoading}
             periodBadge={selectedPeriod === 'yearly' ? "17% úspora" : undefined}
+            noAds
           />
           
           <PremiumFeatureCard 
@@ -212,6 +232,7 @@ const Premium = () => {
               "Prioritní podpora 24/7"
             ]}
             contactSales
+            noAds
           />
         </div>
 
@@ -227,7 +248,7 @@ const Premium = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="space-y-3">
                 <h4 className="font-semibold">🚀 Produktivita</h4>
                 <ul className="text-sm text-muted-foreground space-y-1">
@@ -242,6 +263,18 @@ const Premium = () => {
                   <li>• Detailní statistiky vašich cest</li>
                   <li>• Grafy úspor a výdajů</li>
                   <li>• Sledování pokroku v němčině</li>
+                </ul>
+              </div>
+              <div className="space-y-3">
+                <h4 className="font-semibold flex items-center gap-1">
+                  <EyeOff className="h-4 w-4 text-green-600" />
+                  Bez reklam
+                </h4>
+                <ul className="text-sm text-muted-foreground space-y-1">
+                  <li>• Žádné rušivé bannery</li>
+                  <li>• Žádné popup reklamy</li>
+                  <li>• Čistý zážitek z používání</li>
+                  <li>• Rychlejší načítání stránek</li>
                 </ul>
               </div>
             </div>
@@ -263,6 +296,8 @@ interface PremiumFeatureCardProps {
   onUpgrade?: () => void;
   isLoading?: boolean;
   periodBadge?: string;
+  adNote?: string;
+  noAds?: boolean;
 }
 
 const PremiumFeatureCard = ({
@@ -276,6 +311,8 @@ const PremiumFeatureCard = ({
   onUpgrade,
   isLoading,
   periodBadge,
+  adNote,
+  noAds,
 }: PremiumFeatureCardProps) => {
   return (
     <Card className={`relative ${recommended ? 'border-primary shadow-md' : ''} ${current ? 'bg-accent/50' : ''}`}>
@@ -294,6 +331,15 @@ const PremiumFeatureCard = ({
           </Badge>
         </div>
       )}
+
+      {noAds && (
+        <div className="absolute -top-3 left-4">
+          <Badge variant="secondary" className="bg-green-100 text-green-800">
+            <EyeOff className="h-3 w-3 mr-1" />
+            Bez reklam
+          </Badge>
+        </div>
+      )}
       
       <CardHeader>
         <CardTitle>{title}</CardTitle>
@@ -303,6 +349,11 @@ const PremiumFeatureCard = ({
           {periodBadge && (
             <Badge variant="secondary" className="bg-green-100 text-green-800 text-xs">
               {periodBadge}
+            </Badge>
+          )}
+          {adNote && (
+            <Badge variant="secondary" className="bg-amber-100 text-amber-800 text-xs">
+              {adNote}
             </Badge>
           )}
         </div>

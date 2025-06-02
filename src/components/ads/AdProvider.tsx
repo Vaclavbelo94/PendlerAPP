@@ -27,24 +27,74 @@ interface AdProviderProps {
   children: React.ReactNode;
 }
 
+interface AdminAdSettings {
+  adsEnabled: boolean;
+  bannerAdsEnabled: boolean;
+  popupAdsEnabled: boolean;
+  interstitialAdsEnabled: boolean;
+  globalAdOverride: boolean;
+}
+
 export const AdProvider: React.FC<AdProviderProps> = ({ children }) => {
   const { isPremium } = useAuth();
   const [adViews, setAdViews] = useState(0);
   const [adClicks, setAdClicks] = useState(0);
+  const [adminSettings, setAdminSettings] = useState<AdminAdSettings>({
+    adsEnabled: true,
+    bannerAdsEnabled: true,
+    popupAdsEnabled: true,
+    interstitialAdsEnabled: true,
+    globalAdOverride: false
+  });
 
-  const shouldShowAds = !isPremium;
+  // Load admin settings on mount
+  useEffect(() => {
+    const loadAdminSettings = () => {
+      try {
+        const savedSettings = localStorage.getItem('admin_ad_settings');
+        if (savedSettings) {
+          setAdminSettings(JSON.parse(savedSettings));
+        }
+      } catch (error) {
+        console.error('Error loading admin ad settings:', error);
+      }
+    };
+
+    loadAdminSettings();
+
+    // Listen for admin settings changes
+    const handleAdminSettingsChange = (event: CustomEvent) => {
+      setAdminSettings(event.detail);
+    };
+
+    window.addEventListener('adminAdSettingsChanged', handleAdminSettingsChange as EventListener);
+
+    return () => {
+      window.removeEventListener('adminAdSettingsChanged', handleAdminSettingsChange as EventListener);
+    };
+  }, []);
+
+  // Determine if ads should be shown based on premium status and admin settings
+  const shouldShowAds = !isPremium && 
+                       adminSettings.adsEnabled && 
+                       !adminSettings.globalAdOverride;
 
   const adConfig = {
-    bannerFrequency: 1, // Show banner on every page
-    popupFrequency: 5, // Show popup every 5 page views for non-premium
-    interstitialFrequency: 10, // Show interstitial every 10 actions
+    bannerFrequency: adminSettings.bannerAdsEnabled ? 1 : 0,
+    popupFrequency: adminSettings.popupAdsEnabled ? 5 : 0,
+    interstitialFrequency: adminSettings.interstitialAdsEnabled ? 10 : 0,
   };
 
   const trackAdView = (adType: string) => {
     if (!shouldShowAds) return;
     
     setAdViews(prev => prev + 1);
-    console.log(`Ad view tracked: ${adType}`);
+    console.log(`Ad view tracked: ${adType}`, {
+      timestamp: new Date().toISOString(),
+      adType,
+      userPremium: isPremium,
+      adminSettings
+    });
     
     // Here you would integrate with actual ad tracking service
     // gtag('event', 'ad_view', { ad_type: adType });
@@ -54,7 +104,12 @@ export const AdProvider: React.FC<AdProviderProps> = ({ children }) => {
     if (!shouldShowAds) return;
     
     setAdClicks(prev => prev + 1);
-    console.log(`Ad click tracked: ${adType}`);
+    console.log(`Ad click tracked: ${adType}`, {
+      timestamp: new Date().toISOString(),
+      adType,
+      userPremium: isPremium,
+      adminSettings
+    });
     
     // Here you would integrate with actual ad tracking service
     // gtag('event', 'ad_click', { ad_type: adType });
