@@ -5,10 +5,11 @@ const config: CapacitorConfig = {
   appId: 'app.lovable.43a9f196fcd94f8db60a9c37d14325e5',
   appName: 'pendlerhelfer',
   webDir: 'dist',
-  server: {
-    url: 'https://43a9f196-fcd9-4f8d-b60a-9c37d14325e5.lovableproject.com?forceHideBadge=true',
-    cleartext: true
-  },
+  // Odstraňujeme server konfiguraci pro produkční build
+  // server: {
+  //   url: 'https://43a9f196-fcd9-4f8d-b60a-9c37d14325e5.lovableproject.com?forceHideBadge=true',
+  //   cleartext: true
+  // },
   plugins: {
     SplashScreen: {
       launchShowDuration: 3000,
