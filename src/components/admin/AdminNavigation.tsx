@@ -10,7 +10,8 @@ import {
   Activity,
   Key,
   Crown,
-  RefreshCw
+  RefreshCw,
+  Eye
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -62,6 +63,12 @@ const secondarySections = [
     description: 'Správa promocijních kódů'
   },
   {
+    id: 'ad-management',
+    icon: Eye,
+    label: 'Správa reklam',
+    description: 'Ovládání zobrazování reklam'
+  },
+  {
     id: 'password-reset',
     icon: RefreshCw,
     label: 'Reset hesla',
@@ -94,7 +101,7 @@ export const AdminNavigation: React.FC<AdminNavigationProps> = ({
         "grid gap-4 w-full",
         variant === 'primary' 
           ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-4 max-w-6xl" 
-          : "grid-cols-1 md:grid-cols-2 lg:grid-cols-5 max-w-7xl"
+          : "grid-cols-1 md:grid-cols-2 lg:grid-cols-6 max-w-7xl"
       )}>
         {sections.map((section, index) => {
           const Icon = section.icon;

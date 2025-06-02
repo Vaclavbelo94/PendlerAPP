@@ -71,6 +71,8 @@ const AdminContent = () => {
         return <PromoCodesPanel />;
       case 'premium-features':
         return <PremiumFeaturesPanel />;
+      case 'ad-management':
+        return <AdManagementPanel />;
       case 'system-logs':
         return <div className="p-4">Systémové logy - zatím nedostupné</div>;
       case 'system-monitoring':
@@ -112,15 +114,28 @@ const Admin = () => {
     const checkAdminStatus = async () => {
       if (isLoading) return;
       
-      if (!isAdmin) {
+      // Only show login dialog if user is not admin - don't show for already logged in admins
+      if (!isAdmin && user) {
+        // User is logged in but not admin
+        setShowLoginDialog(false);
+        toast.error("Nemáte administrátorská práva");
+        navigate("/");
+        return;
+      }
+      
+      if (!isAdmin && !user) {
+        // User is not logged in at all
         setShowLoginDialog(true);
-      } else {
+        return;
+      }
+      
+      if (isAdmin) {
         toast.success("Přístup do administrace povolen");
       }
     };
     
     checkAdminStatus();
-  }, [isAdmin, isLoading]);
+  }, [isAdmin, isLoading, user, navigate]);
 
   const handleLogout = () => {
     signOut();
@@ -176,15 +191,6 @@ const Admin = () => {
   return (
     <AdminLayout>
       <AdminContent />
-      
-      <AdminLoginDialog 
-        isOpen={showLoginDialog} 
-        onClose={() => !isAdmin && navigate("/")}
-        onSuccess={() => {
-          setShowLoginDialog(false);
-          toast.success("Přihlášení do administrace úspěšné");
-        }}
-      />
     </AdminLayout>
   );
 };
