@@ -128,7 +128,7 @@ const Dashboard = () => {
               <Button 
                 variant="outline" 
                 className="h-auto p-4 flex flex-col items-center gap-2"
-                onClick={() => handleQuickAction('/language')}
+                onClick={() => handleQuickAction('/vocabulary')}
               >
                 <BookOpen className="h-6 w-6" />
                 <span>Němčina</span>
@@ -136,7 +136,7 @@ const Dashboard = () => {
               <Button 
                 variant="outline" 
                 className="h-auto p-4 flex flex-col items-center gap-2"
-                onClick={() => {/* Stay on dashboard - just scroll to stats */}}
+                onClick={() => handleQuickAction('/dashboard')}
               >
                 <TrendingUp className="h-6 w-6" />
                 <span>Statistiky</span>
