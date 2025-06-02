@@ -60,7 +60,7 @@ const features = [
     title: "Plánovač cest",
     description: "Optimalizujte dojíždění do práce",
     icon: MapPin,
-    href: "/travel-planning",
+    href: "/travel",
     color: "bg-red-500",
     gradient: "from-red-500 to-red-600"
   },
