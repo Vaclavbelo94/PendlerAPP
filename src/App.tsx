@@ -1,4 +1,3 @@
-
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { Toaster } from '@/components/ui/toaster'
@@ -6,6 +5,7 @@ import { Toaster as Sonner } from 'sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { AuthProvider } from '@/hooks/useAuth'
 import { AnalyticsProvider } from '@/components/analytics/AnalyticsProvider'
+import { AdSenseProvider } from '@/components/ads/AdSenseProvider'
 import LayoutWrapper from '@/components/layouts/LayoutWrapper'
 import { RouteOptimizer } from '@/components/optimized/RouteOptimizer'
 import { DatabaseOptimizer } from '@/components/optimized/DatabaseOptimizer'
@@ -63,52 +63,54 @@ function App() {
           <AuthProvider>
             <StateManagerProvider>
               <AnalyticsProvider>
-                <DatabaseOptimizer />
-                <RouteOptimizer>
-                  <LayoutWrapper>
-                    <Routes>
-                      <Route path="/" element={<Index />} />
-                      <Route path="/dashboard" element={<Dashboard />} />
-                      <Route path="/vocabulary" element={<Vocabulary />} />
-                      <Route path="/shifts" element={<Shifts />} />
-                      <Route path="/calculator" element={<Calculator />} />
-                      <Route path="/translator" element={<Translator />} />
-                      <Route path="/vehicle" element={<Vehicle />} />
-                      <Route path="/tax-advisor" element={<TaxAdvisor />} />
-                      <Route path="/travel" element={<TravelPlanning />} />
-                      <Route path="/laws" element={<Laws />} />
-                      
-                      {/* Law detail pages */}
-                      <Route path="/laws/child-benefits" element={<ChildBenefits />} />
-                      <Route path="/laws/employee-protection" element={<EmployeeProtection />} />
-                      <Route path="/laws/health-insurance" element={<HealthInsurance />} />
-                      <Route path="/laws/legal-aid" element={<LegalAid />} />
-                      <Route path="/laws/minimum-holidays" element={<MinimumHolidays />} />
-                      <Route path="/laws/minimum-wage" element={<MinimumWage />} />
-                      <Route path="/laws/parental-allowance" element={<ParentalAllowance />} />
-                      <Route path="/laws/pension-insurance" element={<PensionInsurance />} />
-                      <Route path="/laws/tax-classes" element={<TaxClasses />} />
-                      <Route path="/laws/tax-return" element={<TaxReturn />} />
-                      <Route path="/laws/work-contract" element={<WorkContract />} />
-                      <Route path="/laws/working-hours" element={<WorkingHours />} />
-                      
-                      <Route path="/settings" element={<Settings />} />
-                      <Route path="/profile" element={<Profile />} />
-                      <Route path="/premium" element={<Premium />} />
-                      <Route path="/pricing" element={<Pricing />} />
-                      <Route path="/contact" element={<Contact />} />
-                      <Route path="/faq" element={<FAQ />} />
-                      <Route path="/login" element={<Login />} />
-                      <Route path="/register" element={<Register />} />
-                      <Route path="/admin" element={<Admin />} />
-                    </Routes>
-                  </LayoutWrapper>
-                </RouteOptimizer>
+                <AdSenseProvider clientId="ca-pub-YOUR_PUBLISHER_ID">
+                  <DatabaseOptimizer />
+                  <RouteOptimizer>
+                    <LayoutWrapper>
+                      <Routes>
+                        <Route path="/" element={<Index />} />
+                        <Route path="/dashboard" element={<Dashboard />} />
+                        <Route path="/vocabulary" element={<Vocabulary />} />
+                        <Route path="/shifts" element={<Shifts />} />
+                        <Route path="/calculator" element={<Calculator />} />
+                        <Route path="/translator" element={<Translator />} />
+                        <Route path="/vehicle" element={<Vehicle />} />
+                        <Route path="/tax-advisor" element={<TaxAdvisor />} />
+                        <Route path="/travel" element={<TravelPlanning />} />
+                        <Route path="/laws" element={<Laws />} />
+                        
+                        {/* Law detail pages */}
+                        <Route path="/laws/child-benefits" element={<ChildBenefits />} />
+                        <Route path="/laws/employee-protection" element={<EmployeeProtection />} />
+                        <Route path="/laws/health-insurance" element={<HealthInsurance />} />
+                        <Route path="/laws/legal-aid" element={<LegalAid />} />
+                        <Route path="/laws/minimum-holidays" element={<MinimumHolidays />} />
+                        <Route path="/laws/minimum-wage" element={<MinimumWage />} />
+                        <Route path="/laws/parental-allowance" element={<ParentalAllowance />} />
+                        <Route path="/laws/pension-insurance" element={<PensionInsurance />} />
+                        <Route path="/laws/tax-classes" element={<TaxClasses />} />
+                        <Route path="/laws/tax-return" element={<TaxReturn />} />
+                        <Route path="/laws/work-contract" element={<WorkContract />} />
+                        <Route path="/laws/working-hours" element={<WorkingHours />} />
+                        
+                        <Route path="/settings" element={<Settings />} />
+                        <Route path="/profile" element={<Profile />} />
+                        <Route path="/premium" element={<Premium />} />
+                        <Route path="/pricing" element={<Pricing />} />
+                        <Route path="/contact" element={<Contact />} />
+                        <Route path="/faq" element={<FAQ />} />
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/register" element={<Register />} />
+                        <Route path="/admin" element={<Admin />} />
+                      </Routes>
+                    </LayoutWrapper>
+                  </RouteOptimizer>
+                </AdSenseProvider>
                 <Toaster />
                 <Sonner 
                   position="bottom-right"
                   toastOptions={{
-                    duration: 2500, // Zkráceno z výchozích 4000ms na 2500ms
+                    duration: 2500,
                     style: {
                       background: 'hsl(var(--background))',
                       color: 'hsl(var(--foreground))',

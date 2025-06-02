@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
@@ -7,8 +6,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Crown, TrendingUp, Clock, BookOpen, Calculator, Car, Map } from "lucide-react";
-import { AdBanner } from "@/components/ads/AdBanner";
-import { useAds } from "@/components/ads/AdProvider";
+import { ResponsiveAdSense } from "@/components/ads/ResponsiveAdSense";
+import { AdSenseBanner } from "@/components/ads/AdSenseBanner";
+import { useAdSense } from "@/components/ads/AdSenseProvider";
 import { supabase } from "@/integrations/supabase/client";
 
 interface DashboardStats {
@@ -21,7 +21,7 @@ interface DashboardStats {
 
 const Dashboard = () => {
   const { user, isPremium } = useAuth();
-  const { shouldShowAds } = useAds();
+  const { shouldShowAds } = useAdSense();
   const navigate = useNavigate();
   const [stats, setStats] = useState<DashboardStats>({
     totalShifts: 0,
@@ -117,9 +117,13 @@ const Dashboard = () => {
 
   return (
     <div className="container mx-auto p-6 space-y-6">
-      {/* Ad Banner pro non-premium uživatele */}
+      {/* AdSense Banner pro non-premium uživatele */}
       {shouldShowAds && (
-        <AdBanner className="mb-6" />
+        <ResponsiveAdSense 
+          mobileAdSlot="1234567890"
+          desktopAdSlot="0987654321"
+          className="mb-6"
+        />
       )}
 
       <div className="flex items-center justify-between">
@@ -292,9 +296,13 @@ const Dashboard = () => {
             </Card>
           )}
 
-          {/* Sidebar Ad pro non-premium */}
+          {/* Sidebar AdSense pro non-premium */}
           {shouldShowAds && (
-            <AdBanner variant="square" showCloseButton />
+            <AdSenseBanner
+              adSlot="1122334455"
+              adFormat="rectangle"
+              className="min-h-[250px]"
+            />
           )}
 
           {/* Recent Activity */}
