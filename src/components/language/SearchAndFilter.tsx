@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Search, Filter, Heart, X } from "lucide-react";
 import { useGermanLessonsTranslation } from '@/hooks/useGermanLessonsTranslation';
-import { ExtendedPhrase } from '@/data/extendedGermanLessons';
+import { PracticalPhrase } from '@/data/extendedGermanLessons';
 
 interface SearchAndFilterProps {
   searchTerm: string;

@@ -17,6 +17,10 @@ export interface LessonCategory {
   phrases: PracticalPhrase[];
 }
 
+// Export aliases for compatibility
+export type ExtendedPhrase = PracticalPhrase;
+export type ExtendedLessonCategory = LessonCategory;
+
 export const extendedGermanLessons: LessonCategory[] = [
   {
     id: 'first-day',

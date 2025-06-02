@@ -2,13 +2,13 @@
 import React from 'react';
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { TabsContent } from "@/components/ui/tabs";
-import { ExtendedLessonCategory } from '@/data/extendedGermanLessons';
+import { LessonCategory } from '@/data/extendedGermanLessons';
 import { useGermanLessonsTranslation } from '@/hooks/useGermanLessonsTranslation';
 import { useScreenOrientation } from '@/hooks/useScreenOrientation';
 import PhraseCard from './PhraseCard';
 
 interface CategoryContentProps {
-  category: ExtendedLessonCategory;
+  category: LessonCategory;
 }
 
 const CategoryContent: React.FC<CategoryContentProps> = ({ category }) => {
@@ -22,10 +22,10 @@ const CategoryContent: React.FC<CategoryContentProps> = ({ category }) => {
         <CardHeader className="pb-3">
           <CardTitle className={`${useMobileLayout ? 'text-base' : 'text-lg'} flex items-center gap-2`}>
             <span className="text-xl">{category.icon}</span>
-            {t(category.titleKey)}
+            {category.titleKey}
           </CardTitle>
           <p className={`${useMobileLayout ? 'text-xs' : 'text-sm'} text-muted-foreground`}>
-            {category.phrases.length} frází • {category.estimatedTime} min • {category.description}
+            {category.phrases.length} frází
           </p>
         </CardHeader>
       </Card>
