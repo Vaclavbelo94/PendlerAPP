@@ -1,93 +1,179 @@
 
-import React, { useState } from "react";
+import React from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
-import { useIsMobile, useOrientation } from "@/hooks/use-mobile";
-import { motion } from "framer-motion";
-
-// Import profile components focused on personal info and activity
-import ProfileHeader from "@/components/profile/unified/ProfileHeader";
-import ProfileOverviewSection from "@/components/profile/unified/ProfileOverviewSection";
-import ProfileActivitySection from "@/components/profile/unified/ProfileActivitySection";
-import SubscriptionManagement from "@/components/profile/SubscriptionManagement";
+import { useNavigate } from "react-router-dom";
+import { User, Crown, Settings, Activity, Shield } from "lucide-react";
 import ProfileNavigation from "@/components/profile/ProfileNavigation";
+import { useState } from "react";
 
 const Profile = () => {
-  const { user, isPremium } = useAuth();
-  const [activeTab, setActiveTab] = useState("overview");
-  const isMobile = useIsMobile();
-  const orientation = useOrientation();
-  
-  // Určit, zda je v landscape módu na mobilním zařízení
-  const isLandscapeMobile = isMobile && orientation === "landscape";
+  const { user, isPremium, isAdmin } = useAuth();
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('overview');
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-primary/5 flex items-center justify-center">
-        <motion.div 
-          className="text-center p-8 bg-card/80 backdrop-blur-sm rounded-2xl border border-border/50 shadow-lg max-w-md mx-4"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <h1 className="text-2xl font-bold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            Přístup odepřen
-          </h1>
-          <p className="text-muted-foreground">Pro zobrazení profilu se musíte přihlásit.</p>
-        </motion.div>
+      <div className="container max-w-2xl mx-auto p-6">
+        <Card>
+          <CardContent className="p-6 text-center">
+            <p className="text-muted-foreground mb-4">Pro zobrazení profilu se musíte přihlásit.</p>
+            <Button onClick={() => navigate('/login')}>
+              Přihlásit se
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
+  const OverviewTab = () => (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <User className="h-5 w-5" />
+            Základní informace
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center gap-4">
+            <Avatar className="h-16 w-16">
+              <AvatarFallback className="text-lg">
+                {user.email?.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <h3 className="text-lg font-semibold">{user.email}</h3>
+              <p className="text-sm text-muted-foreground">
+                Registrován: {new Date(user.created_at || '').toLocaleDateString('cs-CZ')}
+              </p>
+              <div className="flex gap-2 mt-2">
+                {isPremium && (
+                  <Badge className="bg-amber-500">
+                    <Crown className="h-3 w-3 mr-1" />
+                    Premium
+                  </Badge>
+                )}
+                {isAdmin && (
+                  <Badge className="bg-red-500">
+                    <Shield className="h-3 w-3 mr-1" />
+                    Administrátor
+                  </Badge>
+                )}
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Rychlé akce</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          <Button variant="outline" className="w-full justify-start" onClick={() => navigate('/settings')}>
+            <Settings className="h-4 w-4 mr-2" />
+            Nastavení účtu
+          </Button>
+          <Button variant="outline" className="w-full justify-start" onClick={() => navigate('/dashboard')}>
+            <Activity className="h-4 w-4 mr-2" />
+            Dashboard
+          </Button>
+          {!isPremium && (
+            <Button className="w-full justify-start" onClick={() => navigate('/premium')}>
+              <Crown className="h-4 w-4 mr-2" />
+              Upgradovat na Premium
+            </Button>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  const SubscriptionTab = () => (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Crown className="h-5 w-5" />
+          Předplatné
+        </CardTitle>
+        <CardDescription>
+          Správa vašeho Premium účtu
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        {isPremium ? (
+          <div className="space-y-4">
+            <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800">
+              <div className="flex items-center gap-2 mb-2">
+                <Crown className="h-5 w-5 text-amber-500" />
+                <span className="font-medium">Premium Active</span>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Máte aktivní Premium účet s plným přístupem ke všem funkcím.
+              </p>
+            </div>
+            <Button variant="outline" onClick={() => navigate('/settings')}>
+              Spravovat předplatné
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <p className="text-muted-foreground">
+              Nemáte aktivní Premium předplatné. Upgradujte pro přístup ke všem funkcím.
+            </p>
+            <Button onClick={() => navigate('/premium')}>
+              <Crown className="h-4 w-4 mr-2" />
+              Aktivovat Premium
+            </Button>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+
+  const ActivityTab = () => (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Activity className="h-5 w-5" />
+          Aktivita a statistiky
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p className="text-muted-foreground">
+          Zde budou zobrazeny vaše statistiky použití aplikace.
+        </p>
+      </CardContent>
+    </Card>
+  );
+
   const renderTabContent = () => {
     switch (activeTab) {
-      case "overview":
-        return <ProfileOverviewSection />;
-      case "subscription":
-        return <SubscriptionManagement />;
-      case "activity":
-        return <ProfileActivitySection />;
-      default:
-        return <ProfileOverviewSection />;
+      case 'overview': return <OverviewTab />;
+      case 'subscription': return <SubscriptionTab />;
+      case 'activity': return <ActivityTab />;
+      default: return <OverviewTab />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-secondary/5">
-      {/* Animated background elements */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 right-10 w-32 h-32 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-full blur-xl animate-pulse" />
-        <div className="absolute bottom-20 left-20 w-24 h-24 bg-gradient-to-r from-green-500/20 to-purple-500/20 rounded-full blur-xl animate-pulse delay-1000" />
+    <div className="container max-w-6xl mx-auto p-6">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold mb-2">Můj profil</h1>
+        <p className="text-muted-foreground">
+          Spravujte své informace a nastavení účtu
+        </p>
       </div>
 
-      <div className="relative z-10">
-        <ProfileHeader />
-        
-        <div className={`container max-w-6xl ${
-          isLandscapeMobile 
-            ? 'py-2 px-2' // Menší padding pro landscape mobile
-            : 'py-8 px-4'
-        }`}>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className={isLandscapeMobile ? "mt-4" : "mt-8"}
-          >
-            <ProfileNavigation
-              activeTab={activeTab}
-              onTabChange={setActiveTab}
-            />
-            
-            <motion.div 
-              className={isLandscapeMobile ? "mt-3" : "mt-6"}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.5 }}
-            >
-              {renderTabContent()}
-            </motion.div>
-          </motion.div>
-        </div>
+      <ProfileNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+      
+      <div className="mt-8">
+        {renderTabContent()}
       </div>
     </div>
   );

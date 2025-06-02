@@ -1,34 +1,21 @@
 
-import React, { ReactNode } from 'react';
+import React from 'react';
 import Layout from './Layout';
-import { NotificationManager } from '@/components/notifications/NotificationManager';
-import { ShiftNotifications } from '@/components/notifications/ShiftNotifications';
-import { CompactNotificationIndicator } from '@/components/notifications/CompactNotificationIndicator';
-import AdminPanelDialog from '@/components/admin/AdminPanelDialog';
-import { useAuth } from '@/hooks/useAuth';
+import { AdProvider } from '@/components/ads/AdProvider';
+import { AdPopup } from '@/components/ads/AdPopup';
 
 interface LayoutWrapperProps {
-  children: ReactNode;
+  children: React.ReactNode;
 }
 
-const LayoutWrapper = ({ children }: LayoutWrapperProps) => {
-  const { isAdmin } = useAuth();
-
-  const navbarRightContent = (
-    <div className="flex items-center gap-1">
-      <CompactNotificationIndicator />
-      {isAdmin && <AdminPanelDialog />}
-    </div>
-  );
-
+const LayoutWrapper: React.FC<LayoutWrapperProps> = ({ children }) => {
   return (
-    <>
-      <NotificationManager />
-      <ShiftNotifications />
-      <Layout navbarRightContent={navbarRightContent}>
+    <AdProvider>
+      <Layout>
         {children}
       </Layout>
-    </>
+      <AdPopup trigger={5} />
+    </AdProvider>
   );
 };
 

@@ -61,13 +61,6 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen }: NavbarProps) => {
         Překladač
       </Link>
       <Link
-        to="/lessons"
-        className={`${mobile ? 'block py-2' : ''} text-foreground hover:text-primary transition-colors`}
-        onClick={onLinkClick}
-      >
-        Lekce
-      </Link>
-      <Link
         to="/premium"
         className={`${mobile ? 'block py-2' : ''} text-foreground hover:text-primary transition-colors flex items-center gap-1`}
         onClick={onLinkClick}

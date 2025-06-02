@@ -21,6 +21,7 @@ import TaxAdvisor from '@/pages/TaxAdvisor'
 import TravelPlanning from '@/pages/TravelPlanning'
 import Laws from '@/pages/Laws'
 import Settings from '@/pages/Settings'
+import Profile from '@/pages/Profile'
 import Premium from '@/pages/Premium'
 import Pricing from '@/pages/Pricing'
 import Contact from '@/pages/Contact'
@@ -61,6 +62,7 @@ function App() {
                       <Route path="/travel" element={<TravelPlanning />} />
                       <Route path="/laws" element={<Laws />} />
                       <Route path="/settings" element={<Settings />} />
+                      <Route path="/profile" element={<Profile />} />
                       <Route path="/premium" element={<Premium />} />
                       <Route path="/pricing" element={<Pricing />} />
                       <Route path="/contact" element={<Contact />} />
