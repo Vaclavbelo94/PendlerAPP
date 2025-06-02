@@ -31,6 +31,20 @@ import Login from '@/pages/Login'
 import Register from '@/pages/Register'
 import Admin from '@/pages/Admin'
 
+// Law pages imports
+import ChildBenefits from '@/pages/laws/ChildBenefits'
+import EmployeeProtection from '@/pages/laws/EmployeeProtection'
+import HealthInsurance from '@/pages/laws/HealthInsurance'
+import LegalAid from '@/pages/laws/LegalAid'
+import MinimumHolidays from '@/pages/laws/MinimumHolidays'
+import MinimumWage from '@/pages/laws/MinimumWage'
+import ParentalAllowance from '@/pages/laws/ParentalAllowance'
+import PensionInsurance from '@/pages/laws/PensionInsurance'
+import TaxClasses from '@/pages/laws/TaxClasses'
+import TaxReturn from '@/pages/laws/TaxReturn'
+import WorkContract from '@/pages/laws/WorkContract'
+import WorkingHours from '@/pages/laws/WorkingHours'
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -63,6 +77,21 @@ function App() {
                       <Route path="/tax-advisor" element={<TaxAdvisor />} />
                       <Route path="/travel" element={<TravelPlanning />} />
                       <Route path="/laws" element={<Laws />} />
+                      
+                      {/* Law detail pages */}
+                      <Route path="/laws/child-benefits" element={<ChildBenefits />} />
+                      <Route path="/laws/employee-protection" element={<EmployeeProtection />} />
+                      <Route path="/laws/health-insurance" element={<HealthInsurance />} />
+                      <Route path="/laws/legal-aid" element={<LegalAid />} />
+                      <Route path="/laws/minimum-holidays" element={<MinimumHolidays />} />
+                      <Route path="/laws/minimum-wage" element={<MinimumWage />} />
+                      <Route path="/laws/parental-allowance" element={<ParentalAllowance />} />
+                      <Route path="/laws/pension-insurance" element={<PensionInsurance />} />
+                      <Route path="/laws/tax-classes" element={<TaxClasses />} />
+                      <Route path="/laws/tax-return" element={<TaxReturn />} />
+                      <Route path="/laws/work-contract" element={<WorkContract />} />
+                      <Route path="/laws/working-hours" element={<WorkingHours />} />
+                      
                       <Route path="/settings" element={<Settings />} />
                       <Route path="/profile" element={<Profile />} />
                       <Route path="/premium" element={<Premium />} />
