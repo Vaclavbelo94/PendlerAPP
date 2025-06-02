@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, User, LogOut, Crown } from "lucide-react";
+import { Menu, User, LogOut, Crown, Shield } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import {
   DropdownMenu,
@@ -21,9 +21,15 @@ interface NavbarProps {
 }
 
 const Navbar = ({ toggleSidebar, rightContent, sidebarOpen }: NavbarProps) => {
-  const { user, signOut, isPremium } = useAuth();
+  const { user, signOut, isPremium, isAdmin } = useAuth();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+
+  // Debug admin status
+  React.useEffect(() => {
+    console.log('Navbar Debug - User:', user?.email);
+    console.log('Navbar Debug - isAdmin:', isAdmin);
+  }, [user, isAdmin]);
 
   const handleSignOut = async () => {
     await signOut();
@@ -69,6 +75,16 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen }: NavbarProps) => {
         Premium
         {isPremium && <span className="text-xs bg-green-100 text-green-800 px-1 rounded">Active</span>}
       </Link>
+      {isAdmin && (
+        <Link
+          to="/admin"
+          className={`${mobile ? 'block py-2' : ''} text-foreground hover:text-primary transition-colors flex items-center gap-1`}
+          onClick={onLinkClick}
+        >
+          <Shield className="h-4 w-4 text-red-500" />
+          Administrace
+        </Link>
+      )}
     </>
   );
 
@@ -111,12 +127,20 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen }: NavbarProps) => {
                       <div className="flex items-center justify-start gap-2 p-2">
                         <div className="flex flex-col space-y-1 leading-none">
                           <p className="font-medium">{user.email}</p>
-                          {isPremium && (
-                            <div className="flex items-center gap-1">
-                              <Crown className="h-3 w-3 text-yellow-500" />
-                              <span className="text-xs text-muted-foreground">Premium</span>
-                            </div>
-                          )}
+                          <div className="flex items-center gap-2">
+                            {isPremium && (
+                              <div className="flex items-center gap-1">
+                                <Crown className="h-3 w-3 text-yellow-500" />
+                                <span className="text-xs text-muted-foreground">Premium</span>
+                              </div>
+                            )}
+                            {isAdmin && (
+                              <div className="flex items-center gap-1">
+                                <Shield className="h-3 w-3 text-red-500" />
+                                <span className="text-xs text-muted-foreground">Admin</span>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
                       <DropdownMenuSeparator />
@@ -128,6 +152,12 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen }: NavbarProps) => {
                         <Crown className="mr-2 h-4 w-4 text-yellow-500" />
                         Premium
                       </DropdownMenuItem>
+                      {isAdmin && (
+                        <DropdownMenuItem onClick={() => navigate('/admin')}>
+                          <Shield className="mr-2 h-4 w-4 text-red-500" />
+                          Administrace
+                        </DropdownMenuItem>
+                      )}
                       <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={handleSignOut}>
                         <LogOut className="mr-2 h-4 w-4" />
@@ -154,12 +184,20 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen }: NavbarProps) => {
                           </Avatar>
                           <div>
                             <p className="font-medium text-sm">{user.email}</p>
-                            {isPremium && (
-                              <div className="flex items-center gap-1">
-                                <Crown className="h-3 w-3 text-yellow-500" />
-                                <span className="text-xs text-muted-foreground">Premium</span>
-                              </div>
-                            )}
+                            <div className="flex items-center gap-2">
+                              {isPremium && (
+                                <div className="flex items-center gap-1">
+                                  <Crown className="h-3 w-3 text-yellow-500" />
+                                  <span className="text-xs text-muted-foreground">Premium</span>
+                                </div>
+                              )}
+                              {isAdmin && (
+                                <div className="flex items-center gap-1">
+                                  <Shield className="h-3 w-3 text-red-500" />
+                                  <span className="text-xs text-muted-foreground">Admin</span>
+                                </div>
+                              )}
+                            </div>
                           </div>
                         </div>
                         <NavLinks mobile onLinkClick={() => setIsOpen(false)} />

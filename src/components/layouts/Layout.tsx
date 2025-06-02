@@ -7,6 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { useIsMobile, useOrientation } from "@/hooks/use-mobile";
 import { useLocation } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 
 interface LayoutProps {
   children: ReactNode;
@@ -18,6 +19,13 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
   const orientation = useOrientation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
+  const { user, isAdmin } = useAuth();
+  
+  // Debug admin status
+  useEffect(() => {
+    console.log('Layout Debug - User:', user?.email);
+    console.log('Layout Debug - isAdmin:', isAdmin);
+  }, [user, isAdmin]);
   
   // Zavřít sidebar při změně cesty
   useEffect(() => {
@@ -92,8 +100,10 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
 
   const DesktopLayout = () => (
     <div className="flex min-h-screen bg-background">
-      <div className="sticky top-0 h-screen">
-        <Sidebar closeSidebar={() => setSidebarOpen(false)} />
+      <div className="w-64 flex-shrink-0">
+        <div className="fixed top-0 left-0 h-full w-64 z-40">
+          <Sidebar closeSidebar={() => setSidebarOpen(false)} />
+        </div>
       </div>
       
       <div className="flex-1 flex flex-col min-w-0">

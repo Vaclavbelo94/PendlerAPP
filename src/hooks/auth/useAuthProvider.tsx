@@ -19,6 +19,40 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
 
+  const refreshAdminStatus = useCallback(async () => {
+    if (!user) {
+      console.log("No user for admin status refresh");
+      setIsAdmin(false);
+      return;
+    }
+
+    try {
+      console.log("Refreshing admin status for user:", user.id, user.email);
+      
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('is_admin')
+        .eq('id', user.id)
+        .single();
+
+      if (error) {
+        console.error('Error fetching admin status:', error);
+        setIsAdmin(false);
+        return;
+      }
+
+      const adminStatus = data?.is_admin || false;
+      console.log("Admin status from database:", adminStatus);
+      setIsAdmin(adminStatus);
+
+      // Store admin status in localStorage for quick access
+      localStorage.setItem('adminLoggedIn', adminStatus ? 'true' : 'false');
+    } catch (error) {
+      console.error('Error checking admin status:', error);
+      setIsAdmin(false);
+    }
+  }, [user]);
+
   const refreshPremiumStatus = useCallback(async (): Promise<{ isPremium: boolean; premiumExpiry?: string }> => {
     if (!user) {
       console.log("No user for premium status refresh");
@@ -91,32 +125,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const { isPremium, setIsPremium, isSpecialUser } = usePremiumStatus(user, refreshPremiumStatus, isAdmin);
 
+  // Check admin status when user changes
   useEffect(() => {
-    const checkAdminStatus = async () => {
-      if (user) {
-        try {
-          const { data, error } = await supabase
-            .from('profiles')
-            .select('is_admin')
-            .eq('id', user.id)
-            .single();
-
-          if (error) {
-            console.error('Error fetching admin status:', error);
-            return;
-          }
-
-          setIsAdmin(data?.is_admin || false);
-        } catch (error) {
-          console.error('Error checking admin status:', error);
-        }
-      } else {
-        setIsAdmin(false);
-      }
-    };
-
-    checkAdminStatus();
-  }, [user]);
+    if (user) {
+      refreshAdminStatus();
+    } else {
+      setIsAdmin(false);
+      localStorage.removeItem('adminLoggedIn');
+    }
+  }, [user, refreshAdminStatus]);
 
   const signIn = async (email: string, password: string) => {
     try {
@@ -166,8 +183,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       toast.success("Přihlášení přes Google proběhlo úspěšně");
       return { error: null, url: data.url };
     } catch (error: any) {
-      console.error("Unexpected error signing in with Google:", error);
-      toast.error("Neočekávaná chyba při přihlašování přes Google");
+      console.error("Error signing in with Google:", error);
+      toast.error("Nepodařilo se přihlásit přes Google");
       return { error: error.message, url: undefined };
     }
   };
@@ -179,93 +196,84 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         cleanupAuthState();
       }
 
-      const { data, error } = await supabase.auth.signUp({
-        email: email,
-        password: password,
+      const redirectUrl = `${window.location.origin}/`;
+      
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
         options: {
-          data: {
-            username: username,
-          },
-          emailRedirectTo: window.location.origin,
-        },
+          emailRedirectTo: redirectUrl,
+          data: username ? { username } : {}
+        }
       });
 
-      if (error) {
-        console.error("Error signing up:", error);
-        toast.error("Registrace se nezdařila");
-        return { error: error.message };
-      }
-
-      if (data.user && checkLocalStorageSpace()) {
-        saveUserToLocalStorage(data.user, false);
-      }
-
-      toast.success("Registrace proběhla úspěšně! Potvrďte prosím svůj email.");
+      if (error) throw error;
+      
+      toast.success('Registrace proběhla úspěšně. Zkontrolujte svůj email.');
       return { error: null };
     } catch (error: any) {
-      console.error("Unexpected error signing up:", error);
-      toast.error("Neočekávaná chyba při registraci");
-      return { error: error.message };
+      console.error('Error signing up:', error);
+      
+      let errorMessage = 'Nepodařilo se registrovat';
+      if (error.message?.includes('quota') || error.message?.includes('storage')) {
+        errorMessage = 'Problém s úložištěm prohlížeče. Zkuste vyčistit cache.';
+        cleanupAuthState();
+      }
+      
+      toast.error(errorMessage);
+      return { error: error.message || error.error_description };
     }
   };
 
   const signOut = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-
-      setIsAdmin(false);
-      setIsPremium(false);
+      // Clean up state first
       cleanupAuthState();
-      navigate('/login');
+      localStorage.removeItem('adminLoggedIn');
+      
+      // Attempt global sign out
+      try {
+        await supabase.auth.signOut({ scope: 'global' });
+      } catch (err) {
+        console.log("Global sign out failed, continuing...");
+      }
+      
       toast.success('Odhlášení proběhlo úspěšně');
+      
+      // Force page reload for clean state
+      window.location.href = '/';
     } catch (error: any) {
       console.error('Error signing out:', error);
-      toast.error('Nepodařilo se odhlásit');
+      toast.error('Problém při odhlašování');
     }
   };
 
-  const refreshAdminStatus = async () => {
-    if (!user) {
-      setIsAdmin(false);
-      return;
-    }
-
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('is_admin')
-        .eq('id', user.id)
-        .single();
-
-      if (error) {
-        console.error('Error fetching admin status:', error);
-        return;
-      }
-
-      setIsAdmin(data?.is_admin || false);
-    } catch (error) {
-      console.error('Error checking admin status:', error);
-      setIsAdmin(false);
-    }
-  };
-
-  const value = {
+  const contextValue = React.useMemo(() => ({
     user,
     session,
     isLoading,
+    error,
     isAdmin,
     isPremium,
+    refreshAdminStatus,
+    refreshPremiumStatus,
     signIn,
     signInWithGoogle,
     signUp,
-    signOut,
+    signOut
+  }), [
+    user,
+    session,
+    isLoading,
+    error,
+    isAdmin,
+    isPremium,
     refreshAdminStatus,
-    refreshPremiumStatus,
-  };
+    refreshPremiumStatus
+  ]);
 
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );
