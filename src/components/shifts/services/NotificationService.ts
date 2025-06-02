@@ -20,6 +20,20 @@ class NotificationService {
     return NotificationService.instance;
   }
 
+  // Optimized durations for better UX
+  private getOptimizedDuration(type: 'success' | 'error' | 'warning' | 'info' | 'default'): number {
+    switch (type) {
+      case 'success':
+        return 2000; // Quick confirmation
+      case 'error':
+        return 4000; // Longer for errors
+      case 'warning':
+        return 3000; // Medium for warnings
+      default:
+        return 2500; // Shorter default
+    }
+  }
+
   showShiftSaved(isUpdate: boolean = false) {
     toast({
       title: isUpdate ? "Směna aktualizována" : "Směna přidána",

@@ -11,40 +11,57 @@ export interface ToastOptions {
 /**
  * Standardized toast hook that uses sonner under the hood
  * Provides consistent toast notifications across the entire application
+ * With optimized durations for better UX
  */
 export const useStandardizedToast = () => {
+  // Optimalized durations for different message types
+  const getDefaultDuration = (variant: string): number => {
+    switch (variant) {
+      case 'success':
+        return 2000; // Quick confirmation
+      case 'info':
+        return 2500; // Basic information
+      case 'warning':
+        return 3000; // Important warning
+      case 'error':
+        return 4000; // Error needs more reading time
+      default:
+        return 2500; // Default shorter duration
+    }
+  };
+
   const showToast = ({ title, description, variant = 'default', duration }: ToastOptions) => {
-    const message = description ? `${title}\n${description}` : title || '';
+    const finalDuration = duration || getDefaultDuration(variant);
     
     switch (variant) {
       case 'success':
         toast.success(title, {
           description,
-          duration,
+          duration: finalDuration,
         });
         break;
       case 'error':
         toast.error(title, {
           description,
-          duration,
+          duration: finalDuration,
         });
         break;
       case 'warning':
         toast.warning(title, {
           description,
-          duration,
+          duration: finalDuration,
         });
         break;
       case 'info':
         toast.info(title, {
           description,
-          duration,
+          duration: finalDuration,
         });
         break;
       default:
         toast(title, {
           description,
-          duration,
+          duration: finalDuration,
         });
         break;
     }

@@ -10,6 +10,7 @@ import LayoutWrapper from '@/components/layouts/LayoutWrapper'
 import { RouteOptimizer } from '@/components/optimized/RouteOptimizer'
 import { DatabaseOptimizer } from '@/components/optimized/DatabaseOptimizer'
 import { StateManagerProvider } from '@/contexts/StateManagerContext'
+import ScrollToTop from '@/components/navigation/ScrollToTop'
 import Index from '@/pages/Index'
 import Dashboard from '@/pages/Dashboard'
 import Vocabulary from '@/pages/Vocabulary'
@@ -44,6 +45,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Router>
+          <ScrollToTop />
           <AuthProvider>
             <StateManagerProvider>
               <AnalyticsProvider>
@@ -74,7 +76,17 @@ function App() {
                   </LayoutWrapper>
                 </RouteOptimizer>
                 <Toaster />
-                <Sonner />
+                <Sonner 
+                  position="bottom-right"
+                  toastOptions={{
+                    duration: 2500, // Zkráceno z výchozích 4000ms na 2500ms
+                    style: {
+                      background: 'hsl(var(--background))',
+                      color: 'hsl(var(--foreground))',
+                      border: '1px solid hsl(var(--border))',
+                    },
+                  }}
+                />
               </AnalyticsProvider>
             </StateManagerProvider>
           </AuthProvider>
