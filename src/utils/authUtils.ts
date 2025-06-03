@@ -1,20 +1,98 @@
 
 /**
- * Utility functions for authentication management
+ * Utility functions for authentication management and localStorage cleanup
  */
 
 /**
+ * Checks available localStorage space
+ */
+export const checkLocalStorageSpace = (): number => {
+  try {
+    const testKey = 'test_storage_space';
+    const testData = 'x'.repeat(1024); // 1KB test
+    let availableSpace = 0;
+    
+    // Test how much space we can use
+    for (let i = 0; i < 10000; i++) {
+      try {
+        localStorage.setItem(testKey + i, testData);
+        availableSpace += 1024;
+      } catch (e) {
+        // Clean up test data
+        for (let j = 0; j <= i; j++) {
+          localStorage.removeItem(testKey + j);
+        }
+        break;
+      }
+    }
+    
+    return availableSpace;
+  } catch (error) {
+    return 0;
+  }
+};
+
+/**
+ * Aggressive cleanup of localStorage to free up space
+ */
+export const aggressiveCleanup = () => {
+  try {
+    console.log('Starting aggressive localStorage cleanup...');
+    
+    // List of keys to preserve (only the most essential)
+    const preserveKeys = [
+      'theme',
+      'language',
+      'isLoggedIn'
+    ];
+    
+    // Get all keys before starting cleanup
+    const allKeys = Object.keys(localStorage);
+    let removedCount = 0;
+    
+    // Remove everything except preserved keys
+    allKeys.forEach((key) => {
+      if (!preserveKeys.includes(key)) {
+        try {
+          localStorage.removeItem(key);
+          removedCount++;
+        } catch (error) {
+          console.warn(`Could not remove key: ${key}`, error);
+        }
+      }
+    });
+    
+    console.log(`Aggressive cleanup completed. Removed ${removedCount} items.`);
+    
+    // Try to clear any remaining space
+    try {
+      localStorage.clear();
+      console.log('Complete localStorage clear performed.');
+    } catch (error) {
+      console.warn('Could not perform complete clear:', error);
+    }
+    
+  } catch (error) {
+    console.error('Error during aggressive cleanup:', error);
+    // Last resort - try to clear everything
+    try {
+      localStorage.clear();
+    } catch (clearError) {
+      console.error('Cannot clear localStorage at all:', clearError);
+    }
+  }
+};
+
+/**
  * Cleans up all authentication-related state from local storage
- * preventing auth limbo states and quota exceeded errors
  */
 export const cleanupAuthState = () => {
   try {
-    // Remove standard auth tokens
-    localStorage.removeItem('supabase.auth.token');
+    console.log('Starting auth state cleanup...');
     
-    // Remove all Supabase auth keys from localStorage
+    // Remove all Supabase auth keys
     Object.keys(localStorage).forEach((key) => {
-      if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+      if (key.startsWith('supabase.auth.') || key.includes('sb-') || key.startsWith('userSessions') || key.startsWith('errorReports')) {
         try {
           localStorage.removeItem(key);
         } catch (error) {
@@ -23,31 +101,45 @@ export const cleanupAuthState = () => {
       }
     });
     
-    // Clean up our custom keys too
-    localStorage.removeItem('adminLoggedIn');
-    localStorage.removeItem('currentUser');
-    localStorage.removeItem('isLoggedIn');
+    // Remove specific problematic keys
+    const problematicKeys = [
+      'supabase.auth.token',
+      'currentUser',
+      'adminLoggedIn',
+      'vocabulary_items',
+      'userSessions',
+      'errorReports',
+      'performanceMetrics'
+    ];
     
-    // Also clean up vocabulary and other app data that might be taking space
-    localStorage.removeItem('vocabulary_items');
+    problematicKeys.forEach(key => {
+      try {
+        localStorage.removeItem(key);
+      } catch (error) {
+        console.warn(`Could not remove key ${key}:`, error);
+      }
+    });
     
-    console.log('Auth state cleaned up successfully');
+    console.log('Auth state cleanup completed');
   } catch (error) {
     console.warn('Error during auth cleanup:', error);
-    // If localStorage is completely broken, try to clear everything
-    try {
-      localStorage.clear();
-    } catch (clearError) {
-      console.error('Cannot clear localStorage:', clearError);
-    }
+    // If regular cleanup fails, try aggressive cleanup
+    aggressiveCleanup();
   }
 };
 
 /**
- * Saves user information to localStorage with error handling
+ * Saves user information to localStorage with error handling and space management
  */
 export const saveUserToLocalStorage = (user: any, isPremium: boolean, premiumExpiry?: string) => {
   try {
+    // Check space first
+    const availableSpace = checkLocalStorageSpace();
+    if (availableSpace < 1024) { // Less than 1KB available
+      console.warn('Low localStorage space, cleaning up...');
+      cleanupAuthState();
+    }
+    
     const currentUser = {
       id: user.id,
       name: user.user_metadata?.username || user.email?.split('@')[0] || 'Uživatel',
@@ -55,26 +147,70 @@ export const saveUserToLocalStorage = (user: any, isPremium: boolean, premiumExp
       isPremium,
       premiumUntil: premiumExpiry
     };
-    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-    localStorage.setItem('isLoggedIn', 'true');
+    
+    const userData = JSON.stringify(currentUser);
+    
+    // Try to save with fallback
+    try {
+      localStorage.setItem('currentUser', userData);
+      localStorage.setItem('isLoggedIn', 'true');
+    } catch (quotaError) {
+      console.warn('Quota exceeded when saving user, performing cleanup...');
+      aggressiveCleanup();
+      
+      // Try again after cleanup
+      try {
+        localStorage.setItem('currentUser', userData);
+        localStorage.setItem('isLoggedIn', 'true');
+      } catch (retryError) {
+        console.error('Failed to save user even after cleanup');
+      }
+    }
+    
   } catch (error) {
     console.warn('Could not save user to localStorage:', error);
-    // Try to free up space by clearing old data
-    cleanupAuthState();
   }
 };
 
 /**
- * Check if localStorage has enough space
+ * Safe localStorage operations with quota handling
  */
-export const checkLocalStorageSpace = (): boolean => {
+export const safeLocalStorageSet = (key: string, value: string): boolean => {
   try {
-    const testKey = 'test_storage_space';
-    const testData = 'x'.repeat(1024); // 1KB test
-    localStorage.setItem(testKey, testData);
-    localStorage.removeItem(testKey);
+    localStorage.setItem(key, value);
     return true;
   } catch (error) {
+    if (error instanceof DOMException && error.name === 'QuotaExceededError') {
+      console.warn('localStorage quota exceeded, cleaning up...');
+      cleanupAuthState();
+      
+      // Try once more after cleanup
+      try {
+        localStorage.setItem(key, value);
+        return true;
+      } catch (retryError) {
+        console.error('Failed to save after cleanup:', retryError);
+        return false;
+      }
+    }
+    console.error('Error saving to localStorage:', error);
     return false;
+  }
+};
+
+/**
+ * Initialize localStorage cleanup on app start
+ */
+export const initializeLocalStorageCleanup = () => {
+  try {
+    const availableSpace = checkLocalStorageSpace();
+    console.log(`Available localStorage space: ${availableSpace} bytes`);
+    
+    if (availableSpace < 5120) { // Less than 5KB available
+      console.warn('Low localStorage space detected, performing cleanup...');
+      cleanupAuthState();
+    }
+  } catch (error) {
+    console.error('Error initializing localStorage cleanup:', error);
   }
 };

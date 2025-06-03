@@ -1,4 +1,3 @@
-
 import * as React from 'react';
 import { useState, useEffect, useCallback } from 'react';
 import { AuthContext } from './useAuthContext';
@@ -6,7 +5,14 @@ import { useAuthState } from './useAuthState';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { cleanupAuthState, saveUserToLocalStorage, checkLocalStorageSpace } from '@/utils/authUtils';
+import { 
+  cleanupAuthState, 
+  saveUserToLocalStorage, 
+  checkLocalStorageSpace, 
+  aggressiveCleanup,
+  initializeLocalStorageCleanup,
+  safeLocalStorageSet
+} from '@/utils/authUtils';
 import { usePremiumStatus } from '@/hooks/usePremiumStatus';
 
 interface AuthProviderProps {
@@ -18,6 +24,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const { user, session, isLoading, error } = authState;
   const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
+
+  // Initialize localStorage cleanup on mount
+  useEffect(() => {
+    initializeLocalStorageCleanup();
+  }, []);
 
   const refreshAdminStatus = useCallback(async () => {
     if (!user) {
@@ -45,8 +56,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.log("Admin status from database:", adminStatus);
       setIsAdmin(adminStatus);
 
-      // Store admin status in localStorage for quick access
-      localStorage.setItem('adminLoggedIn', adminStatus ? 'true' : 'false');
+      // Store admin status with safe localStorage
+      safeLocalStorageSet('adminLoggedIn', adminStatus ? 'true' : 'false');
     } catch (error) {
       console.error('Error checking admin status:', error);
       setIsAdmin(false);
@@ -76,7 +87,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         if (isActive) {
           console.log("User has active Stripe subscription");
           setIsPremium(true);
-          if (user && checkLocalStorageSpace()) {
+          if (user && checkLocalStorageSpace() > 1024) {
             saveUserToLocalStorage(user, true, premiumExpiry);
           }
           return { isPremium: true, premiumExpiry };
@@ -112,7 +123,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.log("Premium status from profile:", { profilePremium, profileExpiry, isActive });
       setIsPremium(isActive);
       
-      if (user && isActive && checkLocalStorageSpace()) {
+      if (user && isActive && checkLocalStorageSpace() > 1024) {
         saveUserToLocalStorage(user, true, profileExpiry);
       }
 
@@ -131,14 +142,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       refreshAdminStatus();
     } else {
       setIsAdmin(false);
-      localStorage.removeItem('adminLoggedIn');
+      try {
+        localStorage.removeItem('adminLoggedIn');
+      } catch (e) {
+        console.warn('Could not remove adminLoggedIn from localStorage');
+      }
     }
   }, [user, refreshAdminStatus]);
 
   const signIn = async (email: string, password: string) => {
     try {
-      // Check storage space first
-      if (!checkLocalStorageSpace()) {
+      // Check storage space first and clean if necessary
+      if (checkLocalStorageSpace() < 1024) {
+        console.log('Low storage space detected, cleaning up before sign in...');
         cleanupAuthState();
       }
 
@@ -151,8 +167,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       let errorMessage = 'Nepodařilo se přihlásit';
       if (error.message?.includes('quota') || error.message?.includes('storage')) {
-        errorMessage = 'Problém s úložištěm prohlížeče. Zkuste vyčistit cache.';
-        cleanupAuthState();
+        errorMessage = 'Problém s úložištěm prohlížeče. Vyčišťuji data...';
+        aggressiveCleanup();
       }
       
       toast.error(errorMessage);
@@ -163,7 +179,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const signInWithGoogle = async () => {
     try {
       // Check storage space first
-      if (!checkLocalStorageSpace()) {
+      if (checkLocalStorageSpace() < 1024) {
         cleanupAuthState();
       }
 
@@ -192,7 +208,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const signUp = async (email: string, password: string, username?: string) => {
     try {
       // Check storage space first
-      if (!checkLocalStorageSpace()) {
+      if (checkLocalStorageSpace() < 1024) {
         cleanupAuthState();
       }
 
@@ -216,8 +232,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       let errorMessage = 'Nepodařilo se registrovat';
       if (error.message?.includes('quota') || error.message?.includes('storage')) {
-        errorMessage = 'Problém s úložištěm prohlížeče. Zkuste vyčistit cache.';
-        cleanupAuthState();
+        errorMessage = 'Problém s úložištěm prohlížeče. Vyčišťuji data...';
+        aggressiveCleanup();
       }
       
       toast.error(errorMessage);
@@ -228,8 +244,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const signOut = async () => {
     try {
       // Clean up state first
-      cleanupAuthState();
-      localStorage.removeItem('adminLoggedIn');
+      aggressiveCleanup();
       
       // Attempt global sign out
       try {

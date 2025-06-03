@@ -5,21 +5,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
-    <!-- Optimalizované preloading kritických zdrojů -->
-    <link rel="preload" href="/src/main.tsx" as="script" type="module" />
-    <link rel="preload" href="/src/index.css" as="style" />
-    <link rel="preload" href="/src/App.tsx" as="script" type="module" />
-    
-    <!-- Prefetch pravděpodobných dalších stránek -->
-    <link rel="prefetch" href="/dashboard" />
-    <link rel="prefetch" href="/vocabulary" />
-    <link rel="prefetch" href="/calculator" />
-    <link rel="prefetch" href="/vehicle" />
-    <link rel="prefetch" href="/shifts" />
-    <link rel="prefetch" href="/travel-planning" />
-    <link rel="prefetch" href="/tax-advisor" />
-    <link rel="prefetch" href="/translator" />
-    
     <!-- DNS prefetch pro externí zdroje -->
     <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
     <link rel="dns-prefetch" href="https://ghfjdgnnhhxhamcwjodx.supabase.co" />
@@ -35,11 +20,11 @@
     <meta name="robots" content="index, follow" />
 
     <!-- Canonical URL -->
-    <link rel="canonical" href="https://43a9f196-fcd9-4f8d-b60a-9c37d14325e5.lovableproject.com" />
+    <link rel="canonical" href="https://pendlerapp.cz" />
     
     <!-- Hreflang for Czech-German target audience -->
-    <link rel="alternate" hreflang="cs" href="https://43a9f196-fcd9-4f8d-b60a-9c37d14325e5.lovableproject.com" />
-    <link rel="alternate" hreflang="de" href="https://43a9f196-fcd9-4f8d-b60a-9c37d14325e5.lovableproject.com/de" />
+    <link rel="alternate" hreflang="cs" href="https://pendlerapp.cz" />
+    <link rel="alternate" hreflang="de" href="https://pendlerapp.cz/de" />
     
     <!-- Geo targeting -->
     <meta name="geo.region" content="CZ" />
@@ -51,22 +36,18 @@
     <meta name="theme-color" content="#3b82f6" />
     <meta name="color-scheme" content="light dark" />
     
-    <!-- Mobile optimizations -->
+    <!-- Mobile optimizations - FIXED deprecated meta tag -->
     <meta name="format-detection" content="telephone=no" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Pendlerův Pomocník" />
-    
-    <!-- Resource hints pro rychlejší načítání -->
-    <link rel="modulepreload" href="/src/main.tsx" />
-    <link rel="modulepreload" href="/src/App.tsx" />
     
     <!-- Open Graph for social sharing -->
     <meta property="og:title" content="Pendlerův Pomocník - Průvodce pro pracovníky v Německu" />
     <meta property="og:description" content="Komplexní průvodce pro Čechy pracující v Německu. Výuka němčiny, kalkulačky, správa směn a vozidel." />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://43a9f196-fcd9-4f8d-b60a-9c37d14325e5.lovableproject.com" />
-    <meta property="og:image" content="https://43a9f196-fcd9-4f8d-b60a-9c37d14325e5.lovableproject.com/lovable-uploads/88ef4e0f-4d33-458c-98f4-7b644e5b8588.png" />
+    <meta property="og:url" content="https://pendlerapp.cz" />
+    <meta property="og:image" content="https://pendlerapp.cz/lovable-uploads/88ef4e0f-4d33-458c-98f4-7b644e5b8588.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:locale" content="cs_CZ" />
@@ -76,7 +57,7 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Pendlerův Pomocník" />
     <meta name="twitter:description" content="Komplexní průvodce pro Čechy pracující v Německu" />
-    <meta name="twitter:image" content="https://43a9f196-fcd9-4f8d-b60a-9c37d14325e5.lovableproject.com/lovable-uploads/88ef4e0f-4d33-458c-98f4-7b644e5b8588.png" />
+    <meta name="twitter:image" content="https://pendlerapp.cz/lovable-uploads/88ef4e0f-4d33-458c-98f4-7b644e5b8588.png" />
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="/lovable-uploads/88ef4e0f-4d33-458c-98f4-7b644e5b8588.png" />
@@ -89,21 +70,21 @@
       "@type": "Organization",
       "name": "Pendlerův Pomocník",
       "description": "Komplexní průvodce pro Čechy pracující v Německu",
-      "url": "https://43a9f196-fcd9-4f8d-b60a-9c37d14325e5.lovableproject.com",
-      "logo": "https://43a9f196-fcd9-4f8d-b60a-9c37d14325e5.lovableproject.com/lovable-uploads/88ef4e0f-4d33-458c-98f4-7b644e5b8588.png",
+      "url": "https://pendlerapp.cz",
+      "logo": "https://pendlerapp.cz/lovable-uploads/88ef4e0f-4d33-458c-98f4-7b644e5b8588.png",
       "contactPoint": {
         "@type": "ContactPoint",
         "telephone": "+420-725-458-395",
         "contactType": "customer service",
-        "email": "info@pendleruvpomocnik.cz"
+        "email": "info@pendlerapp.cz"
       },
       "address": {
         "@type": "PostalAddress",
         "addressCountry": "CZ"
       },
       "sameAs": [
-        "https://www.facebook.com/pendleruvpomocnik",
-        "https://www.instagram.com/pendleruvpomocnik"
+        "https://www.facebook.com/pendlerapp",
+        "https://www.instagram.com/pendlerapp"
       ]
     }
     </script>
@@ -112,12 +93,6 @@
     <style id="critical-css">
       /* Critical above-the-fold styles */
       body { margin: 0; font-family: system-ui, -apple-system, sans-serif; }
-      .route-optimizer { contain: layout style paint; }
-      .mobile-translator-container { contain: layout style; }
-      .mobile-safe-area { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
-      .desktop-stable { min-height: 100vh; }
-      
-      /* Loading state styles */
       .loading-skeleton {
         background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
         background-size: 200% 100%;
@@ -128,7 +103,45 @@
         0% { background-position: -200% 0; }
         100% { background-position: 200% 0; }
       }
+      
+      /* Emergency localStorage cleanup styles */
+      .storage-error {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #ef4444;
+        color: white;
+        padding: 1rem;
+        border-radius: 8px;
+        z-index: 9999;
+      }
     </style>
+    
+    <!-- Emergency localStorage cleanup script -->
+    <script>
+      (function() {
+        try {
+          // Check if localStorage is working
+          localStorage.setItem('test', 'test');
+          localStorage.removeItem('test');
+        } catch (e) {
+          if (e.name === 'QuotaExceededError') {
+            console.warn('LocalStorage quota exceeded on page load, clearing...');
+            try {
+              localStorage.clear();
+              window.location.reload();
+            } catch (clearError) {
+              console.error('Cannot clear localStorage:', clearError);
+              // Show user notification
+              var div = document.createElement('div');
+              div.className = 'storage-error';
+              div.innerHTML = 'Úložiště prohlížeče je plné. Zkuste vymazat data prohlížeče a načíst stránku znovu.';
+              document.body.appendChild(div);
+            }
+          }
+        }
+      })();
+    </script>
   </head>
 
   <body>
