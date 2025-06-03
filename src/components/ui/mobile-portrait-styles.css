@@ -14,6 +14,47 @@
     gap: 1rem;
   }
   
+  /* Mobile Portrait Grid Specific Styles */
+  .mobile-portrait-grid {
+    padding: 1rem;
+    gap: 0.75rem;
+  }
+  
+  .mobile-portrait-grid-item {
+    aspect-ratio: 1;
+    min-height: 100px;
+    padding: 1rem 0.5rem;
+    border-radius: 12px;
+    transition: all 0.2s ease-in-out;
+  }
+  
+  .mobile-portrait-grid-item:active {
+    transform: scale(0.95);
+    background-color: hsl(var(--primary) / 0.05);
+  }
+  
+  .mobile-portrait-grid-item .icon {
+    width: 2rem;
+    height: 2rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .mobile-portrait-grid-item .label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.2;
+    text-align: center;
+  }
+  
+  /* Premium badge positioning */
+  .mobile-portrait-grid-item .premium-badge {
+    position: absolute;
+    top: 0.25rem;
+    right: 0.25rem;
+    font-size: 0.75rem;
+    padding: 0.125rem 0.25rem;
+  }
+  
   /* Improved sidebar overlay */
   .mobile-sidebar-overlay {
     backdrop-filter: blur(4px);
@@ -142,6 +183,11 @@
     min-height: calc(100vh - 4rem) !important;
     padding: 1rem !important;
     overflow-x: hidden !important;
+  }
+  
+  /* Override for grid layout - remove default padding */
+  .mobile-main-content.grid-layout {
+    padding: 0 !important;
   }
   
   /* Fix hero section for mobile portrait */
