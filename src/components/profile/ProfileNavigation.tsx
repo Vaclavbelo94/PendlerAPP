@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { User, Settings, Activity, Crown } from 'lucide-react';
+import { User, Settings, Activity, Crown, Eye } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
@@ -15,6 +15,12 @@ const profileTabs = [
     icon: User,
     label: 'Přehled',
     description: 'Základní informace o profilu'
+  },
+  {
+    id: 'appearance',
+    icon: Eye,
+    label: 'Vzhled',
+    description: 'Nastavení vzhledu aplikace'
   },
   {
     id: 'subscription',
@@ -36,7 +42,7 @@ export const ProfileNavigation: React.FC<ProfileNavigationProps> = ({
 }) => {
   return (
     <div className="flex justify-center">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-4xl">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-5xl">
         {profileTabs.map((tab, index) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;

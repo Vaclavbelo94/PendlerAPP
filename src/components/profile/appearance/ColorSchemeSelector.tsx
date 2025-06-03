@@ -1,8 +1,8 @@
 
 import React from "react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Palette } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ColorSchemeSelectorProps {
@@ -10,33 +10,48 @@ interface ColorSchemeSelectorProps {
   onColorSchemeChange: (value: string) => void;
 }
 
+const colorSchemes = [
+  { value: "purple", label: "Fialová", color: "bg-purple-500" },
+  { value: "blue", label: "Modrá", color: "bg-blue-500" },
+  { value: "green", label: "Zelená", color: "bg-green-500" },
+  { value: "orange", label: "Oranžová", color: "bg-orange-500" },
+  { value: "red", label: "Červená", color: "bg-red-500" },
+  { value: "yellow", label: "Žlutá", color: "bg-yellow-500" }
+];
+
 const ColorSchemeSelector = ({ colorScheme, onColorSchemeChange }: ColorSchemeSelectorProps) => {
   const isMobile = useIsMobile();
 
   return (
-    <div className={`flex items-center justify-between ${isMobile ? 'flex-col gap-3' : ''}`}>
-      <div className={`${isMobile ? 'text-center' : ''}`}>
-        <Label htmlFor="colorScheme" className={`${isMobile ? 'text-sm' : 'text-base'} flex items-center gap-2 ${isMobile ? 'justify-center' : ''}`}>
-          <Palette className={`${isMobile ? 'h-3 w-3' : 'h-4 w-4'}`} />
-          <span>Barevné schéma</span>
-        </Label>
-        <p className={`${isMobile ? 'text-xs' : 'text-sm'} text-muted-foreground ${isMobile ? 'text-center mt-1' : ''}`}>
-          Vyberte hlavní barvu aplikace
-        </p>
+    <div>
+      <Label className={`${isMobile ? 'text-sm' : 'text-base'} mb-3 block`}>Barevné schéma</Label>
+      <p className={`${isMobile ? 'text-xs' : 'text-sm'} text-muted-foreground mb-4`}>
+        Vyberte hlavní barvu aplikace
+      </p>
+      
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+        {colorSchemes.map((scheme) => (
+          <Card
+            key={scheme.value}
+            className={cn(
+              "cursor-pointer transition-all duration-200 hover:scale-105",
+              colorScheme === scheme.value 
+                ? "ring-2 ring-primary shadow-md" 
+                : "hover:shadow-md"
+            )}
+            onClick={() => onColorSchemeChange(scheme.value)}
+          >
+            <CardContent className={`p-3 ${isMobile ? 'p-2' : ''}`}>
+              <div className="flex items-center gap-3">
+                <div className={cn("w-6 h-6 rounded-full", scheme.color)} />
+                <span className={`${isMobile ? 'text-xs' : 'text-sm'} font-medium`}>
+                  {scheme.label}
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
-      <Select value={colorScheme} onValueChange={onColorSchemeChange}>
-        <SelectTrigger className={`${isMobile ? 'w-full' : 'w-32'}`}>
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="purple">Fialová</SelectItem>
-          <SelectItem value="blue">Modrá</SelectItem>
-          <SelectItem value="green">Zelená</SelectItem>
-          <SelectItem value="amber">Oranžová</SelectItem>
-          <SelectItem value="red">Červená</SelectItem>
-          <SelectItem value="pink">Růžová</SelectItem>
-        </SelectContent>
-      </Select>
     </div>
   );
 };

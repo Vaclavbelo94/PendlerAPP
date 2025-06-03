@@ -6,8 +6,9 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
-import { User, Crown, Settings, Activity, Shield } from "lucide-react";
+import { User, Crown, Settings, Activity, Shield, Eye } from "lucide-react";
 import ProfileNavigation from "@/components/profile/ProfileNavigation";
+import ProfileAppearance from "@/components/profile/ProfileAppearance";
 import { useState } from "react";
 
 const Profile = () => {
@@ -94,6 +95,12 @@ const Profile = () => {
     </div>
   );
 
+  const AppearanceTab = () => (
+    <div className="max-w-2xl">
+      <ProfileAppearance />
+    </div>
+  );
+
   const SubscriptionTab = () => (
     <Card>
       <CardHeader>
@@ -155,6 +162,7 @@ const Profile = () => {
   const renderTabContent = () => {
     switch (activeTab) {
       case 'overview': return <OverviewTab />;
+      case 'appearance': return <AppearanceTab />;
       case 'subscription': return <SubscriptionTab />;
       case 'activity': return <ActivityTab />;
       default: return <OverviewTab />;

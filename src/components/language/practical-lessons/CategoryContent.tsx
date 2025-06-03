@@ -17,9 +17,9 @@ const CategoryContent: React.FC<CategoryContentProps> = ({ category }) => {
   const useMobileLayout = isMobile || isSmallLandscape;
 
   return (
-    <TabsContent key={category.id} value={category.id} className="mt-4">
-      <Card>
-        <CardHeader className="pb-3">
+    <TabsContent key={category.id} value={category.id} className="mt-6">
+      <Card className="mb-6">
+        <CardHeader className="pb-4">
           <CardTitle className={`${useMobileLayout ? 'text-base' : 'text-lg'} flex items-center gap-2`}>
             <span className="text-xl">{category.icon}</span>
             {category.titleKey}
@@ -30,7 +30,7 @@ const CategoryContent: React.FC<CategoryContentProps> = ({ category }) => {
         </CardHeader>
       </Card>
       
-      <div className="mt-4 space-y-3">
+      <div className="mt-6 space-y-4">
         {category.phrases.map((phrase) => (
           <PhraseCard key={phrase.id} phrase={phrase} />
         ))}
