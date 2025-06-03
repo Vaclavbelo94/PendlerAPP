@@ -3,7 +3,6 @@ import { ReactNode, useState, useEffect } from "react";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
-import { MobilePortraitGrid } from "./MobilePortraitGrid";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { useIsMobile, useOrientation } from "@/hooks/use-mobile";
@@ -22,51 +21,10 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
   const location = useLocation();
   const { user, isAdmin } = useAuth();
   
-  // Check if we should show the mobile grid (only on homepage in mobile portrait)
-  const shouldShowMobileGrid = isMobile && 
-                              orientation === "portrait" && 
-                              location.pathname === "/";
-  
   // Zavřít sidebar při změně cesty
   useEffect(() => {
     setSidebarOpen(false);
   }, [location.pathname]);
-  
-  // Mobile Portrait Layout with Grid (only on homepage)
-  const MobilePortraitLayoutWithGrid = () => (
-    <div className="flex min-h-screen bg-background relative">
-      <div className="flex-1 flex flex-col min-w-0 relative">
-        <div className="mobile-navbar-fixed">
-          <Navbar 
-            toggleSidebar={() => setSidebarOpen(!sidebarOpen)} 
-            rightContent={navbarRightContent}
-            sidebarOpen={sidebarOpen}
-          />
-        </div>
-        
-        {/* Sidebar overlay for mobile */}
-        {sidebarOpen && (
-          <>
-            <div 
-              className="fixed inset-0 bg-black/50 z-[60] mobile-sidebar-overlay"
-              onClick={() => setSidebarOpen(false)}
-              aria-hidden="true"
-            />
-            <div className="fixed inset-y-0 left-0 z-[70] transform transition-transform duration-300 ease-in-out">
-              <Sidebar closeSidebar={() => setSidebarOpen(false)} />
-            </div>
-          </>
-        )}
-        
-        <div className="flex-1 mobile-content-wrapper">
-          <main className="mobile-main-content">
-            <MobilePortraitGrid />
-          </main>
-          <Footer />
-        </div>
-      </div>
-    </div>
-  );
   
   // Memoized layout components pro lepší výkon
   const MobilePortraitLayout = () => (
@@ -163,16 +121,7 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
   
   // Podmíněné renderování s optimalizací
   if (isMobile) {
-    if (orientation === "landscape") {
-      return <MobileLandscapeLayout />;
-    }
-    
-    // Show grid only on homepage in mobile portrait
-    if (shouldShowMobileGrid) {
-      return <MobilePortraitLayoutWithGrid />;
-    }
-    
-    return <MobilePortraitLayout />;
+    return orientation === "landscape" ? <MobileLandscapeLayout /> : <MobilePortraitLayout />;
   }
   
   return <DesktopLayout />;
