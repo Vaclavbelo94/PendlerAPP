@@ -11,13 +11,10 @@ import {
   Map,
   Settings,
   Crown,
-  CreditCard,
   Contact,
   HelpCircle,
   Scale,
   Shield,
-  Zap,
-  BookOpen,
   Languages
 } from 'lucide-react';
 
@@ -162,17 +159,6 @@ export const modernNavigationItems: ModernNavigationItem[] = [
     isPublic: true,
     color: 'text-yellow-600',
     gradient: 'from-yellow-500 to-yellow-600'
-  },
-  {
-    id: 'pricing',
-    label: 'Ceník',
-    href: '/pricing',
-    icon: CreditCard,
-    description: 'Přehled cen a balíčků',
-    category: 'support',
-    isPublic: true,
-    color: 'text-teal-600',
-    gradient: 'from-teal-500 to-teal-600'
   },
   {
     id: 'contact',

@@ -1,5 +1,6 @@
+
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from '@/components/ui/toaster'
 import { Toaster as Sonner } from 'sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -24,7 +25,6 @@ import Laws from '@/pages/Laws'
 import Settings from '@/pages/Settings'
 import Profile from '@/pages/Profile'
 import Premium from '@/pages/Premium'
-import Pricing from '@/pages/Pricing'
 import Contact from '@/pages/Contact'
 import FAQ from '@/pages/FAQ'
 import Login from '@/pages/Login'
@@ -96,7 +96,8 @@ function App() {
                         <Route path="/settings" element={<Settings />} />
                         <Route path="/profile" element={<Profile />} />
                         <Route path="/premium" element={<Premium />} />
-                        <Route path="/pricing" element={<Pricing />} />
+                        {/* Redirect from old pricing page to premium */}
+                        <Route path="/pricing" element={<Navigate to="/premium" replace />} />
                         <Route path="/contact" element={<Contact />} />
                         <Route path="/faq" element={<FAQ />} />
                         <Route path="/login" element={<Login />} />

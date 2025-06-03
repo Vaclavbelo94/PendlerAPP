@@ -1,6 +1,8 @@
 
+import { motion } from "framer-motion";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { HelpCircle } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { HelpCircle, MessageCircle, Sparkles } from "lucide-react";
 
 const FAQ = () => {
   const faqItems = [
@@ -39,34 +41,106 @@ const FAQ = () => {
   ];
 
   return (
-    <div className="py-12 bg-slate-50">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <HelpCircle className="w-12 h-12 text-primary mx-auto mb-4" />
-          <h1 className="text-4xl font-bold mb-4">Časté otázky (FAQ)</h1>
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-purple-50 relative overflow-hidden">
+      {/* Background decorations */}
+      <div className="absolute inset-0 bg-gradient-to-br from-rose-100/30 via-pink-100/30 to-purple-100/30" />
+      <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-rose-400/10 to-pink-400/10 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-br from-pink-400/10 to-purple-400/10 rounded-full blur-3xl" />
+      
+      <div className="relative container py-12 px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-12"
+        >
+          <motion.div
+            initial={{ scale: 0.8 }}
+            animate={{ scale: 1 }}
+            className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-rose-500 to-pink-600 rounded-2xl shadow-lg mb-6"
+          >
+            <HelpCircle className="w-10 h-10 text-white" />
+          </motion.div>
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-rose-600 via-pink-600 to-purple-600 bg-clip-text text-transparent mb-4">
+            Časté otázky (FAQ)
+          </h1>
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Odpovědi na nejčastější dotazy českých pendlerů pracujících v Německu.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="max-w-3xl mx-auto">
-          <Accordion type="single" collapsible className="w-full">
-            {faqItems.map((item, index) => (
-              <AccordionItem key={index} value={`item-${index}`}>
-                <AccordionTrigger className="text-left">{item.question}</AccordionTrigger>
-                <AccordionContent>
-                  <p className="text-muted-foreground">{item.answer}</p>
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </div>
+        <motion.div 
+          className="max-w-4xl mx-auto mb-12"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-xl">
+            <CardContent className="p-0">
+              <Accordion type="single" collapsible className="w-full">
+                {faqItems.map((item, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1 * index }}
+                  >
+                    <AccordionItem 
+                      value={`item-${index}`} 
+                      className="border-b border-gray-100 last:border-b-0"
+                    >
+                      <AccordionTrigger className="text-left px-6 py-4 hover:bg-gradient-to-r hover:from-rose-50/50 hover:to-pink-50/50 transition-all duration-300 text-base font-semibold">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-gradient-to-r from-rose-500 to-pink-600 rounded-lg flex items-center justify-center">
+                            <span className="text-white text-sm font-bold">{index + 1}</span>
+                          </div>
+                          {item.question}
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="px-6 pb-4">
+                        <div className="ml-11 text-muted-foreground leading-relaxed bg-gradient-to-r from-gray-50 to-slate-50 p-4 rounded-lg border border-gray-100">
+                          {item.answer}
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </motion.div>
+                ))}
+              </Accordion>
+            </CardContent>
+          </Card>
+        </motion.div>
         
-        <div className="mt-12 text-center">
-          <p className="text-muted-foreground">
-            Nenašli jste odpověď na svou otázku? <a href="/contact" className="text-primary hover:underline">Kontaktujte nás</a>.
-          </p>
-        </div>
+        <motion.div 
+          className="text-center"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+        >
+          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-xl max-w-2xl mx-auto">
+            <CardHeader>
+              <CardTitle className="flex items-center justify-center gap-3">
+                <div className="w-12 h-12 bg-gradient-to-r from-rose-500 to-pink-600 rounded-xl flex items-center justify-center">
+                  <MessageCircle className="h-6 w-6 text-white" />
+                </div>
+                Nenašli jste odpověď?
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground mb-4">
+                Pokud jste nenašli odpověď na svou otázku, neváhejte nás kontaktovat. 
+                Rádi vám pomůžeme a odpovíme do 24 hodin.
+              </p>
+              <motion.a 
+                href="/contact" 
+                className="inline-flex items-center gap-2 text-rose-600 hover:text-rose-700 font-semibold transition-colors duration-200"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Sparkles className="h-4 w-4" />
+                Kontaktujte nás
+              </motion.a>
+            </CardContent>
+          </Card>
+        </motion.div>
       </div>
     </div>
   );
