@@ -158,7 +158,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
 
       const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) throw error;
+      if (error) return { error };
       toast.success('Přihlášení proběhlo úspěšně');
       return { error: null };
     } catch (error: any) {
@@ -171,7 +171,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
       
       toast.error(errorMessage);
-      return { error: error.message || error.error_description };
+      return { error };
     }
   };
 
@@ -192,7 +192,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (error) {
         console.error("Error signing in with Google:", error);
         toast.error("Nepodařilo se přihlásit přes Google");
-        return { error: error.message, url: undefined };
+        return { error, url: undefined };
       }
 
       console.log("Google OAuth initiation successful, redirecting...");
@@ -200,7 +200,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } catch (error: any) {
       console.error("Error signing in with Google:", error);
       toast.error("Nepodařilo se přihlásit přes Google");
-      return { error: error.message, url: undefined };
+      return { error, url: undefined };
     }
   };
 
@@ -222,7 +222,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
       });
 
-      if (error) throw error;
+      if (error) return { error };
       
       toast.success('Registrace proběhla úspěšně. Zkontrolujte svůj email.');
       return { error: null };
@@ -236,7 +236,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
       
       toast.error(errorMessage);
-      return { error: error.message || error.error_description };
+      return { error };
     }
   };
 

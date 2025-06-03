@@ -82,13 +82,14 @@ const Register = () => {
       if (error) {
         let errorMessage = "Zkontrolujte své údaje a zkuste to znovu.";
         
-        if (error.message?.includes("User already registered") || error.code === "user_already_exists") {
+        const errorStr = error?.message || error || "";
+        if (errorStr.includes("User already registered") || error?.code === "user_already_exists") {
           errorMessage = "Uživatel s tímto emailem již existuje. Zkuste se přihlásit.";
-        } else if (error.message?.includes("Invalid email")) {
+        } else if (errorStr.includes("Invalid email")) {
           errorMessage = "Neplatný formát emailu.";
-        } else if (error.message?.includes("Password")) {
+        } else if (errorStr.includes("Password")) {
           errorMessage = "Heslo nesplňuje požadavky.";
-        } else if (error.message?.includes("quota") || error.message?.includes("storage")) {
+        } else if (errorStr.includes("quota") || errorStr.includes("storage")) {
           errorMessage = "Problém s úložištěm prohlížeče. Zkuste vyčistit cache.";
         }
         
@@ -139,8 +140,9 @@ const Register = () => {
       const { error, url } = await signInWithGoogle();
       
       if (error) {
+        const errorMessage = error?.message || error || "Nastala chyba při registraci s Google účtem.";
         toast.error("Registrace s Google selhala", {
-          description: error.message || "Nastala chyba při registraci s Google účtem.",
+          description: errorMessage,
         });
       }
       

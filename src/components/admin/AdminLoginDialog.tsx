@@ -34,7 +34,8 @@ const AdminLoginDialog = ({ isOpen, onClose, onSuccess }: AdminLoginDialogProps)
       const { error } = await signIn(email, password);
       
       if (error) {
-        toast.error("Přihlášení selhalo: " + error.message);
+        const errorMessage = error?.message || error || "Neočekávaná chyba";
+        toast.error("Přihlášení selhalo: " + errorMessage);
         return;
       }
       
@@ -55,7 +56,8 @@ const AdminLoginDialog = ({ isOpen, onClose, onSuccess }: AdminLoginDialogProps)
         }
       }, 100);
     } catch (error: any) {
-      toast.error("Přihlášení selhalo: " + error.message);
+      const errorMessage = error?.message || "Neočekávaná chyba";
+      toast.error("Přihlášení selhalo: " + errorMessage);
     } finally {
       setIsLoading(false);
     }
