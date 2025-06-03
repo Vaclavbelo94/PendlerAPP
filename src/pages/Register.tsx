@@ -82,8 +82,10 @@ const Register = () => {
       if (error) {
         let errorMessage = "Zkontrolujte své údaje a zkuste to znovu.";
         
-        const errorStr = error?.message || error || "";
-        if (errorStr.includes("User already registered") || error?.code === "user_already_exists") {
+        const errorStr = typeof error === 'string' ? error : (error?.message || JSON.stringify(error));
+        const errorCode = typeof error === 'object' ? error?.code : undefined;
+        
+        if (errorStr.includes("User already registered") || errorCode === "user_already_exists") {
           errorMessage = "Uživatel s tímto emailem již existuje. Zkuste se přihlásit.";
         } else if (errorStr.includes("Invalid email")) {
           errorMessage = "Neplatný formát emailu.";
@@ -140,7 +142,7 @@ const Register = () => {
       const { error, url } = await signInWithGoogle();
       
       if (error) {
-        const errorMessage = error?.message || error || "Nastala chyba při registraci s Google účtem.";
+        const errorMessage = typeof error === 'string' ? error : (error?.message || "Nastala chyba při registraci s Google účtem.");
         toast.error("Registrace s Google selhala", {
           description: errorMessage,
         });
