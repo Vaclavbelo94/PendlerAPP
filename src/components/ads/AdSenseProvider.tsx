@@ -22,7 +22,7 @@ export const useAdSense = () => {
 
 interface AdSenseProviderProps {
   children: React.ReactNode;
-  clientId?: string; // Google AdSense Client ID
+  clientId?: string;
 }
 
 declare global {
@@ -35,20 +35,17 @@ declare global {
 
 export const AdSenseProvider: React.FC<AdSenseProviderProps> = ({ 
   children, 
-  clientId = "ca-pub-YOUR_PUBLISHER_ID" 
+  clientId = "ca-pub-5766122497657850" 
 }) => {
   const { isPremium } = useAuth();
   const [isAdSenseLoaded, setIsAdSenseLoaded] = useState(false);
 
-  // Determine if ads should be shown
   const shouldShowAds = !isPremium;
 
   useEffect(() => {
     if (!shouldShowAds) return;
 
-    // Load Google AdSense script
     const loadAdSenseScript = () => {
-      // Check if script is already loaded
       if (document.querySelector('script[src*="adsbygoogle.js"]')) {
         setIsAdSenseLoaded(true);
         return;
@@ -61,7 +58,6 @@ export const AdSenseProvider: React.FC<AdSenseProviderProps> = ({
       
       script.onload = () => {
         setIsAdSenseLoaded(true);
-        // Initialize adsbygoogle array if not exists
         window.adsbygoogle = window.adsbygoogle || [];
       };
 
@@ -79,7 +75,6 @@ export const AdSenseProvider: React.FC<AdSenseProviderProps> = ({
     if (!isAdSenseLoaded || !shouldShowAds) return;
 
     try {
-      // Push ad to AdSense queue
       (window.adsbygoogle = window.adsbygoogle || []).push({});
     } catch (error) {
       console.error('Error loading AdSense ad:', error);
@@ -95,7 +90,6 @@ export const AdSenseProvider: React.FC<AdSenseProviderProps> = ({
       userPremium: isPremium
     });
     
-    // Here you can integrate with Google Analytics or other tracking
     if (window.gtag) {
       window.gtag('event', 'ad_view', { 
         ad_type: adType,
@@ -113,7 +107,6 @@ export const AdSenseProvider: React.FC<AdSenseProviderProps> = ({
       userPremium: isPremium
     });
     
-    // Track clicks with Google Analytics
     if (window.gtag) {
       window.gtag('event', 'ad_click', { 
         ad_type: adType,
@@ -134,4 +127,3 @@ export const AdSenseProvider: React.FC<AdSenseProviderProps> = ({
     </AdSenseContext.Provider>
   );
 };
-

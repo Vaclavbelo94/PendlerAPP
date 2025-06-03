@@ -4,7 +4,7 @@ import { useAdSense } from './AdSenseProvider';
 import { cn } from '@/lib/utils';
 
 interface AdSenseBannerProps {
-  adSlot: string; // AdSense ad slot ID
+  adSlot: string;
   adFormat?: 'auto' | 'rectangle' | 'vertical' | 'horizontal';
   className?: string;
   style?: React.CSSProperties;
@@ -25,10 +25,7 @@ export const AdSenseBanner: React.FC<AdSenseBannerProps> = ({
   useEffect(() => {
     if (!shouldShowAds || !isAdSenseLoaded || !adRef.current) return;
 
-    // Track ad view
     trackAdView(`adsense_banner_${adFormat}`);
-
-    // Load the ad
     loadAd(adSlot, adId);
   }, [shouldShowAds, isAdSenseLoaded, adSlot, adFormat, trackAdView, loadAd, adId]);
 
@@ -45,7 +42,7 @@ export const AdSenseBanner: React.FC<AdSenseBannerProps> = ({
       <ins
         className="adsbygoogle"
         style={{ display: 'block', ...style }}
-        data-ad-client="ca-pub-YOUR_PUBLISHER_ID"
+        data-ad-client="ca-pub-5766122497657850"
         data-ad-slot={adSlot}
         data-ad-format={adFormat}
         data-full-width-responsive={responsive ? 'true' : 'false'}

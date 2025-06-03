@@ -62,7 +62,6 @@ const Register = () => {
       return;
     }
     
-    // Check storage space before attempting registration
     if (!checkLocalStorageSpace()) {
       toast.error("Nedostatek místa v úložišti", {
         description: "Zkuste vyčistit úložiště prohlížeče nebo použijte jiný prohlížeč"
@@ -73,18 +72,15 @@ const Register = () => {
     setIsLoading(true);
     
     try {
-      // Clean up any existing auth state before registration
       cleanupAuthState();
       
       const { error } = await signUp(email, password, username);
       
       if (error) {
         let errorMessage = "Zkontrolujte své údaje a zkuste to znovu.";
+        const errorStr = String(error);
         
-        const errorStr = typeof error === 'string' ? error : (error && typeof error === 'object' && 'message' in error ? error.message : JSON.stringify(error));
-        const errorCode = typeof error === 'object' && error !== null && 'code' in error ? error.code : undefined;
-        
-        if (errorStr.includes("User already registered") || errorCode === "user_already_exists") {
+        if (errorStr.includes("User already registered") || errorStr.includes("user_already_exists")) {
           errorMessage = "Uživatel s tímto emailem již existuje. Zkuste se přihlásit.";
         } else if (errorStr.includes("Invalid email")) {
           errorMessage = "Neplatný formát emailu.";
@@ -135,15 +131,13 @@ const Register = () => {
     setIsGoogleLoading(true);
     
     try {
-      // Clean up any existing auth state
       cleanupAuthState();
       
       const { error, url } = await signInWithGoogle();
       
       if (error) {
-        const errorMessage = typeof error === 'string' ? error : (error && typeof error === 'object' && 'message' in error ? error.message : "Nastala chyba při registraci s Google účtem.");
         toast.error("Registrace s Google selhala", {
-          description: errorMessage,
+          description: String(error),
         });
       }
       

@@ -33,8 +33,7 @@ const AdminLoginDialog = ({ isOpen, onClose, onSuccess }: AdminLoginDialogProps)
       const { error } = await signIn(email, password);
       
       if (error) {
-        const errorMessage = typeof error === 'string' ? error : (error && typeof error === 'object' && 'message' in error ? error.message : "Neočekávaná chyba");
-        toast.error("Přihlášení selhalo: " + errorMessage);
+        toast.error("Přihlášení selhalo: " + String(error));
         return;
       }
       
