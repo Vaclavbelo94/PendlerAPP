@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { 
   Dialog,
@@ -34,7 +33,7 @@ const AdminLoginDialog = ({ isOpen, onClose, onSuccess }: AdminLoginDialogProps)
       const { error } = await signIn(email, password);
       
       if (error) {
-        const errorMessage = error?.message || error || "Neočekávaná chyba";
+        const errorMessage = typeof error === 'string' ? error : (error?.message || "Neočekávaná chyba");
         toast.error("Přihlášení selhalo: " + errorMessage);
         return;
       }

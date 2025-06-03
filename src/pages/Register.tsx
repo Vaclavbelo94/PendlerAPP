@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -83,7 +82,7 @@ const Register = () => {
         let errorMessage = "Zkontrolujte své údaje a zkuste to znovu.";
         
         const errorStr = typeof error === 'string' ? error : (error?.message || JSON.stringify(error));
-        const errorCode = typeof error === 'object' ? error?.code : undefined;
+        const errorCode = typeof error === 'object' && error !== null ? error?.code : undefined;
         
         if (errorStr.includes("User already registered") || errorCode === "user_already_exists") {
           errorMessage = "Uživatel s tímto emailem již existuje. Zkuste se přihlásit.";
