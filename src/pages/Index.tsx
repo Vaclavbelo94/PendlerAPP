@@ -2,7 +2,7 @@
 import React from "react";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { IndexBanners } from "@/components/home/index/IndexBanners";
-import { IndexContent } from "@/components/home/index/IndexContent";
+import { ModernIndexContent } from "@/components/home/index/ModernIndexContent";
 import { ScrollToTopButton } from "@/components/home/index/ScrollToTopButton";
 import { useIndexScrollHandling } from "@/components/home/index/useIndexScrollHandling";
 
@@ -15,7 +15,7 @@ const Index = () => {
       <main className="flex-grow relative">
         <IndexBanners />
         
-        <IndexContent animatedHeroVisible={animatedHeroVisible} />
+        <ModernIndexContent animatedHeroVisible={animatedHeroVisible} />
 
         <ScrollToTopButton scrolled={scrolled} />
       </main>
