@@ -52,14 +52,8 @@ export const ModernIndexContent = ({ animatedHeroVisible }: ModernIndexContentPr
       <div className="py-8 bg-slate-50 dark:bg-slate-900">
         <div className="container mx-auto px-4">
           <AdBanner 
-            adType="banner" 
             className="max-w-4xl mx-auto"
-            fallbackContent={
-              <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-6 rounded-lg text-center">
-                <h3 className="text-lg font-semibold mb-2">Podporujte nás!</h3>
-                <p className="text-sm opacity-90">Vaše podpora nám pomáhá udržovat aplikaci zdarma pro všechny.</p>
-              </div>
-            }
+            variant="horizontal"
           />
         </div>
       </div>
