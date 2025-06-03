@@ -1,5 +1,6 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { performanceMonitor } from '@/utils/performanceMonitor';
+import { safeLocalStorageSet, checkLocalStorageSpace, cleanupAuthState } from '@/utils/authUtils';
 
 interface PerformanceMetrics {
   pageLoadTime: number;
@@ -38,20 +39,33 @@ export const usePerformanceMonitoring = (config: PerformanceMonitoringConfig = {
     // Report to analytics service (could be integrated with Google Analytics, etc.)
     console.log('Performance Metrics:', metrics);
     
-    // Store in localStorage for admin panel
-    const existingMetrics = JSON.parse(localStorage.getItem('performanceMetrics') || '[]');
-    existingMetrics.push({
-      ...metrics,
-      timestamp: Date.now(),
-      url: window.location.pathname
-    });
-    
-    // Keep only last 100 entries
-    if (existingMetrics.length > 100) {
-      existingMetrics.splice(0, existingMetrics.length - 100);
+    // Check storage space before attempting to store
+    if (checkLocalStorageSpace() < 1024) {
+      console.warn('Low localStorage space, skipping performance metrics storage');
+      return;
     }
     
-    localStorage.setItem('performanceMetrics', JSON.stringify(existingMetrics));
+    // Store in localStorage for admin panel with safe storage
+    try {
+      const existingMetrics = JSON.parse(localStorage.getItem('performanceMetrics') || '[]');
+      existingMetrics.push({
+        ...metrics,
+        timestamp: Date.now(),
+        url: window.location.pathname
+      });
+      
+      // Keep only last 50 entries (reduced from 100)
+      if (existingMetrics.length > 50) {
+        existingMetrics.splice(0, existingMetrics.length - 50);
+      }
+      
+      const success = safeLocalStorageSet('performanceMetrics', JSON.stringify(existingMetrics));
+      if (!success) {
+        console.warn('Failed to store performance metrics, localStorage may be full');
+      }
+    } catch (error) {
+      console.warn('Error processing performance metrics:', error);
+    }
   }, []);
 
   const collectWebVitals = useCallback(() => {

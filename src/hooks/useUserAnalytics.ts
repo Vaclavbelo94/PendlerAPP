@@ -1,5 +1,6 @@
 import { useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { safeLocalStorageSet, checkLocalStorageSpace } from '@/utils/authUtils';
 
 interface AnalyticsEvent {
   event: string;
@@ -45,16 +46,29 @@ export const useUserAnalytics = () => {
       referrer: document.referrer
     };
 
-    // Store session in localStorage
-    const existingSessions = JSON.parse(localStorage.getItem('userSessions') || '[]');
-    existingSessions.push(sessionRef.current);
-    
-    // Keep only last 10 sessions
-    if (existingSessions.length > 10) {
-      existingSessions.splice(0, existingSessions.length - 10);
+    // Check storage space before attempting to store
+    if (checkLocalStorageSpace() < 2048) {
+      console.warn('Low localStorage space, skipping session storage');
+      return;
     }
-    
-    localStorage.setItem('userSessions', JSON.stringify(existingSessions));
+
+    // Store session in localStorage with safe storage
+    try {
+      const existingSesSions = JSON.parse(localStorage.getItem('userSessions') || '[]');
+      existingSesSions.push(sessionRef.current);
+      
+      // Keep only last 5 sessions (reduced from 10)
+      if (existingSesSions.length > 5) {
+        existingSesSions.splice(0, existingSesSions.length - 5);
+      }
+      
+      const success = safeLocalStorageSet('userSessions', JSON.stringify(existingSesSions));
+      if (!success) {
+        console.warn('Failed to store user session, localStorage may be full');
+      }
+    } catch (error) {
+      console.warn('Error storing user session:', error);
+    }
   }, [getSessionId]);
 
   const trackEvent = useCallback((event: string, properties: Record<string, any> = {}) => {
@@ -76,16 +90,29 @@ export const useUserAnalytics = () => {
 
     sessionRef.current!.events.push(analyticsEvent);
 
-    // Store events locally
-    const existingEvents = JSON.parse(localStorage.getItem('analyticsEvents') || '[]');
-    existingEvents.push(analyticsEvent);
-    
-    // Keep only last 1000 events
-    if (existingEvents.length > 1000) {
-      existingEvents.splice(0, existingEvents.length - 1000);
+    // Check storage space before attempting to store
+    if (checkLocalStorageSpace() < 1024) {
+      console.warn('Low localStorage space, skipping event storage');
+      return;
     }
-    
-    localStorage.setItem('analyticsEvents', JSON.stringify(existingEvents));
+
+    // Store events locally with safe storage
+    try {
+      const existingEvents = JSON.parse(localStorage.getItem('analyticsEvents') || '[]');
+      existingEvents.push(analyticsEvent);
+      
+      // Keep only last 500 events (reduced from 1000)
+      if (existingEvents.length > 500) {
+        existingEvents.splice(0, existingEvents.length - 500);
+      }
+      
+      const success = safeLocalStorageSet('analyticsEvents', JSON.stringify(existingEvents));
+      if (!success) {
+        console.warn('Failed to store analytics event, localStorage may be full');
+      }
+    } catch (error) {
+      console.warn('Error storing analytics event:', error);
+    }
 
     console.log('Analytics Event:', analyticsEvent);
   }, [user?.id, initializeSession]);
@@ -109,15 +136,28 @@ export const useUserAnalytics = () => {
     if (sessionRef.current) {
       sessionRef.current.endTime = Date.now();
       
-      // Update stored session
-      const existingSessions = JSON.parse(localStorage.getItem('userSessions') || '[]');
-      const sessionIndex = existingSessions.findIndex(
-        (s: UserSession) => s.sessionId === sessionRef.current!.sessionId
-      );
+      // Check storage space before attempting to update
+      if (checkLocalStorageSpace() < 1024) {
+        console.warn('Low localStorage space, skipping session update');
+        return;
+      }
       
-      if (sessionIndex !== -1) {
-        existingSessions[sessionIndex] = sessionRef.current;
-        localStorage.setItem('userSessions', JSON.stringify(existingSessions));
+      // Update stored session with safe storage
+      try {
+        const existingSessions = JSON.parse(localStorage.getItem('userSessions') || '[]');
+        const sessionIndex = existingSessions.findIndex(
+          (s: UserSession) => s.sessionId === sessionRef.current!.sessionId
+        );
+        
+        if (sessionIndex !== -1) {
+          existingSessions[sessionIndex] = sessionRef.current;
+          const success = safeLocalStorageSet('userSessions', JSON.stringify(existingSessions));
+          if (!success) {
+            console.warn('Failed to update session, localStorage may be full');
+          }
+        }
+      } catch (error) {
+        console.warn('Error updating session:', error);
       }
     }
   }, []);
