@@ -1,4 +1,3 @@
-
 import * as React from 'react';
 import { useState, useCallback } from 'react';
 import { AuthContext } from './useAuthContext';
@@ -158,7 +157,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
 
       const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) return { error };
+      if (error) return { error: error.message || error };
       toast.success('Přihlášení proběhlo úspěšně');
       return { error: null };
     } catch (error: any) {
@@ -171,7 +170,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
       
       toast.error(errorMessage);
-      return { error };
+      return { error: error.message || errorMessage };
     }
   };
 
@@ -192,7 +191,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (error) {
         console.error("Error signing in with Google:", error);
         toast.error("Nepodařilo se přihlásit přes Google");
-        return { error, url: undefined };
+        return { error: error.message || error, url: undefined };
       }
 
       console.log("Google OAuth initiation successful, redirecting...");
@@ -200,7 +199,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } catch (error: any) {
       console.error("Error signing in with Google:", error);
       toast.error("Nepodařilo se přihlásit přes Google");
-      return { error, url: undefined };
+      return { error: error.message || error, url: undefined };
     }
   };
 
@@ -222,7 +221,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
       });
 
-      if (error) return { error };
+      if (error) return { error: error.message || error };
       
       toast.success('Registrace proběhla úspěšně. Zkontrolujte svůj email.');
       return { error: null };
@@ -236,7 +235,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
       
       toast.error(errorMessage);
-      return { error };
+      return { error: error.message || errorMessage };
     }
   };
 

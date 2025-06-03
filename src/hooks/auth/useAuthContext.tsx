@@ -2,15 +2,20 @@
 import * as React from 'react';
 import { User, Session } from '@supabase/supabase-js';
 
+export interface AuthError {
+  message: string;
+  code?: string;
+}
+
 export interface AuthContextType {
   user: User | null;
   session: Session | null;
   isLoading: boolean;
   isAdmin: boolean;
   isPremium: boolean;
-  signIn: (email: string, password: string) => Promise<{error: any}>;
-  signInWithGoogle: () => Promise<{error: any, url?: string}>;
-  signUp: (email: string, password: string, username?: string) => Promise<{error: any}>;
+  signIn: (email: string, password: string) => Promise<{error: AuthError | string | null}>;
+  signInWithGoogle: () => Promise<{error: AuthError | string | null, url?: string}>;
+  signUp: (email: string, password: string, username?: string) => Promise<{error: AuthError | string | null}>;
   signOut: () => Promise<void>;
   refreshAdminStatus: () => Promise<void>;
   refreshPremiumStatus: () => Promise<{ isPremium: boolean; premiumExpiry?: string }>;

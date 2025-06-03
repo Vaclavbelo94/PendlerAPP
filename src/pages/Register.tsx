@@ -81,8 +81,8 @@ const Register = () => {
       if (error) {
         let errorMessage = "Zkontrolujte své údaje a zkuste to znovu.";
         
-        const errorStr = typeof error === 'string' ? error : (error?.message || JSON.stringify(error));
-        const errorCode = typeof error === 'object' && error !== null ? error?.code : undefined;
+        const errorStr = typeof error === 'string' ? error : (error && typeof error === 'object' && 'message' in error ? error.message : JSON.stringify(error));
+        const errorCode = typeof error === 'object' && error !== null && 'code' in error ? error.code : undefined;
         
         if (errorStr.includes("User already registered") || errorCode === "user_already_exists") {
           errorMessage = "Uživatel s tímto emailem již existuje. Zkuste se přihlásit.";
@@ -141,7 +141,7 @@ const Register = () => {
       const { error, url } = await signInWithGoogle();
       
       if (error) {
-        const errorMessage = typeof error === 'string' ? error : (error?.message || "Nastala chyba při registraci s Google účtem.");
+        const errorMessage = typeof error === 'string' ? error : (error && typeof error === 'object' && 'message' in error ? error.message : "Nastala chyba při registraci s Google účtem.");
         toast.error("Registrace s Google selhala", {
           description: errorMessage,
         });
