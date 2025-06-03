@@ -29,6 +29,7 @@ declare global {
   interface Window {
     adsbygoogle: any[];
     googletag: any;
+    gtag?: (command: string, target: string, config?: any) => void;
   }
 }
 
@@ -95,8 +96,8 @@ export const AdSenseProvider: React.FC<AdSenseProviderProps> = ({
     });
     
     // Here you can integrate with Google Analytics or other tracking
-    if (typeof gtag !== 'undefined') {
-      gtag('event', 'ad_view', { 
+    if (window.gtag) {
+      window.gtag('event', 'ad_view', { 
         ad_type: adType,
         ad_platform: 'adsense'
       });
@@ -113,8 +114,8 @@ export const AdSenseProvider: React.FC<AdSenseProviderProps> = ({
     });
     
     // Track clicks with Google Analytics
-    if (typeof gtag !== 'undefined') {
-      gtag('event', 'ad_click', { 
+    if (window.gtag) {
+      window.gtag('event', 'ad_click', { 
         ad_type: adType,
         ad_platform: 'adsense'
       });
@@ -133,3 +134,4 @@ export const AdSenseProvider: React.FC<AdSenseProviderProps> = ({
     </AdSenseContext.Provider>
   );
 };
+
