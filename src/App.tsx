@@ -63,7 +63,7 @@ function App() {
           <AuthProvider>
             <StateManagerProvider>
               <AnalyticsProvider>
-                <AdSenseProvider clientId="ca-pub-YOUR_PUBLISHER_ID">
+                <AdSenseProvider clientId="ca-pub-5766122497657850">
                   <DatabaseOptimizer />
                   <RouteOptimizer>
                     <LayoutWrapper>
