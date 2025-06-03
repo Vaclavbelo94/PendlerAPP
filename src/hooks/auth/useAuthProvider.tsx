@@ -1,9 +1,9 @@
+
 import * as React from 'react';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { AuthContext } from './useAuthContext';
 import { useAuthState } from './useAuthState';
 import { supabase } from '@/integrations/supabase/client';
-import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { 
   cleanupAuthState, 
@@ -23,10 +23,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const authState = useAuthState();
   const { user, session, isLoading, error } = authState;
   const [isAdmin, setIsAdmin] = useState(false);
-  const navigate = useNavigate();
 
   // Initialize localStorage cleanup on mount
-  useEffect(() => {
+  React.useEffect(() => {
     initializeLocalStorageCleanup();
   }, []);
 
@@ -137,7 +136,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const { isPremium, setIsPremium, isSpecialUser } = usePremiumStatus(user, refreshPremiumStatus, isAdmin);
 
   // Check admin status when user changes
-  useEffect(() => {
+  React.useEffect(() => {
     if (user) {
       refreshAdminStatus();
     } else {
@@ -186,7 +185,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/dashboard`,
+          redirectTo: `${window.location.origin}/`,
         },
       });
 
@@ -196,7 +195,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return { error: error.message, url: undefined };
       }
 
-      toast.success("Přihlášení přes Google proběhlo úspěšně");
+      console.log("Google OAuth initiation successful, redirecting...");
       return { error: null, url: data.url };
     } catch (error: any) {
       console.error("Error signing in with Google:", error);

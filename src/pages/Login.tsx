@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
 
 const Login = () => {
@@ -20,7 +20,7 @@ const Login = () => {
   useEffect(() => {
     // Redirect user to homepage if already logged in
     if (user) {
-      navigate("/");
+      navigate("/dashboard");
     }
   }, [user, navigate]);
 
@@ -32,23 +32,16 @@ const Login = () => {
       const { error } = await signIn(email, password);
       
       if (error) {
-        toast({
-          title: "Přihlášení selhalo",
-          description: error.message || "Zkontrolujte své přihlašovací údaje a zkuste to znovu.",
-          variant: "destructive",
+        toast.error("Přihlášení selhalo", {
+          description: error || "Zkontrolujte své přihlašovací údaje a zkuste to znovu.",
         });
       } else {
-        toast({
-          title: "Úspěšně přihlášeno!",
-          variant: "default",
-        });
-        navigate("/");
+        toast.success("Úspěšně přihlášeno!");
+        navigate("/dashboard");
       }
     } catch (error: any) {
-      toast({
-        title: "Chyba při přihlašování",
+      toast.error("Chyba při přihlašování", {
         description: error?.message || "Nastala neznámá chyba. Zkuste to prosím později.",
-        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -62,125 +55,135 @@ const Login = () => {
       const { error, url } = await signInWithGoogle();
       
       if (error) {
-        toast({
-          title: "Přihlášení s Google selhalo",
-          description: error.message || "Nastala chyba při přihlašování s Google účtem.",
-          variant: "destructive",
+        toast.error("Přihlášení s Google selhalo", {
+          description: error || "Nastala chyba při přihlašování s Google účtem.",
         });
+        setIsGoogleLoading(false);
+        return;
       }
       
       // Pokud máme URL pro přesměrování, přesměrujeme uživatele (standardní OAuth flow)
       if (url) {
         window.location.href = url;
+        // Necháváme loading stav aktivní, protože se přesměrovává
+        return;
       }
     } catch (error: any) {
-      toast({
-        title: "Chyba při přihlašování",
+      toast.error("Chyba při přihlašování", {
         description: error?.message || "Nastala neznámá chyba. Zkuste to prosím později.",
-        variant: "destructive",
       });
-    } finally {
       setIsGoogleLoading(false);
     }
   };
 
   return (
-    <div className="container max-w-md mx-auto py-16 px-4">
-      <Card className="w-full">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl">Přihlášení</CardTitle>
-          <CardDescription>
-            Zadejte své přihlašovací údaje pro přístup k vašemu účtu
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-4">
-          <div className="space-y-4">
-            {/* Google Login Button */}
-            <Button 
-              type="button" 
-              variant="outline" 
-              className="w-full flex items-center justify-center gap-2"
-              onClick={handleGoogleLogin}
-              disabled={isGoogleLoading}
-            >
-              {isGoogleLoading ? (
-                "Přihlašování..."
-              ) : (
-                <>
-                  <svg viewBox="0 0 24 24" width="16" height="16" xmlns="http://www.w3.org/2000/svg">
-                    <g transform="matrix(1, 0, 0, 1, 27.009001, -39.238998)">
-                      <path fill="#4285F4" d="M -3.264 51.509 C -3.264 50.719 -3.334 49.969 -3.454 49.239 L -14.754 49.239 L -14.754 53.749 L -8.284 53.749 C -8.574 55.229 -9.424 56.479 -10.684 57.329 L -10.684 60.329 L -6.824 60.329 C -4.564 58.239 -3.264 55.159 -3.264 51.509 Z" />
-                      <path fill="#34A853" d="M -14.754 63.239 C -11.514 63.239 -8.804 62.159 -6.824 60.329 L -10.684 57.329 C -11.764 58.049 -13.134 58.489 -14.754 58.489 C -17.884 58.489 -20.534 56.379 -21.484 53.529 L -25.464 53.529 L -25.464 56.619 C -23.494 60.539 -19.444 63.239 -14.754 63.239 Z" />
-                      <path fill="#FBBC05" d="M -21.484 53.529 C -21.734 52.809 -21.864 52.039 -21.864 51.239 C -21.864 50.439 -21.724 49.669 -21.484 48.949 L -21.484 45.859 L -25.464 45.859 C -26.284 47.479 -26.754 49.299 -26.754 51.239 C -26.754 53.179 -26.284 54.999 -25.464 56.619 L -21.484 53.529 Z" />
-                      <path fill="#EA4335" d="M -14.754 43.989 C -12.984 43.989 -11.404 44.599 -10.154 45.789 L -6.734 42.369 C -8.804 40.429 -11.514 39.239 -14.754 39.239 C -19.444 39.239 -23.494 41.939 -25.464 45.859 L -21.484 48.949 C -20.534 46.099 -17.884 43.989 -14.754 43.989 Z" />
-                    </g>
-                  </svg>
-                  Přihlásit se pomocí Google
-                </>
-              )}
-            </Button>
-            
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <Separator className="w-full" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">
-                  Nebo s emailem
-                </span>
-              </div>
-            </div>
-            
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="vas@email.cz"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="grid gap-2">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="password">Heslo</Label>
-                  <Link
-                    to="/forgot-password"
-                    className="text-sm text-primary underline-offset-4 hover:underline"
-                  >
-                    Zapomenuté heslo?
-                  </Link>
-                </div>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="********"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={isLoading}
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 relative overflow-hidden">
+      {/* Background decorations */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-100/30 via-purple-100/30 to-pink-100/30" />
+      <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-blue-400/10 to-purple-400/10 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-br from-purple-400/10 to-pink-400/10 rounded-full blur-3xl" />
+      
+      <div className="relative container max-w-md mx-auto py-16 px-4">
+        <Card className="w-full bg-white/80 backdrop-blur-sm border-0 shadow-xl">
+          <CardHeader className="space-y-1 text-center">
+            <CardTitle className="text-2xl bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+              Přihlášení
+            </CardTitle>
+            <CardDescription>
+              Zadejte své přihlašovací údaje pro přístup k vašemu účtu
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-4">
+            <div className="space-y-4">
+              {/* Google Login Button */}
+              <Button 
+                type="button" 
+                variant="outline" 
+                className="w-full flex items-center justify-center gap-2 bg-white/50 backdrop-blur-sm border-gray-200 hover:bg-white/70"
+                onClick={handleGoogleLogin}
+                disabled={isGoogleLoading}
               >
-                {isLoading ? "Přihlašování..." : "Přihlásit se"}
+                {isGoogleLoading ? (
+                  "Přihlašování..."
+                ) : (
+                  <>
+                    <svg viewBox="0 0 24 24" width="16" height="16" xmlns="http://www.w3.org/2000/svg">
+                      <g transform="matrix(1, 0, 0, 1, 27.009001, -39.238998)">
+                        <path fill="#4285F4" d="M -3.264 51.509 C -3.264 50.719 -3.334 49.969 -3.454 49.239 L -14.754 49.239 L -14.754 53.749 L -8.284 53.749 C -8.574 55.229 -9.424 56.479 -10.684 57.329 L -10.684 60.329 L -6.824 60.329 C -4.564 58.239 -3.264 55.159 -3.264 51.509 Z" />
+                        <path fill="#34A853" d="M -14.754 63.239 C -11.514 63.239 -8.804 62.159 -6.824 60.329 L -10.684 57.329 C -11.764 58.049 -13.134 58.489 -14.754 58.489 C -17.884 58.489 -20.534 56.379 -21.484 53.529 L -25.464 53.529 L -25.464 56.619 C -23.494 60.539 -19.444 63.239 -14.754 63.239 Z" />
+                        <path fill="#FBBC05" d="M -21.484 53.529 C -21.734 52.809 -21.864 52.039 -21.864 51.239 C -21.864 50.439 -21.724 49.669 -21.484 48.949 L -21.484 45.859 L -25.464 45.859 C -26.284 47.479 -26.754 49.299 -26.754 51.239 C -26.754 53.179 -26.284 54.999 -25.464 56.619 L -21.484 53.529 Z" />
+                        <path fill="#EA4335" d="M -14.754 43.989 C -12.984 43.989 -11.404 44.599 -10.154 45.789 L -6.734 42.369 C -8.804 40.429 -11.514 39.239 -14.754 39.239 C -19.444 39.239 -23.494 41.939 -25.464 45.859 L -21.484 48.949 C -20.534 46.099 -17.884 43.989 -14.754 43.989 Z" />
+                      </g>
+                    </svg>
+                    Přihlásit se pomocí Google
+                  </>
+                )}
               </Button>
-            </form>
-          </div>
-        </CardContent>
-        <CardFooter>
-          <div className="text-center w-full text-sm">
-            Nemáte účet?{" "}
-            <Link to="/register" className="text-primary underline-offset-4 hover:underline">
-              Registrujte se zdarma
-            </Link>
-          </div>
-        </CardFooter>
-      </Card>
+              
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <Separator className="w-full" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-background px-2 text-muted-foreground">
+                    Nebo s emailem
+                  </span>
+                </div>
+              </div>
+              
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="vas@email.cz"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="bg-white/50 backdrop-blur-sm border-gray-200"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="password">Heslo</Label>
+                    <Link
+                      to="/forgot-password"
+                      className="text-sm text-primary underline-offset-4 hover:underline"
+                    >
+                      Zapomenuté heslo?
+                    </Link>
+                  </div>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="********"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="bg-white/50 backdrop-blur-sm border-gray-200"
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Přihlašování..." : "Přihlásit se"}
+                </Button>
+              </form>
+            </div>
+          </CardContent>
+          <CardFooter>
+            <div className="text-center w-full text-sm">
+              Nemáte účet?{" "}
+              <Link to="/register" className="text-primary underline-offset-4 hover:underline">
+                Registrujte se zdarma
+              </Link>
+            </div>
+          </CardFooter>
+        </Card>
+      </div>
     </div>
   );
 };
