@@ -105,12 +105,7 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
       
       {/* Main content area with dynamic left margin */}
       <div className="flex-1 flex flex-col min-w-0 ml-20 transition-all duration-300">
-        <Navbar 
-          toggleSidebar={() => setSidebarOpen(!sidebarOpen)} 
-          rightContent={navbarRightContent}
-          sidebarOpen={sidebarOpen}
-        />
-        
+        {/* Remove Navbar from desktop, only show on mobile */}
         <ScrollArea className="flex-1">
           <main className="flex-1 px-4 py-4">
             {children}

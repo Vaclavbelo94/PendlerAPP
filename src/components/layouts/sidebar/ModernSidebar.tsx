@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -26,6 +26,7 @@ interface ModernSidebarProps {
 
 export const ModernSidebar: React.FC<ModernSidebarProps> = ({ closeSidebar }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { user, isPremium, isAdmin, signOut } = useAuth();
   const [isCollapsed, setIsCollapsed] = useState(false);
   
@@ -37,6 +38,11 @@ export const ModernSidebar: React.FC<ModernSidebarProps> = ({ closeSidebar }) =>
   };
 
   const handleLinkClick = () => {
+    if (closeSidebar) closeSidebar();
+  };
+
+  const handleProfileClick = () => {
+    navigate('/profile');
     if (closeSidebar) closeSidebar();
   };
 
@@ -76,7 +82,6 @@ export const ModernSidebar: React.FC<ModernSidebarProps> = ({ closeSidebar }) =>
             className="flex items-center w-full"
             onClick={handleLinkClick}
           >
-            {/* Icon with gradient background */}
             <div className={cn(
               "relative flex items-center justify-center rounded-lg transition-all duration-300",
               isCollapsed ? "w-6 h-6" : "w-8 h-8 mr-3",
@@ -89,7 +94,6 @@ export const ModernSidebar: React.FC<ModernSidebarProps> = ({ closeSidebar }) =>
               )}
             </div>
 
-            {/* Label and description */}
             {!isCollapsed && (
               <div className="flex-1 text-left">
                 <div className="flex items-center justify-between">
@@ -117,7 +121,6 @@ export const ModernSidebar: React.FC<ModernSidebarProps> = ({ closeSidebar }) =>
               </div>
             )}
 
-            {/* Active indicator */}
             {isActive && (
               <motion.div
                 layoutId="activeIndicator"
@@ -183,12 +186,9 @@ export const ModernSidebar: React.FC<ModernSidebarProps> = ({ closeSidebar }) =>
       transition={{ duration: 0.3, ease: "easeInOut" }}
       className="relative h-full"
     >
-      {/* Glassmorphism background */}
       <div className="absolute inset-0 bg-gradient-to-br from-blue-600/90 via-purple-600/90 to-indigo-700/90 backdrop-blur-xl border-r border-white/20" />
       
-      {/* Content */}
       <div className="relative h-full flex flex-col">
-        {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-white/20">
           <AnimatePresence mode="wait">
             {!isCollapsed ? (
@@ -230,13 +230,15 @@ export const ModernSidebar: React.FC<ModernSidebarProps> = ({ closeSidebar }) =>
           </Button>
         </div>
 
-        {/* User section */}
         {user ? (
           <div className="p-4 border-b border-white/20">
-            <div className={cn(
-              "flex items-center",
-              isCollapsed ? "justify-center" : "space-x-3"
-            )}>
+            <div 
+              className={cn(
+                "flex items-center cursor-pointer hover:bg-white/10 rounded-lg p-2 transition-colors",
+                isCollapsed ? "justify-center" : "space-x-3"
+              )}
+              onClick={handleProfileClick}
+            >
               <div className="w-10 h-10 rounded-full bg-gradient-to-r from-white/20 to-white/10 flex items-center justify-center">
                 <User className="h-5 w-5 text-white" />
               </div>
@@ -305,15 +307,13 @@ export const ModernSidebar: React.FC<ModernSidebarProps> = ({ closeSidebar }) =>
           </div>
         )}
 
-        {/* Navigation */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-2">
+        <div className="flex-1 overflow-y-auto p-4 space-y-2 sidebar-scroll">
           <CategorySection category="main" />
           <CategorySection category="tools" />
           <CategorySection category="support" />
           {isAdminUser && <CategorySection category="admin" />}
         </div>
 
-        {/* Logout button */}
         {user && (
           <div className="p-4 border-t border-white/20">
             {isCollapsed ? (
