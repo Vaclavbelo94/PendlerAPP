@@ -266,56 +266,6 @@ export const AdManagementPanel = () => {
           </div>
         </CardContent>
       </Card>
-
-      {/* Implementation Status */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Stav implementace</CardTitle>
-          <CardDescription>
-            Přehled stavu implementace reklamního systému
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm">AdProvider kontext</span>
-              <Badge variant="default" className="bg-green-100 text-green-800">
-                ✓ Hotovo
-              </Badge>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm">AdPopup komponenta</span>
-              <Badge variant="default" className="bg-green-100 text-green-800">
-                ✓ Hotovo
-              </Badge>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm">AdBanner komponenta</span>
-              <Badge variant="default" className="bg-green-100 text-green-800">
-                ✓ Hotovo
-              </Badge>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm">Premium integrace</span>
-              <Badge variant="default" className="bg-green-100 text-green-800">
-                ✓ Hotovo
-              </Badge>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm">Tracking a analytics</span>
-              <Badge variant="secondary" className="bg-amber-100 text-amber-800">
-                🔄 Základní
-              </Badge>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm">Skutečné reklamní sítě</span>
-              <Badge variant="outline">
-                📋 Plánováno
-              </Badge>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 };
