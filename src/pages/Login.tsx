@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -15,14 +14,18 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const navigate = useNavigate();
-  const { signIn, signInWithGoogle, user } = useAuth();
+  const { signIn, signInWithGoogle, user, isAdmin } = useAuth();
   
   useEffect(() => {
-    // Redirect user to homepage if already logged in
+    // Redirect user based on their role if already logged in
     if (user) {
-      navigate("/dashboard");
+      if (isAdmin || user.email === 'admin@pendlerapp.com') {
+        navigate("/admin");
+      } else {
+        navigate("/dashboard");
+      }
     }
-  }, [user, navigate]);
+  }, [user, isAdmin, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,7 +40,13 @@ const Login = () => {
         });
       } else {
         toast.success("Úspěšně přihlášeno!");
-        navigate("/dashboard");
+        
+        // Přesměrování admina na admin panel
+        if (email === 'admin@pendlerapp.com') {
+          navigate("/admin");
+        } else {
+          navigate("/dashboard");
+        }
       }
     } catch (error: any) {
       toast.error("Chyba při přihlašování", {

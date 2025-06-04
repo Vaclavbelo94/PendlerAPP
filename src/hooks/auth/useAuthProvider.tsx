@@ -1,3 +1,4 @@
+
 import * as React from 'react';
 import { useState, useCallback } from 'react';
 import { AuthContext } from './useAuthContext';
@@ -37,6 +38,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     try {
       console.log("Refreshing admin status for user:", user.id, user.email);
+      
+      // Zkontrolovat admin status na základě emailu i databáze
+      const isAdminByEmail = user.email === 'admin@pendlerapp.com';
+      
+      if (isAdminByEmail) {
+        console.log("User is admin by email");
+        setIsAdmin(true);
+        safeLocalStorageSet('adminLoggedIn', 'true');
+        return;
+      }
       
       const { data, error } = await supabase
         .from('profiles')
@@ -158,6 +169,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) return { error: error.message || error };
+      
       toast.success('Přihlášení proběhlo úspěšně');
       return { error: null };
     } catch (error: any) {

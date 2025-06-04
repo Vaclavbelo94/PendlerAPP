@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -28,12 +28,16 @@ export const ModernSidebar: React.FC<ModernSidebarProps> = ({ closeSidebar }) =>
   const location = useLocation();
   const navigate = useNavigate();
   const { user, isPremium, isAdmin, signOut } = useAuth();
-  const [isCollapsed, setIsCollapsed] = useState(true); // Start collapsed by default
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
   const hoverTimeoutRef = useRef<NodeJS.Timeout>();
   const sidebarRef = useRef<HTMLDivElement>(null);
   
-  const isAdminUser = user?.email === 'admin@pendlerapp.com' || isAdmin;
+  // Vylepšená detekce admin uživatele
+  const isAdminUser = useMemo(() => {
+    return isAdmin || user?.email === 'admin@pendlerapp.com';
+  }, [isAdmin, user?.email]);
+
   const shouldShowExpanded = isHovered || !isCollapsed;
 
   // Auto-collapse/expand based on hover
@@ -48,7 +52,7 @@ export const ModernSidebar: React.FC<ModernSidebarProps> = ({ closeSidebar }) =>
     const handleMouseLeave = () => {
       hoverTimeoutRef.current = setTimeout(() => {
         setIsHovered(false);
-      }, 300); // Small delay before hiding
+      }, 300);
     };
 
     const sidebarElement = sidebarRef.current;
@@ -84,7 +88,7 @@ export const ModernSidebar: React.FC<ModernSidebarProps> = ({ closeSidebar }) =>
     return getCategoryItems(category).filter(item => {
       if (item.isAdmin && !isAdminUser) return false;
       if (item.requiresAuth && !user) return false;
-      if (item.isPremium && !isPremium && !isAdminUser) return true; // Show with lock
+      if (item.isPremium && !isPremium && !isAdminUser) return true;
       return item.isPublic || (item.requiresAuth && user) || (item.isPremium && (isPremium || isAdminUser));
     });
   };
@@ -226,7 +230,6 @@ export const ModernSidebar: React.FC<ModernSidebarProps> = ({ closeSidebar }) =>
 
   return (
     <>
-      {/* Hover zone for auto-expanding sidebar */}
       <div 
         className="fixed left-0 top-0 w-4 h-full z-30 bg-transparent"
         onMouseEnter={() => setIsHovered(true)}

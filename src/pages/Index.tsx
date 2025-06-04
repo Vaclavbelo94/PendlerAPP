@@ -1,38 +1,21 @@
 
-import React from "react";
 import { Helmet } from "react-helmet";
-import { useMediaQuery } from "@/hooks/use-media-query";
-import { IndexBanners } from "@/components/home/index/IndexBanners";
-import { ModernIndexContent } from "@/components/home/index/ModernIndexContent";
-import { ScrollToTopButton } from "@/components/home/index/ScrollToTopButton";
-import { useIndexScrollHandling } from "@/components/home/index/useIndexScrollHandling";
+import ModernHero from "@/components/home/ModernHero";
 
 const Index = () => {
-  const { scrolled, animatedHeroVisible } = useIndexScrollHandling();
-  const isMobile = !useMediaQuery("md");
-  
   return (
-    <div className="flex flex-col min-h-screen">
+    <>
       <Helmet>
-        <title>Pendlerův Pomocník - Váš průvodce pro práci v zahraničí</title>
-        <meta name="description" content="Komplexní průvodce pro Čechy pracující v Německu. Výuka němčiny, kalkulačky mezd, správa směn a vozidel." />
-        
-        {/* Google AdSense Verification Script */}
-        <script 
-          async 
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5766122497657850"
-          crossOrigin="anonymous"
-        />
+        <title>PendlerApp - Pomocník pro české pracovníky v Německu</title>
+        <meta name="description" content="Komplexní řešení pro české pracovníky v Německu. Správa směn, výuka němčiny, kalkulačky mezd a vše potřebné pro úspěšnou práci v zahraničí." />
+        <meta name="keywords" content="pendler, německo, práce, směny, němčina, kalkulačka mezd" />
+        <meta property="og:title" content="PendlerApp - Pomocník pro české pracovníky v Německu" />
+        <meta property="og:description" content="Komplexní řešení pro české pracovníky v Německu. Správa směn, výuka němčiny, kalkulačky mezd a vše potřebné pro úspěšnou práci v zahraničí." />
+        <meta property="og:type" content="website" />
+        <link rel="canonical" href="https://pendlerapp.com" />
       </Helmet>
-      
-      <main className="flex-grow relative">
-        <IndexBanners />
-        
-        <ModernIndexContent animatedHeroVisible={animatedHeroVisible} />
-
-        <ScrollToTopButton scrolled={scrolled} />
-      </main>
-    </div>
+      <ModernHero />
+    </>
   );
 };
 
