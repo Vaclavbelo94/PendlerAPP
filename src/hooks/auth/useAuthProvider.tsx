@@ -23,6 +23,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const authState = useAuthState();
   const { user, session, isLoading, error } = authState;
   const [isAdmin, setIsAdmin] = useState(false);
+  const [adminStatusLoaded, setAdminStatusLoaded] = useState(false);
 
   // Initialize localStorage cleanup on mount
   React.useEffect(() => {
@@ -30,9 +31,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   const refreshAdminStatus = useCallback(async () => {
-    if (!user) {
-      console.log("No user for admin status refresh");
-      setIsAdmin(false);
+    if (!user || adminStatusLoaded) {
+      console.log("No user or admin status already loaded");
+      if (!user) {
+        setIsAdmin(false);
+        setAdminStatusLoaded(true);
+      }
       return;
     }
 
@@ -45,6 +49,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (isAdminByEmail) {
         console.log("User is admin by email");
         setIsAdmin(true);
+        setAdminStatusLoaded(true);
         safeLocalStorageSet('adminLoggedIn', 'true');
         return;
       }
@@ -53,25 +58,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         .from('profiles')
         .select('is_admin')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error('Error fetching admin status:', error);
         setIsAdmin(false);
+        setAdminStatusLoaded(true);
         return;
       }
 
       const adminStatus = data?.is_admin || false;
       console.log("Admin status from database:", adminStatus);
       setIsAdmin(adminStatus);
+      setAdminStatusLoaded(true);
 
       // Store admin status with safe localStorage
       safeLocalStorageSet('adminLoggedIn', adminStatus ? 'true' : 'false');
     } catch (error) {
       console.error('Error checking admin status:', error);
       setIsAdmin(false);
+      setAdminStatusLoaded(true);
     }
-  }, [user]);
+  }, [user, adminStatusLoaded]);
 
   const refreshPremiumStatus = useCallback(async (): Promise<{ isPremium: boolean; premiumExpiry?: string }> => {
     if (!user) {
@@ -145,19 +153,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const { isPremium, setIsPremium, isSpecialUser } = usePremiumStatus(user, refreshPremiumStatus, isAdmin);
 
-  // Check admin status when user changes
+  // Check admin status when user changes - pouze jednou
   React.useEffect(() => {
-    if (user) {
+    if (user && !adminStatusLoaded) {
       refreshAdminStatus();
-    } else {
+    } else if (!user) {
       setIsAdmin(false);
+      setAdminStatusLoaded(false);
       try {
         localStorage.removeItem('adminLoggedIn');
       } catch (e) {
         console.warn('Could not remove adminLoggedIn from localStorage');
       }
     }
-  }, [user, refreshAdminStatus]);
+  }, [user, refreshAdminStatus, adminStatusLoaded]);
 
   const signIn = async (email: string, password: string) => {
     try {
@@ -254,6 +263,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const signOut = async () => {
     try {
       // Clean up state first
+      setAdminStatusLoaded(false);
       aggressiveCleanup();
       
       // Attempt global sign out

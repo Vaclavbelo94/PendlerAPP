@@ -114,7 +114,15 @@ const Admin = () => {
     const checkAdminStatus = async () => {
       if (isLoading) return;
       
-      // Only show login dialog if user is not admin - don't show for already logged in admins
+      console.log("Checking admin status:", { user, isAdmin });
+      
+      // Pro admin@pendlerapp.com povolíme vždy přístup
+      if (user?.email === 'admin@pendlerapp.com') {
+        console.log("Admin email detected, allowing access");
+        return;
+      }
+      
+      // Pro ostatní uživatele kontrolujeme isAdmin flag
       if (!isAdmin && user) {
         // User is logged in but not admin
         setShowLoginDialog(false);
@@ -129,7 +137,7 @@ const Admin = () => {
         return;
       }
       
-      if (isAdmin) {
+      if (isAdmin || user?.email === 'admin@pendlerapp.com') {
         toast.success("Přístup do administrace povolen");
       }
     };
@@ -153,7 +161,10 @@ const Admin = () => {
     );
   }
 
-  if (!isAdmin) {
+  // Povolit přístup pro admin@pendlerapp.com i když isAdmin není true
+  const hasAdminAccess = isAdmin || user?.email === 'admin@pendlerapp.com';
+
+  if (!hasAdminAccess) {
     return (
       <div className="container py-8 max-w-4xl">
         <SectionHeader
