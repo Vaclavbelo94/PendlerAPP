@@ -3,7 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowRight, Play, Users, TrendingUp, Globe } from 'lucide-react';
+import { ArrowRight, Users, TrendingUp, Globe } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -88,10 +88,6 @@ export const ModernHero = () => {
                 </Button>
               </>
             )}
-            <Button size="lg" variant="ghost" className="text-lg px-8 py-4 h-auto group">
-              <Play className="mr-2 h-5 w-5" />
-              Sledovat demo
-            </Button>
           </motion.div>
         </div>
 
