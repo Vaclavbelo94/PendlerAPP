@@ -17,7 +17,8 @@ import {
   X,
   ChevronDown,
   ChevronRight,
-  RefreshCw
+  RefreshCw,
+  Eye
 } from 'lucide-react';
 import { useAdminContext } from './AdminProvider';
 import { cn } from '@/lib/utils';
@@ -53,7 +54,8 @@ const menuItems: AdminMenuItem[] = [
     icon: <FileText className="h-5 w-5" />,
     children: [
       { id: 'promo-codes', title: 'Promo kódy', icon: <Key className="h-4 w-4" /> },
-      { id: 'premium-features', title: 'Premium funkce', icon: <Crown className="h-4 w-4" /> }
+      { id: 'premium-features', title: 'Premium funkce', icon: <Crown className="h-4 w-4" /> },
+      { id: 'ad-management', title: 'Správa reklam', icon: <Eye className="h-4 w-4" /> }
     ]
   },
   {
