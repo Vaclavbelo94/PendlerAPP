@@ -1,6 +1,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { useGDPRConsent } from '@/contexts/GDPRConsentContext';
 
 interface AdSenseContextType {
   shouldShowAds: boolean;
@@ -8,6 +9,7 @@ interface AdSenseContextType {
   loadAd: (adSlotId: string, elementId: string) => void;
   trackAdView: (adType: string) => void;
   trackAdClick: (adType: string) => void;
+  hasAdvertisingConsent: boolean;
 }
 
 const AdSenseContext = createContext<AdSenseContextType | undefined>(undefined);
@@ -38,12 +40,21 @@ export const AdSenseProvider: React.FC<AdSenseProviderProps> = ({
   clientId = "ca-pub-5766122497657850" 
 }) => {
   const { isPremium } = useAuth();
+  const { hasConsent, preferences } = useGDPRConsent();
   const [isAdSenseLoaded, setIsAdSenseLoaded] = useState(false);
 
-  const shouldShowAds = !isPremium;
+  // Zobrazovat reklamy pouze pokud:
+  // 1. Uživatel není premium
+  // 2. Má souhlas s reklamními cookies (GDPR)
+  const hasAdvertisingConsent = hasConsent && preferences.advertising;
+  const shouldShowAds = !isPremium && hasAdvertisingConsent;
 
   useEffect(() => {
-    if (!shouldShowAds) return;
+    // Načíst AdSense script pouze pokud má uživatel souhlas
+    if (!shouldShowAds) {
+      setIsAdSenseLoaded(false);
+      return;
+    }
 
     const loadAdSenseScript = () => {
       if (document.querySelector('script[src*="adsbygoogle.js"]')) {
@@ -59,6 +70,7 @@ export const AdSenseProvider: React.FC<AdSenseProviderProps> = ({
       script.onload = () => {
         setIsAdSenseLoaded(true);
         window.adsbygoogle = window.adsbygoogle || [];
+        console.log('AdSense script loaded with GDPR consent');
       };
 
       script.onerror = () => {
@@ -72,10 +84,14 @@ export const AdSenseProvider: React.FC<AdSenseProviderProps> = ({
   }, [shouldShowAds, clientId]);
 
   const loadAd = (adSlotId: string, elementId: string) => {
-    if (!isAdSenseLoaded || !shouldShowAds) return;
+    if (!isAdSenseLoaded || !shouldShowAds) {
+      console.log('AdSense ad not loaded - missing consent or not loaded');
+      return;
+    }
 
     try {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
+      console.log(`AdSense ad loaded: ${adSlotId}`);
     } catch (error) {
       console.error('Error loading AdSense ad:', error);
     }
@@ -87,10 +103,12 @@ export const AdSenseProvider: React.FC<AdSenseProviderProps> = ({
     console.log(`AdSense view tracked: ${adType}`, {
       timestamp: new Date().toISOString(),
       adType,
-      userPremium: isPremium
+      userPremium: isPremium,
+      hasConsent: hasConsent,
+      advertisingConsent: preferences.advertising
     });
     
-    if (window.gtag) {
+    if (window.gtag && preferences.analytics) {
       window.gtag('event', 'ad_view', { 
         ad_type: adType,
         ad_platform: 'adsense'
@@ -104,10 +122,12 @@ export const AdSenseProvider: React.FC<AdSenseProviderProps> = ({
     console.log(`AdSense click tracked: ${adType}`, {
       timestamp: new Date().toISOString(),
       adType,
-      userPremium: isPremium
+      userPremium: isPremium,
+      hasConsent: hasConsent,
+      advertisingConsent: preferences.advertising
     });
     
-    if (window.gtag) {
+    if (window.gtag && preferences.analytics) {
       window.gtag('event', 'ad_click', { 
         ad_type: adType,
         ad_platform: 'adsense'
@@ -121,7 +141,8 @@ export const AdSenseProvider: React.FC<AdSenseProviderProps> = ({
       isAdSenseLoaded,
       loadAd,
       trackAdView,
-      trackAdClick
+      trackAdClick,
+      hasAdvertisingConsent
     }}>
       {children}
     </AdSenseContext.Provider>

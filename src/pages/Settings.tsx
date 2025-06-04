@@ -70,6 +70,7 @@ const Settings = () => {
           {activeTab === "security" && <SecuritySettings />}
           {activeTab === "device" && <DeviceSettings />}
           {activeTab === "data" && <DataSettings />}
+          {activeTab === "privacy" && <PrivacySettings />}
         </div>
       </div>
     </div>
