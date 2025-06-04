@@ -96,18 +96,15 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
 
   const DesktopLayout = () => (
     <div className="flex min-h-screen bg-background w-full">
-      {/* Modern Sidebar - dynamically sized */}
-      <div className="flex-shrink-0">
-        <div className="fixed top-0 left-0 h-full z-40">
-          <Sidebar closeSidebar={() => setSidebarOpen(false)} />
-        </div>
+      {/* Modern Sidebar - fixed positioning */}
+      <div className="fixed top-0 left-0 h-full z-40">
+        <Sidebar closeSidebar={() => setSidebarOpen(false)} />
       </div>
       
       {/* Main content area with dynamic left margin */}
       <div className="flex-1 flex flex-col min-w-0 ml-20 transition-all duration-300">
-        {/* Remove Navbar from desktop, only show on mobile */}
         <ScrollArea className="flex-1">
-          <main className="flex-1 px-4 py-4">
+          <main className="flex-1 px-4 py-4 min-h-screen">
             {children}
           </main>
           <Footer />
