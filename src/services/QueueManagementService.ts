@@ -2,120 +2,145 @@
 interface QueueItem {
   id: string;
   type: string;
-  entity: string;
   data: any;
-  priority: 'high' | 'medium' | 'low';
   timestamp: number;
-  retries: number;
+  retryCount: number;
   maxRetries: number;
+  priority: 'high' | 'medium' | 'low';
 }
 
 export class QueueManagementService {
   private queue: QueueItem[] = [];
   private processing = false;
-  private maxConcurrent = 3;
+  private workers = new Map<string, boolean>();
 
-  // Add item to queue
-  addToQueue(item: Omit<QueueItem, 'id' | 'timestamp' | 'retries'>) {
+  constructor(private maxConcurrentJobs = 3) {}
+
+  // Add item to queue with priority
+  addToQueue(item: Omit<QueueItem, 'id' | 'timestamp' | 'retryCount'>) {
     const queueItem: QueueItem = {
       ...item,
-      id: this.generateId(),
+      id: `${item.type}-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
       timestamp: Date.now(),
-      retries: 0
+      retryCount: 0
     };
 
-    this.queue.push(queueItem);
-    this.sortQueue();
-    
-    if (!this.processing) {
-      this.processQueue();
+    // Insert based on priority
+    const priorityOrder = { high: 3, medium: 2, low: 1 };
+    const insertIndex = this.queue.findIndex(
+      existing => priorityOrder[queueItem.priority] > priorityOrder[existing.priority]
+    );
+
+    if (insertIndex === -1) {
+      this.queue.push(queueItem);
+    } else {
+      this.queue.splice(insertIndex, 0, queueItem);
     }
+
+    this.processQueue();
   }
 
   // Process queue with concurrency control
   async processQueue() {
     if (this.processing || this.queue.length === 0) return;
-
+    
     this.processing = true;
+    const activeWorkers: Promise<void>[] = [];
 
-    try {
-      const batch = this.queue.splice(0, this.maxConcurrent);
-      
-      await Promise.allSettled(
-        batch.map(item => this.processItem(item))
-      );
+    while (this.queue.length > 0 && activeWorkers.length < this.maxConcurrentJobs) {
+      const item = this.queue.shift();
+      if (!item) break;
 
-      // Continue processing if more items exist
-      if (this.queue.length > 0) {
-        setTimeout(() => this.processQueue(), 100);
-      }
-    } catch (error) {
-      console.error('Queue processing error:', error);
-    } finally {
-      this.processing = false;
+      const workerPromise = this.processItem(item).finally(() => {
+        this.workers.delete(item.id);
+      });
+
+      this.workers.set(item.id, true);
+      activeWorkers.push(workerPromise);
+    }
+
+    await Promise.allSettled(activeWorkers);
+    this.processing = false;
+
+    // Continue processing if more items were added
+    if (this.queue.length > 0) {
+      this.processQueue();
     }
   }
 
-  // Process single queue item
-  private async processItem(item: QueueItem) {
+  // Process individual item with retry logic
+  private async processItem(item: QueueItem): Promise<void> {
     try {
-      // Simulate processing based on item type
-      await this.executeQueueItem(item);
+      await this.executeItem(item);
+      console.log(`Successfully processed ${item.type} item ${item.id}`);
     } catch (error) {
-      console.error(`Failed to process queue item ${item.id}:`, error);
+      console.error(`Failed to process ${item.type} item ${item.id}:`, error);
       
-      if (item.retries < item.maxRetries) {
-        // Retry with exponential backoff
-        const delay = Math.pow(2, item.retries) * 1000;
+      if (item.retryCount < item.maxRetries) {
+        item.retryCount++;
+        
+        // Exponential backoff
+        const delay = Math.min(1000 * Math.pow(2, item.retryCount), 30000);
+        
         setTimeout(() => {
-          item.retries++;
-          this.queue.unshift(item); // Add back to front
-          this.sortQueue();
+          this.queue.unshift(item); // Add back to front of queue
+          this.processQueue();
         }, delay);
+      } else {
+        console.error(`Max retries exceeded for ${item.type} item ${item.id}`);
       }
     }
   }
 
-  // Execute queue item based on type
-  private async executeQueueItem(item: QueueItem) {
-    // This would be implemented based on specific queue item types
-    console.log(`Processing ${item.type} for ${item.entity}:`, item.data);
-    
-    // Simulate async operation
-    await new Promise(resolve => setTimeout(resolve, 100));
+  // Execute specific item type
+  private async executeItem(item: QueueItem): Promise<void> {
+    switch (item.type) {
+      case 'sync-shifts':
+        await this.syncShifts(item.data);
+        break;
+      case 'sync-vehicles':
+        await this.syncVehicles(item.data);
+        break;
+      case 'sync-calculations':
+        await this.syncCalculations(item.data);
+        break;
+      default:
+        throw new Error(`Unknown queue item type: ${item.type}`);
+    }
   }
 
-  // Sort queue by priority and timestamp
-  private sortQueue() {
-    const priorityOrder = { high: 3, medium: 2, low: 1 };
-    
-    this.queue.sort((a, b) => {
-      const priorityDiff = priorityOrder[b.priority] - priorityOrder[a.priority];
-      if (priorityDiff !== 0) return priorityDiff;
-      
-      return a.timestamp - b.timestamp; // FIFO for same priority
-    });
+  // Sync methods
+  private async syncShifts(data: any): Promise<void> {
+    // Implementation would call Supabase API
+    console.log('Syncing shifts:', data);
+  }
+
+  private async syncVehicles(data: any): Promise<void> {
+    // Implementation would call Supabase API
+    console.log('Syncing vehicles:', data);
+  }
+
+  private async syncCalculations(data: any): Promise<void> {
+    // Implementation would call Supabase API
+    console.log('Syncing calculations:', data);
   }
 
   // Get queue statistics
   getQueueStats() {
     return {
       total: this.queue.length,
-      processing: this.processing,
-      byPriority: this.queue.reduce((acc, item) => {
-        acc[item.priority] = (acc[item.priority] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>)
+      processing: this.workers.size,
+      byPriority: {
+        high: this.queue.filter(item => item.priority === 'high').length,
+        medium: this.queue.filter(item => item.priority === 'medium').length,
+        low: this.queue.filter(item => item.priority === 'low').length
+      }
     };
   }
 
   // Clear queue
   clearQueue() {
     this.queue = [];
-  }
-
-  // Generate unique ID
-  private generateId(): string {
-    return `queue_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    this.workers.clear();
   }
 }
