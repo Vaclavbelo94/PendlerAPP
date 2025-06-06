@@ -3,7 +3,15 @@
 <html lang="cs">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
+    
+    <!-- Android specific meta tags -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="theme-color" content="#3b82f6" />
+    <meta name="msapplication-navbutton-color" content="#3b82f6" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no" />
     
     <!-- DNS prefetch pro externí zdroje -->
     <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
@@ -36,12 +44,6 @@
     <meta name="theme-color" content="#3b82f6" />
     <meta name="color-scheme" content="light dark" />
     
-    <!-- Mobile optimizations - FIXED deprecated meta tag -->
-    <meta name="format-detection" content="telephone=no" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="Pendlerův Pomocník" />
-    
     <!-- Open Graph for social sharing -->
     <meta property="og:title" content="Pendlerův Pomocník - Průvodce pro pracovníky v Německu" />
     <meta property="og:description" content="Komplexní průvodce pro Čechy pracující v Německu. Výuka němčiny, kalkulačky, správa směn a vozidel." />
@@ -62,6 +64,10 @@
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="/lovable-uploads/88ef4e0f-4d33-458c-98f4-7b644e5b8588.png" />
     <link rel="apple-touch-icon" href="/lovable-uploads/88ef4e0f-4d33-458c-98f4-7b644e5b8588.png" />
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Import Android styles -->
+    <link rel="stylesheet" href="/src/components/ui/android-native-styles.css" />
     
     <!-- Structured Data (JSON-LD) -->
     <script type="application/ld+json">
@@ -92,7 +98,13 @@
     <!-- Critical CSS inlining -->
     <style id="critical-css">
       /* Critical above-the-fold styles */
-      body { margin: 0; font-family: system-ui, -apple-system, sans-serif; }
+      body { 
+        margin: 0; 
+        font-family: system-ui, -apple-system, sans-serif;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
+      }
+      
       .loading-skeleton {
         background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
         background-size: 200% 100%;
@@ -115,12 +127,25 @@
         border-radius: 8px;
         z-index: 9999;
       }
+      
+      /* Android safe area support */
+      .android-safe {
+        padding-top: env(safe-area-inset-top, 0);
+        padding-bottom: env(safe-area-inset-bottom, 0);
+        padding-left: env(safe-area-inset-left, 0);
+        padding-right: env(safe-area-inset-right, 0);
+      }
     </style>
     
     <!-- Emergency localStorage cleanup script -->
     <script>
       (function() {
         try {
+          // Detect if running in Capacitor
+          if (window.Capacitor) {
+            document.body.classList.add('capacitor-android', 'native-android');
+          }
+          
           // Check if localStorage is working
           localStorage.setItem('test', 'test');
           localStorage.removeItem('test');

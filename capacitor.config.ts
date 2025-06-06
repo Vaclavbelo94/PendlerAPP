@@ -3,13 +3,9 @@ import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'app.lovable.43a9f196fcd94f8db60a9c37d14325e5',
-  appName: 'pendlerhelfer',
+  appName: 'Pendlerův Pomocník',
   webDir: 'dist',
-  // Odstraňujeme server konfiguraci pro produkční build
-  // server: {
-  //   url: 'https://43a9f196-fcd9-4f8d-b60a-9c37d14325e5.lovableproject.com?forceHideBadge=true',
-  //   cleartext: true
-  // },
+  // Produkční konfigurace - bez development serveru
   plugins: {
     SplashScreen: {
       launchShowDuration: 3000,
@@ -29,7 +25,21 @@ const config: CapacitorConfig = {
     PushNotifications: {
       presentationOptions: ["badge", "sound", "alert"],
     },
+    StatusBar: {
+      style: 'DEFAULT',
+      backgroundColor: '#3b82f6'
+    },
+    Keyboard: {
+      resize: 'body',
+      style: 'dark',
+      resizeOnFullScreen: true
+    }
   },
+  android: {
+    allowMixedContent: true,
+    captureInput: true,
+    webContentsDebuggingEnabled: false
+  }
 };
 
 export default config;

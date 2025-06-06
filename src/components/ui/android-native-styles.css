@@ -1,0 +1,94 @@
+
+/* Android Native App Specific Styles */
+.capacitor-android body {
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  margin: 0;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Native app detection */
+.native-android {
+  --safe-area-inset-top: env(safe-area-inset-top, 24px);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-inset-left: env(safe-area-inset-left, 0px);
+  --safe-area-inset-right: env(safe-area-inset-right, 0px);
+}
+
+/* Better native scrolling */
+.android-scroll {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* Android navigation bar handling */
+.android-nav-safe {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+/* Hide web-only elements in Android app */
+.native-android .web-only {
+  display: none !important;
+}
+
+/* Android-specific button optimizations */
+.android-button {
+  min-height: 48dp; /* Android Material Design recommendation */
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Material Design ripple effect */
+.android-ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.android-ripple::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.3s, height 0.3s;
+}
+
+.android-ripple:active::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* Android keyboard handling */
+.android-keyboard-adjust {
+  transition: transform 0.3s ease;
+}
+
+/* Android status bar styling */
+.android-status-bar-content {
+  padding-top: var(--safe-area-inset-top);
+  background: #3b82f6;
+}
+
+/* Android back button handling */
+.android-back-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
