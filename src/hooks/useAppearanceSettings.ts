@@ -15,7 +15,22 @@ export const useAppearanceSettings = (
     compactMode: boolean;
   }) => void
 ) => {
-  const { theme, setTheme, colorScheme, setColorScheme, isChangingTheme } = useTheme();
+  // Safely access theme context with fallback
+  let themeContext;
+  try {
+    themeContext = useTheme();
+  } catch (error) {
+    console.warn('ThemeProvider not available, using fallback values');
+    themeContext = {
+      theme: 'light',
+      setTheme: () => {},
+      colorScheme: 'purple',
+      setColorScheme: () => {},
+      isChangingTheme: false
+    };
+  }
+
+  const { theme, setTheme, colorScheme, setColorScheme, isChangingTheme } = themeContext;
   const { user } = useAuth();
   const [darkMode, setDarkMode] = useState(initialDarkMode);
   const [compactMode, setCompactMode] = useState(initialCompactMode);
@@ -67,7 +82,9 @@ export const useAppearanceSettings = (
       if (data) {
         console.log('AppearanceSettings: Loaded settings', data);
         setDarkMode(data.dark_mode);
-        setColorScheme(data.color_scheme as any);
+        if (setColorScheme) {
+          setColorScheme(data.color_scheme as any);
+        }
         setCompactMode(data.compact_mode);
       } else {
         console.log('AppearanceSettings: No settings found, using defaults');
@@ -87,7 +104,7 @@ export const useAppearanceSettings = (
   
   // Sync dark mode state with global theme
   useEffect(() => {
-    if (!isChangingTheme) {
+    if (!isChangingTheme && theme) {
       const newDarkMode = theme === 'dark';
       if (newDarkMode !== darkMode) {
         console.log('AppearanceSettings: Syncing darkMode with theme', { theme, newDarkMode });
@@ -98,10 +115,12 @@ export const useAppearanceSettings = (
   
   // Set global theme when darkMode toggle changes
   useEffect(() => {
-    const newTheme = darkMode ? 'dark' : 'light';
-    if (theme !== newTheme) {
-      console.log('AppearanceSettings: Setting theme', { darkMode, newTheme });
-      setTheme(newTheme);
+    if (setTheme) {
+      const newTheme = darkMode ? 'dark' : 'light';
+      if (theme !== newTheme) {
+        console.log('AppearanceSettings: Setting theme', { darkMode, newTheme });
+        setTheme(newTheme);
+      }
     }
   }, [darkMode, theme, setTheme]);
   
@@ -170,7 +189,9 @@ export const useAppearanceSettings = (
 
   const handleColorSchemeChange = useCallback((value: string) => {
     console.log('AppearanceSettings: Color scheme changing to', value);
-    setColorScheme(value as any);
+    if (setColorScheme) {
+      setColorScheme(value as any);
+    }
   }, [setColorScheme]);
 
   return {
