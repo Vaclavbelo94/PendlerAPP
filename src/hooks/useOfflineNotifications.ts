@@ -7,7 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import {
   saveData,
   getAllData,
-  getItemById,
+  getData,
   deleteItemById,
   STORES,
   addToSyncQueue

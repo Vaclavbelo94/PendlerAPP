@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from './useAuth';
 import { supabase } from '@/integrations/supabase/client';
 
-interface SyncSettings {
+export interface SyncSettings {
   enableBackgroundSync: boolean;
   showSyncNotifications: boolean;
   syncInterval: number; // milliseconds
@@ -63,7 +63,7 @@ export const useSyncSettings = () => {
 
   // Save settings to Supabase
   const saveSettings = useCallback(async (newSettings: Partial<SyncSettings>) => {
-    if (!user) return;
+    if (!user) return false;
 
     setIsSaving(true);
     try {

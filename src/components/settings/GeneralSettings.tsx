@@ -8,7 +8,7 @@ import SyncSettingsCard from './general/SyncSettingsCard';
 import SettingsActions from './general/SettingsActions';
 
 const GeneralSettings = () => {
-  const { settings: syncSettings, updateSettings: updateSyncSettings, loading: syncLoading } = useSyncSettings();
+  const { settings: syncSettings, saveSettings: updateSyncSettings, isLoading: syncLoading } = useSyncSettings();
   const [autoSave, setAutoSave] = useState(true);
   const [compactMode, setCompactMode] = useState(false);
   const [autoRefresh, setAutoRefresh] = useState(true);
@@ -60,10 +60,10 @@ const GeneralSettings = () => {
     toast.success("Nastavení byla resetována na výchozí hodnoty");
   };
 
-  const formatLastSyncTime = (lastSyncTime?: string) => {
+  const formatLastSyncTime = (lastSyncTime?: Date | null) => {
     if (!lastSyncTime) return 'Nikdy';
     try {
-      return new Date(lastSyncTime).toLocaleString('cs-CZ');
+      return lastSyncTime.toLocaleString('cs-CZ');
     } catch (error) {
       return 'Neznámý';
     }

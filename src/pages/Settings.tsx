@@ -18,7 +18,7 @@ import { useSyncSettings } from '@/hooks/useSyncSettings';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 const Settings = () => {
-  const { settings: syncSettings, updateSettings: updateSyncSettings } = useSyncSettings();
+  const { settings: syncSettings, saveSettings: updateSyncSettings } = useSyncSettings();
   const isMobile = useIsMobile();
   const [activeTab, setActiveTab] = useState("general");
 

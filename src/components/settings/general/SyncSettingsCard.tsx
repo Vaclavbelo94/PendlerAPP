@@ -10,9 +10,9 @@ import { SyncSettings } from '@/hooks/useSyncSettings';
 
 interface SyncSettingsCardProps {
   syncSettings: SyncSettings;
-  updateSyncSettings: (settings: Partial<SyncSettings>) => void;
+  updateSyncSettings: (settings: Partial<SyncSettings>) => Promise<boolean>;
   syncLoading: boolean;
-  formatLastSyncTime: (time?: string) => string;
+  formatLastSyncTime: (time?: Date | null) => string;
 }
 
 const SyncSettingsCard: React.FC<SyncSettingsCardProps> = ({
