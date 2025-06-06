@@ -3,10 +3,11 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Volume2, Heart, BookOpen } from "lucide-react";
+import { Heart, BookOpen } from "lucide-react";
 import { PracticalPhrase } from '@/data/extendedGermanLessons';
 import { useScreenOrientation } from '@/hooks/useScreenOrientation';
 import { cn } from '@/lib/utils';
+import AudioButton from '../AudioButton';
 
 interface PhraseCardProps {
   phrase: PracticalPhrase;
@@ -17,14 +18,6 @@ const PhraseCard: React.FC<PhraseCardProps> = ({ phrase }) => {
   const [isLearned, setIsLearned] = useState(false);
   const { isMobile, isSmallLandscape } = useScreenOrientation();
   const useMobileLayout = isMobile || isSmallLandscape;
-
-  const handleAudioPlay = () => {
-    if ('speechSynthesis' in window) {
-      const utterance = new SpeechSynthesisUtterance(phrase.german);
-      utterance.lang = 'de-DE';
-      speechSynthesis.speak(utterance);
-    }
-  };
 
   const getImportanceBadgeColor = (importance: string) => {
     switch (importance) {
@@ -60,14 +53,14 @@ const PhraseCard: React.FC<PhraseCardProps> = ({ phrase }) => {
             {phrase.german}
           </CardTitle>
           <div className="flex gap-1 flex-shrink-0">
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={handleAudioPlay}
+            <AudioButton 
+              text={phrase.german}
+              language="de"
+              variant="ghost"
+              size="sm"
+              showText={false}
               className="h-8 w-8 p-0"
-            >
-              <Volume2 className="h-4 w-4" />
-            </Button>
+            />
             <Button 
               variant="ghost" 
               size="sm" 
@@ -105,6 +98,14 @@ const PhraseCard: React.FC<PhraseCardProps> = ({ phrase }) => {
             )}>
               {phrase.czech}
             </span>
+            <AudioButton 
+              text={phrase.czech}
+              language="cs"
+              variant="ghost"
+              size="sm"
+              showText={false}
+              className="h-6 w-6 p-0 ml-auto"
+            />
           </div>
           
           <div className="flex items-center gap-2">
@@ -115,6 +116,14 @@ const PhraseCard: React.FC<PhraseCardProps> = ({ phrase }) => {
             )}>
               {phrase.slovak}
             </span>
+            <AudioButton 
+              text={phrase.slovak}
+              language="sk"
+              variant="ghost"
+              size="sm"
+              showText={false}
+              className="h-6 w-6 p-0 ml-auto"
+            />
           </div>
           
           <div className="flex items-center gap-2">
@@ -125,6 +134,14 @@ const PhraseCard: React.FC<PhraseCardProps> = ({ phrase }) => {
             )}>
               {phrase.english}
             </span>
+            <AudioButton 
+              text={phrase.english}
+              language="en"
+              variant="ghost"
+              size="sm"
+              showText={false}
+              className="h-6 w-6 p-0 ml-auto"
+            />
           </div>
         </div>
         
