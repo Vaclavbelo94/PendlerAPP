@@ -38,7 +38,10 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
               aria-hidden="true"
             />
             <div className="fixed inset-0 z-[70]">
-              <Sidebar closeSidebar={() => setSidebarOpen(false)} />
+              <Sidebar 
+                closeSidebar={() => setSidebarOpen(false)} 
+                mobileVariant="compact"
+              />
             </div>
           </>
         )}
@@ -80,6 +83,7 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
             <Sidebar 
               closeSidebar={() => setSidebarOpen(false)} 
               isLandscapeSheet={true}
+              mobileVariant="full"
             />
           </SheetContent>
         </Sheet>

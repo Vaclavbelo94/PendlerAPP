@@ -1,36 +1,19 @@
 
 import { useState, useEffect } from 'react';
-
-export interface ScreenOrientation {
-  isLandscape: boolean;
-  isPortrait: boolean;
-  isMobile: boolean;
-  isSmallLandscape: boolean;
-}
+import { useIsMobile } from './use-mobile';
 
 export const useScreenOrientation = () => {
-  const [orientation, setOrientation] = useState<ScreenOrientation>({
-    isLandscape: false,
-    isPortrait: true,
-    isMobile: false,
-    isSmallLandscape: false
-  });
+  const isMobile = useIsMobile();
+  const [orientation, setOrientation] = useState<'portrait' | 'landscape'>('portrait');
+  const [isSmallLandscape, setIsSmallLandscape] = useState(false);
 
   useEffect(() => {
     const updateOrientation = () => {
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-      const isMobile = width <= 768;
-      const isLandscape = width > height;
-      const isPortrait = height > width;
-      const isSmallLandscape = isLandscape && height <= 500;
-
-      setOrientation({
-        isLandscape,
-        isPortrait,
-        isMobile,
-        isSmallLandscape
-      });
+      const isLandscape = window.innerWidth > window.innerHeight;
+      setOrientation(isLandscape ? 'landscape' : 'portrait');
+      
+      // Check for small landscape screens (height < 500px)
+      setIsSmallLandscape(isLandscape && window.innerHeight < 500);
     };
 
     updateOrientation();
@@ -43,5 +26,11 @@ export const useScreenOrientation = () => {
     };
   }, []);
 
-  return orientation;
+  return {
+    isMobile,
+    orientation,
+    isSmallLandscape,
+    isLandscape: orientation === 'landscape',
+    isPortrait: orientation === 'portrait'
+  };
 };
