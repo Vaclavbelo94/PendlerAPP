@@ -1,10 +1,6 @@
 
-import { useCallback, useMemo } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useOptimizedQuery } from './useOptimizedQuery';
-import type { Database } from '@/integrations/supabase/types';
-
-type TableName = keyof Database['public']['Tables'];
+import { useCallback, useRef } from 'react';
+import { useCacheManager } from './useCacheManager';
 
 interface OptimizedSupabaseOptions {
   enableCaching?: boolean;
@@ -15,83 +11,74 @@ interface OptimizedSupabaseOptions {
 export const useOptimizedSupabase = (options: OptimizedSupabaseOptions = {}) => {
   const {
     enableCaching = true,
-    cacheTime = 15 * 60 * 1000, // 15 minut
+    cacheTime = 10 * 60 * 1000, // 10 minut
     staleTime = 5 * 60 * 1000   // 5 minut
   } = options;
 
-  // Optimalizovaný select s cache
-  const optimizedSelect = useCallback(
-    <T extends TableName>(table: T, columns: string = '*', filters?: Record<string, any>) => {
-      let query = supabase.from(table).select(columns);
-      
-      if (filters) {
-        Object.entries(filters).forEach(([key, value]) => {
-          if (value !== undefined && value !== null) {
-            query = query.eq(key, value);
-          }
-        });
+  const { set, get } = useCacheManager({
+    enablePeriodicCleanup: true,
+    maxCacheSize: 20 * 1024 * 1024 // 20MB
+  });
+
+  const pendingRequests = useRef(new Map<string, Promise<any>>());
+
+  // Optimized query with caching and deduplication
+  const optimizedQuery = useCallback(async (
+    queryKey: string,
+    queryFn: () => Promise<any>
+  ) => {
+    // Check cache first
+    if (enableCaching) {
+      const cached = get(queryKey);
+      if (cached) {
+        return cached;
+      }
+    }
+
+    // Check for pending request (deduplication)
+    const pendingRequest = pendingRequests.current.get(queryKey);
+    if (pendingRequest) {
+      return pendingRequest;
+    }
+
+    // Create new request
+    const request = queryFn().then(result => {
+      // Cache the result
+      if (enableCaching) {
+        set(queryKey, result, cacheTime);
       }
       
-      return query;
-    },
-    []
-  );
-
-  // Batch operace pro lepší výkon
-  const batchInsert = useCallback(
-    async <T extends TableName>(table: T, data: any[]) => {
-      const BATCH_SIZE = 100;
-      const results = [];
+      // Remove from pending
+      pendingRequests.current.delete(queryKey);
       
-      for (let i = 0; i < data.length; i += BATCH_SIZE) {
-        const batch = data.slice(i, i + BATCH_SIZE);
-        const result = await supabase.from(table).insert(batch);
-        results.push(result);
-      }
-      
-      return results;
-    },
-    []
-  );
+      return result;
+    }).catch(error => {
+      // Remove from pending on error
+      pendingRequests.current.delete(queryKey);
+      throw error;
+    });
 
-  // Optimalizovaný upsert
-  const optimizedUpsert = useCallback(
-    async <T extends TableName>(table: T, data: any, onConflict: string) => {
-      return await supabase
-        .from(table)
-        .upsert(data, { onConflict })
-        .select();
-    },
-    []
-  );
+    // Store pending request
+    pendingRequests.current.set(queryKey, request);
 
-  // Připravené queries pro často používané operace
-  const preparedQueries = useMemo(() => ({
-    getUserProfile: (userId: string) => 
-      optimizedSelect('profiles', '*', { id: userId }),
-    
-    getUserShifts: (userId: string, startDate?: string, endDate?: string) => {
-      let query = optimizedSelect('shifts', '*', { user_id: userId });
-      if (startDate) query = query.gte('date', startDate);
-      if (endDate) query = query.lte('date', endDate);
-      return query.order('date', { ascending: false });
-    },
-    
-    getUserVehicles: (userId: string) =>
-      optimizedSelect('vehicles', '*', { user_id: userId }),
-    
-    getPromoCodes: () =>
-      optimizedSelect('promo_codes', '*')
-        .order('created_at', { ascending: false })
-  }), [optimizedSelect]);
+    return request;
+  }, [enableCaching, get, set, cacheTime]);
+
+  // Batch operations for better performance
+  const batchOperations = useCallback(async (operations: Array<() => Promise<any>>) => {
+    try {
+      const results = await Promise.allSettled(operations.map(op => op()));
+      return results.map(result => 
+        result.status === 'fulfilled' ? result.value : null
+      );
+    } catch (error) {
+      console.error('Batch operations failed:', error);
+      throw error;
+    }
+  }, []);
 
   return {
-    optimizedSelect,
-    batchInsert,
-    optimizedUpsert,
-    preparedQueries,
-    enableCaching,
-    cacheTime,
-    staleTime
+    optimizedQuery,
+    batchOperations
   };
 };

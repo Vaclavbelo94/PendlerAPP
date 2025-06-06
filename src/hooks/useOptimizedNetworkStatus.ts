@@ -5,89 +5,58 @@ interface NetworkStatus {
   isOnline: boolean;
   isSlowConnection: boolean;
   connectionType: string;
-  lastOnlineAt: Date | null;
-  pingTime: number | null;
+  effectiveType: string;
 }
 
-export const useOptimizedNetworkStatus = (): NetworkStatus => {
-  const [status, setStatus] = useState<NetworkStatus>({
+export const useOptimizedNetworkStatus = () => {
+  const [networkStatus, setNetworkStatus] = useState<NetworkStatus>(() => ({
     isOnline: navigator.onLine,
     isSlowConnection: false,
     connectionType: 'unknown',
-    lastOnlineAt: navigator.onLine ? new Date() : null,
-    pingTime: null
-  });
+    effectiveType: 'unknown'
+  }));
 
-  const checkConnectionSpeed = useCallback(async () => {
-    if (!navigator.onLine) return;
+  const updateNetworkStatus = useCallback(() => {
+    const connection = (navigator as any).connection || 
+                      (navigator as any).mozConnection || 
+                      (navigator as any).webkitConnection;
 
-    const startTime = performance.now();
-    try {
-      await fetch('/manifest.json', { 
-        method: 'HEAD',
-        cache: 'no-cache',
-        signal: AbortSignal.timeout(5000)
-      });
-      const pingTime = performance.now() - startTime;
-      
-      setStatus(prev => ({
-        ...prev,
-        pingTime,
-        isSlowConnection: pingTime > 1000
-      }));
-    } catch (error) {
-      setStatus(prev => ({
-        ...prev,
-        isSlowConnection: true,
-        pingTime: null
-      }));
-    }
+    const isSlowConnection = connection ? 
+      (connection.effectiveType === 'slow-2g' || 
+       connection.effectiveType === '2g' ||
+       connection.downlink < 1.5) : false;
+
+    setNetworkStatus({
+      isOnline: navigator.onLine,
+      isSlowConnection,
+      connectionType: connection?.type || 'unknown',
+      effectiveType: connection?.effectiveType || 'unknown'
+    });
   }, []);
 
   useEffect(() => {
-    const handleOnline = () => {
-      setStatus(prev => ({
-        ...prev,
-        isOnline: true,
-        lastOnlineAt: new Date()
-      }));
-      checkConnectionSpeed();
-    };
-
-    const handleOffline = () => {
-      setStatus(prev => ({
-        ...prev,
-        isOnline: false,
-        pingTime: null
-      }));
-    };
-
-    // Get connection info if available
-    const getConnectionInfo = () => {
-      const conn = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection;
-      if (conn) {
-        setStatus(prev => ({
-          ...prev,
-          connectionType: conn.effectiveType || 'unknown',
-          isSlowConnection: conn.effectiveType === 'slow-2g' || conn.effectiveType === '2g'
-        }));
-      }
-    };
-
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-    
     // Initial check
-    getConnectionInfo();
-    if (navigator.onLine) {
-      checkConnectionSpeed();
+    updateNetworkStatus();
+
+    // Event listeners
+    window.addEventListener('online', updateNetworkStatus);
+    window.addEventListener('offline', updateNetworkStatus);
+
+    // Connection change listener
+    const connection = (navigator as any).connection;
+    if (connection) {
+      connection.addEventListener('change', updateNetworkStatus);
     }
 
     return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
+      window.removeEventListener('online', updateNetworkStatus);
+      window.removeEventListener('offline', updateNetworkStatus);
+      
+      if (connection) {
+        connection.removeEventListener('change', updateNetworkStatus);
+      }
     };
-  }, [checkConnectionSpeed]);
+  }, [updateNetworkStatus]);
 
-  return status;
+  return networkStatus;
 };

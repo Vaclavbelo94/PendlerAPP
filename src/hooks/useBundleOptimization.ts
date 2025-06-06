@@ -1,74 +1,104 @@
 
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 
 interface BundleOptimizationOptions {
   enableCodeSplitting?: boolean;
   enablePrefetching?: boolean;
   prefetchDelay?: number;
+  enablePreloading?: boolean;
 }
 
 export const useBundleOptimization = (options: BundleOptimizationOptions = {}) => {
-  const location = useLocation();
   const {
     enableCodeSplitting = true,
-    enablePrefetching = true,
-    prefetchDelay = 2000
+    enablePrefetching = false,
+    prefetchDelay = 2000,
+    enablePreloading = true
   } = options;
 
-  const prefetchRoutes = useCallback(() => {
+  const location = useLocation();
+
+  // Memoized route predictions
+  const routePredictions = useMemo(() => {
+    const currentPath = location.pathname;
+    
+    // Predict likely next routes based on current path
+    const predictions: string[] = [];
+    
+    if (currentPath === '/') {
+      predictions.push('/dashboard', '/calculator', '/vocabulary');
+    } else if (currentPath === '/dashboard') {
+      predictions.push('/shifts', '/vehicle', '/vocabulary');
+    } else if (currentPath.startsWith('/language')) {
+      predictions.push('/vocabulary', '/translator', '/dashboard');
+    }
+    
+    return predictions;
+  }, [location.pathname]);
+
+  // Prefetch route components
+  const prefetchRoutes = useCallback(async () => {
     if (!enablePrefetching) return;
 
-    const routePrefetchMap: Record<string, string[]> = {
-      '/': ['/dashboard', '/language', '/calculator'],
-      '/dashboard': ['/language', '/shifts', '/vehicle'],
-      '/translator': ['/language', '/dashboard'],
-      '/language': ['/translator', '/dashboard'],
-      '/calculator': ['/tax-advisor', '/dashboard'],
-      '/shifts': ['/dashboard', '/vehicle'],
-      '/vehicle': ['/dashboard', '/shifts']
+    for (const route of routePredictions) {
+      try {
+        // Dynamic import with error handling
+        switch (route) {
+          case '/dashboard':
+            await import('@/pages/Dashboard');
+            break;
+          case '/calculator':
+            await import('@/pages/Calculator');
+            break;
+          case '/vocabulary':
+            await import('@/pages/Vocabulary');
+            break;
+          case '/shifts':
+            await import('@/pages/Shifts');
+            break;
+          case '/vehicle':
+            await import('@/pages/Vehicle');
+            break;
+          case '/translator':
+            await import('@/pages/Translator');
+            break;
+        }
+      } catch (error) {
+        console.warn(`Failed to prefetch route ${route}:`, error);
+      }
+    }
+  }, [routePredictions, enablePrefetching]);
+
+  // Prefetch with delay
+  useEffect(() => {
+    if (!enablePrefetching) return;
+
+    const timeoutId = setTimeout(prefetchRoutes, prefetchDelay);
+    return () => clearTimeout(timeoutId);
+  }, [prefetchRoutes, prefetchDelay, enablePrefetching]);
+
+  // Resource preloading
+  useEffect(() => {
+    if (!enablePreloading) return;
+
+    const preloadCriticalResources = () => {
+      // Preload critical CSS
+      const link = document.createElement('link');
+      link.rel = 'preload';
+      link.href = '/assets/critical.css';
+      link.as = 'style';
+      document.head.appendChild(link);
     };
 
-    const currentRoutePrefetches = routePrefetchMap[location.pathname] || [];
-    
-    currentRoutePrefetches.forEach(route => {
-      const link = document.createElement('link');
-      link.rel = 'prefetch';
-      link.href = route;
-      link.as = 'document';
-      document.head.appendChild(link);
-    });
-  }, [location.pathname, enablePrefetching]);
-
-  const optimizeBundles = useCallback(() => {
-    if (!enableCodeSplitting) return;
-
-    // Preload critical modules
-    const criticalModules = [
-      '/src/components/ui/button.tsx',
-      '/src/components/ui/card.tsx',
-      '/src/hooks/useAuth.tsx'
-    ];
-
-    criticalModules.forEach(module => {
-      const link = document.createElement('link');
-      link.rel = 'modulepreload';
-      link.href = module;
-      document.head.appendChild(link);
-    });
-  }, [enableCodeSplitting]);
-
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      prefetchRoutes();
-      optimizeBundles();
-    }, prefetchDelay);
-
-    return () => clearTimeout(timeoutId);
-  }, [prefetchRoutes, optimizeBundles, prefetchDelay]);
+    // Run after initial render
+    requestIdleCallback ? 
+      requestIdleCallback(preloadCriticalResources) : 
+      setTimeout(preloadCriticalResources, 100);
+  }, [enablePreloading]);
 
   return {
-    prefetchRoutes,
-    optimizeBundles
+    routePredictions,
+    prefetchRoutes
   };
 };

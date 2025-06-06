@@ -29,7 +29,7 @@ export const useSwipeNavigation = ({
     onItemChange(items[prevIndex]);
   }, [currentIndex, items, onItemChange, enabled]);
 
-  const { containerRef, isGestureActive } = useMobileGestures(
+  const { containerRef } = useMobileGestures(
     { enableSwipe: enabled, swipeThreshold: 50 },
     {
       onSwipeLeft: handleSwipeLeft,
@@ -39,7 +39,6 @@ export const useSwipeNavigation = ({
 
   return {
     containerRef,
-    isGestureActive,
     currentIndex,
     canSwipeLeft: currentIndex < items.length - 1,
     canSwipeRight: currentIndex > 0
