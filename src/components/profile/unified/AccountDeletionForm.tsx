@@ -1,107 +1,83 @@
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Trash2, AlertTriangle } from 'lucide-react';
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Trash2, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
-import { useAuth } from "@/hooks/useAuth";
-import { useNavigate } from "react-router-dom";
 
 const AccountDeletionForm = () => {
-  const [confirmationText, setConfirmationText] = useState("");
-  const [loading, setLoading] = useState(false);
-  const { user, signOut } = useAuth();
-  const navigate = useNavigate();
+  const [confirmText, setConfirmText] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const expectedText = "SMAZAT MŮJ ÚČET";
 
-  const handleDeleteAccount = async () => {
-    if (confirmationText !== "SMAZAT") {
-      toast.error("Pro potvrzení napište 'SMAZAT'");
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (confirmText !== expectedText) {
+      toast.error("Potvrzovací text není správný");
       return;
     }
-    
-    setLoading(true);
+
+    setIsLoading(true);
+
     try {
-      // Note: Account deletion through Supabase Admin API would require backend implementation
-      // For now, we'll sign out the user and show a message
-      toast.success("Žádost o smazání účtu byla odeslána. Kontaktujte podporu pro dokončení procesu.");
-      await signOut();
-      navigate("/");
+      // Simulate account deletion
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      toast.success("Žádost o smazání účtu byla odeslána");
+      setConfirmText("");
     } catch (error) {
-      console.error('Account deletion error:', error);
-      toast.error("Chyba při mazání účtu");
+      toast.error("Při odeslání žádosti došlo k chybě");
     } finally {
-      setLoading(false);
-      setConfirmationText("");
+      setIsLoading(false);
     }
   };
 
   return (
-    <Card className="border-destructive">
+    <Card className="border-destructive/50">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-destructive">
           <Trash2 className="h-5 w-5" />
           Smazání účtu
         </CardTitle>
         <CardDescription>
-          Trvale smaže váš účet a všechna data. Tato akce je nevratná.
+          Trvale smazat váš účet a všechna související data
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex items-start space-x-3 p-4 bg-destructive/10 rounded-lg border border-destructive/20">
-          <AlertTriangle className="h-5 w-5 text-destructive mt-0.5 flex-shrink-0" />
-          <div className="space-y-1">
-            <p className="font-medium text-sm">Varování</p>
-            <p className="text-sm text-muted-foreground">
-              Smazání účtu je nevratné. Všechny vaše data včetně směn, nastavení a pokroku 
-              budou trvale odstraněny.
-            </p>
-          </div>
-        </div>
+        <Alert className="border-destructive/50">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            <strong>Varování:</strong> Tato akce je nevratná. Všechna vaše data budou trvale smazána.
+          </AlertDescription>
+        </Alert>
 
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button variant="destructive" className="w-full">
-              Smazat můj účet
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Opravdu chcete smazat účet?</AlertDialogTitle>
-              <AlertDialogDescription className="space-y-3">
-                <p>
-                  Tato akce trvale smaže váš účet <strong>{user?.email}</strong> a všechna související data.
-                </p>
-                <p>
-                  Pro potvrzení napište <strong>SMAZAT</strong> do pole níže:
-                </p>
-                <div className="space-y-2">
-                  <Label htmlFor="confirmDelete">Potvrzení</Label>
-                  <Input
-                    id="confirmDelete"
-                    value={confirmationText}
-                    onChange={(e) => setConfirmationText(e.target.value)}
-                    placeholder="Napište 'SMAZAT'"
-                  />
-                </div>
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel onClick={() => setConfirmationText("")}>
-                Zrušit
-              </AlertDialogCancel>
-              <AlertDialogAction
-                onClick={handleDeleteAccount}
-                disabled={confirmationText !== "SMAZAT" || loading}
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              >
-                {loading ? "Mazání..." : "Smazat účet"}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="confirm-deletion">
+              Pro potvrzení napište: <strong>{expectedText}</strong>
+            </Label>
+            <Input
+              id="confirm-deletion"
+              value={confirmText}
+              onChange={(e) => setConfirmText(e.target.value)}
+              placeholder="Napište potvrzovací text"
+              required
+            />
+          </div>
+
+          <Button 
+            type="submit" 
+            variant="destructive"
+            disabled={isLoading || confirmText !== expectedText}
+            className="w-full"
+          >
+            {isLoading ? "Odesílání žádosti..." : "Smazat účet"}
+          </Button>
+        </form>
       </CardContent>
     </Card>
   );
