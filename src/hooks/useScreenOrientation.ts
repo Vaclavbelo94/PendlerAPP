@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useIsMobile } from './use-mobile';
 
 export const useScreenOrientation = () => {
@@ -7,24 +7,46 @@ export const useScreenOrientation = () => {
   const [orientation, setOrientation] = useState<'portrait' | 'landscape'>('portrait');
   const [isSmallLandscape, setIsSmallLandscape] = useState(false);
 
-  useEffect(() => {
-    const updateOrientation = () => {
+  const updateOrientation = useCallback(() => {
+    try {
       const isLandscape = window.innerWidth > window.innerHeight;
-      setOrientation(isLandscape ? 'landscape' : 'portrait');
+      const newOrientation = isLandscape ? 'landscape' : 'portrait';
+      const newIsSmallLandscape = isLandscape && window.innerHeight < 500;
       
-      // Check for small landscape screens (height < 500px)
-      setIsSmallLandscape(isLandscape && window.innerHeight < 500);
+      console.log('ScreenOrientation: Update', { 
+        width: window.innerWidth, 
+        height: window.innerHeight, 
+        orientation: newOrientation,
+        isSmallLandscape: newIsSmallLandscape 
+      });
+      
+      setOrientation(newOrientation);
+      setIsSmallLandscape(newIsSmallLandscape);
+    } catch (error) {
+      console.error('ScreenOrientation: Error updating orientation', error);
+    }
+  }, []);
+
+  useEffect(() => {
+    // Initial update
+    updateOrientation();
+
+    // Debounced event handler
+    let timeoutId: NodeJS.Timeout;
+    const debouncedUpdate = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(updateOrientation, 100);
     };
 
-    updateOrientation();
-    window.addEventListener('resize', updateOrientation);
-    window.addEventListener('orientationchange', updateOrientation);
+    window.addEventListener('resize', debouncedUpdate);
+    window.addEventListener('orientationchange', debouncedUpdate);
 
     return () => {
-      window.removeEventListener('resize', updateOrientation);
-      window.removeEventListener('orientationchange', updateOrientation);
+      clearTimeout(timeoutId);
+      window.removeEventListener('resize', debouncedUpdate);
+      window.removeEventListener('orientationchange', debouncedUpdate);
     };
-  }, []);
+  }, [updateOrientation]);
 
   return {
     isMobile,

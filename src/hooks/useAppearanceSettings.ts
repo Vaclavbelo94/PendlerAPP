@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { toast } from "sonner";
 import { useTheme } from "@/hooks/useTheme";
 import { useAuth } from "@/hooks/useAuth";
@@ -20,57 +20,101 @@ export const useAppearanceSettings = (
   const [darkMode, setDarkMode] = useState(initialDarkMode);
   const [compactMode, setCompactMode] = useState(initialCompactMode);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Debug logging
+  useEffect(() => {
+    console.log('AppearanceSettings: State change', { 
+      user: !!user, 
+      isLoading, 
+      darkMode, 
+      colorScheme, 
+      compactMode,
+      error 
+    });
+  }, [user, isLoading, darkMode, colorScheme, compactMode, error]);
+
+  // Memoized settings object
+  const currentSettings = useMemo(() => ({
+    darkMode,
+    colorScheme,
+    compactMode
+  }), [darkMode, colorScheme, compactMode]);
 
   // Load settings from database when component mounts
-  useEffect(() => {
-    const loadAppearanceSettings = async () => {
-      if (!user) return;
+  const loadAppearanceSettings = useCallback(async () => {
+    if (!user) {
+      setIsLoading(false);
+      return;
+    }
+    
+    console.log('AppearanceSettings: Loading settings for user', user.id);
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const { data, error: dbError } = await supabase
+        .from('user_appearance_settings')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle();
       
-      setIsLoading(true);
-      try {
-        const { data, error } = await supabase
-          .from('user_appearance_settings')
-          .select('*')
-          .eq('user_id', user.id)
-          .maybeSingle();
-        
-        if (error && error.code !== 'PGRST116') {
-          console.error('Chyba při načítání nastavení vzhledu:', error);
-          throw error;
-        }
-
-        if (data) {
-          setDarkMode(data.dark_mode);
-          setColorScheme(data.color_scheme as any);
-          setCompactMode(data.compact_mode);
-        }
-      } catch (error) {
-        console.error('Chyba při načítání nastavení vzhledu:', error);
-        toast.error("Nepodařilo se načíst nastavení vzhledu");
-      } finally {
-        setIsLoading(false);
+      if (dbError && dbError.code !== 'PGRST116') {
+        console.error('AppearanceSettings: Database error:', dbError);
+        throw dbError;
       }
-    };
 
-    loadAppearanceSettings();
+      if (data) {
+        console.log('AppearanceSettings: Loaded settings', data);
+        setDarkMode(data.dark_mode);
+        setColorScheme(data.color_scheme as any);
+        setCompactMode(data.compact_mode);
+      } else {
+        console.log('AppearanceSettings: No settings found, using defaults');
+      }
+    } catch (error) {
+      console.error('AppearanceSettings: Error loading settings:', error);
+      setError("Nepodařilo se načíst nastavení vzhledu");
+      toast.error("Nepodařilo se načíst nastavení vzhledu");
+    } finally {
+      setIsLoading(false);
+    }
   }, [user, setColorScheme]);
+
+  useEffect(() => {
+    loadAppearanceSettings();
+  }, [loadAppearanceSettings]);
   
   // Sync dark mode state with global theme
   useEffect(() => {
     if (!isChangingTheme) {
-      setDarkMode(theme === 'dark');
+      const newDarkMode = theme === 'dark';
+      if (newDarkMode !== darkMode) {
+        console.log('AppearanceSettings: Syncing darkMode with theme', { theme, newDarkMode });
+        setDarkMode(newDarkMode);
+      }
     }
-  }, [theme, isChangingTheme]);
+  }, [theme, isChangingTheme, darkMode]);
   
   // Set global theme when darkMode toggle changes
   useEffect(() => {
-    setTheme(darkMode ? 'dark' : 'light');
-  }, [darkMode, setTheme]);
+    const newTheme = darkMode ? 'dark' : 'light';
+    if (theme !== newTheme) {
+      console.log('AppearanceSettings: Setting theme', { darkMode, newTheme });
+      setTheme(newTheme);
+    }
+  }, [darkMode, theme, setTheme]);
   
-  const handleSave = async () => {
-    if (!user) return;
+  const handleSave = useCallback(async () => {
+    if (!user) {
+      console.warn('AppearanceSettings: No user for save operation');
+      return;
+    }
     
+    console.log('AppearanceSettings: Saving settings', currentSettings);
     setIsLoading(true);
+    setError(null);
+    
     try {
       // Check if settings already exist
       const { data: existingSettings, error: checkError } = await supabase
@@ -109,26 +153,25 @@ export const useAppearanceSettings = (
         throw result.error;
       }
 
+      console.log('AppearanceSettings: Settings saved successfully');
       toast.success("Nastavení vzhledu bylo uloženo");
       
       if (onSave) {
-        onSave({ 
-          darkMode, 
-          colorScheme,
-          compactMode 
-        });
+        onSave(currentSettings);
       }
     } catch (error) {
-      console.error('Chyba při ukládání nastavení vzhledu:', error);
+      console.error('AppearanceSettings: Error saving settings:', error);
+      setError("Nepodařilo se uložit nastavení vzhledu");
       toast.error("Nepodařilo se uložit nastavení vzhledu");
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [user, currentSettings, darkMode, colorScheme, compactMode, onSave]);
 
-  const handleColorSchemeChange = (value: string) => {
+  const handleColorSchemeChange = useCallback((value: string) => {
+    console.log('AppearanceSettings: Color scheme changing to', value);
     setColorScheme(value as any);
-  };
+  }, [setColorScheme]);
 
   return {
     darkMode,
@@ -139,6 +182,7 @@ export const useAppearanceSettings = (
     setCompactMode,
     isLoading,
     isChangingTheme,
+    error,
     handleSave
   };
 };

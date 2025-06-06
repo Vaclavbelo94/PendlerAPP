@@ -22,6 +22,16 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
   const location = useLocation();
   const { user, isAdmin } = useAuth();
   
+  // Debug logging for layout issues
+  useEffect(() => {
+    console.log('Layout: State change', { 
+      isMobile, 
+      orientation, 
+      sidebarOpen, 
+      pathname: location.pathname 
+    });
+  }, [isMobile, orientation, sidebarOpen, location.pathname]);
+  
   // Zavřít sidebar při změně cesty
   useEffect(() => {
     setSidebarOpen(false);
@@ -33,11 +43,11 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
         {sidebarOpen && (
           <>
             <div 
-              className="fixed inset-0 bg-black/50 z-[60]"
+              className="fixed inset-0 bg-black/50 z-40"
               onClick={() => setSidebarOpen(false)}
               aria-hidden="true"
             />
-            <div className="fixed inset-0 z-[70]">
+            <div className="fixed inset-0 z-50">
               <Sidebar 
                 closeSidebar={() => setSidebarOpen(false)} 
                 mobileVariant="compact"
@@ -48,7 +58,7 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
       </AnimatePresence>
       
       <div className="flex-1 flex flex-col min-w-0 relative">
-        <div className="sticky top-0 z-50">
+        <div className="sticky top-0 z-30">
           <Navbar 
             toggleSidebar={() => setSidebarOpen(!sidebarOpen)} 
             rightContent={navbarRightContent}
@@ -78,7 +88,7 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
         <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
           <SheetContent 
             side="top" 
-            className="h-[70vh] w-full p-0 bg-background border-b z-[100]"
+            className="h-[70vh] w-full p-0 bg-background border-b z-45"
           >
             <Sidebar 
               closeSidebar={() => setSidebarOpen(false)} 

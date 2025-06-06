@@ -3,9 +3,11 @@ import React from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { Eye } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Eye, AlertCircle } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAppearanceSettings } from "@/hooks/useAppearanceSettings";
+import ProfileErrorBoundary from "./ProfileErrorBoundary";
 import DarkModeToggle from "./appearance/DarkModeToggle";
 import ColorSchemeSelector from "./appearance/ColorSchemeSelector";
 import CompactModeToggle from "./appearance/CompactModeToggle";
@@ -21,7 +23,7 @@ interface ProfileAppearanceProps {
   }) => void;
 }
 
-const ProfileAppearance = ({
+const ProfileAppearanceContent = ({
   initialDarkMode = false,
   initialColorScheme = "purple",
   initialCompactMode = false,
@@ -38,6 +40,7 @@ const ProfileAppearance = ({
     setCompactMode,
     isLoading,
     isChangingTheme,
+    error,
     handleSave
   } = useAppearanceSettings(initialDarkMode, initialColorScheme, initialCompactMode, onSave);
 
@@ -46,6 +49,7 @@ const ProfileAppearance = ({
       <Card>
         <CardContent className="flex items-center justify-center p-8">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <span className="ml-2">Načítání nastavení...</span>
         </CardContent>
       </Card>
     );
@@ -63,6 +67,13 @@ const ProfileAppearance = ({
         </CardDescription>
       </CardHeader>
       <CardContent className={`${isMobile ? 'px-4' : ''}`}>
+        {error && (
+          <Alert className="mb-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+        
         <div className="space-y-6">
           <DarkModeToggle 
             darkMode={darkMode}
@@ -96,6 +107,14 @@ const ProfileAppearance = ({
         </Button>
       </CardFooter>
     </Card>
+  );
+};
+
+const ProfileAppearance = (props: ProfileAppearanceProps) => {
+  return (
+    <ProfileErrorBoundary>
+      <ProfileAppearanceContent {...props} />
+    </ProfileErrorBoundary>
   );
 };
 

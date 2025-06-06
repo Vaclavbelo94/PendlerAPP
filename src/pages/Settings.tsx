@@ -5,6 +5,7 @@ import {
   Settings as SettingsIcon
 } from 'lucide-react';
 import ProfileAppearance from '@/components/profile/ProfileAppearance';
+import ProfileErrorBoundary from '@/components/profile/ProfileErrorBoundary';
 import GeneralSettings from '@/components/settings/GeneralSettings';
 import NotificationSettings from '@/components/settings/NotificationSettings';
 import LanguageSettings from '@/components/settings/LanguageSettings';
@@ -22,6 +23,9 @@ const Settings = () => {
   const isMobile = useIsMobile();
   const [activeTab, setActiveTab] = useState("general");
 
+  // Debug logging
+  console.log('Settings: Rendering with activeTab:', activeTab);
+
   return (
     <div className="container py-6 md:py-10 max-w-7xl">
       <div className="mb-8">
@@ -34,45 +38,81 @@ const Settings = () => {
         </p>
       </div>
 
-      <div className="space-y-6">
-        {/* Primary navigation */}
-        <div>
-          <h3 className="text-lg font-semibold mb-4">Hlavní nastavení</h3>
-          <SettingsNavigation
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-            variant="primary"
-          />
-        </div>
-
-        {/* Secondary navigation */}
-        <div>
-          <h3 className="text-lg font-semibold mb-4">Další nastavení</h3>
-          <SettingsNavigation
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-            variant="secondary"
-          />
-        </div>
-
-        {/* Tab content */}
-        <div className="mt-8">
-          {activeTab === "general" && <GeneralSettings />}
-          {activeTab === "account" && <AccountSettings />}
-          {activeTab === "appearance" && <ProfileAppearance />}
-          {activeTab === "notifications" && (
-            <NotificationSettings 
-              syncSettings={syncSettings}
-              updateSyncSettings={updateSyncSettings}
+      <ProfileErrorBoundary>
+        <div className="space-y-6">
+          {/* Primary navigation */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Hlavní nastavení</h3>
+            <SettingsNavigation
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+              variant="primary"
             />
-          )}
-          {activeTab === "language" && <LanguageSettings />}
-          {activeTab === "security" && <SecuritySettings />}
-          {activeTab === "device" && <DeviceSettings />}
-          {activeTab === "data" && <DataSettings />}
-          {activeTab === "privacy" && <PrivacySettings />}
+          </div>
+
+          {/* Secondary navigation */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Další nastavení</h3>
+            <SettingsNavigation
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+              variant="secondary"
+            />
+          </div>
+
+          {/* Tab content with individual error boundaries */}
+          <div className="mt-8">
+            {activeTab === "general" && (
+              <ProfileErrorBoundary>
+                <GeneralSettings />
+              </ProfileErrorBoundary>
+            )}
+            {activeTab === "account" && (
+              <ProfileErrorBoundary>
+                <AccountSettings />
+              </ProfileErrorBoundary>
+            )}
+            {activeTab === "appearance" && (
+              <ProfileErrorBoundary>
+                <ProfileAppearance />
+              </ProfileErrorBoundary>
+            )}
+            {activeTab === "notifications" && (
+              <ProfileErrorBoundary>
+                <NotificationSettings 
+                  syncSettings={syncSettings}
+                  updateSyncSettings={updateSyncSettings}
+                />
+              </ProfileErrorBoundary>
+            )}
+            {activeTab === "language" && (
+              <ProfileErrorBoundary>
+                <LanguageSettings />
+              </ProfileErrorBoundary>
+            )}
+            {activeTab === "security" && (
+              <ProfileErrorBoundary>
+                <SecuritySettings />
+              </ProfileErrorBoundary>
+            )}
+            {activeTab === "device" && (
+              <ProfileErrorBoundary>
+                <DeviceSettings />
+              </ProfileErrorBoundary>
+            )}
+            {activeTab === "data" && (
+              <ProfileErrorBoundary>
+                <DataSettings />
+              </ProfileErrorBoundary>
+            )}
+            {activeTab === "privacy" && (
+              <ProfileErrorBoundary>
+                <PrivacySettings />
+              </ProfileErrorBoundary>
+            )}
+          </div>
         </div>
-      </div>
+      </ProfileErrorBoundary>
     </div>
   );
 };
