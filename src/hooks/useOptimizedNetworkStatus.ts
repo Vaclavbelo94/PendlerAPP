@@ -6,6 +6,7 @@ interface NetworkStatus {
   isSlowConnection: boolean;
   connectionType: string;
   effectiveType: string;
+  pingTime?: number;
 }
 
 export const useOptimizedNetworkStatus = () => {
@@ -13,10 +14,26 @@ export const useOptimizedNetworkStatus = () => {
     isOnline: navigator.onLine,
     isSlowConnection: false,
     connectionType: 'unknown',
-    effectiveType: 'unknown'
+    effectiveType: 'unknown',
+    pingTime: undefined
   }));
 
-  const updateNetworkStatus = useCallback(() => {
+  const measurePing = useCallback(async (): Promise<number | undefined> => {
+    try {
+      const start = performance.now();
+      await fetch('https://www.google.com/favicon.ico', {
+        method: 'HEAD',
+        mode: 'no-cors',
+        cache: 'no-cache'
+      });
+      const end = performance.now();
+      return end - start;
+    } catch {
+      return undefined;
+    }
+  }, []);
+
+  const updateNetworkStatus = useCallback(async () => {
     const connection = (navigator as any).connection || 
                       (navigator as any).mozConnection || 
                       (navigator as any).webkitConnection;
@@ -26,13 +43,16 @@ export const useOptimizedNetworkStatus = () => {
        connection.effectiveType === '2g' ||
        connection.downlink < 1.5) : false;
 
+    const pingTime = navigator.onLine ? await measurePing() : undefined;
+
     setNetworkStatus({
       isOnline: navigator.onLine,
       isSlowConnection,
       connectionType: connection?.type || 'unknown',
-      effectiveType: connection?.effectiveType || 'unknown'
+      effectiveType: connection?.effectiveType || 'unknown',
+      pingTime
     });
-  }, []);
+  }, [measurePing]);
 
   useEffect(() => {
     // Initial check

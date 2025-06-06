@@ -23,7 +23,6 @@ export const useRefactoredShiftsManagement = (userId?: string) => {
         {
           id: '1',
           user_id: userId,
-          title: 'Ranní směna',
           start_time: new Date().toISOString(),
           end_time: new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString(),
           created_at: new Date().toISOString(),
