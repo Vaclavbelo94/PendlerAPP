@@ -1,5 +1,5 @@
 
-import { useRef, useEffect, RefObject } from 'react';
+import { useRef, useEffect, RefObject, useState } from 'react';
 
 interface GestureConfig {
   enableSwipe?: boolean;
@@ -19,9 +19,10 @@ interface GestureCallbacks {
 export const useMobileGestures = (
   config: GestureConfig = {},
   callbacks: GestureCallbacks = {}
-): { containerRef: RefObject<HTMLDivElement> } => {
+): { containerRef: RefObject<HTMLDivElement>; isGestureActive: boolean } => {
   const containerRef = useRef<HTMLDivElement>(null);
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const [isGestureActive, setIsGestureActive] = useState(false);
   
   const {
     enableSwipe = true,
@@ -35,6 +36,7 @@ export const useMobileGestures = (
 
     const handleTouchStart = (e: TouchEvent) => {
       if (e.touches.length === 1 && enableSwipe) {
+        setIsGestureActive(true);
         touchStartRef.current = {
           x: e.touches[0].clientX,
           y: e.touches[0].clientY
@@ -43,6 +45,8 @@ export const useMobileGestures = (
     };
 
     const handleTouchEnd = (e: TouchEvent) => {
+      setIsGestureActive(false);
+      
       if (!touchStartRef.current || !enableSwipe) return;
       
       const touchEnd = {
@@ -76,14 +80,21 @@ export const useMobileGestures = (
       touchStartRef.current = null;
     };
 
+    const handleTouchCancel = () => {
+      setIsGestureActive(false);
+      touchStartRef.current = null;
+    };
+
     element.addEventListener('touchstart', handleTouchStart, { passive: true });
     element.addEventListener('touchend', handleTouchEnd, { passive: true });
+    element.addEventListener('touchcancel', handleTouchCancel, { passive: true });
 
     return () => {
       element.removeEventListener('touchstart', handleTouchStart);
       element.removeEventListener('touchend', handleTouchEnd);
+      element.removeEventListener('touchcancel', handleTouchCancel);
     };
   }, [enableSwipe, swipeThreshold, callbacks]);
 
-  return { containerRef };
+  return { containerRef, isGestureActive };
 };
