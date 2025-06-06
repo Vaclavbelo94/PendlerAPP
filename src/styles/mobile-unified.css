@@ -1,0 +1,277 @@
+
+/* Unified Mobile Styles - All mobile optimizations in one place */
+
+/* ===== VARIABLES ===== */
+:root {
+  --mobile-touch-target: 44px;
+  --mobile-spacing-xs: 0.25rem;
+  --mobile-spacing-sm: 0.5rem;
+  --mobile-spacing-md: 1rem;
+  --mobile-spacing-lg: 1.5rem;
+  --mobile-header-height: 4rem;
+  --mobile-nav-height: 4rem;
+  --z-mobile-backdrop: 50;
+  --z-mobile-sidebar: 100;
+  --z-mobile-modal: 200;
+}
+
+/* ===== GLOBAL MOBILE RESETS ===== */
+@media screen and (max-width: 768px) {
+  * {
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+  }
+  
+  html {
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+  }
+  
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    touch-action: manipulation;
+    overflow-x: hidden;
+  }
+
+  /* Prevent zoom on form inputs */
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* ===== SAFE AREA HANDLING ===== */
+.mobile-safe-area {
+  padding-top: env(safe-area-inset-top, 0);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  padding-left: env(safe-area-inset-left, 0);
+  padding-right: env(safe-area-inset-right, 0);
+}
+
+.mobile-content-wrapper {
+  min-height: calc(100vh - var(--mobile-header-height) - var(--mobile-nav-height));
+  min-height: calc(100dvh - var(--mobile-header-height) - var(--mobile-nav-height));
+  padding: var(--mobile-spacing-md);
+}
+
+/* ===== TOUCH TARGETS ===== */
+.mobile-touch-target {
+  min-height: var(--mobile-touch-target);
+  min-width: var(--mobile-touch-target);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+}
+
+.mobile-button {
+  @apply mobile-touch-target;
+  padding: var(--mobile-spacing-sm) var(--mobile-spacing-md);
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+/* ===== LAYOUT COMPONENTS ===== */
+.mobile-sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: var(--z-mobile-backdrop);
+}
+
+.mobile-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  height: 100dvh;
+  width: min(80vw, 320px);
+  background: hsl(var(--background));
+  border-right: 1px solid hsl(var(--border));
+  z-index: var(--z-mobile-sidebar);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+}
+
+.mobile-sidebar.open {
+  transform: translateX(0);
+}
+
+.mobile-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--mobile-header-height);
+  background: hsl(var(--background) / 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid hsl(var(--border));
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  padding: 0 var(--mobile-spacing-md);
+}
+
+/* ===== FORM LAYOUTS ===== */
+.mobile-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mobile-spacing-md);
+  width: 100%;
+}
+
+.mobile-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mobile-spacing-sm);
+}
+
+.mobile-button-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mobile-spacing-sm);
+  width: 100%;
+}
+
+.mobile-button-group button {
+  width: 100%;
+  min-height: var(--mobile-touch-target);
+}
+
+/* ===== NAVIGATION PATTERNS ===== */
+.mobile-tabs {
+  display: flex;
+  background: hsl(var(--muted));
+  border-radius: 0.5rem;
+  padding: 0.25rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.mobile-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.mobile-tab {
+  @apply mobile-touch-target;
+  flex: 1;
+  min-width: max-content;
+  padding: var(--mobile-spacing-sm) var(--mobile-spacing-md);
+  border-radius: 0.25rem;
+  text-align: center;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.mobile-tab.active {
+  background: hsl(var(--background));
+  color: hsl(var(--primary));
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== CARDS AND CONTAINERS ===== */
+.mobile-card {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.75rem;
+  padding: var(--mobile-spacing-md);
+  margin-bottom: var(--mobile-spacing-md);
+}
+
+.mobile-card-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mobile-spacing-sm);
+  margin-bottom: var(--mobile-spacing-md);
+}
+
+.mobile-card-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.mobile-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mobile-spacing-sm);
+}
+
+/* ===== SPACING UTILITIES ===== */
+.mobile-spacing-xs > * + * { margin-top: var(--mobile-spacing-xs); }
+.mobile-spacing-sm > * + * { margin-top: var(--mobile-spacing-sm); }
+.mobile-spacing-md > * + * { margin-top: var(--mobile-spacing-md); }
+.mobile-spacing-lg > * + * { margin-top: var(--mobile-spacing-lg); }
+
+/* ===== LANDSCAPE OPTIMIZATIONS ===== */
+@media screen and (orientation: landscape) and (max-height: 500px) {
+  :root {
+    --mobile-spacing-xs: 0.125rem;
+    --mobile-spacing-sm: 0.25rem;
+    --mobile-spacing-md: 0.5rem;
+    --mobile-spacing-lg: 0.75rem;
+    --mobile-header-height: 3rem;
+  }
+  
+  .mobile-content-wrapper {
+    padding: var(--mobile-spacing-sm);
+  }
+  
+  .mobile-card {
+    padding: var(--mobile-spacing-sm);
+    margin-bottom: var(--mobile-spacing-sm);
+  }
+  
+  .mobile-tab {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+  }
+}
+
+/* ===== LOADING STATES ===== */
+.mobile-skeleton {
+  background: linear-gradient(90deg, 
+    hsl(var(--muted)) 25%, 
+    hsl(var(--muted-foreground) / 0.1) 50%, 
+    hsl(var(--muted)) 75%
+  );
+  background-size: 200% 100%;
+  animation: mobile-shimmer 2s infinite;
+  border-radius: 0.25rem;
+}
+
+@keyframes mobile-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ===== ACCESSIBILITY ===== */
+.mobile-focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-sidebar,
+  .mobile-tab,
+  .mobile-button {
+    transition: none;
+  }
+  
+  .mobile-skeleton {
+    animation: none;
+  }
+}
+
+/* ===== PRINT STYLES ===== */
+@media print {
+  .mobile-sidebar,
+  .mobile-navbar,
+  .mobile-sidebar-backdrop {
+    display: none !important;
+  }
+}
