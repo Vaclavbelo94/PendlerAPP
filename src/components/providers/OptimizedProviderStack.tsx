@@ -1,4 +1,3 @@
-
 import React, { lazy, Suspense } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter as Router } from 'react-router-dom';
@@ -7,7 +6,7 @@ import { Toaster as Sonner } from 'sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { AuthProvider } from '@/hooks/useAuth';
 import { ThemeProvider } from '@/hooks/useTheme';
-import { SimpleLoadingSpinner } from '@/components/loading/SimpleLoadingSpinner';
+import SimpleLoadingSpinner from '@/components/loading/SimpleLoadingSpinner';
 
 // Lazy load non-critical providers
 const AnalyticsProvider = lazy(() => import('@/components/analytics/AnalyticsProvider').then(m => ({ default: m.AnalyticsProvider })));
