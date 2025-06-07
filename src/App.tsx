@@ -2,7 +2,7 @@
 import React, { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { OptimizedProviderStack } from '@/components/providers/OptimizedProviderStack';
-import SimpleLoadingSpinner from '@/components/loading/SimpleLoadingSpinner';
+import { SimpleLoadingSpinner } from '@/components/loading/SimpleLoadingSpinner';
 import LayoutWrapper from '@/components/layouts/LayoutWrapper';
 import ScrollToTop from '@/components/navigation/ScrollToTop';
 
@@ -50,12 +50,16 @@ const RouteOptimizer = lazy(() => import('@/components/optimized/RouteOptimizer'
 const DatabaseOptimizer = lazy(() => import('@/components/optimized/DatabaseOptimizer').then(m => ({ default: m.DatabaseOptimizer })));
 const CookieConsentBanner = lazy(() => import('@/components/gdpr/CookieConsentBanner').then(m => ({ default: m.CookieConsentBanner })));
 
-const AppContent: React.FC = () => {
+const AppRoutes: React.FC = () => {
   const location = useLocation();
   const isAuthPage = location.pathname.startsWith('/login') || location.pathname.startsWith('/register');
   
+  // Disable analytics/ads for auth pages for faster loading
+  const enableAnalytics = !isAuthPage;
+  const enableAds = !isAuthPage;
+
   return (
-    <>
+    <OptimizedProviderStack enableAnalytics={enableAnalytics} enableAds={enableAds}>
       <ScrollToTop />
       
       <Suspense fallback={<SimpleLoadingSpinner />}>
@@ -111,14 +115,6 @@ const AppContent: React.FC = () => {
         
         <CookieConsentBanner />
       </Suspense>
-    </>
-  );
-};
-
-const AppRoutes: React.FC = () => {
-  return (
-    <OptimizedProviderStack>
-      <AppContent />
     </OptimizedProviderStack>
   );
 };
