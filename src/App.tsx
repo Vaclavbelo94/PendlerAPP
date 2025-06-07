@@ -1,8 +1,7 @@
-
 import React, { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { OptimizedProviderStack } from '@/components/providers/OptimizedProviderStack';
-import { SimpleLoadingSpinner } from '@/components/loading/SimpleLoadingSpinner';
+import SimpleLoadingSpinner from '@/components/loading/SimpleLoadingSpinner';
 import LayoutWrapper from '@/components/layouts/LayoutWrapper';
 import ScrollToTop from '@/components/navigation/ScrollToTop';
 
