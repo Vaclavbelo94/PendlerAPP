@@ -1,0 +1,122 @@
+
+/* Optimized Mobile Styles - Consolidated and Performance-First */
+
+/* Critical mobile-only styles */
+@media screen and (max-width: 768px) {
+  * {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+  }
+  
+  html {
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+  }
+  
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    touch-action: manipulation;
+    overscroll-behavior: contain;
+  }
+  
+  /* Safe area handling */
+  .mobile-safe-area {
+    padding-top: max(1rem, env(safe-area-inset-top, 0));
+    padding-bottom: max(1rem, env(safe-area-inset-bottom, 0));
+  }
+  
+  /* Content layout */
+  .mobile-content-wrapper {
+    position: relative;
+    z-index: 1;
+    background: hsl(var(--background));
+    min-height: calc(100vh - 4rem);
+    min-height: calc(100dvh - 4rem);
+    padding: 1rem;
+  }
+  
+  /* Touch targets */
+  .mobile-touch-target {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Optimized scrolling */
+  .mobile-scroll {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    scroll-behavior: smooth;
+  }
+  
+  /* Loading states */
+  .mobile-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+  }
+  
+  /* Simplified animations for performance */
+  .mobile-fade-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  /* Remove complex gradients and shadows on mobile */
+  .desktop-only-effects {
+    background: hsl(var(--background)) !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+  }
+}
+
+/* Landscape mobile optimizations */
+@media screen and (orientation: landscape) and (max-height: 500px) {
+  .mobile-content-wrapper {
+    padding: 0.5rem;
+  }
+  
+  .mobile-compact {
+    font-size: 0.875rem;
+    padding: 0.25rem;
+  }
+}
+
+/* Android app specific */
+.capacitor-android {
+  --safe-area-inset-top: env(safe-area-inset-top, 24px);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.capacitor-android .mobile-safe-area {
+  padding-top: var(--safe-area-inset-top);
+  padding-bottom: var(--safe-area-inset-bottom);
+}
+
+/* Performance optimizations */
+.performance-optimized {
+  contain: layout style;
+  will-change: auto;
+}
+
+.performance-optimized * {
+  will-change: auto;
+}
+
+/* Hide decorative elements on mobile for performance */
+@media screen and (max-width: 768px) {
+  .decorative-blur,
+  .decorative-gradient,
+  .desktop-animation {
+    display: none !important;
+  }
+}

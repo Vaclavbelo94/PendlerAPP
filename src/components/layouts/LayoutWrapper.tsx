@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import Layout from './Layout';
+import OptimizedLayout from './OptimizedLayout';
 import { useOAuthCallback } from '@/hooks/auth/useOAuthCallback';
 
 interface LayoutWrapperProps {
@@ -22,9 +22,9 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({ children }) => {
   }
   
   return (
-    <Layout>
+    <OptimizedLayout>
       {children}
-    </Layout>
+    </OptimizedLayout>
   );
 };
 
