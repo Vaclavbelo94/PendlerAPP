@@ -1,3 +1,4 @@
+
 import React, { lazy, Suspense } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter as Router } from 'react-router-dom';
@@ -26,14 +27,10 @@ const queryClient = new QueryClient({
 
 interface OptimizedProviderStackProps {
   children: React.ReactNode;
-  enableAnalytics?: boolean;
-  enableAds?: boolean;
 }
 
 export const OptimizedProviderStack: React.FC<OptimizedProviderStackProps> = ({ 
-  children, 
-  enableAnalytics = true, 
-  enableAds = true 
+  children
 }) => {
   return (
     <QueryClientProvider client={queryClient}>
@@ -42,19 +39,15 @@ export const OptimizedProviderStack: React.FC<OptimizedProviderStackProps> = ({
           <Router>
             <AuthProvider>
               <Suspense fallback={<SimpleLoadingSpinner />}>
-                {enableAnalytics && enableAds ? (
-                  <StateManagerProvider>
-                    <GDPRConsentProvider>
-                      <AnalyticsProvider>
-                        <AdSenseProvider clientId="ca-pub-5766122497657850">
-                          {children}
-                        </AdSenseProvider>
-                      </AnalyticsProvider>
-                    </GDPRConsentProvider>
-                  </StateManagerProvider>
-                ) : (
-                  children
-                )}
+                <StateManagerProvider>
+                  <GDPRConsentProvider>
+                    <AnalyticsProvider>
+                      <AdSenseProvider clientId="ca-pub-5766122497657850">
+                        {children}
+                      </AdSenseProvider>
+                    </AnalyticsProvider>
+                  </GDPRConsentProvider>
+                </StateManagerProvider>
               </Suspense>
               
               <Toaster />

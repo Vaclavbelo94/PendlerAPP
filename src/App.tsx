@@ -1,3 +1,4 @@
+
 import React, { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { OptimizedProviderStack } from '@/components/providers/OptimizedProviderStack';
@@ -49,16 +50,12 @@ const RouteOptimizer = lazy(() => import('@/components/optimized/RouteOptimizer'
 const DatabaseOptimizer = lazy(() => import('@/components/optimized/DatabaseOptimizer').then(m => ({ default: m.DatabaseOptimizer })));
 const CookieConsentBanner = lazy(() => import('@/components/gdpr/CookieConsentBanner').then(m => ({ default: m.CookieConsentBanner })));
 
-const AppRoutes: React.FC = () => {
+const AppContent: React.FC = () => {
   const location = useLocation();
   const isAuthPage = location.pathname.startsWith('/login') || location.pathname.startsWith('/register');
   
-  // Disable analytics/ads for auth pages for faster loading
-  const enableAnalytics = !isAuthPage;
-  const enableAds = !isAuthPage;
-
   return (
-    <OptimizedProviderStack enableAnalytics={enableAnalytics} enableAds={enableAds}>
+    <>
       <ScrollToTop />
       
       <Suspense fallback={<SimpleLoadingSpinner />}>
@@ -114,12 +111,16 @@ const AppRoutes: React.FC = () => {
         
         <CookieConsentBanner />
       </Suspense>
-    </OptimizedProviderStack>
+    </>
   );
 };
 
-function App() {
-  return <AppRoutes />;
-}
+const App: React.FC = () => {
+  return (
+    <OptimizedProviderStack>
+      <AppContent />
+    </OptimizedProviderStack>
+  );
+};
 
 export default App;
