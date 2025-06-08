@@ -192,6 +192,70 @@ body {
   }
 }
 
+/* ===== MOBILE-FIRST RESPONSIVE CLASSES ===== */
+
+/* Text Alignment */
+.text-responsive-center {
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .text-responsive-center {
+    text-align: left;
+  }
+}
+
+/* Button Alignment */
+.button-responsive-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .button-responsive-stack {
+    flex-direction: row;
+    width: auto;
+    justify-content: flex-end;
+  }
+}
+
+/* Header Layout */
+.header-responsive {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  align-items: stretch;
+  margin-bottom: var(--spacing-lg);
+}
+
+@media (min-width: 768px) {
+  .header-responsive {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+}
+
+/* Card Header Consistency */
+.card-header-consistent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  text-align: center;
+  padding-bottom: var(--spacing-md);
+}
+
+@media (min-width: 768px) {
+  .card-header-consistent {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    text-align: left;
+  }
+}
+
 /* ===== MOBILE OPTIMIZATIONS ===== */
 @media (max-width: 767px) {
   /* Prevent zoom on inputs */
@@ -220,10 +284,21 @@ body {
     border-radius: var(--radius-md);
   }
   
-  /* Mobile buttons */
-  button, [role="button"] {
+  /* Mobile buttons - consistent touch targets */
+  button, [role="button"], .btn {
     min-height: var(--touch-target-min);
     min-width: var(--touch-target-min);
+    touch-action: manipulation;
+  }
+  
+  /* Mobile card headers - ensure proper spacing */
+  .card-header-consistent h3, .card-header-consistent h4 {
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Mobile text alignment */
+  .mobile-text-center {
+    text-align: center;
   }
 }
 
@@ -241,6 +316,12 @@ body {
   
   .card-standard {
     padding: var(--spacing-sm);
+  }
+  
+  /* Compact layout for landscape */
+  .landscape-compact {
+    padding: 0.25rem;
+    gap: 0.25rem;
   }
 }
 
@@ -272,6 +353,59 @@ body {
 .focus-visible {
   outline: 2px solid hsl(var(--ring));
   outline-offset: 2px;
+}
+
+/* ===== CONSISTENT ALIGNMENT UTILITIES ===== */
+
+/* Flex utilities for consistent alignment */
+.align-consistent {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+}
+
+@media (max-width: 767px) {
+  .align-consistent {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+}
+
+.align-consistent-center {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+}
+
+@media (max-width: 767px) {
+  .align-consistent-center {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+}
+
+/* Grid alignment utilities */
+.grid-align-center {
+  display: grid;
+  place-items: center;
+  text-align: center;
+}
+
+.grid-align-start {
+  display: grid;
+  place-items: start;
+  text-align: left;
+}
+
+@media (max-width: 767px) {
+  .grid-align-start {
+    place-items: center;
+    text-align: center;
+  }
 }
 
 /* ===== PRINT STYLES ===== */
