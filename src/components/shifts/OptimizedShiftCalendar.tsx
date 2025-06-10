@@ -37,7 +37,7 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
     );
   }
 
-  // Desktop layout - full width calendar with side details
+  // Desktop layout - optimized for proper calendar display
   const shiftsMap = useMemo(() => {
     const map = new Map<string, Shift[]>();
     shifts.forEach(shift => {
@@ -86,40 +86,35 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      {/* Main Calendar Card - takes 2/3 on desktop */}
-      <div className="lg:col-span-2">
-        <StandardCard 
-          title="Kalendář směn"
-          description="Klikněte na datum pro zobrazení směn"
-          className="h-full"
-        >
-          <div className="flex justify-center">
-            <Calendar
-              mode="single"
-              selected={selectedDate}
-              onSelect={setSelectedDate}
-              locale={cs}
-              modifiers={modifiers}
-              modifiersClassNames={modifiersClassNames}
-              className="rounded-md border w-full scale-110 origin-center"
-            />
-          </div>
-        </StandardCard>
-      </div>
+    <div className="w-full space-y-6">
+      {/* Main Calendar */}
+      <StandardCard 
+        title="Kalendář směn"
+        description="Klikněte na datum pro zobrazení směn"
+        className="w-full"
+      >
+        {/* Calendar wrapper with proper width constraints */}
+        <div className="w-full max-w-none">
+          <Calendar
+            mode="single"
+            selected={selectedDate}
+            onSelect={setSelectedDate}
+            locale={cs}
+            modifiers={modifiers}
+            modifiersClassNames={modifiersClassNames}
+            className="w-full mx-auto [&_.rdp-table]:w-full [&_.rdp-months]:justify-center [&_.rdp-month]:w-full [&_.rdp-head_row]:grid [&_.rdp-head_row]:grid-cols-7 [&_.rdp-row]:grid [&_.rdp-row]:grid-cols-7 [&_.rdp-cell]:aspect-square [&_.rdp-day]:w-full [&_.rdp-day]:h-full"
+          />
+        </div>
+      </StandardCard>
 
-      {/* Selected Date Details - takes 1/3 on desktop */}
-      <div className="lg:col-span-1">
+      {/* Selected Date Details */}
+      {selectedDate && (
         <StandardCard 
-          title={selectedDate 
-            ? format(selectedDate, 'dd. MMMM yyyy', { locale: cs })
-            : 'Vyberte datum'
-          }
+          title={format(selectedDate, 'dd. MMMM yyyy', { locale: cs })}
           description={selectedDateShifts.length === 0 
             ? 'Žádné směny pro tento den'
             : `${selectedDateShifts.length} směn${selectedDateShifts.length > 1 ? 'y' : 'a'}`
           }
-          className="h-full"
         >
           {selectedDateShifts.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
@@ -127,7 +122,7 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
               <p className="text-sm">Pro tento den nejsou naplánované žádné směny</p>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {selectedDateShifts.map((shift) => (
                 <div key={shift.id} className="flex items-center justify-between p-3 border rounded-lg bg-muted/30">
                   <div className="flex items-center gap-2 min-w-0 flex-1">
@@ -163,7 +158,7 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
             </div>
           )}
         </StandardCard>
-      </div>
+      )}
     </div>
   );
 };
