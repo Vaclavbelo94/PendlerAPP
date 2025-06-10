@@ -1,6 +1,6 @@
+
 import React, { useState, useMemo } from 'react';
 import { Calendar } from '@/components/ui/calendar';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { CalendarDays, Edit, Trash2 } from 'lucide-react';
@@ -10,6 +10,8 @@ import { Shift } from '@/hooks/shifts/useShiftsCRUD';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { MobileShiftCalendarGrid } from './mobile/MobileShiftCalendarGrid';
+import { StandardCard } from '@/components/ui/StandardCard';
+import { UnifiedGrid } from '@/components/layout/UnifiedGrid';
 
 interface OptimizedShiftCalendarProps {
   shifts: Shift[];
@@ -36,7 +38,7 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
     );
   }
 
-  // Desktop calendar (keep existing desktop code)
+  // Desktop unified single-column layout
   const shiftsMap = useMemo(() => {
     const map = new Map<string, Shift[]>();
     shifts.forEach(shift => {
@@ -85,19 +87,14 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
-      {/* Desktop Calendar */}
-      <Card>
-        <CardHeader className="pb-4">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <CalendarDays className="h-5 w-5" />
-            Kalendář směn
-          </CardTitle>
-          <CardDescription className="text-sm">
-            Klikněte na datum pro zobrazení směn
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="p-3 lg:p-6">
+    <UnifiedGrid columns={{ mobile: 1, tablet: 1, desktop: 1 }} gap="lg">
+      {/* Calendar Section */}
+      <StandardCard 
+        title="Kalendář směn"
+        description="Klikněte na datum pro zobrazení směn"
+        fullHeight
+      >
+        <div className="space-y-4">
           <Calendar
             mode="single"
             selected={selectedDate}
@@ -105,72 +102,66 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
             locale={cs}
             modifiers={modifiers}
             modifiersClassNames={modifiersClassNames}
-            className="rounded-md border w-full"
+            className="rounded-md border w-full mx-auto"
           />
-        </CardContent>
-      </Card>
+        </div>
+      </StandardCard>
 
-      {/* Desktop Shift Details */}
-      <Card>
-        <CardHeader className="pb-4">
-          <CardTitle className="text-lg">
-            {selectedDate 
-              ? format(selectedDate, 'dd. MMMM yyyy', { locale: cs })
-              : 'Vyberte datum'
-            }
-          </CardTitle>
-          <CardDescription className="text-sm">
-            {selectedDateShifts.length === 0 
-              ? 'Žádné směny pro tento den'
-              : `${selectedDateShifts.length} směn${selectedDateShifts.length > 1 ? 'y' : 'a'}`
-            }
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="p-3 lg:p-6">
-          {selectedDateShifts.length === 0 ? (
-            <div className="text-center py-6 lg:py-8 text-muted-foreground">
-              <CalendarDays className="h-10 w-10 lg:h-12 lg:w-12 mx-auto mb-3 lg:mb-4 opacity-50" />
-              <p className="text-sm lg:text-base">Pro tento den nejsou naplánované žádné směny</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {selectedDateShifts.map((shift) => (
-                <div key={shift.id} className="flex items-center justify-between p-3 lg:p-4 border rounded-lg bg-muted/30">
-                  <div className="flex items-center gap-2 lg:gap-3 min-w-0 flex-1">
-                    <Badge className={cn("text-xs flex-shrink-0", getShiftTypeColor(shift.type))}>
-                      {getShiftTypeLabel(shift.type)}
-                    </Badge>
-                    {shift.notes && (
-                      <span className="text-xs lg:text-sm text-muted-foreground truncate">
-                        {shift.notes}
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-1 lg:gap-2 flex-shrink-0">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => onEditShift(shift)}
-                      className="h-8 w-8 p-0"
-                    >
-                      <Edit className="h-3 w-3 lg:h-4 lg:w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => shift.id && onDeleteShift(shift.id)}
-                      className="h-8 w-8 p-0 hover:bg-destructive/10"
-                    >
-                      <Trash2 className="h-3 w-3 lg:h-4 lg:w-4" />
-                    </Button>
-                  </div>
+      {/* Selected Date Details */}
+      <StandardCard 
+        title={selectedDate 
+          ? format(selectedDate, 'dd. MMMM yyyy', { locale: cs })
+          : 'Vyberte datum'
+        }
+        description={selectedDateShifts.length === 0 
+          ? 'Žádné směny pro tento den'
+          : `${selectedDateShifts.length} směn${selectedDateShifts.length > 1 ? 'y' : 'a'}`
+        }
+        fullHeight
+      >
+        {selectedDateShifts.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">
+            <CalendarDays className="h-12 w-12 mx-auto mb-4 opacity-50" />
+            <p className="text-base">Pro tento den nejsou naplánované žádné směny</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {selectedDateShifts.map((shift) => (
+              <div key={shift.id} className="flex items-center justify-between p-4 border rounded-lg bg-muted/30">
+                <div className="flex items-center gap-3 min-w-0 flex-1">
+                  <Badge className={cn("text-xs flex-shrink-0", getShiftTypeColor(shift.type))}>
+                    {getShiftTypeLabel(shift.type)}
+                  </Badge>
+                  {shift.notes && (
+                    <span className="text-sm text-muted-foreground truncate">
+                      {shift.notes}
+                    </span>
+                  )}
                 </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onEditShift(shift)}
+                    className="h-8 w-8 p-0"
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => shift.id && onDeleteShift(shift.id)}
+                    className="h-8 w-8 p-0 hover:bg-destructive/10"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </StandardCard>
+    </UnifiedGrid>
   );
 };
 
