@@ -22,7 +22,7 @@ const Profile = () => {
 
   if (!user) {
     return (
-      <PageContainer maxWidth="2xl" padding="lg">
+      <PageContainer maxWidth="xl" padding="lg">
         <StandardCard>
           <div className="p-6 text-center">
             <p className="text-muted-foreground mb-4">Pro zobrazení profilu se musíte přihlásit.</p>
@@ -106,7 +106,7 @@ const Profile = () => {
   );
 
   const AppearanceTab = () => (
-    <PageContainer maxWidth="2xl" padding="none">
+    <PageContainer maxWidth="xl" padding="sm">
       <StandardCard title="Nastavení vzhledu" description="Přizpůsobte si vzhled aplikace">
         <ProfileAppearance />
       </StandardCard>
