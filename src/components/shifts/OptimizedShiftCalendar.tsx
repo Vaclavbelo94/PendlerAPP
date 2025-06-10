@@ -38,7 +38,7 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
     );
   }
 
-  // Desktop unified single-column layout
+  // Desktop layout - single column with better spacing
   const shiftsMap = useMemo(() => {
     const map = new Map<string, Shift[]>();
     shifts.forEach(shift => {
@@ -87,14 +87,14 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
   };
 
   return (
-    <UnifiedGrid columns={{ mobile: 1, tablet: 1, desktop: 1 }} gap="lg">
-      {/* Calendar Section */}
+    <div className="space-y-6">
+      {/* Main Calendar Card - full width */}
       <StandardCard 
         title="Kalendář směn"
         description="Klikněte na datum pro zobrazení směn"
-        fullHeight
+        className="w-full"
       >
-        <div className="space-y-4">
+        <div className="flex justify-center">
           <Calendar
             mode="single"
             selected={selectedDate}
@@ -102,12 +102,12 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
             locale={cs}
             modifiers={modifiers}
             modifiersClassNames={modifiersClassNames}
-            className="rounded-md border w-full mx-auto"
+            className="rounded-md border w-full max-w-md mx-auto"
           />
         </div>
       </StandardCard>
 
-      {/* Selected Date Details */}
+      {/* Selected Date Details - full width */}
       <StandardCard 
         title={selectedDate 
           ? format(selectedDate, 'dd. MMMM yyyy', { locale: cs })
@@ -117,7 +117,7 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
           ? 'Žádné směny pro tento den'
           : `${selectedDateShifts.length} směn${selectedDateShifts.length > 1 ? 'y' : 'a'}`
         }
-        fullHeight
+        className="w-full"
       >
         {selectedDateShifts.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
@@ -161,7 +161,7 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
           </div>
         )}
       </StandardCard>
-    </UnifiedGrid>
+    </div>
   );
 };
 
