@@ -94,7 +94,7 @@ serve(async (req) => {
 
     const emailData = {
       from: 'Pendler Assistant <noreply@pendler.cz>',
-      to: [email],
+      to: email,
       subject: `Překlad z ${sourceLanguage} do ${targetLanguage} - ${formattedDate}`,
       html: htmlContent,
     };
@@ -108,12 +108,14 @@ serve(async (req) => {
       body: JSON.stringify(emailData),
     });
 
-    const result = await response.json();
-    
     if (!response.ok) {
-      console.error('Resend API error:', result);
-      throw new Error(`Email sending failed: ${result.message}`);
+      const errorText = await response.text();
+      console.error('Resend API error:', response.status, errorText);
+      throw new Error(`Email sending failed: ${response.status} ${errorText}`);
     }
+
+    const result = await response.json();
+    console.log('Email sent successfully:', result);
 
     return new Response(JSON.stringify({ 
       success: true, 
