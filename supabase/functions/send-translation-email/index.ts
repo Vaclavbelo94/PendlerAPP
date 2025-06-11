@@ -31,8 +31,11 @@ serve(async (req) => {
     
     const resendApiKey = Deno.env.get('RESEND_API_KEY');
     if (!resendApiKey) {
+      console.error('RESEND_API_KEY not found in environment variables');
       throw new Error('RESEND_API_KEY not configured');
     }
+
+    console.log('RESEND_API_KEY configured:', resendApiKey ? 'Yes' : 'No');
 
     const currentDate = new Date();
     const formattedDate = currentDate.toLocaleDateString('cs-CZ');
@@ -93,11 +96,14 @@ serve(async (req) => {
     `;
 
     const emailData = {
-      from: 'Pendler Assistant <noreply@pendler.cz>',
+      from: 'Pendler Assistant <onboarding@resend.dev>',
       to: email,
       subject: `Překlad z ${sourceLanguage} do ${targetLanguage} - ${formattedDate}`,
       html: htmlContent,
     };
+
+    console.log('Sending email to:', email);
+    console.log('Email data:', JSON.stringify(emailData, null, 2));
 
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
