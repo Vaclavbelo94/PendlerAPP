@@ -3,10 +3,11 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Send, Trash2, Languages, Volume2 } from 'lucide-react';
+import { Send, Trash2, Languages, Volume2, Mail } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { useAITranslator } from '@/hooks/useAITranslator';
 import { toast } from '@/components/ui/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { EmailDialog } from './EmailDialog';
 
 interface SimpleAutoTranslatorProps {
   onTextToSpeech?: (text: string, language: string) => void;
@@ -17,6 +18,8 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
   const [translatedText, setTranslatedText] = useState('');
   const [isTranslating, setIsTranslating] = useState(false);
   const [detectedLanguage, setDetectedLanguage] = useState<string>('');
+  const [showEmailDialog, setShowEmailDialog] = useState(false);
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Detect if text is Czech or Polish
@@ -61,20 +64,16 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
     setDetectedLanguage(language === 'cs' ? 'Čeština' : 'Polština');
 
     try {
-      const response = await fetch('/api/supabase/functions/v1/ai-translator', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const { data, error } = await supabase.functions.invoke('ai-translator', {
+        body: {
           message: `Přelož následující ${language === 'cs' ? 'český' : 'polský'} text do němčiny. Vrať pouze překlad bez dalších komentářů: "${text}"`,
           conversationHistory: []
-        })
+        }
       });
 
-      const data = await response.json();
+      if (error) throw error;
       
-      if (data.response) {
+      if (data?.response) {
         // Extract just the translation from the AI response
         let translation = data.response;
         
@@ -84,6 +83,11 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
         translation = translation.trim();
         
         setTranslatedText(translation);
+        
+        toast({
+          title: "Překlad dokončen",
+          description: "Text byl úspěšně přeložen do němčiny"
+        });
       } else {
         throw new Error('Nepodařilo se získat překlad');
       }
@@ -126,119 +130,179 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
     });
   };
 
-  return (
-    <Card className="w-full max-w-4xl mx-auto">
-      <CardHeader className="pb-4">
-        <CardTitle className="flex items-center gap-2">
-          <Languages className="h-5 w-5 text-primary" />
-          Automatický překladač CZ/PL → DE
-        </CardTitle>
-        <p className="text-sm text-muted-foreground">
-          Napište text v češtině nebo polštině a automaticky se přeloží do němčiny
-        </p>
-      </CardHeader>
-      
-      <CardContent className="space-y-6">
-        {/* Input Section */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <label className="text-sm font-medium">
-              Zadejte text (čeština/polština)
-            </label>
-            {detectedLanguage && (
-              <Badge variant="outline" className="text-xs">
-                Rozpoznáno: {detectedLanguage}
-              </Badge>
-            )}
-          </div>
-          <Textarea
-            ref={textareaRef}
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Zadejte text v češtině nebo polštině..."
-            className="min-h-[120px] resize-none"
-            disabled={isTranslating}
-          />
-          <div className="flex gap-2">
-            <Button
-              onClick={handleTranslate}
-              disabled={!inputText.trim() || isTranslating}
-              className="flex-1"
-            >
-              <Send className="h-4 w-4 mr-2" />
-              {isTranslating ? 'Překládám...' : 'Přeložit do němčiny'}
-            </Button>
-            {onTextToSpeech && inputText.trim() && (
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => onTextToSpeech(inputText, detectedLanguage === 'Čeština' ? 'cs' : 'pl')}
-              >
-                <Volume2 className="h-4 w-4" />
-              </Button>
-            )}
-          </div>
-        </div>
+  const handleSendEmail = async (email: string) => {
+    if (!translatedText.trim()) return;
 
-        {/* Output Section */}
-        {(translatedText || isTranslating) && (
+    setIsSendingEmail(true);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('send-translation-email', {
+        body: {
+          email,
+          originalText: inputText,
+          translatedText,
+          sourceLanguage: detectedLanguage,
+          targetLanguage: 'Němčina'
+        }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Email odeslán",
+        description: `Překlad byl odeslán na adresu ${email}`
+      });
+      
+      setShowEmailDialog(false);
+    } catch (error) {
+      console.error('Email sending error:', error);
+      toast({
+        variant: "destructive",
+        title: "Chyba odesílání",
+        description: "Nepodařilo se odeslat email. Zkuste to prosím znovu."
+      });
+    } finally {
+      setIsSendingEmail(false);
+    }
+  };
+
+  return (
+    <>
+      <Card className="w-full max-w-4xl mx-auto">
+        <CardHeader className="pb-4">
+          <CardTitle className="flex items-center gap-2">
+            <Languages className="h-5 w-5 text-primary" />
+            Automatický překladač CZ/PL → DE
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Napište text v češtině nebo polštině a automaticky se přeloží do němčiny
+          </p>
+        </CardHeader>
+        
+        <CardContent className="space-y-6">
+          {/* Input Section */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">
-              Překlad (němčina)
-            </label>
-            <div className="relative">
-              <Textarea
-                value={isTranslating ? 'Překládám...' : translatedText}
-                readOnly
-                className="min-h-[120px] resize-none bg-muted/30"
-                placeholder="Zde se zobrazí překlad..."
-              />
-              {translatedText && !isTranslating && (
-                <div className="absolute top-2 right-2 flex gap-1">
-                  {onTextToSpeech && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => onTextToSpeech(translatedText, 'de')}
-                      className="h-7 w-7 p-0"
-                    >
-                      <Volume2 className="h-3 w-3" />
-                    </Button>
-                  )}
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleCopyTranslation}
-                    className="h-7 px-2 text-xs"
-                  >
-                    Kopírovat
-                  </Button>
-                </div>
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium">
+                Zadejte text (čeština/polština)
+              </label>
+              {detectedLanguage && (
+                <Badge variant="outline" className="text-xs">
+                  Rozpoznáno: {detectedLanguage}
+                </Badge>
+              )}
+            </div>
+            <Textarea
+              ref={textareaRef}
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="Zadejte text v češtině nebo polštině..."
+              className="min-h-[120px] resize-none"
+              disabled={isTranslating}
+            />
+            <div className="flex gap-2">
+              <Button
+                onClick={handleTranslate}
+                disabled={!inputText.trim() || isTranslating}
+                className="flex-1"
+              >
+                <Send className="h-4 w-4 mr-2" />
+                {isTranslating ? 'Překládám...' : 'Přeložit do němčiny'}
+              </Button>
+              {onTextToSpeech && inputText.trim() && (
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => onTextToSpeech(inputText, detectedLanguage === 'Čeština' ? 'cs' : 'pl')}
+                >
+                  <Volume2 className="h-4 w-4" />
+                </Button>
               )}
             </div>
           </div>
-        )}
 
-        {/* Clear Button */}
-        {(inputText || translatedText) && (
-          <div className="flex justify-center">
-            <Button
-              variant="outline"
-              onClick={handleClear}
-              disabled={isTranslating}
-            >
-              <Trash2 className="h-4 w-4 mr-2" />
-              Vymazat vše
-            </Button>
+          {/* Output Section */}
+          {(translatedText || isTranslating) && (
+            <div className="space-y-2">
+              <label className="text-sm font-medium">
+                Překlad (němčina)
+              </label>
+              <div className="relative">
+                <Textarea
+                  value={isTranslating ? 'Překládám...' : translatedText}
+                  readOnly
+                  className="min-h-[120px] resize-none bg-muted/30"
+                  placeholder="Zde se zobrazí překlad..."
+                />
+                {translatedText && !isTranslating && (
+                  <div className="absolute top-2 right-2 flex gap-1">
+                    {onTextToSpeech && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => onTextToSpeech(translatedText, 'de')}
+                        className="h-7 w-7 p-0"
+                      >
+                        <Volume2 className="h-3 w-3" />
+                      </Button>
+                    )}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleCopyTranslation}
+                      className="h-7 px-2 text-xs"
+                    >
+                      Kopírovat
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Email Section */}
+          {translatedText && !isTranslating && (
+            <div className="flex justify-center">
+              <Button
+                variant="outline"
+                onClick={() => setShowEmailDialog(true)}
+                disabled={isSendingEmail}
+                className="flex items-center gap-2"
+              >
+                <Mail className="h-4 w-4" />
+                Odeslat překlad emailem
+              </Button>
+            </div>
+          )}
+
+          {/* Clear Button */}
+          {(inputText || translatedText) && (
+            <div className="flex justify-center">
+              <Button
+                variant="outline"
+                onClick={handleClear}
+                disabled={isTranslating}
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Vymazat vše
+              </Button>
+            </div>
+          )}
+
+          <div className="text-xs text-muted-foreground text-center">
+            Stiskněte Enter pro překlad, Shift+Enter pro nový řádek
           </div>
-        )}
+        </CardContent>
+      </Card>
 
-        <div className="text-xs text-muted-foreground text-center">
-          Stiskněte Enter pro překlad, Shift+Enter pro nový řádek
-        </div>
-      </CardContent>
-    </Card>
+      <EmailDialog
+        open={showEmailDialog}
+        onOpenChange={setShowEmailDialog}
+        onSendEmail={handleSendEmail}
+        isLoading={isSendingEmail}
+      />
+    </>
   );
 };
 

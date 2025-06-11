@@ -9,3 +9,6 @@ verify_jwt = false
 
 [functions.ai-translator]
 verify_jwt = false
+
+[functions.send-translation-email]
+verify_jwt = false
