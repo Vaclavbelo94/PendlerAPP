@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { FlexContainer } from "@/components/ui/flex-container";
-import { MemoizedCard } from "@/components/optimized/MemoizedCard";
+import { Card } from "@/components/ui/card";
 
 interface User {
   id: string;
@@ -22,7 +22,7 @@ interface UserMobileCardProps {
 
 export const UserMobileCard = ({ user, onTogglePremium }: UserMobileCardProps) => {
   return (
-    <MemoizedCard className="p-4">
+    <Card className="p-4">
       <FlexContainer direction="col" gap="sm">
         <FlexContainer justify="between" align="center">
           <div>
@@ -63,6 +63,6 @@ export const UserMobileCard = ({ user, onTogglePremium }: UserMobileCardProps) =
           </Button>
         </FlexContainer>
       </FlexContainer>
-    </MemoizedCard>
+    </Card>
   );
 };

@@ -5,18 +5,18 @@ import FastLoadingFallback from '@/components/common/FastLoadingFallback';
 import PublicPageWithPremiumCheck from '@/components/premium/PublicPageWithPremiumCheck';
 import { useScreenOrientation } from '@/hooks/useScreenOrientation';
 
-// Optimized lazy loading
-const VocabularySection = React.lazy(() => 
-  import('@/components/language/VocabularySection').catch(err => {
-    console.error('Failed to load VocabularySection:', err);
-    return { default: () => <div className="p-4 text-center text-muted-foreground">Lekce němčiny se nenačetly</div> };
-  })
-);
-
+// Optimized lazy loading - removed VocabularySection import since it was deleted
 const LanguageManager = React.lazy(() => 
   import('@/components/language/LanguageManager').catch(err => {
     console.error('Failed to load LanguageManager:', err);
     return { default: ({ children }: { children: React.ReactNode }) => <>{children}</> };
+  })
+);
+
+const SmartLanguagePackDashboard = React.lazy(() => 
+  import('@/components/language/SmartLanguagePackDashboard').catch(err => {
+    console.error('Failed to load SmartLanguagePackDashboard:', err);
+    return { default: () => <div className="p-4 text-center text-muted-foreground">Lekce němčiny se nenačetly</div> };
   })
 );
 
@@ -43,7 +43,7 @@ const GermanLessons = () => {
 
               <ErrorBoundaryWithFallback>
                 <React.Suspense fallback={<FastLoadingFallback message="Načítám jazykové lekce..." />}>
-                  <VocabularySection />
+                  <SmartLanguagePackDashboard />
                 </React.Suspense>
               </ErrorBoundaryWithFallback>
             </div>
