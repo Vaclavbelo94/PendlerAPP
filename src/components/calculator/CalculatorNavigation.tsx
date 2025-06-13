@@ -3,43 +3,46 @@ import React from 'react';
 import { CalculatorIcon, FileTextIcon, TrendingUpIcon, FunctionSquareIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface CalculatorNavigationProps {
   activeTab: string;
   onTabChange: (tabId: string) => void;
 }
 
-const calculatorTabs = [
-  {
-    id: 'basic',
-    icon: CalculatorIcon,
-    label: 'Základní',
-    description: 'Běžné matematické operace'
-  },
-  {
-    id: 'tax',
-    icon: FileTextIcon,
-    label: 'Daně',
-    description: 'Daňové výpočty a odvody'
-  },
-  {
-    id: 'crossborder',
-    icon: TrendingUpIcon,
-    label: 'Zahraniční',
-    description: 'Hraniční práce a pendlování'
-  },
-  {
-    id: 'scientific',
-    icon: FunctionSquareIcon,
-    label: 'Vědecká',
-    description: 'Pokročilé matematické funkce'
-  }
-];
-
 export const CalculatorNavigation: React.FC<CalculatorNavigationProps> = ({
   activeTab,
   onTabChange
 }) => {
+  const { t } = useLanguage();
+
+  const calculatorTabs = [
+    {
+      id: 'basic',
+      icon: CalculatorIcon,
+      label: t('basicCalculator') || 'Základní',
+      description: t('basicCalculatorDescription') || 'Běžné matematické operace'
+    },
+    {
+      id: 'tax',
+      icon: FileTextIcon,
+      label: t('taxCalculator') || 'Daně',
+      description: t('taxCalculatorDescription') || 'Daňové výpočty a odvody'
+    },
+    {
+      id: 'crossborder',
+      icon: TrendingUpIcon,
+      label: t('crossBorderCalculator') || 'Zahraniční',
+      description: t('crossBorderCalculatorDescription') || 'Hraniční práce a pendlování'
+    },
+    {
+      id: 'scientific',
+      icon: FunctionSquareIcon,
+      label: t('scientificCalculator') || 'Vědecká',
+      description: t('scientificCalculatorDescription') || 'Pokročilé matematické funkce'
+    }
+  ];
+
   return (
     <div className="flex justify-center">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full max-w-6xl">

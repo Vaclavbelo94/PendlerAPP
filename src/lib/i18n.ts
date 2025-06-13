@@ -1,4 +1,3 @@
-
 export type Language = 'cs' | 'pl' | 'de';
 
 export const languages = {
@@ -100,7 +99,35 @@ export const translations = {
     savingsGoal: 'Cíl úspor',
     germanLessons: 'Lekce němčiny',
     lessons: 'lekcí',
-    manageGoals: 'Spravovat cíle'
+    manageGoals: 'Spravovat cíle',
+    
+    // Calculator
+    basicCalculator: 'Základní kalkulačka',
+    basicCalculatorDescription: 'Jednoduchá kalkulačka pro základní matematické operace',
+    taxCalculator: 'Daňová kalkulačka',
+    taxCalculatorDescription: 'Výpočty daní a odvodů',
+    crossBorderCalculator: 'Hraniční kalkulačka',
+    crossBorderCalculatorDescription: 'Speciální výpočty pro pendlery',
+    scientificCalculator: 'Vědecká kalkulačka',
+    scientificCalculatorDescription: 'Pokročilé matematické funkce',
+    crossBorderTax: 'Hraniční daně',
+    crossBorderTaxDescription: 'Speciální výpočty pro hraniční práci',
+    firstNumber: 'První číslo',
+    secondNumber: 'Druhé číslo',
+    enterFirstNumber: 'Zadejte první číslo',
+    enterSecondNumber: 'Zadejte druhé číslo',
+    operation: 'Operace',
+    selectOperation: 'Vyberte operaci',
+    addition: 'Sčítání',
+    subtraction: 'Odčítání',
+    multiplication: 'Násobení',
+    division: 'Dělení',
+    calculate: 'Vypočítat',
+    result: 'Výsledek',
+    calculationComplete: 'Výpočet dokončen',
+    invalidInput: 'Zadejte platná čísla',
+    divisionByZero: 'Nelze dělit nulou',
+    divisionByZeroError: 'Chyba: Dělení nulou'
   },
   pl: {
     // Navigation
@@ -194,7 +221,35 @@ export const translations = {
     savingsGoal: 'Cel oszczędności',
     germanLessons: 'Lekcje niemieckiego',
     lessons: 'lekcji',
-    manageGoals: 'Zarządzaj celami'
+    manageGoals: 'Zarządzaj celami',
+    
+    // Calculator
+    basicCalculator: 'Podstawowy kalkulator',
+    basicCalculatorDescription: 'Prosty kalkulator do podstawowych operacji matematycznych',
+    taxCalculator: 'Kalkulator podatkowy',
+    taxCalculatorDescription: 'Obliczenia podatków i składek',
+    crossBorderCalculator: 'Kalkulator transgraniczny',
+    crossBorderCalculatorDescription: 'Specjalne obliczenia dla dojeżdżających',
+    scientificCalculator: 'Kalkulator naukowy',
+    scientificCalculatorDescription: 'Zaawansowane funkcje matematyczne',
+    crossBorderTax: 'Podatki transgraniczne',
+    crossBorderTaxDescription: 'Specjalne obliczenia dla pracy transgranicznej',
+    firstNumber: 'Pierwsza liczba',
+    secondNumber: 'Druga liczba',
+    enterFirstNumber: 'Wprowadź pierwszą liczbę',
+    enterSecondNumber: 'Wprowadź drugą liczbę',
+    operation: 'Operacja',
+    selectOperation: 'Wybierz operację',
+    addition: 'Dodawanie',
+    subtraction: 'Odejmowanie',
+    multiplication: 'Mnożenie',
+    division: 'Dzielenie',
+    calculate: 'Oblicz',
+    result: 'Wynik',
+    calculationComplete: 'Obliczenie zakończone',
+    invalidInput: 'Wprowadź prawidłowe liczby',
+    divisionByZero: 'Nie można dzielić przez zero',
+    divisionByZeroError: 'Błąd: Dzielenie przez zero'
   },
   de: {
     // Navigation
@@ -288,6 +343,34 @@ export const translations = {
     savingsGoal: 'Sparziel',
     germanLessons: 'Deutschstunden',
     lessons: 'Lektionen',
-    manageGoals: 'Ziele verwalten'
+    manageGoals: 'Ziele verwalten',
+    
+    // Calculator
+    basicCalculator: 'Basis-Rechner',
+    basicCalculatorDescription: 'Einfacher Rechner für grundlegende mathematische Operationen',
+    taxCalculator: 'Steuerrechner',
+    taxCalculatorDescription: 'Steuer- und Abgabenberechnungen',
+    crossBorderCalculator: 'Grenzgänger-Rechner',
+    crossBorderCalculatorDescription: 'Spezielle Berechnungen für Pendler',
+    scientificCalculator: 'Wissenschaftlicher Rechner',
+    scientificCalculatorDescription: 'Erweiterte mathematische Funktionen',
+    crossBorderTax: 'Grenzgänger-Steuer',
+    crossBorderTaxDescription: 'Spezielle Berechnungen für Grenzarbeit',
+    firstNumber: 'Erste Zahl',
+    secondNumber: 'Zweite Zahl',
+    enterFirstNumber: 'Erste Zahl eingeben',
+    enterSecondNumber: 'Zweite Zahl eingeben',
+    operation: 'Operation',
+    selectOperation: 'Operation auswählen',
+    addition: 'Addition',
+    subtraction: 'Subtraktion',
+    multiplication: 'Multiplikation',
+    division: 'Division',
+    calculate: 'Berechnen',
+    result: 'Ergebnis',
+    calculationComplete: 'Berechnung abgeschlossen',
+    invalidInput: 'Gültige Zahlen eingeben',
+    divisionByZero: 'Division durch Null nicht möglich',
+    divisionByZeroError: 'Fehler: Division durch Null'
   }
 } as const;
