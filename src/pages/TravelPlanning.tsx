@@ -10,10 +10,10 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import ResponsivePage from "@/components/layouts/ResponsivePage";
 import TravelNavigation from "@/components/travel/TravelNavigation";
 import { 
-  CommuteOptimizerLazy,
-  RideSharingLazy, 
+  EnhancedCommuteOptimizerLazy,
+  EnhancedRideSharingLazy, 
   CommuteCostCalculatorLazy,
-  TrafficPredictionsLazy,
+  TrafficMapLazy,
   TravelAnalyticsLazy
 } from "@/components/travel/LazyTravelComponents";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -46,8 +46,8 @@ const TravelPlanning = () => {
       case "optimizer": return "Optimalizace dojíždění";
       case "ridesharing": return "Sdílení jízd";
       case "calculator": return "Kalkulačka nákladů";
-      case "predictions": return "Predikce dopravy";
-      case "analytics": return "Analytics";
+      case "traffic": return "Live doprava";
+      case "analytics": return "Analýzy cestování";
       default: return "";
     }
   };
@@ -55,17 +55,17 @@ const TravelPlanning = () => {
   const renderTabContent = () => {
     switch (activeTab) {
       case "optimizer":
-        return <CommuteOptimizerLazy />;
+        return <EnhancedCommuteOptimizerLazy />;
       case "ridesharing":
-        return <RideSharingLazy />;
+        return <EnhancedRideSharingLazy />;
       case "calculator":
         return <CommuteCostCalculatorLazy />;
-      case "predictions":
-        return <TrafficPredictionsLazy />;
+      case "traffic":
+        return <TrafficMapLazy origin="" destination="" />;
       case "analytics":
         return <TravelAnalyticsLazy />;
       default:
-        return <CommuteOptimizerLazy />;
+        return <EnhancedCommuteOptimizerLazy />;
     }
   };
 
@@ -83,19 +83,19 @@ const TravelPlanning = () => {
               <Map className={`${isMobile ? 'h-5 w-5' : 'h-6 w-6'} text-primary`} />
             </div>
             <h1 className={`${isMobile ? 'text-xl' : 'text-3xl'} font-bold`}>
-              {isMobile ? 'Plánování cest' : 'Personalizované plánování cest'}
+              {isMobile ? 'Chytré cestování' : 'Inteligentní plánování cest s live daty'}
             </h1>
           </div>
           
           <p className={`text-muted-foreground ${isMobile ? 'text-sm text-center' : 'text-lg'} max-w-3xl`}>
             {isMobile 
-              ? 'Optimalizujte své dojíždění, ušetřete náklady a čas.' 
-              : 'Optimalizujte své každodenní dojíždění, ušetřete náklady a čas s našimi nástroji pro plánování cest. Přizpůsobte své cesty podle vašich směn a sdílejte jízdy s ostatními pendlery.'
+              ? 'Optimalizace tras, spolujízdy, live doprava a analýzy.' 
+              : 'Kompletní řešení pro pendlery: optimalizace tras s real-time traffic daty, chytré vyhledávání spolujízd, analýzy nákladů a dopadu na životní prostředí.'
             }
           </p>
         </section>
         
-        {/* Navigation */}
+        {/* Navigation - updated for new tabs */}
         <TravelNavigation
           activeTab={activeTab}
           onTabChange={handleTabChange}

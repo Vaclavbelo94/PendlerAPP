@@ -36,6 +36,57 @@ export type Database = {
         }
         Relationships: []
       }
+      commute_analytics: {
+        Row: {
+          arrival_time: string | null
+          cost_amount: number | null
+          created_at: string | null
+          departure_time: string
+          distance_km: number | null
+          duration_minutes: number | null
+          id: string
+          route_destination: string
+          route_origin: string
+          traffic_level: string | null
+          transport_mode: string
+          travel_date: string
+          user_id: string
+          weather_conditions: string | null
+        }
+        Insert: {
+          arrival_time?: string | null
+          cost_amount?: number | null
+          created_at?: string | null
+          departure_time: string
+          distance_km?: number | null
+          duration_minutes?: number | null
+          id?: string
+          route_destination: string
+          route_origin: string
+          traffic_level?: string | null
+          transport_mode: string
+          travel_date: string
+          user_id: string
+          weather_conditions?: string | null
+        }
+        Update: {
+          arrival_time?: string | null
+          cost_amount?: number | null
+          created_at?: string | null
+          departure_time?: string
+          distance_km?: number | null
+          duration_minutes?: number | null
+          id?: string
+          route_destination?: string
+          route_origin?: string
+          traffic_level?: string | null
+          transport_mode?: string
+          travel_date?: string
+          user_id?: string
+          weather_conditions?: string | null
+        }
+        Relationships: []
+      }
       email_logs: {
         Row: {
           email_type: string
@@ -414,7 +465,9 @@ export type Database = {
           id: string
           message: string | null
           offer_id: string | null
+          rating: number | null
           requester_user_id: string
+          review: string | null
           status: string | null
           updated_at: string | null
         }
@@ -423,7 +476,9 @@ export type Database = {
           id?: string
           message?: string | null
           offer_id?: string | null
+          rating?: number | null
           requester_user_id: string
+          review?: string | null
           status?: string | null
           updated_at?: string | null
         }
@@ -432,7 +487,9 @@ export type Database = {
           id?: string
           message?: string | null
           offer_id?: string | null
+          rating?: number | null
           requester_user_id?: string
+          review?: string | null
           status?: string | null
           updated_at?: string | null
         }
@@ -446,8 +503,41 @@ export type Database = {
           },
         ]
       }
+      rideshare_messages: {
+        Row: {
+          contact_id: string
+          created_at: string | null
+          id: string
+          message: string
+          sender_user_id: string
+        }
+        Insert: {
+          contact_id: string
+          created_at?: string | null
+          id?: string
+          message: string
+          sender_user_id: string
+        }
+        Update: {
+          contact_id?: string
+          created_at?: string | null
+          id?: string
+          message?: string
+          sender_user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rideshare_messages_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "rideshare_contacts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       rideshare_offers: {
         Row: {
+          completed_rides: number | null
           created_at: string | null
           departure_date: string
           departure_time: string
@@ -458,12 +548,14 @@ export type Database = {
           notes: string | null
           origin_address: string
           price_per_person: number | null
+          rating: number | null
           recurring_days: number[] | null
           seats_available: number
           updated_at: string | null
           user_id: string
         }
         Insert: {
+          completed_rides?: number | null
           created_at?: string | null
           departure_date: string
           departure_time: string
@@ -474,12 +566,14 @@ export type Database = {
           notes?: string | null
           origin_address: string
           price_per_person?: number | null
+          rating?: number | null
           recurring_days?: number[] | null
           seats_available: number
           updated_at?: string | null
           user_id: string
         }
         Update: {
+          completed_rides?: number | null
           created_at?: string | null
           departure_date?: string
           departure_time?: string
@@ -490,6 +584,7 @@ export type Database = {
           notes?: string | null
           origin_address?: string
           price_per_person?: number | null
+          rating?: number | null
           recurring_days?: number[] | null
           seats_available?: number
           updated_at?: string | null
@@ -537,6 +632,48 @@ export type Database = {
           max_price_per_person?: number | null
           notes?: string | null
           origin_address?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      route_preferences: {
+        Row: {
+          avoid_highways: boolean | null
+          avoid_tolls: boolean | null
+          created_at: string | null
+          destination_address: string
+          id: string
+          is_default: boolean | null
+          origin_address: string
+          preferred_departure_time: string | null
+          transport_mode: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          avoid_highways?: boolean | null
+          avoid_tolls?: boolean | null
+          created_at?: string | null
+          destination_address: string
+          id?: string
+          is_default?: boolean | null
+          origin_address: string
+          preferred_departure_time?: string | null
+          transport_mode?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          avoid_highways?: boolean | null
+          avoid_tolls?: boolean | null
+          created_at?: string | null
+          destination_address?: string
+          id?: string
+          is_default?: boolean | null
+          origin_address?: string
+          preferred_departure_time?: string | null
+          transport_mode?: string | null
           updated_at?: string | null
           user_id?: string
         }
@@ -831,6 +968,45 @@ export type Database = {
           form_type?: string
           id?: string
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      traffic_alerts: {
+        Row: {
+          alert_type: string
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          message: string
+          route_destination: string
+          route_origin: string
+          severity: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          alert_type: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          message: string
+          route_destination: string
+          route_origin: string
+          severity?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          alert_type?: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          message?: string
+          route_destination?: string
+          route_origin?: string
+          severity?: string
+          updated_at?: string | null
           user_id?: string
         }
         Relationships: []
