@@ -1,20 +1,24 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
+import { Clock } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import PremiumCheck from '@/components/premium/PremiumCheck';
+import DashboardBackground from '@/components/common/DashboardBackground';
+import ShiftsMobileCarousel from '@/components/shifts/mobile/ShiftsMobileCarousel';
 import ShiftsNavigation from '@/components/shifts/ShiftsNavigation';
 import ShiftsCalendar from '@/components/shifts/ShiftsCalendar';
 import ShiftsOverview from '@/components/shifts/ShiftsOverview';
 import ShiftsAnalytics from '@/components/shifts/ShiftsAnalytics';
-import { useState } from 'react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Shifts: React.FC = () => {
   const { t } = useLanguage();
   const [activeSection, setActiveSection] = useState('calendar');
+  const isMobile = useIsMobile();
 
-  const renderSectionContent = () => {
+  const renderDesktopContent = () => {
     switch (activeSection) {
       case 'overview':
         return <ShiftsOverview />;
@@ -35,53 +39,71 @@ const Shifts: React.FC = () => {
       </Helmet>
       
       <PremiumCheck featureKey="shifts">
-        <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-secondary/5">
-          {/* Animated background elements */}
-          <div className="fixed inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-20 right-10 w-32 h-32 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-full blur-xl animate-pulse" />
-            <div className="absolute bottom-20 left-20 w-24 h-24 bg-gradient-to-r from-green-500/20 to-purple-500/20 rounded-full blur-xl animate-pulse delay-1000" />
-          </div>
+        <DashboardBackground variant="default">
+          <div className="container mx-auto px-4 py-8">
+            {/* Header section with dashboard-style animation */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="mb-8"
+            >
+              <div className={`flex items-center gap-3 mb-4 ${isMobile ? 'flex-col text-center' : ''}`}>
+                <div className={`${isMobile ? 'p-2' : 'p-3'} rounded-full bg-white/10 backdrop-blur-sm border border-white/20`}>
+                  <Clock className={`${isMobile ? 'h-6 w-6' : 'h-8 w-8'} text-white`} />
+                </div>
+                <div>
+                  <h1 className={`${isMobile ? 'text-2xl' : 'text-4xl'} font-bold tracking-tight text-white`}>
+                    {isMobile ? 'Směny' : 'Správa směn'}
+                  </h1>
+                  <p className={`text-white/80 ${isMobile ? 'text-sm mt-2' : 'text-lg mt-2'} max-w-3xl`}>
+                    {isMobile 
+                      ? 'Plánování a sledování pracovní doby.' 
+                      : 'Správa směn, plánování a sledování pracovní doby s pokročilými analýzami.'
+                    }
+                  </p>
+                </div>
+              </div>
+            </motion.div>
 
-          <div className="relative z-10">
-            <div className="container max-w-7xl py-8 px-4">
+            {/* Mobile: Swipe Carousel */}
+            {isMobile ? (
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                className="mb-8"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
               >
-                <h1 className="text-3xl md:text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-4">
-                  {t('shifts')}
-                </h1>
-                <p className="text-lg text-muted-foreground">
-                  Správa směn, plánování a sledování pracovní doby
-                </p>
-              </motion.div>
-
-              {/* Navigation */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.1 }}
-                className="mb-8"
-              >
-                <ShiftsNavigation
+                <ShiftsMobileCarousel
                   activeSection={activeSection}
                   onSectionChange={setActiveSection}
                 />
               </motion.div>
-
-              {/* Content */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-              >
-                {renderSectionContent()}
-              </motion.div>
-            </div>
+            ) : (
+              /* Desktop: Traditional Navigation + Content */
+              <>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.1 }}
+                >
+                  <ShiftsNavigation
+                    activeSection={activeSection}
+                    onSectionChange={setActiveSection}
+                  />
+                </motion.div>
+                
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                  className="mt-8"
+                >
+                  {renderDesktopContent()}
+                </motion.div>
+              </>
+            )}
           </div>
-        </div>
+        </DashboardBackground>
       </PremiumCheck>
     </>
   );
