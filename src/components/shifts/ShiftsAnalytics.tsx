@@ -4,13 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 import { motion } from 'framer-motion';
-
-interface Shift {
-  id: string;
-  date: Date | string;
-  type: 'morning' | 'afternoon' | 'night';
-  notes?: string;
-}
+import { Shift } from '@/hooks/useShiftsManagement';
 
 interface ShiftsAnalyticsProps {
   shifts?: Shift[];

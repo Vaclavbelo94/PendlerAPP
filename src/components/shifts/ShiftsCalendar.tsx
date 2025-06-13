@@ -8,14 +8,7 @@ import { CalendarDays, Clock, MapPin, Edit, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cs } from 'date-fns/locale';
 import { motion } from 'framer-motion';
-
-interface Shift {
-  id: string;
-  date: Date | string;
-  type: 'morning' | 'afternoon' | 'night';
-  location?: string;
-  notes?: string;
-}
+import { Shift } from '@/hooks/useShiftsManagement';
 
 interface ShiftsCalendarProps {
   shifts?: Shift[];
@@ -30,27 +23,26 @@ const ShiftsCalendar: React.FC<ShiftsCalendarProps> = ({
 }) => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   
-  // Convert string dates to Date objects and add default location
+  // Convert and process shifts with default location
   const processedShifts: Shift[] = shifts.map(shift => ({
     ...shift,
-    date: typeof shift.date === 'string' ? new Date(shift.date) : shift.date,
-    location: shift.location || 'München, DE'
+    date: typeof shift.date === 'string' ? shift.date : shift.date
   }));
 
   // Add mock data if no shifts provided
   const allShifts: Shift[] = processedShifts.length > 0 ? processedShifts : [
     {
       id: '1',
-      date: new Date(),
+      user_id: 'mock-user',
+      date: new Date().toISOString().split('T')[0],
       type: 'morning',
-      location: 'München, DE',
       notes: 'Standardní ranní směna'
     },
     {
       id: '2',
-      date: new Date(Date.now() + 24 * 60 * 60 * 1000),
+      user_id: 'mock-user',
+      date: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       type: 'afternoon',
-      location: 'Augsburg, DE',
       notes: 'Odpolední směna'
     }
   ];
@@ -73,9 +65,11 @@ const ShiftsCalendar: React.FC<ShiftsCalendarProps> = ({
     }
   };
 
-  const selectedDateShifts = allShifts.filter(shift => 
-    selectedDate && format(shift.date, 'yyyy-MM-dd') === format(selectedDate, 'yyyy-MM-dd')
-  );
+  const selectedDateShifts = allShifts.filter(shift => {
+    if (!selectedDate) return false;
+    const shiftDate = new Date(shift.date);
+    return format(shiftDate, 'yyyy-MM-dd') === format(selectedDate, 'yyyy-MM-dd');
+  });
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -149,7 +143,7 @@ const ShiftsCalendar: React.FC<ShiftsCalendarProps> = ({
                         </div>
                         <div className="flex items-center text-sm text-muted-foreground mb-2">
                           <MapPin className="h-3 w-3 mr-1" />
-                          {shift.location}
+                          München, DE
                         </div>
                         {shift.notes && (
                           <p className="text-sm text-muted-foreground">{shift.notes}</p>
@@ -167,7 +161,7 @@ const ShiftsCalendar: React.FC<ShiftsCalendarProps> = ({
                           variant="ghost" 
                           size="sm" 
                           className="hover:bg-destructive/10"
-                          onClick={() => onDeleteShift?.(shift.id)}
+                          onClick={() => shift.id && onDeleteShift?.(shift.id)}
                         >
                           <Trash2 className="h-3 w-3" />
                         </Button>

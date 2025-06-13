@@ -12,13 +12,7 @@ import {
   CheckCircle 
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-
-interface Shift {
-  id: string;
-  date: Date | string;
-  type: 'morning' | 'afternoon' | 'night';
-  notes?: string;
-}
+import { Shift } from '@/hooks/useShiftsManagement';
 
 interface ShiftsOverviewProps {
   shifts?: Shift[];
