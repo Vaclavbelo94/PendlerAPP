@@ -1,3 +1,4 @@
+
 import React, { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { OptimizedProviderStack } from '@/components/providers/OptimizedProviderStack';
@@ -29,6 +30,19 @@ const TaxClasses = lazy(() => import('@/pages/laws/TaxClasses'));
 const TaxReturn = lazy(() => import('@/pages/laws/TaxReturn'));
 const WorkContract = lazy(() => import('@/pages/laws/WorkContract'));
 const WorkingHours = lazy(() => import('@/pages/laws/WorkingHours'));
+
+// Lazy load legal pages
+const Privacy = lazy(() => import('@/pages/Privacy'));
+const Cookies = lazy(() => import('@/pages/Cookies'));
+const Terms = lazy(() => import('@/pages/Terms'));
+
+// Lazy load other pages
+const Settings = lazy(() => import('@/pages/Settings'));
+const Profile = lazy(() => import('@/pages/Profile'));
+const Premium = lazy(() => import('@/pages/Premium'));
+const Contact = lazy(() => import('@/pages/Contact'));
+const FAQ = lazy(() => import('@/pages/FAQ'));
+const Admin = lazy(() => import('@/pages/Admin'));
 
 // Lazy load optimizers and components
 const RouteOptimizer = lazy(() => import('@/components/optimized/RouteOptimizer').then(m => ({ default: m.RouteOptimizer })));
