@@ -1,6 +1,7 @@
 
 import React from 'react';
-import { CalendarIcon, BarChartIcon, FileTextIcon, SettingsIcon, DownloadIcon } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Calendar, BarChart3, Clock, Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
@@ -9,112 +10,73 @@ interface ShiftsNavigationProps {
   onSectionChange: (section: string) => void;
 }
 
-const shiftTabs = [
-  {
-    id: 'calendar',
-    icon: CalendarIcon,
-    label: 'Kalendář',
-    description: 'Přehled směn'
-  },
-  {
-    id: 'analytics',
-    icon: BarChartIcon,
-    label: 'Analýzy',
-    description: 'Statistiky'
-  },
-  {
-    id: 'reports',
-    icon: FileTextIcon,
-    label: 'Reporty',
-    description: 'Měsíční přehledy'
-  },
-  {
-    id: 'export',
-    icon: DownloadIcon,
-    label: 'Export',
-    description: 'Kalendáře a soubory'
-  },
-  {
-    id: 'settings',
-    icon: SettingsIcon,
-    label: 'Nastavení',
-    description: 'Konfigurace směn'
-  }
-];
-
-export const ShiftsNavigation: React.FC<ShiftsNavigationProps> = ({
+const ShiftsNavigation: React.FC<ShiftsNavigationProps> = ({
   activeSection,
   onSectionChange
 }) => {
+  const sections = [
+    {
+      id: 'overview',
+      label: 'Přehled',
+      icon: Clock,
+      description: 'Rychlý přehled směn'
+    },
+    {
+      id: 'calendar',
+      label: 'Kalendář',
+      icon: Calendar,
+      description: 'Kalendářní zobrazení'
+    },
+    {
+      id: 'analytics',
+      label: 'Analýzy',
+      icon: BarChart3,
+      description: 'Statistiky a grafy'
+    }
+  ];
+
   return (
-    <div className="flex justify-center">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 w-full max-w-7xl">
-        {shiftTabs.map((tab, index) => {
-          const Icon = tab.icon;
-          const isActive = activeSection === tab.id;
+    <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+      <div className="flex flex-wrap gap-2">
+        {sections.map((section, index) => {
+          const Icon = section.icon;
+          const isActive = activeSection === section.id;
           
           return (
-            <motion.button
-              key={tab.id}
-              onClick={() => onSectionChange(tab.id)}
-              className={cn(
-                "relative p-4 md:p-6 rounded-2xl border text-center transition-all duration-300 group",
-                "hover:shadow-lg hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
-                isActive 
-                  ? "bg-gradient-to-br from-primary/10 to-accent/10 border-primary/30 shadow-lg" 
-                  : "bg-card/80 backdrop-blur-sm border-border/50 hover:border-primary/20"
-              )}
+            <motion.div
+              key={section.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              whileHover={{ y: -2 }}
-              whileTap={{ scale: 0.98 }}
+              transition={{ duration: 0.4, delay: index * 0.1 }}
             >
-              {/* Background gradient for active state */}
-              {isActive && (
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 rounded-2xl"
-                  layoutId="activeShiftsTab"
-                  transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                />
-              )}
-              
-              <div className="relative z-10 flex flex-col items-center">
-                <motion.div 
-                  className={cn(
-                    "w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center transition-all duration-300 mb-3",
-                    isActive 
-                      ? "bg-gradient-to-br from-primary/20 to-accent/20 text-primary" 
-                      : "bg-gradient-to-br from-muted/50 to-muted/30 text-muted-foreground group-hover:from-primary/10 group-hover:to-accent/10 group-hover:text-primary"
-                  )}
-                  whileHover={{ scale: 1.1, rotate: 5 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                >
-                  <Icon className="h-5 w-5 md:h-6 md:w-6" />
-                </motion.div>
-                
-                <h3 className={cn(
-                  "font-semibold text-lg transition-colors duration-300 mb-2",
-                  isActive 
-                    ? "text-primary" 
-                    : "text-foreground group-hover:text-primary"
-                )}>
-                  {tab.label}
-                </h3>
-                
-                <p className={cn(
-                  "text-sm transition-colors duration-300",
-                  isActive 
-                    ? "text-muted-foreground" 
-                    : "text-muted-foreground group-hover:text-foreground"
-                )}>
-                  {tab.description}
-                </p>
-              </div>
-            </motion.button>
+              <Button
+                variant={isActive ? "default" : "outline"}
+                onClick={() => onSectionChange(section.id)}
+                className={cn(
+                  "transition-all duration-300 hover:scale-105",
+                  isActive && "shadow-lg"
+                )}
+              >
+                <Icon className="h-4 w-4 mr-2" />
+                {section.label}
+              </Button>
+            </motion.div>
           );
         })}
       </div>
+
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.4, delay: 0.3 }}
+      >
+        <Button className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 transition-all duration-300">
+          <Plus className="h-4 w-4 mr-2" />
+          Přidat směnu
+        </Button>
+      </motion.div>
     </div>
   );
 };
+
+export default ShiftsNavigation;

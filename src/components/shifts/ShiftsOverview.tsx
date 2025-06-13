@@ -1,156 +1,238 @@
 
 import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Calendar, Clock, TrendingUp, Users } from 'lucide-react';
-import { Shift } from '@/hooks/useShiftsManagement';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { cn } from '@/lib/utils';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
+import { 
+  Clock, 
+  Calendar, 
+  TrendingUp, 
+  Euro,
+  MapPin,
+  CheckCircle 
+} from 'lucide-react';
+import { motion } from 'framer-motion';
 
-interface ShiftsOverviewProps {
-  shifts: Shift[];
-  onEditShift: (shift: Shift) => void;
-  onDeleteShift: (shiftId: string) => void;
-}
-
-const ShiftsOverview: React.FC<ShiftsOverviewProps> = ({
-  shifts,
-  onEditShift,
-  onDeleteShift
-}) => {
-  const isMobile = useIsMobile();
-
-  const getShiftStats = () => {
-    const thisMonth = new Date();
-    thisMonth.setDate(1);
-    
-    const thisMonthShifts = shifts.filter(shift => 
-      new Date(shift.date) >= thisMonth
-    );
-
-    const shiftTypes = shifts.reduce((acc, shift) => {
-      acc[shift.type] = (acc[shift.type] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
-
-    return {
-      total: shifts.length,
-      thisMonth: thisMonthShifts.length,
-      morningShifts: shiftTypes.morning || 0,
-      afternoonShifts: shiftTypes.afternoon || 0,
-      nightShifts: shiftTypes.night || 0
-    };
+const ShiftsOverview: React.FC = () => {
+  // Mock data - v reálné aplikaci by se načítalo z API
+  const weeklyStats = {
+    hoursWorked: 32,
+    plannedHours: 40,
+    shiftsCompleted: 4,
+    shiftsPlanned: 5,
+    earnings: 1280
   };
 
-  const stats = getShiftStats();
-
-  const statCards = [
+  const upcomingShifts = [
     {
-      title: 'Celkem směn',
-      value: stats.total,
-      description: 'Za celou dobu',
-      icon: Calendar,
-      color: 'text-blue-600'
+      id: '1',
+      date: 'Zítra',
+      time: '06:00 - 14:00',
+      type: 'Ranní směna',
+      location: 'München, DE',
+      status: 'planned'
     },
     {
-      title: 'Tento měsíc',
-      value: stats.thisMonth,
-      description: 'Aktuální měsíc',
-      icon: Clock,
-      color: 'text-green-600'
-    },
-    {
-      title: 'Ranní směny',
-      value: stats.morningShifts,
-      description: 'Celkem',
-      icon: TrendingUp,
-      color: 'text-orange-600'
-    },
-    {
-      title: 'Odpolední směny',
-      value: stats.afternoonShifts,
-      description: 'Celkem',
-      icon: Users,
-      color: 'text-purple-600'
+      id: '2',
+      date: 'Pátek',
+      time: '14:00 - 22:00',
+      type: 'Odpolední směna',
+      location: 'Augsburg, DE',
+      status: 'planned'
     }
   ];
 
-  const recentShifts = shifts.slice(0, 5);
+  const recentShifts = [
+    {
+      id: '1',
+      date: 'Včera',
+      time: '06:00 - 14:00',
+      type: 'Ranní směna',
+      location: 'München, DE',
+      status: 'completed'
+    },
+    {
+      id: '2',
+      date: 'Pondělí',
+      time: '06:00 - 14:00',
+      type: 'Ranní směna',
+      location: 'München, DE',
+      status: 'completed'
+    }
+  ];
 
   return (
-    <div className={cn("space-y-6", isMobile ? "space-y-4" : "")}>
-      {/* Statistics Cards */}
-      <div className={cn("grid gap-6", isMobile ? "grid-cols-2 gap-4" : "grid-cols-4")}>
-        {statCards.map((stat) => {
-          const Icon = stat.icon;
-          return (
-            <Card key={stat.title}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className={cn("font-medium", isMobile ? "text-sm" : "text-base")}>
-                  {stat.title}
-                </CardTitle>
-                <Icon className={cn("h-4 w-4", stat.color)} />
-              </CardHeader>
-              <CardContent>
-                <div className={cn("font-bold", isMobile ? "text-xl" : "text-2xl")}>
-                  {stat.value}
+    <div className="space-y-6">
+      {/* Weekly Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Týdenní hodiny</p>
+                  <p className="text-2xl font-bold">{weeklyStats.hoursWorked}h</p>
+                  <p className="text-xs text-muted-foreground">z {weeklyStats.plannedHours}h</p>
                 </div>
-                <p className={cn("text-muted-foreground", isMobile ? "text-xs" : "text-sm")}>
-                  {stat.description}
-                </p>
-              </CardContent>
-            </Card>
-          );
-        })}
+                <div className="p-2 rounded-lg bg-primary/10">
+                  <Clock className="h-5 w-5 text-primary" />
+                </div>
+              </div>
+              <Progress value={(weeklyStats.hoursWorked / weeklyStats.plannedHours) * 100} className="mt-3" />
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+        >
+          <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Směny</p>
+                  <p className="text-2xl font-bold">{weeklyStats.shiftsCompleted}</p>
+                  <p className="text-xs text-muted-foreground">z {weeklyStats.shiftsPlanned}</p>
+                </div>
+                <div className="p-2 rounded-lg bg-green-100 dark:bg-green-900/30">
+                  <Calendar className="h-5 w-5 text-green-600 dark:text-green-400" />
+                </div>
+              </div>
+              <Progress value={(weeklyStats.shiftsCompleted / weeklyStats.shiftsPlanned) * 100} className="mt-3" />
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+          <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Výdělky</p>
+                  <p className="text-2xl font-bold">€{weeklyStats.earnings}</p>
+                  <p className="text-xs text-muted-foreground">tento týden</p>
+                </div>
+                <div className="p-2 rounded-lg bg-green-100 dark:bg-green-900/30">
+                  <Euro className="h-5 w-5 text-green-600 dark:text-green-400" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+        >
+          <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Efektivita</p>
+                  <p className="text-2xl font-bold">92%</p>
+                  <p className="text-xs text-muted-foreground">+5% vs minulý týden</p>
+                </div>
+                <div className="p-2 rounded-lg bg-orange-100 dark:bg-orange-900/30">
+                  <TrendingUp className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
       </div>
 
-      {/* Recent Shifts */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Poslední směny</CardTitle>
-          <CardDescription>
-            Přehled vašich posledních pracovních směn
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {recentShifts.length === 0 ? (
-            <p className="text-center text-muted-foreground py-4">
-              Zatím nemáte žádné směny
-            </p>
-          ) : (
-            <div className="space-y-3">
-              {recentShifts.map((shift) => (
-                <div
-                  key={shift.id}
-                  className="flex items-center justify-between p-3 border rounded-lg hover:bg-accent/50 transition-colors cursor-pointer"
-                  onClick={() => onEditShift(shift)}
-                >
-                  <div className="flex items-center space-x-3">
-                    <div className={cn(
-                      "w-3 h-3 rounded-full",
-                      shift.type === 'morning' ? 'bg-orange-500' :
-                      shift.type === 'afternoon' ? 'bg-blue-500' : 'bg-purple-500'
-                    )} />
+      {/* Upcoming and Recent Shifts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Upcoming Shifts */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+        >
+          <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
+            <CardHeader>
+              <CardTitle className="text-lg">Nadcházející směny</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {upcomingShifts.map((shift, index) => (
+                  <motion.div
+                    key={shift.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: 0.5 + index * 0.1 }}
+                    className="flex items-center justify-between p-3 bg-muted/30 rounded-lg"
+                  >
                     <div>
-                      <p className="font-medium">
-                        {new Date(shift.date).toLocaleDateString('cs-CZ')}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {shift.type === 'morning' ? 'Ranní směna' :
-                         shift.type === 'afternoon' ? 'Odpolední směna' : 'Noční směna'}
-                      </p>
+                      <div className="flex items-center gap-2 mb-1">
+                        <Badge variant="outline">{shift.date}</Badge>
+                        <span className="text-sm font-medium">{shift.type}</span>
+                      </div>
+                      <div className="flex items-center text-sm text-muted-foreground">
+                        <Clock className="h-3 w-3 mr-1" />
+                        {shift.time}
+                        <MapPin className="h-3 w-3 ml-3 mr-1" />
+                        {shift.location}
+                      </div>
                     </div>
-                  </div>
-                  {shift.notes && (
-                    <p className="text-sm text-muted-foreground max-w-xs truncate">
-                      {shift.notes}
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                  </motion.div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Recent Shifts */}
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6, delay: 0.5 }}
+        >
+          <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
+            <CardHeader>
+              <CardTitle className="text-lg">Nedávné směny</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {recentShifts.map((shift, index) => (
+                  <motion.div
+                    key={shift.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: 0.6 + index * 0.1 }}
+                    className="flex items-center justify-between p-3 bg-muted/30 rounded-lg"
+                  >
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <Badge variant="outline">{shift.date}</Badge>
+                        <span className="text-sm font-medium">{shift.type}</span>
+                        <CheckCircle className="h-4 w-4 text-green-600" />
+                      </div>
+                      <div className="flex items-center text-sm text-muted-foreground">
+                        <Clock className="h-3 w-3 mr-1" />
+                        {shift.time}
+                        <MapPin className="h-3 w-3 ml-3 mr-1" />
+                        {shift.location}
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
     </div>
   );
 };
