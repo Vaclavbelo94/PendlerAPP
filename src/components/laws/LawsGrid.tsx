@@ -1,31 +1,46 @@
 
 import React from 'react';
-import { memo } from 'react';
-import LawCard from './LawCard';
-
-interface LawItem {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  updated: string;
-  iconName: string;
-  iconColor: string;
-  path: string;
-}
+import { motion } from 'framer-motion';
+import EnhancedLawCard from './enhanced/EnhancedLawCard';
 
 interface LawsGridProps {
-  laws: LawItem[];
+  laws: Array<{
+    id: string;
+    title: string;
+    description: string;
+    category: string;
+    updated: string;
+    iconName: string;
+    iconColor: string;
+    path: string;
+  }>;
 }
 
-export const LawsGrid: React.FC<LawsGridProps> = memo(({ laws }) => (
-  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-    {laws.map((law) => (
-      <LawCard key={law.id} law={law} />
-    ))}
-  </div>
-));
+const LawsGrid: React.FC<LawsGridProps> = ({ laws }) => {
+  if (laws.length === 0) {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="text-center py-12"
+      >
+        <div className="text-white/60 text-lg mb-2">Žádné zákony nenalezeny</div>
+        <div className="text-white/40 text-sm">Zkuste změnit kategorii nebo vyhledávání</div>
+      </motion.div>
+    );
+  }
 
-LawsGrid.displayName = 'LawsGrid';
+  return (
+    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {laws.map((law, index) => (
+        <EnhancedLawCard 
+          key={law.id} 
+          law={law} 
+          index={index}
+        />
+      ))}
+    </div>
+  );
+};
 
 export default LawsGrid;
