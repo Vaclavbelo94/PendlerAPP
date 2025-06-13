@@ -22,7 +22,7 @@ const navigationItems = [
 
 export const ModernNavbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { user, logout } = useAuth();
+  const { user, signOut } = useAuth();
   const { t } = useLanguage();
   const location = useLocation();
 
@@ -69,7 +69,7 @@ export const ModernNavbar: React.FC = () => {
                   {t('profile')}
                 </Button>
               </Link>
-              <Button variant="outline" size="sm" onClick={logout}>
+              <Button variant="outline" size="sm" onClick={signOut}>
                 {t('logout')}
               </Button>
             </div>
@@ -113,7 +113,7 @@ export const ModernNavbar: React.FC = () => {
                         variant="outline" 
                         className="w-full justify-start" 
                         onClick={() => {
-                          logout();
+                          signOut();
                           setIsOpen(false);
                         }}
                       >
