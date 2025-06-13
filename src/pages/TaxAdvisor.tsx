@@ -9,6 +9,8 @@ import TaxOptimizer from "@/components/tax-advisor/TaxOptimizer";
 import DocumentGenerator from "@/components/tax-advisor/DocumentGenerator";
 import TaxReturnGuide from "@/components/tax-advisor/TaxReturnGuide";
 import TaxCalculatorTab from "@/components/tax-advisor/TaxCalculatorTab";
+import PendlerTipsTab from "@/components/tax-advisor/PendlerTipsTab";
+import InteractiveTaxGuide from "@/components/tax-advisor/InteractiveTaxGuide";
 
 const TaxAdvisor = () => {
   const [activeTab, setActiveTab] = useState("optimizer");
@@ -17,6 +19,10 @@ const TaxAdvisor = () => {
     switch (activeTab) {
       case "optimizer":
         return <TaxOptimizer />;
+      case "pendler":
+        return <PendlerTipsTab />;
+      case "interactive":
+        return <InteractiveTaxGuide />;
       case "documents":
         return <DocumentGenerator />;
       case "guide":

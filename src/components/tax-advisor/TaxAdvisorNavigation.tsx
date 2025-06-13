@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { TrendingUpIcon, FileTextIcon, BookOpenIcon, CalculatorIcon } from 'lucide-react';
+import { TrendingUpIcon, FileTextIcon, BookOpenIcon, CalculatorIcon, UsersIcon, HelpCircleIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
@@ -15,6 +15,18 @@ const taxAdvisorTabs = [
     icon: TrendingUpIcon,
     label: 'Optimalizace',
     description: 'Daňové tipy a optimalizace'
+  },
+  {
+    id: 'pendler',
+    icon: UsersIcon,
+    label: 'Rady pro pendlery',
+    description: 'Specifické rady pro pracující v zahraničí'
+  },
+  {
+    id: 'interactive',
+    icon: HelpCircleIcon,
+    label: 'Interaktivní průvodce',
+    description: 'Krok za krokem k optimálním daním'
   },
   {
     id: 'documents',
@@ -42,7 +54,7 @@ export const TaxAdvisorNavigation: React.FC<TaxAdvisorNavigationProps> = ({
 }) => {
   return (
     <div className="flex justify-center">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full max-w-6xl">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full max-w-6xl">
         {taxAdvisorTabs.map((tab, index) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;

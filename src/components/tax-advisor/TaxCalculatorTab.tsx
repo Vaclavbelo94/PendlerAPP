@@ -1,134 +1,108 @@
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calculator, History, Save, Download } from 'lucide-react';
-import { useAuth } from '@/hooks/auth';
-import { useTaxManagement } from '@/hooks/useTaxManagement';
+import React from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Calculator, History, TrendingUp } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import TaxCalculator from '@/components/calculator/TaxCalculator';
-import GermanTaxCalculator from './calculators/GermanTaxCalculator';
+import { useTaxManagement } from '@/hooks/useTaxManagement';
+import { useAuth } from '@/hooks/auth';
 
 const TaxCalculatorTab = () => {
   const { user } = useAuth();
-  const { calculations, saveCalculation, loadCalculations } = useTaxManagement();
-  const [activeCalculator, setActiveCalculator] = useState('german');
+  const { saveCalculation, calculations } = useTaxManagement();
 
-  useEffect(() => {
-    if (user?.id) {
-      loadCalculations('tax-calculator');
-    }
-  }, [user?.id]);
-
-  const handleCalculationSave = async (inputs: Record<string, any>, result: Record<string, any>) => {
-    if (!user?.id) return;
-
-    try {
+  const handleCalculation = async (inputs: Record<string, any>, results: Record<string, any>) => {
+    if (user?.id && saveCalculation) {
       await saveCalculation({
-        calculation_type: 'tax-calculator',
+        calculation_type: 'german_tax',
         inputs,
-        results: result,
+        results
       });
-    } catch (error) {
-      console.error('Error saving calculation:', error);
     }
   };
 
-  if (!user) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Daňové kalkulátory</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Alert>
-            <Calculator className="h-4 w-4" />
-            <AlertDescription>
-              Pro použití kalkulátorů a ukládání výpočtů se musíte přihlásit.
-            </AlertDescription>
-          </Alert>
-        </CardContent>
-      </Card>
-    );
-  }
+  // Filter calculations for the German tax calculator
+  const germanTaxCalculations = calculations.filter(calc => calc.calculation_type === 'german_tax');
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold">Daňové kalkulátory</h2>
-          <p className="text-muted-foreground">
-            Vypočítejte daně pro různé země a situace
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm">
-            <Download className="h-4 w-4 mr-2" />
-            Export výsledků
-          </Button>
-        </div>
+      <div className="text-center space-y-2">
+        <h2 className="text-2xl font-bold">Daňové kalkulátory</h2>
+        <p className="text-muted-foreground">
+          Rychlé výpočty pro vaše daňové plánování
+        </p>
       </div>
 
-      <Tabs value={activeCalculator} onValueChange={setActiveCalculator}>
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="german">Německý kalkulátor</TabsTrigger>
-          <TabsTrigger value="general">Obecný kalkulátor</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="german" className="space-y-6">
-          <GermanTaxCalculator />
-        </TabsContent>
-
-        <TabsContent value="general" className="space-y-6">
-          <TaxCalculator 
-            onCalculate={handleCalculationSave}
-            calculationHistory={calculations}
-          />
-        </TabsContent>
-      </Tabs>
-
-      {calculations.length > 0 && (
+      <div className="grid gap-6 md:grid-cols-3 mb-6">
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Calculator className="h-5 w-5" />
+              Německý kalkulátor
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-3">
+              Přesný výpočet daní podle německých sazeb pro rok 2024
+            </p>
+            <Badge variant="outline">Aktuální pro 2024</Badge>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-lg">
               <History className="h-5 w-5" />
               Historie výpočtů
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {calculations.slice(0, 5).map((calculation) => (
-                <div key={calculation.id} className="flex items-center justify-between p-3 border rounded-md">
-                  <div>
-                    <p className="font-medium">
-                      {calculation.inputs.income ? `${calculation.inputs.income}€` : 'Výpočet'}
-                      {calculation.inputs.taxClass && ` (Třída ${calculation.inputs.taxClass})`}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {new Date(calculation.created_at!).toLocaleDateString('cs-CZ')}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-medium">
-                      {calculation.results.netIncome ? 
-                        `Čistý: ${calculation.results.netIncome.toFixed(0)}€` : 
-                        'Dokončeno'
-                      }
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {calculation.results.effectiveTaxRate ? 
-                        `Sazba: ${calculation.results.effectiveTaxRate.toFixed(1)}%` : 
-                        ''
-                      }
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <p className="text-sm text-muted-foreground mb-3">
+              {germanTaxCalculations.length} uložených výpočtů
+            </p>
+            <Badge variant="secondary">
+              {user ? 'Přihlášeno' : 'Nepřihlášeno'}
+            </Badge>
           </CardContent>
         </Card>
-      )}
+
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <TrendingUp className="h-5 w-5" />
+              Optimalizace
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-3">
+              Tipy založené na vašich výpočtech
+            </p>
+            <Badge variant="outline">Připravujeme</Badge>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between">
+            <span className="flex items-center gap-2">
+              <Calculator className="h-5 w-5" />
+              Německý daňový kalkulátor 2024
+            </span>
+            <Badge variant="outline">Aktuální sazby</Badge>
+          </CardTitle>
+          <CardDescription>
+            Vypočítejte přesnou výši vaší daňové povinnosti podle německých daňových sazeb.
+            {user ? ' Vaše výpočty se automaticky ukládají.' : ' Přihlaste se pro ukládání výpočtů.'}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <TaxCalculator 
+            onCalculate={handleCalculation}
+            calculationHistory={germanTaxCalculations}
+          />
+        </CardContent>
+      </Card>
     </div>
   );
 };
