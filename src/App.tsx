@@ -14,8 +14,22 @@ import Register from '@/pages/Register';
 
 // Non-critical pages - lazy load
 const Vocabulary = lazy(() => import('@/pages/Vocabulary'));
-const Language = lazy(() => import('@/pages/Language'));
 const Shifts = lazy(() => import('@/pages/Shifts'));
+const Calculator = lazy(() => import('@/pages/Calculator'));
+const Translator = lazy(() => import('@/pages/Translator'));
+const Vehicle = lazy(() => import('@/pages/Vehicle'));
+const TaxAdvisor = lazy(() => import('@/pages/TaxAdvisor'));
+const TravelPlanning = lazy(() => import('@/pages/TravelPlanning'));
+const Laws = lazy(() => import('@/pages/Laws'));
+const Settings = lazy(() => import('@/pages/Settings'));
+const Profile = lazy(() => import('@/pages/Profile'));
+const Premium = lazy(() => import('@/pages/Premium'));
+const Contact = lazy(() => import('@/pages/Contact'));
+const FAQ = lazy(() => import('@/pages/FAQ'));
+const Admin = lazy(() => import('@/pages/Admin'));
+const Privacy = lazy(() => import('@/pages/Privacy'));
+const Cookies = lazy(() => import('@/pages/Cookies'));
+const Terms = lazy(() => import('@/pages/Terms'));
 
 // Lazy load law pages
 const ChildBenefits = lazy(() => import('@/pages/laws/ChildBenefits'));
@@ -30,19 +44,6 @@ const TaxClasses = lazy(() => import('@/pages/laws/TaxClasses'));
 const TaxReturn = lazy(() => import('@/pages/laws/TaxReturn'));
 const WorkContract = lazy(() => import('@/pages/laws/WorkContract'));
 const WorkingHours = lazy(() => import('@/pages/laws/WorkingHours'));
-
-// Lazy load legal pages
-const Privacy = lazy(() => import('@/pages/Privacy'));
-const Cookies = lazy(() => import('@/pages/Cookies'));
-const Terms = lazy(() => import('@/pages/Terms'));
-
-// Lazy load other pages
-const Settings = lazy(() => import('@/pages/Settings'));
-const Profile = lazy(() => import('@/pages/Profile'));
-const Premium = lazy(() => import('@/pages/Premium'));
-const Contact = lazy(() => import('@/pages/Contact'));
-const FAQ = lazy(() => import('@/pages/FAQ'));
-const Admin = lazy(() => import('@/pages/Admin'));
 
 // Lazy load optimizers and components
 const RouteOptimizer = lazy(() => import('@/components/optimized/RouteOptimizer').then(m => ({ default: m.RouteOptimizer })));
@@ -69,8 +70,13 @@ const AppContent: React.FC = () => {
                 <Route path="/register" element={<Register />} />
                 
                 <Route path="/vocabulary" element={<Vocabulary />} />
-                <Route path="/language" element={<Language />} />
                 <Route path="/shifts" element={<Shifts />} />
+                <Route path="/calculator" element={<Calculator />} />
+                <Route path="/translator" element={<Translator />} />
+                <Route path="/vehicle" element={<Vehicle />} />
+                <Route path="/tax-advisor" element={<TaxAdvisor />} />
+                <Route path="/travel" element={<TravelPlanning />} />
+                <Route path="/laws" element={<Laws />} />
                 
                 {/* Law detail pages */}
                 <Route path="/laws/child-benefits" element={<ChildBenefits />} />

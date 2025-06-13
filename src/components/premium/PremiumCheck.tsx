@@ -5,7 +5,7 @@ import { ShieldIcon, LockIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { usePremiumAccess } from "@/hooks/usePremiumAccess";
-import SimpleLoadingSpinner from "@/components/loading/SimpleLoadingSpinner";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 interface PremiumCheckProps {
   featureKey: string;
@@ -21,8 +21,8 @@ const PremiumCheck: React.FC<PremiumCheckProps> = ({ featureKey, children }) => 
     return (
       <div className="flex justify-center items-center w-full p-12">
         <div className="text-center">
-          <SimpleLoadingSpinner />
-          <p className="text-sm text-muted-foreground mt-4">Ověřuji přístup...</p>
+          <LoadingSpinner size="md" className="mx-auto mb-4" />
+          <p className="text-sm text-muted-foreground">Ověřuji přístup...</p>
         </div>
       </div>
     );

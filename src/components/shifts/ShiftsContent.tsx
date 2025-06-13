@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -8,6 +9,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { ShiftCalendar } from './ShiftCalendar';
 import ShiftsList from './ShiftsList';
 import ShiftForm from './ShiftForm';
+import ShiftStats from './ShiftStats';
 import ShiftFilters from './ShiftFilters';
 import EmptyShiftsState from './EmptyShiftsState';
 import { ShiftType, AnalyticsPeriod } from './types';
@@ -167,6 +169,10 @@ const ShiftsContent = () => {
                 <FileSpreadsheet className="h-4 w-4" />
                 Seznam
               </TabsTrigger>
+              <TabsTrigger value="stats" className="flex items-center gap-2">
+                <FileSpreadsheet className="h-4 w-4" />
+                Statistiky
+              </TabsTrigger>
             </TabsList>
             
             <div className="flex gap-2">
@@ -207,6 +213,10 @@ const ShiftsContent = () => {
               onUpdateShift={handleUpdateShift}
               onDeleteShift={handleDeleteShift}
             />
+          </TabsContent>
+          
+          <TabsContent value="stats" className="mt-0">
+            <ShiftStats shifts={filteredShifts} />
           </TabsContent>
         </Tabs>
       </div>

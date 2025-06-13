@@ -1,0 +1,78 @@
+
+/* Consolidated mobile styles - import all mobile optimizations */
+@import './mobile-translator-styles.css';
+@import './mobile-styles-import.css';
+@import './mobile-responsive-styles.css';
+@import './landscape-styles.css';
+@import './mobile-layout-utils.css';
+@import './capacitor-mobile-styles.css';
+
+/* Global mobile performance optimizations */
+@media screen and (max-width: 768px) {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  html {
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+  }
+  
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    touch-action: manipulation;
+  }
+  
+  /* Prevent viewport shifting */
+  .container {
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+  
+  /* Optimize scrolling performance */
+  .scroll-container {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    scroll-behavior: smooth;
+  }
+  
+  /* Better focus management */
+  .focus-trap {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+  
+  /* Loading states */
+  .mobile-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+  }
+  
+  .mobile-skeleton {
+    background: linear-gradient(90deg, 
+      hsl(var(--muted)) 25%, 
+      hsl(var(--muted-foreground) / 0.1) 50%, 
+      hsl(var(--muted)) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Print media optimizations */
+@media print {
+  .mobile-navbar-fixed,
+  .mobile-sidebar-overlay,
+  .mobile-button,
+  .touch-button {
+    display: none !important;
+  }
+}

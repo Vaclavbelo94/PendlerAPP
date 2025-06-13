@@ -1,3 +1,4 @@
+
 import {
   Home,
   BarChart3,
@@ -70,17 +71,6 @@ export const modernNavigationItems: ModernNavigationItem[] = [
     gradient: 'from-purple-500 to-purple-600'
   },
   {
-    id: 'language',
-    label: 'Německé fráze',
-    href: '/language',
-    icon: Languages,
-    description: 'Praktické fráze pro práci',
-    category: 'tools',
-    isPublic: true,
-    color: 'text-indigo-600',
-    gradient: 'from-indigo-500 to-indigo-600'
-  },
-  {
     id: 'translator',
     label: 'Překladač',
     href: '/translator',
@@ -88,8 +78,8 @@ export const modernNavigationItems: ModernNavigationItem[] = [
     description: 'Překládejte texty a fráze',
     category: 'tools',
     isPublic: true,
-    color: 'text-cyan-600',
-    gradient: 'from-cyan-500 to-cyan-600'
+    color: 'text-indigo-600',
+    gradient: 'from-indigo-500 to-indigo-600'
   },
   {
     id: 'calculator',
