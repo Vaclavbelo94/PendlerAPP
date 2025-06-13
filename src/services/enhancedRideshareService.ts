@@ -6,6 +6,8 @@ export interface RideshareMatch extends RideshareOffer {
   matchScore: number;
   routeCompatibility: number;
   timeCompatibility: number;
+  rating?: number;
+  completed_rides?: number;
   profiles?: {
     username: string;
     email: string;
@@ -121,9 +123,21 @@ export const enhancedRideshareService = {
   },
 
   async incrementCompletedRides(offerId: string): Promise<void> {
-    const { error } = await supabase.rpc('increment_completed_rides', {
-      offer_id: offerId
-    });
+    // Get current completed_rides count and increment it
+    const { data: currentOffer, error: fetchError } = await supabase
+      .from('rideshare_offers')
+      .select('completed_rides')
+      .eq('id', offerId)
+      .single();
+    
+    if (fetchError) throw fetchError;
+    
+    const newCount = (currentOffer.completed_rides || 0) + 1;
+    
+    const { error } = await supabase
+      .from('rideshare_offers')
+      .update({ completed_rides: newCount })
+      .eq('id', offerId);
     
     if (error) throw error;
   }
