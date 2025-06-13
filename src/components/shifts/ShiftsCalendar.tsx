@@ -11,17 +11,34 @@ import { motion } from 'framer-motion';
 
 interface Shift {
   id: string;
-  date: Date;
+  date: Date | string;
   type: 'morning' | 'afternoon' | 'night';
-  location: string;
+  location?: string;
   notes?: string;
 }
 
-const ShiftsCalendar: React.FC = () => {
+interface ShiftsCalendarProps {
+  shifts?: Shift[];
+  onEditShift?: (shift: Shift) => void;
+  onDeleteShift?: (shiftId: string) => void;
+}
+
+const ShiftsCalendar: React.FC<ShiftsCalendarProps> = ({ 
+  shifts = [],
+  onEditShift,
+  onDeleteShift 
+}) => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   
-  // Mock data - v reálné aplikaci by se načítalo z API
-  const shifts: Shift[] = [
+  // Convert string dates to Date objects and add default location
+  const processedShifts: Shift[] = shifts.map(shift => ({
+    ...shift,
+    date: typeof shift.date === 'string' ? new Date(shift.date) : shift.date,
+    location: shift.location || 'München, DE'
+  }));
+
+  // Add mock data if no shifts provided
+  const allShifts: Shift[] = processedShifts.length > 0 ? processedShifts : [
     {
       id: '1',
       date: new Date(),
@@ -56,7 +73,7 @@ const ShiftsCalendar: React.FC = () => {
     }
   };
 
-  const selectedDateShifts = shifts.filter(shift => 
+  const selectedDateShifts = allShifts.filter(shift => 
     selectedDate && format(shift.date, 'yyyy-MM-dd') === format(selectedDate, 'yyyy-MM-dd')
   );
 
@@ -139,10 +156,19 @@ const ShiftsCalendar: React.FC = () => {
                         )}
                       </div>
                       <div className="flex items-center gap-1 ml-4">
-                        <Button variant="ghost" size="sm">
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => onEditShift?.(shift)}
+                        >
                           <Edit className="h-3 w-3" />
                         </Button>
-                        <Button variant="ghost" size="sm" className="hover:bg-destructive/10">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="hover:bg-destructive/10"
+                          onClick={() => onDeleteShift?.(shift.id)}
+                        >
                           <Trash2 className="h-3 w-3" />
                         </Button>
                       </div>

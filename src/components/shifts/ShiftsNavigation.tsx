@@ -10,7 +10,7 @@ interface ShiftsNavigationProps {
   onSectionChange: (section: string) => void;
 }
 
-const ShiftsNavigation: React.FC<ShiftsNavigationProps> = ({
+export const ShiftsNavigation: React.FC<ShiftsNavigationProps> = ({
   activeSection,
   onSectionChange
 }) => {

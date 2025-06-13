@@ -13,8 +13,25 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-const ShiftsOverview: React.FC = () => {
-  // Mock data - v reálné aplikaci by se načítalo z API
+interface Shift {
+  id: string;
+  date: Date | string;
+  type: 'morning' | 'afternoon' | 'night';
+  notes?: string;
+}
+
+interface ShiftsOverviewProps {
+  shifts?: Shift[];
+  onEditShift?: (shift: Shift) => void;
+  onDeleteShift?: (shiftId: string) => void;
+}
+
+const ShiftsOverview: React.FC<ShiftsOverviewProps> = ({ 
+  shifts = [],
+  onEditShift,
+  onDeleteShift 
+}) => {
+  // Mock data - v reálné aplikaci by se načítalo z API nebo používalo real shifts data
   const weeklyStats = {
     hoursWorked: 32,
     plannedHours: 40,

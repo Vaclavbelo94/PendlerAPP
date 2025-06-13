@@ -5,10 +5,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 import { motion } from 'framer-motion';
 
-const ShiftsAnalytics: React.FC = () => {
+interface Shift {
+  id: string;
+  date: Date | string;
+  type: 'morning' | 'afternoon' | 'night';
+  notes?: string;
+}
+
+interface ShiftsAnalyticsProps {
+  shifts?: Shift[];
+}
+
+const ShiftsAnalytics: React.FC<ShiftsAnalyticsProps> = ({ shifts = [] }) => {
   const [period, setPeriod] = useState('month');
 
-  // Mock data - v reálné aplikaci by se načítalo z API
+  // Mock data - v reálné aplikaci by se načítalo z API nebo používalo real shifts data
   const weeklyData = [
     { name: 'Po', hodiny: 8, vydelky: 320 },
     { name: 'Út', hodiny: 8, vydelky: 320 },
