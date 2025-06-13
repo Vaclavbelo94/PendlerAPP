@@ -1,19 +1,19 @@
 
 import React, { lazy, Suspense } from 'react';
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { OptimizedProviderStack } from '@/components/providers/OptimizedProviderStack';
+import { LanguageProvider } from '@/components/providers/LanguageProvider';
+import { ModernLayout } from '@/components/modern/ModernLayout';
 import SimpleLoadingSpinner from '@/components/loading/SimpleLoadingSpinner';
-import LayoutWrapper from '@/components/layouts/LayoutWrapper';
 import ScrollToTop from '@/components/navigation/ScrollToTop';
 
 // Critical pages - load immediately
-import Index from '@/pages/Index';
-import Dashboard from '@/pages/Dashboard';
+import ModernIndex from '@/pages/ModernIndex';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 
 // Non-critical pages - lazy load
-const Vocabulary = lazy(() => import('@/pages/Vocabulary'));
+const Dashboard = lazy(() => import('@/pages/Dashboard'));
 const Shifts = lazy(() => import('@/pages/Shifts'));
 const Calculator = lazy(() => import('@/pages/Calculator'));
 const Translator = lazy(() => import('@/pages/Translator'));
@@ -31,7 +31,7 @@ const Privacy = lazy(() => import('@/pages/Privacy'));
 const Cookies = lazy(() => import('@/pages/Cookies'));
 const Terms = lazy(() => import('@/pages/Terms'));
 
-// Lazy load law pages
+// Law detail pages
 const ChildBenefits = lazy(() => import('@/pages/laws/ChildBenefits'));
 const EmployeeProtection = lazy(() => import('@/pages/laws/EmployeeProtection'));
 const HealthInsurance = lazy(() => import('@/pages/laws/HealthInsurance'));
@@ -45,80 +45,63 @@ const TaxReturn = lazy(() => import('@/pages/laws/TaxReturn'));
 const WorkContract = lazy(() => import('@/pages/laws/WorkContract'));
 const WorkingHours = lazy(() => import('@/pages/laws/WorkingHours'));
 
-// Lazy load optimizers and components
-const RouteOptimizer = lazy(() => import('@/components/optimized/RouteOptimizer').then(m => ({ default: m.RouteOptimizer })));
-const DatabaseOptimizer = lazy(() => import('@/components/optimized/DatabaseOptimizer').then(m => ({ default: m.DatabaseOptimizer })));
-const CookieConsentBanner = lazy(() => import('@/components/gdpr/CookieConsentBanner').then(m => ({ default: m.CookieConsentBanner })));
-
 const AppContent: React.FC = () => {
-  const location = useLocation();
-  const isAuthPage = location.pathname.startsWith('/login') || location.pathname.startsWith('/register');
-  
   return (
-    <>
+    <ModernLayout>
       <ScrollToTop />
-      
       <Suspense fallback={<SimpleLoadingSpinner />}>
-        <DatabaseOptimizer />
-        <RouteOptimizer>
-          <LayoutWrapper>
-            <Suspense fallback={<SimpleLoadingSpinner />}>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                
-                <Route path="/vocabulary" element={<Vocabulary />} />
-                <Route path="/shifts" element={<Shifts />} />
-                <Route path="/calculator" element={<Calculator />} />
-                <Route path="/translator" element={<Translator />} />
-                <Route path="/vehicle" element={<Vehicle />} />
-                <Route path="/tax-advisor" element={<TaxAdvisor />} />
-                <Route path="/travel" element={<TravelPlanning />} />
-                <Route path="/laws" element={<Laws />} />
-                
-                {/* Law detail pages */}
-                <Route path="/laws/child-benefits" element={<ChildBenefits />} />
-                <Route path="/laws/employee-protection" element={<EmployeeProtection />} />
-                <Route path="/laws/health-insurance" element={<HealthInsurance />} />
-                <Route path="/laws/legal-aid" element={<LegalAid />} />
-                <Route path="/laws/minimum-holidays" element={<MinimumHolidays />} />
-                <Route path="/laws/minimum-wage" element={<MinimumWage />} />
-                <Route path="/laws/parental-allowance" element={<ParentalAllowance />} />
-                <Route path="/laws/pension-insurance" element={<PensionInsurance />} />
-                <Route path="/laws/tax-classes" element={<TaxClasses />} />
-                <Route path="/laws/tax-return" element={<TaxReturn />} />
-                <Route path="/laws/work-contract" element={<WorkContract />} />
-                <Route path="/laws/working-hours" element={<WorkingHours />} />
-                
-                {/* Legal pages */}
-                <Route path="/privacy" element={<Privacy />} />
-                <Route path="/cookies" element={<Cookies />} />
-                <Route path="/terms" element={<Terms />} />
-                
-                <Route path="/settings" element={<Settings />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/premium" element={<Premium />} />
-                <Route path="/pricing" element={<Navigate to="/premium" replace />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/faq" element={<FAQ />} />
-                <Route path="/admin" element={<Admin />} />
-              </Routes>
-            </Suspense>
-          </LayoutWrapper>
-        </RouteOptimizer>
-        
-        <CookieConsentBanner />
+        <Routes>
+          <Route path="/" element={<ModernIndex />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/shifts" element={<Shifts />} />
+          <Route path="/calculator" element={<Calculator />} />
+          <Route path="/translator" element={<Translator />} />
+          <Route path="/vehicle" element={<Vehicle />} />
+          <Route path="/tax-advisor" element={<TaxAdvisor />} />
+          <Route path="/travel" element={<TravelPlanning />} />
+          <Route path="/laws" element={<Laws />} />
+          
+          {/* Law detail pages */}
+          <Route path="/laws/child-benefits" element={<ChildBenefits />} />
+          <Route path="/laws/employee-protection" element={<EmployeeProtection />} />
+          <Route path="/laws/health-insurance" element={<HealthInsurance />} />
+          <Route path="/laws/legal-aid" element={<LegalAid />} />
+          <Route path="/laws/minimum-holidays" element={<MinimumHolidays />} />
+          <Route path="/laws/minimum-wage" element={<MinimumWage />} />
+          <Route path="/laws/parental-allowance" element={<ParentalAllowance />} />
+          <Route path="/laws/pension-insurance" element={<PensionInsurance />} />
+          <Route path="/laws/tax-classes" element={<TaxClasses />} />
+          <Route path="/laws/tax-return" element={<TaxReturn />} />
+          <Route path="/laws/work-contract" element={<WorkContract />} />
+          <Route path="/laws/working-hours" element={<WorkingHours />} />
+          
+          {/* Legal pages */}
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/cookies" element={<Cookies />} />
+          <Route path="/terms" element={<Terms />} />
+          
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/premium" element={<Premium />} />
+          <Route path="/pricing" element={<Navigate to="/premium" replace />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/admin" element={<Admin />} />
+        </Routes>
       </Suspense>
-    </>
+    </ModernLayout>
   );
 };
 
 const App: React.FC = () => {
   return (
     <OptimizedProviderStack>
-      <AppContent />
+      <LanguageProvider>
+        <AppContent />
+      </LanguageProvider>
     </OptimizedProviderStack>
   );
 };
