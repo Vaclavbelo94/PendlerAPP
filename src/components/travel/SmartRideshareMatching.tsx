@@ -64,7 +64,12 @@ const SmartRideshareMatching: React.FC = () => {
   };
 
   const handleContactDriver = (offer: RideshareMatch) => {
-    setSelectedOffer(offer);
+    // Convert RideshareMatch to RideshareOffer for the dialog
+    const offerForDialog = {
+      ...offer,
+      rating: offer.rating || 0 // Provide default value for required rating property
+    };
+    setSelectedOffer(offerForDialog);
     setContactDialogOpen(true);
   };
 

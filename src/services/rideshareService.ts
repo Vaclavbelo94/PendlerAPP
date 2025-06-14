@@ -13,7 +13,7 @@ export interface RideshareOffer {
   notes: string;
   is_recurring: boolean;
   recurring_days: number[];
-  rating: number;
+  rating?: number;
   completed_rides: number;
   created_at: string;
   is_active: boolean;

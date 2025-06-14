@@ -2,11 +2,11 @@
 import { supabase } from "@/integrations/supabase/client";
 import { rideshareService, RideshareOffer, RideshareContact } from "./rideshareService";
 
-export interface RideshareMatch extends RideshareOffer {
+export interface RideshareMatch extends Omit<RideshareOffer, 'rating'> {
+  rating?: number;
   matchScore: number;
   routeCompatibility: number;
   timeCompatibility: number;
-  rating?: number;
   completed_rides?: number;
   profiles?: {
     username: string;
