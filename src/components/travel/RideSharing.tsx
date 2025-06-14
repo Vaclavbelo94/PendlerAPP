@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,11 +5,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Users, Plus, Car, MapPin, Clock, DollarSign } from 'lucide-react';
+import { Users, Plus, Car, Search, Filter } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import OptimizedAddressAutocomplete from './OptimizedAddressAutocomplete';
+import EnhancedRideOfferCard from './rideshare/EnhancedRideOfferCard';
+import { rideshareService, RideshareOfferWithDriver } from '@/services/rideshareService';
 
 interface RideshareOffer {
   id: string;
@@ -28,7 +28,9 @@ interface RideshareOffer {
 
 const RideSharing: React.FC = () => {
   const { user } = useAuth();
-  const [offers, setOffers] = useState<RideshareOffer[]>([]);
+  const [offers, setOffers] = useState<RideshareOfferWithDriver[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
   const [formData, setFormData] = useState({
     origin_address: '',
     destination_address: '',
@@ -46,15 +48,10 @@ const RideSharing: React.FC = () => {
   }, []);
 
   const loadOffers = async () => {
+    setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('rideshare_offers')
-        .select('*')
-        .eq('is_active', true)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setOffers(data || []);
+      const data = await rideshareService.getRideshareOffers();
+      setOffers(data);
     } catch (error) {
       console.error('Error loading offers:', error);
       toast({
@@ -62,6 +59,8 @@ const RideSharing: React.FC = () => {
         description: "Nepodařilo se načíst nabídky sdílení jízd.",
         variant: "destructive"
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -77,22 +76,10 @@ const RideSharing: React.FC = () => {
     }
 
     try {
-      const { error } = await supabase
-        .from('rideshare_offers')
-        .insert({
-          user_id: user.id,
-          origin_address: formData.origin_address,
-          destination_address: formData.destination_address,
-          departure_date: formData.departure_date,
-          departure_time: formData.departure_time,
-          seats_available: formData.seats_available,
-          price_per_person: formData.price_per_person,
-          notes: formData.notes,
-          is_recurring: formData.is_recurring,
-          recurring_days: formData.recurring_days
-        });
-
-      if (error) throw error;
+      await rideshareService.createRideshareOffer({
+        user_id: user.id,
+        ...formData
+      });
 
       toast({
         title: "Úspěch",
@@ -123,33 +110,25 @@ const RideSharing: React.FC = () => {
     }
   };
 
-  const handleContactOwner = async (offerId: string) => {
+  const handleContactDriver = async (ride: RideshareOfferWithDriver) => {
     if (!user) {
       toast({
         title: "Chyba",
-        description: "Pro kontaktování majitele musíte být přihlášeni.",
+        description: "Pro kontaktování řidiče musíte být přihlášeni.",
         variant: "destructive"
       });
       return;
     }
 
     try {
-      const { error } = await supabase
-        .from('rideshare_contacts')
-        .insert({
-          offer_id: offerId,
-          requester_user_id: user.id,
-          message: 'Mám zájem o vaši nabídku sdílení jízdy.'
-        });
-
-      if (error) throw error;
-
+      await rideshareService.contactDriver(ride.id, 'Mám zájem o vaši nabídku sdílení jízdy.');
+      
       toast({
         title: "Úspěch",
-        description: "Žádost o kontakt byla odeslána majiteli nabídky."
+        description: "Žádost o kontakt byla odeslána řidiči."
       });
     } catch (error) {
-      console.error('Error contacting owner:', error);
+      console.error('Error contacting driver:', error);
       toast({
         title: "Chyba",
         description: "Nepodařilo se odeslat žádost o kontakt.",
@@ -157,6 +136,16 @@ const RideSharing: React.FC = () => {
       });
     }
   };
+
+  const filteredOffers = offers.filter(offer => {
+    if (!searchQuery) return true;
+    const query = searchQuery.toLowerCase();
+    return (
+      offer.origin_address.toLowerCase().includes(query) ||
+      offer.destination_address.toLowerCase().includes(query) ||
+      offer.driver.username.toLowerCase().includes(query)
+    );
+  });
 
   return (
     <div className="space-y-6">
@@ -166,61 +155,65 @@ const RideSharing: React.FC = () => {
           <TabsTrigger value="create">Vytvořit nabídku</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="browse" className="space-y-4">
+        <TabsContent value="browse" className="space-y-6">
+          {/* Search and Filters */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Search className="h-5 w-5" />
+                Najít jízdu
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex gap-4">
+                <div className="flex-1">
+                  <Input
+                    placeholder="Hledat podle města nebo jména řidiče..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+                <Button variant="outline" size="icon">
+                  <Filter className="h-4 w-4" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Offers List */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Users className="h-5 w-5" />
-                Dostupné nabídky sdílení jízd
+                Dostupné nabídky ({filteredOffers.length})
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {offers.length === 0 ? (
+              {loading ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+                  <p className="text-muted-foreground">Načítám nabídky...</p>
+                </div>
+              ) : filteredOffers.length === 0 ? (
                 <div className="text-center text-muted-foreground py-8">
                   <Car className="mx-auto h-12 w-12 mb-4 opacity-50" />
-                  <p>Momentálně nejsou dostupné žádné nabídky sdílení jízd.</p>
+                  <p>
+                    {searchQuery 
+                      ? `Žádné nabídky nenalezeny pro "${searchQuery}"`
+                      : 'Momentálně nejsou dostupné žádné nabídky sdílení jízd.'
+                    }
+                  </p>
                 </div>
               ) : (
-                <div className="grid gap-4">
-                  {offers.map((offer) => (
-                    <div key={offer.id} className="border rounded-lg p-4 space-y-3">
-                      <div className="flex items-start justify-between">
-                        <div className="space-y-2">
-                          <div className="flex items-center gap-2">
-                            <MapPin className="h-4 w-4 text-muted-foreground" />
-                            <span className="font-medium">
-                              {offer.origin_address} → {offer.destination_address}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                            <div className="flex items-center gap-1">
-                              <Clock className="h-4 w-4" />
-                              {offer.departure_date} v {offer.departure_time}
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Users className="h-4 w-4" />
-                              {offer.seats_available} míst
-                            </div>
-                            {offer.price_per_person > 0 && (
-                              <div className="flex items-center gap-1">
-                                <DollarSign className="h-4 w-4" />
-                                {offer.price_per_person} Kč/osoba
-                              </div>
-                            )}
-                          </div>
-                          {offer.notes && (
-                            <p className="text-sm text-muted-foreground">{offer.notes}</p>
-                          )}
-                        </div>
-                        <Button
-                          size="sm"
-                          onClick={() => handleContactOwner(offer.id)}
-                          disabled={offer.user_id === user?.id}
-                        >
-                          {offer.user_id === user?.id ? 'Vaše nabídka' : 'Kontaktovat'}
-                        </Button>
-                      </div>
-                    </div>
+                <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                  {filteredOffers.map((offer) => (
+                    <EnhancedRideOfferCard
+                      key={offer.id}
+                      ride={offer}
+                      onContact={handleContactDriver}
+                      isAuthenticated={!!user}
+                      currentUserId={user?.id}
+                    />
                   ))}
                 </div>
               )}

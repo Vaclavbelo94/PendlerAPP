@@ -14,6 +14,7 @@ export const useProfileSettings = () => {
     bio: "",
     location: "",
     website: "",
+    phoneNumber: "",
     emailNotifications: true,
     shiftNotifications: true,
     languageReminders: true,
@@ -26,6 +27,7 @@ export const useProfileSettings = () => {
     bio: false,
     location: false,
     website: false,
+    phoneNumber: false,
   });
 
   useEffect(() => {
@@ -34,63 +36,54 @@ export const useProfileSettings = () => {
       
       setLoading(true);
       try {
-        // Pokus o načtení rozšířeného profilu ze Supabase
-        const { data, error } = await supabase
-          .from('user_extended_profiles')
-          .select('*')
-          .eq('user_id', user.id)
-          .single();
-        
-        if (error && error.code !== 'PGRST116') {
-          console.error('Chyba při načítání profilu:', error);
-          throw error;
+        // Load profile data from both profiles and user_extended_profiles
+        const [profilesResponse, extendedResponse] = await Promise.all([
+          supabase
+            .from('profiles')
+            .select('username, phone_number')
+            .eq('id', user.id)
+            .single(),
+          supabase
+            .from('user_extended_profiles')
+            .select('*')
+            .eq('user_id', user.id)
+            .single()
+        ]);
+
+        const profileData = profilesResponse.data;
+        const extendedData = extendedResponse.data;
+
+        if (profilesResponse.error && profilesResponse.error.code !== 'PGRST116') {
+          throw profilesResponse.error;
         }
 
-        if (data) {
-          // Profil existuje, nastavíme data
-          const loadedProfile = {
-            id: data.user_id,
-            displayName: data.display_name || user.user_metadata?.username || "",
-            bio: data.bio || "",
-            location: data.location || "",
-            website: data.website || "",
-            emailNotifications: data.email_notifications !== undefined ? data.email_notifications : true,
-            shiftNotifications: data.shift_notifications !== undefined ? data.shift_notifications : true,
-            languageReminders: data.language_reminders !== undefined ? data.language_reminders : true,
-            preferredLanguage: data.preferred_language || "cs",
-          };
-          
-          setProfileSettings(loadedProfile);
-          
-          // Set filled fields based on loaded data
-          setFilledFields({
-            displayName: !!loadedProfile.displayName,
-            bio: !!loadedProfile.bio,
-            location: !!loadedProfile.location,
-            website: !!loadedProfile.website,
-          });
-        } else {
-          // Profil neexistuje, nastavíme výchozí hodnoty
-          setProfileSettings({
-            id: user.id,
-            displayName: user.user_metadata?.username || user.email?.split('@')[0] || "",
-            bio: "",
-            location: "",
-            website: "",
-            emailNotifications: true,
-            shiftNotifications: true,
-            languageReminders: true,
-            preferredLanguage: "cs",
-          });
-          
-          // Set displayName as filled if it comes from user metadata
-          setFilledFields({
-            displayName: !!(user.user_metadata?.username || user.email?.split('@')[0]),
-            bio: false,
-            location: false,
-            website: false,
-          });
+        if (extendedResponse.error && extendedResponse.error.code !== 'PGRST116') {
+          console.error('Extended profile error:', extendedResponse.error);
         }
+
+        const loadedProfile = {
+          id: user.id,
+          displayName: extendedData?.display_name || profileData?.username || user.user_metadata?.username || "",
+          bio: extendedData?.bio || "",
+          location: extendedData?.location || "",
+          website: extendedData?.website || "",
+          phoneNumber: profileData?.phone_number || "",
+          emailNotifications: extendedData?.email_notifications !== undefined ? extendedData.email_notifications : true,
+          shiftNotifications: extendedData?.shift_notifications !== undefined ? extendedData.shift_notifications : true,
+          languageReminders: extendedData?.language_reminders !== undefined ? extendedData.language_reminders : true,
+          preferredLanguage: extendedData?.preferred_language || "cs",
+        };
+        
+        setProfileSettings(loadedProfile);
+        
+        // Set filled fields based on loaded data
+        setFilledFields({
+          displayName: !!loadedProfile.displayName,
+          bio: !!loadedProfile.bio,
+          location: !!loadedProfile.location,
+          website: !!loadedProfile.website,
+          phoneNumber: !!loadedProfile.phoneNumber,
+        });
       } catch (error) {
         console.error('Chyba při načítání profilu:', error);
         toast.error("Nepodařilo se načíst data profilu");
@@ -106,7 +99,7 @@ export const useProfileSettings = () => {
     setProfileSettings(prev => ({ ...prev, [field]: value }));
     
     // Only update filled state for text fields
-    if (typeof value === 'string' && ['displayName', 'bio', 'location', 'website'].includes(field)) {
+    if (typeof value === 'string' && ['displayName', 'bio', 'location', 'website', 'phoneNumber'].includes(field)) {
       setFilledFields(prev => ({ 
         ...prev, 
         [field]: value.trim().length > 0 
@@ -119,7 +112,19 @@ export const useProfileSettings = () => {
     
     setLoading(true);
     try {
-      // Kontrola, zda profil existuje
+      // Update profiles table with phone number
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({
+          phone_number: profileSettings.phoneNumber || null
+        })
+        .eq('id', user.id);
+
+      if (profileError) {
+        throw profileError;
+      }
+
+      // Check if extended profile exists
       const { data: existingProfile, error: checkError } = await supabase
         .from('user_extended_profiles')
         .select('user_id')
@@ -133,7 +138,7 @@ export const useProfileSettings = () => {
 
       let result;
       if (existingProfile) {
-        // Aktualizace existujícího profilu
+        // Update existing extended profile
         result = await supabase
           .from('user_extended_profiles')
           .update({
@@ -149,7 +154,7 @@ export const useProfileSettings = () => {
           })
           .eq('user_id', user.id);
       } else {
-        // Vytvoření nového profilu
+        // Create new extended profile
         result = await supabase
           .from('user_extended_profiles')
           .insert({

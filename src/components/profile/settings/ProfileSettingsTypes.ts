@@ -5,11 +5,9 @@ export interface UserProfileSettings {
   bio: string;
   location: string;
   website: string;
+  phoneNumber: string;
   emailNotifications: boolean;
   shiftNotifications: boolean;
   languageReminders: boolean;
   preferredLanguage: string;
 }
-
-// Audio settings are handled separately via useAudioSettings hook
-// to avoid conflicts with existing profile system and provide better modularity

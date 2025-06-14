@@ -1,197 +1,100 @@
 
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from '@/integrations/supabase/client';
 
 export interface RideshareOffer {
-  id?: string;
+  id: string;
   user_id: string;
   origin_address: string;
   destination_address: string;
   departure_date: string;
   departure_time: string;
   seats_available: number;
-  price_per_person?: number;
-  notes?: string;
-  is_recurring?: boolean;
-  recurring_days?: number[];
-  is_active?: boolean;
-  created_at?: string;
-  updated_at?: string;
+  price_per_person: number;
+  notes: string;
+  is_recurring: boolean;
+  recurring_days: number[];
+  rating: number;
+  completed_rides: number;
+  created_at: string;
+  is_active: boolean;
 }
 
-export interface RideshareRequest {
-  id?: string;
-  user_id: string;
-  origin_address: string;
-  destination_address: string;
-  departure_date: string;
-  departure_time_from: string;
-  departure_time_to: string;
-  max_price_per_person?: number;
-  notes?: string;
-  is_active?: boolean;
-  created_at?: string;
-  updated_at?: string;
-}
-
-export interface RideshareContact {
-  id?: string;
-  offer_id: string;
-  requester_user_id: string;
-  message?: string;
-  status?: 'pending' | 'accepted' | 'rejected' | 'cancelled';
-  created_at?: string;
-  updated_at?: string;
+export interface RideshareOfferWithDriver extends RideshareOffer {
+  driver: {
+    username: string;
+    phone_number?: string;
+    rating?: number;
+    completed_rides?: number;
+  };
 }
 
 export const rideshareService = {
-  // Nabídky spolujízd
-  async createOffer(offer: RideshareOffer): Promise<RideshareOffer> {
+  async getRideshareOffers(): Promise<RideshareOfferWithDriver[]> {
     const { data, error } = await supabase
       .from('rideshare_offers')
-      .insert(offer)
-      .select()
-      .single();
-    
-    if (error) throw error;
-    return data as RideshareOffer;
-  },
-
-  async getOffers(filters?: { 
-    origin?: string; 
-    destination?: string; 
-    date?: string; 
-    limit?: number;
-  }): Promise<RideshareOffer[]> {
-    let query = supabase
-      .from('rideshare_offers')
-      .select('*')
+      .select(`
+        *,
+        profiles!rideshare_offers_user_id_fkey (
+          username,
+          phone_number
+        )
+      `)
       .eq('is_active', true)
-      .order('departure_date', { ascending: true });
-
-    if (filters?.origin) {
-      query = query.ilike('origin_address', `%${filters.origin}%`);
-    }
-    if (filters?.destination) {
-      query = query.ilike('destination_address', `%${filters.destination}%`);
-    }
-    if (filters?.date) {
-      query = query.gte('departure_date', filters.date);
-    }
-    if (filters?.limit) {
-      query = query.limit(filters.limit);
-    }
-
-    const { data, error } = await query;
-    if (error) throw error;
-    return (data || []) as RideshareOffer[];
-  },
-
-  async getUserOffers(userId: string): Promise<RideshareOffer[]> {
-    const { data, error } = await supabase
-      .from('rideshare_offers')
-      .select('*')
-      .eq('user_id', userId)
-      .order('departure_date', { ascending: true });
-    
-    if (error) throw error;
-    return (data || []) as RideshareOffer[];
-  },
-
-  async updateOffer(id: string, updates: Partial<RideshareOffer>): Promise<RideshareOffer> {
-    const { data, error } = await supabase
-      .from('rideshare_offers')
-      .update({ ...updates, updated_at: new Date().toISOString() })
-      .eq('id', id)
-      .select()
-      .single();
-    
-    if (error) throw error;
-    return data as RideshareOffer;
-  },
-
-  async deleteOffer(id: string): Promise<void> {
-    const { error } = await supabase
-      .from('rideshare_offers')
-      .delete()
-      .eq('id', id);
-    
-    if (error) throw error;
-  },
-
-  // Požadavky na spolujízdy
-  async createRequest(request: RideshareRequest): Promise<RideshareRequest> {
-    const { data, error } = await supabase
-      .from('rideshare_requests')
-      .insert(request)
-      .select()
-      .single();
-    
-    if (error) throw error;
-    return data as RideshareRequest;
-  },
-
-  async getRequests(filters?: { 
-    origin?: string; 
-    destination?: string; 
-    date?: string; 
-    limit?: number;
-  }): Promise<RideshareRequest[]> {
-    let query = supabase
-      .from('rideshare_requests')
-      .select('*')
-      .eq('is_active', true)
-      .order('departure_date', { ascending: true });
-
-    if (filters?.origin) {
-      query = query.ilike('origin_address', `%${filters.origin}%`);
-    }
-    if (filters?.destination) {
-      query = query.ilike('destination_address', `%${filters.destination}%`);
-    }
-    if (filters?.date) {
-      query = query.gte('departure_date', filters.date);
-    }
-    if (filters?.limit) {
-      query = query.limit(filters.limit);
-    }
-
-    const { data, error } = await query;
-    if (error) throw error;
-    return (data || []) as RideshareRequest[];
-  },
-
-  // Kontakty
-  async createContact(contact: RideshareContact): Promise<RideshareContact> {
-    const { data, error } = await supabase
-      .from('rideshare_contacts')
-      .insert(contact)
-      .select()
-      .single();
-    
-    if (error) throw error;
-    return data as RideshareContact;
-  },
-
-  async getContactsForOffer(offerId: string): Promise<RideshareContact[]> {
-    const { data, error } = await supabase
-      .from('rideshare_contacts')
-      .select('*')
-      .eq('offer_id', offerId)
       .order('created_at', { ascending: false });
-    
-    if (error) throw error;
-    return (data || []) as RideshareContact[];
+
+    if (error) {
+      console.error('Error loading rideshare offers:', error);
+      throw error;
+    }
+
+    return (data || []).map(offer => ({
+      ...offer,
+      driver: {
+        username: offer.profiles?.username || 'Neznámý řidič',
+        phone_number: offer.profiles?.phone_number,
+        rating: offer.rating,
+        completed_rides: offer.completed_rides
+      }
+    }));
   },
 
-  async updateContactStatus(contactId: string, status: RideshareContact['status']): Promise<RideshareContact> {
+  async createRideshareOffer(offerData: Omit<RideshareOffer, 'id' | 'created_at' | 'rating' | 'completed_rides' | 'is_active'>) {
     const { data, error } = await supabase
-      .from('rideshare_contacts')
-      .update({ status, updated_at: new Date().toISOString() })
-      .eq('id', contactId)
+      .from('rideshare_offers')
+      .insert(offerData)
       .select()
       .single();
+
+    if (error) {
+      console.error('Error creating rideshare offer:', error);
+      throw error;
+    }
+
+    return data;
+  },
+
+  async contactDriver(offerId: string, message: string) {
+    const { data: { user } } = await supabase.auth.getUser();
     
-    if (error) throw error;
-    return data as RideshareContact;
+    if (!user) {
+      throw new Error('User must be authenticated');
+    }
+
+    const { data, error } = await supabase
+      .from('rideshare_contacts')
+      .insert({
+        offer_id: offerId,
+        requester_user_id: user.id,
+        message: message
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error contacting driver:', error);
+      throw error;
+    }
+
+    return data;
   }
 };

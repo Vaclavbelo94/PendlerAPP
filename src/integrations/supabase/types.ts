@@ -332,6 +332,7 @@ export type Database = {
           id: string
           is_admin: boolean | null
           is_premium: boolean | null
+          phone_number: string | null
           premium_expiry: string | null
           updated_at: string
           username: string | null
@@ -342,6 +343,7 @@ export type Database = {
           id: string
           is_admin?: boolean | null
           is_premium?: boolean | null
+          phone_number?: string | null
           premium_expiry?: string | null
           updated_at?: string
           username?: string | null
@@ -352,6 +354,7 @@ export type Database = {
           id?: string
           is_admin?: boolean | null
           is_premium?: boolean | null
+          phone_number?: string | null
           premium_expiry?: string | null
           updated_at?: string
           username?: string | null
