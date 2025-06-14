@@ -1,16 +1,15 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Users, Search, MessageCircle, TrendingUp } from 'lucide-react';
+import { Users, Search, MessageCircle } from 'lucide-react';
 import RideSharing from './RideSharing';
 import SmartRideshareMatching from './SmartRideshareMatching';
-import TravelAnalyticsDashboard from './TravelAnalyticsDashboard';
 
 const EnhancedRideSharing: React.FC = () => {
   return (
     <div className="space-y-6">
       <Tabs defaultValue="browse" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="browse" className="flex items-center gap-2">
             <Users className="h-4 w-4" />
             Procházet
@@ -22,10 +21,6 @@ const EnhancedRideSharing: React.FC = () => {
           <TabsTrigger value="create" className="flex items-center gap-2">
             <MessageCircle className="h-4 w-4" />
             Vytvořit
-          </TabsTrigger>
-          <TabsTrigger value="analytics" className="flex items-center gap-2">
-            <TrendingUp className="h-4 w-4" />
-            Analýzy
           </TabsTrigger>
         </TabsList>
 
@@ -39,10 +34,6 @@ const EnhancedRideSharing: React.FC = () => {
 
         <TabsContent value="create">
           <RideSharing />
-        </TabsContent>
-
-        <TabsContent value="analytics">
-          <TravelAnalyticsDashboard />
         </TabsContent>
       </Tabs>
     </div>
