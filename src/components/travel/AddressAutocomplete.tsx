@@ -1,152 +1,218 @@
 
-import React, { useState, useRef, useEffect } from 'react';
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { MapPin, Clock } from "lucide-react";
-import { useAddressAutocomplete } from "@/hooks/useAddressAutocomplete";
-import { cn } from "@/lib/utils";
+import React, { useState, useRef, useCallback, memo } from 'react';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from '@/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { MapPin, Loader2, X } from 'lucide-react';
+import { useDebounce } from '@/hooks/useDebounce';
+import { cn } from '@/lib/utils';
 
 interface AddressAutocompleteProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
-  recentAddresses?: string[];
   className?: string;
+  disabled?: boolean;
+  id?: string;
 }
 
-const AddressAutocomplete = ({ 
-  value, 
-  onChange, 
-  placeholder, 
-  recentAddresses = [],
-  className 
-}: AddressAutocompleteProps) => {
-  const [focused, setFocused] = useState(false);
-  const [selectedIndex, setSelectedIndex] = useState(-1);
-  const { suggestions, loading } = useAddressAutocomplete(value);
+interface GooglePlacesSuggestion {
+  place_id: string;
+  description: string;
+  structured_formatting: {
+    main_text: string;
+    secondary_text: string;
+  };
+}
+
+const GOOGLE_MAPS_API_KEY = "AIzaSyBKc8VQM2i4TyHq5mI6aK9gJNBBSVnO4xY"; // Replace with your actual API key
+
+const AddressAutocomplete = memo<AddressAutocompleteProps>(({
+  value,
+  onChange,
+  placeholder = "Zadejte adresu...",
+  className,
+  disabled = false,
+  id
+}) => {
+  const [open, setOpen] = useState(false);
+  const [inputValue, setInputValue] = useState(value);
+  const [suggestions, setSuggestions] = useState<GooglePlacesSuggestion[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   
-  const showDropdown = focused && (suggestions.length > 0 || recentAddresses.length > 0);
-  const allSuggestions = [
-    ...recentAddresses.map(addr => ({ display_name: addr, isRecent: true })),
-    ...suggestions.map(s => ({ display_name: s.display_name, isRecent: false }))
-  ];
+  const debouncedQuery = useDebounce(inputValue, 300);
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (!showDropdown) return;
-
-    switch (e.key) {
-      case 'ArrowDown':
-        e.preventDefault();
-        setSelectedIndex(prev => 
-          prev < allSuggestions.length - 1 ? prev + 1 : 0
-        );
-        break;
-      case 'ArrowUp':
-        e.preventDefault();
-        setSelectedIndex(prev => 
-          prev > 0 ? prev - 1 : allSuggestions.length - 1
-        );
-        break;
-      case 'Enter':
-        e.preventDefault();
-        if (selectedIndex >= 0 && allSuggestions[selectedIndex]) {
-          onChange(allSuggestions[selectedIndex].display_name);
-          setFocused(false);
-        }
-        break;
-      case 'Escape':
-        setFocused(false);
-        inputRef.current?.blur();
-        break;
+  const searchPlaces = useCallback(async (query: string) => {
+    if (!query || query.length < 3) {
+      setSuggestions([]);
+      return;
     }
-  };
 
-  const handleSuggestionClick = (suggestion: string) => {
-    onChange(suggestion);
-    setFocused(false);
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(query)}&types=address&components=country:cz|country:de&key=${GOOGLE_MAPS_API_KEY}`
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (data.status === 'OK') {
+        setSuggestions(data.predictions || []);
+      } else {
+        console.error('Google Places API error:', data.status);
+        setError('Nepodařilo se načíst návrhy adres');
+        setSuggestions([]);
+      }
+    } catch (error) {
+      console.error('Error fetching address suggestions:', error);
+      setError('Nepodařilo se načíst návrhy adres');
+      setSuggestions([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    if (debouncedQuery && debouncedQuery.length >= 3) {
+      searchPlaces(debouncedQuery);
+      if (!open) {
+        setOpen(true);
+      }
+    } else {
+      setSuggestions([]);
+      setError(null);
+    }
+  }, [debouncedQuery, searchPlaces, open]);
+
+  const handleInputChange = useCallback((newValue: string) => {
+    setInputValue(newValue);
+    onChange(newValue);
+  }, [onChange]);
+
+  const handleSuggestionSelect = useCallback((suggestion: GooglePlacesSuggestion) => {
+    const selectedValue = suggestion.description;
+    setInputValue(selectedValue);
+    onChange(selectedValue);
+    setOpen(false);
     inputRef.current?.blur();
-  };
+  }, [onChange]);
 
-  useEffect(() => {
-    if (!focused) {
-      setSelectedIndex(-1);
+  const handleClear = useCallback(() => {
+    setInputValue('');
+    onChange('');
+    setOpen(false);
+    inputRef.current?.focus();
+  }, [onChange]);
+
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      setOpen(false);
+      inputRef.current?.blur();
     }
-  }, [focused]);
+  }, []);
 
   return (
-    <div className="relative">
-      <Input
-        ref={inputRef}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setTimeout(() => setFocused(false), 200)}
-        onKeyDown={handleKeyDown}
-        placeholder={placeholder}
-        className={className}
-      />
-      
-      {showDropdown && (
-        <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-background border rounded-md shadow-lg max-h-64 overflow-y-auto">
-          {recentAddresses.length > 0 && (
-            <>
-              <div className="px-3 py-2 text-xs font-medium text-muted-foreground border-b">
-                Nedávné adresy
-              </div>
-              {recentAddresses.map((address, index) => (
-                <Button
-                  key={`recent-${index}`}
-                  variant="ghost"
-                  className={cn(
-                    "w-full justify-start text-left h-auto p-3",
-                    selectedIndex === index && "bg-accent"
-                  )}
-                  onClick={() => handleSuggestionClick(address)}
-                >
-                  <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
-                  <span className="truncate">{address}</span>
-                </Button>
-              ))}
-            </>
-          )}
-          
-          {suggestions.length > 0 && (
-            <>
-              {recentAddresses.length > 0 && (
-                <div className="px-3 py-2 text-xs font-medium text-muted-foreground border-b">
-                  Návrhy
+    <div className={cn("relative", className)}>
+      <Popover open={open && !disabled} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <div className="relative">
+            <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              ref={inputRef}
+              id={id}
+              value={inputValue}
+              onChange={(e) => handleInputChange(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder={placeholder}
+              disabled={disabled}
+              className={cn(
+                "pl-10 pr-10",
+                error && "border-destructive"
+              )}
+            />
+            {loading && (
+              <Loader2 className="absolute right-8 top-1/2 transform -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
+            )}
+            {inputValue && !loading && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={handleClear}
+                className="absolute right-1 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 hover:bg-muted"
+              >
+                <X className="h-3 w-3" />
+              </Button>
+            )}
+          </div>
+        </PopoverTrigger>
+        
+        <PopoverContent 
+          className="w-full p-0" 
+          align="start"
+          side="bottom"
+          sideOffset={4}
+        >
+          <Command>
+            <CommandList className="max-h-[200px] overflow-y-auto">
+              {loading && (
+                <div className="flex items-center justify-center p-4">
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  <span className="text-sm text-muted-foreground">Načítám návrhy...</span>
                 </div>
               )}
-              {suggestions.map((suggestion, index) => {
-                const adjustedIndex = index + recentAddresses.length;
-                return (
-                  <Button
-                    key={suggestion.place_id}
-                    variant="ghost"
-                    className={cn(
-                      "w-full justify-start text-left h-auto p-3",
-                      selectedIndex === adjustedIndex && "bg-accent"
-                    )}
-                    onClick={() => handleSuggestionClick(suggestion.display_name)}
-                  >
-                    <MapPin className="h-4 w-4 mr-2 text-muted-foreground" />
-                    <span className="truncate">{suggestion.display_name}</span>
-                  </Button>
-                );
-              })}
-            </>
-          )}
-          
-          {loading && (
-            <div className="px-3 py-2 text-sm text-muted-foreground">
-              Vyhledávám...
-            </div>
-          )}
-        </div>
-      )}
+              
+              {error && (
+                <div className="p-4 text-sm text-destructive">
+                  {error}
+                </div>
+              )}
+              
+              {!loading && !error && suggestions.length === 0 && inputValue.length >= 3 && (
+                <CommandEmpty>
+                  Žádné návrhy nebyly nalezeny.
+                </CommandEmpty>
+              )}
+              
+              {suggestions.length > 0 && (
+                <CommandGroup>
+                  {suggestions.map((suggestion) => (
+                    <CommandItem
+                      key={suggestion.place_id}
+                      value={suggestion.description}
+                      onSelect={() => handleSuggestionSelect(suggestion)}
+                      className="cursor-pointer"
+                    >
+                      <MapPin className="mr-2 h-4 w-4 text-muted-foreground flex-shrink-0" />
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium">
+                          {suggestion.structured_formatting.main_text}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {suggestion.structured_formatting.secondary_text}
+                        </span>
+                      </div>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              )}
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
     </div>
   );
-};
+});
+
+AddressAutocomplete.displayName = 'AddressAutocomplete';
 
 export default AddressAutocomplete;
