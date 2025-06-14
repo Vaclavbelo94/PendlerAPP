@@ -117,6 +117,10 @@ const PendlerTaxCalculator = () => {
     });
   };
 
+  const handleSecondHomeChange = (checked: boolean | "indeterminate") => {
+    setHasSecondHome(checked === true);
+  };
+
   return (
     <div className="space-y-6">
       <Card>
@@ -179,7 +183,7 @@ const PendlerTaxCalculator = () => {
               <Checkbox
                 id="secondHome"
                 checked={hasSecondHome}
-                onCheckedChange={setHasSecondHome}
+                onCheckedChange={handleSecondHomeChange}
               />
               <Label htmlFor="secondHome" className="flex items-center gap-2">
                 <Home className="h-4 w-4" />
