@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -13,12 +13,22 @@ import { PageContainer } from "@/components/layout/StandardContainers";
 import { StandardCard } from "@/components/ui/StandardCard";
 import { UnifiedGrid } from "@/components/layout/UnifiedGrid";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useSwipeNavigation } from "@/hooks/useSwipeNavigation";
 
 const Profile = () => {
   const { user, isPremium, isAdmin } = useAuth();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [activeTab, setActiveTab] = useState('overview');
+
+  // Swipe navigation setup
+  const profileTabs = ['overview', 'appearance', 'subscription', 'activity'];
+  const { containerRef } = useSwipeNavigation({
+    items: profileTabs,
+    currentItem: activeTab,
+    onItemChange: setActiveTab,
+    enabled: isMobile
+  });
 
   if (!user) {
     return (
@@ -170,17 +180,24 @@ const Profile = () => {
 
   return (
     <PageContainer maxWidth="xl" padding="lg">
-      <div className="mb-8 text-center md:text-left">
-        <h1 className="text-3xl font-bold mb-2">Můj profil</h1>
-        <p className="text-muted-foreground">
-          Spravujte své informace a nastavení účtu
-        </p>
-      </div>
+      <div ref={containerRef} className="touch-manipulation">
+        <div className="mb-8 text-center md:text-left">
+          <h1 className="text-3xl font-bold mb-2">Můj profil</h1>
+          <p className="text-muted-foreground">
+            Spravujte své informace a nastavení účtu
+          </p>
+          {isMobile && (
+            <p className="text-xs text-muted-foreground mt-2">
+              💡 Tip: Přejeďte prstem doleva/doprava pro navigaci mezi záložkami
+            </p>
+          )}
+        </div>
 
-      <ProfileNavigation activeTab={activeTab} onTabChange={setActiveTab} />
-      
-      <div className="mt-8">
-        {renderTabContent()}
+        <ProfileNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+        
+        <div className="mt-8">
+          {renderTabContent()}
+        </div>
       </div>
     </PageContainer>
   );

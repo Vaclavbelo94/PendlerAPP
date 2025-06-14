@@ -63,7 +63,7 @@ const ProfileAppearanceContent = ({
           <span>Nastavení vzhledu</span>
         </CardTitle>
         <CardDescription className={`${isMobile ? 'text-xs' : ''}`}>
-          Upravte si základní nastavení zobrazení aplikace
+          Upravte si základní nastavení zobrazení aplikace. Změny se aplikují okamžitě.
         </CardDescription>
       </CardHeader>
       <CardContent className={`${isMobile ? 'px-4' : ''}`}>
@@ -95,6 +95,14 @@ const ProfileAppearanceContent = ({
             setCompactMode={setCompactMode}
           />
         </div>
+        
+        {isMobile && (
+          <div className="mt-6 p-3 bg-muted/20 rounded-lg">
+            <p className="text-xs text-muted-foreground text-center">
+              ℹ️ Všechny změny se aplikují okamžitě bez nutnosti ukládání
+            </p>
+          </div>
+        )}
       </CardContent>
       <CardFooter className={`${isMobile ? 'px-4' : ''}`}>
         <Button 
@@ -102,8 +110,9 @@ const ProfileAppearanceContent = ({
           className={`${isMobile ? 'w-full' : 'ml-auto'}`}
           disabled={isChangingTheme || isLoading}
           size={isMobile ? "sm" : "default"}
+          variant="outline"
         >
-          {isLoading ? "Ukládání..." : "Uložit nastavení"}
+          {isLoading ? "Ukládání..." : "Uložit do profilu"}
         </Button>
       </CardFooter>
     </Card>

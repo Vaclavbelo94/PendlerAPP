@@ -6,6 +6,7 @@
 @import './landscape-styles.css';
 @import './mobile-layout-utils.css';
 @import './capacitor-mobile-styles.css';
+@import './mobile-swipe-styles.css';
 
 /* Global mobile performance optimizations */
 @media screen and (max-width: 768px) {
