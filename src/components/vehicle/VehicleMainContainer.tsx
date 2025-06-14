@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useSimplifiedAuth } from '@/hooks/auth/useSimplifiedAuth';
@@ -65,9 +64,13 @@ const VehicleMainContainer: React.FC = () => {
   }
 
   if (vehicleManagement.error && !vehicleManagement.isLoading) {
+    const errorObj = vehicleManagement.error instanceof Error 
+      ? vehicleManagement.error 
+      : new Error(String(vehicleManagement.error));
+    
     return (
       <VehicleErrorBoundary 
-        error={vehicleManagement.error instanceof Error ? vehicleManagement.error : new Error(vehicleManagement.error)} 
+        error={errorObj} 
         onRetry={vehicleManagement.retryLastOperation}
         retryCount={vehicleManagement.retryCount}
       />
