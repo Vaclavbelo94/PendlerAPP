@@ -1,29 +1,35 @@
 
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
 import { useSimplifiedAuth } from '@/hooks/auth/useSimplifiedAuth';
 import { useVehicleManagement } from '@/hooks/vehicle/useVehicleManagement';
-import { VehicleData } from '@/types/vehicle';
-import VehicleCarousel from './VehicleCarousel';
+import { useVehiclePageState } from '@/hooks/vehicle/useVehiclePageState';
 import VehicleErrorBoundary from './VehicleErrorBoundary';
 import FastLoadingFallback from '@/components/common/FastLoadingFallback';
-import VehicleSelectorOptimized from './VehicleSelectorOptimized';
-import EmptyVehicleState from './EmptyVehicleState';
-import VehicleForm from './VehicleForm';
-import DeleteVehicleDialog from './DeleteVehicleDialog';
-import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTitle, SheetDescription, SheetHeader } from '@/components/ui/sheet';
-import { Plus, Car } from 'lucide-react';
+import VehiclePageHeader from './VehiclePageHeader';
+import VehiclePageContent from './VehiclePageContent';
+import VehicleSheets from './VehicleSheets';
 
 const VehicleMainContainer: React.FC = () => {
   const { user, isInitialized } = useSimplifiedAuth();
-  const [isAddSheetOpen, setIsAddSheetOpen] = useState(false);
-  const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [editingVehicle, setEditingVehicle] = useState<VehicleData | null>(null);
-  const [deletingVehicle, setDeletingVehicle] = useState<VehicleData | null>(null);
-
+  const [activeTab, setActiveTab] = useState("overview");
+  
   const vehicleManagement = useVehicleManagement(user?.id);
+  const {
+    isAddSheetOpen,
+    setIsAddSheetOpen,
+    isEditSheetOpen,
+    setIsEditSheetOpen,
+    isDeleteDialogOpen,
+    setIsDeleteDialogOpen,
+    editingVehicle,
+    setEditingVehicle,
+    deletingVehicle,
+    setDeletingVehicle,
+    openEditDialog,
+    openDeleteDialog,
+    closeEditSheet,
+    closeDeleteDialog
+  } = useVehiclePageState();
 
   const handleAddVehicle = async (formData: any) => {
     const newVehicle = await vehicleManagement.addVehicle(formData);
@@ -37,8 +43,7 @@ const VehicleMainContainer: React.FC = () => {
     
     const updatedVehicle = await vehicleManagement.updateVehicle({ ...formData, id: editingVehicle.id });
     if (updatedVehicle) {
-      setIsEditSheetOpen(false);
-      setEditingVehicle(null);
+      closeEditSheet();
     }
   };
 
@@ -46,18 +51,7 @@ const VehicleMainContainer: React.FC = () => {
     if (!deletingVehicle?.id) return;
     
     await vehicleManagement.removeVehicle(deletingVehicle.id);
-    setIsDeleteDialogOpen(false);
-    setDeletingVehicle(null);
-  };
-
-  const openEditDialog = (vehicle: VehicleData) => {
-    setEditingVehicle(vehicle);
-    setIsEditSheetOpen(true);
-  };
-
-  const openDeleteDialog = (vehicle: VehicleData) => {
-    setDeletingVehicle(vehicle);
-    setIsDeleteDialogOpen(true);
+    closeDeleteDialog();
   };
 
   if (!isInitialized) {
@@ -68,7 +62,6 @@ const VehicleMainContainer: React.FC = () => {
     // Safely convert error to Error object with proper null handling
     const error = vehicleManagement.error;
     if (!error) {
-      // This shouldn't happen due to the condition above, but TypeScript safety
       return <FastLoadingFallback message="Načítání vozidel..." />;
     }
     
@@ -76,7 +69,6 @@ const VehicleMainContainer: React.FC = () => {
     if (typeof error === 'string') {
       errorObj = new Error(error);
     } else {
-      // If it's not a string, it should be an Error-like object
       errorObj = new Error(String(error));
     }
     
@@ -93,14 +85,6 @@ const VehicleMainContainer: React.FC = () => {
     return <FastLoadingFallback message="Načítání vozidel..." />;
   }
 
-  const {
-    vehicles,
-    selectedVehicle,
-    selectedVehicleId,
-    isSaving,
-    selectVehicle
-  } = vehicleManagement;
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-secondary/5">
       {/* Animated background elements */}
@@ -111,138 +95,32 @@ const VehicleMainContainer: React.FC = () => {
 
       <div className="relative z-10">
         <div className="container max-w-7xl py-8 px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="mb-8"
-          >
-            <h1 className="text-3xl md:text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-4">
-              Vozidla
-            </h1>
-            <p className="text-lg text-muted-foreground">
-              Správa vašich vozidel, spotřeby a dokumentů
-            </p>
-          </motion.div>
-
-          {vehicles.length === 0 ? (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-            >
-              <EmptyVehicleState onAddVehicle={() => setIsAddSheetOpen(true)} />
-            </motion.div>
-          ) : (
-            <>
-              {/* Header with Vehicle selector and Add Button */}
-              <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-6">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.1 }}
-                  className="flex-1"
-                >
-                  <VehicleSelectorOptimized
-                    vehicles={vehicles}
-                    selectedVehicleId={selectedVehicleId}
-                    onSelect={selectVehicle}
-                    onEdit={openEditDialog}
-                    onDelete={openDeleteDialog}
-                    className="w-full max-w-md"
-                  />
-                </motion.div>
-                
-                <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.4, delay: 0.3 }}
-                >
-                  <Button 
-                    onClick={() => setIsAddSheetOpen(true)} 
-                    className="w-full md:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 transition-all duration-300"
-                  >
-                    <Plus className="h-4 w-4" />
-                    Přidat vozidlo
-                  </Button>
-                </motion.div>
-              </div>
-              
-              {selectedVehicle && selectedVehicleId && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.2 }}
-                >
-                  <VehicleCarousel
-                    selectedVehicle={selectedVehicle}
-                    vehicleId={selectedVehicleId}
-                  />
-                </motion.div>
-              )}
-            </>
-          )}
+          <VehiclePageHeader />
           
-          {/* Add Vehicle Sheet */}
-          <Sheet open={isAddSheetOpen} onOpenChange={setIsAddSheetOpen}>
-            <SheetContent className="overflow-y-auto w-full sm:max-w-2xl">
-              <SheetHeader>
-                <SheetTitle className="flex items-center gap-2">
-                  <Car className="h-5 w-5" />
-                  Přidat nové vozidlo
-                </SheetTitle>
-                <SheetDescription>
-                  Vyplňte údaje o vašem vozidle. Všechna pole označená * jsou povinná.
-                </SheetDescription>
-              </SheetHeader>
-              
-              <div className="mt-6">
-                <VehicleForm
-                  onSubmit={handleAddVehicle}
-                  onCancel={() => setIsAddSheetOpen(false)}
-                  isLoading={isSaving}
-                />
-              </div>
-            </SheetContent>
-          </Sheet>
-
-          {/* Edit Vehicle Sheet */}
-          <Sheet open={isEditSheetOpen} onOpenChange={setIsEditSheetOpen}>
-            <SheetContent className="overflow-y-auto w-full sm:max-w-2xl">
-              <SheetHeader>
-                <SheetTitle className="flex items-center gap-2">
-                  <Car className="h-5 w-5" />
-                  Upravit vozidlo
-                </SheetTitle>
-                <SheetDescription>
-                  Upravte údaje o vašem vozidle.
-                </SheetDescription>
-              </SheetHeader>
-              
-              <div className="mt-6">
-                <VehicleForm
-                  onSubmit={handleEditVehicle}
-                  onCancel={() => {
-                    setIsEditSheetOpen(false);
-                    setEditingVehicle(null);
-                  }}
-                  isLoading={isSaving}
-                  vehicle={editingVehicle || undefined}
-                />
-              </div>
-            </SheetContent>
-          </Sheet>
-
-          {/* Delete Vehicle Dialog */}
-          <DeleteVehicleDialog
-            isOpen={isDeleteDialogOpen}
-            onClose={() => {
-              setIsDeleteDialogOpen(false);
-              setDeletingVehicle(null);
-            }}
-            onConfirm={handleDeleteVehicle}
-            vehicle={deletingVehicle}
-            isLoading={isSaving}
+          <VehiclePageContent
+            vehicleManagement={vehicleManagement}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            onAddVehicle={() => setIsAddSheetOpen(true)}
+            onOpenEditDialog={openEditDialog}
+            onOpenDeleteDialog={openDeleteDialog}
+          />
+          
+          <VehicleSheets
+            isAddSheetOpen={isAddSheetOpen}
+            setIsAddSheetOpen={setIsAddSheetOpen}
+            isEditSheetOpen={isEditSheetOpen}
+            setIsEditSheetOpen={setIsEditSheetOpen}
+            isDeleteDialogOpen={isDeleteDialogOpen}
+            setIsDeleteDialogOpen={setIsDeleteDialogOpen}
+            editingVehicle={editingVehicle}
+            setEditingVehicle={setEditingVehicle}
+            deletingVehicle={deletingVehicle}
+            setDeletingVehicle={setDeletingVehicle}
+            isSaving={vehicleManagement.isSaving}
+            onAddVehicle={handleAddVehicle}
+            onEditVehicle={handleEditVehicle}
+            onDeleteVehicle={handleDeleteVehicle}
           />
         </div>
       </div>

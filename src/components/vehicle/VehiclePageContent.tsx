@@ -1,8 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTitle, SheetDescription, SheetHeader } from '@/components/ui/sheet';
-import { Plus, Car } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { VehicleData } from '@/types/vehicle';
 import { UnifiedGrid } from '@/components/layout/UnifiedGrid';
@@ -13,26 +12,12 @@ import ServiceRecordCard from './ServiceRecordCard';
 import InsuranceCard from './InsuranceCard';
 import DocumentsCard from './DocumentsCard';
 import EmptyVehicleState from './EmptyVehicleState';
-import VehicleForm from './VehicleForm';
-import DeleteVehicleDialog from './DeleteVehicleDialog';
 
 interface VehiclePageContentProps {
   vehicleManagement: any;
   activeTab: string;
   setActiveTab: (tab: string) => void;
-  isAddSheetOpen: boolean;
-  setIsAddSheetOpen: (open: boolean) => void;
-  isEditSheetOpen: boolean;
-  setIsEditSheetOpen: (open: boolean) => void;
-  isDeleteDialogOpen: boolean;
-  setIsDeleteDialogOpen: (open: boolean) => void;
-  editingVehicle: VehicleData | null;
-  setEditingVehicle: (vehicle: VehicleData | null) => void;
-  deletingVehicle: VehicleData | null;
-  setDeletingVehicle: (vehicle: VehicleData | null) => void;
-  onAddVehicle: (formData: any) => Promise<void>;
-  onEditVehicle: (formData: any) => Promise<void>;
-  onDeleteVehicle: () => Promise<void>;
+  onAddVehicle: () => void;
   onOpenEditDialog: (vehicle: VehicleData) => void;
   onOpenDeleteDialog: (vehicle: VehicleData) => void;
 }
@@ -41,19 +26,7 @@ const VehiclePageContent: React.FC<VehiclePageContentProps> = ({
   vehicleManagement,
   activeTab,
   setActiveTab,
-  isAddSheetOpen,
-  setIsAddSheetOpen,
-  isEditSheetOpen,
-  setIsEditSheetOpen,
-  isDeleteDialogOpen,
-  setIsDeleteDialogOpen,
-  editingVehicle,
-  setEditingVehicle,
-  deletingVehicle,
-  setDeletingVehicle,
   onAddVehicle,
-  onEditVehicle,
-  onDeleteVehicle,
   onOpenEditDialog,
   onOpenDeleteDialog
 }) => {
@@ -61,7 +34,6 @@ const VehiclePageContent: React.FC<VehiclePageContentProps> = ({
     vehicles,
     selectedVehicle,
     selectedVehicleId,
-    isSaving,
     selectVehicle
   } = vehicleManagement;
 
@@ -104,7 +76,7 @@ const VehiclePageContent: React.FC<VehiclePageContentProps> = ({
           transition={{ duration: 0.4, delay: 0.3 }}
         >
           <Button 
-            onClick={() => setIsAddSheetOpen(true)} 
+            onClick={onAddVehicle} 
             className="w-full md:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 transition-all duration-300"
           >
             <Plus className="h-4 w-4" />
@@ -119,7 +91,7 @@ const VehiclePageContent: React.FC<VehiclePageContentProps> = ({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
         >
-          <EmptyVehicleState onAddVehicle={() => setIsAddSheetOpen(true)} />
+          <EmptyVehicleState onAddVehicle={onAddVehicle} />
         </motion.div>
       ) : (
         <>
@@ -168,68 +140,6 @@ const VehiclePageContent: React.FC<VehiclePageContentProps> = ({
           )}
         </>
       )}
-      
-      {/* Add Vehicle Sheet */}
-      <Sheet open={isAddSheetOpen} onOpenChange={setIsAddSheetOpen}>
-        <SheetContent className="overflow-y-auto w-full sm:max-w-2xl">
-          <SheetHeader>
-            <SheetTitle className="flex items-center gap-2">
-              <Car className="h-5 w-5" />
-              Přidat nové vozidlo
-            </SheetTitle>
-            <SheetDescription>
-              Vyplňte údaje o vašem vozidle. Všechna pole označená * jsou povinná.
-            </SheetDescription>
-          </SheetHeader>
-          
-          <div className="mt-6">
-            <VehicleForm
-              onSubmit={onAddVehicle}
-              onCancel={() => setIsAddSheetOpen(false)}
-              isLoading={isSaving}
-            />
-          </div>
-        </SheetContent>
-      </Sheet>
-
-      {/* Edit Vehicle Sheet */}
-      <Sheet open={isEditSheetOpen} onOpenChange={setIsEditSheetOpen}>
-        <SheetContent className="overflow-y-auto w-full sm:max-w-2xl">
-          <SheetHeader>
-            <SheetTitle className="flex items-center gap-2">
-              <Car className="h-5 w-5" />
-              Upravit vozidlo
-            </SheetTitle>
-            <SheetDescription>
-              Upravte údaje o vašem vozidle.
-            </SheetDescription>
-          </SheetHeader>
-          
-          <div className="mt-6">
-            <VehicleForm
-              onSubmit={onEditVehicle}
-              onCancel={() => {
-                setIsEditSheetOpen(false);
-                setEditingVehicle(null);
-              }}
-              isLoading={isSaving}
-              vehicle={editingVehicle || undefined}
-            />
-          </div>
-        </SheetContent>
-      </Sheet>
-
-      {/* Delete Vehicle Dialog */}
-      <DeleteVehicleDialog
-        isOpen={isDeleteDialogOpen}
-        onClose={() => {
-          setIsDeleteDialogOpen(false);
-          setDeletingVehicle(null);
-        }}
-        onConfirm={onDeleteVehicle}
-        vehicle={deletingVehicle}
-        isLoading={isSaving}
-      />
     </div>
   );
 };
