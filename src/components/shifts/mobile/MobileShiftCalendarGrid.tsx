@@ -98,7 +98,7 @@ export const MobileShiftCalendarGrid: React.FC<MobileShiftCalendarGridProps> = (
   return (
     <div className="space-y-4">
       {/* Calendar Header */}
-      <Card>
+      <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2 text-lg">
@@ -131,7 +131,7 @@ export const MobileShiftCalendarGrid: React.FC<MobileShiftCalendarGridProps> = (
           </div>
         </CardHeader>
         
-        <CardContent className="p-3">
+        <CardContent className="p-3 pt-0">
           {/* Week days header */}
           <div className="grid grid-cols-7 gap-1 mb-2">
             {weekDays.map((day, index) => (
@@ -144,7 +144,7 @@ export const MobileShiftCalendarGrid: React.FC<MobileShiftCalendarGridProps> = (
             ))}
           </div>
 
-          {/* Calendar grid */}
+          {/* Calendar grid - Fixed responsive layout */}
           <div className="grid grid-cols-7 gap-1">
             {calendarDays.map((day, index) => {
               const isCurrentMonth = isSameMonth(day, currentDate);
@@ -157,25 +157,30 @@ export const MobileShiftCalendarGrid: React.FC<MobileShiftCalendarGridProps> = (
                   key={index}
                   onClick={() => handleDateSelect(day)}
                   className={cn(
-                    "relative aspect-square w-full flex flex-col items-center justify-center text-sm font-medium rounded-md transition-all duration-200 touch-manipulation",
-                    "min-h-[44px] p-1",
+                    // Fixed responsive sizing - using aspect-square with proper constraints
+                    "relative w-full aspect-square flex flex-col items-center justify-center text-xs font-medium rounded-md transition-all duration-200 touch-manipulation",
+                    // Minimum size for touch targets on very small screens
+                    "min-h-[40px] min-w-[40px]",
+                    // Text and interaction states
                     isCurrentMonth 
                       ? "text-foreground hover:bg-accent" 
                       : "text-muted-foreground/50",
                     isSelected && "bg-primary text-primary-foreground hover:bg-primary/90",
                     isTodayDate && !isSelected && "bg-accent text-accent-foreground font-bold",
-                    !isCurrentMonth && "opacity-40"
+                    !isCurrentMonth && "opacity-40",
+                    // Ensure proper spacing and overflow handling
+                    "overflow-hidden"
                   )}
                 >
-                  <span className="relative z-10 leading-none">
+                  <span className="relative z-10 leading-none text-[10px] sm:text-xs">
                     {format(day, 'd')}
                   </span>
                   
-                  {/* Shift indicator */}
+                  {/* Shift indicator - smaller for mobile */}
                   {shift && (
                     <div
                       className={cn(
-                        "absolute bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 rounded-full",
+                        "absolute bottom-0.5 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 rounded-full",
                         getShiftTypeColor(shift.type),
                         isSelected && "bg-primary-foreground"
                       )}
@@ -190,7 +195,7 @@ export const MobileShiftCalendarGrid: React.FC<MobileShiftCalendarGridProps> = (
 
       {/* Selected date details */}
       {selectedDate && (
-        <Card>
+        <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg">
               {format(selectedDate, 'dd. MMMM yyyy', { locale: cs })}
@@ -202,7 +207,7 @@ export const MobileShiftCalendarGrid: React.FC<MobileShiftCalendarGridProps> = (
               }
             </div>
           </CardHeader>
-          <CardContent className="p-3">
+          <CardContent className="p-3 pt-0">
             {selectedShifts.length === 0 ? (
               <div className="text-center py-6 text-muted-foreground">
                 <CalendarDays className="h-10 w-10 mx-auto mb-3 opacity-50" />

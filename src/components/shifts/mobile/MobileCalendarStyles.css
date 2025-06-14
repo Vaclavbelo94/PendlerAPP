@@ -1,5 +1,5 @@
 
-/* Mobile calendar specific styles */
+/* Mobile calendar specific styles - optimized for touch and small screens */
 .mobile-calendar {
   touch-action: pan-y;
   -webkit-touch-callout: none;
@@ -15,10 +15,30 @@
   tap-highlight-color: transparent;
 }
 
-/* Enhanced touch targets */
+/* Enhanced touch targets with proper responsive sizing */
 .touch-target {
-  min-height: 40px; /* Reduced for mobile portrait */
-  min-width: 40px;
+  min-height: 44px; /* Apple's recommended minimum */
+  min-width: 44px;
+  touch-action: manipulation;
+}
+
+/* Responsive calendar grid - fixes overlap issues */
+.mobile-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  width: 100%;
+}
+
+@media screen and (max-width: 400px) {
+  .mobile-calendar-grid {
+    gap: 1px;
+  }
+  
+  .touch-target {
+    min-height: 40px;
+    min-width: 40px;
+  }
 }
 
 /* Smooth scrolling for mobile */
@@ -54,14 +74,23 @@
   }
   
   .mobile-calendar-day {
-    min-height: 32px;
+    min-height: 36px;
   }
 }
 
-/* Ultra small screens */
+/* Ultra small screens (< 360px) */
 @media screen and (max-width: 360px) {
   .mobile-calendar-day {
     min-height: 36px;
     font-size: 0.7rem;
   }
+}
+
+/* Performance optimizations for mobile */
+.mobile-calendar * {
+  will-change: auto;
+}
+
+.mobile-calendar-day {
+  contain: layout style;
 }
