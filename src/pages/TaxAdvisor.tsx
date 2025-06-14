@@ -23,7 +23,7 @@ const TaxAdvisor = () => {
               className="mb-8"
             >
               <h1 className="text-3xl md:text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-4">
-                Daňový wizard
+                Daňový poradce
               </h1>
               <p className="text-lg text-muted-foreground">
                 Průvodce krok za krokem pro optimální daňové přiznání

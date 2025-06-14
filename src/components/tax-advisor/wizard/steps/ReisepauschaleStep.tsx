@@ -40,7 +40,7 @@ const ReisepauschaleStep: React.FC<ReisepauschaleStepProps> = ({
     handleChange('hasSecondHome', checked === true);
   };
 
-  // Výpočet Reisepauschale
+  // Výpočet cestovních náhrad
   const calculateReisepauschale = () => {
     if (!data.commuteDistance || !data.workDaysPerYear) return 0;
     
@@ -64,7 +64,7 @@ const ReisepauschaleStep: React.FC<ReisepauschaleStepProps> = ({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Car className="h-5 w-5" />
-          Reisepauschale kalkulátor
+          Kalkulátor cestovních náhrad
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -134,7 +134,7 @@ const ReisepauschaleStep: React.FC<ReisepauschaleStepProps> = ({
           
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
-              <span>Reisepauschale:</span>
+              <span>Cestovní náhrady:</span>
               <span className="font-medium">{reisepausaleBenefit.toFixed(2)} €</span>
             </div>
             

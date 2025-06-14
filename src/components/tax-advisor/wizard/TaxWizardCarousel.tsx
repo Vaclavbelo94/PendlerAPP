@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -58,7 +57,7 @@ const TaxWizardCarousel: React.FC = () => {
   });
 
   const steps = ['personal', 'employment', 'reisepauschale', 'deductions', 'results'];
-  const stepLabels = ['Osobní údaje', 'Zaměstnání', 'Reisepauschale', 'Odpočty', 'Výsledky'];
+  const stepLabels = ['Osobní údaje', 'Zaměstnání', 'Cestovní náhrady', 'Odpočty', 'Výsledky'];
 
   const { containerRef } = useSwipeNavigation({
     items: steps,
@@ -113,7 +112,7 @@ const TaxWizardCarousel: React.FC = () => {
         return wizardData.employmentInfo.employerName && 
                wizardData.employmentInfo.annualIncome > 0 &&
                wizardData.employmentInfo.commuteDistance > 0;
-      case 3: // Reisepauschale
+      case 3: // Cestovní náhrady
         return wizardData.reisepauschale.commuteDistance > 0 && 
                wizardData.reisepauschale.workDaysPerYear > 0;
       case 4: // Odpočty
