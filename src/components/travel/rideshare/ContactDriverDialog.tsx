@@ -21,11 +21,7 @@ const ContactDriverDialog = ({ open, onOpenChange, selectedOffer }: ContactDrive
     if (!user?.id || !selectedOffer?.id) return;
 
     try {
-      await rideshareService.createContact({
-        offer_id: selectedOffer.id,
-        requester_user_id: user.id,
-        message: contactMessage
-      });
+      await rideshareService.contactDriver(selectedOffer.id, contactMessage);
       
       toast.success("Řidič byl kontaktován. Brzy vás bude kontaktovat.");
       onOpenChange(false);

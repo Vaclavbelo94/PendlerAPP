@@ -164,7 +164,7 @@ const SmartRideshareMatching: React.FC = () => {
                         <Users className="h-4 w-4" />
                         {match.seats_available} míst
                       </div>
-                      {match.rating > 0 && (
+                      {match.rating && match.rating > 0 && (
                         <div className="flex items-center gap-1">
                           <Star className="h-4 w-4 fill-current text-yellow-400" />
                           {match.rating.toFixed(1)}
@@ -189,7 +189,7 @@ const SmartRideshareMatching: React.FC = () => {
                       <span className="text-muted-foreground">Řidič: </span>
                       <span className="font-medium">{match.profiles?.username || 'Anonymní'}</span>
                     </div>
-                    {match.completed_rides > 0 && (
+                    {match.completed_rides && match.completed_rides > 0 && (
                       <div className="text-sm text-muted-foreground">
                         {match.completed_rides} dokončených jízd
                       </div>

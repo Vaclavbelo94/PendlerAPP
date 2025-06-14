@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -41,10 +40,12 @@ const RideOfferForm = ({ onOfferCreated, onCancel }: RideOfferFormProps) => {
     }
     
     try {
-      await rideshareService.createOffer({
+      await rideshareService.createRideshareOffer({
         ...newRideOffer,
         user_id: user.id,
-        price_per_person: newRideOffer.price_per_person ? parseFloat(newRideOffer.price_per_person) : undefined
+        price_per_person: newRideOffer.price_per_person ? parseFloat(newRideOffer.price_per_person) : 0,
+        is_recurring: false,
+        recurring_days: []
       });
       
       toast.success("Vaše nabídka spolujízdy byla úspěšně přidána.");

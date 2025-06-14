@@ -19,6 +19,17 @@ export interface RideshareOffer {
   is_active: boolean;
 }
 
+export interface RideshareContact {
+  id: string;
+  offer_id: string;
+  requester_user_id: string;
+  message: string;
+  status: string;
+  created_at: string;
+  rating?: number;
+  review?: string;
+}
+
 export interface RideshareOfferWithDriver extends RideshareOffer {
   driver: {
     username: string;
@@ -73,6 +84,10 @@ export const rideshareService = {
     return data;
   },
 
+  async createOffer(offerData: Omit<RideshareOffer, 'id' | 'created_at' | 'rating' | 'completed_rides' | 'is_active'>) {
+    return this.createRideshareOffer(offerData);
+  },
+
   async contactDriver(offerId: string, message: string) {
     const { data: { user } } = await supabase.auth.getUser();
     
@@ -92,6 +107,21 @@ export const rideshareService = {
 
     if (error) {
       console.error('Error contacting driver:', error);
+      throw error;
+    }
+
+    return data;
+  },
+
+  async createContact(contactData: { offer_id: string; requester_user_id: string; message: string }) {
+    const { data, error } = await supabase
+      .from('rideshare_contacts')
+      .insert(contactData)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error creating contact:', error);
       throw error;
     }
 
