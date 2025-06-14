@@ -68,3 +68,27 @@ export interface DocumentRecord {
   notes?: string;
   file_path?: string;
 }
+
+export interface InspectionRecord {
+  id?: string;
+  vehicle_id: string;
+  inspection_date: string;
+  next_inspection_date: string;
+  result: string;
+  station: string;
+  cost: string;
+  mileage: string;
+  notes?: string;
+}
+
+export interface VignetteRecord {
+  id?: string;
+  vehicle_id: string;
+  country: string;
+  vignette_type: string;
+  valid_from: string;
+  valid_until: string;
+  cost: string;
+  purchase_location?: string;
+  notes?: string;
+}

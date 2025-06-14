@@ -10,16 +10,16 @@ interface EmptyVehicleStateProps {
 
 const EmptyVehicleState: React.FC<EmptyVehicleStateProps> = ({ onAddVehicle }) => {
   return (
-    <Card className="text-center py-12">
+    <Card className="text-center">
       <CardHeader>
-        <div className="mx-auto w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
-          <Car className="h-8 w-8 text-muted-foreground" />
+        <div className="flex justify-center mb-4">
+          <Car className="h-16 w-16 text-muted-foreground" />
         </div>
-        <CardTitle>Zatím nemáte žádná vozidla</CardTitle>
+        <CardTitle>Žádná vozidla</CardTitle>
       </CardHeader>
       <CardContent>
         <p className="text-muted-foreground mb-6">
-          Přidejte své první vozidlo a začněte sledovat spotřebu, servisní záznamy a dokumenty.
+          Začněte přidáním svého prvního vozidla a mějte vše pod kontrolou.
         </p>
         <Button onClick={onAddVehicle} className="flex items-center gap-2">
           <Plus className="h-4 w-4" />

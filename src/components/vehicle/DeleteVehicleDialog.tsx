@@ -27,24 +27,21 @@ const DeleteVehicleDialog: React.FC<DeleteVehicleDialogProps> = ({
   vehicle,
   isLoading
 }) => {
-  if (!vehicle) return null;
-
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Smazat vozidlo</AlertDialogTitle>
           <AlertDialogDescription>
-            Opravdu chcete smazat vozidlo <strong>{vehicle.brand} {vehicle.model}</strong> ({vehicle.license_plate})?
-            <br />
-            <br />
-            Tato akce je nevratná a smaže všechny související záznamy včetně tankování, servisů a dokumentů.
+            Opravdu chcete smazat vozidlo{' '}
+            <strong>
+              {vehicle?.brand} {vehicle?.model} ({vehicle?.license_plate})
+            </strong>
+            ? Tato akce je nevratná a smaže všechny související záznamy.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isLoading}>
-            Zrušit
-          </AlertDialogCancel>
+          <AlertDialogCancel onClick={onClose}>Zrušit</AlertDialogCancel>
           <AlertDialogAction 
             onClick={onConfirm}
             disabled={isLoading}

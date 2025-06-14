@@ -1,5 +1,4 @@
-
-import { ServiceRecord, FuelRecord, InsuranceRecord, DocumentRecord } from '@/types/vehicle';
+import { ServiceRecord, FuelRecord, InsuranceRecord, DocumentRecord, InspectionRecord, VignetteRecord } from '@/types/vehicle';
 import { supabase } from '@/integrations/supabase/client';
 
 // Real Supabase implementations
@@ -326,6 +325,172 @@ export const deleteDocument = async (id: string): Promise<boolean> => {
   } catch (error: any) {
     console.error('Error deleting document:', error);
     throw new Error(`Failed to delete document: ${error.message}`);
+  }
+};
+
+// STK Inspection Records
+export const fetchInspectionRecords = async (vehicleId: string): Promise<InspectionRecord[]> => {
+  if (!vehicleId) {
+    throw new Error('Vehicle ID is required');
+  }
+
+  console.log('Fetching inspection records for vehicle:', vehicleId);
+  
+  const { data, error } = await supabase
+    .from('vehicle_inspections')
+    .select('*')
+    .eq('vehicle_id', vehicleId)
+    .order('inspection_date', { ascending: false });
+  
+  if (error) {
+    console.error('Error fetching inspection records:', error);
+    throw new Error(`Failed to fetch inspection records: ${error.message}`);
+  }
+  
+  return data || [];
+};
+
+export const saveInspectionRecord = async (record: Partial<InspectionRecord>): Promise<InspectionRecord | null> => {
+  try {
+    if (record.id) {
+      // Update existing record
+      const { data, error } = await supabase
+        .from('vehicle_inspections')
+        .update(record)
+        .eq('id', record.id)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
+    } else {
+      // Create new record - validate required fields
+      if (!record.vehicle_id || !record.inspection_date || !record.next_inspection_date || 
+          !record.result || !record.station || !record.cost || !record.mileage) {
+        throw new Error('Missing required fields for inspection record');
+      }
+
+      const newRecord = {
+        vehicle_id: record.vehicle_id,
+        inspection_date: record.inspection_date,
+        next_inspection_date: record.next_inspection_date,
+        result: record.result,
+        station: record.station,
+        cost: record.cost,
+        mileage: record.mileage,
+        notes: record.notes
+      };
+
+      const { data, error } = await supabase
+        .from('vehicle_inspections')
+        .insert(newRecord)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
+    }
+  } catch (error: any) {
+    console.error('Error saving inspection record:', error);
+    throw new Error(`Failed to save inspection record: ${error.message}`);
+  }
+};
+
+export const deleteInspectionRecord = async (id: string): Promise<boolean> => {
+  try {
+    const { error } = await supabase
+      .from('vehicle_inspections')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw error;
+    return true;
+  } catch (error: any) {
+    console.error('Error deleting inspection record:', error);
+    throw new Error(`Failed to delete inspection record: ${error.message}`);
+  }
+};
+
+// Highway Vignette Records
+export const fetchVignetteRecords = async (vehicleId: string): Promise<VignetteRecord[]> => {
+  if (!vehicleId) {
+    throw new Error('Vehicle ID is required');
+  }
+
+  console.log('Fetching vignette records for vehicle:', vehicleId);
+  
+  const { data, error } = await supabase
+    .from('highway_vignettes')
+    .select('*')
+    .eq('vehicle_id', vehicleId)
+    .order('valid_from', { ascending: false });
+  
+  if (error) {
+    console.error('Error fetching vignette records:', error);
+    throw new Error(`Failed to fetch vignette records: ${error.message}`);
+  }
+  
+  return data || [];
+};
+
+export const saveVignetteRecord = async (record: Partial<VignetteRecord>): Promise<VignetteRecord | null> => {
+  try {
+    if (record.id) {
+      // Update existing record
+      const { data, error } = await supabase
+        .from('highway_vignettes')
+        .update(record)
+        .eq('id', record.id)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
+    } else {
+      // Create new record - validate required fields
+      if (!record.vehicle_id || !record.country || !record.vignette_type || 
+          !record.valid_from || !record.valid_until || !record.cost) {
+        throw new Error('Missing required fields for vignette record');
+      }
+
+      const newRecord = {
+        vehicle_id: record.vehicle_id,
+        country: record.country,
+        vignette_type: record.vignette_type,
+        valid_from: record.valid_from,
+        valid_until: record.valid_until,
+        cost: record.cost,
+        purchase_location: record.purchase_location,
+        notes: record.notes
+      };
+
+      const { data, error } = await supabase
+        .from('highway_vignettes')
+        .insert(newRecord)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
+    }
+  } catch (error: any) {
+    console.error('Error saving vignette record:', error);
+    throw new Error(`Failed to save vignette record: ${error.message}`);
+  }
+};
+
+export const deleteVignetteRecord = async (id: string): Promise<boolean> => {
+  try {
+    const { error } = await supabase
+      .from('highway_vignettes')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw error;
+    return true;
+  } catch (error: any) {
+    console.error('Error deleting vignette record:', error);
+    throw new Error(`Failed to delete vignette record: ${error.message}`);
   }
 };
 

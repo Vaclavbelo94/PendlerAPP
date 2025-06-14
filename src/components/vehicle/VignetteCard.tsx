@@ -7,10 +7,10 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Plus, Shield, Edit, Trash2, MoreVertical } from 'lucide-react';
+import { Plus, MapPin, Edit, Trash2, MoreVertical } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchInsuranceRecords, saveInsuranceRecord, deleteInsuranceRecord } from '@/services/vehicleService';
-import { InsuranceRecord } from '@/types/vehicle';
+import { fetchVignetteRecords, saveVignetteRecord, deleteVignetteRecord } from '@/services/vehicleService';
+import { VignetteRecord } from '@/types/vehicle';
 import { useStandardizedToast } from '@/hooks/useStandardizedToast';
 import {
   DropdownMenu,
@@ -29,84 +29,84 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
-interface InsuranceCardProps {
+interface VignetteCardProps {
   vehicleId: string;
   fullView?: boolean;
 }
 
-const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = false }) => {
+const VignetteCard: React.FC<VignetteCardProps> = ({ vehicleId, fullView = false }) => {
   const [isAddSheetOpen, setIsAddSheetOpen] = useState(false);
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [editingRecord, setEditingRecord] = useState<InsuranceRecord | null>(null);
-  const [deletingRecord, setDeletingRecord] = useState<InsuranceRecord | null>(null);
+  const [editingRecord, setEditingRecord] = useState<VignetteRecord | null>(null);
+  const [deletingRecord, setDeletingRecord] = useState<VignetteRecord | null>(null);
   const [formData, setFormData] = useState({
-    provider: '',
-    policy_number: '',
+    country: '',
+    vignette_type: '',
     valid_from: '',
     valid_until: '',
-    monthly_cost: '',
-    coverage_type: '',
+    cost: '',
+    purchase_location: '',
     notes: ''
   });
 
   const { success, error } = useStandardizedToast();
   const queryClient = useQueryClient();
 
-  const { data: insuranceRecords = [], isLoading } = useQuery({
-    queryKey: ['insurance-records', vehicleId],
-    queryFn: () => fetchInsuranceRecords(vehicleId),
+  const { data: vignettes = [], isLoading } = useQuery({
+    queryKey: ['vignette-records', vehicleId],
+    queryFn: () => fetchVignetteRecords(vehicleId),
     enabled: !!vehicleId
   });
 
   const addMutation = useMutation({
-    mutationFn: (data: Partial<InsuranceRecord>) => saveInsuranceRecord({ ...data, vehicle_id: vehicleId }),
+    mutationFn: (data: Partial<VignetteRecord>) => saveVignetteRecord({ ...data, vehicle_id: vehicleId }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['insurance-records', vehicleId] });
-      success('Pojištění bylo přidáno');
+      queryClient.invalidateQueries({ queryKey: ['vignette-records', vehicleId] });
+      success('Dálniční známka byla přidána');
       setIsAddSheetOpen(false);
       resetForm();
     },
     onError: (err: any) => {
-      error(err.message || 'Chyba při přidávání pojištění');
+      error(err.message || 'Chyba při přidávání dálniční známky');
     }
   });
 
   const updateMutation = useMutation({
-    mutationFn: (data: Partial<InsuranceRecord>) => saveInsuranceRecord(data),
+    mutationFn: (data: Partial<VignetteRecord>) => saveVignetteRecord(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['insurance-records', vehicleId] });
-      success('Pojištění bylo aktualizováno');
+      queryClient.invalidateQueries({ queryKey: ['vignette-records', vehicleId] });
+      success('Dálniční známka byla aktualizována');
       setIsEditSheetOpen(false);
       setEditingRecord(null);
       resetForm();
     },
     onError: (err: any) => {
-      error(err.message || 'Chyba při aktualizaci pojištění');
+      error(err.message || 'Chyba při aktualizaci dálniční známky');
     }
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => deleteInsuranceRecord(id),
+    mutationFn: (id: string) => deleteVignetteRecord(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['insurance-records', vehicleId] });
-      success('Pojištění bylo smazáno');
+      queryClient.invalidateQueries({ queryKey: ['vignette-records', vehicleId] });
+      success('Dálniční známka byla smazána');
       setIsDeleteDialogOpen(false);
       setDeletingRecord(null);
     },
     onError: (err: any) => {
-      error(err.message || 'Chyba při mazání pojištění');
+      error(err.message || 'Chyba při mazání dálniční známky');
     }
   });
 
   const resetForm = () => {
     setFormData({
-      provider: '',
-      policy_number: '',
+      country: '',
+      vignette_type: '',
       valid_from: '',
       valid_until: '',
-      monthly_cost: '',
-      coverage_type: '',
+      cost: '',
+      purchase_location: '',
       notes: ''
     });
   };
@@ -121,21 +121,21 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = fal
     }
   };
 
-  const handleEdit = (record: InsuranceRecord) => {
+  const handleEdit = (record: VignetteRecord) => {
     setEditingRecord(record);
     setFormData({
-      provider: record.provider,
-      policy_number: record.policy_number,
+      country: record.country,
+      vignette_type: record.vignette_type,
       valid_from: record.valid_from,
       valid_until: record.valid_until,
-      monthly_cost: record.monthly_cost,
-      coverage_type: record.coverage_type,
+      cost: record.cost,
+      purchase_location: record.purchase_location || '',
       notes: record.notes || ''
     });
     setIsEditSheetOpen(true);
   };
 
-  const handleDelete = (record: InsuranceRecord) => {
+  const handleDelete = (record: VignetteRecord) => {
     setDeletingRecord(record);
     setIsDeleteDialogOpen(true);
   };
@@ -151,8 +151,8 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = fal
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Shield className="h-5 w-5" />
-            Pojištění
+            <MapPin className="h-5 w-5" />
+            Dálniční známky
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -168,8 +168,8 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = fal
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
-              <Shield className="h-5 w-5" />
-              Pojištění
+              <MapPin className="h-5 w-5" />
+              Dálniční známky
             </CardTitle>
             <Sheet open={isAddSheetOpen} onOpenChange={setIsAddSheetOpen}>
               <SheetTrigger asChild>
@@ -180,31 +180,44 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = fal
               </SheetTrigger>
               <SheetContent>
                 <SheetHeader>
-                  <SheetTitle>Přidat pojištění</SheetTitle>
+                  <SheetTitle>Přidat dálniční známku</SheetTitle>
                 </SheetHeader>
                 <form onSubmit={handleSubmit} className="space-y-4 mt-4">
                   <div>
-                    <Label htmlFor="provider">Pojišťovna</Label>
-                    <Input
-                      id="provider"
-                      type="text"
-                      value={formData.provider}
-                      onChange={(e) => setFormData({...formData, provider: e.target.value})}
-                      required
-                    />
+                    <Label htmlFor="country">Země</Label>
+                    <Select value={formData.country} onValueChange={(value) => setFormData({...formData, country: value})}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Vyberte zemi" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Česká republika">Česká republika</SelectItem>
+                        <SelectItem value="Slovensko">Slovensko</SelectItem>
+                        <SelectItem value="Rakousko">Rakousko</SelectItem>
+                        <SelectItem value="Německo">Německo</SelectItem>
+                        <SelectItem value="Švýcarsko">Švýcarsko</SelectItem>
+                        <SelectItem value="Slovinsko">Slovinsko</SelectItem>
+                        <SelectItem value="Maďarsko">Maďarsko</SelectItem>
+                        <SelectItem value="Bulharsko">Bulharsko</SelectItem>
+                        <SelectItem value="Rumunsko">Rumunsko</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div>
-                    <Label htmlFor="policy-number">Číslo smlouvy</Label>
-                    <Input
-                      id="policy-number"
-                      type="text"
-                      value={formData.policy_number}
-                      onChange={(e) => setFormData({...formData, policy_number: e.target.value})}
-                      required
-                    />
+                    <Label htmlFor="vignette-type">Typ známky</Label>
+                    <Select value={formData.vignette_type} onValueChange={(value) => setFormData({...formData, vignette_type: value})}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Vyberte typ známky" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="10 dní">10 dní</SelectItem>
+                        <SelectItem value="1 měsíc">1 měsíc</SelectItem>
+                        <SelectItem value="1 rok">1 rok</SelectItem>
+                        <SelectItem value="Elektronická">Elektronická</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div>
-                    <Label htmlFor="valid-from">Platné od</Label>
+                    <Label htmlFor="valid-from">Platná od</Label>
                     <Input
                       id="valid-from"
                       type="date"
@@ -214,7 +227,7 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = fal
                     />
                   </div>
                   <div>
-                    <Label htmlFor="valid-until">Platné do</Label>
+                    <Label htmlFor="valid-until">Platná do</Label>
                     <Input
                       id="valid-until"
                       type="date"
@@ -224,28 +237,23 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = fal
                     />
                   </div>
                   <div>
-                    <Label htmlFor="monthly-cost">Měsíční platba (Kč)</Label>
+                    <Label htmlFor="cost">Cena (Kč)</Label>
                     <Input
-                      id="monthly-cost"
+                      id="cost"
                       type="text"
-                      value={formData.monthly_cost}
-                      onChange={(e) => setFormData({...formData, monthly_cost: e.target.value})}
+                      value={formData.cost}
+                      onChange={(e) => setFormData({...formData, cost: e.target.value})}
                       required
                     />
                   </div>
                   <div>
-                    <Label htmlFor="coverage-type">Typ pojištění</Label>
-                    <Select value={formData.coverage_type} onValueChange={(value) => setFormData({...formData, coverage_type: value})}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Vyberte typ pojištění" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Povinné ručení">Povinné ručení</SelectItem>
-                        <SelectItem value="Havarijní pojištění">Havarijní pojištění</SelectItem>
-                        <SelectItem value="Komplexní pojištění">Komplexní pojištění</SelectItem>
-                        <SelectItem value="GAP pojištění">GAP pojištění</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Label htmlFor="purchase-location">Místo nákupu</Label>
+                    <Input
+                      id="purchase-location"
+                      type="text"
+                      value={formData.purchase_location}
+                      onChange={(e) => setFormData({...formData, purchase_location: e.target.value})}
+                    />
                   </div>
                   <div>
                     <Label htmlFor="notes">Poznámky</Label>
@@ -269,19 +277,20 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = fal
           </div>
         </CardHeader>
         <CardContent>
-          {insuranceRecords.length === 0 ? (
-            <p className="text-muted-foreground">Zatím žádné pojištění</p>
+          {vignettes.length === 0 ? (
+            <p className="text-muted-foreground">Zatím žádné dálniční známky</p>
           ) : (
             <div className="space-y-2">
-              {(fullView ? insuranceRecords : insuranceRecords.slice(0, 3)).map((insurance) => (
-                <div key={insurance.id} className="flex items-center justify-between p-3 border rounded-lg">
+              {(fullView ? vignettes : vignettes.slice(0, 3)).map((vignette) => (
+                <div key={vignette.id} className="flex items-center justify-between p-3 border rounded-lg">
                   <div>
-                    <p className="font-medium">{insurance.provider}</p>
+                    <p className="font-medium">{vignette.country} - {vignette.vignette_type}</p>
                     <p className="text-sm text-muted-foreground">
-                      {insurance.coverage_type} • {insurance.monthly_cost} Kč/měsíc
+                      {new Date(vignette.valid_from).toLocaleDateString('cs-CZ')} - {new Date(vignette.valid_until).toLocaleDateString('cs-CZ')}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      {new Date(insurance.valid_from).toLocaleDateString('cs-CZ')} - {new Date(insurance.valid_until).toLocaleDateString('cs-CZ')}
+                      {vignette.cost} Kč
+                      {vignette.purchase_location && ` • ${vignette.purchase_location}`}
                     </p>
                   </div>
                   <DropdownMenu>
@@ -291,12 +300,12 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = fal
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => handleEdit(insurance)}>
+                      <DropdownMenuItem onClick={() => handleEdit(vignette)}>
                         <Edit className="mr-2 h-4 w-4" />
                         Upravit
                       </DropdownMenuItem>
                       <DropdownMenuItem 
-                        onClick={() => handleDelete(insurance)}
+                        onClick={() => handleDelete(vignette)}
                         className="text-red-600 focus:text-red-600"
                       >
                         <Trash2 className="mr-2 h-4 w-4" />
@@ -307,9 +316,9 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = fal
                 </div>
               ))}
               
-              {!fullView && insuranceRecords.length > 3 && (
+              {!fullView && vignettes.length > 3 && (
                 <p className="text-sm text-muted-foreground mt-2">
-                  A {insuranceRecords.length - 3} dalších pojištění...
+                  A {vignettes.length - 3} dalších známek...
                 </p>
               )}
             </div>
@@ -321,31 +330,44 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = fal
       <Sheet open={isEditSheetOpen} onOpenChange={setIsEditSheetOpen}>
         <SheetContent>
           <SheetHeader>
-            <SheetTitle>Upravit pojištění</SheetTitle>
+            <SheetTitle>Upravit dálniční známku</SheetTitle>
           </SheetHeader>
           <form onSubmit={handleSubmit} className="space-y-4 mt-4">
             <div>
-              <Label htmlFor="edit-provider">Pojišťovna</Label>
-              <Input
-                id="edit-provider"
-                type="text"
-                value={formData.provider}
-                onChange={(e) => setFormData({...formData, provider: e.target.value})}
-                required
-              />
+              <Label htmlFor="edit-country">Země</Label>
+              <Select value={formData.country} onValueChange={(value) => setFormData({...formData, country: value})}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Vyberte zemi" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Česká republika">Česká republika</SelectItem>
+                  <SelectItem value="Slovensko">Slovensko</SelectItem>
+                  <SelectItem value="Rakousko">Rakousko</SelectItem>
+                  <SelectItem value="Německo">Německo</SelectItem>
+                  <SelectItem value="Švýcarsko">Švýcarsko</SelectItem>
+                  <SelectItem value="Slovinsko">Slovinsko</SelectItem>
+                  <SelectItem value="Maďarsko">Maďarsko</SelectItem>
+                  <SelectItem value="Bulharsko">Bulharsko</SelectItem>
+                  <SelectItem value="Rumunsko">Rumunsko</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div>
-              <Label htmlFor="edit-policy-number">Číslo smlouvy</Label>
-              <Input
-                id="edit-policy-number"
-                type="text"
-                value={formData.policy_number}
-                onChange={(e) => setFormData({...formData, policy_number: e.target.value})}
-                required
-              />
+              <Label htmlFor="edit-vignette-type">Typ známky</Label>
+              <Select value={formData.vignette_type} onValueChange={(value) => setFormData({...formData, vignette_type: value})}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Vyberte typ známky" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="10 dní">10 dní</SelectItem>
+                  <SelectItem value="1 měsíc">1 měsíc</SelectItem>
+                  <SelectItem value="1 rok">1 rok</SelectItem>
+                  <SelectItem value="Elektronická">Elektronická</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div>
-              <Label htmlFor="edit-valid-from">Platné od</Label>
+              <Label htmlFor="edit-valid-from">Platná od</Label>
               <Input
                 id="edit-valid-from"
                 type="date"
@@ -355,7 +377,7 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = fal
               />
             </div>
             <div>
-              <Label htmlFor="edit-valid-until">Platné do</Label>
+              <Label htmlFor="edit-valid-until">Platná do</Label>
               <Input
                 id="edit-valid-until"
                 type="date"
@@ -365,28 +387,23 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = fal
               />
             </div>
             <div>
-              <Label htmlFor="edit-monthly-cost">Měsíční platba (Kč)</Label>
+              <Label htmlFor="edit-cost">Cena (Kč)</Label>
               <Input
-                id="edit-monthly-cost"
+                id="edit-cost"
                 type="text"
-                value={formData.monthly_cost}
-                onChange={(e) => setFormData({...formData, monthly_cost: e.target.value})}
+                value={formData.cost}
+                onChange={(e) => setFormData({...formData, cost: e.target.value})}
                 required
               />
             </div>
             <div>
-              <Label htmlFor="edit-coverage-type">Typ pojištění</Label>
-              <Select value={formData.coverage_type} onValueChange={(value) => setFormData({...formData, coverage_type: value})}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Vyberte typ pojištění" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Povinné ručení">Povinné ručení</SelectItem>
-                  <SelectItem value="Havarijní pojištění">Havarijní pojištění</SelectItem>
-                  <SelectItem value="Komplexní pojištění">Komplexní pojištění</SelectItem>
-                  <SelectItem value="GAP pojištění">GAP pojištění</SelectItem>
-                </SelectContent>
-              </Select>
+              <Label htmlFor="edit-purchase-location">Místo nákupu</Label>
+              <Input
+                id="edit-purchase-location"
+                type="text"
+                value={formData.purchase_location}
+                onChange={(e) => setFormData({...formData, purchase_location: e.target.value})}
+              />
             </div>
             <div>
               <Label htmlFor="edit-notes">Poznámky</Label>
@@ -420,9 +437,9 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = fal
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Smazat pojištění</AlertDialogTitle>
+            <AlertDialogTitle>Smazat dálniční známku</AlertDialogTitle>
             <AlertDialogDescription>
-              Opravdu chcete smazat toto pojištění? Tato akce je nevratná.
+              Opravdu chcete smazat tuto dálniční známku? Tato akce je nevratná.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -446,4 +463,4 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = fal
   );
 };
 
-export default InsuranceCard;
+export default VignetteCard;

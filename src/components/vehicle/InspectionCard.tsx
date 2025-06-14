@@ -7,10 +7,10 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Plus, Shield, Edit, Trash2, MoreVertical } from 'lucide-react';
+import { Plus, ClipboardCheck, Edit, Trash2, MoreVertical } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchInsuranceRecords, saveInsuranceRecord, deleteInsuranceRecord } from '@/services/vehicleService';
-import { InsuranceRecord } from '@/types/vehicle';
+import { fetchInspectionRecords, saveInspectionRecord, deleteInspectionRecord } from '@/services/vehicleService';
+import { InspectionRecord } from '@/types/vehicle';
 import { useStandardizedToast } from '@/hooks/useStandardizedToast';
 import {
   DropdownMenu,
@@ -29,84 +29,84 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
-interface InsuranceCardProps {
+interface InspectionCardProps {
   vehicleId: string;
   fullView?: boolean;
 }
 
-const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = false }) => {
+const InspectionCard: React.FC<InspectionCardProps> = ({ vehicleId, fullView = false }) => {
   const [isAddSheetOpen, setIsAddSheetOpen] = useState(false);
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [editingRecord, setEditingRecord] = useState<InsuranceRecord | null>(null);
-  const [deletingRecord, setDeletingRecord] = useState<InsuranceRecord | null>(null);
+  const [editingRecord, setEditingRecord] = useState<InspectionRecord | null>(null);
+  const [deletingRecord, setDeletingRecord] = useState<InspectionRecord | null>(null);
   const [formData, setFormData] = useState({
-    provider: '',
-    policy_number: '',
-    valid_from: '',
-    valid_until: '',
-    monthly_cost: '',
-    coverage_type: '',
+    inspection_date: '',
+    next_inspection_date: '',
+    result: '',
+    station: '',
+    cost: '',
+    mileage: '',
     notes: ''
   });
 
   const { success, error } = useStandardizedToast();
   const queryClient = useQueryClient();
 
-  const { data: insuranceRecords = [], isLoading } = useQuery({
-    queryKey: ['insurance-records', vehicleId],
-    queryFn: () => fetchInsuranceRecords(vehicleId),
+  const { data: inspections = [], isLoading } = useQuery({
+    queryKey: ['inspection-records', vehicleId],
+    queryFn: () => fetchInspectionRecords(vehicleId),
     enabled: !!vehicleId
   });
 
   const addMutation = useMutation({
-    mutationFn: (data: Partial<InsuranceRecord>) => saveInsuranceRecord({ ...data, vehicle_id: vehicleId }),
+    mutationFn: (data: Partial<InspectionRecord>) => saveInspectionRecord({ ...data, vehicle_id: vehicleId }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['insurance-records', vehicleId] });
-      success('Pojištění bylo přidáno');
+      queryClient.invalidateQueries({ queryKey: ['inspection-records', vehicleId] });
+      success('STK záznam byl přidán');
       setIsAddSheetOpen(false);
       resetForm();
     },
     onError: (err: any) => {
-      error(err.message || 'Chyba při přidávání pojištění');
+      error(err.message || 'Chyba při přidávání STK záznamu');
     }
   });
 
   const updateMutation = useMutation({
-    mutationFn: (data: Partial<InsuranceRecord>) => saveInsuranceRecord(data),
+    mutationFn: (data: Partial<InspectionRecord>) => saveInspectionRecord(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['insurance-records', vehicleId] });
-      success('Pojištění bylo aktualizováno');
+      queryClient.invalidateQueries({ queryKey: ['inspection-records', vehicleId] });
+      success('STK záznam byl aktualizován');
       setIsEditSheetOpen(false);
       setEditingRecord(null);
       resetForm();
     },
     onError: (err: any) => {
-      error(err.message || 'Chyba při aktualizaci pojištění');
+      error(err.message || 'Chyba při aktualizaci STK záznamu');
     }
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => deleteInsuranceRecord(id),
+    mutationFn: (id: string) => deleteInspectionRecord(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['insurance-records', vehicleId] });
-      success('Pojištění bylo smazáno');
+      queryClient.invalidateQueries({ queryKey: ['inspection-records', vehicleId] });
+      success('STK záznam byl smazán');
       setIsDeleteDialogOpen(false);
       setDeletingRecord(null);
     },
     onError: (err: any) => {
-      error(err.message || 'Chyba při mazání pojištění');
+      error(err.message || 'Chyba při mazání STK záznamu');
     }
   });
 
   const resetForm = () => {
     setFormData({
-      provider: '',
-      policy_number: '',
-      valid_from: '',
-      valid_until: '',
-      monthly_cost: '',
-      coverage_type: '',
+      inspection_date: '',
+      next_inspection_date: '',
+      result: '',
+      station: '',
+      cost: '',
+      mileage: '',
       notes: ''
     });
   };
@@ -121,21 +121,21 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = fal
     }
   };
 
-  const handleEdit = (record: InsuranceRecord) => {
+  const handleEdit = (record: InspectionRecord) => {
     setEditingRecord(record);
     setFormData({
-      provider: record.provider,
-      policy_number: record.policy_number,
-      valid_from: record.valid_from,
-      valid_until: record.valid_until,
-      monthly_cost: record.monthly_cost,
-      coverage_type: record.coverage_type,
+      inspection_date: record.inspection_date,
+      next_inspection_date: record.next_inspection_date,
+      result: record.result,
+      station: record.station,
+      cost: record.cost,
+      mileage: record.mileage,
       notes: record.notes || ''
     });
     setIsEditSheetOpen(true);
   };
 
-  const handleDelete = (record: InsuranceRecord) => {
+  const handleDelete = (record: InspectionRecord) => {
     setDeletingRecord(record);
     setIsDeleteDialogOpen(true);
   };
@@ -151,8 +151,8 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = fal
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Shield className="h-5 w-5" />
-            Pojištění
+            <ClipboardCheck className="h-5 w-5" />
+            STK
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -168,8 +168,8 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = fal
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
-              <Shield className="h-5 w-5" />
-              Pojištění
+              <ClipboardCheck className="h-5 w-5" />
+              STK
             </CardTitle>
             <Sheet open={isAddSheetOpen} onOpenChange={setIsAddSheetOpen}>
               <SheetTrigger asChild>
@@ -180,72 +180,71 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = fal
               </SheetTrigger>
               <SheetContent>
                 <SheetHeader>
-                  <SheetTitle>Přidat pojištění</SheetTitle>
+                  <SheetTitle>Přidat STK záznam</SheetTitle>
                 </SheetHeader>
                 <form onSubmit={handleSubmit} className="space-y-4 mt-4">
                   <div>
-                    <Label htmlFor="provider">Pojišťovna</Label>
+                    <Label htmlFor="inspection-date">Datum STK</Label>
                     <Input
-                      id="provider"
-                      type="text"
-                      value={formData.provider}
-                      onChange={(e) => setFormData({...formData, provider: e.target.value})}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="policy-number">Číslo smlouvy</Label>
-                    <Input
-                      id="policy-number"
-                      type="text"
-                      value={formData.policy_number}
-                      onChange={(e) => setFormData({...formData, policy_number: e.target.value})}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="valid-from">Platné od</Label>
-                    <Input
-                      id="valid-from"
+                      id="inspection-date"
                       type="date"
-                      value={formData.valid_from}
-                      onChange={(e) => setFormData({...formData, valid_from: e.target.value})}
+                      value={formData.inspection_date}
+                      onChange={(e) => setFormData({...formData, inspection_date: e.target.value})}
                       required
                     />
                   </div>
                   <div>
-                    <Label htmlFor="valid-until">Platné do</Label>
+                    <Label htmlFor="next-inspection-date">Další STK</Label>
                     <Input
-                      id="valid-until"
+                      id="next-inspection-date"
                       type="date"
-                      value={formData.valid_until}
-                      onChange={(e) => setFormData({...formData, valid_until: e.target.value})}
+                      value={formData.next_inspection_date}
+                      onChange={(e) => setFormData({...formData, next_inspection_date: e.target.value})}
                       required
                     />
                   </div>
                   <div>
-                    <Label htmlFor="monthly-cost">Měsíční platba (Kč)</Label>
-                    <Input
-                      id="monthly-cost"
-                      type="text"
-                      value={formData.monthly_cost}
-                      onChange={(e) => setFormData({...formData, monthly_cost: e.target.value})}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="coverage-type">Typ pojištění</Label>
-                    <Select value={formData.coverage_type} onValueChange={(value) => setFormData({...formData, coverage_type: value})}>
+                    <Label htmlFor="result">Výsledek</Label>
+                    <Select value={formData.result} onValueChange={(value) => setFormData({...formData, result: value})}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Vyberte typ pojištění" />
+                        <SelectValue placeholder="Vyberte výsledek" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Povinné ručení">Povinné ručení</SelectItem>
-                        <SelectItem value="Havarijní pojištění">Havarijní pojištění</SelectItem>
-                        <SelectItem value="Komplexní pojištění">Komplexní pojištění</SelectItem>
-                        <SelectItem value="GAP pojištění">GAP pojištění</SelectItem>
+                        <SelectItem value="Schváleno">Schváleno</SelectItem>
+                        <SelectItem value="Schváleno s vadami">Schváleno s vadami</SelectItem>
+                        <SelectItem value="Neschváleno">Neschváleno</SelectItem>
                       </SelectContent>
                     </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="station">Stanice STK</Label>
+                    <Input
+                      id="station"
+                      type="text"
+                      value={formData.station}
+                      onChange={(e) => setFormData({...formData, station: e.target.value})}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="cost">Cena (Kč)</Label>
+                    <Input
+                      id="cost"
+                      type="text"
+                      value={formData.cost}
+                      onChange={(e) => setFormData({...formData, cost: e.target.value})}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="mileage">Stav tachometru (km)</Label>
+                    <Input
+                      id="mileage"
+                      type="text"
+                      value={formData.mileage}
+                      onChange={(e) => setFormData({...formData, mileage: e.target.value})}
+                      required
+                    />
                   </div>
                   <div>
                     <Label htmlFor="notes">Poznámky</Label>
@@ -269,19 +268,19 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = fal
           </div>
         </CardHeader>
         <CardContent>
-          {insuranceRecords.length === 0 ? (
-            <p className="text-muted-foreground">Zatím žádné pojištění</p>
+          {inspections.length === 0 ? (
+            <p className="text-muted-foreground">Zatím žádné STK záznamy</p>
           ) : (
             <div className="space-y-2">
-              {(fullView ? insuranceRecords : insuranceRecords.slice(0, 3)).map((insurance) => (
-                <div key={insurance.id} className="flex items-center justify-between p-3 border rounded-lg">
+              {(fullView ? inspections : inspections.slice(0, 3)).map((inspection) => (
+                <div key={inspection.id} className="flex items-center justify-between p-3 border rounded-lg">
                   <div>
-                    <p className="font-medium">{insurance.provider}</p>
+                    <p className="font-medium">{inspection.station}</p>
                     <p className="text-sm text-muted-foreground">
-                      {insurance.coverage_type} • {insurance.monthly_cost} Kč/měsíc
+                      {new Date(inspection.inspection_date).toLocaleDateString('cs-CZ')} • {inspection.result} • {inspection.cost} Kč
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      {new Date(insurance.valid_from).toLocaleDateString('cs-CZ')} - {new Date(insurance.valid_until).toLocaleDateString('cs-CZ')}
+                      Další STK: {new Date(inspection.next_inspection_date).toLocaleDateString('cs-CZ')}
                     </p>
                   </div>
                   <DropdownMenu>
@@ -291,12 +290,12 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = fal
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => handleEdit(insurance)}>
+                      <DropdownMenuItem onClick={() => handleEdit(inspection)}>
                         <Edit className="mr-2 h-4 w-4" />
                         Upravit
                       </DropdownMenuItem>
                       <DropdownMenuItem 
-                        onClick={() => handleDelete(insurance)}
+                        onClick={() => handleDelete(inspection)}
                         className="text-red-600 focus:text-red-600"
                       >
                         <Trash2 className="mr-2 h-4 w-4" />
@@ -307,9 +306,9 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = fal
                 </div>
               ))}
               
-              {!fullView && insuranceRecords.length > 3 && (
+              {!fullView && inspections.length > 3 && (
                 <p className="text-sm text-muted-foreground mt-2">
-                  A {insuranceRecords.length - 3} dalších pojištění...
+                  A {inspections.length - 3} dalších záznamů...
                 </p>
               )}
             </div>
@@ -321,72 +320,71 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = fal
       <Sheet open={isEditSheetOpen} onOpenChange={setIsEditSheetOpen}>
         <SheetContent>
           <SheetHeader>
-            <SheetTitle>Upravit pojištění</SheetTitle>
+            <SheetTitle>Upravit STK záznam</SheetTitle>
           </SheetHeader>
           <form onSubmit={handleSubmit} className="space-y-4 mt-4">
             <div>
-              <Label htmlFor="edit-provider">Pojišťovna</Label>
+              <Label htmlFor="edit-inspection-date">Datum STK</Label>
               <Input
-                id="edit-provider"
-                type="text"
-                value={formData.provider}
-                onChange={(e) => setFormData({...formData, provider: e.target.value})}
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="edit-policy-number">Číslo smlouvy</Label>
-              <Input
-                id="edit-policy-number"
-                type="text"
-                value={formData.policy_number}
-                onChange={(e) => setFormData({...formData, policy_number: e.target.value})}
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="edit-valid-from">Platné od</Label>
-              <Input
-                id="edit-valid-from"
+                id="edit-inspection-date"
                 type="date"
-                value={formData.valid_from}
-                onChange={(e) => setFormData({...formData, valid_from: e.target.value})}
+                value={formData.inspection_date}
+                onChange={(e) => setFormData({...formData, inspection_date: e.target.value})}
                 required
               />
             </div>
             <div>
-              <Label htmlFor="edit-valid-until">Platné do</Label>
+              <Label htmlFor="edit-next-inspection-date">Další STK</Label>
               <Input
-                id="edit-valid-until"
+                id="edit-next-inspection-date"
                 type="date"
-                value={formData.valid_until}
-                onChange={(e) => setFormData({...formData, valid_until: e.target.value})}
+                value={formData.next_inspection_date}
+                onChange={(e) => setFormData({...formData, next_inspection_date: e.target.value})}
                 required
               />
             </div>
             <div>
-              <Label htmlFor="edit-monthly-cost">Měsíční platba (Kč)</Label>
-              <Input
-                id="edit-monthly-cost"
-                type="text"
-                value={formData.monthly_cost}
-                onChange={(e) => setFormData({...formData, monthly_cost: e.target.value})}
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="edit-coverage-type">Typ pojištění</Label>
-              <Select value={formData.coverage_type} onValueChange={(value) => setFormData({...formData, coverage_type: value})}>
+              <Label htmlFor="edit-result">Výsledek</Label>
+              <Select value={formData.result} onValueChange={(value) => setFormData({...formData, result: value})}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Vyberte typ pojištění" />
+                  <SelectValue placeholder="Vyberte výsledek" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Povinné ručení">Povinné ručení</SelectItem>
-                  <SelectItem value="Havarijní pojištění">Havarijní pojištění</SelectItem>
-                  <SelectItem value="Komplexní pojištění">Komplexní pojištění</SelectItem>
-                  <SelectItem value="GAP pojištění">GAP pojištění</SelectItem>
+                  <SelectItem value="Schváleno">Schváleno</SelectItem>
+                  <SelectItem value="Schváleno s vadami">Schváleno s vadami</SelectItem>
+                  <SelectItem value="Neschváleno">Neschváleno</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+            <div>
+              <Label htmlFor="edit-station">Stanice STK</Label>
+              <Input
+                id="edit-station"
+                type="text"
+                value={formData.station}
+                onChange={(e) => setFormData({...formData, station: e.target.value})}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-cost">Cena (Kč)</Label>
+              <Input
+                id="edit-cost"
+                type="text"
+                value={formData.cost}
+                onChange={(e) => setFormData({...formData, cost: e.target.value})}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-mileage">Stav tachometru (km)</Label>
+              <Input
+                id="edit-mileage"
+                type="text"
+                value={formData.mileage}
+                onChange={(e) => setFormData({...formData, mileage: e.target.value})}
+                required
+              />
             </div>
             <div>
               <Label htmlFor="edit-notes">Poznámky</Label>
@@ -420,9 +418,9 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = fal
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Smazat pojištění</AlertDialogTitle>
+            <AlertDialogTitle>Smazat STK záznam</AlertDialogTitle>
             <AlertDialogDescription>
-              Opravdu chcete smazat toto pojištění? Tato akce je nevratná.
+              Opravdu chcete smazat tento STK záznam? Tato akce je nevratná.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -446,4 +444,4 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = fal
   );
 };
 
-export default InsuranceCard;
+export default InspectionCard;

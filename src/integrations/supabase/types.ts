@@ -173,6 +173,48 @@ export type Database = {
           },
         ]
       }
+      highway_vignettes: {
+        Row: {
+          cost: string
+          country: string
+          created_at: string
+          id: string
+          notes: string | null
+          purchase_location: string | null
+          updated_at: string
+          valid_from: string
+          valid_until: string
+          vehicle_id: string
+          vignette_type: string
+        }
+        Insert: {
+          cost: string
+          country: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          purchase_location?: string | null
+          updated_at?: string
+          valid_from: string
+          valid_until: string
+          vehicle_id: string
+          vignette_type: string
+        }
+        Update: {
+          cost?: string
+          country?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          purchase_location?: string | null
+          updated_at?: string
+          valid_from?: string
+          valid_until?: string
+          vehicle_id?: string
+          vignette_type?: string
+        }
+        Relationships: []
+      }
       insurance_records: {
         Row: {
           coverage_type: string
@@ -1387,6 +1429,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      vehicle_inspections: {
+        Row: {
+          cost: string
+          created_at: string
+          id: string
+          inspection_date: string
+          mileage: string
+          next_inspection_date: string
+          notes: string | null
+          result: string
+          station: string
+          updated_at: string
+          vehicle_id: string
+        }
+        Insert: {
+          cost: string
+          created_at?: string
+          id?: string
+          inspection_date: string
+          mileage: string
+          next_inspection_date: string
+          notes?: string | null
+          result: string
+          station: string
+          updated_at?: string
+          vehicle_id: string
+        }
+        Update: {
+          cost?: string
+          created_at?: string
+          id?: string
+          inspection_date?: string
+          mileage?: string
+          next_inspection_date?: string
+          notes?: string | null
+          result?: string
+          station?: string
+          updated_at?: string
+          vehicle_id?: string
+        }
+        Relationships: []
       }
       vehicles: {
         Row: {
