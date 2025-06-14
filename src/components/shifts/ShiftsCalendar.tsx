@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useAuth } from '@/hooks/useAuth';
 import { useOptimizedShiftsManagement } from '@/hooks/shifts/useOptimizedShiftsManagement';
 import UnifiedShiftCalendar from './calendar/UnifiedShiftCalendar';
 import { Shift } from '@/types/shifts';
@@ -17,9 +18,10 @@ const ShiftsCalendar: React.FC<ShiftsCalendarProps> = ({
   onDeleteShift: externalOnDeleteShift
 }) => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const { user } = useAuth();
   
   // Use internal shift management if no external shifts provided
-  const shiftsManagement = useOptimizedShiftsManagement();
+  const shiftsManagement = useOptimizedShiftsManagement(user?.id);
   
   // Use external data if provided, otherwise use internal management
   const shifts = externalShifts || shiftsManagement.shifts;
