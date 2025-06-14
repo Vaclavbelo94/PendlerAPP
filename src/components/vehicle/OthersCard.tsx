@@ -1,9 +1,8 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Settings, Plus, Edit, Trash2 } from 'lucide-react';
+import { Settings, Plus, Edit, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 import { useInspectionRecords } from '@/hooks/vehicle/useInspectionRecords';
@@ -39,13 +38,31 @@ const OthersCard: React.FC<OthersCardProps> = ({ vehicleId, fullView = false }) 
   const vignetteRecords = useVignetteRecords(vehicleId);
 
   const tabs = ["insurance", "inspection", "vignette", "documents"];
+  const tabLabels = {
+    insurance: "Pojištění",
+    inspection: "STK",
+    vignette: "Dálniční známky",
+    documents: "Dokumenty"
+  };
   
-  const { containerRef } = useSwipeNavigation({
+  const { containerRef, currentIndex, canSwipeLeft, canSwipeRight } = useSwipeNavigation({
     items: tabs,
     currentItem: activeTab,
     onItemChange: setActiveTab,
     enabled: isMobile && fullView
   });
+
+  const navigateLeft = () => {
+    if (currentIndex > 0) {
+      setActiveTab(tabs[currentIndex - 1]);
+    }
+  };
+
+  const navigateRight = () => {
+    if (currentIndex < tabs.length - 1) {
+      setActiveTab(tabs[currentIndex + 1]);
+    }
+  };
 
   const handleEditInspection = (inspection: InspectionRecord) => {
     setEditingInspection(inspection);
@@ -136,19 +153,42 @@ const OthersCard: React.FC<OthersCardProps> = ({ vehicleId, fullView = false }) 
       <CardContent>
         <div ref={containerRef}>
           {isMobile ? (
-            // Mobile: Swipe navigation
+            // Mobile: Swipe navigation with arrows
             <div className="space-y-4">
-              <div className="flex justify-center">
-                <div className="flex gap-1">
-                  {tabs.map((tab, index) => (
-                    <div
-                      key={tab}
-                      className={`w-2 h-2 rounded-full transition-colors ${
-                        tab === activeTab ? 'bg-primary' : 'bg-muted'
-                      }`}
-                    />
-                  ))}
+              <div className="flex items-center justify-between">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={navigateLeft}
+                  disabled={!canSwipeRight}
+                  className="p-2"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                
+                <div className="flex flex-col items-center gap-2">
+                  <h3 className="text-lg font-semibold">{tabLabels[activeTab as keyof typeof tabLabels]}</h3>
+                  <div className="flex gap-1">
+                    {tabs.map((tab, index) => (
+                      <div
+                        key={tab}
+                        className={`w-2 h-2 rounded-full transition-colors ${
+                          tab === activeTab ? 'bg-primary' : 'bg-muted'
+                        }`}
+                      />
+                    ))}
+                  </div>
                 </div>
+
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={navigateRight}
+                  disabled={!canSwipeLeft}
+                  className="p-2"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
               </div>
               
               <div className="space-y-4">
@@ -158,7 +198,6 @@ const OthersCard: React.FC<OthersCardProps> = ({ vehicleId, fullView = false }) 
                 {activeTab === "inspection" && (
                   <div>
                     <div className="flex justify-between items-center mb-4">
-                      <h3 className="text-lg font-semibold">STK a Emise</h3>
                       <Button size="sm" onClick={() => setInspectionDialogOpen(true)}>
                         <Plus className="h-4 w-4 mr-2" />
                         Přidat kontrolu
@@ -177,7 +216,6 @@ const OthersCard: React.FC<OthersCardProps> = ({ vehicleId, fullView = false }) 
                 {activeTab === "vignette" && (
                   <div>
                     <div className="flex justify-between items-center mb-4">
-                      <h3 className="text-lg font-semibold">Dálniční známky</h3>
                       <Button size="sm" onClick={() => setVignetteDialogOpen(true)}>
                         <Plus className="h-4 w-4 mr-2" />
                         Přidat známku
@@ -199,14 +237,36 @@ const OthersCard: React.FC<OthersCardProps> = ({ vehicleId, fullView = false }) 
               </div>
             </div>
           ) : (
-            // Desktop: Tab navigation
+            // Desktop: Tab navigation with arrows
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="insurance">Pojištění</TabsTrigger>
-                <TabsTrigger value="inspection">STK</TabsTrigger>
-                <TabsTrigger value="vignette">Dálniční známky</TabsTrigger>
-                <TabsTrigger value="documents">Dokumenty</TabsTrigger>
-              </TabsList>
+              <div className="flex items-center gap-2 mb-4">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={navigateLeft}
+                  disabled={currentIndex === 0}
+                  className="p-2"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                
+                <TabsList className="grid w-full grid-cols-4 flex-1">
+                  <TabsTrigger value="insurance">Pojištění</TabsTrigger>
+                  <TabsTrigger value="inspection">STK</TabsTrigger>
+                  <TabsTrigger value="vignette">Dálniční známky</TabsTrigger>
+                  <TabsTrigger value="documents">Dokumenty</TabsTrigger>
+                </TabsList>
+
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={navigateRight}
+                  disabled={currentIndex === tabs.length - 1}
+                  className="p-2"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
               
               <div className="mt-6">
                 <TabsContent value="insurance" className="mt-0">
