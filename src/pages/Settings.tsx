@@ -4,7 +4,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { 
   Settings as SettingsIcon
 } from 'lucide-react';
-import ProfileAppearance from '@/components/profile/ProfileAppearance';
 import ProfileErrorBoundary from '@/components/profile/ProfileErrorBoundary';
 import GeneralSettings from '@/components/settings/GeneralSettings';
 import NotificationSettings from '@/components/settings/NotificationSettings';
@@ -21,7 +20,6 @@ import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 import { 
   User, 
   Bell, 
-  Palette, 
   Globe, 
   Database,
   Shield,
@@ -33,13 +31,13 @@ const Settings = () => {
   const isMobile = useIsMobile();
   const [activeTab, setActiveTab] = useState("general");
 
-  // All available settings tabs for swipe navigation
+  // All available settings tabs for swipe navigation (removed "appearance")
   const allSettingsTabs = [
-    "general", "account", "appearance", "notifications", 
+    "general", "account", "notifications", 
     "language", "security", "device", "data", "privacy"
   ];
 
-  // Settings tabs configuration for UniversalMobileNavigation
+  // Settings tabs configuration for UniversalMobileNavigation (removed appearance tab)
   const settingsTabs = [
     {
       id: 'general',
@@ -52,12 +50,6 @@ const Settings = () => {
       icon: User,
       label: 'Účet',
       description: 'Správa uživatelského účtu'
-    },
-    {
-      id: 'appearance',
-      icon: Palette,
-      label: 'Vzhled',
-      description: 'Témata a zobrazení'
     },
     {
       id: 'notifications',
@@ -136,7 +128,7 @@ const Settings = () => {
               className="settings-navigation"
             />
 
-            {/* Tab content with individual error boundaries */}
+            {/* Tab content with individual error boundaries (removed appearance tab) */}
             <div className="mt-8">
               {activeTab === "general" && (
                 <ProfileErrorBoundary>
@@ -146,11 +138,6 @@ const Settings = () => {
               {activeTab === "account" && (
                 <ProfileErrorBoundary>
                   <AccountSettings />
-                </ProfileErrorBoundary>
-              )}
-              {activeTab === "appearance" && (
-                <ProfileErrorBoundary>
-                  <ProfileAppearance />
                 </ProfileErrorBoundary>
               )}
               {activeTab === "notifications" && (
