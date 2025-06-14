@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useSimplifiedAuth } from '@/hooks/auth/useSimplifiedAuth';
@@ -64,7 +65,7 @@ const VehicleMainContainer: React.FC = () => {
   }
 
   if (vehicleManagement.error && !vehicleManagement.isLoading) {
-    // Safely convert error to Error object with explicit null check
+    // Safely convert error to Error object with proper null handling
     const error = vehicleManagement.error;
     if (!error) {
       // This shouldn't happen due to the condition above, but TypeScript safety
@@ -72,9 +73,10 @@ const VehicleMainContainer: React.FC = () => {
     }
     
     let errorObj: Error;
-    if (typeof error === 'object' && 'message' in error) {
-      errorObj = error as Error;
+    if (typeof error === 'string') {
+      errorObj = new Error(error);
     } else {
+      // If it's not a string, it should be an Error-like object
       errorObj = new Error(String(error));
     }
     
