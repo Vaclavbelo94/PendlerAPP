@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -8,8 +7,7 @@ import { VehicleData } from '@/types/vehicle';
 import VehicleCarouselProgress from './VehicleCarouselProgress';
 import FuelConsumptionCard from './FuelConsumptionCard';
 import ServiceRecordCard from './ServiceRecordCard';
-import DocumentsCard from './DocumentsCard';
-import InsuranceCard from './InsuranceCard';
+import OthersCard from './OthersCard';
 import { UnifiedGrid } from '@/components/layout/UnifiedGrid';
 
 interface VehicleCarouselProps {
@@ -23,8 +21,8 @@ const VehicleCarousel: React.FC<VehicleCarouselProps> = ({
 }) => {
   const [currentStep, setCurrentStep] = useState(1);
   
-  const steps = ['overview', 'fuel', 'service', 'documents'];
-  const stepLabels = ['Přehled', 'Spotřeba', 'Servis', 'Dokumenty'];
+  const steps = ['overview', 'fuel', 'service', 'others'];
+  const stepLabels = ['Přehled', 'Spotřeba', 'Servis', 'Ostatní'];
 
   const { containerRef } = useSwipeNavigation({
     items: steps,
@@ -102,8 +100,7 @@ const VehicleCarousel: React.FC<VehicleCarouselProps> = ({
             <UnifiedGrid columns={{ mobile: 1, tablet: 1, desktop: 2 }} gap="lg">
               <FuelConsumptionCard vehicleId={vehicleId} />
               <ServiceRecordCard vehicleId={vehicleId} />
-              <InsuranceCard vehicleId={vehicleId} />
-              <DocumentsCard vehicleId={vehicleId} />
+              <OthersCard vehicleId={vehicleId} />
             </UnifiedGrid>
           </div>
         );
@@ -111,8 +108,8 @@ const VehicleCarousel: React.FC<VehicleCarouselProps> = ({
         return <FuelConsumptionCard vehicleId={vehicleId} fullView />;
       case 3: // Servis
         return <ServiceRecordCard vehicleId={vehicleId} fullView />;
-      case 4: // Dokumenty
-        return <DocumentsCard vehicleId={vehicleId} fullView />;
+      case 4: // Ostatní
+        return <OthersCard vehicleId={vehicleId} fullView />;
       default:
         return null;
     }

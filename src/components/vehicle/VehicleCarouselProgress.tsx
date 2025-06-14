@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Car, Gauge, Wrench, FileText } from 'lucide-react';
+import { Car, Gauge, Wrench, Settings } from 'lucide-react';
 
 interface VehicleCarouselProgressProps {
   currentStep: number;
@@ -16,7 +15,7 @@ const VehicleCarouselProgress: React.FC<VehicleCarouselProgressProps> = ({
   stepLabels,
   onStepClick
 }) => {
-  const icons = [Car, Gauge, Wrench, FileText];
+  const icons = [Car, Gauge, Wrench, Settings];
 
   return (
     <div className="mb-8">
