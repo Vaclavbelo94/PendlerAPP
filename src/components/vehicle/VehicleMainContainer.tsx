@@ -1,5 +1,3 @@
-
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useSimplifiedAuth } from '@/hooks/auth/useSimplifiedAuth';
@@ -66,10 +64,15 @@ const VehicleMainContainer: React.FC = () => {
   }
 
   if (vehicleManagement.error && !vehicleManagement.isLoading) {
-    // Safely convert error to Error object
+    // Safely convert error to Error object with explicit null check
     const error = vehicleManagement.error;
+    if (!error) {
+      // This shouldn't happen due to the condition above, but TypeScript safety
+      return <FastLoadingFallback message="Načítání vozidel..." />;
+    }
+    
     let errorObj: Error;
-    if (error && typeof error === 'object' && 'message' in error) {
+    if (typeof error === 'object' && 'message' in error) {
       errorObj = error as Error;
     } else {
       errorObj = new Error(String(error));
@@ -246,4 +249,3 @@ const VehicleMainContainer: React.FC = () => {
 };
 
 export default VehicleMainContainer;
-
