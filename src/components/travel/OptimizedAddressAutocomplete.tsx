@@ -61,6 +61,11 @@ const OptimizedAddressAutocomplete = memo<OptimizedAddressAutocompleteProps>(({
     }
   }, []);
 
+  // Update internal value when prop value changes
+  React.useEffect(() => {
+    setInputValue(value);
+  }, [value]);
+
   return (
     <div className={cn("relative", className)}>
       <Popover open={open && !disabled} onOpenChange={setOpen}>

@@ -1,6 +1,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useDebounce } from './useDebounce';
+import { supabase } from '@/integrations/supabase/client';
 
 interface GooglePlacesSuggestion {
   place_id: string;
@@ -10,8 +11,6 @@ interface GooglePlacesSuggestion {
     secondary_text: string;
   };
 }
-
-const GOOGLE_MAPS_API_KEY = "AIzaSyBKc8VQM2i4TyHq5mI6aK9gJNBBSVnO4xY";
 
 export const useOptimizedAddressAutocomplete = (query: string) => {
   const [suggestions, setSuggestions] = useState<GooglePlacesSuggestion[]>([]);
@@ -29,28 +28,24 @@ export const useOptimizedAddressAutocomplete = (query: string) => {
     setError(null);
 
     try {
-      // Using Google Places API for better autocomplete
-      const response = await fetch(
-        `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(searchQuery)}&types=address&components=country:cz|country:de&key=${GOOGLE_MAPS_API_KEY}`
-      );
+      // Use Edge function for address autocomplete
+      const { data, error: funcError } = await supabase.functions.invoke('address-autocomplete', {
+        body: { query: searchQuery }
+      });
 
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
+      if (funcError) {
+        throw funcError;
       }
 
-      const data = await response.json();
-      
-      if (data.status === 'OK') {
-        const mappedSuggestions = data.predictions?.map((prediction: any) => ({
+      if (data && data.predictions) {
+        const mappedSuggestions = data.predictions.map((prediction: any) => ({
           place_id: prediction.place_id,
           display_name: prediction.description,
           structured_formatting: prediction.structured_formatting
-        })) || [];
+        }));
         
         setSuggestions(mappedSuggestions);
       } else {
-        console.error('Google Places API error:', data.status);
-        setError('Nepodařilo se načíst návrhy adres');
         setSuggestions([]);
       }
     } catch (error) {
