@@ -21,8 +21,10 @@ const Profile = () => {
   const isMobile = useIsMobile();
   const [activeTab, setActiveTab] = useState('overview');
 
-  // Swipe navigation setup
+  // Profile tabs for swipe navigation
   const profileTabs = ['overview', 'appearance', 'subscription', 'activity'];
+  
+  // Swipe navigation setup
   const { containerRef } = useSwipeNavigation({
     items: profileTabs,
     currentItem: activeTab,
@@ -116,11 +118,9 @@ const Profile = () => {
   );
 
   const AppearanceTab = () => (
-    <PageContainer maxWidth="xl" padding="sm">
-      <StandardCard title="Nastavení vzhledu" description="Přizpůsobte si vzhled aplikace">
-        <ProfileAppearance />
-      </StandardCard>
-    </PageContainer>
+    <StandardCard title="Nastavení vzhledu" description="Přizpůsobte si vzhled aplikace">
+      <ProfileAppearance />
+    </StandardCard>
   );
 
   const SubscriptionTab = () => (
@@ -180,7 +180,7 @@ const Profile = () => {
 
   return (
     <PageContainer maxWidth="xl" padding="lg">
-      <div ref={containerRef} className="touch-manipulation">
+      <div ref={containerRef} className="touch-manipulation swipe-container">
         <div className="mb-8 text-center md:text-left">
           <h1 className="text-3xl font-bold mb-2">Můj profil</h1>
           <p className="text-muted-foreground">

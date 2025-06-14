@@ -3,6 +3,7 @@ import React from 'react';
 import { User, Settings, Activity, Crown, Eye } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface ProfileNavigationProps {
   activeTab: string;
@@ -40,9 +41,17 @@ export const ProfileNavigation: React.FC<ProfileNavigationProps> = ({
   activeTab,
   onTabChange
 }) => {
+  const isMobile = useIsMobile();
+
   return (
-    <div className="flex justify-center">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-5xl">
+    <div className={cn(
+      "flex justify-center",
+      isMobile && "profile-navigation scroll-snap-type-x"
+    )}>
+      <div className={cn(
+        "grid gap-4 w-full max-w-5xl",
+        isMobile ? "grid-cols-2" : "grid-cols-2 md:grid-cols-4"
+      )}>
         {profileTabs.map((tab, index) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -52,11 +61,12 @@ export const ProfileNavigation: React.FC<ProfileNavigationProps> = ({
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
               className={cn(
-                "relative p-4 md:p-6 rounded-2xl border text-center transition-all duration-300 group",
+                "relative p-4 md:p-6 rounded-2xl border text-center transition-all duration-300 group mobile-nav-button",
                 "hover:shadow-lg hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
                 isActive 
                   ? "bg-gradient-to-br from-primary/10 to-accent/10 border-primary/30 shadow-lg" 
-                  : "bg-card/80 backdrop-blur-sm border-border/50 hover:border-primary/20"
+                  : "bg-card/80 backdrop-blur-sm border-border/50 hover:border-primary/20",
+                isMobile && "scroll-snap-align-center"
               )}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -88,7 +98,8 @@ export const ProfileNavigation: React.FC<ProfileNavigationProps> = ({
                 </motion.div>
                 
                 <h3 className={cn(
-                  "font-semibold text-lg transition-colors duration-300 mb-2",
+                  "font-semibold transition-colors duration-300 mb-2 mobile-text-optimize",
+                  isMobile ? "text-sm" : "text-lg",
                   isActive 
                     ? "text-primary" 
                     : "text-foreground group-hover:text-primary"
@@ -97,7 +108,8 @@ export const ProfileNavigation: React.FC<ProfileNavigationProps> = ({
                 </h3>
                 
                 <p className={cn(
-                  "text-sm transition-colors duration-300",
+                  "transition-colors duration-300 mobile-text-optimize",
+                  isMobile ? "text-xs" : "text-sm",
                   isActive 
                     ? "text-muted-foreground" 
                     : "text-muted-foreground group-hover:text-foreground"
