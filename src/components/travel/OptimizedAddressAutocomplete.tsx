@@ -26,13 +26,12 @@ const OptimizedAddressAutocomplete = memo<OptimizedAddressAutocompleteProps>(({
   id
 }) => {
   const [open, setOpen] = useState(false);
-  const [inputValue, setInputValue] = useState(value);
   const inputRef = useRef<HTMLInputElement>(null);
   
-  const { suggestions, loading, error } = useOptimizedAddressAutocomplete(inputValue);
+  const { suggestions, loading, error } = useOptimizedAddressAutocomplete(value);
 
-  const handleInputChange = useCallback((newValue: string) => {
-    setInputValue(newValue);
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
     onChange(newValue);
     if (newValue.length >= 3 && !open) {
       setOpen(true);
@@ -41,14 +40,12 @@ const OptimizedAddressAutocomplete = memo<OptimizedAddressAutocompleteProps>(({
 
   const handleSuggestionSelect = useCallback((suggestion: any) => {
     const selectedValue = suggestion.display_name;
-    setInputValue(selectedValue);
     onChange(selectedValue);
     setOpen(false);
     inputRef.current?.blur();
   }, [onChange]);
 
   const handleClear = useCallback(() => {
-    setInputValue('');
     onChange('');
     setOpen(false);
     inputRef.current?.focus();
@@ -61,11 +58,6 @@ const OptimizedAddressAutocomplete = memo<OptimizedAddressAutocompleteProps>(({
     }
   }, []);
 
-  // Update internal value when prop value changes
-  React.useEffect(() => {
-    setInputValue(value);
-  }, [value]);
-
   return (
     <div className={cn("relative", className)}>
       <Popover open={open && !disabled} onOpenChange={setOpen}>
@@ -75,8 +67,8 @@ const OptimizedAddressAutocomplete = memo<OptimizedAddressAutocompleteProps>(({
             <Input
               ref={inputRef}
               id={id}
-              value={inputValue}
-              onChange={(e) => handleInputChange(e.target.value)}
+              value={value}
+              onChange={handleInputChange}
               onKeyDown={handleKeyDown}
               placeholder={placeholder}
               disabled={disabled}
@@ -88,7 +80,7 @@ const OptimizedAddressAutocomplete = memo<OptimizedAddressAutocompleteProps>(({
             {loading && (
               <Loader2 className="absolute right-8 top-1/2 transform -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
             )}
-            {inputValue && !loading && (
+            {value && !loading && (
               <Button
                 type="button"
                 variant="ghost"
@@ -123,7 +115,7 @@ const OptimizedAddressAutocomplete = memo<OptimizedAddressAutocompleteProps>(({
                 </div>
               )}
               
-              {!loading && !error && suggestions.length === 0 && inputValue.length >= 3 && (
+              {!loading && !error && suggestions.length === 0 && value.length >= 3 && (
                 <CommandEmpty>
                   Žádné návrhy nebyly nalezeny.
                 </CommandEmpty>

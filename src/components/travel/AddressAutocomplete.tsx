@@ -37,13 +37,12 @@ const AddressAutocomplete = memo<AddressAutocompleteProps>(({
   id
 }) => {
   const [open, setOpen] = useState(false);
-  const [inputValue, setInputValue] = useState(value);
   const [suggestions, setSuggestions] = useState<GooglePlacesSuggestion[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   
-  const debouncedQuery = useDebounce(inputValue, 300);
+  const debouncedQuery = useDebounce(value, 300);
 
   const searchPlaces = useCallback(async (query: string) => {
     if (!query || query.length < 3) {
@@ -93,21 +92,19 @@ const AddressAutocomplete = memo<AddressAutocompleteProps>(({
     }
   }, [debouncedQuery, searchPlaces, open]);
 
-  const handleInputChange = useCallback((newValue: string) => {
-    setInputValue(newValue);
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
     onChange(newValue);
   }, [onChange]);
 
   const handleSuggestionSelect = useCallback((suggestion: GooglePlacesSuggestion) => {
     const selectedValue = suggestion.description;
-    setInputValue(selectedValue);
     onChange(selectedValue);
     setOpen(false);
     inputRef.current?.blur();
   }, [onChange]);
 
   const handleClear = useCallback(() => {
-    setInputValue('');
     onChange('');
     setOpen(false);
     inputRef.current?.focus();
@@ -129,8 +126,8 @@ const AddressAutocomplete = memo<AddressAutocompleteProps>(({
             <Input
               ref={inputRef}
               id={id}
-              value={inputValue}
-              onChange={(e) => handleInputChange(e.target.value)}
+              value={value}
+              onChange={handleInputChange}
               onKeyDown={handleKeyDown}
               placeholder={placeholder}
               disabled={disabled}
@@ -142,7 +139,7 @@ const AddressAutocomplete = memo<AddressAutocompleteProps>(({
             {loading && (
               <Loader2 className="absolute right-8 top-1/2 transform -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
             )}
-            {inputValue && !loading && (
+            {value && !loading && (
               <Button
                 type="button"
                 variant="ghost"
@@ -177,7 +174,7 @@ const AddressAutocomplete = memo<AddressAutocompleteProps>(({
                 </div>
               )}
               
-              {!loading && !error && suggestions.length === 0 && inputValue.length >= 3 && (
+              {!loading && !error && suggestions.length === 0 && value.length >= 3 && (
                 <CommandEmpty>
                   Žádné návrhy nebyly nalezeny.
                 </CommandEmpty>
