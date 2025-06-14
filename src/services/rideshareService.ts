@@ -14,7 +14,7 @@ export interface RideshareOffer {
   is_recurring: boolean;
   recurring_days: number[];
   rating?: number;
-  completed_rides: number;
+  completed_rides?: number;
   created_at: string;
   is_active: boolean;
 }
@@ -45,7 +45,7 @@ export const rideshareService = {
       .from('rideshare_offers')
       .select(`
         *,
-        profiles!rideshare_offers_user_id_fkey (
+        profiles:user_id (
           username,
           phone_number
         )
