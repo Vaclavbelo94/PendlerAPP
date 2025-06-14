@@ -13,6 +13,7 @@ import FuelConsumptionCard from './FuelConsumptionCard';
 import ServiceRecordCard from './ServiceRecordCard';
 import InsuranceCard from './InsuranceCard';
 import DocumentsCard from './DocumentsCard';
+import OthersCard from './OthersCard';
 import EmptyVehicleState from './EmptyVehicleState';
 
 interface VehiclePageContentProps {
@@ -63,6 +64,8 @@ const VehiclePageContent: React.FC<VehiclePageContentProps> = ({
         return <ServiceRecordCard vehicleId={selectedVehicleId} fullView />;
       case "documents":
         return <DocumentsCard vehicleId={selectedVehicleId} fullView />;
+      case "others":
+        return <OthersCard vehicleId={selectedVehicleId} fullView />;
       default:
         return null;
     }
