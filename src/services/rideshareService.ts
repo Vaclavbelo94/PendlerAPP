@@ -41,32 +41,55 @@ export interface RideshareOfferWithDriver extends RideshareOffer {
 
 export const rideshareService = {
   async getRideshareOffers(): Promise<RideshareOfferWithDriver[]> {
-    const { data, error } = await supabase
+    // First get the offers
+    const { data: offers, error: offersError } = await supabase
       .from('rideshare_offers')
-      .select(`
-        *,
-        profiles:user_id (
-          username,
-          phone_number
-        )
-      `)
+      .select('*')
       .eq('is_active', true)
       .order('created_at', { ascending: false });
 
-    if (error) {
-      console.error('Error loading rideshare offers:', error);
-      throw error;
+    if (offersError) {
+      console.error('Error loading rideshare offers:', offersError);
+      throw offersError;
     }
 
-    return (data || []).map(offer => ({
-      ...offer,
-      driver: {
-        username: offer.profiles?.username || 'Neznámý řidič',
-        phone_number: offer.profiles?.phone_number,
-        rating: offer.rating,
-        completed_rides: offer.completed_rides
-      }
-    }));
+    if (!offers || offers.length === 0) {
+      return [];
+    }
+
+    // Get all unique user IDs
+    const userIds = [...new Set(offers.map(offer => offer.user_id))];
+
+    // Get profiles for these users
+    const { data: profiles, error: profilesError } = await supabase
+      .from('profiles')
+      .select('id, username, phone_number')
+      .in('id', userIds);
+
+    if (profilesError) {
+      console.error('Error loading profiles:', profilesError);
+      throw profilesError;
+    }
+
+    // Create a map of user_id to profile
+    const profilesMap = new Map();
+    profiles?.forEach(profile => {
+      profilesMap.set(profile.id, profile);
+    });
+
+    // Combine offers with profile data
+    return offers.map(offer => {
+      const profile = profilesMap.get(offer.user_id);
+      return {
+        ...offer,
+        driver: {
+          username: profile?.username || 'Neznámý řidič',
+          phone_number: profile?.phone_number,
+          rating: offer.rating,
+          completed_rides: offer.completed_rides
+        }
+      };
+    });
   },
 
   async createRideshareOffer(offerData: Omit<RideshareOffer, 'id' | 'created_at' | 'rating' | 'completed_rides' | 'is_active'>) {
