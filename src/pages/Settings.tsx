@@ -14,10 +14,19 @@ import DataSettings from '@/components/settings/DataSettings';
 import PrivacySettings from '@/components/settings/PrivacySettings';
 import DeviceSettings from '@/components/settings/DeviceSettings';
 import SecuritySettings from '@/components/settings/SecuritySettings';
-import SettingsNavigation from '@/components/settings/SettingsNavigation';
+import { UniversalMobileNavigation } from '@/components/navigation/UniversalMobileNavigation';
 import { useSyncSettings } from '@/hooks/useSyncSettings';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
+import { 
+  User, 
+  Bell, 
+  Palette, 
+  Globe, 
+  Database,
+  Shield,
+  Smartphone
+} from 'lucide-react';
 
 const Settings = () => {
   const { settings: syncSettings, saveSettings: updateSyncSettings } = useSyncSettings();
@@ -28,6 +37,64 @@ const Settings = () => {
   const allSettingsTabs = [
     "general", "account", "appearance", "notifications", 
     "language", "security", "device", "data", "privacy"
+  ];
+
+  // Settings tabs configuration for UniversalMobileNavigation
+  const settingsTabs = [
+    {
+      id: 'general',
+      icon: SettingsIcon,
+      label: 'Obecné',
+      description: 'Základní nastavení aplikace'
+    },
+    {
+      id: 'account',
+      icon: User,
+      label: 'Účet',
+      description: 'Správa uživatelského účtu'
+    },
+    {
+      id: 'appearance',
+      icon: Palette,
+      label: 'Vzhled',
+      description: 'Témata a zobrazení'
+    },
+    {
+      id: 'notifications',
+      icon: Bell,
+      label: 'Oznámení',
+      description: 'Nastavení upozornění'
+    },
+    {
+      id: 'language',
+      icon: Globe,
+      label: 'Jazyk',
+      description: 'Jazykové preference'
+    },
+    {
+      id: 'security',
+      icon: Shield,
+      label: 'Bezpečnost',
+      description: 'Zabezpečení a soukromí'
+    },
+    {
+      id: 'device',
+      icon: Smartphone,
+      label: 'Zařízení',
+      description: 'Nastavení zařízení'
+    },
+    {
+      id: 'data',
+      icon: Database,
+      label: 'Data',
+      description: 'Správa dat a zálohy'
+    },
+    {
+      id: 'privacy',
+      icon: Shield,
+      label: 'Soukromí',
+      description: 'Ochrana soukromí'
+    }
   ];
 
   // Swipe navigation setup
@@ -43,7 +110,7 @@ const Settings = () => {
 
   return (
     <div className="container py-6 md:py-10 max-w-7xl">
-      <div ref={containerRef} className="touch-manipulation">
+      <div ref={containerRef} className="touch-manipulation swipe-container">
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
             <SettingsIcon className="h-8 w-8 text-primary" />
@@ -61,25 +128,13 @@ const Settings = () => {
 
         <ProfileErrorBoundary>
           <div className="space-y-6">
-            {/* Primary navigation */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Hlavní nastavení</h3>
-              <SettingsNavigation
-                activeTab={activeTab}
-                onTabChange={setActiveTab}
-                variant="primary"
-              />
-            </div>
-
-            {/* Secondary navigation */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Další nastavení</h3>
-              <SettingsNavigation
-                activeTab={activeTab}
-                onTabChange={setActiveTab}
-                variant="secondary"
-              />
-            </div>
+            {/* Unified navigation using UniversalMobileNavigation */}
+            <UniversalMobileNavigation
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+              tabs={settingsTabs}
+              className="settings-navigation"
+            />
 
             {/* Tab content with individual error boundaries */}
             <div className="mt-8">
