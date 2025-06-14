@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { TrendingUpIcon, FileTextIcon, BookOpenIcon, CalculatorIcon, UsersIcon, HelpCircleIcon } from 'lucide-react';
+import { FileTextIcon, BookOpenIcon, CalculatorIcon, UsersIcon, HelpCircleIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
@@ -11,16 +10,10 @@ interface TaxAdvisorNavigationProps {
 
 const taxAdvisorTabs = [
   {
-    id: 'optimizer',
-    icon: TrendingUpIcon,
-    label: 'Optimalizace',
-    description: 'Daňové tipy a optimalizace'
-  },
-  {
     id: 'pendler',
-    icon: UsersIcon,
-    label: 'Rady pro pendlery',
-    description: 'Specifické rady pro pracující v zahraničí'
+    icon: CalculatorIcon,
+    label: 'Pendler kalkulačka',
+    description: 'Reisepauschale a daňové optimalizace'
   },
   {
     id: 'interactive',
@@ -43,7 +36,7 @@ const taxAdvisorTabs = [
   {
     id: 'calculator',
     icon: CalculatorIcon,
-    label: 'Kalkulátor',
+    label: 'Základní kalkulátor',
     description: 'Rychlé daňové výpočty'
   }
 ];

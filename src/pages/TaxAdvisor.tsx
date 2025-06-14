@@ -3,24 +3,24 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import PremiumCheck from '@/components/premium/PremiumCheck';
 import TaxAdvisorNavigation from "@/components/tax-advisor/TaxAdvisorNavigation";
+import TaxAdvisorMobileCarousel from "@/components/tax-advisor/TaxAdvisorMobileCarousel";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 // Import existing components
-import TaxOptimizer from "@/components/tax-advisor/TaxOptimizer";
 import DocumentGenerator from "@/components/tax-advisor/DocumentGenerator";
 import TaxReturnGuide from "@/components/tax-advisor/TaxReturnGuide";
 import TaxCalculatorTab from "@/components/tax-advisor/TaxCalculatorTab";
-import PendlerTipsTab from "@/components/tax-advisor/PendlerTipsTab";
 import InteractiveTaxGuide from "@/components/tax-advisor/InteractiveTaxGuide";
+import PendlerTaxCalculator from "@/components/tax-advisor/calculators/PendlerTaxCalculator";
 
 const TaxAdvisor = () => {
-  const [activeTab, setActiveTab] = useState("optimizer");
+  const [activeTab, setActiveTab] = useState("pendler");
+  const isMobile = useIsMobile();
 
   const renderTabContent = () => {
     switch (activeTab) {
-      case "optimizer":
-        return <TaxOptimizer />;
       case "pendler":
-        return <PendlerTipsTab />;
+        return <PendlerTaxCalculator />;
       case "interactive":
         return <InteractiveTaxGuide />;
       case "documents":
@@ -30,9 +30,37 @@ const TaxAdvisor = () => {
       case "calculator":
         return <TaxCalculatorTab />;
       default:
-        return <TaxOptimizer />;
+        return <PendlerTaxCalculator />;
     }
   };
+
+  const carouselItems = [
+    {
+      id: "pendler",
+      label: "Pendler kalkulačka",
+      component: <PendlerTaxCalculator />
+    },
+    {
+      id: "interactive",
+      label: "Interaktivní průvodce",
+      component: <InteractiveTaxGuide />
+    },
+    {
+      id: "documents",
+      label: "Dokumenty",
+      component: <DocumentGenerator />
+    },
+    {
+      id: "guide",
+      label: "Průvodce",
+      component: <TaxReturnGuide />
+    },
+    {
+      id: "calculator",
+      label: "Základní kalkulátor",
+      component: <TaxCalculatorTab />
+    }
+  ];
 
   return (
     <PremiumCheck featureKey="tax-advisor">
@@ -55,7 +83,7 @@ const TaxAdvisor = () => {
                 Daňový poradce
               </h1>
               <p className="text-lg text-muted-foreground">
-                Optimalizujte své daně a spravujte daňové dokumenty
+                Perfektní kalkulačka pro pendlery s Reisepauschale
               </p>
             </motion.div>
 
@@ -64,19 +92,29 @@ const TaxAdvisor = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
             >
-              <TaxAdvisorNavigation
-                activeTab={activeTab}
-                onTabChange={setActiveTab}
-              />
-              
-              <motion.div 
-                className="mt-6"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.5 }}
-              >
-                {renderTabContent()}
-              </motion.div>
+              {isMobile ? (
+                <TaxAdvisorMobileCarousel
+                  items={carouselItems}
+                  activeItem={activeTab}
+                  onItemChange={setActiveTab}
+                />
+              ) : (
+                <>
+                  <TaxAdvisorNavigation
+                    activeTab={activeTab}
+                    onTabChange={setActiveTab}
+                  />
+                  
+                  <motion.div 
+                    className="mt-6"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.5 }}
+                  >
+                    {renderTabContent()}
+                  </motion.div>
+                </>
+              )}
             </motion.div>
           </div>
         </div>

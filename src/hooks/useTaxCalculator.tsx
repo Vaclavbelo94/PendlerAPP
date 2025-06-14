@@ -1,6 +1,14 @@
 
 import { useState } from "react";
-import { TaxResult } from "@/components/tax-advisor/tax-optimizer/types";
+
+export interface TaxResult {
+  grossIncome: number;
+  taxAmount: number;
+  socialSecurity: number;
+  healthInsurance: number;
+  netIncome: number;
+  effectiveTaxRate: number;
+}
 
 interface TaxParams {
   country: string;
@@ -17,10 +25,8 @@ export const useTaxCalculator = () => {
     const { country, taxClass, children, married, church } = params;
 
     if (country === 'de') {
-      // Německý daňový výpočet
       return calculateGermanTax(grossIncome, taxClass, children, married, church);
     } else {
-      // Český daňový výpočet
       return calculateCzechTax(grossIncome, children, married);
     }
   };
