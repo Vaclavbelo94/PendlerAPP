@@ -5,8 +5,10 @@ import { Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { VehicleData } from '@/types/vehicle';
 import { UnifiedGrid } from '@/components/layout/UnifiedGrid';
+import { useIsMobile } from '@/hooks/use-mobile';
 import VehicleNavigation from './VehicleNavigation';
 import VehicleSelectorOptimized from './VehicleSelectorOptimized';
+import VehicleCarousel from './VehicleCarousel';
 import FuelConsumptionCard from './FuelConsumptionCard';
 import ServiceRecordCard from './ServiceRecordCard';
 import InsuranceCard from './InsuranceCard';
@@ -36,6 +38,8 @@ const VehiclePageContent: React.FC<VehiclePageContentProps> = ({
     selectedVehicleId,
     selectVehicle
   } = vehicleManagement;
+
+  const isMobile = useIsMobile();
 
   const renderTabContent = () => {
     if (!selectedVehicle || !selectedVehicleId) return null;
@@ -114,28 +118,45 @@ const VehiclePageContent: React.FC<VehiclePageContentProps> = ({
           
           {selectedVehicle && (
             <>
-              {/* Navigation */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="mb-6"
-              >
-                <VehicleNavigation
-                  activeTab={activeTab}
-                  onTabChange={setActiveTab}
-                />
-              </motion.div>
-              
-              {/* Content */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.3 }}
-                className="pb-6"
-              >
-                {renderTabContent()}
-              </motion.div>
+              {/* Mobile: Use carousel with swipe, Desktop: Use navigation tabs */}
+              {isMobile ? (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                  className="pb-6"
+                >
+                  <VehicleCarousel
+                    selectedVehicle={selectedVehicle}
+                    vehicleId={selectedVehicleId}
+                  />
+                </motion.div>
+              ) : (
+                <>
+                  {/* Navigation */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                    className="mb-6"
+                  >
+                    <VehicleNavigation
+                      activeTab={activeTab}
+                      onTabChange={setActiveTab}
+                    />
+                  </motion.div>
+                  
+                  {/* Content */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.3 }}
+                    className="pb-6"
+                  >
+                    {renderTabContent()}
+                  </motion.div>
+                </>
+              )}
             </>
           )}
         </>
