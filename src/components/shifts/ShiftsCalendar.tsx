@@ -24,7 +24,7 @@ const ShiftsCalendar: React.FC<ShiftsCalendarProps> = ({
   // Use external data if provided, otherwise use internal management
   const shifts = externalShifts || shiftsManagement.shifts;
   const onEditShift = externalOnEditShift || (() => {});
-  const onDeleteShift = externalOnDeleteShift || shiftsManagement.deleteShift;
+  const onDeleteShift = externalOnDeleteShift || ((shiftId: string) => shiftsManagement.deleteShift(shiftId));
   const isLoading = !externalShifts ? shiftsManagement.isLoading : false;
 
   return (
