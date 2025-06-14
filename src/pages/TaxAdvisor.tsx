@@ -1,67 +1,10 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 import PremiumCheck from '@/components/premium/PremiumCheck';
-import TaxAdvisorNavigation from "@/components/tax-advisor/TaxAdvisorNavigation";
-import TaxAdvisorMobileCarousel from "@/components/tax-advisor/TaxAdvisorMobileCarousel";
-import { useIsMobile } from "@/hooks/use-mobile";
-
-// Import existing components
-import DocumentGenerator from "@/components/tax-advisor/DocumentGenerator";
-import TaxReturnGuide from "@/components/tax-advisor/TaxReturnGuide";
-import TaxCalculatorTab from "@/components/tax-advisor/TaxCalculatorTab";
-import InteractiveTaxGuide from "@/components/tax-advisor/InteractiveTaxGuide";
-import PendlerTaxCalculator from "@/components/tax-advisor/calculators/PendlerTaxCalculator";
+import TaxWizardCarousel from "@/components/tax-advisor/wizard/TaxWizardCarousel";
 
 const TaxAdvisor = () => {
-  const [activeTab, setActiveTab] = useState("pendler");
-  const isMobile = useIsMobile();
-
-  const renderTabContent = () => {
-    switch (activeTab) {
-      case "pendler":
-        return <PendlerTaxCalculator />;
-      case "interactive":
-        return <InteractiveTaxGuide />;
-      case "documents":
-        return <DocumentGenerator />;
-      case "guide":
-        return <TaxReturnGuide />;
-      case "calculator":
-        return <TaxCalculatorTab />;
-      default:
-        return <PendlerTaxCalculator />;
-    }
-  };
-
-  const carouselItems = [
-    {
-      id: "pendler",
-      label: "Pendler kalkulačka",
-      component: <PendlerTaxCalculator />
-    },
-    {
-      id: "interactive",
-      label: "Interaktivní průvodce",
-      component: <InteractiveTaxGuide />
-    },
-    {
-      id: "documents",
-      label: "Dokumenty",
-      component: <DocumentGenerator />
-    },
-    {
-      id: "guide",
-      label: "Průvodce",
-      component: <TaxReturnGuide />
-    },
-    {
-      id: "calculator",
-      label: "Základní kalkulátor",
-      component: <TaxCalculatorTab />
-    }
-  ];
-
   return (
     <PremiumCheck featureKey="tax-advisor">
       <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-secondary/5">
@@ -80,10 +23,10 @@ const TaxAdvisor = () => {
               className="mb-8"
             >
               <h1 className="text-3xl md:text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-4">
-                Daňový poradce
+                Daňový wizard
               </h1>
               <p className="text-lg text-muted-foreground">
-                Perfektní kalkulačka pro pendlery s Reisepauschale
+                Průvodce krok za krokem pro optimální daňové přiznání
               </p>
             </motion.div>
 
@@ -92,29 +35,7 @@ const TaxAdvisor = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
             >
-              {isMobile ? (
-                <TaxAdvisorMobileCarousel
-                  items={carouselItems}
-                  activeItem={activeTab}
-                  onItemChange={setActiveTab}
-                />
-              ) : (
-                <>
-                  <TaxAdvisorNavigation
-                    activeTab={activeTab}
-                    onTabChange={setActiveTab}
-                  />
-                  
-                  <motion.div 
-                    className="mt-6"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.5 }}
-                  >
-                    {renderTabContent()}
-                  </motion.div>
-                </>
-              )}
+              <TaxWizardCarousel />
             </motion.div>
           </div>
         </div>
