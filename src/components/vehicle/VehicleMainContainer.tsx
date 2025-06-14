@@ -67,7 +67,7 @@ const VehicleMainContainer: React.FC = () => {
   if (vehicleManagement.error && !vehicleManagement.isLoading) {
     return (
       <VehicleErrorBoundary 
-        error={vehicleManagement.error} 
+        error={vehicleManagement.error instanceof Error ? vehicleManagement.error : new Error(vehicleManagement.error)} 
         onRetry={vehicleManagement.retryLastOperation}
         retryCount={vehicleManagement.retryCount}
       />
