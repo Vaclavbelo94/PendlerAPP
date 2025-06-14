@@ -3,19 +3,29 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Clock, AlertTriangle, TrendingUp } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { MapPin, Clock, AlertTriangle, TrendingUp, Navigation } from 'lucide-react';
 import { trafficService, TrafficData, WeatherImpact } from '@/services/trafficService';
 import { toast } from '@/hooks/use-toast';
+import AddressAutocomplete from './AddressAutocomplete';
 
 interface TrafficMapProps {
   origin: string;
   destination: string;
+  onOriginChange?: (value: string) => void;
+  onDestinationChange?: (value: string) => void;
 }
 
-const TrafficMap: React.FC<TrafficMapProps> = ({ origin, destination }) => {
+const TrafficMap: React.FC<TrafficMapProps> = ({ 
+  origin, 
+  destination, 
+  onOriginChange, 
+  onDestinationChange 
+}) => {
   const [trafficData, setTrafficData] = useState<TrafficData | null>(null);
   const [weatherData, setWeatherData] = useState<WeatherImpact | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showRouteForm, setShowRouteForm] = useState(false);
 
   useEffect(() => {
     if (origin && destination) {
@@ -62,19 +72,60 @@ const TrafficMap: React.FC<TrafficMapProps> = ({ origin, destination }) => {
     }
   };
 
-  if (!origin || !destination) {
-    return (
-      <Card>
-        <CardContent className="p-6 text-center text-muted-foreground">
-          <MapPin className="mx-auto h-12 w-12 mb-4 opacity-50" />
-          <p>Zadejte výchozí a cílovou adresu pro zobrazení dopravních informací</p>
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
     <div className="space-y-4">
+      {/* Route Selection */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <Navigation className="h-5 w-5" />
+              Trasa
+            </CardTitle>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowRouteForm(!showRouteForm)}
+            >
+              {showRouteForm ? 'Skrýt' : 'Změnit trasu'}
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {showRouteForm ? (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Výchozí místo</label>
+                <AddressAutocomplete
+                  value={origin}
+                  onChange={onOriginChange || (() => {})}
+                  placeholder="Zadejte výchozí adresu"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Cílové místo</label>
+                <AddressAutocomplete
+                  value={destination}
+                  onChange={onDestinationChange || (() => {})}
+                  placeholder="Zadejte cílovou adresu"
+                />
+              </div>
+              <Button onClick={loadTrafficData} className="w-full">
+                Aktualizovat dopravní informace
+              </Button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 text-sm">
+              <MapPin className="h-4 w-4 text-muted-foreground" />
+              <span className="font-medium">{origin}</span>
+              <span className="text-muted-foreground">→</span>
+              <span className="font-medium">{destination}</span>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Traffic Information */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -128,6 +179,7 @@ const TrafficMap: React.FC<TrafficMapProps> = ({ origin, destination }) => {
         </CardContent>
       </Card>
 
+      {/* Weather Impact */}
       {weatherData && (
         <Card>
           <CardHeader>

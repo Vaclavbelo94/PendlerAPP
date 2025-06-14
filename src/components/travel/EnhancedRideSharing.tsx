@@ -1,41 +1,23 @@
 
 import React from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Users, Search, MessageCircle } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Users } from 'lucide-react';
 import RideSharing from './RideSharing';
-import SmartRideshareMatching from './SmartRideshareMatching';
 
 const EnhancedRideSharing: React.FC = () => {
   return (
     <div className="space-y-6">
-      <Tabs defaultValue="browse" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="browse" className="flex items-center gap-2">
-            <Users className="h-4 w-4" />
-            Procházet
-          </TabsTrigger>
-          <TabsTrigger value="smart-search" className="flex items-center gap-2">
-            <Search className="h-4 w-4" />
-            Chytré hledání
-          </TabsTrigger>
-          <TabsTrigger value="create" className="flex items-center gap-2">
-            <MessageCircle className="h-4 w-4" />
-            Vytvořit
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="browse">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Users className="h-5 w-5" />
+            Sdílení jízd
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
           <RideSharing />
-        </TabsContent>
-
-        <TabsContent value="smart-search">
-          <SmartRideshareMatching />
-        </TabsContent>
-
-        <TabsContent value="create">
-          <RideSharing />
-        </TabsContent>
-      </Tabs>
+        </CardContent>
+      </Card>
     </div>
   );
 };

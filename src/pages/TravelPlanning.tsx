@@ -3,7 +3,6 @@ import React, { useState, Suspense } from 'react';
 import { Helmet } from "react-helmet";
 import { Map } from "lucide-react";
 import PremiumCheck from "@/components/premium/PremiumCheck";
-import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import ResponsivePage from "@/components/layouts/ResponsivePage";
 import TravelNavigation from "@/components/travel/TravelNavigation";
@@ -22,24 +21,12 @@ const LoadingFallback = () => (
 
 const TravelPlanning = () => {
   const [activeTab, setActiveTab] = useState("ridesharing");
-  const { toast } = useToast();
+  const [origin, setOrigin] = useState("Praha, Česká republika");
+  const [destination, setDestination] = useState("Dresden, Německo");
   const isMobile = useIsMobile();
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);
-    toast({
-      title: "Záložka změněna",
-      description: `Zobrazuji: ${getTabName(value)}`,
-      duration: 2000
-    });
-  };
-
-  const getTabName = (tabId: string): string => {
-    switch (tabId) {
-      case "ridesharing": return "Spolujízdy";
-      case "traffic": return "Live doprava";
-      default: return "";
-    }
   };
 
   const renderTabContent = () => {
@@ -47,7 +34,14 @@ const TravelPlanning = () => {
       case "ridesharing":
         return <EnhancedRideSharingLazy />;
       case "traffic":
-        return <TrafficMapLazy origin="" destination="" />;
+        return (
+          <TrafficMapLazy 
+            origin={origin} 
+            destination={destination}
+            onOriginChange={setOrigin}
+            onDestinationChange={setDestination}
+          />
+        );
       default:
         return <EnhancedRideSharingLazy />;
     }
@@ -85,6 +79,10 @@ const TravelPlanning = () => {
             <TravelMobileCarousel 
               activeTab={activeTab} 
               onTabChange={handleTabChange}
+              origin={origin}
+              destination={destination}
+              onOriginChange={setOrigin}
+              onDestinationChange={setDestination}
             />
           ) : (
             <>

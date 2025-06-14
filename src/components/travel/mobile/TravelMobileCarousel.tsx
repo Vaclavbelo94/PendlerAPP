@@ -10,11 +10,19 @@ import { Users, AlertTriangle } from 'lucide-react';
 interface TravelMobileCarouselProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
+  origin: string;
+  destination: string;
+  onOriginChange: (value: string) => void;
+  onDestinationChange: (value: string) => void;
 }
 
 const TravelMobileCarousel: React.FC<TravelMobileCarouselProps> = ({
   activeTab,
-  onTabChange
+  onTabChange,
+  origin,
+  destination,
+  onOriginChange,
+  onDestinationChange
 }) => {
   const tabs = ['ridesharing', 'traffic'];
   
@@ -82,7 +90,12 @@ const TravelMobileCarousel: React.FC<TravelMobileCarouselProps> = ({
           }}
           style={{ display: activeTab === 'traffic' ? 'block' : 'none' }}
         >
-          <TrafficMap origin="" destination="" />
+          <TrafficMap 
+            origin={origin} 
+            destination={destination}
+            onOriginChange={onOriginChange}
+            onDestinationChange={onDestinationChange}
+          />
         </motion.div>
       </motion.div>
     </div>
