@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useSimplifiedAuth } from '@/hooks/auth/useSimplifiedAuth';
@@ -64,9 +65,13 @@ const VehicleMainContainer: React.FC = () => {
   }
 
   if (vehicleManagement.error && !vehicleManagement.isLoading) {
-    const errorObj = vehicleManagement.error instanceof Error 
-      ? vehicleManagement.error 
-      : new Error(String(vehicleManagement.error));
+    // Safely convert error to Error object
+    let errorObj: Error;
+    if (vehicleManagement.error && typeof vehicleManagement.error === 'object' && 'message' in vehicleManagement.error) {
+      errorObj = vehicleManagement.error as Error;
+    } else {
+      errorObj = new Error(String(vehicleManagement.error));
+    }
     
     return (
       <VehicleErrorBoundary 
