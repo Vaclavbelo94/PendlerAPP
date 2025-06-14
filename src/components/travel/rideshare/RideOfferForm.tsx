@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -5,11 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Car } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { rideshareService } from "@/services/rideshareService";
-import AddressAutocomplete from '../AddressAutocomplete';
 
 interface RideOfferFormProps {
   onOfferCreated: () => void;
@@ -78,20 +78,30 @@ const RideOfferForm = ({ onOfferCreated, onCancel }: RideOfferFormProps) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="offer-origin">Místo odjezdu *</Label>
-            <AddressAutocomplete
-              value={newRideOffer.origin_address}
-              onChange={(value) => setNewRideOffer({...newRideOffer, origin_address: value})}
-              placeholder="Odkud vyjíždíte"
-            />
+            <div className="relative">
+              <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                id="offer-origin"
+                className="pl-10"
+                value={newRideOffer.origin_address}
+                onChange={(e) => setNewRideOffer({...newRideOffer, origin_address: e.target.value})}
+                placeholder="Odkud vyjíždíte"
+              />
+            </div>
           </div>
           
           <div className="space-y-2">
             <Label htmlFor="offer-destination">Cíl cesty *</Label>
-            <AddressAutocomplete
-              value={newRideOffer.destination_address}
-              onChange={(value) => setNewRideOffer({...newRideOffer, destination_address: value})}
-              placeholder="Kam jedete"
-            />
+            <div className="relative">
+              <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                id="offer-destination"
+                className="pl-10"
+                value={newRideOffer.destination_address}
+                onChange={(e) => setNewRideOffer({...newRideOffer, destination_address: e.target.value})}
+                placeholder="Kam jedete"
+              />
+            </div>
           </div>
           
           <div className="space-y-2">

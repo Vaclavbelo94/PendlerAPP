@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import AddressAutocomplete from '../AddressAutocomplete';
+import { MapPin } from "lucide-react";
 
 interface RouteData {
   from: string;
@@ -55,20 +55,30 @@ const TrafficAnalysisForm = ({
         <div className={`grid grid-cols-1 ${isMobile ? '' : 'md:grid-cols-2'} gap-4`}>
           <div className="space-y-2">
             <Label htmlFor="route-from">Místo odjezdu</Label>
-            <AddressAutocomplete
-              value={route.from}
-              onChange={(value) => onRouteChange({...route, from: value})}
-              placeholder="Odkud vyjíždíte"
-            />
+            <div className="relative">
+              <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                id="route-from"
+                className="pl-10"
+                value={route.from}
+                onChange={(e) => onRouteChange({...route, from: e.target.value})}
+                placeholder="Odkud vyjíždíte"
+              />
+            </div>
           </div>
           
           <div className="space-y-2">
             <Label htmlFor="route-to">Cíl cesty</Label>
-            <AddressAutocomplete
-              value={route.to}
-              onChange={(value) => onRouteChange({...route, to: value})}
-              placeholder="Kam jedete"
-            />
+            <div className="relative">
+              <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                id="route-to"
+                className="pl-10"
+                value={route.to}
+                onChange={(e) => onRouteChange({...route, to: e.target.value})}
+                placeholder="Kam jedete"
+              />
+            </div>
           </div>
         </div>
         
