@@ -10,6 +10,7 @@ import { Users, Plus, Car, MapPin, Clock, DollarSign } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import OptimizedAddressAutocomplete from './OptimizedAddressAutocomplete';
 
 interface RideshareOffer {
   id: string;
@@ -22,7 +23,7 @@ interface RideshareOffer {
   price_per_person: number;
   notes: string;
   is_recurring: boolean;
-  recurring_days: number[]; // Changed from string[] to number[]
+  recurring_days: number[];
 }
 
 const RideSharing: React.FC = () => {
@@ -37,7 +38,7 @@ const RideSharing: React.FC = () => {
     price_per_person: 0,
     notes: '',
     is_recurring: false,
-    recurring_days: [] as number[] // Changed from string[] to number[]
+    recurring_days: [] as number[]
   });
 
   useEffect(() => {
@@ -240,22 +241,18 @@ const RideSharing: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="origin">Výchozí místo</Label>
-                    <Input
-                      id="origin"
-                      placeholder="Zadejte výchozí adresu"
+                    <OptimizedAddressAutocomplete
                       value={formData.origin_address}
-                      onChange={(e) => setFormData(prev => ({ ...prev, origin_address: e.target.value }))}
-                      required
+                      onChange={(value) => setFormData(prev => ({ ...prev, origin_address: value }))}
+                      placeholder="Zadejte výchozí adresu"
                     />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="destination">Cílové místo</Label>
-                    <Input
-                      id="destination"
-                      placeholder="Zadejte cílovou adresu"
+                    <OptimizedAddressAutocomplete
                       value={formData.destination_address}
-                      onChange={(e) => setFormData(prev => ({ ...prev, destination_address: e.target.value }))}
-                      required
+                      onChange={(value) => setFormData(prev => ({ ...prev, destination_address: value }))}
+                      placeholder="Zadejte cílovou adresu"
                     />
                   </div>
                 </div>

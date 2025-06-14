@@ -1,111 +1,75 @@
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useDebounce } from './useDebounce';
 
-interface AddressSuggestion {
-  display_name: string;
-  lat: string;
-  lon: string;
+interface GooglePlacesSuggestion {
   place_id: string;
+  display_name: string;
+  structured_formatting?: {
+    main_text: string;
+    secondary_text: string;
+  };
 }
 
-interface CacheEntry {
-  data: AddressSuggestion[];
-  timestamp: number;
-}
-
-// Simple in-memory cache
-const cache = new Map<string, CacheEntry>();
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+const GOOGLE_MAPS_API_KEY = "AIzaSyBKc8VQM2i4TyHq5mI6aK9gJNBBSVnO4xY";
 
 export const useOptimizedAddressAutocomplete = (query: string) => {
-  const [suggestions, setSuggestions] = useState<AddressSuggestion[]>([]);
+  const [suggestions, setSuggestions] = useState<GooglePlacesSuggestion[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const debouncedQuery = useDebounce(query, 300);
 
-  // Memoize cache key
-  const cacheKey = useMemo(() => 
-    debouncedQuery.toLowerCase().trim(), 
-    [debouncedQuery]
-  );
+  const searchPlaces = useCallback(async (searchQuery: string) => {
+    if (!searchQuery || searchQuery.length < 3) {
+      setSuggestions([]);
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      // Using Google Places API for better autocomplete
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(searchQuery)}&types=address&components=country:cz|country:de&key=${GOOGLE_MAPS_API_KEY}`
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (data.status === 'OK') {
+        const mappedSuggestions = data.predictions?.map((prediction: any) => ({
+          place_id: prediction.place_id,
+          display_name: prediction.description,
+          structured_formatting: prediction.structured_formatting
+        })) || [];
+        
+        setSuggestions(mappedSuggestions);
+      } else {
+        console.error('Google Places API error:', data.status);
+        setError('Nepodařilo se načíst návrhy adres');
+        setSuggestions([]);
+      }
+    } catch (error) {
+      console.error('Error fetching address suggestions:', error);
+      setError('Nepodařilo se načíst návrhy adres');
+      setSuggestions([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    if (!debouncedQuery || debouncedQuery.length < 3) {
+    if (debouncedQuery) {
+      searchPlaces(debouncedQuery);
+    } else {
       setSuggestions([]);
       setError(null);
-      return;
     }
-
-    // Check cache first
-    const cachedResult = cache.get(cacheKey);
-    if (cachedResult && Date.now() - cachedResult.timestamp < CACHE_DURATION) {
-      setSuggestions(cachedResult.data);
-      return;
-    }
-
-    const searchAddresses = async () => {
-      setLoading(true);
-      setError(null);
-      
-      try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
-
-        const response = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(debouncedQuery)}&limit=5&addressdetails=1&countrycodes=cz,de`,
-          { 
-            signal: controller.signal,
-            headers: {
-              'User-Agent': 'PendlerBuddy/1.0'
-            }
-          }
-        );
-        
-        clearTimeout(timeoutId);
-        
-        if (response.ok) {
-          const data = await response.json();
-          setSuggestions(data);
-          
-          // Cache the result
-          cache.set(cacheKey, {
-            data,
-            timestamp: Date.now()
-          });
-        } else {
-          throw new Error(`HTTP ${response.status}`);
-        }
-      } catch (error) {
-        if (error instanceof Error && error.name === 'AbortError') {
-          console.log('Request was aborted');
-        } else {
-          console.error('Error fetching address suggestions:', error);
-          setError('Nepodařilo se načíst návrhy adres');
-          setSuggestions([]);
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    searchAddresses();
-  }, [debouncedQuery, cacheKey]);
-
-  // Clear old cache entries periodically
-  useEffect(() => {
-    const cleanup = () => {
-      const now = Date.now();
-      for (const [key, entry] of cache.entries()) {
-        if (now - entry.timestamp > CACHE_DURATION) {
-          cache.delete(key);
-        }
-      }
-    };
-
-    const interval = setInterval(cleanup, 60000); // Cleanup every minute
-    return () => clearInterval(interval);
-  }, []);
+  }, [debouncedQuery, searchPlaces]);
 
   return { suggestions, loading, error };
 };

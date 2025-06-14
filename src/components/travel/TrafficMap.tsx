@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { MapPin, Clock, AlertTriangle, TrendingUp, Navigation } from 'lucide-react';
 import { trafficService, TrafficData, WeatherImpact } from '@/services/trafficService';
 import { toast } from '@/hooks/use-toast';
-import AddressAutocomplete from './AddressAutocomplete';
+import OptimizedAddressAutocomplete from './OptimizedAddressAutocomplete';
 
 interface TrafficMapProps {
   origin: string;
@@ -96,7 +96,7 @@ const TrafficMap: React.FC<TrafficMapProps> = ({
             <div className="space-y-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium">Výchozí místo</label>
-                <AddressAutocomplete
+                <OptimizedAddressAutocomplete
                   value={origin}
                   onChange={onOriginChange || (() => {})}
                   placeholder="Zadejte výchozí adresu"
@@ -104,7 +104,7 @@ const TrafficMap: React.FC<TrafficMapProps> = ({
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium">Cílové místo</label>
-                <AddressAutocomplete
+                <OptimizedAddressAutocomplete
                   value={destination}
                   onChange={onDestinationChange || (() => {})}
                   placeholder="Zadejte cílovou adresu"

@@ -1,3 +1,4 @@
+
 import { lazy } from 'react';
 
 // Enhanced components with new features
@@ -11,3 +12,6 @@ export const CommuteOptimizerLazy = lazy(() => import('./CommuteOptimizer'));
 export const RideSharingLazy = lazy(() => import('./RideSharing'));
 export const CommuteCostCalculatorLazy = lazy(() => import('./CommuteCostCalculator'));
 export const TrafficPredictionsLazy = lazy(() => import('./TrafficPredictions'));
+
+// Optimized components
+export const OptimizedAddressAutocompleteLazy = lazy(() => import('./OptimizedAddressAutocomplete'));
