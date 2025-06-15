@@ -1,4 +1,3 @@
-
 export type Language = 'cs' | 'pl' | 'de';
 
 export const languages = {
@@ -101,16 +100,6 @@ export const translations = {
     germanLessons: 'Lekce němčiny',
     lessons: 'lekcí',
     manageGoals: 'Spravovat cíle',
-    
-    // Stats/feature keys:
-    activeUsers: "Aktivních uživatelů",
-    shiftsManaged: "Spravovaných směn",
-    countries: "Státy",
-    // DO NOT REPEAT keys below:
-    // shifts: "Směny", // DUPLICATE!
-    // calculator: "Kalkulačka", // DUPLICATE!
-    // vehicle: "Vozidlo", // DUPLICATE!
-    // translator: "Překladač", // DUPLICATE!
     
     // Calculator
     basicCalculator: 'Základní kalkulačka',
@@ -234,16 +223,6 @@ export const translations = {
     lessons: 'lekcji',
     manageGoals: 'Zarządzaj celami',
     
-    // Stats/feature keys:
-    activeUsers: "Aktywnych użytkowników",
-    shiftsManaged: "Zarządzanych zmian",
-    countries: "Kraje",
-    // DO NOT REPEAT keys below:
-    // shifts: "Zmiany",
-    // calculator: "Kalkulator",
-    // vehicle: "Pojazd",
-    // translator: "Tłumacz",
-    
     // Calculator
     basicCalculator: 'Podstawowy kalkulator',
     basicCalculatorDescription: 'Prosty kalkulator do podstawowych operacji matematycznych',
@@ -366,16 +345,6 @@ export const translations = {
     lessons: 'Lektionen',
     manageGoals: 'Ziele verwalten',
     
-    // Stats/feature keys:
-    activeUsers: "Aktive Nutzer",
-    shiftsManaged: "Verwaltete Schichten",
-    countries: "Länder",
-    // DO NOT REPEAT keys below:
-    // shifts: "Schichten",
-    // calculator: "Rechner",
-    // vehicle: "Fahrzeug",
-    // translator: "Übersetzer",
-    
     // Calculator
     basicCalculator: 'Basis-Rechner',
     basicCalculatorDescription: 'Einfacher Rechner für grundlegende mathematische Operationen',
@@ -405,4 +374,3 @@ export const translations = {
     divisionByZeroError: 'Fehler: Division durch Null'
   }
 } as const;
-
