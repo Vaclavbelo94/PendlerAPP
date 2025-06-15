@@ -9,7 +9,6 @@ export const createLazyComponent = (importFn: () => Promise<any>) => {
 // Bundle splitting for feature modules - using existing pages
 export const LazyShiftsModule = createLazyComponent(() => import('@/pages/Shifts'));
 export const LazyVehicleModule = createLazyComponent(() => import('@/pages/Vehicle'));
-export const LazyCalculatorModule = createLazyComponent(() => import('@/pages/Calculator'));
 export const LazySettingsModule = createLazyComponent(() => import('@/pages/Settings'));
 
 // Performance monitoring utilities

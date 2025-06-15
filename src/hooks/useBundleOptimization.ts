@@ -27,7 +27,7 @@ export const useBundleOptimization = (options: BundleOptimizationOptions = {}) =
     const predictions: string[] = [];
     
     if (currentPath === '/') {
-      predictions.push('/dashboard', '/calculator', '/vocabulary');
+      predictions.push('/dashboard', '/vocabulary');
     } else if (currentPath === '/dashboard') {
       predictions.push('/shifts', '/vehicle', '/vocabulary');
     } else if (currentPath.startsWith('/language')) {
@@ -47,9 +47,6 @@ export const useBundleOptimization = (options: BundleOptimizationOptions = {}) =
         switch (route) {
           case '/dashboard':
             await import('@/pages/Dashboard');
-            break;
-          case '/calculator':
-            await import('@/pages/Calculator');
             break;
           case '/vocabulary':
             await import('@/pages/Vocabulary');
