@@ -1,7 +1,6 @@
 import React from 'react';
 import { WidgetConfig, WidgetType } from './types';
 import ShiftsProgress from '../ShiftsProgress';
-import LanguageStatsWidget from '../LanguageStatsWidget';
 import CommuteComparison from '../CommuteComparison';
 import EducationWidget from '../EducationWidget';
 import AdvancedAnalyticsWidget from '@/components/analytics/AdvancedAnalyticsWidget';
@@ -12,7 +11,6 @@ import { Calendar, Languages, Car, GraduationCap, Brain, Package, BarChart3, Spa
 const WIDGET_COMPONENTS: Record<WidgetType | string, React.ComponentType<any>> = {
   // Original widgets
   shifts: ShiftsProgress,
-  language: LanguageStatsWidget,
   commute: CommuteComparison,
   education: EducationWidget,
   

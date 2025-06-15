@@ -1,7 +1,6 @@
 import React from 'react';
 import { UserProgress, VocabularyStatistics } from '@/models/VocabularyItem';
 import WeeklyProgressHeatmap from './WeeklyProgressHeatmap';
-import LearningSessionHistory from './LearningSessionHistory';
 import { useMasteryStats } from '@/hooks/vocabulary/useMasteryStats';
 import { useVocabularyContext } from './vocabulary/VocabularyProvider';
 
@@ -44,8 +43,12 @@ const VocabularyProgressDashboard: React.FC<VocabularyProgressDashboardProps> = 
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Remove LearningSessionHistory, keep only Heatmap */}
         <div className="md:col-span-2">
-          <LearningSessionHistory dailyStats={progress.dailyStats || []} />
+          {/* Bylo zde <LearningSessionHistory/> z výuky jazyka */}
+          <div className="bg-muted/50 rounded-lg p-6 text-center text-muted-foreground text-sm">
+            Historie výukových relací nyní není dostupná.
+          </div>
         </div>
         <div>
           <WeeklyProgressHeatmap dailyStats={progress.dailyStats || []} />

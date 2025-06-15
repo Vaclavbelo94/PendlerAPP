@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,7 +9,6 @@ import {
   TrendingUpIcon, ClockIcon
 } from "lucide-react";
 import UserActivityChart from "../UserActivityChart";
-import LanguageSkillsChart from "../LanguageSkillsChart";
 
 const ProfileActivitySection = () => {
   const [showStatistics, setShowStatistics] = useState(false);
@@ -120,11 +118,13 @@ const ProfileActivitySection = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <PieChartIcon className="h-5 w-5" />
-                  Jazykové dovednosti
+                  Jazykové dovednosti {/* Placeholder */}
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <LanguageSkillsChart />
+                <div className="text-muted-foreground text-center py-8">
+                  Statistiky jazykových dovedností nejsou dostupné.
+                </div>
               </CardContent>
             </Card>
           </div>

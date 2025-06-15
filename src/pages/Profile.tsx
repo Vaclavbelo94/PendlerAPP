@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
@@ -12,7 +11,6 @@ import ProfileNavigation from '@/components/profile/ProfileNavigation';
 import ProfileOverview from '@/components/profile/ProfileOverview';
 import ProfileAppearance from '@/components/profile/ProfileAppearance';
 import ProfileSubscription from '@/components/profile/subscription/ProfileSubscription';
-import ProfileActivity from '@/components/profile/activity/ProfileActivity';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 const Profile: React.FC = () => {
@@ -64,8 +62,6 @@ const Profile: React.FC = () => {
         return <ProfileAppearance />;
       case 'subscription':
         return <ProfileSubscription />;
-      case 'activity':
-        return <ProfileActivity />;
       default:
         return <ProfileOverview />;
     }

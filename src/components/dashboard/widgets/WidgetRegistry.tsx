@@ -1,22 +1,18 @@
-
 import React from 'react';
 import { WidgetConfig, WidgetType } from './types';
 import ShiftsProgress from '../ShiftsProgress';
-import LanguageStatsWidget from '../LanguageStatsWidget';
 import CommuteComparison from '../CommuteComparison';
 import EducationWidget from '../EducationWidget';
 import { Calendar, Languages, Car, GraduationCap, TrendingUp, Clock } from 'lucide-react';
 
 // Widget components map
-const WIDGET_COMPONENTS: Record<WidgetType, React.ComponentType<any>> = {
-  shifts: ShiftsProgress,
-  language: LanguageStatsWidget,
+const WIDGET_COMPONENTS = {
+  shifts: require('../ShiftsProgress').default,
   commute: CommuteComparison,
   education: EducationWidget,
 };
 
-// Default widget configurations
-export const DEFAULT_WIDGETS: WidgetConfig[] = [
+export const DEFAULT_WIDGETS = [
   {
     id: 'shifts',
     type: 'shifts',
@@ -28,23 +24,13 @@ export const DEFAULT_WIDGETS: WidgetConfig[] = [
     visible: true,
   },
   {
-    id: 'language',
-    type: 'language',
-    title: 'Jazykový pokrok',
-    description: 'Váš pokrok v učení německého jazyka',
-    icon: Languages,
-    size: 'medium',
-    order: 1,
-    visible: true,
-  },
-  {
     id: 'commute',
     type: 'commute',
     title: 'Náklady na dopravu',
     description: 'Porovnání nákladů na dojíždění',
     icon: Car,
     size: 'medium',
-    order: 2,
+    order: 1,
     visible: true,
   },
   {
@@ -54,7 +40,7 @@ export const DEFAULT_WIDGETS: WidgetConfig[] = [
     description: 'Tipy pro efektivní práci v zahraničí',
     icon: GraduationCap,
     size: 'large',
-    order: 3,
+    order: 2,
     visible: true,
   },
 ];

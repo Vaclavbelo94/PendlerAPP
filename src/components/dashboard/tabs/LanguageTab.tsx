@@ -1,8 +1,6 @@
-
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardCard from "../DashboardCard";
-import LanguageStatsWidget from "../LanguageStatsWidget";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
@@ -49,7 +47,9 @@ const LanguageTab = () => {
           description="Váš pokrok v němčině"
           index={0}
         >
-          <LanguageStatsWidget />
+          <div className="bg-muted/50 rounded-lg p-6 text-center text-muted-foreground text-sm">
+            Statistiky učení nyní nejsou dostupné.
+          </div>
         </DashboardCard>
 
         <Card>
