@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,7 +24,6 @@ interface EnhancedRideOfferCardProps {
 const EnhancedRideOfferCard = ({ ride, onContact, isAuthenticated, currentUserId }: EnhancedRideOfferCardProps) => {
   const isOwnRide = ride.user_id === currentUserId;
   const driverName = ride.driver?.username || 'Neznámý řidič';
-  // Prefer phone number from offer, fallback to driver's profile
   const hasPhoneNumber = ride.driver?.phone_number && String(ride.driver.phone_number).length > 4;
 
   const handleCall = () => {
@@ -38,112 +38,105 @@ const EnhancedRideOfferCard = ({ ride, onContact, isAuthenticated, currentUserId
   };
 
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-shadow w-full max-w-full">
-      {/* Driver Info Header */}
-      <CardHeader className="pb-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <Avatar className="h-12 w-12">
-              <AvatarFallback className="bg-primary text-primary-foreground">
-                {driverName.charAt(0).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <h3 className="font-semibold text-lg">{driverName}</h3>
-              <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                <div className="flex items-center">
-                  <Star className="h-3 w-3 mr-1 text-yellow-500" />
-                  <span>{formatRating(ride.rating)}</span>
-                </div>
-                <span>•</span>
-                <div className="flex items-center">
-                  <Car className="h-3 w-3 mr-1" />
-                  <span>{ride.completed_rides || 0} jízd</span>
-                </div>
+    <Card className="w-full max-w-full transition-shadow rounded-xl shadow-sm border bg-white dark:bg-gray-950
+      px-2 py-2 sm:p-4 mb-2 relative
+      ">
+      {/* Header: Driver info and seats */}
+      <CardHeader className="p-0 pb-2 bg-transparent border-0">
+        <div className="flex items-center gap-3">
+          <Avatar className="h-10 w-10 sm:h-12 sm:w-12">
+            <AvatarFallback className="bg-primary text-primary-foreground">
+              {driverName.charAt(0).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex-1">
+            <h3 className="font-medium text-base sm:text-lg leading-tight">{driverName}</h3>
+            <div className="flex flex-wrap gap-x-2 items-center text-xs text-muted-foreground">
+              <div className="flex items-center">
+                <Star className="h-3.5 w-3.5 mr-1 text-yellow-500" />
+                <span>{formatRating(ride.rating)}</span>
+              </div>
+              <span className="hidden sm:inline">•</span>
+              <div className="flex items-center">
+                <Car className="h-3.5 w-3.5 mr-1" />
+                <span>{ride.completed_rides || 0} jízd</span>
               </div>
             </div>
           </div>
-          <Badge variant="outline" className="flex items-center gap-1">
-            <Users className="h-3 w-3" />
+          <Badge variant="outline" className="flex items-center gap-1 text-xs sm:text-sm py-1 px-2 whitespace-nowrap">
+            <Users className="h-3.5 w-3.5" />
             {ride.seats_available} míst
           </Badge>
         </div>
       </CardHeader>
 
-      {/* Trip Details */}
-      <CardContent className="pt-4 pb-4">
-        <div className="space-y-4">
-          {/* Date and Time */}
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between text-sm gap-2">
-            <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-muted-foreground" />
-              <span className="font-medium">{ride.departure_date}</span>
+      {/* Trip details */}
+      <CardContent className="p-0 mt-2 mb-1">
+        {/* Date, Time, Price row */}
+        <div className="flex flex-col sm:flex-row gap-2 mb-3 items-start sm:items-center">
+          <div className="flex items-center gap-1.5 mr-3">
+            <Calendar className="h-4 w-4 text-muted-foreground" />
+            <span className="font-medium text-sm">{ride.departure_date}</span>
+          </div>
+          <div className="flex items-center gap-1.5 mr-3">
+            <Clock className="h-4 w-4 text-muted-foreground" />
+            <span className="font-medium text-sm">{ride.departure_time}</span>
+          </div>
+          {ride.price_per_person > 0 && (
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs text-muted-foreground">Cena:</span>
+              <span className="font-semibold text-green-600 text-base">{ride.price_per_person} Kč</span>
             </div>
-            <div className="flex items-center gap-2">
-              <Clock className="h-4 w-4 text-muted-foreground" />
-              <span className="font-medium">{ride.departure_time}</span>
+          )}
+        </div>
+        {/* Route row */}
+        <div className="flex flex-row gap-3">
+          <div className="flex flex-col items-center justify-center mt-1">
+            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+            <div className="w-px h-6 bg-border"></div>
+            <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+          </div>
+          <div className="flex-1 flex flex-col gap-0.5">
+            <div>
+              <p className="text-xs text-muted-foreground mb-0.5">Odkud</p>
+              <p className="text-sm font-medium break-words leading-tight">{ride.origin_address}</p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground mb-0.5">Kam</p>
+              <p className="text-sm font-medium break-words leading-tight">{ride.destination_address}</p>
             </div>
           </div>
-
-          {/* Route */}
-          <div className="space-y-3">
-            <div className="flex flex-col sm:flex-row items-start gap-3">
-              <div className="flex flex-col items-center mt-1">
-                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                <div className="w-px h-6 bg-border"></div>
-                <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-              </div>
-              <div className="flex-1 space-y-3">
-                <div>
-                  <p className="text-xs text-muted-foreground">ODKUD</p>
-                  <p className="text-sm font-medium line-clamp-2">{ride.origin_address}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">KAM</p>
-                  <p className="text-sm font-medium line-clamp-2">{ride.destination_address}</p>
-                </div>
-              </div>
+        </div>
+        {/* Phone & Notes */}
+        <div className="my-2">
+          {ride.driver?.phone_number && (
+            <div className="flex items-center gap-2 text-sm mb-1">
+              <Phone className="h-4 w-4 text-primary" />
+              <span className="font-medium break-all">{ride.driver.phone_number}</span>
             </div>
-          </div>
-
-          {/* Price, Phone, and Notes */}
-          <div className="space-y-2">
-            {ride.price_per_person > 0 && (
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Cena za osobu:</span>
-                <span className="font-semibold text-green-600">{ride.price_per_person} Kč</span>
-              </div>
-            )}
-            {/* Phone number visible always if provided */}
-            {ride.driver?.phone_number && (
-              <div className="flex items-center gap-2">
-                <Phone className="h-4 w-4 text-primary" />
-                <span className="font-medium">{ride.driver.phone_number}</span>
-              </div>
-            )}
-            {ride.notes && (
-              <div className="text-sm text-muted-foreground bg-gray-50 dark:bg-gray-900 p-3 rounded-md">
-                <p className="italic">"{ride.notes}"</p>
-              </div>
-            )}
-          </div>
+          )}
+          {ride.notes && (
+            <div className="text-xs text-muted-foreground bg-gray-50 dark:bg-gray-900 p-2 rounded mt-1 break-words">
+              <span className="italic">&quot;{ride.notes}&quot;</span>
+            </div>
+          )}
         </div>
       </CardContent>
 
-      {/* Action Buttons */}
-      <CardFooter className="pt-3 border-t bg-gray-50/50 dark:bg-gray-900/50">
+      {/* Footer: actions */}
+      <CardFooter className="p-0 pt-2 mt-1 border-t-0 bg-transparent">
         {isOwnRide ? (
           <div className="w-full text-center">
             <Badge variant="secondary">Vaše nabídka</Badge>
           </div>
         ) : (
-          <div className="w-full space-y-2">
+          <div className="w-full space-y-1">
             {hasPhoneNumber ? (
-              <div className="grid grid-cols-2 gap-2">
+              <div className="flex flex-col sm:flex-row gap-2 w-full">
                 <Button 
                   onClick={handleCall}
                   disabled={!isAuthenticated}
-                  className="flex-1"
+                  className="w-full sm:flex-1 text-sm h-10"
                   size="sm"
                 >
                   <Phone className="h-4 w-4 mr-2" />
@@ -153,7 +146,7 @@ const EnhancedRideOfferCard = ({ ride, onContact, isAuthenticated, currentUserId
                   variant="outline"
                   onClick={() => onContact(ride)}
                   disabled={!isAuthenticated}
-                  className="flex-1"
+                  className="w-full sm:flex-1 text-sm h-10"
                   size="sm"
                 >
                   <MessageCircle className="h-4 w-4 mr-2" />
@@ -164,7 +157,7 @@ const EnhancedRideOfferCard = ({ ride, onContact, isAuthenticated, currentUserId
               <Button 
                 onClick={() => onContact(ride)}
                 disabled={!isAuthenticated}
-                className="w-full"
+                className="w-full text-sm h-10"
                 size="sm"
               >
                 <MessageCircle className="h-4 w-4 mr-2" />
@@ -172,7 +165,7 @@ const EnhancedRideOfferCard = ({ ride, onContact, isAuthenticated, currentUserId
               </Button>
             )}
             {!isAuthenticated && (
-              <p className="text-xs text-center text-muted-foreground">
+              <p className="text-xs text-center text-muted-foreground mt-1">
                 Pro kontaktování se musíte přihlásit
               </p>
             )}
