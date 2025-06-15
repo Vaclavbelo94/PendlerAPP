@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -8,8 +9,20 @@ const DataStatsOverview = ({ stats }: { stats: any }) => {
         <Card>
           <CardContent>
             <div>
+              <span className="font-semibold">Slovíčka</span>
+              <span className="block text-muted-foreground">
+                {stats.vocabularyCount?.toLocaleString?.('cs-CZ') ?? '0'} položek
+              </span>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent>
+            <div>
               <span className="font-semibold">Směny</span>
-              <span className="block text-muted-foreground">{stats.shiftsCount} záznamů</span>
+              <span className="block text-muted-foreground">
+                {stats.shiftsCount?.toLocaleString?.('cs-CZ') ?? '0'} záznamů
+              </span>
             </div>
           </CardContent>
         </Card>
