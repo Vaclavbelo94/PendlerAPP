@@ -154,8 +154,22 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
   };
 
+  // Wrapped setTheme to prevent rapid changes
+  const wrappedSetTheme = (newTheme: Theme) => {
+    if (isChangingTheme || theme === newTheme) return;
+    console.log('ThemeProvider: Setting theme to', newTheme);
+    setTheme(newTheme);
+  };
+
   return (
-    <ThemeContext.Provider value={{ theme, colorScheme, isChangingTheme, setTheme, setColorScheme, toggleTheme }}>
+    <ThemeContext.Provider value={{ 
+      theme, 
+      colorScheme, 
+      isChangingTheme, 
+      setTheme: wrappedSetTheme, 
+      setColorScheme, 
+      toggleTheme 
+    }}>
       {children}
     </ThemeContext.Provider>
   );

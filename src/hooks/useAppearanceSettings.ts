@@ -94,7 +94,7 @@ export const useAppearanceSettings = (
         setDarkMode(data.dark_mode);
         setCompactMode(data.compact_mode);
         
-        // Only set theme if it's different to prevent cycles
+        // Apply theme settings from database
         const newTheme = data.dark_mode ? 'dark' : 'light';
         if (setTheme && theme !== newTheme) {
           setTheme(newTheme);
@@ -126,17 +126,6 @@ export const useAppearanceSettings = (
     loadAppearanceSettings();
   }, [loadAppearanceSettings]);
   
-  // Only sync after initial loading is complete and settings have been loaded from DB
-  useEffect(() => {
-    if (!isInitializing && hasLoadedFromDB && !isChangingTheme && theme) {
-      const newDarkMode = theme === 'dark';
-      if (newDarkMode !== darkMode) {
-        console.log('AppearanceSettings: Syncing darkMode with theme', { theme, newDarkMode });
-        setDarkMode(newDarkMode);
-      }
-    }
-  }, [theme, isChangingTheme, darkMode, isInitializing, hasLoadedFromDB]);
-  
   // Handle manual dark mode changes (from user interactions)
   const handleDarkModeChange = useCallback((newDarkMode: boolean) => {
     if (isInitializing || isChangingTheme) return;
@@ -146,11 +135,9 @@ export const useAppearanceSettings = (
     
     if (setTheme) {
       const newTheme = newDarkMode ? 'dark' : 'light';
-      if (theme !== newTheme) {
-        setTheme(newTheme);
-      }
+      setTheme(newTheme);
     }
-  }, [isInitializing, isChangingTheme, setTheme, theme]);
+  }, [isInitializing, isChangingTheme, setTheme]);
   
   const handleSave = useCallback(async () => {
     if (!user) {
