@@ -1,136 +1,117 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Globe, Download, AlertCircle, Trash2 } from 'lucide-react';
+import { Globe, Clock, MapPin } from 'lucide-react';
 import { toast } from "sonner";
-import { useInternationalization } from "@/hooks/useInternationalization";
-import { useGermanLessonsTranslation } from "@/hooks/useGermanLessonsTranslation";
-import { useOfflineLanguagePacks } from "@/hooks/useOfflineLanguagePacks";
-import { OfflineLanguagePackCard } from "./OfflineLanguagePackCard";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 
-const LanguageSettings = () => {
-  const [learningLanguage, setLearningLanguage] = useState("de");
-  const [region, setRegion] = useState("cz");
-  
-  // Hooks pro správu jazyků
-  const { currentLanguage: systemLanguage, changeLanguage: changeSystemLanguage, availableLanguages: systemLanguages } = useInternationalization();
-  const { currentLanguage: lessonsLanguage, changeLanguage: changeLessonsLanguage, availableLanguages: lessonsLanguages } = useGermanLessonsTranslation();
-  
-  // Hook pro offline jazykové balíčky
-  const {
-    packs,
-    isDownloading,
-    downloadProgress,
-    downloadPack,
-    deletePack
-  } = useOfflineLanguagePacks();
+export const LanguageSettings = () => {
+  const [language, setLanguage] = useState('cs');
+  const [region, setRegion] = useState('cz');
+  const [timezone, setTimezone] = useState('Europe/Prague');
+  const [dateFormat, setDateFormat] = useState('dd.mm.yyyy');
+  const [currency, setCurrency] = useState('czk');
+
+  useEffect(() => {
+    // Load settings from localStorage
+    const savedSettings = localStorage.getItem('languageSettings');
+    if (savedSettings) {
+      try {
+        const parsed = JSON.parse(savedSettings);
+        setLanguage(parsed.language ?? 'cs');
+        setRegion(parsed.region ?? 'cz');
+        setTimezone(parsed.timezone ?? 'Europe/Prague');
+        setDateFormat(parsed.dateFormat ?? 'dd.mm.yyyy');
+        setCurrency(parsed.currency ?? 'czk');
+      } catch (error) {
+        console.error('Error loading language settings:', error);
+      }
+    }
+  }, []);
 
   const handleSaveSettings = () => {
+    const settings = {
+      language,
+      region,
+      timezone,
+      dateFormat,
+      currency
+    };
+    
+    localStorage.setItem('languageSettings', JSON.stringify(settings));
+    
+    // Apply language to document
+    document.documentElement.setAttribute('lang', language);
+    
     toast.success("Jazykové nastavení bylo uloženo");
   };
 
+  const languages = [
+    { value: 'cs', label: '🇨🇿 Čeština', name: 'Čeština' },
+    { value: 'sk', label: '🇸🇰 Slovenčina', name: 'Slovenčina' },
+    { value: 'de', label: '🇩🇪 Němčina', name: 'Deutsch' },
+    { value: 'en', label: '🇬🇧 Angličtina', name: 'English' }
+  ];
+
+  const regions = [
+    { value: 'cz', label: '🇨🇿 Česká republika' },
+    { value: 'sk', label: '🇸🇰 Slovensko' },
+    { value: 'de', label: '🇩🇪 Německo' },
+    { value: 'at', label: '🇦🇹 Rakousko' }
+  ];
+
+  const timezones = [
+    { value: 'Europe/Prague', label: 'Praha (CET/CEST)' },
+    { value: 'Europe/Bratislava', label: 'Bratislava (CET/CEST)' },
+    { value: 'Europe/Berlin', label: 'Berlín (CET/CEST)' },
+    { value: 'Europe/Vienna', label: 'Vídeň (CET/CEST)' }
+  ];
+
   return (
     <div className="space-y-6">
-      {/* System Language Settings */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Globe className="h-5 w-5" />
-            Hlavní jazyk aplikace
+            Jazyk aplikace
           </CardTitle>
           <CardDescription>
-            Nastavte jazyk pro celé uživatelské rozhraní aplikace
+            Nastavte jazyk pro celé uživatelské rozhraní
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="systemLanguage">Jazyk aplikace</Label>
-            <Select value={systemLanguage} onValueChange={changeSystemLanguage}>
-              <SelectTrigger id="systemLanguage">
-                <SelectValue placeholder="Vyberte jazyk aplikace" />
+            <Label htmlFor="language">Hlavní jazyk</Label>
+            <Select value={language} onValueChange={setLanguage}>
+              <SelectTrigger>
+                <SelectValue placeholder="Vyberte jazyk" />
               </SelectTrigger>
               <SelectContent>
-                {systemLanguages.map((lang) => (
-                  <SelectItem key={lang.code} value={lang.code}>
-                    {lang.name}
+                {languages.map((lang) => (
+                  <SelectItem key={lang.value} value={lang.value}>
+                    {lang.label}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-            <p className="text-xs text-muted-foreground">
-              Ovlivňuje jazyk menu, tlačítek a všech obecných textů v aplikaci
-            </p>
           </div>
         </CardContent>
       </Card>
 
-      {/* German Lessons Interface Language */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Globe className="h-5 w-5" />
-            Jazyk rozhraní pro lekce němčiny
+            <MapPin className="h-5 w-5" />
+            Region a lokalizace
           </CardTitle>
           <CardDescription>
-            Nastavte jazyk pro instrukce a popisky v sekcích výuky němčiny
+            Nastavte region pro správné zobrazení obsahu
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            <Label>Vyberte jazyk rozhraní pro lekce:</Label>
-            <div className="grid grid-cols-2 gap-2">
-              {lessonsLanguages.map((lang) => (
-                <Button
-                  key={lang.code}
-                  variant={lessonsLanguage === lang.code ? "default" : "outline"}
-                  onClick={() => changeLessonsLanguage(lang.code)}
-                  className="justify-start h-auto p-3"
-                >
-                  <span className="mr-2 text-base">{lang.flag}</span>
-                  <span className="text-sm font-medium">{lang.name}</span>
-                </Button>
-              ))}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Aktuální jazyk: {lessonsLanguages.find(l => l.code === lessonsLanguage)?.name}
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Separator />
-
-      {/* Learning Preferences */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Globe className="h-5 w-5" />
-            Preference učení
-          </CardTitle>
-          <CardDescription>
-            Nastavte jaký jazyk se učíte a vaší region
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="learningLanguage">Jazyk, který se učíte</Label>
-            <Select value={learningLanguage} onValueChange={setLearningLanguage}>
-              <SelectTrigger>
-                <SelectValue placeholder="Vyberte jazyk pro učení" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="de">🇩🇪 Němčina</SelectItem>
-                <SelectItem value="en">🇬🇧 Angličtina</SelectItem>
-                <SelectItem value="fr">🇫🇷 Francouzština</SelectItem>
-                <SelectItem value="it">🇮🇹 Italština</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
+        <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="region">Region</Label>
             <Select value={region} onValueChange={setRegion}>
@@ -138,57 +119,79 @@ const LanguageSettings = () => {
                 <SelectValue placeholder="Vyberte region" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="cz">🇨🇿 Česká republika</SelectItem>
-                <SelectItem value="sk">🇸🇰 Slovensko</SelectItem>
-                <SelectItem value="de">🇩🇪 Německo</SelectItem>
-                <SelectItem value="at">🇦🇹 Rakousko</SelectItem>
+                {regions.map((reg) => (
+                  <SelectItem key={reg.value} value={reg.value}>
+                    {reg.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="currency">Měna</Label>
+            <Select value={currency} onValueChange={setCurrency}>
+              <SelectTrigger>
+                <SelectValue placeholder="Vyberte měnu" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="czk">CZK - Česká koruna</SelectItem>
+                <SelectItem value="eur">EUR - Euro</SelectItem>
+                <SelectItem value="usd">USD - Americký dolar</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </CardContent>
       </Card>
 
-      {/* Offline Language Packs */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Download className="h-5 w-5" />
-            Offline jazykové balíčky
+            <Clock className="h-5 w-5" />
+            Čas a formáty
           </CardTitle>
           <CardDescription>
-            Stáhněte jazykové balíčky pro offline použití s reálnými daty
+            Nastavte časové pásmo a formáty zobrazení
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <Alert>
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              Offline balíčky obsahují slovní zásobu a fráze z aplikace pro použití bez připojení k internetu.
-            </AlertDescription>
-          </Alert>
-          
-          <div className="space-y-3">
-            {packs.map((pack) => (
-              <OfflineLanguagePackCard
-                key={pack.id}
-                pack={pack}
-                isDownloading={isDownloading === pack.id}
-                downloadProgress={downloadProgress}
-                onDownload={() => downloadPack(pack.id)}
-                onDelete={() => deletePack(pack.id)}
-              />
-            ))}
+          <div className="space-y-2">
+            <Label htmlFor="timezone">Časové pásmo</Label>
+            <Select value={timezone} onValueChange={setTimezone}>
+              <SelectTrigger>
+                <SelectValue placeholder="Vyberte časové pásmo" />
+              </SelectTrigger>
+              <SelectContent>
+                {timezones.map((tz) => (
+                  <SelectItem key={tz.value} value={tz.value}>
+                    {tz.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="dateFormat">Formát data</Label>
+            <Select value={dateFormat} onValueChange={setDateFormat}>
+              <SelectTrigger>
+                <SelectValue placeholder="Vyberte formát data" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="dd.mm.yyyy">DD.MM.YYYY</SelectItem>
+                <SelectItem value="mm/dd/yyyy">MM/DD/YYYY</SelectItem>
+                <SelectItem value="yyyy-mm-dd">YYYY-MM-DD</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </CardContent>
       </Card>
 
       <div className="flex justify-end">
-        <Button onClick={handleSaveSettings}>
-          Uložit nastavení
+        <Button onClick={handleSaveSettings} className="min-w-32">
+          Uložit změny
         </Button>
       </div>
     </div>
   );
 };
-
-export default LanguageSettings;

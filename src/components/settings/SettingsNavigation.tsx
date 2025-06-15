@@ -1,94 +1,68 @@
 
 import React from 'react';
-import { 
-  Settings as SettingsIcon, 
-  User, 
-  Bell, 
-  Palette, 
-  Globe, 
-  Database,
-  Shield,
-  Smartphone
-} from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { 
+  Palette, 
+  Globe, 
+  RefreshCw, 
+  Shield, 
+  Bell, 
+  User
+} from 'lucide-react';
 
 interface SettingsNavigationProps {
   activeTab: string;
   onTabChange: (tabId: string) => void;
-  variant?: 'primary' | 'secondary';
 }
 
-const primaryTabs = [
-  {
-    id: 'general',
-    icon: SettingsIcon,
-    label: 'Obecné',
-    description: 'Základní nastavení aplikace'
-  },
-  {
-    id: 'account',
-    icon: User,
-    label: 'Účet',
-    description: 'Správa uživatelského účtu'
-  },
+const settingsTabs = [
   {
     id: 'appearance',
     icon: Palette,
     label: 'Vzhled',
-    description: 'Témata a zobrazení'
+    description: 'Témata a přizpůsobení'
   },
-  {
-    id: 'notifications',
-    icon: Bell,
-    label: 'Oznámení',
-    description: 'Nastavení upozornění'
-  }
-];
-
-const secondaryTabs = [
   {
     id: 'language',
     icon: Globe,
     label: 'Jazyk',
-    description: 'Jazykové preference'
+    description: 'Jazyk a lokalizace'
+  },
+  {
+    id: 'sync',
+    icon: RefreshCw,
+    label: 'Synchronizace',
+    description: 'Data a zálohy'
   },
   {
     id: 'security',
     icon: Shield,
     label: 'Bezpečnost',
-    description: 'Zabezpečení a soukromí'
+    description: 'Hesla a soukromí'
   },
   {
-    id: 'device',
-    icon: Smartphone,
-    label: 'Zařízení',
-    description: 'Nastavení zařízení'
+    id: 'notifications',
+    icon: Bell,
+    label: 'Oznámení',
+    description: 'Upozornění a notifikace'
   },
   {
-    id: 'data',
-    icon: Database,
-    label: 'Data',
-    description: 'Správa dat a zálohy'
+    id: 'account',
+    icon: User,
+    label: 'Účet',
+    description: 'Správa účtu'
   }
 ];
 
 export const SettingsNavigation: React.FC<SettingsNavigationProps> = ({
   activeTab,
-  onTabChange,
-  variant = 'primary'
+  onTabChange
 }) => {
-  const tabs = variant === 'primary' ? primaryTabs : secondaryTabs;
-  
   return (
     <div className="flex justify-center">
-      <div className={cn(
-        "grid gap-4 w-full",
-        variant === 'primary' 
-          ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-4 max-w-6xl" 
-          : "grid-cols-1 md:grid-cols-2 lg:grid-cols-4 max-w-6xl"
-      )}>
-        {tabs.map((tab, index) => {
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 w-full max-w-6xl">
+        {settingsTabs.map((tab, index) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
           
@@ -113,7 +87,7 @@ export const SettingsNavigation: React.FC<SettingsNavigationProps> = ({
               {isActive && (
                 <motion.div
                   className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 rounded-2xl"
-                  layoutId={`activeSettingsTab-${variant}`}
+                  layoutId="activeSettingsTab"
                   transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                 />
               )}
@@ -133,7 +107,7 @@ export const SettingsNavigation: React.FC<SettingsNavigationProps> = ({
                 </motion.div>
                 
                 <h3 className={cn(
-                  "font-semibold text-lg transition-colors duration-300 mb-2",
+                  "font-semibold text-sm md:text-base transition-colors duration-300 mb-1",
                   isActive 
                     ? "text-primary" 
                     : "text-foreground group-hover:text-primary"
@@ -142,7 +116,7 @@ export const SettingsNavigation: React.FC<SettingsNavigationProps> = ({
                 </h3>
                 
                 <p className={cn(
-                  "text-sm transition-colors duration-300",
+                  "text-xs transition-colors duration-300 hidden md:block",
                   isActive 
                     ? "text-muted-foreground" 
                     : "text-muted-foreground group-hover:text-foreground"
@@ -157,5 +131,3 @@ export const SettingsNavigation: React.FC<SettingsNavigationProps> = ({
     </div>
   );
 };
-
-export default SettingsNavigation;

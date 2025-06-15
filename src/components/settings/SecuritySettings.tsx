@@ -1,21 +1,22 @@
 
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { Shield, Key, Smartphone, Eye, EyeOff } from 'lucide-react';
+import { Shield, Key, Eye, EyeOff, Smartphone, Clock } from 'lucide-react';
 import { toast } from "sonner";
 
-const SecuritySettings = () => {
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+export const SecuritySettings = () => {
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
   const [sessionTimeout, setSessionTimeout] = useState(true);
+  const [loginNotifications, setLoginNotifications] = useState(true);
   const [loading, setLoading] = useState(false);
 
   const handleChangePassword = async () => {
@@ -30,12 +31,12 @@ const SecuritySettings = () => {
 
     setLoading(true);
     try {
-      // In real app, this would call Supabase auth API
+      // Simulate password change
       await new Promise(resolve => setTimeout(resolve, 1000));
       toast.success("Heslo bylo úspěšně změněno");
-      setCurrentPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
     } catch (error) {
       toast.error("Chyba při změně hesla");
     } finally {
@@ -43,9 +44,38 @@ const SecuritySettings = () => {
     }
   };
 
-  const handleEnable2FA = () => {
+  const handleToggle2FA = () => {
     setTwoFactorEnabled(!twoFactorEnabled);
     toast.success(twoFactorEnabled ? "2FA bylo vypnuto" : "2FA bylo zapnuto");
+  };
+
+  const handleViewActiveSessions = () => {
+    toast.info("Funkce zobrazení aktivních relací bude dostupná brzy");
+  };
+
+  const handleDownloadSecurityLog = () => {
+    // Create mock security log
+    const securityLog = {
+      user: 'current_user',
+      loginHistory: [
+        { date: new Date().toISOString(), ip: '192.168.1.1', device: 'Chrome Browser' },
+        { date: new Date(Date.now() - 86400000).toISOString(), ip: '192.168.1.1', device: 'Mobile App' }
+      ],
+      passwordChanges: [
+        { date: new Date(Date.now() - 604800000).toISOString(), success: true }
+      ],
+      exportDate: new Date().toISOString()
+    };
+
+    const blob = new Blob([JSON.stringify(securityLog, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `security-log-${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    toast.success("Bezpečnostní log byl stažen");
   };
 
   return (
@@ -136,17 +166,17 @@ const SecuritySettings = () => {
             <Switch
               id="2fa"
               checked={twoFactorEnabled}
-              onCheckedChange={handleEnable2FA}
+              onCheckedChange={handleToggle2FA}
             />
           </div>
 
           {twoFactorEnabled && (
             <div className="p-4 bg-muted rounded-lg">
               <p className="text-sm font-medium mb-2">Nastavení 2FA</p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground mb-3">
                 Naskenujte QR kód pomocí autentifikační aplikace (Google Authenticator, Authy, apod.)
               </p>
-              <Button variant="outline" size="sm" className="mt-2">
+              <Button variant="outline" size="sm">
                 Zobrazit QR kód
               </Button>
             </div>
@@ -161,10 +191,10 @@ const SecuritySettings = () => {
             Další bezpečnostní nastavení
           </CardTitle>
           <CardDescription>
-            Pokročilé možnosti zabezpečení
+            Pokročilé možnosti zabezpečení a soukromí
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="sessionTimeout">Automatické odhlášení</Label>
@@ -179,20 +209,38 @@ const SecuritySettings = () => {
             />
           </div>
 
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label htmlFor="loginNotifications">Oznámení o přihlášení</Label>
+              <p className="text-sm text-muted-foreground">
+                Upozornit na nová přihlášení z neznámých zařízení
+              </p>
+            </div>
+            <Switch
+              id="loginNotifications"
+              checked={loginNotifications}
+              onCheckedChange={setLoginNotifications}
+            />
+          </div>
+
           <Separator />
 
-          <div className="space-y-2">
-            <Button variant="outline" className="w-full">
-              Zobrazit aktivní relace
-            </Button>
-            <Button variant="outline" className="w-full">
-              Stáhnout bezpečnostní log
-            </Button>
+          <div className="space-y-3">
+            <h4 className="font-medium flex items-center gap-2">
+              <Clock className="h-4 w-4" />
+              Správa relací a auditu
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <Button variant="outline" onClick={handleViewActiveSessions}>
+                Zobrazit aktivní relace
+              </Button>
+              <Button variant="outline" onClick={handleDownloadSecurityLog}>
+                Stáhnout bezpečnostní log
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
     </div>
   );
 };
-
-export default SecuritySettings;

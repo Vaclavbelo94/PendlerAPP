@@ -15,12 +15,7 @@ import {
   Scale,
   Shield,
   Languages,
-  User,
-  Bell,
-  Palette,
-  Database,
-  Smartphone,
-  Lock
+  User
 } from 'lucide-react';
 
 export interface ModernNavigationItem {
@@ -153,94 +148,17 @@ export const modernNavigationItems: ModernNavigationItem[] = [
     gradient: 'from-slate-500 to-slate-600'
   },
 
-  // Settings section (new category)
+  // Settings section (simplified)
   {
-    id: 'settings-general',
-    label: 'Obecné nastavení',
-    href: '/settings?tab=general',
+    id: 'settings',
+    label: 'Nastavení',
+    href: '/settings',
     icon: Settings,
-    description: 'Základní nastavení aplikace',
+    description: 'Nastavení a preference aplikace',
     category: 'settings',
     requiresAuth: true,
     color: 'text-gray-600',
     gradient: 'from-gray-500 to-gray-600'
-  },
-  {
-    id: 'settings-account',
-    label: 'Nastavení účtu',
-    href: '/settings?tab=account',
-    icon: User,
-    description: 'Správa uživatelského účtu',
-    category: 'settings',
-    requiresAuth: true,
-    color: 'text-blue-600',
-    gradient: 'from-blue-500 to-blue-600'
-  },
-  {
-    id: 'settings-appearance',
-    label: 'Vzhled',
-    href: '/settings?tab=appearance',
-    icon: Palette,
-    description: 'Témata a zobrazení',
-    category: 'settings',
-    requiresAuth: true,
-    color: 'text-pink-600',
-    gradient: 'from-pink-500 to-pink-600'
-  },
-  {
-    id: 'settings-notifications',
-    label: 'Oznámení',
-    href: '/settings?tab=notifications',
-    icon: Bell,
-    description: 'Nastavení upozornění',
-    category: 'settings',
-    requiresAuth: true,
-    color: 'text-yellow-600',
-    gradient: 'from-yellow-500 to-yellow-600'
-  },
-  {
-    id: 'settings-language',
-    label: 'Jazyk',
-    href: '/settings?tab=language',
-    icon: Globe,
-    description: 'Jazykové preference',
-    category: 'settings',
-    requiresAuth: true,
-    color: 'text-green-600',
-    gradient: 'from-green-500 to-green-600'
-  },
-  {
-    id: 'settings-security',
-    label: 'Bezpečnost',
-    href: '/settings?tab=security',
-    icon: Lock,
-    description: 'Zabezpečení a soukromí',
-    category: 'settings',
-    requiresAuth: true,
-    color: 'text-red-600',
-    gradient: 'from-red-500 to-red-600'
-  },
-  {
-    id: 'settings-device',
-    label: 'Zařízení',
-    href: '/settings?tab=device',
-    icon: Smartphone,
-    description: 'Nastavení zařízení',
-    category: 'settings',
-    requiresAuth: true,
-    color: 'text-purple-600',
-    gradient: 'from-purple-500 to-purple-600'
-  },
-  {
-    id: 'settings-data',
-    label: 'Data a zálohy',
-    href: '/settings?tab=data',
-    icon: Database,
-    description: 'Správa dat a zálohy',
-    category: 'settings',
-    requiresAuth: true,
-    color: 'text-indigo-600',
-    gradient: 'from-indigo-500 to-indigo-600'
   },
   
   // Support section

@@ -1,48 +1,32 @@
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
-  Settings as SettingsIcon
-} from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
-import ProfileErrorBoundary from '@/components/profile/ProfileErrorBoundary';
-import GeneralSettings from '@/components/settings/GeneralSettings';
-import NotificationSettings from '@/components/settings/NotificationSettings';
-import LanguageSettings from '@/components/settings/LanguageSettings';
-import AccountSettings from '@/components/settings/AccountSettings';
-import DataSettings from '@/components/settings/DataSettings';
-import PrivacySettings from '@/components/settings/PrivacySettings';
-import DeviceSettings from '@/components/settings/DeviceSettings';
-import SecuritySettings from '@/components/settings/SecuritySettings';
-import ProfileAppearance from '@/components/profile/ProfileAppearance';
-import { UniversalMobileNavigation } from '@/components/navigation/UniversalMobileNavigation';
-import { useSyncSettings } from '@/hooks/useSyncSettings';
+import { motion } from 'framer-motion';
+import { Settings as SettingsIcon } from 'lucide-react';
+import { DashboardBackground } from '@/components/common/DashboardBackground';
+import { SettingsNavigation } from '@/components/settings/SettingsNavigation';
+import { AppearanceSettings } from '@/components/settings/AppearanceSettings';
+import { LanguageSettings } from '@/components/settings/LanguageSettings';
+import { SyncSettings } from '@/components/settings/SyncSettings';
+import { SecuritySettings } from '@/components/settings/SecuritySettings';
+import { NotificationSettings } from '@/components/settings/NotificationSettings';
+import { AccountSettings } from '@/components/settings/AccountSettings';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
-import { DashboardBackground } from '@/components/common/DashboardBackground';
-import { motion } from 'framer-motion';
-import { 
-  User, 
-  Bell, 
-  Globe, 
-  Database,
-  Shield,
-  Smartphone,
-  Palette,
-  Lock
-} from 'lucide-react';
 
 const Settings = () => {
-  const { settings: syncSettings, saveSettings: updateSyncSettings } = useSyncSettings();
   const isMobile = useIsMobile();
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState(() => {
-    return searchParams.get('tab') || "general";
+    return searchParams.get('tab') || 'appearance';
   });
+
+  // All available settings tabs for swipe navigation
+  const settingsTabs = ['appearance', 'language', 'sync', 'security', 'notifications', 'account'];
 
   // Update URL when tab changes
   useEffect(() => {
-    if (activeTab !== "general") {
+    if (activeTab !== 'appearance') {
       setSearchParams({ tab: activeTab });
     } else {
       setSearchParams({});
@@ -57,73 +41,9 @@ const Settings = () => {
     }
   }, [searchParams, activeTab]);
 
-  // All available settings tabs for swipe navigation
-  const allSettingsTabs = [
-    "general", "account", "appearance", "notifications", 
-    "language", "security", "device", "data", "privacy"
-  ];
-
-  // Settings tabs configuration for UniversalMobileNavigation
-  const settingsTabs = [
-    {
-      id: 'general',
-      icon: SettingsIcon,
-      label: 'Obecné',
-      description: 'Základní nastavení aplikace'
-    },
-    {
-      id: 'account',
-      icon: User,
-      label: 'Účet',
-      description: 'Správa uživatelského účtu'
-    },
-    {
-      id: 'appearance',
-      icon: Palette,
-      label: 'Vzhled',
-      description: 'Témata a zobrazení'
-    },
-    {
-      id: 'notifications',
-      icon: Bell,
-      label: 'Oznámení',
-      description: 'Nastavení upozornění'
-    },
-    {
-      id: 'language',
-      icon: Globe,
-      label: 'Jazyk',
-      description: 'Jazykové preference'
-    },
-    {
-      id: 'security',
-      icon: Lock,
-      label: 'Bezpečnost',
-      description: 'Zabezpečení a soukromí'
-    },
-    {
-      id: 'device',
-      icon: Smartphone,
-      label: 'Zařízení',
-      description: 'Nastavení zařízení'
-    },
-    {
-      id: 'data',
-      icon: Database,
-      label: 'Data',
-      description: 'Správa dat a zálohy'
-    },
-    {
-      id: 'privacy',
-      icon: Shield,
-      label: 'Soukromí',
-      description: 'Ochrana soukromí'
-    }
-  ];
-
   // Swipe navigation setup
   const { containerRef } = useSwipeNavigation({
-    items: allSettingsTabs,
+    items: settingsTabs,
     currentItem: activeTab,
     onItemChange: setActiveTab,
     enabled: isMobile
@@ -132,29 +52,20 @@ const Settings = () => {
   const renderTabContent = () => {
     const content = (() => {
       switch (activeTab) {
-        case "general":
-          return <GeneralSettings />;
-        case "account":
-          return <AccountSettings />;
-        case "appearance":
-          return <ProfileAppearance />;
-        case "notifications":
-          return <NotificationSettings 
-            syncSettings={syncSettings}
-            updateSyncSettings={updateSyncSettings}
-          />;
-        case "language":
+        case 'appearance':
+          return <AppearanceSettings />;
+        case 'language':
           return <LanguageSettings />;
-        case "security":
+        case 'sync':
+          return <SyncSettings />;
+        case 'security':
           return <SecuritySettings />;
-        case "device":
-          return <DeviceSettings />;
-        case "data":
-          return <DataSettings />;
-        case "privacy":
-          return <PrivacySettings />;
+        case 'notifications':
+          return <NotificationSettings />;
+        case 'account':
+          return <AccountSettings />;
         default:
-          return <GeneralSettings />;
+          return <AppearanceSettings />;
       }
     })();
 
@@ -165,9 +76,7 @@ const Settings = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <ProfileErrorBoundary>
-          {content}
-        </ProfileErrorBoundary>
+        {content}
       </motion.div>
     );
   };
@@ -196,26 +105,22 @@ const Settings = () => {
             )}
           </motion.div>
 
-          <ProfileErrorBoundary>
-            <div className="space-y-6">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.1 }}
-              >
-                <UniversalMobileNavigation
-                  activeTab={activeTab}
-                  onTabChange={setActiveTab}
-                  tabs={settingsTabs}
-                  className="settings-navigation"
-                />
-              </motion.div>
+          <div className="space-y-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+            >
+              <SettingsNavigation
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+              />
+            </motion.div>
 
-              <div className="mt-8">
-                {renderTabContent()}
-              </div>
+            <div className="mt-8">
+              {renderTabContent()}
             </div>
-          </ProfileErrorBoundary>
+          </div>
         </div>
       </div>
     </DashboardBackground>
