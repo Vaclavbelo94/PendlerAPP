@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
-import { WidgetConfig, DashboardLayout } from './types';
+import { WidgetConfig, DashboardLayout, WidgetSize } from './types';
 import { DEFAULT_WIDGETS } from './WidgetRegistry';
 import { useScreenOrientation } from '@/hooks/useScreenOrientation';
 
