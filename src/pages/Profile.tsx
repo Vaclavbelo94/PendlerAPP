@@ -14,6 +14,8 @@ import { StandardCard } from "@/components/ui/StandardCard";
 import { UnifiedGrid } from "@/components/layout/UnifiedGrid";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSwipeNavigation } from "@/hooks/useSwipeNavigation";
+import { DashboardBackground } from "@/components/common/DashboardBackground";
+import { motion } from "framer-motion";
 
 const Profile = () => {
   const { user, isPremium, isAdmin } = useAuth();
@@ -34,138 +36,164 @@ const Profile = () => {
 
   if (!user) {
     return (
-      <PageContainer maxWidth="xl" padding="lg">
-        <StandardCard>
-          <div className="p-6 text-center">
-            <p className="text-muted-foreground mb-4">Pro zobrazení profilu se musíte přihlásit.</p>
-            <Button onClick={() => navigate('/login')}>
-              Přihlásit se
-            </Button>
-          </div>
-        </StandardCard>
-      </PageContainer>
+      <DashboardBackground variant="profile">
+        <PageContainer maxWidth="xl" padding="lg">
+          <StandardCard>
+            <div className="p-6 text-center">
+              <p className="text-muted-foreground mb-4">Pro zobrazení profilu se musíte přihlásit.</p>
+              <Button onClick={() => navigate('/login')}>
+                Přihlásit se
+              </Button>
+            </div>
+          </StandardCard>
+        </PageContainer>
+      </DashboardBackground>
     );
   }
 
   const OverviewTab = () => (
-    <UnifiedGrid 
-      columns={{ mobile: 1, desktop: 1 }} 
-      gap="lg"
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
     >
-      <StandardCard 
-        title="Základní informace"
-        fullHeight
+      <UnifiedGrid 
+        columns={{ mobile: 1, desktop: 1 }} 
+        gap="lg"
       >
-        <div className="flex flex-col sm:flex-row sm:items-start gap-4">
-          <Avatar className="h-16 w-16 mx-auto sm:mx-0">
-            <AvatarFallback className="text-lg">
-              {user.email?.charAt(0).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex-1 text-center sm:text-left">
-            <h3 className="text-lg font-semibold mb-2">{user.email}</h3>
-            <p className="text-sm text-muted-foreground mb-3">
-              Registrován: {new Date(user.created_at || '').toLocaleDateString('cs-CZ')}
-            </p>
-            <div className="flex gap-2 justify-center sm:justify-start">
-              {isPremium && (
-                <Badge className="bg-amber-500">
-                  <Crown className="h-3 w-3 mr-1" />
-                  Premium
-                </Badge>
-              )}
-              {isAdmin && (
-                <Badge className="bg-red-500">
-                  <Shield className="h-3 w-3 mr-1" />
-                  Administrátor
-                </Badge>
-              )}
+        <StandardCard 
+          title="Základní informace"
+          fullHeight
+        >
+          <div className="flex flex-col sm:flex-row sm:items-start gap-4">
+            <Avatar className="h-16 w-16 mx-auto sm:mx-0">
+              <AvatarFallback className="text-lg">
+                {user.email?.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1 text-center sm:text-left">
+              <h3 className="text-lg font-semibold mb-2">{user.email}</h3>
+              <p className="text-sm text-muted-foreground mb-3">
+                Registrován: {new Date(user.created_at || '').toLocaleDateString('cs-CZ')}
+              </p>
+              <div className="flex gap-2 justify-center sm:justify-start">
+                {isPremium && (
+                  <Badge className="bg-amber-500">
+                    <Crown className="h-3 w-3 mr-1" />
+                    Premium
+                  </Badge>
+                )}
+                {isAdmin && (
+                  <Badge className="bg-red-500">
+                    <Shield className="h-3 w-3 mr-1" />
+                    Administrátor
+                  </Badge>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      </StandardCard>
+        </StandardCard>
 
-      <StandardCard title="Rychlé akce" fullHeight>
-        <div className="space-y-3">
-          <Button 
-            variant="outline" 
-            className="w-full justify-start h-auto py-3" 
-            onClick={() => navigate('/settings')}
-          >
-            <Settings className="h-4 w-4 mr-3" />
-            <span className="text-left">Nastavení účtu</span>
-          </Button>
-          <Button 
-            variant="outline" 
-            className="w-full justify-start h-auto py-3" 
-            onClick={() => navigate('/dashboard')}
-          >
-            <Activity className="h-4 w-4 mr-3" />
-            <span className="text-left">Dashboard</span>
-          </Button>
-          {!isPremium && (
+        <StandardCard title="Rychlé akce" fullHeight>
+          <div className="space-y-3">
             <Button 
+              variant="outline" 
               className="w-full justify-start h-auto py-3" 
-              onClick={() => navigate('/premium')}
+              onClick={() => navigate('/settings')}
             >
-              <Crown className="h-4 w-4 mr-3" />
-              <span className="text-left">Upgradovat na Premium</span>
+              <Settings className="h-4 w-4 mr-3" />
+              <span className="text-left">Nastavení účtu</span>
             </Button>
-          )}
-        </div>
-      </StandardCard>
-    </UnifiedGrid>
+            <Button 
+              variant="outline" 
+              className="w-full justify-start h-auto py-3" 
+              onClick={() => navigate('/dashboard')}
+            >
+              <Activity className="h-4 w-4 mr-3" />
+              <span className="text-left">Dashboard</span>
+            </Button>
+            {!isPremium && (
+              <Button 
+                className="w-full justify-start h-auto py-3" 
+                onClick={() => navigate('/premium')}
+              >
+                <Crown className="h-4 w-4 mr-3" />
+                <span className="text-left">Upgradovat na Premium</span>
+              </Button>
+            )}
+          </div>
+        </StandardCard>
+      </UnifiedGrid>
+    </motion.div>
   );
 
   const AppearanceTab = () => (
-    <StandardCard title="Nastavení vzhledu" description="Přizpůsobte si vzhled aplikace">
-      <ProfileAppearance />
-    </StandardCard>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+    >
+      <StandardCard title="Nastavení vzhledu" description="Přizpůsobte si vzhled aplikace">
+        <ProfileAppearance />
+      </StandardCard>
+    </motion.div>
   );
 
   const SubscriptionTab = () => (
-    <StandardCard 
-      title="Předplatné" 
-      description="Správa vašeho Premium účtu"
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
     >
-      {isPremium ? (
-        <div className="space-y-4">
-          <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800">
-            <div className="flex items-center gap-2 mb-2">
-              <Crown className="h-5 w-5 text-amber-500" />
-              <span className="font-medium">Premium Active</span>
+      <StandardCard 
+        title="Předplatné" 
+        description="Správa vašeho Premium účtu"
+      >
+        {isPremium ? (
+          <div className="space-y-4">
+            <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800">
+              <div className="flex items-center gap-2 mb-2">
+                <Crown className="h-5 w-5 text-amber-500" />
+                <span className="font-medium">Premium Active</span>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Máte aktivní Premium účet s plným přístupem ke všem funkcím.
+              </p>
             </div>
-            <p className="text-sm text-muted-foreground">
-              Máte aktivní Premium účet s plným přístupem ke všem funkcím.
-            </p>
+            <Button variant="outline" onClick={() => navigate('/settings')}>
+              Spravovat předplatné
+            </Button>
           </div>
-          <Button variant="outline" onClick={() => navigate('/settings')}>
-            Spravovat předplatné
-          </Button>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          <p className="text-muted-foreground">
-            Nemáte aktivní Premium předplatné. Upgradujte pro přístup ke všem funkcím.
-          </p>
-          <Button onClick={() => navigate('/premium')}>
-            <Crown className="h-4 w-4 mr-2" />
-            Aktivovat Premium
-          </Button>
-        </div>
-      )}
-    </StandardCard>
+        ) : (
+          <div className="space-y-4">
+            <p className="text-muted-foreground">
+              Nemáte aktivní Premium předplatné. Upgradujte pro přístup ke všem funkcím.
+            </p>
+            <Button onClick={() => navigate('/premium')}>
+              <Crown className="h-4 w-4 mr-2" />
+              Aktivovat Premium
+            </Button>
+          </div>
+        )}
+      </StandardCard>
+    </motion.div>
   );
 
   const ActivityTab = () => (
-    <StandardCard 
-      title="Aktivita a statistiky"
-      description="Přehled vašeho používání aplikace"
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
     >
-      <p className="text-muted-foreground">
-        Zde budou zobrazeny vaše statistiky použití aplikace.
-      </p>
-    </StandardCard>
+      <StandardCard 
+        title="Aktivita a statistiky"
+        description="Přehled vašeho používání aplikace"
+      >
+        <p className="text-muted-foreground">
+          Zde budou zobrazeny vaše statistiky použití aplikace.
+        </p>
+      </StandardCard>
+    </motion.div>
   );
 
   const renderTabContent = () => {
@@ -179,27 +207,43 @@ const Profile = () => {
   };
 
   return (
-    <PageContainer maxWidth="xl" padding="lg">
-      <div ref={containerRef} className="touch-manipulation swipe-container">
-        <div className="mb-8 text-center md:text-left">
-          <h1 className="text-3xl font-bold mb-2">Můj profil</h1>
-          <p className="text-muted-foreground">
-            Spravujte své informace a nastavení účtu
-          </p>
-          {isMobile && (
-            <p className="text-xs text-muted-foreground mt-2">
-              💡 Tip: Přejeďte prstem doleva/doprava pro navigaci mezi záložkami
+    <DashboardBackground variant="profile">
+      <PageContainer maxWidth="xl" padding="lg">
+        <div ref={containerRef} className="touch-manipulation swipe-container">
+          <motion.div 
+            className="mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <User className="h-8 w-8 text-primary" />
+              <h1 className="text-3xl font-bold tracking-tight">Můj profil</h1>
+            </div>
+            <p className="text-muted-foreground text-lg">
+              Spravujte své informace a nastavení účtu
             </p>
-          )}
-        </div>
+            {isMobile && (
+              <p className="text-xs text-muted-foreground mt-2">
+                💡 Tip: Přejeďte prstem doleva/doprava pro navigaci mezi záložkami
+              </p>
+            )}
+          </motion.div>
 
-        <ProfileNavigation activeTab={activeTab} onTabChange={setActiveTab} />
-        
-        <div className="mt-8">
-          {renderTabContent()}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+          >
+            <ProfileNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+          </motion.div>
+          
+          <div className="mt-8">
+            {renderTabContent()}
+          </div>
         </div>
-      </div>
-    </PageContainer>
+      </PageContainer>
+    </DashboardBackground>
   );
 };
 

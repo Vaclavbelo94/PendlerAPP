@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
@@ -17,6 +16,8 @@ import { UniversalMobileNavigation } from '@/components/navigation/UniversalMobi
 import { useSyncSettings } from '@/hooks/useSyncSettings';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
+import { DashboardBackground } from '@/components/common/DashboardBackground';
+import { motion } from 'framer-motion';
 import { 
   User, 
   Bell, 
@@ -31,13 +32,13 @@ const Settings = () => {
   const isMobile = useIsMobile();
   const [activeTab, setActiveTab] = useState("general");
 
-  // All available settings tabs for swipe navigation (removed "appearance")
+  // All available settings tabs for swipe navigation
   const allSettingsTabs = [
     "general", "account", "notifications", 
     "language", "security", "device", "data", "privacy"
   ];
 
-  // Settings tabs configuration for UniversalMobileNavigation (removed appearance tab)
+  // Settings tabs configuration for UniversalMobileNavigation
   const settingsTabs = [
     {
       id: 'general',
@@ -97,87 +98,94 @@ const Settings = () => {
     enabled: isMobile
   });
 
-  // Debug logging
-  console.log('Settings: Rendering with activeTab:', activeTab);
+  const renderTabContent = () => {
+    const content = (() => {
+      switch (activeTab) {
+        case "general":
+          return <GeneralSettings />;
+        case "account":
+          return <AccountSettings />;
+        case "notifications":
+          return <NotificationSettings 
+            syncSettings={syncSettings}
+            updateSyncSettings={updateSyncSettings}
+          />;
+        case "language":
+          return <LanguageSettings />;
+        case "security":
+          return <SecuritySettings />;
+        case "device":
+          return <DeviceSettings />;
+        case "data":
+          return <DataSettings />;
+        case "privacy":
+          return <PrivacySettings />;
+        default:
+          return <GeneralSettings />;
+      }
+    })();
+
+    return (
+      <motion.div
+        key={activeTab}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        <ProfileErrorBoundary>
+          {content}
+        </ProfileErrorBoundary>
+      </motion.div>
+    );
+  };
 
   return (
-    <div className="container py-6 md:py-10 max-w-7xl">
-      <div ref={containerRef} className="touch-manipulation swipe-container">
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <SettingsIcon className="h-8 w-8 text-primary" />
-            <h1 className="text-3xl font-bold tracking-tight">Nastavení aplikace</h1>
-          </div>
-          <p className="text-muted-foreground">
-            Spravujte své preference a nastavení aplikace
-          </p>
-          {isMobile && (
-            <p className="text-xs text-muted-foreground mt-2">
-              💡 Tip: Přejeďte prstem doleva/doprava pro navigaci mezi záložkami
-            </p>
-          )}
-        </div>
-
-        <ProfileErrorBoundary>
-          <div className="space-y-6">
-            {/* Unified navigation using UniversalMobileNavigation */}
-            <UniversalMobileNavigation
-              activeTab={activeTab}
-              onTabChange={setActiveTab}
-              tabs={settingsTabs}
-              className="settings-navigation"
-            />
-
-            {/* Tab content with individual error boundaries (removed appearance tab) */}
-            <div className="mt-8">
-              {activeTab === "general" && (
-                <ProfileErrorBoundary>
-                  <GeneralSettings />
-                </ProfileErrorBoundary>
-              )}
-              {activeTab === "account" && (
-                <ProfileErrorBoundary>
-                  <AccountSettings />
-                </ProfileErrorBoundary>
-              )}
-              {activeTab === "notifications" && (
-                <ProfileErrorBoundary>
-                  <NotificationSettings 
-                    syncSettings={syncSettings}
-                    updateSyncSettings={updateSyncSettings}
-                  />
-                </ProfileErrorBoundary>
-              )}
-              {activeTab === "language" && (
-                <ProfileErrorBoundary>
-                  <LanguageSettings />
-                </ProfileErrorBoundary>
-              )}
-              {activeTab === "security" && (
-                <ProfileErrorBoundary>
-                  <SecuritySettings />
-                </ProfileErrorBoundary>
-              )}
-              {activeTab === "device" && (
-                <ProfileErrorBoundary>
-                  <DeviceSettings />
-                </ProfileErrorBoundary>
-              )}
-              {activeTab === "data" && (
-                <ProfileErrorBoundary>
-                  <DataSettings />
-                </ProfileErrorBoundary>
-              )}
-              {activeTab === "privacy" && (
-                <ProfileErrorBoundary>
-                  <PrivacySettings />
-                </ProfileErrorBoundary>
-              )}
+    <DashboardBackground variant="settings">
+      <div className="container py-6 md:py-10 max-w-7xl">
+        <div ref={containerRef} className="touch-manipulation swipe-container">
+          <motion.div 
+            className="mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <SettingsIcon className="h-8 w-8 text-primary" />
+              <h1 className="text-3xl font-bold tracking-tight">Nastavení aplikace</h1>
             </div>
-          </div>
-        </ProfileErrorBoundary>
+            <p className="text-muted-foreground text-lg">
+              Spravujte své preference a nastavení aplikace
+            </p>
+            {isMobile && (
+              <p className="text-xs text-muted-foreground mt-2">
+                💡 Tip: Přejeďte prstem doleva/doprava pro navigaci mezi záložkami
+              </p>
+            )}
+          </motion.div>
+
+          <ProfileErrorBoundary>
+            <div className="space-y-6">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+              >
+                <UniversalMobileNavigation
+                  activeTab={activeTab}
+                  onTabChange={setActiveTab}
+                  tabs={settingsTabs}
+                  className="settings-navigation"
+                />
+              </motion.div>
+
+              <div className="mt-8">
+                {renderTabContent()}
+              </div>
+            </div>
+          </ProfileErrorBoundary>
+        </div>
       </div>
-    </div>
+    </DashboardBackground>
   );
 };
 
