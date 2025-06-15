@@ -1,3 +1,4 @@
+
 export type Language = 'cs' | 'pl' | 'de';
 
 export const languages = {
@@ -105,10 +106,11 @@ export const translations = {
     activeUsers: "Aktivních uživatelů",
     shiftsManaged: "Spravovaných směn",
     countries: "Státy",
-    shifts: "Směny",
-    calculator: "Kalkulačka",
-    vehicle: "Vozidlo",
-    translator: "Překladač",
+    // DO NOT REPEAT keys below:
+    // shifts: "Směny", // DUPLICATE!
+    // calculator: "Kalkulačka", // DUPLICATE!
+    // vehicle: "Vozidlo", // DUPLICATE!
+    // translator: "Překladač", // DUPLICATE!
     
     // Calculator
     basicCalculator: 'Základní kalkulačka',
@@ -236,10 +238,11 @@ export const translations = {
     activeUsers: "Aktywnych użytkowników",
     shiftsManaged: "Zarządzanych zmian",
     countries: "Kraje",
-    shifts: "Zmiany",
-    calculator: "Kalkulator",
-    vehicle: "Pojazd",
-    translator: "Tłumacz",
+    // DO NOT REPEAT keys below:
+    // shifts: "Zmiany",
+    // calculator: "Kalkulator",
+    // vehicle: "Pojazd",
+    // translator: "Tłumacz",
     
     // Calculator
     basicCalculator: 'Podstawowy kalkulator',
@@ -367,10 +370,11 @@ export const translations = {
     activeUsers: "Aktive Nutzer",
     shiftsManaged: "Verwaltete Schichten",
     countries: "Länder",
-    shifts: "Schichten",
-    calculator: "Rechner",
-    vehicle: "Fahrzeug",
-    translator: "Übersetzer",
+    // DO NOT REPEAT keys below:
+    // shifts: "Schichten",
+    // calculator: "Rechner",
+    // vehicle: "Fahrzeug",
+    // translator: "Übersetzer",
     
     // Calculator
     basicCalculator: 'Basis-Rechner',
@@ -401,3 +405,4 @@ export const translations = {
     divisionByZeroError: 'Fehler: Division durch Null'
   }
 } as const;
+
