@@ -9,9 +9,9 @@ import { ChevronDown, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 import { modernNavigationItems, getCategoryItems, getCategoryTitle } from './modernNavigationData';
-import { SidebarLogo } from './SidebarLogo';
-import { SidebarUserSection } from './SidebarUserSection';
-import { SidebarThemeSwitcher } from './SidebarThemeSwitcher';
+import SidebarLogo from './SidebarLogo';
+import SidebarUserSection from './SidebarUserSection';
+import SidebarThemeSwitcher from './SidebarThemeSwitcher';
 
 interface ModernSidebarProps {
   closeSidebar?: () => void;
@@ -54,7 +54,7 @@ export const ModernSidebar: React.FC<ModernSidebarProps> = ({ closeSidebar }) =>
     <div className="w-20 hover:w-64 group transition-all duration-300 bg-card border-r h-screen flex flex-col overflow-hidden">
       {/* Logo */}
       <div className="p-4 border-b">
-        <SidebarLogo />
+        <SidebarLogo closeSidebar={closeSidebar || (() => {})} />
       </div>
 
       {/* Navigation */}
@@ -140,7 +140,7 @@ export const ModernSidebar: React.FC<ModernSidebarProps> = ({ closeSidebar }) =>
       {/* Footer */}
       <div className="border-t p-2 space-y-2">
         <SidebarThemeSwitcher />
-        <SidebarUserSection />
+        <SidebarUserSection closeSidebar={closeSidebar || (() => {})} />
       </div>
     </div>
   );
