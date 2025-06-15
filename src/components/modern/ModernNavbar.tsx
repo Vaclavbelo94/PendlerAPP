@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -12,10 +11,9 @@ import { cn } from '@/lib/utils';
 const navigationItems = [
   { key: 'dashboard', path: '/dashboard' },
   { key: 'shifts', path: '/shifts' },
-  { key: 'calculator', path: '/calculator' },
+  { key: 'taxAdvisor', path: '/tax-advisor' },
   { key: 'translator', path: '/translator' },
   { key: 'vehicle', path: '/vehicle' },
-  { key: 'taxAdvisor', path: '/tax-advisor' },
   { key: 'travel', path: '/travel' },
   { key: 'laws', path: '/laws' },
 ];

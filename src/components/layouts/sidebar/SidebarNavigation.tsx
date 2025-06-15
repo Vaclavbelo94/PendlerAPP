@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { useNavigate, useLocation } from "react-router-dom";
 import { 
   Home, 
-  Calculator, 
   DollarSign, 
   Car, 
   CalendarDays, 
@@ -29,7 +28,6 @@ const SidebarNavigation = ({ closeSidebar, isHorizontal = false }: SidebarNaviga
   const navigationItems = [
     { name: "Domů", path: "/", icon: Home, category: "main" },
     ...(user ? [{ name: "Dashboard", path: "/dashboard", icon: Home, category: "main" }] : []),
-    { name: "Kalkulačka", path: "/calculator", icon: Calculator, category: "tools" },
     { name: "Daňový poradce", path: "/tax-advisor", icon: DollarSign, category: "tools" },
     { name: "Vozidlo", path: "/vehicle", icon: Car, category: "tools" },
     ...(user ? [{ name: "Směny", path: "/shifts", icon: CalendarDays, category: "work" }] : []),

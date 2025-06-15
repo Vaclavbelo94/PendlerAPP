@@ -1,11 +1,9 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { 
   Plus, 
-  Calculator, 
   FileText, 
   Car, 
   Globe, 
@@ -29,12 +27,12 @@ const DashboardActions: React.FC = () => {
       badge: t('quick'),
     },
     {
-      title: t('calculator'),
-      description: t('calculatorDescription'),
-      icon: Calculator,
-      href: '/calculator',
-      color: 'bg-green-500 hover:bg-green-600',
-      badge: t('popular'),
+      title: t('taxAdvisor'),
+      description: t('taxAdvisorDescription'),
+      icon: FileText,
+      href: '/tax-advisor',
+      color: 'bg-orange-500 hover:bg-orange-600',
+      badge: t('premium'),
     },
     {
       title: t('translator'),
@@ -45,11 +43,11 @@ const DashboardActions: React.FC = () => {
       badge: t('ai'),
     },
     {
-      title: t('taxAdvisor'),
-      description: t('taxAdvisorDescription'),
-      icon: FileText,
-      href: '/tax-advisor',
-      color: 'bg-orange-500 hover:bg-orange-600',
+      title: 'Vozidlo',
+      description: 'Správa vozidel a nákladů',
+      icon: Car,
+      href: '/vehicle',
+      color: 'bg-green-500 hover:bg-green-600',
       badge: t('premium'),
     },
   ];

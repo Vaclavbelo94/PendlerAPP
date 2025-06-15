@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -53,11 +52,11 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen }: NavbarProps) => {
         Slovní zásoba
       </Link>
       <Link
-        to="/calculator"
+        to="/tax-advisor"
         className={`${mobile ? 'block py-2' : ''} text-foreground hover:text-primary transition-colors`}
         onClick={onLinkClick}
       >
-        Kalkulačky
+        Daňový poradce
       </Link>
       <Link
         to="/translator"

@@ -1,10 +1,8 @@
-
 import React, { useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { 
-  Calculator, 
   Car, 
   Calendar, 
   BookOpen, 
@@ -35,8 +33,7 @@ const searchItems: SearchItem[] = [
   { id: 'profile', title: 'Profil', description: 'Správa osobních údajů a nastavení', path: '/profile', icon: User, category: 'Navigace' },
   { id: 'settings', title: 'Nastavení', description: 'Konfigurace aplikace', path: '/settings', icon: Settings, category: 'Navigace' },
   
-  // Kalkulačky
-  { id: 'calculator', title: 'Kalkulačky', description: 'Matematické a daňové kalkulačky', path: '/calculator', icon: Calculator, category: 'Nástroje' },
+  // Nástroje
   { id: 'tax-advisor', title: 'Daňový poradce', description: 'Pomoc s daněmi a dokumenty', path: '/tax-advisor', icon: FileText, category: 'Nástroje' },
   
   // Vozidla a cestování

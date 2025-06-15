@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { ChevronRight, Home } from 'lucide-react';
@@ -20,7 +19,6 @@ const routeNames: Record<string, string> = {
   '/vocabulary': 'Slovní zásoba',
   '/translator': 'Překladač',
   '/tax-advisor': 'Daňový poradce',
-  '/calculator': 'Kalkulačky',
   '/laws': 'Právní přehled',
   '/shifts': 'Správa směn',
   '/vehicle': 'Vozidla',
