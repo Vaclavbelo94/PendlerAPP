@@ -55,7 +55,7 @@ export const AppearanceSettings = () => {
     { value: 'blue', label: 'Modrá', color: 'bg-blue-500' },
     { value: 'purple', label: 'Fialová', color: 'bg-purple-500' },
     { value: 'green', label: 'Zelená', color: 'bg-green-500' },
-    { value: 'orange', label: 'Oranžová', color: 'bg-orange-500' },
+    { value: 'amber', label: 'Oranžová', color: 'bg-amber-500' },
     { value: 'red', label: 'Červená', color: 'bg-red-500' },
     { value: 'pink', label: 'Růžová', color: 'bg-pink-500' }
   ];
@@ -75,7 +75,7 @@ export const AppearanceSettings = () => {
         <CardContent className="space-y-6">
           <div className="space-y-4">
             <Label>Barevné téma</Label>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 gap-3">
               <Button
                 variant={theme === 'light' ? 'default' : 'outline'}
                 onClick={() => setTheme('light')}
@@ -91,14 +91,6 @@ export const AppearanceSettings = () => {
               >
                 <Moon className="h-4 w-4" />
                 <span>Tmavé</span>
-              </Button>
-              <Button
-                variant={theme === 'system' ? 'default' : 'outline'}
-                onClick={() => setTheme('system')}
-                className="flex items-center gap-2 h-12"
-              >
-                <Monitor className="h-4 w-4" />
-                <span>Systém</span>
               </Button>
             </div>
           </div>
