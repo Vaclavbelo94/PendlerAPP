@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 
 interface DashboardBackgroundProps {
   children: React.ReactNode;
-  variant?: 'laws' | 'travel' | 'shifts' | 'profile' | 'settings' | 'default';
+  variant?: 'laws' | 'travel' | 'shifts' | 'default';
 }
 
 export const DashboardBackground: React.FC<DashboardBackgroundProps> = ({ 
@@ -19,10 +19,6 @@ export const DashboardBackground: React.FC<DashboardBackgroundProps> = ({
         return 'from-background via-background/95 to-primary/5';
       case 'shifts':
         return 'from-background via-background/95 to-green-500/5';
-      case 'profile':
-        return 'from-background via-background/95 to-purple-500/5';
-      case 'settings':
-        return 'from-background via-background/95 to-slate-500/5';
       default:
         return 'from-background via-background/95 to-primary/5';
     }
@@ -50,20 +46,6 @@ export const DashboardBackground: React.FC<DashboardBackgroundProps> = ({
           { icon: '📅', bottom: '25%', left: '15%', delay: 500 },
           { icon: '⏰', top: '50%', right: '20%', delay: 1000 },
           { icon: '📊', bottom: '40%', right: '8%', delay: 1500 },
-        ];
-      case 'profile':
-        return [
-          { icon: '👤', top: '15%', right: '10%', delay: 0 },
-          { icon: '📱', bottom: '25%', left: '15%', delay: 500 },
-          { icon: '⭐', top: '50%', right: '20%', delay: 1000 },
-          { icon: '🎯', bottom: '40%', right: '8%', delay: 1500 },
-        ];
-      case 'settings':
-        return [
-          { icon: '⚙️', top: '15%', right: '10%', delay: 0 },
-          { icon: '🔧', bottom: '25%', left: '15%', delay: 500 },
-          { icon: '🛠️', top: '50%', right: '20%', delay: 1000 },
-          { icon: '⚡', bottom: '40%', right: '8%', delay: 1500 },
         ];
       default:
         return [

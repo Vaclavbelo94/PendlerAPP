@@ -231,7 +231,6 @@ export const ModernMobileSidebar: React.FC<ModernMobileSidebarProps> = ({ closeS
         {/* Navigation */}
         <CategorySection category="main" />
         <CategorySection category="tools" />
-        <CategorySection category="settings" />
         <CategorySection category="support" />
         {isAdminUser && <CategorySection category="admin" />}
 

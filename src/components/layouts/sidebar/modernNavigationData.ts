@@ -14,8 +14,7 @@ import {
   HelpCircle,
   Scale,
   Shield,
-  Languages,
-  User
+  Languages
 } from 'lucide-react';
 
 export interface ModernNavigationItem {
@@ -24,7 +23,7 @@ export interface ModernNavigationItem {
   href: string;
   icon: any;
   description: string;
-  category: 'main' | 'tools' | 'settings' | 'support' | 'admin';
+  category: 'main' | 'tools' | 'support' | 'admin';
   isPublic?: boolean;
   requiresAuth?: boolean;
   isPremium?: boolean;
@@ -56,17 +55,6 @@ export const modernNavigationItems: ModernNavigationItem[] = [
     requiresAuth: true,
     color: 'text-emerald-600',
     gradient: 'from-emerald-500 to-emerald-600'
-  },
-  {
-    id: 'profile',
-    label: 'Profil',
-    href: '/profile',
-    icon: User,
-    description: 'Správa profilu a osobních údajů',
-    category: 'main',
-    requiresAuth: true,
-    color: 'text-purple-600',
-    gradient: 'from-purple-500 to-purple-600'
   },
   
   // Tools section
@@ -147,19 +135,6 @@ export const modernNavigationItems: ModernNavigationItem[] = [
     color: 'text-slate-600',
     gradient: 'from-slate-500 to-slate-600'
   },
-
-  // Settings section (simplified)
-  {
-    id: 'settings',
-    label: 'Nastavení',
-    href: '/settings',
-    icon: Settings,
-    description: 'Nastavení a preference aplikace',
-    category: 'settings',
-    requiresAuth: true,
-    color: 'text-gray-600',
-    gradient: 'from-gray-500 to-gray-600'
-  },
   
   // Support section
   {
@@ -195,6 +170,17 @@ export const modernNavigationItems: ModernNavigationItem[] = [
     color: 'text-rose-600',
     gradient: 'from-rose-500 to-rose-600'
   },
+  {
+    id: 'settings',
+    label: 'Nastavení',
+    href: '/settings',
+    icon: Settings,
+    description: 'Nastavení účtu a aplikace',
+    category: 'support',
+    requiresAuth: true,
+    color: 'text-gray-600',
+    gradient: 'from-gray-500 to-gray-600'
+  },
   
   // Admin section
   {
@@ -217,7 +203,6 @@ export const getCategoryTitle = (category: string) => {
   switch (category) {
     case 'main': return 'Hlavní';
     case 'tools': return 'Nástroje';
-    case 'settings': return 'Nastavení';
     case 'support': return 'Podpora';
     case 'admin': return 'Administrace';
     default: return '';

@@ -1,68 +1,94 @@
 
 import React from 'react';
-import { motion } from 'framer-motion';
-import { cn } from '@/lib/utils';
 import { 
+  Settings as SettingsIcon, 
+  User, 
+  Bell, 
   Palette, 
   Globe, 
-  RefreshCw, 
-  Shield, 
-  Bell, 
-  User
+  Database,
+  Shield,
+  Smartphone
 } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 interface SettingsNavigationProps {
   activeTab: string;
   onTabChange: (tabId: string) => void;
+  variant?: 'primary' | 'secondary';
 }
 
-const settingsTabs = [
+const primaryTabs = [
   {
-    id: 'appearance',
-    icon: Palette,
-    label: 'Vzhled',
-    description: 'Témata a přizpůsobení'
-  },
-  {
-    id: 'language',
-    icon: Globe,
-    label: 'Jazyk',
-    description: 'Jazyk a lokalizace'
-  },
-  {
-    id: 'sync',
-    icon: RefreshCw,
-    label: 'Synchronizace',
-    description: 'Data a zálohy'
-  },
-  {
-    id: 'security',
-    icon: Shield,
-    label: 'Bezpečnost',
-    description: 'Hesla a soukromí'
-  },
-  {
-    id: 'notifications',
-    icon: Bell,
-    label: 'Oznámení',
-    description: 'Upozornění a notifikace'
+    id: 'general',
+    icon: SettingsIcon,
+    label: 'Obecné',
+    description: 'Základní nastavení aplikace'
   },
   {
     id: 'account',
     icon: User,
     label: 'Účet',
-    description: 'Správa účtu'
+    description: 'Správa uživatelského účtu'
+  },
+  {
+    id: 'appearance',
+    icon: Palette,
+    label: 'Vzhled',
+    description: 'Témata a zobrazení'
+  },
+  {
+    id: 'notifications',
+    icon: Bell,
+    label: 'Oznámení',
+    description: 'Nastavení upozornění'
+  }
+];
+
+const secondaryTabs = [
+  {
+    id: 'language',
+    icon: Globe,
+    label: 'Jazyk',
+    description: 'Jazykové preference'
+  },
+  {
+    id: 'security',
+    icon: Shield,
+    label: 'Bezpečnost',
+    description: 'Zabezpečení a soukromí'
+  },
+  {
+    id: 'device',
+    icon: Smartphone,
+    label: 'Zařízení',
+    description: 'Nastavení zařízení'
+  },
+  {
+    id: 'data',
+    icon: Database,
+    label: 'Data',
+    description: 'Správa dat a zálohy'
   }
 ];
 
 export const SettingsNavigation: React.FC<SettingsNavigationProps> = ({
   activeTab,
-  onTabChange
+  onTabChange,
+  variant = 'primary'
 }) => {
+  const tabs = variant === 'primary' ? primaryTabs : secondaryTabs;
+  
   return (
     <div className="flex justify-center">
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 w-full max-w-6xl">
-        {settingsTabs.map((tab, index) => {
+      <div className={cn(
+        "grid gap-4 w-full",
+        variant === 'primary' 
+          ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-4 max-w-6xl" 
+          : "grid-cols-1 md:grid-cols-2 lg:grid-cols-4 max-w-6xl"
+      )}>
+        {tabs.map((tab, index) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
           
@@ -87,7 +113,7 @@ export const SettingsNavigation: React.FC<SettingsNavigationProps> = ({
               {isActive && (
                 <motion.div
                   className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 rounded-2xl"
-                  layoutId="activeSettingsTab"
+                  layoutId={`activeSettingsTab-${variant}`}
                   transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                 />
               )}
@@ -107,7 +133,7 @@ export const SettingsNavigation: React.FC<SettingsNavigationProps> = ({
                 </motion.div>
                 
                 <h3 className={cn(
-                  "font-semibold text-sm md:text-base transition-colors duration-300 mb-1",
+                  "font-semibold text-lg transition-colors duration-300 mb-2",
                   isActive 
                     ? "text-primary" 
                     : "text-foreground group-hover:text-primary"
@@ -116,7 +142,7 @@ export const SettingsNavigation: React.FC<SettingsNavigationProps> = ({
                 </h3>
                 
                 <p className={cn(
-                  "text-xs transition-colors duration-300 hidden md:block",
+                  "text-sm transition-colors duration-300",
                   isActive 
                     ? "text-muted-foreground" 
                     : "text-muted-foreground group-hover:text-foreground"
@@ -131,3 +157,5 @@ export const SettingsNavigation: React.FC<SettingsNavigationProps> = ({
     </div>
   );
 };
+
+export default SettingsNavigation;
