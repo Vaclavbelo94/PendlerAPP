@@ -101,6 +101,15 @@ export const translations = {
     lessons: 'lekcí',
     manageGoals: 'Spravovat cíle',
     
+    // Stats/feature keys:
+    activeUsers: "Aktivních uživatelů",
+    shiftsManaged: "Spravovaných směn",
+    countries: "Státy",
+    shifts: "Směny",
+    calculator: "Kalkulačka",
+    vehicle: "Vozidlo",
+    translator: "Překladač",
+    
     // Calculator
     basicCalculator: 'Základní kalkulačka',
     basicCalculatorDescription: 'Jednoduchá kalkulačka pro základní matematické operace',
@@ -223,6 +232,15 @@ export const translations = {
     lessons: 'lekcji',
     manageGoals: 'Zarządzaj celami',
     
+    // Stats/feature keys:
+    activeUsers: "Aktywnych użytkowników",
+    shiftsManaged: "Zarządzanych zmian",
+    countries: "Kraje",
+    shifts: "Zmiany",
+    calculator: "Kalkulator",
+    vehicle: "Pojazd",
+    translator: "Tłumacz",
+    
     // Calculator
     basicCalculator: 'Podstawowy kalkulator',
     basicCalculatorDescription: 'Prosty kalkulator do podstawowych operacji matematycznych',
@@ -344,6 +362,15 @@ export const translations = {
     germanLessons: 'Deutschstunden',
     lessons: 'Lektionen',
     manageGoals: 'Ziele verwalten',
+    
+    // Stats/feature keys:
+    activeUsers: "Aktive Nutzer",
+    shiftsManaged: "Verwaltete Schichten",
+    countries: "Länder",
+    shifts: "Schichten",
+    calculator: "Rechner",
+    vehicle: "Fahrzeug",
+    translator: "Übersetzer",
     
     // Calculator
     basicCalculator: 'Basis-Rechner',

@@ -131,7 +131,7 @@ export const ModernHero: React.FC = () => {
                   <stat.icon className="h-6 w-6 text-primary" />
                 </div>
                 <div className="text-2xl font-bold text-foreground mb-1">{stat.value}</div>
-                <div className="text-sm text-muted-foreground">{stat.labelKey}</div>
+                <div className="text-sm text-muted-foreground">{t(stat.labelKey)}</div>
               </CardContent>
             </Card>
           ))}
