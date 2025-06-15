@@ -592,6 +592,7 @@ export type Database = {
           is_recurring: boolean | null
           notes: string | null
           origin_address: string
+          phone_number: string | null
           price_per_person: number | null
           rating: number | null
           recurring_days: number[] | null
@@ -610,6 +611,7 @@ export type Database = {
           is_recurring?: boolean | null
           notes?: string | null
           origin_address: string
+          phone_number?: string | null
           price_per_person?: number | null
           rating?: number | null
           recurring_days?: number[] | null
@@ -628,6 +630,7 @@ export type Database = {
           is_recurring?: boolean | null
           notes?: string | null
           origin_address?: string
+          phone_number?: string | null
           price_per_person?: number | null
           rating?: number | null
           recurring_days?: number[] | null

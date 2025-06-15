@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,7 +23,8 @@ interface EnhancedRideOfferCardProps {
 const EnhancedRideOfferCard = ({ ride, onContact, isAuthenticated, currentUserId }: EnhancedRideOfferCardProps) => {
   const isOwnRide = ride.user_id === currentUserId;
   const driverName = ride.driver?.username || 'Neznámý řidič';
-  const hasPhoneNumber = ride.driver?.phone_number;
+  // Prefer phone number from offer, fallback to driver's profile
+  const hasPhoneNumber = ride.driver?.phone_number && String(ride.driver.phone_number).length > 4;
 
   const handleCall = () => {
     if (hasPhoneNumber) {
@@ -38,7 +38,7 @@ const EnhancedRideOfferCard = ({ ride, onContact, isAuthenticated, currentUserId
   };
 
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+    <Card className="overflow-hidden hover:shadow-lg transition-shadow w-full max-w-full">
       {/* Driver Info Header */}
       <CardHeader className="pb-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20">
         <div className="flex items-center justify-between">
@@ -74,7 +74,7 @@ const EnhancedRideOfferCard = ({ ride, onContact, isAuthenticated, currentUserId
       <CardContent className="pt-4 pb-4">
         <div className="space-y-4">
           {/* Date and Time */}
-          <div className="flex items-center justify-between text-sm">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between text-sm gap-2">
             <div className="flex items-center gap-2">
               <Calendar className="h-4 w-4 text-muted-foreground" />
               <span className="font-medium">{ride.departure_date}</span>
@@ -87,7 +87,7 @@ const EnhancedRideOfferCard = ({ ride, onContact, isAuthenticated, currentUserId
 
           {/* Route */}
           <div className="space-y-3">
-            <div className="flex items-start gap-3">
+            <div className="flex flex-col sm:flex-row items-start gap-3">
               <div className="flex flex-col items-center mt-1">
                 <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                 <div className="w-px h-6 bg-border"></div>
@@ -106,12 +106,19 @@ const EnhancedRideOfferCard = ({ ride, onContact, isAuthenticated, currentUserId
             </div>
           </div>
 
-          {/* Price and Notes */}
+          {/* Price, Phone, and Notes */}
           <div className="space-y-2">
             {ride.price_per_person > 0 && (
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Cena za osobu:</span>
                 <span className="font-semibold text-green-600">{ride.price_per_person} Kč</span>
+              </div>
+            )}
+            {/* Phone number visible always if provided */}
+            {ride.driver?.phone_number && (
+              <div className="flex items-center gap-2">
+                <Phone className="h-4 w-4 text-primary" />
+                <span className="font-medium">{ride.driver.phone_number}</span>
               </div>
             )}
             {ride.notes && (

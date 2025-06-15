@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,7 +24,8 @@ const RideOfferForm = ({ onOfferCreated, onCancel }: RideOfferFormProps) => {
     departure_date: '',
     seats_available: 2,
     price_per_person: '',
-    notes: ''
+    notes: '',
+    phone_number: ''
   });
 
   const handleSubmitOffer = async () => {
@@ -38,7 +38,12 @@ const RideOfferForm = ({ onOfferCreated, onCancel }: RideOfferFormProps) => {
       toast.error("Vyplňte prosím všechny povinné údaje.");
       return;
     }
-    
+
+    if (!newRideOffer.phone_number) {
+      toast.error("Zadejte prosím telefonní číslo.");
+      return;
+    }
+
     try {
       await rideshareService.createRideshareOffer({
         ...newRideOffer,
@@ -58,7 +63,8 @@ const RideOfferForm = ({ onOfferCreated, onCancel }: RideOfferFormProps) => {
         departure_date: '',
         seats_available: 2,
         price_per_person: '',
-        notes: ''
+        notes: '',
+        phone_number: ''
       });
       
       onOfferCreated();
@@ -150,6 +156,18 @@ const RideOfferForm = ({ onOfferCreated, onCancel }: RideOfferFormProps) => {
               placeholder="Např. 150" 
               value={newRideOffer.price_per_person}
               onChange={(e) => setNewRideOffer({...newRideOffer, price_per_person: e.target.value})}
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="offer-phone">Telefonní číslo *</Label>
+            <Input
+              id="offer-phone"
+              type="tel"
+              placeholder="+420 123 456 789"
+              value={newRideOffer.phone_number}
+              maxLength={20}
+              onChange={e => setNewRideOffer({ ...newRideOffer, phone_number: e.target.value })}
             />
           </div>
         </div>

@@ -40,7 +40,8 @@ const RideSharing: React.FC = () => {
     price_per_person: 0,
     notes: '',
     is_recurring: false,
-    recurring_days: [] as number[]
+    recurring_days: [] as number[],
+    phone_number: '',
   });
 
   useEffect(() => {
@@ -74,7 +75,14 @@ const RideSharing: React.FC = () => {
       });
       return;
     }
-
+    if (!formData.phone_number || formData.phone_number.length < 4) {
+      toast({
+        title: "Chyba",
+        description: "Zadejte prosím telefonní číslo pro spojení.",
+        variant: "destructive"
+      });
+      return;
+    }
     try {
       await rideshareService.createRideshareOffer({
         user_id: user.id,
@@ -86,7 +94,6 @@ const RideSharing: React.FC = () => {
         description: "Nabídka sdílení jízdy byla vytvořena."
       });
 
-      // Reset form
       setFormData({
         origin_address: '',
         destination_address: '',
@@ -96,7 +103,8 @@ const RideSharing: React.FC = () => {
         price_per_person: 0,
         notes: '',
         is_recurring: false,
-        recurring_days: []
+        recurring_days: [],
+        phone_number: '',
       });
 
       loadOffers();
@@ -205,7 +213,7 @@ const RideSharing: React.FC = () => {
                   </p>
                 </div>
               ) : (
-                <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
                   {filteredOffers.map((offer) => (
                     <EnhancedRideOfferCard
                       key={offer.id}
@@ -305,6 +313,21 @@ const RideSharing: React.FC = () => {
                     value={formData.notes}
                     onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
                   />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="phone_number">Telefonní číslo *</Label>
+                    <Input
+                      id="phone_number"
+                      type="tel"
+                      placeholder="+420 123 456 789"
+                      value={formData.phone_number}
+                      onChange={e => setFormData(prev => ({ ...prev, phone_number: e.target.value }))}
+                      maxLength={20}
+                      required
+                    />
+                  </div>
                 </div>
 
                 <Button type="submit" className="w-full">

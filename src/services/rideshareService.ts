@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 
 export interface RideshareOffer {
@@ -17,6 +16,7 @@ export interface RideshareOffer {
   completed_rides?: number;
   created_at: string;
   is_active: boolean;
+  phone_number?: string;
 }
 
 export interface RideshareContact {
@@ -84,7 +84,7 @@ export const rideshareService = {
         ...offer,
         driver: {
           username: profile?.username || 'Neznámý řidič',
-          phone_number: profile?.phone_number,
+          phone_number: offer.phone_number || profile?.phone_number, // Prefer offer phone number
           rating: offer.rating,
           completed_rides: offer.completed_rides
         }
