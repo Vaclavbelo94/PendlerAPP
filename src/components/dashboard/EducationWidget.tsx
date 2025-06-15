@@ -2,11 +2,12 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 
+// Removed German courses: now shows general education blocks
 const EducationWidget = () => {
   const courses = [
-    { name: 'Základy němčiny', progress: 78, total: '24 lekcí' },
-    { name: 'Odborná němčina pro výrobu', progress: 45, total: '18 lekcí' },
-    { name: 'Německé pracovní právo', progress: 10, total: '12 lekcí' },
+    { name: 'Interní školení', progress: 90, total: '12 modulů' },
+    { name: 'Školení BOZP', progress: 100, total: '1 modul' },
+    { name: 'Práce s novým zařízením', progress: 60, total: '4 kroky' },
   ];
   
   return (
@@ -27,7 +28,7 @@ const EducationWidget = () => {
       ))}
       <div className="pt-2">
         <Button variant="outline" size="sm" className="w-full">
-          Pokračovat ve studiu
+          Pokračovat ve školení
         </Button>
       </div>
     </div>
