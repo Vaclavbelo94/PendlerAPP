@@ -2,7 +2,6 @@
 import { 
   Home, 
   User, 
-  Calculator, 
   Car, 
   BookOpen, 
   Calendar, 
@@ -34,11 +33,6 @@ export const navigationItems: NavigationItem[] = [
     path: '/dashboard',
     title: 'Dashboard',
     icon: User
-  },
-  {
-    path: '/calculator',
-    title: 'Kalkulačky',
-    icon: Calculator
   },
   {
     path: '/vehicle',

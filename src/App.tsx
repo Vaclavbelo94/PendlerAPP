@@ -15,7 +15,6 @@ import Register from '@/pages/Register';
 // Non-critical pages - lazy load
 const Dashboard = lazy(() => import('@/pages/Dashboard'));
 const Shifts = lazy(() => import('@/pages/Shifts'));
-const Calculator = lazy(() => import('@/pages/Calculator'));
 const Translator = lazy(() => import('@/pages/Translator'));
 const Vehicle = lazy(() => import('@/pages/Vehicle'));
 const TaxAdvisor = lazy(() => import('@/pages/TaxAdvisor'));
@@ -57,7 +56,6 @@ const AppContent: React.FC = () => {
           
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/shifts" element={<Shifts />} />
-          <Route path="/calculator" element={<Calculator />} />
           <Route path="/translator" element={<Translator />} />
           <Route path="/vehicle" element={<Vehicle />} />
           <Route path="/tax-advisor" element={<TaxAdvisor />} />

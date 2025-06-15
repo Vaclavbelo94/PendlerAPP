@@ -4,7 +4,6 @@ import {
   BarChart3,
   GraduationCap,
   Calendar,
-  Calculator,
   Car,
   FileText,
   Globe,
@@ -80,17 +79,6 @@ export const modernNavigationItems: ModernNavigationItem[] = [
     isPublic: true,
     color: 'text-indigo-600',
     gradient: 'from-indigo-500 to-indigo-600'
-  },
-  {
-    id: 'calculator',
-    label: 'Kalkulačky',
-    href: '/calculator',
-    icon: Calculator,
-    description: 'Daňové a mzdové kalkulačky',
-    category: 'tools',
-    isPublic: true,
-    color: 'text-orange-600',
-    gradient: 'from-orange-500 to-orange-600'
   },
   {
     id: 'travel',
