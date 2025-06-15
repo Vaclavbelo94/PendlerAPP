@@ -1,14 +1,14 @@
 
 import React from "react";
 import { useLanguage } from "@/hooks/useLanguage";
-import { ModernNavbar } from "@/components/modern/ModernNavbar";
+// import { ModernNavbar } from "@/components/modern/ModernNavbar"; // REMOVE this import
 
 const ModernIndex = () => {
   const { t } = useLanguage();
 
   return (
     <>
-      <ModernNavbar />
+      {/* <ModernNavbar /> // REMOVE this line */}
       <main className="p-8">
         <h1 className="text-3xl font-bold mb-4">{t('heroTitle')}</h1>
         <p className="mb-2">{t('heroSubtitle')}</p>
