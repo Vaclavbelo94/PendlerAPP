@@ -1,107 +1,112 @@
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import { Toaster } from 'sonner';
+import { QueryClient } from 'react-query';
+import { ErrorBoundary } from 'react-error-boundary';
+import { AdSenseProvider } from './components/ads/AdSenseContext';
+import { AdProvider } from './components/ads/AdContext';
+import Home from './pages/Home';
+import Dashboard from './pages/Dashboard';
+import Profile from './pages/Profile';
+import Vocabulary from './pages/Vocabulary';
+import Translator from './pages/Translator';
+import Travel from './pages/Travel';
+import TaxAdvisor from './pages/TaxAdvisor';
+import Shifts from './pages/Shifts';
+import Vehicle from './pages/Vehicle';
+import Laws from './pages/Laws';
+import Settings from './pages/Settings';
+import Premium from './pages/Premium';
+import Contact from './pages/Contact';
+import FAQ from './pages/FAQ';
+import Admin from './pages/Admin';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
+import NotFound from './pages/NotFound';
+import Maintenance from './pages/Maintenance';
+import AccessibilityStatement from './pages/AccessibilityStatement';
+import CookiePolicy from './pages/CookiePolicy';
+import TermsOfService from './pages/TermsOfService';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import { AccessibilityProvider } from './components/accessibility/AccessibilityContext';
+import CookieConsentBanner from './components/common/CookieConsentBanner';
+import PWAInstallPrompt from './components/common/PWAInstallPrompt';
+import GlobalScrollToTop from './components/common/GlobalScrollToTop';
+import { ThemeProvider } from "@/hooks/useTheme";
 
-import React, { lazy, Suspense } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { OptimizedProviderStack } from '@/components/providers/OptimizedProviderStack';
-import { LanguageProvider } from '@/components/providers/LanguageProvider';
-import { ModernLayout } from '@/components/modern/ModernLayout';
-import SimpleLoadingSpinner from '@/components/loading/SimpleLoadingSpinner';
-import ScrollToTop from '@/components/navigation/ScrollToTop';
+function App() {
+  // Simulate maintenance mode
+  const maintenanceMode = false;
 
-// Critical pages - load immediately
-import ModernIndex from '@/pages/ModernIndex';
-import Login from '@/pages/Login';
-import Register from '@/pages/Register';
+  // Function to handle errors within the ErrorBoundary
+  const handleError = (error: Error, componentStack: string) => {
+    console.error('Error caught by ErrorBoundary:', error, componentStack);
+    // Here you might want to log the error to a service like Sentry or Firebase Crashlytics
+  };
 
-// Non-critical pages - lazy load
-const Dashboard = lazy(() => import('@/pages/Dashboard'));
-const Shifts = lazy(() => import('@/pages/Shifts'));
-const Translator = lazy(() => import('@/pages/Translator'));
-const Vehicle = lazy(() => import('@/pages/Vehicle'));
-const TaxAdvisor = lazy(() => import('@/pages/TaxAdvisor'));
-const TravelPlanning = lazy(() => import('@/pages/TravelPlanning'));
-const Laws = lazy(() => import('@/pages/Laws'));
-const Settings = lazy(() => import('@/pages/Settings'));
-const Profile = lazy(() => import('@/pages/Profile'));
-const Premium = lazy(() => import('@/pages/Premium'));
-const Contact = lazy(() => import('@/pages/Contact'));
-const FAQ = lazy(() => import('@/pages/FAQ'));
-const Admin = lazy(() => import('@/pages/Admin'));
-const Privacy = lazy(() => import('@/pages/Privacy'));
-const Cookies = lazy(() => import('@/pages/Cookies'));
-const Terms = lazy(() => import('@/pages/Terms'));
-
-// Law detail pages
-const ChildBenefits = lazy(() => import('@/pages/laws/ChildBenefits'));
-const EmployeeProtection = lazy(() => import('@/pages/laws/EmployeeProtection'));
-const HealthInsurance = lazy(() => import('@/pages/laws/HealthInsurance'));
-const LegalAid = lazy(() => import('@/pages/laws/LegalAid'));
-const MinimumHolidays = lazy(() => import('@/pages/laws/MinimumHolidays'));
-const MinimumWage = lazy(() => import('@/pages/laws/MinimumWage'));
-const ParentalAllowance = lazy(() => import('@/pages/laws/ParentalAllowance'));
-const PensionInsurance = lazy(() => import('@/pages/laws/PensionInsurance'));
-const TaxClasses = lazy(() => import('@/pages/laws/TaxClasses'));
-const TaxReturn = lazy(() => import('@/pages/laws/TaxReturn'));
-const WorkContract = lazy(() => import('@/pages/laws/WorkContract'));
-const WorkingHours = lazy(() => import('@/pages/laws/WorkingHours'));
-
-const AppContent: React.FC = () => {
   return (
-    <ModernLayout>
-      <ScrollToTop />
-      <Suspense fallback={<SimpleLoadingSpinner />}>
-        <Routes>
-          <Route path="/" element={<ModernIndex />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/shifts" element={<Shifts />} />
-          <Route path="/translator" element={<Translator />} />
-          <Route path="/vehicle" element={<Vehicle />} />
-          <Route path="/tax-advisor" element={<TaxAdvisor />} />
-          <Route path="/travel" element={<TravelPlanning />} />
-          <Route path="/laws" element={<Laws />} />
-          
-          {/* Law detail pages */}
-          <Route path="/laws/child-benefits" element={<ChildBenefits />} />
-          <Route path="/laws/employee-protection" element={<EmployeeProtection />} />
-          <Route path="/laws/health-insurance" element={<HealthInsurance />} />
-          <Route path="/laws/legal-aid" element={<LegalAid />} />
-          <Route path="/laws/minimum-holidays" element={<MinimumHolidays />} />
-          <Route path="/laws/minimum-wage" element={<MinimumWage />} />
-          <Route path="/laws/parental-allowance" element={<ParentalAllowance />} />
-          <Route path="/laws/pension-insurance" element={<PensionInsurance />} />
-          <Route path="/laws/tax-classes" element={<TaxClasses />} />
-          <Route path="/laws/tax-return" element={<TaxReturn />} />
-          <Route path="/laws/work-contract" element={<WorkContract />} />
-          <Route path="/laws/working-hours" element={<WorkingHours />} />
-          
-          {/* Legal pages */}
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="/cookies" element={<Cookies />} />
-          <Route path="/terms" element={<Terms />} />
-          
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/premium" element={<Premium />} />
-          <Route path="/pricing" element={<Navigate to="/premium" replace />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/faq" element={<FAQ />} />
-          <Route path="/admin" element={<Admin />} />
-        </Routes>
-      </Suspense>
-    </ModernLayout>
+    <ThemeProvider>
+      <QueryClient>
+        <AdSenseProvider>
+          <AdProvider>
+            <Router>
+              <div className="min-h-screen bg-background text-foreground">
+                <ErrorBoundary onError={handleError} fallback={<div>Došlo k chybě. Zkuste to prosím znovu.</div>}>
+                  <Toaster position="top-right" />
+                  <AccessibilityProvider>
+                    <CookieConsentBanner />
+                    <PWAInstallPrompt />
+                    
+                    <Routes>
+                      <Route path="/" element={<Home />} />
+                      <Route path="/dashboard" element={<Dashboard />} />
+                      <Route path="/profile" element={<Profile />} />
+                      <Route path="/vocabulary" element={<Vocabulary />} />
+                      <Route path="/translator" element={<Translator />} />
+                      <Route path="/travel" element={<Travel />} />
+                      <Route path="/tax-advisor" element={<TaxAdvisor />} />
+                      <Route path="/shifts" element={<Shifts />} />
+                      <Route path="/vehicle" element={<Vehicle />} />
+                      <Route path="/laws" element={<Laws />} />
+                      <Route path="/settings" element={<Settings />} />
+                      <Route path="/premium" element={<Premium />} />
+                      <Route path="/contact" element={<Contact />} />
+                      <Route path="/faq" element={<FAQ />} />
+                      
+                      {/* Admin route - accessible only to admins */}
+                      <Route path="/admin" element={<Admin />} />
+                      
+                      {/* Authentication routes */}
+                      <Route path="/login" element={<Login />} />
+                      <Route path="/register" element={<Register />} />
+                      <Route path="/forgot-password" element={<ForgotPassword />} />
+                      <Route path="/reset-password" element={<ResetPassword />} />
+                      
+                      {/* Static content routes */}
+                      <Route path="/accessibility-statement" element={<AccessibilityStatement />} />
+                      <Route path="/cookie-policy" element={<CookiePolicy />} />
+                      <Route path="/terms-of-service" element={<TermsOfService />} />
+                      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                      
+                      {/* Maintenance mode route */}
+                      {maintenanceMode && <Route path="*" element={<Maintenance />} />}
+                      
+                      {/* Not Found route - catch-all for non-existing routes */}
+                      {!maintenanceMode && <Route path="*" element={<NotFound />} />}
+                    </Routes>
+                    
+                    <GlobalScrollToTop />
+                  </AccessibilityProvider>
+                </ErrorBoundary>
+              </div>
+            </Router>
+          </AdProvider>
+        </AdSenseProvider>
+      </QueryClient>
+    </ThemeProvider>
   );
-};
-
-const App: React.FC = () => {
-  return (
-    <OptimizedProviderStack>
-      <LanguageProvider>
-        <AppContent />
-      </LanguageProvider>
-    </OptimizedProviderStack>
-  );
-};
+}
 
 export default App;

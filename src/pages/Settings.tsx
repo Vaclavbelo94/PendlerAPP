@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Settings as SettingsIcon } from 'lucide-react';
 import { DashboardBackground } from '@/components/common/DashboardBackground';
 import { SettingsNavigation } from '@/components/settings/SettingsNavigation';
@@ -20,6 +20,7 @@ const Settings = () => {
   const [activeTab, setActiveTab] = useState(() => {
     return searchParams.get('tab') || 'appearance';
   });
+  const [isLoading, setIsLoading] = useState(true);
 
   // All available settings tabs for swipe navigation
   const settingsTabs = ['appearance', 'language', 'sync', 'security', 'notifications', 'account'];
@@ -36,9 +37,10 @@ const Settings = () => {
   // Update tab when URL changes
   useEffect(() => {
     const tab = searchParams.get('tab');
-    if (tab && tab !== activeTab) {
+    if (tab && tab !== activeTab && settingsTabs.includes(tab)) {
       setActiveTab(tab);
     }
+    setIsLoading(false);
   }, [searchParams, activeTab]);
 
   // Swipe navigation setup
@@ -50,6 +52,14 @@ const Settings = () => {
   });
 
   const renderTabContent = () => {
+    if (isLoading) {
+      return (
+        <div className="flex items-center justify-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      );
+    }
+
     const content = (() => {
       switch (activeTab) {
         case 'appearance':
@@ -70,14 +80,17 @@ const Settings = () => {
     })();
 
     return (
-      <motion.div
-        key={activeTab}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
-        {content}
-      </motion.div>
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeTab}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -20 }}
+          transition={{ duration: 0.3 }}
+        >
+          {content}
+        </motion.div>
+      </AnimatePresence>
     );
   };
 

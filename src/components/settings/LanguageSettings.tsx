@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -32,7 +31,8 @@ export const LanguageSettings = () => {
     }
   }, []);
 
-  const handleSaveSettings = () => {
+  // Auto-save when settings change
+  useEffect(() => {
     const settings = {
       language,
       region,
@@ -45,8 +45,11 @@ export const LanguageSettings = () => {
     
     // Apply language to document
     document.documentElement.setAttribute('lang', language);
-    
-    toast.success("Jazykové nastavení bylo uloženo");
+  }, [language, region, timezone, dateFormat, currency]);
+
+  const handleLanguageChange = (value: string) => {
+    setLanguage(value);
+    toast.success("Jazyk změněn na " + languages.find(l => l.value === value)?.name);
   };
 
   const languages = [
@@ -85,7 +88,7 @@ export const LanguageSettings = () => {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="language">Hlavní jazyk</Label>
-            <Select value={language} onValueChange={setLanguage}>
+            <Select value={language} onValueChange={handleLanguageChange}>
               <SelectTrigger>
                 <SelectValue placeholder="Vyberte jazyk" />
               </SelectTrigger>
@@ -114,7 +117,10 @@ export const LanguageSettings = () => {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="region">Region</Label>
-            <Select value={region} onValueChange={setRegion}>
+            <Select value={region} onValueChange={(value) => {
+              setRegion(value);
+              toast.success("Region změněn");
+            }}>
               <SelectTrigger>
                 <SelectValue placeholder="Vyberte region" />
               </SelectTrigger>
@@ -130,7 +136,10 @@ export const LanguageSettings = () => {
 
           <div className="space-y-2">
             <Label htmlFor="currency">Měna</Label>
-            <Select value={currency} onValueChange={setCurrency}>
+            <Select value={currency} onValueChange={(value) => {
+              setCurrency(value);
+              toast.success("Měna změněna");
+            }}>
               <SelectTrigger>
                 <SelectValue placeholder="Vyberte měnu" />
               </SelectTrigger>
@@ -157,7 +166,10 @@ export const LanguageSettings = () => {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="timezone">Časové pásmo</Label>
-            <Select value={timezone} onValueChange={setTimezone}>
+            <Select value={timezone} onValueChange={(value) => {
+              setTimezone(value);
+              toast.success("Časové pásmo změněno");
+            }}>
               <SelectTrigger>
                 <SelectValue placeholder="Vyberte časové pásmo" />
               </SelectTrigger>
@@ -173,7 +185,10 @@ export const LanguageSettings = () => {
 
           <div className="space-y-2">
             <Label htmlFor="dateFormat">Formát data</Label>
-            <Select value={dateFormat} onValueChange={setDateFormat}>
+            <Select value={dateFormat} onValueChange={(value) => {
+              setDateFormat(value);
+              toast.success("Formát data změněn");
+            }}>
               <SelectTrigger>
                 <SelectValue placeholder="Vyberte formát data" />
               </SelectTrigger>
@@ -187,10 +202,10 @@ export const LanguageSettings = () => {
         </CardContent>
       </Card>
 
-      <div className="flex justify-end">
-        <Button onClick={handleSaveSettings} className="min-w-32">
-          Uložit změny
-        </Button>
+      <div className="p-4 bg-muted/50 rounded-lg">
+        <p className="text-sm text-muted-foreground">
+          💡 Všechna nastavení se ukládají automaticky při změně
+        </p>
       </div>
     </div>
   );

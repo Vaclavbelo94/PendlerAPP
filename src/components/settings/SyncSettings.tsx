@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
 import { RefreshCw, Download, Upload, Database, Cloud } from 'lucide-react';
 import { toast } from "sonner";
 
@@ -36,7 +35,8 @@ export const SyncSettings = () => {
     }
   }, []);
 
-  const handleSaveSettings = () => {
+  // Auto-save when settings change
+  useEffect(() => {
     const settings = {
       autoSync,
       syncInterval,
@@ -46,8 +46,7 @@ export const SyncSettings = () => {
     };
     
     localStorage.setItem('syncSettings', JSON.stringify(settings));
-    toast.success("Nastavení synchronizace bylo uloženo");
-  };
+  }, [autoSync, syncInterval, backgroundSync, syncNotifications, lastSyncTime]);
 
   const handleManualSync = async () => {
     setIsSyncing(true);
@@ -56,11 +55,6 @@ export const SyncSettings = () => {
       await new Promise(resolve => setTimeout(resolve, 2000));
       const now = new Date();
       setLastSyncTime(now);
-      
-      // Update localStorage with new sync time
-      const currentSettings = JSON.parse(localStorage.getItem('syncSettings') || '{}');
-      currentSettings.lastSyncTime = now.toISOString();
-      localStorage.setItem('syncSettings', JSON.stringify(currentSettings));
       
       toast.success("Synchronizace byla dokončena");
     } catch (error) {
@@ -126,7 +120,10 @@ export const SyncSettings = () => {
             <Switch
               id="autoSync"
               checked={autoSync}
-              onCheckedChange={setAutoSync}
+              onCheckedChange={(checked) => {
+                setAutoSync(checked);
+                toast.success("Automatická synchronizace " + (checked ? "zapnuta" : "vypnuta"));
+              }}
             />
           </div>
 
@@ -140,7 +137,10 @@ export const SyncSettings = () => {
             <Switch
               id="backgroundSync"
               checked={backgroundSync}
-              onCheckedChange={setBackgroundSync}
+              onCheckedChange={(checked) => {
+                setBackgroundSync(checked);
+                toast.success("Synchronizace na pozadí " + (checked ? "zapnuta" : "vypnuta"));
+              }}
             />
           </div>
 
@@ -154,13 +154,19 @@ export const SyncSettings = () => {
             <Switch
               id="syncNotifications"
               checked={syncNotifications}
-              onCheckedChange={setSyncNotifications}
+              onCheckedChange={(checked) => {
+                setSyncNotifications(checked);
+                toast.success("Oznámení o synchronizaci " + (checked ? "zapnuta" : "vypnuta"));
+              }}
             />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="syncInterval">Interval synchronizace</Label>
-            <Select value={syncInterval} onValueChange={setSyncInterval} disabled={!autoSync}>
+            <Select value={syncInterval} onValueChange={(value) => {
+              setSyncInterval(value);
+              toast.success("Interval synchronizace změněn");
+            }} disabled={!autoSync}>
               <SelectTrigger>
                 <SelectValue placeholder="Vyberte interval" />
               </SelectTrigger>
@@ -237,20 +243,13 @@ export const SyncSettings = () => {
               Importovat nastavení
             </Button>
           </div>
-
-          <div className="p-4 bg-muted rounded-lg">
-            <p className="text-sm text-muted-foreground">
-              <strong>Tip:</strong> Exportovaná nastavení obsahují všechny vaše preference, 
-              ale neobsahují osobní data jako hesla nebo citlivé informace.
-            </p>
-          </div>
         </CardContent>
       </Card>
 
-      <div className="flex justify-end">
-        <Button onClick={handleSaveSettings} className="min-w-32">
-          Uložit změny
-        </Button>
+      <div className="p-4 bg-muted/50 rounded-lg">
+        <p className="text-sm text-muted-foreground">
+          💡 Všechna nastavení se ukládají automaticky při změně
+        </p>
       </div>
     </div>
   );

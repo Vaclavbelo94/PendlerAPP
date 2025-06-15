@@ -9,12 +9,11 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Palette, Monitor, Sun, Moon, Smartphone } from 'lucide-react';
 import { toast } from "sonner";
-import { useTheme } from 'next-themes';
+import { useTheme } from '@/hooks/useTheme';
 
 export const AppearanceSettings = () => {
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, colorScheme, setColorScheme } = useTheme();
   const [compactMode, setCompactMode] = useState(false);
-  const [colorScheme, setColorScheme] = useState('blue');
   const [fontSize, setFontSize] = useState('medium');
   const [animations, setAnimations] = useState(true);
 
@@ -25,7 +24,6 @@ export const AppearanceSettings = () => {
       try {
         const parsed = JSON.parse(savedSettings);
         setCompactMode(parsed.compactMode ?? false);
-        setColorScheme(parsed.colorScheme ?? 'blue');
         setFontSize(parsed.fontSize ?? 'medium');
         setAnimations(parsed.animations ?? true);
       } catch (error) {
@@ -34,10 +32,12 @@ export const AppearanceSettings = () => {
     }
   }, []);
 
-  const handleSaveSettings = () => {
+  // Auto-save when settings change
+  useEffect(() => {
     const settings = {
-      compactMode,
+      theme,
       colorScheme,
+      compactMode,
       fontSize,
       animations
     };
@@ -49,16 +49,15 @@ export const AppearanceSettings = () => {
     document.documentElement.setAttribute('data-color-scheme', colorScheme);
     document.documentElement.setAttribute('data-font-size', fontSize);
     document.documentElement.setAttribute('data-animations', animations.toString());
-    
-    toast.success("Nastavení vzhledu bylo uloženo");
-  };
+  }, [theme, colorScheme, compactMode, fontSize, animations]);
 
   const colorSchemes = [
     { value: 'blue', label: 'Modrá', color: 'bg-blue-500' },
     { value: 'purple', label: 'Fialová', color: 'bg-purple-500' },
     { value: 'green', label: 'Zelená', color: 'bg-green-500' },
     { value: 'orange', label: 'Oranžová', color: 'bg-orange-500' },
-    { value: 'red', label: 'Červená', color: 'bg-red-500' }
+    { value: 'red', label: 'Červená', color: 'bg-red-500' },
+    { value: 'pink', label: 'Růžová', color: 'bg-pink-500' }
   ];
 
   return (
@@ -108,12 +107,12 @@ export const AppearanceSettings = () => {
 
           <div className="space-y-4">
             <Label>Barevné schéma</Label>
-            <div className="grid grid-cols-5 gap-3">
+            <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
               {colorSchemes.map((scheme) => (
                 <Button
                   key={scheme.value}
                   variant={colorScheme === scheme.value ? 'default' : 'outline'}
-                  onClick={() => setColorScheme(scheme.value)}
+                  onClick={() => setColorScheme(scheme.value as any)}
                   className="flex flex-col items-center gap-2 h-16"
                 >
                   <div className={`w-6 h-6 rounded-full ${scheme.color}`} />
@@ -146,7 +145,10 @@ export const AppearanceSettings = () => {
             <Switch
               id="compactMode"
               checked={compactMode}
-              onCheckedChange={setCompactMode}
+              onCheckedChange={(checked) => {
+                setCompactMode(checked);
+                toast.success("Kompaktní režim " + (checked ? "zapnut" : "vypnut"));
+              }}
             />
           </div>
 
@@ -160,13 +162,19 @@ export const AppearanceSettings = () => {
             <Switch
               id="animations"
               checked={animations}
-              onCheckedChange={setAnimations}
+              onCheckedChange={(checked) => {
+                setAnimations(checked);
+                toast.success("Animace " + (checked ? "zapnuty" : "vypnuty"));
+              }}
             />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="fontSize">Velikost písma</Label>
-            <Select value={fontSize} onValueChange={setFontSize}>
+            <Select value={fontSize} onValueChange={(value) => {
+              setFontSize(value);
+              toast.success("Velikost písma změněna na " + value);
+            }}>
               <SelectTrigger>
                 <SelectValue placeholder="Vyberte velikost písma" />
               </SelectTrigger>
@@ -180,10 +188,10 @@ export const AppearanceSettings = () => {
         </CardContent>
       </Card>
 
-      <div className="flex justify-end">
-        <Button onClick={handleSaveSettings} className="min-w-32">
-          Uložit změny
-        </Button>
+      <div className="p-4 bg-muted/50 rounded-lg">
+        <p className="text-sm text-muted-foreground">
+          💡 Všechna nastavení se ukládají automaticky při změně
+        </p>
       </div>
     </div>
   );
