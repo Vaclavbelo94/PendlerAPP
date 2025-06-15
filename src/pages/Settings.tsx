@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
   Settings as SettingsIcon
 } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
 import ProfileErrorBoundary from '@/components/profile/ProfileErrorBoundary';
 import GeneralSettings from '@/components/settings/GeneralSettings';
 import NotificationSettings from '@/components/settings/NotificationSettings';
@@ -12,6 +14,7 @@ import DataSettings from '@/components/settings/DataSettings';
 import PrivacySettings from '@/components/settings/PrivacySettings';
 import DeviceSettings from '@/components/settings/DeviceSettings';
 import SecuritySettings from '@/components/settings/SecuritySettings';
+import ProfileAppearance from '@/components/profile/ProfileAppearance';
 import { UniversalMobileNavigation } from '@/components/navigation/UniversalMobileNavigation';
 import { useSyncSettings } from '@/hooks/useSyncSettings';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -24,17 +27,39 @@ import {
   Globe, 
   Database,
   Shield,
-  Smartphone
+  Smartphone,
+  Palette,
+  Lock
 } from 'lucide-react';
 
 const Settings = () => {
   const { settings: syncSettings, saveSettings: updateSyncSettings } = useSyncSettings();
   const isMobile = useIsMobile();
-  const [activeTab, setActiveTab] = useState("general");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState(() => {
+    return searchParams.get('tab') || "general";
+  });
+
+  // Update URL when tab changes
+  useEffect(() => {
+    if (activeTab !== "general") {
+      setSearchParams({ tab: activeTab });
+    } else {
+      setSearchParams({});
+    }
+  }, [activeTab, setSearchParams]);
+
+  // Update tab when URL changes
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab && tab !== activeTab) {
+      setActiveTab(tab);
+    }
+  }, [searchParams, activeTab]);
 
   // All available settings tabs for swipe navigation
   const allSettingsTabs = [
-    "general", "account", "notifications", 
+    "general", "account", "appearance", "notifications", 
     "language", "security", "device", "data", "privacy"
   ];
 
@@ -53,6 +78,12 @@ const Settings = () => {
       description: 'Správa uživatelského účtu'
     },
     {
+      id: 'appearance',
+      icon: Palette,
+      label: 'Vzhled',
+      description: 'Témata a zobrazení'
+    },
+    {
       id: 'notifications',
       icon: Bell,
       label: 'Oznámení',
@@ -66,7 +97,7 @@ const Settings = () => {
     },
     {
       id: 'security',
-      icon: Shield,
+      icon: Lock,
       label: 'Bezpečnost',
       description: 'Zabezpečení a soukromí'
     },
@@ -105,6 +136,8 @@ const Settings = () => {
           return <GeneralSettings />;
         case "account":
           return <AccountSettings />;
+        case "appearance":
+          return <ProfileAppearance />;
         case "notifications":
           return <NotificationSettings 
             syncSettings={syncSettings}

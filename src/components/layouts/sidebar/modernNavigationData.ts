@@ -14,7 +14,13 @@ import {
   HelpCircle,
   Scale,
   Shield,
-  Languages
+  Languages,
+  User,
+  Bell,
+  Palette,
+  Database,
+  Smartphone,
+  Lock
 } from 'lucide-react';
 
 export interface ModernNavigationItem {
@@ -23,7 +29,7 @@ export interface ModernNavigationItem {
   href: string;
   icon: any;
   description: string;
-  category: 'main' | 'tools' | 'support' | 'admin';
+  category: 'main' | 'tools' | 'settings' | 'support' | 'admin';
   isPublic?: boolean;
   requiresAuth?: boolean;
   isPremium?: boolean;
@@ -55,6 +61,17 @@ export const modernNavigationItems: ModernNavigationItem[] = [
     requiresAuth: true,
     color: 'text-emerald-600',
     gradient: 'from-emerald-500 to-emerald-600'
+  },
+  {
+    id: 'profile',
+    label: 'Profil',
+    href: '/profile',
+    icon: User,
+    description: 'Správa profilu a osobních údajů',
+    category: 'main',
+    requiresAuth: true,
+    color: 'text-purple-600',
+    gradient: 'from-purple-500 to-purple-600'
   },
   
   // Tools section
@@ -135,6 +152,96 @@ export const modernNavigationItems: ModernNavigationItem[] = [
     color: 'text-slate-600',
     gradient: 'from-slate-500 to-slate-600'
   },
+
+  // Settings section (new category)
+  {
+    id: 'settings-general',
+    label: 'Obecné nastavení',
+    href: '/settings?tab=general',
+    icon: Settings,
+    description: 'Základní nastavení aplikace',
+    category: 'settings',
+    requiresAuth: true,
+    color: 'text-gray-600',
+    gradient: 'from-gray-500 to-gray-600'
+  },
+  {
+    id: 'settings-account',
+    label: 'Nastavení účtu',
+    href: '/settings?tab=account',
+    icon: User,
+    description: 'Správa uživatelského účtu',
+    category: 'settings',
+    requiresAuth: true,
+    color: 'text-blue-600',
+    gradient: 'from-blue-500 to-blue-600'
+  },
+  {
+    id: 'settings-appearance',
+    label: 'Vzhled',
+    href: '/settings?tab=appearance',
+    icon: Palette,
+    description: 'Témata a zobrazení',
+    category: 'settings',
+    requiresAuth: true,
+    color: 'text-pink-600',
+    gradient: 'from-pink-500 to-pink-600'
+  },
+  {
+    id: 'settings-notifications',
+    label: 'Oznámení',
+    href: '/settings?tab=notifications',
+    icon: Bell,
+    description: 'Nastavení upozornění',
+    category: 'settings',
+    requiresAuth: true,
+    color: 'text-yellow-600',
+    gradient: 'from-yellow-500 to-yellow-600'
+  },
+  {
+    id: 'settings-language',
+    label: 'Jazyk',
+    href: '/settings?tab=language',
+    icon: Globe,
+    description: 'Jazykové preference',
+    category: 'settings',
+    requiresAuth: true,
+    color: 'text-green-600',
+    gradient: 'from-green-500 to-green-600'
+  },
+  {
+    id: 'settings-security',
+    label: 'Bezpečnost',
+    href: '/settings?tab=security',
+    icon: Lock,
+    description: 'Zabezpečení a soukromí',
+    category: 'settings',
+    requiresAuth: true,
+    color: 'text-red-600',
+    gradient: 'from-red-500 to-red-600'
+  },
+  {
+    id: 'settings-device',
+    label: 'Zařízení',
+    href: '/settings?tab=device',
+    icon: Smartphone,
+    description: 'Nastavení zařízení',
+    category: 'settings',
+    requiresAuth: true,
+    color: 'text-purple-600',
+    gradient: 'from-purple-500 to-purple-600'
+  },
+  {
+    id: 'settings-data',
+    label: 'Data a zálohy',
+    href: '/settings?tab=data',
+    icon: Database,
+    description: 'Správa dat a zálohy',
+    category: 'settings',
+    requiresAuth: true,
+    color: 'text-indigo-600',
+    gradient: 'from-indigo-500 to-indigo-600'
+  },
   
   // Support section
   {
@@ -170,17 +277,6 @@ export const modernNavigationItems: ModernNavigationItem[] = [
     color: 'text-rose-600',
     gradient: 'from-rose-500 to-rose-600'
   },
-  {
-    id: 'settings',
-    label: 'Nastavení',
-    href: '/settings',
-    icon: Settings,
-    description: 'Nastavení účtu a aplikace',
-    category: 'support',
-    requiresAuth: true,
-    color: 'text-gray-600',
-    gradient: 'from-gray-500 to-gray-600'
-  },
   
   // Admin section
   {
@@ -203,6 +299,7 @@ export const getCategoryTitle = (category: string) => {
   switch (category) {
     case 'main': return 'Hlavní';
     case 'tools': return 'Nástroje';
+    case 'settings': return 'Nastavení';
     case 'support': return 'Podpora';
     case 'admin': return 'Administrace';
     default: return '';
