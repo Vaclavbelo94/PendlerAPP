@@ -1,8 +1,8 @@
-
 import React, { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { OptimizedProviderStack } from '@/components/providers/OptimizedProviderStack';
 import { LanguageProvider } from '@/components/providers/LanguageProvider';
+import { ThemeInitializer } from '@/components/theme/ThemeInitializer';
 import { ModernLayout } from '@/components/modern/ModernLayout';
 import SimpleLoadingSpinner from '@/components/loading/SimpleLoadingSpinner';
 import ScrollToTop from '@/components/navigation/ScrollToTop';
@@ -46,51 +46,53 @@ const WorkingHours = lazy(() => import('@/pages/laws/WorkingHours'));
 
 const AppContent: React.FC = () => {
   return (
-    <ModernLayout>
-      <ScrollToTop />
-      <Suspense fallback={<SimpleLoadingSpinner />}>
-        <Routes>
-          <Route path="/" element={<ModernIndex />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/shifts" element={<Shifts />} />
-          <Route path="/translator" element={<Translator />} />
-          <Route path="/vehicle" element={<Vehicle />} />
-          <Route path="/tax-advisor" element={<TaxAdvisor />} />
-          <Route path="/travel" element={<TravelPlanning />} />
-          <Route path="/laws" element={<Laws />} />
-          
-          {/* Law detail pages */}
-          <Route path="/laws/child-benefits" element={<ChildBenefits />} />
-          <Route path="/laws/employee-protection" element={<EmployeeProtection />} />
-          <Route path="/laws/health-insurance" element={<HealthInsurance />} />
-          <Route path="/laws/legal-aid" element={<LegalAid />} />
-          <Route path="/laws/minimum-holidays" element={<MinimumHolidays />} />
-          <Route path="/laws/minimum-wage" element={<MinimumWage />} />
-          <Route path="/laws/parental-allowance" element={<ParentalAllowance />} />
-          <Route path="/laws/pension-insurance" element={<PensionInsurance />} />
-          <Route path="/laws/tax-classes" element={<TaxClasses />} />
-          <Route path="/laws/tax-return" element={<TaxReturn />} />
-          <Route path="/laws/work-contract" element={<WorkContract />} />
-          <Route path="/laws/working-hours" element={<WorkingHours />} />
-          
-          {/* Legal pages */}
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="/cookies" element={<Cookies />} />
-          <Route path="/terms" element={<Terms />} />
-          
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/premium" element={<Premium />} />
-          <Route path="/pricing" element={<Navigate to="/premium" replace />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/faq" element={<FAQ />} />
-          <Route path="/admin" element={<Admin />} />
-        </Routes>
-      </Suspense>
-    </ModernLayout>
+    <ThemeInitializer>
+      <ModernLayout>
+        <ScrollToTop />
+        <Suspense fallback={<SimpleLoadingSpinner />}>
+          <Routes>
+            <Route path="/" element={<ModernIndex />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/shifts" element={<Shifts />} />
+            <Route path="/translator" element={<Translator />} />
+            <Route path="/vehicle" element={<Vehicle />} />
+            <Route path="/tax-advisor" element={<TaxAdvisor />} />
+            <Route path="/travel" element={<TravelPlanning />} />
+            <Route path="/laws" element={<Laws />} />
+            
+            {/* Law detail pages */}
+            <Route path="/laws/child-benefits" element={<ChildBenefits />} />
+            <Route path="/laws/employee-protection" element={<EmployeeProtection />} />
+            <Route path="/laws/health-insurance" element={<HealthInsurance />} />
+            <Route path="/laws/legal-aid" element={<LegalAid />} />
+            <Route path="/laws/minimum-holidays" element={<MinimumHolidays />} />
+            <Route path="/laws/minimum-wage" element={<MinimumWage />} />
+            <Route path="/laws/parental-allowance" element={<ParentalAllowance />} />
+            <Route path="/laws/pension-insurance" element={<PensionInsurance />} />
+            <Route path="/laws/tax-classes" element={<TaxClasses />} />
+            <Route path="/laws/tax-return" element={<TaxReturn />} />
+            <Route path="/laws/work-contract" element={<WorkContract />} />
+            <Route path="/laws/working-hours" element={<WorkingHours />} />
+            
+            {/* Legal pages */}
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/cookies" element={<Cookies />} />
+            <Route path="/terms" element={<Terms />} />
+            
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/premium" element={<Premium />} />
+            <Route path="/pricing" element={<Navigate to="/premium" replace />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/faq" element={<FAQ />} />
+            <Route path="/admin" element={<Admin />} />
+          </Routes>
+        </Suspense>
+      </ModernLayout>
+    </ThemeInitializer>
   );
 };
 

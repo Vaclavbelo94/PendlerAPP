@@ -32,6 +32,11 @@ export const useAppearanceSettings = (
 
   const { theme, setTheme, colorScheme, setColorScheme, isChangingTheme } = themeContext;
   const { user } = useAuth();
+  
+  // Add initialization state to prevent cycles
+  const [isInitializing, setIsInitializing] = useState(true);
+  const [hasLoadedFromDB, setHasLoadedFromDB] = useState(false);
+  
   const [darkMode, setDarkMode] = useState(initialDarkMode);
   const [compactMode, setCompactMode] = useState(initialCompactMode);
   const [isLoading, setIsLoading] = useState(true);
@@ -42,12 +47,14 @@ export const useAppearanceSettings = (
     console.log('AppearanceSettings: State change', { 
       user: !!user, 
       isLoading, 
+      isInitializing,
+      hasLoadedFromDB,
       darkMode, 
       colorScheme, 
       compactMode,
       error 
     });
-  }, [user, isLoading, darkMode, colorScheme, compactMode, error]);
+  }, [user, isLoading, isInitializing, hasLoadedFromDB, darkMode, colorScheme, compactMode, error]);
 
   // Memoized settings object
   const currentSettings = useMemo(() => ({
@@ -60,6 +67,7 @@ export const useAppearanceSettings = (
   const loadAppearanceSettings = useCallback(async () => {
     if (!user) {
       setIsLoading(false);
+      setIsInitializing(false);
       return;
     }
     
@@ -81,13 +89,25 @@ export const useAppearanceSettings = (
 
       if (data) {
         console.log('AppearanceSettings: Loaded settings', data);
+        
+        // Set all states at once to prevent multiple re-renders
         setDarkMode(data.dark_mode);
-        if (setColorScheme) {
+        setCompactMode(data.compact_mode);
+        
+        // Only set theme if it's different to prevent cycles
+        const newTheme = data.dark_mode ? 'dark' : 'light';
+        if (setTheme && theme !== newTheme) {
+          setTheme(newTheme);
+        }
+        
+        if (setColorScheme && colorScheme !== data.color_scheme) {
           setColorScheme(data.color_scheme as any);
         }
-        setCompactMode(data.compact_mode);
+        
+        setHasLoadedFromDB(true);
       } else {
         console.log('AppearanceSettings: No settings found, using defaults');
+        setHasLoadedFromDB(true);
       }
     } catch (error) {
       console.error('AppearanceSettings: Error loading settings:', error);
@@ -95,34 +115,42 @@ export const useAppearanceSettings = (
       toast.error("Nepodařilo se načíst nastavení vzhledu");
     } finally {
       setIsLoading(false);
+      // Small delay to ensure smooth initialization
+      setTimeout(() => {
+        setIsInitializing(false);
+      }, 100);
     }
-  }, [user, setColorScheme]);
+  }, [user, setColorScheme, setTheme, theme, colorScheme]);
 
   useEffect(() => {
     loadAppearanceSettings();
   }, [loadAppearanceSettings]);
   
-  // Sync dark mode state with global theme
+  // Only sync after initial loading is complete and settings have been loaded from DB
   useEffect(() => {
-    if (!isChangingTheme && theme) {
+    if (!isInitializing && hasLoadedFromDB && !isChangingTheme && theme) {
       const newDarkMode = theme === 'dark';
       if (newDarkMode !== darkMode) {
         console.log('AppearanceSettings: Syncing darkMode with theme', { theme, newDarkMode });
         setDarkMode(newDarkMode);
       }
     }
-  }, [theme, isChangingTheme, darkMode]);
+  }, [theme, isChangingTheme, darkMode, isInitializing, hasLoadedFromDB]);
   
-  // Set global theme when darkMode toggle changes
-  useEffect(() => {
+  // Handle manual dark mode changes (from user interactions)
+  const handleDarkModeChange = useCallback((newDarkMode: boolean) => {
+    if (isInitializing || isChangingTheme) return;
+    
+    console.log('AppearanceSettings: Manual dark mode change', { newDarkMode });
+    setDarkMode(newDarkMode);
+    
     if (setTheme) {
-      const newTheme = darkMode ? 'dark' : 'light';
+      const newTheme = newDarkMode ? 'dark' : 'light';
       if (theme !== newTheme) {
-        console.log('AppearanceSettings: Setting theme', { darkMode, newTheme });
         setTheme(newTheme);
       }
     }
-  }, [darkMode, theme, setTheme]);
+  }, [isInitializing, isChangingTheme, setTheme, theme]);
   
   const handleSave = useCallback(async () => {
     if (!user) {
@@ -188,15 +216,17 @@ export const useAppearanceSettings = (
   }, [user, currentSettings, darkMode, colorScheme, compactMode, onSave]);
 
   const handleColorSchemeChange = useCallback((value: string) => {
+    if (isInitializing) return;
+    
     console.log('AppearanceSettings: Color scheme changing to', value);
     if (setColorScheme) {
       setColorScheme(value as any);
     }
-  }, [setColorScheme]);
+  }, [setColorScheme, isInitializing]);
 
   return {
     darkMode,
-    setDarkMode,
+    setDarkMode: handleDarkModeChange,
     colorScheme,
     handleColorSchemeChange,
     compactMode,
