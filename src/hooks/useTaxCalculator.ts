@@ -5,8 +5,9 @@ export interface TaxResult {
   grossIncome: number;
   netIncome: number;
   taxAmount: number;
-  socialInsurance: number;
-  effectiveRate: number;
+  socialSecurity: number;
+  healthInsurance: number;
+  effectiveTaxRate: number;
 }
 
 export interface TaxCalculatorOptions {
@@ -55,19 +56,22 @@ export const useTaxCalculator = () => {
       // Church tax (8% or 9% of income tax if applicable)
       const churchTax = options.church ? incomeTax * 0.08 : 0;
       
-      // Social insurance (approximate 20% of gross)
-      const socialInsurance = grossIncome * 0.20;
+      // Social security and health insurance (approximate breakdown)
+      const totalSocialInsurance = grossIncome * 0.20;
+      const socialSecurity = totalSocialInsurance * 0.6; // ~12% of gross
+      const healthInsurance = totalSocialInsurance * 0.4; // ~8% of gross
       
       const totalTax = incomeTax + solidarityTax + churchTax;
-      const netIncome = grossIncome - totalTax - socialInsurance;
-      const effectiveRate = (totalTax / grossIncome) * 100;
+      const netIncome = grossIncome - totalTax - totalSocialInsurance;
+      const effectiveTaxRate = (totalTax / grossIncome) * 100;
       
       return {
         grossIncome,
         netIncome,
         taxAmount: totalTax,
-        socialInsurance,
-        effectiveRate
+        socialSecurity,
+        healthInsurance,
+        effectiveTaxRate
       };
     } finally {
       setIsCalculating(false);
