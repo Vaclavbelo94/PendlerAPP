@@ -44,10 +44,7 @@ export const ProfileNavigation: React.FC<ProfileNavigationProps> = ({
   const isMobile = useIsMobile();
 
   return (
-    <div className={cn(
-      "flex justify-center",
-      isMobile && "profile-navigation scroll-snap-type-x"
-    )}>
+    <div className="flex justify-center">
       <div className={cn(
         "grid gap-4 w-full max-w-5xl",
         isMobile ? "grid-cols-2" : "grid-cols-2 md:grid-cols-4"
@@ -61,12 +58,11 @@ export const ProfileNavigation: React.FC<ProfileNavigationProps> = ({
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
               className={cn(
-                "relative p-4 md:p-6 rounded-2xl border text-center transition-all duration-300 group mobile-nav-button",
+                "relative p-4 md:p-6 rounded-2xl text-center transition-all duration-300 group",
                 "hover:shadow-lg hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
                 isActive 
-                  ? "bg-gradient-to-br from-primary/10 to-accent/10 border-primary/30 shadow-lg" 
-                  : "bg-card/80 backdrop-blur-sm border-border/50 hover:border-primary/20",
-                isMobile && "scroll-snap-align-center"
+                  ? "bg-white/20 backdrop-blur-sm border border-white/30 shadow-lg" 
+                  : "bg-white/10 backdrop-blur-sm border border-white/20 hover:border-white/40"
               )}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -77,8 +73,8 @@ export const ProfileNavigation: React.FC<ProfileNavigationProps> = ({
               {/* Background gradient for active state */}
               {isActive && (
                 <motion.div
-                  className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 rounded-2xl"
-                  layoutId="activeTab"
+                  className="absolute inset-0 bg-gradient-to-br from-white/10 to-white/5 rounded-2xl"
+                  layoutId="activeProfileTab"
                   transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                 />
               )}
@@ -88,8 +84,8 @@ export const ProfileNavigation: React.FC<ProfileNavigationProps> = ({
                   className={cn(
                     "w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center transition-all duration-300 mb-3",
                     isActive 
-                      ? "bg-gradient-to-br from-primary/20 to-accent/20 text-primary" 
-                      : "bg-gradient-to-br from-muted/50 to-muted/30 text-muted-foreground group-hover:from-primary/10 group-hover:to-accent/10 group-hover:text-primary"
+                      ? "bg-white/30 text-white" 
+                      : "bg-white/10 text-white/80 group-hover:bg-white/20 group-hover:text-white"
                   )}
                   whileHover={{ scale: 1.1, rotate: 5 }}
                   transition={{ type: "spring", stiffness: 400, damping: 17 }}
@@ -98,21 +94,21 @@ export const ProfileNavigation: React.FC<ProfileNavigationProps> = ({
                 </motion.div>
                 
                 <h3 className={cn(
-                  "font-semibold transition-colors duration-300 mb-2 mobile-text-optimize",
+                  "font-semibold transition-colors duration-300 mb-2",
                   isMobile ? "text-sm" : "text-lg",
                   isActive 
-                    ? "text-primary" 
-                    : "text-foreground group-hover:text-primary"
+                    ? "text-white" 
+                    : "text-white/90 group-hover:text-white"
                 )}>
                   {tab.label}
                 </h3>
                 
                 <p className={cn(
-                  "transition-colors duration-300 mobile-text-optimize",
+                  "transition-colors duration-300",
                   isMobile ? "text-xs" : "text-sm",
                   isActive 
-                    ? "text-muted-foreground" 
-                    : "text-muted-foreground group-hover:text-foreground"
+                    ? "text-white/80" 
+                    : "text-white/70 group-hover:text-white/80"
                 )}>
                   {tab.description}
                 </p>
