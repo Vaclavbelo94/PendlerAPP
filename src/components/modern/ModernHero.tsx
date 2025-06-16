@@ -137,7 +137,7 @@ export const ModernHero: React.FC = () => {
               </CardContent>
             </Card>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
