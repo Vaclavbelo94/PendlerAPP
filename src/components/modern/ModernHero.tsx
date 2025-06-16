@@ -3,16 +3,16 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowRight, Users, TrendingUp, Globe, Briefcase, Calculator, Car } from 'lucide-react';
+import { ArrowRight, Users, TrendingUp, Globe, Briefcase, Map, Car } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/hooks/useLanguage';
 
 const features = [
-  { icon: Briefcase, key: 'shifts' },
-  { icon: Calculator, key: 'calculator' },
-  { icon: Car, key: 'vehicle' },
-  { icon: Globe, key: 'translator' },
+  { icon: Briefcase, key: 'shifts', route: '/shifts' },
+  { icon: Map, key: 'travel', route: '/travel' },
+  { icon: Car, key: 'vehicle', route: '/vehicle' },
+  { icon: Globe, key: 'translator', route: '/translator' },
 ];
 
 const stats = [
@@ -105,14 +105,16 @@ export const ModernHero: React.FC = () => {
             className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12"
           >
             {features.map((feature, index) => (
-              <Card key={index} className="bg-card/50 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-                <CardContent className="p-6 text-center">
-                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-r from-primary/20 to-blue-500/20 mb-4 group-hover:scale-110 transition-transform">
-                    <feature.icon className="h-6 w-6 text-primary" />
-                  </div>
-                  <div className="text-sm font-medium">{t(feature.key)}</div>
-                </CardContent>
-              </Card>
+              <Link key={index} to={feature.route} className="group">
+                <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 group cursor-pointer">
+                  <CardContent className="p-6 text-center">
+                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-r from-primary/20 to-blue-500/20 mb-4 group-hover:scale-110 transition-transform">
+                      <feature.icon className="h-6 w-6 text-primary" />
+                    </div>
+                    <div className="text-sm font-medium">{t(feature.key)}</div>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
           </motion.div>
         </div>
@@ -135,7 +137,7 @@ export const ModernHero: React.FC = () => {
               </CardContent>
             </Card>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   );
