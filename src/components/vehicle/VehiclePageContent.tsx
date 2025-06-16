@@ -12,7 +12,6 @@ import VehicleCarousel from './VehicleCarousel';
 import FuelConsumptionCard from './FuelConsumptionCard';
 import ServiceRecordCard from './ServiceRecordCard';
 import InsuranceCard from './InsuranceCard';
-import DocumentsCard from './DocumentsCard';
 import OthersCard from './OthersCard';
 import EmptyVehicleState from './EmptyVehicleState';
 
@@ -55,15 +54,12 @@ const VehiclePageContent: React.FC<VehiclePageContentProps> = ({
             <FuelConsumptionCard vehicleId={selectedVehicleId} />
             <ServiceRecordCard vehicleId={selectedVehicleId} />
             <InsuranceCard vehicleId={selectedVehicleId} />
-            <DocumentsCard vehicleId={selectedVehicleId} />
           </UnifiedGrid>
         );
       case "fuel":
         return <FuelConsumptionCard vehicleId={selectedVehicleId} fullView />;
       case "service":
         return <ServiceRecordCard vehicleId={selectedVehicleId} fullView />;
-      case "documents":
-        return <DocumentsCard vehicleId={selectedVehicleId} fullView />;
       case "others":
         return <OthersCard vehicleId={selectedVehicleId} fullView />;
       default:

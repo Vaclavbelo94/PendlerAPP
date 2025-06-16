@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Car, Gauge, Wrench, FileText } from 'lucide-react';
+import { Car, Gauge, Wrench } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
@@ -32,12 +32,6 @@ export const VehicleNavigation: React.FC<VehicleNavigationProps> = ({
       label: 'Servis',
       icon: Wrench,
       description: 'Údržba a opravy'
-    },
-    {
-      id: 'documents',
-      label: 'Dokumenty',
-      icon: FileText,
-      description: 'Dokumenty a certifikáty'
     }
   ];
 

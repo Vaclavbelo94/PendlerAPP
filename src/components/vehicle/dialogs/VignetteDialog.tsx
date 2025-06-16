@@ -94,6 +94,7 @@ const VignetteDialog: React.FC<VignetteDialogProps> = ({
                 <SelectValue placeholder="Vyberte zemi" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="Česká republika">Česká republika</SelectItem>
                 <SelectItem value="Rakousko">Rakousko</SelectItem>
                 <SelectItem value="Slovensko">Slovensko</SelectItem>
                 <SelectItem value="Maďarsko">Maďarsko</SelectItem>
