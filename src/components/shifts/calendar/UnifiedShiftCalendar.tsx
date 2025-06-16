@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,7 +7,7 @@ import { ChevronLeft, ChevronRight, CalendarDays, Edit, Trash2 } from 'lucide-re
 import { format, addMonths, subMonths, isSameDay } from 'date-fns';
 import { cs } from 'date-fns/locale';
 import { motion } from 'framer-motion';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useUnifiedOrientation } from '@/hooks/useUnifiedOrientation';
 import { ShiftCalendarProps, Shift, ShiftType } from '@/types/shifts';
 import { cn } from '@/lib/utils';
 import { MobileCalendarGrid } from './MobileCalendarGrid';
@@ -41,7 +40,7 @@ const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = ({
   className
 }) => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const isMobile = useIsMobile();
+  const { isMobile, isTablet, isDesktop } = useUnifiedOrientation();
 
   // Memoized shift lookup for better performance
   const shiftsByDate = useMemo(() => {
@@ -114,7 +113,7 @@ const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = ({
     );
   }
 
-  // Mobile layout with swipe support
+  // Mobile layout
   if (isMobile) {
     return (
       <div className={cn("w-full space-y-4", className)}>
@@ -199,57 +198,63 @@ const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = ({
     );
   }
 
-  // Desktop layout - optimized for better usability
+  // Desktop and Tablet layout
+  const cardPadding = isTablet ? "px-6 pb-6" : "px-10 pb-10";
+  const headerPadding = isTablet ? "pb-6" : "pb-8";
+  const calendarPadding = isTablet ? "p-4" : "p-6";
+  const titleSize = isTablet ? "text-xl" : "text-2xl";
+  const monthSize = isTablet ? "text-2xl" : "text-3xl";
+
   return (
-    <div className={cn("w-full max-w-8xl mx-auto space-y-8", className)}>
+    <div className={cn("w-full max-w-7xl mx-auto space-y-6", className)}>
       {/* Main Calendar */}
       <Card className="bg-white/95 backdrop-blur-sm border shadow-xl">
-        <CardHeader className="pb-8">
+        <CardHeader className={headerPadding}>
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-4">
-              <CalendarDays className="h-7 w-7 text-primary" />
-              <span className="text-2xl">Kalendář směn</span>
+            <CardTitle className={`flex items-center gap-4 ${titleSize}`}>
+              <CalendarDays className="h-6 w-6 text-primary" />
+              <span>Kalendář směn</span>
             </CardTitle>
             
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <Button
                 variant="outline"
-                size="default"
+                size={isTablet ? "default" : "default"}
                 onClick={handlePreviousMonth}
-                className="h-11 w-11 p-0"
+                className="h-10 w-10 p-0"
                 aria-label="Předchozí měsíc"
               >
-                <ChevronLeft className="h-5 w-5" />
+                <ChevronLeft className="h-4 w-4" />
               </Button>
               
               <Button
                 variant="outline"
-                size="default"
+                size={isTablet ? "sm" : "default"}
                 onClick={handleTodayClick}
-                className="px-6 py-3 text-base font-medium"
+                className={isTablet ? "px-4 py-2 text-sm" : "px-6 py-3 text-base font-medium"}
               >
                 Dnes
               </Button>
               
               <Button
                 variant="outline"
-                size="default"
+                size={isTablet ? "default" : "default"}
                 onClick={handleNextMonth}
-                className="h-11 w-11 p-0"
+                className="h-10 w-10 p-0"
                 aria-label="Následující měsíc"
               >
-                <ChevronRight className="h-5 w-5" />
+                <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
           </div>
           
-          <div className="text-3xl font-semibold text-center mt-6">
+          <div className={`${monthSize} font-semibold text-center mt-4`}>
             {format(currentMonth, 'LLLL yyyy', { locale: cs })}
           </div>
         </CardHeader>
         
-        <CardContent className="px-10 pb-10">
-          <div className="bg-background/90 rounded-lg border-2 p-6 shadow-inner">
+        <CardContent className={cardPadding}>
+          <div className={`bg-background/90 rounded-lg border-2 ${calendarPadding} shadow-inner`}>
             <Calendar
               mode="single"
               selected={selectedDate}
@@ -262,13 +267,18 @@ const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = ({
           </div>
           
           {/* Legend */}
-          <div className="mt-8 flex flex-wrap gap-4 justify-center">
-            <div className="text-base text-muted-foreground font-semibold">Legenda směn:</div>
+          <div className={`${isTablet ? 'mt-6' : 'mt-8'} flex flex-wrap gap-3 justify-center`}>
+            <div className={`${isTablet ? 'text-sm' : 'text-base'} text-muted-foreground font-semibold`}>
+              Legenda směn:
+            </div>
             {Object.entries(SHIFT_TYPE_LABELS).map(([type, label]) => (
               <Badge 
                 key={type}
                 variant="secondary" 
-                className={cn("text-base px-4 py-2", SHIFT_TYPE_COLORS[type as ShiftType])}
+                className={cn(
+                  isTablet ? "text-sm px-3 py-1" : "text-base px-4 py-2", 
+                  SHIFT_TYPE_COLORS[type as ShiftType]
+                )}
               >
                 {label}
               </Badge>
@@ -280,57 +290,60 @@ const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = ({
       {/* Selected Date Details */}
       {selectedDate && (
         <Card className="bg-white/95 backdrop-blur-sm border shadow-xl">
-          <CardHeader className="pb-6">
-            <CardTitle className="text-2xl">
+          <CardHeader className={`${headerPadding} pb-4`}>
+            <CardTitle className={titleSize}>
               {format(selectedDate, 'EEEE, dd. MMMM yyyy', { locale: cs })}
             </CardTitle>
-            <div className="text-base text-muted-foreground">
+            <div className={`${isTablet ? 'text-sm' : 'text-base'} text-muted-foreground`}>
               {selectedDateShifts.length === 0 
                 ? 'Žádné směny pro tento den'
                 : `${selectedDateShifts.length} směn${selectedDateShifts.length > 1 ? 'y' : 'a'}`
               }
             </div>
           </CardHeader>
-          <CardContent className="px-10 pb-10">
+          <CardContent className={cardPadding}>
             {selectedDateShifts.length === 0 ? (
-              <div className="text-center py-16 text-muted-foreground">
-                <CalendarDays className="h-20 w-20 mx-auto mb-8 opacity-50" />
-                <p className="text-xl">Pro tento den nejsou naplánované žádné směny</p>
+              <div className={`text-center ${isTablet ? 'py-12' : 'py-16'} text-muted-foreground`}>
+                <CalendarDays className={`${isTablet ? 'h-16 w-16' : 'h-20 w-20'} mx-auto ${isTablet ? 'mb-6' : 'mb-8'} opacity-50`} />
+                <p className={isTablet ? 'text-lg' : 'text-xl'}>Pro tento den nejsou naplánované žádné směny</p>
               </div>
             ) : (
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              <div className={`grid gap-4 ${isTablet ? 'sm:grid-cols-2' : 'sm:grid-cols-2 lg:grid-cols-3'}`}>
                 {selectedDateShifts.map((shift) => (
                   <motion.div
                     key={shift.id}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="flex items-center justify-between p-6 border-2 rounded-lg bg-muted/20 hover:bg-muted/30 transition-colors"
+                    className={`flex items-center justify-between ${isTablet ? 'p-4' : 'p-6'} border-2 rounded-lg bg-muted/20 hover:bg-muted/30 transition-colors`}
                   >
-                    <div className="flex items-center gap-4 min-w-0 flex-1">
-                      <Badge className={cn("text-base flex-shrink-0 px-4 py-2", SHIFT_TYPE_COLORS[shift.type])}>
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                      <Badge className={cn(
+                        isTablet ? "text-sm flex-shrink-0 px-3 py-1" : "text-base flex-shrink-0 px-4 py-2", 
+                        SHIFT_TYPE_COLORS[shift.type]
+                      )}>
                         {SHIFT_TYPE_LABELS[shift.type]}
                       </Badge>
                       <div className="min-w-0 flex-1">
-                        <p className="text-base font-medium text-muted-foreground">
+                        <p className={`${isTablet ? 'text-sm' : 'text-base'} font-medium text-muted-foreground`}>
                           {SHIFT_TIME_RANGES[shift.type]}
                         </p>
                         {shift.notes && (
-                          <p className="text-base text-muted-foreground truncate mt-2">
+                          <p className={`${isTablet ? 'text-sm' : 'text-base'} text-muted-foreground truncate mt-1`}>
                             {shift.notes}
                           </p>
                         )}
                       </div>
                     </div>
                     {(onEditShift || onDeleteShift) && (
-                      <div className="flex items-center gap-3 flex-shrink-0">
+                      <div className="flex items-center gap-2 flex-shrink-0">
                         {onEditShift && (
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => onEditShift(shift)}
-                            className="h-10 w-10 p-0 hover:bg-accent"
+                            className="h-8 w-8 p-0 hover:bg-accent"
                           >
-                            <Edit className="h-5 w-5" />
+                            <Edit className="h-4 w-4" />
                           </Button>
                         )}
                         {onDeleteShift && shift.id && (
@@ -338,9 +351,9 @@ const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = ({
                             variant="ghost"
                             size="sm"
                             onClick={() => onDeleteShift(shift.id!)}
-                            className="h-10 w-10 p-0 hover:bg-destructive/10"
+                            className="h-8 w-8 p-0 hover:bg-destructive/10"
                           >
-                            <Trash2 className="h-5 w-5" />
+                            <Trash2 className="h-4 w-4" />
                           </Button>
                         )}
                       </div>

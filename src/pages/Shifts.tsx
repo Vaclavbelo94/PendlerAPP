@@ -11,14 +11,14 @@ import ShiftsNavigation from '@/components/shifts/ShiftsNavigation';
 import ShiftsCalendar from '@/components/shifts/ShiftsCalendar';
 import ShiftsOverview from '@/components/shifts/ShiftsOverview';
 import ShiftsAnalytics from '@/components/shifts/ShiftsAnalytics';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useUnifiedOrientation } from '@/hooks/useUnifiedOrientation';
 
 const Shifts: React.FC = () => {
   const { t } = useLanguage();
   const [activeSection, setActiveSection] = useState('calendar');
-  const isMobile = useIsMobile();
+  const { isMobile, isTablet, isDesktop } = useUnifiedOrientation();
 
-  const renderDesktopContent = () => {
+  const renderContent = () => {
     switch (activeSection) {
       case 'overview':
         return <ShiftsOverview />;
@@ -40,8 +40,12 @@ const Shifts: React.FC = () => {
       
       <PremiumCheck featureKey="shifts">
         <DashboardBackground variant="default">
-          <div className={`mx-auto px-4 py-8 ${isMobile ? 'container' : 'max-w-[1600px]'}`}>
-            {/* Header section with dashboard-style animation */}
+          <div className={`mx-auto px-4 py-8 ${
+            isMobile ? 'container' : 
+            isTablet ? 'max-w-[1200px]' : 
+            'max-w-[1600px]'
+          }`}>
+            {/* Header section */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -53,10 +57,18 @@ const Shifts: React.FC = () => {
                   <Clock className={`${isMobile ? 'h-6 w-6' : 'h-8 w-8'} text-white`} />
                 </div>
                 <div>
-                  <h1 className={`${isMobile ? 'text-2xl' : 'text-4xl'} font-bold tracking-tight text-white`}>
+                  <h1 className={`${
+                    isMobile ? 'text-2xl' : 
+                    isTablet ? 'text-3xl' : 
+                    'text-4xl'
+                  } font-bold tracking-tight text-white`}>
                     {isMobile ? 'Směny' : 'Správa směn'}
                   </h1>
-                  <p className={`text-white/80 ${isMobile ? 'text-sm mt-2' : 'text-lg mt-2'} max-w-3xl`}>
+                  <p className={`text-white/80 ${
+                    isMobile ? 'text-sm mt-2' : 
+                    isTablet ? 'text-base mt-2' : 
+                    'text-lg mt-2'
+                  } max-w-3xl`}>
                     {isMobile 
                       ? 'Plánování a sledování pracovní doby.' 
                       : 'Správa směn, plánování a sledování pracovní doby s pokročilými analýzami.'
@@ -66,7 +78,7 @@ const Shifts: React.FC = () => {
               </div>
             </motion.div>
 
-            {/* Mobile: Swipe Carousel */}
+            {/* Content based on device type */}
             {isMobile ? (
               <motion.div
                 initial={{ opacity: 0 }}
@@ -79,8 +91,8 @@ const Shifts: React.FC = () => {
                 />
               </motion.div>
             ) : (
-              /* Desktop: Traditional Navigation + Content */
-              <div className="space-y-8">
+              /* Desktop and Tablet: Navigation + Content */
+              <div className="space-y-6">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -96,9 +108,11 @@ const Shifts: React.FC = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.2 }}
-                  className="bg-background/98 backdrop-blur-sm rounded-2xl border border-white/10 shadow-2xl p-8 min-h-[600px]"
+                  className={`bg-background/98 backdrop-blur-sm rounded-2xl border border-white/10 shadow-2xl ${
+                    isTablet ? 'p-6 min-h-[500px]' : 'p-8 min-h-[600px]'
+                  }`}
                 >
-                  {renderDesktopContent()}
+                  {renderContent()}
                 </motion.div>
               </div>
             )}
