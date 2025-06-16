@@ -40,7 +40,7 @@ const Shifts: React.FC = () => {
       
       <PremiumCheck featureKey="shifts">
         <DashboardBackground variant="default">
-          <div className="container mx-auto px-4 py-8">
+          <div className={`mx-auto px-4 py-8 ${isMobile ? 'container' : 'max-w-full'}`}>
             {/* Header section with dashboard-style animation */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -80,7 +80,7 @@ const Shifts: React.FC = () => {
               </motion.div>
             ) : (
               /* Desktop: Traditional Navigation + Content */
-              <>
+              <div className="space-y-8">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -96,11 +96,11 @@ const Shifts: React.FC = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.2 }}
-                  className="mt-8"
+                  className="bg-background/95 backdrop-blur-sm rounded-2xl border border-white/10 shadow-2xl p-8"
                 >
                   {renderDesktopContent()}
                 </motion.div>
-              </>
+              </div>
             )}
           </div>
         </DashboardBackground>
