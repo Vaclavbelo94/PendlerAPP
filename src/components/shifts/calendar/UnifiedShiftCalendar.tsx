@@ -201,55 +201,55 @@ const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = ({
 
   // Desktop layout - optimized for better usability
   return (
-    <div className={cn("w-full max-w-7xl mx-auto space-y-8", className)}>
+    <div className={cn("w-full max-w-8xl mx-auto space-y-8", className)}>
       {/* Main Calendar */}
-      <Card className="bg-background border shadow-sm">
-        <CardHeader className="pb-6">
+      <Card className="bg-white/95 backdrop-blur-sm border shadow-xl">
+        <CardHeader className="pb-8">
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-3">
-              <CalendarDays className="h-6 w-6 text-primary" />
-              <span className="text-xl">Kalendář směn</span>
+            <CardTitle className="flex items-center gap-4">
+              <CalendarDays className="h-7 w-7 text-primary" />
+              <span className="text-2xl">Kalendář směn</span>
             </CardTitle>
             
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
               <Button
                 variant="outline"
-                size="sm"
+                size="default"
                 onClick={handlePreviousMonth}
-                className="h-9 w-9 p-0"
+                className="h-11 w-11 p-0"
                 aria-label="Předchozí měsíc"
               >
-                <ChevronLeft className="h-4 w-4" />
+                <ChevronLeft className="h-5 w-5" />
               </Button>
               
               <Button
                 variant="outline"
-                size="sm"
+                size="default"
                 onClick={handleTodayClick}
-                className="px-4 py-2 text-sm font-medium"
+                className="px-6 py-3 text-base font-medium"
               >
                 Dnes
               </Button>
               
               <Button
                 variant="outline"
-                size="sm"
+                size="default"
                 onClick={handleNextMonth}
-                className="h-9 w-9 p-0"
+                className="h-11 w-11 p-0"
                 aria-label="Následující měsíc"
               >
-                <ChevronRight className="h-4 w-4" />
+                <ChevronRight className="h-5 w-5" />
               </Button>
             </div>
           </div>
           
-          <div className="text-2xl font-semibold text-center mt-4">
+          <div className="text-3xl font-semibold text-center mt-6">
             {format(currentMonth, 'LLLL yyyy', { locale: cs })}
           </div>
         </CardHeader>
         
-        <CardContent className="px-8 pb-8">
-          <div className="bg-background rounded-lg border p-4">
+        <CardContent className="px-10 pb-10">
+          <div className="bg-background/90 rounded-lg border-2 p-6 shadow-inner">
             <Calendar
               mode="single"
               selected={selectedDate}
@@ -262,13 +262,13 @@ const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = ({
           </div>
           
           {/* Legend */}
-          <div className="mt-6 flex flex-wrap gap-3 justify-center">
-            <div className="text-sm text-muted-foreground font-medium">Legenda směn:</div>
+          <div className="mt-8 flex flex-wrap gap-4 justify-center">
+            <div className="text-base text-muted-foreground font-semibold">Legenda směn:</div>
             {Object.entries(SHIFT_TYPE_LABELS).map(([type, label]) => (
               <Badge 
                 key={type}
                 variant="secondary" 
-                className={cn("text-sm px-3 py-1", SHIFT_TYPE_COLORS[type as ShiftType])}
+                className={cn("text-base px-4 py-2", SHIFT_TYPE_COLORS[type as ShiftType])}
               >
                 {label}
               </Badge>
@@ -279,58 +279,58 @@ const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = ({
 
       {/* Selected Date Details */}
       {selectedDate && (
-        <Card className="bg-background border shadow-sm">
-          <CardHeader className="pb-4">
-            <CardTitle className="text-xl">
+        <Card className="bg-white/95 backdrop-blur-sm border shadow-xl">
+          <CardHeader className="pb-6">
+            <CardTitle className="text-2xl">
               {format(selectedDate, 'EEEE, dd. MMMM yyyy', { locale: cs })}
             </CardTitle>
-            <div className="text-sm text-muted-foreground">
+            <div className="text-base text-muted-foreground">
               {selectedDateShifts.length === 0 
                 ? 'Žádné směny pro tento den'
                 : `${selectedDateShifts.length} směn${selectedDateShifts.length > 1 ? 'y' : 'a'}`
               }
             </div>
           </CardHeader>
-          <CardContent className="px-8 pb-8">
+          <CardContent className="px-10 pb-10">
             {selectedDateShifts.length === 0 ? (
-              <div className="text-center py-12 text-muted-foreground">
-                <CalendarDays className="h-16 w-16 mx-auto mb-6 opacity-50" />
-                <p className="text-lg">Pro tento den nejsou naplánované žádné směny</p>
+              <div className="text-center py-16 text-muted-foreground">
+                <CalendarDays className="h-20 w-20 mx-auto mb-8 opacity-50" />
+                <p className="text-xl">Pro tento den nejsou naplánované žádné směny</p>
               </div>
             ) : (
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {selectedDateShifts.map((shift) => (
                   <motion.div
                     key={shift.id}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="flex items-center justify-between p-4 border rounded-lg bg-muted/20 hover:bg-muted/30 transition-colors"
+                    className="flex items-center justify-between p-6 border-2 rounded-lg bg-muted/20 hover:bg-muted/30 transition-colors"
                   >
-                    <div className="flex items-center gap-3 min-w-0 flex-1">
-                      <Badge className={cn("text-sm flex-shrink-0 px-3 py-1", SHIFT_TYPE_COLORS[shift.type])}>
+                    <div className="flex items-center gap-4 min-w-0 flex-1">
+                      <Badge className={cn("text-base flex-shrink-0 px-4 py-2", SHIFT_TYPE_COLORS[shift.type])}>
                         {SHIFT_TYPE_LABELS[shift.type]}
                       </Badge>
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium text-muted-foreground">
+                        <p className="text-base font-medium text-muted-foreground">
                           {SHIFT_TIME_RANGES[shift.type]}
                         </p>
                         {shift.notes && (
-                          <p className="text-sm text-muted-foreground truncate mt-1">
+                          <p className="text-base text-muted-foreground truncate mt-2">
                             {shift.notes}
                           </p>
                         )}
                       </div>
                     </div>
                     {(onEditShift || onDeleteShift) && (
-                      <div className="flex items-center gap-2 flex-shrink-0">
+                      <div className="flex items-center gap-3 flex-shrink-0">
                         {onEditShift && (
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => onEditShift(shift)}
-                            className="h-8 w-8 p-0 hover:bg-accent"
+                            className="h-10 w-10 p-0 hover:bg-accent"
                           >
-                            <Edit className="h-4 w-4" />
+                            <Edit className="h-5 w-5" />
                           </Button>
                         )}
                         {onDeleteShift && shift.id && (
@@ -338,9 +338,9 @@ const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = ({
                             variant="ghost"
                             size="sm"
                             onClick={() => onDeleteShift(shift.id!)}
-                            className="h-8 w-8 p-0 hover:bg-destructive/10"
+                            className="h-10 w-10 p-0 hover:bg-destructive/10"
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <Trash2 className="h-5 w-5" />
                           </Button>
                         )}
                       </div>
