@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -7,7 +8,6 @@ import { VehicleData } from '@/types/vehicle';
 import VehicleCarouselProgress from './VehicleCarouselProgress';
 import FuelConsumptionCard from './FuelConsumptionCard';
 import ServiceRecordCard from './ServiceRecordCard';
-import OthersCard from './OthersCard';
 import { UnifiedGrid } from '@/components/layout/UnifiedGrid';
 
 interface VehicleCarouselProps {
@@ -21,8 +21,8 @@ const VehicleCarousel: React.FC<VehicleCarouselProps> = ({
 }) => {
   const [currentStep, setCurrentStep] = useState(1);
   
-  const steps = ['overview', 'fuel', 'service', 'others'];
-  const stepLabels = ['Přehled', 'Spotřeba', 'Servis', 'Ostatní'];
+  const steps = ['overview', 'fuel', 'service'];
+  const stepLabels = ['Přehled', 'Spotřeba', 'Servis'];
 
   const { containerRef } = useSwipeNavigation({
     items: steps,
@@ -35,7 +35,7 @@ const VehicleCarousel: React.FC<VehicleCarouselProps> = ({
   });
 
   const handleNext = () => {
-    if (currentStep < 4) {
+    if (currentStep < 3) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -100,7 +100,6 @@ const VehicleCarousel: React.FC<VehicleCarouselProps> = ({
             <UnifiedGrid columns={{ mobile: 1, tablet: 1, desktop: 2 }} gap="lg">
               <FuelConsumptionCard vehicleId={vehicleId} />
               <ServiceRecordCard vehicleId={vehicleId} />
-              <OthersCard vehicleId={vehicleId} />
             </UnifiedGrid>
           </div>
         );
@@ -108,8 +107,6 @@ const VehicleCarousel: React.FC<VehicleCarouselProps> = ({
         return <FuelConsumptionCard vehicleId={vehicleId} fullView />;
       case 3: // Servis
         return <ServiceRecordCard vehicleId={vehicleId} fullView />;
-      case 4: // Ostatní
-        return <OthersCard vehicleId={vehicleId} fullView />;
       default:
         return null;
     }
@@ -119,7 +116,7 @@ const VehicleCarousel: React.FC<VehicleCarouselProps> = ({
     <div className="max-w-6xl mx-auto" ref={containerRef}>
       <VehicleCarouselProgress
         currentStep={currentStep}
-        totalSteps={4}
+        totalSteps={3}
         stepLabels={stepLabels}
         onStepClick={handleStepClick}
       />
@@ -152,9 +149,9 @@ const VehicleCarousel: React.FC<VehicleCarouselProps> = ({
 
         <Button
           onClick={handleNext}
-          disabled={currentStep === 4}
+          disabled={currentStep === 3}
           className="flex items-center gap-2"
-          variant={currentStep === 4 ? "outline" : "default"}
+          variant={currentStep === 3 ? "outline" : "default"}
         >
           Další
           <ChevronRight className="h-4 w-4" />
