@@ -1,13 +1,13 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Send, Trash2, Languages, Volume2, Mail } from 'lucide-react';
+import { Send, Trash2, Languages, Volume2, Mail, ArrowDown } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { EmailDialog } from './EmailDialog';
+import { motion } from 'framer-motion';
 
 interface SimpleAutoTranslatorProps {
   onTextToSpeech?: (text: string, language: string) => void;
@@ -168,37 +168,29 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
 
   return (
     <>
-      <Card className="w-full max-w-4xl mx-auto">
-        <CardHeader className="pb-4">
-          <CardTitle className="flex items-center gap-2">
-            <Languages className="h-5 w-5 text-primary" />
-            Automatický překladač CZ/PL → DE
-          </CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Napište text v češtině nebo polštině a automaticky se přeloží do němčiny
-          </p>
-        </CardHeader>
-        
-        <CardContent className="space-y-6">
-          {/* Input Section */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium">
-                Zadejte text (čeština/polština)
-              </label>
+      <div className="space-y-6 max-w-4xl mx-auto">
+        {/* Input Section */}
+        <Card className="bg-card/70 backdrop-blur-sm border-0 shadow-xl">
+          <CardHeader className="pb-4">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Languages className="h-5 w-5 text-primary" />
+              Zadejte text k překladu
               {detectedLanguage && (
-                <Badge variant="outline" className="text-xs">
+                <Badge variant="outline" className="ml-auto text-xs">
                   Rozpoznáno: {detectedLanguage}
                 </Badge>
               )}
-            </div>
+            </CardTitle>
+          </CardHeader>
+          
+          <CardContent className="space-y-4">
             <Textarea
               ref={textareaRef}
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Zadejte text v češtině nebo polštině..."
-              className="min-h-[120px] resize-none"
+              placeholder="Napište text v češtině nebo polštině..."
+              className="min-h-[120px] resize-none bg-background/50 border-border/50"
               disabled={isTranslating}
             />
             <div className="flex gap-2">
@@ -206,6 +198,7 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
                 onClick={handleTranslate}
                 disabled={!inputText.trim() || isTranslating}
                 className="flex-1"
+                size="lg"
               >
                 <Send className="h-4 w-4 mr-2" />
                 {isTranslating ? 'Překládám...' : 'Přeložit do němčiny'}
@@ -213,88 +206,121 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
               {onTextToSpeech && inputText.trim() && (
                 <Button
                   variant="outline"
-                  size="icon"
+                  size="lg"
                   onClick={() => onTextToSpeech(inputText, detectedLanguage === 'Čeština' ? 'cs' : 'pl')}
+                  className="bg-background/50"
                 >
                   <Volume2 className="h-4 w-4" />
                 </Button>
               )}
             </div>
-          </div>
+          </CardContent>
+        </Card>
 
-          {/* Output Section */}
-          {(translatedText || isTranslating) && (
-            <div className="space-y-2">
-              <label className="text-sm font-medium">
-                Překlad (němčina)
-              </label>
-              <div className="relative">
-                <Textarea
-                  value={isTranslating ? 'Překládám...' : translatedText}
-                  readOnly
-                  className="min-h-[120px] resize-none bg-muted/30"
-                  placeholder="Zde se zobrazí překlad..."
-                />
-                {translatedText && !isTranslating && (
-                  <div className="absolute top-2 right-2 flex gap-1">
-                    {onTextToSpeech && (
+        {/* Arrow indicator */}
+        {(translatedText || isTranslating) && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+            className="flex justify-center"
+          >
+            <div className="p-2 rounded-full bg-primary/10 backdrop-blur-sm">
+              <ArrowDown className="h-5 w-5 text-primary" />
+            </div>
+          </motion.div>
+        )}
+
+        {/* Output Section */}
+        {(translatedText || isTranslating) && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Card className="bg-card/70 backdrop-blur-sm border-0 shadow-xl">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <Bot className="h-5 w-5 text-green-600" />
+                  Překlad do němčiny
+                </CardTitle>
+              </CardHeader>
+              
+              <CardContent className="space-y-4">
+                <div className="relative">
+                  <Textarea
+                    value={isTranslating ? 'Překládám...' : translatedText}
+                    readOnly
+                    className="min-h-[120px] resize-none bg-background/50 border-border/50"
+                    placeholder="Zde se zobrazí překlad..."
+                  />
+                  {translatedText && !isTranslating && (
+                    <div className="absolute top-2 right-2 flex gap-1">
+                      {onTextToSpeech && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => onTextToSpeech(translatedText, 'de')}
+                          className="h-8 w-8 p-0 bg-background/50"
+                        >
+                          <Volume2 className="h-3 w-3" />
+                        </Button>
+                      )}
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => onTextToSpeech(translatedText, 'de')}
-                        className="h-7 w-7 p-0"
+                        onClick={handleCopyTranslation}
+                        className="h-8 px-2 text-xs bg-background/50"
                       >
-                        <Volume2 className="h-3 w-3" />
+                        Kopírovat
                       </Button>
-                    )}
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleCopyTranslation}
-                      className="h-7 px-2 text-xs"
-                    >
-                      Kopírovat
-                    </Button>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
 
-          {/* Email Section */}
-          {translatedText && !isTranslating && (
-            <div className="flex justify-center">
-              <Button
-                variant="outline"
-                onClick={() => setShowEmailDialog(true)}
-                disabled={isSendingEmail}
-                className="flex items-center gap-2"
-              >
-                <Mail className="h-4 w-4" />
-                Odeslat překlad emailem
-              </Button>
-            </div>
-          )}
+        {/* Action buttons */}
+        {translatedText && !isTranslating && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="flex flex-col sm:flex-row gap-4 justify-center"
+          >
+            <Button
+              variant="outline"
+              onClick={() => setShowEmailDialog(true)}
+              disabled={isSendingEmail}
+              className="flex items-center gap-2 bg-card/50 backdrop-blur-sm"
+              size="lg"
+            >
+              <Mail className="h-4 w-4" />
+              Odeslat překlad emailem
+            </Button>
+            
+            <Button
+              variant="outline"
+              onClick={handleClear}
+              disabled={isTranslating}
+              className="flex items-center gap-2 bg-card/50 backdrop-blur-sm"
+              size="lg"
+            >
+              <Trash2 className="h-4 w-4" />
+              Vymazat vše
+            </Button>
+          </motion.div>
+        )}
 
-          {/* Clear Button */}
-          {(inputText || translatedText) && (
-            <div className="flex justify-center">
-              <Button
-                variant="outline"
-                onClick={handleClear}
-                disabled={isTranslating}
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                Vymazat vše
-              </Button>
-            </div>
-          )}
-
-          <div className="text-xs text-muted-foreground text-center">
+        {/* Instructions */}
+        <div className="text-xs text-muted-foreground text-center mt-6">
+          <div className="p-4 rounded-lg bg-card/30 backdrop-blur-sm border border-border/30">
             Stiskněte Enter pro překlad, Shift+Enter pro nový řádek
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       <EmailDialog
         open={showEmailDialog}
