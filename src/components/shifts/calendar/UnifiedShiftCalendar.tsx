@@ -198,172 +198,325 @@ const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = ({
     );
   }
 
-  // Desktop and Tablet layout
-  const cardPadding = isTablet ? "px-6 pb-6" : "px-10 pb-10";
-  const headerPadding = isTablet ? "pb-6" : "pb-8";
-  const calendarPadding = isTablet ? "p-4" : "p-6";
-  const titleSize = isTablet ? "text-xl" : "text-2xl";
-  const monthSize = isTablet ? "text-2xl" : "text-3xl";
-
+  // Desktop and Tablet layout with improved 2-column design
   return (
     <div className={cn("w-full max-w-7xl mx-auto space-y-6", className)}>
-      {/* Main Calendar */}
-      <Card className="bg-white/95 backdrop-blur-sm border shadow-xl">
-        <CardHeader className={headerPadding}>
-          <div className="flex items-center justify-between">
-            <CardTitle className={`flex items-center gap-4 ${titleSize}`}>
-              <CalendarDays className="h-6 w-6 text-primary" />
-              <span>Kalendář směn</span>
-            </CardTitle>
-            
-            <div className="flex items-center gap-3">
-              <Button
-                variant="outline"
-                size={isTablet ? "default" : "default"}
-                onClick={handlePreviousMonth}
-                className="h-10 w-10 p-0"
-                aria-label="Předchozí měsíc"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
+      {isDesktop ? (
+        // Desktop: Side-by-side layout
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+          {/* Main Calendar - takes 2/3 width on xl screens */}
+          <div className="xl:col-span-2">
+            <Card className="bg-background/80 backdrop-blur-sm border shadow-xl h-fit">
+              <CardHeader className="pb-6">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-4 text-2xl">
+                    <CalendarDays className="h-6 w-6 text-primary" />
+                    <span>Kalendář směn</span>
+                  </CardTitle>
+                  
+                  <div className="flex items-center gap-3">
+                    <Button
+                      variant="outline"
+                      size="default"
+                      onClick={handlePreviousMonth}
+                      className="h-10 w-10 p-0"
+                      aria-label="Předchozí měsíc"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    
+                    <Button
+                      variant="outline"
+                      size="default"
+                      onClick={handleTodayClick}
+                      className="px-6 py-3 text-base font-medium"
+                    >
+                      Dnes
+                    </Button>
+                    
+                    <Button
+                      variant="outline"
+                      size="default"
+                      onClick={handleNextMonth}
+                      className="h-10 w-10 p-0"
+                      aria-label="Následující měsíc"
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+                
+                <div className="text-3xl font-semibold text-center mt-4">
+                  {format(currentMonth, 'LLLL yyyy', { locale: cs })}
+                </div>
+              </CardHeader>
               
-              <Button
-                variant="outline"
-                size={isTablet ? "sm" : "default"}
-                onClick={handleTodayClick}
-                className={isTablet ? "px-4 py-2 text-sm" : "px-6 py-3 text-base font-medium"}
-              >
-                Dnes
-              </Button>
-              
-              <Button
-                variant="outline"
-                size={isTablet ? "default" : "default"}
-                onClick={handleNextMonth}
-                className="h-10 w-10 p-0"
-                aria-label="Následující měsíc"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
+              <CardContent className="px-10 pb-10">
+                <div className="bg-background/90 rounded-lg border-2 p-6 shadow-inner">
+                  <Calendar
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={onSelectDate}
+                    modifiers={modifiers}
+                    modifiersStyles={modifiersStyles}
+                    locale={cs}
+                    className="w-full mx-auto"
+                  />
+                </div>
+                
+                {/* Legend */}
+                <div className="mt-8 flex flex-wrap gap-3 justify-center">
+                  <div className="text-base text-muted-foreground font-semibold">
+                    Legenda směn:
+                  </div>
+                  {Object.entries(SHIFT_TYPE_LABELS).map(([type, label]) => (
+                    <Badge 
+                      key={type}
+                      variant="secondary" 
+                      className={cn("text-base px-4 py-2", SHIFT_TYPE_COLORS[type as ShiftType])}
+                    >
+                      {label}
+                    </Badge>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </div>
-          
-          <div className={`${monthSize} font-semibold text-center mt-4`}>
-            {format(currentMonth, 'LLLL yyyy', { locale: cs })}
-          </div>
-        </CardHeader>
-        
-        <CardContent className={cardPadding}>
-          <div className={`bg-background/90 rounded-lg border-2 ${calendarPadding} shadow-inner`}>
-            <Calendar
-              mode="single"
-              selected={selectedDate}
-              onSelect={onSelectDate}
-              modifiers={modifiers}
-              modifiersStyles={modifiersStyles}
-              locale={cs}
-              className="w-full mx-auto"
-            />
-          </div>
-          
-          {/* Legend */}
-          <div className={`${isTablet ? 'mt-6' : 'mt-8'} flex flex-wrap gap-3 justify-center`}>
-            <div className={`${isTablet ? 'text-sm' : 'text-base'} text-muted-foreground font-semibold`}>
-              Legenda směn:
-            </div>
-            {Object.entries(SHIFT_TYPE_LABELS).map(([type, label]) => (
-              <Badge 
-                key={type}
-                variant="secondary" 
-                className={cn(
-                  isTablet ? "text-sm px-3 py-1" : "text-base px-4 py-2", 
-                  SHIFT_TYPE_COLORS[type as ShiftType]
-                )}
-              >
-                {label}
-              </Badge>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
 
-      {/* Selected Date Details */}
-      {selectedDate && (
-        <Card className="bg-white/95 backdrop-blur-sm border shadow-xl">
-          <CardHeader className={`${headerPadding} pb-4`}>
-            <CardTitle className={titleSize}>
-              {format(selectedDate, 'EEEE, dd. MMMM yyyy', { locale: cs })}
-            </CardTitle>
-            <div className={`${isTablet ? 'text-sm' : 'text-base'} text-muted-foreground`}>
-              {selectedDateShifts.length === 0 
-                ? 'Žádné směny pro tento den'
-                : `${selectedDateShifts.length} směn${selectedDateShifts.length > 1 ? 'y' : 'a'}`
-              }
-            </div>
-          </CardHeader>
-          <CardContent className={cardPadding}>
-            {selectedDateShifts.length === 0 ? (
-              <div className={`text-center ${isTablet ? 'py-12' : 'py-16'} text-muted-foreground`}>
-                <CalendarDays className={`${isTablet ? 'h-16 w-16' : 'h-20 w-20'} mx-auto ${isTablet ? 'mb-6' : 'mb-8'} opacity-50`} />
-                <p className={isTablet ? 'text-lg' : 'text-xl'}>Pro tento den nejsou naplánované žádné směny</p>
-              </div>
-            ) : (
-              <div className={`grid gap-4 ${isTablet ? 'sm:grid-cols-2' : 'sm:grid-cols-2 lg:grid-cols-3'}`}>
-                {selectedDateShifts.map((shift) => (
-                  <motion.div
-                    key={shift.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className={`flex items-center justify-between ${isTablet ? 'p-4' : 'p-6'} border-2 rounded-lg bg-muted/20 hover:bg-muted/30 transition-colors`}
-                  >
-                    <div className="flex items-center gap-3 min-w-0 flex-1">
-                      <Badge className={cn(
-                        isTablet ? "text-sm flex-shrink-0 px-3 py-1" : "text-base flex-shrink-0 px-4 py-2", 
-                        SHIFT_TYPE_COLORS[shift.type]
-                      )}>
-                        {SHIFT_TYPE_LABELS[shift.type]}
-                      </Badge>
-                      <div className="min-w-0 flex-1">
-                        <p className={`${isTablet ? 'text-sm' : 'text-base'} font-medium text-muted-foreground`}>
-                          {SHIFT_TIME_RANGES[shift.type]}
-                        </p>
-                        {shift.notes && (
-                          <p className={`${isTablet ? 'text-sm' : 'text-base'} text-muted-foreground truncate mt-1`}>
-                            {shift.notes}
-                          </p>
-                        )}
-                      </div>
+          {/* Selected Date Details - takes 1/3 width on xl screens */}
+          <div className="xl:col-span-1">
+            {selectedDate && (
+              <Card className="bg-background/80 backdrop-blur-sm border shadow-xl h-fit">
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-xl">
+                    {format(selectedDate, 'EEEE, dd. MMMM yyyy', { locale: cs })}
+                  </CardTitle>
+                  <div className="text-base text-muted-foreground">
+                    {selectedDateShifts.length === 0 
+                      ? 'Žádné směny pro tento den'
+                      : `${selectedDateShifts.length} směn${selectedDateShifts.length > 1 ? 'y' : 'a'}`
+                    }
+                  </div>
+                </CardHeader>
+                <CardContent className="px-6 pb-6">
+                  {selectedDateShifts.length === 0 ? (
+                    <div className="text-center py-12 text-muted-foreground">
+                      <CalendarDays className="h-16 w-16 mx-auto mb-6 opacity-50" />
+                      <p className="text-lg">Pro tento den nejsou naplánované žádné směny</p>
                     </div>
-                    {(onEditShift || onDeleteShift) && (
-                      <div className="flex items-center gap-2 flex-shrink-0">
-                        {onEditShift && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => onEditShift(shift)}
-                            className="h-8 w-8 p-0 hover:bg-accent"
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                        )}
-                        {onDeleteShift && shift.id && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => onDeleteShift(shift.id!)}
-                            className="h-8 w-8 p-0 hover:bg-destructive/10"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        )}
-                      </div>
-                    )}
-                  </motion.div>
+                  ) : (
+                    <div className="space-y-4">
+                      {selectedDateShifts.map((shift) => (
+                        <motion.div
+                          key={shift.id}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="flex flex-col gap-3 p-4 border-2 rounded-lg bg-muted/20 hover:bg-muted/30 transition-colors"
+                        >
+                          <div className="flex items-start justify-between">
+                            <Badge className={cn("text-sm px-3 py-1", SHIFT_TYPE_COLORS[shift.type])}>
+                              {SHIFT_TYPE_LABELS[shift.type]}
+                            </Badge>
+                            {(onEditShift || onDeleteShift) && (
+                              <div className="flex items-center gap-2">
+                                {onEditShift && (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => onEditShift(shift)}
+                                    className="h-8 w-8 p-0 hover:bg-accent"
+                                  >
+                                    <Edit className="h-4 w-4" />
+                                  </Button>
+                                )}
+                                {onDeleteShift && shift.id && (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => onDeleteShift(shift.id!)}
+                                    className="h-8 w-8 p-0 hover:bg-destructive/10"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-muted-foreground">
+                              {SHIFT_TIME_RANGES[shift.type]}
+                            </p>
+                            {shift.notes && (
+                              <p className="text-sm text-muted-foreground mt-1">
+                                {shift.notes}
+                              </p>
+                            )}
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        </div>
+      ) : (
+        // Tablet: Stacked layout with optimized spacing
+        <div className="space-y-6">
+          {/* Main Calendar */}
+          <Card className="bg-background/80 backdrop-blur-sm border shadow-xl">
+            <CardHeader className="pb-6">
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-4 text-xl">
+                  <CalendarDays className="h-6 w-6 text-primary" />
+                  <span>Kalendář směn</span>
+                </CardTitle>
+                
+                <div className="flex items-center gap-3">
+                  <Button
+                    variant="outline"
+                    size="default"
+                    onClick={handlePreviousMonth}
+                    className="h-10 w-10 p-0"
+                    aria-label="Předchozí měsíc"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleTodayClick}
+                    className="px-4 py-2 text-sm"
+                  >
+                    Dnes
+                  </Button>
+                  
+                  <Button
+                    variant="outline"
+                    size="default"
+                    onClick={handleNextMonth}
+                    className="h-10 w-10 p-0"
+                    aria-label="Následující měsíc"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+              
+              <div className="text-2xl font-semibold text-center mt-4">
+                {format(currentMonth, 'LLLL yyyy', { locale: cs })}
+              </div>
+            </CardHeader>
+            
+            <CardContent className="px-6 pb-6">
+              <div className="bg-background/90 rounded-lg border-2 p-4 shadow-inner">
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={onSelectDate}
+                  modifiers={modifiers}
+                  modifiersStyles={modifiersStyles}
+                  locale={cs}
+                  className="w-full mx-auto"
+                />
+              </div>
+              
+              {/* Legend */}
+              <div className="mt-6 flex flex-wrap gap-3 justify-center">
+                <div className="text-sm text-muted-foreground font-semibold">
+                  Legenda směn:
+                </div>
+                {Object.entries(SHIFT_TYPE_LABELS).map(([type, label]) => (
+                  <Badge 
+                    key={type}
+                    variant="secondary" 
+                    className={cn("text-sm px-3 py-1", SHIFT_TYPE_COLORS[type as ShiftType])}
+                  >
+                    {label}
+                  </Badge>
                 ))}
               </div>
-            )}
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+
+          {/* Selected Date Details */}
+          {selectedDate && (
+            <Card className="bg-background/80 backdrop-blur-sm border shadow-xl">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-xl">
+                  {format(selectedDate, 'EEEE, dd. MMMM yyyy', { locale: cs })}
+                </CardTitle>
+                <div className="text-sm text-muted-foreground">
+                  {selectedDateShifts.length === 0 
+                    ? 'Žádné směny pro tento den'
+                    : `${selectedDateShifts.length} směn${selectedDateShifts.length > 1 ? 'y' : 'a'}`
+                  }
+                </div>
+              </CardHeader>
+              <CardContent className="px-6 pb-6">
+                {selectedDateShifts.length === 0 ? (
+                  <div className="text-center py-12 text-muted-foreground">
+                    <CalendarDays className="h-16 w-16 mx-auto mb-6 opacity-50" />
+                    <p className="text-lg">Pro tento den nejsou naplánované žádné směny</p>
+                  </div>
+                ) : (
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    {selectedDateShifts.map((shift) => (
+                      <motion.div
+                        key={shift.id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="flex items-center justify-between p-4 border-2 rounded-lg bg-muted/20 hover:bg-muted/30 transition-colors"
+                      >
+                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                          <Badge className={cn("text-sm flex-shrink-0 px-3 py-1", SHIFT_TYPE_COLORS[shift.type])}>
+                            {SHIFT_TYPE_LABELS[shift.type]}
+                          </Badge>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-medium text-muted-foreground">
+                              {SHIFT_TIME_RANGES[shift.type]}
+                            </p>
+                            {shift.notes && (
+                              <p className="text-sm text-muted-foreground truncate mt-1">
+                                {shift.notes}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        {(onEditShift || onDeleteShift) && (
+                          <div className="flex items-center gap-2 flex-shrink-0">
+                            {onEditShift && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => onEditShift(shift)}
+                                className="h-8 w-8 p-0 hover:bg-accent"
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                            )}
+                            {onDeleteShift && shift.id && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => onDeleteShift(shift.id!)}
+                                className="h-8 w-8 p-0 hover:bg-destructive/10"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
+                        )}
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+        </div>
       )}
     </div>
   );

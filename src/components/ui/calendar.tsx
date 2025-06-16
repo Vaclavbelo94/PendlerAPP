@@ -17,26 +17,26 @@ function Calendar({
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
-      className={cn("p-4 md:p-6 pointer-events-auto w-full max-w-none", className)}
+      className={cn("p-4 md:p-6 lg:p-8 pointer-events-auto w-full max-w-none", className)}
       classNames={{
-        months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0 w-full",
-        month: "space-y-4 md:space-y-6 w-full",
-        caption: "flex justify-center pt-1 md:pt-2 relative items-center mb-4 md:mb-6",
-        caption_label: "text-base md:text-lg font-semibold",
-        nav: "space-x-1 md:space-x-2 flex items-center",
+        months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 lg:space-x-8 sm:space-y-0 w-full",
+        month: "space-y-4 md:space-y-6 lg:space-y-8 w-full",
+        caption: "flex justify-center pt-1 md:pt-2 lg:pt-3 relative items-center mb-4 md:mb-6 lg:mb-8",
+        caption_label: "text-base md:text-lg lg:text-xl xl:text-2xl font-semibold",
+        nav: "space-x-1 md:space-x-2 lg:space-x-3 flex items-center",
         nav_button: cn(
           buttonVariants({ variant: "outline" }),
-          "h-8 w-8 md:h-10 md:w-10 bg-background p-0 opacity-80 hover:opacity-100 pointer-events-auto border shadow-sm hover:bg-accent hover:text-accent-foreground transition-all duration-200"
+          "h-8 w-8 md:h-10 md:w-10 lg:h-12 lg:w-12 bg-background p-0 opacity-80 hover:opacity-100 pointer-events-auto border shadow-sm hover:bg-accent hover:text-accent-foreground transition-all duration-200"
         ),
-        nav_button_previous: "absolute left-1 md:left-2",
-        nav_button_next: "absolute right-1 md:right-2",
-        table: "w-full border-collapse space-y-1 md:space-y-2",
-        head_row: "flex justify-center w-full mb-2 md:mb-3",
-        head_cell: "text-muted-foreground rounded-md w-full font-semibold text-sm md:text-base flex items-center justify-center flex-1 min-w-[40px] md:min-w-[50px] h-10 md:h-12",
-        row: "flex w-full mt-2 md:mt-3 justify-center",
+        nav_button_previous: "absolute left-1 md:left-2 lg:left-3",
+        nav_button_next: "absolute right-1 md:right-2 lg:right-3",
+        table: "w-full border-collapse space-y-1 md:space-y-2 lg:space-y-3",
+        head_row: "flex justify-center w-full mb-2 md:mb-3 lg:mb-4",
+        head_cell: "text-muted-foreground rounded-md w-full font-semibold text-sm md:text-base lg:text-lg flex items-center justify-center flex-1 min-w-[40px] md:min-w-[60px] lg:min-w-[80px] xl:min-w-[100px] h-10 md:h-12 lg:h-14 xl:h-16",
+        row: "flex w-full mt-2 md:mt-3 lg:mt-4 justify-center",
         cell: cn(
-          "relative p-0 text-center text-sm md:text-base focus-within:relative focus-within:z-20",
-          "flex-1 min-w-[40px] md:min-w-[50px] h-10 md:h-12",
+          "relative p-0 text-center text-sm md:text-base lg:text-lg focus-within:relative focus-within:z-20",
+          "flex-1 min-w-[40px] md:min-w-[60px] lg:min-w-[80px] xl:min-w-[100px] h-10 md:h-12 lg:h-14 xl:h-16",
           "[&:has([aria-selected].day-range-end)]:rounded-r-md",
           "[&:has([aria-selected].day-outside)]:bg-accent/50",
           "[&:has([aria-selected])]:bg-accent",
@@ -45,7 +45,7 @@ function Calendar({
         ),
         day: cn(
           buttonVariants({ variant: "ghost" }),
-          "w-full h-full p-0 font-medium aria-selected:opacity-100 flex items-center justify-center pointer-events-auto text-sm md:text-base",
+          "w-full h-full p-0 font-medium aria-selected:opacity-100 flex items-center justify-center pointer-events-auto text-sm md:text-base lg:text-lg",
           "hover:bg-accent hover:text-accent-foreground transition-colors duration-200",
           "focus:bg-accent focus:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
           "cursor-pointer select-none"
@@ -62,7 +62,7 @@ function Calendar({
       components={{
         Chevron: ({ orientation, ...props }) => {
           const Icon = orientation === 'left' ? ChevronLeft : ChevronRight;
-          return <Icon className="h-4 w-4 md:h-5 md:w-5" {...props} />;
+          return <Icon className="h-4 w-4 md:h-5 md:w-5 lg:h-6 lg:w-6" {...props} />;
         },
       }}
       {...props}

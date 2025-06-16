@@ -39,11 +39,11 @@ const Shifts: React.FC = () => {
       </Helmet>
       
       <PremiumCheck featureKey="shifts">
-        <DashboardBackground variant="default">
+        <DashboardBackground variant="shifts">
           <div className={`mx-auto px-4 py-8 ${
             isMobile ? 'container' : 
-            isTablet ? 'max-w-[1200px]' : 
-            'max-w-[1600px]'
+            isTablet ? 'max-w-[1400px]' : 
+            'max-w-[1800px]'
           }`}>
             {/* Header section */}
             <motion.div
@@ -108,8 +108,8 @@ const Shifts: React.FC = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.2 }}
-                  className={`bg-background/98 backdrop-blur-sm rounded-2xl border border-white/10 shadow-2xl ${
-                    isTablet ? 'p-6 min-h-[500px]' : 'p-8 min-h-[600px]'
+                  className={`bg-background/50 backdrop-blur-sm rounded-2xl border border-white/10 shadow-2xl ${
+                    isTablet ? 'p-4 min-h-[500px]' : 'p-6 min-h-[600px]'
                   }`}
                 >
                   {renderContent()}
