@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, User, Eye, Crown } from 'lucide-react';
@@ -77,7 +78,7 @@ export const ProfileMobileCarousel: React.FC<ProfileMobileCarouselProps> = ({
             <div className="p-1.5 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20">
               <Icon className="h-4 w-4 text-white" />
             </div>
-            <h2 className="text-lg font-semibold text-white">
+            <h2 className="text-lg font-semibold text-white text-center">
               {currentTab?.label}
             </h2>
           </div>

@@ -20,7 +20,7 @@ const ProfileBio = () => {
   return (
     <Card>
       <CardContent className="p-6">
-        <div className="flex flex-col items-center space-y-4">
+        <div className="flex flex-col items-center space-y-4 text-center">
           <Avatar className="h-20 w-20">
             <AvatarImage src="" />
             <AvatarFallback className="text-lg">
@@ -28,15 +28,15 @@ const ProfileBio = () => {
             </AvatarFallback>
           </Avatar>
           
-          <div className="text-center space-y-2 w-full">
-            <div className="space-y-1">
-              <h2 className="text-lg font-semibold text-center break-words">
+          <div className="space-y-3 w-full">
+            <div className="space-y-2">
+              <h2 className="text-lg font-semibold text-center">
                 {user?.email ? getUserDisplayName(user.email) : 'Uživatel'}
               </h2>
               
               <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
                 <Mail className="h-3 w-3 flex-shrink-0" />
-                <span className="break-all text-xs">{user?.email}</span>
+                <span className="break-all text-xs text-center">{user?.email}</span>
               </div>
             </div>
             

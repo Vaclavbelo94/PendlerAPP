@@ -57,12 +57,12 @@ const ProfileAppearanceContent = ({
   
   return (
     <Card>
-      <CardHeader className={`${isMobile ? 'pb-3' : ''}`}>
-        <CardTitle className={`flex items-center gap-2 ${isMobile ? 'text-base' : ''}`}>
+      <CardHeader className={`${isMobile ? 'pb-3 text-center' : ''}`}>
+        <CardTitle className={`flex items-center gap-2 ${isMobile ? 'text-base justify-center' : ''}`}>
           <Eye className={`${isMobile ? 'h-4 w-4' : 'h-5 w-5'}`} />
           <span>Nastavení vzhledu</span>
         </CardTitle>
-        <CardDescription className={`${isMobile ? 'text-xs' : ''}`}>
+        <CardDescription className={`${isMobile ? 'text-xs text-center' : ''}`}>
           Upravte si základní nastavení zobrazení aplikace. Změny se aplikují okamžitě.
         </CardDescription>
       </CardHeader>
@@ -104,7 +104,7 @@ const ProfileAppearanceContent = ({
           </div>
         )}
       </CardContent>
-      <CardFooter className={`${isMobile ? 'px-4' : ''}`}>
+      <CardFooter className={`${isMobile ? 'px-4 justify-center' : ''}`}>
         <Button 
           onClick={handleSave} 
           className={`${isMobile ? 'w-full' : 'ml-auto'}`}

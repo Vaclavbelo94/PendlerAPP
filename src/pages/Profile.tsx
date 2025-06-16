@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
@@ -37,15 +38,17 @@ const Profile: React.FC = () => {
             >
               <div className="p-8 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20 max-w-md mx-auto">
                 <User className="h-12 w-12 mx-auto mb-4 text-white" />
-                <h1 className="text-2xl font-bold text-white mb-4">
+                <h1 className="text-2xl font-bold text-white mb-4 text-center">
                   Přístup odepřen
                 </h1>
-                <p className="text-white/80 mb-6">
+                <p className="text-white/80 mb-6 text-center">
                   Pro zobrazení profilu se musíte přihlásit.
                 </p>
-                <Button onClick={() => navigate('/login')} size="lg">
-                  Přihlásit se
-                </Button>
+                <div className="flex justify-center">
+                  <Button onClick={() => navigate('/login')} size="lg">
+                    Přihlásit se
+                  </Button>
+                </div>
               </div>
             </motion.div>
           </div>
@@ -87,11 +90,11 @@ const Profile: React.FC = () => {
               <div className={`${isMobile ? 'p-2' : 'p-3'} rounded-full bg-white/10 backdrop-blur-sm border border-white/20`}>
                 <User className={`${isMobile ? 'h-6 w-6' : 'h-8 w-8'} text-white`} />
               </div>
-              <div>
-                <h1 className={`${isMobile ? 'text-2xl' : 'text-4xl'} font-bold tracking-tight text-white`}>
+              <div className={isMobile ? 'text-center' : ''}>
+                <h1 className={`${isMobile ? 'text-2xl' : 'text-4xl'} font-bold tracking-tight text-white ${isMobile ? 'text-center' : ''}`}>
                   {isMobile ? 'Profil' : 'Můj profil'}
                 </h1>
-                <p className={`text-white/80 ${isMobile ? 'text-sm mt-2' : 'text-lg mt-2'} max-w-3xl`}>
+                <p className={`text-white/80 ${isMobile ? 'text-sm mt-2 text-center' : 'text-lg mt-2'} max-w-3xl`}>
                   {isMobile 
                     ? 'Správa účtu a osobních nastavení.' 
                     : 'Spravujte své informace, nastavení účtu a sledujte svůj pokrok v aplikaci.'

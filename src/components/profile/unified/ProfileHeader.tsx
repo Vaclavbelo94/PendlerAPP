@@ -31,9 +31,9 @@ const ProfileHeader = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <div>
+          <div className={isMobile ? 'text-center' : ''}>
             <motion.h1 
-              className={`font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent ${isLandscapeMobile ? "text-2xl" : "text-3xl md:text-4xl"}`}
+              className={`font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent ${isLandscapeMobile ? "text-2xl" : "text-3xl md:text-4xl"} ${isMobile ? 'text-center' : ''}`}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
@@ -41,7 +41,7 @@ const ProfileHeader = () => {
               Můj profil
             </motion.h1>
             <motion.p 
-              className={`text-muted-foreground ${isLandscapeMobile ? "text-sm" : "text-lg"}`}
+              className={`text-muted-foreground ${isLandscapeMobile ? "text-sm" : "text-lg"} ${isMobile ? 'text-center' : ''}`}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
@@ -51,7 +51,7 @@ const ProfileHeader = () => {
           </div>
           
           <motion.div 
-            className="flex items-center gap-2"
+            className={`flex items-center gap-2 ${isMobile ? 'justify-center' : ''}`}
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
@@ -89,9 +89,9 @@ const ProfileHeader = () => {
             <UserIcon className={`${isLandscapeMobile ? "h-6 w-6" : "h-8 w-8"} text-primary`} />
           </motion.div>
           
-          <div className="flex-1">
+          <div className={`flex-1 ${isMobile ? 'text-center' : ''}`}>
             <motion.h2 
-              className={`font-semibold ${isLandscapeMobile ? "text-lg" : "text-xl md:text-2xl"}`}
+              className={`font-semibold ${isLandscapeMobile ? "text-lg" : "text-xl md:text-2xl"} ${isMobile ? 'text-center' : ''}`}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.5 }}
@@ -99,7 +99,7 @@ const ProfileHeader = () => {
               {user?.user_metadata?.username || user?.email?.split('@')[0] || 'Uživatel'}
             </motion.h2>
             <motion.p 
-              className={`text-muted-foreground ${isLandscapeMobile ? "text-sm" : "text-base"}`}
+              className={`text-muted-foreground ${isLandscapeMobile ? "text-sm" : "text-base"} ${isMobile ? 'text-center' : ''}`}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.6 }}
@@ -107,19 +107,19 @@ const ProfileHeader = () => {
               {user?.email}
             </motion.p>
             <motion.div 
-              className={`flex items-center gap-2 ${isLandscapeMobile ? "mt-1" : "mt-2"}`}
+              className={`flex items-center gap-2 ${isLandscapeMobile ? "mt-1" : "mt-2"} ${isMobile ? 'justify-center' : ''}`}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.7 }}
             >
-              <span className={`text-muted-foreground ${isLandscapeMobile ? "text-xs" : "text-sm"}`}>
+              <span className={`text-muted-foreground ${isLandscapeMobile ? "text-xs" : "text-sm"} ${isMobile ? 'text-center' : ''}`}>
                 Registrován: {user?.created_at ? new Date(user.created_at).toLocaleDateString('cs-CZ') : 'N/A'}
               </span>
             </motion.div>
           </div>
 
           <motion.div 
-            className="flex flex-col sm:flex-row gap-2"
+            className={`flex flex-col sm:flex-row gap-2 ${isMobile ? 'items-center' : ''}`}
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.8 }}
