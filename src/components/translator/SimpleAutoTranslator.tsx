@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -248,42 +247,43 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
               </CardHeader>
               
               <CardContent className="space-y-4">
-                <div className="relative">
-                  <Textarea
-                    value={isTranslating ? 'Překládám...' : translatedText}
-                    readOnly
-                    className="min-h-[120px] resize-none bg-background/50 border-border/50"
-                    placeholder="Zde se zobrazí překlad..."
-                  />
-                  {translatedText && !isTranslating && (
-                    <div className="absolute top-2 right-2 flex gap-1">
-                      {onTextToSpeech && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => onTextToSpeech(translatedText, 'de')}
-                          className="h-8 w-8 p-0 bg-background/50"
-                        >
-                          <Volume2 className="h-3 w-3" />
-                        </Button>
-                      )}
+                <Textarea
+                  value={isTranslating ? 'Překládám...' : translatedText}
+                  readOnly
+                  className="min-h-[120px] resize-none bg-background/50 border-border/50"
+                  placeholder="Zde se zobrazí překlad..."
+                />
+                
+                {/* Action buttons moved outside textarea */}
+                {translatedText && !isTranslating && (
+                  <div className="flex gap-2 justify-end">
+                    {onTextToSpeech && (
                       <Button
-                        variant="ghost"
+                        variant="outline"
                         size="sm"
-                        onClick={handleCopyTranslation}
-                        className="h-8 px-2 text-xs bg-background/50"
+                        onClick={() => onTextToSpeech(translatedText, 'de')}
+                        className="bg-background/50"
                       >
-                        Kopírovat
+                        <Volume2 className="h-4 w-4 mr-2" />
+                        Přehrát
                       </Button>
-                    </div>
-                  )}
-                </div>
+                    )}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleCopyTranslation}
+                      className="bg-background/50"
+                    >
+                      Kopírovat
+                    </Button>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </motion.div>
         )}
 
-        {/* Action buttons */}
+        {/* Main action buttons */}
         {translatedText && !isTranslating && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
