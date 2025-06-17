@@ -1,3 +1,4 @@
+
 import { lazy } from 'react';
 
 // Lazy loading utilities
@@ -31,38 +32,6 @@ class PerformanceTracker {
     }
     
     return duration;
-  }
-
-  trackPageLoad(routeName: string): { finish: () => void } {
-    const startTime = performance.now();
-    
-    return {
-      finish: () => {
-        const duration = performance.now() - startTime;
-        console.log(`Page load for ${routeName}: ${duration.toFixed(2)}ms`);
-        
-        // Store metric for analytics
-        if (typeof window !== 'undefined') {
-          try {
-            const metrics = JSON.parse(localStorage.getItem('pageLoadMetrics') || '[]');
-            metrics.push({
-              route: routeName,
-              duration: Math.round(duration),
-              timestamp: Date.now()
-            });
-            
-            // Keep only last 50 entries
-            if (metrics.length > 50) {
-              metrics.splice(0, metrics.length - 50);
-            }
-            
-            localStorage.setItem('pageLoadMetrics', JSON.stringify(metrics));
-          } catch (error) {
-            console.warn('Failed to store page load metrics:', error);
-          }
-        }
-      }
-    };
   }
   
   measureRender<T extends (...args: any[]) => any>(

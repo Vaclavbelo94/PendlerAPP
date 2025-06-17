@@ -3,7 +3,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet';
 import DHLModernHero from '@/components/home/DHLModernHero';
 import Features from '@/components/home/Features';
-import ModernTestimonials from '@/components/home/ModernTestimonials';
+import Testimonials from '@/components/home/Testimonials';
 import CTA from '@/components/home/CTA';
 
 const Home = () => {
@@ -21,7 +21,7 @@ const Home = () => {
       <div className="flex flex-col">
         <DHLModernHero />
         <Features />
-        <ModernTestimonials />
+        <Testimonials />
         <CTA />
       </div>
     </>

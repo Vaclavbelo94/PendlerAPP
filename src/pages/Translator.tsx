@@ -82,7 +82,7 @@ const Translator = () => {
           >
             <Suspense fallback={
               <div className="flex items-center justify-center py-16">
-                <SimpleLoadingSpinner text="Načítání překladače..." />
+                <SimpleLoadingSpinner message="Načítání překladače..." />
               </div>
             }>
               <SimpleAutoTranslator onTextToSpeech={handleTextToSpeech} />

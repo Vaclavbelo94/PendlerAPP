@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -146,7 +147,7 @@ const ShiftsContent = () => {
 
   // Show loading while auth is loading or data is loading
   if (authLoading || isLoading) {
-    return <SimpleLoadingSpinner text="Načítání směn..." />;
+    return <SimpleLoadingSpinner message="Načítání směn..." />;
   }
 
   // Show empty state for new users

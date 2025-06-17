@@ -1,60 +1,71 @@
 
-import React, { Suspense } from 'react';
-import { BrowserRouter } from 'react-router-dom';
+import React, { lazy, Suspense } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Toaster } from 'sonner';
-import { ThemeProvider } from 'next-themes';
-import { AuthProvider } from '@/hooks/auth/useAuthProvider';
-import { GlobalPerformanceProvider } from '@/components/optimized/GlobalPerformanceProvider';
-import { ErrorBoundary } from '@/components/error/ErrorBoundary';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { Toaster } from '@/components/ui/toaster';
+import { Toaster as Sonner } from 'sonner';
+import { TooltipProvider } from '@/components/ui/tooltip';
+import { AuthProvider } from '@/hooks/useAuth';
+import { ThemeProvider } from '@/hooks/useTheme';
 import SimpleLoadingSpinner from '@/components/loading/SimpleLoadingSpinner';
 
-// Optimalizovaný QueryClient s menší cache
+// Lazy load non-critical providers
+const AnalyticsProvider = lazy(() => import('@/components/analytics/AnalyticsProvider').then(m => ({ default: m.AnalyticsProvider })));
+const AdSenseProvider = lazy(() => import('@/components/ads/AdSenseProvider').then(m => ({ default: m.AdSenseProvider })));
+const GDPRConsentProvider = lazy(() => import('@/contexts/GDPRConsentContext').then(m => ({ default: m.GDPRConsentProvider })));
+const StateManagerProvider = lazy(() => import('@/contexts/StateManagerContext').then(m => ({ default: m.StateManagerProvider })));
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000, // 5 minut
-      gcTime: 10 * 60 * 1000,   // 10 minut (dříve cacheTime)
-      retry: 1,
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: 'always'
+      staleTime: 5 * 60 * 1000,
+      gcTime: 10 * 60 * 1000,
+      retry: 1, // Reduce retries for faster failures
     },
-    mutations: {
-      retry: 0
-    }
-  }
+  },
 });
 
 interface OptimizedProviderStackProps {
   children: React.ReactNode;
 }
 
-export const OptimizedProviderStack: React.FC<OptimizedProviderStackProps> = ({ children }) => {
+export const OptimizedProviderStack: React.FC<OptimizedProviderStackProps> = ({ 
+  children
+}) => {
   return (
-    <ErrorBoundary>
-      <BrowserRouter>
-        <QueryClientProvider client={queryClient}>
-          <ThemeProvider 
-            attribute="class" 
-            defaultTheme="system" 
-            enableSystem 
-            disableTransitionOnChange={false}
-          >
-            <Suspense fallback={<SimpleLoadingSpinner />}>
-              <AuthProvider>
-                <GlobalPerformanceProvider>
-                  {children}
-                  <Toaster 
-                    position="top-right" 
-                    richColors 
-                    closeButton
-                  />
-                </GlobalPerformanceProvider>
-              </AuthProvider>
-            </Suspense>
-          </ThemeProvider>
-        </QueryClientProvider>
-      </BrowserRouter>
-    </ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <ThemeProvider>
+          <Router>
+            <AuthProvider>
+              <Suspense fallback={<SimpleLoadingSpinner />}>
+                <StateManagerProvider>
+                  <GDPRConsentProvider>
+                    <AnalyticsProvider>
+                      <AdSenseProvider clientId="ca-pub-5766122497657850">
+                        {children}
+                      </AdSenseProvider>
+                    </AnalyticsProvider>
+                  </GDPRConsentProvider>
+                </StateManagerProvider>
+              </Suspense>
+              
+              <Toaster />
+              <Sonner 
+                position="bottom-right"
+                toastOptions={{
+                  duration: 2500,
+                  style: {
+                    background: 'hsl(var(--background))',
+                    color: 'hsl(var(--foreground))',
+                    border: '1px solid hsl(var(--border))',
+                  },
+                }}
+              />
+            </AuthProvider>
+          </Router>
+        </ThemeProvider>
+      </TooltipProvider>
+    </QueryClientProvider>
   );
 };

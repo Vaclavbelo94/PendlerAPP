@@ -1,11 +1,4 @@
-
 import { useCallback, useRef, useEffect } from 'react';
-
-interface CacheEntry {
-  data: any;
-  timestamp: number;
-  ttl: number;
-}
 
 interface CacheManagerOptions {
   enablePeriodicCleanup?: boolean;
@@ -13,140 +6,144 @@ interface CacheManagerOptions {
   maxCacheSize?: number;
 }
 
+interface CacheStats {
+  hitRate: number;
+  missRate: number;
+  totalRequests: number;
+  cacheSize: number;
+}
+
 export const useCacheManager = (options: CacheManagerOptions = {}) => {
   const {
     enablePeriodicCleanup = true,
     cleanupInterval = 30 * 60 * 1000, // 30 minut
-    maxCacheSize = 50 * 1024 * 1024    // 50MB
+    maxCacheSize = 50 * 1024 * 1024   // 50MB
   } = options;
 
-  const cache = useRef<Map<string, CacheEntry>>(new Map());
-  const stats = useRef({
-    hits: 0,
-    misses: 0,
-    evictions: 0
+  const cacheRef = useRef(new Map<string, any>());
+  const statsRef = useRef<CacheStats>({
+    hitRate: 0,
+    missRate: 0,
+    totalRequests: 0,
+    cacheSize: 0
   });
 
-  const set = useCallback((key: string, data: any, ttl: number = 15 * 60 * 1000) => {
-    try {
-      cache.current.set(key, {
-        data,
-        timestamp: Date.now(),
-        ttl
-      });
-      
-      // Check cache size and cleanup if needed
-      if (getCacheSize() > maxCacheSize) {
-        cleanup();
-      }
-    } catch (error) {
-      console.warn('Cache set failed:', error);
-    }
-  }, [maxCacheSize]);
+  // Cache operations
+  const set = useCallback((key: string, value: any, ttl?: number) => {
+    const entry = {
+      value,
+      timestamp: Date.now(),
+      ttl: ttl || 5 * 60 * 1000, // 5 minut default
+      size: JSON.stringify(value).length
+    };
+
+    cacheRef.current.set(key, entry);
+    statsRef.current.cacheSize += entry.size;
+  }, []);
 
   const get = useCallback((key: string) => {
-    try {
-      const entry = cache.current.get(key);
-      
-      if (!entry) {
-        stats.current.misses++;
-        return null;
-      }
-      
-      // Check if expired
-      if (Date.now() - entry.timestamp > entry.ttl) {
-        cache.current.delete(key);
-        stats.current.misses++;
-        return null;
-      }
-      
-      stats.current.hits++;
-      return entry.data;
-    } catch (error) {
-      console.warn('Cache get failed:', error);
+    statsRef.current.totalRequests++;
+    
+    const entry = cacheRef.current.get(key);
+    if (!entry) {
+      statsRef.current.missRate++;
       return null;
     }
+
+    // Check TTL
+    if (Date.now() - entry.timestamp > entry.ttl) {
+      cacheRef.current.delete(key);
+      statsRef.current.cacheSize -= entry.size;
+      statsRef.current.missRate++;
+      return null;
+    }
+
+    statsRef.current.hitRate++;
+    return entry.value;
   }, []);
 
-  const cleanup = useCallback(() => {
-    try {
-      const now = Date.now();
-      let evicted = 0;
-      
-      for (const [key, entry] of cache.current.entries()) {
-        if (now - entry.timestamp > entry.ttl) {
-          cache.current.delete(key);
-          evicted++;
-        }
-      }
-      
-      // If still too large, remove oldest entries
-      if (getCacheSize() > maxCacheSize) {
-        const entries = Array.from(cache.current.entries())
-          .sort(([,a], [,b]) => a.timestamp - b.timestamp);
-        
-        while (getCacheSize() > maxCacheSize * 0.8 && entries.length > 0) {
-          const [key] = entries.shift()!;
-          cache.current.delete(key);
-          evicted++;
-        }
-      }
-      
-      stats.current.evictions += evicted;
-      console.log(`Cache cleanup: ${evicted} entries evicted`);
-    } catch (error) {
-      console.warn('Cache cleanup failed:', error);
-    }
-  }, [maxCacheSize]);
-
-  const getCacheSize = useCallback(() => {
-    try {
-      const serialized = JSON.stringify(Array.from(cache.current.entries()));
-      return new Blob([serialized]).size;
-    } catch (error) {
-      return 0;
-    }
-  }, []);
-
-  const getCacheStats = useCallback(() => {
-    const totalRequests = stats.current.hits + stats.current.misses;
-    return {
-      ...stats.current,
-      hitRate: totalRequests > 0 ? (stats.current.hits / totalRequests * 100).toFixed(2) : '0',
-      size: cache.current.size
+  const clear = useCallback(() => {
+    cacheRef.current.clear();
+    statsRef.current = {
+      hitRate: 0,
+      missRate: 0,
+      totalRequests: 0,
+      cacheSize: 0
     };
   }, []);
 
-  const preloadCriticalData = useCallback(async (userId: string) => {
-    try {
-      // Preload pouze kritická data
-      const criticalKeys = [
-        `user-${userId}`,
-        `premiumFeatures-${userId}`,
-        `dashboardStats-${userId}`
-      ];
+  // Cleanup expired entries
+  const cleanup = useCallback(() => {
+    const now = Date.now();
+    const toDelete: string[] = [];
+
+    cacheRef.current.forEach((entry, key) => {
+      if (now - entry.timestamp > entry.ttl) {
+        toDelete.push(key);
+        statsRef.current.cacheSize -= entry.size;
+      }
+    });
+
+    toDelete.forEach(key => cacheRef.current.delete(key));
+    
+    // Check cache size limit
+    if (statsRef.current.cacheSize > maxCacheSize) {
+      const entries = Array.from(cacheRef.current.entries());
+      entries.sort((a, b) => a[1].timestamp - b[1].timestamp);
       
-      console.log('Preloading critical data for user:', userId);
-      // Implementation by měla načíst kritická data do cache
-    } catch (error) {
-      console.warn('Critical data preload failed:', error);
+      // Remove oldest entries
+      const toRemove = entries.slice(0, Math.floor(entries.length * 0.3));
+      toRemove.forEach(([key, entry]) => {
+        cacheRef.current.delete(key);
+        statsRef.current.cacheSize -= entry.size;
+      });
     }
-  }, []);
+  }, [maxCacheSize]);
 
   // Periodic cleanup
   useEffect(() => {
     if (!enablePeriodicCleanup) return;
 
-    const interval = setInterval(cleanup, cleanupInterval);
-    return () => clearInterval(interval);
-  }, [enablePeriodicCleanup, cleanupInterval, cleanup]);
+    const intervalId = setInterval(cleanup, cleanupInterval);
+    return () => clearInterval(intervalId);
+  }, [cleanup, cleanupInterval, enablePeriodicCleanup]);
+
+  const getCacheStats = useCallback((): CacheStats => {
+    const total = statsRef.current.totalRequests;
+    return {
+      ...statsRef.current,
+      hitRate: total > 0 ? (statsRef.current.hitRate / total) * 100 : 0,
+      missRate: total > 0 ? (statsRef.current.missRate / total) * 100 : 0
+    };
+  }, []);
+
+  const getCacheSize = useCallback(() => {
+    return statsRef.current.cacheSize;
+  }, []);
+
+  const preloadCriticalData = useCallback(async (userId: string) => {
+    const criticalKeys = [
+      `user_profile_${userId}`,
+      `user_shifts_${userId}`,
+      `user_vocabulary_${userId}`
+    ];
+
+    // Simulate preloading critical data
+    criticalKeys.forEach(key => {
+      if (!get(key)) {
+        // Placeholder - would fetch from API in real implementation
+        set(key, { preloaded: true }, 10 * 60 * 1000); // 10 minut
+      }
+    });
+  }, [get, set]);
 
   return {
     set,
     get,
+    clear,
     cleanup,
-    getCacheSize,
     getCacheStats,
+    getCacheSize,
     preloadCriticalData
   };
 };

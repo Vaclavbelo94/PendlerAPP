@@ -1,12 +1,10 @@
 
 import { ReactNode, useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
-import { usePerformanceMonitoring } from "@/hooks/usePerformanceMonitoring";
-import { performanceTracker } from "@/utils/performanceOptimizer";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useLocation } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 import { UnifiedMobileSidebar } from "./sidebar/UnifiedMobileSidebar";
 
 interface OptimizedLayoutProps {
@@ -19,29 +17,6 @@ const OptimizedLayout = ({ children, navbarRightContent }: OptimizedLayoutProps)
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const location = useLocation();
   const { user } = useAuth();
-  
-  // Add performance monitoring
-  usePerformanceMonitoring({
-    enableRealTimeTracking: true,
-    trackUserInteractions: true,
-    trackMemoryUsage: true,
-    reportingInterval: 60000 // 1 minuta
-  });
-
-  // Track route changes
-  useEffect(() => {
-    const routeName = location.pathname;
-    const tracker = performanceTracker.trackPageLoad(routeName);
-    
-    // Mark route as ready after render
-    const timer = setTimeout(() => {
-      tracker.finish();
-    }, 100);
-
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [location.pathname]);
   
   // Simplified responsive detection
   useEffect(() => {
