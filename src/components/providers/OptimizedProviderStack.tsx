@@ -1,71 +1,61 @@
 
-import React, { lazy, Suspense } from 'react';
+import React, { Suspense } from 'react';
+import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BrowserRouter as Router } from 'react-router-dom';
-import { Toaster } from '@/components/ui/toaster';
-import { Toaster as Sonner } from 'sonner';
-import { TooltipProvider } from '@/components/ui/tooltip';
-import { AuthProvider } from '@/hooks/useAuth';
-import { ThemeProvider } from '@/hooks/useTheme';
+import { Toaster } from 'sonner';
+import { ThemeProvider } from 'next-themes';
+import { AuthProvider } from '@/contexts/AuthContext';
+import { GlobalPerformanceProvider } from '@/components/optimized/GlobalPerformanceProvider';
+import { ErrorBoundary } from '@/components/error/ErrorBoundary';
 import SimpleLoadingSpinner from '@/components/loading/SimpleLoadingSpinner';
 
-// Lazy load non-critical providers
-const AnalyticsProvider = lazy(() => import('@/components/analytics/AnalyticsProvider').then(m => ({ default: m.AnalyticsProvider })));
-const AdSenseProvider = lazy(() => import('@/components/ads/AdSenseProvider').then(m => ({ default: m.AdSenseProvider })));
-const GDPRConsentProvider = lazy(() => import('@/contexts/GDPRConsentContext').then(m => ({ default: m.GDPRConsentProvider })));
-const StateManagerProvider = lazy(() => import('@/contexts/StateManagerContext').then(m => ({ default: m.StateManagerProvider })));
-
+// Optimalizovaný QueryClient s menší cache
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000,
-      gcTime: 10 * 60 * 1000,
-      retry: 1, // Reduce retries for faster failures
+      staleTime: 5 * 60 * 1000, // 5 minut
+      gcTime: 10 * 60 * 1000,   // 10 minut (dříve cacheTime)
+      retry: 1,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: 'always'
     },
-  },
+    mutations: {
+      retry: 0
+    }
+  }
 });
 
 interface OptimizedProviderStackProps {
   children: React.ReactNode;
 }
 
-export const OptimizedProviderStack: React.FC<OptimizedProviderStackProps> = ({ 
-  children
-}) => {
+export const OptimizedProviderStack: React.FC<OptimizedProviderStackProps> = ({ children }) => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <ThemeProvider>
-          <Router>
-            <AuthProvider>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <GlobalPerformanceProvider>
+          <QueryClientProvider client={queryClient}>
+            <ThemeProvider 
+              attribute="class" 
+              defaultTheme="system" 
+              enableSystem 
+              disableTransitionOnChange={false}
+            >
               <Suspense fallback={<SimpleLoadingSpinner />}>
-                <StateManagerProvider>
-                  <GDPRConsentProvider>
-                    <AnalyticsProvider>
-                      <AdSenseProvider clientId="ca-pub-5766122497657850">
-                        {children}
-                      </AdSenseProvider>
-                    </AnalyticsProvider>
-                  </GDPRConsentProvider>
-                </StateManagerProvider>
+                <AuthProvider>
+                  {children}
+                  <Toaster 
+                    position="top-right" 
+                    richColors 
+                    closeButton
+                    limit={3}
+                  />
+                </AuthProvider>
               </Suspense>
-              
-              <Toaster />
-              <Sonner 
-                position="bottom-right"
-                toastOptions={{
-                  duration: 2500,
-                  style: {
-                    background: 'hsl(var(--background))',
-                    color: 'hsl(var(--foreground))',
-                    border: '1px solid hsl(var(--border))',
-                  },
-                }}
-              />
-            </AuthProvider>
-          </Router>
-        </ThemeProvider>
-      </TooltipProvider>
-    </QueryClientProvider>
+            </ThemeProvider>
+          </QueryClientProvider>
+        </GlobalPerformanceProvider>
+      </BrowserRouter>
+    </ErrorBoundary>
   );
 };
