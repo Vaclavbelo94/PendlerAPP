@@ -1,9 +1,10 @@
+
 import React, { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { OptimizedProviderStack } from '@/components/providers/OptimizedProviderStack';
 import { LanguageProvider } from '@/components/providers/LanguageProvider';
 import { ThemeInitializer } from '@/components/theme/ThemeInitializer';
-import { ModernLayout } from '@/components/modern/ModernLayout';
+import OptimizedLayout from '@/components/layouts/OptimizedLayout';
 import SimpleLoadingSpinner from '@/components/loading/SimpleLoadingSpinner';
 import ScrollToTop from '@/components/navigation/ScrollToTop';
 
@@ -47,7 +48,7 @@ const WorkingHours = lazy(() => import('@/pages/laws/WorkingHours'));
 const AppContent: React.FC = () => {
   return (
     <ThemeInitializer>
-      <ModernLayout>
+      <OptimizedLayout>
         <ScrollToTop />
         <Suspense fallback={<SimpleLoadingSpinner />}>
           <Routes>
@@ -91,7 +92,7 @@ const AppContent: React.FC = () => {
             <Route path="/admin" element={<Admin />} />
           </Routes>
         </Suspense>
-      </ModernLayout>
+      </OptimizedLayout>
     </ThemeInitializer>
   );
 };
