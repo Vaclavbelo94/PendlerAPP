@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'sonner';
 import { ThemeProvider } from 'next-themes';
-import { AuthProvider } from '@/contexts/AuthContext';
+import { AuthProvider } from '@/hooks/auth/useAuthProvider';
 import { GlobalPerformanceProvider } from '@/components/optimized/GlobalPerformanceProvider';
 import { ErrorBoundary } from '@/components/error/ErrorBoundary';
 import SimpleLoadingSpinner from '@/components/loading/SimpleLoadingSpinner';
@@ -48,7 +48,6 @@ export const OptimizedProviderStack: React.FC<OptimizedProviderStackProps> = ({ 
                     position="top-right" 
                     richColors 
                     closeButton
-                    limit={3}
                   />
                 </AuthProvider>
               </Suspense>
