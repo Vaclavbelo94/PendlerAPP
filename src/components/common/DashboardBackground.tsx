@@ -14,13 +14,13 @@ export const DashboardBackground: React.FC<DashboardBackgroundProps> = ({
   const getGradientByVariant = () => {
     switch (variant) {
       case 'laws':
-        return 'from-background via-background/95 to-blue-500/5';
+        return 'from-background via-background/95 to-primary/10';
       case 'travel':
-        return 'from-background via-background/95 to-primary/5';
+        return 'from-background via-background/95 to-secondary/10';
       case 'shifts':
-        return 'from-background via-background/95 to-green-500/5';
-      default:
         return 'from-background via-background/95 to-primary/5';
+      default:
+        return 'from-background via-background/95 to-primary/8';
     }
   };
 
@@ -58,10 +58,11 @@ export const DashboardBackground: React.FC<DashboardBackgroundProps> = ({
 
   return (
     <div className={`min-h-screen bg-gradient-to-br ${getGradientByVariant()}`}>
-      {/* Animated background elements */}
+      {/* Animated background elements with DHL colors */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 right-10 w-32 h-32 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-full blur-xl animate-pulse" />
-        <div className="absolute bottom-20 left-20 w-24 h-24 bg-gradient-to-r from-green-500/20 to-purple-500/20 rounded-full blur-xl animate-pulse delay-1000" />
+        <div className="absolute top-20 right-10 w-32 h-32 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-full blur-xl animate-pulse" />
+        <div className="absolute bottom-20 left-20 w-24 h-24 bg-gradient-to-r from-secondary/20 to-primary/20 rounded-full blur-xl animate-pulse delay-1000" />
+        <div className="absolute top-1/2 left-1/2 w-16 h-16 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-full blur-lg animate-pulse delay-500" />
         
         {/* Floating icons */}
         {getFloatingElements().map((element, index) => (

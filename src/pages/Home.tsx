@@ -1,27 +1,30 @@
 
 import React from 'react';
-import { Helmet } from "react-helmet";
-import Hero from '@/components/home/Hero';
+import { Helmet } from 'react-helmet';
+import DHLModernHero from '@/components/home/DHLModernHero';
 import Features from '@/components/home/Features';
-import { EnhancedStats } from '@/components/home/EnhancedStats';
-import { HowItWorks } from '@/components/home/HowItWorks';
-import Benefits from '@/components/home/Benefits';
+import Testimonials from '@/components/home/Testimonials';
 import CTA from '@/components/home/CTA';
 
 const Home = () => {
   return (
-    <div className="min-h-screen">
+    <>
       <Helmet>
-        <title>Pendlerův Pomocník - Váš průvodce pro práci v zahraničí</title>
+        <title>PendlerApp - Profesionální nástroje pro české pendlery</title>
+        <meta 
+          name="description" 
+          content="Komplexní řešení pro české pracovníky v zahraničí. Cestovní kalkulačky, daňové poradenství, překladač a správa směn na jednom místě." 
+        />
+        <meta name="keywords" content="pendler, czech, germany, austria, work abroad, tax advisor, calculator" />
       </Helmet>
       
-      <Hero />
-      <EnhancedStats />
-      <Features />
-      <HowItWorks />
-      <Benefits />
-      <CTA />
-    </div>
+      <div className="flex flex-col">
+        <DHLModernHero />
+        <Features />
+        <Testimonials />
+        <CTA />
+      </div>
+    </>
   );
 };
 

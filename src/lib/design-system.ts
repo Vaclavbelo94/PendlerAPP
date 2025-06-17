@@ -2,51 +2,59 @@
 export type ColorVariant = 'primary' | 'secondary' | 'accent' | 'muted' | 'danger';
 export type SizeVariant = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
-// Konstanty pro design - v souladu s tailwind.config
+// Aktualizované DHL konstanty pro design
 export const DESIGN_TOKENS = {
-  // Barvy z DHL brandu
+  // Přesné DHL barvy
   colors: {
     primary: {
-      DEFAULT: '#FFEB3B', // DHL žlutá
-      light: '#FFF9C4',
-      dark: '#FBC02D',
-      contrast: '#000000', // Text na primární barvě
+      DEFAULT: '#FFCC00', // Oficiální DHL žlutá
+      light: '#FFD633',
+      dark: '#E6B800',
+      contrast: '#000000', // Černý text na žluté
     },
     secondary: {
-      DEFAULT: '#F44336', // DHL červená
-      light: '#FFCDD2',
-      dark: '#D32F2F',
-      contrast: '#FFFFFF', // Text na sekundární barvě
+      DEFAULT: '#D40511', // Oficiální DHL červená
+      light: '#E63946',
+      dark: '#B8040E',
+      contrast: '#FFFFFF', // Bílý text na červené
     },
     accent: {
-      DEFAULT: '#3F51B5',
-      light: '#C5CAE9',
-      dark: '#303F9F',
-      contrast: '#FFFFFF',
+      DEFAULT: '#FFCC00', // Stejná jako primární pro konzistenci
+      light: '#FFD633',
+      dark: '#E6B800',
+      contrast: '#000000',
     },
     neutral: {
-      50: '#F5F5F5',
-      100: '#E0E0E0',
-      200: '#BDBDBD',
-      300: '#9E9E9E',
-      400: '#757575',
-      500: '#616161',
-      600: '#424242',
-      700: '#212121',
-      800: '#121212',
-      900: '#090909',
+      50: '#FAFAFA',
+      100: '#F5F5F5',
+      200: '#E5E5E5',
+      300: '#D4D4D4',
+      400: '#A3A3A3',
+      500: '#737373',
+      600: '#525252',
+      700: '#404040',
+      800: '#262626',
+      900: '#171717',
     },
-    success: '#4CAF50',
-    warning: '#FF9800',
-    danger: '#FF5252',
-    info: '#2196F3',
+    success: '#22C55E',
+    warning: '#FFCC00', // DHL žlutá pro warnings
+    danger: '#D40511', // DHL červená pro errors
+    info: '#3B82F6',
   },
 
-  // Typografie
+  // Moderní DHL gradienty
+  gradients: {
+    primary: 'linear-gradient(135deg, #FFCC00 0%, #D40511 100%)',
+    subtle: 'linear-gradient(135deg, rgba(255, 204, 0, 0.1) 0%, rgba(212, 5, 17, 0.1) 100%)',
+    radial: 'radial-gradient(circle at center, #FFCC00 0%, #D40511 70%)',
+    hero: 'linear-gradient(135deg, #FFCC00 0%, #FFD633 50%, #D40511 100%)',
+  },
+
+  // Typography
   typography: {
     families: {
       base: 'Inter, sans-serif',
-      heading: 'Poppins, sans-serif',
+      heading: 'Inter, sans-serif', // Používáme Inter pro konzistenci
     },
     weights: {
       light: 300,
@@ -89,21 +97,22 @@ export const DESIGN_TOKENS = {
   radius: {
     none: '0',
     sm: '0.125rem',
-    DEFAULT: '0.25rem',
-    md: '0.375rem',
-    lg: '0.5rem',
-    xl: '0.75rem',
-    '2xl': '1rem',
+    DEFAULT: '0.375rem', // Moderní zaoblení
+    md: '0.5rem',
+    lg: '0.75rem',
+    xl: '1rem',
+    '2xl': '1.5rem',
     full: '9999px',
   },
 
-  // Shadows
+  // Shadows s DHL barvami
   shadows: {
-    sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-    DEFAULT: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
-    md: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-    lg: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-    xl: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+    sm: '0 1px 2px 0 rgba(255, 204, 0, 0.05)',
+    DEFAULT: '0 1px 3px 0 rgba(255, 204, 0, 0.1), 0 1px 2px 0 rgba(212, 5, 17, 0.06)',
+    md: '0 4px 6px -1px rgba(255, 204, 0, 0.1), 0 2px 4px -1px rgba(212, 5, 17, 0.06)',
+    lg: '0 10px 15px -3px rgba(255, 204, 0, 0.1), 0 4px 6px -2px rgba(212, 5, 17, 0.05)',
+    xl: '0 20px 25px -5px rgba(255, 204, 0, 0.1), 0 10px 10px -5px rgba(212, 5, 17, 0.04)',
+    glow: '0 0 20px rgba(255, 204, 0, 0.3)',
   },
 
   // Animace
@@ -140,11 +149,12 @@ export const DESIGN_TOKENS = {
   },
 };
 
-// Přidání specifických DHL barev pro rychlý přístup
+// Přesné DHL barvy pro rychlý přístup
 export const DHL_COLORS = {
   yellow: '#FFCC00',
   red: '#D40511',
   black: '#000000',
+  white: '#FFFFFF',
 };
 
 // Utility funkce pro design systém
