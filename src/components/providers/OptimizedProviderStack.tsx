@@ -20,7 +20,7 @@ const queryClient = new QueryClient({
     queries: {
       staleTime: 5 * 60 * 1000,
       gcTime: 10 * 60 * 1000,
-      retry: 1, // Reduce retries for faster failures
+      retry: 1,
     },
   },
 });
@@ -34,9 +34,9 @@ export const OptimizedProviderStack: React.FC<OptimizedProviderStackProps> = ({
 }) => {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
+      <Router>
         <ThemeProvider>
-          <Router>
+          <TooltipProvider>
             <AuthProvider>
               <Suspense fallback={<SimpleLoadingSpinner />}>
                 <StateManagerProvider>
@@ -63,9 +63,9 @@ export const OptimizedProviderStack: React.FC<OptimizedProviderStackProps> = ({
                 }}
               />
             </AuthProvider>
-          </Router>
+          </TooltipProvider>
         </ThemeProvider>
-      </TooltipProvider>
+      </Router>
     </QueryClientProvider>
   );
 };
