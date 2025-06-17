@@ -33,27 +33,27 @@ export const OptimizedProviderStack: React.FC<OptimizedProviderStackProps> = ({ 
   return (
     <ErrorBoundary>
       <BrowserRouter>
-        <GlobalPerformanceProvider>
-          <QueryClientProvider client={queryClient}>
-            <ThemeProvider 
-              attribute="class" 
-              defaultTheme="system" 
-              enableSystem 
-              disableTransitionOnChange={false}
-            >
-              <Suspense fallback={<SimpleLoadingSpinner />}>
-                <AuthProvider>
+        <QueryClientProvider client={queryClient}>
+          <ThemeProvider 
+            attribute="class" 
+            defaultTheme="system" 
+            enableSystem 
+            disableTransitionOnChange={false}
+          >
+            <Suspense fallback={<SimpleLoadingSpinner />}>
+              <AuthProvider>
+                <GlobalPerformanceProvider>
                   {children}
                   <Toaster 
                     position="top-right" 
                     richColors 
                     closeButton
                   />
-                </AuthProvider>
-              </Suspense>
-            </ThemeProvider>
-          </QueryClientProvider>
-        </GlobalPerformanceProvider>
+                </GlobalPerformanceProvider>
+              </AuthProvider>
+            </Suspense>
+          </ThemeProvider>
+        </QueryClientProvider>
       </BrowserRouter>
     </ErrorBoundary>
   );
