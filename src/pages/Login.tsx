@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -86,14 +87,14 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 relative overflow-hidden">
+    <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Background decorations */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-100/30 via-purple-100/30 to-pink-100/30" />
-      <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-blue-400/10 to-purple-400/10 rounded-full blur-3xl" />
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-br from-purple-400/10 to-pink-400/10 rounded-full blur-3xl" />
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-100/30 via-purple-100/30 to-pink-100/30 dark:from-blue-900/10 dark:via-purple-900/10 dark:to-pink-900/10" />
+      <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-blue-400/10 to-purple-400/10 dark:from-blue-600/5 dark:to-purple-600/5 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-br from-purple-400/10 to-pink-400/10 dark:from-purple-600/5 dark:to-pink-600/5 rounded-full blur-3xl" />
       
       <div className="relative container max-w-md mx-auto py-16 px-4">
-        <Card className="w-full bg-white/80 backdrop-blur-sm border-0 shadow-xl">
+        <Card className="w-full bg-card/80 backdrop-blur-sm border shadow-xl">
           <CardHeader className="space-y-1 text-center">
             <CardTitle className="text-2xl bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
               Přihlášení
@@ -108,7 +109,7 @@ const Login = () => {
               <Button 
                 type="button" 
                 variant="outline" 
-                className="w-full flex items-center justify-center gap-2 bg-white/50 backdrop-blur-sm border-gray-200 hover:bg-white/70"
+                className="w-full flex items-center justify-center gap-2 bg-card/50 backdrop-blur-sm border-border hover:bg-muted/70"
                 onClick={handleGoogleLogin}
                 disabled={isGoogleLoading}
               >
@@ -150,7 +151,7 @@ const Login = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="bg-white/50 backdrop-blur-sm border-gray-200"
+                    className="bg-card/50 backdrop-blur-sm border-border"
                   />
                 </div>
                 <div className="grid gap-2">
@@ -170,7 +171,7 @@ const Login = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="bg-white/50 backdrop-blur-sm border-gray-200"
+                    className="bg-card/50 backdrop-blur-sm border-border"
                   />
                 </div>
                 <Button
