@@ -41,11 +41,11 @@ const FAQ = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-purple-50 relative overflow-hidden">
+    <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Background decorations */}
-      <div className="absolute inset-0 bg-gradient-to-br from-rose-100/30 via-pink-100/30 to-purple-100/30" />
-      <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-rose-400/10 to-pink-400/10 rounded-full blur-3xl" />
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-br from-pink-400/10 to-purple-400/10 rounded-full blur-3xl" />
+      <div className="absolute inset-0 bg-gradient-to-br from-rose-100/30 via-pink-100/30 to-purple-100/30 dark:from-rose-900/10 dark:via-pink-900/10 dark:to-purple-900/10" />
+      <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-rose-400/10 to-pink-400/10 dark:from-rose-600/5 dark:to-pink-600/5 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-br from-pink-400/10 to-purple-400/10 dark:from-pink-600/5 dark:to-purple-600/5 rounded-full blur-3xl" />
       
       <div className="relative container py-12 px-4">
         <motion.div
@@ -74,7 +74,7 @@ const FAQ = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-xl">
+          <Card className="bg-card/80 backdrop-blur-sm border shadow-xl">
             <CardContent className="p-0">
               <Accordion type="single" collapsible className="w-full">
                 {faqItems.map((item, index) => (
@@ -86,9 +86,9 @@ const FAQ = () => {
                   >
                     <AccordionItem 
                       value={`item-${index}`} 
-                      className="border-b border-gray-100 last:border-b-0"
+                      className="border-b border-border last:border-b-0"
                     >
-                      <AccordionTrigger className="text-left px-6 py-4 hover:bg-gradient-to-r hover:from-rose-50/50 hover:to-pink-50/50 transition-all duration-300 text-base font-semibold">
+                      <AccordionTrigger className="text-left px-6 py-4 hover:bg-muted/50 transition-all duration-300 text-base font-semibold text-foreground">
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 bg-gradient-to-r from-rose-500 to-pink-600 rounded-lg flex items-center justify-center">
                             <span className="text-white text-sm font-bold">{index + 1}</span>
@@ -97,7 +97,7 @@ const FAQ = () => {
                         </div>
                       </AccordionTrigger>
                       <AccordionContent className="px-6 pb-4">
-                        <div className="ml-11 text-muted-foreground leading-relaxed bg-gradient-to-r from-gray-50 to-slate-50 p-4 rounded-lg border border-gray-100">
+                        <div className="ml-11 text-muted-foreground leading-relaxed bg-muted/30 p-4 rounded-lg border border-border">
                           {item.answer}
                         </div>
                       </AccordionContent>
@@ -115,9 +115,9 @@ const FAQ = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8 }}
         >
-          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-xl max-w-2xl mx-auto">
+          <Card className="bg-card/80 backdrop-blur-sm border shadow-xl max-w-2xl mx-auto">
             <CardHeader>
-              <CardTitle className="flex items-center justify-center gap-3">
+              <CardTitle className="flex items-center justify-center gap-3 text-foreground">
                 <div className="w-12 h-12 bg-gradient-to-r from-rose-500 to-pink-600 rounded-xl flex items-center justify-center">
                   <MessageCircle className="h-6 w-6 text-white" />
                 </div>
@@ -131,7 +131,7 @@ const FAQ = () => {
               </p>
               <motion.a 
                 href="/contact" 
-                className="inline-flex items-center gap-2 text-rose-600 hover:text-rose-700 font-semibold transition-colors duration-200"
+                className="inline-flex items-center gap-2 text-rose-600 hover:text-rose-700 dark:text-rose-400 dark:hover:text-rose-300 font-semibold transition-colors duration-200"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
