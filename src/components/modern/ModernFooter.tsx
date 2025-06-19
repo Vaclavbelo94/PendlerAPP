@@ -14,7 +14,6 @@ export const ModernFooter: React.FC = () => {
       links: [
         { key: 'dashboard', path: '/dashboard' },
         { key: 'shifts', path: '/shifts' },
-        { key: 'calculator', path: '/calculator' },
         { key: 'vehicle', path: '/vehicle' },
       ]
     },

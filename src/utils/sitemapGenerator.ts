@@ -42,12 +42,6 @@ export const generateSitemap = (): string => {
       priority: '0.8'
     },
     {
-      loc: `${baseUrl}/calculator`,
-      lastmod: currentDate,
-      changefreq: 'monthly',
-      priority: '0.8'
-    },
-    {
       loc: `${baseUrl}/laws`,
       lastmod: currentDate,
       changefreq: 'monthly',
@@ -146,7 +140,7 @@ export const generateSitemap = (): string => {
   </url>`).join('');
 
   return `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/siteme/0.9">
 ${xmlUrls}
 </urlset>`;
 };
