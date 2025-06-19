@@ -14,7 +14,9 @@ import {
   HelpCircle,
   Scale,
   Shield,
-  Languages
+  Languages,
+  Lock,
+  FileCheck
 } from 'lucide-react';
 
 export interface ModernNavigationItem {
@@ -169,6 +171,28 @@ export const modernNavigationItems: ModernNavigationItem[] = [
     isPublic: true,
     color: 'text-rose-600',
     gradient: 'from-rose-500 to-rose-600'
+  },
+  {
+    id: 'privacy',
+    label: 'Ochrana údajů',
+    href: '/privacy',
+    icon: Lock,
+    description: 'Ochrana osobních údajů',
+    category: 'support',
+    isPublic: true,
+    color: 'text-teal-600',
+    gradient: 'from-teal-500 to-teal-600'
+  },
+  {
+    id: 'terms',
+    label: 'Podmínky',
+    href: '/terms',
+    icon: FileCheck,
+    description: 'Podmínky použití',
+    category: 'support',
+    isPublic: true,
+    color: 'text-orange-600',
+    gradient: 'from-orange-500 to-orange-600'
   },
   {
     id: 'settings',

@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -22,7 +23,8 @@ import {
   User,
   Shield,
   Scale,
-  Lock
+  Lock,
+  FileCheck
 } from 'lucide-react';
 
 const MobileNavigation = ({ onClose }: { onClose: () => void }) => {
@@ -51,7 +53,9 @@ const MobileNavigation = ({ onClose }: { onClose: () => void }) => {
     { label: 'Nastavení', href: '/settings', icon: Settings, requiresAuth: true },
     { label: 'Premium', href: '/premium', icon: Crown, isPublic: true },
     { label: 'Kontakt', href: '/contact', icon: Contact, isPublic: true },
-    { label: 'FAQ', href: '/faq', icon: HelpCircle, isPublic: true }
+    { label: 'FAQ', href: '/faq', icon: HelpCircle, isPublic: true },
+    { label: 'Ochrana údajů', href: '/privacy', icon: Lock, isPublic: true },
+    { label: 'Podmínky', href: '/terms', icon: FileCheck, isPublic: true }
   ];
 
   if (isAdmin) {
