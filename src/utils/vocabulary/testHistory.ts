@@ -1,5 +1,5 @@
 
-import { TestResult } from '@/components/language/vocabulary/VocabularyTest';
+import { TestResult } from '@/types/language';
 import { saveData } from '@/utils/offlineStorage';
 
 // Save and load test history

@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { crossDeviceSyncService } from '@/services/CrossDeviceSyncService';
 import { smartLanguagePackService } from '@/services/SmartLanguagePackService';
@@ -95,7 +94,7 @@ export const useVocabularySyncManager = (
         console.log('Received remote vocabulary update:', data);
         
         // Add new items from remote device
-        const newItems = data.items.filter((remoteItem: VocabularyItem) => 
+        const newItems = data.items.filter((remoteItem: BasicVocabularyItem) => 
           !vocabularyItems.some(localItem => localItem.id === remoteItem.id)
         );
         

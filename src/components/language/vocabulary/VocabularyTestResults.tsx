@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
-import type { TestResult } from './VocabularyTest';
+import type { TestResult } from '@/types/language';
 
 interface VocabularyTestResultsProps {
   results: TestResult;

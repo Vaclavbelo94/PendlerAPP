@@ -66,3 +66,54 @@ export interface BasicVocabularyItem {
   correctCount: number;
   incorrectCount: number;
 }
+
+// Gamification types
+export interface Achievement {
+  id: string;
+  name: string;
+  unlocked: boolean;
+  date: string | null;
+}
+
+export interface GamificationData {
+  xp: number;
+  level: number;
+  streak: number;
+  dailyGoalCompleted: boolean;
+  lastActivity: string | null;
+  achievements: Achievement[];
+}
+
+// Offline status types
+export interface OfflineStatus {
+  grammarSaved: boolean;
+  vocabularySaved: boolean;
+  phrasesSaved: boolean;
+}
+
+// Smart pack recommendation types
+export interface SmartPackRecommendation {
+  id: string;
+  packId: string;
+  reason: string;
+  priority: 'low' | 'medium' | 'high';
+  estimatedValue: number;
+  basedOn: 'ai' | 'usage' | 'progress' | 'preferences';
+}
+
+// Test result types
+export interface TestItem {
+  item: BasicVocabularyItem;
+  userAnswer: string;
+  wasCorrect: boolean;
+}
+
+export interface TestResult {
+  id?: string;
+  startTime: Date;
+  endTime: Date;
+  totalQuestions: number;
+  correctAnswers: number;
+  wrongAnswers: number;
+  testItems: TestItem[];
+}

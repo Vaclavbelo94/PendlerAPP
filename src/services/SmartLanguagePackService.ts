@@ -1,5 +1,6 @@
+
 import { Subject } from 'rxjs';
-import { BasicVocabularyItem } from '@/types/language';
+import { BasicVocabularyItem, SmartPackRecommendation } from '@/types/language';
 
 // SmartLanguagePackService - simulates language pack loading and usage tracking
 // This is a simplified version for demonstration purposes
@@ -136,3 +137,4 @@ class SmartLanguagePackService {
 }
 
 export const smartLanguagePackService = SmartLanguagePackService.getInstance();
+export type { SmartPackRecommendation };
