@@ -44,8 +44,7 @@ const defaultVocabulary: VocabularyItem[] = [
     repetitionLevel: 0,
     correctCount: 0,
     incorrectCount: 0,
-    nextReviewDate: new Date().toISOString(),
-    nextReview: new Date()
+    nextReviewDate: new Date().toISOString()
   },
   {
     id: '2',
@@ -58,8 +57,7 @@ const defaultVocabulary: VocabularyItem[] = [
     repetitionLevel: 0,
     correctCount: 0,
     incorrectCount: 0,
-    nextReviewDate: new Date().toISOString(),
-    nextReview: new Date()
+    nextReviewDate: new Date().toISOString()
   }
 ];
 
