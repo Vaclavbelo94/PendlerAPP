@@ -7,12 +7,14 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Mail, Phone, MapPin, Send, MessageCircle } from "lucide-react";
+import { useLanguage } from '@/hooks/useLanguage';
 
 const Contact = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const { t } = useLanguage();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -27,6 +29,15 @@ const Contact = () => {
     setEmail("");
     setMessage("");
     setIsLoading(false);
+  };
+
+  const getEmailPlaceholder = () => {
+    const { language } = useLanguage();
+    switch (language) {
+      case 'de': return 'ihre@email.de';
+      case 'pl': return 'twoj@email.pl';
+      default: return 'vas@email.cz';
+    }
   };
 
   return (
@@ -50,10 +61,10 @@ const Contact = () => {
             <Mail className="w-10 h-10 text-white" />
           </motion.div>
           <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent mb-4">
-            Kontaktujte nás
+            {t('contactTitle')}
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Máte dotaz nebo návrh? Neváhejte nás kontaktovat. Odpovídáme obvykle do 24 hodin.
+            {t('contactSubtitle')}
           </p>
         </motion.div>
 
@@ -70,7 +81,7 @@ const Contact = () => {
                   <div className="w-10 h-10 bg-gradient-to-r from-violet-500 to-purple-600 rounded-lg flex items-center justify-center">
                     <MessageCircle className="h-6 w-6 text-white" />
                   </div>
-                  Kontaktní informace
+                  {t('contactInfo')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-8">
@@ -83,9 +94,9 @@ const Contact = () => {
                     <Mail className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-lg text-gray-900">Email</h3>
+                    <h3 className="font-semibold text-lg text-gray-900">{t('contactEmail')}</h3>
                     <p className="text-violet-600 font-medium">info@pendleruvpomocnik.cz</p>
-                    <p className="text-sm text-muted-foreground mt-1">Odpovídáme do 24 hodin</p>
+                    <p className="text-sm text-muted-foreground mt-1">{t('contactResponseTime')}</p>
                   </div>
                 </motion.div>
                 
@@ -98,9 +109,9 @@ const Contact = () => {
                     <Phone className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-lg text-gray-900">Telefon</h3>
+                    <h3 className="font-semibold text-lg text-gray-900">{t('contactPhone')}</h3>
                     <p className="text-purple-600 font-medium">+420 725 458 395</p>
-                    <p className="text-sm text-muted-foreground mt-1">Po-Pá: 9:00 - 17:00</p>
+                    <p className="text-sm text-muted-foreground mt-1">{t('contactWorkingHours')}</p>
                   </div>
                 </motion.div>
                 
@@ -113,7 +124,7 @@ const Contact = () => {
                     <MapPin className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-lg text-gray-900">Adresa</h3>
+                    <h3 className="font-semibold text-lg text-gray-900">{t('contactAddress')}</h3>
                     <div className="text-indigo-600 font-medium space-y-1">
                       <p>Pendlerův Pomocník s.r.o.</p>
                       <p>Hlavní 123</p>
@@ -137,7 +148,7 @@ const Contact = () => {
                   <div className="w-10 h-10 bg-gradient-to-r from-violet-500 to-purple-600 rounded-lg flex items-center justify-center">
                     <Send className="h-6 w-6 text-white" />
                   </div>
-                  Napište nám
+                  {t('contactFormTitle')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -148,13 +159,13 @@ const Contact = () => {
                     transition={{ delay: 0.4 }}
                   >
                     <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-2">
-                      Jméno
+                      {t('contactName')}
                     </label>
                     <Input
                       id="name"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      placeholder="Vaše jméno"
+                      placeholder={t('contactNamePlaceholder')}
                       required
                       className="border-violet-200 focus:border-violet-400 focus:ring-violet-400/20"
                     />
@@ -166,14 +177,14 @@ const Contact = () => {
                     transition={{ delay: 0.5 }}
                   >
                     <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
-                      Email
+                      {t('contactEmail')}
                     </label>
                     <Input
                       id="email"
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="vas@email.cz"
+                      placeholder={getEmailPlaceholder()}
                       required
                       className="border-violet-200 focus:border-violet-400 focus:ring-violet-400/20"
                     />
@@ -185,13 +196,13 @@ const Contact = () => {
                     transition={{ delay: 0.6 }}
                   >
                     <label htmlFor="message" className="block text-sm font-semibold text-gray-700 mb-2">
-                      Zpráva
+                      {t('contactMessage')}
                     </label>
                     <Textarea
                       id="message"
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
-                      placeholder="Vaše zpráva..."
+                      placeholder={t('contactMessagePlaceholder')}
                       rows={6}
                       required
                       className="border-violet-200 focus:border-violet-400 focus:ring-violet-400/20 resize-none"
@@ -209,7 +220,7 @@ const Contact = () => {
                       disabled={isLoading}
                     >
                       <Send className="w-4 h-4 mr-2" />
-                      {isLoading ? "Odesílání..." : "Odeslat zprávu"}
+                      {isLoading ? t('contactSending') : t('contactSend')}
                     </Button>
                   </motion.div>
                 </form>
