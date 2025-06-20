@@ -50,6 +50,18 @@ export const translations: Translations = {
     email: 'E-mail',
     password: 'Heslo',
     
+    // Profile
+    profileTitle: 'Můj profil',
+    profileSubtitle: 'Správa vašeho účtu',
+    accountManagement: 'Správa účtu',
+    personalInfo: 'Osobní informace',
+    accountSettings: 'Nastavení účtu',
+    dataExport: 'Export dat',
+    accountDeletion: 'Smazání účtu',
+    changePassword: 'Změnit heslo',
+    exportData: 'Exportovat data',
+    deleteAccount: 'Smazat účet',
+    
     // Registration
     registerTitle: 'Vytvořit účet',
     registerDescription: 'Vytvořte si účet a začněte využívat všechny funkce aplikace',
@@ -88,6 +100,75 @@ export const translations: Translations = {
     cleanStorage: 'Vyčistit úložiště',
     storageCleanedUp: 'Úložiště bylo vyčištěno',
     
+    // Tax Advisor
+    taxAdvisorTitle: 'Daňový poradce',
+    taxAdvisorSubtitle: 'Průvodce krok za krokem pro optimální daňové přiznání',
+    taxCalculators: 'Daňové kalkulátory',
+    taxOptimization: 'Daňová optimalizace',
+    documentGenerator: 'Generátor dokumentů',
+    taxReminders: 'Daňové připomínky',
+    quickCalculations: 'Rychlé výpočty pro vaše daňové plánování',
+    germanCalculator: 'Německý kalkulátor',
+    calculationHistory: 'Historie výpočtů',
+    optimizationTips: 'Optimalizace',
+    currentSituation: 'Aktuální situace',
+    optimizedSituation: 'Optimalizovaná situace',
+    taxSavings: 'Můžete ušetřit',
+    annualSavings: 'Roční úspora na daních',
+    yearly: 'ročně',
+    germanTaxCalculator2024: 'Německý daňový kalkulátor 2024',
+    currentRates: 'Aktuální sazby',
+    calculatorDescription: 'Vypočítejte přesnou výši vaší daňové povinnosti podle německých daňových sazeb.',
+    loggedInSaves: 'Vaše výpočty se automaticky ukládají.',
+    notLoggedInNoSave: 'Přihlaste se pro ukládání výpočtů.',
+    
+    // Tax Notifications
+    taxNotificationsTitle: 'Daňové připomínky',
+    taxNotificationsSubtitle: 'Důležité termíny a upozornění pro daňové záležitosti',
+    noActiveReminders: 'Žádné aktivní připomínky',
+    showAllReminders: 'Zobrazit všechny připomínky',
+    showLessReminders: 'Zobrazit méně připomínek',
+    deadline: 'Termín',
+    highPriority: 'Vysoká',
+    mediumPriority: 'Střední',
+    lowPriority: 'Nízká',
+    
+    // Tax Optimizer
+    taxOptimizerTitle: 'Daňová optimalizace pro pendlery',
+    taxOptimizerDescription: 'Tento nástroj vám pomůže optimalizovat vaše daňové zatížení při práci v Německu. Vyplňte formulář níže a zjistěte, kolik můžete ušetřit na daních.',
+    calculationSuccessful: 'Výpočet proběhl úspěšně',
+    potentialSavings: 'Potenciální úspora',
+    calculationError: 'Chyba při výpočtu',
+    checkValues: 'Došlo k chybě při výpočtu daní. Zkontrolujte zadané hodnoty.',
+    
+    // Document Generator
+    documentGeneratorTitle: 'Generátor daňových dokumentů',
+    documentGeneratorLogin: 'Pro používání generátoru se musíte přihlásit',
+    loginForDocuments: 'Přihlaste se pro generování a ukládání daňových dokumentů',
+    documentExamples: 'Vzory dokumentů',
+    documentExamplesDescription: 'Prohlédněte si vzorové dokumenty s ukázkovými daty',
+    showExamples: 'Zobrazit příklady',
+    documentHistory: 'Historie dokumentů',
+    documentHistoryDescription: 'Vaše vygenerované daňové dokumenty',
+    noDocumentsYet: 'Zatím jste nevygenerovali žádné dokumenty',
+    generateNewDocument: 'Generovat nový dokument',
+    fillFormDescription: 'Vyplňte formulář pro vytvoření daňového dokumentu',
+    generateDocument: 'Vygenerovat dokument',
+    generatingDocument: 'Generuji dokument...',
+    download: 'Stáhnout',
+    delete: 'Smazat',
+    deleting: 'Maže se...',
+    confirmDeletion: 'Potvrdit smazání',
+    deleteConfirmation: 'Opravdu chcete smazat tento dokument? Tato akce je nevratná.',
+    cancel: 'Zrušit',
+    deleteDocument: 'Smazat dokument',
+    
+    // Document Types
+    taxReturn: 'Daňové přiznání',
+    commuterCertificate: 'Potvrzení o dojíždění',
+    taxReductionApplication: 'Žádost o snížení daně ze mzdy',
+    workEquipmentCertificate: 'Potvrzení o pracovních prostředcích',
+    
     // Contact
     contactTitle: 'Kontaktujte nás',
     contactSubtitle: 'Máte otázky nebo potřebujete pomoc? Rádi vám pomůžeme!',
@@ -104,6 +185,20 @@ export const translations: Translations = {
     contactMessagePlaceholder: 'Popište váš dotaz nebo problém...',
     contactSending: 'Odesílání...',
     contactSend: 'Odeslat zprávu',
+    
+    // Common
+    save: 'Uložit',
+    update: 'Aktualizovat',
+    create: 'Vytvořit',
+    edit: 'Upravit',
+    close: 'Zavřít',
+    back: 'Zpět',
+    next: 'Další',
+    previous: 'Předchozí',
+    success: 'Úspěch',
+    error: 'Chyba',
+    warning: 'Upozornění',
+    info: 'Informace',
     
     // Footer
     footerAppName: 'PendlerApp',
@@ -143,6 +238,18 @@ export const translations: Translations = {
     email: 'E-Mail',
     password: 'Passwort',
     
+    // Profile
+    profileTitle: 'Mein Profil',
+    profileSubtitle: 'Kontoverwaltung',
+    accountManagement: 'Kontoverwaltung',
+    personalInfo: 'Persönliche Informationen',
+    accountSettings: 'Kontoeinstellungen',
+    dataExport: 'Datenexport',
+    accountDeletion: 'Konto löschen',
+    changePassword: 'Passwort ändern',
+    exportData: 'Daten exportieren',
+    deleteAccount: 'Konto löschen',
+    
     // Registration
     registerTitle: 'Konto erstellen',
     registerDescription: 'Erstellen Sie ein Konto und nutzen Sie alle App-Funktionen',
@@ -181,6 +288,75 @@ export const translations: Translations = {
     cleanStorage: 'Speicher leeren',
     storageCleanedUp: 'Speicher wurde geleert',
     
+    // Tax Advisor
+    taxAdvisorTitle: 'Steuerberater',
+    taxAdvisorSubtitle: 'Schritt-für-Schritt-Anleitung für optimale Steuererklärung',
+    taxCalculators: 'Steuerrechner',
+    taxOptimization: 'Steueroptimierung',
+    documentGenerator: 'Dokumentengenerator',
+    taxReminders: 'Steuererinnerungen',
+    quickCalculations: 'Schnelle Berechnungen für Ihre Steuerplanung',
+    germanCalculator: 'Deutscher Rechner',
+    calculationHistory: 'Berechnungshistorie',
+    optimizationTips: 'Optimierung',
+    currentSituation: 'Aktuelle Situation',
+    optimizedSituation: 'Optimierte Situation',
+    taxSavings: 'Sie können sparen',
+    annualSavings: 'Jährliche Steuerersparnis',
+    yearly: 'jährlich',
+    germanTaxCalculator2024: 'Deutscher Steuerrechner 2024',
+    currentRates: 'Aktuelle Sätze',
+    calculatorDescription: 'Berechnen Sie die genaue Höhe Ihrer Steuerschuld nach deutschen Steuersätzen.',
+    loggedInSaves: 'Ihre Berechnungen werden automatisch gespeichert.',
+    notLoggedInNoSave: 'Melden Sie sich an, um Berechnungen zu speichern.',
+    
+    // Tax Notifications
+    taxNotificationsTitle: 'Steuererinnerungen',
+    taxNotificationsSubtitle: 'Wichtige Termine und Hinweise für Steuerangelegenheiten',
+    noActiveReminders: 'Keine aktiven Erinnerungen',
+    showAllReminders: 'Alle Erinnerungen anzeigen',
+    showLessReminders: 'Weniger Erinnerungen anzeigen',
+    deadline: 'Termin',
+    highPriority: 'Hoch',
+    mediumPriority: 'Mittel',
+    lowPriority: 'Niedrig',
+    
+    // Tax Optimizer
+    taxOptimizerTitle: 'Steueroptimierung für Pendler',
+    taxOptimizerDescription: 'Dieses Tool hilft Ihnen, Ihre Steuerbelastung bei der Arbeit in Deutschland zu optimieren. Füllen Sie das Formular unten aus und erfahren Sie, wie viel Sie bei Steuern sparen können.',
+    calculationSuccessful: 'Berechnung erfolgreich',
+    potentialSavings: 'Potenzielle Ersparnis',
+    calculationError: 'Berechnungsfehler',
+    checkValues: 'Fehler bei der Steuerberechnung aufgetreten. Überprüfen Sie die eingegebenen Werte.',
+    
+    // Document Generator
+    documentGeneratorTitle: 'Steuerdokumentengenerator',
+    documentGeneratorLogin: 'Sie müssen sich anmelden, um den Generator zu verwenden',
+    loginForDocuments: 'Melden Sie sich an zum Generieren und Speichern von Steuerdokumenten',
+    documentExamples: 'Dokumentenvorlagen',
+    documentExamplesDescription: 'Sehen Sie sich Beispieldokumente mit Musterdaten an',
+    showExamples: 'Beispiele anzeigen',
+    documentHistory: 'Dokumentenhistorie',
+    documentHistoryDescription: 'Ihre generierten Steuerdokumente',
+    noDocumentsYet: 'Sie haben noch keine Dokumente generiert',
+    generateNewDocument: 'Neues Dokument generieren',
+    fillFormDescription: 'Füllen Sie das Formular aus, um ein Steuerdokument zu erstellen',
+    generateDocument: 'Dokument generieren',
+    generatingDocument: 'Dokument wird generiert...',
+    download: 'Herunterladen',
+    delete: 'Löschen',
+    deleting: 'Wird gelöscht...',
+    confirmDeletion: 'Löschung bestätigen',
+    deleteConfirmation: 'Möchten Sie dieses Dokument wirklich löschen? Diese Aktion ist unwiderruflich.',
+    cancel: 'Abbrechen',
+    deleteDocument: 'Dokument löschen',
+    
+    // Document Types
+    taxReturn: 'Steuererklärung',
+    commuterCertificate: 'Pendlerbescheinigung',
+    taxReductionApplication: 'Antrag auf Lohnsteuerermäßigung',
+    workEquipmentCertificate: 'Nachweis Arbeitsmittel',
+    
     // Contact
     contactTitle: 'Kontaktieren Sie uns',
     contactSubtitle: 'Haben Sie Fragen oder brauchen Hilfe? Wir helfen Ihnen gerne!',
@@ -197,6 +373,20 @@ export const translations: Translations = {
     contactMessagePlaceholder: 'Beschreiben Sie Ihre Frage oder Ihr Problem...',
     contactSending: 'Wird gesendet...',
     contactSend: 'Nachricht senden',
+    
+    // Common
+    save: 'Speichern',
+    update: 'Aktualisieren',
+    create: 'Erstellen',
+    edit: 'Bearbeiten',
+    close: 'Schließen',
+    back: 'Zurück',
+    next: 'Weiter',
+    previous: 'Vorherige',
+    success: 'Erfolg',
+    error: 'Fehler',
+    warning: 'Warnung',
+    info: 'Information',
     
     // Footer
     footerAppName: 'PendlerApp',
@@ -236,6 +426,18 @@ export const translations: Translations = {
     email: 'E-mail',
     password: 'Hasło',
     
+    // Profile
+    profileTitle: 'Mój profil',
+    profileSubtitle: 'Zarządzanie kontem',
+    accountManagement: 'Zarządzanie kontem',
+    personalInfo: 'Informacje osobiste',
+    accountSettings: 'Ustawienia konta',
+    dataExport: 'Eksport danych',
+    accountDeletion: 'Usunięcie konta',
+    changePassword: 'Zmień hasło',
+    exportData: 'Eksportuj dane',
+    deleteAccount: 'Usuń konto',
+    
     // Registration
     registerTitle: 'Utwórz konto',
     registerDescription: 'Utwórz konto i korzystaj ze wszystkich funkcji aplikacji',
@@ -274,6 +476,75 @@ export const translations: Translations = {
     cleanStorage: 'Wyczyść pamięć',
     storageCleanedUp: 'Pamięć została wyczyszczona',
     
+    // Tax Advisor
+    taxAdvisorTitle: 'Doradca podatkowy',
+    taxAdvisorSubtitle: 'Przewodnik krok po kroku dla optymalnego rozliczenia podatkowego',
+    taxCalculators: 'Kalkulatory podatkowe',
+    taxOptimization: 'Optymalizacja podatkowa',
+    documentGenerator: 'Generator dokumentów',
+    taxReminders: 'Przypomnienia podatkowe',
+    quickCalculations: 'Szybkie obliczenia dla planowania podatkowego',
+    germanCalculator: 'Kalkulator niemiecki',
+    calculationHistory: 'Historia obliczeń',
+    optimizationTips: 'Optymalizacja',
+    currentSituation: 'Obecna sytuacja',
+    optimizedSituation: 'Zoptymalizowana sytuacja',
+    taxSavings: 'Możesz zaoszczędzić',
+    annualSavings: 'Roczne oszczędności podatkowe',
+    yearly: 'rocznie',
+    germanTaxCalculator2024: 'Niemiecki kalkulator podatkowy 2024',
+    currentRates: 'Aktualne stawki',
+    calculatorDescription: 'Oblicz dokładną wysokość zobowiązania podatkowego według niemieckich stawek podatkowych.',
+    loggedInSaves: 'Twoje obliczenia są automatycznie zapisywane.',
+    notLoggedInNoSave: 'Zaloguj się, aby zapisywać obliczenia.',
+    
+    // Tax Notifications
+    taxNotificationsTitle: 'Przypomnienia podatkowe',
+    taxNotificationsSubtitle: 'Ważne terminy i powiadomienia dotyczące spraw podatkowych',
+    noActiveReminders: 'Brak aktywnych przypomnień',
+    showAllReminders: 'Pokaż wszystkie przypomnienia',
+    showLessReminders: 'Pokaż mniej przypomnień',
+    deadline: 'Termin',
+    highPriority: 'Wysoki',
+    mediumPriority: 'Średni',
+    lowPriority: 'Niski',
+    
+    // Tax Optimizer
+    taxOptimizerTitle: 'Optymalizacja podatkowa dla dojeżdżających',
+    taxOptimizerDescription: 'To narzędzie pomoże Ci zoptymalizować obciążenie podatkowe podczas pracy w Niemczech. Wypełnij formularz poniżej i dowiedz się, ile możesz zaoszczędzić na podatkach.',
+    calculationSuccessful: 'Obliczenie zakończone sukcesem',
+    potentialSavings: 'Potencjalne oszczędności',
+    calculationError: 'Błąd obliczenia',
+    checkValues: 'Wystąpił błąd podczas obliczania podatków. Sprawdź wprowadzone wartości.',
+    
+    // Document Generator
+    documentGeneratorTitle: 'Generator dokumentów podatkowych',
+    documentGeneratorLogin: 'Musisz się zalogować, aby używać generatora',
+    loginForDocuments: 'Zaloguj się, aby generować i zapisywać dokumenty podatkowe',
+    documentExamples: 'Przykłady dokumentów',
+    documentExamplesDescription: 'Zobacz przykładowe dokumenty z przykładowymi danymi',
+    showExamples: 'Pokaż przykłady',
+    documentHistory: 'Historia dokumentów',
+    documentHistoryDescription: 'Twoje wygenerowane dokumenty podatkowe',
+    noDocumentsYet: 'Nie wygenerowałeś jeszcze żadnych dokumentów',
+    generateNewDocument: 'Generuj nowy dokument',
+    fillFormDescription: 'Wypełnij formularz, aby utworzyć dokument podatkowy',
+    generateDocument: 'Generuj dokument',
+    generatingDocument: 'Generowanie dokumentu...',
+    download: 'Pobierz',
+    delete: 'Usuń',
+    deleting: 'Usuwanie...',
+    confirmDeletion: 'Potwierdź usunięcie',
+    deleteConfirmation: 'Czy naprawdę chcesz usunąć ten dokument? Ta akcja jest nieodwracalna.',
+    cancel: 'Anuluj',
+    deleteDocument: 'Usuń dokument',
+    
+    // Document Types
+    taxReturn: 'Deklaracja podatkowa',
+    commuterCertificate: 'Zaświadczenie o dojazdach',
+    taxReductionApplication: 'Wniosek o zmniejszenie podatku od wynagrodzeń',
+    workEquipmentCertificate: 'Zaświadczenie o środkach pracy',
+    
     // Contact
     contactTitle: 'Skontaktuj się z nami',
     contactSubtitle: 'Masz pytania lub potrzebujesz pomocy? Chętnie pomożemy!',
@@ -290,6 +561,20 @@ export const translations: Translations = {
     contactMessagePlaceholder: 'Opisz swoje pytanie lub problem...',
     contactSending: 'Wysyłanie...',
     contactSend: 'Wyślij wiadomość',
+    
+    // Common
+    save: 'Zapisz',
+    update: 'Aktualizuj',
+    create: 'Utwórz',
+    edit: 'Edytuj',
+    close: 'Zamknij',
+    back: 'Wstecz',
+    next: 'Dalej',
+    previous: 'Poprzedni',
+    success: 'Sukces',
+    error: 'Błąd',
+    warning: 'Ostrzeżenie',
+    info: 'Informacja',
     
     // Footer
     footerAppName: 'PendlerApp',
@@ -329,6 +614,18 @@ export const translations: Translations = {
     email: 'Email',
     password: 'Password',
     
+    // Profile
+    profileTitle: 'My Profile',
+    profileSubtitle: 'Account management',
+    accountManagement: 'Account Management',
+    personalInfo: 'Personal Information',
+    accountSettings: 'Account Settings',
+    dataExport: 'Data Export',
+    accountDeletion: 'Account Deletion',
+    changePassword: 'Change Password',
+    exportData: 'Export Data',
+    deleteAccount: 'Delete Account',
+    
     // Registration
     registerTitle: 'Create Account',
     registerDescription: 'Create an account and use all app features',
@@ -367,6 +664,75 @@ export const translations: Translations = {
     cleanStorage: 'Clear Storage',
     storageCleanedUp: 'Storage has been cleared',
     
+    // Tax Advisor
+    taxAdvisorTitle: 'Tax Advisor',
+    taxAdvisorSubtitle: 'Step-by-step guide for optimal tax return',
+    taxCalculators: 'Tax Calculators',
+    taxOptimization: 'Tax Optimization',
+    documentGenerator: 'Document Generator',
+    taxReminders: 'Tax Reminders',
+    quickCalculations: 'Quick calculations for your tax planning',
+    germanCalculator: 'German Calculator',
+    calculationHistory: 'Calculation History',
+    optimizationTips: 'Optimization',
+    currentSituation: 'Current Situation',
+    optimizedSituation: 'Optimized Situation',
+    taxSavings: 'You can save',
+    annualSavings: 'Annual tax savings',
+    yearly: 'yearly',
+    germanTaxCalculator2024: 'German Tax Calculator 2024',
+    currentRates: 'Current Rates',
+    calculatorDescription: 'Calculate the exact amount of your tax liability according to German tax rates.',
+    loggedInSaves: 'Your calculations are automatically saved.',
+    notLoggedInNoSave: 'Log in to save calculations.',
+    
+    // Tax Notifications
+    taxNotificationsTitle: 'Tax Reminders',
+    taxNotificationsSubtitle: 'Important deadlines and notifications for tax matters',
+    noActiveReminders: 'No active reminders',
+    showAllReminders: 'Show all reminders',
+    showLessReminders: 'Show fewer reminders',
+    deadline: 'Deadline',
+    highPriority: 'High',
+    mediumPriority: 'Medium',
+    lowPriority: 'Low',
+    
+    // Tax Optimizer
+    taxOptimizerTitle: 'Tax optimization for commuters',
+    taxOptimizerDescription: 'This tool will help you optimize your tax burden when working in Germany. Fill out the form below and find out how much you can save on taxes.',
+    calculationSuccessful: 'Calculation successful',
+    potentialSavings: 'Potential savings',
+    calculationError: 'Calculation error',
+    checkValues: 'An error occurred while calculating taxes. Check the entered values.',
+    
+    // Document Generator
+    documentGeneratorTitle: 'Tax Document Generator',
+    documentGeneratorLogin: 'You must log in to use the generator',
+    loginForDocuments: 'Log in to generate and save tax documents',
+    documentExamples: 'Document Examples',
+    documentExamplesDescription: 'View sample documents with example data',
+    showExamples: 'Show Examples',
+    documentHistory: 'Document History',
+    documentHistoryDescription: 'Your generated tax documents',
+    noDocumentsYet: 'You haven\'t generated any documents yet',
+    generateNewDocument: 'Generate New Document',
+    fillFormDescription: 'Fill out the form to create a tax document',
+    generateDocument: 'Generate Document',
+    generatingDocument: 'Generating document...',
+    download: 'Download',
+    delete: 'Delete',
+    deleting: 'Deleting...',
+    confirmDeletion: 'Confirm Deletion',
+    deleteConfirmation: 'Do you really want to delete this document? This action is irreversible.',
+    cancel: 'Cancel',
+    deleteDocument: 'Delete Document',
+    
+    // Document Types
+    taxReturn: 'Tax Return',
+    commuterCertificate: 'Commuter Certificate',
+    taxReductionApplication: 'Tax Reduction Application',
+    workEquipmentCertificate: 'Work Equipment Certificate',
+    
     // Contact
     contactTitle: 'Contact Us',
     contactSubtitle: 'Have questions or need help? We are happy to help!',
@@ -383,6 +749,20 @@ export const translations: Translations = {
     contactMessagePlaceholder: 'Describe your question or problem...',
     contactSending: 'Sending...',
     contactSend: 'Send Message',
+    
+    // Common
+    save: 'Save',
+    update: 'Update',
+    create: 'Create',
+    edit: 'Edit',
+    close: 'Close',
+    back: 'Back',
+    next: 'Next',
+    previous: 'Previous',
+    success: 'Success',
+    error: 'Error',
+    warning: 'Warning',
+    info: 'Information',
     
     // Footer
     footerAppName: 'PendlerApp',

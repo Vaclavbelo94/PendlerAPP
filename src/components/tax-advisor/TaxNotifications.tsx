@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Bell, Calendar, FileText, AlertTriangle, Info } from 'lucide-react';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface TaxReminder {
   id: string;
@@ -18,6 +19,7 @@ interface TaxReminder {
 const TaxNotifications = () => {
   const [reminders, setReminders] = useState<TaxReminder[]>([]);
   const [showAllReminders, setShowAllReminders] = useState(false);
+  const { t } = useLanguage();
 
   useEffect(() => {
     // Simulace načtení připomínek - v reálné aplikaci by se načítaly z API
@@ -25,7 +27,7 @@ const TaxNotifications = () => {
     const mockReminders: TaxReminder[] = [
       {
         id: '1',
-        title: 'Daňové přiznání za rok ' + (currentYear - 1),
+        title: t('taxReturn') + ' za rok ' + (currentYear - 1),
         description: 'Termín pro podání daňového přiznání se blíží',
         date: `${currentYear}-07-31`,
         type: 'deadline',
@@ -66,7 +68,7 @@ const TaxNotifications = () => {
     ];
     
     setReminders(mockReminders);
-  }, []);
+  }, [t]);
 
   const getIconForType = (type: string) => {
     switch (type) {
@@ -93,11 +95,11 @@ const TaxNotifications = () => {
   const getPriorityLabel = (priority: string) => {
     switch (priority) {
       case 'high':
-        return 'Vysoká';
+        return t('highPriority');
       case 'medium':
-        return 'Střední';
+        return t('mediumPriority');
       case 'low':
-        return 'Nízká';
+        return t('lowPriority');
       default:
         return priority;
     }
@@ -114,10 +116,10 @@ const TaxNotifications = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Bell className="h-5 w-5" />
-          Daňové připomínky
+          {t('taxNotificationsTitle')}
         </CardTitle>
         <CardDescription>
-          Důležité termíny a upozornění pro daňové záležitosti
+          {t('taxNotificationsSubtitle')}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -126,7 +128,7 @@ const TaxNotifications = () => {
             <Alert>
               <Info className="h-4 w-4" />
               <AlertDescription>
-                Žádné aktivní připomínky
+                {t('noActiveReminders')}
               </AlertDescription>
             </Alert>
           ) : (
@@ -145,7 +147,7 @@ const TaxNotifications = () => {
                       {reminder.description}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      Termín: {new Date(reminder.date).toLocaleDateString('cs-CZ')}
+                      {t('deadline')}: {new Date(reminder.date).toLocaleDateString('cs-CZ')}
                     </p>
                   </div>
                 </div>
@@ -163,7 +165,7 @@ const TaxNotifications = () => {
               onClick={handleShowAllReminders}
             >
               <FileText className="h-4 w-4 mr-2" />
-              {showAllReminders ? 'Zobrazit méně připomínek' : 'Zobrazit všechny připomínky'}
+              {showAllReminders ? t('showLessReminders') : t('showAllReminders')}
             </Button>
           </div>
         )}

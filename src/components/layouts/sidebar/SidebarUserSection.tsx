@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
 import { User, LogOut, Crown, Sparkles } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useLanguage } from "@/hooks/useLanguage";
 
 interface SidebarUserSectionProps {
   closeSidebar: () => void;
@@ -14,6 +15,7 @@ interface SidebarUserSectionProps {
 const SidebarUserSection = ({ closeSidebar, isCompact = false }: SidebarUserSectionProps) => {
   const navigate = useNavigate();
   const { user, isPremium, signOut } = useAuth();
+  const { t } = useLanguage();
 
   const handleNavigation = (path: string) => {
     navigate(path);
@@ -34,7 +36,7 @@ const SidebarUserSection = ({ closeSidebar, isCompact = false }: SidebarUserSect
           onClick={() => handleNavigation('/login')}
           className="w-full bg-gradient-to-r from-sidebar-accent/20 to-sidebar-accent/10 border-sidebar-border/50 hover:from-primary/20 hover:to-accent/20 hover:border-primary/30 transition-all duration-300"
         >
-          Přihlášení
+          {t('login')}
         </Button>
         <Button 
           variant="default" 
@@ -42,7 +44,7 @@ const SidebarUserSection = ({ closeSidebar, isCompact = false }: SidebarUserSect
           onClick={() => handleNavigation('/register')}
           className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-lg transition-all duration-300 hover:scale-[1.02]"
         >
-          Registrace
+          {t('registerCreateAccount')}
         </Button>
       </div>
     );
@@ -66,7 +68,7 @@ const SidebarUserSection = ({ closeSidebar, isCompact = false }: SidebarUserSect
               <div className="flex items-center gap-1">
                 <Crown className="h-3 w-3 text-amber-500 animate-pulse" />
                 <Sparkles className="h-3 w-3 text-amber-400" />
-                <span className="text-xs text-amber-600 dark:text-amber-400 font-medium">Premium</span>
+                <span className="text-xs text-amber-600 dark:text-amber-400 font-medium">{t('premium')}</span>
               </div>
             )}
           </div>
@@ -80,7 +82,7 @@ const SidebarUserSection = ({ closeSidebar, isCompact = false }: SidebarUserSect
             className="text-xs h-7 hover:bg-gradient-to-r hover:from-blue-500/20 hover:to-blue-600/20 transition-all duration-300"
           >
             <User className="h-3 w-3 mr-1" />
-            Profil
+            {t('profile')}
           </Button>
           <Button
             variant="ghost"
@@ -89,7 +91,7 @@ const SidebarUserSection = ({ closeSidebar, isCompact = false }: SidebarUserSect
             className="text-xs h-7 hover:bg-gradient-to-r hover:from-red-500/20 hover:to-red-600/20 transition-all duration-300"
           >
             <LogOut className="h-3 w-3 mr-1" />
-            Odhlásit
+            {t('logout')}
           </Button>
         </div>
       </div>
@@ -113,7 +115,7 @@ const SidebarUserSection = ({ closeSidebar, isCompact = false }: SidebarUserSect
             <div className="flex items-center gap-1 mt-1">
               <Crown className="h-3 w-3 text-amber-500 animate-pulse" />
               <Sparkles className="h-3 w-3 text-amber-400" />
-              <span className="text-xs text-amber-600 dark:text-amber-400 font-medium">Premium účet</span>
+              <span className="text-xs text-amber-600 dark:text-amber-400 font-medium">{t('premium')} účet</span>
             </div>
           )}
         </div>
@@ -127,7 +129,7 @@ const SidebarUserSection = ({ closeSidebar, isCompact = false }: SidebarUserSect
           className="w-full justify-start text-sidebar-foreground hover:bg-gradient-to-r hover:from-blue-500/20 hover:to-blue-600/20 hover:scale-[1.02] transition-all duration-300 group"
         >
           <User className="h-4 w-4 mr-3 transition-all duration-300 group-hover:rotate-6 group-hover:scale-110" />
-          <span className="font-medium">Profil</span>
+          <span className="font-medium">{t('profile')}</span>
         </Button>
         <Button
           variant="ghost"
@@ -136,7 +138,7 @@ const SidebarUserSection = ({ closeSidebar, isCompact = false }: SidebarUserSect
           className="w-full justify-start text-sidebar-foreground hover:bg-gradient-to-r hover:from-red-500/20 hover:to-red-600/20 hover:scale-[1.02] transition-all duration-300 group"
         >
           <LogOut className="h-4 w-4 mr-3 transition-all duration-300 group-hover:rotate-6 group-hover:scale-110" />
-          <span className="font-medium">Odhlásit se</span>
+          <span className="font-medium">{t('logout')}</span>
         </Button>
       </div>
     </div>

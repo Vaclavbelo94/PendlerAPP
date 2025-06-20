@@ -6,10 +6,12 @@ import { Badge } from '@/components/ui/badge';
 import TaxCalculator from '@/components/calculator/TaxCalculator';
 import { useTaxManagement } from '@/hooks/useTaxManagement';
 import { useAuth } from '@/hooks/auth';
+import { useLanguage } from '@/hooks/useLanguage';
 
 const TaxCalculatorTab = () => {
   const { user } = useAuth();
   const { saveCalculation, calculations } = useTaxManagement();
+  const { t } = useLanguage();
 
   const handleCalculation = async (inputs: Record<string, any>, results: Record<string, any>) => {
     if (user?.id && saveCalculation) {
@@ -27,9 +29,9 @@ const TaxCalculatorTab = () => {
   return (
     <div className="space-y-6">
       <div className="text-center space-y-2">
-        <h2 className="text-2xl font-bold">Daňové kalkulátory</h2>
+        <h2 className="text-2xl font-bold">{t('taxCalculators')}</h2>
         <p className="text-muted-foreground">
-          Rychlé výpočty pro vaše daňové plánování
+          {t('quickCalculations')}
         </p>
       </div>
 
@@ -38,14 +40,14 @@ const TaxCalculatorTab = () => {
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-lg">
               <Calculator className="h-5 w-5" />
-              Německý kalkulátor
+              {t('germanCalculator')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground mb-3">
-              Přesný výpočet daní podle německých sazeb pro rok 2024
+              {t('calculatorDescription')}
             </p>
-            <Badge variant="outline">Aktuální pro 2024</Badge>
+            <Badge variant="outline">{t('currentRates')}</Badge>
           </CardContent>
         </Card>
 
@@ -53,15 +55,15 @@ const TaxCalculatorTab = () => {
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-lg">
               <History className="h-5 w-5" />
-              Historie výpočtů
+              {t('calculationHistory')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground mb-3">
-              {germanTaxCalculations.length} uložených výpočtů
+              {germanTaxCalculations.length} {t('calculationHistory').toLowerCase()}
             </p>
             <Badge variant="secondary">
-              {user ? 'Přihlášeno' : 'Nepřihlášeno'}
+              {user ? t('loggedInSaves') : t('notLoggedInNoSave')}
             </Badge>
           </CardContent>
         </Card>
@@ -70,14 +72,14 @@ const TaxCalculatorTab = () => {
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-lg">
               <TrendingUp className="h-5 w-5" />
-              Optimalizace
+              {t('optimizationTips')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground mb-3">
-              Tipy založené na vašich výpočtech
+              {t('calculatorDescription')}
             </p>
-            <Badge variant="outline">Připravujeme</Badge>
+            <Badge variant="outline">{t('loading')}</Badge>
           </CardContent>
         </Card>
       </div>
@@ -87,13 +89,13 @@ const TaxCalculatorTab = () => {
           <CardTitle className="flex items-center justify-between">
             <span className="flex items-center gap-2">
               <Calculator className="h-5 w-5" />
-              Německý daňový kalkulátor 2024
+              {t('germanTaxCalculator2024')}
             </span>
-            <Badge variant="outline">Aktuální sazby</Badge>
+            <Badge variant="outline">{t('currentRates')}</Badge>
           </CardTitle>
           <CardDescription>
-            Vypočítejte přesnou výši vaší daňové povinnosti podle německých daňových sazeb.
-            {user ? ' Vaše výpočty se automaticky ukládají.' : ' Přihlaste se pro ukládání výpočtů.'}
+            {t('calculatorDescription')} {' '}
+            {user ? t('loggedInSaves') : t('notLoggedInNoSave')}
           </CardDescription>
         </CardHeader>
         <CardContent>
