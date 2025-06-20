@@ -2,11 +2,9 @@
 import {
   Home,
   BarChart3,
-  GraduationCap,
   Calendar,
   Car,
   FileText,
-  Globe,
   Map,
   Settings,
   Crown,
@@ -60,17 +58,6 @@ export const modernNavigationItems: ModernNavigationItem[] = [
   },
   
   // Tools section
-  {
-    id: 'vocabulary',
-    label: 'Výuka němčiny',
-    href: '/vocabulary',
-    icon: GraduationCap,
-    description: 'Slovní zásoba a lekce',
-    category: 'tools',
-    isPublic: true,
-    color: 'text-purple-600',
-    gradient: 'from-purple-500 to-purple-600'
-  },
   {
     id: 'translator',
     label: 'Překladač',

@@ -40,19 +40,14 @@ export const navigationItems: NavigationItem[] = [
     icon: Car
   },
   {
-    path: '/vocabulary',
-    title: 'Slovníček',
-    icon: BookOpen
+    path: '/translator',
+    title: 'Překladač',
+    icon: Languages
   },
   {
     path: '/shifts',
     title: 'Směny',
     icon: Calendar
-  },
-  {
-    path: '/translator',
-    title: 'Překladač',
-    icon: Languages
   },
   {
     path: '/travel',

@@ -8,11 +8,10 @@ import { useLanguage } from '@/hooks/useLanguage';
 import {
   Home,
   BarChart3,
-  GraduationCap,
+  Languages,
   Calendar,
   Car,
   FileText,
-  Globe,
   Map,
   Settings,
   Crown,
@@ -45,8 +44,7 @@ const MobileNavigation = ({ onClose }: { onClose: () => void }) => {
   const navigationItems = [
     { label: t('home'), href: '/', icon: Home, isPublic: true },
     { label: t('dashboard'), href: '/dashboard', icon: BarChart3, isPremium: true },
-    { label: t('germanLessons'), href: '/vocabulary', icon: GraduationCap, isPublic: true },
-    { label: t('translator'), href: '/translator', icon: Globe, isPublic: true },
+    { label: t('translator'), href: '/translator', icon: Languages, isPublic: true },
     { label: t('taxAdvisor'), href: '/tax-advisor', icon: FileText, isPremium: true },
     { label: t('shifts'), href: '/shifts', icon: Calendar, isPremium: true },
     { label: t('vehicle'), href: '/vehicle', icon: Car, isPremium: true },

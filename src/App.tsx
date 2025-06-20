@@ -1,3 +1,4 @@
+
 import React, { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { OptimizedProviderStack } from '@/components/providers/OptimizedProviderStack';
@@ -62,6 +63,9 @@ const AppContent: React.FC = () => {
             <Route path="/tax-advisor" element={<TaxAdvisor />} />
             <Route path="/travel" element={<TravelPlanning />} />
             <Route path="/laws" element={<Laws />} />
+            
+            {/* Redirect old vocabulary route to translator */}
+            <Route path="/vocabulary" element={<Navigate to="/translator" replace />} />
             
             {/* Law detail pages */}
             <Route path="/laws/child-benefits" element={<ChildBenefits />} />

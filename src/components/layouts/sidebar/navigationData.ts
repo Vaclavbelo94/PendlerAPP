@@ -2,11 +2,10 @@
 import {
   Home,
   BarChart3,
-  GraduationCap,
+  Globe,
   Calendar,
   Car,
   FileText,
-  Globe,
   Map,
   Settings,
   Crown,
@@ -20,7 +19,6 @@ import { NavigationItem } from './types';
 export const navigationItems: NavigationItem[] = [
   { label: 'Domů', href: '/', icon: Home, isPublic: true },
   { label: 'Dashboard', href: '/dashboard', icon: BarChart3, requiresAuth: true },
-  { label: 'Slovní zásoba', href: '/vocabulary', icon: GraduationCap, isPublic: true },
   { label: 'Překladač', href: '/translator', icon: Globe, isPublic: true },
   { label: 'Daňový poradce', href: '/tax-advisor', icon: FileText, isPremium: true },
   { label: 'Směny', href: '/shifts', icon: Calendar, isPremium: true },
