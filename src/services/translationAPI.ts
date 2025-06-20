@@ -7,7 +7,7 @@ interface TranslationResult {
 }
 
 // Základní offline slovník pro nejčastější fráze
-const offlineDictionary: Record<string, Record<string, string>> = {
+const offlineDictionary: Record<string, Record<string, Record<string, string>>> = {
   cs: {
     'dobrý den': { pl: 'dzień dobry', de: 'guten tag' },
     'děkuji': { pl: 'dziękuję', de: 'danke' },
@@ -62,10 +62,11 @@ export const translateText = async (
 
   // Nejdříve zkusíme offline slovník
   const normalizedText = text.toLowerCase().trim();
-  const sourceDict = offlineDictionary[sourceLang as keyof typeof offlineDictionary];
+  const sourceDict = offlineDictionary[sourceLang];
   
   if (sourceDict && sourceDict[normalizedText]) {
-    const translation = sourceDict[normalizedText][targetLang as keyof typeof sourceDict[typeof normalizedText]];
+    const translationsForPhrase = sourceDict[normalizedText];
+    const translation = translationsForPhrase[targetLang];
     if (translation) {
       return {
         translatedText: translation,
