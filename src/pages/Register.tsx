@@ -110,7 +110,7 @@ const Register = () => {
         
         if (isPromoValid && promoCode) {
           successMessage = t('accountCreatedWithPremium');
-          description = t('promoCodeActivated', { code: promoCode });
+          description = t('promoCodeActivated').replace('{code}', promoCode);
         }
         
         toast.success(successMessage, { description });
