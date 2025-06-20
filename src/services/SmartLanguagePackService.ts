@@ -1,5 +1,5 @@
+
 import { VocabularyItem } from '@/models/VocabularyItem';
-import { PracticalPhrase } from '@/data/practicalGermanLessons';
 import { getAllData, saveData, bulkSaveData, clearStore } from '@/utils/offlineStorage';
 
 export interface SmartPackRecommendation {

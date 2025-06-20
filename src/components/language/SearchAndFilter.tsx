@@ -5,8 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Search, Filter, Heart, X } from "lucide-react";
-import { useGermanLessonsTranslation } from '@/hooks/useGermanLessonsTranslation';
-import { PracticalPhrase } from '@/data/extendedGermanLessons';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface SearchAndFilterProps {
   searchTerm: string;
@@ -31,14 +30,14 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
   totalPhrases,
   filteredCount
 }) => {
-  const { t } = useGermanLessonsTranslation();
+  const { t } = useLanguage();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const importanceOptions = [
-    { value: 'all', labelKey: 'filter.all' },
-    { value: 'critical', labelKey: 'filter.critical' },
-    { value: 'important', labelKey: 'filter.important' },
-    { value: 'useful', labelKey: 'filter.useful' }
+    { value: 'all', labelKey: 'všechny' },
+    { value: 'critical', labelKey: 'kritické' },
+    { value: 'important', labelKey: 'důležité' },
+    { value: 'useful', labelKey: 'užitečné' }
   ];
 
   return (
@@ -49,7 +48,7 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
-              placeholder={t('search.placeholder')}
+              placeholder="Hledat..."
               value={searchTerm}
               onChange={(e) => onSearchChange(e.target.value)}
               className="pl-10 pr-4"
@@ -85,11 +84,11 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
               className="flex items-center gap-2"
             >
               <Heart className={`h-4 w-4 ${showFavoritesOnly ? 'fill-current' : ''}`} />
-              {t('instruction.favorites')} ({favorites.length})
+              Oblíbené ({favorites.length})
             </Button>
 
             <div className="text-sm text-muted-foreground ml-auto">
-              {filteredCount} z {totalPhrases} frází
+              {filteredCount} z {totalPhrases} položek
             </div>
           </div>
 
@@ -107,7 +106,7 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
                         className="cursor-pointer"
                         onClick={() => onImportanceChange(option.value)}
                       >
-                        {t(option.labelKey)}
+                        {option.labelKey}
                       </Badge>
                     ))}
                   </div>

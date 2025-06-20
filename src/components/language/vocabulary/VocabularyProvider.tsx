@@ -2,7 +2,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { VocabularyItem, UserProgress, TestResult } from '@/models/VocabularyItem';
 import { useSpacedRepetition } from '@/hooks/useSpacedRepetition';
-import { defaultGermanVocabulary } from '@/data/defaultGermanVocabulary';
 
 export interface VocabularyContextType {
   items: VocabularyItem[];
@@ -33,6 +32,28 @@ export interface VocabularyContextType {
 
 const VocabularyContext = createContext<VocabularyContextType | null>(null);
 
+// Basic default vocabulary items
+const defaultVocabulary: VocabularyItem[] = [
+  {
+    id: '1',
+    german: 'Hallo',
+    czech: 'Ahoj',
+    difficulty: 1,
+    category: 'Základní fráze',
+    createdAt: new Date(),
+    nextReview: new Date()
+  },
+  {
+    id: '2',
+    german: 'Danke',
+    czech: 'Děkuji',
+    difficulty: 1,
+    category: 'Základní fráze',
+    createdAt: new Date(),
+    nextReview: new Date()
+  }
+];
+
 export const VocabularyProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [initialItems, setInitialItems] = useState<VocabularyItem[]>([]);
@@ -62,19 +83,14 @@ export const VocabularyProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         }
         
         // Fallback to default data
-        if (defaultGermanVocabulary && defaultGermanVocabulary.length > 0) {
-          console.log('Using default German vocabulary:', defaultGermanVocabulary.length, 'items');
-          setInitialItems(defaultGermanVocabulary);
-          
-          // Save default data to localStorage
-          try {
-            localStorage.setItem('vocabulary_items', JSON.stringify(defaultGermanVocabulary));
-          } catch (error) {
-            console.warn('Could not save to localStorage:', error);
-          }
-        } else {
-          console.error('No default vocabulary data available');
-          setInitialItems([]);
+        console.log('Using default vocabulary:', defaultVocabulary.length, 'items');
+        setInitialItems(defaultVocabulary);
+        
+        // Save default data to localStorage
+        try {
+          localStorage.setItem('vocabulary_items', JSON.stringify(defaultVocabulary));
+        } catch (error) {
+          console.warn('Could not save to localStorage:', error);
         }
         
         setInitialized(true);
