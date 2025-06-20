@@ -96,6 +96,36 @@ export const translations = {
     termsTitle: 'Podmínky použití',
     termsIntro: 'Tyto podmínky upravují používání aplikace PendlerApp.',
     
+    // Terms detailed content
+    terms: {
+      introTitle: 'Úvodní ustanovení',
+      agreement: 'Používáním aplikace vyjadřujete souhlas s těmito podmínkami. Pokud s podmínkami nesouhlasíte, není možné aplikaci používat.',
+      registrationTitle: 'Registrace a uživatelský účet',
+      registrationDesc: 'Pro plné využití funkcí aplikace je nutná registrace. Při registraci je uživatel povinen uvést pravdivé a úplné údaje.',
+      userResponsibility: 'Uživatel je povinen chránit své přihlašovací údaje před zneužitím a nese odpovědnost za veškeré aktivity provedené pod jeho účtem.',
+      accountTermination: 'Provozovatel si vyhrazuje právo zrušit uživatelský účet, který porušuje tyto podmínky použití.',
+      rightsTitle: 'Práva a povinnosti uživatele',
+      userCommits: 'Uživatel se zavazuje:',
+      noHarm: 'Nepoužívat aplikaci způsobem, který by mohl poškodit, znepřístupnit, přetížit nebo zhoršit její funkčnost',
+      noIllegalContent: 'Nenahrávat do aplikace obsah, který porušuje právní předpisy nebo práva třetích osob',
+      noSpam: 'Nešířit prostřednictvím aplikace nevyžádaná sdělení (spam)',
+      noTampering: 'Nezasahovat do technického provedení aplikace',
+      noAutomation: 'Nepoužívat automatizované systémy pro přístup k aplikaci',
+      liabilityTitle: 'Omezení odpovědnosti',
+      informationNature: 'Informace poskytované v aplikaci mají pouze informativní charakter a nejsou právním poradenstvím. Provozovatel nenese odpovědnost za případné škody vzniklé v důsledku použití těchto informací.',
+      userContentLiability: 'Provozovatel neodpovídá za obsah vložený do aplikace uživateli (například nabídky spolujízdy).',
+      thirdPartyLinks: 'Aplikace může obsahovat odkazy na webové stránky třetích stran. Provozovatel neodpovídá za obsah těchto stránek.',
+      availabilityTitle: 'Dostupnost služby',
+      noGuarantee: 'Provozovatel nezaručuje nepřetržitou dostupnost aplikace. V případě technických problémů nebo údržby může být funkčnost aplikace dočasně omezena.',
+      serviceChanges: 'Provozovatel si vyhrazuje právo změnit nebo ukončit provoz aplikace nebo její části bez předchozího upozornění.',
+      privacyTitle: 'Ochrana osobních údajů',
+      privacyReference: 'Zpracování osobních údajů uživatelů se řídí zásadami ochrany osobních údajů, které jsou dostupné v sekci „Ochrana soukromí".',
+      finalTitle: 'Závěrečná ustanovení',
+      czechLaw: 'Tyto podmínky použití se řídí právním řádem České republiky.',
+      termsChanges: 'Provozovatel si vyhrazuje právo tyto podmínky použití kdykoliv změnit. O změnách bude uživatele informovat prostřednictvím aplikace.',
+      effectiveDate: 'Tyto podmínky použití jsou platné a účinné od 1.5.2025.'
+    },
+    
     // Footer
     footer: {
       appName: 'Pendlerův Pomocník',
@@ -204,6 +234,36 @@ export const translations = {
     termsTitle: 'Nutzungsbedingungen',
     termsIntro: 'Diese Bedingungen regeln die Nutzung der PendlerApp-Anwendung.',
     
+    // Terms detailed content
+    terms: {
+      introTitle: 'Einleitende Bestimmungen',
+      agreement: 'Durch die Nutzung der Anwendung stimmen Sie diesen Bedingungen zu. Wenn Sie mit den Bedingungen nicht einverstanden sind, ist die Nutzung der Anwendung nicht möglich.',
+      registrationTitle: 'Registrierung und Benutzerkonto',
+      registrationDesc: 'Für die vollständige Nutzung der Anwendungsfunktionen ist eine Registrierung erforderlich. Bei der Registrierung ist der Benutzer verpflichtet, wahrheitsgemäße und vollständige Angaben zu machen.',
+      userResponsibility: 'Der Benutzer ist verpflichtet, seine Anmeldedaten vor Missbrauch zu schützen und trägt die Verantwortung für alle unter seinem Konto durchgeführten Aktivitäten.',
+      accountTermination: 'Der Betreiber behält sich das Recht vor, ein Benutzerkonto zu kündigen, das gegen diese Nutzungsbedingungen verstößt.',
+      rightsTitle: 'Rechte und Pflichten des Benutzers',
+      userCommits: 'Der Benutzer verpflichtet sich:',
+      noHarm: 'Die Anwendung nicht in einer Weise zu nutzen, die ihre Funktionalität beschädigen, unzugänglich machen, überlasten oder verschlechtern könnte',
+      noIllegalContent: 'Keine Inhalte in die Anwendung hochzuladen, die gegen Rechtsvorschriften oder Rechte Dritter verstoßen',
+      noSpam: 'Über die Anwendung keine unerwünschten Nachrichten (Spam) zu verbreiten',
+      noTampering: 'Nicht in die technische Umsetzung der Anwendung einzugreifen',
+      noAutomation: 'Keine automatisierten Systeme für den Zugriff auf die Anwendung zu verwenden',
+      liabilityTitle: 'Haftungsbeschränkung',
+      informationNature: 'Die in der Anwendung bereitgestellten Informationen haben nur informativen Charakter und stellen keine Rechtsberatung dar. Der Betreiber übernimmt keine Verantwortung für eventuelle Schäden, die durch die Verwendung dieser Informationen entstehen.',
+      userContentLiability: 'Der Betreiber ist nicht verantwortlich für Inhalte, die von Benutzern in die Anwendung eingefügt werden (z.B. Mitfahrgelegenheiten).',
+      thirdPartyLinks: 'Die Anwendung kann Links zu Websites Dritter enthalten. Der Betreiber ist nicht verantwortlich für den Inhalt dieser Seiten.',
+      availabilityTitle: 'Verfügbarkeit des Dienstes',
+      noGuarantee: 'Der Betreiber garantiert nicht die ununterbrochene Verfügbarkeit der Anwendung. Bei technischen Problemen oder Wartung kann die Funktionalität der Anwendung vorübergehend eingeschränkt sein.',
+      serviceChanges: 'Der Betreiber behält sich das Recht vor, den Betrieb der Anwendung oder Teile davon ohne vorherige Ankündigung zu ändern oder einzustellen.',
+      privacyTitle: 'Schutz personenbezogener Daten',
+      privacyReference: 'Die Verarbeitung personenbezogener Daten der Benutzer unterliegt den Datenschutzrichtlinien, die im Abschnitt „Datenschutz" verfügbar sind.',
+      finalTitle: 'Schlussbestimmungen',
+      czechLaw: 'Diese Nutzungsbedingungen unterliegen dem Recht der Tschechischen Republik.',
+      termsChanges: 'Der Betreiber behält sich das Recht vor, diese Nutzungsbedingungen jederzeit zu ändern. Über Änderungen wird der Benutzer über die Anwendung informiert.',
+      effectiveDate: 'Diese Nutzungsbedingungen sind gültig und wirksam ab dem 1.5.2025.'
+    },
+    
     // Footer
     footer: {
       appName: 'Pendler-Assistent',
@@ -311,6 +371,36 @@ export const translations = {
     // Terms page
     termsTitle: 'Regulamin',
     termsIntro: 'Niniejszy regulamin określa zasady korzystania z aplikacji PendlerApp.',
+    
+    // Terms detailed content
+    terms: {
+      introTitle: 'Postanowienia wstępne',
+      agreement: 'Korzystając z aplikacji wyrażasz zgodę na niniejszy regulamin. Jeśli nie zgadzasz się z regulaminem, nie możesz korzystać z aplikacji.',
+      registrationTitle: 'Rejestracja i konto użytkownika',
+      registrationDesc: 'Dla pełnego wykorzystania funkcji aplikacji wymagana jest rejestracja. Podczas rejestracji użytkownik zobowiązany jest podać prawdziwe i kompletne dane.',
+      userResponsibility: 'Użytkownik zobowiązany jest chronić swoje dane logowania przed nadużyciem i ponosi odpowiedzialność za wszystkie działania wykonane na jego koncie.',
+      accountTermination: 'Operator zastrzega sobie prawo do usunięcia konta użytkownika, które narusza niniejszy regulamin.',
+      rightsTitle: 'Prawa i obowiązki użytkownika',
+      userCommits: 'Użytkownik zobowiązuje się:',
+      noHarm: 'Nie używać aplikacji w sposób, który mógłby uszkodzić, uniemożliwić dostęp, przeciążyć lub pogorszyć jej funkcjonalność',
+      noIllegalContent: 'Nie przesyłać do aplikacji treści naruszających przepisy prawne lub prawa osób trzecich',
+      noSpam: 'Nie rozpowszechniać za pośrednictwem aplikacji niechcianych wiadomości (spam)',
+      noTampering: 'Nie ingerować w techniczne wykonanie aplikacji',
+      noAutomation: 'Nie używać zautomatyzowanych systemów dostępu do aplikacji',
+      liabilityTitle: 'Ograniczenie odpowiedzialności',
+      informationNature: 'Informacje dostarczone w aplikacji mają charakter wyłącznie informacyjny i nie stanowią porady prawnej. Operator nie ponosi odpowiedzialności za ewentualne szkody powstałe w wyniku korzystania z tych informacji.',
+      userContentLiability: 'Operator nie odpowiada za treści wstawione do aplikacji przez użytkowników (np. oferty wspólnych przejazdów).',
+      thirdPartyLinks: 'Aplikacja może zawierać linki do stron internetowych osób trzecich. Operator nie odpowiada za treść tych stron.',
+      availabilityTitle: 'Dostępność usługi',
+      noGuarantee: 'Operator nie gwarantuje nieprzerwanej dostępności aplikacji. W przypadku problemów technicznych lub konserwacji funkcjonalność aplikacji może być tymczasowo ograniczona.',
+      serviceChanges: 'Operator zastrzega sobie prawo do zmiany lub zakończenia działania aplikacji lub jej części bez wcześniejszego powiadomienia.',
+      privacyTitle: 'Ochrona danych osobowych',
+      privacyReference: 'Przetwarzanie danych osobowych użytkowników podlega zasadom ochrony danych osobowych dostępnym w sekcji „Ochrona prywatności".',
+      finalTitle: 'Postanowienia końcowe',
+      czechLaw: 'Niniejszy regulamin podlega prawu Republiki Czeskiej.',
+      termsChanges: 'Operator zastrzega sobie prawo do zmiany niniejszego regulaminu w każdym czasie. O zmianach użytkownik zostanie poinformowany za pośrednictwem aplikacji.',
+      effectiveDate: 'Niniejszy regulamin obowiązuje od 1.5.2025.'
+    },
     
     // Footer
     footer: {

@@ -10,7 +10,7 @@ export const ModernFooter: React.FC = () => {
 
   const footerSections = [
     {
-      title: 'Aplikace',
+      title: t('footer.features'),
       links: [
         { key: 'dashboard', path: '/dashboard' },
         { key: 'shifts', path: '/shifts' },
@@ -18,7 +18,7 @@ export const ModernFooter: React.FC = () => {
       ]
     },
     {
-      title: 'Nástroje',
+      title: t('footer.aboutUs'),
       links: [
         { key: 'translator', path: '/translator' },
         { key: 'taxAdvisor', path: '/tax-advisor' },
@@ -27,7 +27,7 @@ export const ModernFooter: React.FC = () => {
       ]
     },
     {
-      title: 'Účet',
+      title: t('settings'),
       links: [
         { key: 'premium', path: '/premium' },
         { key: 'profile', path: '/profile' },
@@ -35,7 +35,7 @@ export const ModernFooter: React.FC = () => {
       ]
     },
     {
-      title: 'Podpora',
+      title: t('contact'),
       links: [
         { key: 'faq', path: '/faq' },
         { key: 'contact', path: '/contact' },
@@ -53,7 +53,7 @@ export const ModernFooter: React.FC = () => {
           <div className="lg:col-span-1">
             <Link to="/" className="flex items-center space-x-2 mb-4">
               <Briefcase className="h-6 w-6 text-primary" />
-              <span className="font-bold text-xl">PendlerApp</span>
+              <span className="font-bold text-xl">{t('footer.appName')}</span>
             </Link>
             <p className="text-sm text-muted-foreground mb-4">
               {t('heroSubtitle')}
@@ -92,7 +92,7 @@ export const ModernFooter: React.FC = () => {
 
         <div className="border-t mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-sm text-muted-foreground mb-4 md:mb-0">
-            © {currentYear} PendlerApp. Všechna práva vyhrazena.
+            © {currentYear} {t('footer.appName')}. {t('footer.allRightsReserved')}.
           </p>
           <div className="flex space-x-6">
             <Link to="/privacy" className="text-sm text-muted-foreground hover:text-primary transition-colors">

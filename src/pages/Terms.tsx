@@ -22,53 +22,53 @@ const Terms = () => {
           
           <div className="prose prose-lg max-w-none text-foreground">
             <section className="mb-8">
-              <h2 className="text-xl font-semibold mb-4 text-foreground">1. Úvodní ustanovení</h2>
+              <h2 className="text-xl font-semibold mb-4 text-foreground">1. {t('terms.introTitle')}</h2>
               <p className="text-muted-foreground">{t('termsIntro')}</p>
-              <p className="text-muted-foreground">Používáním aplikace vyjadřujete souhlas s těmito podmínkami. Pokud s podmínkami nesouhlasíte, není možné aplikaci používat.</p>
+              <p className="text-muted-foreground">{t('terms.agreement')}</p>
             </section>
             
             <section className="mb-8">
-              <h2 className="text-xl font-semibold mb-4 text-foreground">2. Registrace a uživatelský účet</h2>
-              <p className="text-muted-foreground">Pro plné využití funkcí aplikace je nutná registrace. Při registraci je uživatel povinen uvést pravdivé a úplné údaje.</p>
-              <p className="text-muted-foreground">Uživatel je povinen chránit své přihlašovací údaje před zneužitím a nese odpovědnost za veškeré aktivity provedené pod jeho účtem.</p>
-              <p className="text-muted-foreground">Provozovatel si vyhrazuje právo zrušit uživatelský účet, který porušuje tyto podmínky použití.</p>
+              <h2 className="text-xl font-semibold mb-4 text-foreground">2. {t('terms.registrationTitle')}</h2>
+              <p className="text-muted-foreground">{t('terms.registrationDesc')}</p>
+              <p className="text-muted-foreground">{t('terms.userResponsibility')}</p>
+              <p className="text-muted-foreground">{t('terms.accountTermination')}</p>
             </section>
             
             <section className="mb-8">
-              <h2 className="text-xl font-semibold mb-4 text-foreground">3. Práva a povinnosti uživatele</h2>
-              <p className="text-muted-foreground">Uživatel se zavazuje:</p>
+              <h2 className="text-xl font-semibold mb-4 text-foreground">3. {t('terms.rightsTitle')}</h2>
+              <p className="text-muted-foreground">{t('terms.userCommits')}</p>
               <ul className="list-disc pl-5 space-y-2 my-4 text-muted-foreground">
-                <li>Nepoužívat aplikaci způsobem, který by mohl poškodit, znepřístupnit, přetížit nebo zhoršit její funkčnost</li>
-                <li>Nenahrávat do aplikace obsah, který porušuje právní předpisy nebo práva třetích osob</li>
-                <li>Nešířit prostřednictvím aplikace nevyžádaná sdělení (spam)</li>
-                <li>Nezasahovat do technického provedení aplikace</li>
-                <li>Nepoužívat automatizované systémy pro přístup k aplikaci</li>
+                <li>{t('terms.noHarm')}</li>
+                <li>{t('terms.noIllegalContent')}</li>
+                <li>{t('terms.noSpam')}</li>
+                <li>{t('terms.noTampering')}</li>
+                <li>{t('terms.noAutomation')}</li>
               </ul>
             </section>
             
             <section className="mb-8">
-              <h2 className="text-xl font-semibold mb-4 text-foreground">4. Omezení odpovědnosti</h2>
-              <p className="text-muted-foreground">Informace poskytované v aplikaci mají pouze informativní charakter a nejsou právním poradenstvím. Provozovatel nenese odpovědnost za případné škody vzniklé v důsledku použití těchto informací.</p>
-              <p className="text-muted-foreground">Provozovatel neodpovídá za obsah vložený do aplikace uživateli (například nabídky spolujízdy).</p>
-              <p className="text-muted-foreground">Aplikace může obsahovat odkazy na webové stránky třetích stran. Provozovatel neodpovídá za obsah těchto stránek.</p>
+              <h2 className="text-xl font-semibold mb-4 text-foreground">4. {t('terms.liabilityTitle')}</h2>
+              <p className="text-muted-foreground">{t('terms.informationNature')}</p>
+              <p className="text-muted-foreground">{t('terms.userContentLiability')}</p>
+              <p className="text-muted-foreground">{t('terms.thirdPartyLinks')}</p>
             </section>
             
             <section className="mb-8">
-              <h2 className="text-xl font-semibold mb-4 text-foreground">5. Dostupnost služby</h2>
-              <p className="text-muted-foreground">Provozovatel nezaručuje nepřetržitou dostupnost aplikace. V případě technických problémů nebo údržby může být funkčnost aplikace dočasně omezena.</p>
-              <p className="text-muted-foreground">Provozovatel si vyhrazuje právo změnit nebo ukončit provoz aplikace nebo její části bez předchozího upozornění.</p>
+              <h2 className="text-xl font-semibold mb-4 text-foreground">5. {t('terms.availabilityTitle')}</h2>
+              <p className="text-muted-foreground">{t('terms.noGuarantee')}</p>
+              <p className="text-muted-foreground">{t('terms.serviceChanges')}</p>
             </section>
             
             <section className="mb-8">
-              <h2 className="text-xl font-semibold mb-4 text-foreground">6. Ochrana osobních údajů</h2>
-              <p className="text-muted-foreground">Zpracování osobních údajů uživatelů se řídí zásadami ochrany osobních údajů, které jsou dostupné v sekci „Ochrana soukromí".</p>
+              <h2 className="text-xl font-semibold mb-4 text-foreground">6. {t('terms.privacyTitle')}</h2>
+              <p className="text-muted-foreground">{t('terms.privacyReference')}</p>
             </section>
             
             <section className="mb-8">
-              <h2 className="text-xl font-semibold mb-4 text-foreground">7. Závěrečná ustanovení</h2>
-              <p className="text-muted-foreground">Tyto podmínky použití se řídí právním řádem České republiky.</p>
-              <p className="text-muted-foreground">Provozovatel si vyhrazuje právo tyto podmínky použití kdykoliv změnit. O změnách bude uživatele informovat prostřednictvím aplikace.</p>
-              <p className="text-muted-foreground">Tyto podmínky použití jsou platné a účinné od 1.5.2025.</p>
+              <h2 className="text-xl font-semibold mb-4 text-foreground">7. {t('terms.finalTitle')}</h2>
+              <p className="text-muted-foreground">{t('terms.czechLaw')}</p>
+              <p className="text-muted-foreground">{t('terms.termsChanges')}</p>
+              <p className="text-muted-foreground">{t('terms.effectiveDate')}</p>
             </section>
           </div>
         </div>
