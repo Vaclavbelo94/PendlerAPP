@@ -1,5 +1,10 @@
-
 export type Language = 'cs' | 'de' | 'pl';
+
+export const languages = {
+  cs: { name: 'Čeština', flag: '🇨🇿' },
+  de: { name: 'Deutsch', flag: '🇩🇪' },
+  pl: { name: 'Polski', flag: '🇵🇱' }
+};
 
 export const translations = {
   cs: {
@@ -69,6 +74,19 @@ export const translations = {
     contactMessagePlaceholder: 'Vaše zpráva...',
     contactSending: 'Odesílání...',
     contactSend: 'Odeslat zprávu',
+    
+    // Register page
+    registerTitle: 'Registrace',
+    registerDescription: 'Vytvořte si nový účet a začněte využívat všechny funkce',
+    registerWithGoogle: 'Registrovat se pomocí Google',
+    registerWithEmail: 'Nebo s emailem',
+    registerUsername: 'Uživatelské jméno (volitelné)',
+    registerUsernamePlaceholder: 'Vaše uživatelské jméno',
+    registerPasswordMinLength: 'Alespoň 6 znaků',
+    registerConfirmPassword: 'Potvrďte heslo',
+    registerConfirmPasswordPlaceholder: 'Zadejte heslo znovu',
+    registerCreateAccount: 'Vytvořit účet',
+    registerCreating: 'Registrování...',
     
     // Privacy page
     privacyTitle: 'Ochrana osobních údajů',
@@ -147,6 +165,19 @@ export const translations = {
     contactSending: 'Senden...',
     contactSend: 'Nachricht senden',
     
+    // Register page
+    registerTitle: 'Registrierung',
+    registerDescription: 'Erstellen Sie ein neues Konto und nutzen Sie alle Funktionen',
+    registerWithGoogle: 'Mit Google registrieren',
+    registerWithEmail: 'Oder mit E-Mail',
+    registerUsername: 'Benutzername (optional)',
+    registerUsernamePlaceholder: 'Ihr Benutzername',
+    registerPasswordMinLength: 'Mindestens 6 Zeichen',
+    registerConfirmPassword: 'Passwort bestätigen',
+    registerConfirmPasswordPlaceholder: 'Passwort erneut eingeben',
+    registerCreateAccount: 'Konto erstellen',
+    registerCreating: 'Registrierung...',
+    
     // Privacy page
     privacyTitle: 'Datenschutz',
     privacyIntro: 'Wir achten auf den Schutz Ihrer persönlichen Daten und respektieren Ihre Privatsphäre.',
@@ -223,6 +254,19 @@ export const translations = {
     contactMessagePlaceholder: 'Twoja wiadomość...',
     contactSending: 'Wysyłanie...',
     contactSend: 'Wyślij wiadomość',
+    
+    // Register page
+    registerTitle: 'Rejestracja',
+    registerDescription: 'Utwórz nowe konto i zacznij korzystać ze wszystkich funkcji',
+    registerWithGoogle: 'Zarejestruj się przez Google',
+    registerWithEmail: 'Lub z e-mailem',
+    registerUsername: 'Nazwa użytkownika (opcjonalnie)',
+    registerUsernamePlaceholder: 'Twoja nazwa użytkownika',
+    registerPasswordMinLength: 'Co najmniej 6 znaków',
+    registerConfirmPassword: 'Potwierdź hasło',
+    registerConfirmPasswordPlaceholder: 'Wprowadź hasło ponownie',
+    registerCreateAccount: 'Utwórz konto',
+    registerCreating: 'Rejestrowanie...',
     
     // Privacy page
     privacyTitle: 'Ochrona danych osobowych',

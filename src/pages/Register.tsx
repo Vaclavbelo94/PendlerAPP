@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,7 @@ import PromoCodeField from "@/components/auth/PromoCodeField";
 import { cleanupAuthState, checkLocalStorageSpace } from "@/utils/authUtils";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useLanguage } from '@/hooks/useLanguage';
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -24,6 +26,7 @@ const Register = () => {
   const [storageWarning, setStorageWarning] = useState(false);
   const navigate = useNavigate();
   const { signUp, signInWithGoogle, user } = useAuth();
+  const { t, language } = useLanguage();
   
   useEffect(() => {
     // Redirect user to homepage if already logged in
@@ -47,6 +50,14 @@ const Register = () => {
     cleanupAuthState();
     setStorageWarning(false);
     toast.success("Úložiště bylo vyčištěno");
+  };
+
+  const getEmailPlaceholder = () => {
+    switch (language) {
+      case 'de': return 'ihre@email.de';
+      case 'pl': return 'twoj@email.pl';
+      default: return 'vas@email.cz';
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -157,9 +168,9 @@ const Register = () => {
     <div className="container max-w-md mx-auto py-16 px-4">
       <Card className="w-full">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl">Registrace</CardTitle>
+          <CardTitle className="text-2xl">{t('registerTitle')}</CardTitle>
           <CardDescription>
-            Vytvořte si nový účet a začněte využívat všechny funkce
+            {t('registerDescription')}
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
@@ -191,7 +202,7 @@ const Register = () => {
             disabled={isGoogleLoading}
           >
             {isGoogleLoading ? (
-              "Registrace..."
+              t('loading')
             ) : (
               <>
                 <svg viewBox="0 0 24 24" width="16" height="16" xmlns="http://www.w3.org/2000/svg">
@@ -202,7 +213,7 @@ const Register = () => {
                     <path fill="#EA4335" d="M -14.754 43.989 C -12.984 43.989 -11.404 44.599 -10.154 45.789 L -6.734 42.369 C -8.804 40.429 -11.514 39.239 -14.754 39.239 C -19.444 39.239 -23.494 41.939 -25.464 45.859 L -21.484 48.949 C -20.534 46.099 -17.884 43.989 -14.754 43.989 Z" />
                   </g>
                 </svg>
-                Registrovat se pomocí Google
+                {t('registerWithGoogle')}
               </>
             )}
           </Button>
@@ -213,50 +224,50 @@ const Register = () => {
             </div>
             <div className="relative flex justify-center text-xs uppercase">
               <span className="bg-background px-2 text-muted-foreground">
-                Nebo s emailem
+                {t('registerWithEmail')}
               </span>
             </div>
           </div>
           
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid gap-2">
-              <Label htmlFor="username">Uživatelské jméno (volitelné)</Label>
+              <Label htmlFor="username">{t('registerUsername')}</Label>
               <Input
                 id="username"
                 type="text"
-                placeholder="Vaše uživatelské jméno"
+                placeholder={t('registerUsernamePlaceholder')}
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t('email')}</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="vas@email.cz"
+                placeholder={getEmailPlaceholder()}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="password">Heslo</Label>
+              <Label htmlFor="password">{t('password')}</Label>
               <Input
                 id="password"
                 type="password"
-                placeholder="Alespoň 6 znaků"
+                placeholder={t('registerPasswordMinLength')}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="confirmPassword">Potvrďte heslo</Label>
+              <Label htmlFor="confirmPassword">{t('registerConfirmPassword')}</Label>
               <Input
                 id="confirmPassword"
                 type="password"
-                placeholder="Zadejte heslo znovu"
+                placeholder={t('registerConfirmPasswordPlaceholder')}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
@@ -270,15 +281,15 @@ const Register = () => {
               className="w-full"
               disabled={isLoading}
             >
-              {isLoading ? "Registrování..." : "Vytvořit účet"}
+              {isLoading ? t('registerCreating') : t('registerCreateAccount')}
             </Button>
           </form>
         </CardContent>
         <CardFooter>
           <div className="text-center w-full text-sm">
-            Již máte účet?{" "}
+            {t('alreadyHaveAccount')}{" "}
             <Link to="/login" className="text-primary underline-offset-4 hover:underline">
-              Přihlaste se
+              {t('login')}
             </Link>
           </div>
         </CardFooter>
