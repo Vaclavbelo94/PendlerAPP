@@ -37,10 +37,10 @@ export const ModernFooter: React.FC = () => {
     {
       title: 'Podpora',
       links: [
-        { label: 'FAQ', path: '/faq' },
-        { label: 'Kontakt', path: '/contact' },
-        { label: 'Ochrana údajů', path: '/privacy' },
-        { label: 'Podmínky', path: '/terms' },
+        { key: 'faq', path: '/faq' },
+        { key: 'contact', path: '/contact' },
+        { key: 'privacy', path: '/privacy' },
+        { key: 'terms', path: '/terms' },
       ]
     }
   ];
@@ -81,7 +81,7 @@ export const ModernFooter: React.FC = () => {
                       to={link.path}
                       className="text-sm text-muted-foreground hover:text-primary transition-colors"
                     >
-                      {link.key ? t(link.key) : link.label}
+                      {t(link.key)}
                     </Link>
                   </li>
                 ))}
@@ -96,10 +96,10 @@ export const ModernFooter: React.FC = () => {
           </p>
           <div className="flex space-x-6">
             <Link to="/privacy" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-              Ochrana údajů
+              {t('privacy')}
             </Link>
             <Link to="/terms" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-              Podmínky použití
+              {t('terms')}
             </Link>
             <Link to="/cookies" className="text-sm text-muted-foreground hover:text-primary transition-colors">
               Cookies

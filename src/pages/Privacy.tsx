@@ -1,27 +1,30 @@
 
 import React from 'react';
 import { Helmet } from 'react-helmet';
+import { useLanguage } from '@/hooks/useLanguage';
 
 const Privacy = () => {
+  const { t } = useLanguage();
+
   return (
     <>
       <Helmet>
-        <title>Ochrana soukromí - PendlerApp</title>
+        <title>{t('privacy')} - PendlerApp</title>
         <meta 
           name="description" 
-          content="Zásady ochrany osobních údajů aplikace PendlerApp. Informace o tom, jak shromažďujeme, používáme a chráníme vaše osobní údaje." 
+          content={t('privacyIntro')}
         />
       </Helmet>
       
       <div className="py-12 bg-background">
         <div className="container mx-auto px-4 max-w-4xl">
-          <h1 className="text-3xl font-bold mb-8 text-center text-foreground">Ochrana soukromí</h1>
+          <h1 className="text-3xl font-bold mb-8 text-center text-foreground">{t('privacyTitle')}</h1>
           
           <div className="prose prose-lg max-w-none text-foreground">
             <section className="mb-8">
               <h2 className="text-xl font-semibold mb-4 text-foreground">1. Úvod</h2>
               <p className="text-muted-foreground">Společnost Pendlerův Pomocník s.r.o., IČO: 12345678, se sídlem Hlavní 123, 150 00 Praha 5 (dále jen „správce"), jako správce osobních údajů, tímto informuje o způsobu a rozsahu zpracování osobních údajů uživatelů aplikace Pendlerův Pomocník (dále jen „aplikace").</p>
-              <p className="text-muted-foreground">Ochrana vašich osobních údajů je pro nás velmi důležitá. Tato pravidla ochrany soukromí vysvětlují, jaké údaje shromažďujeme, jak je používáme a jak je chráníme.</p>
+              <p className="text-muted-foreground">{t('privacyIntro')}</p>
             </section>
             
             <section className="mb-8">

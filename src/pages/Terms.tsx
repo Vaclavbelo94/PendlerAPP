@@ -1,26 +1,29 @@
 
 import React from 'react';
 import { Helmet } from 'react-helmet';
+import { useLanguage } from '@/hooks/useLanguage';
 
 const Terms = () => {
+  const { t } = useLanguage();
+
   return (
     <>
       <Helmet>
-        <title>Podmínky použití - PendlerApp</title>
+        <title>{t('terms')} - PendlerApp</title>
         <meta 
           name="description" 
-          content="Podmínky použití aplikace PendlerApp. Práva a povinnosti uživatelů při používání naší aplikace." 
+          content={t('termsIntro')}
         />
       </Helmet>
       
       <div className="py-12 bg-background">
         <div className="container mx-auto px-4 max-w-4xl">
-          <h1 className="text-3xl font-bold mb-8 text-center text-foreground">Podmínky použití</h1>
+          <h1 className="text-3xl font-bold mb-8 text-center text-foreground">{t('termsTitle')}</h1>
           
           <div className="prose prose-lg max-w-none text-foreground">
             <section className="mb-8">
               <h2 className="text-xl font-semibold mb-4 text-foreground">1. Úvodní ustanovení</h2>
-              <p className="text-muted-foreground">Tyto podmínky použití upravují práva a povinnosti uživatelů webové aplikace Pendlerův Pomocník (dále jen „aplikace") provozované společností Pendlerův Pomocník s.r.o., IČO: 12345678, se sídlem Hlavní 123, 150 00 Praha 5 (dále jen „provozovatel").</p>
+              <p className="text-muted-foreground">{t('termsIntro')}</p>
               <p className="text-muted-foreground">Používáním aplikace vyjadřujete souhlas s těmito podmínkami. Pokud s podmínkami nesouhlasíte, není možné aplikaci používat.</p>
             </section>
             

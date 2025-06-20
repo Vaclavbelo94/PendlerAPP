@@ -1,3 +1,4 @@
+
 export type Language = 'cs' | 'pl' | 'de';
 
 export const languages = {
@@ -22,6 +23,10 @@ export const translations = {
     profile: 'Profil',
     settings: 'Nastavení',
     admin: 'Admin',
+    contact: 'Kontakt',
+    faq: 'FAQ',
+    privacy: 'Ochrana údajů',
+    terms: 'Podmínky',
     
     // Common
     login: 'Přihlásit se',
@@ -36,6 +41,21 @@ export const translations = {
     error: 'Chyba',
     success: 'Úspěch',
     open: 'Otevřít',
+    close: 'Zavřít',
+    back: 'Zpět',
+    next: 'Další',
+    previous: 'Předchozí',
+    submit: 'Odeslat',
+    
+    // Auth
+    email: 'Email',
+    password: 'Heslo',
+    confirmPassword: 'Potvrdit heslo',
+    forgotPassword: 'Zapomenuté heslo?',
+    dontHaveAccount: 'Nemáte účet?',
+    alreadyHaveAccount: 'Už máte účet?',
+    signInWithGoogle: 'Přihlásit se pomocí Google',
+    orContinueWith: 'Nebo pokračovat s',
     
     // Hero section
     heroTitle: 'Pendlerův Pomocník',
@@ -43,6 +63,30 @@ export const translations = {
     heroDescription: 'Komplexní řešení pro české, polské a německé pracovníky. Správa směn, daní, vozidel a všeho co potřebujete.',
     getStarted: 'Začít zdarma',
     learnMore: 'Zjistit více',
+    
+    // FAQ
+    faqTitle: 'Časté otázky (FAQ)',
+    faqSubtitle: 'Odpovědi na nejčastější dotazy českých pendlerů pracujících v Německu.',
+    notFoundAnswer: 'Nenašli jste odpověď?',
+    notFoundAnswerText: 'Pokud jste nenašli odpověď na svou otázku, neváhejte nás kontaktovat. Rádi vám pomůžeme a odpovíme do 24 hodin.',
+    contactUs: 'Kontaktujte nás',
+    
+    // Privacy
+    privacyTitle: 'Ochrana soukromí',
+    privacyIntro: 'Ochrana vašich osobních údajů je pro nás velmi důležitá. Tato pravidla ochrany soukromí vysvětlují, jaké údaje shromažďujeme, jak je používáme a jak je chráníme.',
+    
+    // Terms
+    termsTitle: 'Podmínky použití',
+    termsIntro: 'Tyto podmínky použití upravují práva a povinnosti uživatelů webové aplikace PendlerApp.',
+    
+    // Contact
+    contactTitle: 'Kontakt',
+    contactSubtitle: 'Máte otázky? Rádi vám pomůžeme.',
+    contactFormTitle: 'Napište nám',
+    name: 'Jméno',
+    subject: 'Předmět',
+    message: 'Zpráva',
+    sendMessage: 'Odeslat zprávu',
     
     // Dashboard
     welcomeBack: 'Vítejte zpět',
@@ -144,6 +188,10 @@ export const translations = {
     profile: 'Profil',
     settings: 'Ustawienia',
     admin: 'Admin',
+    contact: 'Kontakt',
+    faq: 'FAQ',
+    privacy: 'Ochrona danych',
+    terms: 'Warunki',
     
     // Common
     login: 'Zaloguj się',
@@ -158,6 +206,21 @@ export const translations = {
     error: 'Błąd',
     success: 'Sukces',
     open: 'Otwórz',
+    close: 'Zamknij',
+    back: 'Wstecz',
+    next: 'Dalej',
+    previous: 'Poprzedni',
+    submit: 'Wyślij',
+    
+    // Auth
+    email: 'Email',
+    password: 'Hasło',
+    confirmPassword: 'Potwierdź hasło',
+    forgotPassword: 'Zapomniałeś hasła?',
+    dontHaveAccount: 'Nie masz konta?',
+    alreadyHaveAccount: 'Masz już konto?',
+    signInWithGoogle: 'Zaloguj się przez Google',
+    orContinueWith: 'Lub kontynuuj z',
     
     // Hero section
     heroTitle: 'Pomocnik Pendlera',
@@ -165,6 +228,30 @@ export const translations = {
     heroDescription: 'Kompleksowe rozwiązanie dla czeskich, polskich i niemieckich pracowników. Zarządzanie zmianami, podatkami, pojazdami i wszystkim czego potrzebujesz.',
     getStarted: 'Zacznij za darmo',
     learnMore: 'Dowiedz się więcej',
+    
+    // FAQ
+    faqTitle: 'Często zadawane pytania (FAQ)',
+    faqSubtitle: 'Odpowiedzi na najczęstsze pytania polskich pracowników w Niemczech.',
+    notFoundAnswer: 'Nie znalazłeś odpowiedzi?',
+    notFoundAnswerText: 'Jeśli nie znalazłeś odpowiedzi na swoje pytanie, nie wahaj się z nami skontaktować. Chętnie pomożemy i odpowiemy w ciągu 24 godzin.',
+    contactUs: 'Skontaktuj się z nami',
+    
+    // Privacy
+    privacyTitle: 'Ochrona prywatności',
+    privacyIntro: 'Ochrona Twoich danych osobowych jest dla nas bardzo ważna. Te zasady ochrony prywatności wyjaśniają, jakie dane zbieramy, jak ich używamy i jak je chronimy.',
+    
+    // Terms
+    termsTitle: 'Warunki użytkowania',
+    termsIntro: 'Te warunki użytkowania regulują prawa i obowiązki użytkowników aplikacji internetowej PendlerApp.',
+    
+    // Contact
+    contactTitle: 'Kontakt',
+    contactSubtitle: 'Masz pytania? Chętnie pomożemy.',
+    contactFormTitle: 'Napisz do nas',
+    name: 'Imię',
+    subject: 'Temat',
+    message: 'Wiadomość',
+    sendMessage: 'Wyślij wiadomość',
     
     // Dashboard
     welcomeBack: 'Witaj z powrotem',
@@ -266,6 +353,10 @@ export const translations = {
     profile: 'Profil',
     settings: 'Einstellungen',
     admin: 'Admin',
+    contact: 'Kontakt',
+    faq: 'FAQ',
+    privacy: 'Datenschutz',
+    terms: 'Nutzungsbedingungen',
     
     // Common
     login: 'Anmelden',
@@ -280,6 +371,21 @@ export const translations = {
     error: 'Fehler',
     success: 'Erfolg',
     open: 'Öffnen',
+    close: 'Schließen',
+    back: 'Zurück',
+    next: 'Weiter',
+    previous: 'Vorherige',
+    submit: 'Senden',
+    
+    // Auth
+    email: 'E-Mail',
+    password: 'Passwort',
+    confirmPassword: 'Passwort bestätigen',
+    forgotPassword: 'Passwort vergessen?',
+    dontHaveAccount: 'Kein Konto?',
+    alreadyHaveAccount: 'Bereits ein Konto?',
+    signInWithGoogle: 'Mit Google anmelden',
+    orContinueWith: 'Oder fortfahren mit',
     
     // Hero section
     heroTitle: 'Pendler-Helfer',
@@ -287,6 +393,30 @@ export const translations = {
     heroDescription: 'Umfassende Lösung für tschechische, polnische und deutsche Arbeiter. Schichtverwaltung, Steuern, Fahrzeuge und alles was Sie brauchen.',
     getStarted: 'Kostenlos starten',
     learnMore: 'Mehr erfahren',
+    
+    // FAQ
+    faqTitle: 'Häufig gestellte Fragen (FAQ)',
+    faqSubtitle: 'Antworten auf die häufigsten Fragen von Pendlern, die in Deutschland arbeiten.',
+    notFoundAnswer: 'Antwort nicht gefunden?',
+    notFoundAnswerText: 'Wenn Sie keine Antwort auf Ihre Frage gefunden haben, zögern Sie nicht, uns zu kontaktieren. Wir helfen gerne und antworten innerhalb von 24 Stunden.',
+    contactUs: 'Kontaktieren Sie uns',
+    
+    // Privacy
+    privacyTitle: 'Datenschutz',
+    privacyIntro: 'Der Schutz Ihrer persönlichen Daten ist uns sehr wichtig. Diese Datenschutzrichtlinien erklären, welche Daten wir sammeln, wie wir sie verwenden und wie wir sie schützen.',
+    
+    // Terms
+    termsTitle: 'Nutzungsbedingungen',
+    termsIntro: 'Diese Nutzungsbedingungen regeln die Rechte und Pflichten der Nutzer der Webanwendung PendlerApp.',
+    
+    // Contact
+    contactTitle: 'Kontakt',
+    contactSubtitle: 'Haben Sie Fragen? Wir helfen gerne.',
+    contactFormTitle: 'Schreiben Sie uns',
+    name: 'Name',
+    subject: 'Betreff',
+    message: 'Nachricht',
+    sendMessage: 'Nachricht senden',
     
     // Dashboard
     welcomeBack: 'Willkommen zurück',

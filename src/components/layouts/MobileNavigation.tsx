@@ -4,6 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/useAuth';
+import { useLanguage } from '@/hooks/useLanguage';
 import {
   Home,
   BarChart3,
@@ -30,6 +31,7 @@ import {
 const MobileNavigation = ({ onClose }: { onClose: () => void }) => {
   const location = useLocation();
   const { user, isPremium, isAdmin, signOut } = useAuth();
+  const { t } = useLanguage();
 
   const handleLinkClick = () => {
     onClose();
@@ -41,26 +43,26 @@ const MobileNavigation = ({ onClose }: { onClose: () => void }) => {
   };
 
   const navigationItems = [
-    { label: 'Domů', href: '/', icon: Home, isPublic: true },
-    { label: 'Dashboard', href: '/dashboard', icon: BarChart3, isPremium: true },
-    { label: 'Lekce němčiny', href: '/vocabulary', icon: GraduationCap, isPublic: true },
-    { label: 'Překladač', href: '/translator', icon: Globe, isPublic: true },
-    { label: 'Daňový poradce', href: '/tax-advisor', icon: FileText, isPremium: true },
-    { label: 'Směny', href: '/shifts', icon: Calendar, isPremium: true },
-    { label: 'Vozidlo', href: '/vehicle', icon: Car, isPremium: true },
-    { label: 'Plánování cest', href: '/travel', icon: Map, isPremium: true },
-    { label: 'Zákony', href: '/laws', icon: Scale, isPublic: true },
-    { label: 'Nastavení', href: '/settings', icon: Settings, requiresAuth: true },
-    { label: 'Premium', href: '/premium', icon: Crown, isPublic: true },
-    { label: 'Kontakt', href: '/contact', icon: Contact, isPublic: true },
-    { label: 'FAQ', href: '/faq', icon: HelpCircle, isPublic: true },
-    { label: 'Ochrana údajů', href: '/privacy', icon: Lock, isPublic: true },
-    { label: 'Podmínky', href: '/terms', icon: FileCheck, isPublic: true }
+    { label: t('home'), href: '/', icon: Home, isPublic: true },
+    { label: t('dashboard'), href: '/dashboard', icon: BarChart3, isPremium: true },
+    { label: t('germanLessons'), href: '/vocabulary', icon: GraduationCap, isPublic: true },
+    { label: t('translator'), href: '/translator', icon: Globe, isPublic: true },
+    { label: t('taxAdvisor'), href: '/tax-advisor', icon: FileText, isPremium: true },
+    { label: t('shifts'), href: '/shifts', icon: Calendar, isPremium: true },
+    { label: t('vehicle'), href: '/vehicle', icon: Car, isPremium: true },
+    { label: t('travel'), href: '/travel', icon: Map, isPremium: true },
+    { label: t('laws'), href: '/laws', icon: Scale, isPublic: true },
+    { label: t('settings'), href: '/settings', icon: Settings, requiresAuth: true },
+    { label: t('premium'), href: '/premium', icon: Crown, isPublic: true },
+    { label: t('contact'), href: '/contact', icon: Contact, isPublic: true },
+    { label: t('faq'), href: '/faq', icon: HelpCircle, isPublic: true },
+    { label: t('privacy'), href: '/privacy', icon: Lock, isPublic: true },
+    { label: t('terms'), href: '/terms', icon: FileCheck, isPublic: true }
   ];
 
   if (isAdmin) {
     navigationItems.push({
-      label: 'Admin',
+      label: t('admin'),
       href: '/admin',
       icon: Shield,
       requiresAuth: true
@@ -121,7 +123,7 @@ const MobileNavigation = ({ onClose }: { onClose: () => void }) => {
                 <span>{item.label}</span>
                 {item.isPremium && isPremium && (
                   <Badge variant="secondary" className="ml-auto text-xs">
-                    Premium
+                    {t('premium')}
                   </Badge>
                 )}
               </Link>
@@ -140,7 +142,7 @@ const MobileNavigation = ({ onClose }: { onClose: () => void }) => {
               className="flex items-center gap-3 px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
             >
               <User className="h-4 w-4" />
-              <span>Profil</span>
+              <span>{t('profile')}</span>
             </Link>
             <Button
               variant="ghost"
@@ -149,7 +151,7 @@ const MobileNavigation = ({ onClose }: { onClose: () => void }) => {
               className="w-full justify-start gap-3 text-muted-foreground hover:text-foreground"
             >
               <LogOut className="h-4 w-4" />
-              <span>Odhlásit se</span>
+              <span>{t('logout')}</span>
             </Button>
           </div>
         ) : (
@@ -160,7 +162,7 @@ const MobileNavigation = ({ onClose }: { onClose: () => void }) => {
               className="flex items-center gap-3 px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
             >
               <LogIn className="h-4 w-4" />
-              <span>Přihlásit se</span>
+              <span>{t('login')}</span>
             </Link>
             <Link
               to="/register"
@@ -168,7 +170,7 @@ const MobileNavigation = ({ onClose }: { onClose: () => void }) => {
               className="flex items-center gap-3 px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
             >
               <UserPlus className="h-4 w-4" />
-              <span>Registrovat se</span>
+              <span>{t('register')}</span>
             </Link>
           </div>
         )}

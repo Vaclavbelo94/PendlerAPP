@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
+import { useLanguage } from '@/hooks/useLanguage';
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -16,6 +18,7 @@ const Login = () => {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const navigate = useNavigate();
   const { signIn, signInWithGoogle, user, isAdmin } = useAuth();
+  const { t } = useLanguage();
   
   useEffect(() => {
     // Redirect user based on their role if already logged in
@@ -97,7 +100,7 @@ const Login = () => {
         <Card className="w-full bg-card/80 backdrop-blur-sm border shadow-xl">
           <CardHeader className="space-y-1 text-center">
             <CardTitle className="text-2xl bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Přihlášení
+              {t('login')}
             </CardTitle>
             <CardDescription>
               Zadejte své přihlašovací údaje pro přístup k vašemu účtu
@@ -114,7 +117,7 @@ const Login = () => {
                 disabled={isGoogleLoading}
               >
                 {isGoogleLoading ? (
-                  "Přihlašování..."
+                  t('loading')
                 ) : (
                   <>
                     <svg viewBox="0 0 24 24" width="16" height="16" xmlns="http://www.w3.org/2000/svg">
@@ -125,7 +128,7 @@ const Login = () => {
                         <path fill="#EA4335" d="M -14.754 43.989 C -12.984 43.989 -11.404 44.599 -10.154 45.789 L -6.734 42.369 C -8.804 40.429 -11.514 39.239 -14.754 39.239 C -19.444 39.239 -23.494 41.939 -25.464 45.859 L -21.484 48.949 C -20.534 46.099 -17.884 43.989 -14.754 43.989 Z" />
                       </g>
                     </svg>
-                    Přihlásit se pomocí Google
+                    {t('signInWithGoogle')}
                   </>
                 )}
               </Button>
@@ -136,14 +139,14 @@ const Login = () => {
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
                   <span className="bg-background px-2 text-muted-foreground">
-                    Nebo s emailem
+                    {t('orContinueWith')} {t('email').toLowerCase()}
                   </span>
                 </div>
               </div>
               
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email">{t('email')}</Label>
                   <Input
                     id="email"
                     type="email"
@@ -156,12 +159,12 @@ const Login = () => {
                 </div>
                 <div className="grid gap-2">
                   <div className="flex items-center justify-between">
-                    <Label htmlFor="password">Heslo</Label>
+                    <Label htmlFor="password">{t('password')}</Label>
                     <Link
                       to="/forgot-password"
                       className="text-sm text-primary underline-offset-4 hover:underline"
                     >
-                      Zapomenuté heslo?
+                      {t('forgotPassword')}
                     </Link>
                   </div>
                   <Input
@@ -179,16 +182,16 @@ const Login = () => {
                   className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                   disabled={isLoading}
                 >
-                  {isLoading ? "Přihlašování..." : "Přihlásit se"}
+                  {isLoading ? t('loading') : t('login')}
                 </Button>
               </form>
             </div>
           </CardContent>
           <CardFooter>
             <div className="text-center w-full text-sm">
-              Nemáte účet?{" "}
+              {t('dontHaveAccount')}{" "}
               <Link to="/register" className="text-primary underline-offset-4 hover:underline">
-                Registrujte se zdarma
+                {t('register')}
               </Link>
             </div>
           </CardFooter>
