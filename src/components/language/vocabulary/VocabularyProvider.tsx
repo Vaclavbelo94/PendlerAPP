@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { VocabularyItem, UserProgress, TestResult } from '@/models/VocabularyItem';
 import { useSpacedRepetition } from '@/hooks/useSpacedRepetition';
@@ -46,7 +45,6 @@ const defaultVocabulary: VocabularyItem[] = [
     correctCount: 0,
     incorrectCount: 0,
     nextReviewDate: new Date().toISOString(),
-    createdAt: new Date(),
     nextReview: new Date()
   },
   {
@@ -61,7 +59,6 @@ const defaultVocabulary: VocabularyItem[] = [
     correctCount: 0,
     incorrectCount: 0,
     nextReviewDate: new Date().toISOString(),
-    createdAt: new Date(),
     nextReview: new Date()
   }
 ];
