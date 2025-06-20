@@ -3,8 +3,11 @@ import React from "react";
 import { motion } from "framer-motion";
 import PremiumCheck from '@/components/premium/PremiumCheck';
 import TaxWizardCarousel from "@/components/tax-advisor/wizard/TaxWizardCarousel";
+import { useLanguage } from "@/hooks/useLanguage";
 
 const TaxAdvisor = () => {
+  const { t } = useLanguage();
+
   return (
     <PremiumCheck featureKey="tax-advisor">
       <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-secondary/5">
@@ -23,10 +26,10 @@ const TaxAdvisor = () => {
               className="mb-8"
             >
               <h1 className="text-3xl md:text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-4">
-                Daňový poradce
+                {t('taxAdvisor')}
               </h1>
               <p className="text-lg text-muted-foreground">
-                Průvodce krok za krokem pro optimální daňové přiznání
+                {t('taxAdvisorDescription')}
               </p>
             </motion.div>
 
