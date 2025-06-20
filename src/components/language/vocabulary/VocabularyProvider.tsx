@@ -36,19 +36,31 @@ const VocabularyContext = createContext<VocabularyContextType | null>(null);
 const defaultVocabulary: VocabularyItem[] = [
   {
     id: '1',
+    word: 'Hallo',
+    translation: 'Ahoj',
     german: 'Hallo',
     czech: 'Ahoj',
-    difficulty: 1,
+    difficulty: 'easy',
     category: 'Základní fráze',
+    repetitionLevel: 0,
+    correctCount: 0,
+    incorrectCount: 0,
+    nextReviewDate: new Date().toISOString(),
     createdAt: new Date(),
     nextReview: new Date()
   },
   {
     id: '2',
+    word: 'Danke',
+    translation: 'Děkuji',
     german: 'Danke',
     czech: 'Děkuji',
-    difficulty: 1,
+    difficulty: 'easy',
     category: 'Základní fráze',
+    repetitionLevel: 0,
+    correctCount: 0,
+    incorrectCount: 0,
+    nextReviewDate: new Date().toISOString(),
     createdAt: new Date(),
     nextReview: new Date()
   }
