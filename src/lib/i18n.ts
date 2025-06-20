@@ -38,6 +38,18 @@ export const translations = {
     close: 'Zavřít',
     open: 'Otevřít',
     select: 'Vybrat',
+    submit: 'Odeslat',
+    reset: 'Resetovat',
+    refresh: 'Obnovit',
+    view: 'Zobrazit',
+    download: 'Stáhnout',
+    upload: 'Nahrát',
+    copy: 'Kopírovat',
+    paste: 'Vložit',
+    cut: 'Vyjmout',
+    print: 'Tisknout',
+    export: 'Exportovat',
+    import: 'Importovat',
     
     // Autentifikace
     welcome: 'Vítejte',
@@ -47,6 +59,9 @@ export const translations = {
     email: 'E-mail',
     password: 'Heslo',
     username: 'Uživatelské jméno',
+    firstName: 'Jméno',
+    lastName: 'Příjmení',
+    phoneNumber: 'Telefonní číslo',
     
     // Překladač
     translateFrom: 'Přeložit z',
@@ -62,12 +77,64 @@ export const translations = {
     invalidEmail: 'Neplatný e-mail',
     tooShort: 'Příliš krátké',
     tooLong: 'Příliš dlouhé',
+    invalidFormat: 'Neplatný formát',
+    fieldRequired: 'Toto pole je povinné',
+    enterValue: 'Zadejte hodnotu',
+    selectOption: 'Vyberte možnost',
+    enterValidEmail: 'Zadejte platný e-mail',
+    passwordTooShort: 'Heslo je příliš krátké',
+    passwordsDoNotMatch: 'Hesla se neshodují',
     
     // Zprávy
     saveSuccess: 'Úspěšně uloženo',
     saveError: 'Chyba při ukládání',
     deleteSuccess: 'Úspěšně smazáno',
     deleteError: 'Chyba při mazání',
+    updateSuccess: 'Úspěšně aktualizováno',
+    updateError: 'Chyba při aktualizaci',
+    loginSuccess: 'Úspěšně přihlášen',
+    loginError: 'Chyba při přihlašování',
+    logoutSuccess: 'Úspěšně odhlášen',
+    registrationSuccess: 'Registrace byla úspěšná',
+    registrationError: 'Chyba při registraci',
+    
+    // Tabulky a seznamy
+    noData: 'Žádná data k zobrazení',
+    noResults: 'Žádné výsledky',
+    loading: 'Načítání...',
+    page: 'Stránka',
+    of: 'z',
+    rows: 'řádků',
+    showing: 'Zobrazeno',
+    to: 'do',
+    entries: 'záznamů',
+    sortBy: 'Seřadit podle',
+    filterBy: 'Filtrovat podle',
+    
+    // Datum a čas
+    today: 'Dnes',
+    yesterday: 'Včera',
+    tomorrow: 'Zítra',
+    thisWeek: 'Tento týden',
+    thisMonth: 'Tento měsíc',
+    thisYear: 'Tento rok',
+    selectDate: 'Vyberte datum',
+    selectTime: 'Vyberte čas',
+    dateRange: 'Rozsah dat',
+    startDate: 'Počáteční datum',
+    endDate: 'Koncové datum',
+    
+    // Stav a status
+    active: 'Aktivní',
+    inactive: 'Neaktivní',
+    enabled: 'Zapnuto',
+    disabled: 'Vypnuto',
+    online: 'Online',
+    offline: 'Offline',
+    completed: 'Dokončeno',
+    pending: 'Čekající',
+    inProgress: 'Probíhá',
+    cancelled: 'Zrušeno',
     
     // Footer
     footer: {
@@ -84,17 +151,53 @@ export const translations = {
     next: 'Další',
     previous: 'Předchozí',
     heroSubtitle: 'Aplikace pro pendlery pracující v zahraničí',
+    user: 'Uživatel',
     
     // Stránky
     contact: 'Kontakt',
     privacy: 'Ochrana osobních údajů',
     terms: 'Podmínky použití',
     cookies: 'Cookies',
-    faq: 'Časté otázky'
+    faq: 'Časté otázky',
+    
+    // Dashboard specifické
+    welcomeBack: 'Vítejte zpět',
+    welcomeUser: 'Vítejte, {username}',
+    dashboardSubtitle: 'Zde je přehled vašich aktivit',
+    dashboardDescription: 'Správa vašich pracovních aktivit a plánování',
+    monthlyProgress: 'Měsíční pokrok',
+    monthlyHours: 'Hodiny za měsíc',
+    monthlyEarnings: 'Výdělek za měsíc',
+    shiftsThisMonth: 'Směny tento měsíc',
+    efficiency: 'Efektivita',
+    travelCosts: 'Náklady na dopravu',
+    documentsReady: 'Připravené dokumenty',
+    completed: 'Dokončeno',
+    remaining: 'Zbývá',
+    
+    // Profile a Settings
+    viewEditProfile: 'Zobrazit a upravit profil',
+    goToProfile: 'Přejít na profil',
+    manageAppPreferences: 'Spravovat předvolby aplikace',
+    openSettings: 'Otevřít nastavení',
+    helpSupport: 'Pomoc a podpora',
+    getAssistance: 'Získat pomoc',
+    contactSupport: 'Kontaktovat podporu',
+    newUserTips: 'Tipy pro nové uživatele',
+    liveTraining: 'Živý výcvik',
+    knowledgeBase: 'Znalostní báze',
+    notifications: 'Oznámení',
+    showFaqHelp: 'Zobrazit FAQ a nápovědu',
+    premiumBenefits: 'Výhody Premium',
+    advancedFeatures: 'Pokročilé funkce',
+    allLanguageExercises: 'Všechna jazyková cvičení',
+    exportData: 'Export dat',
+    activatePremium: 'Aktivovat Premium',
+    welcomeDescription: 'Vítejte v aplikaci pro efektivní správu vašich pracovních aktivit'
   },
   
   pl: {
-    // Navigacja
+    // Nawigacja
     dashboard: 'Panel główny',
     shifts: 'Zmiany',
     translator: 'Tłumacz',
@@ -123,6 +226,18 @@ export const translations = {
     close: 'Zamknij',
     open: 'Otwórz',
     select: 'Wybierz',
+    submit: 'Wyślij',
+    reset: 'Resetuj',
+    refresh: 'Odśwież',
+    view: 'Zobacz',
+    download: 'Pobierz',
+    upload: 'Wgraj',
+    copy: 'Kopiuj',
+    paste: 'Wklej',
+    cut: 'Wytnij',
+    print: 'Drukuj',
+    export: 'Eksportuj',
+    import: 'Importuj',
     
     // Autoryzacja
     welcome: 'Witamy',
@@ -132,6 +247,9 @@ export const translations = {
     email: 'E-mail',
     password: 'Hasło',
     username: 'Nazwa użytkownika',
+    firstName: 'Imię',
+    lastName: 'Nazwisko',
+    phoneNumber: 'Numer telefonu',
     
     // Tłumacz
     translateFrom: 'Tłumacz z',
@@ -147,12 +265,64 @@ export const translations = {
     invalidEmail: 'Nieprawidłowy e-mail',
     tooShort: 'Za krótkie',
     tooLong: 'Za długie',
+    invalidFormat: 'Nieprawidłowy format',
+    fieldRequired: 'To pole jest wymagane',
+    enterValue: 'Wprowadź wartość',
+    selectOption: 'Wybierz opcję',
+    enterValidEmail: 'Wprowadź prawidłowy e-mail',
+    passwordTooShort: 'Hasło jest za krótkie',
+    passwordsDoNotMatch: 'Hasła nie pasują do siebie',
     
     // Komunikaty
     saveSuccess: 'Pomyślnie zapisano',
     saveError: 'Błąd podczas zapisywania',
     deleteSuccess: 'Pomyślnie usunięto',
     deleteError: 'Błąd podczas usuwania',
+    updateSuccess: 'Pomyślnie zaktualizowano',
+    updateError: 'Błąd podczas aktualizacji',
+    loginSuccess: 'Pomyślnie zalogowano',
+    loginError: 'Błąd podczas logowania',
+    logoutSuccess: 'Pomyślnie wylogowano',
+    registrationSuccess: 'Rejestracja zakończona pomyślnie',
+    registrationError: 'Błąd podczas rejestracji',
+    
+    // Tabele i listy
+    noData: 'Brak danych do wyświetlenia',
+    noResults: 'Brak wyników',
+    loading: 'Ładowanie...',
+    page: 'Strona',
+    of: 'z',
+    rows: 'wierszy',
+    showing: 'Pokazano',
+    to: 'do',
+    entries: 'wpisów',
+    sortBy: 'Sortuj według',
+    filterBy: 'Filtruj według',
+    
+    // Data i czas
+    today: 'Dzisiaj',
+    yesterday: 'Wczoraj',
+    tomorrow: 'Jutro',
+    thisWeek: 'Ten tydzień',
+    thisMonth: 'Ten miesiąc',
+    thisYear: 'Ten rok',
+    selectDate: 'Wybierz datę',
+    selectTime: 'Wybierz czas',
+    dateRange: 'Zakres dat',
+    startDate: 'Data początkowa',
+    endDate: 'Data końcowa',
+    
+    // Stan i status
+    active: 'Aktywny',
+    inactive: 'Nieaktywny',
+    enabled: 'Włączony',
+    disabled: 'Wyłączony',
+    online: 'Online',
+    offline: 'Offline',
+    completed: 'Ukończone',
+    pending: 'Oczekujące',
+    inProgress: 'W toku',
+    cancelled: 'Anulowane',
     
     // Stopka
     footer: {
@@ -169,13 +339,49 @@ export const translations = {
     next: 'Dalej',
     previous: 'Poprzedni',
     heroSubtitle: 'Aplikacja dla pracowników za granicą',
+    user: 'Użytkownik',
     
     // Strony
     contact: 'Kontakt',
     privacy: 'Polityka prywatności',
     terms: 'Warunki użytkowania',
     cookies: 'Cookies',
-    faq: 'Często zadawane pytania'
+    faq: 'Często zadawane pytania',
+    
+    // Dashboard specifické
+    welcomeBack: 'Witamy z powrotem',
+    welcomeUser: 'Witaj, {username}',
+    dashboardSubtitle: 'Oto przegląd Twoich aktywności',
+    dashboardDescription: 'Zarządzanie aktywnościami zawodowymi i planowanie',
+    monthlyProgress: 'Miesięczny postęp',
+    monthlyHours: 'Godziny w miesiącu',
+    monthlyEarnings: 'Zarobki w miesiącu',
+    shiftsThisMonth: 'Zmiany w tym miesiącu',
+    efficiency: 'Wydajność',
+    travelCosts: 'Koszty podróży',
+    documentsReady: 'Gotowe dokumenty',
+    completed: 'Ukończone',
+    remaining: 'Pozostało',
+    
+    // Profile a Settings
+    viewEditProfile: 'Zobacz i edytuj profil',
+    goToProfile: 'Przejdź do profilu',
+    manageAppPreferences: 'Zarządzaj preferencjami aplikacji',
+    openSettings: 'Otwórz ustawienia',
+    helpSupport: 'Pomoc i wsparcie',
+    getAssistance: 'Uzyskaj pomoc',
+    contactSupport: 'Skontaktuj się z wsparciem',
+    newUserTips: 'Wskazówki dla nowych użytkowników',
+    liveTraining: 'Szkolenie na żywo',
+    knowledgeBase: 'Baza wiedzy',
+    notifications: 'Powiadomienia',
+    showFaqHelp: 'Pokaż FAQ i pomoc',
+    premiumBenefits: 'Korzyści Premium',
+    advancedFeatures: 'Zaawansowane funkcje',
+    allLanguageExercises: 'Wszystkie ćwiczenia językowe',
+    exportData: 'Eksport danych',
+    activatePremium: 'Aktywuj Premium',
+    welcomeDescription: 'Witamy w aplikacji do efektywnego zarządzania Twoimi aktywnościami zawodowymi'
   },
   
   de: {
@@ -208,6 +414,18 @@ export const translations = {
     close: 'Schließen',
     open: 'Öffnen',
     select: 'Auswählen',
+    submit: 'Absenden',
+    reset: 'Zurücksetzen',
+    refresh: 'Aktualisieren',
+    view: 'Anzeigen',
+    download: 'Herunterladen',
+    upload: 'Hochladen',
+    copy: 'Kopieren',
+    paste: 'Einfügen',
+    cut: 'Ausschneiden',
+    print: 'Drucken',
+    export: 'Exportieren',
+    import: 'Importieren',
     
     // Authentifizierung
     welcome: 'Willkommen',
@@ -217,6 +435,9 @@ export const translations = {
     email: 'E-Mail',
     password: 'Passwort',
     username: 'Benutzername',
+    firstName: 'Vorname',
+    lastName: 'Nachname',
+    phoneNumber: 'Telefonnummer',
     
     // Übersetzer
     translateFrom: 'Übersetzen von',
@@ -232,12 +453,64 @@ export const translations = {
     invalidEmail: 'Ungültige E-Mail',
     tooShort: 'Zu kurz',
     tooLong: 'Zu lang',
+    invalidFormat: 'Ungültiges Format',
+    fieldRequired: 'Dieses Feld ist erforderlich',
+    enterValue: 'Wert eingeben',
+    selectOption: 'Option auswählen',
+    enterValidEmail: 'Gültige E-Mail eingeben',
+    passwordTooShort: 'Passwort ist zu kurz',
+    passwordsDoNotMatch: 'Passwörter stimmen nicht überein',
     
     // Nachrichten
     saveSuccess: 'Erfolgreich gespeichert',
     saveError: 'Fehler beim Speichern',
     deleteSuccess: 'Erfolgreich gelöscht',
     deleteError: 'Fehler beim Löschen',
+    updateSuccess: 'Erfolgreich aktualisiert',
+    updateError: 'Fehler beim Aktualisieren',
+    loginSuccess: 'Erfolgreich angemeldet',
+    loginError: 'Fehler beim Anmelden',
+    logoutSuccess: 'Erfolgreich abgemeldet',
+    registrationSuccess: 'Registrierung erfolgreich',
+    registrationError: 'Fehler bei der Registrierung',
+    
+    // Tabellen und Listen
+    noData: 'Keine Daten zum Anzeigen',
+    noResults: 'Keine Ergebnisse',
+    loading: 'Laden...',
+    page: 'Seite',
+    of: 'von',
+    rows: 'Zeilen',
+    showing: 'Angezeigt',
+    to: 'bis',
+    entries: 'Einträge',
+    sortBy: 'Sortieren nach',
+    filterBy: 'Filtern nach',
+    
+    // Datum und Zeit
+    today: 'Heute',
+    yesterday: 'Gestern',
+    tomorrow: 'Morgen',
+    thisWeek: 'Diese Woche',
+    thisMonth: 'Dieser Monat',
+    thisYear: 'Dieses Jahr',
+    selectDate: 'Datum auswählen',
+    selectTime: 'Zeit auswählen',
+    dateRange: 'Datumsbereich',
+    startDate: 'Startdatum',
+    endDate: 'Enddatum',
+    
+    // Status und Zustand
+    active: 'Aktiv',
+    inactive: 'Inaktiv',
+    enabled: 'Aktiviert',
+    disabled: 'Deaktiviert',
+    online: 'Online',
+    offline: 'Offline',
+    completed: 'Abgeschlossen',
+    pending: 'Wartend',
+    inProgress: 'In Bearbeitung',
+    cancelled: 'Storniert',
     
     // Fußzeile
     footer: {
@@ -254,12 +527,48 @@ export const translations = {
     next: 'Weiter',
     previous: 'Vorherige',
     heroSubtitle: 'App für Grenzgänger',
+    user: 'Benutzer',
     
     // Seiten
     contact: 'Kontakt',
     privacy: 'Datenschutz',
     terms: 'Nutzungsbedingungen',
     cookies: 'Cookies',
-    faq: 'Häufig gestellte Fragen'
+    faq: 'Häufig gestellte Fragen',
+    
+    // Dashboard specifické
+    welcomeBack: 'Willkommen zurück',
+    welcomeUser: 'Willkommen, {username}',
+    dashboardSubtitle: 'Hier ist eine Übersicht Ihrer Aktivitäten',
+    dashboardDescription: 'Verwaltung Ihrer beruflichen Aktivitäten und Planung',
+    monthlyProgress: 'Monatlicher Fortschritt',
+    monthlyHours: 'Stunden pro Monat',
+    monthlyEarnings: 'Monatliche Einnahmen',
+    shiftsThisMonth: 'Schichten diesen Monat',
+    efficiency: 'Effizienz',
+    travelCosts: 'Reisekosten',
+    documentsReady: 'Bereite Dokumente',
+    completed: 'Abgeschlossen',
+    remaining: 'Verbleibend',
+    
+    // Profile a Settings
+    viewEditProfile: 'Profil anzeigen und bearbeiten',
+    goToProfile: 'Zum Profil gehen',
+    manageAppPreferences: 'App-Einstellungen verwalten',
+    openSettings: 'Einstellungen öffnen',
+    helpSupport: 'Hilfe und Support',
+    getAssistance: 'Hilfe erhalten',
+    contactSupport: 'Support kontaktieren',
+    newUserTips: 'Tipps für neue Benutzer',
+    liveTraining: 'Live-Training',
+    knowledgeBase: 'Wissensdatenbank',
+    notifications: 'Benachrichtigungen',
+    showFaqHelp: 'FAQ und Hilfe anzeigen',
+    premiumBenefits: 'Premium-Vorteile',
+    advancedFeatures: 'Erweiterte Funktionen',
+    allLanguageExercises: 'Alle Sprachübungen',
+    exportData: 'Daten exportieren',
+    activatePremium: 'Premium aktivieren',
+    welcomeDescription: 'Willkommen in der App zur effizienten Verwaltung Ihrer beruflichen Aktivitäten'
   }
 } as const;
