@@ -49,7 +49,7 @@ const Register = () => {
   const handleStorageCleanup = () => {
     cleanupAuthState();
     setStorageWarning(false);
-    toast.success("Úložiště bylo vyčištěno");
+    toast.success(t('storageCleanedUp'));
   };
 
   const getEmailPlaceholder = () => {
@@ -64,18 +64,18 @@ const Register = () => {
     e.preventDefault();
     
     if (password !== confirmPassword) {
-      toast.error("Hesla se neshodují");
+      toast.error(t('passwordsDoNotMatch'));
       return;
     }
     
     if (password.length < 6) {
-      toast.error("Heslo musí mít alespoň 6 znaků");
+      toast.error(t('passwordTooShort'));
       return;
     }
     
     if (!checkLocalStorageSpace()) {
-      toast.error("Nedostatek místa v úložišti", {
-        description: "Zkuste vyčistit úložiště prohlížeče nebo použijte jiný prohlížeč"
+      toast.error(t('insufficientStorage'), {
+        description: t('insufficientStorageDescription')
       });
       return;
     }
@@ -88,42 +88,42 @@ const Register = () => {
       const { error } = await signUp(email, password, username);
       
       if (error) {
-        let errorMessage = "Zkontrolujte své údaje a zkuste to znovu.";
+        let errorMessage = t('registerCheckDataRetry');
         const errorStr = String(error);
         
         if (errorStr.includes("User already registered") || errorStr.includes("user_already_exists")) {
-          errorMessage = "Uživatel s tímto emailem již existuje. Zkuste se přihlásit.";
+          errorMessage = t('userAlreadyExists');
         } else if (errorStr.includes("Invalid email")) {
-          errorMessage = "Neplatný formát emailu.";
+          errorMessage = t('invalidEmailFormat');
         } else if (errorStr.includes("Password")) {
-          errorMessage = "Heslo nesplňuje požadavky.";
+          errorMessage = t('passwordRequirementsNotMet');
         } else if (errorStr.includes("quota") || errorStr.includes("storage")) {
-          errorMessage = "Problém s úložištěm prohlížeče. Zkuste vyčistit cache.";
+          errorMessage = t('browserStorageProblem');
         }
         
-        toast.error("Registrace selhala", {
+        toast.error(t('registrationFailed'), {
           description: errorMessage,
         });
       } else {
-        let successMessage = "Účet byl úspěšně vytvořen!";
-        let description = "Nyní se můžete přihlásit.";
+        let successMessage = t('accountCreatedSuccessfully');
+        let description = t('nowYouCanLogin');
         
         if (isPromoValid && promoCode) {
-          successMessage = "Účet vytvořen s Premium přístupem!";
-          description = `Promo kód "${promoCode}" byl aktivován. Nyní se můžete přihlásit.`;
+          successMessage = t('accountCreatedWithPremium');
+          description = t('promoCodeActivated', { code: promoCode });
         }
         
         toast.success(successMessage, { description });
         navigate("/login");
       }
     } catch (error: any) {
-      let errorMessage = "Nastala neznámá chyba. Zkuste to prosím později.";
+      let errorMessage = t('unknownErrorOccurred');
       
       if (error?.message?.includes("quota") || error?.message?.includes("storage")) {
-        errorMessage = "Nedostatek místa v úložišti prohlížeče. Zkuste vyčistit cache nebo použít jiný prohlížeč.";
+        errorMessage = t('browserStorageInsufficientSpace');
       }
       
-      toast.error("Chyba při registraci", {
+      toast.error(t('registrationError'), {
         description: errorMessage,
       });
     } finally {
@@ -133,8 +133,8 @@ const Register = () => {
 
   const handleGoogleRegister = async () => {
     if (!checkLocalStorageSpace()) {
-      toast.error("Nedostatek místa v úložišti", {
-        description: "Zkuste vyčistit úložiště prohlížeče"
+      toast.error(t('insufficientStorage'), {
+        description: t('insufficientStorageDescription')
       });
       return;
     }
@@ -147,7 +147,7 @@ const Register = () => {
       const { error, url } = await signInWithGoogle();
       
       if (error) {
-        toast.error("Registrace s Google selhala", {
+        toast.error(t('googleRegistrationFailed'), {
           description: String(error),
         });
       }
@@ -156,8 +156,8 @@ const Register = () => {
         window.location.href = url;
       }
     } catch (error: any) {
-      toast.error("Chyba při registraci", {
-        description: error?.message || "Nastala neznámá chyba. Zkuste to prosím později.",
+      toast.error(t('registrationError'), {
+        description: error?.message || t('unknownErrorOccurred'),
       });
     } finally {
       setIsGoogleLoading(false);
@@ -179,21 +179,20 @@ const Register = () => {
               <AlertCircle className="h-4 w-4 text-yellow-600" />
               <AlertDescription className="text-yellow-800 dark:text-yellow-200">
                 <div className="flex flex-col space-y-2">
-                  <span>Úložiště prohlížeče je plné. To může způsobit problémy při registraci.</span>
+                  <span>{t('browserStorageFull')}</span>
                   <Button 
                     size="sm" 
                     variant="outline" 
                     onClick={handleStorageCleanup}
                     className="w-fit"
                   >
-                    Vyčistit úložiště
+                    {t('cleanStorage')}
                   </Button>
                 </div>
               </AlertDescription>
             </Alert>
           )}
           
-          {/* Google Register Button */}
           <Button 
             type="button" 
             variant="outline" 
