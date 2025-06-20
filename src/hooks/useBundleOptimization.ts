@@ -27,11 +27,11 @@ export const useBundleOptimization = (options: BundleOptimizationOptions = {}) =
     const predictions: string[] = [];
     
     if (currentPath === '/') {
-      predictions.push('/dashboard', '/vocabulary');
+      predictions.push('/dashboard', '/translator');
     } else if (currentPath === '/dashboard') {
-      predictions.push('/shifts', '/vehicle', '/vocabulary');
+      predictions.push('/shifts', '/vehicle', '/translator');
     } else if (currentPath.startsWith('/language')) {
-      predictions.push('/vocabulary', '/translator', '/dashboard');
+      predictions.push('/translator', '/dashboard');
     }
     
     return predictions;
@@ -48,17 +48,14 @@ export const useBundleOptimization = (options: BundleOptimizationOptions = {}) =
           case '/dashboard':
             await import('@/pages/Dashboard');
             break;
-          case '/vocabulary':
-            await import('@/pages/Vocabulary');
+          case '/translator':
+            await import('@/pages/Translator');
             break;
           case '/shifts':
             await import('@/pages/Shifts');
             break;
           case '/vehicle':
             await import('@/pages/Vehicle');
-            break;
-          case '/translator':
-            await import('@/pages/Translator');
             break;
         }
       } catch (error) {
