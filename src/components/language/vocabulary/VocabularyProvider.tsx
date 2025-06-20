@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { VocabularyItem, UserProgress, TestResult } from '@/models/VocabularyItem';
 import { useSpacedRepetition } from '@/hooks/useSpacedRepetition';
@@ -31,35 +32,8 @@ export interface VocabularyContextType {
 
 const VocabularyContext = createContext<VocabularyContextType | null>(null);
 
-// Basic default vocabulary items
-const defaultVocabulary: VocabularyItem[] = [
-  {
-    id: '1',
-    word: 'Hallo',
-    translation: 'Ahoj',
-    german: 'Hallo',
-    czech: 'Ahoj',
-    difficulty: 'easy',
-    category: 'Základní fráze',
-    repetitionLevel: 0,
-    correctCount: 0,
-    incorrectCount: 0,
-    nextReviewDate: new Date().toISOString()
-  },
-  {
-    id: '2',
-    word: 'Danke',
-    translation: 'Děkuji',
-    german: 'Danke',
-    czech: 'Děkuji',
-    difficulty: 'easy',
-    category: 'Základní fráze',
-    repetitionLevel: 0,
-    correctCount: 0,
-    incorrectCount: 0,
-    nextReviewDate: new Date().toISOString()
-  }
-];
+// Prázdný seznam - uživatel si přidá vlastní slovíčka pro překladač
+const defaultVocabulary: VocabularyItem[] = [];
 
 export const VocabularyProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -89,11 +63,11 @@ export const VocabularyProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           }
         }
         
-        // Fallback to default data
-        console.log('Using default vocabulary:', defaultVocabulary.length, 'items');
+        // Fallback to empty list - no default German vocabulary
+        console.log('Using empty vocabulary list');
         setInitialItems(defaultVocabulary);
         
-        // Save default data to localStorage
+        // Save empty list to localStorage
         try {
           localStorage.setItem('vocabulary_items', JSON.stringify(defaultVocabulary));
         } catch (error) {
@@ -126,7 +100,7 @@ export const VocabularyProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   
   // Save changes only when items actually change and we're initialized
   useEffect(() => {
-    if (initialized && !isLoading && spacedRepetition.items.length > 0) {
+    if (initialized && !isLoading && spacedRepetition.items.length >= 0) {
       try {
         // Only save if items are different from what's stored
         const storedData = localStorage.getItem('vocabulary_items');

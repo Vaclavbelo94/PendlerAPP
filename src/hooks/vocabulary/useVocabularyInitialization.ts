@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { VocabularyItem } from '@/models/VocabularyItem';
-import { defaultGermanVocabulary } from '@/data/defaultVocabulary';
+import { defaultVocabulary } from '@/data/defaultVocabulary';
 import { loadVocabularyItems } from '@/utils/vocabularyStorage';
 
 export const useVocabularyInitialization = () => {
@@ -12,9 +12,9 @@ export const useVocabularyInitialization = () => {
     // Zkontrolovat, jestli už máme slovíčka v localStorage
     const existingItems = loadVocabularyItems();
     
-    // Pokud nemáme žádná slovíčka, použijeme výchozí sadu
+    // Pokud nemáme žádná slovíčka, začneme s prázdným seznamem
     if (!existingItems || existingItems.length === 0) {
-      setVocabularyItems(defaultGermanVocabulary);
+      setVocabularyItems(defaultVocabulary); // prázdný seznam
     } else {
       setVocabularyItems(existingItems);
     }
