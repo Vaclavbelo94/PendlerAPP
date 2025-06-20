@@ -94,7 +94,25 @@ export const translations = {
     
     // Terms page
     termsTitle: 'Podmínky použití',
-    termsIntro: 'Tyto podmínky upravují používání aplikace PendlerApp.'
+    termsIntro: 'Tyto podmínky upravují používání aplikace PendlerApp.',
+    
+    // Footer
+    footer: {
+      appName: 'Pendlerův Pomocník',
+      description: 'Komplexní průvodce a pomocník pro české pendlery pracující v Německu. Usnadňujeme každodenní život a překonáváme jazykové i administrativní výzvy.',
+      features: 'Funkce',
+      germanLessons: 'Výuka němčiny',
+      lawsOverview: 'Přehled zákonů',
+      vehicleManagement: 'Správa vozidla',
+      shiftPlanning: 'Plánování směn',
+      aboutUs: 'O nás',
+      aboutProject: 'O projektu',
+      frequentQuestions: 'Časté otázky',
+      allRightsReserved: 'Všechna práva vyhrazena',
+      termsOfUse: 'Podmínky použití',
+      privacyProtection: 'Ochrana soukromí',
+      website: 'Web'
+    }
   },
   
   de: {
@@ -184,7 +202,25 @@ export const translations = {
     
     // Terms page
     termsTitle: 'Nutzungsbedingungen',
-    termsIntro: 'Diese Bedingungen regeln die Nutzung der PendlerApp-Anwendung.'
+    termsIntro: 'Diese Bedingungen regeln die Nutzung der PendlerApp-Anwendung.',
+    
+    // Footer
+    footer: {
+      appName: 'Pendler-Assistent',
+      description: 'Umfassender Leitfaden und Assistent für tschechische Pendler, die in Deutschland arbeiten. Wir erleichtern das tägliche Leben und überwinden sprachliche und administrative Herausforderungen.',
+      features: 'Funktionen',
+      germanLessons: 'Deutschunterricht',
+      lawsOverview: 'Gesetze Übersicht',
+      vehicleManagement: 'Fahrzeugverwaltung',
+      shiftPlanning: 'Schichtplanung',
+      aboutUs: 'Über uns',
+      aboutProject: 'Über das Projekt',
+      frequentQuestions: 'Häufige Fragen',
+      allRightsReserved: 'Alle Rechte vorbehalten',
+      termsOfUse: 'Nutzungsbedingungen',
+      privacyProtection: 'Datenschutz',
+      website: 'Website'
+    }
   },
   
   pl: {
@@ -274,6 +310,24 @@ export const translations = {
     
     // Terms page
     termsTitle: 'Regulamin',
-    termsIntro: 'Niniejszy regulamin określa zasady korzystania z aplikacji PendlerApp.'
+    termsIntro: 'Niniejszy regulamin określa zasady korzystania z aplikacji PendlerApp.',
+    
+    // Footer
+    footer: {
+      appName: 'Asystent Pendlera',
+      description: 'Kompleksowy przewodnik i asystent dla czeskich pracowników dojeżdżających do Niemiec. Ułatwiamy codzienne życie i pokonujemy wyzwania językowe i administracyjne.',
+      features: 'Funkcje',
+      germanLessons: 'Nauka niemieckiego',
+      lawsOverview: 'Przegląd praw',
+      vehicleManagement: 'Zarządzanie pojazdem',
+      shiftPlanning: 'Planowanie zmian',
+      aboutUs: 'O nas',
+      aboutProject: 'O projekcie',
+      frequentQuestions: 'Często zadawane pytania',
+      allRightsReserved: 'Wszelkie prawa zastrzeżone',
+      termsOfUse: 'Regulamin',
+      privacyProtection: 'Ochrona prywatności',
+      website: 'Strona internetowa'
+    }
   }
 };
