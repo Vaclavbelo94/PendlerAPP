@@ -102,7 +102,7 @@ export const ModernFooter: React.FC = () => {
               {t('terms')}
             </Link>
             <Link to="/cookies" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-              Cookies
+              {t('cookies')}
             </Link>
           </div>
         </div>

@@ -8,10 +8,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Globe } from "lucide-react";
-import { useGermanLessonsTranslation } from '@/hooks/useGermanLessonsTranslation';
+import { useInternationalization } from '@/hooks/useInternationalization';
 
 const LanguageToggle = () => {
-  const { currentLanguage, changeLanguage, availableLanguages } = useGermanLessonsTranslation();
+  const { currentLanguage, changeLanguage, availableLanguages } = useInternationalization();
   
   const currentLang = availableLanguages.find(lang => lang.code === currentLanguage);
 

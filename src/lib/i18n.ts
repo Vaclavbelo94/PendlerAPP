@@ -1,771 +1,602 @@
-
-export type Language = 'cs' | 'de' | 'pl' | 'en';
-
-export interface Translations {
-  cs: Record<string, string>;
-  de: Record<string, string>;
-  pl: Record<string, string>;
-  en: Record<string, string>;
-}
-
 export const languages = [
-  { code: 'cs' as Language, name: 'Čeština', flag: '🇨🇿' },
-  { code: 'de' as Language, name: 'Deutsch', flag: '🇩🇪' },
-  { code: 'pl' as Language, name: 'Polski', flag: '🇵🇱' },
-  { code: 'en' as Language, name: 'English', flag: '🇬🇧' }
+  {
+    code: 'cs',
+    name: 'Čeština',
+    flag: '🇨🇿'
+  },
+  {
+    code: 'de',
+    name: 'Deutsch',
+    flag: '🇩🇪'
+  },
+  {
+    code: 'en',
+    name: 'English',
+    flag: '🇬🇧'
+  }
 ];
 
-export const translations: Translations = {
+export const translations = {
   cs: {
-    // App General
-    appName: 'PendlerApp',
-    heroTitle: 'Váš průvodce pendlerováním',
-    heroSubtitle: 'Kompletní řešení pro pracovníky dojíždějící do zahraničí',
-    heroAction: 'Začít zdarma',
-    
-    // Navigation
-    features: 'Funkce',
-    aboutUs: 'O nás',
-    contact: 'Kontakt',
-    settings: 'Nastavení',
-    premium: 'Premium',
-    profile: 'Profil',
-    faq: 'FAQ',
-    privacy: 'Ochrana osobních údajů',
-    terms: 'Podmínky použití',
-    cookies: 'Cookies',
-    
-    // Dashboard
-    dashboard: 'Přehled',
-    shifts: 'Směny',
-    vehicle: 'Vozidlo',
-    translator: 'Překladač',
+    overview: 'Přehled',
+    deadlines: 'Termíny',
+    documents: 'Dokumenty',
+    warning: 'Upozornění',
+    showExamples: 'Zobrazit příklady',
+    documentPreview: 'Náhled dokumentu',
+    personalData: 'Osobní údaje',
+    workData: 'Pracovní údaje',
+    name: 'Jméno',
+    taxId: 'Daňové identifikační číslo',
+    address: 'Adresa',
+    dateOfBirth: 'Datum narození',
+    employer: 'Zaměstnavatel',
+    annualIncome: 'Roční příjem',
+    commuteDistance: 'Vzdálenost dojíždění',
+    workDays: 'Počet pracovních dní',
+    notes: 'Poznámky',
+    downloadThisExample: 'Stáhnout tento příklad',
+    closePreview: 'Zavřít náhled',
+    download: 'Stáhnout',
+    preview: 'Náhled',
     taxAdvisor: 'Daňový poradce',
-    travel: 'Cestování',
-    laws: 'Zákony',
-    
-    // Authentication
-    login: 'Přihlášení',
-    logout: 'Odhlásit se',
-    email: 'E-mail',
-    password: 'Heslo',
-    
-    // Profile
-    profileTitle: 'Můj profil',
-    profileSubtitle: 'Správa vašeho účtu',
-    accountManagement: 'Správa účtu',
-    personalInfo: 'Osobní informace',
-    accountSettings: 'Nastavení účtu',
-    dataExport: 'Export dat',
-    accountDeletion: 'Smazání účtu',
-    changePassword: 'Změnit heslo',
-    exportData: 'Exportovat data',
-    deleteAccount: 'Smazat účet',
-    
-    // Registration
-    registerTitle: 'Vytvořit účet',
-    registerDescription: 'Vytvořte si účet a začněte využívat všechny funkce aplikace',
-    registerUsername: 'Uživatelské jméno',
-    registerUsernamePlaceholder: 'Zadejte uživatelské jméno',
-    registerPasswordMinLength: 'Heslo (min. 6 znaků)',
-    registerConfirmPassword: 'Potvrdit heslo',
-    registerConfirmPasswordPlaceholder: 'Potvrďte heslo',
-    registerWithGoogle: 'Registrovat se přes Google',
-    registerWithEmail: 'nebo se registrujte e-mailem',
-    registerCreating: 'Vytváří se...',
-    registerCreateAccount: 'Vytvořit účet',
-    alreadyHaveAccount: 'Již máte účet?',
-    
-    // Registration Messages
-    passwordsDoNotMatch: 'Hesla se neshodují',
-    passwordTooShort: 'Heslo musí mít alespoň 6 znaků',
-    insufficientStorage: 'Nedostatek místa v úložišti',
-    insufficientStorageDescription: 'Vyčistěte prosím úložiště prohlížeče',
-    registerCheckDataRetry: 'Zkontrolujte zadané údaje a zkuste to znovu',
-    userAlreadyExists: 'Uživatel s tímto e-mailem již existuje',
-    invalidEmailFormat: 'Neplatný formát e-mailu',
-    passwordRequirementsNotMet: 'Heslo nesplňuje požadavky',
-    browserStorageProblem: 'Problém s úložištěm prohlížeče',
-    registrationFailed: 'Registrace se nezdařila',
-    accountCreatedSuccessfully: 'Účet byl úspěšně vytvořen',
-    nowYouCanLogin: 'Nyní se můžete přihlásit',
-    accountCreatedWithPremium: 'Účet vytvořen s Premium funkcemi',
-    promoCodeActivated: 'Propagační kód {code} byl aktivován',
-    unknownErrorOccurred: 'Došlo k neznámé chybě',
-    browserStorageInsufficientSpace: 'Nedostatek místa v úložišti prohlížeče',
-    registrationError: 'Chyba při registraci',
-    googleRegistrationFailed: 'Registrace přes Google se nezdařila',
-    loading: 'Načítání...',
-    browserStorageFull: 'Úložiště prohlížeče je plné. Klikněte pro vyčištění starých dat.',
-    cleanStorage: 'Vyčistit úložiště',
-    storageCleanedUp: 'Úložiště bylo vyčištěno',
-    
-    // Tax Advisor
-    taxAdvisorTitle: 'Daňový poradce',
-    taxAdvisorSubtitle: 'Průvodce krok za krokem pro optimální daňové přiznání',
-    taxCalculators: 'Daňové kalkulátory',
-    taxOptimization: 'Daňová optimalizace',
-    documentGenerator: 'Generátor dokumentů',
-    taxReminders: 'Daňové připomínky',
-    quickCalculations: 'Rychlé výpočty pro vaše daňové plánování',
-    germanCalculator: 'Německý kalkulátor',
-    calculationHistory: 'Historie výpočtů',
-    optimizationTips: 'Optimalizace',
-    currentSituation: 'Aktuální situace',
-    optimizedSituation: 'Optimalizovaná situace',
-    taxSavings: 'Můžete ušetřit',
-    annualSavings: 'Roční úspora na daních',
-    yearly: 'ročně',
-    germanTaxCalculator2024: 'Německý daňový kalkulátor 2024',
+    taxAdvisorDescription: 'Zjednodušte si daňové přiznání s naším průvodcem a nástroji.',
+    taxReturnGuide: {
+      title: 'Průvodce daňovým přiznáním',
+      overviewTitle: 'Jak podat daňové přiznání v Německu',
+      importantDeadlines: 'Důležité termíny pro daňové přiznání',
+      requiredDocuments: 'Potřebné dokumenty',
+      needHelp: 'Potřebujete pomoci?',
+      needHelpDescription: 'Využijte naše daňové nástroje a průvodce pro snadné vyplnění přiznání.',
+      requiredDocumentsDescription: 'Připravte si všechny potřebné dokumenty pro daňové přiznání.',
+      documentExamples: 'Příklady dokumentů',
+      documentExamplesDescription: 'Prohlédněte si vzorové dokumenty, které budete potřebovat.',
+      deadlineWarning: 'Důležité termíny se blíží! Nezapomeňte podat daňové přiznání včas.',
+      steps: {
+        prepareDocuments: {
+          title: 'Připravte si dokumenty',
+          content: 'Shromážděte všechny potřebné dokumenty, jako jsou potvrzení o příjmu, výdajích a další relevantní doklady.'
+        },
+        createElsterAccount: {
+          title: 'Vytvořte si účet na Elster',
+          content: 'Zaregistrujte se na online portálu Elster, který slouží pro elektronické podávání daňových přiznání v Německu.'
+        },
+        fillForms: {
+          title: 'Vyplňte daňové formuláře',
+          content: 'Vyplňte všechny potřebné daňové formuláře s pomocí našich průvodců a nástrojů. Ujistěte se, že uvádíte správné a úplné informace.'
+        },
+        submitReturn: {
+          title: 'Odešlete daňové přiznání',
+          content: 'Po vyplnění formulářů odešlete daňové přiznání elektronicky prostřednictvím portálu Elster. Uložte si potvrzení o odeslání.'
+        },
+        checkDecision: {
+          title: 'Zkontrolujte rozhodnutí',
+          content: 'Po zpracování daňového přiznání obdržíte rozhodnutí od finančního úřadu. Zkontrolujte, zda jsou všechny údaje správné a v případě nesrovnalostí se odvolejte.'
+        }
+      },
+      deadlines: {
+        standard: {
+          title: 'Standardní termín',
+          date: '31. července',
+          description: 'Daňové přiznání musí být podáno do tohoto data bez prodloužení.'
+        },
+        extended: {
+          title: 'Prodloužený termín (s daňovým poradcem)',
+          date: '28. února následujícího roku',
+          description: 'Pokud vám daňové přiznání zpracovává daňový poradce, máte více času.'
+        },
+        late: {
+          title: 'Pozdní podání',
+          fee: 'Pokuta za pozdní podání',
+          description: 'Při pozdním podání daňového přiznání vám může být udělena pokuta.'
+        }
+      },
+      documents: {
+        lohnsteuerbescheinigung: 'Potvrzení o dani ze mzdy od zaměstnavatele.',
+        pendlerpauschale: 'Náklady na dojíždění do práce.',
+        werbungskosten: 'Výdaje související s výkonem zaměstnání.',
+        sonderausgaben: 'Osobní výdaje, které lze odečíst od základu daně.',
+        aussergewoehnlicheBelastungen: 'Mimořádné výdaje, které lze odečíst od základu daně.'
+      }
+    },
+    documentExamples: {
+      title: 'Příklady dokumentů',
+      description: 'Prohlédněte si vzorové dokumenty, které budete potřebovat pro daňové přiznání.',
+      types: {
+        taxReturn: 'Daňové přiznání',
+        commuterCertificate: 'Potvrzení o dojíždění',
+        taxReductionApplication: 'Žádost o snížení daně',
+        workToolsCertificate: 'Potvrzení o pracovních prostředcích'
+      },
+      sampleNotes: {
+        developer: 'Poznámky k daňovému přiznání pro vývojáře softwaru.'
+      }
+    },
+    taxCalculators: 'Daňové kalkulačky',
+    quickCalculations: 'Rychlé a přesné výpočty vašich daní',
+    germanCalculator: 'Německá daňová kalkulačka',
+    calculatorDescription: 'Spočítejte si výši daně z příjmu v Německu pro rok 2024.',
     currentRates: 'Aktuální sazby',
-    calculatorDescription: 'Vypočítejte přesnou výši vaší daňové povinnosti podle německých daňových sazeb.',
-    loggedInSaves: 'Vaše výpočty se automaticky ukládají.',
-    notLoggedInNoSave: 'Přihlaste se pro ukládání výpočtů.',
-    
-    // Tax Notifications
-    taxNotificationsTitle: 'Daňové připomínky',
-    taxNotificationsSubtitle: 'Důležité termíny a upozornění pro daňové záležitosti',
+    calculationHistory: 'Historie výpočtů',
+    loggedInSaves: 'Přihlášený uživatel - ukládáme historii výpočtů',
+    notLoggedInNoSave: 'Nepřihlášený uživatel - historie výpočtů se neukládá',
+    optimizationTips: 'Tipy pro optimalizaci',
+    loading: 'Načítání...',
+    germanTaxCalculator2024: 'Německá daňová kalkulačka 2024',
+    taxNotificationsTitle: 'Daňové notifikace',
+    taxNotificationsSubtitle: 'Důležité upozornění a termíny pro vaše daně',
     noActiveReminders: 'Žádné aktivní připomínky',
+    taxReturn: 'Daňové přiznání',
+    highPriority: 'Vysoká priorita',
+    mediumPriority: 'Střední priorita',
+    lowPriority: 'Nízká priorita',
+    deadline: 'Termín',
     showAllReminders: 'Zobrazit všechny připomínky',
     showLessReminders: 'Zobrazit méně připomínek',
-    deadline: 'Termín',
-    highPriority: 'Vysoká',
-    mediumPriority: 'Střední',
-    lowPriority: 'Nízká',
+    user: 'uživateli',
+    highPriority: 'Vysoká priorita',
+    mediumPriority: 'Střední priorita',
+    lowPriority: 'Nízká priorita',
+
+    // Dashboard translations
+    dashboard: 'Dashboard',
+    monthlyProgress: 'Měsíční pokrok',
+    monthlyHours: 'Měsíční hodiny',
+    monthlyEarnings: 'Měsíční výdělky',
+    shiftsThisMonth: 'Směny tento měsíc',
+    efficiency: 'Efektivita',
+    travelCosts: 'Cestovní náklady',
+    documentsReady: 'Připravené dokumenty',
+    completed: 'dokončeno',
+    remaining: 'zbývá',
+    currentShift: 'Aktuální směna',
+    active: 'aktivní',
+    inactive: 'neaktivní',
+    time: 'Čas',
+    location: 'Místo',
+    progress: 'Pokrok',
+    weeklyOverview: 'Týdenní přehled',
+    hoursWorked: 'Odpracované hodiny',
+    plannedHours: 'Plánované hodiny',
+    estimatedEarnings: 'Odhadované výdělky',
+    shiftsCompleted: 'Dokončené směny',
     
-    // Tax Optimizer
-    taxOptimizerTitle: 'Daňová optimalizace pro pendlery',
-    taxOptimizerDescription: 'Tento nástroj vám pomůže optimalizovat vaše daňové zatížení při práci v Německu. Vyplňte formulář níže a zjistěte, kolik můžete ušetřit na daních.',
-    calculationSuccessful: 'Výpočet proběhl úspěšně',
-    potentialSavings: 'Potenciální úspora',
-    calculationError: 'Chyba při výpočtu',
-    checkValues: 'Došlo k chybě při výpočtu daní. Zkontrolujte zadané hodnoty.',
+    // Welcome section
+    welcomeUser: 'Vítejte, {username}!',
+    welcomeDescription: 'Začněte používat Pendlerův Pomocník pro efektivnější práci v zahraničí',
+    newUserTips: 'Tipy pro nové uživatele',
+    liveTraining: '• Připojte se k našim školením v živém přenosu',
+    knowledgeBase: '• Procházejte naši znalostní bázi s návody',
+    notifications: '• Nastavte si notifikace pro důležité události',
+    showFaqHelp: 'Zobrazit FAQ a nápovědu',
+    premiumBenefits: 'Premium výhody',
+    advancedFeatures: '• Odemkněte pokročilé funkce a statistiky',
+    allLanguageExercises: '• Získejte přístup ke všem jazykovým cvičením',
+    exportData: '• Exportujte data do různých formátů',
+    activatePremium: 'Aktivovat Premium',
     
-    // Document Generator
-    documentGeneratorTitle: 'Generátor daňových dokumentů',
-    documentGeneratorLogin: 'Pro používání generátoru se musíte přihlásit',
-    loginForDocuments: 'Přihlaste se pro generování a ukládání daňových dokumentů',
-    documentExamples: 'Vzory dokumentů',
-    documentExamplesDescription: 'Prohlédněte si vzorové dokumenty s ukázkovými daty',
-    showExamples: 'Zobrazit příklady',
-    documentHistory: 'Historie dokumentů',
-    documentHistoryDescription: 'Vaše vygenerované daňové dokumenty',
-    noDocumentsYet: 'Zatím jste nevygenerovali žádné dokumenty',
-    generateNewDocument: 'Generovat nový dokument',
-    fillFormDescription: 'Vyplňte formulář pro vytvoření daňového dokumentu',
-    generateDocument: 'Vygenerovat dokument',
-    generatingDocument: 'Generuji dokument...',
-    download: 'Stáhnout',
-    delete: 'Smazat',
-    deleting: 'Maže se...',
-    confirmDeletion: 'Potvrdit smazání',
-    deleteConfirmation: 'Opravdu chcete smazat tento dokument? Tato akce je nevratná.',
-    cancel: 'Zrušit',
-    deleteDocument: 'Smazat dokument',
-    
-    // Document Types
-    taxReturn: 'Daňové přiznání',
-    commuterCertificate: 'Potvrzení o dojíždění',
-    taxReductionApplication: 'Žádost o snížení daně ze mzdy',
-    workEquipmentCertificate: 'Potvrzení o pracovních prostředcích',
-    
-    // Contact
-    contactTitle: 'Kontaktujte nás',
-    contactSubtitle: 'Máte otázky nebo potřebujete pomoc? Rádi vám pomůžeme!',
-    contactInfo: 'Kontaktní informace',
-    contactEmail: 'E-mail',
-    contactPhone: 'Telefon',
-    contactAddress: 'Adresa',
-    contactResponseTime: 'Odpovídáme do 24 hodin',
-    contactWorkingHours: 'Po-Pá 9:00-17:00',
-    contactFormTitle: 'Napište nám zprávu',
-    contactName: 'Jméno',
-    contactNamePlaceholder: 'Vaše jméno',
-    contactMessage: 'Zpráva',
-    contactMessagePlaceholder: 'Popište váš dotaz nebo problém...',
-    contactSending: 'Odesílání...',
-    contactSend: 'Odeslat zprávu',
-    
-    // Common
-    save: 'Uložit',
-    update: 'Aktualizovat',
-    create: 'Vytvořit',
-    edit: 'Upravit',
-    close: 'Zavřít',
-    back: 'Zpět',
-    next: 'Další',
-    previous: 'Předchozí',
-    success: 'Úspěch',
-    error: 'Chyba',
-    warning: 'Upozornění',
-    info: 'Informace',
-    
-    // Footer
-    footerAppName: 'PendlerApp',
-    footerAllRightsReserved: 'Všechna práva vyhrazena'
-  },
-  de: {
-    // App General
-    appName: 'PendlerApp',
-    heroTitle: 'Ihr Pendler-Begleiter',
-    heroSubtitle: 'Komplettlösung für Grenzgänger und Pendler',
-    heroAction: 'Kostenlos starten',
-    
-    // Navigation
-    features: 'Funktionen',
-    aboutUs: 'Über uns',
-    contact: 'Kontakt',
-    settings: 'Einstellungen',
-    premium: 'Premium',
-    profile: 'Profil',
-    faq: 'FAQ',
-    privacy: 'Datenschutz',
-    terms: 'Nutzungsbedingungen',
+    // Modern components
+    features: 'Funkce',
+    aboutUs: 'O nás',
+    appName: 'Pendlerův Pomocník',
+    allRightsReserved: 'Všechna práva vyhrazena',
     cookies: 'Cookies',
     
-    // Dashboard
-    dashboard: 'Übersicht',
-    shifts: 'Schichten',
-    vehicle: 'Fahrzeug',
-    translator: 'Übersetzer',
-    taxAdvisor: 'Steuerberater',
-    travel: 'Reisen',
-    laws: 'Gesetze',
+    // Footer sections
+    'footer.features': 'Funkce',
+    'footer.aboutUs': 'O aplikaci',
+    'footer.appName': 'Pendlerův Pomocník',
+    'footer.allRightsReserved': 'Všechna práva vyhrazena',
     
-    // Authentication
-    login: 'Anmelden',
-    logout: 'Abmelden',
-    email: 'E-Mail',
-    password: 'Passwort',
+    // Common language
+    heroSubtitle: 'Váš digitální asistent pro práci v zahraničí',
     
-    // Profile
-    profileTitle: 'Mein Profil',
-    profileSubtitle: 'Kontoverwaltung',
-    accountManagement: 'Kontoverwaltung',
-    personalInfo: 'Persönliche Informationen',
-    accountSettings: 'Kontoeinstellungen',
-    dataExport: 'Datenexport',
-    accountDeletion: 'Konto löschen',
-    changePassword: 'Passwort ändern',
-    exportData: 'Daten exportieren',
-    deleteAccount: 'Konto löschen',
-    
-    // Registration
-    registerTitle: 'Konto erstellen',
-    registerDescription: 'Erstellen Sie ein Konto und nutzen Sie alle App-Funktionen',
-    registerUsername: 'Benutzername',
-    registerUsernamePlaceholder: 'Benutzername eingeben',
-    registerPasswordMinLength: 'Passwort (min. 6 Zeichen)',
-    registerConfirmPassword: 'Passwort bestätigen',
-    registerConfirmPasswordPlaceholder: 'Passwort bestätigen',
-    registerWithGoogle: 'Mit Google registrieren',
-    registerWithEmail: 'oder per E-Mail registrieren',
-    registerCreating: 'Wird erstellt...',
-    registerCreateAccount: 'Konto erstellen',
-    alreadyHaveAccount: 'Haben Sie bereits ein Konto?',
-    
-    // Registration Messages
-    passwordsDoNotMatch: 'Passwörter stimmen nicht überein',
-    passwordTooShort: 'Passwort muss mindestens 6 Zeichen haben',
-    insufficientStorage: 'Unzureichender Speicherplatz',
-    insufficientStorageDescription: 'Bitte Browser-Speicher leeren',
-    registerCheckDataRetry: 'Überprüfen Sie die Daten und versuchen Sie es erneut',
-    userAlreadyExists: 'Benutzer mit dieser E-Mail existiert bereits',
-    invalidEmailFormat: 'Ungültiges E-Mail-Format',
-    passwordRequirementsNotMet: 'Passwort erfüllt nicht die Anforderungen',
-    browserStorageProblem: 'Browser-Speicher-Problem',
-    registrationFailed: 'Registrierung fehlgeschlagen',
-    accountCreatedSuccessfully: 'Konto erfolgreich erstellt',
-    nowYouCanLogin: 'Sie können sich jetzt anmelden',
-    accountCreatedWithPremium: 'Konto mit Premium-Funktionen erstellt',
-    promoCodeActivated: 'Promo-Code {code} wurde aktiviert',
-    unknownErrorOccurred: 'Unbekannter Fehler aufgetreten',
-    browserStorageInsufficientSpace: 'Unzureichender Browser-Speicherplatz',
-    registrationError: 'Registrierungsfehler',
-    googleRegistrationFailed: 'Google-Registrierung fehlgeschlagen',
-    loading: 'Laden...',
-    browserStorageFull: 'Browser-Speicher ist voll. Klicken Sie zum Löschen alter Daten.',
-    cleanStorage: 'Speicher leeren',
-    storageCleanedUp: 'Speicher wurde geleert',
-    
-    // Tax Advisor
-    taxAdvisorTitle: 'Steuerberater',
-    taxAdvisorSubtitle: 'Schritt-für-Schritt-Anleitung für optimale Steuererklärung',
-    taxCalculators: 'Steuerrechner',
-    taxOptimization: 'Steueroptimierung',
-    documentGenerator: 'Dokumentengenerator',
-    taxReminders: 'Steuererinnerungen',
-    quickCalculations: 'Schnelle Berechnungen für Ihre Steuerplanung',
-    germanCalculator: 'Deutscher Rechner',
-    calculationHistory: 'Berechnungshistorie',
-    optimizationTips: 'Optimierung',
-    currentSituation: 'Aktuelle Situation',
-    optimizedSituation: 'Optimierte Situation',
-    taxSavings: 'Sie können sparen',
-    annualSavings: 'Jährliche Steuerersparnis',
-    yearly: 'jährlich',
-    germanTaxCalculator2024: 'Deutscher Steuerrechner 2024',
-    currentRates: 'Aktuelle Sätze',
-    calculatorDescription: 'Berechnen Sie die genaue Höhe Ihrer Steuerschuld nach deutschen Steuersätzen.',
-    loggedInSaves: 'Ihre Berechnungen werden automatisch gespeichert.',
-    notLoggedInNoSave: 'Melden Sie sich an, um Berechnungen zu speichern.',
-    
-    // Tax Notifications
-    taxNotificationsTitle: 'Steuererinnerungen',
-    taxNotificationsSubtitle: 'Wichtige Termine und Hinweise für Steuerangelegenheiten',
-    noActiveReminders: 'Keine aktiven Erinnerungen',
-    showAllReminders: 'Alle Erinnerungen anzeigen',
-    showLessReminders: 'Weniger Erinnerungen anzeigen',
-    deadline: 'Termin',
-    highPriority: 'Hoch',
-    mediumPriority: 'Mittel',
-    lowPriority: 'Niedrig',
-    
-    // Tax Optimizer
-    taxOptimizerTitle: 'Steueroptimierung für Pendler',
-    taxOptimizerDescription: 'Dieses Tool hilft Ihnen, Ihre Steuerbelastung bei der Arbeit in Deutschland zu optimieren. Füllen Sie das Formular unten aus und erfahren Sie, wie viel Sie bei Steuern sparen können.',
-    calculationSuccessful: 'Berechnung erfolgreich',
-    potentialSavings: 'Potenzielle Ersparnis',
-    calculationError: 'Berechnungsfehler',
-    checkValues: 'Fehler bei der Steuerberechnung aufgetreten. Überprüfen Sie die eingegebenen Werte.',
-    
-    // Document Generator
-    documentGeneratorTitle: 'Steuerdokumentengenerator',
-    documentGeneratorLogin: 'Sie müssen sich anmelden, um den Generator zu verwenden',
-    loginForDocuments: 'Melden Sie sich an zum Generieren und Speichern von Steuerdokumenten',
-    documentExamples: 'Dokumentenvorlagen',
-    documentExamplesDescription: 'Sehen Sie sich Beispieldokumente mit Musterdaten an',
-    showExamples: 'Beispiele anzeigen',
-    documentHistory: 'Dokumentenhistorie',
-    documentHistoryDescription: 'Ihre generierten Steuerdokumente',
-    noDocumentsYet: 'Sie haben noch keine Dokumente generiert',
-    generateNewDocument: 'Neues Dokument generieren',
-    fillFormDescription: 'Füllen Sie das Formular aus, um ein Steuerdokument zu erstellen',
-    generateDocument: 'Dokument generieren',
-    generatingDocument: 'Dokument wird generiert...',
-    download: 'Herunterladen',
-    delete: 'Löschen',
-    deleting: 'Wird gelöscht...',
-    confirmDeletion: 'Löschung bestätigen',
-    deleteConfirmation: 'Möchten Sie dieses Dokument wirklich löschen? Diese Aktion ist unwiderruflich.',
-    cancel: 'Abbrechen',
-    deleteDocument: 'Dokument löschen',
-    
-    // Document Types
-    taxReturn: 'Steuererklärung',
-    commuterCertificate: 'Pendlerbescheinigung',
-    taxReductionApplication: 'Antrag auf Lohnsteuerermäßigung',
-    workEquipmentCertificate: 'Nachweis Arbeitsmittel',
-    
-    // Contact
-    contactTitle: 'Kontaktieren Sie uns',
-    contactSubtitle: 'Haben Sie Fragen oder brauchen Hilfe? Wir helfen Ihnen gerne!',
-    contactInfo: 'Kontaktinformationen',
-    contactEmail: 'E-Mail',
-    contactPhone: 'Telefon',
-    contactAddress: 'Adresse',
-    contactResponseTime: 'Antwort innerhalb von 24 Stunden',
-    contactWorkingHours: 'Mo-Fr 9:00-17:00',
-    contactFormTitle: 'Schreiben Sie uns eine Nachricht',
-    contactName: 'Name',
-    contactNamePlaceholder: 'Ihr Name',
-    contactMessage: 'Nachricht',
-    contactMessagePlaceholder: 'Beschreiben Sie Ihre Frage oder Ihr Problem...',
-    contactSending: 'Wird gesendet...',
-    contactSend: 'Nachricht senden',
-    
-    // Common
-    save: 'Speichern',
-    update: 'Aktualisieren',
-    create: 'Erstellen',
-    edit: 'Bearbeiten',
-    close: 'Schließen',
-    back: 'Zurück',
-    next: 'Weiter',
-    previous: 'Vorherige',
-    success: 'Erfolg',
-    error: 'Fehler',
-    warning: 'Warnung',
-    info: 'Information',
-    
-    // Footer
-    footerAppName: 'PendlerApp',
-    footerAllRightsReserved: 'Alle Rechte vorbehalten'
-  },
-  pl: {
-    // App General
-    appName: 'PendlerApp',
-    heroTitle: 'Twój przewodnik po pracy za granicą',
-    heroSubtitle: 'Kompleksowe rozwiązanie dla pracowników dojeżdżających',
-    heroAction: 'Rozpocznij za darmo',
-    
-    // Navigation
-    features: 'Funkcje',
-    aboutUs: 'O nas',
-    contact: 'Kontakt',
-    settings: 'Ustawienia',
-    premium: 'Premium',
-    profile: 'Profil',
-    faq: 'FAQ',
-    privacy: 'Prywatność',
-    terms: 'Warunki użytkowania',
-    cookies: 'Cookies',
-    
-    // Dashboard
-    dashboard: 'Przegląd',
-    shifts: 'Zmiany',
-    vehicle: 'Pojazd',
-    translator: 'Tłumacz',
-    taxAdvisor: 'Doradca podatkowy',
-    travel: 'Podróże',
-    laws: 'Prawo',
-    
-    // Authentication
-    login: 'Logowanie',
-    logout: 'Wyloguj się',
-    email: 'E-mail',
-    password: 'Hasło',
-    
-    // Profile
-    profileTitle: 'Mój profil',
-    profileSubtitle: 'Zarządzanie kontem',
-    accountManagement: 'Zarządzanie kontem',
-    personalInfo: 'Informacje osobiste',
-    accountSettings: 'Ustawienia konta',
-    dataExport: 'Eksport danych',
-    accountDeletion: 'Usunięcie konta',
-    changePassword: 'Zmień hasło',
-    exportData: 'Eksportuj dane',
-    deleteAccount: 'Usuń konto',
-    
-    // Registration
-    registerTitle: 'Utwórz konto',
-    registerDescription: 'Utwórz konto i korzystaj ze wszystkich funkcji aplikacji',
-    registerUsername: 'Nazwa użytkownika',
-    registerUsernamePlaceholder: 'Wprowadź nazwę użytkownika',
-    registerPasswordMinLength: 'Hasło (min. 6 znaków)',
-    registerConfirmPassword: 'Potwierdź hasło',
-    registerConfirmPasswordPlaceholder: 'Potwierdź hasło',
-    registerWithGoogle: 'Zarejestruj się przez Google',
-    registerWithEmail: 'lub zarejestruj się e-mailem',
-    registerCreating: 'Tworzenie...',
-    registerCreateAccount: 'Utwórz konto',
-    alreadyHaveAccount: 'Masz już konto?',
-    
-    // Registration Messages
-    passwordsDoNotMatch: 'Hasła nie pasują do siebie',
-    passwordTooShort: 'Hasło musi mieć co najmniej 6 znaków',
-    insufficientStorage: 'Niewystarczająca ilość miejsca',
-    insufficientStorageDescription: 'Proszę wyczyścić pamięć przeglądarki',
-    registerCheckDataRetry: 'Sprawdź dane i spróbuj ponownie',
-    userAlreadyExists: 'Użytkownik z tym e-mailem już istnieje',
-    invalidEmailFormat: 'Nieprawidłowy format e-maila',
-    passwordRequirementsNotMet: 'Hasło nie spełnia wymagań',
-    browserStorageProblem: 'Problem z pamięcią przeglądarki',
-    registrationFailed: 'Rejestracja nie powiodła się',
-    accountCreatedSuccessfully: 'Konto zostało pomyślnie utworzone',
-    nowYouCanLogin: 'Teraz możesz się zalogować',
-    accountCreatedWithPremium: 'Konto utworzone z funkcjami Premium',
-    promoCodeActivated: 'Kod promocyjny {code} został aktywowany',
-    unknownErrorOccurred: 'Wystąpił nieznany błąd',
-    browserStorageInsufficientSpace: 'Niewystarczająca ilość miejsca w przeglądarce',
-    registrationError: 'Błąd rejestracji',
-    googleRegistrationFailed: 'Rejestracja przez Google nie powiodła się',
-    loading: 'Ładowanie...',
-    browserStorageFull: 'Pamięć przeglądarki jest pełna. Kliknij, aby wyczyścić stare dane.',
-    cleanStorage: 'Wyczyść pamięć',
-    storageCleanedUp: 'Pamięć została wyczyszczona',
-    
-    // Tax Advisor
-    taxAdvisorTitle: 'Doradca podatkowy',
-    taxAdvisorSubtitle: 'Przewodnik krok po kroku dla optymalnego rozliczenia podatkowego',
-    taxCalculators: 'Kalkulatory podatkowe',
-    taxOptimization: 'Optymalizacja podatkowa',
-    documentGenerator: 'Generator dokumentów',
-    taxReminders: 'Przypomnienia podatkowe',
-    quickCalculations: 'Szybkie obliczenia dla planowania podatkowego',
-    germanCalculator: 'Kalkulator niemiecki',
-    calculationHistory: 'Historia obliczeń',
-    optimizationTips: 'Optymalizacja',
-    currentSituation: 'Obecna sytuacja',
-    optimizedSituation: 'Zoptymalizowana sytuacja',
-    taxSavings: 'Możesz zaoszczędzić',
-    annualSavings: 'Roczne oszczędności podatkowe',
-    yearly: 'rocznie',
-    germanTaxCalculator2024: 'Niemiecki kalkulator podatkowy 2024',
-    currentRates: 'Aktualne stawki',
-    calculatorDescription: 'Oblicz dokładną wysokość zobowiązania podatkowego według niemieckich stawek podatkowych.',
-    loggedInSaves: 'Twoje obliczenia są automatycznie zapisywane.',
-    notLoggedInNoSave: 'Zaloguj się, aby zapisywać obliczenia.',
-    
-    // Tax Notifications
-    taxNotificationsTitle: 'Przypomnienia podatkowe',
-    taxNotificationsSubtitle: 'Ważne terminy i powiadomienia dotyczące spraw podatkowych',
-    noActiveReminders: 'Brak aktywnych przypomnień',
-    showAllReminders: 'Pokaż wszystkie przypomnienia',
-    showLessReminders: 'Pokaż mniej przypomnień',
-    deadline: 'Termin',
-    highPriority: 'Wysoki',
-    mediumPriority: 'Średni',
-    lowPriority: 'Niski',
-    
-    // Tax Optimizer
-    taxOptimizerTitle: 'Optymalizacja podatkowa dla dojeżdżających',
-    taxOptimizerDescription: 'To narzędzie pomoże Ci zoptymalizować obciążenie podatkowe podczas pracy w Niemczech. Wypełnij formularz poniżej i dowiedz się, ile możesz zaoszczędzić na podatkach.',
-    calculationSuccessful: 'Obliczenie zakończone sukcesem',
-    potentialSavings: 'Potencjalne oszczędności',
-    calculationError: 'Błąd obliczenia',
-    checkValues: 'Wystąpił błąd podczas obliczania podatków. Sprawdź wprowadzone wartości.',
-    
-    // Document Generator
-    documentGeneratorTitle: 'Generator dokumentów podatkowych',
-    documentGeneratorLogin: 'Musisz się zalogować, aby używać generatora',
-    loginForDocuments: 'Zaloguj się, aby generować i zapisywać dokumenty podatkowe',
-    documentExamples: 'Przykłady dokumentów',
-    documentExamplesDescription: 'Zobacz przykładowe dokumenty z przykładowymi danymi',
-    showExamples: 'Pokaż przykłady',
-    documentHistory: 'Historia dokumentów',
-    documentHistoryDescription: 'Twoje wygenerowane dokumenty podatkowe',
-    noDocumentsYet: 'Nie wygenerowałeś jeszcze żadnych dokumentów',
-    generateNewDocument: 'Generuj nowy dokument',
-    fillFormDescription: 'Wypełnij formularz, aby utworzyć dokument podatkowy',
-    generateDocument: 'Generuj dokument',
-    generatingDocument: 'Generowanie dokumentu...',
-    download: 'Pobierz',
-    delete: 'Usuń',
-    deleting: 'Usuwanie...',
-    confirmDeletion: 'Potwierdź usunięcie',
-    deleteConfirmation: 'Czy naprawdę chcesz usunąć ten dokument? Ta akcja jest nieodwracalna.',
-    cancel: 'Anuluj',
-    deleteDocument: 'Usuń dokument',
-    
-    // Document Types
-    taxReturn: 'Deklaracja podatkowa',
-    commuterCertificate: 'Zaświadczenie o dojazdach',
-    taxReductionApplication: 'Wniosek o zmniejszenie podatku od wynagrodzeń',
-    workEquipmentCertificate: 'Zaświadczenie o środkach pracy',
-    
-    // Contact
-    contactTitle: 'Skontaktuj się z nami',
-    contactSubtitle: 'Masz pytania lub potrzebujesz pomocy? Chętnie pomożemy!',
-    contactInfo: 'Informacje kontaktowe',
-    contactEmail: 'E-mail',
-    contactPhone: 'Telefon',
-    contactAddress: 'Adres',
-    contactResponseTime: 'Odpowiadamy w ciągu 24 godzin',
-    contactWorkingHours: 'Pn-Pt 9:00-17:00',
-    contactFormTitle: 'Napisz do nas wiadomość',
-    contactName: 'Imię',
-    contactNamePlaceholder: 'Twoje imię',
-    contactMessage: 'Wiadomość',
-    contactMessagePlaceholder: 'Opisz swoje pytanie lub problem...',
-    contactSending: 'Wysyłanie...',
-    contactSend: 'Wyślij wiadomość',
-    
-    // Common
-    save: 'Zapisz',
-    update: 'Aktualizuj',
-    create: 'Utwórz',
-    edit: 'Edytuj',
-    close: 'Zamknij',
-    back: 'Wstecz',
-    next: 'Dalej',
-    previous: 'Poprzedni',
-    success: 'Sukces',
-    error: 'Błąd',
-    warning: 'Ostrzeżenie',
-    info: 'Informacja',
-    
-    // Footer
-    footerAppName: 'PendlerApp',
-    footerAllRightsReserved: 'Wszelkie prawa zastrzeżone'
+    // Internationalization
+    search: 'Hledat',
+    filter: 'Filtrovat',
+    all: 'Vše',
+    beginner: 'Začátečník',
+    intermediate: 'Pokročilý',
+    advanced: 'Pokročilý',
+    'daily-conversations': 'Denní konverzace',
+    'at-work': 'V práci',
+    'shopping': 'Nakupování',
+    'transportation': 'Doprava',
   },
   en: {
-    // App General
-    appName: 'PendlerApp',
-    heroTitle: 'Your Commuter Companion',
-    heroSubtitle: 'Complete solution for cross-border workers',
-    heroAction: 'Start for free',
+    overview: 'Overview',
+    deadlines: 'Deadlines',
+    documents: 'Documents',
+    warning: 'Warning',
+    showExamples: 'Show Examples',
+    documentPreview: 'Document Preview',
+    personalData: 'Personal Data',
+    workData: 'Work Data',
+    name: 'Name',
+    taxId: 'Tax ID',
+    address: 'Address',
+    dateOfBirth: 'Date of Birth',
+    employer: 'Employer',
+    annualIncome: 'Annual Income',
+    commuteDistance: 'Commute Distance',
+    workDays: 'Work Days',
+    notes: 'Notes',
+    downloadThisExample: 'Download This Example',
+    closePreview: 'Close Preview',
+    download: 'Download',
+    preview: 'Preview',
+    taxAdvisor: 'Tax Advisor',
+    taxAdvisorDescription: 'Simplify your tax return with our guide and tools.',
+    taxReturnGuide: {
+      title: 'Tax Return Guide',
+      overviewTitle: 'How to file a tax return in Germany',
+      importantDeadlines: 'Important deadlines for tax returns',
+      requiredDocuments: 'Required documents',
+      needHelp: 'Need help?',
+      needHelpDescription: 'Use our tax tools and guides to easily complete your return.',
+      requiredDocumentsDescription: 'Prepare all the necessary documents for your tax return.',
+      documentExamples: 'Document examples',
+      documentExamplesDescription: 'View sample documents that you will need.',
+      deadlineWarning: 'Important deadlines are approaching! Remember to file your tax return on time.',
+      steps: {
+        prepareDocuments: {
+          title: 'Prepare documents',
+          content: 'Gather all necessary documents such as income statements, expense reports, and other relevant records.'
+        },
+        createElsterAccount: {
+          title: 'Create an Elster account',
+          content: 'Register on the Elster online portal, which is used for electronic tax filing in Germany.'
+        },
+        fillForms: {
+          title: 'Fill out tax forms',
+          content: 'Fill out all the necessary tax forms with the help of our guides and tools. Make sure you provide accurate and complete information.'
+        },
+        submitReturn: {
+          title: 'Submit tax return',
+          content: 'After completing the forms, submit your tax return electronically via the Elster portal. Save the submission confirmation.'
+        },
+        checkDecision: {
+          title: 'Check the decision',
+          content: 'After processing your tax return, you will receive a decision from the tax office. Check that all the information is correct and appeal if there are any discrepancies.'
+        }
+      },
+      deadlines: {
+        standard: {
+          title: 'Standard deadline',
+          date: 'July 31',
+          description: 'The tax return must be filed by this date without extension.'
+        },
+        extended: {
+          title: 'Extended deadline (with tax advisor)',
+          date: 'February 28 of the following year',
+          description: 'If a tax advisor prepares your tax return, you have more time.'
+        },
+        late: {
+          title: 'Late submission',
+          fee: 'Late filing fee',
+          description: 'You may be fined for late filing of your tax return.'
+        }
+      },
+      documents: {
+        lohnsteuerbescheinigung: 'Certificate of wage tax from the employer.',
+        pendlerpauschale: 'Costs of commuting to work.',
+        werbungskosten: 'Expenses related to employment.',
+        sonderausgaben: 'Personal expenses that can be deducted from the tax base.',
+        aussergewoehnlicheBelastungen: 'Extraordinary expenses that can be deducted from the tax base.'
+      }
+    },
+    documentExamples: {
+      title: 'Document Examples',
+      description: 'View sample documents that you will need for your tax return.',
+      types: {
+        taxReturn: 'Tax Return',
+        commuterCertificate: 'Commuter Certificate',
+        taxReductionApplication: 'Tax Reduction Application',
+        workToolsCertificate: 'Work Tools Certificate'
+      },
+      sampleNotes: {
+        developer: 'Notes on the tax return for software developers.'
+      }
+    },
+    taxCalculators: 'Tax Calculators',
+    quickCalculations: 'Quick and accurate calculations of your taxes',
+    germanCalculator: 'German Tax Calculator',
+    calculatorDescription: 'Calculate your income tax in Germany for 2024.',
+    currentRates: 'Current Rates',
+    calculationHistory: 'Calculation History',
+    loggedInSaves: 'Logged in user - we save calculation history',
+    notLoggedInNoSave: 'Not logged in user - calculation history is not saved',
+    optimizationTips: 'Optimization Tips',
+    loading: 'Loading...',
+    germanTaxCalculator2024: 'German Tax Calculator 2024',
+    taxNotificationsTitle: 'Tax Notifications',
+    taxNotificationsSubtitle: 'Important notices and deadlines for your taxes',
+    noActiveReminders: 'No active reminders',
+    taxReturn: 'Tax Return',
+    highPriority: 'High Priority',
+    mediumPriority: 'Medium Priority',
+    lowPriority: 'Low Priority',
+    deadline: 'Deadline',
+    showAllReminders: 'Show All Reminders',
+    showLessReminders: 'Show Less Reminders',
+    user: 'user',
+    highPriority: 'High Priority',
+    mediumPriority: 'Medium Priority',
+    lowPriority: 'Low Priority',
+
+    // Dashboard translations
+    dashboard: 'Dashboard',
+    monthlyProgress: 'Monthly Progress',
+    monthlyHours: 'Monthly Hours',
+    monthlyEarnings: 'Monthly Earnings',
+    shiftsThisMonth: 'Shifts This Month',
+    efficiency: 'Efficiency',
+    travelCosts: 'Travel Costs',
+    documentsReady: 'Documents Ready',
+    completed: 'completed',
+    remaining: 'remaining',
+    currentShift: 'Current Shift',
+    active: 'active',
+    inactive: 'inactive',
+    time: 'Time',
+    location: 'Location',
+    progress: 'Progress',
+    weeklyOverview: 'Weekly Overview',
+    hoursWorked: 'Hours Worked',
+    plannedHours: 'Planned Hours',
+    estimatedEarnings: 'Estimated Earnings',
+    shiftsCompleted: 'Shifts Completed',
     
-    // Navigation
+    // Welcome section
+    welcomeUser: 'Welcome, {username}!',
+    welcomeDescription: 'Start using Commuter Helper for more efficient work abroad',
+    newUserTips: 'Tips for New Users',
+    liveTraining: '• Join our live training sessions',
+    knowledgeBase: '• Browse our knowledge base with guides',
+    notifications: '• Set up notifications for important events',
+    showFaqHelp: 'Show FAQ and Help',
+    premiumBenefits: 'Premium Benefits',
+    advancedFeatures: '• Unlock advanced features and statistics',
+    allLanguageExercises: '• Get access to all language exercises',
+    exportData: '• Export data to various formats',
+    activatePremium: 'Activate Premium',
+    
+    // Modern components
     features: 'Features',
     aboutUs: 'About Us',
-    contact: 'Contact',
-    settings: 'Settings',
-    premium: 'Premium',
-    profile: 'Profile',
-    faq: 'FAQ',
-    privacy: 'Privacy',
-    terms: 'Terms of Use',
+    appName: 'Commuter Helper',
+    allRightsReserved: 'All rights reserved',
     cookies: 'Cookies',
     
-    // Dashboard
+    // Footer sections
+    'footer.features': 'Features',
+    'footer.aboutUs': 'About App',
+    'footer.appName': 'Commuter Helper',
+    'footer.allRightsReserved': 'All rights reserved',
+    
+    // Common language
+    heroSubtitle: 'Your digital assistant for working abroad',
+    
+    // Internationalization
+    search: 'Search',
+    filter: 'Filter',
+    all: 'All',
+    beginner: 'Beginner',
+    intermediate: 'Intermediate',
+    advanced: 'Advanced',
+    'daily-conversations': 'Daily Conversations',
+    'at-work': 'At Work',
+    'shopping': 'Shopping',
+    'transportation': 'Transportation',
+  },
+  de: {
+    overview: 'Übersicht',
+    deadlines: 'Fristen',
+    documents: 'Dokumente',
+    warning: 'Warnung',
+    showExamples: 'Beispiele anzeigen',
+    documentPreview: 'Dokumentenvorschau',
+    personalData: 'Persönliche Daten',
+    workData: 'Arbeitsdaten',
+    name: 'Name',
+    taxId: 'Steuer-ID',
+    address: 'Adresse',
+    dateOfBirth: 'Geburtsdatum',
+    employer: 'Arbeitgeber',
+    annualIncome: 'Jahreseinkommen',
+    commuteDistance: 'Pendelstrecke',
+    workDays: 'Arbeitstage',
+    notes: 'Notizen',
+    downloadThisExample: 'Dieses Beispiel herunterladen',
+    closePreview: 'Vorschau schließen',
+    download: 'Herunterladen',
+    preview: 'Vorschau',
+    taxAdvisor: 'Steuerberater',
+    taxAdvisorDescription: 'Vereinfachen Sie Ihre Steuererklärung mit unserem Leitfaden und unseren Tools.',
+    taxReturnGuide: {
+      title: 'Steuererklärung Leitfaden',
+      overviewTitle: 'Wie man eine Steuererklärung in Deutschland einreicht',
+      importantDeadlines: 'Wichtige Fristen für Steuererklärungen',
+      requiredDocuments: 'Benötigte Dokumente',
+      needHelp: 'Brauchen Sie Hilfe?',
+      needHelpDescription: 'Nutzen Sie unsere Steuer-Tools und Anleitungen, um Ihre Erklärung einfach auszufüllen.',
+      requiredDocumentsDescription: 'Bereiten Sie alle notwendigen Dokumente für Ihre Steuererklärung vor.',
+      documentExamples: 'Dokumentenbeispiele',
+      documentExamplesDescription: 'Sehen Sie sich Beispieldokumente an, die Sie benötigen.',
+      deadlineWarning: 'Wichtige Fristen stehen vor der Tür! Denken Sie daran, Ihre Steuererklärung rechtzeitig einzureichen.',
+      steps: {
+        prepareDocuments: {
+          title: 'Dokumente vorbereiten',
+          content: 'Sammeln Sie alle notwendigen Dokumente wie Einkommensnachweise, Ausgabenberichte und andere relevante Unterlagen.'
+        },
+        createElsterAccount: {
+          title: 'Elster-Konto erstellen',
+          content: 'Registrieren Sie sich auf dem Elster Online-Portal, das für die elektronische Steuererklärung in Deutschland verwendet wird.'
+        },
+        fillForms: {
+          title: 'Steuerformulare ausfüllen',
+          content: 'Füllen Sie alle notwendigen Steuerformulare mit Hilfe unserer Anleitungen und Tools aus. Stellen Sie sicher, dass Sie genaue und vollständige Informationen angeben.'
+        },
+        submitReturn: {
+          title: 'Steuererklärung einreichen',
+          content: 'Nach dem Ausfüllen der Formulare reichen Sie Ihre Steuererklärung elektronisch über das Elster-Portal ein. Speichern Sie die Einreichungsbestätigung.'
+        },
+        checkDecision: {
+          title: 'Entscheidung prüfen',
+          content: 'Nach der Bearbeitung Ihrer Steuererklärung erhalten Sie eine Entscheidung vom Finanzamt. Überprüfen Sie, ob alle Angaben korrekt sind, und legen Sie bei Unstimmigkeiten Einspruch ein.'
+        }
+      },
+      deadlines: {
+        standard: {
+          title: 'Standardtermin',
+          date: '31. Juli',
+          description: 'Die Steuererklärung muss bis zu diesem Datum ohne Verlängerung eingereicht werden.'
+        },
+        extended: {
+          title: 'Verlängerter Termin (mit Steuerberater)',
+          date: '28. Februar des Folgejahres',
+          description: 'Wenn ein Steuerberater Ihre Steuererklärung erstellt, haben Sie mehr Zeit.'
+        },
+        late: {
+          title: 'Verspätete Einreichung',
+          fee: 'Gebühr für verspätete Einreichung',
+          description: 'Für die verspätete Einreichung Ihrer Steuererklärung können Sie mit einer Geldstrafe belegt werden.'
+        }
+      },
+      documents: {
+        lohnsteuerbescheinigung: 'Bescheinigung über die Lohnsteuer vom Arbeitgeber.',
+        pendlerpauschale: 'Kosten für das Pendeln zur Arbeit.',
+        werbungskosten: 'Aufwendungen im Zusammenhang mit der Beschäftigung.',
+        sonderausgaben: 'Persönliche Ausgaben, die von der Steuerbasis abgezogen werden können.',
+        aussergewoehnlicheBelastungen: 'Außergewöhnliche Ausgaben, die von der Steuerbasis abgezogen werden können.'
+      }
+    },
+    documentExamples: {
+      title: 'Dokumentenbeispiele',
+      description: 'Sehen Sie sich Beispieldokumente an, die Sie für Ihre Steuererklärung benötigen.',
+      types: {
+        taxReturn: 'Steuererklärung',
+        commuterCertificate: 'Pendlerbescheinigung',
+        taxReductionApplication: 'Antrag auf Steuerermäßigung',
+        workToolsCertificate: 'Bescheinigung über Arbeitsmittel'
+      },
+      sampleNotes: {
+        developer: 'Hinweise zur Steuererklärung für Softwareentwickler.'
+      }
+    },
+    taxCalculators: 'Steuerrechner',
+    quickCalculations: 'Schnelle und genaue Berechnung Ihrer Steuern',
+    germanCalculator: 'Deutscher Steuerrechner',
+    calculatorDescription: 'Berechnen Sie Ihre Einkommensteuer in Deutschland für 2024.',
+    currentRates: 'Aktuelle Sätze',
+    calculationHistory: 'Berechnungshistorie',
+    loggedInSaves: 'Angemeldeter Benutzer - wir speichern die Berechnungshistorie',
+    notLoggedInNoSave: 'Nicht angemeldeter Benutzer - Berechnungshistorie wird nicht gespeichert',
+    optimizationTips: 'Optimierungstipps',
+    loading: 'Laden...',
+    germanTaxCalculator2024: 'Deutscher Steuerrechner 2024',
+    taxNotificationsTitle: 'Steuerbenachrichtigungen',
+    taxNotificationsSubtitle: 'Wichtige Hinweise und Fristen für Ihre Steuern',
+    noActiveReminders: 'Keine aktiven Erinnerungen',
+    taxReturn: 'Steuererklärung',
+    highPriority: 'Hohe Priorität',
+    mediumPriority: 'Mittlere Priorität',
+    lowPriority: 'Niedrige Priorität',
+    deadline: 'Frist',
+    showAllReminders: 'Alle Erinnerungen anzeigen',
+    showLessReminders: 'Weniger Erinnerungen anzeigen',
+    user: 'Benutzer',
+    highPriority: 'Hohe Priorität',
+    mediumPriority: 'Mittlere Priorität',
+    lowPriority: 'Niedrige Priorität',
+
+    // Dashboard translations
     dashboard: 'Dashboard',
-    shifts: 'Shifts',
-    vehicle: 'Vehicle',
-    translator: 'Translator',
-    taxAdvisor: 'Tax Advisor',
-    travel: 'Travel',
-    laws: 'Laws',
+    monthlyProgress: 'Monatlicher Fortschritt',
+    monthlyHours: 'Monatliche Stunden',
+    monthlyEarnings: 'Monatliche Einnahmen',
+    shiftsThisMonth: 'Schichten diesen Monat',
+    efficiency: 'Effizienz',
+    travelCosts: 'Reisekosten',
+    documentsReady: 'Dokumente bereit',
+    completed: 'abgeschlossen',
+    remaining: 'verbleibend',
+    currentShift: 'Aktuelle Schicht',
+    active: 'aktiv',
+    inactive: 'inaktiv',
+    time: 'Zeit',
+    location: 'Ort',
+    progress: 'Fortschritt',
+    weeklyOverview: 'Wöchentliche Übersicht',
+    hoursWorked: 'Gearbeitete Stunden',
+    plannedHours: 'Geplante Stunden',
+    estimatedEarnings: 'Geschätzte Einnahmen',
+    shiftsCompleted: 'Abgeschlossene Schichten',
     
-    // Authentication
-    login: 'Login',
-    logout: 'Logout',
-    email: 'Email',
-    password: 'Password',
+    // Welcome section
+    welcomeUser: 'Willkommen, {username}!',
+    welcomeDescription: 'Nutzen Sie den Pendler-Helfer für effizienteres Arbeiten im Ausland',
+    newUserTips: 'Tipps für neue Benutzer',
+    liveTraining: '• Nehmen Sie an unseren Live-Schulungen teil',
+    knowledgeBase: '• Durchsuchen Sie unsere Wissensdatenbank mit Anleitungen',
+    notifications: '• Richten Sie Benachrichtigungen für wichtige Ereignisse ein',
+    showFaqHelp: 'FAQ und Hilfe anzeigen',
+    premiumBenefits: 'Premium-Vorteile',
+    advancedFeatures: '• Erweiterte Funktionen und Statistiken freischalten',
+    allLanguageExercises: '• Zugang zu allen Sprachübungen erhalten',
+    exportData: '• Daten in verschiedene Formate exportieren',
+    activatePremium: 'Premium aktivieren',
     
-    // Profile
-    profileTitle: 'My Profile',
-    profileSubtitle: 'Account management',
-    accountManagement: 'Account Management',
-    personalInfo: 'Personal Information',
-    accountSettings: 'Account Settings',
-    dataExport: 'Data Export',
-    accountDeletion: 'Account Deletion',
-    changePassword: 'Change Password',
-    exportData: 'Export Data',
-    deleteAccount: 'Delete Account',
+    // Modern components
+    features: 'Funktionen',
+    aboutUs: 'Über uns',
+    appName: 'Pendler-Helfer',
+    allRightsReserved: 'Alle Rechte vorbehalten',
+    cookies: 'Cookies',
     
-    // Registration
-    registerTitle: 'Create Account',
-    registerDescription: 'Create an account and use all app features',
-    registerUsername: 'Username',
-    registerUsernamePlaceholder: 'Enter username',
-    registerPasswordMinLength: 'Password (min. 6 characters)',
-    registerConfirmPassword: 'Confirm Password',
-    registerConfirmPasswordPlaceholder: 'Confirm password',
-    registerWithGoogle: 'Register with Google',
-    registerWithEmail: 'or register with email',
-    registerCreating: 'Creating...',
-    registerCreateAccount: 'Create Account',
-    alreadyHaveAccount: 'Already have an account?',
+    // Footer sections
+    'footer.features': 'Funktionen',
+    'footer.aboutUs': 'Über die App',
+    'footer.appName': 'Pendler-Helfer',
+    'footer.allRightsReserved': 'Alle Rechte vorbehalten',
     
-    // Registration Messages
-    passwordsDoNotMatch: 'Passwords do not match',
-    passwordTooShort: 'Password must be at least 6 characters',
-    insufficientStorage: 'Insufficient storage space',
-    insufficientStorageDescription: 'Please clear browser storage',
-    registerCheckDataRetry: 'Check the data and try again',
-    userAlreadyExists: 'User with this email already exists',
-    invalidEmailFormat: 'Invalid email format',
-    passwordRequirementsNotMet: 'Password does not meet requirements',
-    browserStorageProblem: 'Browser storage problem',
-    registrationFailed: 'Registration failed',
-    accountCreatedSuccessfully: 'Account created successfully',
-    nowYouCanLogin: 'You can now log in',
-    accountCreatedWithPremium: 'Account created with Premium features',
-    promoCodeActivated: 'Promo code {code} has been activated',
-    unknownErrorOccurred: 'Unknown error occurred',
-    browserStorageInsufficientSpace: 'Insufficient browser storage space',
-    registrationError: 'Registration error',
-    googleRegistrationFailed: 'Google registration failed',
-    loading: 'Loading...',
-    browserStorageFull: 'Browser storage is full. Click to clear old data.',
-    cleanStorage: 'Clear Storage',
-    storageCleanedUp: 'Storage has been cleared',
+    // Common language
+    heroSubtitle: 'Ihr digitaler Assistent für die Arbeit im Ausland',
     
-    // Tax Advisor
-    taxAdvisorTitle: 'Tax Advisor',
-    taxAdvisorSubtitle: 'Step-by-step guide for optimal tax return',
-    taxCalculators: 'Tax Calculators',
-    taxOptimization: 'Tax Optimization',
-    documentGenerator: 'Document Generator',
-    taxReminders: 'Tax Reminders',
-    quickCalculations: 'Quick calculations for your tax planning',
-    germanCalculator: 'German Calculator',
-    calculationHistory: 'Calculation History',
-    optimizationTips: 'Optimization',
-    currentSituation: 'Current Situation',
-    optimizedSituation: 'Optimized Situation',
-    taxSavings: 'You can save',
-    annualSavings: 'Annual tax savings',
-    yearly: 'yearly',
-    germanTaxCalculator2024: 'German Tax Calculator 2024',
-    currentRates: 'Current Rates',
-    calculatorDescription: 'Calculate the exact amount of your tax liability according to German tax rates.',
-    loggedInSaves: 'Your calculations are automatically saved.',
-    notLoggedInNoSave: 'Log in to save calculations.',
-    
-    // Tax Notifications
-    taxNotificationsTitle: 'Tax Reminders',
-    taxNotificationsSubtitle: 'Important deadlines and notifications for tax matters',
-    noActiveReminders: 'No active reminders',
-    showAllReminders: 'Show all reminders',
-    showLessReminders: 'Show fewer reminders',
-    deadline: 'Deadline',
-    highPriority: 'High',
-    mediumPriority: 'Medium',
-    lowPriority: 'Low',
-    
-    // Tax Optimizer
-    taxOptimizerTitle: 'Tax optimization for commuters',
-    taxOptimizerDescription: 'This tool will help you optimize your tax burden when working in Germany. Fill out the form below and find out how much you can save on taxes.',
-    calculationSuccessful: 'Calculation successful',
-    potentialSavings: 'Potential savings',
-    calculationError: 'Calculation error',
-    checkValues: 'An error occurred while calculating taxes. Check the entered values.',
-    
-    // Document Generator
-    documentGeneratorTitle: 'Tax Document Generator',
-    documentGeneratorLogin: 'You must log in to use the generator',
-    loginForDocuments: 'Log in to generate and save tax documents',
-    documentExamples: 'Document Examples',
-    documentExamplesDescription: 'View sample documents with example data',
-    showExamples: 'Show Examples',
-    documentHistory: 'Document History',
-    documentHistoryDescription: 'Your generated tax documents',
-    noDocumentsYet: 'You haven\'t generated any documents yet',
-    generateNewDocument: 'Generate New Document',
-    fillFormDescription: 'Fill out the form to create a tax document',
-    generateDocument: 'Generate Document',
-    generatingDocument: 'Generating document...',
-    download: 'Download',
-    delete: 'Delete',
-    deleting: 'Deleting...',
-    confirmDeletion: 'Confirm Deletion',
-    deleteConfirmation: 'Do you really want to delete this document? This action is irreversible.',
-    cancel: 'Cancel',
-    deleteDocument: 'Delete Document',
-    
-    // Document Types
-    taxReturn: 'Tax Return',
-    commuterCertificate: 'Commuter Certificate',
-    taxReductionApplication: 'Tax Reduction Application',
-    workEquipmentCertificate: 'Work Equipment Certificate',
-    
-    // Contact
-    contactTitle: 'Contact Us',
-    contactSubtitle: 'Have questions or need help? We are happy to help!',
-    contactInfo: 'Contact Information',
-    contactEmail: 'Email',
-    contactPhone: 'Phone',
-    contactAddress: 'Address',
-    contactResponseTime: 'We respond within 24 hours',
-    contactWorkingHours: 'Mon-Fri 9:00-17:00',
-    contactFormTitle: 'Send us a message',
-    contactName: 'Name',
-    contactNamePlaceholder: 'Your name',
-    contactMessage: 'Message',
-    contactMessagePlaceholder: 'Describe your question or problem...',
-    contactSending: 'Sending...',
-    contactSend: 'Send Message',
-    
-    // Common
-    save: 'Save',
-    update: 'Update',
-    create: 'Create',
-    edit: 'Edit',
-    close: 'Close',
-    back: 'Back',
-    next: 'Next',
-    previous: 'Previous',
-    success: 'Success',
-    error: 'Error',
-    warning: 'Warning',
-    info: 'Information',
-    
-    // Footer
-    footerAppName: 'PendlerApp',
-    footerAllRightsReserved: 'All rights reserved'
+    // Internationalization
+    search: 'Suchen',
+    filter: 'Filtern',
+    all: 'Alle',
+    beginner: 'Anfänger',
+    intermediate: 'Fortgeschritten',
+    advanced: 'Fortgeschritten',
+    'daily-conversations': 'Tägliche Gespräche',
+    'at-work': 'Bei der Arbeit',
+    'shopping': 'Einkaufen',
+    'transportation': 'Transport',
   }
 };
+
+export type Language = keyof typeof translations;
+
+export function getNestedTranslation(
+  language: Language,
+  key: string,
+  vars?: Record<string, string | number>
+): string {
+  const keys = key.split('.');
+  let value: any = translations[language];
+
+  for (const k of keys) {
+    value = value?.[k];
+  }
+
+  if (typeof value === 'string' && vars) {
+    Object.entries(vars).forEach(([varKey, varValue]) => {
+      const regex = new RegExp(`{${varKey}}`, 'g');
+      value = value.replace(regex, String(varValue));
+    });
+  }
+
+  return value || key;
+}

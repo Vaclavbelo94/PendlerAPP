@@ -5,38 +5,40 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { useLanguage } from '@/hooks/useLanguage';
 
 export const WelcomeSection = () => {
   const { user } = useAuth();
-  const username = user?.email?.split('@')[0] || 'uživateli';
+  const { t } = useLanguage();
+  const username = user?.email?.split('@')[0] || t('user');
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-3xl font-bold tracking-tight">Vítejte, {username}!</h2>
+        <h2 className="text-3xl font-bold tracking-tight">{t('welcomeUser').replace('{username}', username)}</h2>
         <p className="text-muted-foreground mt-1">
-          Začněte používat Pendlerův Pomocník pro efektivnější práci v zahraničí
+          {t('welcomeDescription')}
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Tipy pro nové uživatele</CardTitle>
+            <CardTitle className="text-lg">{t('newUserTips')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             <p className="text-sm text-muted-foreground">
-              • Připojte se k našim školením v živém přenosu
+              {t('liveTraining')}
             </p>
             <p className="text-sm text-muted-foreground">
-              • Procházejte naši znalostní bázi s návody
+              {t('knowledgeBase')}
             </p>
             <p className="text-sm text-muted-foreground">
-              • Nastavte si notifikace pro důležité události
+              {t('notifications')}
             </p>
             <Button variant="outline" className="mt-4 w-full" asChild>
               <Link to="/faq">
-                Zobrazit FAQ a nápovědu
+                {t('showFaqHelp')}
               </Link>
             </Button>
           </CardContent>
@@ -46,22 +48,22 @@ export const WelcomeSection = () => {
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center">
               <span className="bg-primary/20 text-primary p-1 rounded-md mr-2">PRO</span>
-              Premium výhody
+              {t('premiumBenefits')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             <p className="text-sm text-muted-foreground">
-              • Odemkněte pokročilé funkce a statistiky
+              {t('advancedFeatures')}
             </p>
             <p className="text-sm text-muted-foreground">
-              • Získejte přístup ke všem jazykovým cvičením
+              {t('allLanguageExercises')}
             </p>
             <p className="text-sm text-muted-foreground">
-              • Exportujte data do různých formátů
+              {t('exportData')}
             </p>
             <Button className="mt-4 w-full" asChild>
               <Link to="/premium">
-                Aktivovat Premium
+                {t('activatePremium')}
                 <ArrowRight className="h-4 w-4 ml-2" />
               </Link>
             </Button>
