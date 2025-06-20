@@ -2,26 +2,25 @@
 export type Language = 'cs' | 'de' | 'pl' | 'en';
 
 export interface Translations {
-  [key: string]: any;
-  cs: any;
-  de: any;
-  pl: any;
-  en: any;
+  cs: Record<string, string>;
+  de: Record<string, string>;
+  pl: Record<string, string>;
+  en: Record<string, string>;
 }
 
 export const languages = [
-  { code: 'cs', name: 'Čeština', flag: '🇨🇿' },
-  { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
-  { code: 'pl', name: 'Polski', flag: '🇵🇱' },
-  { code: 'en', name: 'English', flag: '🇬🇧' }
+  { code: 'cs' as Language, name: 'Čeština', flag: '🇨🇿' },
+  { code: 'de' as Language, name: 'Deutsch', flag: '🇩🇪' },
+  { code: 'pl' as Language, name: 'Polski', flag: '🇵🇱' },
+  { code: 'en' as Language, name: 'English', flag: '🇬🇧' }
 ];
 
 export const translations: Translations = {
   cs: {
-    // App basics
-    appName: 'Pendlerův Pomocník',
-    heroTitle: 'Váš spolehlivý průvodce v Německu',
-    heroSubtitle: 'Komplexní aplikace pro dojíždějící pracovníky s překladačem, kalkulátorem daní a správou směn',
+    // App General
+    appName: 'PendlerApp',
+    heroTitle: 'Váš průvodce pendlerováním',
+    heroSubtitle: 'Kompletní řešení pro pracovníky dojíždějící do zahraničí',
     heroAction: 'Začít zdarma',
     
     // Navigation
@@ -31,11 +30,12 @@ export const translations: Translations = {
     settings: 'Nastavení',
     premium: 'Premium',
     profile: 'Profil',
-    faq: 'Často kladené otázky',
+    faq: 'FAQ',
     privacy: 'Ochrana osobních údajů',
-    terms: 'Obchodní podmínky',
-    login: 'Přihlášení',
-    logout: 'Odhlásit se',
+    terms: 'Podmínky použití',
+    cookies: 'Cookies',
+    
+    // Dashboard
     dashboard: 'Přehled',
     shifts: 'Směny',
     vehicle: 'Vozidlo',
@@ -43,103 +43,54 @@ export const translations: Translations = {
     taxAdvisor: 'Daňový poradce',
     travel: 'Cestování',
     laws: 'Zákony',
-    vocabulary: 'Slovníček',
     
     // Authentication
+    login: 'Přihlášení',
+    logout: 'Odhlásit se',
     email: 'E-mail',
     password: 'Heslo',
     
-    // Register page
+    // Registration
     registerTitle: 'Vytvořit účet',
-    registerDescription: 'Vytvořte si účet a získejte přístup ke všem funkcím aplikace',
-    registerWithGoogle: 'Registrovat se přes Google',
-    registerWithEmail: 'Nebo se registrujte e-mailem',
+    registerDescription: 'Vytvořte si účet a začněte využívat všechny funkce aplikace',
     registerUsername: 'Uživatelské jméno',
     registerUsernamePlaceholder: 'Zadejte uživatelské jméno',
     registerPasswordMinLength: 'Heslo (min. 6 znaků)',
     registerConfirmPassword: 'Potvrdit heslo',
-    registerConfirmPasswordPlaceholder: 'Potvrďte své heslo',
-    registerCreating: 'Vytváří se účet...',
+    registerConfirmPasswordPlaceholder: 'Potvrďte heslo',
+    registerWithGoogle: 'Registrovat se přes Google',
+    registerWithEmail: 'nebo se registrujte e-mailem',
+    registerCreating: 'Vytváří se...',
     registerCreateAccount: 'Vytvořit účet',
-    alreadyHaveAccount: 'Už máte účet?',
-    loading: 'Načítání...',
+    alreadyHaveAccount: 'Již máte účet?',
     
-    // Register validation and messages
+    // Registration Messages
     passwordsDoNotMatch: 'Hesla se neshodují',
     passwordTooShort: 'Heslo musí mít alespoň 6 znaků',
+    insufficientStorage: 'Nedostatek místa v úložišti',
+    insufficientStorageDescription: 'Vyčistěte prosím úložiště prohlížeče',
     registerCheckDataRetry: 'Zkontrolujte zadané údaje a zkuste to znovu',
     userAlreadyExists: 'Uživatel s tímto e-mailem již existuje',
-    invalidEmailFormat: 'Neplatný formát e-mailové adresy',
+    invalidEmailFormat: 'Neplatný formát e-mailu',
     passwordRequirementsNotMet: 'Heslo nesplňuje požadavky',
     browserStorageProblem: 'Problém s úložištěm prohlížeče',
     registrationFailed: 'Registrace se nezdařila',
     accountCreatedSuccessfully: 'Účet byl úspěšně vytvořen',
     nowYouCanLogin: 'Nyní se můžete přihlásit',
-    accountCreatedWithPremium: 'Účet vytvořen s Premium přístupem',
-    promoCodeActivated: 'Promo kód {code} byl aktivován',
-    registrationError: 'Chyba při registraci',
+    accountCreatedWithPremium: 'Účet vytvořen s Premium funkcemi',
+    promoCodeActivated: 'Propagační kód {code} byl aktivován',
     unknownErrorOccurred: 'Došlo k neznámé chybě',
     browserStorageInsufficientSpace: 'Nedostatek místa v úložišti prohlížeče',
+    registrationError: 'Chyba při registraci',
     googleRegistrationFailed: 'Registrace přes Google se nezdařila',
-    insufficientStorage: 'Nedostatek úložného prostoru',
-    insufficientStorageDescription: 'Vyčistěte úložiště prohlížeče a zkuste to znovu',
-    browserStorageFull: 'Úložiště prohlížeče je plné. Vyčistěte data pro lepší výkon.',
+    loading: 'Načítání...',
+    browserStorageFull: 'Úložiště prohlížeče je plné. Klikněte pro vyčištění starých dat.',
     cleanStorage: 'Vyčistit úložiště',
     storageCleanedUp: 'Úložiště bylo vyčištěno',
     
-    // Footer
-    footer: {
-      appName: 'Pendlerův Pomocník',
-      description: 'Komplexní aplikace pro dojíždějící pracovníky do Německa',
-      features: 'Funkce',
-      aboutUs: 'O nás',
-      allRightsReserved: 'Všechna práva vyhrazena',
-      termsOfUse: 'Podmínky použití',
-      privacyProtection: 'Ochrana osobních údajů',
-      website: 'Webové stránky',
-      germanLessons: 'Německé lekce',
-      lawsOverview: 'Přehled zákonů',
-      vehicleManagement: 'Správa vozidel',
-      shiftPlanning: 'Plánování směn',
-      aboutProject: 'O projektu',
-      frequentQuestions: 'Časté otázky'
-    },
-    
-    // Terms page
-    termsTitle: 'Obchodní podmínky',
-    termsIntro: 'Tyto obchodní podmínky upravují používání naší aplikace Pendlerův Pomocník.',
-    terms: {
-      introTitle: 'Úvod a souhlas',
-      agreement: 'Používáním této aplikace souhlasíte s těmito podmínkami.',
-      registrationTitle: 'Registrace a uživatelský účet',
-      registrationDesc: 'Pro plné využití aplikace je nutná registrace.',
-      userResponsibility: 'Uživatel je odpovědný za správnost poskytnutých údajů.',
-      accountTermination: 'Účet může být ukončen při porušení podmínek.',
-      rightsTitle: 'Práva a povinnosti uživatele',
-      userCommits: 'Uživatel se zavazuje:',
-      noHarm: 'Nepoškozovat aplikaci ani jiné uživatele',
-      noIllegalContent: 'Nezveřejňovat nezákonný obsah',
-      noSpam: 'Neposílat spam nebo nevyžádané zprávy',
-      noTampering: 'Nemanipulovat s funkcemi aplikace',
-      noAutomation: 'Nepoužívat automatizované nástroje',
-      liabilityTitle: 'Odpovědnost a omezení',
-      informationNature: 'Informace v aplikaci mají informativní charakter.',
-      userContentLiability: 'Za obsah vytvořený uživateli odpovídá uživatel.',
-      thirdPartyLinks: 'Neneseme odpovědnost za odkazy na třetí strany.',
-      availabilityTitle: 'Dostupnost služby',
-      noGuarantee: 'Nezaručujeme nepřetržitou dostupnost služby.',
-      serviceChanges: 'Vyhrazujeme si právo na změny ve službě.',
-      privacyTitle: 'Ochrana osobních údajů',
-      privacyReference: 'Podrobnosti naleznete v našich zásadách ochrany osobních údajů.',
-      finalTitle: 'Závěrečná ustanovení',
-      czechLaw: 'Tyto podmínky se řídí českým právem.',
-      termsChanges: 'Podmínky mohou být změněny s předchozím upozorněním.',
-      effectiveDate: 'Tyto podmínky jsou účinné od 1. ledna 2024.'
-    },
-    
-    // Contact page
+    // Contact
     contactTitle: 'Kontaktujte nás',
-    contactSubtitle: 'Máte otázku nebo potřebujete pomoc? Rádi vám pomůžeme!',
+    contactSubtitle: 'Máte otázky nebo potřebujete pomoc? Rádi vám pomůžeme!',
     contactInfo: 'Kontaktní informace',
     contactEmail: 'E-mail',
     contactPhone: 'Telefon',
@@ -151,15 +102,18 @@ export const translations: Translations = {
     contactNamePlaceholder: 'Vaše jméno',
     contactMessage: 'Zpráva',
     contactMessagePlaceholder: 'Popište váš dotaz nebo problém...',
+    contactSending: 'Odesílání...',
     contactSend: 'Odeslat zprávu',
-    contactSending: 'Odesílání...'
+    
+    // Footer
+    footerAppName: 'PendlerApp',
+    footerAllRightsReserved: 'Všechna práva vyhrazena'
   },
-  
   de: {
-    // App basics
-    appName: 'Pendler Helfer',
-    heroTitle: 'Ihr zuverlässiger Begleiter in Deutschland',
-    heroSubtitle: 'Umfassende App für Pendler mit Übersetzer, Steuerrechner und Schichtenverwaltung',
+    // App General
+    appName: 'PendlerApp',
+    heroTitle: 'Ihr Pendler-Begleiter',
+    heroSubtitle: 'Komplettlösung für Grenzgänger und Pendler',
     heroAction: 'Kostenlos starten',
     
     // Navigation
@@ -169,11 +123,12 @@ export const translations: Translations = {
     settings: 'Einstellungen',
     premium: 'Premium',
     profile: 'Profil',
-    faq: 'Häufige Fragen',
+    faq: 'FAQ',
     privacy: 'Datenschutz',
-    terms: 'Geschäftsbedingungen',
-    login: 'Anmelden',
-    logout: 'Abmelden',
+    terms: 'Nutzungsbedingungen',
+    cookies: 'Cookies',
+    
+    // Dashboard
     dashboard: 'Übersicht',
     shifts: 'Schichten',
     vehicle: 'Fahrzeug',
@@ -181,124 +136,78 @@ export const translations: Translations = {
     taxAdvisor: 'Steuerberater',
     travel: 'Reisen',
     laws: 'Gesetze',
-    vocabulary: 'Wortschatz',
     
     // Authentication
+    login: 'Anmelden',
+    logout: 'Abmelden',
     email: 'E-Mail',
     password: 'Passwort',
     
-    // Register page
+    // Registration
     registerTitle: 'Konto erstellen',
-    registerDescription: 'Erstellen Sie ein Konto und erhalten Sie Zugang zu allen App-Funktionen',
-    registerWithGoogle: 'Mit Google registrieren',
-    registerWithEmail: 'Oder registrieren Sie sich per E-Mail',
+    registerDescription: 'Erstellen Sie ein Konto und nutzen Sie alle App-Funktionen',
     registerUsername: 'Benutzername',
     registerUsernamePlaceholder: 'Benutzername eingeben',
     registerPasswordMinLength: 'Passwort (min. 6 Zeichen)',
     registerConfirmPassword: 'Passwort bestätigen',
     registerConfirmPasswordPlaceholder: 'Passwort bestätigen',
-    registerCreating: 'Konto wird erstellt...',
+    registerWithGoogle: 'Mit Google registrieren',
+    registerWithEmail: 'oder per E-Mail registrieren',
+    registerCreating: 'Wird erstellt...',
     registerCreateAccount: 'Konto erstellen',
     alreadyHaveAccount: 'Haben Sie bereits ein Konto?',
-    loading: 'Laden...',
     
-    // Register validation and messages
+    // Registration Messages
     passwordsDoNotMatch: 'Passwörter stimmen nicht überein',
     passwordTooShort: 'Passwort muss mindestens 6 Zeichen haben',
-    registerCheckDataRetry: 'Überprüfen Sie Ihre Daten und versuchen Sie es erneut',
+    insufficientStorage: 'Unzureichender Speicherplatz',
+    insufficientStorageDescription: 'Bitte Browser-Speicher leeren',
+    registerCheckDataRetry: 'Überprüfen Sie die Daten und versuchen Sie es erneut',
     userAlreadyExists: 'Benutzer mit dieser E-Mail existiert bereits',
     invalidEmailFormat: 'Ungültiges E-Mail-Format',
     passwordRequirementsNotMet: 'Passwort erfüllt nicht die Anforderungen',
-    browserStorageProblem: 'Problem mit Browser-Speicher',
+    browserStorageProblem: 'Browser-Speicher-Problem',
     registrationFailed: 'Registrierung fehlgeschlagen',
     accountCreatedSuccessfully: 'Konto erfolgreich erstellt',
     nowYouCanLogin: 'Sie können sich jetzt anmelden',
-    accountCreatedWithPremium: 'Konto mit Premium-Zugang erstellt',
+    accountCreatedWithPremium: 'Konto mit Premium-Funktionen erstellt',
     promoCodeActivated: 'Promo-Code {code} wurde aktiviert',
-    registrationError: 'Registrierungsfehler',
-    unknownErrorOccurred: 'Ein unbekannter Fehler ist aufgetreten',
+    unknownErrorOccurred: 'Unbekannter Fehler aufgetreten',
     browserStorageInsufficientSpace: 'Unzureichender Browser-Speicherplatz',
+    registrationError: 'Registrierungsfehler',
     googleRegistrationFailed: 'Google-Registrierung fehlgeschlagen',
-    insufficientStorage: 'Unzureichender Speicherplatz',
-    insufficientStorageDescription: 'Browser-Speicher leeren und erneut versuchen',
-    browserStorageFull: 'Browser-Speicher ist voll. Daten für bessere Leistung löschen.',
+    loading: 'Laden...',
+    browserStorageFull: 'Browser-Speicher ist voll. Klicken Sie zum Löschen alter Daten.',
     cleanStorage: 'Speicher leeren',
     storageCleanedUp: 'Speicher wurde geleert',
     
-    // Footer
-    footer: {
-      appName: 'Pendler Helfer',
-      description: 'Umfassende App für Pendler nach Deutschland',
-      features: 'Funktionen',
-      aboutUs: 'Über uns',
-      allRightsReserved: 'Alle Rechte vorbehalten',
-      termsOfUse: 'Nutzungsbedingungen',
-      privacyProtection: 'Datenschutz',
-      website: 'Website',
-      germanLessons: 'Deutsche Lektionen',
-      lawsOverview: 'Gesetzesübersicht',
-      vehicleManagement: 'Fahrzeugverwaltung',
-      shiftPlanning: 'Schichtplanung',
-      aboutProject: 'Über das Projekt',
-      frequentQuestions: 'Häufige Fragen'
-    },
-    
-    // Terms page
-    termsTitle: 'Geschäftsbedingungen',
-    termsIntro: 'Diese Geschäftsbedingungen regeln die Nutzung unserer Pendler Helfer App.',
-    terms: {
-      introTitle: 'Einführung und Zustimmung',
-      agreement: 'Mit der Nutzung dieser App stimmen Sie diesen Bedingungen zu.',
-      registrationTitle: 'Registrierung und Benutzerkonto',
-      registrationDesc: 'Für die vollständige Nutzung der App ist eine Registrierung erforderlich.',
-      userResponsibility: 'Der Benutzer ist für die Richtigkeit der bereitgestellten Daten verantwortlich.',
-      accountTermination: 'Das Konto kann bei Verstoß gegen die Bedingungen gekündigt werden.',
-      rightsTitle: 'Rechte und Pflichten des Benutzers',
-      userCommits: 'Der Benutzer verpflichtet sich:',
-      noHarm: 'Die App oder andere Benutzer nicht zu schädigen',
-      noIllegalContent: 'Keine illegalen Inhalte zu veröffentlichen',
-      noSpam: 'Keinen Spam oder unerwünschte Nachrichten zu senden',
-      noTampering: 'Nicht mit App-Funktionen zu manipulieren',
-      noAutomation: 'Keine automatisierten Tools zu verwenden',
-      liabilityTitle: 'Haftung und Beschränkungen',
-      informationNature: 'Informationen in der App haben informativen Charakter.',
-      userContentLiability: 'Für vom Benutzer erstellte Inhalte ist der Benutzer verantwortlich.',
-      thirdPartyLinks: 'Wir übernehmen keine Verantwortung für Links zu Dritten.',
-      availabilityTitle: 'Verfügbarkeit des Dienstes',
-      noGuarantee: 'Wir garantieren keine ununterbrochene Verfügbarkeit des Dienstes.',
-      serviceChanges: 'Wir behalten uns das Recht auf Änderungen am Dienst vor.',
-      privacyTitle: 'Datenschutz',
-      privacyReference: 'Details finden Sie in unserer Datenschutzerklärung.',
-      finalTitle: 'Schlussbestimmungen',
-      czechLaw: 'Diese Bedingungen unterliegen tschechischem Recht.',
-      termsChanges: 'Bedingungen können mit vorheriger Ankündigung geändert werden.',
-      effectiveDate: 'Diese Bedingungen sind ab dem 1. Januar 2024 wirksam.'
-    },
-    
-    // Contact page
+    // Contact
     contactTitle: 'Kontaktieren Sie uns',
-    contactSubtitle: 'Haben Sie eine Frage oder benötigen Hilfe? Wir helfen Ihnen gerne!',
+    contactSubtitle: 'Haben Sie Fragen oder brauchen Hilfe? Wir helfen Ihnen gerne!',
     contactInfo: 'Kontaktinformationen',
     contactEmail: 'E-Mail',
     contactPhone: 'Telefon',
     contactAddress: 'Adresse',
-    contactResponseTime: 'Wir antworten innerhalb von 24 Stunden',
+    contactResponseTime: 'Antwort innerhalb von 24 Stunden',
     contactWorkingHours: 'Mo-Fr 9:00-17:00',
     contactFormTitle: 'Schreiben Sie uns eine Nachricht',
     contactName: 'Name',
     contactNamePlaceholder: 'Ihr Name',
     contactMessage: 'Nachricht',
     contactMessagePlaceholder: 'Beschreiben Sie Ihre Frage oder Ihr Problem...',
+    contactSending: 'Wird gesendet...',
     contactSend: 'Nachricht senden',
-    contactSending: 'Senden...'
+    
+    // Footer
+    footerAppName: 'PendlerApp',
+    footerAllRightsReserved: 'Alle Rechte vorbehalten'
   },
-  
   pl: {
-    // App basics
-    appName: 'Pomocnik Dojeżdżającego',
-    heroTitle: 'Twój niezawodny przewodnik w Niemczech',
-    heroSubtitle: 'Kompleksowa aplikacja dla dojeżdżających z tłumaczem, kalkulatorem podatkowym i zarządzaniem zmianami',
-    heroAction: 'Zacznij za darmo',
+    // App General
+    appName: 'PendlerApp',
+    heroTitle: 'Twój przewodnik po pracy za granicą',
+    heroSubtitle: 'Kompleksowe rozwiązanie dla pracowników dojeżdżających',
+    heroAction: 'Rozpocznij za darmo',
     
     // Navigation
     features: 'Funkcje',
@@ -307,42 +216,45 @@ export const translations: Translations = {
     settings: 'Ustawienia',
     premium: 'Premium',
     profile: 'Profil',
-    faq: 'Często zadawane pytania',
+    faq: 'FAQ',
     privacy: 'Prywatność',
-    terms: 'Regulamin',
-    login: 'Logowanie',
-    logout: 'Wyloguj',
-    dashboard: 'Pulpit',
+    terms: 'Warunki użytkowania',
+    cookies: 'Cookies',
+    
+    // Dashboard
+    dashboard: 'Przegląd',
     shifts: 'Zmiany',
     vehicle: 'Pojazd',
     translator: 'Tłumacz',
     taxAdvisor: 'Doradca podatkowy',
     travel: 'Podróże',
     laws: 'Prawo',
-    vocabulary: 'Słownik',
     
     // Authentication
+    login: 'Logowanie',
+    logout: 'Wyloguj się',
     email: 'E-mail',
     password: 'Hasło',
     
-    // Register page
+    // Registration
     registerTitle: 'Utwórz konto',
-    registerDescription: 'Utwórz konto i uzyskaj dostęp do wszystkich funkcji aplikacji',
-    registerWithGoogle: 'Zarejestruj się przez Google',
-    registerWithEmail: 'Lub zarejestruj się e-mailem',
+    registerDescription: 'Utwórz konto i korzystaj ze wszystkich funkcji aplikacji',
     registerUsername: 'Nazwa użytkownika',
     registerUsernamePlaceholder: 'Wprowadź nazwę użytkownika',
     registerPasswordMinLength: 'Hasło (min. 6 znaków)',
     registerConfirmPassword: 'Potwierdź hasło',
-    registerConfirmPasswordPlaceholder: 'Potwierdź swoje hasło',
-    registerCreating: 'Tworzenie konta...',
+    registerConfirmPasswordPlaceholder: 'Potwierdź hasło',
+    registerWithGoogle: 'Zarejestruj się przez Google',
+    registerWithEmail: 'lub zarejestruj się e-mailem',
+    registerCreating: 'Tworzenie...',
     registerCreateAccount: 'Utwórz konto',
     alreadyHaveAccount: 'Masz już konto?',
-    loading: 'Ładowanie...',
     
-    // Register validation and messages
-    passwordsDoNotMatch: 'Hasła nie pasują',
+    // Registration Messages
+    passwordsDoNotMatch: 'Hasła nie pasują do siebie',
     passwordTooShort: 'Hasło musi mieć co najmniej 6 znaków',
+    insufficientStorage: 'Niewystarczająca ilość miejsca',
+    insufficientStorageDescription: 'Proszę wyczyścić pamięć przeglądarki',
     registerCheckDataRetry: 'Sprawdź dane i spróbuj ponownie',
     userAlreadyExists: 'Użytkownik z tym e-mailem już istnieje',
     invalidEmailFormat: 'Nieprawidłowy format e-maila',
@@ -351,71 +263,20 @@ export const translations: Translations = {
     registrationFailed: 'Rejestracja nie powiodła się',
     accountCreatedSuccessfully: 'Konto zostało pomyślnie utworzone',
     nowYouCanLogin: 'Teraz możesz się zalogować',
-    accountCreatedWithPremium: 'Konto utworzone z dostępem Premium',
+    accountCreatedWithPremium: 'Konto utworzone z funkcjami Premium',
     promoCodeActivated: 'Kod promocyjny {code} został aktywowany',
-    registrationError: 'Błąd rejestracji',
     unknownErrorOccurred: 'Wystąpił nieznany błąd',
-    browserStorageInsufficientSpace: 'Niewystarczająca ilość miejsca w pamięci przeglądarki',
+    browserStorageInsufficientSpace: 'Niewystarczająca ilość miejsca w przeglądarce',
+    registrationError: 'Błąd rejestracji',
     googleRegistrationFailed: 'Rejestracja przez Google nie powiodła się',
-    insufficientStorage: 'Niewystarczająca ilość miejsca',
-    insufficientStorageDescription: 'Wyczyść pamięć przeglądarki i spróbuj ponownie',
-    browserStorageFull: 'Pamięć przeglądarki jest pełna. Wyczyść dane dla lepszej wydajności.',
+    loading: 'Ładowanie...',
+    browserStorageFull: 'Pamięć przeglądarki jest pełna. Kliknij, aby wyczyścić stare dane.',
     cleanStorage: 'Wyczyść pamięć',
     storageCleanedUp: 'Pamięć została wyczyszczona',
     
-    // Footer
-    footer: {
-      appName: 'Pomocnik Dojeżdżającego',
-      description: 'Kompleksowa aplikacja dla dojeżdżających do Niemiec',
-      features: 'Funkcje',
-      aboutUs: 'O nas',
-      allRightsReserved: 'Wszystkie prawa zastrzeżone',
-      termsOfUse: 'Warunki użytkowania',
-      privacyProtection: 'Ochrona prywatności',
-      website: 'Strona internetowa',
-      germanLessons: 'Lekcje niemieckiego',
-      lawsOverview: 'Przegląd prawa',
-      vehicleManagement: 'Zarządzanie pojazdem',
-      shiftPlanning: 'Planowanie zmian',
-      aboutProject: 'O projekcie',
-      frequentQuestions: 'Często zadawane pytania'
-    },
-    
-    // Terms page
-    termsTitle: 'Regulamin',
-    termsIntro: 'Ten regulamin reguluje korzystanie z naszej aplikacji Pomocnik Dojeżdżającego.',
-    terms: {
-      introTitle: 'Wprowadzenie i zgoda',
-      agreement: 'Korzystając z tej aplikacji, zgadzasz się na te warunki.',
-      registrationTitle: 'Rejestracja i konto użytkownika',
-      registrationDesc: 'Do pełnego korzystania z aplikacji wymagana jest rejestracja.',
-      userResponsibility: 'Użytkownik jest odpowiedzialny za poprawność podanych danych.',
-      accountTermination: 'Konto może zostać zamknięte w przypadku naruszenia warunków.',
-      rightsTitle: 'Prawa i obowiązki użytkownika',
-      userCommits: 'Użytkownik zobowiązuje się:',
-      noHarm: 'Nie szkodzić aplikacji ani innym użytkownikom',
-      noIllegalContent: 'Nie publikować nielegalnych treści',
-      noSpam: 'Nie wysyłać spamu lub niechcianych wiadomości',
-      noTampering: 'Nie manipulować funkcjami aplikacji',
-      noAutomation: 'Nie używać zautomatyzowanych narzędzi',
-      liabilityTitle: 'Odpowiedzialność i ograniczenia',
-      informationNature: 'Informacje w aplikacji mają charakter informacyjny.',
-      userContentLiability: 'Za treści tworzone przez użytkownika odpowiada użytkownik.',
-      thirdPartyLinks: 'Nie ponosimy odpowiedzialności za linki do stron trzecich.',
-      availabilityTitle: 'Dostępność usługi',
-      noGuarantee: 'Nie gwarantujemy nieprzerwnej dostępności usługi.',
-      serviceChanges: 'Zastrzegamy sobie prawo do zmian w usłudze.',
-      privacyTitle: 'Ochrona danych osobowych',
-      privacyReference: 'Szczegóły znajdziesz w naszej polityce prywatności.',
-      finalTitle: 'Postanowienia końcowe',
-      czechLaw: 'Te warunki podlegają prawu czeskiemu.',
-      termsChanges: 'Warunki mogą zostać zmienione po wcześniejszym powiadomieniu.',
-      effectiveDate: 'Te warunki obowiązują od 1 stycznia 2024 roku.'
-    },
-    
-    // Contact page
+    // Contact
     contactTitle: 'Skontaktuj się z nami',
-    contactSubtitle: 'Masz pytanie lub potrzebujesz pomocy? Chętnie pomożemy!',
+    contactSubtitle: 'Masz pytania lub potrzebujesz pomocy? Chętnie pomożemy!',
     contactInfo: 'Informacje kontaktowe',
     contactEmail: 'E-mail',
     contactPhone: 'Telefon',
@@ -427,29 +288,33 @@ export const translations: Translations = {
     contactNamePlaceholder: 'Twoje imię',
     contactMessage: 'Wiadomość',
     contactMessagePlaceholder: 'Opisz swoje pytanie lub problem...',
+    contactSending: 'Wysyłanie...',
     contactSend: 'Wyślij wiadomość',
-    contactSending: 'Wysyłanie...'
+    
+    // Footer
+    footerAppName: 'PendlerApp',
+    footerAllRightsReserved: 'Wszelkie prawa zastrzeżone'
   },
-  
   en: {
-    // App basics
-    appName: 'Commuter Helper',
-    heroTitle: 'Your reliable guide in Germany',
-    heroSubtitle: 'Comprehensive app for commuters with translator, tax calculator and shift management',
+    // App General
+    appName: 'PendlerApp',
+    heroTitle: 'Your Commuter Companion',
+    heroSubtitle: 'Complete solution for cross-border workers',
     heroAction: 'Start for free',
     
     // Navigation
     features: 'Features',
-    aboutUs: 'About us',
+    aboutUs: 'About Us',
     contact: 'Contact',
     settings: 'Settings',
     premium: 'Premium',
     profile: 'Profile',
     faq: 'FAQ',
     privacy: 'Privacy',
-    terms: 'Terms',
-    login: 'Login',
-    logout: 'Logout',
+    terms: 'Terms of Use',
+    cookies: 'Cookies',
+    
+    // Dashboard
     dashboard: 'Dashboard',
     shifts: 'Shifts',
     vehicle: 'Vehicle',
@@ -457,31 +322,33 @@ export const translations: Translations = {
     taxAdvisor: 'Tax Advisor',
     travel: 'Travel',
     laws: 'Laws',
-    vocabulary: 'Vocabulary',
     
     // Authentication
+    login: 'Login',
+    logout: 'Logout',
     email: 'Email',
     password: 'Password',
     
-    // Register page
+    // Registration
     registerTitle: 'Create Account',
-    registerDescription: 'Create an account and get access to all app features',
-    registerWithGoogle: 'Register with Google',
-    registerWithEmail: 'Or register with email',
+    registerDescription: 'Create an account and use all app features',
     registerUsername: 'Username',
     registerUsernamePlaceholder: 'Enter username',
     registerPasswordMinLength: 'Password (min. 6 characters)',
     registerConfirmPassword: 'Confirm Password',
-    registerConfirmPasswordPlaceholder: 'Confirm your password',
-    registerCreating: 'Creating account...',
+    registerConfirmPasswordPlaceholder: 'Confirm password',
+    registerWithGoogle: 'Register with Google',
+    registerWithEmail: 'or register with email',
+    registerCreating: 'Creating...',
     registerCreateAccount: 'Create Account',
     alreadyHaveAccount: 'Already have an account?',
-    loading: 'Loading...',
     
-    // Register validation and messages
+    // Registration Messages
     passwordsDoNotMatch: 'Passwords do not match',
     passwordTooShort: 'Password must be at least 6 characters',
-    registerCheckDataRetry: 'Check your data and try again',
+    insufficientStorage: 'Insufficient storage space',
+    insufficientStorageDescription: 'Please clear browser storage',
+    registerCheckDataRetry: 'Check the data and try again',
     userAlreadyExists: 'User with this email already exists',
     invalidEmailFormat: 'Invalid email format',
     passwordRequirementsNotMet: 'Password does not meet requirements',
@@ -489,71 +356,20 @@ export const translations: Translations = {
     registrationFailed: 'Registration failed',
     accountCreatedSuccessfully: 'Account created successfully',
     nowYouCanLogin: 'You can now log in',
-    accountCreatedWithPremium: 'Account created with Premium access',
+    accountCreatedWithPremium: 'Account created with Premium features',
     promoCodeActivated: 'Promo code {code} has been activated',
-    registrationError: 'Registration error',
-    unknownErrorOccurred: 'An unknown error occurred',
+    unknownErrorOccurred: 'Unknown error occurred',
     browserStorageInsufficientSpace: 'Insufficient browser storage space',
+    registrationError: 'Registration error',
     googleRegistrationFailed: 'Google registration failed',
-    insufficientStorage: 'Insufficient storage',
-    insufficientStorageDescription: 'Clear browser storage and try again',
-    browserStorageFull: 'Browser storage is full. Clear data for better performance.',
+    loading: 'Loading...',
+    browserStorageFull: 'Browser storage is full. Click to clear old data.',
     cleanStorage: 'Clear Storage',
-    storageCleanedUp: 'Storage has been cleaned',
+    storageCleanedUp: 'Storage has been cleared',
     
-    // Footer
-    footer: {
-      appName: 'Commuter Helper',
-      description: 'Comprehensive app for commuters to Germany',
-      features: 'Features',
-      aboutUs: 'About us',
-      allRightsReserved: 'All rights reserved',
-      termsOfUse: 'Terms of use',
-      privacyProtection: 'Privacy protection',
-      website: 'Website',
-      germanLessons: 'German lessons',
-      lawsOverview: 'Laws overview',
-      vehicleManagement: 'Vehicle management',
-      shiftPlanning: 'Shift planning',
-      aboutProject: 'About project',
-      frequentQuestions: 'Frequent questions'
-    },
-    
-    // Terms page
-    termsTitle: 'Terms of Service',
-    termsIntro: 'These terms of service govern the use of our Commuter Helper app.',
-    terms: {
-      introTitle: 'Introduction and consent',
-      agreement: 'By using this app, you agree to these terms.',
-      registrationTitle: 'Registration and user account',
-      registrationDesc: 'Registration is required for full use of the app.',
-      userResponsibility: 'The user is responsible for the accuracy of provided data.',
-      accountTermination: 'Account may be terminated for violation of terms.',
-      rightsTitle: 'User rights and obligations',
-      userCommits: 'The user commits to:',
-      noHarm: 'Not harm the app or other users',
-      noIllegalContent: 'Not publish illegal content',
-      noSpam: 'Not send spam or unwanted messages',
-      noTampering: 'Not tamper with app functions',
-      noAutomation: 'Not use automated tools',
-      liabilityTitle: 'Liability and limitations',
-      informationNature: 'Information in the app is informational in nature.',
-      userContentLiability: 'User is responsible for user-generated content.',
-      thirdPartyLinks: 'We are not responsible for third-party links.',
-      availabilityTitle: 'Service availability',
-      noGuarantee: 'We do not guarantee uninterrupted service availability.',
-      serviceChanges: 'We reserve the right to make changes to the service.',
-      privacyTitle: 'Privacy protection',
-      privacyReference: 'Details can be found in our privacy policy.',
-      finalTitle: 'Final provisions',
-      czechLaw: 'These terms are governed by Czech law.',
-      termsChanges: 'Terms may be changed with prior notice.',
-      effectiveDate: 'These terms are effective from January 1, 2024.'
-    },
-    
-    // Contact page
+    // Contact
     contactTitle: 'Contact Us',
-    contactSubtitle: 'Have a question or need help? We are happy to help!',
+    contactSubtitle: 'Have questions or need help? We are happy to help!',
     contactInfo: 'Contact Information',
     contactEmail: 'Email',
     contactPhone: 'Phone',
@@ -565,7 +381,11 @@ export const translations: Translations = {
     contactNamePlaceholder: 'Your name',
     contactMessage: 'Message',
     contactMessagePlaceholder: 'Describe your question or problem...',
+    contactSending: 'Sending...',
     contactSend: 'Send Message',
-    contactSending: 'Sending...'
+    
+    // Footer
+    footerAppName: 'PendlerApp',
+    footerAllRightsReserved: 'All rights reserved'
   }
 };
