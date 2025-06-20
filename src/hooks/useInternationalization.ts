@@ -13,9 +13,8 @@ export const useInternationalization = () => {
   
   const availableLanguages: Language[] = [
     { code: 'cs', name: 'Čeština', flag: '🇨🇿' },
-    { code: 'en', name: 'English', flag: '🇬🇧' },
-    { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
-    { code: 'sk', name: 'Slovenčina', flag: '🇸🇰' }
+    { code: 'pl', name: 'Polski', flag: '🇵🇱' },
+    { code: 'de', name: 'Deutsch', flag: '🇩🇪' }
   ];
 
   const changeLanguage = (langCode: string) => {

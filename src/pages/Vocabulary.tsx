@@ -1,57 +1,63 @@
 
 import React from 'react';
-import { ErrorBoundaryWithFallback } from '@/components/common/ErrorBoundaryWithFallback';
-import FastLoadingFallback from '@/components/common/FastLoadingFallback';
-import PublicPageWithPremiumCheck from '@/components/premium/PublicPageWithPremiumCheck';
-import { useScreenOrientation } from '@/hooks/useScreenOrientation';
+import { useLanguage } from '@/hooks/useLanguage';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { BookOpen, Languages } from 'lucide-react';
 
-// Optimized lazy loading
-const VocabularySection = React.lazy(() => 
-  import('@/components/language/VocabularySection').catch(err => {
-    console.error('Failed to load VocabularySection:', err);
-    return { default: () => <div className="p-4 text-center text-muted-foreground">Lekce němčiny se nenačetly</div> };
-  })
-);
-
-const LanguageManager = React.lazy(() => 
-  import('@/components/language/LanguageManager').catch(err => {
-    console.error('Failed to load LanguageManager:', err);
-    return { default: ({ children }: { children: React.ReactNode }) => <>{children}</> };
-  })
-);
-
-const GermanLessons = () => {
-  const { isMobile, isSmallLandscape } = useScreenOrientation();
-  const useMobileLayout = isMobile || isSmallLandscape;
-
-  console.log('German Lessons page rendering');
+const Vocabulary = () => {
+  const { t } = useLanguage();
 
   return (
-    <PublicPageWithPremiumCheck featureName="Lekce němčiny" allowPublicAccess={true}>
-      <ErrorBoundaryWithFallback>
-        <React.Suspense fallback={<FastLoadingFallback message="Načítám správce jazykových lekcí..." />}>
-          <LanguageManager>
-            <div className={`container py-6 md:py-10 max-w-7xl ${useMobileLayout ? 'pb-32' : ''} ${isSmallLandscape ? 'px-2' : ''}`}>
-              <div className={`mb-8 ${isSmallLandscape ? 'mb-4' : ''}`}>
-                <h1 className={`${useMobileLayout ? 'text-2xl' : 'text-3xl'} font-bold tracking-tight mb-2`}>
-                  Lekce němčiny
-                </h1>
-                <p className={`text-muted-foreground ${useMobileLayout ? 'text-sm' : ''}`}>
-                  Interaktivní výuka němčiny pro české a polské pracovníky v balíkovém centru
-                </p>
-              </div>
+    <div className="container py-6 md:py-10 max-w-4xl">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold tracking-tight mb-2">
+          {t('translator')}
+        </h1>
+        <p className="text-muted-foreground">
+          Jazykové nástroje pro práci v Německu
+        </p>
+      </div>
 
-              <ErrorBoundaryWithFallback>
-                <React.Suspense fallback={<FastLoadingFallback message="Načítám jazykové lekce..." />}>
-                  <VocabularySection />
-                </React.Suspense>
-              </ErrorBoundaryWithFallback>
+      <div className="grid gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Languages className="h-5 w-5" />
+              {t('translator')}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground mb-4">
+              Využijte náš překladač pro překlad mezi češtinou, polštinou a němčinou.
+            </p>
+            <div className="text-center">
+              <a 
+                href="/translator" 
+                className="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+              >
+                <Languages className="h-4 w-4 mr-2" />
+                Otevřít překladač
+              </a>
             </div>
-          </LanguageManager>
-        </React.Suspense>
-      </ErrorBoundaryWithFallback>
-    </PublicPageWithPremiumCheck>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BookOpen className="h-5 w-5" />
+              Jazykové materiály
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground">
+              Sekce jazykových lekcí byla odstraněna. Využijte překladač pro rychlé překlady potřebných frází a výrazů.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 };
 
-export default GermanLessons;
+export default Vocabulary;
