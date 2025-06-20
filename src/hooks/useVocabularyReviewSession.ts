@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { VocabularyItem } from '@/models/VocabularyItem';
+import { BasicVocabularyItem } from '@/types/language';
 
 interface SessionStats {
   startTime: Date;
@@ -13,8 +13,8 @@ interface SessionStats {
 }
 
 export const useVocabularyReviewSession = (
-  dueItems: VocabularyItem[],
-  currentItem: VocabularyItem | null,
+  dueItems: BasicVocabularyItem[],
+  currentItem: BasicVocabularyItem | null,
   markCorrect: (id: string) => void,
   markIncorrect: (id: string) => void,
   goToNextItem: () => void

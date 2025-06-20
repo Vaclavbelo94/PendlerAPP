@@ -3,11 +3,11 @@ import { useState, useEffect, useCallback } from 'react';
 import { crossDeviceSyncService } from '@/services/CrossDeviceSyncService';
 import { smartLanguagePackService } from '@/services/SmartLanguagePackService';
 import { useStandardizedToast } from '@/hooks/useStandardizedToast';
-import { VocabularyItem } from '@/models/VocabularyItem';
+import { BasicVocabularyItem } from '@/types/language';
 
 export const useVocabularySyncManager = (
-  vocabularyItems: VocabularyItem[],
-  bulkAddVocabularyItems: (items: VocabularyItem[]) => void,
+  vocabularyItems: BasicVocabularyItem[],
+  bulkAddVocabularyItems: (items: BasicVocabularyItem[]) => void,
   testHistory: any[]
 ) => {
   const [isSyncing, setIsSyncing] = useState(false);

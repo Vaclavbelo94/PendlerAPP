@@ -1,9 +1,8 @@
-
-import { VocabularyItem } from '@/models/VocabularyItem';
+import { BasicVocabularyItem } from '@/types/language';
 
 // Calculate category distribution
 export const calculateCategoryDistribution = (
-  vocabularyItems: VocabularyItem[]
+  vocabularyItems: BasicVocabularyItem[]
 ): { [category: string]: number } => {
   const categoryDist: {[category: string]: number} = {};
   
@@ -17,7 +16,7 @@ export const calculateCategoryDistribution = (
 
 // Calculate difficulty distribution
 export const calculateDifficultyDistribution = (
-  vocabularyItems: VocabularyItem[]
+  vocabularyItems: BasicVocabularyItem[]
 ): { easy: number; medium: number; hard: number; unspecified: number } => {
   const difficultyDist = {
     easy: 0,
@@ -42,7 +41,7 @@ export const calculateDifficultyDistribution = (
 };
 
 // Find the most recent study date
-export const findLastStudyDate = (vocabularyItems: VocabularyItem[]): string | undefined => {
+export const findLastStudyDate = (vocabularyItems: BasicVocabularyItem[]): string | undefined => {
   const reviewDates = vocabularyItems
     .map(item => item.lastReviewed)
     .filter(Boolean) as string[];

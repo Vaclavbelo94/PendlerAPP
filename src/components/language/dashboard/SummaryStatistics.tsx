@@ -1,8 +1,7 @@
-
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { UserProgress } from '@/models/VocabularyItem';
+import { UserProgress } from '@/types/language';
 
 interface SummaryStatisticsProps {
   vocabularyCount: number;

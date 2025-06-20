@@ -1,11 +1,10 @@
-
 import { useState, useEffect } from 'react';
-import { VocabularyItem } from '@/models/VocabularyItem';
+import { BasicVocabularyItem } from '@/types/language';
 import { calculateNextReviewDate, calculateKnowledgeScore, optimizeReviewTime } from '@/utils/dateUtils';
 
-export const useRepetitionAlgorithm = (items: VocabularyItem[]) => {
-  const [dueItems, setDueItems] = useState<VocabularyItem[]>([]);
-  const [currentItem, setCurrentItem] = useState<VocabularyItem | null>(null);
+export const useRepetitionAlgorithm = (items: BasicVocabularyItem[]) => {
+  const [dueItems, setDueItems] = useState<BasicVocabularyItem[]>([]);
+  const [currentItem, setCurrentItem] = useState<BasicVocabularyItem | null>(null);
 
   // Calculate due items whenever items change
   useEffect(() => {

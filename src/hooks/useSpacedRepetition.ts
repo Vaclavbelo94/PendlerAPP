@@ -1,13 +1,6 @@
-
 import { useState, useEffect } from 'react';
 import { VocabularyItem } from '@/models/VocabularyItem';
-import { 
-  saveDailyProgress,
-  loadDailyProgress,
-  loadDailyGoal,
-  saveDailyGoal
-} from '@/utils/vocabularyStorage';
-import { calculateVocabularyStatistics } from '@/utils/vocabularyStats';
+import { BasicVocabularyItem } from '@/types/language';
 
 // Pomocné funkce pro spaced repetition algoritmus
 const getNextReviewDate = (repetitionLevel: number): Date => {
@@ -27,6 +20,25 @@ const isItemDueToday = (item: VocabularyItem): boolean => {
   reviewDate.setHours(0, 0, 0, 0);
   
   return reviewDate <= today;
+};
+
+// Simple localStorage functions (minimal implementation)
+const saveDailyProgress = (progress: number) => {
+  localStorage.setItem('daily_progress', progress.toString());
+};
+
+const loadDailyProgress = (): number => {
+  const stored = localStorage.getItem('daily_progress');
+  return stored ? parseInt(stored, 10) : 0;
+};
+
+const loadDailyGoal = (): number => {
+  const stored = localStorage.getItem('daily_goal');
+  return stored ? parseInt(stored, 10) : 10;
+};
+
+const saveDailyGoal = (goal: number) => {
+  localStorage.setItem('daily_goal', goal.toString());
 };
 
 export const useSpacedRepetition = (initialItems: VocabularyItem[] = []) => {

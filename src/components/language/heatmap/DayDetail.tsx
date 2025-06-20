@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { motion } from "framer-motion";
 import { format } from 'date-fns';
 import { cs } from 'date-fns/locale';
-import { DailyProgressStat } from '@/models/VocabularyItem';
+import { DailyProgressStat } from '@/types/language';
 
 interface DayDetailProps {
   selectedDay: Date;

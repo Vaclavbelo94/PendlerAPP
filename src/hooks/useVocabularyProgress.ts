@@ -1,10 +1,9 @@
-
 import { useState, useEffect } from 'react';
-import { UserProgress, VocabularyItem } from '@/models/VocabularyItem';
+import { UserProgress, BasicVocabularyItem } from '@/types/language';
 import { generateDailyStats, calculateStreakDays, calculateAverageAccuracy } from '@/utils/progressCalculations';
 import { calculateCategoryDistribution, calculateDifficultyDistribution, findLastStudyDate } from '@/utils/vocabularyDistribution';
 
-export const useVocabularyProgress = (vocabularyItems: VocabularyItem[] = []) => {
+export const useVocabularyProgress = (vocabularyItems: BasicVocabularyItem[] = []) => {
   const [userProgress, setUserProgress] = useState<UserProgress>({
     dailyStats: [],
     totalReviewed: 0,

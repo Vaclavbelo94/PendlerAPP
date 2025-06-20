@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { format, isSameDay, parseISO } from 'date-fns';
-import { DailyProgressStat } from '@/models/VocabularyItem';
+import { DailyProgressStat } from '@/types/language';
 import { AnimatePresence } from "framer-motion";
 
 // Import refactored components

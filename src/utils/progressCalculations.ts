@@ -1,10 +1,9 @@
-
-import { VocabularyItem, DailyProgressStat } from '@/models/VocabularyItem';
+import { BasicVocabularyItem, DailyProgressStat } from '@/types/language';
 import { format, subDays, parseISO } from 'date-fns';
 
 // Generate daily stats for a specified number of days
 export const generateDailyStats = (
-  vocabularyItems: VocabularyItem[], 
+  vocabularyItems: BasicVocabularyItem[], 
   days: number = 7
 ): DailyProgressStat[] => {
   const stats: DailyProgressStat[] = [];
@@ -36,7 +35,7 @@ export const generateDailyStats = (
 };
 
 // Calculate user streak days
-export const calculateStreakDays = (vocabularyItems: VocabularyItem[]): number => {
+export const calculateStreakDays = (vocabularyItems: BasicVocabularyItem[]): number => {
   let streakCount = 0;
   const now = new Date();
   const today = format(now, 'yyyy-MM-dd');
@@ -70,7 +69,7 @@ export const calculateStreakDays = (vocabularyItems: VocabularyItem[]): number =
 };
 
 // Calculate average accuracy from items
-export const calculateAverageAccuracy = (vocabularyItems: VocabularyItem[]): number => {
+export const calculateAverageAccuracy = (vocabularyItems: BasicVocabularyItem[]): number => {
   let totalCorrect = 0;
   let totalAttempts = 0;
   

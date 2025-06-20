@@ -1,10 +1,10 @@
 
-import { VocabularyItem, VocabularyStatistics } from '@/models/VocabularyItem';
+import { BasicVocabularyItem, VocabularyStatistics } from '@/types/language';
 import { calculateKnowledgeScore } from '@/utils/dateUtils';
 
 export const useVocabularyStatistics = (
-  items: VocabularyItem[], 
-  dueItems: VocabularyItem[],
+  items: BasicVocabularyItem[], 
+  dueItems: BasicVocabularyItem[],
   completedToday: number, 
   dailyGoal: number
 ) => {

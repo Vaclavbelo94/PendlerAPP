@@ -1,8 +1,9 @@
-import { VocabularyItem } from '@/models/VocabularyItem';
+
+import { BasicVocabularyItem } from '@/types/language';
 
 export const calculateVocabularyStatistics = (
-  items: VocabularyItem[], 
-  dueItems: VocabularyItem[], 
+  items: BasicVocabularyItem[], 
+  dueItems: BasicVocabularyItem[], 
   completedToday: number, 
   dailyGoal: number
 ) => {
