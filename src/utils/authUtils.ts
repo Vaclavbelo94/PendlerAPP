@@ -1,4 +1,3 @@
-
 /**
  * Utility functions for authentication management and localStorage cleanup
  */
@@ -8,26 +7,15 @@
  */
 export const checkLocalStorageSpace = (): number => {
   try {
-    const testKey = 'test_storage_space';
-    const testData = 'x'.repeat(1024); // 1KB test
-    let availableSpace = 0;
-    
-    // Test how much space we can use
-    for (let i = 0; i < 10000; i++) {
-      try {
-        localStorage.setItem(testKey + i, testData);
-        availableSpace += 1024;
-      } catch (e) {
-        // Clean up test data
-        for (let j = 0; j <= i; j++) {
-          localStorage.removeItem(testKey + j);
-        }
-        break;
+    let totalSpace = 0;
+    for (let key in localStorage) {
+      if (localStorage.hasOwnProperty(key)) {
+        totalSpace += localStorage[key].length + key.length;
       }
     }
-    
-    return availableSpace;
+    return totalSpace;
   } catch (error) {
+    console.warn('Failed to check localStorage space:', error);
     return 0;
   }
 };
@@ -86,45 +74,27 @@ export const aggressiveCleanup = () => {
 /**
  * Cleans up all authentication-related state from local storage
  */
-export const cleanupAuthState = () => {
+export const cleanupAuthState = (): void => {
   try {
-    console.log('Starting auth state cleanup...');
-    
-    // Remove all Supabase auth keys
-    Object.keys(localStorage).forEach((key) => {
-      if (key.startsWith('supabase.auth.') || key.includes('sb-') || key.startsWith('userSessions') || key.startsWith('errorReports')) {
+    const authKeys = ['supabase.auth.token', 'sb-auth-token', 'auth-storage'];
+    authKeys.forEach(key => {
+      const item = localStorage.getItem(key);
+      if (item) {
         try {
-          localStorage.removeItem(key);
-        } catch (error) {
-          console.warn(`Could not remove localStorage key: ${key}`, error);
+          const parsed = JSON.parse(item);
+          if (parsed.expires_at && Date.now() > parsed.expires_at * 1000) {
+            localStorage.removeItem(key);
+          }
+        } catch (e) {
+          // Keep valid auth tokens, remove invalid ones
+          if (!item.includes('access_token')) {
+            localStorage.removeItem(key);
+          }
         }
       }
     });
-    
-    // Remove specific problematic keys
-    const problematicKeys = [
-      'supabase.auth.token',
-      'currentUser',
-      'adminLoggedIn',
-      'vocabulary_items',
-      'userSessions',
-      'errorReports',
-      'performanceMetrics'
-    ];
-    
-    problematicKeys.forEach(key => {
-      try {
-        localStorage.removeItem(key);
-      } catch (error) {
-        console.warn(`Could not remove key ${key}:`, error);
-      }
-    });
-    
-    console.log('Auth state cleanup completed');
   } catch (error) {
-    console.warn('Error during auth cleanup:', error);
-    // If regular cleanup fails, try aggressive cleanup
-    aggressiveCleanup();
+    console.warn('Failed to cleanup auth state:', error);
   }
 };
 
@@ -175,25 +145,31 @@ export const saveUserToLocalStorage = (user: any, isPremium: boolean, premiumExp
 /**
  * Safe localStorage operations with quota handling
  */
+export const safeLocalStorageGet = (key: string): string | null => {
+  try {
+    return localStorage.getItem(key);
+  } catch (error) {
+    console.warn(`Failed to get localStorage item ${key}:`, error);
+    return null;
+  }
+};
+
 export const safeLocalStorageSet = (key: string, value: string): boolean => {
   try {
     localStorage.setItem(key, value);
     return true;
   } catch (error) {
-    if (error instanceof DOMException && error.name === 'QuotaExceededError') {
-      console.warn('localStorage quota exceeded, cleaning up...');
-      cleanupAuthState();
-      
-      // Try once more after cleanup
-      try {
-        localStorage.setItem(key, value);
-        return true;
-      } catch (retryError) {
-        console.error('Failed to save after cleanup:', retryError);
-        return false;
-      }
-    }
-    console.error('Error saving to localStorage:', error);
+    console.warn(`Failed to set localStorage item ${key}:`, error);
+    return false;
+  }
+};
+
+export const safeLocalStorageRemove = (key: string): boolean => {
+  try {
+    localStorage.removeItem(key);
+    return true;
+  } catch (error) {
+    console.warn(`Failed to remove localStorage item ${key}:`, error);
     return false;
   }
 };

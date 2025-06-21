@@ -1,6 +1,5 @@
 
-import { useEffect, useCallback, useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useEffect, useCallback } from 'react';
 
 interface BundleOptimizationOptions {
   enableCodeSplitting?: boolean;
@@ -12,87 +11,86 @@ interface BundleOptimizationOptions {
 export const useBundleOptimization = (options: BundleOptimizationOptions = {}) => {
   const {
     enableCodeSplitting = true,
-    enablePrefetching = false,
+    enablePrefetching = true,
     prefetchDelay = 2000,
     enablePreloading = true
   } = options;
 
-  const location = useLocation();
-
-  // Memoized route predictions
-  const routePredictions = useMemo(() => {
-    const currentPath = location.pathname;
-    
-    // Predict likely next routes based on current path
-    const predictions: string[] = [];
-    
-    if (currentPath === '/') {
-      predictions.push('/dashboard', '/translator');
-    } else if (currentPath === '/dashboard') {
-      predictions.push('/shifts', '/vehicle', '/translator');
-    } else if (currentPath.startsWith('/language')) {
-      predictions.push('/translator', '/dashboard');
-    }
-    
-    return predictions;
-  }, [location.pathname]);
-
-  // Prefetch route components
-  const prefetchRoutes = useCallback(async () => {
+  // Prefetch critical routes
+  const prefetchCriticalRoutes = useCallback(() => {
     if (!enablePrefetching) return;
 
-    for (const route of routePredictions) {
-      try {
-        // Dynamic import with error handling
-        switch (route) {
-          case '/dashboard':
-            await import('@/pages/Dashboard');
-            break;
-          case '/translator':
-            await import('@/pages/Translator');
-            break;
-          case '/shifts':
-            await import('@/pages/Shifts');
-            break;
-          case '/vehicle':
-            await import('@/pages/Vehicle');
-            break;
-        }
-      } catch (error) {
-        console.warn(`Failed to prefetch route ${route}:`, error);
-      }
-    }
-  }, [routePredictions, enablePrefetching]);
+    const criticalRoutes = [
+      '/dashboard',
+      '/shifts',
+      '/tax-advisor',
+      '/translator',
+      '/vehicle'
+    ];
 
-  // Prefetch with delay
-  useEffect(() => {
-    if (!enablePrefetching) return;
+    criticalRoutes.forEach(route => {
+      const link = document.createElement('link');
+      link.rel = 'prefetch';
+      link.href = route;
+      document.head.appendChild(link);
+    });
+  }, [enablePrefetching]);
 
-    const timeoutId = setTimeout(prefetchRoutes, prefetchDelay);
-    return () => clearTimeout(timeoutId);
-  }, [prefetchRoutes, prefetchDelay, enablePrefetching]);
-
-  // Resource preloading
-  useEffect(() => {
+  // Preload critical resources
+  const preloadCriticalResources = useCallback(() => {
     if (!enablePreloading) return;
 
-    const preloadCriticalResources = () => {
-      // Preload critical CSS
-      const link = document.createElement('link');
-      link.rel = 'preload';
-      link.href = '/assets/critical.css';
-      link.as = 'style';
-      document.head.appendChild(link);
-    };
+    // Preload critical CSS
+    const criticalCSS = document.createElement('link');
+    criticalCSS.rel = 'preload';
+    criticalCSS.as = 'style';
+    criticalCSS.href = '/src/index.css';
+    document.head.appendChild(criticalCSS);
 
-    // Run after initial render
-    requestIdleCallback ? 
-      requestIdleCallback(preloadCriticalResources) : 
-      setTimeout(preloadCriticalResources, 100);
+    // Preload important fonts
+    const fontPreload = document.createElement('link');
+    fontPreload.rel = 'preload';
+    fontPreload.as = 'font';
+    fontPreload.type = 'font/woff2';
+    fontPreload.crossOrigin = 'anonymous';
+    document.head.appendChild(fontPreload);
   }, [enablePreloading]);
 
+  // Dynamic import optimization
+  const optimizeImports = useCallback(() => {
+    if (!enableCodeSplitting) return;
+
+    // Add module preload hints
+    const modulePreloadScript = document.createElement('script');
+    modulePreloadScript.innerHTML = `
+      window.addEventListener('mouseover', (e) => {
+        const link = e.target.closest('a[href]');
+        if (link && !link.dataset.preloaded) {
+          link.dataset.preloaded = 'true';
+          const moduleLink = document.createElement('link');
+          moduleLink.rel = 'modulepreload';
+          moduleLink.href = link.href;
+          document.head.appendChild(moduleLink);
+        }
+      });
+    `;
+    document.head.appendChild(modulePreloadScript);
+  }, [enableCodeSplitting]);
+
+  useEffect(() => {
+    // Delayed execution to avoid blocking initial render
+    const timer = setTimeout(() => {
+      prefetchCriticalRoutes();
+      preloadCriticalResources();
+      optimizeImports();
+    }, prefetchDelay);
+
+    return () => clearTimeout(timer);
+  }, [prefetchCriticalRoutes, preloadCriticalResources, optimizeImports, prefetchDelay]);
+
   return {
-    routePredictions,
-    prefetchRoutes
+    prefetchCriticalRoutes,
+    preloadCriticalResources,
+    optimizeImports
   };
 };

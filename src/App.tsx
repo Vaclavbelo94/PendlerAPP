@@ -1,4 +1,3 @@
-
 import React, { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { OptimizedProviderStack } from '@/components/providers/OptimizedProviderStack';
@@ -45,69 +44,77 @@ const TaxReturn = lazy(() => import('@/pages/laws/TaxReturn'));
 const WorkContract = lazy(() => import('@/pages/laws/WorkContract'));
 const WorkingHours = lazy(() => import('@/pages/laws/WorkingHours'));
 
-const AppContent: React.FC = () => {
-  return (
-    <ThemeInitializer>
-      <ModernLayout>
-        <ScrollToTop />
-        <Suspense fallback={<SimpleLoadingSpinner />}>
-          <Routes>
-            <Route path="/" element={<ModernIndex />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/shifts" element={<Shifts />} />
-            <Route path="/translator" element={<Translator />} />
-            <Route path="/vehicle" element={<Vehicle />} />
-            <Route path="/tax-advisor" element={<TaxAdvisor />} />
-            <Route path="/travel" element={<TravelPlanning />} />
-            <Route path="/laws" element={<Laws />} />
-            
-            {/* Redirect old vocabulary route to translator */}
-            <Route path="/vocabulary" element={<Navigate to="/translator" replace />} />
-            
-            {/* Law detail pages */}
-            <Route path="/laws/child-benefits" element={<ChildBenefits />} />
-            <Route path="/laws/employee-protection" element={<EmployeeProtection />} />
-            <Route path="/laws/health-insurance" element={<HealthInsurance />} />
-            <Route path="/laws/legal-aid" element={<LegalAid />} />
-            <Route path="/laws/minimum-holidays" element={<MinimumHolidays />} />
-            <Route path="/laws/minimum-wage" element={<MinimumWage />} />
-            <Route path="/laws/parental-allowance" element={<ParentalAllowance />} />
-            <Route path="/laws/pension-insurance" element={<PensionInsurance />} />
-            <Route path="/laws/tax-classes" element={<TaxClasses />} />
-            <Route path="/laws/tax-return" element={<TaxReturn />} />
-            <Route path="/laws/work-contract" element={<WorkContract />} />
-            <Route path="/laws/working-hours" element={<WorkingHours />} />
-            
-            {/* Legal pages */}
-            <Route path="/privacy" element={<Privacy />} />
-            <Route path="/cookies" element={<Cookies />} />
-            <Route path="/terms" element={<Terms />} />
-            
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/premium" element={<Premium />} />
-            <Route path="/pricing" element={<Navigate to="/premium" replace />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/faq" element={<FAQ />} />
-            <Route path="/admin" element={<Admin />} />
-          </Routes>
-        </Suspense>
-      </ModernLayout>
-    </ThemeInitializer>
-  );
-};
+import { GlobalPerformanceProvider } from '@/components/optimized/GlobalPerformanceProvider';
+import {
+  QueryClient,
+  QueryClientProvider,
+} from '@tanstack/react-query'
+import { BrowserRouter } from 'react-router-dom';
+import { AuthProvider } from './components/providers/AuthProvider';
+import { ThemeProvider } from './components/theme/ThemeProvider';
+import { Toaster } from './components/ui/toaster';
 
-const App: React.FC = () => {
+const queryClient = new QueryClient()
+
+function App() {
   return (
-    <OptimizedProviderStack>
-      <LanguageProvider>
-        <AppContent />
-      </LanguageProvider>
-    </OptimizedProviderStack>
+    <GlobalPerformanceProvider>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <LanguageProvider>
+            <AuthProvider>
+              <ThemeProvider>
+                <Toaster />
+                <Routes>
+                  <Route path="/" element={<ModernIndex />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/shifts" element={<Shifts />} />
+                  <Route path="/translator" element={<Translator />} />
+                  <Route path="/vehicle" element={<Vehicle />} />
+                  <Route path="/tax-advisor" element={<TaxAdvisor />} />
+                  <Route path="/travel" element={<TravelPlanning />} />
+                  <Route path="/laws" element={<Laws />} />
+                  
+                  {/* Redirect old vocabulary route to translator */}
+                  <Route path="/vocabulary" element={<Navigate to="/translator" replace />} />
+                  
+                  {/* Law detail pages */}
+                  <Route path="/laws/child-benefits" element={<ChildBenefits />} />
+                  <Route path="/laws/employee-protection" element={<EmployeeProtection />} />
+                  <Route path="/laws/health-insurance" element={<HealthInsurance />} />
+                  <Route path="/laws/legal-aid" element={<LegalAid />} />
+                  <Route path="/laws/minimum-holidays" element={<MinimumHolidays />} />
+                  <Route path="/laws/minimum-wage" element={<MinimumWage />} />
+                  <Route path="/laws/parental-allowance" element={<ParentalAllowance />} />
+                  <Route path="/laws/pension-insurance" element={<PensionInsurance />} />
+                  <Route path="/laws/tax-classes" element={<TaxClasses />} />
+                  <Route path="/laws/tax-return" element={<TaxReturn />} />
+                  <Route path="/laws/work-contract" element={<WorkContract />} />
+                  <Route path="/laws/working-hours" element={<WorkingHours />} />
+                  
+                  {/* Legal pages */}
+                  <Route path="/privacy" element={<Privacy />} />
+                  <Route path="/cookies" element={<Cookies />} />
+                  <Route path="/terms" element={<Terms />} />
+                  
+                  <Route path="/settings" element={<Settings />} />
+                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/premium" element={<Premium />} />
+                  <Route path="/pricing" element={<Navigate to="/premium" replace />} />
+                  <Route path="/contact" element={<Contact />} />
+                  <Route path="/faq" element={<FAQ />} />
+                  <Route path="/admin" element={<Admin />} />
+                </Routes>
+              </ThemeProvider>
+            </AuthProvider>
+          </LanguageProvider>
+        </BrowserRouter>
+      </QueryClientProvider>
+    </GlobalPerformanceProvider>
   );
-};
+}
 
 export default App;

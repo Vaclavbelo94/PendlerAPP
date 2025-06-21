@@ -1,78 +1,66 @@
 
-// Performance monitoring utilities for tracking page load times and component performance
-export const performanceMonitor = {
-  // Track page load times
-  trackPageLoad: (pageName: string) => {
-    const startTime = performance.now();
-    
-    return {
-      finish: () => {
-        const endTime = performance.now();
-        const loadTime = endTime - startTime;
-        
-        console.log(`[PERFORMANCE] ${pageName} loaded in ${loadTime.toFixed(2)}ms`);
-        
-        // Log slow pages
-        if (loadTime > 1000) {
-          console.warn(`[PERFORMANCE] Slow page detected: ${pageName} took ${loadTime.toFixed(2)}ms`);
-        }
-        
-        return loadTime;
-      }
-    };
-  },
+class PerformanceMonitor {
+  private metrics: Map<string, number> = new Map();
+  private observers: PerformanceObserver[] = [];
 
-  // Track component render times
-  trackComponentRender: (componentName: string) => {
-    const startTime = performance.now();
-    
-    return () => {
-      const endTime = performance.now();
-      const renderTime = endTime - startTime;
-      
-      if (renderTime > 100) {
-        console.warn(`[PERFORMANCE] Slow component render: ${componentName} took ${renderTime.toFixed(2)}ms`);
-      }
-      
-      return renderTime;
-    };
-  },
+  constructor() {
+    this.initializeObservers();
+  }
 
-  // Track memory usage
-  checkMemoryUsage: () => {
-    if (typeof window !== 'undefined' && 'performance' in window && (performance as any).memory) {
-      const memory = (performance as any).memory;
-      const usedMB = Math.round(memory.usedJSHeapSize / 1024 / 1024);
-      const totalMB = Math.round(memory.totalJSHeapSize / 1024 / 1024);
-      
-      console.log(`[PERFORMANCE] Memory usage: ${usedMB}MB / ${totalMB}MB`);
-      
-      if (usedMB > 100) {
-        console.warn(`[PERFORMANCE] High memory usage detected: ${usedMB}MB`);
-      }
-      
-      return { used: usedMB, total: totalMB };
-    }
-    return null;
-  },
+  private initializeObservers() {
+    // Observe paint metrics
+    if ('PerformanceObserver' in window) {
+      try {
+        const paintObserver = new PerformanceObserver((list) => {
+          for (const entry of list.getEntries()) {
+            this.metrics.set(entry.name, entry.startTime);
+          }
+        });
+        paintObserver.observe({ entryTypes: ['paint'] });
+        this.observers.push(paintObserver);
 
-  // Track user interactions
-  trackUserInteraction: (action: string, element: string) => {
-    const timestamp = Date.now();
-    console.log(`[PERFORMANCE] User interaction: ${action} on ${element} at ${timestamp}`);
-  },
+        // Observe layout shifts
+        const layoutShiftObserver = new PerformanceObserver((list) => {
+          let cumulativeScore = 0;
+          for (const entry of list.getEntries()) {
+            if (!(entry as any).hadRecentInput) {
+              cumulativeScore += (entry as any).value;
+            }
+          }
+          this.metrics.set('cumulativeLayoutShift', cumulativeScore);
+        });
+        layoutShiftObserver.observe({ entryTypes: ['layout-shift'] });
+        this.observers.push(layoutShiftObserver);
 
-  // Add the missing destroy method
-  destroy: () => {
-    console.log(`[PERFORMANCE] Performance monitor destroyed`);
-    // Clean up any performance observers or timers if needed
-    try {
-      if ('performance' in window && 'clearMarks' in performance) {
-        performance.clearMarks();
-        performance.clearMeasures();
+        // Observe largest contentful paint
+        const lcpObserver = new PerformanceObserver((list) => {
+          const entries = list.getEntries();
+          const lastEntry = entries[entries.length - 1];
+          this.metrics.set('largestContentfulPaint', lastEntry.startTime);
+        });
+        lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
+        this.observers.push(lcpObserver);
+      } catch (error) {
+        console.warn('Performance observers not supported:', error);
       }
-    } catch (error) {
-      console.warn('[PERFORMANCE] Error during cleanup:', error);
     }
   }
-};
+
+  trackUserInteraction(type: string, element: string) {
+    const key = `interaction_${type}_${element}`;
+    const count = this.metrics.get(key) || 0;
+    this.metrics.set(key, count + 1);
+  }
+
+  getMetrics() {
+    return Object.fromEntries(this.metrics);
+  }
+
+  cleanup() {
+    this.observers.forEach(observer => observer.disconnect());
+    this.observers = [];
+    this.metrics.clear();
+  }
+}
+
+export const performanceMonitor = new PerformanceMonitor();

@@ -1,7 +1,6 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useBundleOptimization } from '@/hooks/useBundleOptimization';
 
 interface RouteOptimizerProps {
   children: React.ReactNode;
@@ -9,37 +8,61 @@ interface RouteOptimizerProps {
 
 export const RouteOptimizer: React.FC<RouteOptimizerProps> = ({ children }) => {
   const location = useLocation();
-  const [isRouteReady, setIsRouteReady] = useState(false);
-  
-  // Use bundle optimization hook
-  useBundleOptimization({
-    enableCodeSplitting: true,
-    enablePrefetching: true,
-    prefetchDelay: 1500
-  });
 
   useEffect(() => {
-    // Mark route as ready after a small delay
-    const timer = setTimeout(() => {
-      setIsRouteReady(true);
-    }, 100);
+    // Preload next likely routes based on current route
+    const preloadRoutes = () => {
+      const currentPath = location.pathname;
+      let likelyNextRoutes: string[] = [];
 
+      switch (currentPath) {
+        case '/':
+          likelyNextRoutes = ['/dashboard', '/register', '/login'];
+          break;
+        case '/dashboard':
+          likelyNextRoutes = ['/shifts', '/tax-advisor', '/vehicle'];
+          break;
+        case '/shifts':
+          likelyNextRoutes = ['/dashboard', '/tax-advisor'];
+          break;
+        case '/tax-advisor':
+          likelyNextRoutes = ['/dashboard', '/shifts'];
+          break;
+        default:
+          likelyNextRoutes = ['/dashboard'];
+      }
+
+      // Create prefetch links
+      likelyNextRoutes.forEach(route => {
+        const existingLink = document.querySelector(`link[href="${route}"]`);
+        if (!existingLink) {
+          const link = document.createElement('link');
+          link.rel = 'prefetch';
+          link.href = route;
+          document.head.appendChild(link);
+        }
+      });
+    };
+
+    // Delay preloading to avoid blocking current page
+    const timer = setTimeout(preloadRoutes, 1000);
     return () => clearTimeout(timer);
   }, [location.pathname]);
 
-  // Add route-specific optimizations
   useEffect(() => {
-    if (isRouteReady) {
-      // Performance mark for route loading
-      if ('performance' in window && 'mark' in performance) {
-        performance.mark(`route-${location.pathname}-ready`);
+    // Clean up old prefetch links
+    const cleanupPrefetchLinks = () => {
+      const prefetchLinks = document.querySelectorAll('link[rel="prefetch"]');
+      if (prefetchLinks.length > 10) {
+        // Remove oldest prefetch links
+        Array.from(prefetchLinks)
+          .slice(0, prefetchLinks.length - 10)
+          .forEach(link => link.remove());
       }
-    }
-  }, [isRouteReady, location.pathname]);
+    };
 
-  return (
-    <div className="route-optimizer">
-      {children}
-    </div>
-  );
+    cleanupPrefetchLinks();
+  }, [location.pathname]);
+
+  return <>{children}</>;
 };
