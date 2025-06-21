@@ -1,335 +1,261 @@
-import React, { useState, useRef, useEffect } from 'react';
+
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Send, Trash2, Languages, Volume2, Mail, ArrowDown, Bot } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { ArrowLeftRight, Volume2, Copy, Trash2, History, Languages, Sparkles } from 'lucide-react';
+import { useAITranslator } from '@/hooks/useAITranslator';
+import { useLanguage } from '@/hooks/useLanguage';
 import { toast } from '@/components/ui/use-toast';
-import { supabase } from '@/integrations/supabase/client';
-import { EmailDialog } from './EmailDialog';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface SimpleAutoTranslatorProps {
   onTextToSpeech?: (text: string, language: string) => void;
 }
 
 const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpeech }) => {
+  const { t } = useLanguage();
+  const { messages, isLoading, currentService, sendMessage, clearConversation, loadHistory } = useAITranslator();
   const [inputText, setInputText] = useState('');
-  const [translatedText, setTranslatedText] = useState('');
-  const [isTranslating, setIsTranslating] = useState(false);
-  const [detectedLanguage, setDetectedLanguage] = useState<string>('');
-  const [showEmailDialog, setShowEmailDialog] = useState(false);
-  const [isSendingEmail, setIsSendingEmail] = useState(false);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [showHistory, setShowHistory] = useState(false);
 
-  // Detect if text is Czech or Polish
-  const detectLanguage = (text: string): 'cs' | 'pl' | 'unknown' => {
-    const czechChars = /[áčďéěíňóřšťúůýž]/i;
-    const polishChars = /[ąćęłńóśźż]/i;
-    
-    if (czechChars.test(text)) {
-      return 'cs';
-    } else if (polishChars.test(text)) {
-      return 'pl';
-    }
-    
-    // Check for common Czech/Polish words
-    const czechWords = /\b(je|jsou|byl|byla|bylo|můj|moje|tento|tato|toto|kde|jak|kdy|proč|ano|ne|děkuji|prosím)\b/i;
-    const polishWords = /\b(jest|są|był|była|było|mój|moja|ten|ta|to|gdzie|jak|kiedy|dlaczego|tak|nie|dziękuję|proszę)\b/i;
-    
-    if (czechWords.test(text)) {
-      return 'cs';
-    } else if (polishWords.test(text)) {
-      return 'pl';
-    }
-    
-    return 'unknown';
-  };
+  useEffect(() => {
+    loadHistory();
+  }, []);
 
-  const translateText = async (text: string) => {
-    if (!text.trim()) return;
-
-    const language = detectLanguage(text);
-    
-    if (language === 'unknown') {
+  const handleTranslate = async () => {
+    if (!inputText.trim()) {
       toast({
         variant: "destructive",
-        title: "Nepodporovaný jazyk",
-        description: "Zadejte prosím text v češtině nebo polštině"
+        title: t('error'),
+        description: t('enterTextToTranslate')
       });
       return;
     }
 
-    setIsTranslating(true);
-    setDetectedLanguage(language === 'cs' ? 'Čeština' : 'Polština');
-
-    try {
-      const { data, error } = await supabase.functions.invoke('ai-translator', {
-        body: {
-          message: `Přelož následující ${language === 'cs' ? 'český' : 'polský'} text do němčiny. Vrať pouze překlad bez dalších komentářů: "${text}"`,
-          conversationHistory: []
-        }
-      });
-
-      if (error) throw error;
-      
-      if (data?.response) {
-        // Extract just the translation from the AI response
-        let translation = data.response;
-        
-        // Remove formatting if present
-        translation = translation.replace(/🔄\s*\*\*Překlad\*\*:\s*/g, '');
-        translation = translation.replace(/^.*?:\s*/g, '');
-        translation = translation.trim();
-        
-        setTranslatedText(translation);
-        
-        toast({
-          title: "Překlad dokončen",
-          description: "Text byl úspěšně přeložen do němčiny"
-        });
-      } else {
-        throw new Error('Nepodařilo se získat překlad');
-      }
-    } catch (error) {
-      console.error('Translation error:', error);
-      toast({
-        variant: "destructive",
-        title: "Chyba překladu",
-        description: "Nepodařilo se přeložit text. Zkuste to prosím znovu."
-      });
-    } finally {
-      setIsTranslating(false);
-    }
+    await sendMessage(inputText);
   };
 
-  const handleTranslate = () => {
-    translateText(inputText);
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleTranslate();
-    }
+  const handleCopy = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast({
+      title: t('success'),
+      description: t('textCopied')
+    });
   };
 
   const handleClear = () => {
     setInputText('');
-    setTranslatedText('');
-    setDetectedLanguage('');
+    clearConversation();
   };
 
-  const handleCopyTranslation = () => {
-    if (!translatedText.trim()) return;
-    
-    navigator.clipboard.writeText(translatedText);
-    toast({
-      title: "Zkopírováno",
-      description: "Překlad byl zkopírován do schránky"
-    });
-  };
-
-  const handleSendEmail = async (email: string) => {
-    if (!translatedText.trim()) return;
-
-    setIsSendingEmail(true);
-    
-    try {
-      const { data, error } = await supabase.functions.invoke('send-translation-email', {
-        body: {
-          email,
-          originalText: inputText,
-          translatedText,
-          sourceLanguage: detectedLanguage,
-          targetLanguage: 'Němčina'
-        }
-      });
-
-      if (error) throw error;
-
-      toast({
-        title: "Email odeslán",
-        description: `Překlad byl odeslán na adresu ${email}`
-      });
-      
-      setShowEmailDialog(false);
-    } catch (error) {
-      console.error('Email sending error:', error);
-      toast({
-        variant: "destructive",
-        title: "Chyba odesílání",
-        description: "Nepodařilo se odeslat email. Zkuste to prosím znovu."
-      });
-    } finally {
-      setIsSendingEmail(false);
+  const handleTextToSpeech = (text: string, lang: string = 'de') => {
+    if (onTextToSpeech) {
+      onTextToSpeech(text, lang);
     }
   };
 
+  const getServiceBadge = () => {
+    switch (currentService) {
+      case 'gemini':
+        return <Badge variant="default" className="bg-green-500"><Sparkles className="w-3 h-3 mr-1" />AI Aktivní</Badge>;
+      case 'google-translate':
+        return <Badge variant="secondary"><Languages className="w-3 h-3 mr-1" />Google Translate</Badge>;
+      default:
+        return <Badge variant="outline">Offline</Badge>;
+    }
+  };
+
+  const latestResponse = messages.length > 0 ? messages[messages.length - 1] : null;
+  const isAIResponse = latestResponse?.role === 'assistant';
+
   return (
-    <>
-      <div className="space-y-6 max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto space-y-6">
+      {/* Service Status */}
+      <div className="flex justify-between items-center">
+        <div className="flex items-center gap-2">
+          {getServiceBadge()}
+        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setShowHistory(!showHistory)}
+          className="flex items-center gap-2"
+        >
+          <History className="w-4 h-4" />
+          {t('translationHistory')}
+        </Button>
+      </div>
+
+      {/* Main Translation Interface */}
+      <div className="grid gap-6 md:grid-cols-2">
         {/* Input Section */}
-        <Card className="bg-card/70 backdrop-blur-sm border-0 shadow-xl">
-          <CardHeader className="pb-4">
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Languages className="h-5 w-5 text-primary" />
-              Zadejte text k překladu
-              {detectedLanguage && (
-                <Badge variant="outline" className="ml-auto text-xs">
-                  Rozpoznáno: {detectedLanguage}
-                </Badge>
-              )}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Languages className="w-5 h-5" />
+              {t('enterText')}
             </CardTitle>
           </CardHeader>
-          
           <CardContent className="space-y-4">
             <Textarea
-              ref={textareaRef}
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Napište text v češtině nebo polštině..."
-              className="min-h-[120px] resize-none bg-background/50 border-border/50"
-              disabled={isTranslating}
+              placeholder={`${t('enterText')}...`}
+              className="min-h-32 resize-none"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && e.ctrlKey) {
+                  handleTranslate();
+                }
+              }}
             />
             <div className="flex gap-2">
-              <Button
-                onClick={handleTranslate}
-                disabled={!inputText.trim() || isTranslating}
+              <Button 
+                onClick={handleTranslate} 
+                disabled={isLoading || !inputText.trim()}
                 className="flex-1"
-                size="lg"
               >
-                <Send className="h-4 w-4 mr-2" />
-                {isTranslating ? 'Překládám...' : 'Přeložit do němčiny'}
+                {isLoading ? t('translating') : t('translate')}
               </Button>
-              {onTextToSpeech && inputText.trim() && (
-                <Button
-                  variant="outline"
-                  size="lg"
-                  onClick={() => onTextToSpeech(inputText, detectedLanguage === 'Čeština' ? 'cs' : 'pl')}
-                  className="bg-background/50"
-                >
-                  <Volume2 className="h-4 w-4" />
-                </Button>
-              )}
+              <Button variant="outline" size="icon" onClick={handleClear}>
+                <Trash2 className="w-4 h-4" />
+              </Button>
             </div>
           </CardContent>
         </Card>
 
-        {/* Arrow indicator */}
-        {(translatedText || isTranslating) && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3 }}
-            className="flex justify-center"
-          >
-            <div className="p-2 rounded-full bg-primary/10 backdrop-blur-sm">
-              <ArrowDown className="h-5 w-5 text-primary" />
-            </div>
-          </motion.div>
-        )}
-
         {/* Output Section */}
-        {(translatedText || isTranslating) && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <ArrowLeftRight className="w-5 h-5" />
+              {t('translatedText')}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="min-h-32 p-4 bg-muted rounded-md border">
+              <AnimatePresence mode="wait">
+                {isLoading ? (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="flex items-center justify-center h-24"
+                  >
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                    <span className="ml-2 text-sm text-muted-foreground">{t('translating')}</span>
+                  </motion.div>
+                ) : isAIResponse ? (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="prose prose-sm max-w-none"
+                  >
+                    <div className="whitespace-pre-wrap">{latestResponse.content}</div>
+                  </motion.div>
+                ) : (
+                  <div className="text-muted-foreground text-sm">
+                    {t('translatedText')}...
+                  </div>
+                )}
+              </AnimatePresence>
+            </div>
+            
+            {isAIResponse && (
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => handleCopy(latestResponse.content)}
+                  className="flex items-center gap-2"
+                >
+                  <Copy className="w-4 h-4" />
+                  {t('copyText')}
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => handleTextToSpeech(latestResponse.content, 'de')}
+                  className="flex items-center gap-2"
+                >
+                  <Volume2 className="w-4 h-4" />
+                  {t('playAudio')}
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* History Section */}
+      <AnimatePresence>
+        {showHistory && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
           >
-            <Card className="bg-card/70 backdrop-blur-sm border-0 shadow-xl">
-              <CardHeader className="pb-4">
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <Bot className="h-5 w-5 text-green-600" />
-                  Překlad do němčiny
-                </CardTitle>
-              </CardHeader>
-              
-              <CardContent className="space-y-4">
-                <Textarea
-                  value={isTranslating ? 'Překládám...' : translatedText}
-                  readOnly
-                  className="min-h-[120px] resize-none bg-background/50 border-border/50"
-                  placeholder="Zde se zobrazí překlad..."
-                />
-                
-                {/* Action buttons moved outside textarea */}
-                {translatedText && !isTranslating && (
-                  <div className="flex gap-2 justify-end">
-                    {onTextToSpeech && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => onTextToSpeech(translatedText, 'de')}
-                        className="bg-background/50"
-                      >
-                        <Volume2 className="h-4 w-4 mr-2" />
-                        Přehrát
-                      </Button>
-                    )}
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleCopyTranslation}
-                      className="bg-background/50"
-                    >
-                      Kopírovat
+            <Card>
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                  <CardTitle className="flex items-center gap-2">
+                    <History className="w-5 h-5" />
+                    {t('translationHistory')}
+                  </CardTitle>
+                  {messages.length > 0 && (
+                    <Button variant="outline" size="sm" onClick={clearConversation}>
+                      {t('clearHistory')}
                     </Button>
+                  )}
+                </div>
+              </CardHeader>
+              <CardContent>
+                {messages.length === 0 ? (
+                  <div className="text-center text-muted-foreground py-8">
+                    {t('noHistory')}
+                  </div>
+                ) : (
+                  <div className="space-y-4 max-h-64 overflow-y-auto">
+                    {messages.slice().reverse().map((message, index) => (
+                      <div key={message.id} className="border rounded-lg p-3">
+                        <div className="flex justify-between items-start mb-2">
+                          <Badge variant={message.role === 'user' ? 'default' : 'secondary'}>
+                            {message.role === 'user' ? 'Vstup' : 'Překlad'}
+                          </Badge>
+                          <span className="text-xs text-muted-foreground">
+                            {message.timestamp.toLocaleTimeString()}
+                          </span>
+                        </div>
+                        <div className="text-sm whitespace-pre-wrap">{message.content}</div>
+                        {message.role === 'assistant' && (
+                          <div className="mt-2 flex gap-2">
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => handleCopy(message.content)}
+                            >
+                              <Copy className="w-3 h-3" />
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => handleTextToSpeech(message.content, 'de')}
+                            >
+                              <Volume2 className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    ))}
                   </div>
                 )}
               </CardContent>
             </Card>
           </motion.div>
         )}
-
-        {/* Main action buttons */}
-        {translatedText && !isTranslating && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center"
-          >
-            <Button
-              variant="outline"
-              onClick={() => setShowEmailDialog(true)}
-              disabled={isSendingEmail}
-              className="flex items-center gap-2 bg-card/50 backdrop-blur-sm"
-              size="lg"
-            >
-              <Mail className="h-4 w-4" />
-              Odeslat překlad emailem
-            </Button>
-            
-            <Button
-              variant="outline"
-              onClick={handleClear}
-              disabled={isTranslating}
-              className="flex items-center gap-2 bg-card/50 backdrop-blur-sm"
-              size="lg"
-            >
-              <Trash2 className="h-4 w-4" />
-              Vymazat vše
-            </Button>
-          </motion.div>
-        )}
-
-        {/* Instructions */}
-        <div className="text-xs text-muted-foreground text-center mt-6">
-          <div className="p-4 rounded-lg bg-card/30 backdrop-blur-sm border border-border/30">
-            Stiskněte Enter pro překlad, Shift+Enter pro nový řádek
-          </div>
-        </div>
-      </div>
-
-      <EmailDialog
-        open={showEmailDialog}
-        onOpenChange={setShowEmailDialog}
-        onSendEmail={handleSendEmail}
-        isLoading={isSendingEmail}
-      />
-    </>
+      </AnimatePresence>
+    </div>
   );
 };
 
