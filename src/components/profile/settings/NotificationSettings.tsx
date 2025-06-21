@@ -2,6 +2,7 @@
 import React from "react";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface NotificationSettingsProps {
   emailNotifications: boolean;
@@ -16,14 +17,18 @@ const NotificationSettings = ({
   languageReminders,
   handleInputChange,
 }: NotificationSettingsProps) => {
+  const { t } = useLanguage();
+
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-medium">Nastavení oznámení</h3>
+      <h3 className="text-lg font-medium">{t('notificationSettings') || 'Nastavení oznámení'}</h3>
       
       <div className="flex items-center justify-between">
         <div className="space-y-0.5">
-          <Label htmlFor="emailNotifications">E-mailová oznámení</Label>
-          <p className="text-sm text-muted-foreground">Dostávat důležitá oznámení e-mailem</p>
+          <Label htmlFor="emailNotifications">{t('emailNotifications') || 'E-mailová oznámení'}</Label>
+          <p className="text-sm text-muted-foreground">
+            {t('receiveImportantEmailNotifications') || 'Dostávat důležitá oznámení e-mailem'}
+          </p>
         </div>
         <Switch
           id="emailNotifications"
@@ -34,8 +39,10 @@ const NotificationSettings = ({
       
       <div className="flex items-center justify-between">
         <div className="space-y-0.5">
-          <Label htmlFor="shiftNotifications">Oznámení o směnách</Label>
-          <p className="text-sm text-muted-foreground">Dostávat upozornění o začátku směny</p>
+          <Label htmlFor="shiftNotifications">{t('shiftNotifications') || 'Oznámení o směnách'}</Label>
+          <p className="text-sm text-muted-foreground">
+            {t('receiveShiftStartNotifications') || 'Dostávat upozornění o začátku směny'}
+          </p>
         </div>
         <Switch
           id="shiftNotifications"
@@ -46,8 +53,10 @@ const NotificationSettings = ({
       
       <div className="flex items-center justify-between">
         <div className="space-y-0.5">
-          <Label htmlFor="languageReminders">Jazyková připomenutí</Label>
-          <p className="text-sm text-muted-foreground">Dostávat připomenutí pro učení slovíček</p>
+          <Label htmlFor="languageReminders">{t('languageReminders') || 'Jazyková připomenutí'}</Label>
+          <p className="text-sm text-muted-foreground">
+            {t('receiveVocabularyReminders') || 'Dostávat připomenutí pro učení slovíček'}
+          </p>
         </div>
         <Switch
           id="languageReminders"

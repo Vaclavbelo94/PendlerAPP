@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { RefreshCw, Cloud } from 'lucide-react';
 import { SyncSettings } from '@/hooks/useSyncSettings';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface SyncSettingsCardProps {
   syncSettings: SyncSettings;
@@ -21,6 +22,8 @@ const SyncSettingsCard: React.FC<SyncSettingsCardProps> = ({
   syncLoading,
   formatLastSyncTime
 }) => {
+  const { t } = useLanguage();
+
   const handleManualSync = () => {
     // Trigger manual sync
     console.log('Manual sync triggered');
@@ -31,18 +34,18 @@ const SyncSettingsCard: React.FC<SyncSettingsCardProps> = ({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Cloud className="h-5 w-5" />
-          Synchronizace dat
+          {t('dataSync') || 'Synchronizace dat'}
         </CardTitle>
         <CardDescription>
-          Nastavení synchronizace mezi zařízeními
+          {t('syncSettingsBetweenDevices') || 'Nastavení synchronizace mezi zařízeními'}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label htmlFor="backgroundSync">Synchronizace na pozadí</Label>
+            <Label htmlFor="backgroundSync">{t('backgroundSync') || 'Synchronizace na pozadí'}</Label>
             <p className="text-sm text-muted-foreground">
-              Automaticky synchronizovat data i když aplikace není aktivní
+              {t('autoSyncWhenInactive') || 'Automaticky synchronizovat data i když aplikace není aktivní'}
             </p>
           </div>
           <Switch
@@ -54,9 +57,9 @@ const SyncSettingsCard: React.FC<SyncSettingsCardProps> = ({
 
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label htmlFor="syncNotifications">Oznámení o synchronizaci</Label>
+            <Label htmlFor="syncNotifications">{t('syncNotifications') || 'Oznámení o synchronizaci'}</Label>
             <p className="text-sm text-muted-foreground">
-              Zobrazovat oznámení o stavu synchronizace
+              {t('showSyncStatusNotifications') || 'Zobrazovat oznámení o stavu synchronizace'}
             </p>
           </div>
           <Switch
@@ -68,13 +71,13 @@ const SyncSettingsCard: React.FC<SyncSettingsCardProps> = ({
 
         <div className="flex items-center justify-between p-4 border rounded-lg">
           <div>
-            <p className="font-medium">Poslední synchronizace</p>
+            <p className="font-medium">{t('lastSync') || 'Poslední synchronizace'}</p>
             <p className="text-sm text-muted-foreground">
               {formatLastSyncTime(syncSettings.lastSyncTime)}
             </p>
             <div className="flex items-center gap-2 mt-1">
               <Badge variant="secondary">
-                {syncSettings.enableBackgroundSync ? 'Aktivní' : 'Neaktivní'}
+                {syncSettings.enableBackgroundSync ? (t('active') || 'Aktivní') : (t('inactive') || 'Neaktivní')}
               </Badge>
             </div>
           </div>
@@ -85,7 +88,7 @@ const SyncSettingsCard: React.FC<SyncSettingsCardProps> = ({
             className="gap-2"
           >
             <RefreshCw className={`h-4 w-4 ${syncLoading ? 'animate-spin' : ''}`} />
-            {syncLoading ? 'Synchronizuji...' : 'Synchronizovat'}
+            {syncLoading ? (t('syncing') || 'Synchronizuji...') : (t('synchronize') || 'Synchronizovat')}
           </Button>
         </div>
       </CardContent>

@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { CheckCircle } from "lucide-react";
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface PersonalInfoFormProps {
   displayName: string;
@@ -22,18 +23,20 @@ const PersonalInfoForm = ({
   filledFields,
   handleInputChange,
 }: PersonalInfoFormProps) => {
+  const { t } = useLanguage();
+
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-medium">Osobní údaje</h3>
+      <h3 className="text-lg font-medium">{t('personalInfo') || 'Osobní údaje'}</h3>
       
       <div className="space-y-2 relative">
-        <Label htmlFor="displayName">Zobrazované jméno</Label>
+        <Label htmlFor="displayName">{t('displayName') || 'Zobrazované jméno'}</Label>
         <div className="relative">
           <Input
             id="displayName"
             value={displayName}
             onChange={(e) => handleInputChange('displayName', e.target.value)}
-            placeholder="Zadejte své jméno"
+            placeholder={t('enterYourName') || 'Zadejte své jméno'}
             className={filledFields.displayName ? "pr-10" : ""}
           />
           {filledFields.displayName && (
@@ -43,31 +46,33 @@ const PersonalInfoForm = ({
       </div>
       
       <div className="space-y-2">
-        <Label htmlFor="bio">O mně</Label>
+        <Label htmlFor="bio">{t('aboutMe') || 'O mně'}</Label>
         <div className="relative">
           <Textarea
             id="bio"
             value={bio}
             onChange={(e) => handleInputChange('bio', e.target.value)}
-            placeholder="Napište něco o sobě"
+            placeholder={t('writeSomethingAboutYourself') || 'Napište něco o sobě'}
             className={filledFields.bio ? "pr-10" : ""}
           />
           {filledFields.bio && (
             <CheckCircle className="absolute right-3 top-3 h-5 w-5 text-green-500" />
           )}
         </div>
-        <p className="text-sm text-muted-foreground">Krátký popis, který se zobrazí na vašem profilu</p>
+        <p className="text-sm text-muted-foreground">
+          {t('shortDescriptionForProfile') || 'Krátký popis, který se zobrazí na vašem profilu'}
+        </p>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="location">Bydliště</Label>
+          <Label htmlFor="location">{t('residence') || 'Bydliště'}</Label>
           <div className="relative">
             <Input
               id="location"
               value={location}
               onChange={(e) => handleInputChange('location', e.target.value)}
-              placeholder="Např. Praha, CZ"
+              placeholder={t('locationPlaceholder') || 'Např. Praha, CZ'}
               className={filledFields.location ? "pr-10" : ""}
             />
             {filledFields.location && (
@@ -77,7 +82,7 @@ const PersonalInfoForm = ({
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="website">Webová stránka</Label>
+          <Label htmlFor="website">{t('website') || 'Webová stránka'}</Label>
           <div className="relative">
             <Input
               id="website"
