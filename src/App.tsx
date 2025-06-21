@@ -1,7 +1,6 @@
 
-
-import React, { lazy, Suspense } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import React, { lazy, Suspense, startTransition } from 'react';
+import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { LanguageProvider } from '@/components/providers/LanguageProvider';
 
 // Critical pages - load immediately
@@ -53,6 +52,23 @@ import { Toaster } from './components/ui/toaster';
 
 const queryClient = new QueryClient()
 
+// Enhanced loading fallback
+const AppLoadingFallback = () => (
+  <div className="min-h-screen bg-background flex items-center justify-center">
+    <div className="text-center space-y-4">
+      <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin mx-auto"></div>
+      <p className="text-sm text-muted-foreground">Načítání...</p>
+    </div>
+  </div>
+);
+
+// Safe lazy component wrapper
+const SafeLazyRoute = ({ Component }: { Component: React.ComponentType }) => (
+  <Suspense fallback={<AppLoadingFallback />}>
+    <Component />
+  </Suspense>
+);
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -62,49 +78,51 @@ function App() {
             <AuthProvider>
               <ThemeProvider>
                 <Toaster />
-                <Routes>
-                  <Route path="/" element={<ModernIndex />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
-                  
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/shifts" element={<Shifts />} />
-                  <Route path="/translator" element={<Translator />} />
-                  <Route path="/vehicle" element={<Vehicle />} />
-                  <Route path="/tax-advisor" element={<TaxAdvisor />} />
-                  <Route path="/travel" element={<TravelPlanning />} />
-                  <Route path="/laws" element={<Laws />} />
-                  
-                  {/* Redirect old vocabulary route to translator */}
-                  <Route path="/vocabulary" element={<Navigate to="/translator" replace />} />
-                  
-                  {/* Law detail pages */}
-                  <Route path="/laws/child-benefits" element={<ChildBenefits />} />
-                  <Route path="/laws/employee-protection" element={<EmployeeProtection />} />
-                  <Route path="/laws/health-insurance" element={<HealthInsurance />} />
-                  <Route path="/laws/legal-aid" element={<LegalAid />} />
-                  <Route path="/laws/minimum-holidays" element={<MinimumHolidays />} />
-                  <Route path="/laws/minimum-wage" element={<MinimumWage />} />
-                  <Route path="/laws/parental-allowance" element={<ParentalAllowance />} />
-                  <Route path="/laws/pension-insurance" element={<PensionInsurance />} />
-                  <Route path="/laws/tax-classes" element={<TaxClasses />} />
-                  <Route path="/laws/tax-return" element={<TaxReturn />} />
-                  <Route path="/laws/work-contract" element={<WorkContract />} />
-                  <Route path="/laws/working-hours" element={<WorkingHours />} />
-                  
-                  {/* Legal pages */}
-                  <Route path="/privacy" element={<Privacy />} />
-                  <Route path="/cookies" element={<Cookies />} />
-                  <Route path="/terms" element={<Terms />} />
-                  
-                  <Route path="/settings" element={<Settings />} />
-                  <Route path="/profile" element={<Profile />} />
-                  <Route path="/premium" element={<Premium />} />
-                  <Route path="/pricing" element={<Navigate to="/premium" replace />} />
-                  <Route path="/contact" element={<Contact />} />
-                  <Route path="/faq" element={<FAQ />} />
-                  <Route path="/admin" element={<Admin />} />
-                </Routes>
+                <Suspense fallback={<AppLoadingFallback />}>
+                  <Routes>
+                    <Route path="/" element={<ModernIndex />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                    
+                    <Route path="/dashboard" element={<SafeLazyRoute Component={Dashboard} />} />
+                    <Route path="/shifts" element={<SafeLazyRoute Component={Shifts} />} />
+                    <Route path="/translator" element={<SafeLazyRoute Component={Translator} />} />
+                    <Route path="/vehicle" element={<SafeLazyRoute Component={Vehicle} />} />
+                    <Route path="/tax-advisor" element={<SafeLazyRoute Component={TaxAdvisor} />} />
+                    <Route path="/travel" element={<SafeLazyRoute Component={TravelPlanning} />} />
+                    <Route path="/laws" element={<SafeLazyRoute Component={Laws} />} />
+                    
+                    {/* Redirect old vocabulary route to translator */}
+                    <Route path="/vocabulary" element={<Navigate to="/translator" replace />} />
+                    
+                    {/* Law detail pages */}
+                    <Route path="/laws/child-benefits" element={<SafeLazyRoute Component={ChildBenefits} />} />
+                    <Route path="/laws/employee-protection" element={<SafeLazyRoute Component={EmployeeProtection} />} />
+                    <Route path="/laws/health-insurance" element={<SafeLazyRoute Component={HealthInsurance} />} />
+                    <Route path="/laws/legal-aid" element={<SafeLazyRoute Component={LegalAid} />} />
+                    <Route path="/laws/minimum-holidays" element={<SafeLazyRoute Component={MinimumHolidays} />} />
+                    <Route path="/laws/minimum-wage" element={<SafeLazyRoute Component={MinimumWage} />} />
+                    <Route path="/laws/parental-allowance" element={<SafeLazyRoute Component={ParentalAllowance} />} />
+                    <Route path="/laws/pension-insurance" element={<SafeLazyRoute Component={PensionInsurance} />} />
+                    <Route path="/laws/tax-classes" element={<SafeLazyRoute Component={TaxClasses} />} />
+                    <Route path="/laws/tax-return" element={<SafeLazyRoute Component={TaxReturn} />} />
+                    <Route path="/laws/work-contract" element={<SafeLazyRoute Component={WorkContract} />} />
+                    <Route path="/laws/working-hours" element={<SafeLazyRoute Component={WorkingHours} />} />
+                    
+                    {/* Legal pages */}
+                    <Route path="/privacy" element={<SafeLazyRoute Component={Privacy} />} />
+                    <Route path="/cookies" element={<SafeLazyRoute Component={Cookies} />} />
+                    <Route path="/terms" element={<SafeLazyRoute Component={Terms} />} />
+                    
+                    <Route path="/settings" element={<SafeLazyRoute Component={Settings} />} />
+                    <Route path="/profile" element={<SafeLazyRoute Component={Profile} />} />
+                    <Route path="/premium" element={<SafeLazyRoute Component={Premium} />} />
+                    <Route path="/pricing" element={<Navigate to="/premium" replace />} />
+                    <Route path="/contact" element={<SafeLazyRoute Component={Contact} />} />
+                    <Route path="/faq" element={<SafeLazyRoute Component={FAQ} />} />
+                    <Route path="/admin" element={<SafeLazyRoute Component={Admin} />} />
+                  </Routes>
+                </Suspense>
               </ThemeProvider>
             </AuthProvider>
           </LanguageProvider>
@@ -115,4 +133,3 @@ function App() {
 }
 
 export default App;
-
