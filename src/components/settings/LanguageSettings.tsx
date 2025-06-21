@@ -19,18 +19,18 @@ const LanguageSettings: React.FC = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Globe className="h-5 w-5" />
-          {t('settings') || 'Nastavení'} - {t('preferredLanguage') || 'Preferovaný jazyk'}
+          {t('settings')} - {t('preferredLanguage')}
         </CardTitle>
         <CardDescription>
-          {t('selectLanguage') || 'Vyberte jazyk rozhraní aplikace'}
+          {t('selectLanguage')}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-2 max-w-xs">
-          <Label htmlFor="app-language-select">{t('preferredLanguage') || 'Preferovaný jazyk'}</Label>
+          <Label htmlFor="app-language-select">{t('preferredLanguage')}</Label>
           <Select value={language} onValueChange={handleLanguageChange}>
             <SelectTrigger id="app-language-select" className="w-full">
-              <SelectValue placeholder={t('select') || 'Vybrat'} />
+              <SelectValue placeholder={t('select')} />
             </SelectTrigger>
             <SelectContent>
               {languages.map(lang => (

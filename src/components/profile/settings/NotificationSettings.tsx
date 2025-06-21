@@ -21,13 +21,13 @@ const NotificationSettings = ({
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-medium">{t('notificationSettings') || 'Nastavení oznámení'}</h3>
+      <h3 className="text-lg font-medium">{t('notificationSettings')}</h3>
       
       <div className="flex items-center justify-between">
         <div className="space-y-0.5">
-          <Label htmlFor="emailNotifications">{t('emailNotifications') || 'E-mailová oznámení'}</Label>
+          <Label htmlFor="emailNotifications">{t('emailNotifications')}</Label>
           <p className="text-sm text-muted-foreground">
-            {t('receiveImportantEmailNotifications') || 'Dostávat důležitá oznámení e-mailem'}
+            {t('receiveImportantEmailNotifications')}
           </p>
         </div>
         <Switch
@@ -39,9 +39,9 @@ const NotificationSettings = ({
       
       <div className="flex items-center justify-between">
         <div className="space-y-0.5">
-          <Label htmlFor="shiftNotifications">{t('shiftNotifications') || 'Oznámení o směnách'}</Label>
+          <Label htmlFor="shiftNotifications">{t('shiftNotifications')}</Label>
           <p className="text-sm text-muted-foreground">
-            {t('receiveShiftStartNotifications') || 'Dostávat upozornění o začátku směny'}
+            {t('receiveShiftStartNotifications')}
           </p>
         </div>
         <Switch
@@ -53,9 +53,9 @@ const NotificationSettings = ({
       
       <div className="flex items-center justify-between">
         <div className="space-y-0.5">
-          <Label htmlFor="languageReminders">{t('languageReminders') || 'Jazyková připomenutí'}</Label>
+          <Label htmlFor="languageReminders">{t('languageReminders')}</Label>
           <p className="text-sm text-muted-foreground">
-            {t('receiveVocabularyReminders') || 'Dostávat připomenutí pro učení slovíček'}
+            {t('receiveVocabularyReminders')}
           </p>
         </div>
         <Switch

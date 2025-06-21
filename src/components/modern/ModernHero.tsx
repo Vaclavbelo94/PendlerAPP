@@ -8,22 +8,22 @@ import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/hooks/useLanguage';
 
-const features = [
-  { icon: Briefcase, key: 'shifts', route: '/shifts' },
-  { icon: Map, key: 'travel', route: '/travel' },
-  { icon: Car, key: 'vehicle', route: '/vehicle' },
-  { icon: Globe, key: 'translator', route: '/translator' },
-];
-
-const stats = [
-  { icon: Users, value: '15,000+', labelKey: 'activeUsers' },
-  { icon: TrendingUp, value: '200,000+', labelKey: 'shiftsManaged' },
-  { icon: Globe, value: '3', labelKey: 'countries' },
-];
-
-export const ModernHero: React.FC = () => {
+const ModernHero: React.FC = () => {
   const { user } = useAuth();
   const { t } = useLanguage();
+
+  const features = [
+    { icon: Briefcase, key: 'shifts', route: '/shifts' },
+    { icon: Map, key: 'travel', route: '/travel' },
+    { icon: Car, key: 'vehicle', route: '/vehicle' },
+    { icon: Globe, key: 'translator', route: '/translator' },
+  ];
+
+  const stats = [
+    { icon: Users, value: '15,000+', labelKey: 'activeUsers' },
+    { icon: TrendingUp, value: '200,000+', labelKey: 'shiftsManaged' },
+    { icon: Globe, value: '3', labelKey: 'countries' },
+  ];
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-background via-background/95 to-primary/5">
@@ -43,7 +43,7 @@ export const ModernHero: React.FC = () => {
           >
             <span className="inline-flex items-center px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
               <span className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
-              {t('heroSubtitle') || 'Komplexní řešení pro pendlery'}
+              {t('heroSubtitle')}
             </span>
           </motion.div>
 
@@ -54,7 +54,7 @@ export const ModernHero: React.FC = () => {
             className="text-5xl lg:text-7xl font-bold mb-6 leading-tight"
           >
             <span className="bg-gradient-to-r from-primary via-blue-600 to-purple-600 bg-clip-text text-transparent">
-              {t('heroTitle') || 'PendlerApp'}
+              {t('heroTitle')}
             </span>
           </motion.h1>
 
@@ -64,7 +64,7 @@ export const ModernHero: React.FC = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-xl lg:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed"
           >
-            {t('heroDescription') || 'Vše co potřebujete pro efektivní plánování směn, správu vozidel, daňové optimalizace a komunikaci v jedné aplikaci.'}
+            {t('heroDescription')}
           </motion.p>
 
           <motion.div
@@ -76,7 +76,7 @@ export const ModernHero: React.FC = () => {
             {user ? (
               <Button size="lg" className="text-lg px-8 py-4 h-auto group" asChild>
                 <Link to="/dashboard">
-                  {t('dashboard') || 'Dashboard'}
+                  {t('dashboard')}
                   <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </Button>
@@ -84,13 +84,13 @@ export const ModernHero: React.FC = () => {
               <>
                 <Button size="lg" className="text-lg px-8 py-4 h-auto group" asChild>
                   <Link to="/register">
-                    {t('getStarted') || 'Začít nyní'}
+                    {t('getStarted')}
                     <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </Button>
                 <Button size="lg" variant="outline" className="text-lg px-8 py-4 h-auto" asChild>
                   <Link to="/login">
-                    {t('login') || 'Přihlásit se'}
+                    {t('login')}
                   </Link>
                 </Button>
               </>
@@ -111,7 +111,7 @@ export const ModernHero: React.FC = () => {
                     <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-r from-primary/20 to-blue-500/20 mb-4 group-hover:scale-110 transition-transform">
                       <feature.icon className="h-6 w-6 text-primary" />
                     </div>
-                    <div className="text-sm font-medium">{t(feature.key) || feature.key}</div>
+                    <div className="text-sm font-medium">{t(feature.key)}</div>
                   </CardContent>
                 </Card>
               </Link>
@@ -133,7 +133,7 @@ export const ModernHero: React.FC = () => {
                   <stat.icon className="h-6 w-6 text-primary" />
                 </div>
                 <div className="text-2xl font-bold text-foreground mb-1">{stat.value}</div>
-                <div className="text-sm text-muted-foreground">{t(stat.labelKey) || stat.labelKey}</div>
+                <div className="text-sm text-muted-foreground">{t(stat.labelKey)}</div>
               </CardContent>
             </Card>
           ))}
@@ -142,3 +142,5 @@ export const ModernHero: React.FC = () => {
     </section>
   );
 };
+
+export { ModernHero };

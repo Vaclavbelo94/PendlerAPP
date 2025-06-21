@@ -49,8 +49,8 @@ const TextTranslation: React.FC<TextTranslationProps> = ({
     
     navigator.clipboard.writeText(translatedText);
     toast({
-      title: t('copied') || "Zkopírováno",
-      description: t('translationCopied') || "Překlad byl zkopírován do schránky",
+      title: t('copied'),
+      description: t('translationCopied'),
     });
   };
 
@@ -59,10 +59,10 @@ const TextTranslation: React.FC<TextTranslationProps> = ({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Languages className="h-5 w-5" />
-          <span>{t('textTranslation') || 'Překlad textu'}</span>
+          <span>{t('textTranslation')}</span>
         </CardTitle>
         <CardDescription>
-          {t('textTranslationDescription') || 'Přeložte text mezi češtinou, němčinou, angličtinou a dalšími jazyky'}
+          {t('textTranslationDescription')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -98,8 +98,8 @@ const TextTranslation: React.FC<TextTranslationProps> = ({
             <TranslationInput
               value={sourceText}
               onChange={(e) => setSourceText(e.target.value)}
-              label={t('sourceLanguage') || 'Zdrojový jazyk'}
-              placeholder={t('enterTextToTranslate') || 'Zadejte text k překladu...'}
+              label={t('sourceLanguage')}
+              placeholder={t('enterTextToTranslate')}
               onTextToSpeech={() => handleTextToSpeech(sourceText, sourceLanguage)}
               actions={
                 <Button 
@@ -108,7 +108,7 @@ const TextTranslation: React.FC<TextTranslationProps> = ({
                   className="h-6 px-2 text-xs"
                   onClick={() => setSourceText("")}
                 >
-                  {t('clear') || 'Vymazat'}
+                  {t('clear')}
                 </Button>
               }
             />
@@ -118,8 +118,8 @@ const TextTranslation: React.FC<TextTranslationProps> = ({
             <TranslationInput
               value={translatedText}
               onChange={() => {}}
-              label={t('targetLanguage') || 'Cílový jazyk'}
-              placeholder={t('translatedText') || 'Přeložený text...'}
+              label={t('targetLanguage')}
+              placeholder={t('translatedText')}
               readOnly={true}
               className="min-h-[200px] resize-none bg-muted/30"
               onTextToSpeech={() => handleTextToSpeech(translatedText, targetLanguage)}
@@ -132,7 +132,7 @@ const TextTranslation: React.FC<TextTranslationProps> = ({
                   disabled={!translatedText.trim()}
                 >
                   <Copy className="h-3 w-3 mr-1" />
-                  {t('copy') || 'Kopírovat'}
+                  {t('copy')}
                 </Button>
               }
             />
