@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -14,6 +15,7 @@ import {
   Shield
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useLanguage } from "@/hooks/useLanguage";
 
 interface SidebarNavigationProps {
   closeSidebar: () => void;
@@ -24,19 +26,20 @@ const SidebarNavigation = ({ closeSidebar, isHorizontal = false }: SidebarNaviga
   const navigate = useNavigate();
   const location = useLocation();
   const { user, isAdmin } = useAuth();
+  const { t } = useLanguage();
 
   const navigationItems = [
-    { name: "Domů", path: "/", icon: Home, category: "main" },
-    ...(user ? [{ name: "Dashboard", path: "/dashboard", icon: Home, category: "main" }] : []),
-    { name: "Daňový poradce", path: "/tax-advisor", icon: DollarSign, category: "tools" },
-    { name: "Vozidlo", path: "/vehicle", icon: Car, category: "tools" },
-    ...(user ? [{ name: "Směny", path: "/shifts", icon: CalendarDays, category: "work" }] : []),
-    { name: "Lekce němčiny", path: "/vocabulary", icon: GraduationCap, category: "learning" },
-    { name: "Překladač", path: "/translator", icon: Languages, category: "learning" },
-    { name: "Zákony", path: "/laws", icon: Scale, category: "legal" },
-    { name: "Cesty", path: "/travel", icon: MapPin, category: "planning" },
-    { name: "Nastavení", path: "/settings", icon: Settings, category: "system" },
-    ...(isAdmin ? [{ name: "Administrace", path: "/admin", icon: Shield, category: "admin" }] : []),
+    { nameKey: "home", path: "/", icon: Home, category: "main" },
+    ...(user ? [{ nameKey: "dashboard", path: "/dashboard", icon: Home, category: "main" }] : []),
+    { nameKey: "taxAdvisor", path: "/tax-advisor", icon: DollarSign, category: "tools" },
+    { nameKey: "vehicle", path: "/vehicle", icon: Car, category: "tools" },
+    ...(user ? [{ nameKey: "shifts", path: "/shifts", icon: CalendarDays, category: "work" }] : []),
+    { nameKey: "vocabulary", path: "/vocabulary", icon: GraduationCap, category: "learning" },
+    { nameKey: "translator", path: "/translator", icon: Languages, category: "learning" },
+    { nameKey: "laws", path: "/laws", icon: Scale, category: "legal" },
+    { nameKey: "travel", path: "/travel", icon: MapPin, category: "planning" },
+    { nameKey: "settings", path: "/settings", icon: Settings, category: "system" },
+    ...(isAdmin ? [{ nameKey: "admin", path: "/admin", icon: Shield, category: "admin" }] : []),
   ];
 
   const handleNavigation = (path: string) => {
@@ -87,7 +90,7 @@ const SidebarNavigation = ({ closeSidebar, isHorizontal = false }: SidebarNaviga
               <Icon className={`h-4 w-4 mb-1 flex-shrink-0 transition-all duration-300 ${
                 active ? "animate-pulse" : "group-hover:rotate-6"
               }`} />
-              <span className="text-center break-words max-w-full leading-3 font-medium">{item.name}</span>
+              <span className="text-center break-words max-w-full leading-3 font-medium">{t(item.nameKey)}</span>
               {active && (
                 <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded-md pointer-events-none" />
               )}
@@ -121,7 +124,7 @@ const SidebarNavigation = ({ closeSidebar, isHorizontal = false }: SidebarNaviga
             <Icon className={`h-4 w-4 mr-3 transition-all duration-300 ${
               active ? "animate-pulse" : "group-hover:rotate-6 group-hover:scale-110"
             }`} />
-            <span className="font-medium">{item.name}</span>
+            <span className="font-medium">{t(item.nameKey)}</span>
             {active && (
               <>
                 <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent rounded-md pointer-events-none" />

@@ -35,7 +35,7 @@ export const ModernNavbar: React.FC = () => {
       )}
       onClick={() => mobile && setIsOpen(false)}
     >
-      {t(item.key) || item.key}
+      {t(item.key)}
     </Link>
   );
 
@@ -62,23 +62,23 @@ export const ModernNavbar: React.FC = () => {
             <div className="hidden md:flex items-center space-x-4">
               <Link to="/profile">
                 <Button variant="ghost" size="sm">
-                  {t('profile') || 'Profil'}
+                  {t('profile')}
                 </Button>
               </Link>
               <Button variant="outline" size="sm" onClick={signOut}>
-                {t('logout') || 'Odhlásit'}
+                {t('logout')}
               </Button>
             </div>
           ) : (
             <div className="hidden md:flex items-center space-x-2">
               <Link to="/login">
                 <Button variant="ghost" size="sm">
-                  {t('login') || 'Přihlásit'}
+                  {t('login')}
                 </Button>
               </Link>
               <Link to="/register">
                 <Button size="sm">
-                  {t('register') || 'Registrovat'}
+                  {t('register')}
                 </Button>
               </Link>
             </div>
@@ -101,7 +101,7 @@ export const ModernNavbar: React.FC = () => {
                     <>
                       <Link to="/profile" onClick={() => setIsOpen(false)}>
                         <Button variant="ghost" className="w-full justify-start">
-                          {t('profile') || 'Profil'}
+                          {t('profile')}
                         </Button>
                       </Link>
                       <Button 
@@ -112,19 +112,19 @@ export const ModernNavbar: React.FC = () => {
                           setIsOpen(false);
                         }}
                       >
-                        {t('logout') || 'Odhlásit'}
+                        {t('logout')}
                       </Button>
                     </>
                   ) : (
                     <>
                       <Link to="/login" onClick={() => setIsOpen(false)}>
                         <Button variant="ghost" className="w-full justify-start">
-                          {t('login') || 'Přihlásit'}
+                          {t('login')}
                         </Button>
                       </Link>
                       <Link to="/register" onClick={() => setIsOpen(false)}>
                         <Button className="w-full justify-start">
-                          {t('register') || 'Registrovat'}
+                          {t('register')}
                         </Button>
                       </Link>
                     </>
