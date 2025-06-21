@@ -2,13 +2,14 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import { ModernHero } from '@/components/modern/ModernHero';
+import { PublicLayout } from '@/components/modern/PublicLayout';
 import { useLanguage } from '@/hooks/useLanguage';
 
 const ModernIndex: React.FC = () => {
   const { t } = useLanguage();
 
   return (
-    <>
+    <PublicLayout>
       <Helmet>
         <title>PendlerApp - {t('heroSubtitle')}</title>
         <meta name="description" content={t('heroDescription')} />
@@ -19,7 +20,7 @@ const ModernIndex: React.FC = () => {
         <link rel="canonical" href="https://pendlerapp.com" />
       </Helmet>
       <ModernHero />
-    </>
+    </PublicLayout>
   );
 };
 

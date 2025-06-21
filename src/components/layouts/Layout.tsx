@@ -1,6 +1,5 @@
 
 import { ReactNode, useState, useEffect } from "react";
-import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
@@ -11,7 +10,7 @@ import { useUnifiedOrientation } from "@/hooks/useUnifiedOrientation";
 import { UnifiedMobileSidebar } from "./sidebar/UnifiedMobileSidebar";
 import { ModernSidebar } from "./sidebar/ModernSidebar";
 import { useLanguage } from "@/hooks/useLanguage";
-import { NavbarRightContent } from "./NavbarPatch";
+import { UnifiedNavbar } from "./UnifiedNavbar";
 
 interface LayoutProps {
   children: ReactNode;
@@ -52,9 +51,9 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
       
       <div className="flex-1 flex flex-col min-w-0 relative">
         <div className="sticky top-0 z-30">
-          <Navbar 
+          <UnifiedNavbar 
             toggleSidebar={() => setSidebarOpen(!sidebarOpen)} 
-            rightContent={<NavbarRightContent />}
+            rightContent={navbarRightContent}
             sidebarOpen={sidebarOpen}
           />
         </div>
@@ -72,9 +71,9 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
   const MobileLandscapeLayout = () => (
     <div className="flex min-h-screen bg-background w-full">
       <div className="flex-1 flex flex-col min-w-0">
-        <Navbar 
+        <UnifiedNavbar 
           toggleSidebar={() => setSidebarOpen(!sidebarOpen)} 
-          rightContent={<NavbarRightContent />}
+          rightContent={navbarRightContent}
           sidebarOpen={sidebarOpen}
         />
         
@@ -111,9 +110,9 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
       
       <div className="flex-1 flex flex-col min-w-0">
         <div className="sticky top-0 z-30">
-          <Navbar 
+          <UnifiedNavbar 
             toggleSidebar={() => setSidebarOpen(!sidebarOpen)} 
-            rightContent={<NavbarRightContent />}
+            rightContent={navbarRightContent}
             sidebarOpen={sidebarOpen}
           />
         </div>
@@ -138,9 +137,9 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
       {/* Main content area */}
       <div className="flex-1 flex flex-col min-w-0 ml-64 transition-all duration-300">
         <div className="sticky top-0 z-30">
-          <Navbar 
+          <UnifiedNavbar 
             toggleSidebar={() => setSidebarOpen(!sidebarOpen)} 
-            rightContent={<NavbarRightContent />}
+            rightContent={navbarRightContent}
             sidebarOpen={false}
           />
         </div>
