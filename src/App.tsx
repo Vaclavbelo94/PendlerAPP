@@ -2,12 +2,7 @@
 
 import React, { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { OptimizedProviderStack } from '@/components/providers/OptimizedProviderStack';
 import { LanguageProvider } from '@/components/providers/LanguageProvider';
-import { ThemeInitializer } from '@/components/theme/ThemeInitializer';
-import { ModernLayout } from '@/components/modern/ModernLayout';
-import SimpleLoadingSpinner from '@/components/loading/SimpleLoadingSpinner';
-import ScrollToTop from '@/components/navigation/ScrollToTop';
 
 // Critical pages - load immediately
 import ModernIndex from '@/pages/ModernIndex';
@@ -60,9 +55,9 @@ const queryClient = new QueryClient()
 
 function App() {
   return (
-    <GlobalPerformanceProvider>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <GlobalPerformanceProvider>
           <LanguageProvider>
             <AuthProvider>
               <ThemeProvider>
@@ -113,9 +108,9 @@ function App() {
               </ThemeProvider>
             </AuthProvider>
           </LanguageProvider>
-        </BrowserRouter>
-      </QueryClientProvider>
-    </GlobalPerformanceProvider>
+        </GlobalPerformanceProvider>
+      </BrowserRouter>
+    </QueryClientProvider>
   );
 }
 
