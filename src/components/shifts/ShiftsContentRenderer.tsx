@@ -9,6 +9,7 @@ import ShiftsExport from './ShiftsExport';
 import BulkOperations from './BulkOperations';
 import { Shift } from '@/hooks/shifts/useOptimizedShiftsManagement';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface ShiftsContentRendererProps {
   activeSection: string;
@@ -25,6 +26,7 @@ const ShiftsContentRenderer: React.FC<ShiftsContentRendererProps> = ({
   onEditShift,
   onDeleteShift
 }) => {
+  const { t } = useLanguage();
   const [selectedShifts, setSelectedShifts] = useState<string[]>([]);
 
   const handleShiftSelect = (shiftId: string) => {
@@ -73,8 +75,8 @@ const ShiftsContentRenderer: React.FC<ShiftsContentRendererProps> = ({
       return (
         <Tabs defaultValue="calendar" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="calendar">Kalendářní pohled</TabsTrigger>
-            <TabsTrigger value="bulk">Hromadné operace</TabsTrigger>
+            <TabsTrigger value="calendar">{t('calendarView') || 'Kalendářní pohled'}</TabsTrigger>
+            <TabsTrigger value="bulk">{t('bulkOperations') || 'Hromadné operace'}</TabsTrigger>
           </TabsList>
           <TabsContent value="calendar" className="mt-6">
             {/* Use the standard optimized calendar for all devices */}
