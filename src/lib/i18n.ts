@@ -1,4 +1,3 @@
-
 export type Language = 'cs' | 'pl' | 'de';
 
 export const languages = [
@@ -18,6 +17,108 @@ export const translations = {
     settings: 'Nastavení',
     language: 'Jazyk',
     logout: 'Odhlásit se',
+    
+    // Vehicle section translations
+    vehicle: 'Vozidla',
+    vehicleDescription: 'Správa vašich vozidel, spotřeby paliva a údržby pro efektivní dojíždění',
+    vehicleOverview: 'Přehled vozidla',
+    vehicleManagement: 'Správa vozidel',
+    addVehicle: 'Přidat vozidlo',
+    editVehicle: 'Upravit vozidlo',
+    deleteVehicle: 'Smazat vozidlo',
+    noVehicles: 'Žádná vozidla',
+    noVehiclesDescription: 'Začněte přidáním svého prvního vozidla a mějte vše pod kontrolou.',
+    addFirstVehicle: 'Přidat první vozidlo',
+    vehicleName: 'Název vozidla',
+    brand: 'Značka',
+    model: 'Model',
+    year: 'Rok výroby',
+    licensePlate: 'SPZ',
+    fuelType: 'Typ paliva',
+    engineSize: 'Objem motoru',
+    power: 'Výkon',
+    color: 'Barva',
+    vin: 'VIN',
+    registrationDate: 'Datum registrace',
+    
+    // Fuel types
+    petrol: 'Benzín',
+    diesel: 'Nafta',
+    electric: 'Elektrické',
+    hybrid: 'Hybrid',
+    lpg: 'LPG',
+    cng: 'CNG',
+    
+    // Fuel consumption
+    fuelConsumption: 'Spotřeba paliva',
+    fuelAndCosts: 'Palivo a náklady',
+    addFuelRecord: 'Přidat tankování',
+    fuelAmount: 'Množství paliva',
+    fuelPrice: 'Cena za litr',
+    totalCost: 'Celková cena',
+    odometer: 'Stav tachometru',
+    fuelStation: 'Čerpací stanice',
+    notes: 'Poznámky',
+    consumption: 'Spotřeba',
+    averageConsumption: 'Průměrná spotřeba',
+    totalDistance: 'Celková vzdálenost',
+    totalFuelCost: 'Celkové náklady na palivo',
+    
+    // Service records
+    serviceRecord: 'Servisní záznamy',
+    maintenance: 'Údržba',
+    maintenanceAndRepairs: 'Údržba a opravy',
+    addServiceRecord: 'Přidat servisní záznam',
+    serviceType: 'Typ servisu',
+    serviceDate: 'Datum servisu',
+    serviceDescription: 'Popis servisu',
+    serviceCost: 'Náklady na servis',
+    serviceProvider: 'Poskytovatel služby',
+    nextService: 'Další servis',
+    serviceHistory: 'Historie servisu',
+    
+    // Service types
+    oilChange: 'Výměna oleje',
+    inspection: 'Technická kontrola',
+    repair: 'Oprava',
+    maintenance: 'Údržba',
+    tire: 'Pneumatiky',
+    brake: 'Brzdy',
+    
+    // Insurance
+    insurance: 'Pojištění',
+    insuranceCompany: 'Pojišťovna',
+    policyNumber: 'Číslo pojistky',
+    insuranceType: 'Typ pojištění',
+    validFrom: 'Platí od',
+    validTo: 'Platí do',
+    premium: 'Pojistné',
+    coverage: 'Krytí',
+    
+    // Documents
+    documents: 'Dokumenty',
+    others: 'Ostatní',
+    documentType: 'Typ dokumentu',
+    documentName: 'Název dokumentu',
+    documentDate: 'Datum dokumentu',
+    uploadDocument: 'Nahrát dokument',
+    
+    // Actions
+    save: 'Uložit',
+    cancel: 'Zrušit',
+    edit: 'Upravit',
+    delete: 'Smazat',
+    view: 'Zobrazit',
+    add: 'Přidat',
+    update: 'Aktualizovat',
+    confirm: 'Potvrdit',
+    close: 'Zavřít',
+    
+    // Messages
+    vehicleSaved: 'Vozidlo bylo úspěšně uloženo',
+    vehicleDeleted: 'Vozidlo bylo úspěšně smazáno',
+    confirmDelete: 'Opravdu chcete smazat toto vozidlo?',
+    deleteConfirmation: 'Tato akce je nevratná a smaže všechny související záznamy.',
     
     // Translator section translations
     aiTranslator: 'AI Překladač',
@@ -107,7 +208,7 @@ export const translations = {
     currentMinimumWage: 'Aktuální minimální mzda',
     whoIsEntitled: 'Kdo má nárok na minimální mzdu',
     exceptions: 'Výjimky z minimální mzdy',
-    practicalInfo: 'Praktické informacje',
+    practicalInfo: 'Praktické informacije',
     complianceControl: 'Kontrola dodržování',
     reportViolations: 'Kde nahlásit porušení',
     
@@ -155,6 +256,107 @@ export const translations = {
     settings: 'Ustawienia',
     language: 'Język',
     logout: 'Wyloguj się',
+    
+    // Vehicle section translations
+    vehicle: 'Pojazdy',
+    vehicleDescription: 'Zarządzanie pojazdami, zużyciem paliwa i konserwacją dla efektywnych dojazdów',
+    vehicleOverview: 'Przegląd pojazdu',
+    vehicleManagement: 'Zarządzanie pojazdami',
+    addVehicle: 'Dodaj pojazd',
+    editVehicle: 'Edytuj pojazd',
+    deleteVehicle: 'Usuń pojazd',
+    noVehicles: 'Brak pojazdów',
+    noVehiclesDescription: 'Zacznij od dodania swojego pierwszego pojazdu i miej wszystko pod kontrolą.',
+    addFirstVehicle: 'Dodaj pierwszy pojazd',
+    vehicleName: 'Nazwa pojazdu',
+    brand: 'Marka',
+    model: 'Model',
+    year: 'Rok produkcji',
+    licensePlate: 'Numer rejestracyjny',
+    fuelType: 'Typ paliwa',
+    engineSize: 'Pojemność silnika',
+    power: 'Moc',
+    color: 'Kolor',
+    vin: 'VIN',
+    registrationDate: 'Data rejestracji',
+    
+    // Fuel types
+    petrol: 'Benzyna',
+    diesel: 'Diesel',
+    electric: 'Elektryczny',
+    hybrid: 'Hybryda',
+    lpg: 'LPG',
+    cng: 'CNG',
+    
+    // Fuel consumption
+    fuelConsumption: 'Zużycie paliwa',
+    fuelAndCosts: 'Paliwo i koszty',
+    addFuelRecord: 'Dodaj tankowanie',
+    fuelAmount: 'Ilość paliwa',
+    fuelPrice: 'Cena za litr',
+    totalCost: 'Całkowity koszt',
+    odometer: 'Stan licznika',
+    fuelStation: 'Stacja paliw',
+    notes: 'Notatki',
+    consumption: 'Zużycie',
+    averageConsumption: 'Średnie zużycie',
+    totalDistance: 'Całkowita odległość',
+    totalFuelCost: 'Całkowite koszty paliwa',
+    
+    // Service records
+    serviceRecord: 'Zapisy serwisowe',
+    maintenance: 'Konserwacja',
+    maintenanceAndRepairs: 'Konserwacja i naprawy',
+    addServiceRecord: 'Dodaj zapis serwisowy',
+    serviceType: 'Typ serwisu',
+    serviceDate: 'Data serwisu',
+    serviceDescription: 'Opis serwisu',
+    serviceCost: 'Koszt serwisu',
+    serviceProvider: 'Dostawca usług',
+    nextService: 'Następny serwis',
+    serviceHistory: 'Historia serwisu',
+    
+    // Service types
+    oilChange: 'Wymiana oleju',
+    inspection: 'Przegląd techniczny',
+    repair: 'Naprawa',
+    tire: 'Opony',
+    brake: 'Hamulce',
+    
+    // Insurance
+    insurance: 'Ubezpieczenie',
+    insuranceCompany: 'Firma ubezpieczeniowa',
+    policyNumber: 'Numer polisy',
+    insuranceType: 'Typ ubezpieczenia',
+    validFrom: 'Ważne od',
+    validTo: 'Ważne do',
+    premium: 'Składka',
+    coverage: 'Zakres',
+    
+    // Documents
+    documents: 'Dokumenty',
+    others: 'Inne',
+    documentType: 'Typ dokumentu',
+    documentName: 'Nazwa dokumentu',
+    documentDate: 'Data dokumentu',
+    uploadDocument: 'Prześlij dokument',
+    
+    // Actions
+    save: 'Zapisz',
+    cancel: 'Anuluj',
+    edit: 'Edytuj',
+    delete: 'Usuń',
+    view: 'Zobacz',
+    add: 'Dodaj',
+    update: 'Aktualizuj',
+    confirm: 'Potwierdź',
+    close: 'Zamknij',
+    
+    // Messages
+    vehicleSaved: 'Pojazd został pomyślnie zapisany',
+    vehicleDeleted: 'Pojazd został pomyślnie usunięty',
+    confirmDelete: 'Czy na pewno chcesz usunąć ten pojazd?',
+    deleteConfirmation: 'Ta akcja jest nieodwracalna i usunie wszystkie powiązane rekordy.',
     
     // Translator section translations
     aiTranslator: 'Tłumacz AI',
@@ -292,6 +494,107 @@ export const translations = {
     settings: 'Einstellungen',
     language: 'Sprache',
     logout: 'Abmelden',
+    
+    // Vehicle section translations
+    vehicle: 'Fahrzeuge',
+    vehicleDescription: 'Verwaltung Ihrer Fahrzeuge, Kraftstoffverbrauch und Wartung für effizientes Pendeln',
+    vehicleOverview: 'Fahrzeugübersicht',
+    vehicleManagement: 'Fahrzeugverwaltung',
+    addVehicle: 'Fahrzeug hinzufügen',
+    editVehicle: 'Fahrzeug bearbeiten',
+    deleteVehicle: 'Fahrzeug löschen',
+    noVehicles: 'Keine Fahrzeuge',
+    noVehiclesDescription: 'Beginnen Sie mit dem Hinzufügen Ihres ersten Fahrzeugs und behalten Sie alles unter Kontrolle.',
+    addFirstVehicle: 'Erstes Fahrzeug hinzufügen',
+    vehicleName: 'Fahrzeugname',
+    brand: 'Marke',
+    model: 'Modell',
+    year: 'Baujahr',
+    licensePlate: 'Kennzeichen',
+    fuelType: 'Kraftstoffart',
+    engineSize: 'Hubraum',
+    power: 'Leistung',
+    color: 'Farbe',
+    vin: 'VIN',
+    registrationDate: 'Zulassungsdatum',
+    
+    // Fuel types
+    petrol: 'Benzin',
+    diesel: 'Diesel',
+    electric: 'Elektrisch',
+    hybrid: 'Hybrid',
+    lpg: 'LPG',
+    cng: 'CNG',
+    
+    // Fuel consumption
+    fuelConsumption: 'Kraftstoffverbrauch',
+    fuelAndCosts: 'Kraftstoff und Kosten',
+    addFuelRecord: 'Tankvorgang hinzufügen',
+    fuelAmount: 'Kraftstoffmenge',
+    fuelPrice: 'Preis pro Liter',
+    totalCost: 'Gesamtkosten',
+    odometer: 'Kilometerstand',
+    fuelStation: 'Tankstelle',
+    notes: 'Notizen',
+    consumption: 'Verbrauch',
+    averageConsumption: 'Durchschnittsverbrauch',
+    totalDistance: 'Gesamtstrecke',
+    totalFuelCost: 'Gesamte Kraftstoffkosten',
+    
+    // Service records
+    serviceRecord: 'Serviceaufzeichnungen',
+    maintenance: 'Wartung',
+    maintenanceAndRepairs: 'Wartung und Reparaturen',
+    addServiceRecord: 'Serviceaufzeichnung hinzufügen',
+    serviceType: 'Servicetyp',
+    serviceDate: 'Servicedatum',
+    serviceDescription: 'Servicebeschreibung',
+    serviceCost: 'Servicekosten',
+    serviceProvider: 'Serviceanbieter',
+    nextService: 'Nächster Service',
+    serviceHistory: 'Servicehistorie',
+    
+    // Service types
+    oilChange: 'Ölwechsel',
+    inspection: 'Technische Überwachung',
+    repair: 'Reparatur',
+    tire: 'Reifen',
+    brake: 'Bremsen',
+    
+    // Insurance
+    insurance: 'Versicherung',
+    insuranceCompany: 'Versicherungsgesellschaft',
+    policyNumber: 'Policennummer',
+    insuranceType: 'Versicherungstyp',
+    validFrom: 'Gültig ab',
+    validTo: 'Gültig bis',
+    premium: 'Prämie',
+    coverage: 'Deckung',
+    
+    // Documents
+    documents: 'Dokumente',
+    others: 'Sonstiges',
+    documentType: 'Dokumenttyp',
+    documentName: 'Dokumentname',
+    documentDate: 'Dokumentdatum',
+    uploadDocument: 'Dokument hochladen',
+    
+    // Actions
+    save: 'Speichern',
+    cancel: 'Abbrechen',
+    edit: 'Bearbeiten',
+    delete: 'Löschen',
+    view: 'Anzeigen',
+    add: 'Hinzufügen',
+    update: 'Aktualisieren',
+    confirm: 'Bestätigen',
+    close: 'Schließen',
+    
+    // Messages
+    vehicleSaved: 'Fahrzeug wurde erfolgreich gespeichert',
+    vehicleDeleted: 'Fahrzeug wurde erfolgreich gelöscht',
+    confirmDelete: 'Möchten Sie dieses Fahrzeug wirklich löschen?',
+    deleteConfirmation: 'Diese Aktion ist unumkehrbar und löscht alle zugehörigen Datensätze.',
     
     // Translator section translations
     aiTranslator: 'KI-Übersetzer',

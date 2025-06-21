@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { VehicleData } from '@/types/vehicle';
 import { UnifiedGrid } from '@/components/layout/UnifiedGrid';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useLanguage } from '@/hooks/useLanguage';
 import VehicleNavigation from './VehicleNavigation';
 import VehicleSelectorOptimized from './VehicleSelectorOptimized';
 import VehicleCarousel from './VehicleCarousel';
@@ -40,6 +41,7 @@ const VehiclePageContent: React.FC<VehiclePageContentProps> = ({
   } = vehicleManagement;
 
   const isMobile = useIsMobile();
+  const { t } = useLanguage();
 
   const renderTabContent = () => {
     if (!selectedVehicle || !selectedVehicleId) return null;
@@ -83,7 +85,7 @@ const VehiclePageContent: React.FC<VehiclePageContentProps> = ({
             className="w-full md:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 transition-all duration-300"
           >
             <Plus className="h-4 w-4" />
-            Přidat vozidlo
+            {t('addVehicle')}
           </Button>
         </motion.div>
       </div>

@@ -11,6 +11,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { VehicleData } from '@/types/vehicle';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface DeleteVehicleDialogProps {
   isOpen: boolean;
@@ -27,27 +28,29 @@ const DeleteVehicleDialog: React.FC<DeleteVehicleDialogProps> = ({
   vehicle,
   isLoading
 }) => {
+  const { t } = useLanguage();
+
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Smazat vozidlo</AlertDialogTitle>
+          <AlertDialogTitle>{t('deleteVehicle')}</AlertDialogTitle>
           <AlertDialogDescription>
-            Opravdu chcete smazat vozidlo{' '}
+            {t('confirmDelete')}{' '}
             <strong>
               {vehicle?.brand} {vehicle?.model} ({vehicle?.license_plate})
             </strong>
-            ? Tato akce je nevratná a smaže všechny související záznamy.
+            ? {t('deleteConfirmation')}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={onClose}>Zrušit</AlertDialogCancel>
+          <AlertDialogCancel onClick={onClose}>{t('cancel')}</AlertDialogCancel>
           <AlertDialogAction 
             onClick={onConfirm}
             disabled={isLoading}
             className="bg-red-600 hover:bg-red-700"
           >
-            {isLoading ? 'Mazání...' : 'Smazat vozidlo'}
+            {isLoading ? `${t('delete')}...` : t('deleteVehicle')}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
