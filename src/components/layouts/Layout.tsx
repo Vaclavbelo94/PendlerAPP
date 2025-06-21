@@ -10,6 +10,7 @@ import { AnimatePresence } from "framer-motion";
 import { useUnifiedOrientation } from "@/hooks/useUnifiedOrientation";
 import { UnifiedMobileSidebar } from "./sidebar/UnifiedMobileSidebar";
 import { ModernSidebar } from "./sidebar/ModernSidebar";
+import { useLanguage } from "@/hooks/useLanguage";
 
 interface LayoutProps {
   children: ReactNode;
@@ -21,6 +22,7 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
   const { user, isAdmin } = useAuth();
+  const { t } = useLanguage();
   
   // Debug logging
   useEffect(() => {

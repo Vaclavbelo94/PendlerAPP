@@ -91,10 +91,10 @@ const BasicSettingsCard: React.FC<BasicSettingsCardProps> = ({
               <SelectValue placeholder={t('selectDefaultPage') || 'Vyberte výchozí stránku'} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="dashboard">{t('dashboard')}</SelectItem>
-              <SelectItem value="shifts">{t('shifts')}</SelectItem>
-              <SelectItem value="vehicles">{t('vehicles')}</SelectItem>
-              <SelectItem value="language">{t('vocabulary')}</SelectItem>
+              <SelectItem value="dashboard">{t('dashboard') || 'Dashboard'}</SelectItem>
+              <SelectItem value="shifts">{t('shifts') || 'Směny'}</SelectItem>
+              <SelectItem value="vehicles">{t('vehicles') || 'Vozidla'}</SelectItem>
+              <SelectItem value="vocabulary">{t('vocabulary') || 'Slovníček'}</SelectItem>
             </SelectContent>
           </Select>
         </div>

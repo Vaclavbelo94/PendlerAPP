@@ -6,16 +6,18 @@ import ShiftNotificationDialog from "@/components/notifications/ShiftNotificatio
 import ScheduleShareDialog from "@/components/sharing/ScheduleShareDialog";
 import LanguageToggle from "@/components/common/LanguageToggle";
 import { useAuth } from "@/hooks/useAuth";
+import { useLanguage } from "@/hooks/useLanguage";
 
 export const NavbarRightContent = () => {
   const { user } = useAuth();
+  const { t } = useLanguage();
 
   return (
     <div className="flex items-center gap-2">
       {/* Language toggle for all users */}
       <LanguageToggle />
       
-      {/* Na mobilních zařízeních se nezobrazí díky úpravě ThemeToggle komponenty */}
+      {/* Theme toggle - hidden on mobile due to component styling */}
       <ThemeToggle />
       
       {user && (
