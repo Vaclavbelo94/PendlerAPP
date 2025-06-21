@@ -1,4 +1,5 @@
 
+
 import React, { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { OptimizedProviderStack } from '@/components/providers/OptimizedProviderStack';
@@ -52,7 +53,7 @@ import {
 } from '@tanstack/react-query'
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from '@/hooks/auth';
-import { ThemeProvider } from '@/components/theme/ThemeProvider';
+import { ThemeProvider } from '@/hooks/useTheme';
 import { Toaster } from './components/ui/toaster';
 
 const queryClient = new QueryClient()
@@ -119,3 +120,4 @@ function App() {
 }
 
 export default App;
+
