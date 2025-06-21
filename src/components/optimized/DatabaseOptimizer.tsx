@@ -25,7 +25,8 @@ export const DatabaseOptimizer: React.FC = () => {
       const pendingRequests = new Map();
 
       window.fetch = async function(input, init) {
-        const key = typeof input === 'string' ? input : input.url;
+        // Extract URL properly from both string and Request objects
+        const key = typeof input === 'string' ? input : (input instanceof Request ? input.url : input.toString());
         
         // Batch similar requests
         if (pendingRequests.has(key)) {

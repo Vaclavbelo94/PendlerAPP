@@ -1,3 +1,4 @@
+
 import React, { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { OptimizedProviderStack } from '@/components/providers/OptimizedProviderStack';
@@ -50,8 +51,8 @@ import {
   QueryClientProvider,
 } from '@tanstack/react-query'
 import { BrowserRouter } from 'react-router-dom';
-import { AuthProvider } from './components/providers/AuthProvider';
-import { ThemeProvider } from './components/theme/ThemeProvider';
+import { AuthProvider } from '@/hooks/auth';
+import { ThemeProvider } from '@/components/theme/ThemeProvider';
 import { Toaster } from './components/ui/toaster';
 
 const queryClient = new QueryClient()
