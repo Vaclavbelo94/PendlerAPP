@@ -10,8 +10,10 @@ import ShiftsContentRenderer from './ShiftsContentRenderer';
 import { ShiftsNavigation } from './ShiftsNavigation';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
+import { useLanguage } from '@/hooks/useLanguage';
 
 const ShiftsMainContainer: React.FC = () => {
+  const { t } = useLanguage();
   const {
     user,
     isInitialized,
@@ -50,7 +52,7 @@ const ShiftsMainContainer: React.FC = () => {
         <Alert>
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
-            Pro správu směn se musíte přihlásit.
+            {t('loginRequired') || 'Pro správu směn se musíte přihlásit.'}
           </AlertDescription>
         </Alert>
       </div>

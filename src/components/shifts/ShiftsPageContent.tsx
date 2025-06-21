@@ -9,6 +9,7 @@ import ShiftsSettings from '@/components/shifts/ShiftsSettings';
 import EmptyShiftsState from '@/components/shifts/EmptyShiftsState';
 import { ErrorBoundaryWithFallback } from '@/components/common/ErrorBoundaryWithFallback';
 import { Shift } from '@/hooks/useShiftsManagement';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface ShiftsPageContentProps {
   activeSection: string;
@@ -27,6 +28,8 @@ const ShiftsPageContent: React.FC<ShiftsPageContentProps> = ({
   onDeleteShift,
   onAddShift
 }) => {
+  const { t } = useLanguage();
+
   const renderSectionContent = () => {
     if (shifts.length === 0 && activeSection === 'calendar') {
       return <EmptyShiftsState onAddShift={onAddShift} />;

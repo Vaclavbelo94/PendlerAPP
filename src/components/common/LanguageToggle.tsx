@@ -28,16 +28,16 @@ const LanguageToggle = () => {
           <span className="hidden md:inline-block">
             {currentLang?.flag} {currentLang?.name}
           </span>
-          <span className="sr-only">{t('settings')}</span>
+          <span className="sr-only">{t('settings') || 'Nastavení'}</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="bg-white dark:bg-gray-800 border shadow-lg z-50">
+      <DropdownMenuContent align="end" className="bg-background border border-border shadow-lg z-50">
         {languages.map((lang) => (
           <DropdownMenuItem
             key={lang.code}
             onClick={() => handleLanguageChange(lang.code as Language)}
             className={`cursor-pointer flex items-center justify-between ${
-              language === lang.code ? 'bg-gray-100 dark:bg-gray-700' : ''
+              language === lang.code ? 'bg-accent' : ''
             }`}
           >
             <div className="flex items-center">

@@ -12,7 +12,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { languages, Language } from '@/lib/i18n';
 
 export const LanguageSelector: React.FC = () => {
-  const { language, setLanguage } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
 
   // Find the current language object from the array
   const currentLanguage = languages.find(lang => lang.code === language);
@@ -29,7 +29,7 @@ export const LanguageSelector: React.FC = () => {
         <Button variant="ghost" size="sm" className="gap-2">
           <Globe className="h-4 w-4" />
           <span className="text-lg">{currentLanguage?.flag || '🇨🇿'}</span>
-          <span className="hidden sm:inline">{currentLanguage?.name || 'Čeština'}</span>
+          <span className="hidden sm:inline">{currentLanguage?.name || t('czech') || 'Čeština'}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="bg-background border border-border">

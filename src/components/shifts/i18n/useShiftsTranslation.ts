@@ -1,10 +1,13 @@
 
 import { useMemo } from 'react';
+import { useLanguage } from '@/hooks/useLanguage';
 import { translations, Language } from './translations';
 
-export const useShiftsTranslation = (language: Language = 'cs') => {
+export const useShiftsTranslation = () => {
+  const { language } = useLanguage();
+  
   const t = useMemo(() => {
-    const lang = translations[language] || translations.cs;
+    const lang = translations[language as Language] || translations.cs;
     
     return (key: string) => {
       const keys = key.split('.');

@@ -6,8 +6,10 @@ import { useSyncSettings } from "@/hooks/useSyncSettings";
 import BasicSettingsCard from './general/BasicSettingsCard';
 import SyncSettingsCard from './general/SyncSettingsCard';
 import SettingsActions from './general/SettingsActions';
+import { useLanguage } from '@/hooks/useLanguage';
 
 const GeneralSettings = () => {
+  const { t } = useLanguage();
   const { settings: syncSettings, saveSettings: updateSyncSettings, isLoading: syncLoading } = useSyncSettings();
   const [autoSave, setAutoSave] = useState(true);
   const [compactMode, setCompactMode] = useState(false);
@@ -42,10 +44,10 @@ const GeneralSettings = () => {
       };
       
       localStorage.setItem('generalSettings', JSON.stringify(generalSettings));
-      toast.success("Obecná nastavení byla uložena");
+      toast.success(t('settingsSaved') || "Obecná nastavení byla uložena");
     } catch (error) {
       console.error('Error saving general settings:', error);
-      toast.error("Chyba při ukládání nastavení");
+      toast.error(t('settingsError') || "Chyba při ukládání nastavení");
     } finally {
       setLoading(false);
     }
@@ -57,15 +59,15 @@ const GeneralSettings = () => {
     setAutoRefresh(true);
     setDefaultView("dashboard");
     localStorage.removeItem('generalSettings');
-    toast.success("Nastavení byla resetována na výchozí hodnoty");
+    toast.success(t('settingsReset') || "Nastavení byla resetována na výchozí hodnoty");
   };
 
   const formatLastSyncTime = (lastSyncTime?: Date | null) => {
-    if (!lastSyncTime) return 'Nikdy';
+    if (!lastSyncTime) return t('never') || 'Nikdy';
     try {
       return lastSyncTime.toLocaleString('cs-CZ');
     } catch (error) {
-      return 'Neznámý';
+      return t('unknown') || 'Neznámý';
     }
   };
 
