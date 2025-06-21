@@ -5,6 +5,7 @@ import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface TaxAdvisorMobileCarouselProps {
   items: Array<{
@@ -21,6 +22,7 @@ export const TaxAdvisorMobileCarousel: React.FC<TaxAdvisorMobileCarouselProps> =
   activeItem,
   onItemChange
 }) => {
+  const { t } = useLanguage();
   const itemIds = items.map(item => item.id);
   const { containerRef, currentIndex, canSwipeLeft, canSwipeRight } = useSwipeNavigation({
     items: itemIds,
@@ -50,6 +52,7 @@ export const TaxAdvisorMobileCarousel: React.FC<TaxAdvisorMobileCarouselProps> =
           size="sm"
           onClick={handlePrevious}
           className="p-2"
+          aria-label={t('previous') || 'Předchozí'}
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
@@ -63,6 +66,7 @@ export const TaxAdvisorMobileCarousel: React.FC<TaxAdvisorMobileCarouselProps> =
           size="sm"
           onClick={handleNext}
           className="p-2"
+          aria-label={t('next') || 'Další'}
         >
           <ChevronRight className="h-4 w-4" />
         </Button>
