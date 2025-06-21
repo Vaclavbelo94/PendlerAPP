@@ -35,8 +35,8 @@ export function ThemeToggle({
     setTheme(theme === 'dark' ? 'light' : 'dark');
   };
   
-  const lightModeLabel = t('switchToLightMode');
-  const darkModeLabel = t('switchToDarkMode');
+  const lightModeLabel = t('switchToLightMode') || 'Přepnout na světlý režim';
+  const darkModeLabel = t('switchToDarkMode') || 'Přepnout na tmavý režim';
   
   const ButtonComponent = (
     <Button
