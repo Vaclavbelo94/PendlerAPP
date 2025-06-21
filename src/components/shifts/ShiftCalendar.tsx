@@ -23,21 +23,20 @@ export const ShiftCalendar = ({
 }: ShiftCalendarProps) => {
   const { t } = useLanguage();
 
-  // Gets modifiers for the calendar to highlight days with shifts
   const getCalendarModifiers = () => {
     if (!shifts.length) return {};
     
     const morningShifts = shifts
       .filter(shift => shift.type === "morning")
-      .map(shift => dateFromDBString(shift.date)); // Convert string to Date
+      .map(shift => dateFromDBString(shift.date));
     
     const afternoonShifts = shifts
       .filter(shift => shift.type === "afternoon")
-      .map(shift => dateFromDBString(shift.date)); // Convert string to Date
+      .map(shift => dateFromDBString(shift.date));
     
     const nightShifts = shifts
       .filter(shift => shift.type === "night")
-      .map(shift => dateFromDBString(shift.date)); // Convert string to Date
+      .map(shift => dateFromDBString(shift.date));
       
     return {
       morning: morningShifts,
@@ -46,7 +45,6 @@ export const ShiftCalendar = ({
     };
   };
   
-  // Gets styles for different shift types in the calendar
   const getCalendarModifiersStyles = () => {
     return {
       morning: { backgroundColor: "#3b82f6", color: "#ffffff", fontWeight: "bold" },

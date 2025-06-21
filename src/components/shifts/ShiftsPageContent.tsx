@@ -63,7 +63,6 @@ const ShiftsPageContent: React.FC<ShiftsPageContentProps> = ({
 
   return (
     <ErrorBoundaryWithFallback>
-      {/* Navigation */}
       <div className="mb-6">
         <ShiftsNavigation
           activeSection={activeSection}
@@ -71,7 +70,6 @@ const ShiftsPageContent: React.FC<ShiftsPageContentProps> = ({
         />
       </div>
 
-      {/* Content */}
       <div className="pb-6">
         {renderSectionContent()}
       </div>

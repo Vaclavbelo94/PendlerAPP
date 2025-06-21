@@ -11,7 +11,7 @@ import { motion } from 'framer-motion';
 interface ThemeToggleProps {
   variant?: 'default' | 'outline' | 'secondary' | 'ghost' | 'link';
   size?: 'default' | 'sm' | 'lg' | 'icon';
-  alwaysShow?: boolean; // Show on mobile devices
+  alwaysShow?: boolean;
   className?: string;
 }
 
@@ -25,7 +25,6 @@ export function ThemeToggle({
   const { t } = useLanguage();
   const isMobile = useIsMobile();
   
-  // Don't render if not supposed to show on mobile and we are on mobile
   if (!alwaysShow && isMobile) {
     return null;
   }
@@ -56,7 +55,6 @@ export function ThemeToggle({
     </Button>
   );
 
-  // Na mobilu v dropdown menu nepoužívat tooltip ani motion
   if (alwaysShow && isMobile) {
     return ButtonComponent;
   }

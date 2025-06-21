@@ -6,6 +6,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 import ShiftForm from '@/components/shifts/ShiftForm';
 import { Shift } from '@/hooks/useShiftsManagement';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface ShiftsFormSheetsProps {
   isAddSheetOpen: boolean;
@@ -31,19 +32,19 @@ const ShiftsFormSheets: React.FC<ShiftsFormSheetsProps> = ({
   isSaving
 }) => {
   const isMobile = useIsMobile();
+  const { t } = useLanguage();
 
   return (
     <>
-      {/* Add Shift Sheet */}
       <Sheet open={isAddSheetOpen} onOpenChange={setIsAddSheetOpen}>
         <SheetContent className={cn("overflow-y-auto", isMobile ? "w-full" : "sm:max-w-2xl")}>
           <SheetHeader>
             <SheetTitle className="flex items-center gap-2">
               <Calendar className="h-5 w-5" />
-              Přidat novou směnu
+              {t('addNewShift') || 'Přidat novou směnu'}
             </SheetTitle>
             <SheetDescription>
-              Vyplňte údaje o vaší pracovní směně. Všechna pole označená * jsou povinná.
+              {t('fillShiftDetails') || 'Vyplňte údaje o vaší pracovní směně. Všechna pole označená * jsou povinná.'}
             </SheetDescription>
           </SheetHeader>
           
@@ -57,16 +58,15 @@ const ShiftsFormSheets: React.FC<ShiftsFormSheetsProps> = ({
         </SheetContent>
       </Sheet>
 
-      {/* Edit Shift Sheet */}
       <Sheet open={isEditSheetOpen} onOpenChange={setIsEditSheetOpen}>
         <SheetContent className={cn("overflow-y-auto", isMobile ? "w-full" : "sm:max-w-2xl")}>
           <SheetHeader>
             <SheetTitle className="flex items-center gap-2">
               <Calendar className="h-5 w-5" />
-              Upravit směnu
+              {t('editShift') || 'Upravit směnu'}
             </SheetTitle>
             <SheetDescription>
-              Upravte údaje o vaší pracovní směně.
+              {t('editShiftDetails') || 'Upravte údaje o vaší pracovní směně.'}
             </SheetDescription>
           </SheetHeader>
           

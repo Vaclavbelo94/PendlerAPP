@@ -17,7 +17,6 @@ export const ShiftsHeader = () => {
           <h1 className="text-3xl font-bold tracking-tight">{t('shiftsManagement') || 'Správa směn'}</h1>
         </div>
         
-        {/* Desktop share button */}
         {!isMobile && (
           <ScheduleShareDialog />
         )}
