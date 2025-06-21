@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -43,6 +43,51 @@ export const UnifiedNavbar: React.FC<UnifiedNavbarProps> = ({
   const { t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
+  const navRef = useRef<HTMLElement>(null);
+
+  // Swipe detection for mobile menu
+  useEffect(() => {
+    let startX = 0;
+    let startY = 0;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+    };
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (!e.changedTouches[0]) return;
+      
+      const endX = e.changedTouches[0].clientX;
+      const endY = e.changedTouches[0].clientY;
+      const deltaX = endX - startX;
+      const deltaY = endY - startY;
+
+      // Check if it's a horizontal swipe and started from the left edge
+      if (
+        Math.abs(deltaX) > Math.abs(deltaY) && 
+        Math.abs(deltaX) > 50 && 
+        startX < 50 && 
+        deltaX > 0 && 
+        user &&
+        window.innerWidth <= 768
+      ) {
+        if (toggleSidebar) {
+          toggleSidebar();
+        } else {
+          setIsOpen(true);
+        }
+      }
+    };
+
+    document.addEventListener('touchstart', handleTouchStart, { passive: true });
+    document.addEventListener('touchend', handleTouchEnd, { passive: true });
+
+    return () => {
+      document.removeEventListener('touchstart', handleTouchStart);
+      document.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [toggleSidebar, user]);
 
   const handleSignOut = async () => {
     await signOut();
@@ -64,12 +109,12 @@ export const UnifiedNavbar: React.FC<UnifiedNavbarProps> = ({
   );
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center">
+    <nav ref={navRef} className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-16 items-center px-3 md:px-4">
         {/* Logo */}
-        <Link to="/" className="mr-6 flex items-center space-x-2">
-          <Briefcase className="h-6 w-6 text-primary" />
-          <span className="font-bold text-xl bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
+        <Link to="/" className="mr-4 md:mr-6 flex items-center space-x-2 flex-shrink-0">
+          <Briefcase className="h-5 w-5 md:h-6 md:w-6 text-primary" />
+          <span className="font-bold text-lg md:text-xl bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
             PendlerApp
           </span>
         </Link>
@@ -84,18 +129,24 @@ export const UnifiedNavbar: React.FC<UnifiedNavbarProps> = ({
         )}
 
         {/* Right side content */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-2 md:space-x-4 ml-auto">
           {/* Language Selector - always visible */}
-          <LanguageSelector />
+          <div className="flex-shrink-0">
+            <LanguageSelector />
+          </div>
           
           {/* Right content from props (theme toggle, notifications, etc.) */}
-          {rightContent}
+          {rightContent && (
+            <div className="flex-shrink-0">
+              {rightContent}
+            </div>
+          )}
           
           {user ? (
             /* Authenticated user content */
             <>
               {/* Desktop user menu */}
-              <div className="hidden md:block">
+              <div className="hidden md:block flex-shrink-0">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="relative h-8 w-8 rounded-full">
@@ -151,11 +202,11 @@ export const UnifiedNavbar: React.FC<UnifiedNavbarProps> = ({
               </div>
 
               {/* Mobile hamburger menu for authenticated users */}
-              <div className="md:hidden">
+              <div className="md:hidden flex-shrink-0">
                 <Sheet open={isOpen} onOpenChange={setIsOpen}>
                   <SheetTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                      <Menu className="h-5 w-5" />
+                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                      <Menu className="h-4 w-4" />
                     </Button>
                   </SheetTrigger>
                   <SheetContent>
@@ -207,7 +258,7 @@ export const UnifiedNavbar: React.FC<UnifiedNavbarProps> = ({
             /* Non-authenticated user content */
             <>
               {/* Desktop login/register buttons */}
-              <div className="hidden md:flex items-center space-x-2">
+              <div className="hidden md:flex items-center space-x-2 flex-shrink-0">
                 <Link to="/login">
                   <Button variant="ghost" size="sm">
                     {t('login') || 'Přihlásit'}
@@ -221,11 +272,11 @@ export const UnifiedNavbar: React.FC<UnifiedNavbarProps> = ({
               </div>
 
               {/* Mobile hamburger menu for non-authenticated users */}
-              <div className="md:hidden">
+              <div className="md:hidden flex-shrink-0">
                 <Sheet open={isOpen} onOpenChange={setIsOpen}>
                   <SheetTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                      <Menu className="h-5 w-5" />
+                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                      <Menu className="h-4 w-4" />
                     </Button>
                   </SheetTrigger>
                   <SheetContent side="right" className="w-80">
