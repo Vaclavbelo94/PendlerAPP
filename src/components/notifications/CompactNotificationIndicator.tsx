@@ -11,11 +11,13 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useNotifications } from '@/hooks/useNotifications';
 import { NotificationItem } from './NotificationItem';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useLanguage } from '@/hooks/useLanguage';
 
 export const CompactNotificationIndicator = () => {
   const { notifications, unreadCount, markAllAsRead, clearNotifications } = useNotifications();
   const [open, setOpen] = useState(false);
   const isMobile = useIsMobile();
+  const { t } = useLanguage();
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -37,12 +39,12 @@ export const CompactNotificationIndicator = () => {
               {unreadCount > 9 ? '9+' : unreadCount}
             </span>
           )}
-          <span className="sr-only">Oznámení</span>
+          <span className="sr-only">{t('notifications')}</span>
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80" align="end">
         <div className="flex items-center justify-between mb-2">
-          <h3 className="font-semibold text-sm">Oznámení</h3>
+          <h3 className="font-semibold text-sm">{t('notifications')}</h3>
           <div className="flex gap-1">
             {unreadCount > 0 && (
               <Button 
@@ -51,7 +53,7 @@ export const CompactNotificationIndicator = () => {
                 className="h-6 text-xs px-2"
                 onClick={() => markAllAsRead()}
               >
-                Označit jako přečtené
+                {t('markAsRead')}
               </Button>
             )}
             {notifications.length > 0 && (
@@ -61,7 +63,7 @@ export const CompactNotificationIndicator = () => {
                 className="h-6 text-xs px-2"
                 onClick={() => clearNotifications()}
               >
-                Smazat
+                {t('delete')}
               </Button>
             )}
           </div>
@@ -70,7 +72,7 @@ export const CompactNotificationIndicator = () => {
         <ScrollArea className="h-[300px] pr-4">
           {notifications.length === 0 ? (
             <div className="py-8 text-center text-sm text-muted-foreground">
-              Žádná oznámení
+              {t('noNotifications')}
             </div>
           ) : (
             <div className="space-y-2">

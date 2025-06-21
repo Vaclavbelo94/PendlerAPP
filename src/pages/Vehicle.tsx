@@ -12,7 +12,7 @@ const Vehicle = () => {
     <>
       <Helmet>
         <title>{t('vehicle')} | PendlerApp</title>
-        <meta name="description" content="Správa vozidel, spotřeby a dokumentů" />
+        <meta name="description" content={t('vehicleDescription')} />
       </Helmet>
       
       <OptimizedPremiumCheck featureKey="vehicle_management">

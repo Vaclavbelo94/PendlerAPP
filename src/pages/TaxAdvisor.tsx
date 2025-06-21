@@ -11,7 +11,6 @@ const TaxAdvisor = () => {
   return (
     <PremiumCheck featureKey="tax-advisor">
       <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-secondary/5">
-        {/* Animated background elements */}
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-20 right-10 w-32 h-32 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-full blur-xl animate-pulse" />
           <div className="absolute bottom-20 left-20 w-24 h-24 bg-gradient-to-r from-green-500/20 to-purple-500/20 rounded-full blur-xl animate-pulse delay-1000" />
