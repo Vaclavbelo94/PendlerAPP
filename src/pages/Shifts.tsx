@@ -12,6 +12,8 @@ import ShiftsCalendar from '@/components/shifts/ShiftsCalendar';
 import ShiftsOverview from '@/components/shifts/ShiftsOverview';
 import ShiftsAnalytics from '@/components/shifts/ShiftsAnalytics';
 import { useIsMobile } from '@/hooks/use-mobile';
+import Layout from '@/components/layouts/Layout';
+import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 
 const Shifts: React.FC = () => {
   const { t } = useLanguage();
@@ -32,7 +34,7 @@ const Shifts: React.FC = () => {
   };
 
   return (
-    <>
+    <Layout navbarRightContent={<NavbarRightContent />}>
       <Helmet>
         <title>{t('shifts')} | PendlerApp</title>
         <meta name="description" content="Správa směn a plánování pracovní doby" />
@@ -105,7 +107,7 @@ const Shifts: React.FC = () => {
           </div>
         </DashboardBackground>
       </PremiumCheck>
-    </>
+    </Layout>
   );
 };
 
