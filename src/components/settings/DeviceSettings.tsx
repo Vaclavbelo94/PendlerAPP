@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
@@ -8,8 +9,10 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Smartphone, Wifi, BellRing, Download, HardDrive, Trash2 } from 'lucide-react';
 import { toast } from "sonner";
+import { useLanguage } from '@/hooks/useLanguage';
 
 const DeviceSettings = () => {
+  const { t } = useLanguage();
   const [pushNotifications, setPushNotifications] = useState(true);
   const [offlineMode, setOfflineMode] = useState(false);
   const [autoDownload, setAutoDownload] = useState(true);
@@ -57,10 +60,10 @@ const DeviceSettings = () => {
       };
       
       localStorage.setItem('deviceSettings', JSON.stringify(deviceSettings));
-      toast.success("Nastavení zařízení byla uložena");
+      toast.success(t('deviceSettingsSaved') || "Nastavení zařízení byla uložena");
     } catch (error) {
       console.error('Error saving device settings:', error);
-      toast.error("Chyba při ukládání nastavení");
+      toast.error(t('errorSavingSettings') || "Chyba při ukládání nastavení");
     } finally {
       setLoading(false);
     }
@@ -89,10 +92,10 @@ const DeviceSettings = () => {
       }
       
       setStorageUsed(0);
-      toast.success("Cache byla vymazána");
+      toast.success(t('cacheCleared') || "Cache byla vymazána");
     } catch (error) {
       console.error('Error clearing cache:', error);
-      toast.error("Chyba při mazání cache");
+      toast.error(t('errorClearingCache') || "Chyba při mazání cache");
     } finally {
       setLoading(false);
     }
@@ -100,7 +103,7 @@ const DeviceSettings = () => {
 
   const downloadOfflineData = async () => {
     if (!offlineMode) {
-      toast.info("Nejprve povolte offline režim");
+      toast.info(t('enableOfflineModeFirst') || "Nejprve povolte offline režim");
       return;
     }
     
@@ -108,7 +111,7 @@ const DeviceSettings = () => {
     try {
       // Simulate downloading offline data
       await new Promise(resolve => setTimeout(resolve, 2000));
-      toast.success("Offline data byla stažena");
+      toast.success(t('offlineDataDownloaded') || "Offline data byla stažena");
     } finally {
       setLoading(false);
     }
@@ -120,10 +123,10 @@ const DeviceSettings = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Smartphone className="h-5 w-5" />
-            Nastavení zařízení
+            {t('deviceSettings') || 'Nastavení zařízení'}
           </CardTitle>
           <CardDescription>
-            Konfigurace pro mobilní zařízení a offline režim
+            {t('mobileAndOfflineConfiguration') || 'Konfigurace pro mobilní zařízení a offline režim'}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -131,10 +134,10 @@ const DeviceSettings = () => {
             <div className="space-y-0.5">
               <Label htmlFor="pushNotifications" className="flex items-center gap-2">
                 <BellRing className="h-4 w-4" />
-                Push notifikace
+                {t('pushNotifications') || 'Push notifikace'}
               </Label>
               <p className="text-sm text-muted-foreground">
-                Povoluje zasílání upozornění na zařízení
+                {t('allowNotificationsOnDevice') || 'Povoluje zasílání upozornění na zařízení'}
               </p>
             </div>
             <Switch
@@ -150,10 +153,10 @@ const DeviceSettings = () => {
             <div className="space-y-0.5">
               <Label htmlFor="offlineMode" className="flex items-center gap-2">
                 <Wifi className="h-4 w-4" />
-                Offline režim
+                {t('offlineMode') || 'Offline režim'}
               </Label>
               <p className="text-sm text-muted-foreground">
-                Umožňuje používání aplikace bez internetového připojení
+                {t('useAppWithoutInternet') || 'Umožňuje používání aplikace bez internetového připojení'}
               </p>
             </div>
             <Switch
@@ -169,10 +172,10 @@ const DeviceSettings = () => {
             <div className="space-y-0.5">
               <Label htmlFor="autoDownload" className="flex items-center gap-2">
                 <Download className="h-4 w-4" />
-                Automatické stahování
+                {t('automaticDownload') || 'Automatické stahování'}
               </Label>
               <p className="text-sm text-muted-foreground">
-                Automaticky stahuje obsah pro offline použití
+                {t('autoDownloadForOffline') || 'Automaticky stahuje obsah pro offline použití'}
               </p>
             </div>
             <Switch
@@ -189,10 +192,10 @@ const DeviceSettings = () => {
             <div className="space-y-0.5">
               <Label htmlFor="dataCompression" className="flex items-center gap-2">
                 <HardDrive className="h-4 w-4" />
-                Komprese dat
+                {t('dataCompression') || 'Komprese dat'}
               </Label>
               <p className="text-sm text-muted-foreground">
-                Šetří datový objem kompresí přenášených dat
+                {t('saveDataByCompression') || 'Šetří datový objem kompresí přenášených dat'}
               </p>
             </div>
             <Switch
@@ -206,7 +209,7 @@ const DeviceSettings = () => {
             <>
               <Separator />
               <div className="space-y-3">
-                <Label>Offline data</Label>
+                <Label>{t('offlineData') || 'Offline data'}</Label>
                 <div className="flex gap-2">
                   <Button 
                     onClick={downloadOfflineData} 
@@ -215,10 +218,10 @@ const DeviceSettings = () => {
                     className="gap-2"
                   >
                     <Download className="h-4 w-4" />
-                    {loading ? "Stahuji..." : "Stáhnout offline data"}
+                    {loading ? (t('downloading') || "Stahuji...") : (t('downloadOfflineData') || "Stáhnout offline data")}
                   </Button>
                   <Badge variant="secondary">
-                    {autoDownload ? "Auto-sync zapnutý" : "Ruční režim"}
+                    {autoDownload ? (t('autoSyncEnabled') || "Auto-sync zapnutý") : (t('manualMode') || "Ruční režim")}
                   </Badge>
                 </div>
               </div>
@@ -229,20 +232,20 @@ const DeviceSettings = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle>Úložiště a cache</CardTitle>
+          <CardTitle>{t('storageAndCache') || 'Úložiště a cache'}</CardTitle>
           <CardDescription>
-            Správa místního úložiště aplikace
+            {t('localStorageManagement') || 'Správa místního úložiště aplikace'}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Použité úložiště</span>
+              <span className="text-sm font-medium">{t('usedStorage') || 'Použité úložiště'}</span>
               <span className="text-sm text-muted-foreground">{storageUsed} KB</span>
             </div>
             <Progress value={Math.min((storageUsed / 1000) * 100, 100)} className="h-2" />
             <p className="text-xs text-muted-foreground">
-              Doporučeno vymazat cache při dosažení 500 KB
+              {t('recommendClearAt500KB') || 'Doporučeno vymazat cache při dosažení 500 KB'}
             </p>
           </div>
 
@@ -254,12 +257,12 @@ const DeviceSettings = () => {
               className="gap-2"
             >
               <Trash2 className="h-4 w-4" />
-              {loading ? "Mažu..." : "Vymazat cache"}
+              {loading ? (t('clearing') || "Mažu...") : (t('clearCache') || "Vymazat cache")}
             </Button>
             
             {storageUsed > 500 && (
               <Badge variant="destructive" className="ml-auto">
-                Doporučeno vymazat
+                {t('recommendedToClear') || 'Doporučeno vymazat'}
               </Badge>
             )}
           </div>
@@ -268,7 +271,7 @@ const DeviceSettings = () => {
 
       <div className="flex gap-3">
         <Button onClick={handleSaveSettings} disabled={loading}>
-          {loading ? "Ukládám..." : "Uložit nastavení"}
+          {loading ? (t('saving') || "Ukládám...") : (t('saveSettings') || "Uložit nastavení")}
         </Button>
       </div>
     </div>

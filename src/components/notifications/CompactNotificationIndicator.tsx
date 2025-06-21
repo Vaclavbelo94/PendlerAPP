@@ -39,12 +39,12 @@ export const CompactNotificationIndicator = () => {
               {unreadCount > 9 ? '9+' : unreadCount}
             </span>
           )}
-          <span className="sr-only">{t('notifications')}</span>
+          <span className="sr-only">{t('notifications') || 'Notifikace'}</span>
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80" align="end">
         <div className="flex items-center justify-between mb-2">
-          <h3 className="font-semibold text-sm">{t('notifications')}</h3>
+          <h3 className="font-semibold text-sm">{t('notifications') || 'Notifikace'}</h3>
           <div className="flex gap-1">
             {unreadCount > 0 && (
               <Button 
@@ -53,7 +53,7 @@ export const CompactNotificationIndicator = () => {
                 className="h-6 text-xs px-2"
                 onClick={() => markAllAsRead()}
               >
-                {t('markAsRead')}
+                {t('markAsRead') || 'Označit jako přečtené'}
               </Button>
             )}
             {notifications.length > 0 && (
@@ -63,7 +63,7 @@ export const CompactNotificationIndicator = () => {
                 className="h-6 text-xs px-2"
                 onClick={() => clearNotifications()}
               >
-                {t('delete')}
+                {t('delete') || 'Smazat'}
               </Button>
             )}
           </div>
@@ -72,7 +72,7 @@ export const CompactNotificationIndicator = () => {
         <ScrollArea className="h-[300px] pr-4">
           {notifications.length === 0 ? (
             <div className="py-8 text-center text-sm text-muted-foreground">
-              {t('noNotifications')}
+              {t('noNotifications') || 'Žádné notifikace'}
             </div>
           ) : (
             <div className="space-y-2">

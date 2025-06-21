@@ -27,16 +27,16 @@ const PersonalInfoForm = ({
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-medium">{t('personalInfo')}</h3>
+      <h3 className="text-lg font-medium">{t('personalInfo') || 'Osobní údaje'}</h3>
       
       <div className="space-y-2 relative">
-        <Label htmlFor="displayName">{t('displayName')}</Label>
+        <Label htmlFor="displayName">{t('displayName') || 'Zobrazované jméno'}</Label>
         <div className="relative">
           <Input
             id="displayName"
             value={displayName}
             onChange={(e) => handleInputChange('displayName', e.target.value)}
-            placeholder={t('enterYourName')}
+            placeholder={t('enterYourName') || 'Zadejte své jméno'}
             className={filledFields.displayName ? "pr-10" : ""}
           />
           {filledFields.displayName && (
@@ -46,13 +46,13 @@ const PersonalInfoForm = ({
       </div>
       
       <div className="space-y-2">
-        <Label htmlFor="bio">{t('aboutMe')}</Label>
+        <Label htmlFor="bio">{t('aboutMe') || 'O mně'}</Label>
         <div className="relative">
           <Textarea
             id="bio"
             value={bio}
             onChange={(e) => handleInputChange('bio', e.target.value)}
-            placeholder={t('writeSomethingAboutYourself')}
+            placeholder={t('writeSomethingAboutYourself') || 'Napište něco o sobě'}
             className={filledFields.bio ? "pr-10" : ""}
           />
           {filledFields.bio && (
@@ -60,19 +60,19 @@ const PersonalInfoForm = ({
           )}
         </div>
         <p className="text-sm text-muted-foreground">
-          {t('shortDescriptionForProfile')}
+          {t('shortDescriptionForProfile') || 'Stručný popis pro váš profil'}
         </p>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="location">{t('residence')}</Label>
+          <Label htmlFor="location">{t('residence') || 'Bydliště'}</Label>
           <div className="relative">
             <Input
               id="location"
               value={location}
               onChange={(e) => handleInputChange('location', e.target.value)}
-              placeholder={t('locationPlaceholder')}
+              placeholder={t('locationPlaceholder') || 'Město, země'}
               className={filledFields.location ? "pr-10" : ""}
             />
             {filledFields.location && (
@@ -82,7 +82,7 @@ const PersonalInfoForm = ({
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="website">{t('website')}</Label>
+          <Label htmlFor="website">{t('website') || 'Webová stránka'}</Label>
           <div className="relative">
             <Input
               id="website"
