@@ -1,16 +1,19 @@
 
 import { Helmet } from "react-helmet";
 import ModernHero from "@/components/home/ModernHero";
+import { useLanguage } from "@/hooks/useLanguage";
 
 const Index = () => {
+  const { t } = useLanguage();
+
   return (
     <>
       <Helmet>
-        <title>PendlerApp - Pomocník pro české pracovníky v Německu</title>
-        <meta name="description" content="Komplexní řešení pro české pracovníky v Německu. Správa směn, výuka němčiny, kalkulačky mezd a vše potřebné pro úspěšnou práci v zahraničí." />
+        <title>PendlerApp - {t('czechWorkersHelper')}</title>
+        <meta name="description" content={t('completeGermanySolution')} />
         <meta name="keywords" content="pendler, německo, práce, směny, němčina, kalkulačka mezd" />
-        <meta property="og:title" content="PendlerApp - Pomocník pro české pracovníky v Německu" />
-        <meta property="og:description" content="Komplexní řešení pro české pracovníky v Německu. Správa směn, výuka němčiny, kalkulačky mezd a vše potřebné pro úspěšnou práci v zahraničí." />
+        <meta property="og:title" content={`PendlerApp - ${t('czechWorkersHelper')}`} />
+        <meta property="og:description" content={t('completeGermanySolution')} />
         <meta property="og:type" content="website" />
         <link rel="canonical" href="https://pendlerapp.com" />
       </Helmet>

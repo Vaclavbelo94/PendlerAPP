@@ -30,10 +30,10 @@ const DashboardOverview: React.FC = () => {
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg font-semibold flex items-center gap-2">
               <Calendar className="h-5 w-5 text-primary" />
-              {t('currentShift') || 'Aktuální směna'}
+              {t('currentShift')}
             </CardTitle>
             <Badge variant={currentShift.status === 'active' ? 'default' : 'secondary'}>
-              {t(currentShift.status) || currentShift.status}
+              {t(currentShift.status)}
             </Badge>
           </div>
         </CardHeader>
@@ -44,7 +44,7 @@ const DashboardOverview: React.FC = () => {
                 <Clock className="h-4 w-4 text-primary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">{t('time') || 'Čas'}</p>
+                <p className="text-sm text-muted-foreground">{t('time')}</p>
                 <p className="font-medium">{currentShift.startTime} - {currentShift.endTime}</p>
               </div>
             </div>
@@ -53,7 +53,7 @@ const DashboardOverview: React.FC = () => {
                 <MapPin className="h-4 w-4 text-primary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">{t('location') || 'Místo'}</p>
+                <p className="text-sm text-muted-foreground">{t('location')}</p>
                 <p className="font-medium">{currentShift.location}</p>
               </div>
             </div>
@@ -62,7 +62,7 @@ const DashboardOverview: React.FC = () => {
                 <TrendingUp className="h-4 w-4 text-primary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">{t('progress') || 'Pokrok'}</p>
+                <p className="text-sm text-muted-foreground">{t('progress')}</p>
                 <p className="font-medium">{Math.round((weeklyStats.hoursWorked / weeklyStats.plannedHours) * 100)}%</p>
               </div>
             </div>
@@ -72,24 +72,24 @@ const DashboardOverview: React.FC = () => {
 
       <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg font-semibold">{t('weeklyOverview') || 'Týdenní přehled'}</CardTitle>
+          <CardTitle className="text-lg font-semibold">{t('weeklyOverview')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">{t('hoursWorked') || 'Odpracované hodiny'}</span>
+              <span className="text-sm text-muted-foreground">{t('hoursWorked')}</span>
               <span className="font-medium">{weeklyStats.hoursWorked}h</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">{t('plannedHours') || 'Plánované hodiny'}</span>
+              <span className="text-sm text-muted-foreground">{t('plannedHours')}</span>
               <span className="font-medium">{weeklyStats.plannedHours}h</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">{t('estimatedEarnings') || 'Odhadované výdělky'}</span>
+              <span className="text-sm text-muted-foreground">{t('estimatedEarnings')}</span>
               <span className="font-medium text-green-600">€{weeklyStats.earnings}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">{t('shiftsCompleted') || 'Dokončené směny'}</span>
+              <span className="text-sm text-muted-foreground">{t('shiftsCompleted')}</span>
               <span className="font-medium">{weeklyStats.shiftsCompleted}</span>
             </div>
           </div>

@@ -20,51 +20,51 @@ const DashboardActions: React.FC = () => {
 
   const quickActions = [
     {
-      title: t('addShift') || 'Přidat směnu',
-      description: t('addShiftDescription') || 'Rychle přidat novou pracovní směnu',
+      title: t('addShift'),
+      description: t('addShiftDescription'),
       icon: Plus,
       href: '/shifts',
       color: 'bg-blue-500 hover:bg-blue-600',
-      badge: t('quick') || 'rychlé',
+      badge: t('quick'),
     },
     {
-      title: t('taxAdvisor') || 'Daňový poradce',
-      description: t('taxAdvisorDescription') || 'Optimalizace daní a Pendler kalkulačka',
+      title: t('taxAdvisor'),
+      description: t('taxAdvisorDescription'),
       icon: FileText,
       href: '/tax-advisor',
       color: 'bg-orange-500 hover:bg-orange-600',
-      badge: t('premium') || 'premium',
+      badge: t('premium'),
     },
     {
-      title: t('translator') || 'Překladač',
-      description: t('translatorDescription') || 'AI asistent pro překlady a komunikaci',
+      title: t('translator'),
+      description: t('translatorDescription'),
       icon: Globe,
       href: '/translator',
       color: 'bg-purple-500 hover:bg-purple-600',
-      badge: t('ai') || 'AI',
+      badge: t('ai'),
     },
     {
-      title: t('vehicle') || 'Vozidlo',
-      description: t('vehicleDescription') || 'Správa vozidel a nákladů',
+      title: t('vehicle'),
+      description: t('vehicleDescription'),
       icon: Car,
       href: '/vehicle',
       color: 'bg-green-500 hover:bg-green-600',
-      badge: t('premium') || 'premium',
+      badge: t('premium'),
     },
   ];
 
   const upcomingShifts = [
     {
-      date: t('tomorrow') || 'zítra',
+      date: t('tomorrow'),
       time: '07:00 - 15:00',
       location: 'Berlin, DE',
-      type: t('regular') || 'standardní',
+      type: t('regular'),
     },
     {
-      date: t('friday') || 'pátek',
+      date: t('friday'),
       time: '08:00 - 16:00',
       location: 'München, DE',
-      type: t('overtime') || 'přesčas',
+      type: t('overtime'),
     },
   ];
 
@@ -72,7 +72,7 @@ const DashboardActions: React.FC = () => {
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <Card className="lg:col-span-2 bg-card/50 backdrop-blur-sm border-0 shadow-lg">
         <CardHeader>
-          <CardTitle className="text-xl font-semibold">{t('quickActions') || 'Rychlé akce'}</CardTitle>
+          <CardTitle className="text-xl font-semibold">{t('quickActions')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -94,7 +94,7 @@ const DashboardActions: React.FC = () => {
                     {action.description}
                   </p>
                   <div className="flex items-center text-sm text-primary">
-                    {t('open') || 'otevřít'}
+                    {t('open')}
                     <ArrowRight className="h-3 w-3 ml-1 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
@@ -106,7 +106,7 @@ const DashboardActions: React.FC = () => {
 
       <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
         <CardHeader>
-          <CardTitle className="text-xl font-semibold">{t('upcomingShifts') || 'Nadcházející směny'}</CardTitle>
+          <CardTitle className="text-xl font-semibold">{t('upcomingShifts')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -114,7 +114,7 @@ const DashboardActions: React.FC = () => {
               <div key={index} className="p-3 rounded-lg bg-primary/5 border border-primary/10">
                 <div className="flex items-center justify-between mb-2">
                   <span className="font-medium">{shift.date}</span>
-                  <Badge variant={shift.type === (t('overtime') || 'přesčas') ? 'destructive' : 'default'} className="text-xs">
+                  <Badge variant={shift.type === t('overtime') ? 'destructive' : 'default'} className="text-xs">
                     {shift.type}
                   </Badge>
                 </div>
@@ -130,7 +130,7 @@ const DashboardActions: React.FC = () => {
             ))}
             <Link to="/shifts">
               <Button variant="outline" className="w-full">
-                {t('viewAllShifts') || 'Zobrazit všechny směny'}
+                {t('viewAllShifts')}
                 <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
             </Link>

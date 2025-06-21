@@ -5,15 +5,18 @@ import DHLModernHero from '@/components/home/DHLModernHero';
 import Features from '@/components/home/Features';
 import ModernTestimonials from '@/components/home/ModernTestimonials';
 import CTA from '@/components/home/CTA';
+import { useLanguage } from '@/hooks/useLanguage';
 
 const Home = () => {
+  const { t } = useLanguage();
+
   return (
     <>
       <Helmet>
-        <title>PendlerApp - Profesionální nástroje pro české pendlery</title>
+        <title>PendlerApp - {t('professionalToolsForPendlers')}</title>
         <meta 
           name="description" 
-          content="Komplexní řešení pro české pracovníky v zahraničí. Cestovní kalkulačky, daňové poradenství, překladač a správa směn na jednom místě." 
+          content={t('completeToolsDescription')} 
         />
         <meta name="keywords" content="pendler, czech, germany, austria, work abroad, tax advisor, calculator" />
       </Helmet>

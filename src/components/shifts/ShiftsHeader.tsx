@@ -14,7 +14,7 @@ export const ShiftsHeader = () => {
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-3">
           <CalendarDays className="h-8 w-8 text-primary" />
-          <h1 className="text-3xl font-bold tracking-tight">{t('shiftsManagement') || 'Správa směn'}</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t('shiftsManagement')}</h1>
         </div>
         
         {!isMobile && (
@@ -22,7 +22,7 @@ export const ShiftsHeader = () => {
         )}
       </div>
       <p className="text-muted-foreground">
-        {t('organizeAndTrackShifts') || 'Organizujte a sledujte své pracovní směny'}
+        {t('organizeAndTrackShifts')}
       </p>
     </div>
   );

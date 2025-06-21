@@ -14,10 +14,8 @@ export const NavbarRightContent = () => {
 
   return (
     <div className="flex items-center gap-2">
-      {/* Language toggle for all users */}
       <LanguageToggle />
       
-      {/* Theme toggle - hidden on mobile due to component styling */}
       <ThemeToggle />
       
       {user && (
