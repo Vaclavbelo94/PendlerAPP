@@ -64,15 +64,15 @@ const DataSettings = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
               <div className="p-3 bg-muted rounded-lg">
                 <p className="font-medium">{t('vocabulary') || 'Slovíčka'}</p>
-                <p className="text-muted-foreground">{t('itemsCount', '1,247') || '1,247 položek'}</p>
+                <p className="text-muted-foreground">1,247 {t('items') || 'položek'}</p>
               </div>
               <div className="p-3 bg-muted rounded-lg">
                 <p className="font-medium">{t('shifts') || 'Směny'}</p>
-                <p className="text-muted-foreground">{t('recordsCount', '156') || '156 záznamů'}</p>
+                <p className="text-muted-foreground">156 {t('records') || 'záznamů'}</p>
               </div>
               <div className="p-3 bg-muted rounded-lg">
                 <p className="font-medium">{t('tests') || 'Testy'}</p>
-                <p className="text-muted-foreground">{t('resultsCount', '89') || '89 výsledků'}</p>
+                <p className="text-muted-foreground">89 {t('results') || 'výsledků'}</p>
               </div>
             </div>
           </div>
