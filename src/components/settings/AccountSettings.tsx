@@ -9,27 +9,29 @@ import { Badge } from "@/components/ui/badge";
 import { User, Mail, Key, Trash2, Crown } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from "sonner";
+import { useLanguage } from '@/hooks/useLanguage';
 
 const AccountSettings = () => {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleChangePassword = () => {
     if (newPassword !== confirmPassword) {
-      toast.error("Nová hesla se neshodují");
+      toast.error(t('passwordsDoNotMatch') || "Nová hesla se neshodují");
       return;
     }
     if (newPassword.length < 6) {
-      toast.error("Heslo musí mít alespoň 6 znaků");
+      toast.error(t('passwordMinLength') || "Heslo musí mít alespoň 6 znaků");
       return;
     }
-    toast.success("Heslo bylo úspěšně změněno");
+    toast.success(t('passwordChangedSuccessfully') || "Heslo bylo úspěšně změněno");
   };
 
   const handleDeleteAccount = () => {
-    toast.error("Funkce smazání účtu bude implementována později");
+    toast.error(t('deleteAccountFeatureComingSoon') || "Funkce smazání účtu bude implementována později");
   };
 
   return (
@@ -38,16 +40,16 @@ const AccountSettings = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <User className="h-5 w-5" />
-            Informace o účtu
+            {t('accountInfo') || 'Informace o účtu'}
           </CardTitle>
           <CardDescription>
-            Základní informace o vašem účtu
+            {t('basicAccountInformation') || 'Základní informace o vašem účtu'}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>E-mailová adresa</Label>
+              <Label>{t('emailAddress') || 'E-mailová adresa'}</Label>
               <div className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-muted-foreground" />
                 <span className="text-sm">{user?.email}</span>
@@ -55,11 +57,11 @@ const AccountSettings = () => {
             </div>
             
             <div className="space-y-2">
-              <Label>Typ účtu</Label>
+              <Label>{t('accountType') || 'Typ účtu'}</Label>
               <div className="flex items-center gap-2">
                 <Crown className="h-4 w-4 text-muted-foreground" />
                 <Badge variant="secondary">
-                  Základní účet
+                  {t('basicAccount') || 'Základní účet'}
                 </Badge>
               </div>
             </div>
@@ -68,9 +70,9 @@ const AccountSettings = () => {
           <Separator />
 
           <div className="space-y-2">
-            <Label>Datum registrace</Label>
+            <Label>{t('registrationDate') || 'Datum registrace'}</Label>
             <p className="text-sm text-muted-foreground">
-              {user?.created_at ? new Date(user.created_at).toLocaleDateString('cs-CZ') : 'Neznámé'}
+              {user?.created_at ? new Date(user.created_at).toLocaleDateString('cs-CZ') : (t('unknown') || 'Neznámé')}
             </p>
           </div>
         </CardContent>
@@ -80,43 +82,43 @@ const AccountSettings = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Key className="h-5 w-5" />
-            Změna hesla
+            {t('changePassword') || 'Změna hesla'}
           </CardTitle>
           <CardDescription>
-            Aktualizujte své heslo pro lepší zabezpečení
+            {t('updatePasswordForSecurity') || 'Aktualizujte své heslo pro lepší zabezpečení'}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="currentPassword">Současné heslo</Label>
+            <Label htmlFor="currentPassword">{t('currentPassword') || 'Současné heslo'}</Label>
             <Input
               id="currentPassword"
               type="password"
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
-              placeholder="Zadejte současné heslo"
+              placeholder={t('enterCurrentPassword') || 'Zadejte současné heslo'}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="newPassword">Nové heslo</Label>
+            <Label htmlFor="newPassword">{t('newPassword') || 'Nové heslo'}</Label>
             <Input
               id="newPassword"
               type="password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              placeholder="Zadejte nové heslo (min. 6 znaků)"
+              placeholder={t('enterNewPasswordMin6') || 'Zadejte nové heslo (min. 6 znaků)'}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Potvrďte nové heslo</Label>
+            <Label htmlFor="confirmPassword">{t('confirmNewPassword') || 'Potvrďte nové heslo'}</Label>
             <Input
               id="confirmPassword"
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Zadejte nové heslo znovu"
+              placeholder={t('enterNewPasswordAgain') || 'Zadejte nové heslo znovu'}
             />
           </div>
 
@@ -124,7 +126,7 @@ const AccountSettings = () => {
             onClick={handleChangePassword}
             disabled={!currentPassword || !newPassword || !confirmPassword}
           >
-            Změnit heslo
+            {t('changePassword') || 'Změnit heslo'}
           </Button>
         </CardContent>
       </Card>
@@ -133,10 +135,10 @@ const AccountSettings = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-destructive">
             <Trash2 className="h-5 w-5" />
-            Nebezpečná zóna
+            {t('dangerZone') || 'Nebezpečná zóna'}
           </CardTitle>
           <CardDescription>
-            Tyto akce jsou nevratné. Buďte opatrní.
+            {t('irreversibleActions') || 'Tyto akce jsou nevratné. Buďte opatrní.'}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -146,10 +148,10 @@ const AccountSettings = () => {
             className="w-full"
           >
             <Trash2 className="h-4 w-4 mr-2" />
-            Smazat účet
+            {t('deleteAccount') || 'Smazat účet'}
           </Button>
           <p className="text-xs text-muted-foreground mt-2">
-            Tato akce smaže všechna vaše data a nelze ji vrátit zpět.
+            {t('deleteAccountWarning') || 'Tato akce smaže všechna vaše data a nelze ji vrátit zpět.'}
           </p>
         </CardContent>
       </Card>

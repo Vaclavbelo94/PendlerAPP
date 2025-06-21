@@ -5,28 +5,31 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Database, Download, Upload, Trash2, RefreshCw } from 'lucide-react';
 import { toast } from "sonner";
+import { useLanguage } from '@/hooks/useLanguage';
 
 const DataSettings = () => {
+  const { t } = useLanguage();
+
   const handleExportData = () => {
-    toast.success("Export dat byl zahájen. Soubor bude stažen za chvíli.");
+    toast.success(t('dataExportStarted') || "Export dat byl zahájen. Soubor bude stažen za chvíli.");
   };
 
   const handleImportData = () => {
-    toast.info("Funkce importu dat bude implementována v budoucí verzi");
+    toast.info(t('importFeatureComingSoon') || "Funkce importu dat bude implementována v budoucí verzi");
   };
 
   const handleClearCache = () => {
     localStorage.clear();
     sessionStorage.clear();
-    toast.success("Cache byla vymazána");
+    toast.success(t('cacheCleared') || "Cache byla vymazána");
   };
 
   const handleSyncData = () => {
-    toast.success("Synchronizace dat byla zahájena");
+    toast.success(t('syncStarted') || "Synchronizace dat byla zahájena");
   };
 
   const handleClearAllData = () => {
-    toast.error("Funkce smazání všech dat bude implementována později");
+    toast.error(t('deleteAllDataFeatureComingSoon') || "Funkce smazání všech dat bude implementována později");
   };
 
   return (
@@ -35,41 +38,41 @@ const DataSettings = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Database className="h-5 w-5" />
-            Správa dat
+            {t('dataManagement') || 'Správa dat'}
           </CardTitle>
           <CardDescription>
-            Exportujte, importujte nebo spravujte svá data
+            {t('exportImportManageData') || 'Exportujte, importujte nebo spravujte svá data'}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Button onClick={handleExportData} className="w-full">
               <Download className="h-4 w-4 mr-2" />
-              Exportovat data
+              {t('exportData') || 'Exportovat data'}
             </Button>
             
             <Button onClick={handleImportData} variant="outline" className="w-full">
               <Upload className="h-4 w-4 mr-2" />
-              Importovat data
+              {t('importData') || 'Importovat data'}
             </Button>
           </div>
 
           <Separator />
 
           <div className="space-y-3">
-            <h4 className="font-medium">Statistiky dat</h4>
+            <h4 className="font-medium">{t('dataStatistics') || 'Statistiky dat'}</h4>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
               <div className="p-3 bg-muted rounded-lg">
-                <p className="font-medium">Slovíčka</p>
-                <p className="text-muted-foreground">1,247 položek</p>
+                <p className="font-medium">{t('vocabulary') || 'Slovíčka'}</p>
+                <p className="text-muted-foreground">{t('itemsCount', '1,247') || '1,247 položek'}</p>
               </div>
               <div className="p-3 bg-muted rounded-lg">
-                <p className="font-medium">Směny</p>
-                <p className="text-muted-foreground">156 záznamů</p>
+                <p className="font-medium">{t('shifts') || 'Směny'}</p>
+                <p className="text-muted-foreground">{t('recordsCount', '156') || '156 záznamů'}</p>
               </div>
               <div className="p-3 bg-muted rounded-lg">
-                <p className="font-medium">Testy</p>
-                <p className="text-muted-foreground">89 výsledků</p>
+                <p className="font-medium">{t('tests') || 'Testy'}</p>
+                <p className="text-muted-foreground">{t('resultsCount', '89') || '89 výsledků'}</p>
               </div>
             </div>
           </div>
@@ -80,29 +83,29 @@ const DataSettings = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <RefreshCw className="h-5 w-5" />
-            Synchronizace
+            {t('synchronization') || 'Synchronizace'}
           </CardTitle>
           <CardDescription>
-            Spravujte synchronizaci dat mezi zařízeními
+            {t('manageSyncBetweenDevices') || 'Spravujte synchronizaci dat mezi zařízeními'}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between p-4 border rounded-lg">
             <div>
-              <p className="font-medium">Poslední synchronizace</p>
+              <p className="font-medium">{t('lastSync') || 'Poslední synchronizace'}</p>
               <p className="text-sm text-muted-foreground">
                 {new Date().toLocaleString('cs-CZ')}
               </p>
             </div>
             <Button onClick={handleSyncData} size="sm">
               <RefreshCw className="h-4 w-4 mr-2" />
-              Synchronizovat
+              {t('synchronize') || 'Synchronizovat'}
             </Button>
           </div>
 
           <Button onClick={handleClearCache} variant="outline" className="w-full">
             <Trash2 className="h-4 w-4 mr-2" />
-            Vymazat místní cache
+            {t('clearLocalCache') || 'Vymazat místní cache'}
           </Button>
         </CardContent>
       </Card>
@@ -111,10 +114,10 @@ const DataSettings = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-destructive">
             <Trash2 className="h-5 w-5" />
-            Smazání dat
+            {t('dangerZone') || 'Smazání dat'}
           </CardTitle>
           <CardDescription>
-            Permanentně smažte všechna svá data
+            {t('permanentlyDeleteAllData') || 'Permanentně smažte všechna svá data'}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -124,10 +127,10 @@ const DataSettings = () => {
             className="w-full"
           >
             <Trash2 className="h-4 w-4 mr-2" />
-            Smazat všechna data
+            {t('deleteAllData') || 'Smazat všechna data'}
           </Button>
           <p className="text-xs text-muted-foreground mt-2">
-            Tato akce je nevratná a smaže všechna vaše uložená data.
+            {t('actionIrreversible') || 'Tato akce je nevratná a smaže všechna vaše uložená data.'}
           </p>
         </CardContent>
       </Card>

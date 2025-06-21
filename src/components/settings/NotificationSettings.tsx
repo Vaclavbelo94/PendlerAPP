@@ -12,6 +12,7 @@ import { SyncSettings } from '@/hooks/useSyncSettings';
 import { EmailNotificationSettings } from '@/components/notifications/EmailNotificationSettings';
 import { PushNotificationSettings } from '@/components/notifications/PushNotificationSettings';
 import { useNotifications } from '@/hooks/useNotifications';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface NotificationSettingsProps {
   syncSettings: SyncSettings;
@@ -20,6 +21,7 @@ interface NotificationSettingsProps {
 
 const NotificationSettings = ({ syncSettings, updateSyncSettings }: NotificationSettingsProps) => {
   const { preferences, updatePreferences, loading } = useNotifications();
+  const { t } = useLanguage();
   const [localPreferences, setLocalPreferences] = useState(preferences);
 
   useEffect(() => {
@@ -61,15 +63,15 @@ const NotificationSettings = ({ syncSettings, updateSyncSettings }: Notification
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Calendar className="h-5 w-5" />
-            Oznámení o směnách
+            {t('shiftNotifications') || 'Oznámení o směnách'}
           </CardTitle>
           <CardDescription>
-            Nastavte, kdy chcete být upozorněni na nadcházející směny
+            {t('setShiftNotificationPreferences') || 'Nastavte, kdy chcete být upozorněni na nadcházející směny'}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex items-center justify-between">
-            <Label htmlFor="shift-reminders">Povolit připomínky směn</Label>
+            <Label htmlFor="shift-reminders">{t('enableShiftReminders') || 'Povolit připomínky směn'}</Label>
             <Switch
               id="shift-reminders"
               checked={localPreferences?.shift_reminders || false}
@@ -78,7 +80,7 @@ const NotificationSettings = ({ syncSettings, updateSyncSettings }: Notification
           </div>
           
           <div className="flex items-center justify-between">
-            <Label htmlFor="email-notifications">E-mailová oznámení</Label>
+            <Label htmlFor="email-notifications">{t('emailNotifications') || 'E-mailová oznámení'}</Label>
             <Switch
               id="email-notifications"
               checked={localPreferences?.email_notifications || false}
@@ -87,7 +89,7 @@ const NotificationSettings = ({ syncSettings, updateSyncSettings }: Notification
           </div>
           
           <div className="flex items-center justify-between">
-            <Label htmlFor="weekly-summaries">Týdenní souhrny</Label>
+            <Label htmlFor="weekly-summaries">{t('weeklySummaries') || 'Týdenní souhrny'}</Label>
             <Switch
               id="weekly-summaries"
               checked={localPreferences?.weekly_summaries || false}
@@ -96,7 +98,7 @@ const NotificationSettings = ({ syncSettings, updateSyncSettings }: Notification
           </div>
           
           <div className="flex items-center justify-between">
-            <Label htmlFor="system-updates">Systémová oznámení</Label>
+            <Label htmlFor="system-updates">{t('systemNotifications') || 'Systémová oznámení'}</Label>
             <Switch
               id="system-updates"
               checked={localPreferences?.system_updates || false}
@@ -107,7 +109,7 @@ const NotificationSettings = ({ syncSettings, updateSyncSettings }: Notification
           <div className="space-y-2">
             <Label className="flex items-center gap-2">
               <Clock className="h-4 w-4" />
-              Čas připomínky
+              {t('reminderTime') || 'Čas připomínky'}
             </Label>
             <Select
               value={localPreferences?.reminder_time || '08:00:00'}
@@ -117,46 +119,20 @@ const NotificationSettings = ({ syncSettings, updateSyncSettings }: Notification
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="06:00:00">6:00</SelectItem>
-                <SelectItem value="08:00:00">8:00</SelectItem>
+                <SelectItem value="06:00:00">06:00</SelectItem>
+                <SelectItem value="07:00:00">07:00</SelectItem>
+                <SelectItem value="08:00:00">08:00</SelectItem>
+                <SelectItem value="09:00:00">09:00</SelectItem>
                 <SelectItem value="10:00:00">10:00</SelectItem>
-                <SelectItem value="12:00:00">12:00</SelectItem>
-                <SelectItem value="18:00:00">18:00</SelectItem>
-                <SelectItem value="20:00:00">20:00</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          <Button onClick={handleSavePreferences} className="w-full">
-            Uložit nastavení
-          </Button>
-        </CardContent>
-      </Card>
+          <Separator />
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Bell className="h-5 w-5" />
-            Obecná oznámení
-          </CardTitle>
-          <CardDescription>
-            Základní nastavení notifikací v aplikaci
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="syncNotifications">Oznámení o synchronizaci</Label>
-              <p className="text-sm text-muted-foreground">
-                Zobrazovat stav synchronizace dat
-              </p>
-            </div>
-            <Switch
-              id="syncNotifications"
-              checked={syncSettings.showSyncNotifications}
-              onCheckedChange={(checked) => updateSyncSettings({ showSyncNotifications: checked })}
-            />
-          </div>
+          <Button onClick={handleSavePreferences} className="w-full">
+            {t('savePreferences') || 'Uložit předvolby'}
+          </Button>
         </CardContent>
       </Card>
     </div>
