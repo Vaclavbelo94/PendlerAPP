@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { ArrowRightLeft, Copy, Languages } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
+import { useLanguage } from '@/hooks/useLanguage';
 import LanguageSelector from './components/LanguageSelector';
 import TranslationInput from './components/TranslationInput';
 import TranslationControls from './components/TranslationControls';
@@ -41,13 +42,15 @@ const TextTranslation: React.FC<TextTranslationProps> = ({
   handleTextToSpeech,
   languagePairs
 }) => {
+  const { t } = useLanguage();
+
   const handleCopyTranslation = () => {
     if (!translatedText.trim()) return;
     
     navigator.clipboard.writeText(translatedText);
     toast({
-      title: "Zkopírováno",
-      description: "Překlad byl zkopírován do schránky",
+      title: t('copied') || "Zkopírováno",
+      description: t('translationCopied') || "Překlad byl zkopírován do schránky",
     });
   };
 
@@ -56,10 +59,10 @@ const TextTranslation: React.FC<TextTranslationProps> = ({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Languages className="h-5 w-5" />
-          <span>Překlad textu</span>
+          <span>{t('textTranslation') || 'Překlad textu'}</span>
         </CardTitle>
         <CardDescription>
-          Přeložte text mezi češtinou, němčinou, angličtinou a dalšími jazyky
+          {t('textTranslationDescription') || 'Přeložte text mezi češtinou, němčinou, angličtinou a dalšími jazyky'}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -95,8 +98,8 @@ const TextTranslation: React.FC<TextTranslationProps> = ({
             <TranslationInput
               value={sourceText}
               onChange={(e) => setSourceText(e.target.value)}
-              label="Zdrojový jazyk"
-              placeholder="Zadejte text k překladu..."
+              label={t('sourceLanguage') || 'Zdrojový jazyk'}
+              placeholder={t('enterTextToTranslate') || 'Zadejte text k překladu...'}
               onTextToSpeech={() => handleTextToSpeech(sourceText, sourceLanguage)}
               actions={
                 <Button 
@@ -105,7 +108,7 @@ const TextTranslation: React.FC<TextTranslationProps> = ({
                   className="h-6 px-2 text-xs"
                   onClick={() => setSourceText("")}
                 >
-                  Vymazat
+                  {t('clear') || 'Vymazat'}
                 </Button>
               }
             />
@@ -115,8 +118,8 @@ const TextTranslation: React.FC<TextTranslationProps> = ({
             <TranslationInput
               value={translatedText}
               onChange={() => {}}
-              label="Cílový jazyk"
-              placeholder="Přeložený text..."
+              label={t('targetLanguage') || 'Cílový jazyk'}
+              placeholder={t('translatedText') || 'Přeložený text...'}
               readOnly={true}
               className="min-h-[200px] resize-none bg-muted/30"
               onTextToSpeech={() => handleTextToSpeech(translatedText, targetLanguage)}
@@ -129,7 +132,7 @@ const TextTranslation: React.FC<TextTranslationProps> = ({
                   disabled={!translatedText.trim()}
                 >
                   <Copy className="h-3 w-3 mr-1" />
-                  Kopírovat
+                  {t('copy') || 'Kopírovat'}
                 </Button>
               }
             />

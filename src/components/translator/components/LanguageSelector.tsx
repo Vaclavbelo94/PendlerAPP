@@ -1,6 +1,7 @@
 
 import React from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface LanguageSelectorProps {
   value: string;
@@ -17,10 +18,12 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
   languages,
   label
 }) => {
+  const { t } = useLanguage();
+
   return (
     <Select value={value} onValueChange={onValueChange}>
       <SelectTrigger id={id}>
-        <SelectValue placeholder={label || "Vyberte jazyk"} />
+        <SelectValue placeholder={label || t('selectLanguage') || "Vyberte jazyk"} />
       </SelectTrigger>
       <SelectContent>
         {languages.map((lang) => (

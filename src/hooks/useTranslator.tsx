@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { toast } from '@/components/ui/use-toast';
+import { useLanguage } from '@/hooks/useLanguage';
 import { translateText } from '@/services/translationAPI';
 
 export interface TranslationHistoryItem {
@@ -13,6 +14,7 @@ export interface TranslationHistoryItem {
 }
 
 export const useTranslator = () => {
+  const { t } = useLanguage();
   const [sourceText, setSourceText] = useState("");
   const [translatedText, setTranslatedText] = useState("");
   const [sourceLanguage, setSourceLanguage] = useState("cs");
@@ -55,8 +57,8 @@ export const useTranslator = () => {
     if (!sourceText.trim()) {
       toast({
         variant: "destructive",
-        title: "Chyba",
-        description: "Zadejte text k překladu"
+        title: t('error') || "Chyba",
+        description: t('enterTextToTranslate') || "Zadejte text k překladu"
       });
       return;
     }
@@ -85,8 +87,8 @@ export const useTranslator = () => {
       console.error('Chyba při překladu:', error);
       toast({
         variant: "destructive",
-        title: "Chyba",
-        description: "Došlo k chybě při překladu"
+        title: t('error') || "Chyba",
+        description: t('translationError') || "Došlo k chybě při překladu"
       });
     } finally {
       setIsTranslating(false);
@@ -110,8 +112,8 @@ export const useTranslator = () => {
     } else {
       toast({
         variant: "destructive",
-        title: "Chyba",
-        description: "Váš prohlížeč nepodporuje převod textu na řeč"
+        title: t('error') || "Chyba",
+        description: t('speechNotSupported') || "Váš prohlížeč nepodporuje převod textu na řeč"
       });
     }
   };
@@ -127,8 +129,8 @@ export const useTranslator = () => {
     setHistory([]);
     localStorage.removeItem('translationHistory');
     toast({
-      title: "Historie vymazána",
-      description: "Historie překladů byla vymazána"
+      title: t('historyCleared') || "Historie vymazána",
+      description: t('translationHistoryCleared') || "Historie překladů byla vymazána"
     });
   };
 
