@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useTheme } from '@/hooks/useTheme';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useLanguage } from '@/hooks/useLanguage';
 import { motion } from 'framer-motion';
 
 interface ThemeToggleProps {
@@ -21,6 +22,7 @@ export function ThemeToggle({
   className
 }: ThemeToggleProps) {
   const { theme, setTheme, isChangingTheme } = useTheme();
+  const { t } = useLanguage();
   const isMobile = useIsMobile();
   
   // Don't render if not supposed to show on mobile and we are on mobile
@@ -34,6 +36,9 @@ export function ThemeToggle({
     setTheme(theme === 'dark' ? 'light' : 'dark');
   };
   
+  const lightModeLabel = t('switchToLightMode') || 'Přepnout na světlý režim';
+  const darkModeLabel = t('switchToDarkMode') || 'Přepnout na tmavý režim';
+  
   const ButtonComponent = (
     <Button
       variant={variant}
@@ -41,7 +46,7 @@ export function ThemeToggle({
       onClick={toggleTheme}
       className={className}
       disabled={isChangingTheme}
-      aria-label={theme === 'dark' ? 'Přepnout na světlý režim' : 'Přepnout na tmavý režim'}
+      aria-label={theme === 'dark' ? lightModeLabel : darkModeLabel}
     >
       {theme === 'dark' ? (
         <Sun className="h-[1.2rem] w-[1.2rem] transition-transform duration-200 rotate-0" />
@@ -68,7 +73,7 @@ export function ThemeToggle({
           </motion.div>
         </TooltipTrigger>
         <TooltipContent>
-          <p>{theme === 'dark' ? 'Přepnout na světlý režim' : 'Přepnout na tmavý režim'}</p>
+          <p>{theme === 'dark' ? lightModeLabel : darkModeLabel}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

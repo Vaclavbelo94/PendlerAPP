@@ -4,6 +4,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Shift, ShiftType } from "./types";
 import { cs } from "date-fns/locale";
 import { dateFromDBString } from "./utils/dateUtils";
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface ShiftCalendarProps {
   selectedDate: Date | undefined;
@@ -20,6 +21,8 @@ export const ShiftCalendar = ({
   onUpdateShift,
   onDeleteShift
 }: ShiftCalendarProps) => {
+  const { t } = useLanguage();
+
   // Gets modifiers for the calendar to highlight days with shifts
   const getCalendarModifiers = () => {
     if (!shifts.length) return {};
