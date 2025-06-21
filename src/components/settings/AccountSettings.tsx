@@ -151,7 +151,7 @@ const AccountSettings = () => {
             {t('deleteAccount') || 'Smazat účet'}
           </Button>
           <p className="text-xs text-muted-foreground mt-2">
-            {t('deleteAccountWarning') || 'Tato akce smaže všechna vaše data a nelze ji vrátit zpět.'}
+            {t('deleteAccountWarning') ||'Tato akce smaže všechna vaše data a nelze ji vrátit zpět.'}
           </p>
         </CardContent>
       </Card>

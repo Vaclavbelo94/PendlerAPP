@@ -8,8 +8,10 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Shield, Key, Smartphone, Eye, EyeOff } from 'lucide-react';
 import { toast } from "sonner";
+import { useLanguage } from '@/hooks/useLanguage';
 
 const SecuritySettings = () => {
+  const { t } = useLanguage();
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -20,11 +22,11 @@ const SecuritySettings = () => {
 
   const handleChangePassword = async () => {
     if (newPassword !== confirmPassword) {
-      toast.error("Nová hesla se neshodují");
+      toast.error(t('passwordsDoNotMatch') || "Nová hesla se neshodují");
       return;
     }
     if (newPassword.length < 6) {
-      toast.error("Heslo musí mít alespoň 6 znaků");
+      toast.error(t('passwordMinLength') || "Heslo musí mít alespoň 6 znaků");
       return;
     }
 
@@ -32,12 +34,12 @@ const SecuritySettings = () => {
     try {
       // In real app, this would call Supabase auth API
       await new Promise(resolve => setTimeout(resolve, 1000));
-      toast.success("Heslo bylo úspěšně změněno");
+      toast.success(t('passwordChangedSuccessfully') || "Heslo bylo úspěšně změněno");
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
     } catch (error) {
-      toast.error("Chyba při změně hesla");
+      toast.error(t('passwordChangeError') || "Chyba při změně hesla");
     } finally {
       setLoading(false);
     }
@@ -45,7 +47,7 @@ const SecuritySettings = () => {
 
   const handleEnable2FA = () => {
     setTwoFactorEnabled(!twoFactorEnabled);
-    toast.success(twoFactorEnabled ? "2FA bylo vypnuto" : "2FA bylo zapnuto");
+    toast.success(twoFactorEnabled ? (t('2faDisabled') || "2FA bylo vypnuto") : (t('2faEnabled') || "2FA bylo zapnuto"));
   };
 
   return (
@@ -54,22 +56,22 @@ const SecuritySettings = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Key className="h-5 w-5" />
-            Změna hesla
+            {t('changePassword') || 'Změna hesla'}
           </CardTitle>
           <CardDescription>
-            Aktualizujte své heslo pro lepší zabezpečení
+            {t('updatePasswordForSecurity') || 'Aktualizujte své heslo pro lepší zabezpečení'}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="currentPassword">Současné heslo</Label>
+            <Label htmlFor="currentPassword">{t('currentPassword') || 'Současné heslo'}</Label>
             <div className="relative">
               <Input
                 id="currentPassword"
                 type={showPassword ? "text" : "password"}
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
-                placeholder="Zadejte současné heslo"
+                placeholder={t('enterCurrentPassword') || 'Zadejte současné heslo'}
               />
               <Button
                 type="button"
@@ -84,24 +86,24 @@ const SecuritySettings = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="newPassword">Nové heslo</Label>
+            <Label htmlFor="newPassword">{t('newPassword') || 'Nové heslo'}</Label>
             <Input
               id="newPassword"
               type="password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              placeholder="Zadejte nové heslo (min. 6 znaků)"
+              placeholder={t('enterNewPasswordMin6') || 'Zadejte nové heslo (min. 6 znaků)'}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Potvrzení nového hesla</Label>
+            <Label htmlFor="confirmPassword">{t('confirmNewPassword') || 'Potvrzení nového hesla'}</Label>
             <Input
               id="confirmPassword"
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Potvrďte nové heslo"
+              placeholder={t('confirmNewPassword') || 'Potvrďte nové heslo'}
             />
           </div>
 
@@ -110,7 +112,7 @@ const SecuritySettings = () => {
             disabled={loading || !currentPassword || !newPassword || !confirmPassword}
             className="w-full"
           >
-            {loading ? "Měním heslo..." : "Změnit heslo"}
+            {loading ? (t('changingPassword') || "Měním heslo...") : (t('changePassword') || "Změnit heslo")}
           </Button>
         </CardContent>
       </Card>
@@ -119,18 +121,18 @@ const SecuritySettings = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Smartphone className="h-5 w-5" />
-            Dvoufaktorové ověření
+            {t('twoFactorAuth') || 'Dvoufaktorové ověření'}
           </CardTitle>
           <CardDescription>
-            Přidejte extra vrstvu zabezpečení k vašemu účtu
+            {t('addExtraSecurityLayer') || 'Přidejte extra vrstvu zabezpečení k vašemu účtu'}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label htmlFor="2fa">Povolit 2FA</Label>
+              <Label htmlFor="2fa">{t('enable2fa') || 'Povolit 2FA'}</Label>
               <p className="text-sm text-muted-foreground">
-                Vyžadovat druhý faktor při přihlášení
+                {t('requireSecondFactorLogin') || 'Vyžadovat druhý faktor při přihlášení'}
               </p>
             </div>
             <Switch
@@ -142,12 +144,12 @@ const SecuritySettings = () => {
 
           {twoFactorEnabled && (
             <div className="p-4 bg-muted rounded-lg">
-              <p className="text-sm font-medium mb-2">Nastavení 2FA</p>
+              <p className="text-sm font-medium mb-2">{t('2faSetup') || 'Nastavení 2FA'}</p>
               <p className="text-sm text-muted-foreground">
-                Naskenujte QR kód pomocí autentifikační aplikace (Google Authenticator, Authy, apod.)
+                {t('scanQrCodeWithAuthApp') || 'Naskenujte QR kód pomocí autentifikační aplikace (Google Authenticator, Authy, apod.)'}
               </p>
               <Button variant="outline" size="sm" className="mt-2">
-                Zobrazit QR kód
+                {t('showQrCode') || 'Zobrazit QR kód'}
               </Button>
             </div>
           )}
@@ -158,18 +160,18 @@ const SecuritySettings = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Shield className="h-5 w-5" />
-            Další bezpečnostní nastavení
+            {t('additionalSecuritySettings') || 'Další bezpečnostní nastavení'}
           </CardTitle>
           <CardDescription>
-            Pokročilé možnosti zabezpečení
+            {t('advancedSecurityOptions') || 'Pokročilé možnosti zabezpečení'}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label htmlFor="sessionTimeout">Automatické odhlášení</Label>
+              <Label htmlFor="sessionTimeout">{t('autoLogout') || 'Automatické odhlášení'}</Label>
               <p className="text-sm text-muted-foreground">
-                Automaticky odhlásit po 30 minutách nečinnosti
+                {t('logoutAfter30MinInactivity') || 'Automaticky odhlásit po 30 minutách nečinnosti'}
               </p>
             </div>
             <Switch
@@ -183,10 +185,10 @@ const SecuritySettings = () => {
 
           <div className="space-y-2">
             <Button variant="outline" className="w-full">
-              Zobrazit aktivní relace
+              {t('showActiveSessions') || 'Zobrazit aktivní relace'}
             </Button>
             <Button variant="outline" className="w-full">
-              Stáhnout bezpečnostní log
+              {t('downloadSecurityLog') || 'Stáhnout bezpečnostní log'}
             </Button>
           </div>
         </CardContent>

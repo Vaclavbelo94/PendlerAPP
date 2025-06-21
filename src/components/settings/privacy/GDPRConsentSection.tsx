@@ -8,8 +8,10 @@ import { Separator } from "@/components/ui/separator";
 import { Shield, Eye, Settings, BarChart3, Target } from 'lucide-react';
 import { useGDPRConsent, ConsentPreferences } from '@/contexts/GDPRConsentContext';
 import { toast } from "sonner";
+import { useLanguage } from '@/hooks/useLanguage';
 
 export const GDPRConsentSection: React.FC = () => {
+  const { t } = useLanguage();
   const { 
     preferences, 
     updateConsent, 
@@ -26,7 +28,7 @@ export const GDPRConsentSection: React.FC = () => {
     };
     
     updateConsent(newPreferences);
-    toast.success("Nastavení souhlasu bylo aktualizováno");
+    toast.success(t('consentSettingsUpdated') || "Nastavení souhlasu bylo aktualizováno");
   };
 
   return (
@@ -34,23 +36,23 @@ export const GDPRConsentSection: React.FC = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Shield className="h-5 w-5" />
-          GDPR Consent Management
+          {t('gdprConsentManagement') || 'GDPR Consent Management'}
         </CardTitle>
         <CardDescription>
-          Spravujte své souhlas s cookies a zpracováním osobních údajů
+          {t('manageCookiesAndDataProcessing') || 'Spravujte své souhlas s cookies a zpracováním osobních údajů'}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {!hasConsent && (
           <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
             <p className="text-sm text-yellow-800">
-              Nemáte ještě nastaven souhlas s cookies. 
+              {t('noConsentSetYet') || 'Nemáte ještě nastaven souhlas s cookies.'} 
               <Button 
                 variant="link" 
                 className="p-0 ml-1 text-yellow-800 underline"
                 onClick={openSettings}
               >
-                Nastavit nyní
+                {t('setNow') || 'Nastavit nyní'}
               </Button>
             </p>
           </div>
@@ -61,10 +63,10 @@ export const GDPRConsentSection: React.FC = () => {
             <div className="space-y-0.5">
               <Label className="flex items-center gap-2">
                 <Shield className="h-4 w-4" />
-                Nezbytné cookies
+                {t('necessaryCookies') || 'Nezbytné cookies'}
               </Label>
               <p className="text-sm text-muted-foreground">
-                Požadované pro základní funkčnost webu
+                {t('requiredForBasicWebFunctionality') || 'Požadované pro základní funkčnost webu'}
               </p>
             </div>
             <Switch checked={true} disabled />
@@ -76,10 +78,10 @@ export const GDPRConsentSection: React.FC = () => {
             <div className="space-y-0.5">
               <Label className="flex items-center gap-2">
                 <Settings className="h-4 w-4" />
-                Funkční cookies
+                {t('functionalCookies') || 'Funkční cookies'}
               </Label>
               <p className="text-sm text-muted-foreground">
-                Zapamatování nastavení a personalizace
+                {t('rememberSettingsAndPersonalization') || 'Zapamatování nastavení a personalizace'}
               </p>
             </div>
             <Switch
@@ -94,10 +96,10 @@ export const GDPRConsentSection: React.FC = () => {
             <div className="space-y-0.5">
               <Label className="flex items-center gap-2">
                 <BarChart3 className="h-4 w-4" />
-                Analytické cookies
+                {t('analyticsCookies') || 'Analytické cookies'}
               </Label>
               <p className="text-sm text-muted-foreground">
-                Anonymní statistiky pro zlepšení služeb
+                {t('anonymousStatsForServiceImprovement') || 'Anonymní statistiky pro zlepšení služeb'}
               </p>
             </div>
             <Switch
@@ -112,10 +114,10 @@ export const GDPRConsentSection: React.FC = () => {
             <div className="space-y-0.5">
               <Label className="flex items-center gap-2">
                 <Target className="h-4 w-4" />
-                Reklamní cookies (Google AdSense)
+                {t('advertisingCookiesAdSense') || 'Reklamní cookies (Google AdSense)'}
               </Label>
               <p className="text-sm text-muted-foreground">
-                Personalizované reklamy a jejich měření
+                {t('personalizedAdsAndMeasurement') || 'Personalizované reklamy a jejich měření'}
               </p>
             </div>
             <Switch
@@ -126,8 +128,7 @@ export const GDPRConsentSection: React.FC = () => {
 
           <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
             <p className="text-sm text-blue-800">
-              <strong>Google AdSense:</strong> Pokud povolíte reklamní cookies, budou se zobrazovat 
-              personalizované reklamy od Google AdSense, které pomáhají financovat tuto aplikaci.
+              <strong>{t('googleAdSense') || 'Google AdSense'}:</strong> {t('adSenseDescription') || 'Pokud povolíte reklamní cookies, budou se zobrazovat personalizované reklamy od Google AdSense, které pomáhají financovat tuto aplikaci.'}
             </p>
           </div>
         </div>
@@ -138,14 +139,14 @@ export const GDPRConsentSection: React.FC = () => {
           <div className="space-y-0.5">
             <Label className="flex items-center gap-2">
               <Eye className="h-4 w-4" />
-              Zobrazit cookie banner
+              {t('showCookieBanner') || 'Zobrazit cookie banner'}
             </Label>
             <p className="text-sm text-muted-foreground">
-              Znovu otevřít nastavení cookies
+              {t('reopenCookieSettings') || 'Znovu otevřít nastavení cookies'}
             </p>
           </div>
           <Button onClick={openSettings} variant="outline" size="sm">
-            Otevřít nastavení
+            {t('openSettings') || 'Otevřít nastavení'}
           </Button>
         </div>
       </CardContent>

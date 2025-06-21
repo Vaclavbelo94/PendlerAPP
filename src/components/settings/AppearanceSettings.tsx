@@ -9,8 +9,10 @@ import { Separator } from "@/components/ui/separator";
 import { useAppearanceSettings } from "@/hooks/useAppearanceSettings";
 import { Palette, Moon, Sun, Sparkles, Monitor } from "lucide-react";
 import { toast } from "sonner";
+import { useLanguage } from '@/hooks/useLanguage';
 
 const AppearanceSettings = () => {
+  const { t } = useLanguage();
   const {
     darkMode,
     setDarkMode,
@@ -25,12 +27,12 @@ const AppearanceSettings = () => {
   } = useAppearanceSettings();
 
   const colorSchemes = [
-    { value: 'purple', label: 'Fialová', color: 'bg-purple-500' },
-    { value: 'blue', label: 'Modrá', color: 'bg-blue-500' },
-    { value: 'green', label: 'Zelená', color: 'bg-green-500' },
-    { value: 'amber', label: 'Žlutá', color: 'bg-amber-500' },
-    { value: 'red', label: 'Červená', color: 'bg-red-500' },
-    { value: 'pink', label: 'Růžová', color: 'bg-pink-500' }
+    { value: 'purple', label: t('purple') || 'Fialová', color: 'bg-purple-500' },
+    { value: 'blue', label: t('blue') || 'Modrá', color: 'bg-blue-500' },
+    { value: 'green', label: t('green') || 'Zelená', color: 'bg-green-500' },
+    { value: 'amber', label: t('yellow') || 'Žlutá', color: 'bg-amber-500' },
+    { value: 'red', label: t('red') || 'Červená', color: 'bg-red-500' },
+    { value: 'pink', label: t('pink') || 'Růžová', color: 'bg-pink-500' }
   ];
 
   const handleDarkModeToggle = (checked: boolean) => {
@@ -56,10 +58,10 @@ const AppearanceSettings = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Palette className="h-5 w-5" />
-            Téma aplikace
+            {t('appTheme') || 'Téma aplikace'}
           </CardTitle>
           <CardDescription>
-            Přizpůsobte si vzhled aplikace podle vašich preferencí
+            {t('customizeAppAppearance') || 'Přizpůsobte si vzhled aplikace podle vašich preferencí'}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -68,10 +70,10 @@ const AppearanceSettings = () => {
             <div className="space-y-0.5">
               <Label className="text-base font-medium flex items-center gap-2">
                 {darkMode ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
-                Tmavý režim
+                {t('darkMode') || 'Tmavý režim'}
               </Label>
               <p className="text-sm text-muted-foreground">
-                Přepnout mezi světlým a tmavým tématem
+                {t('switchBetweenLightDarkTheme') || 'Přepnout mezi světlým a tmavým tématem'}
               </p>
             </div>
             <Switch
@@ -87,19 +89,19 @@ const AppearanceSettings = () => {
           <div className="space-y-3">
             <Label className="text-base font-medium flex items-center gap-2">
               <Sparkles className="h-4 w-4" />
-              Barevné schéma
+              {t('colorScheme') || 'Barevné schéma'}
             </Label>
             <p className="text-sm text-muted-foreground">
-              Vyberte hlavní barvu aplikace
+              {t('selectMainAppColor') || 'Vyberte hlavní barvu aplikace'}
             </p>
             <Select value={colorScheme} onValueChange={handleColorSchemeChange}>
               <SelectTrigger>
-                <SelectValue placeholder="Vyberte barevné schéma">
+                <SelectValue placeholder={t('selectColorScheme') || 'Vyberte barevné schéma'}>
                   <div className="flex items-center gap-2">
                     <div className={`w-4 h-4 rounded-full ${
                       colorSchemes.find(c => c.value === colorScheme)?.color || 'bg-purple-500'
                     }`} />
-                    {colorSchemes.find(c => c.value === colorScheme)?.label || 'Fialová'}
+                    {colorSchemes.find(c => c.value === colorScheme)?.label || t('purple') || 'Fialová'}
                   </div>
                 </SelectValue>
               </SelectTrigger>
@@ -123,10 +125,10 @@ const AppearanceSettings = () => {
             <div className="space-y-0.5">
               <Label className="text-base font-medium flex items-center gap-2">
                 <Monitor className="h-4 w-4" />
-                Kompaktní režim
+                {t('compactMode') || 'Kompaktní režim'}
               </Label>
               <p className="text-sm text-muted-foreground">
-                Zmenší mezery a velikosti prvků pro více obsahu
+                {t('reduceSpacingForMoreContent') || 'Zmenší mezery a velikosti prvků pro více obsahu'}
               </p>
             </div>
             <Switch
@@ -140,28 +142,28 @@ const AppearanceSettings = () => {
       {/* Preview Section */}
       <Card>
         <CardHeader>
-          <CardTitle>Náhled</CardTitle>
+          <CardTitle>{t('preview') || 'Náhled'}</CardTitle>
           <CardDescription>
-            Ukázka vašeho nastaveného tématu
+            {t('previewOfYourThemeSettings') || 'Ukázka vašeho nastaveného tématu'}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className={`p-4 rounded-lg border bg-card ${compactMode ? 'space-y-2' : 'space-y-4'}`}>
             <div className="flex items-center justify-between">
               <h3 className={`font-semibold ${compactMode ? 'text-sm' : 'text-base'}`}>
-                Ukázkový nadpis
+                {t('sampleTitle') || 'Ukázkový nadpis'}
               </h3>
               <div className={`w-3 h-3 rounded-full bg-current opacity-20`} />
             </div>
             <p className={`text-muted-foreground ${compactMode ? 'text-xs' : 'text-sm'}`}>
-              Toto je ukázka textu s vaším aktuálním nastavením tématu.
+              {t('sampleTextWithCurrentTheme') || 'Toto je ukázka textu s vaším aktuálním nastavením tématu.'}
             </p>
             <div className="flex gap-2">
               <div className={`px-2 py-1 bg-primary/10 rounded text-primary ${compactMode ? 'text-xs' : 'text-sm'}`}>
-                Primární
+                {t('primary') || 'Primární'}
               </div>
               <div className={`px-2 py-1 bg-muted rounded ${compactMode ? 'text-xs' : 'text-sm'}`}>
-                Sekundární
+                {t('secondary') || 'Sekundární'}
               </div>
             </div>
           </div>
@@ -171,7 +173,7 @@ const AppearanceSettings = () => {
       {/* Save Button */}
       <div className="flex justify-end">
         <Button onClick={handleSaveClick} disabled={isLoading}>
-          {isLoading ? 'Ukládám...' : 'Uložit nastavení'}
+          {isLoading ? (t('saving') || 'Ukládám...') : (t('saveSettings') || 'Uložit nastavení')}
         </Button>
       </div>
     </div>
