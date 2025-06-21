@@ -11,6 +11,7 @@ import { useUnifiedOrientation } from "@/hooks/useUnifiedOrientation";
 import { UnifiedMobileSidebar } from "./sidebar/UnifiedMobileSidebar";
 import { ModernSidebar } from "./sidebar/ModernSidebar";
 import { useLanguage } from "@/hooks/useLanguage";
+import { NavbarRightContent } from "./NavbarPatch";
 
 interface LayoutProps {
   children: ReactNode;
@@ -53,7 +54,7 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
         <div className="sticky top-0 z-30">
           <Navbar 
             toggleSidebar={() => setSidebarOpen(!sidebarOpen)} 
-            rightContent={navbarRightContent}
+            rightContent={<NavbarRightContent />}
             sidebarOpen={sidebarOpen}
           />
         </div>
@@ -73,7 +74,7 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
       <div className="flex-1 flex flex-col min-w-0">
         <Navbar 
           toggleSidebar={() => setSidebarOpen(!sidebarOpen)} 
-          rightContent={navbarRightContent}
+          rightContent={<NavbarRightContent />}
           sidebarOpen={sidebarOpen}
         />
         
@@ -112,7 +113,7 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
         <div className="sticky top-0 z-30">
           <Navbar 
             toggleSidebar={() => setSidebarOpen(!sidebarOpen)} 
-            rightContent={navbarRightContent}
+            rightContent={<NavbarRightContent />}
             sidebarOpen={sidebarOpen}
           />
         </div>
@@ -129,13 +130,20 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
 
   const DesktopLayout = () => (
     <div className="flex min-h-screen bg-background w-full">
-      {/* Desktop Sidebar */}
-      <div className="fixed top-0 left-0 h-full z-40">
+      {/* Desktop Sidebar - vždy viditelný */}
+      <div className="fixed top-0 left-0 h-full z-40 w-64">
         <ModernSidebar closeSidebar={() => setSidebarOpen(false)} />
       </div>
       
       {/* Main content area */}
-      <div className="flex-1 flex flex-col min-w-0 ml-20 transition-all duration-300">
+      <div className="flex-1 flex flex-col min-w-0 ml-64 transition-all duration-300">
+        <div className="sticky top-0 z-30">
+          <Navbar 
+            toggleSidebar={() => setSidebarOpen(!sidebarOpen)} 
+            rightContent={<NavbarRightContent />}
+            sidebarOpen={false}
+          />
+        </div>
         <ScrollArea className="flex-1">
           <main className="flex-1 px-4 py-4 min-h-screen">
             {children}
