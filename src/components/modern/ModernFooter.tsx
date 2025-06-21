@@ -10,7 +10,7 @@ export const ModernFooter: React.FC = () => {
 
   const footerSections = [
     {
-      title: t('footer.features') || 'Funkce',
+      title: t('features') || 'Funkce',
       links: [
         { key: 'dashboard', path: '/dashboard' },
         { key: 'shifts', path: '/shifts' },
@@ -18,7 +18,7 @@ export const ModernFooter: React.FC = () => {
       ]
     },
     {
-      title: t('footer.aboutUs') || 'O nás',
+      title: t('aboutUs') || 'O nás',
       links: [
         { key: 'translator', path: '/translator' },
         { key: 'taxAdvisor', path: '/tax-advisor' },
@@ -49,11 +49,10 @@ export const ModernFooter: React.FC = () => {
     <footer className="bg-card border-t mt-auto">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
-          {/* Brand section */}
           <div className="lg:col-span-1">
             <Link to="/" className="flex items-center space-x-2 mb-4">
               <Briefcase className="h-6 w-6 text-primary" />
-              <span className="font-bold text-xl">{t('footer.appName') || 'PendlerApp'}</span>
+              <span className="font-bold text-xl">{t('appName') || 'PendlerApp'}</span>
             </Link>
             <p className="text-sm text-muted-foreground mb-4">
               {t('heroSubtitle') || 'Komplexní řešení pro pendlery'}
@@ -68,7 +67,6 @@ export const ModernFooter: React.FC = () => {
             </div>
           </div>
 
-          {/* Footer sections */}
           {footerSections.map((section, index) => (
             <div key={index}>
               <h3 className="font-semibold text-sm uppercase tracking-wider mb-4">
@@ -92,7 +90,7 @@ export const ModernFooter: React.FC = () => {
 
         <div className="border-t mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-sm text-muted-foreground mb-4 md:mb-0">
-            © {currentYear} {t('footer.appName') || 'PendlerApp'}. {t('footer.allRightsReserved') || 'Všechna práva vyhrazena'}.
+            © {currentYear} {t('appName') || 'PendlerApp'}. {t('allRightsReserved') || 'Všechna práva vyhrazena'}.
           </p>
           <div className="flex space-x-6">
             <Link to="/privacy" className="text-sm text-muted-foreground hover:text-primary transition-colors">

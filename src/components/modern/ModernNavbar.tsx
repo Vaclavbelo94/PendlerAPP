@@ -42,7 +42,6 @@ export const ModernNavbar: React.FC = () => {
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
-        {/* Logo */}
         <Link to="/" className="mr-6 flex items-center space-x-2">
           <Briefcase className="h-6 w-6 text-primary" />
           <span className="font-bold text-xl bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
@@ -50,14 +49,12 @@ export const ModernNavbar: React.FC = () => {
           </span>
         </Link>
 
-        {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-6 flex-1">
           {user && navigationItems.map((item) => (
             <NavLink key={item.key} item={item} />
           ))}
         </div>
 
-        {/* Right side actions */}
         <div className="flex items-center space-x-4">
           <LanguageSelector />
           
@@ -87,7 +84,6 @@ export const ModernNavbar: React.FC = () => {
             </div>
           )}
 
-          {/* Mobile menu */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild className="md:hidden">
               <Button variant="ghost" size="sm">

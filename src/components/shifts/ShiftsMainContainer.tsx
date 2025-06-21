@@ -40,12 +40,10 @@ const ShiftsMainContainer: React.FC = () => {
     deleteShift
   } = useShiftsContainer();
 
-  // Show skeleton during initial load
   if (!isInitialized || (isLoading && shifts.length === 0)) {
     return <FastLoadingSkeleton onRetry={handleRetry} timeoutMs={8000} />;
   }
 
-  // Show auth required message
   if (!user) {
     return (
       <div className="container max-w-7xl mx-auto px-4 py-8">
@@ -59,7 +57,6 @@ const ShiftsMainContainer: React.FC = () => {
     );
   }
 
-  // Show empty state for new users
   if (shifts.length === 0 && !isLoading) {
     return (
       <div className="container max-w-7xl mx-auto px-4">
@@ -90,13 +87,11 @@ const ShiftsMainContainer: React.FC = () => {
 
       <ShiftsPageHeader onAddShift={handleOpenAddSheet} />
 
-      {/* Category Navigation - same style as Vehicles section */}
       <ShiftsNavigation
         activeSection={activeSection}
         onSectionChange={handleSectionChange}
       />
 
-      {/* Content */}
       <div className="mt-6">
         <ShiftsContentRenderer
           activeSection={activeSection}

@@ -8,7 +8,6 @@ import { useLanguage } from '@/hooks/useLanguage';
 const DashboardOverview: React.FC = () => {
   const { t } = useLanguage();
 
-  // Mock data - v reálné aplikaci by se načítalo z API
   const currentShift = {
     date: new Date().toLocaleDateString(),
     startTime: '08:00',
@@ -26,7 +25,6 @@ const DashboardOverview: React.FC = () => {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      {/* Current Shift */}
       <Card className="lg:col-span-2 bg-card/50 backdrop-blur-sm border-0 shadow-lg">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
@@ -72,7 +70,6 @@ const DashboardOverview: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Weekly Summary */}
       <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg font-semibold">{t('weeklyOverview') || 'Týdenní přehled'}</CardTitle>

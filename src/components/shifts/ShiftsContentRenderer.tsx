@@ -54,8 +54,6 @@ const ShiftsContentRenderer: React.FC<ShiftsContentRendererProps> = ({
   };
 
   const handleBulkEdit = (shiftIds: string[]) => {
-    // For now, just edit the first selected shift
-    // In a real implementation, you'd open a bulk edit dialog
     const firstShift = shifts.find(shift => shift.id === shiftIds[0]);
     if (firstShift) {
       onEditShift(firstShift);
@@ -79,7 +77,6 @@ const ShiftsContentRenderer: React.FC<ShiftsContentRendererProps> = ({
             <TabsTrigger value="bulk">{t('bulkOperations') || 'Hromadné operace'}</TabsTrigger>
           </TabsList>
           <TabsContent value="calendar" className="mt-6">
-            {/* Use the standard optimized calendar for all devices */}
             <OptimizedShiftCalendar
               shifts={shifts}
               onEditShift={onEditShift}

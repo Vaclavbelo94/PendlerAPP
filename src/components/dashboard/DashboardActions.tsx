@@ -70,7 +70,6 @@ const DashboardActions: React.FC = () => {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      {/* Quick Actions */}
       <Card className="lg:col-span-2 bg-card/50 backdrop-blur-sm border-0 shadow-lg">
         <CardHeader>
           <CardTitle className="text-xl font-semibold">{t('quickActions') || 'Rychlé akce'}</CardTitle>
@@ -105,7 +104,6 @@ const DashboardActions: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Upcoming Shifts */}
       <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
         <CardHeader>
           <CardTitle className="text-xl font-semibold">{t('upcomingShifts') || 'Nadcházející směny'}</CardTitle>
