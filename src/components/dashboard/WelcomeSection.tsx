@@ -10,37 +10,37 @@ import { useLanguage } from '@/hooks/useLanguage';
 export const WelcomeSection = () => {
   const { user } = useAuth();
   const { t } = useLanguage();
-  const username = user?.email?.split('@')[0] || t('user') || 'uživatel';
+  const username = user?.email?.split('@')[0] || t('user');
 
   return (
     <div className="space-y-6">
       <div>
         <h2 className="text-3xl font-bold tracking-tight">
-          {(t('welcomeUser') || 'Vítejte, {username}!').replace('{username}', username)}
+          {t('welcomeUser').replace('{username}', username)}
         </h2>
         <p className="text-muted-foreground mt-1">
-          {t('welcomeDescription') || 'Začněte s plánováním svých směn a správou pracovních úkolů.'}
+          {t('welcomeDescription')}
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">{t('newUserTips') || 'Tipy pro nové uživatele'}</CardTitle>
+            <CardTitle className="text-lg">{t('newUserTips')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             <p className="text-sm text-muted-foreground">
-              {t('liveTraining') || 'Živá školení a podpora komunitou'}
+              {t('liveTraining')}
             </p>
             <p className="text-sm text-muted-foreground">
-              {t('knowledgeBase') || 'Kompletní znalostní báze a návody'}
+              {t('knowledgeBase')}
             </p>
             <p className="text-sm text-muted-foreground">
-              {t('notifications') || 'Inteligentní notifikace a připomenutí'}
+              {t('notifications')}
             </p>
             <Button variant="outline" className="mt-4 w-full" asChild>
               <Link to="/faq">
-                {t('showFaqHelp') || 'Zobrazit nápovědu a FAQ'}
+                {t('showFaqHelp')}
               </Link>
             </Button>
           </CardContent>
@@ -50,22 +50,22 @@ export const WelcomeSection = () => {
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center">
               <span className="bg-primary/20 text-primary p-1 rounded-md mr-2">PRO</span>
-              {t('premiumBenefits') || 'Premium výhody'}
+              {t('premiumBenefits')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             <p className="text-sm text-muted-foreground">
-              {t('advancedFeatures') || 'Pokročilé funkce a analýzy'}
+              {t('advancedFeatures')}
             </p>
             <p className="text-sm text-muted-foreground">
-              {t('allLanguageExercises') || 'Všechna jazyková cvičení'}
+              {t('allLanguageExercises')}
             </p>
             <p className="text-sm text-muted-foreground">
-              {t('exportData') || 'Export dat a pokročilé reporty'}
+              {t('exportData')}
             </p>
             <Button className="mt-4 w-full" asChild>
               <Link to="/premium">
-                {t('activatePremium') || 'Aktivovat Premium'}
+                {t('activatePremium')}
                 <ArrowRight className="h-4 w-4 ml-2" />
               </Link>
             </Button>

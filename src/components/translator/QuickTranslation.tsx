@@ -32,10 +32,10 @@ const QuickTranslation: React.FC<QuickTranslationProps> = (props) => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Zap className="h-5 w-5" />
-          <span>{t('quickTranslations') || 'Rychlé překlady'}</span>
+          <span>{t('quickTranslations')}</span>
         </CardTitle>
         <CardDescription>
-          {t('quickTranslationsDescription') || 'Klasický překladač pro rychlé překlady bez AI asistenta'}
+          {t('quickTranslationsDescription')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -69,15 +69,15 @@ const QuickTranslation: React.FC<QuickTranslationProps> = (props) => {
             <TranslationInput
               value={props.sourceText}
               onChange={(e) => props.setSourceText(e.target.value)}
-              label={t('sourceLanguage') || 'Zdrojový jazyk'}
-              placeholder={t('enterTextToTranslate') || 'Zadejte text k překladu...'}
+              label={t('sourceLanguage')}
+              placeholder={t('enterTextToTranslate')}
               onTextToSpeech={() => props.handleTextToSpeech(props.sourceText, props.sourceLanguage)}
               actions={
                 <button 
                   className="text-xs text-muted-foreground hover:text-foreground transition-colors"
                   onClick={() => props.setSourceText("")}
                 >
-                  {t('clear') || 'Vymazat'}
+                  {t('clear')}
                 </button>
               }
             />
@@ -87,8 +87,8 @@ const QuickTranslation: React.FC<QuickTranslationProps> = (props) => {
             <TranslationInput
               value={props.translatedText}
               onChange={() => {}}
-              label={t('targetLanguage') || 'Cílový jazyk'}
-              placeholder={t('translatedText') || 'Přeložený text...'}
+              label={t('targetLanguage')}
+              placeholder={t('translatedText')}
               readOnly={true}
               className="min-h-[200px] resize-none bg-muted/30"
               onTextToSpeech={() => props.handleTextToSpeech(props.translatedText, props.targetLanguage)}
@@ -98,7 +98,7 @@ const QuickTranslation: React.FC<QuickTranslationProps> = (props) => {
                   onClick={() => navigator.clipboard.writeText(props.translatedText)}
                   disabled={!props.translatedText.trim()}
                 >
-                  {t('copy') || 'Kopírovat'}
+                  {t('copy')}
                 </button>
               }
             />

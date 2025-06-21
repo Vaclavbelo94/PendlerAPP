@@ -20,26 +20,26 @@ export const TranslatorNavigation: React.FC<TranslatorNavigationProps> = ({
     {
       id: 'ai-chat',
       icon: Bot,
-      label: t('aiChat') || 'AI Chat',
-      description: t('aiChatDesc') || 'Inteligentní AI asistent pro překlady'
+      label: t('aiChat'),
+      description: t('aiChatDesc')
     },
     {
       id: 'quick-translate',
       icon: Languages,
-      label: t('quickTranslations') || 'Rychlé překlady',
-      description: t('classicTranslator') || 'Klasický překladač'
+      label: t('quickTranslations'),
+      description: t('classicTranslator')
     },
     {
       id: 'phrasebook',
       icon: BookOpen,
-      label: t('phrasebook') || 'Frázovník',
-      description: t('workPhrases') || 'Užitečné fráze pro práci'
+      label: t('phrasebook'),
+      description: t('workPhrases')
     },
     {
       id: 'history',
       icon: Clock,
-      label: t('history') || 'Historie',
-      description: t('previousTranslations') || 'Předchozí překlady'
+      label: t('history'),
+      description: t('previousTranslations')
     }
   ];
 
