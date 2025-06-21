@@ -1,3 +1,4 @@
+
 export type Language = 'cs' | 'pl' | 'de';
 
 export const languages = [
@@ -62,6 +63,10 @@ export const translations = {
     deleteShift: 'Smazat směnu',
     saveShift: 'Uložit směnu',
     updateShift: 'Aktualizovat směnu',
+    shiftManagement: 'Správa směn',
+    shiftPlanning: 'Plánování směn',
+    workTimeTracking: 'Sledování pracovní doby',
+    advancedAnalytics: 'Pokročilé analýzy',
     
     // Autentifikace
     welcome: 'Vítejte',
@@ -190,7 +195,6 @@ export const translations = {
     estimatedEarnings: 'Odhadované výdělky',
     shiftsCompleted: 'Dokončené směny',
     quickActions: 'Rychlé akce',
-    addShift: 'Přidat směnu',
     addShiftDescription: 'Rychle si naplánujte svou další směnu.',
     taxAdvisorDescription: 'Optimalizujte své daně s naším daňovým poradcem.',
     translatorDescription: 'Překládejte texty snadno a rychle.',
@@ -265,6 +269,10 @@ export const translations = {
     deleteShift: 'Usuń zmianę',
     saveShift: 'Zapisz zmianę',
     updateShift: 'Zaktualizuj zmianę',
+    shiftManagement: 'Zarządzanie zmianami',
+    shiftPlanning: 'Planowanie zmian',
+    workTimeTracking: 'Śledzenie czasu pracy',
+    advancedAnalytics: 'Zaawansowana analityka',
     
     // Autentifikace
     welcome: 'Witamy',
@@ -393,7 +401,6 @@ export const translations = {
     estimatedEarnings: 'Szacowane zarobki',
     shiftsCompleted: 'Ukończone zmiany',
     quickActions: 'Szybkie akcje',
-    addShift: 'Dodaj zmianę',
     addShiftDescription: 'Szybko zaplanuj swoją następną zmianę.',
     taxAdvisorDescription: 'Zoptymalizuj swoje podatki z naszym doradcą podatkowym.',
     translatorDescription: 'Tłumacz teksty łatwo i szybko.',
@@ -468,6 +475,10 @@ export const translations = {
     deleteShift: 'Schicht löschen',
     saveShift: 'Schicht speichern',
     updateShift: 'Schicht aktualisieren',
+    shiftManagement: 'Schichtenverwaltung',
+    shiftPlanning: 'Schichtplanung',
+    workTimeTracking: 'Arbeitszeitverfolgung',
+    advancedAnalytics: 'Erweiterte Analysen',
     
     // Autentifikace
     welcome: 'Willkommen',
@@ -596,7 +607,6 @@ export const translations = {
     estimatedEarnings: 'Geschätzte Einnahmen',
     shiftsCompleted: 'Abgeschlossene Schichten',
     quickActions: 'Schnellaktionen',
-    addShift: 'Schicht hinzufügen',
     addShiftDescription: 'Planen Sie schnell Ihre nächste Schicht.',
     taxAdvisorDescription: 'Optimieren Sie Ihre Steuern mit unserem Steuerberater.',
     translatorDescription: 'Übersetzen Sie Texte einfach und schnell.',
