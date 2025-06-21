@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -6,6 +5,7 @@ import { Plus, Calendar, ListFilter, FileSpreadsheet } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { useStandardizedToast } from '@/hooks/useStandardizedToast';
 import { useAuth } from '@/hooks/useAuth';
+import { useLanguage } from '@/hooks/useLanguage';
 import { ShiftCalendar } from './ShiftCalendar';
 import ShiftsList from './ShiftsList';
 import ShiftForm from './ShiftForm';
@@ -18,6 +18,7 @@ import SimpleLoadingSpinner from '@/components/loading/SimpleLoadingSpinner';
 const ShiftsContent = () => {
   const { user, isLoading: authLoading } = useAuth();
   const { success, error } = useStandardizedToast();
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState('calendar');
   const [isAddSheetOpen, setIsAddSheetOpen] = useState(false);
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
@@ -78,10 +79,10 @@ const ShiftsContent = () => {
       localStorage.setItem(`userShifts_${user.id}`, JSON.stringify(updatedShifts));
       
       setIsAddSheetOpen(false);
-      success('Směna byla úspěšně přidána');
+      success(t('shiftAddedSuccessfully') || 'Směna byla úspěšně přidána');
     } catch (err) {
       console.error('Error adding shift:', err);
-      error('Chyba při přidání směny');
+      error(t('errorAddingShift') || 'Chyba při přidání směny');
     }
   };
 
@@ -93,10 +94,10 @@ const ShiftsContent = () => {
       
       setShifts(updatedShifts);
       localStorage.setItem(`userShifts_${user.id}`, JSON.stringify(updatedShifts));
-      success('Směna byla aktualizována');
+      success(t('shiftUpdated') || 'Směna byla aktualizována');
     } catch (err) {
       console.error('Error updating shift:', err);
-      error('Chyba při aktualizaci směny');
+      error(t('errorUpdatingShift') || 'Chyba při aktualizaci směny');
     }
   };
 
@@ -105,10 +106,10 @@ const ShiftsContent = () => {
       const updatedShifts = shifts.filter(shift => shift.id !== id);
       setShifts(updatedShifts);
       localStorage.setItem(`userShifts_${user.id}`, JSON.stringify(updatedShifts));
-      success('Směna byla smazána');
+      success(t('shiftDeleted') || 'Směna byla smazána');
     } catch (err) {
       console.error('Error deleting shift:', err);
-      error('Chyba při mazání směny');
+      error(t('errorDeletingShift') || 'Chyba při mazání směny');
     }
   };
 
@@ -147,7 +148,7 @@ const ShiftsContent = () => {
 
   // Show loading while auth is loading or data is loading
   if (authLoading || isLoading) {
-    return <SimpleLoadingSpinner message="Načítání směn..." />;
+    return <SimpleLoadingSpinner message={t('loadingShifts') || "Načítání směn..."} />;
   }
 
   // Show empty state for new users
@@ -163,15 +164,15 @@ const ShiftsContent = () => {
             <TabsList>
               <TabsTrigger value="calendar" className="flex items-center gap-2">
                 <Calendar className="h-4 w-4" />
-                Kalendář
+                {t('calendar') || 'Kalendář'}
               </TabsTrigger>
               <TabsTrigger value="list" className="flex items-center gap-2">
                 <FileSpreadsheet className="h-4 w-4" />
-                Seznam
+                {t('list') || 'Seznam'}
               </TabsTrigger>
               <TabsTrigger value="stats" className="flex items-center gap-2">
                 <FileSpreadsheet className="h-4 w-4" />
-                Statistiky
+                {t('statistics') || 'Statistiky'}
               </TabsTrigger>
             </TabsList>
             
@@ -183,7 +184,7 @@ const ShiftsContent = () => {
                 className="flex items-center gap-2"
               >
                 <ListFilter className="h-4 w-4" />
-                Filtrovat
+                {t('filter') || 'Filtrovat'}
               </Button>
               
               <Button 
@@ -192,7 +193,7 @@ const ShiftsContent = () => {
                 className="flex items-center gap-2"
               >
                 <Plus className="h-4 w-4" />
-                Přidat směnu
+                {t('addShift') || 'Přidat směnu'}
               </Button>
             </div>
           </div>
@@ -225,9 +226,9 @@ const ShiftsContent = () => {
       <Sheet open={isAddSheetOpen} onOpenChange={setIsAddSheetOpen}>
         <SheetContent className="sm:max-w-md">
           <SheetHeader>
-            <SheetTitle>Přidat novou směnu</SheetTitle>
+            <SheetTitle>{t('addNewShift') || 'Přidat novou směnu'}</SheetTitle>
             <SheetDescription>
-              Vyplňte detaily o vaší směně. Klikněte na uložit, až budete hotovi.
+              {t('fillShiftDetails') || 'Vyplňte detaily o vaší směně. Klikněte na uložit, až budete hotovi.'}
             </SheetDescription>
           </SheetHeader>
           <div className="py-4">
@@ -240,9 +241,9 @@ const ShiftsContent = () => {
       <Sheet open={isFilterSheetOpen} onOpenChange={setIsFilterSheetOpen}>
         <SheetContent className="sm:max-w-md">
           <SheetHeader>
-            <SheetTitle>Filtrovat směny</SheetTitle>
+            <SheetTitle>{t('filterShifts') || 'Filtrovat směny'}</SheetTitle>
             <SheetDescription>
-              Nastavte filtry pro zobrazení směn
+              {t('setFiltersForShifts') || 'Nastavte filtry pro zobrazení směn'}
             </SheetDescription>
           </SheetHeader>
           <div className="py-4">

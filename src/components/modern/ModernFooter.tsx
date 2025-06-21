@@ -81,7 +81,7 @@ export const ModernFooter: React.FC = () => {
                       to={link.path}
                       className="text-sm text-muted-foreground hover:text-primary transition-colors"
                     >
-                      {t(link.key)}
+                      {t(link.key) || link.key}
                     </Link>
                   </li>
                 ))}

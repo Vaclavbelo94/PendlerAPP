@@ -29,9 +29,9 @@ const LanguagePreferences = ({
             <SelectValue placeholder={t('selectLanguage') || 'Vyberte jazyk'} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="cs">{t('czech') || 'Čeština'}</SelectItem>
-            <SelectItem value="de">{t('german') || 'Němčina'}</SelectItem>
-            <SelectItem value="en">{t('english') || 'Angličtina'}</SelectItem>
+            <SelectItem value="cs">🇨🇿 {t('czech') || 'Čeština'}</SelectItem>
+            <SelectItem value="pl">🇵🇱 {t('polish') || 'Polski'}</SelectItem>
+            <SelectItem value="de">🇩🇪 {t('german') || 'Deutsch'}</SelectItem>
           </SelectContent>
         </Select>
       </div>

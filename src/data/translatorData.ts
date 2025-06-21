@@ -1,4 +1,6 @@
 
+import { useLanguage } from '@/hooks/useLanguage';
+
 export const supportedLanguages = [
   { code: 'cs', name: 'Čeština', flag: '🇨🇿' },
   { code: 'pl', name: 'Polski', flag: '🇵🇱' },
@@ -60,4 +62,16 @@ export const workplacePhrases = {
     'Ich brauche Hilfe',
     'Meine Schicht ist zu Ende'
   ]
+};
+
+// Helper function to get translated common phrases
+export const getCommonPhrases = () => {
+  const { language } = useLanguage();
+  return commonPhrases[language] || commonPhrases.cs;
+};
+
+// Helper function to get translated workplace phrases
+export const getWorkplacePhrases = () => {
+  const { language } = useLanguage();
+  return workplacePhrases[language] || workplacePhrases.cs;
 };
