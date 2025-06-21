@@ -1,4 +1,3 @@
-
 export type Language = 'cs' | 'pl' | 'de';
 
 export const languages = [
@@ -92,7 +91,7 @@ export const translations = {
     ridesharing: "Spolujízdy",
     ridesharingDesc: "Sdílení jízd a matching",
     liveTraffic: "Live doprava",
-    realTimeTraffic: "Real-time traffic data",
+    realTimeTraffic: "Dopravní informace v reálném čase",
     trafficMap: "Dopravní mapa",
     commuteOptimizer: "Optimalizace dojíždění",
     routePlanning: "Plánování tras",
@@ -201,7 +200,7 @@ export const translations = {
     ridesharing: "Wspólne przejazdy",
     ridesharingDesc: "Dzielenie się przejazdami i dopasowywanie",
     liveTraffic: "Ruch na żywo",
-    realTimeTraffic: "Dane o ruchu w czasie rzeczywistym",
+    realTimeTraffic: "Informacje o ruchu w czasie rzeczywistym",
     trafficMap: "Mapa ruchu",
     commuteOptimizer: "Optymalizacja dojazdów",
     routePlanning: "Planowanie tras",
@@ -310,7 +309,7 @@ export const translations = {
     ridesharing: "Fahrgemeinschaften",
     ridesharingDesc: "Fahrtenteilung und Matching",
     liveTraffic: "Live-Verkehr",
-    realTimeTraffic: "Echtzeit-Verkehrsdaten",
+    realTimeTraffic: "Echtzeit-Verkehrsinformationen",
     trafficMap: "Verkehrskarte",
     commuteOptimizer: "Pendeloptimierung",
     routePlanning: "Routenplanung",
