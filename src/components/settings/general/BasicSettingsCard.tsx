@@ -35,18 +35,18 @@ const BasicSettingsCard: React.FC<BasicSettingsCardProps> = ({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Settings className="h-5 w-5" />
-          {t('basicSettings') || 'Základní nastavení'}
+          {t('basicSettings')}
         </CardTitle>
         <CardDescription>
-          {t('generalAppSettings') || 'Obecné nastavení chování aplikace'}
+          {t('generalAppSettings')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label htmlFor="autoSave">{t('autoSave') || 'Automatické ukládání'}</Label>
+            <Label htmlFor="autoSave">{t('autoSave')}</Label>
             <p className="text-sm text-muted-foreground">
-              {t('autoSaveDesc') || 'Automaticky ukládat změny bez potvrzení'}
+              {t('autoSaveDesc')}
             </p>
           </div>
           <Switch
@@ -58,9 +58,9 @@ const BasicSettingsCard: React.FC<BasicSettingsCardProps> = ({
 
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label htmlFor="compactMode">{t('compactMode') || 'Kompaktní režim'}</Label>
+            <Label htmlFor="compactMode">{t('compactMode')}</Label>
             <p className="text-sm text-muted-foreground">
-              {t('compactModeDesc') || 'Menší rozestupy a kompaktnější UI prvky'}
+              {t('compactModeDesc')}
             </p>
           </div>
           <Switch
@@ -72,9 +72,9 @@ const BasicSettingsCard: React.FC<BasicSettingsCardProps> = ({
 
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label htmlFor="autoRefresh">{t('autoRefresh') || 'Automatické obnovování'}</Label>
+            <Label htmlFor="autoRefresh">{t('autoRefresh')}</Label>
             <p className="text-sm text-muted-foreground">
-              {t('autoRefreshDesc') || 'Automaticky obnovovat data v pravidelných intervalech'}
+              {t('autoRefreshDesc')}
             </p>
           </div>
           <Switch
@@ -85,16 +85,16 @@ const BasicSettingsCard: React.FC<BasicSettingsCardProps> = ({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="defaultView">{t('defaultView') || 'Výchozí zobrazení'}</Label>
+          <Label htmlFor="defaultView">{t('defaultView')}</Label>
           <Select value={defaultView} onValueChange={setDefaultView}>
             <SelectTrigger>
-              <SelectValue placeholder={t('selectDefaultPage') || 'Vyberte výchozí stránku'} />
+              <SelectValue placeholder={t('selectDefaultPage')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="dashboard">{t('dashboard') || 'Dashboard'}</SelectItem>
-              <SelectItem value="shifts">{t('shifts') || 'Směny'}</SelectItem>
-              <SelectItem value="vehicles">{t('vehicles') || 'Vozidla'}</SelectItem>
-              <SelectItem value="vocabulary">{t('vocabulary') || 'Slovníček'}</SelectItem>
+              <SelectItem value="dashboard">{t('dashboard')}</SelectItem>
+              <SelectItem value="shifts">{t('shifts')}</SelectItem>
+              <SelectItem value="vehicles">{t('vehicles')}</SelectItem>
+              <SelectItem value="vocabulary">{t('vocabulary')}</SelectItem>
             </SelectContent>
           </Select>
         </div>

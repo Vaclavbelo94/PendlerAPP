@@ -19,10 +19,10 @@ const LanguageSettings: React.FC = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Globe className="h-5 w-5" />
-          {t('settings')} - {t('preferredLanguage')}
+          {t('languageSettings')}
         </CardTitle>
         <CardDescription>
-          {t('selectLanguage')}
+          {t('selectPreferredLanguage')}
         </CardDescription>
       </CardHeader>
       <CardContent>

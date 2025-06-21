@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
@@ -44,10 +43,10 @@ const GeneralSettings = () => {
       };
       
       localStorage.setItem('generalSettings', JSON.stringify(generalSettings));
-      toast.success(t('settingsSaved') || "Obecná nastavení byla uložena");
+      toast.success(t('settingsSaved'));
     } catch (error) {
       console.error('Error saving general settings:', error);
-      toast.error(t('settingsError') || "Chyba při ukládání nastavení");
+      toast.error(t('settingsError'));
     } finally {
       setLoading(false);
     }
@@ -59,15 +58,15 @@ const GeneralSettings = () => {
     setAutoRefresh(true);
     setDefaultView("dashboard");
     localStorage.removeItem('generalSettings');
-    toast.success(t('settingsReset') || "Nastavení byla resetována na výchozí hodnoty");
+    toast.success(t('settingsReset'));
   };
 
   const formatLastSyncTime = (lastSyncTime?: Date | null) => {
-    if (!lastSyncTime) return t('never') || 'Nikdy';
+    if (!lastSyncTime) return t('never');
     try {
       return lastSyncTime.toLocaleString('cs-CZ');
     } catch (error) {
-      return t('unknown') || 'Neznámý';
+      return t('unknown');
     }
   };
 

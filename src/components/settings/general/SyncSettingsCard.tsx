@@ -34,18 +34,18 @@ const SyncSettingsCard: React.FC<SyncSettingsCardProps> = ({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Cloud className="h-5 w-5" />
-          {t('dataSync') || 'Synchronizace dat'}
+          {t('dataSync')}
         </CardTitle>
         <CardDescription>
-          {t('syncSettingsBetweenDevices') || 'Nastavení synchronizace mezi zařízeními'}
+          {t('syncSettingsBetweenDevices')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label htmlFor="backgroundSync">{t('backgroundSync') || 'Synchronizace na pozadí'}</Label>
+            <Label htmlFor="backgroundSync">{t('backgroundSync')}</Label>
             <p className="text-sm text-muted-foreground">
-              {t('autoSyncWhenInactive') || 'Automaticky synchronizovat data i když aplikace není aktivní'}
+              {t('autoSyncWhenInactive')}
             </p>
           </div>
           <Switch
@@ -57,9 +57,9 @@ const SyncSettingsCard: React.FC<SyncSettingsCardProps> = ({
 
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label htmlFor="syncNotifications">{t('syncNotifications') || 'Oznámení o synchronizaci'}</Label>
+            <Label htmlFor="syncNotifications">{t('syncNotifications')}</Label>
             <p className="text-sm text-muted-foreground">
-              {t('showSyncStatusNotifications') || 'Zobrazovat oznámení o stavu synchronizace'}
+              {t('showSyncStatusNotifications')}
             </p>
           </div>
           <Switch
@@ -71,13 +71,13 @@ const SyncSettingsCard: React.FC<SyncSettingsCardProps> = ({
 
         <div className="flex items-center justify-between p-4 border rounded-lg">
           <div>
-            <p className="font-medium">{t('lastSync') || 'Poslední synchronizace'}</p>
+            <p className="font-medium">{t('lastSync')}</p>
             <p className="text-sm text-muted-foreground">
               {formatLastSyncTime(syncSettings.lastSyncTime)}
             </p>
             <div className="flex items-center gap-2 mt-1">
               <Badge variant="secondary">
-                {syncSettings.enableBackgroundSync ? (t('active') || 'Aktivní') : (t('inactive') || 'Neaktivní')}
+                {syncSettings.enableBackgroundSync ? t('active') : t('inactive')}
               </Badge>
             </div>
           </div>
@@ -88,7 +88,7 @@ const SyncSettingsCard: React.FC<SyncSettingsCardProps> = ({
             className="gap-2"
           >
             <RefreshCw className={`h-4 w-4 ${syncLoading ? 'animate-spin' : ''}`} />
-            {syncLoading ? (t('syncing') || 'Synchronizuji...') : (t('synchronize') || 'Synchronizovat')}
+            {syncLoading ? t('syncing') : t('synchronize')}
           </Button>
         </div>
       </CardContent>
