@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/hooks/useLanguage';
 import Layout from '@/components/layouts/Layout';
+import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 import DashboardOverview from '@/components/dashboard/DashboardOverview';
 import DashboardStats from '@/components/dashboard/DashboardStats';
 import DashboardActions from '@/components/dashboard/DashboardActions';
@@ -15,7 +16,7 @@ const Dashboard: React.FC = () => {
   const { t } = useLanguage();
 
   return (
-    <Layout>
+    <Layout navbarRightContent={<NavbarRightContent />}>
       <Helmet>
         <title>{t('dashboard')} | PendlerApp</title>
         <meta name="description" content={t('dashboardDescription')} />
