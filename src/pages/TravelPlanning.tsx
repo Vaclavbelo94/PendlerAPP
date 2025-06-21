@@ -11,6 +11,7 @@ import DashboardBackground from "@/components/common/DashboardBackground";
 import { EnhancedRideSharingLazy, TrafficMapLazy } from "@/components/travel/LazyTravelComponents";
 import { Skeleton } from "@/components/ui/skeleton";
 import TravelMobileCarousel from "@/components/travel/mobile/TravelMobileCarousel";
+import { useLanguage } from "@/hooks/useLanguage";
 
 const LoadingFallback = () => (
   <div className="space-y-4">
@@ -25,6 +26,7 @@ const TravelPlanning = () => {
   const [origin, setOrigin] = useState("Praha, Česká republika");
   const [destination, setDestination] = useState("Dresden, Německo");
   const isMobile = useIsMobile();
+  const { t } = useLanguage();
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);
@@ -52,7 +54,7 @@ const TravelPlanning = () => {
     <Layout navbarRightContent={<NavbarRightContent />}>
       <PremiumCheck featureKey="travel_planning">
         <Helmet>
-          <title>Plánování cest | Pendlerův Pomocník</title>
+          <title>{t('travelPlanning')} | Pendlerův Pomocník</title>
         </Helmet>
         
         <DashboardBackground variant="travel">
@@ -64,15 +66,12 @@ const TravelPlanning = () => {
                   <Map className={`${isMobile ? 'h-5 w-5' : 'h-6 w-6'} text-primary`} />
                 </div>
                 <h1 className={`${isMobile ? 'text-xl' : 'text-3xl'} font-bold text-white`}>
-                  {isMobile ? 'Chytré cestování' : 'Plánování cest'}
+                  {isMobile ? t('smartTravel') : t('travelPlanning')}
                 </h1>
               </div>
               
               <p className={`text-white/80 ${isMobile ? 'text-sm text-center' : 'text-lg'} max-w-3xl`}>
-                {isMobile 
-                  ? 'Spolujízdy a aktuální dopravní situace.' 
-                  : 'Sdílení jízd s ostatními pendlery a sledování aktuální dopravní situace v reálném čase.'
-                }
+                {isMobile ? t('travelDescriptionMobile') : t('travelDescription')}
               </p>
             </section>
             

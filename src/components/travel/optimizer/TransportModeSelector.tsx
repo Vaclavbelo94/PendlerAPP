@@ -4,25 +4,28 @@ import { Button } from '@/components/ui/button';
 import { Car, Train, Bus, Bike } from 'lucide-react';
 import { MobileOptimizedCard } from '@/components/ui/mobile-optimized-card';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface TransportModeSelectorProps {
   selectedModes: string[];
   onModeToggle: (mode: string) => void;
 }
 
-const transportModes = [
-  { id: 'car', label: 'Auto', icon: Car },
-  { id: 'public', label: 'MHD', icon: Train },
-  { id: 'bus', label: 'Autobus', icon: Bus },
-  { id: 'bike', label: 'Kolo', icon: Bike }
-];
-
 const TransportModeSelector: React.FC<TransportModeSelectorProps> = ({
   selectedModes,
   onModeToggle
 }) => {
+  const { t } = useLanguage();
+
+  const transportModes = [
+    { id: 'car', label: 'Auto', icon: Car },
+    { id: 'public', label: 'MHD', icon: Train },
+    { id: 'bus', label: 'Autobus', icon: Bus },
+    { id: 'bike', label: 'Kolo', icon: Bike }
+  ];
+
   return (
-    <MobileOptimizedCard title="Dopravní prostředky" compact>
+    <MobileOptimizedCard title={t('transportMode')} compact>
       <div className="grid grid-cols-2 gap-2">
         {transportModes.map((mode) => {
           const Icon = mode.icon;

@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MapPin } from "lucide-react";
+import { useLanguage } from "@/hooks/useLanguage";
 
 interface SearchFilters {
   origin: string;
@@ -18,11 +19,13 @@ interface RideSearchFormProps {
 }
 
 const RideSearchForm = ({ searchFilters, onSearchFiltersChange, onSearch }: RideSearchFormProps) => {
+  const { t } = useLanguage();
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Vyhledat spolujízdu</CardTitle>
-        <CardDescription>Najděte spolujízdu podle vašich potřeb.</CardDescription>
+        <CardTitle>{t('searchRides')}</CardTitle>
+        <CardDescription>{t('findRide')}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -32,7 +35,7 @@ const RideSearchForm = ({ searchFilters, onSearchFiltersChange, onSearch }: Ride
               className="pl-10"
               value={searchFilters.origin}
               onChange={(e) => onSearchFiltersChange({...searchFilters, origin: e.target.value})}
-              placeholder="Místo odjezdu"
+              placeholder={t('origin')}
             />
           </div>
           <div className="relative">
@@ -41,7 +44,7 @@ const RideSearchForm = ({ searchFilters, onSearchFiltersChange, onSearch }: Ride
               className="pl-10"
               value={searchFilters.destination}
               onChange={(e) => onSearchFiltersChange({...searchFilters, destination: e.target.value})}
-              placeholder="Cíl cesty"
+              placeholder={t('destination')}
             />
           </div>
           <Input 
@@ -49,7 +52,7 @@ const RideSearchForm = ({ searchFilters, onSearchFiltersChange, onSearch }: Ride
             value={searchFilters.date}
             onChange={(e) => onSearchFiltersChange({...searchFilters, date: e.target.value})}
           />
-          <Button onClick={onSearch} className="md:col-span-3">Hledat spolujízdy</Button>
+          <Button onClick={onSearch} className="md:col-span-3">{t('searchRides')}</Button>
         </div>
       </CardContent>
     </Card>

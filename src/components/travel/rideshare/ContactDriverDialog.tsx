@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { rideshareService, RideshareOffer } from "@/services/rideshareService";
+import { useLanguage } from "@/hooks/useLanguage";
 
 interface ContactDriverDialogProps {
   open: boolean;
@@ -15,6 +16,7 @@ interface ContactDriverDialogProps {
 
 const ContactDriverDialog = ({ open, onOpenChange, selectedOffer }: ContactDriverDialogProps) => {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [contactMessage, setContactMessage] = useState('');
 
   const handleContactDriver = async () => {
@@ -23,12 +25,12 @@ const ContactDriverDialog = ({ open, onOpenChange, selectedOffer }: ContactDrive
     try {
       await rideshareService.contactDriver(selectedOffer.id, contactMessage);
       
-      toast.success("Řidič byl kontaktován. Brzy vás bude kontaktovat.");
+      toast.success(t('success'));
       onOpenChange(false);
       setContactMessage('');
     } catch (error) {
       console.error('Error contacting driver:', error);
-      toast.error('Nepodařilo se kontaktovat řidiče');
+      toast.error(t('error'));
     }
   };
 
@@ -36,24 +38,24 @@ const ContactDriverDialog = ({ open, onOpenChange, selectedOffer }: ContactDrive
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Kontaktovat řidiče</DialogTitle>
+          <DialogTitle>{t('findRide')}</DialogTitle>
           <DialogDescription>
-            Pošlete zprávu řidiči a vyjednejte podrobnosti spolujízdy
+            {t('ridesharing')}
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <Textarea
             value={contactMessage}
             onChange={(e) => setContactMessage(e.target.value)}
-            placeholder="Napište zprávu řidiči..."
+            placeholder={t('enterText')}
             rows={4}
           />
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => onOpenChange(false)}>
-              Zrušit
+              {t('cancel')}
             </Button>
             <Button onClick={handleContactDriver} disabled={!contactMessage.trim()}>
-              Odeslat zprávu
+              {t('save')}
             </Button>
           </div>
         </div>

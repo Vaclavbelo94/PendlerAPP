@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { MapPin, Clock } from 'lucide-react';
 import { MobileOptimizedCard } from '@/components/ui/mobile-optimized-card';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface RouteFormProps {
   origin: string;
@@ -25,18 +26,20 @@ const RouteForm: React.FC<RouteFormProps> = ({
   onDepartureTimeChange,
   onOptimize
 }) => {
+  const { t } = useLanguage();
+
   return (
-    <MobileOptimizedCard title="Trasa" compact>
+    <MobileOptimizedCard title={t('routePlanning')} compact>
       <div className="space-y-4">
         <div className="grid grid-cols-1 gap-4">
           <div className="space-y-2">
             <Label htmlFor="origin" className="flex items-center gap-2">
               <MapPin className="h-4 w-4" />
-              Výchozí bod
+              {t('origin')}
             </Label>
             <Input
               id="origin"
-              placeholder="Zadejte výchozí adresu"
+              placeholder={t('origin')}
               value={origin}
               onChange={(e) => onOriginChange(e.target.value)}
             />
@@ -45,11 +48,11 @@ const RouteForm: React.FC<RouteFormProps> = ({
           <div className="space-y-2">
             <Label htmlFor="destination" className="flex items-center gap-2">
               <MapPin className="h-4 w-4" />
-              Cíl
+              {t('destination')}
             </Label>
             <Input
               id="destination"
-              placeholder="Zadejte cílovou adresu"
+              placeholder={t('destination')}
               value={destination}
               onChange={(e) => onDestinationChange(e.target.value)}
             />
@@ -58,7 +61,7 @@ const RouteForm: React.FC<RouteFormProps> = ({
           <div className="space-y-2">
             <Label htmlFor="departure" className="flex items-center gap-2">
               <Clock className="h-4 w-4" />
-              Čas odjezdu
+              {t('departureTime')}
             </Label>
             <Input
               id="departure"
@@ -74,7 +77,7 @@ const RouteForm: React.FC<RouteFormProps> = ({
           className="w-full"
           disabled={!origin || !destination}
         >
-          Optimalizovat trasu
+          {t('optimizeRoute')}
         </Button>
       </div>
     </MobileOptimizedCard>

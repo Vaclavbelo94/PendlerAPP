@@ -20,15 +20,15 @@ export const TravelNavigation: React.FC<TravelNavigationProps> = ({
   const sections = [
     {
       id: 'ridesharing',
-      label: t('ridesharing') || 'Spolujízdy',
+      label: t('ridesharing'),
       icon: Users,
-      description: t('ridesharingDesc') || 'Sdílení jízd a matching'
+      description: t('ridesharingDesc')
     },
     {
       id: 'traffic',
-      label: t('liveTraffic') || 'Live doprava',
+      label: t('liveTraffic'),
       icon: AlertTriangle,
-      description: t('realTimeTraffic') || 'Real-time traffic data'
+      description: t('realTimeTraffic')
     }
   ];
 
