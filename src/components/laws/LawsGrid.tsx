@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useLanguage } from '@/hooks/useLanguage';
 import EnhancedLawCard from './enhanced/EnhancedLawCard';
 
 interface LawsGridProps {
@@ -17,6 +18,8 @@ interface LawsGridProps {
 }
 
 const LawsGrid: React.FC<LawsGridProps> = ({ laws }) => {
+  const { t } = useLanguage();
+
   if (laws.length === 0) {
     return (
       <motion.div
@@ -24,8 +27,8 @@ const LawsGrid: React.FC<LawsGridProps> = ({ laws }) => {
         animate={{ opacity: 1 }}
         className="text-center py-12"
       >
-        <div className="text-white/60 text-lg mb-2">Žádné zákony nenalezeny</div>
-        <div className="text-white/40 text-sm">Zkuste změnit kategorii nebo vyhledávání</div>
+        <div className="text-white/60 text-lg mb-2">{t('noLawsFound')}</div>
+        <div className="text-white/40 text-sm">{t('tryChangeCategory')}</div>
       </motion.div>
     );
   }

@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface EnhancedLawCardProps {
   law: {
@@ -23,6 +24,8 @@ interface EnhancedLawCardProps {
 }
 
 export const EnhancedLawCard: React.FC<EnhancedLawCardProps> = ({ law, index = 0 }) => {
+  const { t } = useLanguage();
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -80,7 +83,7 @@ export const EnhancedLawCard: React.FC<EnhancedLawCardProps> = ({ law, index = 0
           <div className="flex items-center justify-between">
             <div className="flex items-center text-xs text-white/60">
               <Clock className="h-3 w-3 mr-1" />
-              Aktualizováno
+              {t('updated')}
             </div>
             
             <Button
@@ -90,7 +93,7 @@ export const EnhancedLawCard: React.FC<EnhancedLawCardProps> = ({ law, index = 0
               className="group/btn text-white hover:text-primary hover:bg-white/10 transition-all duration-200"
             >
               <Link to={law.path}>
-                Číst více
+                {t('readMore')}
                 <ArrowRight className="h-3 w-3 ml-1 transition-transform group-hover/btn:translate-x-1" />
               </Link>
             </Button>

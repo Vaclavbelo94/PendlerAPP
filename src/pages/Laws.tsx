@@ -7,8 +7,9 @@ import LawsNavigation from '@/components/laws/LawsNavigation';
 import LawsLoadingSkeleton from '@/components/laws/LawsLoadingSkeleton';
 import LawsMobileCarousel from '@/components/laws/mobile/LawsMobileCarousel';
 import DashboardBackground from '@/components/common/DashboardBackground';
-import { lawItems } from '@/data/lawsData';
+import { getLawItems } from '@/data/lawsData';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useLanguage } from '@/hooks/useLanguage';
 import EnhancedLawCard from '@/components/laws/enhanced/EnhancedLawCard';
 import Layout from '@/components/layouts/Layout';
 import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
@@ -17,6 +18,7 @@ const Laws = () => {
   const [activeCategory, setActiveCategory] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
   const isMobile = useIsMobile();
+  const { t } = useLanguage();
 
   // Simulate initial loading with shorter duration
   React.useEffect(() => {
@@ -27,12 +29,14 @@ const Laws = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  const lawItems = getLawItems(t);
+
   const filteredLaws = useMemo(() => {
     if (activeCategory === "all") {
       return lawItems;
     }
     return lawItems.filter(law => law.category === activeCategory);
-  }, [activeCategory]);
+  }, [activeCategory, lawItems]);
 
   if (isLoading) {
     return (
@@ -64,13 +68,10 @@ const Laws = () => {
                 </div>
                 <div>
                   <h1 className={`${isMobile ? 'text-2xl' : 'text-4xl'} font-bold tracking-tight text-white`}>
-                    {isMobile ? 'Německé zákony' : 'Průvodce německými zákony'}
+                    {isMobile ? t('germanLaws') : t('lawsGuide')}
                   </h1>
                   <p className={`text-white/80 ${isMobile ? 'text-sm mt-2' : 'text-lg mt-2'} max-w-3xl`}>
-                    {isMobile 
-                      ? 'Kompletní přehled zákonů pro pendlery v Německu.' 
-                      : 'Kompletní přehled nejdůležitějších zákonů a předpisů pro pendlery a zaměstnance v Německu.'
-                    }
+                    {isMobile ? t('lawsDescriptionMobile') : t('lawsDescription')}
                   </p>
                 </div>
               </div>

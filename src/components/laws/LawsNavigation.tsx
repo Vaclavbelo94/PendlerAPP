@@ -3,49 +3,40 @@ import React from 'react';
 import { BookOpen, Briefcase, Euro, Users, Heart } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/hooks/useLanguage';
+import { getLawCategories } from '@/data/lawsData';
 
 interface LawsNavigationProps {
   activeCategory: string;
   onCategoryChange: (categoryId: string) => void;
 }
 
-const lawsTabs = [
-  {
-    id: 'all',
-    icon: BookOpen,
-    label: 'Všechny zákony',
-    description: 'Kompletní přehled všech zákonů'
-  },
-  {
-    id: 'work',
-    icon: Briefcase,
-    label: 'Pracovní právo',
-    description: 'Zákony týkající se práce'
-  },
-  {
-    id: 'tax',
-    icon: Euro,
-    label: 'Daně',
-    description: 'Daňové předpisy a pravidla'
-  },
-  {
-    id: 'social',
-    icon: Users,
-    label: 'Sociální zabezpečení',
-    description: 'Sociální dávky a pojištění'
-  },
-  {
-    id: 'health',
-    icon: Heart,
-    label: 'Zdravotní pojištění',
-    description: 'Zdravotnické předpisy'
-  }
-];
-
 export const LawsNavigation: React.FC<LawsNavigationProps> = ({
   activeCategory,
   onCategoryChange
 }) => {
+  const { t } = useLanguage();
+  
+  const lawsTabs = [
+    {
+      id: 'all',
+      icon: BookOpen,
+      label: t('allLaws'),
+      description: t('allLawsDescription')
+    },
+    ...getLawCategories(t).map(cat => ({
+      id: cat.id,
+      icon: cat.id === 'work' ? Briefcase : 
+           cat.id === 'tax' ? Euro :
+           cat.id === 'social' ? Users : Heart,
+      label: cat.label,
+      description: cat.id === 'work' ? t('workLawDescription') :
+                  cat.id === 'tax' ? t('taxesDescription') :
+                  cat.id === 'social' ? t('socialSecurityDescription') :
+                  t('healthInsuranceDescription')
+    }))
+  ];
+
   return (
     <div className="flex justify-center mb-8">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 w-full max-w-7xl">

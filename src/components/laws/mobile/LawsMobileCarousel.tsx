@@ -4,9 +4,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
-import { lawCategories } from '@/data/lawsData';
+import { getLawCategories, getLawItems } from '@/data/lawsData';
+import { useLanguage } from '@/hooks/useLanguage';
 import LawsGrid from '../LawsGrid';
-import { lawItems } from '@/data/lawsData';
 
 interface LawsMobileCarouselProps {
   activeCategory: string;
@@ -17,7 +17,8 @@ export const LawsMobileCarousel: React.FC<LawsMobileCarouselProps> = ({
   activeCategory,
   onCategoryChange
 }) => {
-  const allCategories = [{ id: "all", label: "Všechny", iconName: "Scale" }, ...lawCategories];
+  const { t } = useLanguage();
+  const allCategories = [{ id: "all", label: t('allLaws'), iconName: "Scale" }, ...getLawCategories(t)];
   const categoryIds = allCategories.map(cat => cat.id);
   const currentIndex = allCategories.findIndex(cat => cat.id === activeCategory);
 
@@ -38,6 +39,7 @@ export const LawsMobileCarousel: React.FC<LawsMobileCarouselProps> = ({
     onCategoryChange(allCategories[nextIndex].id);
   };
 
+  const lawItems = getLawItems(t);
   const filteredLaws = activeCategory === "all" 
     ? lawItems 
     : lawItems.filter(law => law.category === activeCategory);
@@ -103,7 +105,7 @@ export const LawsMobileCarousel: React.FC<LawsMobileCarouselProps> = ({
 
       {/* Category info */}
       <div className="text-center text-sm text-white/70 px-4">
-        {currentIndex + 1} z {allCategories.length} • {filteredLaws.length} zákonů
+        {currentIndex + 1} z {allCategories.length} • {filteredLaws.length} {t('lawsCount')}
       </div>
     </div>
   );

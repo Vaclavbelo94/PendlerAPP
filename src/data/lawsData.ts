@@ -1,128 +1,130 @@
 
-export const lawCategories = [
-  { id: "work", label: "Pracovní právo", iconName: "Briefcase" },
-  { id: "tax", label: "Daně", iconName: "Euro" },
-  { id: "social", label: "Sociální zabezpečení", iconName: "Users" },
-  { id: "health", label: "Zdravotní pojištění", iconName: "Heart" },
+import { useLanguage } from '@/hooks/useLanguage';
+
+export const getLawCategories = (t: (key: string) => string) => [
+  { id: "work", label: t('workLaw'), iconName: "Briefcase" },
+  { id: "tax", label: t('taxes'), iconName: "Euro" },
+  { id: "social", label: t('socialSecurity'), iconName: "Users" },
+  { id: "health", label: t('healthInsurance'), iconName: "Heart" },
 ];
 
-export const lawItems = [
+export const getLawItems = (t: (key: string) => string) => [
   {
     id: "minimum-wage",
-    title: "Minimální mzda",
-    description: "Informace o minimální mzdě v Německu",
+    title: t('minimumWage'),
+    description: t('minimumWageDescription'),
     category: "work",
-    updated: "2025-04-15",
+    updated: "2025-01-15",
     iconName: "Euro",
     iconColor: "text-green-600",
     path: "/laws/minimum-wage"
   },
   {
     id: "tax-classes",
-    title: "Daňové třídy",
-    description: "Vysvětlení daňových tříd v Německu",
+    title: t('taxClasses'),
+    description: t('taxClassesDescription'),
     category: "tax",
-    updated: "2025-03-28",
+    updated: "2025-01-10",
     iconName: "FileText",
     iconColor: "text-yellow-600",
     path: "/laws/tax-classes"
   },
   {
     id: "health-insurance",
-    title: "Zdravotní pojištění",
-    description: "Jak funguje zdravotní pojištění v Německu",
+    title: t('healthInsuranceSystem'),
+    description: t('healthInsuranceSystemDescription'),
     category: "health", 
-    updated: "2025-04-02",
+    updated: "2025-01-20",
     iconName: "Heart",
     iconColor: "text-red-600",
     path: "/laws/health-insurance"
   },
   {
     id: "work-contract",
-    title: "Pracovní smlouva",
-    description: "Náležitosti pracovní smlouvy v Německu",
+    title: t('workContract'),
+    description: t('workContractDescription'),
     category: "work",
-    updated: "2025-03-18",
+    updated: "2025-01-12",
     iconName: "Briefcase",
     iconColor: "text-blue-600",
     path: "/laws/work-contract"
   },
   {
     id: "tax-return",
-    title: "Daňové přiznání",
-    description: "Jak podat daňové přiznání v Německu",
+    title: t('taxReturn'),
+    description: t('taxReturnDescription'),
     category: "tax",
-    updated: "2025-04-10",
+    updated: "2025-01-18",
     iconName: "FileText",
     iconColor: "text-yellow-600",
     path: "/laws/tax-return"
   },
   {
     id: "pension-insurance",
-    title: "Důchodové pojištění",
-    description: "Systém důchodového pojištění v Německu",
+    title: t('pensionInsurance'),
+    description: t('pensionInsuranceDescription'),
     category: "social",
-    updated: "2025-03-25",
+    updated: "2025-01-08",
     iconName: "Clock",
     iconColor: "text-purple-600",
     path: "/laws/pension-insurance"
   },
   {
     id: "employee-protection",
-    title: "Ochrana zaměstnanců",
-    description: "Práva zaměstnanců a ochranné zákony",
+    title: t('employeeProtection'),
+    description: t('employeeProtectionDescription'),
     category: "work",
-    updated: "2025-03-30",
+    updated: "2025-01-14",
     iconName: "UserCheck",
     iconColor: "text-blue-600",
     path: "/laws/employee-protection"
   },
   {
     id: "child-benefits",
-    title: "Přídavky na děti",
-    description: "Informace o příspěvku Kindergeld",
+    title: t('childBenefits'),
+    description: t('childBenefitsDescription'),
     category: "social",
-    updated: "2025-04-05",
+    updated: "2025-01-22",
     iconName: "Baby",
     iconColor: "text-pink-600",
     path: "/laws/child-benefits"
   },
   {
     id: "working-hours",
-    title: "Pracovní doba",
-    description: "Pravidla pracovní doby v Německu",
+    title: t('workingHours'),
+    description: t('workingHoursDescription'),
     category: "work", 
-    updated: "2025-05-10",
+    updated: "2025-01-16",
     iconName: "Clock",
     iconColor: "text-blue-600",
     path: "/laws/working-hours"
   },
   {
     id: "minimum-holidays",
-    title: "Minimální dovolená",
-    description: "Zákonný nárok na dovolenou v Německu",
+    title: t('minimumHolidays'),
+    description: t('minimumHolidaysDescription'),
     category: "work",
-    updated: "2025-05-12",
+    updated: "2025-01-11",
     iconName: "CalendarDays",
     iconColor: "text-green-600",
     path: "/laws/minimum-holidays"
   },
   {
     id: "parental-allowance",
-    title: "Rodičovský příspěvek",
-    description: "Informace o příspěvku Elterngeld",
+    title: t('parentalAllowance'),
+    description: t('parentalAllowanceDescription'),
     category: "social",
-    updated: "2025-05-15",
+    updated: "2025-01-19",
     iconName: "BabyIcon",
     iconColor: "text-pink-600",
     path: "/laws/parental-allowance"
   },
   {
     id: "legal-aid",
-    title: "Právní pomoc",
-    description: "Možnosti právní pomoci pro zahraniční pracovníky",
+    title: t('legalAid'),
+    description: t('legalAidDescription'),
     category: "work",
-    updated: "2025-05-08",
+    updated: "2025-01-13",
     iconName: "Scale",
     iconColor: "text-indigo-600",
     path: "/laws/legal-aid"
