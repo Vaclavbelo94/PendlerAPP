@@ -10,7 +10,7 @@ export const ModernFooter: React.FC = () => {
 
   const footerSections = [
     {
-      title: t('footer.features'),
+      title: t('footer.features') || 'Funkce',
       links: [
         { key: 'dashboard', path: '/dashboard' },
         { key: 'shifts', path: '/shifts' },
@@ -18,7 +18,7 @@ export const ModernFooter: React.FC = () => {
       ]
     },
     {
-      title: t('footer.aboutUs'),
+      title: t('footer.aboutUs') || 'O nás',
       links: [
         { key: 'translator', path: '/translator' },
         { key: 'taxAdvisor', path: '/tax-advisor' },
@@ -27,7 +27,7 @@ export const ModernFooter: React.FC = () => {
       ]
     },
     {
-      title: t('settings'),
+      title: t('settings') || 'Nastavení',
       links: [
         { key: 'premium', path: '/premium' },
         { key: 'profile', path: '/profile' },
@@ -35,7 +35,7 @@ export const ModernFooter: React.FC = () => {
       ]
     },
     {
-      title: t('contact'),
+      title: t('contact') || 'Kontakt',
       links: [
         { key: 'faq', path: '/faq' },
         { key: 'contact', path: '/contact' },
@@ -53,10 +53,10 @@ export const ModernFooter: React.FC = () => {
           <div className="lg:col-span-1">
             <Link to="/" className="flex items-center space-x-2 mb-4">
               <Briefcase className="h-6 w-6 text-primary" />
-              <span className="font-bold text-xl">{t('footer.appName')}</span>
+              <span className="font-bold text-xl">{t('footer.appName') || 'PendlerApp'}</span>
             </Link>
             <p className="text-sm text-muted-foreground mb-4">
-              {t('heroSubtitle')}
+              {t('heroSubtitle') || 'Komplexní řešení pro pendlery'}
             </p>
             <div className="flex space-x-4">
               <Link to="/contact" className="text-muted-foreground hover:text-primary transition-colors">
@@ -92,17 +92,17 @@ export const ModernFooter: React.FC = () => {
 
         <div className="border-t mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-sm text-muted-foreground mb-4 md:mb-0">
-            © {currentYear} {t('footer.appName')}. {t('footer.allRightsReserved')}.
+            © {currentYear} {t('footer.appName') || 'PendlerApp'}. {t('footer.allRightsReserved') || 'Všechna práva vyhrazena'}.
           </p>
           <div className="flex space-x-6">
             <Link to="/privacy" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-              {t('privacy')}
+              {t('privacy') || 'Soukromí'}
             </Link>
             <Link to="/terms" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-              {t('terms')}
+              {t('terms') || 'Podmínky'}
             </Link>
             <Link to="/cookies" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-              {t('cookies')}
+              {t('cookies') || 'Cookies'}
             </Link>
           </div>
         </div>
