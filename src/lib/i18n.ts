@@ -1,4 +1,5 @@
 
+
 export type Language = 'cs' | 'pl' | 'de';
 
 export const languages = [
@@ -101,7 +102,6 @@ export const translations = {
     // Tabulky a seznamy
     noData: 'Žádná data k zobrazení',
     noResults: 'Žádné výsledky',
-    loading: 'Načítání...',
     page: 'Stránka',
     of: 'z',
     rows: 'řádků',
@@ -172,7 +172,6 @@ export const translations = {
     efficiency: 'Efektivita',
     travelCosts: 'Náklady na dopravu',
     documentsReady: 'Připravené dokumenty',
-    completed: 'Dokončeno',
     remaining: 'Zbývá',
     
     // Profile a Settings
@@ -289,7 +288,6 @@ export const translations = {
     // Tabele i listy
     noData: 'Brak danych do wyświetlenia',
     noResults: 'Brak wyników',
-    loading: 'Ładowanie...',
     page: 'Strona',
     of: 'z',
     rows: 'wierszy',
@@ -360,7 +358,6 @@ export const translations = {
     efficiency: 'Wydajność',
     travelCosts: 'Koszty podróży',
     documentsReady: 'Gotowe dokumenty',
-    completed: 'Ukończone',
     remaining: 'Pozostało',
     
     // Profile a Settings
@@ -477,7 +474,6 @@ export const translations = {
     // Tabellen und Listen
     noData: 'Keine Daten zum Anzeigen',
     noResults: 'Keine Ergebnisse',
-    loading: 'Laden...',
     page: 'Seite',
     of: 'von',
     rows: 'Zeilen',
@@ -548,7 +544,6 @@ export const translations = {
     efficiency: 'Effizienz',
     travelCosts: 'Reisekosten',
     documentsReady: 'Bereite Dokumente',
-    completed: 'Abgeschlossen',
     remaining: 'Verbleibend',
     
     // Profile a Settings
@@ -572,3 +567,4 @@ export const translations = {
     welcomeDescription: 'Willkommen in der App zur effizienten Verwaltung Ihrer beruflichen Aktivitäten'
   }
 } as const;
+
