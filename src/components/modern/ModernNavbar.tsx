@@ -35,7 +35,7 @@ export const ModernNavbar: React.FC = () => {
       )}
       onClick={() => mobile && setIsOpen(false)}
     >
-      {t(item.key)}
+      {t(item.key) || item.key}
     </Link>
   );
 

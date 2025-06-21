@@ -111,7 +111,7 @@ export const ModernHero: React.FC = () => {
                     <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-r from-primary/20 to-blue-500/20 mb-4 group-hover:scale-110 transition-transform">
                       <feature.icon className="h-6 w-6 text-primary" />
                     </div>
-                    <div className="text-sm font-medium">{t(feature.key)}</div>
+                    <div className="text-sm font-medium">{t(feature.key) || feature.key}</div>
                   </CardContent>
                 </Card>
               </Link>

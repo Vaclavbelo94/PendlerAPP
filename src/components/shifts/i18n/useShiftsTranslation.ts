@@ -4,12 +4,18 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { translations, Language } from './translations';
 
 export const useShiftsTranslation = () => {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   
-  const t = useMemo(() => {
-    const lang = translations[language as Language] || translations.cs;
-    
+  const shiftsT = useMemo(() => {
     return (key: string) => {
+      // Try to get from main translations first with shifts prefix
+      const mainTranslation = t(`shifts.${key}`);
+      if (mainTranslation && mainTranslation !== `shifts.${key}`) {
+        return mainTranslation;
+      }
+
+      // Fallback to local shifts translations if available
+      const lang = translations[language as Language] || translations.cs;
       const keys = key.split('.');
       let value: any = lang.shifts;
       
@@ -19,7 +25,7 @@ export const useShiftsTranslation = () => {
       
       return value || key;
     };
-  }, [language]);
+  }, [language, t]);
 
-  return { t };
+  return { t: shiftsT };
 };

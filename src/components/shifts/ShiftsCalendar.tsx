@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useOptimizedShiftsManagement } from '@/hooks/shifts/useOptimizedShiftsManagement';
 import UnifiedShiftCalendar from './calendar/UnifiedShiftCalendar';
 import { Shift } from '@/types/shifts';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface ShiftsCalendarProps {
   shifts?: Shift[];
@@ -19,6 +20,7 @@ const ShiftsCalendar: React.FC<ShiftsCalendarProps> = ({
 }) => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const { user } = useAuth();
+  const { t } = useLanguage();
   
   // Use internal shift management if no external shifts provided
   const shiftsManagement = useOptimizedShiftsManagement(user?.id);
