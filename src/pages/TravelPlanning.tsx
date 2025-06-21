@@ -4,7 +4,8 @@ import { Helmet } from "react-helmet";
 import { Map } from "lucide-react";
 import PremiumCheck from "@/components/premium/PremiumCheck";
 import { useIsMobile } from "@/hooks/use-mobile";
-import ResponsivePage from "@/components/layouts/ResponsivePage";
+import Layout from "@/components/layouts/Layout";
+import { NavbarRightContent } from "@/components/layouts/NavbarPatch";
 import TravelNavigation from "@/components/travel/TravelNavigation";
 import DashboardBackground from "@/components/common/DashboardBackground";
 import { EnhancedRideSharingLazy, TrafficMapLazy } from "@/components/travel/LazyTravelComponents";
@@ -48,61 +49,63 @@ const TravelPlanning = () => {
   };
 
   return (
-    <PremiumCheck featureKey="travel_planning">
-      <DashboardBackground variant="travel">
-        <ResponsivePage enableLandscapeOptimization={true}>
-          <Helmet>
-            <title>Plánování cest | Pendlerův Pomocník</title>
-          </Helmet>
-          
-          {/* Header section */}
-          <section className={`mb-${isMobile ? '4' : '6'}`} role="banner">
-            <div className={`flex items-center gap-3 mb-4 ${isMobile ? 'flex-col text-center' : ''}`}>
-              <div className={`${isMobile ? 'p-1.5' : 'p-2'} rounded-full bg-primary/10`} role="img" aria-label="Ikona mapy">
-                <Map className={`${isMobile ? 'h-5 w-5' : 'h-6 w-6'} text-primary`} />
-              </div>
-              <h1 className={`${isMobile ? 'text-xl' : 'text-3xl'} font-bold text-white`}>
-                {isMobile ? 'Chytré cestování' : 'Plánování cest'}
-              </h1>
-            </div>
-            
-            <p className={`text-white/80 ${isMobile ? 'text-sm text-center' : 'text-lg'} max-w-3xl`}>
-              {isMobile 
-                ? 'Spolujízdy a aktuální dopravní situace.' 
-                : 'Sdílení jízd s ostatními pendlery a sledování aktuální dopravní situace v reálném čase.'
-              }
-            </p>
-          </section>
-          
-          {/* Mobile or Desktop UI based on device */}
-          {isMobile ? (
-            <TravelMobileCarousel 
-              activeTab={activeTab} 
-              onTabChange={handleTabChange}
-              origin={origin}
-              destination={destination}
-              onOriginChange={setOrigin}
-              onDestinationChange={setDestination}
-            />
-          ) : (
-            <>
-              {/* Navigation - only two tabs now */}
-              <TravelNavigation
-                activeTab={activeTab}
-                onTabChange={handleTabChange}
-              />
-              
-              {/* Tab content with suspense */}
-              <Suspense fallback={<LoadingFallback />}>
-                <div className="space-y-4">
-                  {renderTabContent()}
+    <Layout navbarRightContent={<NavbarRightContent />}>
+      <PremiumCheck featureKey="travel_planning">
+        <Helmet>
+          <title>Plánování cest | Pendlerův Pomocník</title>
+        </Helmet>
+        
+        <DashboardBackground variant="travel">
+          <div className="container mx-auto px-4 py-6">
+            {/* Header section */}
+            <section className={`mb-${isMobile ? '4' : '6'}`} role="banner">
+              <div className={`flex items-center gap-3 mb-4 ${isMobile ? 'flex-col text-center' : ''}`}>
+                <div className={`${isMobile ? 'p-1.5' : 'p-2'} rounded-full bg-primary/10`} role="img" aria-label="Ikona mapy">
+                  <Map className={`${isMobile ? 'h-5 w-5' : 'h-6 w-6'} text-primary`} />
                 </div>
-              </Suspense>
-            </>
-          )}
-        </ResponsivePage>
-      </DashboardBackground>
-    </PremiumCheck>
+                <h1 className={`${isMobile ? 'text-xl' : 'text-3xl'} font-bold text-white`}>
+                  {isMobile ? 'Chytré cestování' : 'Plánování cest'}
+                </h1>
+              </div>
+              
+              <p className={`text-white/80 ${isMobile ? 'text-sm text-center' : 'text-lg'} max-w-3xl`}>
+                {isMobile 
+                  ? 'Spolujízdy a aktuální dopravní situace.' 
+                  : 'Sdílení jízd s ostatními pendlery a sledování aktuální dopravní situace v reálném čase.'
+                }
+              </p>
+            </section>
+            
+            {/* Mobile or Desktop UI based on device */}
+            {isMobile ? (
+              <TravelMobileCarousel 
+                activeTab={activeTab} 
+                onTabChange={handleTabChange}
+                origin={origin}
+                destination={destination}
+                onOriginChange={setOrigin}
+                onDestinationChange={setDestination}
+              />
+            ) : (
+              <>
+                {/* Navigation - only two tabs now */}
+                <TravelNavigation
+                  activeTab={activeTab}
+                  onTabChange={handleTabChange}
+                />
+                
+                {/* Tab content with suspense */}
+                <Suspense fallback={<LoadingFallback />}>
+                  <div className="space-y-4">
+                    {renderTabContent()}
+                  </div>
+                </Suspense>
+              </>
+            )}
+          </div>
+        </DashboardBackground>
+      </PremiumCheck>
+    </Layout>
   );
 };
 

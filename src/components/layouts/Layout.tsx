@@ -71,11 +71,13 @@ const Layout = ({ children, navbarRightContent }: LayoutProps) => {
   const MobileLandscapeLayout = () => (
     <div className="flex min-h-screen bg-background w-full">
       <div className="flex-1 flex flex-col min-w-0">
-        <UnifiedNavbar 
-          toggleSidebar={() => setSidebarOpen(!sidebarOpen)} 
-          rightContent={navbarRightContent}
-          sidebarOpen={sidebarOpen}
-        />
+        <div className="sticky top-0 z-30">
+          <UnifiedNavbar 
+            toggleSidebar={() => setSidebarOpen(!sidebarOpen)} 
+            rightContent={navbarRightContent}
+            sidebarOpen={sidebarOpen}
+          />
+        </div>
         
         <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
           <SheetContent 
