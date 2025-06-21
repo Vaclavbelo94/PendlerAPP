@@ -1,50 +1,54 @@
+
 import React from 'react';
 import { FileTextIcon, BookOpenIcon, CalculatorIcon, UsersIcon, HelpCircleIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface TaxAdvisorNavigationProps {
   activeTab: string;
   onTabChange: (tabId: string) => void;
 }
 
-const taxAdvisorTabs = [
-  {
-    id: 'pendler',
-    icon: CalculatorIcon,
-    label: 'Pendler kalkulačka',
-    description: 'Reisepauschale a daňové optimalizace'
-  },
-  {
-    id: 'interactive',
-    icon: HelpCircleIcon,
-    label: 'Interaktivní průvodce',
-    description: 'Krok za krokem k optimálním daním'
-  },
-  {
-    id: 'documents',
-    icon: FileTextIcon,
-    label: 'Dokumenty',
-    description: 'Generátor PDF dokumentů'
-  },
-  {
-    id: 'guide',
-    icon: BookOpenIcon,
-    label: 'Průvodce',
-    description: 'Průvodce daňovým přiznáním'
-  },
-  {
-    id: 'calculator',
-    icon: CalculatorIcon,
-    label: 'Základní kalkulátor',
-    description: 'Rychlé daňové výpočty'
-  }
-];
-
 export const TaxAdvisorNavigation: React.FC<TaxAdvisorNavigationProps> = ({
   activeTab,
   onTabChange
 }) => {
+  const { t } = useLanguage();
+
+  const taxAdvisorTabs = [
+    {
+      id: 'pendler',
+      icon: CalculatorIcon,
+      label: t('pendlerCalculator') || 'Pendler kalkulačka',
+      description: t('reisepauschaleOptimization') || 'Reisepauschale a daňové optimalizace'
+    },
+    {
+      id: 'interactive',
+      icon: HelpCircleIcon,
+      label: t('interactiveGuide') || 'Interaktivní průvodce',
+      description: t('stepByStepTaxes') || 'Krok za krokem k optimálním daním'
+    },
+    {
+      id: 'documents',
+      icon: FileTextIcon,
+      label: t('documents') || 'Dokumenty',
+      description: t('pdfGenerator') || 'Generátor PDF dokumentů'
+    },
+    {
+      id: 'guide',
+      icon: BookOpenIcon,
+      label: t('guide') || 'Průvodce',
+      description: t('taxReturnGuide') || 'Průvodce daňovým přiznáním'
+    },
+    {
+      id: 'calculator',
+      icon: CalculatorIcon,
+      label: t('basicCalculator') || 'Základní kalkulátor',
+      description: t('quickTaxCalculations') || 'Rychlé daňové výpočty'
+    }
+  ];
+
   return (
     <div className="flex justify-center">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full max-w-6xl">
@@ -69,7 +73,6 @@ export const TaxAdvisorNavigation: React.FC<TaxAdvisorNavigationProps> = ({
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.98 }}
             >
-              {/* Background gradient for active state */}
               {isActive && (
                 <motion.div
                   className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 rounded-2xl"

@@ -4,44 +4,46 @@ import { User, Settings, Activity, Crown, Eye } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface ProfileNavigationProps {
   activeTab: string;
   onTabChange: (tabId: string) => void;
 }
 
-const profileTabs = [
-  {
-    id: 'overview',
-    icon: User,
-    label: 'Přehled',
-    description: 'Základní informace o profilu'
-  },
-  {
-    id: 'appearance',
-    icon: Eye,
-    label: 'Vzhled',
-    description: 'Nastavení vzhledu aplikace'
-  },
-  {
-    id: 'subscription',
-    icon: Crown,
-    label: 'Předplatné',
-    description: 'Správa Premium účtu'
-  },
-  {
-    id: 'activity',
-    icon: Activity,
-    label: 'Aktivita',
-    description: 'Historie a statistiky'
-  }
-];
-
 export const ProfileNavigation: React.FC<ProfileNavigationProps> = ({
   activeTab,
   onTabChange
 }) => {
   const isMobile = useIsMobile();
+  const { t } = useLanguage();
+
+  const profileTabs = [
+    {
+      id: 'overview',
+      icon: User,
+      label: t('dashboard') || 'Přehled',
+      description: t('basicProfileInfo') || 'Základní informace o profilu'
+    },
+    {
+      id: 'appearance',
+      icon: Eye,
+      label: t('appearance') || 'Vzhled',
+      description: t('appAppearanceSettings') || 'Nastavení vzhledu aplikace'
+    },
+    {
+      id: 'subscription',
+      icon: Crown,
+      label: t('subscription') || 'Předplatné',
+      description: t('premiumAccountManagement') || 'Správa Premium účtu'
+    },
+    {
+      id: 'activity',
+      icon: Activity,
+      label: t('activity') || 'Aktivita',
+      description: t('historyAndStats') || 'Historie a statistiky'
+    }
+  ];
 
   return (
     <div className="flex justify-center">
@@ -70,7 +72,6 @@ export const ProfileNavigation: React.FC<ProfileNavigationProps> = ({
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.98 }}
             >
-              {/* Background gradient for active state */}
               {isActive && (
                 <motion.div
                   className="absolute inset-0 bg-gradient-to-br from-white/10 to-white/5 rounded-2xl"

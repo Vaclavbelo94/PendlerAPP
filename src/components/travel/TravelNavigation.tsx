@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Users, AlertTriangle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface TravelNavigationProps {
   activeTab: string;
@@ -14,19 +15,20 @@ export const TravelNavigation: React.FC<TravelNavigationProps> = ({
   activeTab,
   onTabChange
 }) => {
-  // Simplified navigation with only two sections
+  const { t } = useLanguage();
+
   const sections = [
     {
       id: 'ridesharing',
-      label: 'Spolujízdy',
+      label: t('ridesharing') || 'Spolujízdy',
       icon: Users,
-      description: 'Sdílení jízd a matching'
+      description: t('ridesharingDesc') || 'Sdílení jízd a matching'
     },
     {
       id: 'traffic',
-      label: 'Live doprava',
+      label: t('liveTraffic') || 'Live doprava',
       icon: AlertTriangle,
-      description: 'Real-time traffic data'
+      description: t('realTimeTraffic') || 'Real-time traffic data'
     }
   ];
 

@@ -22,7 +22,7 @@ const LanguageSettings: React.FC = () => {
           {t('settings')} - {t('translateFrom')}
         </CardTitle>
         <CardDescription>
-          Vyberte jazyk rozhraní aplikace (čeština, polština, němčina)
+          {t('selectLanguage') || 'Vyberte jazyk rozhraní aplikace (čeština, polština, němčina)'}
         </CardDescription>
       </CardHeader>
       <CardContent>

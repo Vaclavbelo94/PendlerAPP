@@ -5,6 +5,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Settings } from 'lucide-react';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface BasicSettingsCardProps {
   autoSave: boolean;
@@ -27,23 +28,25 @@ const BasicSettingsCard: React.FC<BasicSettingsCardProps> = ({
   defaultView,
   setDefaultView
 }) => {
+  const { t } = useLanguage();
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Settings className="h-5 w-5" />
-          Základní nastavení
+          {t('basicSettings') || 'Základní nastavení'}
         </CardTitle>
         <CardDescription>
-          Obecné nastavení chování aplikace
+          {t('generalAppSettings') || 'Obecné nastavení chování aplikace'}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label htmlFor="autoSave">Automatické ukládání</Label>
+            <Label htmlFor="autoSave">{t('autoSave') || 'Automatické ukládání'}</Label>
             <p className="text-sm text-muted-foreground">
-              Automaticky ukládat změny bez potvrzení
+              {t('autoSaveDesc') || 'Automaticky ukládat změny bez potvrzení'}
             </p>
           </div>
           <Switch
@@ -55,9 +58,9 @@ const BasicSettingsCard: React.FC<BasicSettingsCardProps> = ({
 
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label htmlFor="compactMode">Kompaktní režim</Label>
+            <Label htmlFor="compactMode">{t('compactMode') || 'Kompaktní režim'}</Label>
             <p className="text-sm text-muted-foreground">
-              Menší rozestupy a kompaktnější UI prvky
+              {t('compactModeDesc') || 'Menší rozestupy a kompaktnější UI prvky'}
             </p>
           </div>
           <Switch
@@ -69,9 +72,9 @@ const BasicSettingsCard: React.FC<BasicSettingsCardProps> = ({
 
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label htmlFor="autoRefresh">Automatické obnovování</Label>
+            <Label htmlFor="autoRefresh">{t('autoRefresh') || 'Automatické obnovování'}</Label>
             <p className="text-sm text-muted-foreground">
-              Automaticky obnovovat data v pravidelných intervalech
+              {t('autoRefreshDesc') || 'Automaticky obnovovat data v pravidelných intervalech'}
             </p>
           </div>
           <Switch
@@ -82,16 +85,16 @@ const BasicSettingsCard: React.FC<BasicSettingsCardProps> = ({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="defaultView">Výchozí zobrazení</Label>
+          <Label htmlFor="defaultView">{t('defaultView') || 'Výchozí zobrazení'}</Label>
           <Select value={defaultView} onValueChange={setDefaultView}>
             <SelectTrigger>
-              <SelectValue placeholder="Vyberte výchozí stránku" />
+              <SelectValue placeholder={t('selectDefaultPage') || 'Vyberte výchozí stránku'} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="dashboard">Dashboard</SelectItem>
-              <SelectItem value="shifts">Směny</SelectItem>
-              <SelectItem value="vehicles">Vozidla</SelectItem>
-              <SelectItem value="language">Výuka němčiny</SelectItem>
+              <SelectItem value="dashboard">{t('dashboard')}</SelectItem>
+              <SelectItem value="shifts">{t('shifts')}</SelectItem>
+              <SelectItem value="vehicles">{t('vehicles')}</SelectItem>
+              <SelectItem value="language">{t('vocabulary')}</SelectItem>
             </SelectContent>
           </Select>
         </div>

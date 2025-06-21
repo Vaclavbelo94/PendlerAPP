@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Car, Gauge, Wrench } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface VehicleNavigationProps {
   activeTab: string;
@@ -14,24 +15,26 @@ export const VehicleNavigation: React.FC<VehicleNavigationProps> = ({
   activeTab,
   onTabChange
 }) => {
+  const { t } = useLanguage();
+
   const sections = [
     {
       id: 'overview',
-      label: 'Přehled',
+      label: t('dashboard') || 'Přehled',
       icon: Car,
-      description: 'Rychlý přehled vozidla'
+      description: t('vehicleOverview') || 'Rychlý přehled vozidla'
     },
     {
       id: 'fuel',
-      label: 'Spotřeba',
+      label: t('fuelConsumption') || 'Spotřeba',
       icon: Gauge,
-      description: 'Palivo a náklady'
+      description: t('fuelAndCosts') || 'Palivo a náklady'
     },
     {
       id: 'service',
-      label: 'Servis',
+      label: t('maintenance') || 'Servis',
       icon: Wrench,
-      description: 'Údržba a opravy'
+      description: t('maintenanceAndRepairs') || 'Údržba a opravy'
     }
   ];
 

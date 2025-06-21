@@ -3,43 +3,46 @@ import React from 'react';
 import { Bot, Languages, BookOpen, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface TranslatorNavigationProps {
   activeTab: string;
   onTabChange: (tabId: string) => void;
 }
 
-const translatorTabs = [
-  {
-    id: 'ai-chat',
-    icon: Bot,
-    label: 'AI Chat',
-    description: 'Inteligentní AI asistent pro překlady'
-  },
-  {
-    id: 'quick-translate',
-    icon: Languages,
-    label: 'Rychlé překlady',
-    description: 'Klasický překladač'
-  },
-  {
-    id: 'phrasebook',
-    icon: BookOpen,
-    label: 'Frázovník',
-    description: 'Užitečné fráze pro práci'
-  },
-  {
-    id: 'history',
-    icon: Clock,
-    label: 'Historie',
-    description: 'Předchozí překlady'
-  }
-];
-
 export const TranslatorNavigation: React.FC<TranslatorNavigationProps> = ({
   activeTab,
   onTabChange
 }) => {
+  const { t } = useLanguage();
+
+  const translatorTabs = [
+    {
+      id: 'ai-chat',
+      icon: Bot,
+      label: t('aiChat') || 'AI Chat',
+      description: t('aiChatDesc') || 'Inteligentní AI asistent pro překlady'
+    },
+    {
+      id: 'quick-translate',
+      icon: Languages,
+      label: t('quickTranslations') || 'Rychlé překlady',
+      description: t('classicTranslator') || 'Klasický překladač'
+    },
+    {
+      id: 'phrasebook',
+      icon: BookOpen,
+      label: t('phrasebook') || 'Frázovník',
+      description: t('workPhrases') || 'Užitečné fráze pro práci'
+    },
+    {
+      id: 'history',
+      icon: Clock,
+      label: t('history') || 'Historie',
+      description: t('previousTranslations') || 'Předchozí překlady'
+    }
+  ];
+
   return (
     <div className="flex justify-center">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full max-w-6xl">
@@ -64,7 +67,6 @@ export const TranslatorNavigation: React.FC<TranslatorNavigationProps> = ({
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.98 }}
             >
-              {/* Background gradient for active state */}
               {isActive && (
                 <motion.div
                   className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 rounded-2xl"
