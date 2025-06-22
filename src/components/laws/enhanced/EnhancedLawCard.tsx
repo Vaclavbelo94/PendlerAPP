@@ -24,7 +24,13 @@ interface EnhancedLawCardProps {
 }
 
 export const EnhancedLawCard: React.FC<EnhancedLawCardProps> = ({ law, index = 0 }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const locale = language === 'cs' ? 'cs-CZ' : language === 'pl' ? 'pl-PL' : 'de-DE';
+    return date.toLocaleDateString(locale);
+  };
 
   return (
     <motion.div
@@ -66,7 +72,7 @@ export const EnhancedLawCard: React.FC<EnhancedLawCardProps> = ({ law, index = 0
               variant="secondary" 
               className="bg-white/10 text-white border-white/20 text-xs"
             >
-              {new Date(law.updated).toLocaleDateString('cs-CZ')}
+              {formatDate(law.updated)}
             </Badge>
           </div>
           
