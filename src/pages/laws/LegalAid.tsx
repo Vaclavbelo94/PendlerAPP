@@ -6,13 +6,59 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { useLanguage } from '@/hooks/useLanguage';
 
 const LegalAid = () => {
+  const { t, language } = useLanguage();
+
+  const getLocalizedContent = () => {
+    return {
+      title: t('legalAid'),
+      subtitle: language === 'de' 
+        ? 'Rechtshilfemöglichkeiten für ausländische Arbeitnehmer'
+        : language === 'pl'
+        ? 'Możliwości pomocy prawnej dla zagranicznych pracowników'
+        : 'Možnosti právní pomoci pro zahraniční pracovníky',
+      freeLegalAid: t('freeLegalAid'),
+      description: language === 'de'
+        ? 'In Deutschland haben ausländische Arbeitnehmer in bestimmten Situationen Anspruch auf kostenlose Rechtshilfe:'
+        : language === 'pl'
+        ? 'W Niemczech zagraniczni pracownicy mają prawo do bezpłatnej pomocy prawnej w określonych sytuacjach:'
+        : 'V Německu mají zahraniční pracovníci nárok na bezplatnou právní pomoc v určitých situacích:',
+      situations: language === 'de'
+        ? [
+            'Arbeitsrechtliche Streitigkeiten mit dem Arbeitgeber',
+            'Probleme mit Unterkunft und Miete',
+            'Diskriminierung am Arbeitsplatz',
+            'Unbezahlte Löhne oder Verletzung des Arbeitsvertrags',
+            'Sozialleistungen und Versicherung'
+          ]
+        : language === 'pl'
+        ? [
+            'Spory pracownicze z pracodawcą',
+            'Problemy z zakwaterowaniem i najmem',
+            'Dyskryminacja w miejscu pracy',
+            'Nieopłacone wynagrodzenie lub naruszenie umowy o pracę',
+            'Świadczenia socjalne i ubezpieczenie'
+          ]
+        : [
+            'Pracovněprávní spory s zaměstnavatelem',
+            'Problémy s ubytováním a nájmem',
+            'Diskriminace na pracovišti',
+            'Nezaplacená mzda nebo porušení pracovní smlouvy',
+            'Sociální dávky a pojištění'
+          ],
+      whereToGetHelp: t('whereToGetHelp')
+    };
+  };
+
+  const content = getLocalizedContent();
+
   return (
     <div className="container mx-auto px-4 py-8">
       <Link to="/laws" className="flex items-center mb-6 text-sm font-medium text-primary hover:underline">
         <ArrowLeft className="mr-1 h-4 w-4" />
-        Zpět na přehled zákonů
+        {t('backToLaws')}
       </Link>
 
       <div className="flex items-center gap-4 mb-6">
@@ -20,8 +66,8 @@ const LegalAid = () => {
           <Scale className="h-8 w-8 text-indigo-600" />
         </div>
         <div>
-          <h1 className="text-3xl font-bold">Právní pomoc</h1>
-          <p className="text-muted-foreground">Možnosti právní pomoci pro zahraniční pracovníky</p>
+          <h1 className="text-3xl font-bold">{content.title}</h1>
+          <p className="text-muted-foreground">{content.subtitle}</p>
         </div>
       </div>
 
@@ -30,33 +76,36 @@ const LegalAid = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Scale className="h-5 w-5 text-indigo-600" />
-              Bezplatná právní pomoc
+              {content.freeLegalAid}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p>
-              V Německu mají zahraniční pracovníci nárok na bezplatnou právní pomoc v určitých situacích:
-            </p>
+            <p>{content.description}</p>
             <ul className="list-disc list-inside space-y-2 text-sm">
-              <li>Pracovněprávní spory s zaměstnavatelem</li>
-              <li>Problémy s ubytováním a nájmem</li>
-              <li>Diskriminace na pracovišti</li>
-              <li>Nezaplacená mzda nebo porušení pracovní smlouvy</li>
-              <li>Sociální dávky a pojištění</li>
+              {content.situations.map((situation, index) => (
+                <li key={index}>{situation}</li>
+              ))}
             </ul>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Kde získat právní pomoc</CardTitle>
+            <CardTitle>{content.whereToGetHelp}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-4">
               <div className="border rounded-lg p-4">
-                <h3 className="font-semibold mb-2">Odborové svazy (Gewerkschaften)</h3>
+                <h3 className="font-semibold mb-2">
+                  {language === 'de' ? 'Gewerkschaften' : language === 'pl' ? 'Związki zawodowe' : 'Odborové svazy (Gewerkschaften)'}
+                </h3>
                 <p className="text-sm text-muted-foreground mb-3">
-                  Členové odborových svazů mají nárok na bezplatnou právní pomoc v pracovněprávních věcech.
+                  {language === 'de' 
+                    ? 'Gewerkschaftsmitglieder haben Anspruch auf kostenlose Rechtshilfe in arbeitsrechtlichen Angelegenheiten.'
+                    : language === 'pl'
+                    ? 'Członkowie związków zawodowych mają prawo do bezpłatnej pomocy prawnej w sprawach pracowniczych.'
+                    : 'Členové odborových svazů mají nárok na bezplatnou právní pomoc v pracovněprávních věcech.'
+                  }
                 </p>
                 <div className="flex items-center gap-2 text-sm">
                   <Phone className="h-4 w-4" />
@@ -65,9 +114,16 @@ const LegalAid = () => {
               </div>
 
               <div className="border rounded-lg p-4">
-                <h3 className="font-semibold mb-2">Beratungsstellen für Migranten</h3>
+                <h3 className="font-semibold mb-2">
+                  {language === 'de' ? 'Beratungsstellen für Migranten' : language === 'pl' ? 'Centra doradztwa dla migrantów' : 'Beratungsstellen für Migranten'}
+                </h3>
                 <p className="text-sm text-muted-foreground mb-3">
-                  Specializované poradny pro migranty poskytují bezplatné právní poradenství.
+                  {language === 'de'
+                    ? 'Spezialisierte Beratungsstellen für Migranten bieten kostenlose Rechtsberatung.'
+                    : language === 'pl'
+                    ? 'Wyspecjalizowane centra doradztwa dla migrantów oferują bezpłatne porady prawne.'
+                    : 'Specializované poradny pro migranty poskytují bezplatné právní poradenství.'
+                  }
                 </p>
                 <div className="space-y-1 text-sm">
                   <div className="flex items-center gap-2">
@@ -76,93 +132,28 @@ const LegalAid = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <MapPin className="h-4 w-4" />
-                    <span>Dostupné ve všech větších městech</span>
+                    <span>
+                      {language === 'de' ? 'Verfügbar in allen größeren Städten' : language === 'pl' ? 'Dostępne we wszystkich większych miastach' : 'Dostupné ve všech větších městech'}
+                    </span>
                   </div>
                 </div>
               </div>
 
               <div className="border rounded-lg p-4">
-                <h3 className="font-semibold mb-2">Rechtsantragsstelle (Soud)</h3>
+                <h3 className="font-semibold mb-2">
+                  {language === 'de' ? 'Rechtsantragsstelle (Gericht)' : language === 'pl' ? 'Rechtsantragsstelle (Sąd)' : 'Rechtsantragsstelle (Soud)'}
+                </h3>
                 <p className="text-sm text-muted-foreground mb-3">
-                  Pro osoby s nízkými příjmy - žádost o bezplatnou právní pomoc u soudu.
+                  {language === 'de'
+                    ? 'Für Personen mit geringem Einkommen - Antrag auf kostenlose Rechtshilfe beim Gericht.'
+                    : language === 'pl'
+                    ? 'Dla osób o niskich dochodach - wniosek o bezpłatną pomoc prawną w sądzie.'
+                    : 'Pro osoby s nízkými příjmy - žádost o bezplatnou právní pomoc u soudu.'
+                  }
                 </p>
-                <Badge variant="secondary">Závisí na příjmech</Badge>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Pracovněprávní poradny</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="border rounded-lg p-4">
-                <h3 className="font-semibold mb-2">Arbeitsrechtliche Beratung</h3>
-                <p className="text-sm text-muted-foreground mb-3">
-                  Specializované poradny pro pracovní právo - první konzultace často zdarma.
-                </p>
-                <div className="flex items-center gap-4 text-sm">
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4" />
-                    <span>Po-Pá: 9:00-17:00</span>
-                  </div>
-                  <Badge variant="outline">30-60 min zdarma</Badge>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Důležité kontakty</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="space-y-3">
-                <div>
-                  <h4 className="font-medium">Faire Mobilität</h4>
-                  <p className="text-sm text-muted-foreground">Poradna pro mobilní pracovníky z EU</p>
-                  <div className="flex items-center gap-2 text-sm mt-1">
-                    <Phone className="h-4 w-4" />
-                    <span>030 21240-270</span>
-                  </div>
-                </div>
-                
-                <Separator />
-                
-                <div>
-                  <h4 className="font-medium">Bundesamt für Migration</h4>
-                  <p className="text-sm text-muted-foreground">Úřad pro migraci a uprchlíky</p>
-                  <div className="flex items-center gap-2 text-sm mt-1">
-                    <Phone className="h-4 w-4" />
-                    <span>0911 943-0</span>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="space-y-3">
-                <div>
-                  <h4 className="font-medium">Verbraucherzentrale</h4>
-                  <p className="text-sm text-muted-foreground">Centrum pro spotřebitele</p>
-                  <div className="flex items-center gap-2 text-sm mt-1">
-                    <Phone className="h-4 w-4" />
-                    <span>0180 5 791 879</span>
-                  </div>
-                </div>
-                
-                <Separator />
-                
-                <div>
-                  <h4 className="font-medium">Antidiskriminierungsstelle</h4>
-                  <p className="text-sm text-muted-foreground">Úřad proti diskriminaci</p>
-                  <div className="flex items-center gap-2 text-sm mt-1">
-                    <Phone className="h-4 w-4" />
-                    <span>030 18555-1865</span>
-                  </div>
-                </div>
+                <Badge variant="secondary">
+                  {language === 'de' ? 'Einkommensabhängig' : language === 'pl' ? 'Zależne od dochodów' : 'Závisí na příjmech'}
+                </Badge>
               </div>
             </div>
           </CardContent>
@@ -172,11 +163,11 @@ const LegalAid = () => {
           <Link to="/laws">
             <Button variant="outline" className="flex items-center gap-2">
               <ArrowLeft className="h-4 w-4" />
-              Zpět na přehled zákonů
+              {t('backToLaws')}
             </Button>
           </Link>
           <Badge variant="outline">
-            Aktualizováno: 8. května 2025
+            {t('updated')}: 8. května 2025
           </Badge>
         </div>
       </div>
