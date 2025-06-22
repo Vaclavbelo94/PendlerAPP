@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Scale, Phone, Mail, MapPin } from 'lucide-react';
@@ -18,13 +17,13 @@ const LegalAid = () => {
 
   const getLocalizedContent = () => {
     return {
-      title: t('legalAid'),
+      title: t('laws.legalAidTitle'),
       subtitle: language === 'de' 
         ? 'Rechtshilfemöglichkeiten für ausländische Arbeitnehmer'
         : language === 'pl'
         ? 'Możliwości pomocy prawnej dla zagranicznych pracowników'
         : 'Možnosti právní pomoci pro zahraniční pracovníky',
-      freeLegalAid: t('freeLegalAid'),
+      freeLegalAid: t('laws.freeLegalAid'),
       description: language === 'de'
         ? 'In Deutschland haben ausländische Arbeitnehmer in bestimmten Situationen Anspruch auf kostenlose Rechtshilfe:'
         : language === 'pl'
@@ -53,7 +52,7 @@ const LegalAid = () => {
             'Nezaplacená mzda nebo porušení pracovní smlouvy',
             'Sociální dávky a pojištění'
           ],
-      whereToGetHelp: t('whereToGetHelp'),
+      whereToGetHelp: t('laws.whereToGetHelp'),
       unionsTitle: language === 'de' ? 'Gewerkschaften' : language === 'pl' ? 'Związki zawodowe' : 'Odborové svazy (Gewerkschaften)',
       unionsDesc: language === 'de' 
         ? 'Gewerkschaftsmitglieder haben Anspruch auf kostenlose Rechtshilfe in arbeitsrechtlichen Angelegenheiten.'
@@ -83,7 +82,7 @@ const LegalAid = () => {
     <div className="container mx-auto px-4 py-8">
       <Link to="/laws" className="flex items-center mb-6 text-sm font-medium text-primary hover:underline">
         <ArrowLeft className="mr-1 h-4 w-4" />
-        {t('backToLaws')}
+        {t('laws.backToLaws')}
       </Link>
 
       <div className="flex items-center gap-4 mb-6">
@@ -173,11 +172,11 @@ const LegalAid = () => {
           <Link to="/laws">
             <Button variant="outline" className="flex items-center gap-2">
               <ArrowLeft className="h-4 w-4" />
-              {t('backToLaws')}
+              {t('laws.backToLaws')}
             </Button>
           </Link>
           <Badge variant="outline">
-            {t('updated')}: {formatDate('2025-05-08')}
+            {t('laws.updated')}: {formatDate('2025-05-08')}
           </Badge>
         </div>
       </div>

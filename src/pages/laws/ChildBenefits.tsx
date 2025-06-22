@@ -7,13 +7,19 @@ import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/hooks/useLanguage';
 
 const ChildBenefits = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const locale = language === 'cs' ? 'cs-CZ' : language === 'pl' ? 'pl-PL' : 'de-DE';
+    return date.toLocaleDateString(locale);
+  };
 
   return (
     <div className="container mx-auto px-4 py-6">
       <Link to="/laws" className="inline-flex items-center mb-6 text-sm font-medium text-primary hover:underline">
         <ArrowLeft className="mr-1 h-4 w-4" />
-        {t('backToLaws')}
+        {t('laws.backToLaws')}
       </Link>
 
       <div className="flex items-center gap-4 mb-6">
@@ -21,9 +27,9 @@ const ChildBenefits = () => {
           <Baby className="h-6 w-6 text-pink-600" />
         </div>
         <div>
-          <h1 className="text-3xl font-bold">{t('childBenefitsTitle')}</h1>
+          <h1 className="text-3xl font-bold">{t('laws.childBenefitsTitle')}</h1>
           <Badge variant="outline" className="mt-2">
-            {t('updated')}: 5. dubna 2025
+            {t('laws.updated')}: {formatDate('2025-04-05')}
           </Badge>
         </div>
       </div>
@@ -35,14 +41,14 @@ const ChildBenefits = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="text-2xl font-bold text-pink-600 mb-2">{t('kindergeldAmount')}</div>
-              <p className="text-muted-foreground">{t('kindergeldDesc')}</p>
+              <div className="text-2xl font-bold text-pink-600 mb-2">{t('laws.kindergeldAmount')}</div>
+              <p className="text-muted-foreground">{t('laws.kindergeldDesc')}</p>
               <div>
-                <h4 className="font-semibold mb-2">{t('ageLimits')}</h4>
+                <h4 className="font-semibold mb-2">{t('laws.ageLimits')}</h4>
                 <ul className="list-disc pl-6 space-y-1">
-                  <li>{t('upTo18')}</li>
-                  <li>{t('upTo25')}</li>
-                  <li>{t('disabled')}</li>
+                  <li>{t('laws.upTo18')}</li>
+                  <li>{t('laws.upTo25')}</li>
+                  <li>{t('laws.disabled')}</li>
                 </ul>
               </div>
             </div>
@@ -51,36 +57,36 @@ const ChildBenefits = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>{t('eligibility')}</CardTitle>
+            <CardTitle>{t('laws.eligibility')}</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="list-disc pl-6 space-y-2">
-              <li>{t('permanentResidence')}</li>
-              <li>{t('sameHousehold')}</li>
-              <li>{t('childUnprovided')}</li>
-              <li>{t('ageConditions')}</li>
+              <li>{t('laws.permanentResidence')}</li>
+              <li>{t('laws.sameHousehold')}</li>
+              <li>{t('laws.childUnprovided')}</li>
+              <li>{t('laws.ageConditions')}</li>
             </ul>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>{t('howToApply')}</CardTitle>
+            <CardTitle>{t('laws.howToApply')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div>
-                <h4 className="font-semibold">{t('whereToApply')}</h4>
-                <p className="text-sm text-muted-foreground">{t('familienkasse')}</p>
+                <h4 className="font-semibold">{t('laws.whereToApply')}</h4>
+                <p className="text-sm text-muted-foreground">{t('laws.familienkasse')}</p>
               </div>
               <div>
-                <h4 className="font-semibold">{t('requiredDocuments')}</h4>
+                <h4 className="font-semibold">{t('laws.requiredDocuments')}</h4>
                 <ul className="list-disc pl-6 space-y-1 text-sm">
-                  <li>{t('applicationForm')}</li>
-                  <li>{t('birthCertificate')}</li>
-                  <li>{t('idDocument')}</li>
-                  <li>{t('residenceConfirmation')}</li>
-                  <li>{t('studyConfirmation')}</li>
+                  <li>{t('laws.applicationForm')}</li>
+                  <li>{t('laws.birthCertificate')}</li>
+                  <li>{t('laws.idDocument')}</li>
+                  <li>{t('laws.residenceConfirmation')}</li>
+                  <li>{t('laws.studyConfirmation')}</li>
                 </ul>
               </div>
             </div>
@@ -89,18 +95,18 @@ const ChildBenefits = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>{t('kinderzuschlag')}</CardTitle>
+            <CardTitle>{t('laws.kinderzuschlag')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              <div className="text-lg font-bold text-green-600">{t('upTo250')}</div>
-              <p className="text-sm text-muted-foreground">{t('lowIncomeDesc')}</p>
+              <div className="text-lg font-bold text-green-600">{t('laws.upTo250')}</div>
+              <p className="text-sm text-muted-foreground">{t('laws.lowIncomeDesc')}</p>
               <div>
-                <h4 className="font-semibold">{t('kinderzuschlagConditions')}</h4>
+                <h4 className="font-semibold">{t('laws.kinderzuschlagConditions')}</h4>
                 <ul className="list-disc pl-6 space-y-1 text-sm">
-                  <li>{t('minimumIncome')}</li>
-                  <li>{t('incomeNotSufficient')}</li>
-                  <li>{t('noAlg2Needed')}</li>
+                  <li>{t('laws.minimumIncome')}</li>
+                  <li>{t('laws.incomeNotSufficient')}</li>
+                  <li>{t('laws.noAlg2Needed')}</li>
                 </ul>
               </div>
             </div>

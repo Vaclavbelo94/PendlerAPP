@@ -7,13 +7,19 @@ import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/hooks/useLanguage';
 
 const TaxReturn = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const locale = language === 'cs' ? 'cs-CZ' : language === 'pl' ? 'pl-PL' : 'de-DE';
+    return date.toLocaleDateString(locale);
+  };
 
   return (
     <div className="container mx-auto px-4 py-6">
       <Link to="/laws" className="inline-flex items-center mb-6 text-sm font-medium text-primary hover:underline">
         <ArrowLeft className="mr-1 h-4 w-4" />
-        {t('backToLaws')}
+        {t('laws.backToLaws')}
       </Link>
 
       <div className="flex items-center gap-4 mb-6">
@@ -21,9 +27,9 @@ const TaxReturn = () => {
           <FileText className="h-6 w-6 text-yellow-600" />
         </div>
         <div>
-          <h1 className="text-3xl font-bold">{t('taxReturnTitle')}</h1>
+          <h1 className="text-3xl font-bold">{t('laws.taxReturnTitle')}</h1>
           <Badge variant="outline" className="mt-2">
-            {t('updated')}: 10. dubna 2025
+            {t('laws.updated')}: {formatDate('2025-04-10')}
           </Badge>
         </div>
       </div>
@@ -31,32 +37,32 @@ const TaxReturn = () => {
       <div className="grid gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>{t('whoMustFile')}</CardTitle>
+            <CardTitle>{t('laws.whoMustFile')}</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="list-disc pl-6 space-y-2">
-              <li>{t('selfEmployed')}</li>
-              <li>{t('sideIncome')}</li>
-              <li>{t('marriedTaxClass')}</li>
-              <li>{t('multipleEmployers')}</li>
-              <li>{t('unemploymentBenefits')}</li>
+              <li>{t('laws.selfEmployed')}</li>
+              <li>{t('laws.sideIncome')}</li>
+              <li>{t('laws.marriedTaxClass')}</li>
+              <li>{t('laws.multipleEmployers')}</li>
+              <li>{t('laws.unemploymentBenefits')}</li>
             </ul>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>{t('filingDeadlines')}</CardTitle>
+            <CardTitle>{t('laws.filingDeadlines')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div>
-                <h4 className="font-semibold">{t('standardDeadline')}</h4>
-                <p className="text-sm text-muted-foreground">{t('standardDeadlineDesc')}</p>
+                <h4 className="font-semibold">{t('laws.standardDeadline')}</h4>
+                <p className="text-sm text-muted-foreground">{t('laws.standardDeadlineDesc')}</p>
               </div>
               <div>
-                <h4 className="font-semibold">{t('withTaxAdvisor')}</h4>
-                <p className="text-sm text-muted-foreground">{t('withTaxAdvisorDesc')}</p>
+                <h4 className="font-semibold">{t('laws.withTaxAdvisor')}</h4>
+                <p className="text-sm text-muted-foreground">{t('laws.withTaxAdvisorDesc')}</p>
               </div>
             </div>
           </CardContent>
@@ -64,16 +70,16 @@ const TaxReturn = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>{t('deductibleItems')}</CardTitle>
+            <CardTitle>{t('laws.deductibleItems')}</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="list-disc pl-6 space-y-2">
-              <li>{t('commutingCosts')}</li>
-              <li>{t('workingTools')}</li>
-              <li>{t('furtherEducation')}</li>
-              <li>{t('insuranceContributions')}</li>
-              <li>{t('churchTax')}</li>
-              <li>{t('charityDonations')}</li>
+              <li>{t('laws.commutingCosts')}</li>
+              <li>{t('laws.workingTools')}</li>
+              <li>{t('laws.furtherEducation')}</li>
+              <li>{t('laws.insuranceContributions')}</li>
+              <li>{t('laws.churchTax')}</li>
+              <li>{t('laws.charityDonations')}</li>
             </ul>
           </CardContent>
         </Card>

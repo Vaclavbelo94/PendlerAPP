@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ArrowLeft, Briefcase } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -91,7 +90,7 @@ const WorkContract = () => {
     <div className="container mx-auto px-4 py-6">
       <Link to="/laws" className="inline-flex items-center mb-6 text-sm font-medium text-primary hover:underline">
         <ArrowLeft className="mr-1 h-4 w-4" />
-        {t('backToLaws')}
+        {t('laws.backToLaws')}
       </Link>
 
       <div className="flex items-center gap-4 mb-6">
@@ -99,9 +98,9 @@ const WorkContract = () => {
           <Briefcase className="h-6 w-6 text-blue-600" />
         </div>
         <div>
-          <h1 className="text-3xl font-bold">{t('workContract')}</h1>
+          <h1 className="text-3xl font-bold">{t('laws.workContract')}</h1>
           <Badge variant="outline" className="mt-2">
-            {t('updated')}: {formatDate('2025-03-18')}
+            {t('laws.updated')}: {formatDate('2025-03-18')}
           </Badge>
         </div>
       </div>
@@ -109,7 +108,7 @@ const WorkContract = () => {
       <div className="grid gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>{t('contractRequirements')}</CardTitle>
+            <CardTitle>{t('laws.contractRequirements')}</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="list-disc pl-6 space-y-2">
@@ -122,7 +121,7 @@ const WorkContract = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>{t('probationPeriod')}</CardTitle>
+            <CardTitle>{t('laws.probationPeriod')}</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="mb-4">
@@ -133,7 +132,7 @@ const WorkContract = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>{t('typesOfEmployment')}</CardTitle>
+            <CardTitle>{t('laws.typesOfEmployment')}</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="list-disc pl-6 space-y-2">

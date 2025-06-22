@@ -7,13 +7,19 @@ import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/hooks/useLanguage';
 
 const WorkingHours = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const locale = language === 'cs' ? 'cs-CZ' : language === 'pl' ? 'pl-PL' : 'de-DE';
+    return date.toLocaleDateString(locale);
+  };
 
   return (
     <div className="container mx-auto px-4 py-6">
       <Link to="/laws" className="inline-flex items-center mb-6 text-sm font-medium text-primary hover:underline">
         <ArrowLeft className="mr-1 h-4 w-4" />
-        {t('backToLaws')}
+        {t('laws.backToLaws')}
       </Link>
 
       <div className="flex items-center gap-4 mb-6">
@@ -21,9 +27,9 @@ const WorkingHours = () => {
           <Clock className="h-6 w-6 text-blue-600" />
         </div>
         <div>
-          <h1 className="text-3xl font-bold">{t('workingHoursTitle')}</h1>
+          <h1 className="text-3xl font-bold">{t('laws.workingHoursTitle')}</h1>
           <Badge variant="outline" className="mt-2">
-            {t('updated')}: 10. května 2025
+            {t('laws.updated')}: {formatDate('2025-05-10')}
           </Badge>
         </div>
       </div>
@@ -31,21 +37,21 @@ const WorkingHours = () => {
       <div className="grid gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>{t('workingTimeAct')}</CardTitle>
+            <CardTitle>{t('laws.workingTimeAct')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div>
-                <h4 className="font-semibold text-blue-600">{t('maxDailyHours')}</h4>
-                <p className="text-sm text-muted-foreground">{t('maxDailyHoursDesc')}</p>
+                <h4 className="font-semibold text-blue-600">{t('laws.maxDailyHours')}</h4>
+                <p className="text-sm text-muted-foreground">{t('laws.maxDailyHoursDesc')}</p>
               </div>
               <div>
-                <h4 className="font-semibold text-green-600">{t('weeklyLimit')}</h4>
-                <p className="text-sm text-muted-foreground">{t('weeklyLimitDesc')}</p>
+                <h4 className="font-semibold text-green-600">{t('laws.weeklyLimit')}</h4>
+                <p className="text-sm text-muted-foreground">{t('laws.weeklyLimitDesc')}</p>
               </div>
               <div>
-                <h4 className="font-semibold text-orange-600">{t('dailyRest')}</h4>
-                <p className="text-sm text-muted-foreground">{t('dailyRestDesc')}</p>
+                <h4 className="font-semibold text-orange-600">{t('laws.dailyRest')}</h4>
+                <p className="text-sm text-muted-foreground">{t('laws.dailyRestDesc')}</p>
               </div>
             </div>
           </CardContent>
@@ -53,21 +59,21 @@ const WorkingHours = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>{t('breaksAndPauses')}</CardTitle>
+            <CardTitle>{t('laws.breaksAndPauses')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span>{t('work6to9Hours')}</span>
-                <span className="font-semibold">{t('break30min')}</span>
+                <span>{t('laws.work6to9Hours')}</span>
+                <span className="font-semibold">{t('laws.break30min')}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span>{t('workOver9Hours')}</span>
-                <span className="font-semibold">{t('break45min')}</span>
+                <span>{t('laws.workOver9Hours')}</span>
+                <span className="font-semibold">{t('laws.break45min')}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span>{t('maxContinuous')}</span>
-                <span className="font-semibold">{t('maxContinuous6h')}</span>
+                <span>{t('laws.maxContinuous')}</span>
+                <span className="font-semibold">{t('laws.maxContinuous6h')}</span>
               </div>
             </div>
           </CardContent>
@@ -75,35 +81,35 @@ const WorkingHours = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>{t('nightWork')}</CardTitle>
+            <CardTitle>{t('laws.nightWork')}</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="list-disc pl-6 space-y-2">
-              <li><strong>{t('nightTime')}</strong></li>
-              <li><strong>{t('nightShift')}</strong></li>
-              <li><strong>{t('nightWorkLimit')}</strong></li>
-              <li><strong>{t('healthExams')}</strong></li>
-              <li><strong>{t('dayWorkTransfer')}</strong></li>
+              <li><strong>{t('laws.nightTime')}</strong></li>
+              <li><strong>{t('laws.nightShift')}</strong></li>
+              <li><strong>{t('laws.nightWorkLimit')}</strong></li>
+              <li><strong>{t('laws.healthExams')}</strong></li>
+              <li><strong>{t('laws.dayWorkTransfer')}</strong></li>
             </ul>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>{t('sundayHolidayWork')}</CardTitle>
+            <CardTitle>{t('laws.sundayHolidayWork')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <p>{t('sundayWorkDesc')}</p>
+              <p>{t('laws.sundayWorkDesc')}</p>
               <ul className="list-disc pl-6 space-y-1">
-                <li>{t('healthcare')}</li>
-                <li>{t('transport')}</li>
-                <li>{t('hospitality')}</li>
-                <li>{t('energy')}</li>
-                <li>{t('agriculture')}</li>
+                <li>{t('laws.healthcare')}</li>
+                <li>{t('laws.transport')}</li>
+                <li>{t('laws.hospitality')}</li>
+                <li>{t('laws.energy')}</li>
+                <li>{t('laws.agriculture')}</li>
               </ul>
               <div className="bg-yellow-50 p-3 rounded-md mt-4">
-                <p className="text-sm"><strong>{t('compensation')}</strong></p>
+                <p className="text-sm"><strong>{t('laws.compensation')}</strong></p>
               </div>
             </div>
           </CardContent>
@@ -111,21 +117,21 @@ const WorkingHours = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>{t('flexibleWork')}</CardTitle>
+            <CardTitle>{t('laws.flexibleWork')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               <div>
-                <h4 className="font-semibold">{t('gleitzeit')}</h4>
-                <p className="text-sm text-muted-foreground">{t('gleitzeitDesc')}</p>
+                <h4 className="font-semibold">{t('laws.gleitzeit')}</h4>
+                <p className="text-sm text-muted-foreground">{t('laws.gleitzeitDesc')}</p>
               </div>
               <div>
-                <h4 className="font-semibold">{t('homeoffice')}</h4>
-                <p className="text-sm text-muted-foreground">{t('homeofficeDesc')}</p>
+                <h4 className="font-semibold">{t('laws.homeoffice')}</h4>
+                <p className="text-sm text-muted-foreground">{t('laws.homeofficeDesc')}</p>
               </div>
               <div>
-                <h4 className="font-semibold">{t('teilzeit')}</h4>
-                <p className="text-sm text-muted-foreground">{t('teilzeitDesc')}</p>
+                <h4 className="font-semibold">{t('laws.teilzeit')}</h4>
+                <p className="text-sm text-muted-foreground">{t('laws.teilzeitDesc')}</p>
               </div>
             </div>
           </CardContent>

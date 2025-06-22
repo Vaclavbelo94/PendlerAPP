@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from "@/components/ui/card";
@@ -25,12 +24,12 @@ const MinimumHolidays = () => {
           <Button variant="ghost" size="sm" asChild>
             <Link to="/laws" className="flex items-center gap-2">
               <ArrowLeft className="h-4 w-4" />
-              <span>{t('backToLaws')}</span>
+              <span>{t('laws.backToLaws')}</span>
             </Link>
           </Button>
         </div>
 
-        <h1 className="text-3xl font-bold">{t('minimumHolidaysTitle')}</h1>
+        <h1 className="text-3xl font-bold">{t('laws.minimumHolidaysTitle')}</h1>
         
         <Card>
           <CardContent className="pt-6 space-y-4">
@@ -38,13 +37,13 @@ const MinimumHolidays = () => {
               <FileText className="h-6 w-6 text-blue-600" />
               <div>
                 <p className="text-sm text-muted-foreground">Zákon</p>
-                <p className="font-medium">{t('federalHolidayLaw')}</p>
+                <p className="font-medium">{t('laws.federalHolidayLaw')}</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <Calendar className="h-6 w-6 text-blue-600" />
               <div>
-                <p className="text-sm text-muted-foreground">{t('updated')}</p>
+                <p className="text-sm text-muted-foreground">{t('laws.updated')}</p>
                 <p className="font-medium">{formatDate('2025-05-12')}</p>
               </div>
             </div>
@@ -53,31 +52,31 @@ const MinimumHolidays = () => {
 
         <Alert>
           <AlertCircle className="h-4 w-4" />
-          <AlertTitle>{t('importantNotice')}</AlertTitle>
+          <AlertTitle>{t('laws.importantNotice')}</AlertTitle>
           <AlertDescription>
-            {t('orientationGuide')}
+            {t('laws.orientationGuide')}
           </AlertDescription>
         </Alert>
 
         <div className="space-y-6">
           <section className="space-y-2">
-            <h2 className="text-2xl font-semibold">{t('basicInformation')}</h2>
+            <h2 className="text-2xl font-semibold">{t('laws.basicInformation')}</h2>
             <p>
-              {t('basicInfoDesc')}
+              {t('laws.basicInfoDesc')}
             </p>
           </section>
 
           <Separator />
 
           <section className="space-y-4">
-            <h2 className="text-2xl font-semibold">{t('holidayEntitlementOverview')}</h2>
+            <h2 className="text-2xl font-semibold">{t('laws.holidayEntitlementOverview')}</h2>
             
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{t('workingDaysPerWeek')}</TableHead>
-                  <TableHead>{t('legalMinimumEntitlement')}</TableHead>
-                  <TableHead>{t('commonCollectiveAgreement')}</TableHead>
+                  <TableHead>{t('laws.workingDaysPerWeek')}</TableHead>
+                  <TableHead>{t('laws.legalMinimumEntitlement')}</TableHead>
+                  <TableHead>{t('laws.commonCollectiveAgreement')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -105,10 +104,10 @@ const MinimumHolidays = () => {
             </Table>
             
             <div className="bg-muted p-4 rounded-md">
-              <h3 className="text-lg font-medium mb-2">{t('specialCases')}</h3>
+              <h3 className="text-lg font-medium mb-2">{t('laws.specialCases')}</h3>
               <ul className="list-disc pl-5 space-y-1">
-                <li>{t('disabledPersons')}</li>
-                <li>{t('youngEmployees')}</li>
+                <li>{t('laws.disabledPersons')}</li>
+                <li>{t('laws.youngEmployees')}</li>
               </ul>
             </div>
           </section>
@@ -116,35 +115,35 @@ const MinimumHolidays = () => {
           <Separator />
 
           <section className="space-y-4">
-            <h2 className="text-2xl font-semibold">{t('keyHolidayRules')}</h2>
+            <h2 className="text-2xl font-semibold">{t('laws.keyHolidayRules')}</h2>
             
             <div className="space-y-4">
               <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-md">
-                <h3 className="text-lg font-medium mb-2">{t('takingHolidays')}</h3>
-                <p>{t('takingHolidaysRules')}</p>
+                <h3 className="text-lg font-medium mb-2">{t('laws.takingHolidays')}</h3>
+                <p>{t('laws.takingHolidaysRules')}</p>
               </div>
 
               <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-md">
-                <h3 className="text-lg font-medium mb-2">{t('carryingOverHolidays')}</h3>
+                <h3 className="text-lg font-medium mb-2">{t('laws.carryingOverHolidays')}</h3>
                 <p>
-                  {t('carryOverDesc')}
+                  {t('laws.carryOverDesc')}
                 </p>
                 <p className="mt-2">
-                  <strong>Důležité:</strong> {t('carryOverImportant')}
+                  <strong>Důležité:</strong> {t('laws.carryOverImportant')}
                 </p>
               </div>
 
               <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-md">
-                <h3 className="text-lg font-medium mb-2">{t('sicknessDuringHolidays')}</h3>
+                <h3 className="text-lg font-medium mb-2">{t('laws.sicknessDuringHolidays')}</h3>
                 <p>
-                  {t('sicknessDesc')}
+                  {t('laws.sicknessDesc')}
                 </p>
               </div>
               
               <div className="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-md">
-                <h3 className="text-lg font-medium mb-2">{t('financialCompensation')}</h3>
+                <h3 className="text-lg font-medium mb-2">{t('laws.financialCompensation')}</h3>
                 <p>
-                  {t('compensationDesc')}
+                  {t('laws.compensationDesc')}
                 </p>
               </div>
             </div>
@@ -153,33 +152,33 @@ const MinimumHolidays = () => {
           <Separator />
 
           <section className="space-y-4">
-            <h2 className="text-2xl font-semibold">{t('proportionalEntitlement')}</h2>
+            <h2 className="text-2xl font-semibold">{t('laws.proportionalEntitlement')}</h2>
             
             <div className="space-y-2">
               <p>
-                {t('proportionalDesc')}
+                {t('laws.proportionalDesc')}
               </p>
               
               <div className="bg-muted p-4 rounded-md mt-2">
-                <p className="font-medium mb-2">{t('proportionalCalculation')}</p>
+                <p className="font-medium mb-2">{t('laws.proportionalCalculation')}</p>
                 <p>
-                  <strong>{t('calculationFormula')}</strong>
+                  <strong>{t('laws.calculationFormula')}</strong>
                 </p>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  {t('calculationExample')}
+                  {t('laws.calculationExample')}
                 </p>
               </div>
             </div>
           </section>
 
           <section className="bg-muted p-4 rounded-md mt-6">
-            <h2 className="text-xl font-semibold mb-2">{t('legalPositionAndEnforcement')}</h2>
+            <h2 className="text-xl font-semibold mb-2">{t('laws.legalPositionAndEnforcement')}</h2>
             <div className="space-y-2">
               <p>
-                {t('legalRightsDesc')}
+                {t('laws.legalRightsDesc')}
               </p>
               <p className="mt-2">
-                <strong>Důležité:</strong> {t('statuteOfLimitations')}
+                <strong>Důležité:</strong> {t('laws.statuteOfLimitations')}
               </p>
             </div>
           </section>
@@ -187,10 +186,10 @@ const MinimumHolidays = () => {
           <section className="flex items-center justify-between bg-blue-50 dark:bg-blue-900/20 p-4 rounded-md mt-6">
             <div className="flex items-center gap-2">
               <CheckSquare className="h-5 w-5 text-blue-600" />
-              <span className="font-medium">{t('downloadHolidayRights')}</span>
+              <span className="font-medium">{t('laws.downloadHolidayRights')}</span>
             </div>
             <Button variant="outline" size="sm">
-              {t('download')}
+              {t('laws.download')}
             </Button>
           </section>
         </div>
