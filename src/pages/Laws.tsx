@@ -68,10 +68,10 @@ const Laws = () => {
                 </div>
                 <div>
                   <h1 className={`${isMobile ? 'text-2xl' : 'text-4xl'} font-bold tracking-tight text-white`}>
-                    {isMobile ? t('germanLaws') : t('lawsGuide')}
+                    {isMobile ? t('laws.germanLaws') : t('laws.lawsGuide')}
                   </h1>
                   <p className={`text-white/80 ${isMobile ? 'text-sm mt-2' : 'text-lg mt-2'} max-w-3xl`}>
-                    {isMobile ? t('lawsDescriptionMobile') : t('lawsDescription')}
+                    {isMobile ? t('laws.lawsDescriptionMobile') : t('laws.lawsDescription')}
                   </p>
                 </div>
               </div>

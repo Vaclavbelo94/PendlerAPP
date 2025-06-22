@@ -11,6 +11,7 @@ export const lawsTranslations = {
       backToLawsList: 'Zpět na seznam zákonů',
       allLaws: 'Všechny zákony',
       allLawsDescription: 'Zobrazit všechny dostupné zákony a předpisy',
+      readMore: 'Číst více',
       
       // Law categories
       workLaw: 'Pracovní právo',
@@ -48,6 +49,39 @@ export const lawsTranslations = {
       legalAid: 'Právní pomoc',
       legalAidDescription: 'Možnosti bezplatné právní pomoci pro zahraniční pracovníky',
       
+      // Search/Filter
+      noLawsFound: 'Žádné zákony nenalezeny',
+      tryChangeCategory: 'Zkuste změnit kategorii',
+      
+      // Employee Protection specific terms
+      employeeProtectionTitle: 'Ochrana zaměstnanců',
+      basicRights: 'Základní práva',
+      safeWorkplace: 'Bezpečné pracovní prostředí',
+      antiDiscrimination: 'Ochrana před diskriminací',
+      fairWages: 'Spravedlivé mzdy',
+      vacation: 'Dovolená a volno',
+      wrongfulTermination: 'Ochrana před nesprávným propuštěním',
+      dismissalProtection: 'Ochrana před výpovědí',
+      dismissalProtectionDesc: 'Německé právo poskytuje silnou ochranu před nespravedlivým propuštěním.',
+      dismissalReasons: 'Důvody pro výpověď',
+      personalReasons: 'Osobní důvody (nemoc, nekompetentnost)',
+      dutyViolation: 'Porušení pracovních povinností',
+      operationalReasons: 'Provozní důvody (reorganizace, krize)',
+      workplaceSafety: 'Bezpečnost práce',
+      employerObligations: 'Zaměstnavatel má povinnost zajistit bezpečné pracovní prostředí',
+      protectiveEquipment: 'Poskytování ochranných pomůcek',
+      safetyTraining: 'Školení o bezpečnosti práce',
+      refuseDangerous: 'Právo odmítnout nebezpečnou práci',
+      accidentReporting: 'Hlášení pracovních úrazů',
+      discriminationProtection: 'Ochrana před diskriminací',
+      equalTreatment: 'Všichni zaměstnanci mají právo na rovné zacházení bez ohledu na:',
+      raceEthnicity: 'Rasu nebo etnický původ',
+      gender: 'Pohlaví',
+      religion: 'Náboženství nebo světový názor',
+      disability: 'Zdravotní postižení',
+      age: 'Věk',
+      sexualOrientation: 'Sexuální orientaci',
+      
       // Common terms
       importantNotice: 'Důležité upozornění',
       orientationGuide: 'Tento průvodce slouží pouze k orientaci. Pro konkrétní právní rady se obraťte na odborníka.',
@@ -63,6 +97,7 @@ export const lawsTranslations = {
       backToLawsList: 'Zurück zur Gesetzesliste',
       allLaws: 'Alle Gesetze',
       allLawsDescription: 'Alle verfügbaren Gesetze und Vorschriften anzeigen',
+      readMore: 'Mehr lesen',
       
       workLaw: 'Arbeitsrecht',
       workLawDescription: 'Gesetze zu Arbeitsverträgen und Arbeitnehmerrechten',
@@ -98,6 +133,9 @@ export const lawsTranslations = {
       legalAid: 'Rechtshilfe',
       legalAidDescription: 'Möglichkeiten kostenloser Rechtshilfe für ausländische Arbeitnehmer',
       
+      noLawsFound: 'Keine Gesetze gefunden',
+      tryChangeCategory: 'Versuchen Sie, die Kategorie zu ändern',
+      
       importantNotice: 'Wichtiger Hinweis',
       orientationGuide: 'Dieser Leitfaden dient nur der Orientierung. Für spezifische Rechtsberatung wenden Sie sich an einen Fachmann.',
     }
@@ -112,6 +150,7 @@ export const lawsTranslations = {
       backToLawsList: 'Powrót do listy praw',
       allLaws: 'Wszystkie prawa',
       allLawsDescription: 'Wyświetl wszystkie dostępne prawa i przepisy',
+      readMore: 'Czytaj więcej',
       
       workLaw: 'Prawo pracy',
       workLawDescription: 'Prawa dotyczące umów o pracę i praw pracowników',
@@ -146,6 +185,9 @@ export const lawsTranslations = {
       parentalAllowanceDescription: 'Informacje o zasiłku rodzicielskim (Elterngeld)',
       legalAid: 'Pomoc prawna',
       legalAidDescription: 'Możliwości bezpłatnej pomocy prawnej dla zagranicznych pracowników',
+      
+      noLawsFound: 'Nie znaleziono praw',
+      tryChangeCategory: 'Spróbuj zmienić kategorię',
       
       importantNotice: 'Ważna uwaga',
       orientationGuide: 'Ten przewodnik służy tylko orientacji. W przypadku konkretnych porad prawnych skontaktuj się ze specjalistą.',
