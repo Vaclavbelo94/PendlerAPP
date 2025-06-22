@@ -19,7 +19,7 @@ const EmployeeProtection = () => {
     <div className="container mx-auto px-4 py-6">
       <Link to="/laws" className="inline-flex items-center mb-6 text-sm font-medium text-primary hover:underline">
         <ArrowLeft className="mr-1 h-4 w-4" />
-        {t('backToLaws')}
+        {t('laws.backToLaws')}
       </Link>
 
       <div className="flex items-center gap-4 mb-6">
@@ -27,9 +27,9 @@ const EmployeeProtection = () => {
           <UserCheck className="h-6 w-6 text-blue-600" />
         </div>
         <div>
-          <h1 className="text-3xl font-bold">{t('employeeProtectionTitle')}</h1>
+          <h1 className="text-3xl font-bold">{t('laws.employeeProtectionTitle')}</h1>
           <Badge variant="outline" className="mt-2">
-            {t('updated')}: {formatDate('2025-03-30')}
+            {t('laws.updated')}: {formatDate('2025-03-30')}
           </Badge>
         </div>
       </div>
@@ -37,33 +37,33 @@ const EmployeeProtection = () => {
       <div className="grid gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>{t('basicRights')}</CardTitle>
+            <CardTitle>{t('laws.basicRights')}</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="list-disc pl-6 space-y-2">
-              <li>{t('safeWorkplace')}</li>
-              <li>{t('antiDiscrimination')}</li>
-              <li>{t('fairWages')}</li>
-              <li>{t('workingHours')}</li>
-              <li>{t('vacation')}</li>
-              <li>{t('wrongfulTermination')}</li>
+              <li>{t('laws.safeWorkplace')}</li>
+              <li>{t('laws.antiDiscrimination')}</li>
+              <li>{t('laws.fairWages')}</li>
+              <li>{t('laws.workingHours')}</li>
+              <li>{t('laws.vacation')}</li>
+              <li>{t('laws.wrongfulTermination')}</li>
             </ul>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>{t('dismissalProtection')}</CardTitle>
+            <CardTitle>{t('laws.dismissalProtection')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <p>{t('dismissalProtectionDesc')}</p>
+              <p>{t('laws.dismissalProtectionDesc')}</p>
               <div>
-                <h4 className="font-semibold">{t('dismissalReasons')}</h4>
+                <h4 className="font-semibold">{t('laws.dismissalReasons')}</h4>
                 <ul className="list-disc pl-6 space-y-1 mt-2">
-                  <li>{t('personalReasons')}</li>
-                  <li>{t('dutyViolation')}</li>
-                  <li>{t('operationalReasons')}</li>
+                  <li>{t('laws.personalReasons')}</li>
+                  <li>{t('laws.dutyViolation')}</li>
+                  <li>{t('laws.operationalReasons')}</li>
                 </ul>
               </div>
             </div>
@@ -72,33 +72,33 @@ const EmployeeProtection = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>{t('workplaceSafety')}</CardTitle>
+            <CardTitle>{t('laws.workplaceSafety')}</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="list-disc pl-6 space-y-2">
-              <li>{t('employerObligations')}</li>
-              <li>{t('protectiveEquipment')}</li>
-              <li>{t('safetyTraining')}</li>
-              <li>{t('refuseDangerous')}</li>
-              <li>{t('accidentReporting')}</li>
+              <li>{t('laws.employerObligations')}</li>
+              <li>{t('laws.protectiveEquipment')}</li>
+              <li>{t('laws.safetyTraining')}</li>
+              <li>{t('laws.refuseDangerous')}</li>
+              <li>{t('laws.accidentReporting')}</li>
             </ul>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>{t('discriminationProtection')}</CardTitle>
+            <CardTitle>{t('laws.discriminationProtection')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <p>{t('equalTreatment')}</p>
+              <p>{t('laws.equalTreatment')}</p>
               <ul className="list-disc pl-6 space-y-1">
-                <li>{t('raceEthnicity')}</li>
-                <li>{t('gender')}</li>
-                <li>{t('religion')}</li>
-                <li>{t('disability')}</li>
-                <li>{t('age')}</li>
-                <li>{t('sexualOrientation')}</li>
+                <li>{t('laws.raceEthnicity')}</li>
+                <li>{t('laws.gender')}</li>
+                <li>{t('laws.religion')}</li>
+                <li>{t('laws.disability')}</li>
+                <li>{t('laws.age')}</li>
+                <li>{t('laws.sexualOrientation')}</li>
               </ul>
             </div>
           </CardContent>

@@ -19,7 +19,7 @@ const MinimumWage = () => {
     <div className="container mx-auto px-4 py-6">
       <Link to="/laws" className="inline-flex items-center mb-6 text-sm font-medium text-primary hover:underline">
         <ArrowLeft className="mr-1 h-4 w-4" />
-        {t('backToLaws')}
+        {t('laws.backToLaws')}
       </Link>
 
       <div className="flex items-center gap-4 mb-6">
@@ -27,9 +27,9 @@ const MinimumWage = () => {
           <Euro className="h-6 w-6 text-green-600" />
         </div>
         <div>
-          <h1 className="text-3xl font-bold">{t('minimumWage')}</h1>
+          <h1 className="text-3xl font-bold">{t('laws.minimumWage')}</h1>
           <Badge variant="outline" className="mt-2">
-            {t('updated')}: {formatDate('2025-05-15')}
+            {t('laws.updated')}: {formatDate('2025-05-15')}
           </Badge>
         </div>
       </div>
@@ -37,60 +37,60 @@ const MinimumWage = () => {
       <div className="grid gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>{t('currentMinimumWage')}</CardTitle>
+            <CardTitle>{t('laws.currentMinimumWage')}</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600 mb-2">12,41 € {t('perHour')}</div>
+            <div className="text-2xl font-bold text-green-600 mb-2">12,41 € {t('laws.perHour')}</div>
             <p className="text-muted-foreground">
-              {t('currentWageDescription')}
+              {t('laws.currentWageDescription')}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>{t('whoIsEntitled')}</CardTitle>
+            <CardTitle>{t('laws.whoIsEntitled')}</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="list-disc pl-6 space-y-2">
-              <li>{t('allEmployeesOver18')}</li>
-              <li>{t('partTimeWorkers')}</li>
-              <li>{t('temporaryWorkers')}</li>
-              <li>{t('internsWithExceptions')}</li>
+              <li>{t('laws.allEmployeesOver18')}</li>
+              <li>{t('laws.partTimeWorkers')}</li>
+              <li>{t('laws.temporaryWorkers')}</li>
+              <li>{t('laws.internsWithExceptions')}</li>
             </ul>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>{t('exceptions')}</CardTitle>
+            <CardTitle>{t('laws.exceptions')}</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="list-disc pl-6 space-y-2">
-              <li>{t('minorsWithoutEducation')}</li>
-              <li>{t('volunteers')}</li>
-              <li>{t('mandatoryInterns')}</li>
-              <li>{t('longTermUnemployed')}</li>
+              <li>{t('laws.minorsWithoutEducation')}</li>
+              <li>{t('laws.volunteers')}</li>
+              <li>{t('laws.mandatoryInterns')}</li>
+              <li>{t('laws.longTermUnemployed')}</li>
             </ul>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>{t('practicalInfo')}</CardTitle>
+            <CardTitle>{t('laws.practicalInfo')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div>
-                <h4 className="font-semibold mb-2">{t('complianceControl')}</h4>
+                <h4 className="font-semibold mb-2">{t('laws.complianceControl')}</h4>
                 <p className="text-sm text-muted-foreground">
-                  {t('complianceControlDescription')}
+                  {t('laws.complianceControlDescription')}
                 </p>
               </div>
               <div>
-                <h4 className="font-semibold mb-2">{t('reportViolations')}</h4>
+                <h4 className="font-semibold mb-2">{t('laws.reportViolations')}</h4>
                 <p className="text-sm text-muted-foreground">
-                  {t('reportViolationsDescription')}
+                  {t('laws.reportViolationsDescription')}
                 </p>
               </div>
             </div>

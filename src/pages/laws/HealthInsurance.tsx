@@ -118,7 +118,7 @@ const HealthInsurance = () => {
     <div className="container mx-auto px-4 py-6">
       <Link to="/laws" className="inline-flex items-center mb-6 text-sm font-medium text-primary hover:underline">
         <ArrowLeft className="mr-1 h-4 w-4" />
-        {t('backToLaws')}
+        {t('laws.backToLaws')}
       </Link>
 
       <div className="flex items-center gap-4 mb-6">
@@ -126,9 +126,9 @@ const HealthInsurance = () => {
           <Heart className="h-6 w-6 text-red-600" />
         </div>
         <div>
-          <h1 className="text-3xl font-bold">{t('healthInsuranceSystem')}</h1>
+          <h1 className="text-3xl font-bold">{t('laws.healthInsuranceSystem')}</h1>
           <Badge variant="outline" className="mt-2">
-            {t('updated')}: {formatDate('2025-04-02')}
+            {t('laws.updated')}: {formatDate('2025-04-02')}
           </Badge>
         </div>
       </div>
@@ -136,7 +136,7 @@ const HealthInsurance = () => {
       <div className="grid gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>{t('typesOfInsurance')}</CardTitle>
+            <CardTitle>{t('laws.typesOfInsurance')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -154,7 +154,7 @@ const HealthInsurance = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>{t('insuranceContributions')}</CardTitle>
+            <CardTitle>{t('laws.insuranceContributions')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
@@ -170,7 +170,7 @@ const HealthInsurance = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>{t('whatIsCovered')}</CardTitle>
+            <CardTitle>{t('laws.whatIsCovered')}</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="list-disc pl-6 space-y-2">

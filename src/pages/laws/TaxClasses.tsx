@@ -89,7 +89,7 @@ const TaxClasses = () => {
     <div className="container mx-auto px-4 py-6">
       <Link to="/laws" className="inline-flex items-center mb-6 text-sm font-medium text-primary hover:underline">
         <ArrowLeft className="mr-1 h-4 w-4" />
-        {t('backToLaws')}
+        {t('laws.backToLaws')}
       </Link>
 
       <div className="flex items-center gap-4 mb-6">
@@ -97,9 +97,9 @@ const TaxClasses = () => {
           <FileText className="h-6 w-6 text-yellow-600" />
         </div>
         <div>
-          <h1 className="text-3xl font-bold">{t('taxClasses')}</h1>
+          <h1 className="text-3xl font-bold">{t('laws.taxClasses')}</h1>
           <Badge variant="outline" className="mt-2">
-            {t('updated')}: {formatDate('2025-03-28')}
+            {t('laws.updated')}: {formatDate('2025-03-28')}
           </Badge>
         </div>
       </div>
@@ -107,7 +107,7 @@ const TaxClasses = () => {
       <div className="grid gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>{t('taxClassesOverview')}</CardTitle>
+            <CardTitle>{t('laws.taxClassesOverview')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -123,7 +123,7 @@ const TaxClasses = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>{t('howToChoose')}</CardTitle>
+            <CardTitle>{t('laws.howToChoose')}</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="mb-4">

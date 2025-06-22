@@ -12,6 +12,7 @@ export const lawsTranslations = {
       allLaws: 'Všechny zákony',
       allLawsDescription: 'Zobrazit všechny dostupné zákony a předpisy',
       readMore: 'Číst více',
+      updated: 'Aktualizováno',
       
       // Law categories
       workLaw: 'Pracovní právo',
@@ -53,7 +54,36 @@ export const lawsTranslations = {
       noLawsFound: 'Žádné zákony nenalezeny',
       tryChangeCategory: 'Zkuste změnit kategorii',
       
-      // Employee Protection specific terms
+      // MinimumWage specific
+      currentMinimumWage: 'Aktuální minimální mzda',
+      perHour: 'za hodinu',
+      currentWageDescription: 'Platná od 1. ledna 2024 pro všechny zaměstnance nad 18 let',
+      whoIsEntitled: 'Kdo má nárok',
+      allEmployeesOver18: 'Všichni zaměstnanci nad 18 let',
+      partTimeWorkers: 'Pracovníci na částečný úvazek',
+      temporaryWorkers: 'Dočasní pracovníci',
+      internsWithExceptions: 'Stážisté (s výjimkami)',
+      exceptions: 'Výjimky',
+      minorsWithoutEducation: 'Nezletilí bez dokončeného vzdělání',
+      volunteers: 'Dobrovolníci',
+      mandatoryInterns: 'Povinní stážisté',
+      longTermUnemployed: 'Dlouhodobě nezaměstnaní (první 6 měsíců)',
+      practicalInfo: 'Praktické informace',
+      complianceControl: 'Kontrola dodržování',
+      complianceControlDescription: 'Kontroluje Celní správa (Zoll). Pokuty až 500 000 €.',
+      reportViolations: 'Hlášení porušení',
+      reportViolationsDescription: 'Porušení můžete nahlásit na: finanzkontrolle-schwarzarbeit@zoll.bund.de',
+      
+      // TaxClasses specific
+      taxClassesOverview: 'Přehled daňových tříd',
+      howToChoose: 'Jak vybrat daňovou třídu',
+      
+      // WorkContract specific
+      contractRequirements: 'Povinné náležitosti smlouvy',
+      probationPeriod: 'Zkušební doba',
+      typesOfEmployment: 'Typy pracovních poměrů',
+      
+      // EmployeeProtection specific
       employeeProtectionTitle: 'Ochrana zaměstnanců',
       basicRights: 'Základní práva',
       safeWorkplace: 'Bezpečné pracovní prostředí',
@@ -82,6 +112,11 @@ export const lawsTranslations = {
       age: 'Věk',
       sexualOrientation: 'Sexuální orientaci',
       
+      // HealthInsurance specific
+      typesOfInsurance: 'Typy pojištění',
+      insuranceContributions: 'Pojistné příspěvky',
+      whatIsCovered: 'Co je pokryto',
+      
       // Common terms
       importantNotice: 'Důležité upozornění',
       orientationGuide: 'Tento průvodce slouží pouze k orientaci. Pro konkrétní právní rady se obraťte na odborníka.',
@@ -98,6 +133,7 @@ export const lawsTranslations = {
       allLaws: 'Alle Gesetze',
       allLawsDescription: 'Alle verfügbaren Gesetze und Vorschriften anzeigen',
       readMore: 'Mehr lesen',
+      updated: 'Aktualisiert',
       
       workLaw: 'Arbeitsrecht',
       workLawDescription: 'Gesetze zu Arbeitsverträgen und Arbeitnehmerrechten',
@@ -151,6 +187,7 @@ export const lawsTranslations = {
       allLaws: 'Wszystkie prawa',
       allLawsDescription: 'Wyświetl wszystkie dostępne prawa i przepisy',
       readMore: 'Czytaj więcej',
+      updated: 'Zaktualizowano',
       
       workLaw: 'Prawo pracy',
       workLawDescription: 'Prawa dotyczące umów o pracę i praw pracowników',
