@@ -7,7 +7,13 @@ import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/hooks/useLanguage';
 
 const EmployeeProtection = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const locale = language === 'cs' ? 'cs-CZ' : language === 'pl' ? 'pl-PL' : 'de-DE';
+    return date.toLocaleDateString(locale);
+  };
 
   return (
     <div className="container mx-auto px-4 py-6">
@@ -23,7 +29,7 @@ const EmployeeProtection = () => {
         <div>
           <h1 className="text-3xl font-bold">{t('employeeProtectionTitle')}</h1>
           <Badge variant="outline" className="mt-2">
-            {t('updated')}: 30. března 2025
+            {t('updated')}: {formatDate('2025-03-30')}
           </Badge>
         </div>
       </div>
