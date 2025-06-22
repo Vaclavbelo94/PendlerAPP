@@ -1,3 +1,4 @@
+
 export type Language = 'cs' | 'pl' | 'de';
 
 export const languages = [
@@ -159,13 +160,38 @@ export const translations = {
     // Legal Aid
     legalAid: 'Právní pomoc',
     freeLegalAid: 'Bezplatná právní pomoc',
-    whereToGetHelp: 'Kde získat pomoc'
+    whereToGetHelp: 'Kde získat pomoc',
+    
+    // Work Contract
+    workContract: 'Pracovní smlouva',
+    contractRequirements: 'Povinné náležitosti smlouvy',
+    probationPeriod: 'Zkušební doba',
+    typesOfEmployment: 'Typy pracovních poměrů',
+    
+    // Health Insurance
+    healthInsuranceSystem: 'Systém zdravotního pojištění',
+    typesOfInsurance: 'Druhy pojištění',
+    whatIsCovered: 'Co je pokryto',
+    
+    // Tax Classes
+    taxClasses: 'Daňové třídy',
+    taxClassesOverview: 'Přehled daňových tříd',
+    howToChoose: 'Jak vybrat daňovou třídu',
+    
+    // Minimum Wage
+    minimumWage: 'Minimální mzda',
+    currentMinimumWage: 'Aktuální minimální mzda',
+    whoIsEntitled: 'Kdo má nárok',
+    exceptions: 'Výjimky',
+    practicalInfo: 'Praktické informace',
+    complianceControl: 'Kontrola dodržování',
+    reportViolations: 'Hlášení porušení'
   },
   
   pl: {
     home: 'Strona główna',
     dashboard: 'Panel',
-    shifts: 'Zmiany',
+    shifts: 'Zmiany',  
     travel: 'Podróże',
     translator: 'Tłumacz',
     laws: 'Prawo',
@@ -314,7 +340,32 @@ export const translations = {
     // Legal Aid
     legalAid: 'Pomoc prawna',
     freeLegalAid: 'Bezpłatna pomoc prawna',
-    whereToGetHelp: 'Gdzie uzyskać pomoc'
+    whereToGetHelp: 'Gdzie uzyskać pomoc',
+    
+    // Work Contract
+    workContract: 'Umowa o pracę',
+    contractRequirements: 'Wymagane elementy umowy',
+    probationPeriod: 'Okres próbny',
+    typesOfEmployment: 'Rodzaje zatrudnienia',
+    
+    // Health Insurance
+    healthInsuranceSystem: 'System ubezpieczenia zdrowotnego',
+    typesOfInsurance: 'Rodzaje ubezpieczenia',
+    whatIsCovered: 'Co jest pokryte',
+    
+    // Tax Classes
+    taxClasses: 'Klasy podatkowe',
+    taxClassesOverview: 'Przegląd klas podatkowych',
+    howToChoose: 'Jak wybrać klasę podatkową',
+    
+    // Minimum Wage
+    minimumWage: 'Płaca minimalna',
+    currentMinimumWage: 'Aktualna płaca minimalna',
+    whoIsEntitled: 'Kto ma prawo',
+    exceptions: 'Wyjątki',
+    practicalInfo: 'Informacje praktyczne',
+    complianceControl: 'Kontrola przestrzegania',
+    reportViolations: 'Zgłaszanie naruszeń'
   },
   
   de: {
@@ -469,6 +520,31 @@ export const translations = {
     // Legal Aid
     legalAid: 'Rechtshilfe',
     freeLegalAid: 'Kostenlose Rechtshilfe',
-    whereToGetHelp: 'Wo Hilfe bekommen'
+    whereToGetHelp: 'Wo Hilfe bekommen',
+    
+    // Work Contract
+    workContract: 'Arbeitsvertrag',
+    contractRequirements: 'Vertragliche Anforderungen',
+    probationPeriod: 'Probezeit',
+    typesOfEmployment: 'Beschäftigungsarten',
+    
+    // Health Insurance
+    healthInsuranceSystem: 'Krankenversicherungssystem',
+    typesOfInsurance: 'Versicherungsarten',
+    whatIsCovered: 'Was ist abgedeckt',
+    
+    // Tax Classes
+    taxClasses: 'Steuerklassen',
+    taxClassesOverview: 'Steuerklassen Übersicht',
+    howToChoose: 'Wie man die Steuerklasse wählt',
+    
+    // Minimum Wage
+    minimumWage: 'Mindestlohn',
+    currentMinimumWage: 'Aktueller Mindestlohn',
+    whoIsEntitled: 'Wer hat Anspruch',
+    exceptions: 'Ausnahmen',
+    practicalInfo: 'Praktische Informationen',
+    complianceControl: 'Einhaltungskontrolle',
+    reportViolations: 'Verstöße melden'
   }
 };

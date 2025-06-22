@@ -7,92 +7,112 @@ import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/hooks/useLanguage';
 
 const MinimumWage = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
-  const getLocalizedContent = () => {
-    return {
-      title: t('minimumWage'),
-      currentWage: '12,41 €',
-      updateDate: '15. května 2025',
-      sections: {
-        current: {
-          title: t('currentMinimumWage'),
-          content: t('language') === 'de' 
-            ? 'Seit dem 1. Januar 2024 beträgt der Mindestlohn in Deutschland 12,41 € pro Stunde für alle Arbeitnehmer über 18 Jahre.'
-            : t('language') === 'pl'
-            ? 'Od 1 stycznia 2024 roku płaca minimalna w Niemczech wynosi 12,41 € za godzinę dla wszystkich pracowników powyżej 18 roku życia.'
-            : 'Od 1. ledna 2024 činí minimální mzda v Německu 12,41 € za hodinu pro všechny zaměstnance starší 18 let.'
-        },
-        entitled: {
-          title: t('whoIsEntitled'),
-          items: t('language') === 'de' 
-            ? [
-                'Alle Arbeitnehmer über 18 Jahre',
-                'Teilzeitbeschäftigte',
-                'Zeitarbeitnehmer',
-                'Praktikanten (mit Ausnahmen)'
-              ]
-            : t('language') === 'pl'
-            ? [
-                'Wszyscy pracownicy powyżej 18 roku życia',
-                'Pracownicy na część etatu',
-                'Pracownicy tymczasowi',
-                'Praktykanci (z wyjątkami)'
-              ]
-            : [
-                'Všichni zaměstnanci starší 18 let',
-                'Pracovníci na částečný úvazek',
-                'Dočasní pracovníci',
-                'Praktikanti (s výjimkami)'
-              ]
-        },
-        exceptions: {
-          title: t('exceptions'),
-          items: t('language') === 'de' 
-            ? [
-                'Jugendliche unter 18 Jahren ohne abgeschlossene Ausbildung',
-                'Freiwillige (FÖJ, FSJ, BFD)',
-                'Pflichtpraktikanten aus der Schule',
-                'Langzeitarbeitslose (erste 6 Monate)'
-              ]
-            : t('language') === 'pl'
-            ? [
-                'Młodzież poniżej 18 roku życia bez ukończonego wykształcenia',
-                'Wolontariusze (FÖJ, FSJ, BFD)',
-                'Praktykanci obowiązkowi ze szkoły',
-                'Długotrwale bezrobotni (pierwsze 6 miesięcy)'
-              ]
-            : [
-                'Mladiství do 18 let bez dokončeného vzdělání',
-                'Dobrovolníci (FÖJ, FSJ, BFD)',
-                'Praktikanti při povinné praxi ze školy',
-                'Dlouhodobě nezaměstnaní (první 6 měsíců)'
-              ]
-        },
-        practical: {
-          title: t('practicalInfo'),
-          control: {
-            title: t('complianceControl'),
-            content: t('language') === 'de' 
-              ? 'Den Mindestlohn kontrolliert der Zoll. Verstöße können zu Bußgeldern bis 500.000 € führen.'
-              : t('language') === 'pl'
-              ? 'Płacę minimalną kontroluje Urząd Celny (Zoll). Naruszenia mogą prowadzić do kar grzywny do 500.000 €.'
-              : 'Minimální mzdu kontroluje Celní správa (Zoll). Porušení může vést k pokutám až 500 000 €.'
-          },
-          report: {
-            title: t('reportViolations'),
-            content: t('language') === 'de' 
-              ? 'Verstöße gegen den Mindestlohn können Sie über die Hotline melden: 0351 44834-523'
-              : t('language') === 'pl'
-              ? 'Naruszenia płacy minimalnej można zgłaszać na infolinię: 0351 44834-523'
-              : 'Porušení minimální mzdy můžete nahlásit na horkou linku: 0351 44834-523'
-          }
-        }
-      }
-    };
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const locale = language === 'cs' ? 'cs-CZ' : language === 'pl' ? 'pl-PL' : 'de-DE';
+    return date.toLocaleDateString(locale);
   };
 
-  const content = getLocalizedContent();
+  const getCurrentWageDesc = () => {
+    if (language === 'de') {
+      return 'Seit dem 1. Januar 2024 beträgt der Mindestlohn in Deutschland 12,41 € pro Stunde für alle Arbeitnehmer über 18 Jahre.';
+    } else if (language === 'pl') {
+      return 'Od 1 stycznia 2024 roku płaca minimalna w Niemczech wynosi 12,41 € za godzinę dla wszystkich pracowników powyżej 18 roku życia.';
+    } else {
+      return 'Od 1. ledna 2024 činí minimální mzda v Německu 12,41 € za hodinu pro všechny zaměstnance starší 18 let.';
+    }
+  };
+
+  const getEntitledItems = () => {
+    if (language === 'de') {
+      return [
+        'Alle Arbeitnehmer über 18 Jahre',
+        'Teilzeitbeschäftigte',
+        'Zeitarbeitnehmer',
+        'Praktikanten (mit Ausnahmen)'
+      ];
+    } else if (language === 'pl') {
+      return [
+        'Wszyscy pracownicy powyżej 18 roku życia',
+        'Pracownicy na część etatu',
+        'Pracownicy tymczasowi',
+        'Praktykanci (z wyjątkami)'
+      ];
+    } else {
+      return [
+        'Všichni zaměstnanci starší 18 let',
+        'Pracovníci na částečný úvazek',
+        'Dočasní pracovníci',
+        'Praktikanti (s výjimkami)'
+      ];
+    }
+  };
+
+  const getExceptionItems = () => {
+    if (language === 'de') {
+      return [
+        'Jugendliche unter 18 Jahren ohne abgeschlossene Ausbildung',
+        'Freiwillige (FÖJ, FSJ, BFD)',
+        'Pflichtpraktikanten aus der Schule',
+        'Langzeitarbeitslose (erste 6 Monate)'
+      ];
+    } else if (language === 'pl') {
+      return [
+        'Młodzież poniżej 18 roku życia bez ukończonego wykształcenia',
+        'Wolontariusze (FÖJ, FSJ, BFD)',
+        'Praktykanci obowiązkowi ze szkoły',
+        'Długotrwale bezrobotni (pierwsze 6 miesięcy)'
+      ];
+    } else {
+      return [
+        'Mladiství do 18 let bez dokončeného vzdělání',
+        'Dobrovolníci (FÖJ, FSJ, BFD)',
+        'Praktikanti při povinné praxi ze školy',
+        'Dlouhodobě nezaměstnaní (první 6 měsíců)'
+      ];
+    }
+  };
+
+  const getControlContent = () => {
+    if (language === 'de') {
+      return 'Den Min
+
+destlohn kontrolliert der Zoll. Verstöße können zu Bußgeldern bis 500.000 € führen.';
+    } else if (language === 'pl') {
+      return 'Płacę minimalną kontroluje Urząd Celny (Zoll). Naruszenia mogą prowadzić do kar grzywny do 500.000 €.';
+    } else {
+      return 'Minimální mzdu kontroluje Celní správa (Zoll). Porušení může vést k pokutám až 500 000 €.';
+    }
+  };
+
+  const getReportContent = () => {
+    if (language === 'de') {
+      return 'Verstöße gegen den Mindestlohn können Sie über die Hotline melden: 0351 44834-523';
+    } else if (language === 'pl') {
+      return 'Naruszenia płacy minimalnej można zgłaszać na infolinię: 0351 44834-523';
+    } else {
+      return 'Porušení minimální mzdy můžete nahlásit na horkou linku: 0351 44834-523';
+    }
+  };
+
+  const getHourlyText = () => {
+    if (language === 'de') {
+      return 'pro Stunde';
+    } else if (language === 'pl') {
+      return 'za godzinę';
+    } else {
+      return 'za hodinu';
+    }
+  };
+
+  const currentWageDesc = getCurrentWageDesc();
+  const entitledItems = getEntitledItems();
+  const exceptionItems = getExceptionItems();
+  const controlContent = getControlContent();
+  const reportContent = getReportContent();
+  const hourlyText = getHourlyText();
 
   return (
     <div className="container mx-auto px-4 py-6">
@@ -106,9 +126,9 @@ const MinimumWage = () => {
           <Euro className="h-6 w-6 text-green-600" />
         </div>
         <div>
-          <h1 className="text-3xl font-bold">{content.title}</h1>
+          <h1 className="text-3xl font-bold">{t('minimumWage')}</h1>
           <Badge variant="outline" className="mt-2">
-            {t('updated')}: {content.updateDate}
+            {t('updated')}: {formatDate('2025-05-15')}
           </Badge>
         </div>
       </div>
@@ -116,23 +136,23 @@ const MinimumWage = () => {
       <div className="grid gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>{content.sections.current.title}</CardTitle>
+            <CardTitle>{t('currentMinimumWage')}</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600 mb-2">{content.currentWage} {t('language') === 'de' ? 'pro Stunde' : t('language') === 'pl' ? 'za godzinę' : 'za hodinu'}</div>
+            <div className="text-2xl font-bold text-green-600 mb-2">12,41 € {hourlyText}</div>
             <p className="text-muted-foreground">
-              {content.sections.current.content}
+              {currentWageDesc}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>{content.sections.entitled.title}</CardTitle>
+            <CardTitle>{t('whoIsEntitled')}</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="list-disc pl-6 space-y-2">
-              {content.sections.entitled.items.map((item, index) => (
+              {entitledItems.map((item, index) => (
                 <li key={index}>{item}</li>
               ))}
             </ul>
@@ -141,11 +161,11 @@ const MinimumWage = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>{content.sections.exceptions.title}</CardTitle>
+            <CardTitle>{t('exceptions')}</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="list-disc pl-6 space-y-2">
-              {content.sections.exceptions.items.map((item, index) => (
+              {exceptionItems.map((item, index) => (
                 <li key={index}>{item}</li>
               ))}
             </ul>
@@ -154,20 +174,20 @@ const MinimumWage = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>{content.sections.practical.title}</CardTitle>
+            <CardTitle>{t('practicalInfo')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div>
-                <h4 className="font-semibold mb-2">{content.sections.practical.control.title}</h4>
+                <h4 className="font-semibold mb-2">{t('complianceControl')}</h4>
                 <p className="text-sm text-muted-foreground">
-                  {content.sections.practical.control.content}
+                  {controlContent}
                 </p>
               </div>
               <div>
-                <h4 className="font-semibold mb-2">{content.sections.practical.report.title}</h4>
+                <h4 className="font-semibold mb-2">{t('reportViolations')}</h4>
                 <p className="text-sm text-muted-foreground">
-                  {content.sections.practical.report.content}
+                  {reportContent}
                 </p>
               </div>
             </div>

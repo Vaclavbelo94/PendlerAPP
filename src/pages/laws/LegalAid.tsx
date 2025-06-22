@@ -1,15 +1,20 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Scale, Phone, Mail, MapPin, Clock } from 'lucide-react';
+import { ArrowLeft, Scale, Phone, Mail, MapPin } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { useLanguage } from '@/hooks/useLanguage';
 
 const LegalAid = () => {
   const { t, language } = useLanguage();
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const locale = language === 'cs' ? 'cs-CZ' : language === 'pl' ? 'pl-PL' : 'de-DE';
+    return date.toLocaleDateString(locale);
+  };
 
   const getLocalizedContent = () => {
     return {
@@ -48,7 +53,27 @@ const LegalAid = () => {
             'Nezaplacená mzda nebo porušení pracovní smlouvy',
             'Sociální dávky a pojištění'
           ],
-      whereToGetHelp: t('whereToGetHelp')
+      whereToGetHelp: t('whereToGetHelp'),
+      unionsTitle: language === 'de' ? 'Gewerkschaften' : language === 'pl' ? 'Związki zawodowe' : 'Odborové svazy (Gewerkschaften)',
+      unionsDesc: language === 'de' 
+        ? 'Gewerkschaftsmitglieder haben Anspruch auf kostenlose Rechtshilfe in arbeitsrechtlichen Angelegenheiten.'
+        : language === 'pl'
+        ? 'Członkowie związków zawodowych mają prawo do bezpłatnej pomocy prawnej w sprawach pracowniczych.'
+        : 'Členové odborových svazů mají nárok na bezplatnou právní pomoc v pracovněprávních věcech.',
+      migrantCentersTitle: language === 'de' ? 'Beratungsstellen für Migranten' : language === 'pl' ? 'Centra doradztwa dla migrantów' : 'Beratungsstellen für Migranten',
+      migrantCentersDesc: language === 'de'
+        ? 'Spezialisierte Beratungsstellen für Migranten bieten kostenlose Rechtsberatung.'
+        : language === 'pl'
+        ? 'Wyspecjalizowane centra doradztwa dla migrantów oferują bezpłatne porady prawne.'
+        : 'Specializované poradny pro migranty poskytují bezplatné právní poradenství.',
+      availableInCities: language === 'de' ? 'Verfügbar in allen größeren Städten' : language === 'pl' ? 'Dostępne we wszystkich większych miastach' : 'Dostupné ve všech větších městech',
+      courtTitle: language === 'de' ? 'Rechtsantragsstelle (Gericht)' : language === 'pl' ? 'Rechtsantragsstelle (Sąd)' : 'Rechtsantragsstelle (Soud)',
+      courtDesc: language === 'de'
+        ? 'Für Personen mit geringem Einkommen - Antrag auf kostenlose Rechtshilfe beim Gericht.'
+        : language === 'pl'
+        ? 'Dla osób o niskich dochodach - wniosek o bezpłatną pomoc prawną w sądzie.'
+        : 'Pro osoby s nízkými příjmy - žádost o bezplatnou právní pomoc u soudu.',
+      incomeDependent: language === 'de' ? 'Einkommensabhängig' : language === 'pl' ? 'Zależne od dochodów' : 'Závisí na příjmech'
     };
   };
 
@@ -97,15 +122,10 @@ const LegalAid = () => {
             <div className="space-y-4">
               <div className="border rounded-lg p-4">
                 <h3 className="font-semibold mb-2">
-                  {language === 'de' ? 'Gewerkschaften' : language === 'pl' ? 'Związki zawodowe' : 'Odborové svazy (Gewerkschaften)'}
+                  {content.unionsTitle}
                 </h3>
                 <p className="text-sm text-muted-foreground mb-3">
-                  {language === 'de' 
-                    ? 'Gewerkschaftsmitglieder haben Anspruch auf kostenlose Rechtshilfe in arbeitsrechtlichen Angelegenheiten.'
-                    : language === 'pl'
-                    ? 'Członkowie związków zawodowych mają prawo do bezpłatnej pomocy prawnej w sprawach pracowniczych.'
-                    : 'Členové odborových svazů mají nárok na bezplatnou právní pomoc v pracovněprávních věcech.'
-                  }
+                  {content.unionsDesc}
                 </p>
                 <div className="flex items-center gap-2 text-sm">
                   <Phone className="h-4 w-4" />
@@ -115,15 +135,10 @@ const LegalAid = () => {
 
               <div className="border rounded-lg p-4">
                 <h3 className="font-semibold mb-2">
-                  {language === 'de' ? 'Beratungsstellen für Migranten' : language === 'pl' ? 'Centra doradztwa dla migrantów' : 'Beratungsstellen für Migranten'}
+                  {content.migrantCentersTitle}
                 </h3>
                 <p className="text-sm text-muted-foreground mb-3">
-                  {language === 'de'
-                    ? 'Spezialisierte Beratungsstellen für Migranten bieten kostenlose Rechtsberatung.'
-                    : language === 'pl'
-                    ? 'Wyspecjalizowane centra doradztwa dla migrantów oferują bezpłatne porady prawne.'
-                    : 'Specializované poradny pro migranty poskytují bezplatné právní poradenství.'
-                  }
+                  {content.migrantCentersDesc}
                 </p>
                 <div className="space-y-1 text-sm">
                   <div className="flex items-center gap-2">
@@ -133,7 +148,7 @@ const LegalAid = () => {
                   <div className="flex items-center gap-2">
                     <MapPin className="h-4 w-4" />
                     <span>
-                      {language === 'de' ? 'Verfügbar in allen größeren Städten' : language === 'pl' ? 'Dostępne we wszystkich większych miastach' : 'Dostupné ve všech větších městech'}
+                      {content.availableInCities}
                     </span>
                   </div>
                 </div>
@@ -141,18 +156,13 @@ const LegalAid = () => {
 
               <div className="border rounded-lg p-4">
                 <h3 className="font-semibold mb-2">
-                  {language === 'de' ? 'Rechtsantragsstelle (Gericht)' : language === 'pl' ? 'Rechtsantragsstelle (Sąd)' : 'Rechtsantragsstelle (Soud)'}
+                  {content.courtTitle}
                 </h3>
                 <p className="text-sm text-muted-foreground mb-3">
-                  {language === 'de'
-                    ? 'Für Personen mit geringem Einkommen - Antrag auf kostenlose Rechtshilfe beim Gericht.'
-                    : language === 'pl'
-                    ? 'Dla osób o niskich dochodach - wniosek o bezpłatną pomoc prawną w sądzie.'
-                    : 'Pro osoby s nízkými příjmy - žádost o bezplatnou právní pomoc u soudu.'
-                  }
+                  {content.courtDesc}
                 </p>
                 <Badge variant="secondary">
-                  {language === 'de' ? 'Einkommensabhängig' : language === 'pl' ? 'Zależne od dochodów' : 'Závisí na příjmech'}
+                  {content.incomeDependent}
                 </Badge>
               </div>
             </div>
@@ -167,7 +177,7 @@ const LegalAid = () => {
             </Button>
           </Link>
           <Badge variant="outline">
-            {t('updated')}: 8. května 2025
+            {t('updated')}: {formatDate('2025-05-08')}
           </Badge>
         </div>
       </div>
