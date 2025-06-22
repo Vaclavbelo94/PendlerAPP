@@ -1,14 +1,12 @@
-export type Language = 'cs' | 'de' | 'pl';
 
-export const languages = [
-  { code: 'cs', name: 'Čeština', flag: '🇨🇿' },
-  { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
-  { code: 'pl', name: 'Polski', flag: '🇵🇱' },
-];
+// Legacy compatibility - re-export from new modular structure
+export { Language, LanguageInfo, languages, defaultLanguage, getTranslation, useTranslation } from './i18n';
+export type { Translations } from './i18n';
 
+// For backward compatibility, export old structure
 export const translations = {
   cs: {
-    // Navigation and general
+    // Common navigation
     dashboard: 'Dashboard',
     shifts: 'Směny',
     language: 'Jazyk',
@@ -33,7 +31,7 @@ export const translations = {
     exercises: 'Cvičení',
     progress: 'Pokrok',
     
-    // Laws section
+    // Laws section - using new structure
     germanLaws: 'Německé zákony',
     lawsGuide: 'Průvodce německými zákony',
     lawsDescription: 'Kompletní průvodce německými zákony pro zahraniční pracovníky',
@@ -83,150 +81,6 @@ export const translations = {
     updated: 'Aktualizováno',
     importantNotice: 'Důležité upozornění',
     orientationGuide: 'Tento průvodce slouží pouze k orientaci. Pro konkrétní právní rady se obraťte na odborníka.',
-    
-    // Employee Protection specific
-    employeeProtectionTitle: 'Ochrana zaměstnanců',
-    basicRights: 'Základní práva zaměstnanců',
-    safeWorkplace: 'Právo na bezpečné pracovní prostředí',
-    antiDiscrimination: 'Ochrana před diskriminací',
-    fairWages: 'Právo na spravedlivou mzdu',
-    workingHours: 'Regulace pracovní doby',
-    vacation: 'Nárok na dovolenou',
-    wrongfulTermination: 'Ochrana před neoprávněným propuštěním',
-    dismissalProtection: 'Ochrana před propuštěním',
-    dismissalProtectionDesc: 'Německé právo poskytuje rozsáhlou ochranu zaměstnanců před neoprávněným propuštěním.',
-    dismissalReasons: 'Důvody pro propuštění',
-    personalReasons: 'Osobní důvody (nemoc, neschopnost)',
-    dutyViolation: 'Porušení pracovních povinností',
-    operationalReasons: 'Provozní důvody (restrukturalizace)',
-    workplaceSafety: 'Bezpečnost na pracovišti',
-    employerObligations: 'Povinnosti zaměstnavatele zajistit bezpečné prostředí',
-    protectiveEquipment: 'Poskytnutí ochranných pomůcek',
-    safetyTraining: 'Školení bezpečnosti práce',
-    refuseDangerous: 'Právo odmítnout nebezpečnou práci',
-    accidentReporting: 'Hlášení pracovních úrazů',
-    discriminationProtection: 'Ochrana před diskriminací',
-    equalTreatment: 'Všichni zaměstnanci mají právo na rovné zacházení bez ohledu na:',
-    raceEthnicity: 'Rasu nebo etnický původ',
-    gender: 'Pohlaví',
-    religion: 'Náboženství nebo světový názor',
-    disability: 'Zdravotní postižení',
-    age: 'Věk',
-    sexualOrientation: 'Sexuální orientaci',
-    
-    // Parental Allowance specific
-    parentalAllowanceTitle: 'Rodičovský příspěvek (Elterngeld)',
-    whatIsElterngeld: 'Co je Elterngeld?',
-    elterngeldDescription: 'Elterngeld je státní dávka pro rodiče, kteří si chtějí vzít volno z práce a starat se o své novorozené nebo adoptované dítě.',
-    basicFacts: 'Základní fakta',
-    amountOfBenefit: 'Výše dávky',
-    amountDescription: 'Elterngeld se vypočítává na základě vašeho předchozího čistého příjmu:',
-    withIncome: '65-67% předchozího čistého příjmu',
-    minimumAmount: 'Minimálně 300 € měsíčně',
-    maximumAmount: 'Maximálně 1.800 € měsíčně',
-    paymentPeriod: 'Doba výplaty',
-    basicElterngeld: 'Základní Elterngeld: až 12 měsíců',
-    elterngeldPlus: 'ElterngeldPlus: až 24 měsíců (s nižší částkou)',
-    partnershipBonus: 'Partnerský bonus: až 4 dodatečné měsíce',
-    whoIsEntitledParental: 'Kdo má nárok na Elterngeld?',
-    entitlementConditions: 'Nárok mají rodiče, kteří žijí se svým dítětem ve společné domácnosti a starají se o něj osobně.',
-    typesOfBenefits: 'Typy dávek',
-    basicBenefit: 'Základní Elterngeld',
-    basicBenefitDesc: 'Standardní forma dávky na dobu až 12 měsíců.',
-    basicBenefitAmount: '65-67% předchozího příjmu',
-    extendedBenefit: 'ElterngeldPlus',
-    extendedBenefitDesc: 'Prodloužená forma dávky na dobu až 24 měsíců s poloviční výší.',
-    extendedBenefitAmount: '32,5-33,5% předchozího příjmu',
-    partnershipBonusTitle: 'Partnerský bonus',
-    partnershipBonusDesc: 'Dodatečné 4 měsíce pro páry, kde oba rodiče pracují na částečný úvazek.',
-    howToApplyElterngeld: 'Jak požádat o Elterngeld',
-    applicationProcess: 'Žádost musí být podána do 3 měsíců od narození dítěte u místního úřadu pro Elterngeld.',
-    requiredDocumentsTitle: 'Potřebné dokumenty',
-    applicationFormFilled: 'Vyplněný formulář žádosti',
-    childBirthCertificate: 'Rodný list dítěte',
-    incomeConfirmation: 'Potvrzení o příjmech za posledních 12 měsíců',
-    workInterruptionConfirmation: 'Potvrzení o přerušení práce',
-    parentsIdProof: 'Doklady totožnosti obou rodičů',
-    healthInsuranceConfirmation: 'Potvrzení o zdravotním pojištění',
-    usefulLinks: 'Užitečné odkazy',
-    officialFamilyPortal: 'Oficiální rodinný portál',
-    digitalElterngeldApplication: 'Digitální žádost o Elterngeld',
-    
-    // Pension Insurance specific
-    pensionInsuranceTitle: 'Důchodové pojištění',
-    pensionInsuranceSubtitle: 'Kompletní přehled německého důchodového systému pro zahraniční pracovníky',
-    germanPensionSystem: 'Německý důchodový systém',
-    systemStructure: 'Struktura systému',
-    systemDescription: 'Německý důchodový systém se skládá ze tří pilířů, které společně zajišťují příjem ve stáří:',
-    statePension: '1. pilíř - Státní důchod',
-    statePensionDesc: 'Povinné zákonné důchodové pojištění (gesetzliche Rentenversicherung)',
-    employeePension: '2. pilíř - Firemní důchod',
-    employeePensionDesc: 'Firemní důchodové pojištění (betriebliche Altersvorsorge)',
-    privateSavings: '3. pilíř - Soukromé spoření',
-    privateSavingsDesc: 'Soukromé důchodové pojištění a investice (private Altersvorsorge)',
-    statutoryPensionInsurance: 'Zákonné důchodové pojištění',
-    statutoryDescription: 'Zákonné důchodové pojištění je povinné pro všechny zaměstnance. Příspěvky platí zaměstnanec i zaměstnavatel (každý 9,3% z hrubé mzdy).',
-    forCommuters: 'Pro pendlery',
-    commuterInfo: 'Zahraniční pracovníci, kteří pracují v Německu, jsou automaticky pojištěni v německém systému důchodového pojištění.',
-    pensionConditions: 'Podmínky pro nárok na důchod',
-    minimumInsurancePeriod: 'Minimální doba pojištění',
-    minimumPeriodDesc: 'Pro nárok na německý důchod je třeba splnit minimální dobu pojištění (Mindestversicherungszeit):',
-    basicOldAgePension: 'Základní starobní důchod',
-    basicPensionDesc: 'Minimálně 5 let pojištění, důchod od věku 67 let',
-    earlyPension: 'Předčasný důchod',
-    earlyPensionDesc: 'Minimálně 35 let pojištění, možnost odchodu od 63 let se snížením',
-    retirementAge: 'Věk odchodu do důchodu',
-    retirementAgeDesc: 'Standardní věk odchodu do důchodu se postupně zvyšuje:',
-    ageBefore1947: 'Ročníky před 1947: 65 let',
-    ageBetween1947And1963: 'Ročníky 1947-1963: postupné zvyšování na 67 let',
-    ageAfter1964: 'Ročníky od 1964: 67 let',
-    pensionCalculation: 'Výpočet důchodu',
-    calculationFactors: 'Výše důchodu závisí na počtu let pojištění, výši příspěvků a aktuální hodnotě důchodového bodu.',
-    pensionsForCommuters: 'Důchody pro pendlery',
-    addingInsurancePeriods: 'Sčítání dob pojištění',
-    addingPeriodsDesc: 'Doba pojištění z různých zemí EU se může sčítat díky mezinárodním smlouvám o sociálním zabezpečení.',
-    addingBenefits: 'To umožňuje dosáhnout minimální doby pojištění pro nárok na důchod i při práci v různých zemích.',
-    pensionPayment: 'Výplata důchodu',
-    paymentConditions: 'Německý důchod lze pobírat i při bydlišti v jiné zemi EU.',
-    paymentBenefits: 'Důchod se vyplácí v plné výši bez ohledu na to, kde důchodce žije.',
-    practicalSteps: 'Praktické kroky',
-    practicalStepsList: 'Informujte se u Deutsche Rentenversicherung o svých nárocích a možnostech sčítání dob pojištění.',
-    contactsAndInfo: 'Kontakty a informace',
-    contactsDesc: 'Podrobné informace získáte na oficiálních stránkách Deutsche Rentenversicherung.',
-    officialInfoSource: 'Oficiální zdroj informací',
-    
-    // Minimum Holidays specific  
-    minimumHolidaysTitle: 'Minimální dovolená',
-    federalHolidayLaw: 'Bundesurlaubsgesetz (BUrlG)',
-    basicInformation: 'Základní informace',
-    basicInfoDesc: 'Německý zákon o dovolené (Bundesurlaubsgesetz) stanovuje minimální nárok na placenou dovolenou pro všechny zaměstnance.',
-    holidayEntitlementOverview: 'Přehled nároků na dovolenou',
-    workingDaysPerWeek: 'Pracovní dny týdně',
-    legalMinimumEntitlement: 'Zákonné minimum',
-    commonCollectiveAgreement: 'Běžné kolektivní smlouvy',
-    specialCases: 'Zvláštní případy',
-    disabledPersons: 'Těžce zdravotně postižení: +5 dní',
-    youngEmployees: 'Mladiství zaměstnanci: podle JArbSchG',
-    keyHolidayRules: 'Klíčová pravidla dovolené',
-    takingHolidays: 'Čerpání dovolené',
-    takingHolidaysRules: 'Dovolenou je třeba čerpat v kalendářním roce. Zaměstnavatel musí umožnit čerpání alespoň 2 souvislých týdnů.',
-    carryingOverHolidays: 'Převádění dovolené',
-    carryOverDesc: 'Nevyčerpaná dovolená zaniká k 31.12., pokud není převedena do 31.3. následujícího roku.',
-    carryOverImportant: 'Převedení je možné jen ve výjimečných případech (nemoc, provozní důvody).',
-    sicknessDuringHolidays: 'Nemoc během dovolené',
-    sicknessDesc: 'Pokud onemocníte během dovolené, dny nemoci se nezapočítávají do dovolené (nutné lékařské potvrzení).',
-    financialCompensation: 'Finanční náhrada',
-    compensationDesc: 'Při skončení pracovního poměru máte nárok na finanční náhradu za nevyčerpanou dovolenou.',
-    proportionalEntitlement: 'Poměrný nárok',
-    proportionalDesc: 'Při nástupu/skončení během roku se dovolená vypočítává poměrně podle odpracovaných měsíců.',
-    proportionalCalculation: 'Výpočet poměrné dovolené',
-    calculationFormula: '(Zákonný nárok ÷ 12) × počet odpracovaných měsíců',
-    calculationExample: 'Příklad: Nástup v červenci = (20 ÷ 12) × 6 = 10 dní dovolené',
-    legalPositionAndEnforcement: 'Právní postavení a vymáhání',
-    legalRightsDesc: 'Nárok na dovolenou je nezadatelné právo zaměstnance. Nelze se ho vzdát ani ho nahradit penězi (kromě skončení pracovního poměru).',
-    statuteOfLimitations: 'Nároky na dovolenou se promlčují za 3 roky.',
-    downloadHolidayRights: 'Stáhnout přehled práv na dovolenou',
-    download: 'Stáhnout',
   },
   
   de: {
@@ -258,15 +112,4 @@ export const translations = {
     login: 'Zaloguj',
     register: 'Zarejestruj',
   }
-};
-
-// Helper function to get translation
-export const getTranslation = (language: Language, key: string): string => {
-  const translation = translations[language]?.[key as keyof typeof translations[typeof language]];
-  return translation || key;
-};
-
-// Hook for using translations in components
-export const useTranslation = (language: Language) => {
-  return (key: string) => getTranslation(language, key);
 };

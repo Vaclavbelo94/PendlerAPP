@@ -28,7 +28,7 @@ const LanguageToggle = () => {
           <span className="hidden md:inline-block">
             {currentLang?.flag} {currentLang?.name}
           </span>
-          <span className="sr-only">{t('settings')}</span>
+          <span className="sr-only">{t('common.settings')}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="bg-background border border-border shadow-lg z-50">

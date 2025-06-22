@@ -1,6 +1,6 @@
 
 import { useState, useEffect, createContext, useContext } from 'react';
-import { Language, translations } from '@/lib/i18n';
+import { Language, getTranslation } from '@/lib/i18n';
 
 interface LanguageContextType {
   language: Language;
@@ -42,19 +42,7 @@ export const useLanguageProvider = () => {
   };
 
   const t = (key: string): string => {
-    const keys = key.split('.');
-    let value: any = translations[language];
-    
-    for (const k of keys) {
-      value = value?.[k];
-    }
-    
-    if (!value) {
-      console.warn(`Translation missing for key: ${key} in language: ${language}`);
-      return key; // Vrátí klíč jako fallback
-    }
-    
-    return value;
+    return getTranslation(language, key);
   };
 
   return { language, setLanguage, t };

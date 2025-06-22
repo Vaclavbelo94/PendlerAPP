@@ -29,7 +29,7 @@ export const LanguageSelector: React.FC = () => {
         <Button variant="ghost" size="sm" className="gap-2">
           <Globe className="h-4 w-4" />
           <span className="text-lg">{currentLanguage?.flag || '🇨🇿'}</span>
-          <span className="hidden sm:inline">{currentLanguage?.name || t('czech')}</span>
+          <span className="hidden sm:inline">{currentLanguage?.name || t('common.language')}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="bg-background border border-border">
