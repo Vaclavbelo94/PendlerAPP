@@ -1,7 +1,12 @@
 
-// Legacy compatibility - re-export from new modular structure
-export { Language, LanguageInfo, languages, defaultLanguage, getTranslation, useTranslation } from './i18n';
-export type { Translations } from './i18n';
+// Legacy compatibility - direct imports to avoid circular dependencies
+import type { Language, LanguageInfo, Translations } from './i18n/types';
+import { languages, defaultLanguage } from './i18n/languages';
+import { getTranslation, useTranslation } from './i18n/index';
+
+// Re-export from new modular structure
+export type { Language, LanguageInfo, Translations };
+export { languages, defaultLanguage, getTranslation, useTranslation };
 
 // For backward compatibility, export old structure
 export const translations = {

@@ -1,5 +1,5 @@
 
-import { Language, LanguageInfo, Translations } from './types';
+import type { Language, LanguageInfo, Translations } from './types';
 import { languages, defaultLanguage } from './languages';
 import { commonTranslations } from './translations/common';
 import { lawsTranslations } from './translations/laws';
@@ -44,5 +44,5 @@ export const useTranslation = (language: Language) => {
 };
 
 // Export everything needed
-export { Language, LanguageInfo, languages, defaultLanguage };
-export type { Translations };
+export type { Language, LanguageInfo, Translations };
+export { languages, defaultLanguage };

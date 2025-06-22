@@ -15,6 +15,6 @@ export interface Translations {
   [namespace: string]: TranslationNamespace;
 }
 
-export interface LanguageTranslations {
+export type LanguageTranslations = {
   [lang in Language]: Translations;
-}
+};
