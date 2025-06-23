@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useSimplifiedAuth } from '@/hooks/auth/useSimplifiedAuth';
 import { useVehicleManagement } from '@/hooks/vehicle/useVehicleManagement';
 import { useVehiclePageState } from '@/hooks/vehicle/useVehiclePageState';
+import { useTranslation } from 'react-i18next';
 import VehicleErrorBoundary from './VehicleErrorBoundary';
 import FastLoadingFallback from '@/components/common/FastLoadingFallback';
 import VehiclePageHeader from './VehiclePageHeader';
@@ -11,6 +12,7 @@ import VehicleSheets from './VehicleSheets';
 
 const VehicleMainContainer: React.FC = () => {
   const { user, isInitialized } = useSimplifiedAuth();
+  const { t } = useTranslation(['vehicle']);
   const [activeTab, setActiveTab] = useState("overview");
   
   const vehicleManagement = useVehicleManagement(user?.id);
@@ -55,14 +57,14 @@ const VehicleMainContainer: React.FC = () => {
   };
 
   if (!isInitialized) {
-    return <FastLoadingFallback message="Inicializace..." />;
+    return <FastLoadingFallback message={t('vehicle:initializing')} />;
   }
 
   if (vehicleManagement.error && !vehicleManagement.isLoading) {
     // Safely convert error to Error object with proper null handling
     const error = vehicleManagement.error;
     if (!error) {
-      return <FastLoadingFallback message="Načítání vozidel..." />;
+      return <FastLoadingFallback message={t('vehicle:loadingVehicles')} />;
     }
     
     let errorObj: Error;
@@ -82,7 +84,7 @@ const VehicleMainContainer: React.FC = () => {
   }
 
   if (vehicleManagement.isLoading) {
-    return <FastLoadingFallback message="Načítání vozidel..." />;
+    return <FastLoadingFallback message={t('vehicle:loadingVehicles')} />;
   }
 
   return (

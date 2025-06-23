@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 import { VehicleData } from '@/types/vehicle';
+import { useTranslation } from 'react-i18next';
 import VehicleCarouselProgress from './VehicleCarouselProgress';
 import FuelConsumptionCard from './FuelConsumptionCard';
 import ServiceRecordCard from './ServiceRecordCard';
@@ -19,10 +20,15 @@ const VehicleCarousel: React.FC<VehicleCarouselProps> = ({
   selectedVehicle,
   vehicleId
 }) => {
+  const { t } = useTranslation(['vehicle']);
   const [currentStep, setCurrentStep] = useState(1);
   
   const steps = ['overview', 'fuel', 'service'];
-  const stepLabels = ['Přehled', 'Spotřeba', 'Servis'];
+  const stepLabels = [
+    t('vehicle:overview'),
+    t('vehicle:fuel'),
+    t('vehicle:service')
+  ];
 
   const { containerRef } = useSwipeNavigation({
     items: steps,
@@ -62,34 +68,34 @@ const VehicleCarousel: React.FC<VehicleCarouselProps> = ({
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
                 <div>
-                  <span className="text-muted-foreground">Rok výroby:</span>
+                  <span className="text-muted-foreground">{t('vehicle:year')}:</span>
                   <span className="ml-2 font-medium">{selectedVehicle.year}</span>
                 </div>
                 <div>
-                  <span className="text-muted-foreground">SPZ:</span>
+                  <span className="text-muted-foreground">{t('vehicle:licensePlate')}:</span>
                   <span className="ml-2 font-medium">{selectedVehicle.license_plate}</span>
                 </div>
                 {selectedVehicle.fuel_type && (
                   <div>
-                    <span className="text-muted-foreground">Palivo:</span>
+                    <span className="text-muted-foreground">{t('vehicle:fuelType')}:</span>
                     <span className="ml-2 font-medium">{selectedVehicle.fuel_type}</span>
                   </div>
                 )}
                 {selectedVehicle.mileage && (
                   <div>
-                    <span className="text-muted-foreground">Najeto:</span>
+                    <span className="text-muted-foreground">{t('vehicle:mileage')}:</span>
                     <span className="ml-2 font-medium">{selectedVehicle.mileage} km</span>
                   </div>
                 )}
                 {selectedVehicle.average_consumption && (
                   <div>
-                    <span className="text-muted-foreground">Spotřeba:</span>
-                    <span className="ml-2 font-medium">{selectedVehicle.average_consumption} l/100km</span>
+                    <span className="text-muted-foreground">{t('vehicle:fuel.averageConsumption')}:</span>
+                    <span className="ml-2 font-medium">{selectedVehicle.average_consumption} {t('vehicle:fuel.per100km')}</span>
                   </div>
                 )}
                 {selectedVehicle.engine && (
                   <div>
-                    <span className="text-muted-foreground">Motor:</span>
+                    <span className="text-muted-foreground">{t('vehicle:engineType')}:</span>
                     <span className="ml-2 font-medium">{selectedVehicle.engine}</span>
                   </div>
                 )}
@@ -144,7 +150,7 @@ const VehicleCarousel: React.FC<VehicleCarouselProps> = ({
           className="flex items-center gap-2"
         >
           <ChevronLeft className="h-4 w-4" />
-          Zpět
+          {t('ui:previous')}
         </Button>
 
         <Button
@@ -153,7 +159,7 @@ const VehicleCarousel: React.FC<VehicleCarouselProps> = ({
           className="flex items-center gap-2"
           variant={currentStep === 3 ? "outline" : "default"}
         >
-          Další
+          {t('ui:next')}
           <ChevronRight className="h-4 w-4" />
         </Button>
       </div>

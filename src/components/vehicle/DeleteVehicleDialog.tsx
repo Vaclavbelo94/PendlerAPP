@@ -11,7 +11,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { VehicleData } from '@/types/vehicle';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 interface DeleteVehicleDialogProps {
   isOpen: boolean;
@@ -28,29 +28,29 @@ const DeleteVehicleDialog: React.FC<DeleteVehicleDialogProps> = ({
   vehicle,
   isLoading
 }) => {
-  const { t } = useLanguage();
+  const { t } = useTranslation(['vehicle']);
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>{t('deleteVehicle')}</AlertDialogTitle>
+          <AlertDialogTitle>{t('vehicle:deleteVehicle')}</AlertDialogTitle>
           <AlertDialogDescription>
-            {t('confirmDelete')}{' '}
+            {t('vehicle:confirmDelete')}{' '}
             <strong>
               {vehicle?.brand} {vehicle?.model} ({vehicle?.license_plate})
             </strong>
-            ? {t('deleteConfirmation')}
+            ? {t('vehicle:deleteConfirmation')}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={onClose}>{t('cancel')}</AlertDialogCancel>
+          <AlertDialogCancel onClick={onClose}>{t('vehicle:cancel')}</AlertDialogCancel>
           <AlertDialogAction 
             onClick={onConfirm}
             disabled={isLoading}
             className="bg-red-600 hover:bg-red-700"
           >
-            {isLoading ? `${t('delete')}...` : t('deleteVehicle')}
+            {isLoading ? `${t('vehicle:delete')}...` : t('vehicle:deleteVehicle')}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

@@ -4,6 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { MoreVertical, Edit, Trash2 } from 'lucide-react';
 import { VehicleData } from '@/types/vehicle';
+import { useTranslation } from 'react-i18next';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,13 +29,14 @@ const VehicleSelectorOptimized: React.FC<VehicleSelectorOptimizedProps> = ({
   onDelete,
   className
 }) => {
+  const { t } = useTranslation(['vehicle', 'ui']);
   const selectedVehicle = vehicles.find(v => v.id === selectedVehicleId);
 
   return (
     <div className={`flex items-center gap-2 ${className}`}>
       <Select value={selectedVehicleId || ''} onValueChange={onSelect}>
         <SelectTrigger className="flex-1">
-          <SelectValue placeholder="Vyberte vozidlo">
+          <SelectValue placeholder={t('vehicle:selectVehicle')}>
             {selectedVehicle && `${selectedVehicle.brand} ${selectedVehicle.model} (${selectedVehicle.license_plate})`}
           </SelectValue>
         </SelectTrigger>
@@ -57,14 +59,14 @@ const VehicleSelectorOptimized: React.FC<VehicleSelectorOptimizedProps> = ({
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => onEdit(selectedVehicle)}>
               <Edit className="mr-2 h-4 w-4" />
-              Upravit
+              {t('vehicle:edit')}
             </DropdownMenuItem>
             <DropdownMenuItem 
               onClick={() => onDelete(selectedVehicle)}
               className="text-red-600 focus:text-red-600"
             >
               <Trash2 className="mr-2 h-4 w-4" />
-              Smazat
+              {t('vehicle:delete')}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

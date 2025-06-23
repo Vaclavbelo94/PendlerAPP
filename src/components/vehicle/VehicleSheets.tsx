@@ -3,6 +3,7 @@ import React from 'react';
 import { Sheet, SheetContent, SheetTitle, SheetDescription, SheetHeader } from '@/components/ui/sheet';
 import { Car } from 'lucide-react';
 import { VehicleData } from '@/types/vehicle';
+import { useTranslation } from 'react-i18next';
 import VehicleForm from './VehicleForm';
 import DeleteVehicleDialog from './DeleteVehicleDialog';
 
@@ -39,6 +40,8 @@ const VehicleSheets: React.FC<VehicleSheetsProps> = ({
   onEditVehicle,
   onDeleteVehicle
 }) => {
+  const { t } = useTranslation(['vehicle']);
+
   return (
     <>
       {/* Add Vehicle Sheet */}
@@ -47,10 +50,10 @@ const VehicleSheets: React.FC<VehicleSheetsProps> = ({
           <SheetHeader>
             <SheetTitle className="flex items-center gap-2">
               <Car className="h-5 w-5" />
-              Přidat nové vozidlo
+              {t('vehicle:addVehicle')}
             </SheetTitle>
             <SheetDescription>
-              Vyplňte údaje o vašem vozidle. Všechna pole označená * jsou povinná.
+              {t('vehicle:fillVehicleDetails')}
             </SheetDescription>
           </SheetHeader>
           
@@ -70,10 +73,10 @@ const VehicleSheets: React.FC<VehicleSheetsProps> = ({
           <SheetHeader>
             <SheetTitle className="flex items-center gap-2">
               <Car className="h-5 w-5" />
-              Upravit vozidlo
+              {t('vehicle:editVehicle')}
             </SheetTitle>
             <SheetDescription>
-              Upravte údaje o vašem vozidle.
+              {t('vehicle:editVehicleDetails')}
             </SheetDescription>
           </SheetHeader>
           

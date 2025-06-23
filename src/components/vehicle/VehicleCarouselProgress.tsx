@@ -2,6 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Car, Gauge, Wrench } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface VehicleCarouselProgressProps {
   currentStep: number;
@@ -16,6 +17,7 @@ const VehicleCarouselProgress: React.FC<VehicleCarouselProgressProps> = ({
   stepLabels,
   onStepClick
 }) => {
+  const { t } = useTranslation(['ui']);
   const icons = [Car, Gauge, Wrench];
 
   return (
@@ -78,7 +80,7 @@ const VehicleCarouselProgress: React.FC<VehicleCarouselProgressProps> = ({
       {/* Step counter */}
       <div className="text-center">
         <span className="text-sm text-muted-foreground">
-          Krok {currentStep} z {totalSteps}
+          {t('ui:step')} {currentStep} {t('ui:of')} {totalSteps}
         </span>
       </div>
     </div>
