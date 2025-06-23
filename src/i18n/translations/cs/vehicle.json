@@ -154,7 +154,6 @@
   "totalServiceCost": "Celkové náklady na servis",
   "averageServiceCost": "Průměrné náklady na servis",
   "lastServiceDate": "Datum posledního servisu",
-  "serviceProvider": "Poskytovatel servisu",
   "emptyServiceMessage": "Začněte přidáním svého prvního servisního záznamu",
   "insuranceInfo": "Informace o pojištění",
   "insuranceProvider": "Pojišťovna",
