@@ -87,7 +87,9 @@
       "taxClass": "Steuerklasse",
       "workDaysPerYear": "Arbeitstage pro Jahr",
       "commuteDistance": "Entfernung zur Arbeit (km)",
-      "importFromShifts": "Aus Schichten importieren"
+      "importFromShifts": "Aus Schichten importieren",
+      "averageDistance": "Durchschnittliche Entfernung",
+      "workDaysCount": "Anzahl Arbeitstage"
     },
     "reisepauschale": {
       "title": "Entfernungspauschale",
@@ -126,7 +128,8 @@
       "breakdown": "Aufschlüsselung",
       "reisepauschaleAmount": "Entfernungspauschale",
       "additionalDeductions": "Zusätzliche Abzüge",
-      "taxSavingEstimate": "Geschätzte Steuerersparnis"
+      "taxSavingEstimate": "Geschätzte Steuerersparnis",
+      "exportDescription": "Laden Sie das vollständige Steuerdokument mit allen berechneten Abzügen herunter"
     }
   },
   "optimizer": {

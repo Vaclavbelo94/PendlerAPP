@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Shirt, GraduationCap, Shield, Church } from 'lucide-react';
 import { AdditionalDeductions } from '../types';
+import { useTranslation } from 'react-i18next';
 
 interface DeductionsStepProps {
   data: AdditionalDeductions;
@@ -13,6 +14,8 @@ interface DeductionsStepProps {
 }
 
 const DeductionsStep: React.FC<DeductionsStepProps> = ({ data, onChange }) => {
+  const { t } = useTranslation('taxAdvisor');
+
   const handleChange = (field: keyof AdditionalDeductions, value: any) => {
     onChange({ ...data, [field]: value });
   };
@@ -20,7 +23,10 @@ const DeductionsStep: React.FC<DeductionsStepProps> = ({ data, onChange }) => {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Další daňové odpočty</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          <Shield className="h-5 w-5" />
+          {t('wizard.deductions.title')}
+        </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Pracovní oblečení */}
@@ -33,19 +39,19 @@ const DeductionsStep: React.FC<DeductionsStepProps> = ({ data, onChange }) => {
             />
             <Label htmlFor="workClothes" className="flex items-center gap-2">
               <Shirt className="h-4 w-4" />
-              Pracovní oblečení a ochranné pomůcky
+              {t('wizard.deductions.workClothes')}
             </Label>
           </div>
           
           {data.workClothes && (
             <div className="ml-6 space-y-2">
-              <Label htmlFor="workClothesCost">Roční náklad (€)</Label>
+              <Label htmlFor="workClothesCost">{t('wizard.deductions.workClothesCost')}</Label>
               <Input
                 id="workClothesCost"
                 type="number"
                 value={data.workClothesCost || ''}
                 onChange={(e) => handleChange('workClothesCost', parseFloat(e.target.value) || 0)}
-                placeholder="např. 400"
+                placeholder="400"
               />
             </div>
           )}
@@ -61,19 +67,19 @@ const DeductionsStep: React.FC<DeductionsStepProps> = ({ data, onChange }) => {
             />
             <Label htmlFor="education" className="flex items-center gap-2">
               <GraduationCap className="h-4 w-4" />
-              Vzdělávání a odborné kurzy
+              {t('wizard.deductions.education')}
             </Label>
           </div>
           
           {data.education && (
             <div className="ml-6 space-y-2">
-              <Label htmlFor="educationCost">Roční náklad (€)</Label>
+              <Label htmlFor="educationCost">{t('wizard.deductions.educationCost')}</Label>
               <Input
                 id="educationCost"
                 type="number"
                 value={data.educationCost || ''}
                 onChange={(e) => handleChange('educationCost', parseFloat(e.target.value) || 0)}
-                placeholder="např. 800"
+                placeholder="800"
               />
             </div>
           )}
@@ -89,19 +95,19 @@ const DeductionsStep: React.FC<DeductionsStepProps> = ({ data, onChange }) => {
             />
             <Label htmlFor="insurance" className="flex items-center gap-2">
               <Shield className="h-4 w-4" />
-              Dodatečné pojištění
+              {t('wizard.deductions.insurance')}
             </Label>
           </div>
           
           {data.insurance && (
             <div className="ml-6 space-y-2">
-              <Label htmlFor="insuranceCost">Roční náklad (€)</Label>
+              <Label htmlFor="insuranceCost">{t('wizard.deductions.insuranceCost')}</Label>
               <Input
                 id="insuranceCost"
                 type="number"
                 value={data.insuranceCost || ''}
                 onChange={(e) => handleChange('insuranceCost', parseFloat(e.target.value) || 0)}
-                placeholder="např. 300"
+                placeholder="300"
               />
             </div>
           )}
@@ -117,7 +123,7 @@ const DeductionsStep: React.FC<DeductionsStepProps> = ({ data, onChange }) => {
             />
             <Label htmlFor="churchTax" className="flex items-center gap-2">
               <Church className="h-4 w-4" />
-              Plátce církevní daně
+              {t('wizard.deductions.churchTax')}
             </Label>
           </div>
         </div>

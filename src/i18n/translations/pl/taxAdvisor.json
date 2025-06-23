@@ -87,7 +87,9 @@
       "taxClass": "Klasa podatkowa",
       "workDaysPerYear": "Dni robocze w roku",
       "commuteDistance": "Odległość do pracy (km)",
-      "importFromShifts": "Importuj ze zmian"
+      "importFromShifts": "Importuj ze zmian",
+      "averageDistance": "Średnia odległość",
+      "workDaysCount": "Liczba dni roboczych"
     },
     "reisepauschale": {
       "title": "Ryczałt na dojazdy",
@@ -126,7 +128,8 @@
       "breakdown": "Zestawienie",
       "reisepauschaleAmount": "Kwota ryczałtu na dojazdy",
       "additionalDeductions": "Dodatkowe odliczenia",
-      "taxSavingEstimate": "Szacowane oszczędności podatkowe"
+      "taxSavingEstimate": "Szacowane oszczędności podatkowe",
+      "exportDescription": "Pobierz kompletny dokument podatkowy ze wszystkimi obliczonymi odliczeniami"
     }
   },
   "optimizer": {
