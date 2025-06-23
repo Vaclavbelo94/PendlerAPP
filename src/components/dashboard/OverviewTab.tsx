@@ -10,14 +10,14 @@ import { useTranslation } from 'react-i18next';
 const OverviewTab: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { t } = useTranslation('dashboard');
+  const { t } = useTranslation('profile');
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <Card className="bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800">
         <CardContent className="flex flex-col justify-between h-full p-6">
           <div>
-            <h3 className="text-lg font-semibold mb-2">{t('profile')}</h3>
+            <h3 className="text-lg font-semibold mb-2">{t('overview')}</h3>
             <p className="text-sm text-muted-foreground">
               {t('viewEditProfile')}
             </p>

@@ -11,6 +11,7 @@ import ProfileErrorBoundary from "./ProfileErrorBoundary";
 import DarkModeToggle from "./appearance/DarkModeToggle";
 import ColorSchemeSelector from "./appearance/ColorSchemeSelector";
 import CompactModeToggle from "./appearance/CompactModeToggle";
+import { useTranslation } from 'react-i18next';
 
 interface ProfileAppearanceProps {
   initialDarkMode?: boolean;
@@ -30,6 +31,7 @@ const ProfileAppearanceContent = ({
   onSave
 }: ProfileAppearanceProps) => {
   const isMobile = useIsMobile();
+  const { t } = useTranslation('profile');
   
   const {
     darkMode,
@@ -49,7 +51,7 @@ const ProfileAppearanceContent = ({
       <Card>
         <CardContent className="flex items-center justify-center p-8">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          <span className="ml-2">Načítání nastavení...</span>
+          <span className="ml-2">{t('loadingSettings')}</span>
         </CardContent>
       </Card>
     );
@@ -60,10 +62,10 @@ const ProfileAppearanceContent = ({
       <CardHeader className={`${isMobile ? 'pb-3 text-center' : ''}`}>
         <CardTitle className={`flex items-center gap-2 ${isMobile ? 'text-base justify-center' : ''}`}>
           <Eye className={`${isMobile ? 'h-4 w-4' : 'h-5 w-5'}`} />
-          <span>Nastavení vzhledu</span>
+          <span>{t('appearanceSettings')}</span>
         </CardTitle>
         <CardDescription className={`${isMobile ? 'text-xs text-center' : ''}`}>
-          Upravte si základní nastavení zobrazení aplikace. Změny se aplikují okamžitě.
+          {t('adjustDisplaySettings')}
         </CardDescription>
       </CardHeader>
       <CardContent className={`${isMobile ? 'px-4' : ''}`}>
@@ -99,7 +101,7 @@ const ProfileAppearanceContent = ({
         {isMobile && (
           <div className="mt-6 p-3 bg-muted/20 rounded-lg">
             <p className="text-xs text-muted-foreground text-center">
-              ℹ️ Všechny změny se aplikují okamžitě bez nutnosti ukládání
+              ℹ️ {t('changesAppliedImmediately')}
             </p>
           </div>
         )}
@@ -112,7 +114,7 @@ const ProfileAppearanceContent = ({
           size={isMobile ? "sm" : "default"}
           variant="outline"
         >
-          {isLoading ? "Ukládání..." : "Uložit do profilu"}
+          {isLoading ? t('savingSettings') : t('saveToProfile')}
         </Button>
       </CardFooter>
     </Card>

@@ -4,9 +4,11 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } fro
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { generateActivityData } from "@/utils/chartData";
+import { useTranslation } from 'react-i18next';
 
 const UserActivityChart = () => {
   const [timeRange, setTimeRange] = useState("14");
+  const { t } = useTranslation('profile');
   const data = generateActivityData(parseInt(timeRange));
   
   const formatXAxis = (tickItem: string) => {
@@ -18,19 +20,19 @@ const UserActivityChart = () => {
     <Card className="col-span-2">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <div>
-          <CardTitle>Vaše aktivita</CardTitle>
+          <CardTitle>{t('userActivity')}</CardTitle>
           <CardDescription>
-            Přehled vašich aktivit za posledních {timeRange} dní
+            {t('userActivity')} za posledních {timeRange} {t('days')}
           </CardDescription>
         </div>
         <Select value={timeRange} onValueChange={setTimeRange}>
           <SelectTrigger className="w-[120px]">
-            <SelectValue placeholder="Období" />
+            <SelectValue placeholder={t('period')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="7">7 dní</SelectItem>
-            <SelectItem value="14">14 dní</SelectItem>
-            <SelectItem value="30">30 dní</SelectItem>
+            <SelectItem value="7">7 {t('days')}</SelectItem>
+            <SelectItem value="14">14 {t('days')}</SelectItem>
+            <SelectItem value="30">30 {t('days')}</SelectItem>
           </SelectContent>
         </Select>
       </CardHeader>
@@ -44,12 +46,12 @@ const UserActivityChart = () => {
               <XAxis dataKey="date" tickFormatter={formatXAxis} />
               <YAxis />
               <Tooltip
-                labelFormatter={(value) => `Datum: ${new Date(value).toLocaleDateString("cs-CZ")}`}
+                labelFormatter={(value) => `${t('date')}: ${new Date(value).toLocaleDateString("cs-CZ")}`}
               />
               <Legend />
-              <Bar dataKey="activities" fill="#8884d8" name="Aktivity celkem" />
-              <Bar dataKey="lessons" fill="#82ca9d" name="Lekce" />
-              <Bar dataKey="translations" fill="#ffc658" name="Překlady" />
+              <Bar dataKey="activities" fill="#8884d8" name={t('activitiesTotal')} />
+              <Bar dataKey="lessons" fill="#82ca9d" name={t('lessons')} />
+              <Bar dataKey="translations" fill="#ffc658" name={t('translations')} />
             </BarChart>
           </ResponsiveContainer>
         </div>
