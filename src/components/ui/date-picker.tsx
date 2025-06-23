@@ -1,7 +1,9 @@
 
 import * as React from "react"
 import { format } from "date-fns"
+import { cs, de, pl } from "date-fns/locale"
 import { Calendar as CalendarIcon } from "lucide-react"
+import { useTranslation } from 'react-i18next'
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
@@ -22,10 +24,30 @@ interface DatePickerProps {
 export function DatePicker({
   selected,
   onSelect,
-  placeholderText = "Pick a date",
+  placeholderText,
   disabled = false,
   className
 }: DatePickerProps) {
+  const { t, i18n } = useTranslation();
+  
+  // Get locale for date formatting
+  const getLocale = () => {
+    switch (i18n.language) {
+      case 'de':
+        return de;
+      case 'pl':
+        return pl;
+      case 'cs':
+      default:
+        return cs;
+    }
+  };
+
+  const getPlaceholder = () => {
+    if (placeholderText) return placeholderText;
+    return t('common:selectDate', 'Vyberte datum');
+  };
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -39,7 +61,7 @@ export function DatePicker({
           disabled={disabled}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {selected ? format(selected, "PPP") : <span>{placeholderText}</span>}
+          {selected ? format(selected, "PPP", { locale: getLocale() }) : <span>{getPlaceholder()}</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="start">
@@ -48,7 +70,7 @@ export function DatePicker({
           selected={selected || undefined}
           onSelect={onSelect}
           initialFocus
-          className="pointer-events-auto"
+          className={cn("p-3 pointer-events-auto")}
         />
       </PopoverContent>
     </Popover>

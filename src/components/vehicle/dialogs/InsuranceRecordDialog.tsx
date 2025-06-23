@@ -9,6 +9,7 @@ import { InsuranceRecord } from '@/types/vehicle';
 import { saveInsuranceRecord } from '@/services/vehicleService';
 import { useStandardizedToast } from '@/hooks/useStandardizedToast';
 import { useTranslation } from 'react-i18next';
+import { useCurrencyFormatter } from '@/utils/currencyUtils';
 
 interface InsuranceRecordDialogProps {
   isOpen: boolean;
@@ -26,6 +27,7 @@ const InsuranceRecordDialog: React.FC<InsuranceRecordDialogProps> = ({
   record = null
 }) => {
   const { t } = useTranslation(['vehicle']);
+  const { getCurrencySymbol } = useCurrencyFormatter();
   const [isLoading, setIsLoading] = useState(false);
   const { success, error } = useStandardizedToast();
   const [formData, setFormData] = useState({
@@ -168,7 +170,7 @@ const InsuranceRecordDialog: React.FC<InsuranceRecordDialogProps> = ({
           </div>
 
           <div>
-            <Label htmlFor="monthly_cost">{t('vehicle:monthlyCost')} (Kč) *</Label>
+            <Label htmlFor="monthly_cost">{t('vehicle:monthlyCost')} ({getCurrencySymbol()}) *</Label>
             <Input
               id="monthly_cost"
               type="number"

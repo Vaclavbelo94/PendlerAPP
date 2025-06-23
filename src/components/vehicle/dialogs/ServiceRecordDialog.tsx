@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -9,6 +10,7 @@ import { ServiceRecord } from '@/types/vehicle';
 import { saveServiceRecord } from '@/services/vehicleService';
 import { useStandardizedToast } from '@/hooks/useStandardizedToast';
 import { useTranslation } from 'react-i18next';
+import { useCurrencyFormatter } from '@/utils/currencyUtils';
 
 interface ServiceRecordDialogProps {
   isOpen: boolean;
@@ -26,6 +28,7 @@ const ServiceRecordDialog: React.FC<ServiceRecordDialogProps> = ({
   record = null
 }) => {
   const { t } = useTranslation(['vehicle']);
+  const { getCurrencySymbol } = useCurrencyFormatter();
   const [isLoading, setIsLoading] = useState(false);
   const { success, error } = useStandardizedToast();
   const [formData, setFormData] = useState({
@@ -160,7 +163,7 @@ const ServiceRecordDialog: React.FC<ServiceRecordDialogProps> = ({
           </div>
 
           <div>
-            <Label htmlFor="cost">{t('vehicle:cost')} (Kč) *</Label>
+            <Label htmlFor="cost">{t('vehicle:cost')} ({getCurrencySymbol()}) *</Label>
             <Input
               id="cost"
               type="number"

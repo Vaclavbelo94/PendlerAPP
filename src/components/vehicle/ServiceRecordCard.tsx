@@ -13,6 +13,7 @@ import { useStandardizedToast } from '@/hooks/useStandardizedToast';
 import { useTranslation } from 'react-i18next';
 import ServiceRecordDialog from './dialogs/ServiceRecordDialog';
 import { formatDate } from '@/utils/dateUtils';
+import { useCurrencyFormatter } from '@/utils/currencyUtils';
 
 interface ServiceRecordCardProps {
   vehicleId: string;
@@ -21,6 +22,7 @@ interface ServiceRecordCardProps {
 
 const ServiceRecordCard: React.FC<ServiceRecordCardProps> = ({ vehicleId, fullView = false }) => {
   const { t } = useTranslation(['vehicle']);
+  const { formatCurrency } = useCurrencyFormatter();
   const [serviceRecords, setServiceRecords] = useState<ServiceRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -73,7 +75,7 @@ const ServiceRecordCard: React.FC<ServiceRecordCardProps> = ({ vehicleId, fullVi
   };
 
   const calculateTotalCost = () => {
-    return serviceRecords.reduce((sum, record) => sum + (parseFloat(record.cost) || 0), 0);
+    return serviceRecords.reduce((sum, record) => sum + (parseFloat(record.cost.toString()) || 0), 0);
   };
 
   const calculateAverageCost = () => {
@@ -138,11 +140,11 @@ const ServiceRecordCard: React.FC<ServiceRecordCardProps> = ({ vehicleId, fullVi
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-lg">
                   <h4 className="text-sm font-medium text-muted-foreground">{t('vehicle:totalServiceCost')}</h4>
-                  <p className="text-2xl font-bold text-blue-600">{calculateTotalCost().toFixed(0)} Kč</p>
+                  <p className="text-2xl font-bold text-blue-600">{formatCurrency(calculateTotalCost())}</p>
                 </div>
                 <div className="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-lg">
                   <h4 className="text-sm font-medium text-muted-foreground">{t('vehicle:averageServiceCost')}</h4>
-                  <p className="text-2xl font-bold text-green-600">{calculateAverageCost().toFixed(0)} Kč</p>
+                  <p className="text-2xl font-bold text-green-600">{formatCurrency(calculateAverageCost())}</p>
                 </div>
                 <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-4 rounded-lg">
                   <h4 className="text-sm font-medium text-muted-foreground">{t('vehicle:lastServiceDate')}</h4>
@@ -174,7 +176,7 @@ const ServiceRecordCard: React.FC<ServiceRecordCardProps> = ({ vehicleId, fullVi
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                           <div>
                             <span className="text-muted-foreground">{t('vehicle:cost')}:</span>
-                            <span className="ml-1 font-medium">{record.cost} Kč</span>
+                            <span className="ml-1 font-medium">{formatCurrency(record.cost)}</span>
                           </div>
                           <div>
                             <span className="text-muted-foreground">{t('vehicle:provider')}:</span>
