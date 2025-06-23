@@ -13,6 +13,7 @@ export const lawsTranslations = {
       backToLaws: 'Zpět na zákony',
       backToLawsList: 'Zpět na seznam zákonů',
       updated: 'Aktualizováno',
+      readMore: 'Číst více',
       importantNotice: 'Důležité upozornění',
       orientationGuide: 'Tento průvodce slouží pouze k orientaci. Pro konkrétní právní rady se obraťte na odborníka.',
 
@@ -48,6 +49,7 @@ export const lawsTranslations = {
       backToLaws: 'Zurück zu Gesetzen',
       backToLawsList: 'Zurück zur Gesetzesliste',
       updated: 'Aktualisiert',
+      readMore: 'Mehr lesen',
       importantNotice: 'Wichtiger Hinweis',
       orientationGuide: 'Diese Anleitung dient nur zur Orientierung. Für spezifische Rechtsberatung wenden Sie sich an einen Experten.',
 
@@ -77,6 +79,7 @@ export const lawsTranslations = {
       backToLaws: 'Powrót do praw',
       backToLawsList: 'Powrót do listy praw',
       updated: 'Zaktualizowano',
+      readMore: 'Czytaj więcej',
       importantNotice: 'Ważna uwaga',
       orientationGuide: 'Ten przewodnik służy tylko do orientacji. W sprawie konkretnych porad prawnych skontaktuj się z ekspertem.',
 
