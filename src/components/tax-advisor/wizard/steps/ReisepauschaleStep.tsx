@@ -92,7 +92,7 @@ const ReisepauschaleStep: React.FC<ReisepauschaleStepProps> = ({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="car">
-                {t('wizard.reisepauschale.car')} (0.30€ {t('wizard.reisepauschale.perKm')} ≤20km, 0.38€ {t('wizard.reisepauschale.perKm')} >20km)
+                {t('wizard.reisepauschale.car')} (0.30€ {t('wizard.reisepauschale.perKm')} ≤20km, 0.38€ {t('wizard.reisepauschale.perKm')} {'>'}20km)
               </SelectItem>
               <SelectItem value="public">
                 {t('wizard.reisepauschale.publicTransport')} (0.30€{t('wizard.reisepauschale.perKm')})
