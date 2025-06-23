@@ -36,9 +36,9 @@
   "polish": "Polski",
   "selectLanguage": "Wybierz język",
   "languageChanged": "Język został zmieniony",
-  "autoDetected": "Automatycznie wykryto",
+  "autoDetected": "Automatycznie wykryty",
   "taxAdvisorDescription": "Kompletny doradca podatkowy dla niemieckich podatków",
-  "pendlerCalculator": "Kalkulator dojazdów",
+  "pendlerCalculator": "Kalkulator dla dojeżdżających",
   "reisepauschaleOptimization": "Reisepauschale i optymalizacja podatkowa",
   "interactiveGuide": "Interaktywny przewodnik",
   "stepByStepTaxes": "Krok po kroku do optymalnych podatków",
@@ -49,5 +49,8 @@
   "basicCalculator": "Podstawowy kalkulator",
   "quickTaxCalculations": "Szybkie obliczenia podatkowe",
   "step": "Krok",
-  "of": "z"
+  "of": "z",
+  "monthly": "Miesięcznie",
+  "export": "Eksport",
+  "recommended": "Polecane"
 }
