@@ -1,7 +1,8 @@
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
 import { Car, Plus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 
@@ -10,35 +11,52 @@ interface EmptyVehicleStateProps {
 }
 
 const EmptyVehicleState: React.FC<EmptyVehicleStateProps> = ({ onAddVehicle }) => {
-  const { t } = useTranslation(['vehicle', 'ui']);
+  const { t } = useTranslation(['vehicle']);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.4 }}
-      className="text-center py-12 px-6 bg-card/50 backdrop-blur-sm rounded-xl border border-border/50"
-    >
-      <div className="mb-6">
-        <div className="mx-auto w-16 h-16 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-full flex items-center justify-center mb-4">
-          <Car className="h-8 w-8 text-primary" />
-        </div>
-        <h3 className="text-xl font-semibold text-foreground mb-2">
-          {t('vehicle:noVehiclesFound')}
-        </h3>
-        <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-          {t('vehicle:getStartedByAdding')}
-        </p>
-      </div>
-      
-      <Button 
-        onClick={onAddVehicle}
-        className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 transition-all duration-300"
+    <Card className="p-8 md:p-12 text-center bg-gradient-to-br from-card/50 to-muted/20 backdrop-blur-sm border-dashed border-2">
+      <motion.div
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-primary/20 to-accent/20 rounded-3xl flex items-center justify-center"
       >
-        <Plus className="h-4 w-4 mr-2" />
-        {t('vehicle:addVehicle')}
-      </Button>
-    </motion.div>
+        <Car className="h-10 w-10 text-primary" />
+      </motion.div>
+      
+      <motion.h3
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+        className="text-2xl font-semibold mb-3 text-foreground"
+      >
+        {t('vehicle:noVehiclesFound')}
+      </motion.h3>
+      
+      <motion.p
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+        className="text-muted-foreground mb-8 max-w-md mx-auto"
+      >
+        {t('vehicle:getStartedByAdding')}
+      </motion.p>
+      
+      <motion.div
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.5 }}
+      >
+        <Button 
+          onClick={onAddVehicle}
+          className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 transition-all duration-300 shadow-lg hover:shadow-xl"
+          size="lg"
+        >
+          <Plus className="h-5 w-5 mr-2" />
+          {t('vehicle:addVehicle')}
+        </Button>
+      </motion.div>
+    </Card>
   );
 };
 
