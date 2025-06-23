@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import { Clock } from 'lucide-react';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 import PremiumCheck from '@/components/premium/PremiumCheck';
 import DashboardBackground from '@/components/common/DashboardBackground';
 import ShiftsMobileCarousel from '@/components/shifts/mobile/ShiftsMobileCarousel';
@@ -16,7 +16,7 @@ import Layout from '@/components/layouts/Layout';
 import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 
 const Shifts: React.FC = () => {
-  const { t } = useLanguage();
+  const { t } = useTranslation('shifts');
   const [activeSection, setActiveSection] = useState('calendar');
   const isMobile = useIsMobile();
 
@@ -36,7 +36,7 @@ const Shifts: React.FC = () => {
   return (
     <Layout navbarRightContent={<NavbarRightContent />}>
       <Helmet>
-        <title>{t('shifts')} | PendlerApp</title>
+        <title>{t('shifts') || 'Směny'} | PendlerApp</title>
         <meta name="description" content={t('shiftsDescription') || 'Správa směn a plánování pracovní doby'} />
       </Helmet>
       
@@ -56,7 +56,7 @@ const Shifts: React.FC = () => {
                 </div>
                 <div>
                   <h1 className={`${isMobile ? 'text-2xl' : 'text-4xl'} font-bold tracking-tight text-white`}>
-                    {t('shifts')}
+                    {t('shifts') || 'Směny'}
                   </h1>
                   <p className={`text-white/80 ${isMobile ? 'text-sm mt-2' : 'text-lg mt-2'} max-w-3xl`}>
                     {t('shiftsDescription') || 'Správa směn, plánování a sledování pracovní doby s pokročilými analýzami.'}

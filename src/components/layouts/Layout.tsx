@@ -11,7 +11,12 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
 
-const Layout: React.FC = () => {
+interface LayoutProps {
+  children?: React.ReactNode;
+  navbarRightContent?: React.ReactNode;
+}
+
+const Layout: React.FC<LayoutProps> = ({ children, navbarRightContent }) => {
   const { user, isLoading } = useAuth();
   const location = useLocation();
   const isMobile = useIsMobile();
@@ -32,7 +37,7 @@ const Layout: React.FC = () => {
   if (isAuthPage) {
     return (
       <>
-        <Outlet />
+        {children || <Outlet />}
         <Toaster position="top-right" />
       </>
     );
@@ -42,9 +47,9 @@ const Layout: React.FC = () => {
   if (isPublicPage && !user) {
     return (
       <div className="min-h-screen flex flex-col">
-        <UnifiedNavbar />
+        <UnifiedNavbar rightContent={navbarRightContent} />
         <main className="flex-1">
-          <Outlet />
+          {children || <Outlet />}
         </main>
         <Footer />
         <Toaster position="top-right" />
@@ -52,7 +57,7 @@ const Layout: React.FC = () => {
     );
   }
 
-  // Protected layout with sidebar - simplified without AuthGuard
+  // Protected layout with sidebar
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -71,10 +76,10 @@ const Layout: React.FC = () => {
         <div className="flex">
           <ModernSidebar />
           <div className="flex-1 flex flex-col min-h-screen ml-64">
-            <UnifiedNavbar />
+            <UnifiedNavbar rightContent={navbarRightContent} />
             <main className="flex-1 p-6">
               <div className="max-w-7xl mx-auto">
-                <Outlet />
+                {children || <Outlet />}
               </div>
             </main>
           </div>
@@ -84,10 +89,10 @@ const Layout: React.FC = () => {
       {/* Mobile Layout */}
       {isMobile && (
         <div className="flex flex-col min-h-screen">
-          <UnifiedNavbar />
+          <UnifiedNavbar rightContent={navbarRightContent} />
           <main className="flex-1 p-4 pb-20">
             <div className="max-w-7xl mx-auto">
-              <Outlet />
+              {children || <Outlet />}
             </div>
           </main>
           <MobileNavigation />

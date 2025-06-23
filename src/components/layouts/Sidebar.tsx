@@ -1,6 +1,6 @@
 
 import { useIsMobile } from '@/hooks/use-mobile';
-import { ModernSidebar } from './sidebar/ModernSidebar';
+import ModernSidebar from './sidebar/ModernSidebar';
 import MobileSidebar from './MobileSidebar';
 
 interface SidebarProps {
