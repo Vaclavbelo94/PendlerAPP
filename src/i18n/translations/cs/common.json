@@ -52,12 +52,5 @@
   "of": "z",
   "monthly": "Měsíční",
   "export": "Export",
-  "recommended": "Doporučeno",
-  "wizard": "Průvodce",
-  "calculator": "Kalkulačka",
-  "optimization": "Optimalizace",
-  "wizardDescription": "Krok za krokem k daňové optimalizaci",
-  "calculatorDescription": "Rychlé daňové výpočty",
-  "documentsDescription": "Generování PDF dokumentů",
-  "optimizationDescription": "Tipy a triky pro úsporu daní"
+  "recommended": "Doporučeno"
 }

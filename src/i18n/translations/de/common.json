@@ -52,12 +52,5 @@
   "of": "von",
   "monthly": "Monatlich",
   "export": "Export",
-  "recommended": "Empfohlen",
-  "wizard": "Assistent",
-  "calculator": "Rechner",
-  "optimization": "Optimierung",
-  "wizardDescription": "Schritt für Schritt zur Steueroptimierung",
-  "calculatorDescription": "Schnelle Steuerberechnungen",
-  "documentsDescription": "PDF-Dokumente generieren",
-  "optimizationDescription": "Tipps und Tricks zum Steuern sparen"
+  "recommended": "Empfohlen"
 }

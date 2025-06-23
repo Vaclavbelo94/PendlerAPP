@@ -1,50 +1,14 @@
 
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React from "react";
+import { motion } from "framer-motion";
 import PremiumCheck from '@/components/premium/PremiumCheck';
 import TaxWizardCarousel from "@/components/tax-advisor/wizard/TaxWizardCarousel";
-import TaxCalculator from "@/components/tax-advisor/TaxCalculator";
-import DocumentGenerator from "@/components/tax-advisor/DocumentGenerator";
-import TaxOptimization from "@/components/tax-advisor/TaxOptimization";
-import TaxAdvisorSwipeNavigation from "@/components/tax-advisor/TaxAdvisorSwipeNavigation";
-import { TaxAdvisorMobileCarousel } from "@/components/tax-advisor/TaxAdvisorMobileCarousel";
 import Layout from '@/components/layouts/Layout';
 import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 import { useTranslation } from 'react-i18next';
-import { useResponsive } from '@/hooks/useResponsive';
 
 const TaxAdvisor = () => {
   const { t } = useTranslation('common');
-  const { isMobile } = useResponsive();
-  const [activeSection, setActiveSection] = useState('wizard');
-
-  const sections = [
-    {
-      id: 'wizard',
-      label: t('wizard'),
-      component: <TaxWizardCarousel />
-    },
-    {
-      id: 'calculator',
-      label: t('calculator'),
-      component: <TaxCalculator />
-    },
-    {
-      id: 'documents',
-      label: t('documents'),
-      component: <DocumentGenerator />
-    },
-    {
-      id: 'optimization',
-      label: t('optimization'),
-      component: <TaxOptimization />
-    }
-  ];
-
-  const renderContent = () => {
-    const currentSection = sections.find(section => section.id === activeSection);
-    return currentSection?.component || <TaxWizardCarousel />;
-  };
 
   return (
     <Layout navbarRightContent={<NavbarRightContent />}>
@@ -74,41 +38,9 @@ const TaxAdvisor = () => {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
               >
-                {isMobile ? (
-                  <TaxAdvisorMobileCarousel
-                    items={sections}
-                    activeItem={activeSection}
-                    onItemChange={setActiveSection}
-                  />
-                ) : (
-                  <>
-                    <TaxAdvisorSwipeNavigation
-                      activeTab={activeSection}
-                      onTabChange={setActiveSection}
-                      isMobile={false}
-                    />
-                    
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.6, delay: 0.4 }}
-                    >
-                      <AnimatePresence mode="wait">
-                        <motion.div
-                          key={activeSection}
-                          initial={{ opacity: 0, x: 20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: -20 }}
-                          transition={{ duration: 0.3 }}
-                        >
-                          {renderContent()}
-                        </motion.div>
-                      </AnimatePresence>
-                    </motion.div>
-                  </>
-                )}
+                <TaxWizardCarousel />
               </motion.div>
             </div>
           </div>

@@ -1,84 +1,57 @@
 
 import React from 'react';
-import { FileTextIcon, CalculatorIcon, HelpCircleIcon, TrendingUpIcon } from 'lucide-react';
+import { FileTextIcon, BookOpenIcon, CalculatorIcon, UsersIcon, HelpCircleIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
 
-interface TaxAdvisorSwipeNavigationProps {
+interface TaxAdvisorNavigationProps {
   activeTab: string;
   onTabChange: (tabId: string) => void;
-  isMobile?: boolean;
 }
 
-export const TaxAdvisorSwipeNavigation: React.FC<TaxAdvisorSwipeNavigationProps> = ({
+export const TaxAdvisorNavigation: React.FC<TaxAdvisorNavigationProps> = ({
   activeTab,
-  onTabChange,
-  isMobile = false
+  onTabChange
 }) => {
   const { t } = useTranslation('common');
 
   const taxAdvisorTabs = [
     {
-      id: 'wizard',
-      icon: HelpCircleIcon,
-      label: t('wizard'),
-      description: t('wizardDescription')
+      id: 'pendler',
+      icon: CalculatorIcon,
+      label: t('pendlerCalculator') || 'Pendler kalkulačka',
+      description: t('reisepauschaleOptimization') || 'Reisepauschale a daňové optimalizace'
     },
     {
-      id: 'calculator',
-      icon: CalculatorIcon,
-      label: t('calculator'),
-      description: t('calculatorDescription')
+      id: 'interactive',
+      icon: HelpCircleIcon,
+      label: t('interactiveGuide') || 'Interaktivní průvodce',
+      description: t('stepByStepTaxes') || 'Krok za krokem k optimálním daním'
     },
     {
       id: 'documents',
       icon: FileTextIcon,
-      label: t('documents'),
-      description: t('documentsDescription')
+      label: t('documents') || 'Dokumenty',
+      description: t('pdfGenerator') || 'Generátor PDF dokumentů'
     },
     {
-      id: 'optimization',
-      icon: TrendingUpIcon,
-      label: t('optimization'),
-      description: t('optimizationDescription')
+      id: 'guide',
+      icon: BookOpenIcon,
+      label: t('guide') || 'Průvodce',
+      description: t('taxReturnGuide') || 'Průvodce daňovým přiznáním'
+    },
+    {
+      id: 'calculator',
+      icon: CalculatorIcon,
+      label: t('basicCalculator') || 'Základní kalkulátor',
+      description: t('quickTaxCalculations') || 'Rychlé daňové výpočty'
     }
   ];
 
-  if (isMobile) {
-    return (
-      <div className="flex justify-center mb-6">
-        <div className="flex gap-2 overflow-x-auto scrollbar-hide px-4">
-          {taxAdvisorTabs.map((tab) => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
-            
-            return (
-              <motion.button
-                key={tab.id}
-                onClick={() => onTabChange(tab.id)}
-                className={cn(
-                  "flex flex-col items-center p-3 rounded-xl border min-w-[80px] transition-all duration-300",
-                  isActive 
-                    ? "bg-primary text-primary-foreground border-primary shadow-lg" 
-                    : "bg-card border-border hover:border-primary/30"
-                )}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Icon className="h-5 w-5 mb-1" />
-                <span className="text-xs font-medium text-center">{tab.label}</span>
-              </motion.button>
-            );
-          })}
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="flex justify-center mb-8">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full max-w-6xl">
+    <div className="flex justify-center">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full max-w-6xl">
         {taxAdvisorTabs.map((tab, index) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -88,7 +61,7 @@ export const TaxAdvisorSwipeNavigation: React.FC<TaxAdvisorSwipeNavigationProps>
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
               className={cn(
-                "relative p-6 rounded-2xl border text-center transition-all duration-300 group",
+                "relative p-4 md:p-6 rounded-2xl border text-center transition-all duration-300 group",
                 "hover:shadow-lg hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
                 isActive 
                   ? "bg-gradient-to-br from-primary/10 to-accent/10 border-primary/30 shadow-lg" 
@@ -111,7 +84,7 @@ export const TaxAdvisorSwipeNavigation: React.FC<TaxAdvisorSwipeNavigationProps>
               <div className="relative z-10 flex flex-col items-center">
                 <motion.div 
                   className={cn(
-                    "w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 mb-3",
+                    "w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center transition-all duration-300 mb-3",
                     isActive 
                       ? "bg-gradient-to-br from-primary/20 to-accent/20 text-primary" 
                       : "bg-gradient-to-br from-muted/50 to-muted/30 text-muted-foreground group-hover:from-primary/10 group-hover:to-accent/10 group-hover:text-primary"
@@ -119,7 +92,7 @@ export const TaxAdvisorSwipeNavigation: React.FC<TaxAdvisorSwipeNavigationProps>
                   whileHover={{ scale: 1.1, rotate: 5 }}
                   transition={{ type: "spring", stiffness: 400, damping: 17 }}
                 >
-                  <Icon className="h-6 w-6" />
+                  <Icon className="h-5 w-5 md:h-6 md:w-6" />
                 </motion.div>
                 
                 <h3 className={cn(
@@ -148,4 +121,4 @@ export const TaxAdvisorSwipeNavigation: React.FC<TaxAdvisorSwipeNavigationProps>
   );
 };
 
-export default TaxAdvisorSwipeNavigation;
+export default TaxAdvisorNavigation;
