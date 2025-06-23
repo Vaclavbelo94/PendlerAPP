@@ -22,11 +22,10 @@ const VehiclePageHeader: React.FC = () => {
         >
           <Car className="h-6 w-6 text-primary" />
         </motion.div>
-        <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+        <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
           {t('vehicle:vehicleManagement')}
         </h1>
       </div>
-      
       <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
         {t('vehicle:vehicleInfo')}
       </p>

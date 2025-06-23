@@ -13,7 +13,7 @@ const Vehicle = () => {
   return (
     <Layout navbarRightContent={<NavbarRightContent />}>
       <Helmet>
-        <title>{t('vehicle:title')} | PendlerApp</title>
+        <title>{t('vehicle:vehicleManagement')} | PendlerApp</title>
         <meta name="description" content={t('vehicle:vehicleInfo')} />
       </Helmet>
       

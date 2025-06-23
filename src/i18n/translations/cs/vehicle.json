@@ -1,6 +1,9 @@
 
 {
+  "title": "Vozidlo",
   "vehicles": "Vozidla",
+  "vehicleManagement": "Správa vozidel",
+  "vehicleInfo": "Informace o vozidle",
   "addVehicle": "Přidat vozidlo",
   "addVehicleButton": "Přidat vozidlo",
   "editVehicle": "Upravit vozidlo",
@@ -148,5 +151,9 @@
   "mileageAtRefuel": "Nájezd při tankování",
   "deleteFuelRecord": "Smazat záznam o palivu",
   "confirmDeleteFuelRecord": "Opravdu chcete smazat tento záznam o palivu?",
-  "insuranceInfo": "Informace o pojištění"
+  "insuranceInfo": "Informace o pojištění",
+  "overview": "Přehled",
+  "fuel": "Palivo",
+  "service": "Servis",
+  "others": "Ostatní"
 }
