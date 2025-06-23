@@ -2,6 +2,8 @@
 import React, { useRef, useState } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { addMonths, subMonths } from 'date-fns';
+import { cs, de, pl } from 'date-fns/locale';
+import { useTranslation } from 'react-i18next';
 import type { DayPickerSingleProps } from 'react-day-picker';
 
 interface SwipeableCalendarProps extends Omit<DayPickerSingleProps, 'mode'> {
@@ -20,6 +22,17 @@ export const SwipeableCalendar: React.FC<SwipeableCalendarProps> = ({
   const touchStartX = useRef<number>(0);
   const touchStartY = useRef<number>(0);
   const [isDragging, setIsDragging] = useState(false);
+  const { i18n } = useTranslation();
+
+  // Get appropriate date-fns locale
+  const getDateLocale = () => {
+    switch (i18n.language) {
+      case 'de': return de;
+      case 'pl': return pl;
+      case 'cs':
+      default: return cs;
+    }
+  };
 
   const handleSwipeLeft = () => {
     const nextMonth = addMonths(currentMonth, 1);
@@ -92,6 +105,7 @@ export const SwipeableCalendar: React.FC<SwipeableCalendarProps> = ({
       <Calendar
         mode={mode}
         className={className}
+        locale={getDateLocale()}
         {...props}
       />
     </div>

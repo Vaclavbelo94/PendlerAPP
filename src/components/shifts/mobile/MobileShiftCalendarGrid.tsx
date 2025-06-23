@@ -5,9 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ChevronLeft, ChevronRight, CalendarDays, Edit, Trash2 } from 'lucide-react';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay, isSameMonth, isToday } from 'date-fns';
-import { cs } from 'date-fns/locale';
+import { cs, de, pl } from 'date-fns/locale';
 import { Shift } from '@/hooks/shifts/useOptimizedShiftsManagement';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 interface MobileShiftCalendarGridProps {
   shifts: Shift[];
@@ -22,6 +23,27 @@ export const MobileShiftCalendarGrid: React.FC<MobileShiftCalendarGridProps> = (
 }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const { t, i18n } = useTranslation('shifts');
+
+  // Get appropriate date-fns locale
+  const getDateLocale = () => {
+    switch (i18n.language) {
+      case 'de': return de;
+      case 'pl': return pl;
+      case 'cs':
+      default: return cs;
+    }
+  };
+
+  // Get localized week days
+  const getWeekDays = () => {
+    switch (i18n.language) {
+      case 'de': return ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
+      case 'pl': return ['Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'So', 'Nd'];
+      case 'cs':
+      default: return ['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'];
+    }
+  };
 
   // Generate calendar grid
   const calendarDays = useMemo(() => {
@@ -73,9 +95,9 @@ export const MobileShiftCalendarGrid: React.FC<MobileShiftCalendarGridProps> = (
 
   const getShiftTypeLabel = (type: string) => {
     switch (type) {
-      case 'morning': return 'Ranní';
-      case 'afternoon': return 'Odpolední';
-      case 'night': return 'Noční';
+      case 'morning': return t('morningShift');
+      case 'afternoon': return t('afternoonShift');
+      case 'night': return t('nightShift');
       default: return type;
     }
   };
@@ -92,8 +114,7 @@ export const MobileShiftCalendarGrid: React.FC<MobileShiftCalendarGridProps> = (
     setSelectedDate(date);
   };
 
-  // Week days header
-  const weekDays = ['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'];
+  const weekDays = getWeekDays();
 
   return (
     <div className="space-y-4">
@@ -103,7 +124,7 @@ export const MobileShiftCalendarGrid: React.FC<MobileShiftCalendarGridProps> = (
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2 text-lg">
               <CalendarDays className="h-5 w-5" />
-              Kalendář směn
+              {t('shiftsCalendar')}
             </CardTitle>
             <div className="flex items-center gap-1">
               <Button
@@ -111,6 +132,7 @@ export const MobileShiftCalendarGrid: React.FC<MobileShiftCalendarGridProps> = (
                 size="sm"
                 onClick={handlePreviousMonth}
                 className="h-8 w-8 p-0"
+                aria-label={t('previousMonth')}
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
@@ -119,6 +141,7 @@ export const MobileShiftCalendarGrid: React.FC<MobileShiftCalendarGridProps> = (
                 size="sm"
                 onClick={handleNextMonth}
                 className="h-8 w-8 p-0"
+                aria-label={t('nextMonth')}
               >
                 <ChevronRight className="h-4 w-4" />
               </Button>
@@ -126,7 +149,7 @@ export const MobileShiftCalendarGrid: React.FC<MobileShiftCalendarGridProps> = (
           </div>
           <div className="text-center">
             <span className="text-lg font-semibold">
-              {format(currentDate, 'LLLL yyyy', { locale: cs })}
+              {format(currentDate, 'LLLL yyyy', { locale: getDateLocale() })}
             </span>
           </div>
         </CardHeader>
@@ -198,12 +221,12 @@ export const MobileShiftCalendarGrid: React.FC<MobileShiftCalendarGridProps> = (
         <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg">
-              {format(selectedDate, 'dd. MMMM yyyy', { locale: cs })}
+              {format(selectedDate, 'dd. MMMM yyyy', { locale: getDateLocale() })}
             </CardTitle>
             <div className="text-sm text-muted-foreground">
               {selectedShifts.length === 0 
-                ? 'Žádné směny pro tento den'
-                : `${selectedShifts.length} směn${selectedShifts.length > 1 ? 'y' : 'a'}`
+                ? t('noShiftsForThisDay')
+                : `${selectedShifts.length} ${selectedShifts.length > 1 ? t('shifts') : t('shift')}`
               }
             </div>
           </CardHeader>
@@ -211,7 +234,7 @@ export const MobileShiftCalendarGrid: React.FC<MobileShiftCalendarGridProps> = (
             {selectedShifts.length === 0 ? (
               <div className="text-center py-6 text-muted-foreground">
                 <CalendarDays className="h-10 w-10 mx-auto mb-3 opacity-50" />
-                <p className="text-sm">Pro tento den nejsou naplánované žádné směny</p>
+                <p className="text-sm">{t('noShiftsPlannedForThisDay')}</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -219,10 +242,10 @@ export const MobileShiftCalendarGrid: React.FC<MobileShiftCalendarGridProps> = (
                   <div key={shift.id} className="flex items-center justify-between p-3 border rounded-lg bg-muted/30">
                     <div className="flex items-center gap-2 min-w-0 flex-1">
                       <Badge className={cn("text-xs flex-shrink-0", 
-                        shift.type === 'morning' ? 'bg-blue-100 text-blue-800' :
-                        shift.type === 'afternoon' ? 'bg-amber-100 text-amber-800' :
-                        shift.type === 'night' ? 'bg-indigo-100 text-indigo-800' :
-                        'bg-gray-100 text-gray-800'
+                        shift.type === 'morning' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300' :
+                        shift.type === 'afternoon' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300' :
+                        shift.type === 'night' ? 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300' :
+                        'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300'
                       )}>
                         {getShiftTypeLabel(shift.type)}
                       </Badge>

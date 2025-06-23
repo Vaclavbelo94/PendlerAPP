@@ -1,9 +1,10 @@
 
 import React from 'react';
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, eachDayOfInterval, isSameMonth, isSameDay, isToday } from 'date-fns';
-import { cs } from 'date-fns/locale';
+import { cs, de, pl } from 'date-fns/locale';
 import { Shift } from '@/hooks/shifts/useOptimizedShiftsManagement';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 interface MobileCalendarGridProps {
   currentDate: Date;
@@ -18,6 +19,28 @@ export const MobileCalendarGrid: React.FC<MobileCalendarGridProps> = ({
   shifts,
   onDateSelect
 }) => {
+  const { i18n } = useTranslation();
+
+  // Get appropriate date-fns locale
+  const getDateLocale = () => {
+    switch (i18n.language) {
+      case 'de': return de;
+      case 'pl': return pl;
+      case 'cs':
+      default: return cs;
+    }
+  };
+
+  // Get localized week days
+  const getWeekDays = () => {
+    switch (i18n.language) {
+      case 'de': return ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
+      case 'pl': return ['Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'So', 'Nd'];
+      case 'cs':
+      default: return ['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'];
+    }
+  };
+
   // Calculate calendar grid
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
@@ -44,8 +67,7 @@ export const MobileCalendarGrid: React.FC<MobileCalendarGridProps> = ({
     }
   };
 
-  // Week days header
-  const weekDays = ['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'];
+  const weekDays = getWeekDays();
 
   return (
     <div className="w-full">

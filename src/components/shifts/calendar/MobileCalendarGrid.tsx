@@ -4,9 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, CalendarDays } from 'lucide-react';
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, eachDayOfInterval, isSameMonth, isSameDay, isToday, addMonths, subMonths } from 'date-fns';
-import { cs } from 'date-fns/locale';
+import { cs, de, pl } from 'date-fns/locale';
 import { Shift } from '@/types/shifts';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 interface MobileCalendarGridProps {
   currentDate: Date;
@@ -23,6 +24,28 @@ export const MobileCalendarGrid: React.FC<MobileCalendarGridProps> = ({
   onDateSelect,
   onMonthChange
 }) => {
+  const { t, i18n } = useTranslation('shifts');
+
+  // Get appropriate date-fns locale
+  const getDateLocale = () => {
+    switch (i18n.language) {
+      case 'de': return de;
+      case 'pl': return pl;
+      case 'cs':
+      default: return cs;
+    }
+  };
+
+  // Get localized week days
+  const getWeekDays = () => {
+    switch (i18n.language) {
+      case 'de': return ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
+      case 'pl': return ['Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'So', 'Nd'];
+      case 'cs':
+      default: return ['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'];
+    }
+  };
+
   // Calculate calendar grid with proper week alignment
   const calendarDays = useMemo(() => {
     const monthStart = startOfMonth(currentDate);
@@ -72,8 +95,7 @@ export const MobileCalendarGrid: React.FC<MobileCalendarGridProps> = ({
     onMonthChange?.(newDate);
   };
 
-  // Week days header
-  const weekDays = ['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'];
+  const weekDays = getWeekDays();
 
   return (
     <Card className="w-full bg-card/50 backdrop-blur-sm border-0 shadow-lg">
@@ -81,7 +103,7 @@ export const MobileCalendarGrid: React.FC<MobileCalendarGridProps> = ({
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-lg">
             <CalendarDays className="h-5 w-5" />
-            Kalendář směn
+            {t('shiftsCalendar')}
           </CardTitle>
           <div className="flex items-center gap-1">
             <Button
@@ -89,7 +111,7 @@ export const MobileCalendarGrid: React.FC<MobileCalendarGridProps> = ({
               size="sm"
               onClick={handlePreviousMonth}
               className="h-8 w-8 p-0"
-              aria-label="Předchozí měsíc"
+              aria-label={t('previousMonth')}
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
@@ -98,7 +120,7 @@ export const MobileCalendarGrid: React.FC<MobileCalendarGridProps> = ({
               size="sm"
               onClick={handleNextMonth}
               className="h-8 w-8 p-0"
-              aria-label="Následující měsíc"
+              aria-label={t('nextMonth')}
             >
               <ChevronRight className="h-4 w-4" />
             </Button>
@@ -106,7 +128,7 @@ export const MobileCalendarGrid: React.FC<MobileCalendarGridProps> = ({
         </div>
         <div className="text-center">
           <span className="text-lg font-semibold">
-            {format(currentDate, 'LLLL yyyy', { locale: cs })}
+            {format(currentDate, 'LLLL yyyy', { locale: getDateLocale() })}
           </span>
         </div>
       </CardHeader>
