@@ -1,31 +1,18 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Plus, Fuel, Edit, Trash2, MoreVertical } from 'lucide-react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchFuelRecords, saveFuelRecord, deleteFuelRecord } from '@/services/vehicleService';
+import { Badge } from '@/components/ui/badge';
+import { FuelIcon, PlusIcon, MoreHorizontalIcon, EditIcon, TrashIcon } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { FuelRecord } from '@/types/vehicle';
+import { getFuelRecords, deleteFuelRecord } from '@/services/vehicleService';
 import { useStandardizedToast } from '@/hooks/useStandardizedToast';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+import { useTranslation } from 'react-i18next';
+import FuelRecordDialog from './dialogs/FuelRecordDialog';
+import { formatDate } from '@/lib/utils';
 
 interface FuelConsumptionCardProps {
   vehicleId: string;
@@ -33,140 +20,82 @@ interface FuelConsumptionCardProps {
 }
 
 const FuelConsumptionCard: React.FC<FuelConsumptionCardProps> = ({ vehicleId, fullView = false }) => {
-  const [isAddSheetOpen, setIsAddSheetOpen] = useState(false);
-  const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const { t } = useTranslation(['vehicle']);
+  const [fuelRecords, setFuelRecords] = useState<FuelRecord[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingRecord, setEditingRecord] = useState<FuelRecord | null>(null);
-  const [deletingRecord, setDeletingRecord] = useState<FuelRecord | null>(null);
-  const [formData, setFormData] = useState({
-    date: '',
-    amount_liters: '',
-    price_per_liter: '',
-    total_cost: '',
-    mileage: '',
-    full_tank: true,
-    station: ''
-  });
-
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const { success, error } = useStandardizedToast();
-  const queryClient = useQueryClient();
 
-  const { data: fuelRecords = [], isLoading } = useQuery({
-    queryKey: ['fuel-records', vehicleId],
-    queryFn: () => fetchFuelRecords(vehicleId),
-    enabled: !!vehicleId
-  });
-
-  const addMutation = useMutation({
-    mutationFn: (data: Partial<FuelRecord>) => saveFuelRecord({ ...data, vehicle_id: vehicleId }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['fuel-records', vehicleId] });
-      success('Záznam o tankování byl přidán');
-      setIsAddSheetOpen(false);
-      resetForm();
-    },
-    onError: (err: any) => {
-      error(err.message || 'Chyba při přidávání záznamu');
-    }
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: (data: Partial<FuelRecord>) => saveFuelRecord(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['fuel-records', vehicleId] });
-      success('Záznam o tankování byl aktualizován');
-      setIsEditSheetOpen(false);
-      setEditingRecord(null);
-      resetForm();
-    },
-    onError: (err: any) => {
-      error(err.message || 'Chyba při aktualizaci záznamu');
-    }
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: (id: string) => deleteFuelRecord(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['fuel-records', vehicleId] });
-      success('Záznam o tankování byl smazán');
-      setIsDeleteDialogOpen(false);
-      setDeletingRecord(null);
-    },
-    onError: (err: any) => {
-      error(err.message || 'Chyba při mazání záznamu');
-    }
-  });
-
-  const resetForm = () => {
-    setFormData({
-      date: '',
-      amount_liters: '',
-      price_per_liter: '',
-      total_cost: '',
-      mileage: '',
-      full_tank: true,
-      station: ''
-    });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    const data = {
-      ...formData,
-      amount_liters: parseFloat(formData.amount_liters),
-      price_per_liter: parseFloat(formData.price_per_liter),
-      total_cost: parseFloat(formData.total_cost)
-    };
-
-    if (editingRecord) {
-      updateMutation.mutate({ ...data, id: editingRecord.id });
-    } else {
-      addMutation.mutate(data);
+  const loadFuelRecords = async () => {
+    try {
+      setIsLoading(true);
+      const records = await getFuelRecords(vehicleId);
+      setFuelRecords(records || []);
+    } catch (err: any) {
+      error(t('vehicle:errorSavingFuelRecord'));
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleEdit = (record: FuelRecord) => {
+  useEffect(() => {
+    loadFuelRecords();
+  }, [vehicleId]);
+
+  const handleAddRecord = () => {
+    setEditingRecord(null);
+    setIsDialogOpen(true);
+  };
+
+  const handleEditRecord = (record: FuelRecord) => {
     setEditingRecord(record);
-    setFormData({
-      date: record.date,
-      amount_liters: record.amount_liters.toString(),
-      price_per_liter: record.price_per_liter.toString(),
-      total_cost: record.total_cost.toString(),
-      mileage: record.mileage,
-      full_tank: record.full_tank,
-      station: record.station
-    });
-    setIsEditSheetOpen(true);
+    setIsDialogOpen(true);
   };
 
-  const handleDelete = (record: FuelRecord) => {
-    setDeletingRecord(record);
-    setIsDeleteDialogOpen(true);
-  };
-
-  const confirmDelete = () => {
-    if (deletingRecord?.id) {
-      deleteMutation.mutate(deletingRecord.id);
+  const handleDeleteRecord = async (recordId: string) => {
+    try {
+      setDeletingId(recordId);
+      await deleteFuelRecord(recordId);
+      success(t('vehicle:fuelRecordDeleted'));
+      loadFuelRecords();
+    } catch (err: any) {
+      error(t('vehicle:errorDeletingFuelRecord'));
+    } finally {
+      setDeletingId(null);
     }
   };
 
-  const totalCost = fuelRecords.reduce((sum, record) => sum + record.total_cost, 0);
-  const averageConsumption = fuelRecords.length > 0 
-    ? fuelRecords.reduce((sum, record) => sum + record.amount_liters, 0) / fuelRecords.length 
-    : 0;
+  const handleDialogSuccess = () => {
+    loadFuelRecords();
+    setIsDialogOpen(false);
+  };
+
+  const calculateTotalCost = () => {
+    return fuelRecords.reduce((sum, record) => sum + (record.total_cost || 0), 0);
+  };
+
+  const calculateAveragePrice = () => {
+    if (fuelRecords.length === 0) return 0;
+    const total = fuelRecords.reduce((sum, record) => sum + (record.price_per_liter || 0), 0);
+    return total / fuelRecords.length;
+  };
+
+  const calculateTotalLiters = () => {
+    return fuelRecords.reduce((sum, record) => sum + (record.amount_liters || 0), 0);
+  };
+
+  const displayRecords = fullView ? fuelRecords : fuelRecords.slice(0, 3);
 
   if (isLoading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Fuel className="h-5 w-5" />
-            Spotřeba paliva
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p>Načítání...</p>
+      <Card className="h-64">
+        <CardContent className="flex items-center justify-center h-full">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+            <p className="text-sm text-muted-foreground">{t('vehicle:loading')}</p>
+          </div>
         </CardContent>
       </Card>
     );
@@ -174,276 +103,154 @@ const FuelConsumptionCard: React.FC<FuelConsumptionCardProps> = ({ vehicleId, fu
 
   return (
     <>
-      <Card className={fullView ? "h-full" : ""}>
+      <Card className={fullView ? "w-full" : ""}>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <Fuel className="h-5 w-5" />
-              Spotřeba paliva
-            </CardTitle>
-            <Sheet open={isAddSheetOpen} onOpenChange={setIsAddSheetOpen}>
-              <SheetTrigger asChild>
-                <Button size="sm" className="flex items-center gap-2">
-                  <Plus className="h-4 w-4" />
-                  Přidat
-                </Button>
-              </SheetTrigger>
-              <SheetContent>
-                <SheetHeader>
-                  <SheetTitle>Přidat tankování</SheetTitle>
-                </SheetHeader>
-                <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-                  <div>
-                    <Label htmlFor="date">Datum</Label>
-                    <Input
-                      id="date"
-                      type="date"
-                      value={formData.date}
-                      onChange={(e) => setFormData({...formData, date: e.target.value})}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="amount">Množství (l)</Label>
-                    <Input
-                      id="amount"
-                      type="number"
-                      step="0.01"
-                      value={formData.amount_liters}
-                      onChange={(e) => setFormData({...formData, amount_liters: e.target.value})}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="price">Cena za litr (€)</Label>
-                    <Input
-                      id="price"
-                      type="number"
-                      step="0.001"
-                      value={formData.price_per_liter}
-                      onChange={(e) => setFormData({...formData, price_per_liter: e.target.value})}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="total">Celková cena (€)</Label>
-                    <Input
-                      id="total"
-                      type="number"
-                      step="0.01"
-                      value={formData.total_cost}
-                      onChange={(e) => setFormData({...formData, total_cost: e.target.value})}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="mileage">Stav tachometru (km)</Label>
-                    <Input
-                      id="mileage"
-                      type="text"
-                      value={formData.mileage}
-                      onChange={(e) => setFormData({...formData, mileage: e.target.value})}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="station">Čerpací stanice</Label>
-                    <Input
-                      id="station"
-                      type="text"
-                      value={formData.station}
-                      onChange={(e) => setFormData({...formData, station: e.target.value})}
-                      required
-                    />
-                  </div>
-                  <div className="flex gap-2">
-                    <Button type="submit" disabled={addMutation.isPending}>
-                      {addMutation.isPending ? 'Ukládání...' : 'Uložit'}
-                    </Button>
-                    <Button type="button" variant="outline" onClick={() => setIsAddSheetOpen(false)}>
-                      Zrušit
-                    </Button>
-                  </div>
-                </form>
-              </SheetContent>
-            </Sheet>
+            <div className="flex items-center gap-2">
+              <FuelIcon className="h-5 w-5 text-primary" />
+              <CardTitle className="text-lg">{t('vehicle:fuelConsumption')}</CardTitle>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleAddRecord}
+              className="flex items-center gap-1"
+            >
+              <PlusIcon className="h-4 w-4" />
+              {t('vehicle:add')}
+            </Button>
           </div>
         </CardHeader>
         <CardContent>
           {fuelRecords.length === 0 ? (
-            <p className="text-muted-foreground">Zatím žádné záznamy o tankování</p>
+            <div className="text-center py-8">
+              <FuelIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <p className="text-muted-foreground mb-4">{t('vehicle:noFuelRecords')}</p>
+              <Button onClick={handleAddRecord} className="gap-2">
+                <PlusIcon className="h-4 w-4" />
+                {t('vehicle:addFuelRecord')}
+              </Button>
+            </div>
           ) : (
-            <>
-              <div className="grid grid-cols-2 gap-4 mb-4">
-                <div>
-                  <p className="text-sm text-muted-foreground">Celkové náklady</p>
-                  <p className="text-2xl font-bold">{totalCost.toFixed(2)} €</p>
+            <div className="space-y-4">
+              {/* Summary Statistics */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-lg">
+                  <h4 className="text-sm font-medium text-muted-foreground">{t('vehicle:totalFuelCost')}</h4>
+                  <p className="text-2xl font-bold text-blue-600">{calculateTotalCost().toFixed(0)} Kč</p>
                 </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Průměrná spotřeba</p>
-                  <p className="text-2xl font-bold">{averageConsumption.toFixed(1)} l</p>
+                <div className="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-lg">
+                  <h4 className="text-sm font-medium text-muted-foreground">{t('vehicle:averageFuelPrice')}</h4>
+                  <p className="text-2xl font-bold text-green-600">{calculateAveragePrice().toFixed(2)} Kč/L</p>
+                </div>
+                <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-4 rounded-lg">
+                  <h4 className="text-sm font-medium text-muted-foreground">{t('vehicle:totalFuelConsumed')}</h4>
+                  <p className="text-2xl font-bold text-purple-600">{calculateTotalLiters().toFixed(0)} L</p>
                 </div>
               </div>
-              
-              <div className="space-y-2">
-                {(fullView ? fuelRecords : fuelRecords.slice(0, 3)).map((record) => (
-                  <div key={record.id} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div>
-                      <p className="font-medium">{record.station}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {new Date(record.date).toLocaleDateString('cs-CZ')} • {record.amount_liters}l • {record.total_cost.toFixed(2)}€
-                      </p>
+
+              {/* Fuel Records List */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-medium">{t('vehicle:fuelRecords')}</h4>
+                  {!fullView && fuelRecords.length > 3 && (
+                    <Button variant="ghost" size="sm">
+                      {t('vehicle:viewAll')}
+                    </Button>
+                  )}
+                </div>
+                
+                {displayRecords.map((record) => (
+                  <div key={record.id} className="border rounded-lg p-4 hover:bg-accent/50 transition-colors">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Badge variant="outline">{formatDate(record.date)}</Badge>
+                          <Badge variant="secondary">{record.station}</Badge>
+                          {record.full_tank && (
+                            <Badge variant="default">{t('vehicle:fullTank')}</Badge>
+                          )}
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                          <div>
+                            <span className="text-muted-foreground">{t('vehicle:amount')}:</span>
+                            <span className="ml-1 font-medium">{record.amount_liters}L</span>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">{t('vehicle:pricePerLiter')}:</span>
+                            <span className="ml-1 font-medium">{record.price_per_liter} Kč</span>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">{t('vehicle:totalCost')}:</span>
+                            <span className="ml-1 font-medium">{record.total_cost} Kč</span>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">{t('vehicle:mileageAtRefuel')}:</span>
+                            <span className="ml-1 font-medium">{record.mileage} km</span>
+                          </div>
+                        </div>
+                      </div>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm">
+                            <MoreHorizontalIcon className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="bg-background border border-border shadow-lg z-50">
+                          <DropdownMenuItem onClick={() => handleEditRecord(record)}>
+                            <EditIcon className="h-4 w-4 mr-2" />
+                            {t('vehicle:edit')}
+                          </DropdownMenuItem>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                <TrashIcon className="h-4 w-4 mr-2" />
+                                {t('vehicle:delete')}
+                              </DropdownMenuItem>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>{t('vehicle:deleteFuelRecord')}</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  {t('vehicle:confirmDeleteFuelRecord')}
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>{t('vehicle:cancel')}</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleDeleteRecord(record.id)}
+                                  disabled={deletingId === record.id}
+                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                >
+                                  {deletingId === record.id ? t('vehicle:deleting') : t('vehicle:delete')}
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm">
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleEdit(record)}>
-                          <Edit className="mr-2 h-4 w-4" />
-                          Upravit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem 
-                          onClick={() => handleDelete(record)}
-                          className="text-red-600 focus:text-red-600"
-                        >
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          Smazat
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
                   </div>
                 ))}
+                
+                {!fullView && fuelRecords.length > 3 && (
+                  <p className="text-sm text-muted-foreground text-center">
+                    {t('vehicle:andMoreRecords', { count: fuelRecords.length - 3 })}
+                  </p>
+                )}
               </div>
-              
-              {!fullView && fuelRecords.length > 3 && (
-                <p className="text-sm text-muted-foreground mt-2">
-                  A {fuelRecords.length - 3} dalších záznamů...
-                </p>
-              )}
-            </>
+            </div>
           )}
         </CardContent>
       </Card>
 
-      {/* Edit Sheet */}
-      <Sheet open={isEditSheetOpen} onOpenChange={setIsEditSheetOpen}>
-        <SheetContent>
-          <SheetHeader>
-            <SheetTitle>Upravit tankování</SheetTitle>
-          </SheetHeader>
-          <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-            <div>
-              <Label htmlFor="edit-date">Datum</Label>
-              <Input
-                id="edit-date"
-                type="date"
-                value={formData.date}
-                onChange={(e) => setFormData({...formData, date: e.target.value})}
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="edit-amount">Množství (l)</Label>
-              <Input
-                id="edit-amount"
-                type="number"
-                step="0.01"
-                value={formData.amount_liters}
-                onChange={(e) => setFormData({...formData, amount_liters: e.target.value})}
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="edit-price">Cena za litr (€)</Label>
-              <Input
-                id="edit-price"
-                type="number"
-                step="0.001"
-                value={formData.price_per_liter}
-                onChange={(e) => setFormData({...formData, price_per_liter: e.target.value})}
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="edit-total">Celková cena (€)</Label>
-              <Input
-                id="edit-total"
-                type="number"
-                step="0.01"
-                value={formData.total_cost}
-                onChange={(e) => setFormData({...formData, total_cost: e.target.value})}
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="edit-mileage">Stav tachometru (km)</Label>
-              <Input
-                id="edit-mileage"
-                type="text"
-                value={formData.mileage}
-                onChange={(e) => setFormData({...formData, mileage: e.target.value})}
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="edit-station">Čerpací stanice</Label>
-              <Input
-                id="edit-station"
-                type="text"
-                value={formData.station}
-                onChange={(e) => setFormData({...formData, station: e.target.value})}
-                required
-              />
-            </div>
-            <div className="flex gap-2">
-              <Button type="submit" disabled={updateMutation.isPending}>
-                {updateMutation.isPending ? 'Ukládání...' : 'Uložit'}
-              </Button>
-              <Button 
-                type="button" 
-                variant="outline" 
-                onClick={() => {
-                  setIsEditSheetOpen(false);
-                  setEditingRecord(null);
-                  resetForm();
-                }}
-              >
-                Zrušit
-              </Button>
-            </div>
-          </form>
-        </SheetContent>
-      </Sheet>
-
-      {/* Delete Dialog */}
-      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Smazat záznam o tankování</AlertDialogTitle>
-            <AlertDialogDescription>
-              Opravdu chcete smazat tento záznam o tankování? Tato akce je nevratná.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => {
-              setIsDeleteDialogOpen(false);
-              setDeletingRecord(null);
-            }}>
-              Zrušit
-            </AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={confirmDelete}
-              disabled={deleteMutation.isPending}
-              className="bg-red-600 hover:bg-red-700"
-            >
-              {deleteMutation.isPending ? 'Mazání...' : 'Smazat'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <FuelRecordDialog
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        vehicleId={vehicleId}
+        onSuccess={handleDialogSuccess}
+        record={editingRecord}
+      />
     </>
   );
 };
