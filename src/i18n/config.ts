@@ -24,6 +24,7 @@ import deNavigation from './translations/de/navigation.json';
 import deDashboard from './translations/de/dashboard.json';
 import deLaws from './translations/de/laws.json';
 import deShifts from './translations/de/shifts.json';
+import deTravel from './translations/de/travel.json';
 import deTranslator from './translations/de/translator.json';
 import deProfile from './translations/de/profile.json';
 import deSettings from './translations/de/settings.json';
@@ -33,6 +34,7 @@ import plNavigation from './translations/pl/navigation.json';
 import plDashboard from './translations/pl/dashboard.json';
 import plLaws from './translations/pl/laws.json';
 import plShifts from './translations/pl/shifts.json';
+import plTravel from './translations/pl/travel.json';
 import plTranslator from './translations/pl/translator.json';
 import plProfile from './translations/pl/profile.json';
 import plSettings from './translations/pl/settings.json';
@@ -60,6 +62,7 @@ export const resources = {
     dashboard: deDashboard,
     laws: deLaws,
     shifts: deShifts,
+    travel: deTravel,
     translator: deTranslator,
     profile: deProfile,
     settings: deSettings,
@@ -70,6 +73,7 @@ export const resources = {
     dashboard: plDashboard,
     laws: plLaws,
     shifts: plShifts,
+    travel: plTravel,
     translator: plTranslator,
     profile: plProfile,
     settings: plSettings,
