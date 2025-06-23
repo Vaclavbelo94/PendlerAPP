@@ -1,0 +1,17 @@
+
+{
+  "welcome": "Vítejte",
+  "quickStats": "Rychlé statistiky",
+  "recentActivity": "Nedávná aktivita",
+  "overview": "Přehled",
+  "statistics": "Statistiky",
+  "todayShifts": "Dnešní směny",
+  "weeklyHours": "Týdenní hodiny",
+  "monthlyEarnings": "Měsíční výdělky",
+  "totalShifts": "Celkem směn",
+  "averageHours": "Průměrné hodiny",
+  "nextShift": "Další směna",
+  "noShiftsToday": "Dnes nemáte žádné směny",
+  "upcomingEvents": "Nadcházející události",
+  "quickActions": "Rychlé akce"
+}

@@ -1,0 +1,27 @@
+
+{
+  "title": "Profil",
+  "personalInfo": "Osobní informace",
+  "accountSettings": "Nastavení účtu",
+  "preferences": "Předvolby",
+  "firstName": "Jméno",
+  "lastName": "Příjmení",
+  "email": "E-mail",
+  "phone": "Telefon",
+  "address": "Adresa",
+  "dateOfBirth": "Datum narození",
+  "nationality": "Národnost",
+  "occupation": "Povolání",
+  "employer": "Zaměstnavatel",
+  "taxNumber": "Daňové číslo",
+  "socialSecurityNumber": "Číslo sociálního pojištění",
+  "updateProfile": "Aktualizovat profil",
+  "profileUpdated": "Profil byl úspěšně aktualizován",
+  "changePassword": "Změnit heslo",
+  "currentPassword": "Současné heslo",
+  "newPassword": "Nové heslo",
+  "confirmPassword": "Potvrdit heslo",
+  "passwordChanged": "Heslo bylo úspěšně změněno",
+  "deleteAccount": "Smazat účet",
+  "accountDeleted": "Účet byl úspěšně smazán"
+}

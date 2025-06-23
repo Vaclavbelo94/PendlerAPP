@@ -3,10 +3,10 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, X, Briefcase } from 'lucide-react';
+import { Menu, Briefcase } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { useLanguage } from '@/hooks/useLanguage';
-import { LanguageSelector } from './LanguageSelector';
+import { useTranslation } from 'react-i18next';
+import { LanguageSwitcher } from '@/components/i18n/LanguageSwitcher';
 import { cn } from '@/lib/utils';
 
 const navigationItems = [
@@ -22,7 +22,7 @@ const navigationItems = [
 export const ModernNavbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { user, signOut } = useAuth();
-  const { t } = useLanguage();
+  const { t } = useTranslation('navigation');
   const location = useLocation();
 
   const NavLink = ({ item, mobile = false }: { item: typeof navigationItems[0], mobile?: boolean }) => (
@@ -56,29 +56,29 @@ export const ModernNavbar: React.FC = () => {
         </div>
 
         <div className="flex items-center space-x-4">
-          <LanguageSelector />
+          <LanguageSwitcher />
           
           {user ? (
             <div className="hidden md:flex items-center space-x-4">
               <Link to="/profile">
                 <Button variant="ghost" size="sm">
-                  {t('profile') || 'Profil'}
+                  {t('profile')}
                 </Button>
               </Link>
               <Button variant="outline" size="sm" onClick={signOut}>
-                {t('logout') || 'Odhlásit'}
+                {t('logout')}
               </Button>
             </div>
           ) : (
             <div className="hidden md:flex items-center space-x-2">
               <Link to="/login">
                 <Button variant="ghost" size="sm">
-                  {t('login') || 'Přihlásit'}
+                  {t('login')}
                 </Button>
               </Link>
               <Link to="/register">
                 <Button size="sm">
-                  {t('register') || 'Registrovat'}
+                  {t('register')}
                 </Button>
               </Link>
             </div>

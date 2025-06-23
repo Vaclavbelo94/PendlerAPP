@@ -1,0 +1,26 @@
+
+{
+  "title": "Zmiany",
+  "subtitle": "Planuj i śledź swoje zmiany robocze efektywnie",
+  "calendar": "Kalendarz",
+  "analytics": "Analityka",
+  "reports": "Raporty",
+  "addShift": "Dodaj zmianę",
+  "editShift": "Edytuj zmianę",
+  "deleteShift": "Usuń zmianę",
+  "saveShift": "Zapisz zmianę",
+  "updateShift": "Aktualizuj zmianę",
+  "shiftType": "Typ zmiany",
+  "shiftNotes": "Notatki zmiany",
+  "selectDate": "Wybierz datę, aby dodać lub edytować zmianę",
+  "noShift": "Brak zaplanowanej zmiany",
+  "morningShift": "🌅 Poranna (6:00 - 14:00)",
+  "afternoonShift": "☀️ Popołudniowa (14:00 - 22:00)",
+  "nightShift": "🌙 Nocna (22:00 - 6:00)",
+  "shiftSaved": "Zmiana została pomyślnie zapisana",
+  "shiftUpdated": "Zmiana została pomyślnie zaktualizowana",
+  "shiftDeleted": "Zmiana została pomyślnie usunięta",
+  "shiftError": "Błąd podczas przetwarzania zmiany",
+  "syncComplete": "Synchronizacja zakończona",
+  "conflictsResolved": "konflikty rozwiązane"
+}

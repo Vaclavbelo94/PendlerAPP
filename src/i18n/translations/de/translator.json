@@ -1,0 +1,22 @@
+
+{
+  "title": "Übersetzer",
+  "subtitle": "Professionelle Übersetzung zwischen Deutsch und Tschechisch",
+  "translateFrom": "Übersetzen von",
+  "translateTo": "Übersetzen nach",
+  "enterText": "Text zum Übersetzen eingeben...",
+  "translation": "Übersetzung",
+  "noTranslation": "Keine Übersetzung anzuzeigen",
+  "translating": "Übersetze...",
+  "copyTranslation": "Übersetzung kopieren",
+  "clearText": "Text löschen",
+  "swapLanguages": "Sprachen tauschen",
+  "history": "Verlauf",
+  "favorites": "Favoriten",
+  "recentTranslations": "Letzte Übersetzungen",
+  "noHistory": "Kein Übersetzungsverlauf",
+  "addToFavorites": "Zu Favoriten hinzufügen",
+  "removeFromFavorites": "Von Favoriten entfernen",
+  "characterCount": "Zeichenanzahl",
+  "maxCharacters": "Maximal 5000 Zeichen"
+}

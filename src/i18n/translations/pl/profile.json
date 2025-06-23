@@ -1,0 +1,27 @@
+
+{
+  "title": "Profil",
+  "personalInfo": "Informacje osobiste",
+  "accountSettings": "Ustawienia konta",
+  "preferences": "Preferencje",
+  "firstName": "Imię",
+  "lastName": "Nazwisko",
+  "email": "E-mail",
+  "phone": "Telefon",
+  "address": "Adres",
+  "dateOfBirth": "Data urodzenia",
+  "nationality": "Narodowość",
+  "occupation": "Zawód",
+  "employer": "Pracodawca",
+  "taxNumber": "Numer podatku",
+  "socialSecurityNumber": "Numer ubezpieczenia społecznego",
+  "updateProfile": "Aktualizuj profil",
+  "profileUpdated": "Profil został pomyślnie zaktualizowany",
+  "changePassword": "Zmień hasło",
+  "currentPassword": "Obecne hasło",
+  "newPassword": "Nowe hasło",
+  "confirmPassword": "Potwierdź hasło",
+  "passwordChanged": "Hasło zostało pomyślnie zmienione",
+  "deleteAccount": "Usuń konto",
+  "accountDeleted": "Konto zostało pomyślnie usunięte"
+}

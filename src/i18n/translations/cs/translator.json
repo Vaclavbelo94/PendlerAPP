@@ -1,0 +1,22 @@
+
+{
+  "title": "Překladač",
+  "subtitle": "Profesionální překlad mezi němčinou a češtinou",
+  "translateFrom": "Přeložit z",
+  "translateTo": "Přeložit do",
+  "enterText": "Zadejte text k překladu...",
+  "translation": "Překlad",
+  "noTranslation": "Žádný překlad k zobrazení",
+  "translating": "Překládám...",
+  "copyTranslation": "Kopírovat překlad",
+  "clearText": "Vymazat text",
+  "swapLanguages": "Vyměnit jazyky",
+  "history": "Historie",
+  "favorites": "Oblíbené",
+  "recentTranslations": "Nedávné překlady",
+  "noHistory": "Žádná historie překladů",
+  "addToFavorites": "Přidat do oblíbených",
+  "removeFromFavorites": "Odebrat z oblíbených",
+  "characterCount": "Počet znaků",
+  "maxCharacters": "Maximálně 5000 znaků"
+}

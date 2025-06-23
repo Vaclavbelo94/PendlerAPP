@@ -1,0 +1,22 @@
+
+{
+  "title": "Tłumacz",
+  "subtitle": "Profesjonalne tłumaczenie między niemieckim a czeskim",
+  "translateFrom": "Tłumacz z",
+  "translateTo": "Tłumacz na",
+  "enterText": "Wprowadź tekst do przetłumaczenia...",
+  "translation": "Tłumaczenie",
+  "noTranslation": "Brak tłumaczenia do wyświetlenia",
+  "translating": "Tłumaczę...",
+  "copyTranslation": "Kopiuj tłumaczenie",
+  "clearText": "Wyczyść tekst",
+  "swapLanguages": "Zamień języki",
+  "history": "Historia",
+  "favorites": "Ulubione",
+  "recentTranslations": "Ostatnie tłumaczenia",
+  "noHistory": "Brak historii tłumaczeń",
+  "addToFavorites": "Dodaj do ulubionych",
+  "removeFromFavorites": "Usuń z ulubionych",
+  "characterCount": "Liczba znaków",
+  "maxCharacters": "Maksymalnie 5000 znaków"
+}

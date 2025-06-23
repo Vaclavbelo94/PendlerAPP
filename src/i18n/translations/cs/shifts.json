@@ -1,0 +1,26 @@
+
+{
+  "title": "Směny",
+  "subtitle": "Plánujte a sledujte své pracovní směny efektivně",
+  "calendar": "Kalendář",
+  "analytics": "Analýzy",
+  "reports": "Reporty",
+  "addShift": "Přidat směnu",
+  "editShift": "Upravit směnu",
+  "deleteShift": "Smazat směnu",
+  "saveShift": "Uložit směnu",
+  "updateShift": "Aktualizovat směnu",
+  "shiftType": "Typ směny",
+  "shiftNotes": "Poznámka ke směně",
+  "selectDate": "Vyberte datum pro přidání nebo úpravu směny",
+  "noShift": "Žádná směna naplánována",
+  "morningShift": "🌅 Ranní (6:00 - 14:00)",
+  "afternoonShift": "☀️ Odpolední (14:00 - 22:00)",
+  "nightShift": "🌙 Noční (22:00 - 6:00)",
+  "shiftSaved": "Směna byla úspěšně uložena",
+  "shiftUpdated": "Směna byla úspěšně aktualizována",
+  "shiftDeleted": "Směna byla úspěšně odstraněna",
+  "shiftError": "Došlo k chybě při zpracování směny",
+  "syncComplete": "Synchronizace dokončena",
+  "conflictsResolved": "konflikty vyřešeny"
+}

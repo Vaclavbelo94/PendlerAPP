@@ -1,6 +1,6 @@
-
-import React, { lazy, Suspense, startTransition } from 'react';
-import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
+import React, { lazy, Suspense } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import './i18n/config'; // Initialize i18next
 import { LanguageProvider } from '@/components/providers/LanguageProvider';
 
 // Critical pages - load immediately

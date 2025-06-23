@@ -1,0 +1,26 @@
+
+{
+  "title": "Schichten",
+  "subtitle": "Planen und verfolgen Sie Ihre Arbeitsschichten effizient",
+  "calendar": "Kalender",
+  "analytics": "Analysen",
+  "reports": "Berichte",
+  "addShift": "Schicht hinzufügen",
+  "editShift": "Schicht bearbeiten",
+  "deleteShift": "Schicht löschen", 
+  "saveShift": "Schicht speichern",
+  "updateShift": "Schicht aktualisieren",
+  "shiftType": "Schichttyp",
+  "shiftNotes": "Schichtnotizen",
+  "selectDate": "Wählen Sie ein Datum zum Hinzufügen oder Bearbeiten einer Schicht",
+  "noShift": "Keine Schicht geplant",
+  "morningShift": "🌅 Morgen (6:00 - 14:00)",
+  "afternoonShift": "☀️ Nachmittag (14:00 - 22:00)",
+  "nightShift": "🌙 Nacht (22:00 - 6:00)",
+  "shiftSaved": "Schicht erfolgreich gespeichert",
+  "shiftUpdated": "Schicht erfolgreich aktualisiert",
+  "shiftDeleted": "Schicht erfolgreich gelöscht",
+  "shiftError": "Fehler beim Verarbeiten der Schicht",
+  "syncComplete": "Synchronisation abgeschlossen",
+  "conflictsResolved": "Konflikte gelöst"
+}

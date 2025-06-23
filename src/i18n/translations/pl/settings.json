@@ -1,0 +1,27 @@
+
+{
+  "title": "Ustawienia",
+  "general": "Ogólne",
+  "appearance": "Wygląd",
+  "notifications": "Powiadomienia",
+  "privacy": "Prywatność",
+  "language": "Język",
+  "selectLanguage": "Wybierz język",
+  "theme": "Motyw",
+  "lightTheme": "Jasny",
+  "darkTheme": "Ciemny",
+  "systemTheme": "Systemowy",
+  "emailNotifications": "Powiadomienia e-mail",
+  "pushNotifications": "Powiadomienia push",
+  "shiftReminders": "Przypomnienia o zmianach",
+  "taxDeadlines": "Terminy podatkowe",
+  "legalUpdates": "Aktualizacje prawne",
+  "dataExport": "Eksport danych",
+  "dataImport": "Import danych",
+  "backupSettings": "Kopia zapasowa ustawień",
+  "restoreSettings": "Przywróć ustawienia",
+  "clearCache": "Wyczyść pamięć podręczną",
+  "resetSettings": "Resetuj ustawienia",
+  "settingsSaved": "Ustawienia zostały zapisane",
+  "settingsReset": "Ustawienia zostały zresetowane"
+}

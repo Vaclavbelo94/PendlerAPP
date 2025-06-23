@@ -1,0 +1,17 @@
+
+{
+  "welcome": "Willkommen",
+  "quickStats": "Schnelle Statistiken",
+  "recentActivity": "Letzte Aktivität",
+  "overview": "Übersicht",
+  "statistics": "Statistiken",
+  "todayShifts": "Heutige Schichten",
+  "weeklyHours": "Wöchentliche Stunden",
+  "monthlyEarnings": "Monatliche Einnahmen",
+  "totalShifts": "Gesamte Schichten",
+  "averageHours": "Durchschnittliche Stunden",
+  "nextShift": "Nächste Schicht",
+  "noShiftsToday": "Heute haben Sie keine Schichten",
+  "upcomingEvents": "Kommende Ereignisse",
+  "quickActions": "Schnelle Aktionen"
+}

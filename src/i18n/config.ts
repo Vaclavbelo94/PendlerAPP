@@ -1,0 +1,88 @@
+
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import LanguageDetector from 'i18next-browser-languagedetector';
+
+// Import translation files
+import csCommon from './translations/cs/common.json';
+import csNavigation from './translations/cs/navigation.json';
+import csDashboard from './translations/cs/dashboard.json';
+import csLaws from './translations/cs/laws.json';
+import csShifts from './translations/cs/shifts.json';
+import csTranslator from './translations/cs/translator.json';
+import csProfile from './translations/cs/profile.json';
+import csSettings from './translations/cs/settings.json';
+
+import deCommon from './translations/de/common.json';
+import deNavigation from './translations/de/navigation.json';
+import deDashboard from './translations/de/dashboard.json';
+import deLaws from './translations/de/laws.json';
+import deShifts from './translations/de/shifts.json';
+import deTranslator from './translations/de/translator.json';
+import deProfile from './translations/de/profile.json';
+import deSettings from './translations/de/settings.json';
+
+import plCommon from './translations/pl/common.json';
+import plNavigation from './translations/pl/navigation.json';
+import plDashboard from './translations/pl/dashboard.json';
+import plLaws from './translations/pl/laws.json';
+import plShifts from './translations/pl/shifts.json';
+import plTranslator from './translations/pl/translator.json';
+import plProfile from './translations/pl/profile.json';
+import plSettings from './translations/pl/settings.json';
+
+export const resources = {
+  cs: {
+    common: csCommon,
+    navigation: csNavigation,
+    dashboard: csDashboard,
+    laws: csLaws,
+    shifts: csShifts,
+    translator: csTranslator,
+    profile: csProfile,
+    settings: csSettings,
+  },
+  de: {
+    common: deCommon,
+    navigation: deNavigation,
+    dashboard: deDashboard,
+    laws: deLaws,
+    shifts: deShifts,
+    translator: deTranslator,
+    profile: deProfile,
+    settings: deSettings,
+  },
+  pl: {
+    common: plCommon,
+    navigation: plNavigation,
+    dashboard: plDashboard,
+    laws: plLaws,
+    shifts: plShifts,
+    translator: plTranslator,
+    profile: plProfile,
+    settings: plSettings,
+  },
+};
+
+i18n
+  .use(LanguageDetector)
+  .use(initReactI18next)
+  .init({
+    resources,
+    fallbackLng: 'cs',
+    debug: process.env.NODE_ENV === 'development',
+    
+    detection: {
+      order: ['localStorage', 'navigator', 'htmlTag'],
+      caches: ['localStorage'],
+    },
+
+    interpolation: {
+      escapeValue: false,
+    },
+
+    defaultNS: 'common',
+    ns: ['common', 'navigation', 'dashboard', 'laws', 'shifts', 'translator', 'profile', 'settings'],
+  });
+
+export default i18n;
