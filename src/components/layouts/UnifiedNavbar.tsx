@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -45,6 +45,52 @@ const UnifiedNavbar: React.FC<UnifiedNavbarProps> = ({ rightContent }) => {
   const { t } = useTranslation('common');
   const isMobile = useIsMobile();
 
+  // Touch event handling for swipe gestures
+  const touchStartX = useRef<number>(0);
+  const touchStartY = useRef<number>(0);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    touchStartX.current = touch.clientX;
+    touchStartY.current = touch.clientY;
+    setIsDragging(true);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging) return;
+    
+    // Prevent scrolling during horizontal swipe
+    const touch = e.touches[0];
+    const deltaX = Math.abs(touch.clientX - touchStartX.current);
+    const deltaY = Math.abs(touch.clientY - touchStartY.current);
+    
+    if (deltaX > deltaY && deltaX > 10) {
+      e.preventDefault();
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!isDragging) return;
+    
+    const touch = e.changedTouches[0];
+    const deltaX = touch.clientX - touchStartX.current;
+    const deltaY = touch.clientY - touchStartY.current;
+    
+    // Only trigger swipe if horizontal movement is greater than vertical
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+      if (deltaX > 0 && touchStartX.current < 50) {
+        // Swipe right from left edge - open menu
+        setIsMobileMenuOpen(true);
+      } else if (deltaX < 0 && isMobileMenuOpen) {
+        // Swipe left - close menu
+        setIsMobileMenuOpen(false);
+      }
+    }
+    
+    setIsDragging(false);
+  };
+
   const handleSignOut = async () => {
     try {
       await signOut();
@@ -57,10 +103,15 @@ const UnifiedNavbar: React.FC<UnifiedNavbarProps> = ({ rightContent }) => {
   const isPublicPage = ['/', '/about', '/contact', '/features', '/pricing'].includes(location.pathname);
 
   return (
-    <nav className={cn(
-      "border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50",
-      isPublicPage ? "border-border/40" : "border-border"
-    )}>
+    <nav 
+      className={cn(
+        "border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50",
+        isPublicPage ? "border-border/40" : "border-border"
+      )}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
       <div className="flex h-16 items-center px-4 md:px-6">
         {/* Logo */}
         <div className="flex items-center space-x-4">
