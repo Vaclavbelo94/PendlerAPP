@@ -13,6 +13,7 @@ import { useStandardizedToast } from '@/hooks/useStandardizedToast';
 import { useTranslation } from 'react-i18next';
 import FuelRecordDialog from './dialogs/FuelRecordDialog';
 import { formatDate } from '@/utils/dateUtils';
+import { useCurrencyFormatter } from '@/utils/currencyUtils';
 
 interface FuelConsumptionCardProps {
   vehicleId: string;
@@ -21,6 +22,7 @@ interface FuelConsumptionCardProps {
 
 const FuelConsumptionCard: React.FC<FuelConsumptionCardProps> = ({ vehicleId, fullView = false }) => {
   const { t } = useTranslation(['vehicle']);
+  const { formatCurrency } = useCurrencyFormatter();
   const [fuelRecords, setFuelRecords] = useState<FuelRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -137,11 +139,11 @@ const FuelConsumptionCard: React.FC<FuelConsumptionCardProps> = ({ vehicleId, fu
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-lg">
                   <h4 className="text-sm font-medium text-muted-foreground">{t('vehicle:totalFuelCost')}</h4>
-                  <p className="text-2xl font-bold text-blue-600">{calculateTotalCost().toFixed(0)} Kč</p>
+                  <p className="text-2xl font-bold text-blue-600">{formatCurrency(calculateTotalCost())}</p>
                 </div>
                 <div className="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-lg">
                   <h4 className="text-sm font-medium text-muted-foreground">{t('vehicle:averageFuelPrice')}</h4>
-                  <p className="text-2xl font-bold text-green-600">{calculateAveragePrice().toFixed(2)} Kč/L</p>
+                  <p className="text-2xl font-bold text-green-600">{formatCurrency(calculateAveragePrice())} /L</p>
                 </div>
                 <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-4 rounded-lg">
                   <h4 className="text-sm font-medium text-muted-foreground">{t('vehicle:totalFuelConsumed')}</h4>
@@ -178,11 +180,11 @@ const FuelConsumptionCard: React.FC<FuelConsumptionCardProps> = ({ vehicleId, fu
                           </div>
                           <div>
                             <span className="text-muted-foreground">{t('vehicle:pricePerLiter')}:</span>
-                            <span className="ml-1 font-medium">{record.price_per_liter} Kč</span>
+                            <span className="ml-1 font-medium">{formatCurrency(record.price_per_liter)}</span>
                           </div>
                           <div>
                             <span className="text-muted-foreground">{t('vehicle:totalCost')}:</span>
-                            <span className="ml-1 font-medium">{record.total_cost} Kč</span>
+                            <span className="ml-1 font-medium">{formatCurrency(record.total_cost)}</span>
                           </div>
                           <div>
                             <span className="text-muted-foreground">{t('vehicle:mileageAtRefuel')}:</span>
@@ -249,6 +251,7 @@ const FuelConsumptionCard: React.FC<FuelConsumptionCardProps> = ({ vehicleId, fu
         onClose={() => setIsDialogOpen(false)}
         vehicleId={vehicleId}
         onSuccess={handleDialogSuccess}
+        record={editingRecord}
       />
     </>
   );
