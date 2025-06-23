@@ -1,3 +1,4 @@
+
 import React, { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import './i18n/config'; // Initialize i18next
@@ -50,7 +51,16 @@ import { AuthProvider } from '@/hooks/auth';
 import { ThemeProvider } from '@/hooks/useTheme';
 import { Toaster } from './components/ui/toaster';
 
-const queryClient = new QueryClient()
+// Create QueryClient instance outside component to prevent recreation
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes
+      retry: 1,
+    },
+  },
+});
 
 // Enhanced loading fallback
 const AppLoadingFallback = () => (
