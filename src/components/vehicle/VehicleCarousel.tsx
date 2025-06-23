@@ -89,8 +89,8 @@ const VehicleCarousel: React.FC<VehicleCarouselProps> = ({
                 )}
                 {selectedVehicle.average_consumption && (
                   <div>
-                    <span className="text-muted-foreground">{t('vehicle:fuel.averageConsumption')}:</span>
-                    <span className="ml-2 font-medium">{selectedVehicle.average_consumption} {t('vehicle:fuel.per100km')}</span>
+                    <span className="text-muted-foreground">{t('vehicle:averageConsumption')}:</span>
+                    <span className="ml-2 font-medium">{selectedVehicle.average_consumption} {t('vehicle:per100km')}</span>
                   </div>
                 )}
                 {selectedVehicle.engine && (
