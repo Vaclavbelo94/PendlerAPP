@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Scale } from 'lucide-react';
@@ -13,6 +12,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import EnhancedLawCard from '@/components/laws/enhanced/EnhancedLawCard';
 import Layout from '@/components/layouts/Layout';
 import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
+import { Law } from '@/types/laws';
 
 const Laws = () => {
   const [activeSection, setActiveSection] = useState("all");
@@ -49,6 +49,13 @@ const Laws = () => {
     tags: [lawItem.category],
     officialUrl: lawItem.path
   });
+
+  const handleViewDetails = (law: Law) => {
+    // For now, just navigate to the official URL if available
+    if (law.officialUrl) {
+      window.open(law.officialUrl, '_blank');
+    }
+  };
 
   if (isLoading) {
     return (
@@ -126,6 +133,7 @@ const Laws = () => {
                       key={law.id} 
                       law={convertToLaw(law)} 
                       index={index}
+                      onViewDetails={handleViewDetails}
                     />
                   ))}
                 </motion.div>
