@@ -17,7 +17,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 const Profile: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeSection, setActiveSection] = useState('overview');
   const isMobile = useIsMobile();
 
   if (!user) {
@@ -58,7 +58,7 @@ const Profile: React.FC = () => {
   }
 
   const renderDesktopContent = () => {
-    switch (activeTab) {
+    switch (activeSection) {
       case 'overview':
         return <ProfileOverview />;
       case 'appearance':
@@ -117,8 +117,8 @@ const Profile: React.FC = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
             >
               <ProfileMobileCarousel
-                activeTab={activeTab}
-                onTabChange={setActiveTab}
+                activeTab={activeSection}
+                onTabChange={setActiveSection}
               />
             </motion.div>
           ) : (
@@ -130,8 +130,8 @@ const Profile: React.FC = () => {
                 transition={{ duration: 0.6, delay: 0.1 }}
               >
                 <ProfileNavigation
-                  activeTab={activeTab}
-                  onTabChange={setActiveTab}
+                  activeSection={activeSection}
+                  onSectionChange={setActiveSection}
                 />
               </motion.div>
               

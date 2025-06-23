@@ -15,7 +15,7 @@ import Layout from '@/components/layouts/Layout';
 import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 
 const Laws = () => {
-  const [activeCategory, setActiveCategory] = useState("all");
+  const [activeSection, setActiveSection] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
   const isMobile = useIsMobile();
   const { t } = useLanguage();
@@ -32,11 +32,23 @@ const Laws = () => {
   const lawItems = getLawItems(t);
 
   const filteredLaws = useMemo(() => {
-    if (activeCategory === "all") {
+    if (activeSection === "all") {
       return lawItems;
     }
-    return lawItems.filter(law => law.category === activeCategory);
-  }, [activeCategory, lawItems]);
+    return lawItems.filter(law => law.category === activeSection);
+  }, [activeSection, lawItems]);
+
+  // Convert LawItem to Law type for EnhancedLawCard
+  const convertToLaw = (lawItem: any) => ({
+    id: lawItem.id,
+    title: lawItem.title,
+    summary: lawItem.description, // Use description as summary
+    category: lawItem.category,
+    lastUpdated: lawItem.updated,
+    importance: 5, // Default importance
+    tags: [lawItem.category],
+    officialUrl: lawItem.path
+  });
 
   if (isLoading) {
     return (
@@ -85,8 +97,8 @@ const Laws = () => {
                 transition={{ duration: 0.6, delay: 0.2 }}
               >
                 <LawsMobileCarousel
-                  activeCategory={activeCategory}
-                  onCategoryChange={setActiveCategory}
+                  activeCategory={activeSection}
+                  onCategoryChange={setActiveSection}
                 />
               </motion.div>
             ) : (
@@ -98,8 +110,8 @@ const Laws = () => {
                   transition={{ duration: 0.6, delay: 0.1 }}
                 >
                   <LawsNavigation
-                    activeCategory={activeCategory}
-                    onCategoryChange={setActiveCategory}
+                    activeSection={activeSection}
+                    onSectionChange={setActiveSection}
                   />
                 </motion.div>
                 
@@ -112,7 +124,7 @@ const Laws = () => {
                   {filteredLaws.map((law, index) => (
                     <EnhancedLawCard 
                       key={law.id} 
-                      law={law} 
+                      law={convertToLaw(law)} 
                       index={index}
                     />
                   ))}
