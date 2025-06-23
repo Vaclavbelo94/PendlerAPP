@@ -52,5 +52,12 @@
   "of": "z",
   "monthly": "Miesięcznie",
   "export": "Eksport",
-  "recommended": "Polecane"
+  "recommended": "Polecane",
+  "wizard": "Przewodnik",
+  "calculator": "Kalkulator",
+  "optimization": "Optymalizacja",
+  "wizardDescription": "Krok po kroku do optymalizacji podatkowej",
+  "calculatorDescription": "Szybkie obliczenia podatkowe",
+  "documentsDescription": "Generowanie dokumentów PDF",
+  "optimizationDescription": "Wskazówki i triki oszczędzania podatków"
 }
