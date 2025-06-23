@@ -1,10 +1,16 @@
 
+// Re-export legacy compatibility
 import type { Language, LanguageInfo, Translations } from './types';
 import { languages, defaultLanguage } from './languages';
 import { commonTranslations } from './translations/common';
 import { lawsTranslations } from './translations/laws';
 
-// Combine all translations
+// New centralized system
+export { useCentralizedTranslation } from '@/hooks/useCentralizedTranslation';
+export { getCentralizedTranslation, centralizedTranslations } from './centralized-translations';
+export type { CentralizedLanguage } from './centralized-translations';
+
+// Combine all translations for legacy compatibility
 const allTranslations = {
   cs: {
     ...commonTranslations.cs,
@@ -20,7 +26,7 @@ const allTranslations = {
   },
 };
 
-// Helper function to get nested translation
+// Legacy helper function
 export const getTranslation = (language: Language, key: string): string => {
   const keys = key.split('.');
   let value: any = allTranslations[language];
@@ -38,11 +44,11 @@ export const getTranslation = (language: Language, key: string): string => {
   return typeof value === 'string' ? value : key;
 };
 
-// Hook for using translations in components
+// Legacy hook
 export const useTranslation = (language: Language) => {
   return (key: string) => getTranslation(language, key);
 };
 
-// Export everything needed
+// Export everything needed for backward compatibility
 export type { Language, LanguageInfo, Translations };
 export { languages, defaultLanguage };
