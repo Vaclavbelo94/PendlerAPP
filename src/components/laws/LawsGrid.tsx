@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 import EnhancedLawCard from './enhanced/EnhancedLawCard';
 
 interface LawsGridProps {
@@ -18,7 +18,7 @@ interface LawsGridProps {
 }
 
 const LawsGrid: React.FC<LawsGridProps> = ({ laws }) => {
-  const { t } = useLanguage();
+  const { t } = useTranslation('laws');
 
   if (laws.length === 0) {
     return (

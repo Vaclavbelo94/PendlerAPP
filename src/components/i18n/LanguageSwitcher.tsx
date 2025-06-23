@@ -13,16 +13,16 @@ import { useTranslation } from 'react-i18next';
 const languages = [
   { code: 'cs', name: 'Čeština', flag: '🇨🇿' },
   { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
-  { code: 'pl', name: 'Polski', flag: '🇵🇱' },
+  { code: 'pl', name: 'Polski', flag: '🇵🇱' }
 ];
 
 export const LanguageSwitcher: React.FC = () => {
   const { i18n } = useTranslation();
 
-  const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
+  const currentLanguage = languages.find(lang => lang.code === i18n.language);
 
-  const handleLanguageChange = (languageCode: string) => {
-    i18n.changeLanguage(languageCode);
+  const handleLanguageChange = (newLanguage: string) => {
+    i18n.changeLanguage(newLanguage);
   };
 
   return (
@@ -30,8 +30,8 @@ export const LanguageSwitcher: React.FC = () => {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="sm" className="gap-2">
           <Globe className="h-4 w-4" />
-          <span className="text-lg">{currentLanguage.flag}</span>
-          <span className="hidden sm:inline">{currentLanguage.name}</span>
+          <span className="text-lg">{currentLanguage?.flag || '🇨🇿'}</span>
+          <span className="hidden sm:inline">{currentLanguage?.name || 'Čeština'}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="bg-background border border-border">

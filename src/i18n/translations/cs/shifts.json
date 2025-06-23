@@ -14,13 +14,20 @@
   "shiftNotes": "Poznámka ke směně",
   "selectDate": "Vyberte datum pro přidání nebo úpravu směny",
   "noShift": "Žádná směna naplánována",
-  "morningShift": "🌅 Ranní (6:00 - 14:00)",
-  "afternoonShift": "☀️ Odpolední (14:00 - 22:00)",
-  "nightShift": "🌙 Noční (22:00 - 6:00)",
-  "shiftSaved": "Směna byla úspěšně uložena",
-  "shiftUpdated": "Směna byla úspěšně aktualizována",
-  "shiftDeleted": "Směna byla úspěšně odstraněna",
-  "shiftError": "Došlo k chybě při zpracování směny",
-  "syncComplete": "Synchronizace dokončena",
-  "conflictsResolved": "konflikty vyřešeny"
+  "loginRequired": "Pro správu směn se musíte přihlásit",
+  "calendarView": "Kalendářní pohled",
+  "bulkOperations": "Hromadné operace",
+  "types": {
+    "morning": "🌅 Ranní (6:00 - 14:00)",
+    "afternoon": "☀️ Odpolední (14:00 - 22:00)",
+    "night": "🌙 Noční (22:00 - 6:00)"
+  },
+  "notifications": {
+    "saved": "Směna byla úspěšně uložena",
+    "updated": "Směna byla úspěšně aktualizována",
+    "deleted": "Směna byla úspěšně odstraněna",
+    "error": "Došlo k chybě při zpracování směny",
+    "syncComplete": "Synchronizace dokončena",
+    "conflictsResolved": "konflikty vyřešeny"
+  }
 }

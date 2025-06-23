@@ -5,7 +5,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 import { getLawCategories, getLawItems } from '@/data/lawsData';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 import LawsGrid from '../LawsGrid';
 
 interface LawsMobileCarouselProps {
@@ -17,7 +17,7 @@ export const LawsMobileCarousel: React.FC<LawsMobileCarouselProps> = ({
   activeCategory,
   onCategoryChange
 }) => {
-  const { t } = useLanguage();
+  const { t } = useTranslation('laws');
   const allCategories = [{ id: "all", label: t('allLaws'), iconName: "Scale" }, ...getLawCategories(t)];
   const categoryIds = allCategories.map(cat => cat.id);
   const currentIndex = allCategories.findIndex(cat => cat.id === activeCategory);
@@ -48,7 +48,6 @@ export const LawsMobileCarousel: React.FC<LawsMobileCarouselProps> = ({
 
   return (
     <div className="space-y-4">
-      {/* Category Navigation Header */}
       <div className="flex items-center justify-between px-2">
         <Button
           variant="ghost"
@@ -88,7 +87,6 @@ export const LawsMobileCarousel: React.FC<LawsMobileCarouselProps> = ({
         </Button>
       </div>
 
-      {/* Laws Content with Animation */}
       <div ref={containerRef} className="overflow-hidden">
         <AnimatePresence mode="wait">
           <motion.div
@@ -103,7 +101,6 @@ export const LawsMobileCarousel: React.FC<LawsMobileCarouselProps> = ({
         </AnimatePresence>
       </div>
 
-      {/* Category info */}
       <div className="text-center text-sm text-white/70 px-4">
         {currentIndex + 1} z {allCategories.length} • {filteredLaws.length} {t('lawsCount')}
       </div>

@@ -10,10 +10,10 @@ import {
   Car, 
   FileText 
 } from 'lucide-react';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 const DashboardStats: React.FC = () => {
-  const { t } = useLanguage();
+  const { t } = useTranslation('dashboard');
 
   const stats = [
     {
@@ -35,7 +35,7 @@ const DashboardStats: React.FC = () => {
       bgColor: 'bg-green-100',
     },
     {
-      title: t('shiftsThisMonth'),
+      title: 'Směny tento měsíc',
       value: '18',
       target: '20',
       progress: 90,
@@ -44,7 +44,7 @@ const DashboardStats: React.FC = () => {
       bgColor: 'bg-purple-100',
     },
     {
-      title: t('efficiency'),
+      title: 'Efektivita',
       value: '94%',
       target: '95%',
       progress: 94,
@@ -53,7 +53,7 @@ const DashboardStats: React.FC = () => {
       bgColor: 'bg-orange-100',
     },
     {
-      title: t('travelCosts'),
+      title: 'Cestovní náklady',
       value: '€280',
       target: '€300',
       progress: 93,
@@ -62,7 +62,7 @@ const DashboardStats: React.FC = () => {
       bgColor: 'bg-red-100',
     },
     {
-      title: t('documentsReady'),
+      title: 'Připravených dokumentů',
       value: '12',
       target: '15',
       progress: 80,
@@ -74,7 +74,7 @@ const DashboardStats: React.FC = () => {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6">{t('monthlyProgress')}</h2>
+      <h2 className="text-2xl font-bold mb-6">Měsíční pokrok</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {stats.map((stat, index) => (
           <Card key={index} className="bg-card/50 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300">
@@ -96,8 +96,8 @@ const DashboardStats: React.FC = () => {
                 </div>
                 <Progress value={stat.progress} className="h-2" />
                 <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>{stat.progress}% {t('completed')}</span>
-                  <span>{100 - stat.progress}% {t('remaining')}</span>
+                  <span>{stat.progress}% dokončeno</span>
+                  <span>{100 - stat.progress}% zbývá</span>
                 </div>
               </div>
             </CardContent>

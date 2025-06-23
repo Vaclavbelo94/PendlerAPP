@@ -1,6 +1,6 @@
 
 {
-  "germanLaws": "Německé zákony",
+  "title": "Zákony",
   "lawsGuide": "Průvodce německými zákony",
   "lawsDescription": "Kompletní průvodce německými zákony pro zahraniční pracovníky",
   "lawsDescriptionMobile": "Průvodce německými zákony",
@@ -13,7 +13,6 @@
   "noLawsFound": "Nebyly nalezeny žádné zákony",
   "tryChangeCategory": "Zkuste změnit kategorii",
   "lawsCount": "zákonů",
-  
   "workLaw": "Pracovní právo",
   "workLawDescription": "Zákony týkající se pracovních smluv a práv zaměstnanců",
   "taxes": "Daně",
@@ -22,7 +21,6 @@
   "socialSecurityDescription": "Systém sociálního zabezpečení a dávky",
   "healthInsurance": "Zdravotní pojištění",
   "healthInsuranceDescription": "Systém zdravotního pojištění a pokrytí",
-  
   "minimumWage": "Minimální mzda",
   "minimumWageDescription": "Aktuální sazby minimální mzdy a pravidla pro zaměstnance",
   "workContract": "Pracovní smlouva",

@@ -14,13 +14,20 @@
   "shiftNotes": "Notatki zmiany",
   "selectDate": "Wybierz datę, aby dodać lub edytować zmianę",
   "noShift": "Brak zaplanowanej zmiany",
-  "morningShift": "🌅 Poranna (6:00 - 14:00)",
-  "afternoonShift": "☀️ Popołudniowa (14:00 - 22:00)",
-  "nightShift": "🌙 Nocna (22:00 - 6:00)",
-  "shiftSaved": "Zmiana została pomyślnie zapisana",
-  "shiftUpdated": "Zmiana została pomyślnie zaktualizowana",
-  "shiftDeleted": "Zmiana została pomyślnie usunięta",
-  "shiftError": "Błąd podczas przetwarzania zmiany",
-  "syncComplete": "Synchronizacja zakończona",
-  "conflictsResolved": "konflikty rozwiązane"
+  "loginRequired": "Musisz się zalogować, aby zarządzać zmianami",
+  "calendarView": "Widok kalendarza",
+  "bulkOperations": "Operacje masowe",
+  "types": {
+    "morning": "🌅 Poranna (6:00 - 14:00)",
+    "afternoon": "☀️ Popołudniowa (14:00 - 22:00)",
+    "night": "🌙 Nocna (22:00 - 6:00)"
+  },
+  "notifications": {
+    "saved": "Zmiana została pomyślnie zapisana",
+    "updated": "Zmiana została pomyślnie zaktualizowana",
+    "deleted": "Zmiana została pomyślnie usunięta",
+    "error": "Błąd podczas przetwarzania zmiany",
+    "syncComplete": "Synchronizacja zakończona",
+    "conflictsResolved": "konflikty rozwiązane"
+  }
 }
