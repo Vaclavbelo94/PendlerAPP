@@ -20,7 +20,7 @@ import TaxWizardProgress from './TaxWizardProgress';
 
 const TaxWizardCarousel: React.FC = () => {
   const { toast } = useToast();
-  const { t } = useTranslation('taxAdvisor');
+  const { t } = useTranslation(['taxAdvisor', 'common']);
   const { result, calculateTax } = useTaxCalculator();
   
   const [currentStep, setCurrentStep] = useState(1);
@@ -230,7 +230,7 @@ const TaxWizardCarousel: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto" ref={containerRef}>
+    <div className="max-w-4xl mx-auto px-4 sm:px-6" ref={containerRef}>
       <TaxWizardProgress
         currentStep={currentStep}
         totalSteps={5}
@@ -252,12 +252,12 @@ const TaxWizardCarousel: React.FC = () => {
       </div>
 
       {/* Navigation buttons */}
-      <div className="flex justify-between mt-8">
+      <div className="flex flex-col sm:flex-row justify-between gap-4 mt-8">
         <Button
           variant="outline"
           onClick={handlePrevious}
           disabled={currentStep === 1}
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 w-full sm:w-auto"
         >
           <ChevronLeft className="h-4 w-4" />
           {t('common:back')}
@@ -267,7 +267,7 @@ const TaxWizardCarousel: React.FC = () => {
           <Button
             onClick={handleNext}
             disabled={!canGoNext()}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 w-full sm:w-auto"
           >
             {t('common:next')}
             <ChevronRight className="h-4 w-4" />
@@ -276,7 +276,7 @@ const TaxWizardCarousel: React.FC = () => {
           <Button
             onClick={handleExportPDF}
             disabled={!result}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 w-full sm:w-auto"
           >
             {t('wizard.results.exportPdf')}
           </Button>

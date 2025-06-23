@@ -3,12 +3,12 @@ import React from "react";
 import { motion } from "framer-motion";
 import PremiumCheck from '@/components/premium/PremiumCheck';
 import TaxWizardCarousel from "@/components/tax-advisor/wizard/TaxWizardCarousel";
-import { useLanguage } from "@/hooks/useLanguage";
 import Layout from '@/components/layouts/Layout';
 import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
+import { useTranslation } from 'react-i18next';
 
 const TaxAdvisor = () => {
-  const { t } = useLanguage();
+  const { t } = useTranslation('common');
 
   return (
     <Layout navbarRightContent={<NavbarRightContent />}>

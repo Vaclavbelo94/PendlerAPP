@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Car, Home, Euro, Calculator } from 'lucide-react';
 import { ReisepauschaleInfo, EmploymentInfo } from '../types';
+import { useTranslation } from 'react-i18next';
 
 interface ReisepauschaleStepProps {
   data: ReisepauschaleInfo;
@@ -20,6 +21,8 @@ const ReisepauschaleStep: React.FC<ReisepauschaleStepProps> = ({
   employmentData, 
   onChange 
 }) => {
+  const { t } = useTranslation('taxAdvisor');
+
   // Synchronizace dat ze zaměstnání
   useEffect(() => {
     if (employmentData.commuteDistance !== data.commuteDistance || 
@@ -64,35 +67,35 @@ const ReisepauschaleStep: React.FC<ReisepauschaleStepProps> = ({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Car className="h-5 w-5" />
-          Kalkulátor cestovních náhrad
+          {t('wizard.reisepauschale.title')}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="bg-primary/5 p-4 rounded-lg">
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <span className="text-muted-foreground">Vzdálenost:</span>
+              <span className="text-muted-foreground">{t('wizard.reisepauschale.commuteDistance')}:</span>
               <span className="font-medium ml-2">{data.commuteDistance} km</span>
             </div>
             <div>
-              <span className="text-muted-foreground">Pracovní dny:</span>
+              <span className="text-muted-foreground">{t('wizard.reisepauschale.workDaysPerYear')}:</span>
               <span className="font-medium ml-2">{data.workDaysPerYear}</span>
             </div>
           </div>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="transportType">Typ dopravy</Label>
+          <Label htmlFor="transportType">{t('wizard.reisepauschale.transportType')}</Label>
           <Select value={data.transportType} onValueChange={(value: 'car' | 'public') => handleChange('transportType', value)}>
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="car">
-                Auto (0.30€ prvních 20km, 0.38€ nad 20km)
+                {t('wizard.reisepauschale.car')} (0.30€ {t('wizard.reisepauschale.perKm')} ≤20km, 0.38€ {t('wizard.reisepauschale.perKm')} >20km)
               </SelectItem>
               <SelectItem value="public">
-                Veřejná doprava (0.30€/km)
+                {t('wizard.reisepauschale.publicTransport')} (0.30€{t('wizard.reisepauschale.perKm')})
               </SelectItem>
             </SelectContent>
           </Select>
@@ -107,19 +110,19 @@ const ReisepauschaleStep: React.FC<ReisepauschaleStepProps> = ({
             />
             <Label htmlFor="secondHome" className="flex items-center gap-2">
               <Home className="h-4 w-4" />
-              Druhé bydlení v Německu
+              {t('wizard.reisepauschale.hasSecondHome')}
             </Label>
           </div>
 
           {data.hasSecondHome && (
             <div className="ml-6 space-y-2">
-              <Label htmlFor="secondHomeCost">Roční náklad na druhé bydlení (€)</Label>
+              <Label htmlFor="secondHomeCost">{t('wizard.reisepauschale.secondHomeCost')}</Label>
               <Input
                 id="secondHomeCost"
                 type="number"
                 value={data.secondHomeCost || ''}
                 onChange={(e) => handleChange('secondHomeCost', parseFloat(e.target.value) || 0)}
-                placeholder="např. 1200"
+                placeholder="1200"
               />
             </div>
           )}
@@ -129,29 +132,29 @@ const ReisepauschaleStep: React.FC<ReisepauschaleStepProps> = ({
         <div className="bg-muted/50 p-4 rounded-lg space-y-3">
           <h4 className="font-semibold flex items-center gap-2">
             <Calculator className="h-4 w-4" />
-            Předběžný výpočet
+            {t('wizard.reisepauschale.calculation')}
           </h4>
           
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
-              <span>Cestovní náhrady:</span>
+              <span>{t('wizard.reisepauschale.title')}:</span>
               <span className="font-medium">{reisepausaleBenefit.toFixed(2)} €</span>
             </div>
             
             {data.hasSecondHome && (
               <div className="flex justify-between">
-                <span>Druhé bydlení:</span>
+                <span>{t('wizard.reisepauschale.hasSecondHome')}:</span>
                 <span className="font-medium">{secondHomeBenefit.toFixed(2)} €</span>
               </div>
             )}
             
             <div className="border-t pt-2 flex justify-between font-bold">
-              <span>Celkem odpočet:</span>
+              <span>{t('wizard.results.totalDeductions')}:</span>
               <span className="text-green-600">{totalBenefit.toFixed(2)} €</span>
             </div>
             
             <div className="flex justify-between text-muted-foreground">
-              <span>Odhadovaná úspora (25%):</span>
+              <span>{t('wizard.results.estimatedSaving')} (25%):</span>
               <span>{(totalBenefit * 0.25).toFixed(2)} €</span>
             </div>
           </div>
