@@ -38,11 +38,11 @@ const Login = () => {
       const { error } = await signIn(email, password);
       
       if (error) {
-        toast.error("Přihlášení selhalo", {
-          description: error || "Zkontrolujte své přihlašovací údaje a zkuste to znovu.",
+        toast.error(t('registrationFailed'), {
+          description: error || t('registerCheckDataRetry'),
         });
       } else {
-        toast.success("Úspěšně přihlášeno!");
+        toast.success(t('accountCreatedSuccessfully'));
         
         // Přesměrování admina na admin panel
         if (email === 'admin@pendlerapp.com') {
@@ -52,8 +52,8 @@ const Login = () => {
         }
       }
     } catch (error: any) {
-      toast.error("Chyba při přihlašování", {
-        description: error?.message || "Nastala neznámá chyba. Zkuste to prosím později.",
+      toast.error(t('registrationError'), {
+        description: error?.message || t('unknownErrorOccurred'),
       });
     } finally {
       setIsLoading(false);
@@ -67,8 +67,8 @@ const Login = () => {
       const { error, url } = await signInWithGoogle();
       
       if (error) {
-        toast.error("Přihlášení s Google selhalo", {
-          description: error || "Nastala chyba při přihlašování s Google účtem.",
+        toast.error(t('googleRegistrationFailed'), {
+          description: error || t('unknownErrorOccurred'),
         });
         setIsGoogleLoading(false);
         return;
@@ -81,8 +81,8 @@ const Login = () => {
         return;
       }
     } catch (error: any) {
-      toast.error("Chyba při přihlašování", {
-        description: error?.message || "Nastala neznámá chyba. Zkuste to prosím později.",
+      toast.error(t('registrationError'), {
+        description: error?.message || t('unknownErrorOccurred'),
       });
       setIsGoogleLoading(false);
     }
@@ -102,7 +102,7 @@ const Login = () => {
               {t('login')}
             </CardTitle>
             <CardDescription>
-              Zadejte své přihlašovací údaje pro přístup k vašemu účtu
+              {t('registerDescription')}
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4">

@@ -30,6 +30,7 @@ import deTaxAdvisor from './translations/de/taxAdvisor.json';
 import deForms from './translations/de/forms.json';
 import deProfile from './translations/de/profile.json';
 import deSettings from './translations/de/settings.json';
+import deAuth from './translations/de/auth.json';
 
 import plCommon from './translations/pl/common.json';
 import plNavigation from './translations/pl/navigation.json';
@@ -42,6 +43,7 @@ import plTaxAdvisor from './translations/pl/taxAdvisor.json';
 import plForms from './translations/pl/forms.json';
 import plProfile from './translations/pl/profile.json';
 import plSettings from './translations/pl/settings.json';
+import plAuth from './translations/pl/auth.json';
 
 export const resources = {
   cs: {
@@ -72,6 +74,7 @@ export const resources = {
     forms: deForms,
     profile: deProfile,
     settings: deSettings,
+    auth: deAuth,
   },
   pl: {
     common: plCommon,
@@ -85,6 +88,7 @@ export const resources = {
     forms: plForms,
     profile: plProfile,
     settings: plSettings,
+    auth: plAuth,
   },
 };
 
