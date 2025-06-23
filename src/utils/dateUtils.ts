@@ -88,10 +88,43 @@ export const calculateKnowledgeScore = (correctAnswers: number, totalAnswers: nu
 };
 
 /**
- * Optimize review time (placeholder implementation)
+ * Optimize review time based on repetition level and knowledge score
  */
-export const optimizeReviewTime = (userPreference: string): Date => {
+export const optimizeReviewTime = (repetitionLevel: number, knowledgeScore: number): string => {
   const now = new Date();
-  // Default to current time
-  return now;
+  
+  // Calculate interval based on repetition level (spaced repetition algorithm)
+  let intervalDays = 1;
+  switch (repetitionLevel) {
+    case 0:
+      intervalDays = 1; // Review again tomorrow
+      break;
+    case 1:
+      intervalDays = 3; // Review in 3 days
+      break;
+    case 2:
+      intervalDays = 7; // Review in a week
+      break;
+    case 3:
+      intervalDays = 14; // Review in 2 weeks
+      break;
+    case 4:
+      intervalDays = 30; // Review in a month
+      break;
+    case 5:
+      intervalDays = 90; // Review in 3 months
+      break;
+    default:
+      intervalDays = 180; // Review in 6 months for higher levels
+  }
+  
+  // Adjust interval based on knowledge score
+  if (knowledgeScore < 50) {
+    intervalDays = Math.max(1, Math.floor(intervalDays * 0.5)); // Halve the interval for low scores
+  } else if (knowledgeScore > 80) {
+    intervalDays = Math.floor(intervalDays * 1.5); // Increase interval for high scores
+  }
+  
+  const nextDate = new Date(now.getTime() + intervalDays * 24 * 60 * 60 * 1000);
+  return nextDate.toISOString();
 };
