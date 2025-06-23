@@ -81,6 +81,10 @@
   "filter": "Filtruj",
   "list": "Lista",
   "statistics": "Statystyki",
+  "shiftsCalendar": "Kalendarz zmian",
+  "clickDateToViewShifts": "Kliknij datę, aby wyświetlić zmiany",
+  "noShiftsForThisDay": "Brak zmian na ten dzień",
+  "noShiftsPlannedForThisDay": "Na ten dzień nie są zaplanowane żadne zmiany",
   "types": {
     "morning": "🌅 Poranna (6:00 - 14:00)",
     "afternoon": "☀️ Popołudniowa (14:00 - 22:00)",

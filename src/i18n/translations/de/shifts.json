@@ -81,6 +81,10 @@
   "filter": "Filter",
   "list": "Liste",
   "statistics": "Statistiken",
+  "shiftsCalendar": "Schichtenkalender",
+  "clickDateToViewShifts": "Klicken Sie auf ein Datum, um Schichten anzuzeigen",
+  "noShiftsForThisDay": "Keine Schichten für diesen Tag",
+  "noShiftsPlannedForThisDay": "Für diesen Tag sind keine Schichten geplant",
   "types": {
     "morning": "🌅 Morgen (6:00 - 14:00)",
     "afternoon": "☀️ Nachmittag (14:00 - 22:00)",
