@@ -7,7 +7,7 @@ import ShiftsFormSheets from './ShiftsFormSheets';
 import EmptyShiftsState from './EmptyShiftsState';
 import ShiftsErrorHandler from './ShiftsErrorHandler';
 import ShiftsContentRenderer from './ShiftsContentRenderer';
-import { ShiftsNavigation } from './ShiftsNavigation';
+import ShiftsNavigation from './ShiftsNavigation';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';

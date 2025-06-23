@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ShiftsNavigation } from '@/components/shifts/ShiftsNavigation';
+import ShiftsNavigation from '@/components/shifts/ShiftsNavigation';
 import ShiftsOverview from '@/components/shifts/ShiftsOverview';
 import ShiftsCalendar from '@/components/shifts/ShiftsCalendar';
 import ShiftsAnalytics from '@/components/shifts/ShiftsAnalytics';
