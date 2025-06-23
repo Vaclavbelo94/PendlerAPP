@@ -1,6 +1,6 @@
 
 {
-  "dashboard": "Dashboard",
+  "dashboard": "Přehled",
   "shifts": "Směny",
   "travel": "Cestování",
   "translator": "Překladač",
@@ -8,10 +8,24 @@
   "laws": "Zákony",
   "vehicle": "Vozidlo",
   "vocabulary": "Slovní zásoba",
-  "premium": "Premium",
+  "premium": "Prémiové",
   "admin": "Administrace",
   "contact": "Kontakt",
   "faq": "Často kladené otázky",
   "help": "Nápověda",
-  "support": "Podpora"
+  "support": "Podpora",
+  "home": "Domů",
+  "profile": "Profil",
+  "settings": "Nastavení",
+  "notifications": "Oznámení",
+  "calendar": "Kalendář",
+  "reports": "Zprávy",
+  "analytics": "Analýzy",
+  "statistics": "Statistiky",
+  "export": "Export",
+  "import": "Import",
+  "backup": "Záloha",
+  "sync": "Synchronizace",
+  "offline": "Offline",
+  "online": "Online"
 }
