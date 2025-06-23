@@ -1,4 +1,3 @@
-
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
@@ -99,11 +98,6 @@ export const resources = {
     auth: plAuth,
   },
 };
-
-console.log('i18n config loaded - Available resources:', Object.keys(resources));
-console.log('Czech shifts translations loaded:', resources.cs.shifts);
-console.log('Polish shifts translations loaded:', resources.pl.shifts);
-console.log('German shifts translations loaded:', resources.de.shifts);
 
 i18n
   .use(LanguageDetector)

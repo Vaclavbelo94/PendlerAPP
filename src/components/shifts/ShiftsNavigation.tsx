@@ -13,30 +13,22 @@ const ShiftsNavigation: React.FC<ShiftsNavigationProps> = ({
   activeSection,
   onSectionChange,
 }) => {
-  const { t, i18n } = useTranslation('shifts');
-
-  // Debug: Log current language and translations
-  console.log('ShiftsNavigation - Current language:', i18n.language);
-  console.log('ShiftsNavigation - Translations:', {
-    overview: t('overview'),
-    calendar: t('calendar'),
-    analytics: t('analytics')
-  });
+  const { t } = useTranslation('shifts');
 
   const sections = [
     {
       id: 'overview',
-      label: t('overview') || 'Přehled',
+      label: t('overview'),
       icon: Eye,
     },
     {
       id: 'calendar',
-      label: t('calendar') || 'Kalendář',
+      label: t('calendar'),
       icon: Calendar,
     },
     {
       id: 'analytics',
-      label: t('analytics') || 'Analityka',
+      label: t('analytics'),
       icon: BarChart3,
     },
   ];
