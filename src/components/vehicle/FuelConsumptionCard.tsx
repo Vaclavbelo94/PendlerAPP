@@ -8,11 +8,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { FuelRecord } from '@/types/vehicle';
-import { getFuelRecords, deleteFuelRecord } from '@/services/vehicleService';
+import { fetchFuelRecords, deleteFuelRecord } from '@/services/vehicleService';
 import { useStandardizedToast } from '@/hooks/useStandardizedToast';
 import { useTranslation } from 'react-i18next';
 import FuelRecordDialog from './dialogs/FuelRecordDialog';
-import { formatDate } from '@/lib/utils';
+import { formatDate } from '@/utils/dateUtils';
 
 interface FuelConsumptionCardProps {
   vehicleId: string;
@@ -31,7 +31,7 @@ const FuelConsumptionCard: React.FC<FuelConsumptionCardProps> = ({ vehicleId, fu
   const loadFuelRecords = async () => {
     try {
       setIsLoading(true);
-      const records = await getFuelRecords(vehicleId);
+      const records = await fetchFuelRecords(vehicleId);
       setFuelRecords(records || []);
     } catch (err: any) {
       error(t('vehicle:errorSavingFuelRecord'));
@@ -249,7 +249,6 @@ const FuelConsumptionCard: React.FC<FuelConsumptionCardProps> = ({ vehicleId, fu
         onClose={() => setIsDialogOpen(false)}
         vehicleId={vehicleId}
         onSuccess={handleDialogSuccess}
-        record={editingRecord}
       />
     </>
   );

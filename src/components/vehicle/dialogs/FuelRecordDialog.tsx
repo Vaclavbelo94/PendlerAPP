@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,20 +8,24 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { FuelRecord } from '@/types/vehicle';
 import { saveFuelRecord } from '@/services/vehicleService';
 import { useStandardizedToast } from '@/hooks/useStandardizedToast';
+import { useTranslation } from 'react-i18next';
 
 interface FuelRecordDialogProps {
   isOpen: boolean;
   onClose: () => void;
   vehicleId: string;
   onSuccess: () => void;
+  record?: FuelRecord | null;
 }
 
 const FuelRecordDialog: React.FC<FuelRecordDialogProps> = ({
   isOpen,
   onClose,
   vehicleId,
-  onSuccess
+  onSuccess,
+  record = null
 }) => {
+  const { t } = useTranslation(['vehicle']);
   const [isLoading, setIsLoading] = useState(false);
   const { success, error } = useStandardizedToast();
   const [formData, setFormData] = useState({
@@ -33,6 +37,30 @@ const FuelRecordDialog: React.FC<FuelRecordDialogProps> = ({
     full_tank: true,
     station: ''
   });
+
+  useEffect(() => {
+    if (record) {
+      setFormData({
+        date: record.date,
+        amount_liters: record.amount_liters.toString(),
+        price_per_liter: record.price_per_liter.toString(),
+        total_cost: record.total_cost.toString(),
+        mileage: record.mileage,
+        full_tank: record.full_tank,
+        station: record.station
+      });
+    } else {
+      setFormData({
+        date: new Date().toISOString().split('T')[0],
+        amount_liters: '',
+        price_per_liter: '',
+        total_cost: '',
+        mileage: '',
+        full_tank: true,
+        station: ''
+      });
+    }
+  }, [record, isOpen]);
 
   const handleInputChange = (field: string, value: any) => {
     setFormData(prev => {
@@ -57,7 +85,7 @@ const FuelRecordDialog: React.FC<FuelRecordDialogProps> = ({
     setIsLoading(true);
 
     try {
-      const record: Partial<FuelRecord> = {
+      const recordData: Partial<FuelRecord> = {
         vehicle_id: vehicleId,
         date: formData.date,
         amount_liters: parseFloat(formData.amount_liters),
@@ -68,12 +96,16 @@ const FuelRecordDialog: React.FC<FuelRecordDialogProps> = ({
         station: formData.station
       };
 
-      await saveFuelRecord(record);
-      success('Záznam o tankování byl úspěšně přidán');
+      if (record) {
+        recordData.id = record.id;
+      }
+
+      await saveFuelRecord(recordData);
+      success(record ? t('vehicle:fuelRecordUpdated') : t('vehicle:fuelRecordSaved'));
       onSuccess();
       onClose();
     } catch (err: any) {
-      error(err.message || 'Chyba při ukládání záznamu');
+      error(err.message || t('vehicle:errorSavingFuelRecord'));
     } finally {
       setIsLoading(false);
     }
@@ -83,16 +115,18 @@ const FuelRecordDialog: React.FC<FuelRecordDialogProps> = ({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Přidat tankování</DialogTitle>
+          <DialogTitle>
+            {record ? t('vehicle:editFuelRecord') : t('vehicle:addFuelRecord')}
+          </DialogTitle>
           <DialogDescription>
-            Zadejte údaje o novém tankování
+            {record ? t('vehicle:editFuelRecord') : t('vehicle:addFuelRecord')}
           </DialogDescription>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="date">Datum *</Label>
+              <Label htmlFor="date">{t('vehicle:date')} *</Label>
               <Input
                 id="date"
                 type="date"
@@ -103,7 +137,7 @@ const FuelRecordDialog: React.FC<FuelRecordDialogProps> = ({
             </div>
             
             <div>
-              <Label htmlFor="mileage">Stav km *</Label>
+              <Label htmlFor="mileage">{t('vehicle:mileageAtRefuel')} *</Label>
               <Input
                 id="mileage"
                 type="text"
@@ -116,7 +150,7 @@ const FuelRecordDialog: React.FC<FuelRecordDialogProps> = ({
           </div>
 
           <div>
-            <Label htmlFor="station">Čerpací stanice *</Label>
+            <Label htmlFor="station">{t('vehicle:station')} *</Label>
             <Input
               id="station"
               type="text"
@@ -129,7 +163,7 @@ const FuelRecordDialog: React.FC<FuelRecordDialogProps> = ({
 
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <Label htmlFor="amount_liters">Množství (L) *</Label>
+              <Label htmlFor="amount_liters">{t('vehicle:amount')} (L) *</Label>
               <Input
                 id="amount_liters"
                 type="number"
@@ -141,7 +175,7 @@ const FuelRecordDialog: React.FC<FuelRecordDialogProps> = ({
             </div>
             
             <div>
-              <Label htmlFor="price_per_liter">Cena/L (Kč) *</Label>
+              <Label htmlFor="price_per_liter">{t('vehicle:pricePerLiter')} (Kč) *</Label>
               <Input
                 id="price_per_liter"
                 type="number"
@@ -153,7 +187,7 @@ const FuelRecordDialog: React.FC<FuelRecordDialogProps> = ({
             </div>
             
             <div>
-              <Label htmlFor="total_cost">Celkem (Kč) *</Label>
+              <Label htmlFor="total_cost">{t('vehicle:totalCost')} (Kč) *</Label>
               <Input
                 id="total_cost"
                 type="number"
@@ -171,15 +205,15 @@ const FuelRecordDialog: React.FC<FuelRecordDialogProps> = ({
               checked={formData.full_tank}
               onCheckedChange={(checked) => handleInputChange('full_tank', checked)}
             />
-            <Label htmlFor="full_tank">Plná nádrž</Label>
+            <Label htmlFor="full_tank">{t('vehicle:fullTank')}</Label>
           </div>
 
           <div className="flex justify-end gap-2 pt-4">
             <Button type="button" variant="outline" onClick={onClose}>
-              Zrušit
+              {t('vehicle:cancel')}
             </Button>
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? 'Ukládám...' : 'Přidat'}
+              {isLoading ? t('vehicle:saving') : (record ? t('vehicle:save') : t('vehicle:add'))}
             </Button>
           </div>
         </form>
