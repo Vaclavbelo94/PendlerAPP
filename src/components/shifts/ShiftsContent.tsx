@@ -79,10 +79,10 @@ const ShiftsContent = () => {
       localStorage.setItem(`userShifts_${user.id}`, JSON.stringify(updatedShifts));
       
       setIsAddSheetOpen(false);
-      success(t('shiftAddedSuccessfully') || 'Směna byla úspěšně přidána');
+      success(t('shiftAddedSuccessfully'));
     } catch (err) {
       console.error('Error adding shift:', err);
-      error(t('errorAddingShift') || 'Chyba při přidání směny');
+      error(t('errorAddingShift'));
     }
   };
 
@@ -94,10 +94,10 @@ const ShiftsContent = () => {
       
       setShifts(updatedShifts);
       localStorage.setItem(`userShifts_${user.id}`, JSON.stringify(updatedShifts));
-      success(t('shiftUpdated') || 'Směna byla aktualizována');
+      success(t('shiftUpdated'));
     } catch (err) {
       console.error('Error updating shift:', err);
-      error(t('errorUpdatingShift') || 'Chyba při aktualizaci směny');
+      error(t('errorUpdatingShift'));
     }
   };
 
@@ -106,10 +106,10 @@ const ShiftsContent = () => {
       const updatedShifts = shifts.filter(shift => shift.id !== id);
       setShifts(updatedShifts);
       localStorage.setItem(`userShifts_${user.id}`, JSON.stringify(updatedShifts));
-      success(t('shiftDeleted') || 'Směna byla smazána');
+      success(t('shiftDeleted'));
     } catch (err) {
       console.error('Error deleting shift:', err);
-      error(t('errorDeletingShift') || 'Chyba při mazání směny');
+      error(t('errorDeletingShift'));
     }
   };
 
@@ -148,7 +148,7 @@ const ShiftsContent = () => {
 
   // Show loading while auth is loading or data is loading
   if (authLoading || isLoading) {
-    return <SimpleLoadingSpinner message={t('loadingShifts') || "Načítání směn..."} />;
+    return <SimpleLoadingSpinner message={t('loadingShifts')} />;
   }
 
   // Show empty state for new users
@@ -164,15 +164,15 @@ const ShiftsContent = () => {
             <TabsList>
               <TabsTrigger value="calendar" className="flex items-center gap-2">
                 <Calendar className="h-4 w-4" />
-                {t('calendar') || 'Kalendář'}
+                {t('calendar')}
               </TabsTrigger>
               <TabsTrigger value="list" className="flex items-center gap-2">
                 <FileSpreadsheet className="h-4 w-4" />
-                {t('list') || 'Seznam'}
+                {t('list')}
               </TabsTrigger>
               <TabsTrigger value="stats" className="flex items-center gap-2">
                 <FileSpreadsheet className="h-4 w-4" />
-                {t('statistics') || 'Statistiky'}
+                {t('statistics')}
               </TabsTrigger>
             </TabsList>
             
@@ -184,7 +184,7 @@ const ShiftsContent = () => {
                 className="flex items-center gap-2"
               >
                 <ListFilter className="h-4 w-4" />
-                {t('filter') || 'Filtrovat'}
+                {t('filter')}
               </Button>
               
               <Button 
@@ -193,7 +193,7 @@ const ShiftsContent = () => {
                 className="flex items-center gap-2"
               >
                 <Plus className="h-4 w-4" />
-                {t('addShift') || 'Přidat směnu'}
+                {t('addShift')}
               </Button>
             </div>
           </div>
@@ -226,9 +226,9 @@ const ShiftsContent = () => {
       <Sheet open={isAddSheetOpen} onOpenChange={setIsAddSheetOpen}>
         <SheetContent className="sm:max-w-md">
           <SheetHeader>
-            <SheetTitle>{t('addNewShift') || 'Přidat novou směnu'}</SheetTitle>
+            <SheetTitle>{t('addNewShift')}</SheetTitle>
             <SheetDescription>
-              {t('fillShiftDetails') || 'Vyplňte detaily o vaší směně. Klikněte na uložit, až budete hotovi.'}
+              {t('fillShiftDetails')}
             </SheetDescription>
           </SheetHeader>
           <div className="py-4">
@@ -241,9 +241,9 @@ const ShiftsContent = () => {
       <Sheet open={isFilterSheetOpen} onOpenChange={setIsFilterSheetOpen}>
         <SheetContent className="sm:max-w-md">
           <SheetHeader>
-            <SheetTitle>{t('filterShifts') || 'Filtrovat směny'}</SheetTitle>
+            <SheetTitle>{t('filterShifts')}</SheetTitle>
             <SheetDescription>
-              {t('setFiltersForShifts') || 'Nastavte filtry pro zobrazení směn'}
+              {t('setFiltersForShifts')}
             </SheetDescription>
           </SheetHeader>
           <div className="py-4">

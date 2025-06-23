@@ -36,8 +36,8 @@ const Shifts: React.FC = () => {
   return (
     <Layout navbarRightContent={<NavbarRightContent />}>
       <Helmet>
-        <title>{t('shifts') || 'Směny'} | PendlerApp</title>
-        <meta name="description" content={t('shiftsDescription') || 'Správa směn a plánování pracovní doby'} />
+        <title>{t('title')} | PendlerApp</title>
+        <meta name="description" content={t('shiftsDescription')} />
       </Helmet>
       
       <PremiumCheck featureKey="shifts">
@@ -56,10 +56,10 @@ const Shifts: React.FC = () => {
                 </div>
                 <div>
                   <h1 className={`${isMobile ? 'text-2xl' : 'text-4xl'} font-bold tracking-tight text-white`}>
-                    {t('shifts') || 'Směny'}
+                    {t('title')}
                   </h1>
                   <p className={`text-white/80 ${isMobile ? 'text-sm mt-2' : 'text-lg mt-2'} max-w-3xl`}>
-                    {t('shiftsDescription') || 'Správa směn, plánování a sledování pracovní doby s pokročilými analýzami.'}
+                    {t('shiftsDescription')}
                   </p>
                 </div>
               </div>

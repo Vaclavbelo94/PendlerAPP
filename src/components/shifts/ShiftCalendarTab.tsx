@@ -204,7 +204,7 @@ export const ShiftCalendarTab = React.memo<ShiftCalendarTabProps>(({
               <div className="space-y-2">
                 <label className="text-sm font-medium">{t('notes')}</label>
                 <Textarea 
-                  placeholder={t('optionalShiftNote') || 'Optional shift note...'}
+                  placeholder={t('optionalShiftNote')}
                   value={shiftNotes}
                   onChange={handleNotesChange}
                   rows={3}
