@@ -1,4 +1,3 @@
-
 import React, { useMemo, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -149,7 +148,6 @@ export const ShiftCalendarTab = React.memo<ShiftCalendarTabProps>(({
             selected={selectedDate}
             onSelect={onSelectDate}
             onMonthChange={handleMonthChange}
-            locale={getDateLocale()}
             className="rounded-md border"
           />
           
