@@ -19,7 +19,7 @@ export const WelcomeSection = () => {
           {t('dashboard:welcome')}, {username}!
         </h2>
         <p className="text-muted-foreground mt-1">
-          {t('dashboard:welcomeBack')} ve vašem pracovním asistentovi
+          {t('dashboard:welcomeBack')} {t('dashboard:workAssistant')}
         </p>
       </div>
 
