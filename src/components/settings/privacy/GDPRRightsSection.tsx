@@ -3,10 +3,10 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 export const GDPRRightsSection: React.FC = () => {
-  const { t } = useLanguage();
+  const { t } = useTranslation('settings');
 
   const handleDownloadData = () => {
     toast.success(t('dataDownloadRequested') || "Požadavek na stažení dat byl odeslán");

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -6,11 +5,11 @@ import { Card, CardContent } from '@/components/ui/card';
 import { ArrowRight, Users, TrendingUp, Globe, Briefcase, Map, Car } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 const ModernHero: React.FC = () => {
   const { user } = useAuth();
-  const { t } = useLanguage();
+  const { t } = useTranslation('common');
 
   const features = [
     { icon: Briefcase, key: 'shifts', route: '/shifts' },
@@ -143,4 +142,4 @@ const ModernHero: React.FC = () => {
   );
 };
 
-export { ModernHero };
+export default ModernHero;

@@ -3,10 +3,10 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, Clock, MapPin, TrendingUp } from 'lucide-react';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 const DashboardOverview: React.FC = () => {
-  const { t } = useLanguage();
+  const { t } = useTranslation('dashboard');
 
   const currentShift = {
     date: new Date().toLocaleDateString(),

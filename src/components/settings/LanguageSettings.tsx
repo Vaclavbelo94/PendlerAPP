@@ -4,14 +4,19 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Label } from "@/components/ui/label";
 import { Select, SelectTrigger, SelectItem, SelectContent, SelectValue } from "@/components/ui/select";
 import { Globe } from "lucide-react";
-import { useLanguage } from "@/hooks/useLanguage";
-import { languages, Language } from "@/lib/i18n";
+import { useTranslation } from "react-i18next";
+
+const languages = [
+  { code: 'cs', name: 'Čeština', flag: '🇨🇿' },
+  { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
+  { code: 'pl', name: 'Polski', flag: '🇵🇱' }
+];
 
 const LanguageSettings: React.FC = () => {
-  const { language, setLanguage, t } = useLanguage();
+  const { i18n, t } = useTranslation('settings');
 
   const handleLanguageChange = (value: string) => {
-    setLanguage(value as Language);
+    i18n.changeLanguage(value);
   };
 
   return (
@@ -28,7 +33,7 @@ const LanguageSettings: React.FC = () => {
       <CardContent>
         <div className="space-y-2 max-w-xs">
           <Label htmlFor="app-language-select">{t('preferredLanguage')}</Label>
-          <Select value={language} onValueChange={handleLanguageChange}>
+          <Select value={i18n.language} onValueChange={handleLanguageChange}>
             <SelectTrigger id="app-language-select" className="w-full">
               <SelectValue placeholder={t('select')} />
             </SelectTrigger>

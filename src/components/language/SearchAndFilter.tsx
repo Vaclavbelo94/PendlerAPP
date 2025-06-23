@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Search, Filter, Heart, X } from "lucide-react";
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 interface SearchAndFilterProps {
   searchTerm: string;
@@ -30,7 +30,7 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
   totalPhrases,
   filteredCount
 }) => {
-  const { t } = useLanguage();
+  const { t } = useTranslation('common');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const importanceOptions = [

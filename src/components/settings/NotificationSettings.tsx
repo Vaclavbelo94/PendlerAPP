@@ -12,7 +12,7 @@ import { SyncSettings } from '@/hooks/useSyncSettings';
 import { EmailNotificationSettings } from '@/components/notifications/EmailNotificationSettings';
 import { PushNotificationSettings } from '@/components/notifications/PushNotificationSettings';
 import { useNotifications } from '@/hooks/useNotifications';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 interface NotificationSettingsProps {
   syncSettings: SyncSettings;
@@ -21,7 +21,7 @@ interface NotificationSettingsProps {
 
 const NotificationSettings = ({ syncSettings, updateSyncSettings }: NotificationSettingsProps) => {
   const { preferences, updatePreferences, loading } = useNotifications();
-  const { t } = useLanguage();
+  const { t } = useTranslation('settings');
   const [localPreferences, setLocalPreferences] = useState(preferences);
 
   useEffect(() => {

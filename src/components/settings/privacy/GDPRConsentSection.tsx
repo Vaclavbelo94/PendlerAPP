@@ -8,10 +8,10 @@ import { Separator } from "@/components/ui/separator";
 import { Shield, Eye, Settings, BarChart3, Target } from 'lucide-react';
 import { useGDPRConsent, ConsentPreferences } from '@/contexts/GDPRConsentContext';
 import { toast } from "sonner";
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 export const GDPRConsentSection: React.FC = () => {
-  const { t } = useLanguage();
+  const { t } = useTranslation('settings');
   const { 
     preferences, 
     updateConsent, 

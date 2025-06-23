@@ -2,10 +2,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Briefcase, Mail, MessageCircle } from 'lucide-react';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 export const ModernFooter: React.FC = () => {
-  const { t } = useLanguage();
+  const { t } = useTranslation('common');
   const currentYear = new Date().getFullYear();
 
   const footerSections = [

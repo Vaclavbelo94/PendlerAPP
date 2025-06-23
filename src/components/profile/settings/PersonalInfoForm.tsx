@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { CheckCircle } from "lucide-react";
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 interface PersonalInfoFormProps {
   displayName: string;
@@ -23,7 +23,7 @@ const PersonalInfoForm = ({
   filledFields,
   handleInputChange,
 }: PersonalInfoFormProps) => {
-  const { t } = useLanguage();
+  const { t } = useTranslation('profile');
 
   return (
     <div className="space-y-4">

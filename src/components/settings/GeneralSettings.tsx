@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
@@ -5,10 +6,10 @@ import { useSyncSettings } from "@/hooks/useSyncSettings";
 import BasicSettingsCard from './general/BasicSettingsCard';
 import SyncSettingsCard from './general/SyncSettingsCard';
 import SettingsActions from './general/SettingsActions';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 const GeneralSettings = () => {
-  const { t } = useLanguage();
+  const { t } = useTranslation('settings');
   const { settings: syncSettings, saveSettings: updateSyncSettings, isLoading: syncLoading } = useSyncSettings();
   const [autoSave, setAutoSave] = useState(true);
   const [compactMode, setCompactMode] = useState(false);

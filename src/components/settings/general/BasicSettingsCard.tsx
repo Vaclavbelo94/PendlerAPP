@@ -5,7 +5,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Settings } from 'lucide-react';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 interface BasicSettingsCardProps {
   autoSave: boolean;
@@ -28,7 +28,7 @@ const BasicSettingsCard: React.FC<BasicSettingsCardProps> = ({
   defaultView,
   setDefaultView
 }) => {
-  const { t } = useLanguage();
+  const { t } = useTranslation('settings');
 
   return (
     <Card>

@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { RotateCcw, Save } from 'lucide-react';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 interface SettingsActionsProps {
   onSave: () => void;
@@ -11,7 +11,7 @@ interface SettingsActionsProps {
 }
 
 const SettingsActions: React.FC<SettingsActionsProps> = ({ onSave, onReset, loading }) => {
-  const { t } = useLanguage();
+  const { t } = useTranslation('settings');
 
   return (
     <div className="flex gap-3 pt-4">

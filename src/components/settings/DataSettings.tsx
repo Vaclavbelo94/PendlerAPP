@@ -5,10 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Database, Download, Upload, Trash2, RefreshCw } from 'lucide-react';
 import { toast } from "sonner";
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 const DataSettings = () => {
-  const { t } = useLanguage();
+  const { t } = useTranslation('settings');
 
   const handleExportData = () => {
     toast.success(t('dataExportStarted') || "Export dat byl zahájen. Soubor bude stažen za chvíli.");

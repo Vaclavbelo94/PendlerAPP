@@ -2,7 +2,7 @@
 import React from "react";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 interface NotificationSettingsProps {
   emailNotifications: boolean;
@@ -17,7 +17,7 @@ const NotificationSettings = ({
   languageReminders,
   handleInputChange,
 }: NotificationSettingsProps) => {
-  const { t } = useLanguage();
+  const { t } = useTranslation('profile');
 
   return (
     <div className="space-y-4">

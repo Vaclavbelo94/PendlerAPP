@@ -2,7 +2,7 @@
 import React from "react";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 interface LanguagePreferencesProps {
   preferredLanguage: string;
@@ -13,7 +13,7 @@ const LanguagePreferences = ({
   preferredLanguage,
   handleInputChange,
 }: LanguagePreferencesProps) => {
-  const { t } = useLanguage();
+  const { t } = useTranslation('profile');
 
   return (
     <div className="space-y-4">

@@ -9,11 +9,11 @@ import { Badge } from "@/components/ui/badge";
 import { User, Mail, Key, Trash2, Crown } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from "sonner";
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 const AccountSettings = () => {
   const { user } = useAuth();
-  const { t } = useLanguage();
+  const { t } = useTranslation('settings');
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");

@@ -13,10 +13,10 @@ import {
   MapPin
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 const DashboardActions: React.FC = () => {
-  const { t } = useLanguage();
+  const { t } = useTranslation('dashboard');
 
   const quickActions = [
     {

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { RefreshCw, Cloud } from 'lucide-react';
 import { SyncSettings } from '@/hooks/useSyncSettings';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 interface SyncSettingsCardProps {
   syncSettings: SyncSettings;
@@ -22,7 +22,7 @@ const SyncSettingsCard: React.FC<SyncSettingsCardProps> = ({
   syncLoading,
   formatLastSyncTime
 }) => {
-  const { t } = useLanguage();
+  const { t } = useTranslation('settings');
 
   const handleManualSync = () => {
     // Trigger manual sync

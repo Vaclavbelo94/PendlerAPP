@@ -7,10 +7,10 @@ import { Switch } from '@/components/ui/switch';
 import { Shield, Zap, Database } from 'lucide-react';
 import HealthMonitor from '@/components/monitoring/HealthMonitor';
 import AudioSettings from '@/components/profile/settings/AudioSettings';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 const SystemSettings = () => {
-  const { t } = useLanguage();
+  const { t } = useTranslation('settings');
 
   return (
     <div className="space-y-6">

@@ -11,13 +11,13 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useNotifications } from '@/hooks/useNotifications';
 import { NotificationItem } from './NotificationItem';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 export const CompactNotificationIndicator = () => {
   const { notifications, unreadCount, markAllAsRead, clearNotifications } = useNotifications();
   const [open, setOpen] = useState(false);
   const isMobile = useIsMobile();
-  const { t } = useLanguage();
+  const { t } = useTranslation('common');
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
