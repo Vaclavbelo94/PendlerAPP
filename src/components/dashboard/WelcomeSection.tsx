@@ -9,38 +9,38 @@ import { useTranslation } from 'react-i18next';
 
 export const WelcomeSection = () => {
   const { user } = useAuth();
-  const { t } = useTranslation('dashboard');
-  const username = user?.email?.split('@')[0] || 'uživatel';
+  const { t } = useTranslation(['dashboard', 'ui']);
+  const username = user?.email?.split('@')[0] || t('ui:user');
 
   return (
     <div className="space-y-6">
       <div>
         <h2 className="text-3xl font-bold tracking-tight">
-          {t('welcome')}, {username}!
+          {t('dashboard:welcome')}, {username}!
         </h2>
         <p className="text-muted-foreground mt-1">
-          Vítejte zpět ve vašem pracovním asistentovi
+          {t('dashboard:welcomeBack')} ve vašem pracovním asistentovi
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Tipy pro nové uživatele</CardTitle>
+            <CardTitle className="text-lg">{t('dashboard:newUserTips')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             <p className="text-sm text-muted-foreground">
-              Živý trénink s moderními funkcemi
+              {t('dashboard:liveTraining')}
             </p>
             <p className="text-sm text-muted-foreground">
-              Komplexní znalostní databáze
+              {t('dashboard:knowledgeBase')}
             </p>
             <p className="text-sm text-muted-foreground">
-              Přizpůsobená oznámení a připomenutí
+              {t('dashboard:notifications')}
             </p>
             <Button variant="outline" className="mt-4 w-full" asChild>
               <Link to="/faq">
-                Zobrazit nápovědu a FAQ
+                {t('dashboard:showFaqHelp')}
               </Link>
             </Button>
           </CardContent>
@@ -50,22 +50,22 @@ export const WelcomeSection = () => {
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center">
               <span className="bg-primary/20 text-primary p-1 rounded-md mr-2">PRO</span>
-              Premium výhody
+              {t('dashboard:premiumBenefits')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             <p className="text-sm text-muted-foreground">
-              Pokročilé funkce pro profesionály
+              {t('dashboard:advancedFeatures')}
             </p>
             <p className="text-sm text-muted-foreground">
-              Všechna jazyková cvičení
+              {t('dashboard:allLanguageExercises')}
             </p>
             <p className="text-sm text-muted-foreground">
-              Export dat a analýzy
+              {t('dashboard:exportData')}
             </p>
             <Button className="mt-4 w-full" asChild>
               <Link to="/premium">
-                Aktivovat Premium
+                {t('dashboard:activatePremium')}
                 <ArrowRight className="h-4 w-4 ml-2" />
               </Link>
             </Button>

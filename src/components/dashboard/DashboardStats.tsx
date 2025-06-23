@@ -13,11 +13,11 @@ import {
 import { useTranslation } from 'react-i18next';
 
 const DashboardStats: React.FC = () => {
-  const { t } = useTranslation('dashboard');
+  const { t } = useTranslation(['dashboard', 'ui']);
 
   const stats = [
     {
-      title: t('monthlyHours'),
+      title: t('dashboard:monthlyHours'),
       value: '142',
       target: '160',
       progress: 89,
@@ -26,7 +26,7 @@ const DashboardStats: React.FC = () => {
       bgColor: 'bg-blue-100',
     },
     {
-      title: t('monthlyEarnings'),
+      title: t('dashboard:monthlyEarnings'),
       value: '€4,680',
       target: '€5,200',
       progress: 90,
@@ -35,7 +35,7 @@ const DashboardStats: React.FC = () => {
       bgColor: 'bg-green-100',
     },
     {
-      title: 'Směny tento měsíc',
+      title: t('dashboard:shiftsThisMonth'),
       value: '18',
       target: '20',
       progress: 90,
@@ -44,7 +44,7 @@ const DashboardStats: React.FC = () => {
       bgColor: 'bg-purple-100',
     },
     {
-      title: 'Efektivita',
+      title: t('dashboard:efficiency'),
       value: '94%',
       target: '95%',
       progress: 94,
@@ -53,7 +53,7 @@ const DashboardStats: React.FC = () => {
       bgColor: 'bg-orange-100',
     },
     {
-      title: 'Cestovní náklady',
+      title: t('dashboard:travelCosts'),
       value: '€280',
       target: '€300',
       progress: 93,
@@ -62,7 +62,7 @@ const DashboardStats: React.FC = () => {
       bgColor: 'bg-red-100',
     },
     {
-      title: 'Připravených dokumentů',
+      title: t('dashboard:preparedDocuments'),
       value: '12',
       target: '15',
       progress: 80,
@@ -74,7 +74,7 @@ const DashboardStats: React.FC = () => {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6">Měsíční pokrok</h2>
+      <h2 className="text-2xl font-bold mb-6">{t('dashboard:monthlyProgress')}</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {stats.map((stat, index) => (
           <Card key={index} className="bg-card/50 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300">
@@ -96,8 +96,8 @@ const DashboardStats: React.FC = () => {
                 </div>
                 <Progress value={stat.progress} className="h-2" />
                 <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>{stat.progress}% dokončeno</span>
-                  <span>{100 - stat.progress}% zbývá</span>
+                  <span>{stat.progress}% {t('dashboard:completed')}</span>
+                  <span>{100 - stat.progress}% {t('dashboard:remaining')}</span>
                 </div>
               </div>
             </CardContent>

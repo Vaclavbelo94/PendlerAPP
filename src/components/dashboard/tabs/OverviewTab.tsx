@@ -8,6 +8,7 @@ import { CalendarDays, Clock, TrendingUp, Plus, FileText } from "lucide-react";
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from "date-fns";
 import { cs } from "date-fns/locale";
 import QuickPromoCode from "@/components/dashboard/QuickPromoCode";
+import { useTranslation } from 'react-i18next';
 
 interface ShiftData {
   id: string;
@@ -19,6 +20,7 @@ interface ShiftData {
 const OverviewTab = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation(['dashboard', 'ui']);
   const [shifts, setShifts] = useState<ShiftData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -168,20 +170,20 @@ const OverviewTab = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Týdenní hodiny</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('dashboard:weeklyHours')}</CardTitle>
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{thisWeekHours}</div>
             <p className="text-xs text-muted-foreground">
-              {thisWeekShifts.length} směn tento týden
+              {thisWeekShifts.length} {t('dashboard:shiftsThisWeek')}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Měsíční směny</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('dashboard:monthlyShifts')}</CardTitle>
             <CalendarDays className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -194,7 +196,7 @@ const OverviewTab = () => {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pokrok</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('dashboard:progress')}</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -202,7 +204,7 @@ const OverviewTab = () => {
               {Math.round((thisWeekHours / 40) * 100)}%
             </div>
             <p className="text-xs text-muted-foreground">
-              Týdenní cíl (40h)
+              {t('dashboard:weeklyGoal')}
             </p>
           </CardContent>
         </Card>
@@ -213,8 +215,8 @@ const OverviewTab = () => {
         {/* Recent shifts */}
         <Card>
           <CardHeader>
-            <CardTitle>Nedávné směny</CardTitle>
-            <CardDescription>Vaše poslední směny</CardDescription>
+            <CardTitle>{t('dashboard:recentShifts')}</CardTitle>
+            <CardDescription>{t('dashboard:yourRecentShifts')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {recentShifts.length > 0 ? (
@@ -233,8 +235,8 @@ const OverviewTab = () => {
                         })()}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        {shift.type === "morning" ? "Ranní" : 
-                         shift.type === "afternoon" ? "Odpolední" : "Noční"} směna
+                        {shift.type === "morning" ? t('dashboard:morningShift') : 
+                         shift.type === "afternoon" ? t('dashboard:afternoonShift') : t('dashboard:nightShift')} {t('dashboard:shift')}
                       </p>
                     </div>
                     <div className="text-sm text-muted-foreground">
@@ -248,15 +250,15 @@ const OverviewTab = () => {
                   onClick={() => navigate("/shifts")}
                 >
                   <CalendarDays className="mr-2 h-4 w-4" />
-                  Zobrazit všechny směny
+                  {t('dashboard:viewAllShifts')}
                 </Button>
               </>
             ) : (
               <div className="text-center py-6">
-                <p className="text-muted-foreground mb-4">Zatím nemáte žádné směny</p>
+                <p className="text-muted-foreground mb-4">{t('dashboard:noShiftsYet')}</p>
                 <Button onClick={() => navigate("/shifts")}>
                   <Plus className="mr-2 h-4 w-4" />
-                  Přidat směnu
+                  {t('dashboard:addShift')}
                 </Button>
               </div>
             )}
@@ -266,7 +268,7 @@ const OverviewTab = () => {
         {/* Quick actions */}
         <Card>
           <CardHeader>
-            <CardTitle>Rychlé akce</CardTitle>
+            <CardTitle>{t('dashboard:quickActions')}</CardTitle>
             <CardDescription>Nejčastěji používané funkce</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -276,7 +278,7 @@ const OverviewTab = () => {
               onClick={() => navigate("/shifts")}
             >
               <Plus className="mr-2 h-4 w-4" />
-              Přidat novou směnu
+              {t('dashboard:addShift')}
             </Button>
             
             <Button 
@@ -285,7 +287,7 @@ const OverviewTab = () => {
               onClick={() => navigate("/language?tab=vocabulary")}
             >
               <Plus className="mr-2 h-4 w-4" />
-              Procvičovat slovíčka
+              {t('dashboard:practiceVocabulary')}
             </Button>
             
             <Button 
@@ -294,7 +296,7 @@ const OverviewTab = () => {
               onClick={() => navigate("/calculator")}
             >
               <TrendingUp className="mr-2 h-4 w-4" />
-              Kalkulačka mezd
+              {t('dashboard:salaryCalculator')}
             </Button>
             
             <Button 
@@ -303,7 +305,7 @@ const OverviewTab = () => {
               onClick={() => navigate("/tax-advisor")}
             >
               <FileText className="mr-2 h-4 w-4" />
-              Daňový poradce
+              {t('dashboard:taxAdvisor')}
             </Button>
           </CardContent>
         </Card>

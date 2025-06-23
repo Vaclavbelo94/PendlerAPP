@@ -3,7 +3,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 import Layout from '@/components/layouts/Layout';
 import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 import DashboardOverview from '@/components/dashboard/DashboardOverview';
@@ -13,13 +13,15 @@ import DashboardWidgets from '@/components/dashboard/DashboardWidgets';
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
-  const { t } = useLanguage();
+  const { t } = useTranslation(['dashboard', 'ui']);
+
+  const username = user?.email?.split('@')[0] || t('ui:user');
 
   return (
     <Layout navbarRightContent={<NavbarRightContent />}>
       <Helmet>
-        <title>{t('dashboard')} | PendlerApp</title>
-        <meta name="description" content={t('dashboardDescription')} />
+        <title>{t('dashboard:title')} | PendlerApp</title>
+        <meta name="description" content={t('dashboard:dashboardSubtitle')} />
       </Helmet>
       
       <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-primary/5">
@@ -40,10 +42,10 @@ const Dashboard: React.FC = () => {
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h1 className="text-3xl md:text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                    {t('welcomeBack')}, {user?.email?.split('@')[0] || t('user')}!
+                    {t('dashboard:welcomeBack')}, {username}!
                   </h1>
                   <p className="text-lg text-muted-foreground mt-2">
-                    {t('dashboardSubtitle')}
+                    {t('dashboard:dashboardSubtitle')}
                   </p>
                 </div>
               </div>
