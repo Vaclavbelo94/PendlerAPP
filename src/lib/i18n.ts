@@ -36,7 +36,11 @@ export const translations = {
     exercises: 'Cvičení',
     progress: 'Pokrok',
     
-    // Laws section - using new structure
+    // Common UI elements
+    updated: 'Aktualizováno',
+    readMore: 'Číst více',
+    
+    // Law section specific - using new structure
     germanLaws: 'Německé zákony',
     lawsGuide: 'Průvodce německými zákony',
     lawsDescription: 'Kompletní průvodce německými zákony pro zahraniční pracovníky',
@@ -83,9 +87,13 @@ export const translations = {
     legalAidDescription: 'Možnosti bezplatné právní pomoci pro zahraniční pracovníky',
     
     // Common terms
-    updated: 'Aktualizováno',
     importantNotice: 'Důležité upozornění',
     orientationGuide: 'Tento průvodce slouží pouze k orientaci. Pro konkrétní právní rady se obraťte na odborníka.',
+    
+    // Additional missing translations
+    noLawsFound: 'Nebyly nalezeny žádné zákony',
+    tryChangeCategory: 'Zkuste změnit kategorii',
+    lawsCount: 'zákonů',
   },
   
   de: {
@@ -101,6 +109,10 @@ export const translations = {
     logout: 'Abmelden',
     login: 'Anmelden',
     register: 'Registrieren',
+    
+    // Common UI elements
+    updated: 'Aktualisiert',
+    readMore: 'Mehr lesen',
   },
   
   pl: {
@@ -116,5 +128,9 @@ export const translations = {
     logout: 'Wyloguj',
     login: 'Zaloguj',
     register: 'Zarejestruj',
+    
+    // Common UI elements
+    updated: 'Zaktualizowano',
+    readMore: 'Czytaj więcej',
   }
 };

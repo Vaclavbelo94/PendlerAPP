@@ -35,6 +35,11 @@ export const lawsTranslations = {
       healthInsurance: 'Zdravotní pojištění',
       healthInsuranceDescription: 'Systém zdravotního pojištění a pokrytí',
 
+      // Additional missing translations
+      noLawsFound: 'Nebyly nalezeny žádné zákony',
+      tryChangeCategory: 'Zkuste změnit kategorii',
+      lawsCount: 'zákonů',
+
       // Merge all specific translations
       ...workLawTranslations.cs.laws,
       ...taxesTranslations.cs.laws,
