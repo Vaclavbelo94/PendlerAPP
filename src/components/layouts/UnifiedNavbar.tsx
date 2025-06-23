@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -28,22 +27,12 @@ interface UnifiedNavbarProps {
   rightContent?: React.ReactNode;
 }
 
-const navigationItems = [
-  { icon: Home, label: 'Dashboard', href: '/dashboard' },
-  { icon: Calendar, label: 'Směny', href: '/shifts' },
-  { icon: Calculator, label: 'Daňový poradce', href: '/tax-advisor' },
-  { icon: Car, label: 'Vozidlo', href: '/vehicle' },
-  { icon: Plane, label: 'Cestování', href: '/travel' },
-  { icon: Languages, label: 'Překladač', href: '/translator' },
-  { icon: Scale, label: 'Zákony', href: '/laws' },
-];
-
 const UnifiedNavbar: React.FC<UnifiedNavbarProps> = ({ rightContent }) => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(['common', 'navigation']);
   const isMobile = useIsMobile();
 
   // Touch event handling for swipe gestures
@@ -92,6 +81,16 @@ const UnifiedNavbar: React.FC<UnifiedNavbarProps> = ({ rightContent }) => {
     setIsDragging(false);
   };
 
+  const navigationItems = [
+    { icon: Home, label: t('navigation:dashboard'), href: '/dashboard' },
+    { icon: Calendar, label: t('navigation:shifts'), href: '/shifts' },
+    { icon: Calculator, label: t('navigation:taxAdvisor'), href: '/tax-advisor' },
+    { icon: Car, label: t('navigation:vehicle'), href: '/vehicle' },
+    { icon: Plane, label: t('navigation:travel'), href: '/travel' },
+    { icon: Languages, label: t('navigation:translator'), href: '/translator' },
+    { icon: Scale, label: t('navigation:laws'), href: '/laws' },
+  ];
+
   const handleSignOut = async () => {
     try {
       await signOut();
@@ -128,16 +127,16 @@ const UnifiedNavbar: React.FC<UnifiedNavbarProps> = ({ rightContent }) => {
         {isPublicPage && !user && (
           <div className="hidden md:flex ml-8 space-x-6">
             <Link to="/features" className="text-sm font-medium transition-colors hover:text-primary">
-              {t('features')}
+              {t('common:features')}
             </Link>
             <Link to="/pricing" className="text-sm font-medium transition-colors hover:text-primary">
-              {t('pricing')}
+              {t('common:pricing')}
             </Link>
             <Link to="/about" className="text-sm font-medium transition-colors hover:text-primary">
-              {t('about')}
+              {t('common:about')}
             </Link>
             <Link to="/contact" className="text-sm font-medium transition-colors hover:text-primary">
-              {t('contact')}
+              {t('common:contact')}
             </Link>
           </div>
         )}
@@ -179,16 +178,16 @@ const UnifiedNavbar: React.FC<UnifiedNavbarProps> = ({ rightContent }) => {
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => navigate('/profile')}>
                       <User className="mr-2 h-4 w-4" />
-                      <span>{t('profile')}</span>
+                      <span>{t('common:profile')}</span>
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => navigate('/subscription')}>
                       <CreditCard className="mr-2 h-4 w-4" />
-                      <span>{t('subscription')}</span>
+                      <span>{t('common:subscription')}</span>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleSignOut}>
                       <LogOut className="mr-2 h-4 w-4" />
-                      <span>{t('signOut')}</span>
+                      <span>{t('common:signOut')}</span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -253,7 +252,7 @@ const UnifiedNavbar: React.FC<UnifiedNavbarProps> = ({ rightContent }) => {
                           }}
                         >
                           <User className="h-5 w-5" />
-                          <span>Profil</span>
+                          <span>{t('common:profile')}</span>
                         </Button>
                         <Button
                           variant="ghost"
@@ -264,7 +263,7 @@ const UnifiedNavbar: React.FC<UnifiedNavbarProps> = ({ rightContent }) => {
                           }}
                         >
                           <LogOut className="h-5 w-5" />
-                          <span>Odhlásit se</span>
+                          <span>{t('common:signOut')}</span>
                         </Button>
                       </div>
                     </div>
@@ -275,16 +274,16 @@ const UnifiedNavbar: React.FC<UnifiedNavbarProps> = ({ rightContent }) => {
           ) : (
             <div className="flex items-center space-x-2">
               <Button variant="ghost" size="sm" onClick={() => navigate('/auth/signin')}>
-                {t('signIn')}
+                {t('common:signIn')}
               </Button>
               <Button size="sm" onClick={() => navigate('/auth/signup')}>
-                {t('signUp')}
+                {t('common:signUp')}
               </Button>
             </div>
           )}
 
           {/* Mobile Menu Button for Public Pages */}
-          {!user && isMobile && (
+          {!user && isMobile && isPublicPage && (
             <Button
               variant="ghost"
               className="md:hidden"
@@ -298,40 +297,38 @@ const UnifiedNavbar: React.FC<UnifiedNavbarProps> = ({ rightContent }) => {
       </div>
 
       {/* Mobile Menu for Public Pages */}
-      {!user && isMobileMenuOpen && (
+      {!user && isMobileMenuOpen && isPublicPage && (
         <div className="md:hidden border-t bg-background p-4">
-          {isPublicPage && (
-            <div className="flex flex-col space-y-3">
-              <Link 
-                to="/features" 
-                className="text-sm font-medium transition-colors hover:text-primary"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                {t('features')}
-              </Link>
-              <Link 
-                to="/pricing" 
-                className="text-sm font-medium transition-colors hover:text-primary"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                {t('pricing')}
-              </Link>
-              <Link 
-                to="/about" 
-                className="text-sm font-medium transition-colors hover:text-primary"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                {t('about')}
-              </Link>
-              <Link 
-                to="/contact" 
-                className="text-sm font-medium transition-colors hover:text-primary"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                {t('contact')}
-              </Link>
-            </div>
-          )}
+          <div className="flex flex-col space-y-3">
+            <Link 
+              to="/features" 
+              className="text-sm font-medium transition-colors hover:text-primary"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              {t('common:features')}
+            </Link>
+            <Link 
+              to="/pricing" 
+              className="text-sm font-medium transition-colors hover:text-primary"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              {t('common:pricing')}
+            </Link>
+            <Link 
+              to="/about" 
+              className="text-sm font-medium transition-colors hover:text-primary"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              {t('common:about')}
+            </Link>
+            <Link 
+              to="/contact" 
+              className="text-sm font-medium transition-colors hover:text-primary"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              {t('common:contact')}
+            </Link>
+          </div>
         </div>
       )}
     </nav>

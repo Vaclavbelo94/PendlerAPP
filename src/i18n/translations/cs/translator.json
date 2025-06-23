@@ -1,22 +1,63 @@
 
 {
   "title": "Překladač",
-  "subtitle": "Profesionální překlad mezi němčinou a češtinou",
-  "translateFrom": "Přeložit z",
-  "translateTo": "Přeložit do",
-  "enterText": "Zadejte text k překladu...",
+  "translateText": "Přeložit text",
+  "sourceLanguage": "Zdrojový jazyk",
+  "targetLanguage": "Cílový jazyk",
+  "enterText": "Zadejte text k překladu",
   "translation": "Překlad",
-  "noTranslation": "Žádný překlad k zobrazení",
-  "translating": "Překládám...",
   "copyTranslation": "Kopírovat překlad",
   "clearText": "Vymazat text",
-  "swapLanguages": "Vyměnit jazyky",
+  "swapLanguages": "Prohodit jazyky",
+  "detectLanguage": "Rozpoznat jazyk",
   "history": "Historie",
   "favorites": "Oblíbené",
-  "recentTranslations": "Nedávné překlady",
-  "noHistory": "Žádná historie překladů",
-  "addToFavorites": "Přidat do oblíbených",
-  "removeFromFavorites": "Odebrat z oblíbených",
-  "characterCount": "Počet znaků",
-  "maxCharacters": "Maximálně 5000 znaků"
+  "phrasebook": "Slovník frází",
+  "languages": {
+    "czech": "Čeština",
+    "german": "Němčina",
+    "english": "Angličtina",
+    "polish": "Polština",
+    "slovak": "Slovenština",
+    "auto": "Automaticky"
+  },
+  "common": {
+    "hello": "Ahoj",
+    "goodbye": "Na shledanou",
+    "please": "Prosím",
+    "thankyou": "Děkuji",
+    "sorry": "Promiňte",
+    "yes": "Ano",
+    "no": "Ne",
+    "help": "Pomoc",
+    "excuse": "S dovolením"
+  },
+  "work": {
+    "title": "Práce",
+    "shift": "Směna",
+    "overtime": "Přesčas",
+    "break": "Přestávka",
+    "salary": "Plat",
+    "contract": "Smlouva",
+    "colleague": "Kolega",
+    "boss": "Šéf",
+    "meeting": "Schůzka"
+  },
+  "daily": {
+    "title": "Každodenní",
+    "morning": "Ráno",
+    "afternoon": "Odpoledne",
+    "evening": "Večer",
+    "night": "Noc",
+    "eat": "Jíst",
+    "drink": "Pít",
+    "sleep": "Spát",
+    "shopping": "Nakupování"
+  },
+  "errors": {
+    "translationFailed": "Překlad se nezdařil",
+    "networkError": "Chyba sítě",
+    "textTooLong": "Text je příliš dlouhý",
+    "unsupportedLanguage": "Nepodporovaný jazyk"
+  }
 }

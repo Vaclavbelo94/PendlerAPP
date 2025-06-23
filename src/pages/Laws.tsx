@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Scale } from 'lucide-react';
@@ -13,12 +14,14 @@ import EnhancedLawCard from '@/components/laws/enhanced/EnhancedLawCard';
 import Layout from '@/components/layouts/Layout';
 import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 import { Law } from '@/types/laws';
+import { useTranslation } from 'react-i18next';
 
 const Laws = () => {
   const [activeSection, setActiveSection] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
   const isMobile = useIsMobile();
-  const { t } = useLanguage();
+  const { t: tLang } = useLanguage();
+  const { t } = useTranslation(['laws', 'common']);
 
   // Simulate initial loading with shorter duration
   React.useEffect(() => {
@@ -29,7 +32,7 @@ const Laws = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  const lawItems = getLawItems(t);
+  const lawItems = getLawItems(tLang);
 
   const filteredLaws = useMemo(() => {
     if (activeSection === "all") {
@@ -42,16 +45,15 @@ const Laws = () => {
   const convertToLaw = (lawItem: any) => ({
     id: lawItem.id,
     title: lawItem.title,
-    summary: lawItem.description, // Use description as summary
+    summary: lawItem.description,
     category: lawItem.category,
     lastUpdated: lawItem.updated,
-    importance: 5, // Default importance
+    importance: 5,
     tags: [lawItem.category],
     officialUrl: lawItem.path
   });
 
   const handleViewDetails = (law: Law) => {
-    // For now, just navigate to the official URL if available
     if (law.officialUrl) {
       window.open(law.officialUrl, '_blank');
     }
@@ -87,10 +89,10 @@ const Laws = () => {
                 </div>
                 <div>
                   <h1 className={`${isMobile ? 'text-2xl' : 'text-4xl'} font-bold tracking-tight text-white`}>
-                    {isMobile ? t('laws.germanLaws') : t('laws.lawsGuide')}
+                    {isMobile ? t('laws:germanLaws') : t('laws:lawsGuide')}
                   </h1>
                   <p className={`text-white/80 ${isMobile ? 'text-sm mt-2' : 'text-lg mt-2'} max-w-3xl`}>
-                    {isMobile ? t('laws.lawsDescriptionMobile') : t('laws.lawsDescription')}
+                    {isMobile ? t('laws:lawsDescriptionMobile') : t('laws:lawsDescription')}
                   </p>
                 </div>
               </div>

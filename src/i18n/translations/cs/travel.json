@@ -1,0 +1,64 @@
+
+{
+  "title": "Cestování",
+  "addTrip": "Přidat cestu",
+  "editTrip": "Upravit cestu",
+  "deleteTrip": "Smazat cestu",
+  "tripDetails": "Detaily cesty",
+  "upcomingTrips": "Nadcházející cesty",
+  "recentTrips": "Nedávné cesty",
+  "totalTrips": "Celkem cest",
+  "from": "Z",
+  "to": "Do",
+  "departure": "Odjezd",
+  "arrival": "Příjezd",
+  "duration": "Doba trvání",
+  "distance": "Vzdálenost",
+  "cost": "Náklady",
+  "transportType": "Typ dopravy",
+  "bookingReference": "Číslo rezervace",
+  "status": {
+    "planned": "Naplánováno",
+    "booked": "Rezervováno",
+    "inProgress": "Cestuje",
+    "completed": "Dokončeno",
+    "cancelled": "Zrušeno",
+    "delayed": "Zpožděno"
+  },
+  "transportTypes": {
+    "car": "Auto",
+    "train": "Vlak",
+    "bus": "Autobus",
+    "plane": "Letadlo",
+    "other": "Jiné"
+  },
+  "form": {
+    "from": "Odkud",
+    "to": "Kam",
+    "departureDate": "Datum odjezdu",
+    "departureTime": "Čas odjezdu",
+    "arrivalDate": "Datum příjezdu",
+    "arrivalTime": "Čas příjezdu",
+    "transportType": "Typ dopravy",
+    "cost": "Náklady",
+    "notes": "Poznámky",
+    "bookingReference": "Číslo rezervace",
+    "save": "Uložit cestu",
+    "cancel": "Zrušit",
+    "required": "Povinné pole"
+  },
+  "filters": {
+    "all": "Všechny",
+    "upcoming": "Nadcházející",
+    "completed": "Dokončené",
+    "thisWeek": "Tento týden",
+    "thisMonth": "Tento měsíc"
+  },
+  "summary": {
+    "totalDistance": "Celková vzdálenost",
+    "totalCost": "Celkové náklady",
+    "averageCost": "Průměrné náklady",
+    "thisMonth": "Tento měsíc",
+    "lastMonth": "Minulý měsíc"
+  }
+}

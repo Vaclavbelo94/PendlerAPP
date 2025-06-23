@@ -1,0 +1,73 @@
+
+{
+  "title": "Vozidlo",
+  "addVehicle": "Přidat vozidlo",
+  "editVehicle": "Upravit vozidlo",
+  "deleteVehicle": "Smazat vozidlo",
+  "vehicleDetails": "Detaily vozidla",
+  "myVehicles": "Moje vozidla",
+  "brand": "Značka",
+  "model": "Model",
+  "year": "Rok výroby",
+  "color": "Barva",
+  "licensePlate": "SPZ",
+  "fuelType": "Typ paliva",
+  "fuelConsumption": "Spotřeba paliva",
+  "mileage": "Najeté kilometry",
+  "insurance": "Pojištění",
+  "registration": "Registrace",
+  "maintenance": "Údržba",
+  "fuelTypes": {
+    "petrol": "Benzín",
+    "diesel": "Nafta",
+    "electric": "Elektřina",
+    "hybrid": "Hybrid",
+    "lpg": "LPG",
+    "cng": "CNG"
+  },
+  "form": {
+    "brand": "Značka",
+    "model": "Model",
+    "year": "Rok výroby",
+    "color": "Barva",
+    "licensePlate": "SPZ",
+    "fuelType": "Typ paliva",
+    "fuelConsumption": "Spotřeba (l/100km)",
+    "purchasePrice": "Pořizovací cena",
+    "purchaseDate": "Datum nákupu",
+    "notes": "Poznámky",
+    "save": "Uložit vozidlo",
+    "cancel": "Zrušit",
+    "required": "Povinné pole"
+  },
+  "maintenance": {
+    "title": "Údržba",
+    "addMaintenance": "Přidat údržbu",
+    "editMaintenance": "Upravit údržbu",
+    "date": "Datum",
+    "type": "Typ údržby",
+    "description": "Popis",
+    "cost": "Náklady",
+    "mileage": "Stav tachometru",
+    "nextService": "Příští servis",
+    "types": {
+      "oil": "Výměna oleje",
+      "brakes": "Brzdy",
+      "tires": "Pneumatiky",
+      "inspection": "Technická kontrola",
+      "repair": "Oprava",
+      "other": "Jiné"
+    }
+  },
+  "costs": {
+    "title": "Náklady",
+    "fuel": "Palivo",
+    "maintenance": "Údržba",
+    "insurance": "Pojištění",
+    "registration": "Registrace",
+    "total": "Celkem",
+    "monthly": "Měsíčně",
+    "yearly": "Ročně",
+    "costPerKm": "Náklady na km"
+  }
+}
