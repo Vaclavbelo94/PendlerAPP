@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -7,12 +6,19 @@ import { format, addDays, isSameDay } from 'date-fns';
 import { cs, de, pl } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
+import { Shift } from '@/hooks/useShiftsManagement';
 
 interface ShiftsOverviewProps {
-  shifts?: any[];
+  shifts?: Shift[];
+  onEditShift?: (shift: Shift) => void;
+  onDeleteShift?: (shiftId: string) => void;
 }
 
-const ShiftsOverview: React.FC<ShiftsOverviewProps> = ({ shifts = [] }) => {
+const ShiftsOverview: React.FC<ShiftsOverviewProps> = ({ 
+  shifts = [], 
+  onEditShift, 
+  onDeleteShift 
+}) => {
   const { t, i18n } = useTranslation('shifts');
 
   // Get appropriate date-fns locale
