@@ -35,6 +35,36 @@ export const lawsTranslations = {
       healthInsurance: 'Zdravotní pojištění',
       healthInsuranceDescription: 'Systém zdravotního pojištění a pokrytí',
 
+      // Individual law titles and descriptions
+      minimumWage: 'Minimální mzda',
+      minimumWageDescription: 'Aktuální sazby minimální mzdy a pravidla pro zaměstnance',
+      workContract: 'Pracovní smlouva',
+      workContractDescription: 'Základní informace o pracovních smlouvách a právech',
+      workingHours: 'Pracovní doba',
+      workingHoursDescription: 'Pravidla pro pracovní dobu a přesčasy',
+      minimumHolidays: 'Minimální dovolená',
+      minimumHolidaysDescription: 'Zákonné nároky na dovolenou a volno',
+      employeeProtection: 'Ochrana zaměstnanců',
+      employeeProtectionDescription: 'Práva a ochrana zaměstnanců podle německého práva',
+      
+      taxReturn: 'Daňové přiznání',
+      taxReturnDescription: 'Průvodce podáním daňového přiznání v Německu',
+      taxClasses: 'Daňové třídy',
+      taxClassesDescription: 'Vysvětlení německých daňových tříd a jejich aplikace',
+      
+      pensionInsurance: 'Důchodové pojištění',
+      pensionInsuranceDescription: 'Informace o německém systému důchodového pojištění',
+      childBenefits: 'Dětské dávky',
+      childBenefitsDescription: 'Informace o dětských dávkách a rodinných příspěvcích',
+      parentalAllowance: 'Rodičovský příspěvek',
+      parentalAllowanceDescription: 'Informace o rodičovském příspěvku (Elterngeld)',
+      
+      healthInsuranceSystem: 'Systém zdravotního pojištění',
+      healthInsuranceSystemDescription: 'Přehled německého systému zdravotního pojištění pro zahraniční pracovníky',
+      
+      legalAid: 'Právní pomoc',
+      legalAidDescription: 'Možnosti bezplatné a cenově dostupné právní pomoci pro zahraniční pracovníky',
+
       // Additional missing translations
       noLawsFound: 'Nebyly nalezeny žádné zákony',
       tryChangeCategory: 'Zkuste změnit kategorii',
@@ -61,6 +91,9 @@ export const lawsTranslations = {
       germanLaws: 'Deutsche Gesetze',
       lawsGuide: 'Leitfaden für deutsche Gesetze',
       lawsDescription: 'Vollständiger Leitfaden für deutsche Gesetze für ausländische Arbeitnehmer',
+      allLaws: 'Alle Gesetze',
+      allLawsDescription: 'Alle verfügbaren Gesetze und Vorschriften anzeigen',
+      
       workLaw: 'Arbeitsrecht',
       workLawDescription: 'Gesetze zu Arbeitsverträgen und Arbeitnehmerrechten',
       taxes: 'Steuern',
@@ -91,6 +124,9 @@ export const lawsTranslations = {
       germanLaws: 'Niemieckie prawo',
       lawsGuide: 'Przewodnik po niemieckim prawie',
       lawsDescription: 'Kompletny przewodnik po niemieckim prawie dla zagranicznych pracowników',
+      allLaws: 'Wszystkie prawa',
+      allLawsDescription: 'Pokaż wszystkie dostępne prawa i przepisy',
+      
       workLaw: 'Prawo pracy',
       workLawDescription: 'Przepisy dotyczące umów o pracę i praw pracowników',
       taxes: 'Podatki',

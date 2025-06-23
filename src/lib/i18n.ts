@@ -113,6 +113,21 @@ export const translations = {
     // Common UI elements
     updated: 'Aktualisiert',
     readMore: 'Mehr lesen',
+    
+    // Law section
+    germanLaws: 'Deutsche Gesetze',
+    lawsGuide: 'Leitfaden für deutsche Gesetze',
+    lawsDescription: 'Vollständiger Leitfaden für deutsche Gesetze für ausländische Arbeitnehmer',
+    allLaws: 'Alle Gesetze',
+    allLawsDescription: 'Alle verfügbaren Gesetze und Vorschriften anzeigen',
+    workLaw: 'Arbeitsrecht',
+    workLawDescription: 'Gesetze zu Arbeitsverträgen und Arbeitnehmerrechten',
+    taxes: 'Steuern',
+    taxesDescription: 'Steuergesetze und Vorschriften für Arbeitnehmer',
+    socialSecurity: 'Sozialversicherung',
+    socialSecurityDescription: 'Sozialversicherungssystem und Leistungen',
+    healthInsurance: 'Krankenversicherung',
+    healthInsuranceDescription: 'Krankenversicherungssystem und Abdeckung',
   },
   
   pl: {
@@ -132,5 +147,20 @@ export const translations = {
     // Common UI elements
     updated: 'Zaktualizowano',
     readMore: 'Czytaj więcej',
+    
+    // Law section
+    germanLaws: 'Niemieckie prawo',
+    lawsGuide: 'Przewodnik po niemieckim prawie',
+    lawsDescription: 'Kompletny przewodnik po niemieckim prawie dla zagranicznych pracowników',
+    allLaws: 'Wszystkie prawa',
+    allLawsDescription: 'Pokaż wszystkie dostępne prawa i przepisy',
+    workLaw: 'Prawo pracy',
+    workLawDescription: 'Przepisy dotyczące umów o pracę i praw pracowników',
+    taxes: 'Podatki',
+    taxesDescription: 'Przepisy podatkowe dla pracowników',
+    socialSecurity: 'Ubezpieczenia społeczne',
+    socialSecurityDescription: 'System ubezpieczeń społecznych i świadczenia',
+    healthInsurance: 'Ubezpieczenie zdrowotne',
+    healthInsuranceDescription: 'System ubezpieczenia zdrowotnego i pokrycie',
   }
 };
