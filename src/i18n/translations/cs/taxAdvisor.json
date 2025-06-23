@@ -51,7 +51,18 @@
     "documentDownloaded": "Dokument byl stažen",
     "exportError": "Chyba exportu",
     "failedToGenerate": "Nepodařilo se vygenerovat PDF dokument",
-    "taxWizard": "Daňový_Průvodce"
+    "taxWizard": "Daňový_Průvodce",
+    "title": "Výsledky výpočtu",
+    "summary": "Souhrn",
+    "totalDeductions": "Celkové odpočty",
+    "estimatedSaving": "Odhadovaná úspora",
+    "annualBenefit": "Roční benefit",
+    "exportPdf": "Stáhnout PDF dokument",
+    "breakdown": "Detailní rozpis odpočtů",
+    "reisepauschaleAmount": "Cestovní náhrady",
+    "additionalDeductions": "Další odpočty",
+    "taxSavingEstimate": "Odhad daňové úspory",
+    "exportDescription": "Stáhněte si kompletní daňový dokument s všemi vypočítanými odpočty"
   },
   "tips": {
     "title": "Daňové tipy",
