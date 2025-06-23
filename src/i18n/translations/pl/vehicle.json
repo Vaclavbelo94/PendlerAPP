@@ -17,6 +17,14 @@
   "color": "Kolor",
   "notes": "Notatki",
   
+  "overview": "Przegląd",
+  "fuel": "Paliwo",
+  "service": "Serwis",
+  "others": "Inne",
+  "basicInfo": "Podstawowe informacje",
+  "maintenance": "Konserwacja",
+  "documents": "Dokumenty",
+  
   "serviceRecords": "Dane serwisowe",
   "addServiceRecord": "Dodaj dane serwisowe",
   "editServiceRecord": "Edytuj dane serwisowe",
