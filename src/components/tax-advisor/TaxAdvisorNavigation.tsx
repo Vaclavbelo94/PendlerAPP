@@ -65,9 +65,9 @@ export const TaxAdvisorNavigation: React.FC<TaxAdvisorNavigationProps> = ({
 
   return (
     <>
-      {/* Mobile Navigation - Visible on small screens */}
-      <div className="block md:hidden">
-        <div className="flex items-center justify-between mb-4 px-4">
+      {/* Mobile Navigation - Shows current tab with arrows */}
+      <div className="block md:hidden mb-6">
+        <div className="flex items-center justify-between px-4 py-3 bg-card border rounded-lg">
           <Button
             variant="ghost"
             size="sm"
@@ -75,14 +75,21 @@ export const TaxAdvisorNavigation: React.FC<TaxAdvisorNavigationProps> = ({
             className="p-2 hover:bg-primary/10"
             aria-label={t('previous') || 'Předchozí'}
           >
-            <ChevronLeft className="h-5 w-5" />
+            <ChevronLeft className="h-4 w-4" />
           </Button>
           
           <div className="flex-1 text-center px-4">
-            <h3 className="text-lg font-semibold text-primary truncate">
-              {currentTab?.label}
-            </h3>
-            <p className="text-sm text-muted-foreground truncate">
+            <div className="flex items-center justify-center gap-2 mb-1">
+              {currentTab && (
+                <>
+                  <currentTab.icon className="h-4 w-4 text-primary" />
+                  <h3 className="text-sm font-semibold text-primary">
+                    {currentTab.label}
+                  </h3>
+                </>
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground">
               {currentTab?.description}
             </p>
           </div>
@@ -94,18 +101,18 @@ export const TaxAdvisorNavigation: React.FC<TaxAdvisorNavigationProps> = ({
             className="p-2 hover:bg-primary/10"
             aria-label={t('next') || 'Další'}
           >
-            <ChevronRight className="h-5 w-5" />
+            <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
 
         {/* Progress indicators */}
-        <div className="flex justify-center mb-6">
-          <div className="flex gap-2">
+        <div className="flex justify-center mt-3">
+          <div className="flex gap-1">
             {taxAdvisorTabs.map((_, index) => (
               <div
                 key={index}
                 className={cn(
-                  "w-2 h-2 rounded-full transition-colors duration-200",
+                  "w-1.5 h-1.5 rounded-full transition-colors duration-200",
                   index === currentIndex ? "bg-primary" : "bg-muted-foreground/30"
                 )}
               />
@@ -114,7 +121,7 @@ export const TaxAdvisorNavigation: React.FC<TaxAdvisorNavigationProps> = ({
         </div>
       </div>
 
-      {/* Desktop Navigation - Hidden on small screens */}
+      {/* Desktop Navigation - Grid layout */}
       <div className="hidden md:flex justify-center">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full max-w-6xl">
           {taxAdvisorTabs.map((tab, index) => {
