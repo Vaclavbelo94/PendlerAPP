@@ -61,7 +61,7 @@ export const TaxAdvisorNavigation: React.FC<TaxAdvisorNavigationProps> = ({
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
               className={cn(
-                "relative p-4 md:p-6 rounded-2xl border text-center transition-all duration-300 group",
+                "relative p-4 md:p-6 rounded-2xl border text-center transition-all duration-300 group min-h-[140px]",
                 "hover:shadow-lg hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
                 isActive 
                   ? "bg-gradient-to-br from-primary/10 to-accent/10 border-primary/30 shadow-lg" 
@@ -81,7 +81,7 @@ export const TaxAdvisorNavigation: React.FC<TaxAdvisorNavigationProps> = ({
                 />
               )}
               
-              <div className="relative z-10 flex flex-col items-center">
+              <div className="relative z-10 flex flex-col items-center h-full justify-center">
                 <motion.div 
                   className={cn(
                     "w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center transition-all duration-300 mb-3",
@@ -96,7 +96,7 @@ export const TaxAdvisorNavigation: React.FC<TaxAdvisorNavigationProps> = ({
                 </motion.div>
                 
                 <h3 className={cn(
-                  "font-semibold text-lg transition-colors duration-300 mb-2",
+                  "font-semibold text-base md:text-lg transition-colors duration-300 mb-2 leading-tight",
                   isActive 
                     ? "text-primary" 
                     : "text-foreground group-hover:text-primary"
@@ -105,7 +105,7 @@ export const TaxAdvisorNavigation: React.FC<TaxAdvisorNavigationProps> = ({
                 </h3>
                 
                 <p className={cn(
-                  "text-sm transition-colors duration-300",
+                  "text-sm transition-colors duration-300 leading-tight px-1",
                   isActive 
                     ? "text-muted-foreground" 
                     : "text-muted-foreground group-hover:text-foreground"
