@@ -1,41 +1,65 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { InsuranceRecord } from '@/types/vehicle';
 import { saveInsuranceRecord } from '@/services/vehicleService';
 import { useStandardizedToast } from '@/hooks/useStandardizedToast';
+import { useTranslation } from 'react-i18next';
 
 interface InsuranceRecordDialogProps {
   isOpen: boolean;
   onClose: () => void;
   vehicleId: string;
   onSuccess: () => void;
+  record?: InsuranceRecord | null;
 }
 
 const InsuranceRecordDialog: React.FC<InsuranceRecordDialogProps> = ({
   isOpen,
   onClose,
   vehicleId,
-  onSuccess
+  onSuccess,
+  record = null
 }) => {
+  const { t } = useTranslation(['vehicle']);
   const [isLoading, setIsLoading] = useState(false);
   const { success, error } = useStandardizedToast();
   const [formData, setFormData] = useState({
     provider: '',
+    insurance_type: '',
     policy_number: '',
-    valid_from: '',
-    valid_until: '',
-    monthly_cost: '',
-    coverage_type: '',
-    notes: ''
+    start_date: new Date().toISOString().split('T')[0],
+    expiry_date: '',
+    cost: ''
   });
 
-  const handleInputChange = (field: string, value: string) => {
+  useEffect(() => {
+    if (record) {
+      setFormData({
+        provider: record.provider,
+        insurance_type: record.insurance_type,
+        policy_number: record.policy_number,
+        start_date: record.start_date,
+        expiry_date: record.expiry_date,
+        cost: record.cost.toString()
+      });
+    } else {
+      setFormData({
+        provider: '',
+        insurance_type: '',
+        policy_number: '',
+        start_date: new Date().toISOString().split('T')[0],
+        expiry_date: '',
+        cost: ''
+      });
+    }
+  }, [record, isOpen]);
+
+  const handleInputChange = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -44,23 +68,26 @@ const InsuranceRecordDialog: React.FC<InsuranceRecordDialogProps> = ({
     setIsLoading(true);
 
     try {
-      const record: Partial<InsuranceRecord> = {
+      const recordData: Partial<InsuranceRecord> = {
         vehicle_id: vehicleId,
         provider: formData.provider,
+        insurance_type: formData.insurance_type,
         policy_number: formData.policy_number,
-        valid_from: formData.valid_from,
-        valid_until: formData.valid_until,
-        monthly_cost: formData.monthly_cost,
-        coverage_type: formData.coverage_type,
-        notes: formData.notes
+        start_date: formData.start_date,
+        expiry_date: formData.expiry_date,
+        cost: parseFloat(formData.cost)
       };
 
-      await saveInsuranceRecord(record);
-      success('Záznam o pojištění byl úspěšně přidán');
+      if (record) {
+        recordData.id = record.id;
+      }
+
+      await saveInsuranceRecord(recordData);
+      success(record ? t('vehicle:serviceRecordUpdated') : t('vehicle:serviceRecordSaved'));
       onSuccess();
       onClose();
     } catch (err: any) {
-      error(err.message || 'Chyba při ukládání záznamu');
+      error(err.message || t('vehicle:errorSavingServiceRecord'));
     } finally {
       setIsLoading(false);
     }
@@ -70,106 +97,94 @@ const InsuranceRecordDialog: React.FC<InsuranceRecordDialogProps> = ({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Přidat pojištění</DialogTitle>
+          <DialogTitle>
+            {record ? t('vehicle:edit') : t('vehicle:add')} {t('vehicle:insurance')}
+          </DialogTitle>
           <DialogDescription>
-            Zadejte údaje o pojištění vozidla
+            {t('vehicle:insuranceInfo')}
           </DialogDescription>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="provider">Pojišťovna *</Label>
+            <Label htmlFor="provider">{t('vehicle:insuranceProvider')} *</Label>
             <Input
               id="provider"
               type="text"
               value={formData.provider}
               onChange={(e) => handleInputChange('provider', e.target.value)}
-              placeholder="Allianz, Kooperativa..."
+              placeholder="Allianz, ČSOB..."
               required
             />
           </div>
 
           <div>
-            <Label htmlFor="policy_number">Číslo pojistky *</Label>
+            <Label htmlFor="insurance_type">{t('vehicle:insuranceType')} *</Label>
+            <Select value={formData.insurance_type} onValueChange={(value) => handleInputChange('insurance_type', value)}>
+              <SelectTrigger>
+                <SelectValue placeholder={t('vehicle:selectServiceType')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="liability">{t('vehicle:insurance')}</SelectItem>
+                <SelectItem value="comprehensive">{t('vehicle:insurance')}</SelectItem>
+                <SelectItem value="collision">{t('vehicle:insurance')}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <Label htmlFor="policy_number">{t('vehicle:policyNumber')} *</Label>
             <Input
               id="policy_number"
               type="text"
               value={formData.policy_number}
               onChange={(e) => handleInputChange('policy_number', e.target.value)}
-              placeholder="123456789"
               required
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="valid_from">Platné od *</Label>
+              <Label htmlFor="start_date">{t('vehicle:date')} *</Label>
               <Input
-                id="valid_from"
+                id="start_date"
                 type="date"
-                value={formData.valid_from}
-                onChange={(e) => handleInputChange('valid_from', e.target.value)}
+                value={formData.start_date}
+                onChange={(e) => handleInputChange('start_date', e.target.value)}
                 required
               />
             </div>
             
             <div>
-              <Label htmlFor="valid_until">Platné do *</Label>
+              <Label htmlFor="expiry_date">{t('vehicle:insuranceExpiry')} *</Label>
               <Input
-                id="valid_until"
+                id="expiry_date"
                 type="date"
-                value={formData.valid_until}
-                onChange={(e) => handleInputChange('valid_until', e.target.value)}
+                value={formData.expiry_date}
+                onChange={(e) => handleInputChange('expiry_date', e.target.value)}
                 required
               />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="monthly_cost">Měsíční platba (Kč) *</Label>
-              <Input
-                id="monthly_cost"
-                type="text"
-                value={formData.monthly_cost}
-                onChange={(e) => handleInputChange('monthly_cost', e.target.value)}
-                placeholder="2500"
-                required
-              />
-            </div>
-            
-            <div>
-              <Label htmlFor="coverage_type">Typ pojištění *</Label>
-              <Select value={formData.coverage_type} onValueChange={(value) => handleInputChange('coverage_type', value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Vyberte typ" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="povinne">Povinné ručení</SelectItem>
-                  <SelectItem value="havarijni">Havarijní pojištění</SelectItem>
-                  <SelectItem value="komplexni">Komplexní pojištění</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
           </div>
 
           <div>
-            <Label htmlFor="notes">Poznámky</Label>
-            <Textarea
-              id="notes"
-              value={formData.notes}
-              onChange={(e) => handleInputChange('notes', e.target.value)}
-              placeholder="Dodatečné informace..."
-              rows={3}
+            <Label htmlFor="cost">{t('vehicle:cost')} (Kč) *</Label>
+            <Input
+              id="cost"
+              type="number"
+              step="0.01"
+              value={formData.cost}
+              onChange={(e) => handleInputChange('cost', e.target.value)}
+              required
             />
           </div>
 
           <div className="flex justify-end gap-2 pt-4">
             <Button type="button" variant="outline" onClick={onClose}>
-              Zrušit
+              {t('vehicle:cancel')}
             </Button>
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? 'Ukládám...' : 'Přidat'}
+              {isLoading ? t('vehicle:saving') : (record ? t('vehicle:save') : t('vehicle:add'))}
             </Button>
           </div>
         </form>

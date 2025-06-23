@@ -1,32 +1,18 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Plus, Wrench, Edit, Trash2, MoreVertical } from 'lucide-react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchServiceRecords, saveServiceRecord, deleteServiceRecord } from '@/services/vehicleService';
+import { Badge } from '@/components/ui/badge';
+import { WrenchIcon, PlusIcon, MoreHorizontalIcon, EditIcon, TrashIcon } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { ServiceRecord } from '@/types/vehicle';
+import { fetchServiceRecords, deleteServiceRecord } from '@/services/vehicleService';
 import { useStandardizedToast } from '@/hooks/useStandardizedToast';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+import { useTranslation } from 'react-i18next';
+import ServiceRecordDialog from './dialogs/ServiceRecordDialog';
+import { formatDate } from '@/utils/dateUtils';
 
 interface ServiceRecordCardProps {
   vehicleId: string;
@@ -34,127 +20,83 @@ interface ServiceRecordCardProps {
 }
 
 const ServiceRecordCard: React.FC<ServiceRecordCardProps> = ({ vehicleId, fullView = false }) => {
-  const [isAddSheetOpen, setIsAddSheetOpen] = useState(false);
-  const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const { t } = useTranslation(['vehicle']);
+  const [serviceRecords, setServiceRecords] = useState<ServiceRecord[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingRecord, setEditingRecord] = useState<ServiceRecord | null>(null);
-  const [deletingRecord, setDeletingRecord] = useState<ServiceRecord | null>(null);
-  const [formData, setFormData] = useState({
-    service_date: '',
-    service_type: '',
-    description: '',
-    mileage: '',
-    cost: '',
-    provider: ''
-  });
-
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const { success, error } = useStandardizedToast();
-  const queryClient = useQueryClient();
 
-  const { data: serviceRecords = [], isLoading } = useQuery({
-    queryKey: ['service-records', vehicleId],
-    queryFn: () => fetchServiceRecords(vehicleId),
-    enabled: !!vehicleId
-  });
-
-  const addMutation = useMutation({
-    mutationFn: (data: Partial<ServiceRecord>) => saveServiceRecord({ ...data, vehicle_id: vehicleId }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['service-records', vehicleId] });
-      success('Servisní záznam byl přidán');
-      setIsAddSheetOpen(false);
-      resetForm();
-    },
-    onError: (err: any) => {
-      error(err.message || 'Chyba při přidávání záznamu');
-    }
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: (data: Partial<ServiceRecord>) => saveServiceRecord(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['service-records', vehicleId] });
-      success('Servisní záznam byl aktualizován');
-      setIsEditSheetOpen(false);
-      setEditingRecord(null);
-      resetForm();
-    },
-    onError: (err: any) => {
-      error(err.message || 'Chyba při aktualizaci záznamu');
-    }
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: (id: string) => deleteServiceRecord(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['service-records', vehicleId] });
-      success('Servisní záznam byl smazán');
-      setIsDeleteDialogOpen(false);
-      setDeletingRecord(null);
-    },
-    onError: (err: any) => {
-      error(err.message || 'Chyba při mazání záznamu');
-    }
-  });
-
-  const resetForm = () => {
-    setFormData({
-      service_date: '',
-      service_type: '',
-      description: '',
-      mileage: '',
-      cost: '',
-      provider: ''
-    });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (editingRecord) {
-      updateMutation.mutate({ ...formData, id: editingRecord.id });
-    } else {
-      addMutation.mutate(formData);
+  const loadServiceRecords = async () => {
+    try {
+      setIsLoading(true);
+      const records = await fetchServiceRecords(vehicleId);
+      setServiceRecords(records || []);
+    } catch (err: any) {
+      error(t('vehicle:errorSavingServiceRecord'));
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleEdit = (record: ServiceRecord) => {
+  useEffect(() => {
+    loadServiceRecords();
+  }, [vehicleId]);
+
+  const handleAddRecord = () => {
+    setEditingRecord(null);
+    setIsDialogOpen(true);
+  };
+
+  const handleEditRecord = (record: ServiceRecord) => {
     setEditingRecord(record);
-    setFormData({
-      service_date: record.service_date,
-      service_type: record.service_type,
-      description: record.description,
-      mileage: record.mileage,
-      cost: record.cost,
-      provider: record.provider
-    });
-    setIsEditSheetOpen(true);
+    setIsDialogOpen(true);
   };
 
-  const handleDelete = (record: ServiceRecord) => {
-    setDeletingRecord(record);
-    setIsDeleteDialogOpen(true);
-  };
-
-  const confirmDelete = () => {
-    if (deletingRecord?.id) {
-      deleteMutation.mutate(deletingRecord.id);
+  const handleDeleteRecord = async (recordId: string) => {
+    try {
+      setDeletingId(recordId);
+      await deleteServiceRecord(recordId);
+      success(t('vehicle:serviceRecordDeleted'));
+      loadServiceRecords();
+    } catch (err: any) {
+      error(t('vehicle:errorDeletingServiceRecord'));
+    } finally {
+      setDeletingId(null);
     }
   };
 
-  const totalCost = serviceRecords.reduce((sum, record) => sum + parseFloat(record.cost), 0);
+  const handleDialogSuccess = () => {
+    loadServiceRecords();
+    setIsDialogOpen(false);
+  };
+
+  const calculateTotalCost = () => {
+    return serviceRecords.reduce((sum, record) => sum + (record.cost || 0), 0);
+  };
+
+  const calculateAverageCost = () => {
+    if (serviceRecords.length === 0) return 0;
+    return calculateTotalCost() / serviceRecords.length;
+  };
+
+  const getLastServiceDate = () => {
+    if (serviceRecords.length === 0) return null;
+    const sortedRecords = [...serviceRecords].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    return sortedRecords[0].date;
+  };
+
+  const displayRecords = fullView ? serviceRecords : serviceRecords.slice(0, 3);
 
   if (isLoading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Wrench className="h-5 w-5" />
-            Servisní záznamy
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p>Načítání...</p>
+      <Card className="h-64">
+        <CardContent className="flex items-center justify-center h-full">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+            <p className="text-sm text-muted-foreground">{t('vehicle:loading')}</p>
+          </div>
         </CardContent>
       </Card>
     );
@@ -162,275 +104,153 @@ const ServiceRecordCard: React.FC<ServiceRecordCardProps> = ({ vehicleId, fullVi
 
   return (
     <>
-      <Card className={fullView ? "h-full" : ""}>
+      <Card className={fullView ? "w-full" : ""}>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <Wrench className="h-5 w-5" />
-              Servisní záznamy
-            </CardTitle>
-            <Sheet open={isAddSheetOpen} onOpenChange={setIsAddSheetOpen}>
-              <SheetTrigger asChild>
-                <Button size="sm" className="flex items-center gap-2">
-                  <Plus className="h-4 w-4" />
-                  Přidat
-                </Button>
-              </SheetTrigger>
-              <SheetContent>
-                <SheetHeader>
-                  <SheetTitle>Přidat servisní záznam</SheetTitle>
-                </SheetHeader>
-                <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-                  <div>
-                    <Label htmlFor="service-date">Datum servisu</Label>
-                    <Input
-                      id="service-date"
-                      type="date"
-                      value={formData.service_date}
-                      onChange={(e) => setFormData({...formData, service_date: e.target.value})}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="service-type">Typ servisu</Label>
-                    <Select value={formData.service_type} onValueChange={(value) => setFormData({...formData, service_type: value})}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Vyberte typ servisu" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Pravidelná údržba">Pravidelná údržba</SelectItem>
-                        <SelectItem value="Oprava">Oprava</SelectItem>
-                        <SelectItem value="Výměna olejů">Výměna olejů</SelectItem>
-                        <SelectItem value="Výměna pneumatik">Výměna pneumatik</SelectItem>
-                        <SelectItem value="Techničtá kontrola">Technická kontrola</SelectItem>
-                        <SelectItem value="Ostatní">Ostatní</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="description">Popis</Label>
-                    <Textarea
-                      id="description"
-                      value={formData.description}
-                      onChange={(e) => setFormData({...formData, description: e.target.value})}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="mileage">Stav tachometru (km)</Label>
-                    <Input
-                      id="mileage"
-                      type="text"
-                      value={formData.mileage}
-                      onChange={(e) => setFormData({...formData, mileage: e.target.value})}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="cost">Náklady (€)</Label>
-                    <Input
-                      id="cost"
-                      type="text"
-                      value={formData.cost}
-                      onChange={(e) => setFormData({...formData, cost: e.target.value})}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="provider">Poskytovatel</Label>
-                    <Input
-                      id="provider"
-                      type="text"
-                      value={formData.provider}
-                      onChange={(e) => setFormData({...formData, provider: e.target.value})}
-                      required
-                    />
-                  </div>
-                  <div className="flex gap-2">
-                    <Button type="submit" disabled={addMutation.isPending}>
-                      {addMutation.isPending ? 'Ukládání...' : 'Uložit'}
-                    </Button>
-                    <Button type="button" variant="outline" onClick={() => setIsAddSheetOpen(false)}>
-                      Zrušit
-                    </Button>
-                  </div>
-                </form>
-              </SheetContent>
-            </Sheet>
+            <div className="flex items-center gap-2">
+              <WrenchIcon className="h-5 w-5 text-primary" />
+              <CardTitle className="text-lg">{t('vehicle:serviceRecords')}</CardTitle>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleAddRecord}
+              className="flex items-center gap-1"
+            >
+              <PlusIcon className="h-4 w-4" />
+              {t('vehicle:add')}
+            </Button>
           </div>
         </CardHeader>
         <CardContent>
           {serviceRecords.length === 0 ? (
-            <p className="text-muted-foreground">Zatím žádné servisní záznamy</p>
+            <div className="text-center py-8">
+              <WrenchIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <p className="text-muted-foreground mb-4">{t('vehicle:noServiceRecords')}</p>
+              <Button onClick={handleAddRecord} className="gap-2">
+                <PlusIcon className="h-4 w-4" />
+                {t('vehicle:addServiceRecord')}
+              </Button>
+            </div>
           ) : (
-            <>
-              <div className="mb-4">
-                <p className="text-sm text-muted-foreground">Celkové náklady na servis</p>
-                <p className="text-2xl font-bold">{totalCost.toFixed(2)} €</p>
+            <div className="space-y-4">
+              {/* Summary Statistics */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-lg">
+                  <h4 className="text-sm font-medium text-muted-foreground">{t('vehicle:totalServiceCost')}</h4>
+                  <p className="text-2xl font-bold text-blue-600">{calculateTotalCost().toFixed(0)} Kč</p>
+                </div>
+                <div className="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-lg">
+                  <h4 className="text-sm font-medium text-muted-foreground">{t('vehicle:averageServiceCost')}</h4>
+                  <p className="text-2xl font-bold text-green-600">{calculateAverageCost().toFixed(0)} Kč</p>
+                </div>
+                <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-4 rounded-lg">
+                  <h4 className="text-sm font-medium text-muted-foreground">{t('vehicle:lastServiceDate')}</h4>
+                  <p className="text-2xl font-bold text-purple-600">
+                    {getLastServiceDate() ? formatDate(getLastServiceDate()!) : t('vehicle:noDataAvailable')}
+                  </p>
+                </div>
               </div>
-              
-              <div className="space-y-2">
-                {(fullView ? serviceRecords : serviceRecords.slice(0, 3)).map((record) => (
-                  <div key={record.id} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div>
-                      <p className="font-medium">{record.service_type}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {new Date(record.service_date).toLocaleDateString('cs-CZ')} • {record.provider} • {parseFloat(record.cost).toFixed(2)}€
-                      </p>
-                      <p className="text-sm text-muted-foreground">{record.description}</p>
+
+              {/* Service Records List */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-medium">{t('vehicle:serviceRecords')}</h4>
+                  {!fullView && serviceRecords.length > 3 && (
+                    <Button variant="ghost" size="sm">
+                      {t('vehicle:viewAll')}
+                    </Button>
+                  )}
+                </div>
+                
+                {displayRecords.map((record) => (
+                  <div key={record.id} className="border rounded-lg p-4 hover:bg-accent/50 transition-colors">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Badge variant="outline">{formatDate(record.date)}</Badge>
+                          <Badge variant="secondary">{record.service_type}</Badge>
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                          <div>
+                            <span className="text-muted-foreground">{t('vehicle:cost')}:</span>
+                            <span className="ml-1 font-medium">{record.cost} Kč</span>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">{t('vehicle:provider')}:</span>
+                            <span className="ml-1 font-medium">{record.provider}</span>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">{t('vehicle:mileage')}:</span>
+                            <span className="ml-1 font-medium">{record.mileage} km</span>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">{t('vehicle:description')}:</span>
+                            <span className="ml-1 font-medium">{record.description}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm">
+                            <MoreHorizontalIcon className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="bg-background border border-border shadow-lg z-50">
+                          <DropdownMenuItem onClick={() => handleEditRecord(record)}>
+                            <EditIcon className="h-4 w-4 mr-2" />
+                            {t('vehicle:edit')}
+                          </DropdownMenuItem>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                <TrashIcon className="h-4 w-4 mr-2" />
+                                {t('vehicle:delete')}
+                              </DropdownMenuItem>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>{t('vehicle:deleteServiceRecord')}</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  {t('vehicle:confirmDeleteServiceRecord')}
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>{t('vehicle:cancel')}</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleDeleteRecord(record.id)}
+                                  disabled={deletingId === record.id}
+                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                >
+                                  {deletingId === record.id ? t('vehicle:deleting') : t('vehicle:delete')}
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm">
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleEdit(record)}>
-                          <Edit className="mr-2 h-4 w-4" />
-                          Upravit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem 
-                          onClick={() => handleDelete(record)}
-                          className="text-red-600 focus:text-red-600"
-                        >
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          Smazat
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
                   </div>
                 ))}
+                
+                {!fullView && serviceRecords.length > 3 && (
+                  <p className="text-sm text-muted-foreground text-center">
+                    {t('vehicle:andMoreRecords', { count: serviceRecords.length - 3 })}
+                  </p>
+                )}
               </div>
-              
-              {!fullView && serviceRecords.length > 3 && (
-                <p className="text-sm text-muted-foreground mt-2">
-                  A {serviceRecords.length - 3} dalších záznamů...
-                </p>
-              )}
-            </>
+            </div>
           )}
         </CardContent>
       </Card>
 
-      {/* Edit Sheet */}
-      <Sheet open={isEditSheetOpen} onOpenChange={setIsEditSheetOpen}>
-        <SheetContent>
-          <SheetHeader>
-            <SheetTitle>Upravit servisní záznam</SheetTitle>
-          </SheetHeader>
-          <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-            <div>
-              <Label htmlFor="edit-service-date">Datum servisu</Label>
-              <Input
-                id="edit-service-date"
-                type="date"
-                value={formData.service_date}
-                onChange={(e) => setFormData({...formData, service_date: e.target.value})}
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="edit-service-type">Typ servisu</Label>
-              <Select value={formData.service_type} onValueChange={(value) => setFormData({...formData, service_type: value})}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Vyberte typ servisu" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Pravidelná údržba">Pravidelná údržba</SelectItem>
-                  <SelectItem value="Oprava">Oprava</SelectItem>
-                  <SelectItem value="Výměna olejů">Výměna olejů</SelectItem>
-                  <SelectItem value="Výměna pneumatik">Výměna pneumatik</SelectItem>
-                  <SelectItem value="Techničtá kontrola">Technická kontrola</SelectItem>
-                  <SelectItem value="Ostatní">Ostatní</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label htmlFor="edit-description">Popis</Label>
-              <Textarea
-                id="edit-description"
-                value={formData.description}
-                onChange={(e) => setFormData({...formData, description: e.target.value})}
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="edit-mileage">Stav tachometru (km)</Label>
-              <Input
-                id="edit-mileage"
-                type="text"
-                value={formData.mileage}
-                onChange={(e) => setFormData({...formData, mileage: e.target.value})}
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="edit-cost">Náklady (€)</Label>
-              <Input
-                id="edit-cost"
-                type="text"
-                value={formData.cost}
-                onChange={(e) => setFormData({...formData, cost: e.target.value})}
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="edit-provider">Poskytovatel</Label>
-              <Input
-                id="edit-provider"
-                type="text"
-                value={formData.provider}
-                onChange={(e) => setFormData({...formData, provider: e.target.value})}
-                required
-              />
-            </div>
-            <div className="flex gap-2">
-              <Button type="submit" disabled={updateMutation.isPending}>
-                {updateMutation.isPending ? 'Ukládání...' : 'Uložit'}
-              </Button>
-              <Button 
-                type="button" 
-                variant="outline" 
-                onClick={() => {
-                  setIsEditSheetOpen(false);
-                  setEditingRecord(null);
-                  resetForm();
-                }}
-              >
-                Zrušit
-              </Button>
-            </div>
-          </form>
-        </SheetContent>
-      </Sheet>
-
-      {/* Delete Dialog */}
-      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Smazat servisní záznam</AlertDialogTitle>
-            <AlertDialogDescription>
-              Opravdu chcete smazat tento servisní záznam? Tato akce je nevratná.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => {
-              setIsDeleteDialogOpen(false);
-              setDeletingRecord(null);
-            }}>
-              Zrušit
-            </AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={confirmDelete}
-              disabled={deleteMutation.isPending}
-              className="bg-red-600 hover:bg-red-700"
-            >
-              {deleteMutation.isPending ? 'Mazání...' : 'Smazat'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ServiceRecordDialog
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        vehicleId={vehicleId}
+        onSuccess={handleDialogSuccess}
+        record={editingRecord}
+      />
     </>
   );
 };

@@ -1,33 +1,17 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Plus, Shield, Edit, Trash2, MoreVertical } from 'lucide-react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchInsuranceRecords, saveInsuranceRecord, deleteInsuranceRecord } from '@/services/vehicleService';
+import { Badge } from '@/components/ui/badge';
+import { ShieldIcon, PlusIcon, EditIcon, TrashIcon, MoreHorizontalIcon } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { InsuranceRecord } from '@/types/vehicle';
+import { fetchInsuranceRecords, deleteInsuranceRecord } from '@/services/vehicleService';
 import { useStandardizedToast } from '@/hooks/useStandardizedToast';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+import { useTranslation } from 'react-i18next';
+import InsuranceRecordDialog from './dialogs/InsuranceRecordDialog';
+import { formatDate } from '@/utils/dateUtils';
 
 interface InsuranceCardProps {
   vehicleId: string;
@@ -35,128 +19,80 @@ interface InsuranceCardProps {
 }
 
 const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = false }) => {
-  const [isAddSheetOpen, setIsAddSheetOpen] = useState(false);
-  const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const { t } = useTranslation(['vehicle']);
+  const [insuranceRecords, setInsuranceRecords] = useState<InsuranceRecord[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingRecord, setEditingRecord] = useState<InsuranceRecord | null>(null);
-  const [deletingRecord, setDeletingRecord] = useState<InsuranceRecord | null>(null);
-  const [formData, setFormData] = useState({
-    provider: '',
-    policy_number: '',
-    valid_from: '',
-    valid_until: '',
-    monthly_cost: '',
-    coverage_type: '',
-    notes: ''
-  });
-
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const { success, error } = useStandardizedToast();
-  const queryClient = useQueryClient();
 
-  const { data: insuranceRecords = [], isLoading } = useQuery({
-    queryKey: ['insurance-records', vehicleId],
-    queryFn: () => fetchInsuranceRecords(vehicleId),
-    enabled: !!vehicleId
-  });
-
-  const addMutation = useMutation({
-    mutationFn: (data: Partial<InsuranceRecord>) => saveInsuranceRecord({ ...data, vehicle_id: vehicleId }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['insurance-records', vehicleId] });
-      success('Pojištění bylo přidáno');
-      setIsAddSheetOpen(false);
-      resetForm();
-    },
-    onError: (err: any) => {
-      error(err.message || 'Chyba při přidávání pojištění');
-    }
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: (data: Partial<InsuranceRecord>) => saveInsuranceRecord(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['insurance-records', vehicleId] });
-      success('Pojištění bylo aktualizováno');
-      setIsEditSheetOpen(false);
-      setEditingRecord(null);
-      resetForm();
-    },
-    onError: (err: any) => {
-      error(err.message || 'Chyba při aktualizaci pojištění');
-    }
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: (id: string) => deleteInsuranceRecord(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['insurance-records', vehicleId] });
-      success('Pojištění bylo smazáno');
-      setIsDeleteDialogOpen(false);
-      setDeletingRecord(null);
-    },
-    onError: (err: any) => {
-      error(err.message || 'Chyba při mazání pojištění');
-    }
-  });
-
-  const resetForm = () => {
-    setFormData({
-      provider: '',
-      policy_number: '',
-      valid_from: '',
-      valid_until: '',
-      monthly_cost: '',
-      coverage_type: '',
-      notes: ''
-    });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (editingRecord) {
-      updateMutation.mutate({ ...formData, id: editingRecord.id });
-    } else {
-      addMutation.mutate(formData);
+  const loadInsuranceRecords = async () => {
+    try {
+      setIsLoading(true);
+      const records = await fetchInsuranceRecords(vehicleId);
+      setInsuranceRecords(records || []);
+    } catch (err: any) {
+      error(t('vehicle:errorSavingServiceRecord'));
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleEdit = (record: InsuranceRecord) => {
+  useEffect(() => {
+    loadInsuranceRecords();
+  }, [vehicleId]);
+
+  const handleAddRecord = () => {
+    setEditingRecord(null);
+    setIsDialogOpen(true);
+  };
+
+  const handleEditRecord = (record: InsuranceRecord) => {
     setEditingRecord(record);
-    setFormData({
-      provider: record.provider,
-      policy_number: record.policy_number,
-      valid_from: record.valid_from,
-      valid_until: record.valid_until,
-      monthly_cost: record.monthly_cost,
-      coverage_type: record.coverage_type,
-      notes: record.notes || ''
-    });
-    setIsEditSheetOpen(true);
+    setIsDialogOpen(true);
   };
 
-  const handleDelete = (record: InsuranceRecord) => {
-    setDeletingRecord(record);
-    setIsDeleteDialogOpen(true);
-  };
-
-  const confirmDelete = () => {
-    if (deletingRecord?.id) {
-      deleteMutation.mutate(deletingRecord.id);
+  const handleDeleteRecord = async (recordId: string) => {
+    try {
+      setDeletingId(recordId);
+      await deleteInsuranceRecord(recordId);
+      success(t('vehicle:serviceRecordDeleted'));
+      loadInsuranceRecords();
+    } catch (err: any) {
+      error(t('vehicle:errorDeletingServiceRecord'));
+    } finally {
+      setDeletingId(null);
     }
   };
+
+  const handleDialogSuccess = () => {
+    loadInsuranceRecords();
+    setIsDialogOpen(false);
+  };
+
+  const calculateTotalCost = () => {
+    return insuranceRecords.reduce((sum, record) => sum + (record.cost || 0), 0);
+  };
+
+  const getActiveInsurance = () => {
+    const now = new Date();
+    return insuranceRecords.find(record => {
+      const expiryDate = new Date(record.expiry_date);
+      return expiryDate > now;
+    });
+  };
+
+  const displayRecords = fullView ? insuranceRecords : insuranceRecords.slice(0, 3);
 
   if (isLoading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Shield className="h-5 w-5" />
-            Pojištění
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p>Načítání...</p>
+      <Card className="h-64">
+        <CardContent className="flex items-center justify-center h-full">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+            <p className="text-sm text-muted-foreground">{t('vehicle:loading')}</p>
+          </div>
         </CardContent>
       </Card>
     );
@@ -164,284 +100,177 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = fal
 
   return (
     <>
-      <Card className={fullView ? "h-full" : ""}>
+      <Card className={fullView ? "w-full" : ""}>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <Shield className="h-5 w-5" />
-              Pojištění
-            </CardTitle>
-            <Sheet open={isAddSheetOpen} onOpenChange={setIsAddSheetOpen}>
-              <SheetTrigger asChild>
-                <Button size="sm" className="flex items-center gap-2">
-                  <Plus className="h-4 w-4" />
-                  Přidat
-                </Button>
-              </SheetTrigger>
-              <SheetContent>
-                <SheetHeader>
-                  <SheetTitle>Přidat pojištění</SheetTitle>
-                </SheetHeader>
-                <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-                  <div>
-                    <Label htmlFor="provider">Pojišťovna</Label>
-                    <Input
-                      id="provider"
-                      type="text"
-                      value={formData.provider}
-                      onChange={(e) => setFormData({...formData, provider: e.target.value})}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="policy-number">Číslo smlouvy</Label>
-                    <Input
-                      id="policy-number"
-                      type="text"
-                      value={formData.policy_number}
-                      onChange={(e) => setFormData({...formData, policy_number: e.target.value})}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="valid-from">Platné od</Label>
-                    <Input
-                      id="valid-from"
-                      type="date"
-                      value={formData.valid_from}
-                      onChange={(e) => setFormData({...formData, valid_from: e.target.value})}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="valid-until">Platné do</Label>
-                    <Input
-                      id="valid-until"
-                      type="date"
-                      value={formData.valid_until}
-                      onChange={(e) => setFormData({...formData, valid_until: e.target.value})}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="monthly-cost">Měsíční platba (Kč)</Label>
-                    <Input
-                      id="monthly-cost"
-                      type="text"
-                      value={formData.monthly_cost}
-                      onChange={(e) => setFormData({...formData, monthly_cost: e.target.value})}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="coverage-type">Typ pojištění</Label>
-                    <Select value={formData.coverage_type} onValueChange={(value) => setFormData({...formData, coverage_type: value})}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Vyberte typ pojištění" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Povinné ručení">Povinné ručení</SelectItem>
-                        <SelectItem value="Havarijní pojištění">Havarijní pojištění</SelectItem>
-                        <SelectItem value="Komplexní pojištění">Komplexní pojištění</SelectItem>
-                        <SelectItem value="GAP pojištění">GAP pojištění</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="notes">Poznámky</Label>
-                    <Textarea
-                      id="notes"
-                      value={formData.notes}
-                      onChange={(e) => setFormData({...formData, notes: e.target.value})}
-                    />
-                  </div>
-                  <div className="flex gap-2">
-                    <Button type="submit" disabled={addMutation.isPending}>
-                      {addMutation.isPending ? 'Ukládání...' : 'Uložit'}
-                    </Button>
-                    <Button type="button" variant="outline" onClick={() => setIsAddSheetOpen(false)}>
-                      Zrušit
-                    </Button>
-                  </div>
-                </form>
-              </SheetContent>
-            </Sheet>
+            <div className="flex items-center gap-2">
+              <ShieldIcon className="h-5 w-5 text-primary" />
+              <CardTitle className="text-lg">{t('vehicle:insurance')}</CardTitle>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleAddRecord}
+              className="flex items-center gap-1"
+            >
+              <PlusIcon className="h-4 w-4" />
+              {t('vehicle:add')}
+            </Button>
           </div>
         </CardHeader>
         <CardContent>
           {insuranceRecords.length === 0 ? (
-            <p className="text-muted-foreground">Zatím žádné pojištění</p>
+            <div className="text-center py-8">
+              <ShieldIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <p className="text-muted-foreground mb-4">{t('vehicle:noServiceRecords')}</p>
+              <Button onClick={handleAddRecord} className="gap-2">
+                <PlusIcon className="h-4 w-4" />
+                {t('vehicle:addServiceRecord')}
+              </Button>
+            </div>
           ) : (
-            <div className="space-y-2">
-              {(fullView ? insuranceRecords : insuranceRecords.slice(0, 3)).map((insurance) => (
-                <div key={insurance.id} className="flex items-center justify-between p-3 border rounded-lg">
-                  <div>
-                    <p className="font-medium">{insurance.provider}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {insurance.coverage_type} • {insurance.monthly_cost} Kč/měsíc
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {new Date(insurance.valid_from).toLocaleDateString('cs-CZ')} - {new Date(insurance.valid_until).toLocaleDateString('cs-CZ')}
-                    </p>
+            <div className="space-y-4">
+              {/* Active Insurance Summary */}
+              {getActiveInsurance() && (
+                <div className="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-lg mb-6">
+                  <h4 className="text-sm font-medium text-muted-foreground mb-2">{t('vehicle:insurance')}</h4>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="text-muted-foreground">{t('vehicle:insuranceProvider')}:</span>
+                      <span className="ml-1 font-medium">{getActiveInsurance()?.provider}</span>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">{t('vehicle:insuranceExpiry')}:</span>
+                      <span className="ml-1 font-medium">{formatDate(getActiveInsurance()!.expiry_date)}</span>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">{t('vehicle:insuranceType')}:</span>
+                      <span className="ml-1 font-medium">{getActiveInsurance()?.insurance_type}</span>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">{t('vehicle:policyNumber')}:</span>
+                      <span className="ml-1 font-medium">{getActiveInsurance()?.policy_number}</span>
+                    </div>
                   </div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm">
-                        <MoreVertical className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => handleEdit(insurance)}>
-                        <Edit className="mr-2 h-4 w-4" />
-                        Upravit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem 
-                        onClick={() => handleDelete(insurance)}
-                        className="text-red-600 focus:text-red-600"
-                      >
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        Smazat
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
                 </div>
-              ))}
-              
-              {!fullView && insuranceRecords.length > 3 && (
-                <p className="text-sm text-muted-foreground mt-2">
-                  A {insuranceRecords.length - 3} dalších pojištění...
-                </p>
               )}
+
+              {/* Summary Statistics */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-lg">
+                  <h4 className="text-sm font-medium text-muted-foreground">{t('vehicle:totalServiceCost')}</h4>
+                  <p className="text-2xl font-bold text-blue-600">{calculateTotalCost().toFixed(0)} Kč</p>
+                </div>
+                <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-4 rounded-lg">
+                  <h4 className="text-sm font-medium text-muted-foreground">{t('vehicle:insurance')}</h4>
+                  <p className="text-2xl font-bold text-purple-600">
+                    {getActiveInsurance() ? t('vehicle:insurance') : t('vehicle:noDataAvailable')}
+                  </p>
+                </div>
+              </div>
+
+              {/* Insurance Records List */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-medium">{t('vehicle:insuranceInfo')}</h4>
+                  {!fullView && insuranceRecords.length > 3 && (
+                    <Button variant="ghost" size="sm">
+                      {t('vehicle:viewAll')}
+                    </Button>
+                  )}
+                </div>
+                
+                {displayRecords.map((record) => (
+                  <div key={record.id} className="border rounded-lg p-4 hover:bg-accent/50 transition-colors">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Badge variant="outline">{formatDate(record.start_date)}</Badge>
+                          <Badge variant="secondary">{record.insurance_type}</Badge>
+                          {getActiveInsurance()?.id === record.id && (
+                            <Badge variant="default">{t('vehicle:insurance')}</Badge>
+                          )}
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                          <div>
+                            <span className="text-muted-foreground">{t('vehicle:insuranceProvider')}:</span>
+                            <span className="ml-1 font-medium">{record.provider}</span>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">{t('vehicle:cost')}:</span>
+                            <span className="ml-1 font-medium">{record.cost} Kč</span>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">{t('vehicle:insuranceExpiry')}:</span>
+                            <span className="ml-1 font-medium">{formatDate(record.expiry_date)}</span>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">{t('vehicle:policyNumber')}:</span>
+                            <span className="ml-1 font-medium">{record.policy_number}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm">
+                            <MoreHorizontalIcon className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="bg-background border border-border shadow-lg z-50">
+                          <DropdownMenuItem onClick={() => handleEditRecord(record)}>
+                            <EditIcon className="h-4 w-4 mr-2" />
+                            {t('vehicle:edit')}
+                          </DropdownMenuItem>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                <TrashIcon className="h-4 w-4 mr-2" />
+                                {t('vehicle:delete')}
+                              </DropdownMenuItem>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>{t('vehicle:deleteServiceRecord')}</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  {t('vehicle:confirmDeleteServiceRecord')}
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>{t('vehicle:cancel')}</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleDeleteRecord(record.id)}
+                                  disabled={deletingId === record.id}
+                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                >
+                                  {deletingId === record.id ? t('vehicle:deleting') : t('vehicle:delete')}
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </div>
+                ))}
+                
+                {!fullView && insuranceRecords.length > 3 && (
+                  <p className="text-sm text-muted-foreground text-center">
+                    {t('vehicle:andMoreRecords', { count: insuranceRecords.length - 3 })}
+                  </p>
+                )}
+              </div>
             </div>
           )}
         </CardContent>
       </Card>
 
-      {/* Edit Sheet */}
-      <Sheet open={isEditSheetOpen} onOpenChange={setIsEditSheetOpen}>
-        <SheetContent>
-          <SheetHeader>
-            <SheetTitle>Upravit pojištění</SheetTitle>
-          </SheetHeader>
-          <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-            <div>
-              <Label htmlFor="edit-provider">Pojišťovna</Label>
-              <Input
-                id="edit-provider"
-                type="text"
-                value={formData.provider}
-                onChange={(e) => setFormData({...formData, provider: e.target.value})}
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="edit-policy-number">Číslo smlouvy</Label>
-              <Input
-                id="edit-policy-number"
-                type="text"
-                value={formData.policy_number}
-                onChange={(e) => setFormData({...formData, policy_number: e.target.value})}
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="edit-valid-from">Platné od</Label>
-              <Input
-                id="edit-valid-from"
-                type="date"
-                value={formData.valid_from}
-                onChange={(e) => setFormData({...formData, valid_from: e.target.value})}
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="edit-valid-until">Platné do</Label>
-              <Input
-                id="edit-valid-until"
-                type="date"
-                value={formData.valid_until}
-                onChange={(e) => setFormData({...formData, valid_until: e.target.value})}
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="edit-monthly-cost">Měsíční platba (Kč)</Label>
-              <Input
-                id="edit-monthly-cost"
-                type="text"
-                value={formData.monthly_cost}
-                onChange={(e) => setFormData({...formData, monthly_cost: e.target.value})}
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="edit-coverage-type">Typ pojištění</Label>
-              <Select value={formData.coverage_type} onValueChange={(value) => setFormData({...formData, coverage_type: value})}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Vyberte typ pojištění" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Povinné ručení">Povinné ručení</SelectItem>
-                  <SelectItem value="Havarijní pojištění">Havarijní pojištění</SelectItem>
-                  <SelectItem value="Komplexní pojištění">Komplexní pojištění</SelectItem>
-                  <SelectItem value="GAP pojištění">GAP pojištění</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label htmlFor="edit-notes">Poznámky</Label>
-              <Textarea
-                id="edit-notes"
-                value={formData.notes}
-                onChange={(e) => setFormData({...formData, notes: e.target.value})}
-              />
-            </div>
-            <div className="flex gap-2">
-              <Button type="submit" disabled={updateMutation.isPending}>
-                {updateMutation.isPending ? 'Ukládání...' : 'Uložit'}
-              </Button>
-              <Button 
-                type="button" 
-                variant="outline" 
-                onClick={() => {
-                  setIsEditSheetOpen(false);
-                  setEditingRecord(null);
-                  resetForm();
-                }}
-              >
-                Zrušit
-              </Button>
-            </div>
-          </form>
-        </SheetContent>
-      </Sheet>
-
-      {/* Delete Dialog */}
-      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Smazat pojištění</AlertDialogTitle>
-            <AlertDialogDescription>
-              Opravdu chcete smazat toto pojištění? Tato akce je nevratná.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => {
-              setIsDeleteDialogOpen(false);
-              setDeletingRecord(null);
-            }}>
-              Zrušit
-            </AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={confirmDelete}
-              disabled={deleteMutation.isPending}
-              className="bg-red-600 hover:bg-red-700"
-            >
-              {deleteMutation.isPending ? 'Mazání...' : 'Smazat'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <InsuranceRecordDialog
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        vehicleId={vehicleId}
+        onSuccess={handleDialogSuccess}
+        record={editingRecord}
+      />
     </>
   );
 };

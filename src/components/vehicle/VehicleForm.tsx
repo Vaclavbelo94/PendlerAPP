@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { VehicleData } from '@/types/vehicle';
+import { useTranslation } from 'react-i18next';
 
 interface VehicleFormProps {
   onSubmit: (data: any) => void;
@@ -19,6 +20,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({
   isLoading,
   vehicle
 }) => {
+  const { t } = useTranslation(['vehicle']);
   const [formData, setFormData] = useState({
     brand: '',
     model: '',
@@ -76,13 +78,13 @@ const VehicleForm: React.FC<VehicleFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Základní informace */}
+      {/* Basic Information */}
       <div className="space-y-4">
-        <h3 className="text-lg font-medium">Základní informace</h3>
+        <h3 className="text-lg font-medium">{t('vehicle:basicInformation')}</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="brand">Značka *</Label>
+            <Label htmlFor="brand">{t('vehicle:brand')} *</Label>
             <Input
               id="brand"
               type="text"
@@ -93,7 +95,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({
           </div>
           
           <div>
-            <Label htmlFor="model">Model *</Label>
+            <Label htmlFor="model">{t('vehicle:model')} *</Label>
             <Input
               id="model"
               type="text"
@@ -104,7 +106,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({
           </div>
           
           <div>
-            <Label htmlFor="year">Rok výroby *</Label>
+            <Label htmlFor="year">{t('vehicle:year')} *</Label>
             <Input
               id="year"
               type="text"
@@ -115,7 +117,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({
           </div>
           
           <div>
-            <Label htmlFor="license_plate">SPZ *</Label>
+            <Label htmlFor="license_plate">{t('vehicle:licensePlate')} *</Label>
             <Input
               id="license_plate"
               type="text"
@@ -126,17 +128,18 @@ const VehicleForm: React.FC<VehicleFormProps> = ({
           </div>
           
           <div>
-            <Label htmlFor="vin">VIN</Label>
+            <Label htmlFor="vin">{t('vehicle:vin')}</Label>
             <Input
               id="vin"
               type="text"
               value={formData.vin}
               onChange={(e) => handleChange('vin', e.target.value)}
+              placeholder={t('vehicle:vinPlaceholder')}
             />
           </div>
           
           <div>
-            <Label htmlFor="color">Barva</Label>
+            <Label htmlFor="color">{t('vehicle:color')}</Label>
             <Input
               id="color"
               type="text"
@@ -147,94 +150,96 @@ const VehicleForm: React.FC<VehicleFormProps> = ({
         </div>
       </div>
 
-      {/* Technické údaje */}
+      {/* Technical Information */}
       <div className="space-y-4">
-        <h3 className="text-lg font-medium">Technické údaje</h3>
+        <h3 className="text-lg font-medium">{t('vehicle:technicalInformation')}</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="fuel_type">Typ paliva</Label>
+            <Label htmlFor="fuel_type">{t('vehicle:fuelType')}</Label>
             <Select value={formData.fuel_type} onValueChange={(value) => handleChange('fuel_type', value)}>
               <SelectTrigger>
-                <SelectValue placeholder="Vyberte typ paliva" />
+                <SelectValue placeholder={t('vehicle:selectFuelType')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Benzín">Benzín</SelectItem>
-                <SelectItem value="Diesel">Diesel</SelectItem>
-                <SelectItem value="LPG">LPG</SelectItem>
-                <SelectItem value="CNG">CNG</SelectItem>
-                <SelectItem value="Elektro">Elektro</SelectItem>
-                <SelectItem value="Hybrid">Hybrid</SelectItem>
+                <SelectItem value="petrol">{t('vehicle:fuelTypes.petrol')}</SelectItem>
+                <SelectItem value="diesel">{t('vehicle:fuelTypes.diesel')}</SelectItem>
+                <SelectItem value="lpg">{t('vehicle:fuelTypes.lpg')}</SelectItem>
+                <SelectItem value="cng">{t('vehicle:fuelTypes.cng')}</SelectItem>
+                <SelectItem value="electric">{t('vehicle:fuelTypes.electric')}</SelectItem>
+                <SelectItem value="hybrid">{t('vehicle:fuelTypes.hybrid')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
           
           <div>
-            <Label htmlFor="engine">Motor</Label>
+            <Label htmlFor="engine">{t('vehicle:engineType')}</Label>
             <Input
               id="engine"
               type="text"
               value={formData.engine}
               onChange={(e) => handleChange('engine', e.target.value)}
-              placeholder="např. 1.6 TDI"
+              placeholder={t('vehicle:enginePlaceholder')}
             />
           </div>
           
           <div>
-            <Label htmlFor="power">Výkon</Label>
+            <Label htmlFor="power">{t('vehicle:power')}</Label>
             <Input
               id="power"
               type="text"
               value={formData.power}
               onChange={(e) => handleChange('power', e.target.value)}
-              placeholder="např. 85 kW"
+              placeholder={t('vehicle:powerPlaceholder')}
             />
           </div>
           
           <div>
-            <Label htmlFor="transmission">Převodovka</Label>
+            <Label htmlFor="transmission">{t('vehicle:transmission')}</Label>
             <Select value={formData.transmission} onValueChange={(value) => handleChange('transmission', value)}>
               <SelectTrigger>
-                <SelectValue placeholder="Vyberte převodovku" />
+                <SelectValue placeholder={t('vehicle:selectTransmission')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Manuální">Manuální</SelectItem>
-                <SelectItem value="Automatická">Automatická</SelectItem>
-                <SelectItem value="CVT">CVT</SelectItem>
-                <SelectItem value="DSG">DSG</SelectItem>
+                <SelectItem value="manual">{t('vehicle:transmissionTypes.manual')}</SelectItem>
+                <SelectItem value="automatic">{t('vehicle:transmissionTypes.automatic')}</SelectItem>
+                <SelectItem value="cvt">{t('vehicle:transmissionTypes.cvt')}</SelectItem>
+                <SelectItem value="dsg">{t('vehicle:transmissionTypes.dsg')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </div>
       </div>
 
-      {/* Provozní údaje */}
+      {/* Operational Information */}
       <div className="space-y-4">
-        <h3 className="text-lg font-medium">Provozní údaje</h3>
+        <h3 className="text-lg font-medium">{t('vehicle:operationalInformation')}</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="mileage">Najeto km</Label>
+            <Label htmlFor="mileage">{t('vehicle:mileage')}</Label>
             <Input
               id="mileage"
               type="text"
               value={formData.mileage}
               onChange={(e) => handleChange('mileage', e.target.value)}
+              placeholder={t('vehicle:mileagePlaceholder')}
             />
           </div>
           
           <div>
-            <Label htmlFor="average_consumption">Průměrná spotřeba (l/100km)</Label>
+            <Label htmlFor="average_consumption">{t('vehicle:averageConsumption')} (l/100km)</Label>
             <Input
               id="average_consumption"
               type="text"
               value={formData.average_consumption}
               onChange={(e) => handleChange('average_consumption', e.target.value)}
+              placeholder={t('vehicle:consumptionPlaceholder')}
             />
           </div>
           
           <div>
-            <Label htmlFor="last_service">Poslední servis</Label>
+            <Label htmlFor="last_service">{t('vehicle:lastService')}</Label>
             <Input
               id="last_service"
               type="date"
@@ -244,7 +249,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({
           </div>
           
           <div>
-            <Label htmlFor="next_inspection">Další STK</Label>
+            <Label htmlFor="next_inspection">{t('vehicle:nextServiceDue')}</Label>
             <Input
               id="next_inspection"
               type="date"
@@ -255,60 +260,64 @@ const VehicleForm: React.FC<VehicleFormProps> = ({
         </div>
       </div>
 
-      {/* Finanční údaje */}
+      {/* Financial Information */}
       <div className="space-y-4">
-        <h3 className="text-lg font-medium">Finanční údaje</h3>
+        <h3 className="text-lg font-medium">{t('vehicle:financialInformation')}</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="purchase_price">Pořizovací cena (Kč)</Label>
+            <Label htmlFor="purchase_price">{t('vehicle:purchasePrice')} (Kč)</Label>
             <Input
               id="purchase_price"
               type="text"
               value={formData.purchase_price}
               onChange={(e) => handleChange('purchase_price', e.target.value)}
+              placeholder={t('vehicle:pricePlaceholder')}
             />
           </div>
           
           <div>
-            <Label htmlFor="insurance_monthly">Pojištění měsíčně (Kč)</Label>
+            <Label htmlFor="insurance_monthly">{t('vehicle:insuranceCost')} {t('vehicle:monthlyAverage')} (Kč)</Label>
             <Input
               id="insurance_monthly"
               type="text"
               value={formData.insurance_monthly}
               onChange={(e) => handleChange('insurance_monthly', e.target.value)}
+              placeholder={t('vehicle:insurancePlaceholder')}
             />
           </div>
           
           <div>
-            <Label htmlFor="tax_yearly">Daň ročně (Kč)</Label>
+            <Label htmlFor="tax_yearly">{t('vehicle:taxPlaceholder')} (Kč)</Label>
             <Input
               id="tax_yearly"
               type="text"
               value={formData.tax_yearly}
               onChange={(e) => handleChange('tax_yearly', e.target.value)}
+              placeholder={t('vehicle:taxPlaceholder')}
             />
           </div>
           
           <div>
-            <Label htmlFor="last_repair_cost">Poslední oprava (Kč)</Label>
+            <Label htmlFor="last_repair_cost">{t('vehicle:lastService')} {t('vehicle:repair')} (Kč)</Label>
             <Input
               id="last_repair_cost"
               type="text"
               value={formData.last_repair_cost}
               onChange={(e) => handleChange('last_repair_cost', e.target.value)}
+              placeholder={t('vehicle:repairPlaceholder')}
             />
           </div>
         </div>
       </div>
 
-      {/* Tlačítka */}
+      {/* Buttons */}
       <div className="flex gap-4 pt-6">
         <Button type="submit" disabled={isLoading} className="flex-1">
-          {isLoading ? 'Ukládání...' : (vehicle ? 'Uložit změny' : 'Přidat vozidlo')}
+          {isLoading ? t('vehicle:saving') : (vehicle ? t('vehicle:addChanges') : t('vehicle:addVehicleButton'))}
         </Button>
         <Button type="button" variant="outline" onClick={onCancel} className="flex-1">
-          Zrušit
+          {t('vehicle:cancel')}
         </Button>
       </div>
     </form>
