@@ -1,11 +1,17 @@
 
 {
   "title": "Překladač",
+  "aiTranslator": "AI Překladač",
+  "translatorDescription": "Pokročilý AI překladač pro rychlé a přesné překlady mezi češtinou, němčinou a polštinou",
+  "translatorDescriptionMobile": "AI překladač pro rychlé překlady",
+  "howTranslatorWorks": "Jak překladač funguje",
+  "translatorInstructions": "Zadejte text do levého pole, vyberte cílový jazyk a překladač automaticky detekuje zdrojový jazyk a vytvoří překlad.",
   "translateText": "Přeložit text",
   "sourceLanguage": "Zdrojový jazyk",
   "targetLanguage": "Cílový jazyk",
   "enterText": "Zadejte text k překladu",
   "translation": "Překlad",
+  "translating": "Překládám...",
   "copyTranslation": "Kopírovat překlad",
   "clearText": "Vymazat text",
   "swapLanguages": "Prohodit jazyky",

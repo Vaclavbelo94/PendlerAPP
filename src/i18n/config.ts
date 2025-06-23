@@ -9,7 +9,12 @@ import csNavigation from './translations/cs/navigation.json';
 import csDashboard from './translations/cs/dashboard.json';
 import csLaws from './translations/cs/laws.json';
 import csShifts from './translations/cs/shifts.json';
+import csTravel from './translations/cs/travel.json';
 import csTranslator from './translations/cs/translator.json';
+import csTaxAdvisor from './translations/cs/taxAdvisor.json';
+import csVehicle from './translations/cs/vehicle.json';
+import csForms from './translations/cs/forms.json';
+import csUI from './translations/cs/ui.json';
 import csProfile from './translations/cs/profile.json';
 import csSettings from './translations/cs/settings.json';
 
@@ -38,7 +43,12 @@ export const resources = {
     dashboard: csDashboard,
     laws: csLaws,
     shifts: csShifts,
+    travel: csTravel,
     translator: csTranslator,
+    taxAdvisor: csTaxAdvisor,
+    vehicle: csVehicle,
+    forms: csForms,
+    ui: csUI,
     profile: csProfile,
     settings: csSettings,
   },
@@ -82,7 +92,7 @@ i18n
     },
 
     defaultNS: 'common',
-    ns: ['common', 'navigation', 'dashboard', 'laws', 'shifts', 'translator', 'profile', 'settings'],
+    ns: ['common', 'navigation', 'dashboard', 'laws', 'shifts', 'travel', 'translator', 'taxAdvisor', 'vehicle', 'forms', 'ui', 'profile', 'settings'],
   });
 
 export default i18n;

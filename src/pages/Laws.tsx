@@ -9,7 +9,6 @@ import LawsMobileCarousel from '@/components/laws/mobile/LawsMobileCarousel';
 import DashboardBackground from '@/components/common/DashboardBackground';
 import { getLawItems } from '@/data/lawsData';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { useLanguage } from '@/hooks/useLanguage';
 import EnhancedLawCard from '@/components/laws/enhanced/EnhancedLawCard';
 import Layout from '@/components/layouts/Layout';
 import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
@@ -20,7 +19,6 @@ const Laws = () => {
   const [activeSection, setActiveSection] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
   const isMobile = useIsMobile();
-  const { t: tLang } = useLanguage();
   const { t } = useTranslation(['laws', 'common']);
 
   // Simulate initial loading with shorter duration
@@ -32,7 +30,7 @@ const Laws = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  const lawItems = getLawItems(tLang);
+  const lawItems = getLawItems(t);
 
   const filteredLaws = useMemo(() => {
     if (activeSection === "all") {

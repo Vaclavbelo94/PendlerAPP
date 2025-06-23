@@ -1,6 +1,14 @@
 
 {
   "title": "Cestování",
+  "travelPlanning": "Plánování cest",
+  "smartTravel": "Chytré cestování",
+  "travelDescription": "Inteligentní plánování cest a dopravy pro efektivní pendlování",
+  "travelDescriptionMobile": "Chytré plánování cest",
+  "enhancedRideSharing": "Pokročilé sdílení jízd",
+  "trafficMap": "Dopravní mapa",
+  "origin": "Odkud",
+  "destination": "Kam",
   "addTrip": "Přidat cestu",
   "editTrip": "Upravit cestu",
   "deleteTrip": "Smazat cestu",
