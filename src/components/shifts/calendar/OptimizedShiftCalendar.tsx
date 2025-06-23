@@ -4,9 +4,10 @@ import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { format, isSameDay, startOfMonth, endOfMonth, eachDayOfInterval } from "date-fns";
-import { cs } from "date-fns/locale";
+import { cs, de, pl } from "date-fns/locale";
 import { Shift, ShiftType } from '../types';
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface OptimizedShiftCalendarProps {
   shifts: Shift[];
@@ -16,19 +17,7 @@ interface OptimizedShiftCalendarProps {
   onOpenNoteDialog?: () => void;
 }
 
-const SHIFT_TYPE_COLORS = {
-  morning: 'bg-blue-100 text-blue-800 border-blue-200',
-  afternoon: 'bg-orange-100 text-orange-800 border-orange-200',
-  night: 'bg-purple-100 text-purple-800 border-purple-200'
-} as const;
-
-const SHIFT_TYPE_LABELS = {
-  morning: 'Ranní',
-  afternoon: 'Odpolední', 
-  night: 'Noční'
-} as const;
-
-export const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
+const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
   shifts,
   selectedDate,
   onSelectDate,
@@ -36,6 +25,32 @@ export const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
   onOpenNoteDialog
 }) => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const { t, i18n } = useTranslation('shifts');
+
+  // Get appropriate date-fns locale
+  const getDateLocale = () => {
+    switch (i18n.language) {
+      case 'de': return de;
+      case 'pl': return pl;
+      case 'cs':
+      default: return cs;
+    }
+  };
+
+  const SHIFT_TYPE_COLORS = {
+    morning: 'bg-blue-100 text-blue-800 border-blue-200',
+    afternoon: 'bg-orange-100 text-orange-800 border-orange-200',
+    night: 'bg-purple-100 text-purple-800 border-purple-200'
+  } as const;
+
+  const getShiftTypeLabel = (type: ShiftType) => {
+    switch (type) {
+      case 'morning': return t('morningShift');
+      case 'afternoon': return t('afternoonShift');
+      case 'night': return t('nightShift');
+      default: return type;
+    }
+  };
 
   // Memoized shift lookup for better performance
   const shiftsByDate = useMemo(() => {
@@ -98,14 +113,14 @@ export const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
             <CalendarIcon className="h-5 w-5" />
-            Kalendář směn
+            {t('shiftsCalendar')}
           </CardTitle>
           
           <div className="flex items-center gap-2">
             <button
               onClick={handlePreviousMonth}
               className="p-2 hover:bg-muted rounded-md transition-colors"
-              aria-label="Předchozí měsíc"
+              aria-label={t('previousMonth')}
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
@@ -114,13 +129,13 @@ export const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
               onClick={handleTodayClick}
               className="px-3 py-1 text-sm hover:bg-muted rounded-md transition-colors"
             >
-              Dnes
+              {t('today')}
             </button>
             
             <button
               onClick={handleNextMonth}
               className="p-2 hover:bg-muted rounded-md transition-colors"
-              aria-label="Následující měsíc"
+              aria-label={t('nextMonth')}
             >
               <ChevronRight className="h-4 w-4" />
             </button>
@@ -128,7 +143,7 @@ export const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
         </div>
         
         <div className="text-lg font-semibold">
-          {format(currentMonth, 'LLLL yyyy', { locale: cs })}
+          {format(currentMonth, 'LLLL yyyy', { locale: getDateLocale() })}
         </div>
       </CardHeader>
       
@@ -139,20 +154,20 @@ export const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
           onSelect={onSelectDate}
           modifiers={modifiers}
           modifiersStyles={modifiersStyles}
-          locale={cs}
+          locale={getDateLocale()}
           className="w-full"
         />
         
         {/* Legend */}
         <div className="mt-4 flex flex-wrap gap-2">
-          <div className="text-sm text-muted-foreground">Legenda:</div>
-          {Object.entries(SHIFT_TYPE_LABELS).map(([type, label]) => (
+          <div className="text-sm text-muted-foreground">{t('shiftTypesLegend')}:</div>
+          {Object.entries(SHIFT_TYPE_COLORS).map(([type, colorClass]) => (
             <Badge 
               key={type}
               variant="secondary" 
-              className={`text-xs ${SHIFT_TYPE_COLORS[type as ShiftType]}`}
+              className={`text-xs ${colorClass}`}
             >
-              {label}
+              {getShiftTypeLabel(type as ShiftType)}
             </Badge>
           ))}
         </div>
@@ -161,17 +176,17 @@ export const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
         {selectedDate && (
           <div className="mt-4 p-3 bg-muted rounded-lg">
             <div className="font-medium">
-              {format(selectedDate, 'EEEE, dd. MMMM yyyy', { locale: cs })}
+              {format(selectedDate, 'EEEE, dd. MMMM yyyy', { locale: getDateLocale() })}
             </div>
             {currentShift ? (
               <div className="mt-2 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Badge className={SHIFT_TYPE_COLORS[currentShift.type as ShiftType]}>
-                    {SHIFT_TYPE_LABELS[currentShift.type as ShiftType]}
+                    {getShiftTypeLabel(currentShift.type as ShiftType)}
                   </Badge>
                   {currentShift.notes && (
                     <span className="text-sm text-muted-foreground">
-                      Poznámka: {currentShift.notes.substring(0, 50)}
+                      {t('notes')}: {currentShift.notes.substring(0, 50)}
                       {currentShift.notes.length > 50 ? '...' : ''}
                     </span>
                   )}
@@ -181,13 +196,13 @@ export const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
                     onClick={onOpenNoteDialog}
                     className="text-sm text-primary hover:underline"
                   >
-                    Upravit poznámku
+                    {t('editShift')}
                   </button>
                 )}
               </div>
             ) : (
               <div className="mt-2 text-sm text-muted-foreground">
-                Žádná směna pro tento den
+                {t('noShiftsForThisDay')}
               </div>
             )}
           </div>

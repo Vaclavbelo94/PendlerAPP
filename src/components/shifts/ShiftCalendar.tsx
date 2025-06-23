@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { Shift, ShiftType } from "./types";
-import { cs } from "date-fns/locale";
+import { cs, de, pl } from "date-fns/locale";
 import { dateFromDBString } from "./utils/dateUtils";
 import { useTranslation } from 'react-i18next';
 
@@ -21,7 +21,17 @@ export const ShiftCalendar = ({
   onUpdateShift,
   onDeleteShift
 }: ShiftCalendarProps) => {
-  const { t } = useTranslation('shifts');
+  const { t, i18n } = useTranslation('shifts');
+
+  // Get appropriate date-fns locale
+  const getDateLocale = () => {
+    switch (i18n.language) {
+      case 'de': return de;
+      case 'pl': return pl;
+      case 'cs':
+      default: return cs;
+    }
+  };
 
   const getCalendarModifiers = () => {
     if (!shifts.length) return {};
@@ -60,7 +70,7 @@ export const ShiftCalendar = ({
         selected={selectedDate}
         onSelect={onSelectDate}
         className="p-3 pointer-events-auto"
-        locale={cs}
+        locale={getDateLocale()}
         showOutsideDays
         modifiers={getCalendarModifiers()}
         modifiersStyles={getCalendarModifiersStyles()}
