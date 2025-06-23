@@ -20,13 +20,13 @@ const Sidebar = ({
   if (isLandscapeSheet || isMobile) {
     return (
       <MobileSidebar 
-        closeSidebar={closeSidebar!} 
+        closeSidebar={closeSidebar || (() => {})} 
         variant={mobileVariant}
       />
     );
   }
 
-  return <ModernSidebar closeSidebar={closeSidebar} />;
+  return <ModernSidebar />;
 };
 
 export default Sidebar;

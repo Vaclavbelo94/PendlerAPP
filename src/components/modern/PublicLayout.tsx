@@ -1,21 +1,21 @@
 
 import React from 'react';
-import { UnifiedNavbar } from '@/components/layouts/UnifiedNavbar';
-import { ModernFooter } from './ModernFooter';
-import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
+import { Outlet } from 'react-router-dom';
+import UnifiedNavbar from '@/components/layouts/UnifiedNavbar';
+import Footer from '@/components/layouts/Footer';
 
 interface PublicLayoutProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 export const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
   return (
-    <div className="min-h-screen flex flex-col bg-background w-full">
-      <UnifiedNavbar rightContent={<NavbarRightContent />} />
+    <div className="min-h-screen flex flex-col">
+      <UnifiedNavbar />
       <main className="flex-1">
-        {children}
+        {children || <Outlet />}
       </main>
-      <ModernFooter />
+      <Footer />
     </div>
   );
 };

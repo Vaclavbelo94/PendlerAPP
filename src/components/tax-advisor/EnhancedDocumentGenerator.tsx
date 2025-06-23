@@ -327,10 +327,7 @@ const EnhancedDocumentGenerator = () => {
         </div>
       </div>
 
-      <DocumentExamplesDialog 
-        open={showExamplesDialog}
-        onOpenChange={setShowExamplesDialog}
-      />
+      <DocumentExamplesDialog />
     </div>
   );
 };
