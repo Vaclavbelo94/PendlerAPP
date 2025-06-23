@@ -42,7 +42,16 @@
     "yearlyResults": "Wyniki roczne",
     "takeHome": "Do wypłaty",
     "effectiveTaxRate": "Efektywna stawka podatkowa",
-    "marginalTaxRate": "Krańcowa stawka podatkowa"
+    "marginalTaxRate": "Krańcowa stawka podatkowa",
+    "error": "Błąd",
+    "completeCalculationFirst": "Proszę najpierw ukończyć obliczenia",
+    "generatedWith": "Wygenerowano z",
+    "estimatedSaving": "Szacowane oszczędności",
+    "exportSuccess": "Eksport PDF zakończony powodzeniem",
+    "documentDownloaded": "Dokument został pobrany",
+    "exportError": "Błąd eksportu",
+    "failedToGenerate": "Nie udało się wygenerować dokumentu PDF",
+    "taxWizard": "Asystent_Podatkowy"
   },
   "tips": {
     "title": "Porady podatkowe",

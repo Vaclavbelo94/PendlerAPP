@@ -47,5 +47,7 @@
   "guide": "Leitfaden",
   "taxReturnGuide": "Steuererklärung Leitfaden",
   "basicCalculator": "Grundrechner",
-  "quickTaxCalculations": "Schnelle Steuerberechnungen"
+  "quickTaxCalculations": "Schnelle Steuerberechnungen",
+  "step": "Schritt",
+  "of": "von"
 }

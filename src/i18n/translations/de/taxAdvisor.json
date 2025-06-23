@@ -42,7 +42,16 @@
     "yearlyResults": "Jährliche Ergebnisse",
     "takeHome": "Auszahlung",
     "effectiveTaxRate": "Effektiver Steuersatz",
-    "marginalTaxRate": "Grenzsteuersatz"
+    "marginalTaxRate": "Grenzsteuersatz",
+    "error": "Fehler",
+    "completeCalculationFirst": "Bitte vervollständigen Sie zuerst die Berechnung",
+    "generatedWith": "Erstellt mit",
+    "estimatedSaving": "Geschätzte Ersparnis",
+    "exportSuccess": "PDF Export erfolgreich",
+    "documentDownloaded": "Dokument wurde heruntergeladen",
+    "exportError": "Fehler beim Export",
+    "failedToGenerate": "PDF-Dokument konnte nicht erstellt werden",
+    "taxWizard": "Steuer_Assistent"
   },
   "tips": {
     "title": "Steuertipps",
@@ -57,7 +66,7 @@
     "steps": {
       "personal": "Persönliche Daten",
       "employment": "Beschäftigung",
-      "reisepauschale": "Reisepauschale",
+      "reisepauschale": "Entfernungspauschale",
       "deductions": "Abzüge",
       "results": "Ergebnisse"
     },
@@ -81,7 +90,7 @@
       "importFromShifts": "Aus Schichten importieren"
     },
     "reisepauschale": {
-      "title": "Reisepauschale",
+      "title": "Entfernungspauschale",
       "transportType": "Verkehrsmittel",
       "car": "Auto",
       "publicTransport": "Öffentliche Verkehrsmittel",
@@ -115,7 +124,7 @@
       "annualBenefit": "Jährlicher Nutzen",
       "exportPdf": "PDF exportieren",
       "breakdown": "Aufschlüsselung",
-      "reisepauschaleAmount": "Reisepauschale",
+      "reisepauschaleAmount": "Entfernungspauschale",
       "additionalDeductions": "Zusätzliche Abzüge",
       "taxSavingEstimate": "Geschätzte Steuerersparnis"
     }

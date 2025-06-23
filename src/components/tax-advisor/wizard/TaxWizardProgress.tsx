@@ -3,6 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 interface TaxWizardProgressProps {
   currentStep: number;
@@ -15,6 +16,8 @@ const TaxWizardProgress: React.FC<TaxWizardProgressProps> = ({
   totalSteps,
   stepLabels
 }) => {
+  const { t } = useTranslation('common');
+  
   return (
     <div className="mb-8">
       {/* Progress bar */}
@@ -75,7 +78,7 @@ const TaxWizardProgress: React.FC<TaxWizardProgressProps> = ({
       {/* Step counter */}
       <div className="text-center">
         <span className="text-sm text-muted-foreground">
-          Krok {currentStep} z {totalSteps}
+          {t('step')} {currentStep} {t('of')} {totalSteps}
         </span>
       </div>
     </div>

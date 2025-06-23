@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -7,6 +8,7 @@ import { useTaxCalculator } from './hooks/useTaxCalculator';
 import { TaxWizardData, PersonalInfo, EmploymentInfo, ReisepauschaleInfo, AdditionalDeductions } from './types';
 import { generateModernTaxDocument } from '@/utils/pdf/modern/ModernTaxPDFGenerator';
 import { useToast } from '@/hooks/use-toast';
+import { useTranslation } from 'react-i18next';
 
 // Import kroků
 import PersonalInfoStep from './steps/PersonalInfoStep';
@@ -18,6 +20,7 @@ import TaxWizardProgress from './TaxWizardProgress';
 
 const TaxWizardCarousel: React.FC = () => {
   const { toast } = useToast();
+  const { t } = useTranslation('taxAdvisor');
   const { result, calculateTax } = useTaxCalculator();
   
   const [currentStep, setCurrentStep] = useState(1);
@@ -57,7 +60,13 @@ const TaxWizardCarousel: React.FC = () => {
   });
 
   const steps = ['personal', 'employment', 'reisepauschale', 'deductions', 'results'];
-  const stepLabels = ['Osobní údaje', 'Zaměstnání', 'Cestovní náhrady', 'Odpočty', 'Výsledky'];
+  const stepLabels = [
+    t('wizard.steps.personal'),
+    t('wizard.steps.employment'),
+    t('wizard.steps.reisepauschale'),
+    t('wizard.steps.deductions'),
+    t('wizard.steps.results')
+  ];
 
   const { containerRef } = useSwipeNavigation({
     items: steps,
@@ -125,8 +134,8 @@ const TaxWizardCarousel: React.FC = () => {
   const handleExportPDF = async () => {
     if (!result) {
       toast({
-        title: "Chyba",
-        description: "Nejdříve dokončete výpočet",
+        title: t('results.error'),
+        description: t('results.completeCalculationFirst'),
         variant: "destructive",
       });
       return;
@@ -149,28 +158,28 @@ const TaxWizardCarousel: React.FC = () => {
         includeCommuteExpenses: true,
         includeSecondHome: wizardData.reisepauschale.hasSecondHome,
         includeWorkClothes: wizardData.deductions.workClothes,
-        additionalNotes: `Výpočet vygenerován pomocí PendlerApp Wizard. Celkové odpočty: ${result.totalDeductions.toFixed(2)}€, odhadovaná úspora: ${result.estimatedTaxSaving.toFixed(2)}€`
+        additionalNotes: `${t('results.generatedWith')} PendlerApp Wizard. ${t('results.totalDeductions')}: ${result.totalDeductions.toFixed(2)}€, ${t('results.estimatedSaving')}: ${result.estimatedTaxSaving.toFixed(2)}€`
       };
 
       const blob = await generateModernTaxDocument(documentData);
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `PendlerApp_Danovy_Wizard_${wizardData.personalInfo.lastName}_${new Date().getFullYear()}.pdf`;
+      link.download = `PendlerApp_${t('results.taxWizard')}_${wizardData.personalInfo.lastName}_${new Date().getFullYear()}.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
 
       toast({
-        title: "PDF Export úspěšný",
-        description: "Dokument byl stažen do vašeho zařízení",
+        title: t('results.exportSuccess'),
+        description: t('results.documentDownloaded'),
       });
     } catch (error) {
       console.error('Chyba při exportu PDF:', error);
       toast({
-        title: "Chyba při exportu",
-        description: "Nepodařilo se vygenerovat PDF dokument",
+        title: t('results.exportError'),
+        description: t('results.failedToGenerate'),
         variant: "destructive",
       });
     }
@@ -251,7 +260,7 @@ const TaxWizardCarousel: React.FC = () => {
           className="flex items-center gap-2"
         >
           <ChevronLeft className="h-4 w-4" />
-          Zpět
+          {t('common:back')}
         </Button>
 
         {currentStep < 5 ? (
@@ -260,7 +269,7 @@ const TaxWizardCarousel: React.FC = () => {
             disabled={!canGoNext()}
             className="flex items-center gap-2"
           >
-            Další
+            {t('common:next')}
             <ChevronRight className="h-4 w-4" />
           </Button>
         ) : (
@@ -269,7 +278,7 @@ const TaxWizardCarousel: React.FC = () => {
             disabled={!result}
             className="flex items-center gap-2"
           >
-            Dokončit
+            {t('wizard.results.exportPdf')}
           </Button>
         )}
       </div>

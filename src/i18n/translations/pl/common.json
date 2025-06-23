@@ -47,5 +47,7 @@
   "guide": "Przewodnik",
   "taxReturnGuide": "Przewodnik po zeznaniu podatkowym",
   "basicCalculator": "Podstawowy kalkulator",
-  "quickTaxCalculations": "Szybkie obliczenia podatkowe"
+  "quickTaxCalculations": "Szybkie obliczenia podatkowe",
+  "step": "Krok",
+  "of": "z"
 }

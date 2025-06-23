@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { User, Mail, MapPin, FileText, Calendar } from 'lucide-react';
 import { PersonalInfo } from '../types';
+import { useTranslation } from 'react-i18next';
 
 interface PersonalInfoStepProps {
   data: PersonalInfo;
@@ -12,6 +13,8 @@ interface PersonalInfoStepProps {
 }
 
 const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ data, onChange }) => {
+  const { t } = useTranslation('taxAdvisor');
+  
   const handleChange = (field: keyof PersonalInfo, value: string) => {
     onChange({ ...data, [field]: value });
   };
@@ -21,26 +24,26 @@ const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ data, onChange }) =
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <User className="h-5 w-5" />
-          Osobní údaje
+          {t('wizard.personalInfo.title')}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="firstName">Jméno</Label>
+            <Label htmlFor="firstName">{t('wizard.personalInfo.firstName')}</Label>
             <Input
               id="firstName"
-              placeholder="Vaše jméno"
+              placeholder={t('wizard.personalInfo.firstName')}
               value={data.firstName}
               onChange={(e) => handleChange('firstName', e.target.value)}
             />
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="lastName">Příjmení</Label>
+            <Label htmlFor="lastName">{t('wizard.personalInfo.lastName')}</Label>
             <Input
               id="lastName"
-              placeholder="Vaše příjmení"
+              placeholder={t('wizard.personalInfo.lastName')}
               value={data.lastName}
               onChange={(e) => handleChange('lastName', e.target.value)}
             />
@@ -50,11 +53,11 @@ const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ data, onChange }) =
         <div className="space-y-2">
           <Label htmlFor="address" className="flex items-center gap-2">
             <MapPin className="h-4 w-4" />
-            Adresa trvalého bydliště
+            {t('wizard.personalInfo.address')}
           </Label>
           <Input
             id="address"
-            placeholder="Ulice, město, PSČ"
+            placeholder={t('wizard.personalInfo.address')}
             value={data.address}
             onChange={(e) => handleChange('address', e.target.value)}
           />
@@ -63,7 +66,7 @@ const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ data, onChange }) =
         <div className="space-y-2">
           <Label htmlFor="taxId" className="flex items-center gap-2">
             <FileText className="h-4 w-4" />
-            Daňové identifikační číslo
+            {t('wizard.personalInfo.taxId')}
           </Label>
           <Input
             id="taxId"
@@ -77,12 +80,12 @@ const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ data, onChange }) =
           <div className="space-y-2">
             <Label htmlFor="email" className="flex items-center gap-2">
               <Mail className="h-4 w-4" />
-              Email
+              {t('wizard.personalInfo.email')}
             </Label>
             <Input
               id="email"
               type="email"
-              placeholder="vas@email.cz"
+              placeholder={t('wizard.personalInfo.email')}
               value={data.email}
               onChange={(e) => handleChange('email', e.target.value)}
             />
@@ -91,7 +94,7 @@ const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ data, onChange }) =
           <div className="space-y-2">
             <Label htmlFor="dateOfBirth" className="flex items-center gap-2">
               <Calendar className="h-4 w-4" />
-              Datum narození
+              {t('wizard.personalInfo.dateOfBirth')}
             </Label>
             <Input
               id="dateOfBirth"
