@@ -1,7 +1,8 @@
 
 import React from 'react';
-import { Button } from "@/components/ui/button";
-import { RotateCcw, Save } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Save, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 interface SettingsActionsProps {
@@ -10,20 +11,33 @@ interface SettingsActionsProps {
   loading: boolean;
 }
 
-const SettingsActions: React.FC<SettingsActionsProps> = ({ onSave, onReset, loading }) => {
+const SettingsActions = ({ onSave, onReset, loading }: SettingsActionsProps) => {
   const { t } = useTranslation('settings');
 
   return (
-    <div className="flex gap-3 pt-4">
-      <Button onClick={onSave} disabled={loading} className="gap-2">
-        <Save className="h-4 w-4" />
-        {loading ? t('saving') : t('saveSettings')}
-      </Button>
-      <Button onClick={onReset} variant="outline" className="gap-2">
-        <RotateCcw className="h-4 w-4" />
-        {t('reset')}
-      </Button>
-    </div>
+    <Card>
+      <CardContent className="pt-6">
+        <div className="flex flex-col sm:flex-row gap-4 justify-end">
+          <Button 
+            variant="outline" 
+            onClick={onReset}
+            disabled={loading}
+            className="flex items-center gap-2"
+          >
+            <RotateCcw className="h-4 w-4" />
+            {t('resetToDefaults')}
+          </Button>
+          <Button 
+            onClick={onSave}
+            disabled={loading}
+            className="flex items-center gap-2"
+          >
+            <Save className="h-4 w-4" />
+            {loading ? t('save') : t('saveSettings')}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 

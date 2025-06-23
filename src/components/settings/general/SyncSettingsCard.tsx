@@ -1,32 +1,37 @@
 
 import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { RefreshCw, Cloud } from 'lucide-react';
-import { SyncSettings } from '@/hooks/useSyncSettings';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Cloud, RefreshCw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 interface SyncSettingsCardProps {
-  syncSettings: SyncSettings;
-  updateSyncSettings: (settings: Partial<SyncSettings>) => Promise<boolean>;
+  syncSettings: any;
+  updateSyncSettings: (settings: any) => void;
   syncLoading: boolean;
   formatLastSyncTime: (time?: Date | null) => string;
 }
 
-const SyncSettingsCard: React.FC<SyncSettingsCardProps> = ({
+const SyncSettingsCard = ({
   syncSettings,
   updateSyncSettings,
   syncLoading,
   formatLastSyncTime
-}) => {
+}: SyncSettingsCardProps) => {
   const { t } = useTranslation('settings');
+  
+  const handleSyncSettingChange = (key: string, value: boolean) => {
+    updateSyncSettings({
+      ...syncSettings,
+      [key]: value
+    });
+  };
 
-  const handleManualSync = () => {
-    // Trigger manual sync
-    console.log('Manual sync triggered');
+  const handleForceSync = () => {
+    // Force sync implementation
+    console.log('Force sync triggered');
   };
 
   return (
@@ -34,62 +39,71 @@ const SyncSettingsCard: React.FC<SyncSettingsCardProps> = ({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Cloud className="h-5 w-5" />
-          {t('dataSync')}
+          {t('synchronization')}
         </CardTitle>
         <CardDescription>
-          {t('syncSettingsBetweenDevices')}
+          {t('dataSyncSettings')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label htmlFor="backgroundSync">{t('backgroundSync')}</Label>
+            <Label>{t('cloudSync')}</Label>
             <p className="text-sm text-muted-foreground">
-              {t('autoSyncWhenInactive')}
+              {t('syncDataWithCloud')}
             </p>
           </div>
-          <Switch
-            id="backgroundSync"
-            checked={syncSettings.enableBackgroundSync}
-            onCheckedChange={(checked) => updateSyncSettings({ enableBackgroundSync: checked })}
+          <Switch 
+            checked={syncSettings?.cloudSync || false}
+            onCheckedChange={(checked) => handleSyncSettingChange('cloudSync', checked)}
+            disabled={syncLoading}
           />
         </div>
 
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label htmlFor="syncNotifications">{t('syncNotifications')}</Label>
+            <Label>{t('autoSync')}</Label>
             <p className="text-sm text-muted-foreground">
-              {t('showSyncStatusNotifications')}
+              {t('syncEvery15Minutes')}
             </p>
           </div>
-          <Switch
-            id="syncNotifications"
-            checked={syncSettings.showSyncNotifications}
-            onCheckedChange={(checked) => updateSyncSettings({ showSyncNotifications: checked })}
+          <Switch 
+            checked={syncSettings?.autoSync || false}
+            onCheckedChange={(checked) => handleSyncSettingChange('autoSync', checked)}
+            disabled={syncLoading}
           />
         </div>
 
-        <div className="flex items-center justify-between p-4 border rounded-lg">
-          <div>
-            <p className="font-medium">{t('lastSync')}</p>
+        <div className="flex items-center justify-between">
+          <div className="space-y-0.5">
+            <Label>{t('offlineMode')}</Label>
             <p className="text-sm text-muted-foreground">
-              {formatLastSyncTime(syncSettings.lastSyncTime)}
+              {t('allowWorkingOffline')}
             </p>
-            <div className="flex items-center gap-2 mt-1">
-              <Badge variant="secondary">
-                {syncSettings.enableBackgroundSync ? t('active') : t('inactive')}
-              </Badge>
-            </div>
           </div>
-          <Button 
-            onClick={handleManualSync} 
+          <Switch 
+            checked={syncSettings?.offlineMode || false}
+            onCheckedChange={(checked) => handleSyncSettingChange('offlineMode', checked)}
             disabled={syncLoading}
-            size="sm"
-            className="gap-2"
-          >
-            <RefreshCw className={`h-4 w-4 ${syncLoading ? 'animate-spin' : ''}`} />
-            {syncLoading ? t('syncing') : t('synchronize')}
-          </Button>
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label>{t('syncStatus')}</Label>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">
+              {t('lastSync')}: {formatLastSyncTime(syncSettings?.lastSyncTime)}
+            </span>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={handleForceSync}
+              disabled={syncLoading}
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${syncLoading ? 'animate-spin' : ''}`} />
+              {syncLoading ? t('syncNow') : t('forceSync')}
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>

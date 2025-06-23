@@ -22,18 +22,18 @@ const SystemSettings = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Shield className="h-5 w-5" />
-            {t('security') || 'Zabezpečení'}
+            {t('security')}
           </CardTitle>
           <CardDescription>
-            {t('securityAndPrivacySettings') || 'Nastavení bezpečnosti a soukromí'}
+            {t('securityAndPrivacySettings')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label>{t('twoFactorAuth') || 'Dvou-faktorové ověření'}</Label>
+              <Label>{t('twoFactorAuth')}</Label>
               <p className="text-sm text-muted-foreground">
-                {t('additionalAccountProtection') || 'Dodatečná ochrana vašeho účtu'}
+                {t('additionalAccountProtection')}
               </p>
             </div>
             <Switch />
@@ -41,9 +41,9 @@ const SystemSettings = () => {
           
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label>{t('autoLogout') || 'Automatické odhlášení'}</Label>
+              <Label>{t('autoLogout')}</Label>
               <p className="text-sm text-muted-foreground">
-                {t('logoutAfter30MinInactivity') || 'Odhlásit po 30 minutách nečinnosti'}
+                {t('logoutAfter30MinInactivity')}
               </p>
             </div>
             <Switch defaultChecked />
@@ -56,18 +56,18 @@ const SystemSettings = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Zap className="h-5 w-5" />
-            {t('appPerformance') || 'Výkon aplikace'}
+            {t('appPerformance')}
           </CardTitle>
           <CardDescription>
-            {t('speedAndPerformanceOptimization') || 'Optimalizace rychlosti a výkonu'}
+            {t('speedAndPerformanceOptimization')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label>{t('hardwareAcceleration') || 'Hardwarová akcelerace'}</Label>
+              <Label>{t('hardwareAcceleration')}</Label>
               <p className="text-sm text-muted-foreground">
-                {t('useGpuForBetterPerformance') || 'Využít GPU pro lepší výkon'}
+                {t('useGpuForBetterPerformance')}
               </p>
             </div>
             <Switch defaultChecked />
@@ -75,16 +75,16 @@ const SystemSettings = () => {
           
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label>{t('preloadPages') || 'Předem načítat stránky'}</Label>
+              <Label>{t('preloadPages')}</Label>
               <p className="text-sm text-muted-foreground">
-                {t('fasterLoadingDuringNavigation') || 'Rychlejší načítání při navigaci'}
+                {t('fasterLoadingDuringNavigation')}
               </p>
             </div>
             <Switch defaultChecked />
           </div>
           
           <Button variant="outline" className="w-full sm:w-auto">
-            {t('clearCache') || 'Vymazat cache'}
+            {t('clearCache')}
           </Button>
         </CardContent>
       </Card>
@@ -94,22 +94,22 @@ const SystemSettings = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Database className="h-5 w-5" />
-            {t('dataManagement') || 'Správa dat'}
+            {t('dataManagement')}
           </CardTitle>
           <CardDescription>
-            {t('exportImportBackupData') || 'Export, import a záloha dat'}
+            {t('exportImportBackupData')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-wrap gap-2">
             <Button variant="outline">
-              {t('exportData') || 'Exportovat data'}
+              {t('exportData')}
             </Button>
             <Button variant="outline">
-              {t('importData') || 'Importovat data'}
+              {t('importData')}
             </Button>
             <Button variant="outline">
-              {t('createBackup') || 'Vytvořit zálohu'}
+              {t('createBackup')}
             </Button>
           </div>
         </CardContent>

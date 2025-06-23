@@ -1,9 +1,9 @@
 
 import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Settings } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -18,7 +18,7 @@ interface BasicSettingsCardProps {
   setDefaultView: (value: string) => void;
 }
 
-const BasicSettingsCard: React.FC<BasicSettingsCardProps> = ({
+const BasicSettingsCard = ({
   autoSave,
   setAutoSave,
   compactMode,
@@ -27,7 +27,7 @@ const BasicSettingsCard: React.FC<BasicSettingsCardProps> = ({
   setAutoRefresh,
   defaultView,
   setDefaultView
-}) => {
+}: BasicSettingsCardProps) => {
   const { t } = useTranslation('settings');
 
   return (
@@ -38,65 +38,55 @@ const BasicSettingsCard: React.FC<BasicSettingsCardProps> = ({
           {t('basicSettings')}
         </CardTitle>
         <CardDescription>
-          {t('generalAppSettings')}
+          {t('applicationBehavior')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label htmlFor="autoSave">{t('autoSave')}</Label>
+            <Label>{t('autoSave')}</Label>
             <p className="text-sm text-muted-foreground">
-              {t('autoSaveDesc')}
+              {t('saveChangesAutomatically')}
             </p>
           </div>
-          <Switch
-            id="autoSave"
-            checked={autoSave}
-            onCheckedChange={setAutoSave}
-          />
+          <Switch checked={autoSave} onCheckedChange={setAutoSave} />
         </div>
 
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label htmlFor="compactMode">{t('compactMode')}</Label>
+            <Label>{t('compactMode')}</Label>
             <p className="text-sm text-muted-foreground">
-              {t('compactModeDesc')}
+              {t('showMoreContentOnScreen')}
             </p>
           </div>
-          <Switch
-            id="compactMode"
-            checked={compactMode}
-            onCheckedChange={setCompactMode}
-          />
+          <Switch checked={compactMode} onCheckedChange={setCompactMode} />
         </div>
 
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label htmlFor="autoRefresh">{t('autoRefresh')}</Label>
+            <Label>{t('autoRefresh')}</Label>
             <p className="text-sm text-muted-foreground">
-              {t('autoRefreshDesc')}
+              {t('refreshDataEvery5Minutes')}
             </p>
           </div>
-          <Switch
-            id="autoRefresh"
-            checked={autoRefresh}
-            onCheckedChange={setAutoRefresh}
-          />
+          <Switch checked={autoRefresh} onCheckedChange={setAutoRefresh} />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="defaultView">{t('defaultView')}</Label>
+          <Label>{t('defaultView')}</Label>
           <Select value={defaultView} onValueChange={setDefaultView}>
-            <SelectTrigger>
-              <SelectValue placeholder={t('selectDefaultPage')} />
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder={t('selectDefaultPageAfterLogin')} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="dashboard">{t('dashboard')}</SelectItem>
               <SelectItem value="shifts">{t('shifts')}</SelectItem>
-              <SelectItem value="vehicles">{t('vehicles')}</SelectItem>
-              <SelectItem value="vocabulary">{t('vocabulary')}</SelectItem>
+              <SelectItem value="profile">{t('profile')}</SelectItem>
             </SelectContent>
           </Select>
+          <p className="text-sm text-muted-foreground">
+            {t('selectDefaultPageAfterLogin')}
+          </p>
         </div>
       </CardContent>
     </Card>
