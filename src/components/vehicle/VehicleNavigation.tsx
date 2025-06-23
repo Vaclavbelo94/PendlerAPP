@@ -30,7 +30,7 @@ export const VehicleNavigation: React.FC<VehicleNavigationProps> = ({
       id: 'fuel',
       icon: FuelIcon,
       label: t('vehicle:fuel'),
-      description: t('vehicle:fuel.fuelConsumption')
+      description: t('vehicle:fuelConsumption')
     },
     {
       id: 'service',
