@@ -1,5 +1,4 @@
 
-
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -9,7 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -18,7 +17,7 @@ const Login = () => {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const navigate = useNavigate();
   const { signIn, signInWithGoogle, user, isAdmin } = useAuth();
-  const { t } = useLanguage();
+  const { t } = useTranslation('auth');
   
   useEffect(() => {
     // Redirect user based on their role if already logged in

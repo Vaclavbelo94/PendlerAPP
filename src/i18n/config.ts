@@ -17,6 +17,7 @@ import csForms from './translations/cs/forms.json';
 import csUI from './translations/cs/ui.json';
 import csProfile from './translations/cs/profile.json';
 import csSettings from './translations/cs/settings.json';
+import csAuth from './translations/cs/auth.json';
 
 import deCommon from './translations/de/common.json';
 import deNavigation from './translations/de/navigation.json';
@@ -51,6 +52,7 @@ export const resources = {
     ui: csUI,
     profile: csProfile,
     settings: csSettings,
+    auth: csAuth,
   },
   de: {
     common: deCommon,
@@ -92,7 +94,7 @@ i18n
     },
 
     defaultNS: 'common',
-    ns: ['common', 'navigation', 'dashboard', 'laws', 'shifts', 'travel', 'translator', 'taxAdvisor', 'vehicle', 'forms', 'ui', 'profile', 'settings'],
+    ns: ['common', 'navigation', 'dashboard', 'laws', 'shifts', 'travel', 'translator', 'taxAdvisor', 'vehicle', 'forms', 'ui', 'profile', 'settings', 'auth'],
   });
 
 export default i18n;

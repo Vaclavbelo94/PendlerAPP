@@ -12,7 +12,7 @@ import PromoCodeField from "@/components/auth/PromoCodeField";
 import { cleanupAuthState, checkLocalStorageSpace } from "@/utils/authUtils";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -26,7 +26,7 @@ const Register = () => {
   const [storageWarning, setStorageWarning] = useState(false);
   const navigate = useNavigate();
   const { signUp, signInWithGoogle, user } = useAuth();
-  const { t, language } = useLanguage();
+  const { t, i18n } = useTranslation('auth');
   
   useEffect(() => {
     // Redirect user to homepage if already logged in
@@ -53,7 +53,7 @@ const Register = () => {
   };
 
   const getEmailPlaceholder = () => {
-    switch (language) {
+    switch (i18n.language) {
       case 'de': return 'ihre@email.de';
       case 'pl': return 'twoj@email.pl';
       default: return 'vas@email.cz';
