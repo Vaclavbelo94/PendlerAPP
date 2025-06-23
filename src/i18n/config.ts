@@ -26,6 +26,7 @@ import deLaws from './translations/de/laws.json';
 import deShifts from './translations/de/shifts.json';
 import deTravel from './translations/de/travel.json';
 import deTranslator from './translations/de/translator.json';
+import deTaxAdvisor from './translations/de/taxAdvisor.json';
 import deProfile from './translations/de/profile.json';
 import deSettings from './translations/de/settings.json';
 
@@ -36,6 +37,7 @@ import plLaws from './translations/pl/laws.json';
 import plShifts from './translations/pl/shifts.json';
 import plTravel from './translations/pl/travel.json';
 import plTranslator from './translations/pl/translator.json';
+import plTaxAdvisor from './translations/pl/taxAdvisor.json';
 import plProfile from './translations/pl/profile.json';
 import plSettings from './translations/pl/settings.json';
 
@@ -64,6 +66,7 @@ export const resources = {
     shifts: deShifts,
     travel: deTravel,
     translator: deTranslator,
+    taxAdvisor: deTaxAdvisor,
     profile: deProfile,
     settings: deSettings,
   },
@@ -75,6 +78,7 @@ export const resources = {
     shifts: plShifts,
     travel: plTravel,
     translator: plTranslator,
+    taxAdvisor: plTaxAdvisor,
     profile: plProfile,
     settings: plSettings,
   },

@@ -1,0 +1,54 @@
+
+{
+  "title": "Doradca podatkowy",
+  "calculator": "Kalkulator",
+  "taxCalculation": "Obliczenie podatku",
+  "grossSalary": "Wynagrodzenie brutto",
+  "netSalary": "Wynagrodzenie netto",
+  "taxClass": "Klasa podatkowa",
+  "monthlyIncome": "Miesięczny dochód",
+  "yearlyIncome": "Roczny dochód",
+  "incomeTax": "Podatek dochodowy",
+  "churchTax": "Podatek kościelny",
+  "solidarityTax": "Podatek solidarnościowy",
+  "socialInsurance": "Ubezpieczenie społeczne",
+  "healthInsurance": "Ubezpieczenie zdrowotne",
+  "pensionInsurance": "Ubezpieczenie emerytalne",
+  "unemploymentInsurance": "Ubezpieczenie od bezrobocia",
+  "longTermCareInsurance": "Ubezpieczenie pielęgnacyjne",
+  "totalDeductions": "Całkowite potrącenia",
+  "taxClasses": {
+    "class1": "Klasa I - Osoby stanu wolnego",
+    "class2": "Klasa II - Samotni rodzice",
+    "class3": "Klasa III - Małżeństwa (korzystniejsza)",
+    "class4": "Klasa IV - Małżeństwa (standardowa)",
+    "class5": "Klasa V - Małżeństwa (mniej korzystna)",
+    "class6": "Klasa VI - Dodatkowe zatrudnienie"
+  },
+  "form": {
+    "grossSalary": "Wynagrodzenie brutto (€)",
+    "taxClass": "Klasa podatkowa",
+    "hasChildren": "Mam dzieci",
+    "churchMember": "Członek kościoła",
+    "healthInsuranceRate": "Stawka ubezpieczenia zdrowotnego (%)",
+    "calculate": "Oblicz",
+    "reset": "Wyczyść",
+    "required": "Pole wymagane",
+    "invalidAmount": "Nieprawidłowa kwota"
+  },
+  "results": {
+    "breakdown": "Zestawienie potrąceń",
+    "monthlyResults": "Wyniki miesięczne",
+    "yearlyResults": "Wyniki roczne",
+    "takeHome": "Do wypłaty",
+    "effectiveTaxRate": "Efektywna stawka podatkowa",
+    "marginalTaxRate": "Krańcowa stawka podatkowa"
+  },
+  "tips": {
+    "title": "Porady podatkowe",
+    "tip1": "Użyj klasy podatkowej III/V dla małżeństw z różnymi dochodami",
+    "tip2": "Nie zapomnij o kosztach dojazdu do pracy",
+    "tip3": "Dodatkowe dochody do 520€ są zwolnione z podatku",
+    "tip4": "Świadczenia pracownicze mogą zmniejszyć obciążenie podatkowe"
+  }
+}

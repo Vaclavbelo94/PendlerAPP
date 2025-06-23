@@ -1,0 +1,54 @@
+
+{
+  "title": "Steuerberater",
+  "calculator": "Rechner",
+  "taxCalculation": "Steuerberechnung",
+  "grossSalary": "Bruttogehalt",
+  "netSalary": "Nettogehalt",
+  "taxClass": "Steuerklasse",
+  "monthlyIncome": "Monatseinkommen",
+  "yearlyIncome": "Jahreseinkommen",
+  "incomeTax": "Einkommensteuer",
+  "churchTax": "Kirchensteuer",
+  "solidarityTax": "Solidaritätszuschlag",
+  "socialInsurance": "Sozialversicherung",
+  "healthInsurance": "Krankenversicherung",
+  "pensionInsurance": "Rentenversicherung",
+  "unemploymentInsurance": "Arbeitslosenversicherung",
+  "longTermCareInsurance": "Pflegeversicherung",
+  "totalDeductions": "Gesamtabzüge",
+  "taxClasses": {
+    "class1": "Klasse I - Ledige",
+    "class2": "Klasse II - Alleinerziehende",
+    "class3": "Klasse III - Verheiratete (günstiger)",
+    "class4": "Klasse IV - Verheiratete (Standard)",
+    "class5": "Klasse V - Verheiratete (weniger günstig)",
+    "class6": "Klasse VI - Nebentätigkeit"
+  },
+  "form": {
+    "grossSalary": "Bruttogehalt (€)",
+    "taxClass": "Steuerklasse",
+    "hasChildren": "Ich habe Kinder",
+    "churchMember": "Kirchenmitglied",
+    "healthInsuranceRate": "Krankenversicherungssatz (%)",
+    "calculate": "Berechnen",
+    "reset": "Zurücksetzen",
+    "required": "Pflichtfeld",
+    "invalidAmount": "Ungültiger Betrag"
+  },
+  "results": {
+    "breakdown": "Aufschlüsselung der Abzüge",
+    "monthlyResults": "Monatliche Ergebnisse",
+    "yearlyResults": "Jährliche Ergebnisse",
+    "takeHome": "Auszahlung",
+    "effectiveTaxRate": "Effektiver Steuersatz",
+    "marginalTaxRate": "Grenzsteuersatz"
+  },
+  "tips": {
+    "title": "Steuertipps",
+    "tip1": "Nutzen Sie Steuerklasse III/V für Ehepartner mit unterschiedlichen Einkommen",
+    "tip2": "Vergessen Sie nicht die Pendlerpauschale",
+    "tip3": "Nebeneinkünfte bis 520€ sind steuerfrei",
+    "tip4": "Geldwerte Vorteile können die Steuerlast reduzieren"
+  }
+}
