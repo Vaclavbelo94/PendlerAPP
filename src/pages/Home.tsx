@@ -5,18 +5,18 @@ import DHLModernHero from '@/components/home/DHLModernHero';
 import Features from '@/components/home/Features';
 import ModernTestimonials from '@/components/home/ModernTestimonials';
 import CTA from '@/components/home/CTA';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 const Home = () => {
-  const { t } = useLanguage();
+  const { t } = useTranslation('dashboard');
 
   return (
     <>
       <Helmet>
-        <title>PendlerApp - {t('professionalToolsForPendlers')}</title>
+        <title>PendlerApp - {t('czechWorkersHelper')}</title>
         <meta 
           name="description" 
-          content={t('completeToolsDescription')} 
+          content={t('completeGermanySolution')} 
         />
         <meta name="keywords" content="pendler, czech, germany, austria, work abroad, tax advisor, calculator" />
       </Helmet>

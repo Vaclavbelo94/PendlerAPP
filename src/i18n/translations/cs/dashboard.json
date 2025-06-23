@@ -1,3 +1,4 @@
+
 {
   "title": "Panel",
   "welcome": "Vítejte",
@@ -161,5 +162,17 @@
   "friday": "Pátek",
   "regular": "Pravidelný",
   "overtime": "Přesčas",
-  "open": "Otevřít"
+  "open": "Otevřít",
+  "weeklyHours": "Týdenní hodiny",
+  "shiftsThisWeek": "Směny tento týden",
+  "monthlyShifts": "Měsíční směny",
+  "weeklyGoal": "Týdenní cíl",
+  "yourRecentShifts": "Vaše nedávné směny",
+  "noShiftsYet": "Zatím žádné směny",
+  "morningShift": "Ranní",
+  "afternoonShift": "Odpolední", 
+  "nightShift": "Noční",
+  "shift": "směna",
+  "practiceVocabulary": "Procvičovat slovíčka",
+  "salaryCalculator": "Kalkulačka mzdy"
 }

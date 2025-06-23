@@ -1,16 +1,21 @@
 
 {
-  "dashboard": "Přehled",
+  "home": "Domů",
+  "dashboard": "Panel",
+  "translator": "Překladač",
+  "taxAdvisor": "Daňový poradce",
   "shifts": "Směny",
-  "taxAdvisor": "Daňový poradce", 
   "vehicle": "Vozidlo",
   "travel": "Cestování",
-  "translator": "Překladač",
   "laws": "Zákony",
-  "profile": "Profil",
   "settings": "Nastavení",
-  "subscription": "Předplatné",
-  "admin": "Administrace",
+  "premium": "Premium",
+  "pricing": "Ceník",
+  "contact": "Kontakt",
+  "faq": "FAQ",
   "language": "Jazyk",
-  "vocabulary": "Slovní zásoba"
+  "profile": "Profil",
+  "logout": "Odhlásit se",
+  "login": "Přihlásit se",
+  "register": "Registrovat se"
 }

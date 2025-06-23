@@ -5,18 +5,18 @@ import { UnifiedHero } from '@/components/home/unified/UnifiedHero';
 import { UnifiedFeatures } from '@/components/home/unified/UnifiedFeatures';
 import { UnifiedStats } from '@/components/home/unified/UnifiedStats';
 import { UnifiedCTA } from '@/components/home/unified/UnifiedCTA';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 const UnifiedHomePage = () => {
-  const { t } = useLanguage();
+  const { t } = useTranslation('dashboard');
 
   return (
     <div className="min-h-screen">
       <Helmet>
-        <title>{t('pendlerHelper')} - {t('workAbroadGuide')}</title>
+        <title>{t('czechWorkersHelper')} - {t('completeGermanySolution')}</title>
         <meta 
           name="description" 
-          content={t('completeAppDescription')} 
+          content={t('completeGermanySolution')} 
         />
       </Helmet>
       

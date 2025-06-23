@@ -1,10 +1,10 @@
 
 import { Helmet } from "react-helmet";
 import ModernHero from "@/components/home/ModernHero";
-import { useLanguage } from "@/hooks/useLanguage";
+import { useTranslation } from 'react-i18next';
 
 const Index = () => {
-  const { t } = useLanguage();
+  const { t } = useTranslation('dashboard');
 
   return (
     <>

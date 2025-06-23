@@ -16,21 +16,22 @@ import {
 } from 'lucide-react';
 import { NavigationItem } from './types';
 
+// Tyto labels budou přeloženy v komponentě pomocí useTranslation
 export const navigationItems: NavigationItem[] = [
-  { label: 'Domů', href: '/', icon: Home, isPublic: true },
-  { label: 'Dashboard', href: '/dashboard', icon: BarChart3, requiresAuth: true },
-  { label: 'Překladač', href: '/translator', icon: Globe, isPublic: true },
-  { label: 'Daňový poradce', href: '/tax-advisor', icon: FileText, isPremium: true },
-  { label: 'Směny', href: '/shifts', icon: Calendar, isPremium: true },
-  { label: 'Vozidlo', href: '/vehicle', icon: Car, isPremium: true },
-  { label: 'Plánování cest', href: '/travel', icon: Map, isPremium: true },
-  { label: 'Zákony', href: '/laws', icon: Scale, isPublic: true },
-  { label: 'Nastavení', href: '/settings', icon: Settings, requiresAuth: true }
+  { label: 'navigation:home', href: '/', icon: Home, isPublic: true },
+  { label: 'navigation:dashboard', href: '/dashboard', icon: BarChart3, requiresAuth: true },
+  { label: 'navigation:translator', href: '/translator', icon: Globe, isPublic: true },
+  { label: 'navigation:taxAdvisor', href: '/tax-advisor', icon: FileText, isPremium: true },
+  { label: 'navigation:shifts', href: '/shifts', icon: Calendar, isPremium: true },
+  { label: 'navigation:vehicle', href: '/vehicle', icon: Car, isPremium: true },
+  { label: 'navigation:travel', href: '/travel', icon: Map, isPremium: true },
+  { label: 'navigation:laws', href: '/laws', icon: Scale, isPublic: true },
+  { label: 'navigation:settings', href: '/settings', icon: Settings, requiresAuth: true }
 ];
 
 export const supportItems: NavigationItem[] = [
-  { label: 'Premium', href: '/premium', icon: Crown, isPublic: true },
-  { label: 'Ceník', href: '/pricing', icon: CreditCard, isPublic: true },
-  { label: 'Kontakt', href: '/contact', icon: Contact, isPublic: true },
-  { label: 'FAQ', href: '/faq', icon: HelpCircle, isPublic: true }
+  { label: 'navigation:premium', href: '/premium', icon: Crown, isPublic: true },
+  { label: 'navigation:pricing', href: '/pricing', icon: CreditCard, isPublic: true },
+  { label: 'navigation:contact', href: '/contact', icon: Contact, isPublic: true },
+  { label: 'navigation:faq', href: '/faq', icon: HelpCircle, isPublic: true }
 ];
