@@ -6,30 +6,13 @@ import { Badge } from '@/components/ui/badge';
 import { Calendar } from '@/components/ui/calendar';
 import { ChevronLeft, ChevronRight, CalendarDays, Edit, Trash2 } from 'lucide-react';
 import { format, addMonths, subMonths, isSameDay } from 'date-fns';
-import { cs } from 'date-fns/locale';
+import { cs, de, pl } from 'date-fns/locale';
 import { motion } from 'framer-motion';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { ShiftCalendarProps, Shift, ShiftType } from '@/types/shifts';
 import { cn } from '@/lib/utils';
 import { MobileCalendarGrid } from './MobileCalendarGrid';
-
-const SHIFT_TYPE_COLORS = {
-  morning: 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300',
-  afternoon: 'bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-900/30 dark:text-amber-300',
-  night: 'bg-indigo-100 text-indigo-800 border-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-300'
-} as const;
-
-const SHIFT_TYPE_LABELS = {
-  morning: 'Ranní',
-  afternoon: 'Odpolední', 
-  night: 'Noční'
-} as const;
-
-const SHIFT_TIME_RANGES = {
-  morning: '06:00 - 14:00',
-  afternoon: '14:00 - 22:00',
-  night: '22:00 - 06:00'
-} as const;
+import { useTranslation } from 'react-i18next';
 
 const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = ({
   shifts,
@@ -42,6 +25,38 @@ const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = ({
 }) => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const isMobile = useIsMobile();
+  const { t, i18n } = useTranslation('shifts');
+
+  // Get appropriate date-fns locale
+  const getDateLocale = () => {
+    switch (i18n.language) {
+      case 'de': return de;
+      case 'pl': return pl;
+      case 'cs':
+      default: return cs;
+    }
+  };
+
+  const SHIFT_TYPE_COLORS = {
+    morning: 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300',
+    afternoon: 'bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-900/30 dark:text-amber-300',
+    night: 'bg-indigo-100 text-indigo-800 border-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-300'
+  } as const;
+
+  const getShiftTypeLabel = (type: ShiftType) => {
+    switch (type) {
+      case 'morning': return t('morningShift');
+      case 'afternoon': return t('afternoonShift');
+      case 'night': return t('nightShift');
+      default: return type;
+    }
+  };
+
+  const SHIFT_TIME_RANGES = {
+    morning: '06:00 - 14:00',
+    afternoon: '14:00 - 22:00',
+    night: '22:00 - 06:00'
+  } as const;
 
   // Memoized shift lookup for better performance
   const shiftsByDate = useMemo(() => {
@@ -131,14 +146,14 @@ const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = ({
           <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
             <CardHeader className="pb-3">
               <CardTitle className="text-lg">
-                {format(selectedDate, 'dd. MMMM yyyy', { locale: cs })}
+                {format(selectedDate, 'dd. MMMM yyyy', { locale: getDateLocale() })}
               </CardTitle>
             </CardHeader>
             <CardContent className="p-3 pt-0">
               {selectedDateShifts.length === 0 ? (
                 <div className="text-center py-6 text-muted-foreground">
                   <CalendarDays className="h-10 w-10 mx-auto mb-3 opacity-50" />
-                  <p className="text-sm">Pro tento den nejsou naplánované žádné směny</p>
+                  <p className="text-sm">{t('noShiftsPlannedForThisDay')}</p>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -151,7 +166,7 @@ const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = ({
                     >
                       <div className="flex items-center gap-2 min-w-0 flex-1">
                         <Badge className={cn("text-xs flex-shrink-0", SHIFT_TYPE_COLORS[shift.type])}>
-                          {SHIFT_TYPE_LABELS[shift.type]}
+                          {getShiftTypeLabel(shift.type)}
                         </Badge>
                         <div className="min-w-0 flex-1">
                           <p className="text-xs text-muted-foreground">
@@ -208,7 +223,7 @@ const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = ({
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-3">
               <CalendarDays className="h-6 w-6 text-primary" />
-              <span className="text-xl">Kalendář směn</span>
+              <span className="text-xl">{t('shiftsCalendar')}</span>
             </CardTitle>
             
             <div className="flex items-center gap-3">
@@ -217,7 +232,7 @@ const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = ({
                 size="sm"
                 onClick={handlePreviousMonth}
                 className="h-9 w-9 p-0"
-                aria-label="Předchozí měsíc"
+                aria-label={t('previousMonth') || 'Previous month'}
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
@@ -228,7 +243,7 @@ const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = ({
                 onClick={handleTodayClick}
                 className="px-4 py-2 text-sm font-medium"
               >
-                Dnes
+                {t('today') || 'Today'}
               </Button>
               
               <Button
@@ -236,7 +251,7 @@ const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = ({
                 size="sm"
                 onClick={handleNextMonth}
                 className="h-9 w-9 p-0"
-                aria-label="Následující měsíc"
+                aria-label={t('nextMonth') || 'Next month'}
               >
                 <ChevronRight className="h-4 w-4" />
               </Button>
@@ -244,7 +259,7 @@ const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = ({
           </div>
           
           <div className="text-2xl font-semibold text-center mt-4">
-            {format(currentMonth, 'LLLL yyyy', { locale: cs })}
+            {format(currentMonth, 'LLLL yyyy', { locale: getDateLocale() })}
           </div>
         </CardHeader>
         
@@ -256,21 +271,21 @@ const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = ({
               onSelect={onSelectDate}
               modifiers={modifiers}
               modifiersStyles={modifiersStyles}
-              locale={cs}
+              locale={getDateLocale()}
               className="w-full mx-auto"
             />
           </div>
           
           {/* Legend */}
           <div className="mt-6 flex flex-wrap gap-3 justify-center">
-            <div className="text-sm text-muted-foreground font-medium">Legenda směn:</div>
-            {Object.entries(SHIFT_TYPE_LABELS).map(([type, label]) => (
+            <div className="text-sm text-muted-foreground font-medium">{t('shiftTypesLegend') || 'Shift types legend'}:</div>
+            {Object.entries(SHIFT_TYPE_COLORS).map(([type, colorClass]) => (
               <Badge 
                 key={type}
                 variant="secondary" 
-                className={cn("text-sm px-3 py-1", SHIFT_TYPE_COLORS[type as ShiftType])}
+                className={cn("text-sm px-3 py-1", colorClass)}
               >
-                {label}
+                {getShiftTypeLabel(type as ShiftType)}
               </Badge>
             ))}
           </div>
@@ -282,12 +297,12 @@ const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = ({
         <Card className="bg-background border shadow-sm">
           <CardHeader className="pb-4">
             <CardTitle className="text-xl">
-              {format(selectedDate, 'EEEE, dd. MMMM yyyy', { locale: cs })}
+              {format(selectedDate, 'EEEE, dd. MMMM yyyy', { locale: getDateLocale() })}
             </CardTitle>
             <div className="text-sm text-muted-foreground">
               {selectedDateShifts.length === 0 
-                ? 'Žádné směny pro tento den'
-                : `${selectedDateShifts.length} směn${selectedDateShifts.length > 1 ? 'y' : 'a'}`
+                ? t('noShiftsForThisDay')
+                : `${selectedDateShifts.length} ${selectedDateShifts.length > 1 ? t('shifts').toLowerCase() : t('shift')}`
               }
             </div>
           </CardHeader>
@@ -295,7 +310,7 @@ const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = ({
             {selectedDateShifts.length === 0 ? (
               <div className="text-center py-12 text-muted-foreground">
                 <CalendarDays className="h-16 w-16 mx-auto mb-6 opacity-50" />
-                <p className="text-lg">Pro tento den nejsou naplánované žádné směny</p>
+                <p className="text-lg">{t('noShiftsPlannedForThisDay')}</p>
               </div>
             ) : (
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -308,7 +323,7 @@ const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = ({
                   >
                     <div className="flex items-center gap-3 min-w-0 flex-1">
                       <Badge className={cn("text-sm flex-shrink-0 px-3 py-1", SHIFT_TYPE_COLORS[shift.type])}>
-                        {SHIFT_TYPE_LABELS[shift.type]}
+                        {getShiftTypeLabel(shift.type)}
                       </Badge>
                       <div className="min-w-0 flex-1">
                         <p className="text-sm font-medium text-muted-foreground">

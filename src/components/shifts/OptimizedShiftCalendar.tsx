@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { CalendarDays, Edit, Trash2 } from 'lucide-react';
 import { format, isSameDay } from 'date-fns';
-import { cs } from 'date-fns/locale';
+import { cs, de, pl } from 'date-fns/locale';
 import { Shift } from '@/hooks/shifts/useShiftsCRUD';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -26,7 +26,17 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
 }) => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const isMobile = useIsMobile();
-  const { t } = useTranslation('shifts');
+  const { t, i18n } = useTranslation('shifts');
+
+  // Get appropriate date-fns locale
+  const getDateLocale = () => {
+    switch (i18n.language) {
+      case 'de': return de;
+      case 'pl': return pl;
+      case 'cs':
+      default: return cs;
+    }
+  };
 
   if (isMobile) {
     return (
@@ -58,9 +68,9 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
 
   const getShiftTypeLabel = (type: string) => {
     switch (type) {
-      case 'morning': return t('morningShift') || 'Ranní';
-      case 'afternoon': return t('afternoonShift') || 'Odpolední';
-      case 'night': return t('nightShift') || 'Noční';
+      case 'morning': return t('morningShift');
+      case 'afternoon': return t('afternoonShift');
+      case 'night': return t('nightShift');
       default: return type;
     }
   };
@@ -88,8 +98,8 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
   return (
     <div className="w-full space-y-6">
       <StandardCard 
-        title={t('shiftsCalendar') || 'Kalendář směn'}
-        description={t('clickDateToViewShifts') || 'Klikněte na datum pro zobrazení směn'}
+        title={t('shiftsCalendar')}
+        description={t('clickDateToViewShifts')}
         className="w-full"
       >
         <div className="w-full max-w-none">
@@ -97,7 +107,7 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
             mode="single"
             selected={selectedDate}
             onSelect={setSelectedDate}
-            locale={cs}
+            locale={getDateLocale()}
             modifiers={modifiers}
             modifiersClassNames={modifiersClassNames}
             className="w-full mx-auto [&_.rdp-table]:w-full [&_.rdp-months]:justify-center [&_.rdp-month]:w-full [&_.rdp-head_row]:grid [&_.rdp-head_row]:grid-cols-7 [&_.rdp-row]:grid [&_.rdp-row]:grid-cols-7 [&_.rdp-cell]:aspect-square [&_.rdp-day]:w-full [&_.rdp-day]:h-full"
@@ -107,16 +117,16 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
 
       {selectedDate && (
         <StandardCard 
-          title={format(selectedDate, 'dd. MMMM yyyy', { locale: cs })}
+          title={format(selectedDate, 'dd. MMMM yyyy', { locale: getDateLocale() })}
           description={selectedDateShifts.length === 0 
-            ? t('noShiftsForThisDay') || 'Žádné směny pro tento den'
+            ? t('noShiftsForThisDay')
             : `${selectedDateShifts.length} ${t('shifts').toLowerCase()}${selectedDateShifts.length > 1 ? 'y' : 'a'}`
           }
         >
           {selectedDateShifts.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               <CalendarDays className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p className="text-sm">{t('noShiftsPlannedForThisDay') || 'Pro tento den nejsou naplánované žádné směny'}</p>
+              <p className="text-sm">{t('noShiftsPlannedForThisDay')}</p>
             </div>
           ) : (
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">

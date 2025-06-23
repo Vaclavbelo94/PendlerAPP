@@ -8,9 +8,10 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SwipeableCalendar } from "./calendar/SwipeableCalendar";
 import { format } from "date-fns";
-import { cs } from "date-fns/locale";
+import { cs, de, pl } from 'date-fns/locale';
 import { CalendarDays, Clock, FileText, Trash2 } from "lucide-react";
 import { Shift, ShiftType } from "./types";
+import { useTranslation } from 'react-i18next';
 
 interface ShiftCalendarTabProps {
   selectedDate: Date | undefined;
@@ -41,6 +42,18 @@ export const ShiftCalendarTab = React.memo<ShiftCalendarTabProps>(({
   onDeleteShift,
   onOpenNoteDialog
 }) => {
+  const { t, i18n } = useTranslation('shifts');
+
+  // Get appropriate date-fns locale
+  const getDateLocale = () => {
+    switch (i18n.language) {
+      case 'de': return de;
+      case 'pl': return pl;
+      case 'cs':
+      default: return cs;
+    }
+  };
+
   // Memoized function for getting shifts for a specific date
   const getShiftsForDate = useCallback((date: Date) => {
     return shifts.filter(shift => {
@@ -55,8 +68,8 @@ export const ShiftCalendarTab = React.memo<ShiftCalendarTabProps>(({
   }, [shifts]);
 
   const handleMonthChange = useCallback((date: Date) => {
-    console.log('Měsíc změněn na:', format(date, 'MMMM yyyy', { locale: cs }));
-  }, []);
+    console.log('Měsíc změněn na:', format(date, 'MMMM yyyy', { locale: getDateLocale() }));
+  }, [getDateLocale]);
 
   const handleShiftTypeChange = useCallback((value: ShiftType) => {
     setShiftType(value);
@@ -65,6 +78,15 @@ export const ShiftCalendarTab = React.memo<ShiftCalendarTabProps>(({
   const handleNotesChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setShiftNotes(e.target.value);
   }, [setShiftNotes]);
+
+  const getShiftTypeLabel = (type: ShiftType) => {
+    switch (type) {
+      case 'morning': return t('morningShift');
+      case 'afternoon': return t('afternoonShift');
+      case 'night': return t('nightShift');
+      default: return type;
+    }
+  };
 
   // Loading skeleton component
   const CalendarSkeleton = () => (
@@ -92,7 +114,7 @@ export const ShiftCalendarTab = React.memo<ShiftCalendarTabProps>(({
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CalendarDays className="h-5 w-5" />
-              Kalendář směn
+              {t('shiftsCalendar')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -101,7 +123,7 @@ export const ShiftCalendarTab = React.memo<ShiftCalendarTabProps>(({
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>Detail směny</CardTitle>
+            <CardTitle>{t('shiftDetails')}</CardTitle>
           </CardHeader>
           <CardContent>
             <DetailSkeleton />
@@ -118,7 +140,7 @@ export const ShiftCalendarTab = React.memo<ShiftCalendarTabProps>(({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <CalendarDays className="h-5 w-5" />
-            Kalendář směn
+            {t('shiftsCalendar')}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -133,14 +155,13 @@ export const ShiftCalendarTab = React.memo<ShiftCalendarTabProps>(({
           {selectedDate && (
             <div className="mt-4 p-4 bg-muted/30 rounded-lg">
               <h3 className="font-medium mb-2">
-                {format(selectedDate, "EEEE, d. MMMM yyyy", { locale: cs })}
+                {format(selectedDate, "EEEE, d. MMMM yyyy", { locale: getDateLocale() })}
               </h3>
               {currentShift ? (
                 <div className="space-y-2">
                   <Badge variant="secondary" className="flex items-center gap-1 w-fit">
                     <Clock className="h-3 w-3" />
-                    {currentShift.type === "morning" ? "Ranní směna" : 
-                     currentShift.type === "afternoon" ? "Odpolední směna" : "Noční směna"}
+                    {getShiftTypeLabel(currentShift.type)}
                   </Badge>
                   {currentShift.notes && (
                     <p className="text-sm text-muted-foreground">
@@ -150,7 +171,7 @@ export const ShiftCalendarTab = React.memo<ShiftCalendarTabProps>(({
                   )}
                 </div>
               ) : (
-                <p className="text-sm text-muted-foreground">Žádná směna naplánována</p>
+                <p className="text-sm text-muted-foreground">{t('noShift')}</p>
               )}
             </div>
           )}
@@ -161,30 +182,30 @@ export const ShiftCalendarTab = React.memo<ShiftCalendarTabProps>(({
       <Card>
         <CardHeader>
           <CardTitle>
-            {currentShift ? "Upravit směnu" : "Přidat směnu"}
+            {currentShift ? t('editShift') : t('addShift')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {selectedDate ? (
             <>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Typ směny</label>
+                <label className="text-sm font-medium">{t('shiftType')}</label>
                 <Select value={shiftType} onValueChange={handleShiftTypeChange}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Vyberte typ směny" />
+                    <SelectValue placeholder={t('selectShiftType')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="morning">🌅 Ranní (6:00 - 14:00)</SelectItem>
-                    <SelectItem value="afternoon">☀️ Odpolední (14:00 - 22:00)</SelectItem>
-                    <SelectItem value="night">🌙 Noční (22:00 - 6:00)</SelectItem>
+                    <SelectItem value="morning">{t('types.morning')}</SelectItem>
+                    <SelectItem value="afternoon">{t('types.afternoon')}</SelectItem>
+                    <SelectItem value="night">{t('types.night')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">Poznámka</label>
+                <label className="text-sm font-medium">{t('notes')}</label>
                 <Textarea 
-                  placeholder="Volitelná poznámka k směně..."
+                  placeholder={t('optionalShiftNote') || 'Volitelná poznámka k směně...'}
                   value={shiftNotes}
                   onChange={handleNotesChange}
                   rows={3}
@@ -193,7 +214,7 @@ export const ShiftCalendarTab = React.memo<ShiftCalendarTabProps>(({
 
               <div className="flex gap-2">
                 <Button onClick={onSaveShift} className="flex-1">
-                  {currentShift ? "Aktualizovat" : "Uložit směnu"}
+                  {currentShift ? t('updateShift') : t('saveShift')}
                 </Button>
                 {currentShift && (
                   <Button 
@@ -209,7 +230,7 @@ export const ShiftCalendarTab = React.memo<ShiftCalendarTabProps>(({
           ) : (
             <div className="text-center py-8 text-muted-foreground">
               <CalendarDays className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>Vyberte datum pro přidání nebo úpravu směny</p>
+              <p>{t('selectDate')}</p>
             </div>
           )}
         </CardContent>
