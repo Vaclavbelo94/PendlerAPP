@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { LanguageSwitcher } from '@/components/i18n/LanguageSwitcher';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -142,7 +143,10 @@ const UnifiedNavbar: React.FC<UnifiedNavbarProps> = ({ rightContent }) => {
         )}
 
         {/* Right Content */}
-        <div className="ml-auto flex items-center space-x-4">
+        <div className="ml-auto flex items-center space-x-2">
+          {/* Language Switcher - Always visible */}
+          <LanguageSwitcher />
+          
           {rightContent}
           
           {/* User Menu */}
