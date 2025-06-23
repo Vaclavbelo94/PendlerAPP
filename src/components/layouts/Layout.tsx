@@ -6,7 +6,6 @@ import { useAuth } from '@/hooks/useAuth';
 import UnifiedNavbar from './UnifiedNavbar';
 import Footer from './Footer';
 import ModernSidebar from './sidebar/ModernSidebar';
-import MobileNavigation from './MobileNavigation';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
@@ -86,16 +85,15 @@ const Layout: React.FC<LayoutProps> = ({ children, navbarRightContent }) => {
         </div>
       )}
 
-      {/* Mobile Layout */}
+      {/* Mobile Layout - with hamburger menu in navbar */}
       {isMobile && (
         <div className="flex flex-col min-h-screen">
           <UnifiedNavbar rightContent={navbarRightContent} />
-          <main className="flex-1 p-4 pb-20">
+          <main className="flex-1 p-4">
             <div className="max-w-7xl mx-auto">
               {children || <Outlet />}
             </div>
           </main>
-          <MobileNavigation />
         </div>
       )}
 

@@ -3,11 +3,12 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Menu, X, LogOut, User, CreditCard } from 'lucide-react';
+import { Menu, X, LogOut, User, CreditCard, Home, Calendar, Calculator, Car, Languages, Book, Plane, Scale } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
+import { useIsMobile } from '@/hooks/use-mobile';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,10 +17,25 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 
 interface UnifiedNavbarProps {
   rightContent?: React.ReactNode;
 }
+
+const navigationItems = [
+  { icon: Home, label: 'Dashboard', href: '/dashboard' },
+  { icon: Calendar, label: 'Směny', href: '/shifts' },
+  { icon: Calculator, label: 'Daňový poradce', href: '/tax-advisor' },
+  { icon: Car, label: 'Vozidlo', href: '/vehicle' },
+  { icon: Plane, label: 'Cestování', href: '/travel' },
+  { icon: Languages, label: 'Překladač', href: '/translator' },
+  { icon: Scale, label: 'Zákony', href: '/laws' },
+];
 
 const UnifiedNavbar: React.FC<UnifiedNavbarProps> = ({ rightContent }) => {
   const { user, signOut } = useAuth();
@@ -27,6 +43,7 @@ const UnifiedNavbar: React.FC<UnifiedNavbarProps> = ({ rightContent }) => {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { t } = useTranslation('common');
+  const isMobile = useIsMobile();
 
   const handleSignOut = async () => {
     try {
@@ -79,44 +96,127 @@ const UnifiedNavbar: React.FC<UnifiedNavbarProps> = ({ rightContent }) => {
           
           {/* User Menu */}
           {user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src={user.user_metadata?.avatar_url} alt={user.email} />
-                    <AvatarFallback>
-                      {user.email?.charAt(0).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
-                <DropdownMenuLabel className="font-normal">
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">
-                      {user.user_metadata?.full_name || user.email}
-                    </p>
-                    <p className="text-xs leading-none text-muted-foreground">
-                      {user.email}
-                    </p>
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => navigate('/profile')}>
-                  <User className="mr-2 h-4 w-4" />
-                  <span>{t('profile')}</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate('/subscription')}>
-                  <CreditCard className="mr-2 h-4 w-4" />
-                  <span>{t('subscription')}</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleSignOut}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>{t('signOut')}</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <>
+              {/* Desktop User Menu */}
+              <div className="hidden md:block">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src={user.user_metadata?.avatar_url} alt={user.email} />
+                        <AvatarFallback>
+                          {user.email?.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56" align="end" forceMount>
+                    <DropdownMenuLabel className="font-normal">
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium leading-none">
+                          {user.user_metadata?.full_name || user.email}
+                        </p>
+                        <p className="text-xs leading-none text-muted-foreground">
+                          {user.email}
+                        </p>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => navigate('/profile')}>
+                      <User className="mr-2 h-4 w-4" />
+                      <span>{t('profile')}</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate('/subscription')}>
+                      <CreditCard className="mr-2 h-4 w-4" />
+                      <span>{t('subscription')}</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleSignOut}>
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>{t('signOut')}</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+
+              {/* Mobile Hamburger Menu */}
+              {isMobile && (
+                <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+                  <SheetTrigger asChild>
+                    <Button variant="ghost" size="sm" className="md:hidden">
+                      <Menu className="h-5 w-5" />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="right" className="w-80">
+                    <div className="flex flex-col h-full">
+                      {/* User Info */}
+                      <div className="flex items-center gap-3 p-4 border-b">
+                        <Avatar className="h-10 w-10">
+                          <AvatarImage src={user.user_metadata?.avatar_url} alt={user.email} />
+                          <AvatarFallback>
+                            {user.email?.charAt(0).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">
+                            {user.user_metadata?.full_name || user.email}
+                          </p>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {user.email}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Navigation Items */}
+                      <div className="flex-1 py-4">
+                        <div className="space-y-2">
+                          {navigationItems.map((item) => (
+                            <Button
+                              key={item.href}
+                              variant={location.pathname === item.href ? "secondary" : "ghost"}
+                              className="w-full justify-start gap-3 h-12"
+                              onClick={() => {
+                                navigate(item.href);
+                                setIsMobileMenuOpen(false);
+                              }}
+                            >
+                              <item.icon className="h-5 w-5" />
+                              <span>{item.label}</span>
+                            </Button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Bottom Actions */}
+                      <div className="border-t p-4 space-y-2">
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-start gap-3"
+                          onClick={() => {
+                            navigate('/profile');
+                            setIsMobileMenuOpen(false);
+                          }}
+                        >
+                          <User className="h-5 w-5" />
+                          <span>Profil</span>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-start gap-3"
+                          onClick={() => {
+                            handleSignOut();
+                            setIsMobileMenuOpen(false);
+                          }}
+                        >
+                          <LogOut className="h-5 w-5" />
+                          <span>Odhlásit se</span>
+                        </Button>
+                      </div>
+                    </div>
+                  </SheetContent>
+                </Sheet>
+              )}
+            </>
           ) : (
             <div className="flex items-center space-x-2">
               <Button variant="ghost" size="sm" onClick={() => navigate('/auth/signin')}>
@@ -128,22 +228,24 @@ const UnifiedNavbar: React.FC<UnifiedNavbarProps> = ({ rightContent }) => {
             </div>
           )}
 
-          {/* Mobile Menu Button */}
-          <Button
-            variant="ghost"
-            className="md:hidden"
-            size="sm"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
-            {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </Button>
+          {/* Mobile Menu Button for Public Pages */}
+          {!user && isMobile && (
+            <Button
+              variant="ghost"
+              className="md:hidden"
+              size="sm"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </Button>
+          )}
         </div>
       </div>
 
-      {/* Mobile Menu */}
-      {isMobileMenuOpen && (
+      {/* Mobile Menu for Public Pages */}
+      {!user && isMobileMenuOpen && (
         <div className="md:hidden border-t bg-background p-4">
-          {isPublicPage && !user && (
+          {isPublicPage && (
             <div className="flex flex-col space-y-3">
               <Link 
                 to="/features" 
