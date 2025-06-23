@@ -232,7 +232,7 @@ const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = ({
                 size="sm"
                 onClick={handlePreviousMonth}
                 className="h-9 w-9 p-0"
-                aria-label={t('previousMonth') || 'Previous month'}
+                aria-label={t('previousMonth')}
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
@@ -243,7 +243,7 @@ const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = ({
                 onClick={handleTodayClick}
                 className="px-4 py-2 text-sm font-medium"
               >
-                {t('today') || 'Today'}
+                {t('today')}
               </Button>
               
               <Button
@@ -251,7 +251,7 @@ const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = ({
                 size="sm"
                 onClick={handleNextMonth}
                 className="h-9 w-9 p-0"
-                aria-label={t('nextMonth') || 'Next month'}
+                aria-label={t('nextMonth')}
               >
                 <ChevronRight className="h-4 w-4" />
               </Button>
@@ -278,7 +278,7 @@ const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = ({
           
           {/* Legend */}
           <div className="mt-6 flex flex-wrap gap-3 justify-center">
-            <div className="text-sm text-muted-foreground font-medium">{t('shiftTypesLegend') || 'Shift types legend'}:</div>
+            <div className="text-sm text-muted-foreground font-medium">{t('shiftTypesLegend')}:</div>
             {Object.entries(SHIFT_TYPE_COLORS).map(([type, colorClass]) => (
               <Badge 
                 key={type}
@@ -319,7 +319,7 @@ const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = ({
                     key={shift.id}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="flex items-center justify-between p-4 border rounded-lg bg-muted/20 hover:bg-muted/30 transition-colors"
+                    className="flex items-center justify-between p-4 border rounde d-lg bg-muted/20 hover:bg-muted/30 transition-colors"
                   >
                     <div className="flex items-center gap-3 min-w-0 flex-1">
                       <Badge className={cn("text-sm flex-shrink-0 px-3 py-1", SHIFT_TYPE_COLORS[shift.type])}>

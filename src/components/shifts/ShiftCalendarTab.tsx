@@ -68,7 +68,7 @@ export const ShiftCalendarTab = React.memo<ShiftCalendarTabProps>(({
   }, [shifts]);
 
   const handleMonthChange = useCallback((date: Date) => {
-    console.log('Měsíc změněn na:', format(date, 'MMMM yyyy', { locale: getDateLocale() }));
+    console.log('Month changed to:', format(date, 'MMMM yyyy', { locale: getDateLocale() }));
   }, [getDateLocale]);
 
   const handleShiftTypeChange = useCallback((value: ShiftType) => {
@@ -135,7 +135,7 @@ export const ShiftCalendarTab = React.memo<ShiftCalendarTabProps>(({
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      {/* Kalendář */}
+      {/* Calendar */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -149,6 +149,7 @@ export const ShiftCalendarTab = React.memo<ShiftCalendarTabProps>(({
             selected={selectedDate}
             onSelect={onSelectDate}
             onMonthChange={handleMonthChange}
+            locale={getDateLocale()}
             className="rounded-md border"
           />
           
@@ -178,7 +179,7 @@ export const ShiftCalendarTab = React.memo<ShiftCalendarTabProps>(({
         </CardContent>
       </Card>
 
-      {/* Detail směny */}
+      {/* Shift Details */}
       <Card>
         <CardHeader>
           <CardTitle>
@@ -205,7 +206,7 @@ export const ShiftCalendarTab = React.memo<ShiftCalendarTabProps>(({
               <div className="space-y-2">
                 <label className="text-sm font-medium">{t('notes')}</label>
                 <Textarea 
-                  placeholder={t('optionalShiftNote') || 'Volitelná poznámka k směně...'}
+                  placeholder={t('optionalShiftNote') || 'Optional shift note...'}
                   value={shiftNotes}
                   onChange={handleNotesChange}
                   rows={3}
