@@ -33,7 +33,7 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = fal
       const records = await fetchInsuranceRecords(vehicleId);
       setInsuranceRecords(records || []);
     } catch (err: any) {
-      error(t('vehicle:errorSavingServiceRecord'));
+      error(t('vehicle:errorLoadingInsuranceRecords'));
     } finally {
       setIsLoading(false);
     }
@@ -57,10 +57,10 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = fal
     try {
       setDeletingId(recordId);
       await deleteInsuranceRecord(recordId);
-      success(t('vehicle:serviceRecordDeleted'));
+      success(t('vehicle:insuranceRecordDeleted'));
       loadInsuranceRecords();
     } catch (err: any) {
-      error(t('vehicle:errorDeletingServiceRecord'));
+      error(t('vehicle:errorDeletingInsuranceRecord'));
     } finally {
       setDeletingId(null);
     }
@@ -72,13 +72,13 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = fal
   };
 
   const calculateTotalCost = () => {
-    return insuranceRecords.reduce((sum, record) => sum + (record.cost || 0), 0);
+    return insuranceRecords.reduce((sum, record) => sum + (parseFloat(record.monthly_cost) || 0), 0);
   };
 
   const getActiveInsurance = () => {
     const now = new Date();
     return insuranceRecords.find(record => {
-      const expiryDate = new Date(record.expiry_date);
+      const expiryDate = new Date(record.valid_until);
       return expiryDate > now;
     });
   };
@@ -122,10 +122,10 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = fal
           {insuranceRecords.length === 0 ? (
             <div className="text-center py-8">
               <ShieldIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <p className="text-muted-foreground mb-4">{t('vehicle:noServiceRecords')}</p>
+              <p className="text-muted-foreground mb-4">{t('vehicle:noInsuranceRecords')}</p>
               <Button onClick={handleAddRecord} className="gap-2">
                 <PlusIcon className="h-4 w-4" />
-                {t('vehicle:addServiceRecord')}
+                {t('vehicle:addInsuranceRecord')}
               </Button>
             </div>
           ) : (
@@ -133,7 +133,7 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = fal
               {/* Active Insurance Summary */}
               {getActiveInsurance() && (
                 <div className="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-lg mb-6">
-                  <h4 className="text-sm font-medium text-muted-foreground mb-2">{t('vehicle:insurance')}</h4>
+                  <h4 className="text-sm font-medium text-muted-foreground mb-2">{t('vehicle:activeInsurance')}</h4>
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
                       <span className="text-muted-foreground">{t('vehicle:insuranceProvider')}:</span>
@@ -141,11 +141,11 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = fal
                     </div>
                     <div>
                       <span className="text-muted-foreground">{t('vehicle:insuranceExpiry')}:</span>
-                      <span className="ml-1 font-medium">{formatDate(getActiveInsurance()!.expiry_date)}</span>
+                      <span className="ml-1 font-medium">{formatDate(getActiveInsurance()!.valid_until)}</span>
                     </div>
                     <div>
-                      <span className="text-muted-foreground">{t('vehicle:insuranceType')}:</span>
-                      <span className="ml-1 font-medium">{getActiveInsurance()?.insurance_type}</span>
+                      <span className="text-muted-foreground">{t('vehicle:coverageType')}:</span>
+                      <span className="ml-1 font-medium">{getActiveInsurance()?.coverage_type}</span>
                     </div>
                     <div>
                       <span className="text-muted-foreground">{t('vehicle:policyNumber')}:</span>
@@ -158,13 +158,13 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = fal
               {/* Summary Statistics */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-lg">
-                  <h4 className="text-sm font-medium text-muted-foreground">{t('vehicle:totalServiceCost')}</h4>
+                  <h4 className="text-sm font-medium text-muted-foreground">{t('vehicle:totalInsuranceCost')}</h4>
                   <p className="text-2xl font-bold text-blue-600">{calculateTotalCost().toFixed(0)} Kč</p>
                 </div>
                 <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-4 rounded-lg">
-                  <h4 className="text-sm font-medium text-muted-foreground">{t('vehicle:insurance')}</h4>
+                  <h4 className="text-sm font-medium text-muted-foreground">{t('vehicle:insuranceStatus')}</h4>
                   <p className="text-2xl font-bold text-purple-600">
-                    {getActiveInsurance() ? t('vehicle:insurance') : t('vehicle:noDataAvailable')}
+                    {getActiveInsurance() ? t('vehicle:active') : t('vehicle:noActiveInsurance')}
                   </p>
                 </div>
               </div>
@@ -172,7 +172,7 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = fal
               {/* Insurance Records List */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <h4 className="font-medium">{t('vehicle:insuranceInfo')}</h4>
+                  <h4 className="font-medium">{t('vehicle:insuranceRecords')}</h4>
                   {!fullView && insuranceRecords.length > 3 && (
                     <Button variant="ghost" size="sm">
                       {t('vehicle:viewAll')}
@@ -185,10 +185,10 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = fal
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
-                          <Badge variant="outline">{formatDate(record.start_date)}</Badge>
-                          <Badge variant="secondary">{record.insurance_type}</Badge>
+                          <Badge variant="outline">{formatDate(record.valid_from)}</Badge>
+                          <Badge variant="secondary">{record.coverage_type}</Badge>
                           {getActiveInsurance()?.id === record.id && (
-                            <Badge variant="default">{t('vehicle:insurance')}</Badge>
+                            <Badge variant="default">{t('vehicle:active')}</Badge>
                           )}
                         </div>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
@@ -197,12 +197,12 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = fal
                             <span className="ml-1 font-medium">{record.provider}</span>
                           </div>
                           <div>
-                            <span className="text-muted-foreground">{t('vehicle:cost')}:</span>
-                            <span className="ml-1 font-medium">{record.cost} Kč</span>
+                            <span className="text-muted-foreground">{t('vehicle:monthlyCost')}:</span>
+                            <span className="ml-1 font-medium">{record.monthly_cost} Kč</span>
                           </div>
                           <div>
                             <span className="text-muted-foreground">{t('vehicle:insuranceExpiry')}:</span>
-                            <span className="ml-1 font-medium">{formatDate(record.expiry_date)}</span>
+                            <span className="ml-1 font-medium">{formatDate(record.valid_until)}</span>
                           </div>
                           <div>
                             <span className="text-muted-foreground">{t('vehicle:policyNumber')}:</span>
@@ -230,9 +230,9 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = fal
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                               <AlertDialogHeader>
-                                <AlertDialogTitle>{t('vehicle:deleteServiceRecord')}</AlertDialogTitle>
+                                <AlertDialogTitle>{t('vehicle:deleteInsuranceRecord')}</AlertDialogTitle>
                                 <AlertDialogDescription>
-                                  {t('vehicle:confirmDeleteServiceRecord')}
+                                  {t('vehicle:confirmDeleteInsuranceRecord')}
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>

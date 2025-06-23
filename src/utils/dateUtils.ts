@@ -68,3 +68,30 @@ export const daysBetween = (startDate: string, endDate: string): number => {
     return 0;
   }
 };
+
+/**
+ * Calculate next review date for vocabulary (placeholder implementation)
+ */
+export const calculateNextReviewDate = (lastReview: Date, difficulty: number): Date => {
+  const now = new Date();
+  const daysToAdd = Math.max(1, difficulty * 2);
+  const nextDate = new Date(now.getTime() + daysToAdd * 24 * 60 * 60 * 1000);
+  return nextDate;
+};
+
+/**
+ * Calculate knowledge score (placeholder implementation)
+ */
+export const calculateKnowledgeScore = (correctAnswers: number, totalAnswers: number): number => {
+  if (totalAnswers === 0) return 0;
+  return Math.round((correctAnswers / totalAnswers) * 100);
+};
+
+/**
+ * Optimize review time (placeholder implementation)
+ */
+export const optimizeReviewTime = (userPreference: string): Date => {
+  const now = new Date();
+  // Default to current time
+  return now;
+};

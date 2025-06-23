@@ -34,7 +34,7 @@ const ServiceRecordCard: React.FC<ServiceRecordCardProps> = ({ vehicleId, fullVi
       const records = await fetchServiceRecords(vehicleId);
       setServiceRecords(records || []);
     } catch (err: any) {
-      error(t('vehicle:errorSavingServiceRecord'));
+      error(t('vehicle:errorLoadingServiceRecords'));
     } finally {
       setIsLoading(false);
     }
@@ -73,7 +73,7 @@ const ServiceRecordCard: React.FC<ServiceRecordCardProps> = ({ vehicleId, fullVi
   };
 
   const calculateTotalCost = () => {
-    return serviceRecords.reduce((sum, record) => sum + (record.cost || 0), 0);
+    return serviceRecords.reduce((sum, record) => sum + (parseFloat(record.cost) || 0), 0);
   };
 
   const calculateAverageCost = () => {
@@ -83,8 +83,8 @@ const ServiceRecordCard: React.FC<ServiceRecordCardProps> = ({ vehicleId, fullVi
 
   const getLastServiceDate = () => {
     if (serviceRecords.length === 0) return null;
-    const sortedRecords = [...serviceRecords].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    return sortedRecords[0].date;
+    const sortedRecords = [...serviceRecords].sort((a, b) => new Date(b.service_date).getTime() - new Date(a.service_date).getTime());
+    return sortedRecords[0].service_date;
   };
 
   const displayRecords = fullView ? serviceRecords : serviceRecords.slice(0, 3);
@@ -168,7 +168,7 @@ const ServiceRecordCard: React.FC<ServiceRecordCardProps> = ({ vehicleId, fullVi
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
-                          <Badge variant="outline">{formatDate(record.date)}</Badge>
+                          <Badge variant="outline">{formatDate(record.service_date)}</Badge>
                           <Badge variant="secondary">{record.service_type}</Badge>
                         </div>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">

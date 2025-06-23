@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -30,35 +29,32 @@ const ServiceRecordDialog: React.FC<ServiceRecordDialogProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const { success, error } = useStandardizedToast();
   const [formData, setFormData] = useState({
-    date: new Date().toISOString().split('T')[0],
+    service_date: new Date().toISOString().split('T')[0],
     service_type: '',
     description: '',
     cost: '',
     provider: '',
-    mileage: '',
-    next_service_date: ''
+    mileage: ''
   });
 
   useEffect(() => {
     if (record) {
       setFormData({
-        date: record.date,
+        service_date: record.service_date,
         service_type: record.service_type,
         description: record.description || '',
         cost: record.cost.toString(),
         provider: record.provider,
-        mileage: record.mileage,
-        next_service_date: record.next_service_date || ''
+        mileage: record.mileage
       });
     } else {
       setFormData({
-        date: new Date().toISOString().split('T')[0],
+        service_date: new Date().toISOString().split('T')[0],
         service_type: '',
         description: '',
         cost: '',
         provider: '',
-        mileage: '',
-        next_service_date: ''
+        mileage: ''
       });
     }
   }, [record, isOpen]);
@@ -74,13 +70,12 @@ const ServiceRecordDialog: React.FC<ServiceRecordDialogProps> = ({
     try {
       const recordData: Partial<ServiceRecord> = {
         vehicle_id: vehicleId,
-        date: formData.date,
+        service_date: formData.service_date,
         service_type: formData.service_type,
         description: formData.description,
-        cost: parseFloat(formData.cost),
+        cost: formData.cost,
         provider: formData.provider,
-        mileage: formData.mileage,
-        next_service_date: formData.next_service_date || null
+        mileage: formData.mileage
       };
 
       if (record) {
@@ -106,19 +101,19 @@ const ServiceRecordDialog: React.FC<ServiceRecordDialogProps> = ({
             {record ? t('vehicle:editServiceRecord') : t('vehicle:addServiceRecord')}
           </DialogTitle>
           <DialogDescription>
-            {record ? t('vehicle:editServiceRecord') : t('vehicle:addServiceRecord')}
+            {record ? t('vehicle:editServiceRecordDescription') : t('vehicle:addServiceRecordDescription')}
           </DialogDescription>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="date">{t('vehicle:date')} *</Label>
+              <Label htmlFor="service_date">{t('vehicle:date')} *</Label>
               <Input
-                id="date"
+                id="service_date"
                 type="date"
-                value={formData.date}
-                onChange={(e) => handleInputChange('date', e.target.value)}
+                value={formData.service_date}
+                onChange={(e) => handleInputChange('service_date', e.target.value)}
                 required
               />
             </div>
@@ -164,28 +159,16 @@ const ServiceRecordDialog: React.FC<ServiceRecordDialogProps> = ({
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="cost">{t('vehicle:cost')} (Kč) *</Label>
-              <Input
-                id="cost"
-                type="number"
-                step="0.01"
-                value={formData.cost}
-                onChange={(e) => handleInputChange('cost', e.target.value)}
-                required
-              />
-            </div>
-            
-            <div>
-              <Label htmlFor="next_service_date">{t('vehicle:nextServiceDue')}</Label>
-              <Input
-                id="next_service_date"
-                type="date"
-                value={formData.next_service_date}
-                onChange={(e) => handleInputChange('next_service_date', e.target.value)}
-              />
-            </div>
+          <div>
+            <Label htmlFor="cost">{t('vehicle:cost')} (Kč) *</Label>
+            <Input
+              id="cost"
+              type="number"
+              step="0.01"
+              value={formData.cost}
+              onChange={(e) => handleInputChange('cost', e.target.value)}
+              required
+            />
           </div>
 
           <div>

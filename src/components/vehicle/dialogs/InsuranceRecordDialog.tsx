@@ -30,31 +30,31 @@ const InsuranceRecordDialog: React.FC<InsuranceRecordDialogProps> = ({
   const { success, error } = useStandardizedToast();
   const [formData, setFormData] = useState({
     provider: '',
-    insurance_type: '',
+    coverage_type: '',
     policy_number: '',
-    start_date: new Date().toISOString().split('T')[0],
-    expiry_date: '',
-    cost: ''
+    valid_from: new Date().toISOString().split('T')[0],
+    valid_until: '',
+    monthly_cost: ''
   });
 
   useEffect(() => {
     if (record) {
       setFormData({
         provider: record.provider,
-        insurance_type: record.insurance_type,
+        coverage_type: record.coverage_type,
         policy_number: record.policy_number,
-        start_date: record.start_date,
-        expiry_date: record.expiry_date,
-        cost: record.cost.toString()
+        valid_from: record.valid_from,
+        valid_until: record.valid_until,
+        monthly_cost: record.monthly_cost.toString()
       });
     } else {
       setFormData({
         provider: '',
-        insurance_type: '',
+        coverage_type: '',
         policy_number: '',
-        start_date: new Date().toISOString().split('T')[0],
-        expiry_date: '',
-        cost: ''
+        valid_from: new Date().toISOString().split('T')[0],
+        valid_until: '',
+        monthly_cost: ''
       });
     }
   }, [record, isOpen]);
@@ -71,11 +71,11 @@ const InsuranceRecordDialog: React.FC<InsuranceRecordDialogProps> = ({
       const recordData: Partial<InsuranceRecord> = {
         vehicle_id: vehicleId,
         provider: formData.provider,
-        insurance_type: formData.insurance_type,
+        coverage_type: formData.coverage_type,
         policy_number: formData.policy_number,
-        start_date: formData.start_date,
-        expiry_date: formData.expiry_date,
-        cost: parseFloat(formData.cost)
+        valid_from: formData.valid_from,
+        valid_until: formData.valid_until,
+        monthly_cost: formData.monthly_cost
       };
 
       if (record) {
@@ -83,11 +83,11 @@ const InsuranceRecordDialog: React.FC<InsuranceRecordDialogProps> = ({
       }
 
       await saveInsuranceRecord(recordData);
-      success(record ? t('vehicle:serviceRecordUpdated') : t('vehicle:serviceRecordSaved'));
+      success(record ? t('vehicle:insuranceRecordUpdated') : t('vehicle:insuranceRecordSaved'));
       onSuccess();
       onClose();
     } catch (err: any) {
-      error(err.message || t('vehicle:errorSavingServiceRecord'));
+      error(err.message || t('vehicle:errorSavingInsuranceRecord'));
     } finally {
       setIsLoading(false);
     }
@@ -98,10 +98,10 @@ const InsuranceRecordDialog: React.FC<InsuranceRecordDialogProps> = ({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>
-            {record ? t('vehicle:edit') : t('vehicle:add')} {t('vehicle:insurance')}
+            {record ? t('vehicle:editInsuranceRecord') : t('vehicle:addInsuranceRecord')}
           </DialogTitle>
           <DialogDescription>
-            {t('vehicle:insuranceInfo')}
+            {t('vehicle:insuranceRecordInfo')}
           </DialogDescription>
         </DialogHeader>
         
@@ -119,15 +119,15 @@ const InsuranceRecordDialog: React.FC<InsuranceRecordDialogProps> = ({
           </div>
 
           <div>
-            <Label htmlFor="insurance_type">{t('vehicle:insuranceType')} *</Label>
-            <Select value={formData.insurance_type} onValueChange={(value) => handleInputChange('insurance_type', value)}>
+            <Label htmlFor="coverage_type">{t('vehicle:coverageType')} *</Label>
+            <Select value={formData.coverage_type} onValueChange={(value) => handleInputChange('coverage_type', value)}>
               <SelectTrigger>
-                <SelectValue placeholder={t('vehicle:selectServiceType')} />
+                <SelectValue placeholder={t('vehicle:selectCoverageType')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="liability">{t('vehicle:insurance')}</SelectItem>
-                <SelectItem value="comprehensive">{t('vehicle:insurance')}</SelectItem>
-                <SelectItem value="collision">{t('vehicle:insurance')}</SelectItem>
+                <SelectItem value="liability">{t('vehicle:liability')}</SelectItem>
+                <SelectItem value="comprehensive">{t('vehicle:comprehensive')}</SelectItem>
+                <SelectItem value="collision">{t('vehicle:collision')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -145,36 +145,36 @@ const InsuranceRecordDialog: React.FC<InsuranceRecordDialogProps> = ({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="start_date">{t('vehicle:date')} *</Label>
+              <Label htmlFor="valid_from">{t('vehicle:validFrom')} *</Label>
               <Input
-                id="start_date"
+                id="valid_from"
                 type="date"
-                value={formData.start_date}
-                onChange={(e) => handleInputChange('start_date', e.target.value)}
+                value={formData.valid_from}
+                onChange={(e) => handleInputChange('valid_from', e.target.value)}
                 required
               />
             </div>
             
             <div>
-              <Label htmlFor="expiry_date">{t('vehicle:insuranceExpiry')} *</Label>
+              <Label htmlFor="valid_until">{t('vehicle:validUntil')} *</Label>
               <Input
-                id="expiry_date"
+                id="valid_until"
                 type="date"
-                value={formData.expiry_date}
-                onChange={(e) => handleInputChange('expiry_date', e.target.value)}
+                value={formData.valid_until}
+                onChange={(e) => handleInputChange('valid_until', e.target.value)}
                 required
               />
             </div>
           </div>
 
           <div>
-            <Label htmlFor="cost">{t('vehicle:cost')} (Kč) *</Label>
+            <Label htmlFor="monthly_cost">{t('vehicle:monthlyCost')} (Kč) *</Label>
             <Input
-              id="cost"
+              id="monthly_cost"
               type="number"
               step="0.01"
-              value={formData.cost}
-              onChange={(e) => handleInputChange('cost', e.target.value)}
+              value={formData.monthly_cost}
+              onChange={(e) => handleInputChange('monthly_cost', e.target.value)}
               required
             />
           </div>
