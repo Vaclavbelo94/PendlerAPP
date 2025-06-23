@@ -1,0 +1,41 @@
+
+{
+  "validation": {
+    "required": "To pole jest wymagane",
+    "email": "Wprowadź prawidłowy adres e-mail",
+    "password": "Hasło musi mieć co najmniej 8 znaków",
+    "confirmPassword": "Hasła nie pasują do siebie",
+    "phone": "Wprowadź prawidłowy numer telefonu",
+    "date": "Wprowadź prawidłową datę",
+    "time": "Wprowadź prawidłowy czas",
+    "number": "Wprowadź prawidłową liczbę",
+    "url": "Wprowadź prawidłowy adres URL",
+    "minLength": "Minimalna długość to {min} znaków",
+    "maxLength": "Maksymalna długość to {max} znaków",
+    "min": "Minimalna wartość to {min}",
+    "max": "Maksymalna wartość to {max}"
+  },
+  "buttons": {
+    "submit": "Wyślij",
+    "save": "Zapisz",
+    "cancel": "Anuluj",
+    "delete": "Usuń",
+    "edit": "Edytuj",
+    "add": "Dodaj",
+    "remove": "Usuń",
+    "clear": "Wyczyść",
+    "reset": "Resetuj",
+    "confirm": "Potwierdź",
+    "close": "Zamknij"
+  },
+  "messages": {
+    "saved": "Pomyślnie zapisano",
+    "deleted": "Pomyślnie usunięto",
+    "updated": "Pomyślnie zaktualizowano",
+    "error": "Wystąpił błąd",
+    "loading": "Ładowanie...",
+    "noData": "Brak danych",
+    "confirmDelete": "Czy na pewno chcesz usunąć ten element?",
+    "unsavedChanges": "Masz niezapisane zmiany. Czy na pewno chcesz kontynuować?"
+  }
+}
