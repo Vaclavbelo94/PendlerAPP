@@ -3,11 +3,11 @@ import React from 'react';
 import { CalendarDays } from 'lucide-react';
 import ScheduleShareDialog from '@/components/sharing/ScheduleShareDialog';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 export const ShiftsHeader = () => {
   const isMobile = useIsMobile();
-  const { t } = useLanguage();
+  const { t } = useTranslation('shifts');
 
   return (
     <div className="mb-8">

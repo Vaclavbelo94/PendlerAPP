@@ -1,146 +1,95 @@
 
-import React from "react";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { useNavigate } from "react-router-dom";
-import { User, LogOut, Crown, Sparkles } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
-import { useLanguage } from "@/hooks/useLanguage";
+import React from 'react';
+import { Button } from '@/components/ui/button';
+import { User, Crown } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 interface SidebarUserSectionProps {
-  closeSidebar: () => void;
-  isCompact?: boolean;
+  collapsed: boolean;
 }
 
-const SidebarUserSection = ({ closeSidebar, isCompact = false }: SidebarUserSectionProps) => {
-  const navigate = useNavigate();
-  const { user, isPremium, signOut } = useAuth();
-  const { t } = useLanguage();
+const SidebarUserSection: React.FC<SidebarUserSectionProps> = ({ collapsed }) => {
+  const { user } = useAuth();
+  const { t } = useTranslation('common');
 
-  const handleNavigation = (path: string) => {
-    navigate(path);
-    closeSidebar();
-  };
+  const displayName = user?.email?.split('@')[0] || t('user');
+  const isPremium = false; // This would come from user data
 
-  const handleLogout = async () => {
-    await signOut();
-    closeSidebar();
-  };
-
-  if (!user) {
-    return (
-      <div className={`${isCompact ? 'p-2' : 'p-4'} space-y-2 border-t border-sidebar-border/30`}>
-        <Button 
-          variant="outline" 
-          size={isCompact ? "sm" : "default"}
-          onClick={() => handleNavigation('/login')}
-          className="w-full bg-gradient-to-r from-sidebar-accent/20 to-sidebar-accent/10 border-sidebar-border/50 hover:from-primary/20 hover:to-accent/20 hover:border-primary/30 transition-all duration-300"
-        >
-          {t('login')}
-        </Button>
-        <Button 
-          variant="default" 
-          size={isCompact ? "sm" : "default"}
-          onClick={() => handleNavigation('/register')}
-          className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-lg transition-all duration-300 hover:scale-[1.02]"
-        >
-          {t('registerCreateAccount')}
-        </Button>
-      </div>
-    );
-  }
-
-  // Kompaktní layout pro landscape sheet
-  if (isCompact) {
-    return (
-      <div className="space-y-2">
-        <div className="flex items-center gap-2 p-2 bg-gradient-to-r from-sidebar-accent/30 to-sidebar-accent/10 rounded-lg border border-sidebar-border/30 backdrop-blur-sm">
-          <Avatar className="h-6 w-6 ring-2 ring-primary/30">
-            <AvatarFallback className="text-xs bg-gradient-to-br from-primary/20 to-accent/20 font-medium">
-              {user.email?.charAt(0).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex-1 min-w-0">
-            <p className="text-xs font-medium text-sidebar-foreground truncate">
-              {user.email}
-            </p>
-            {isPremium && (
-              <div className="flex items-center gap-1">
-                <Crown className="h-3 w-3 text-amber-500 animate-pulse" />
-                <Sparkles className="h-3 w-3 text-amber-400" />
-                <span className="text-xs text-amber-600 dark:text-amber-400 font-medium">{t('premium')}</span>
-              </div>
-            )}
-          </div>
-        </div>
-        
-        <div className="grid grid-cols-2 gap-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => handleNavigation('/profile')}
-            className="text-xs h-7 hover:bg-gradient-to-r hover:from-blue-500/20 hover:to-blue-600/20 transition-all duration-300"
-          >
-            <User className="h-3 w-3 mr-1" />
-            {t('profile')}
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleLogout}
-            className="text-xs h-7 hover:bg-gradient-to-r hover:from-red-500/20 hover:to-red-600/20 transition-all duration-300"
-          >
-            <LogOut className="h-3 w-3 mr-1" />
-            {t('logout')}
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
-  // Původní layout s vylepšeným stylingem
   return (
-    <div className="p-4 border-t border-sidebar-border/30">
-      <div className="flex items-center gap-3 mb-3 p-3 bg-gradient-to-r from-sidebar-accent/30 to-sidebar-accent/10 rounded-lg border border-sidebar-border/30 backdrop-blur-sm">
-        <Avatar className="h-8 w-8 ring-2 ring-primary/30 transition-all duration-300 hover:ring-primary/50 hover:scale-110">
-          <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20 font-medium">
-            {user.email?.charAt(0).toUpperCase()}
-          </AvatarFallback>
-        </Avatar>
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-sidebar-foreground truncate">
-            {user.email}
-          </p>
-          {isPremium && (
-            <div className="flex items-center gap-1 mt-1">
-              <Crown className="h-3 w-3 text-amber-500 animate-pulse" />
-              <Sparkles className="h-3 w-3 text-amber-400" />
-              <span className="text-xs text-amber-600 dark:text-amber-400 font-medium">{t('premium')} účet</span>
+    <div className="p-4 border-t border-border">
+      <AnimatePresence mode="wait">
+        {!collapsed ? (
+          <motion.div
+            key="expanded"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className="space-y-3"
+          >
+            {/* User Info Card */}
+            <div className="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-muted/50 to-muted/30 border border-border/50">
+              <div className="relative">
+                <div className="bg-primary text-primary-foreground p-2 rounded-full">
+                  <User className="h-4 w-4" />
+                </div>
+                {isPremium && (
+                  <div className="absolute -top-1 -right-1 bg-yellow-500 text-yellow-50 p-1 rounded-full">
+                    <Crown className="h-2 w-2" />
+                  </div>
+                )}
+              </div>
+              
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate">
+                  {displayName}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {isPremium ? t('premiumAccount') : t('freeAccount')}
+                </p>
+              </div>
             </div>
-          )}
-        </div>
-      </div>
-      
-      <div className="space-y-1">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => handleNavigation('/profile')}
-          className="w-full justify-start text-sidebar-foreground hover:bg-gradient-to-r hover:from-blue-500/20 hover:to-blue-600/20 hover:scale-[1.02] transition-all duration-300 group"
-        >
-          <User className="h-4 w-4 mr-3 transition-all duration-300 group-hover:rotate-6 group-hover:scale-110" />
-          <span className="font-medium">{t('profile')}</span>
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleLogout}
-          className="w-full justify-start text-sidebar-foreground hover:bg-gradient-to-r hover:from-red-500/20 hover:to-red-600/20 hover:scale-[1.02] transition-all duration-300 group"
-        >
-          <LogOut className="h-4 w-4 mr-3 transition-all duration-300 group-hover:rotate-6 group-hover:scale-110" />
-          <span className="font-medium">{t('logout')}</span>
-        </Button>
-      </div>
+
+            {/* Upgrade Button (if not premium) */}
+            {!isPremium && (
+              <Button
+                size="sm"
+                className={cn(
+                  "w-full bg-gradient-to-r from-primary to-primary/80",
+                  "hover:from-primary/90 hover:to-primary/70",
+                  "shadow-md hover:shadow-lg transition-all duration-200"
+                )}
+              >
+                <Crown className="h-3 w-3 mr-2" />
+                {t('upgradeToPremium')}
+              </Button>
+            )}
+          </motion.div>
+        ) : (
+          <motion.div
+            key="collapsed"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.2 }}
+            className="flex justify-center"
+          >
+            <div className="relative">
+              <div className="bg-primary text-primary-foreground p-2 rounded-full">
+                <User className="h-4 w-4" />
+              </div>
+              {isPremium && (
+                <div className="absolute -top-1 -right-1 bg-yellow-500 text-yellow-50 p-1 rounded-full">
+                  <Crown className="h-2 w-2" />
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

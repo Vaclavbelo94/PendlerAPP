@@ -1,279 +1,324 @@
 
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Smartphone, Wifi, BellRing, Download, HardDrive, Trash2 } from 'lucide-react';
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { 
+  Smartphone, 
+  Battery, 
+  Wifi, 
+  HardDrive, 
+  Camera, 
+  Mic, 
+  MapPin,
+  Bell
+} from 'lucide-react';
 import { toast } from "sonner";
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 const DeviceSettings = () => {
-  const { t } = useLanguage();
-  const [pushNotifications, setPushNotifications] = useState(true);
-  const [offlineMode, setOfflineMode] = useState(false);
-  const [autoDownload, setAutoDownload] = useState(true);
-  const [dataCompression, setDataCompression] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [storageUsed, setStorageUsed] = useState(0);
+  const { t } = useTranslation('settings');
+  const [permissions, setPermissions] = useState({
+    camera: false,
+    microphone: false,
+    location: false,
+    notifications: false
+  });
+  const [deviceInfo, setDeviceInfo] = useState({
+    storage: 65,
+    battery: 85,
+    connection: 'wifi'
+  });
 
   useEffect(() => {
-    // Load device settings and calculate storage
-    const loadSettings = () => {
-      const saved = localStorage.getItem('deviceSettings');
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          setPushNotifications(parsed.pushNotifications ?? true);
-          setOfflineMode(parsed.offlineMode ?? false);
-          setAutoDownload(parsed.autoDownload ?? true);
-          setDataCompression(parsed.dataCompression ?? false);
-        } catch (error) {
-          console.error('Error loading device settings:', error);
-        }
-      }
-      
-      // Calculate storage usage
-      let total = 0;
-      for (let key in localStorage) {
-        if (localStorage.hasOwnProperty(key)) {
-          total += localStorage[key].length;
-        }
-      }
-      setStorageUsed(Math.round(total / 1024)); // KB
-    };
-
-    loadSettings();
+    // Check current permissions
+    checkPermissions();
+    // Update device info
+    updateDeviceInfo();
   }, []);
 
-  const handleSaveSettings = async () => {
-    setLoading(true);
+  const checkPermissions = async () => {
     try {
-      const deviceSettings = {
-        pushNotifications,
-        offlineMode,
-        autoDownload,
-        dataCompression
-      };
+      // Check camera permission
+      const cameraPermission = await navigator.permissions.query({ name: 'camera' as PermissionName });
       
-      localStorage.setItem('deviceSettings', JSON.stringify(deviceSettings));
-      toast.success(t('deviceSettingsSaved') || "Nastavení zařízení byla uložena");
+      // Check microphone permission
+      const micPermission = await navigator.permissions.query({ name: 'microphone' as PermissionName });
+      
+      // Check location permission
+      const locationPermission = await navigator.permissions.query({ name: 'geolocation' as PermissionName });
+      
+      // Check notification permission
+      const notificationPermission = Notification.permission;
+
+      setPermissions({
+        camera: cameraPermission.state === 'granted',
+        microphone: micPermission.state === 'granted',
+        location: locationPermission.state === 'granted',
+        notifications: notificationPermission === 'granted'
+      });
     } catch (error) {
-      console.error('Error saving device settings:', error);
-      toast.error(t('errorSavingSettings') || "Chyba při ukládání nastavení");
-    } finally {
-      setLoading(false);
+      console.error('Error checking permissions:', error);
     }
   };
 
-  const clearCache = async () => {
-    setLoading(true);
-    try {
-      // Clear various caches but keep important settings
-      const keysToKeep = ['deviceSettings', 'auth_session', 'theme'];
-      const keysToRemove: string[] = [];
-      
-      for (let key in localStorage) {
-        if (!keysToKeep.includes(key)) {
-          keysToRemove.push(key);
+  const updateDeviceInfo = () => {
+    // Get storage info (mock for now)
+    if ('storage' in navigator && 'estimate' in navigator.storage) {
+      navigator.storage.estimate().then(estimate => {
+        if (estimate.quota && estimate.usage) {
+          const percentage = (estimate.usage / estimate.quota) * 100;
+          setDeviceInfo(prev => ({ ...prev, storage: Math.round(percentage) }));
         }
-      }
-      
-      keysToRemove.forEach(key => localStorage.removeItem(key));
-      sessionStorage.clear();
-      
-      // Clear service worker cache if available
-      if ('caches' in window) {
-        const cacheNames = await caches.keys();
-        await Promise.all(cacheNames.map(name => caches.delete(name)));
-      }
-      
-      setStorageUsed(0);
-      toast.success(t('cacheCleared') || "Cache byla vymazána");
-    } catch (error) {
-      console.error('Error clearing cache:', error);
-      toast.error(t('errorClearingCache') || "Chyba při mazání cache");
-    } finally {
-      setLoading(false);
+      });
+    }
+
+    // Get battery info
+    if ('getBattery' in navigator) {
+      (navigator as any).getBattery().then((battery: any) => {
+        setDeviceInfo(prev => ({ 
+          ...prev, 
+          battery: Math.round(battery.level * 100) 
+        }));
+      });
+    }
+
+    // Get connection info
+    if ('connection' in navigator) {
+      const connection = (navigator as any).connection;
+      setDeviceInfo(prev => ({ 
+        ...prev, 
+        connection: connection.effectiveType || 'unknown' 
+      }));
     }
   };
 
-  const downloadOfflineData = async () => {
-    if (!offlineMode) {
-      toast.info(t('enableOfflineModeFirst') || "Nejprve povolte offline režim");
-      return;
-    }
-    
-    setLoading(true);
+  const requestPermission = async (type: keyof typeof permissions) => {
     try {
-      // Simulate downloading offline data
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      toast.success(t('offlineDataDownloaded') || "Offline data byla stažena");
-    } finally {
-      setLoading(false);
+      switch (type) {
+        case 'camera':
+          await navigator.mediaDevices.getUserMedia({ video: true });
+          break;
+        case 'microphone':
+          await navigator.mediaDevices.getUserMedia({ audio: true });
+          break;
+        case 'location':
+          navigator.geolocation.getCurrentPosition(() => {});
+          break;
+        case 'notifications':
+          await Notification.requestPermission();
+          break;
+      }
+      
+      setTimeout(checkPermissions, 1000);
+      toast.success(t('permissionGranted'));
+    } catch (error) {
+      console.error('Permission denied:', error);
+      toast.error(t('permissionDenied'));
     }
+  };
+
+  const clearAppData = () => {
+    localStorage.clear();
+    sessionStorage.clear();
+    toast.success(t('appDataCleared'));
   };
 
   return (
     <div className="space-y-6">
+      {/* Device Info */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Smartphone className="h-5 w-5" />
-            {t('deviceSettings') || 'Nastavení zařízení'}
+            {t('deviceInformation')}
           </CardTitle>
           <CardDescription>
-            {t('mobileAndOfflineConfiguration') || 'Konfigurace pro mobilní zařízení a offline režim'}
+            {t('currentDeviceStatus')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="pushNotifications" className="flex items-center gap-2">
-                <BellRing className="h-4 w-4" />
-                {t('pushNotifications') || 'Push notifikace'}
-              </Label>
-              <p className="text-sm text-muted-foreground">
-                {t('allowNotificationsOnDevice') || 'Povoluje zasílání upozornění na zařízení'}
-              </p>
-            </div>
-            <Switch
-              id="pushNotifications"
-              checked={pushNotifications}
-              onCheckedChange={setPushNotifications}
-            />
-          </div>
-
-          <Separator />
-
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="offlineMode" className="flex items-center gap-2">
-                <Wifi className="h-4 w-4" />
-                {t('offlineMode') || 'Offline režim'}
-              </Label>
-              <p className="text-sm text-muted-foreground">
-                {t('useAppWithoutInternet') || 'Umožňuje používání aplikace bez internetového připojení'}
-              </p>
-            </div>
-            <Switch
-              id="offlineMode"
-              checked={offlineMode}
-              onCheckedChange={setOfflineMode}
-            />
-          </div>
-
-          <Separator />
-
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="autoDownload" className="flex items-center gap-2">
-                <Download className="h-4 w-4" />
-                {t('automaticDownload') || 'Automatické stahování'}
-              </Label>
-              <p className="text-sm text-muted-foreground">
-                {t('autoDownloadForOffline') || 'Automaticky stahuje obsah pro offline použití'}
-              </p>
-            </div>
-            <Switch
-              id="autoDownload"
-              checked={autoDownload}
-              onCheckedChange={setAutoDownload}
-              disabled={!offlineMode}
-            />
-          </div>
-
-          <Separator />
-
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="dataCompression" className="flex items-center gap-2">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
                 <HardDrive className="h-4 w-4" />
-                {t('dataCompression') || 'Komprese dat'}
-              </Label>
+                <Label>{t('storage')}</Label>
+              </div>
+              <Progress value={deviceInfo.storage} className="h-2" />
               <p className="text-sm text-muted-foreground">
-                {t('saveDataByCompression') || 'Šetří datový objem kompresí přenášených dat'}
+                {deviceInfo.storage}% {t('used')}
               </p>
             </div>
-            <Switch
-              id="dataCompression"
-              checked={dataCompression}
-              onCheckedChange={setDataCompression}
-            />
-          </div>
 
-          {offlineMode && (
-            <>
-              <Separator />
-              <div className="space-y-3">
-                <Label>{t('offlineData') || 'Offline data'}</Label>
-                <div className="flex gap-2">
-                  <Button 
-                    onClick={downloadOfflineData} 
-                    disabled={loading}
-                    size="sm"
-                    className="gap-2"
-                  >
-                    <Download className="h-4 w-4" />
-                    {loading ? (t('downloading') || "Stahuji...") : (t('downloadOfflineData') || "Stáhnout offline data")}
-                  </Button>
-                  <Badge variant="secondary">
-                    {autoDownload ? (t('autoSyncEnabled') || "Auto-sync zapnutý") : (t('manualMode') || "Ruční režim")}
-                  </Badge>
-                </div>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Battery className="h-4 w-4" />
+                <Label>{t('battery')}</Label>
               </div>
-            </>
-          )}
+              <Progress value={deviceInfo.battery} className="h-2" />
+              <p className="text-sm text-muted-foreground">
+                {deviceInfo.battery}% {t('charged')}
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Wifi className="h-4 w-4" />
+                <Label>{t('connection')}</Label>
+              </div>
+              <Badge variant="secondary" className="w-fit">
+                {deviceInfo.connection}
+              </Badge>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
+      {/* Permissions */}
       <Card>
         <CardHeader>
-          <CardTitle>{t('storageAndCache') || 'Úložiště a cache'}</CardTitle>
+          <CardTitle>{t('permissions')}</CardTitle>
           <CardDescription>
-            {t('localStorageManagement') || 'Správa místního úložiště aplikace'}
+            {t('manageAppPermissions')}
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
+        <CardContent className="space-y-6">
+          <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">{t('usedStorage') || 'Použité úložiště'}</span>
-              <span className="text-sm text-muted-foreground">{storageUsed} KB</span>
+              <div className="flex items-center gap-3">
+                <Camera className="h-4 w-4" />
+                <div>
+                  <Label>{t('camera')}</Label>
+                  <p className="text-sm text-muted-foreground">
+                    {t('accessCameraForPhotos')}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge variant={permissions.camera ? "default" : "secondary"}>
+                  {permissions.camera ? t('granted') : t('denied')}
+                </Badge>
+                {!permissions.camera && (
+                  <Button
+                    size="sm"
+                    onClick={() => requestPermission('camera')}
+                  >
+                    {t('enable')}
+                  </Button>
+                )}
+              </div>
             </div>
-            <Progress value={Math.min((storageUsed / 1000) * 100, 100)} className="h-2" />
-            <p className="text-xs text-muted-foreground">
-              {t('recommendClearAt500KB') || 'Doporučeno vymazat cache při dosažení 500 KB'}
-            </p>
-          </div>
 
-          <div className="flex gap-2">
-            <Button 
-              variant="outline" 
-              onClick={clearCache} 
-              disabled={loading}
-              className="gap-2"
-            >
-              <Trash2 className="h-4 w-4" />
-              {loading ? (t('clearing') || "Mažu...") : (t('clearCache') || "Vymazat cache")}
-            </Button>
-            
-            {storageUsed > 500 && (
-              <Badge variant="destructive" className="ml-auto">
-                {t('recommendedToClear') || 'Doporučeno vymazat'}
-              </Badge>
-            )}
+            <Separator />
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Mic className="h-4 w-4" />
+                <div>
+                  <Label>{t('microphone')}</Label>
+                  <p className="text-sm text-muted-foreground">
+                    {t('accessMicrophoneForRecording')}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge variant={permissions.microphone ? "default" : "secondary"}>
+                  {permissions.microphone ? t('granted') : t('denied')}
+                </Badge>
+                {!permissions.microphone && (
+                  <Button
+                    size="sm"
+                    onClick={() => requestPermission('microphone')}
+                  >
+                    {t('enable')}
+                  </Button>
+                )}
+              </div>
+            </div>
+
+            <Separator />
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <MapPin className="h-4 w-4" />
+                <div>
+                  <Label>{t('location')}</Label>
+                  <p className="text-sm text-muted-foreground">
+                    {t('accessLocationForFeatures')}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge variant={permissions.location ? "default" : "secondary"}>
+                  {permissions.location ? t('granted') : t('denied')}
+                </Badge>
+                {!permissions.location && (
+                  <Button
+                    size="sm"
+                    onClick={() => requestPermission('location')}
+                  >
+                    {t('enable')}
+                  </Button>
+                )}
+              </div>
+            </div>
+
+            <Separator />
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Bell className="h-4 w-4" />
+                <div>
+                  <Label>{t('notifications')}</Label>
+                  <p className="text-sm text-muted-foreground">
+                    {t('receiveImportantNotifications')}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge variant={permissions.notifications ? "default" : "secondary"}>
+                  {permissions.notifications ? t('granted') : t('denied')}
+                </Badge>
+                {!permissions.notifications && (
+                  <Button
+                    size="sm"
+                    onClick={() => requestPermission('notifications')}
+                  >
+                    {t('enable')}
+                  </Button>
+                )}
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
 
-      <div className="flex gap-3">
-        <Button onClick={handleSaveSettings} disabled={loading}>
-          {loading ? (t('saving') || "Ukládám...") : (t('saveSettings') || "Uložit nastavení")}
-        </Button>
-      </div>
+      {/* Data Management */}
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('dataManagement')}</CardTitle>
+          <CardDescription>
+            {t('manageAppData')}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col gap-4">
+            <div className="p-4 border rounded-lg">
+              <h4 className="font-medium mb-2">{t('clearAppData')}</h4>
+              <p className="text-sm text-muted-foreground mb-4">
+                {t('clearAllLocalData')}
+              </p>
+              <Button variant="destructive" onClick={clearAppData}>
+                {t('clearData')}
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

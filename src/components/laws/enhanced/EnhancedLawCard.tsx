@@ -1,113 +1,106 @@
 
 import React from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ExternalLink, BookOpen, Clock, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, Clock } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Law } from '@/types/laws';
 import { cn } from '@/lib/utils';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 interface EnhancedLawCardProps {
-  law: {
-    id: string;
-    title: string;
-    description: string;
-    category: string;
-    updated: string;
-    iconName: string;
-    iconColor: string;
-    path: string;
-  };
-  index?: number;
+  law: Law;
+  index: number;
+  onViewDetails: (law: Law) => void;
 }
 
-export const EnhancedLawCard: React.FC<EnhancedLawCardProps> = ({ law, index = 0 }) => {
-  const { t, language } = useLanguage();
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const locale = language === 'cs' ? 'cs-CZ' : language === 'pl' ? 'pl-PL' : 'de-DE';
-    return date.toLocaleDateString(locale);
-  };
+export const EnhancedLawCard: React.FC<EnhancedLawCardProps> = ({
+  law,
+  index,
+  onViewDetails
+}) => {
+  const { t } = useTranslation('laws');
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: index * 0.1 }}
-      whileHover={{ scale: 1.02, y: -5 }}
-      whileTap={{ scale: 0.98 }}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
+      whileHover={{ y: -4, transition: { duration: 0.2 } }}
     >
       <Card className={cn(
-        "group relative overflow-hidden h-full transition-all duration-300",
-        "bg-white/10 backdrop-blur-md border border-white/20",
-        "hover:bg-white/15 hover:border-white/30 hover:shadow-xl",
-        "cursor-pointer"
+        "h-full transition-all duration-300 hover:shadow-lg border-l-4",
+        law.category === 'arbeitsrecht' && "border-l-blue-500",
+        law.category === 'steuerrecht' && "border-l-green-500",
+        law.category === 'sozialrecht' && "border-l-purple-500",
+        law.category === 'verkehrsrecht' && "border-l-orange-500"
       )}>
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-        
-        <CardHeader className="relative z-10 pb-3">
-          <div className="flex items-start justify-between mb-2">
-            <div className={cn(
-              "p-2 rounded-lg",
-              "bg-white/10 backdrop-blur-sm border border-white/20"
-            )}>
-              <div className={cn("text-lg", law.iconColor)}>
-                {law.iconName === 'Euro' && '💶'}
-                {law.iconName === 'FileText' && '📄'}
-                {law.iconName === 'Heart' && '❤️'}
-                {law.iconName === 'Briefcase' && '💼'}
-                {law.iconName === 'Clock' && '🕐'}
-                {law.iconName === 'UserCheck' && '✅'}
-                {law.iconName === 'Baby' && '👶'}
-                {law.iconName === 'BabyIcon' && '👶'}
-                {law.iconName === 'CalendarDays' && '📅'}
-                {law.iconName === 'Scale' && '⚖️'}
-              </div>
-            </div>
-            <Badge 
-              variant="secondary" 
-              className="bg-white/10 text-white border-white/20 text-xs"
-            >
-              {formatDate(law.updated)}
+        <CardHeader className="pb-3">
+          <div className="flex justify-between items-start mb-2">
+            <Badge variant="secondary" className="text-xs">
+              {law.category}
             </Badge>
+            <div className="flex items-center gap-1 text-muted-foreground">
+              <Clock className="h-3 w-3" />
+              <span className="text-xs">{law.lastUpdated}</span>
+            </div>
           </div>
           
-          <CardTitle className="text-lg font-semibold text-white group-hover:text-primary transition-colors">
+          <CardTitle className="text-lg leading-tight">
             {law.title}
           </CardTitle>
-        </CardHeader>
-        
-        <CardContent className="relative z-10 pt-0">
-          <p className="text-white/80 text-sm mb-4 line-clamp-2">
-            {law.description}
-          </p>
           
-          <div className="flex items-center justify-between">
-            <div className="flex items-center text-xs text-white/60">
-              <Clock className="h-3 w-3 mr-1" />
-              {t('updated')}
+          <CardDescription className="line-clamp-2">
+            {law.summary}
+          </CardDescription>
+        </CardHeader>
+
+        <CardContent className="pt-0">
+          <div className="flex flex-wrap gap-1 mb-4">
+            {law.tags?.map((tag, i) => (
+              <Badge key={i} variant="outline" className="text-xs">
+                {tag}
+              </Badge>
+            ))}
+          </div>
+
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+              <span>{law.importance}/5</span>
             </div>
             
-            <Button
-              asChild
-              variant="ghost"
-              size="sm"
-              className="group/btn text-white hover:text-primary hover:bg-white/10 transition-all duration-200"
-            >
-              <Link to={law.path}>
-                {t('readMore')}
-                <ArrowRight className="h-3 w-3 ml-1 transition-transform group-hover/btn:translate-x-1" />
-              </Link>
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => onViewDetails(law)}
+                className="gap-1"
+              >
+                <BookOpen className="h-3 w-3" />
+                {t('details')}
+              </Button>
+              
+              {law.officialUrl && (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  asChild
+                  className="gap-1"
+                >
+                  <a 
+                    href={law.officialUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                  >
+                    <ExternalLink className="h-3 w-3" />
+                  </a>
+                </Button>
+              )}
+            </div>
           </div>
         </CardContent>
-        
-        {/* Hover effect border */}
-        <div className="absolute inset-0 border-2 border-transparent group-hover:border-primary/30 rounded-lg transition-all duration-300" />
       </Card>
     </motion.div>
   );

@@ -4,7 +4,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Shift, ShiftType } from "./types";
 import { cs } from "date-fns/locale";
 import { dateFromDBString } from "./utils/dateUtils";
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 interface ShiftCalendarProps {
   selectedDate: Date | undefined;
@@ -21,7 +21,7 @@ export const ShiftCalendar = ({
   onUpdateShift,
   onDeleteShift
 }: ShiftCalendarProps) => {
-  const { t } = useLanguage();
+  const { t } = useTranslation('shifts');
 
   const getCalendarModifiers = () => {
     if (!shifts.length) return {};

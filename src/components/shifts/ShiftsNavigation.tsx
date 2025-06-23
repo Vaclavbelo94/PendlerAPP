@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Calendar, BarChart3, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 interface ShiftsNavigationProps {
   activeSection: string;
@@ -15,26 +15,26 @@ export const ShiftsNavigation: React.FC<ShiftsNavigationProps> = ({
   activeSection,
   onSectionChange
 }) => {
-  const { t } = useLanguage();
+  const { t } = useTranslation('shifts');
 
   const sections = [
     {
       id: 'overview',
-      label: t('dashboard') || 'Přehled',
+      label: t('overview'),
       icon: Clock,
-      description: t('quickShiftOverview') || 'Rychlý přehled směn'
+      description: t('quickShiftOverview')
     },
     {
       id: 'calendar',
-      label: t('calendar') || 'Kalendář',
+      label: t('calendar'),
       icon: Calendar,
-      description: t('calendarView') || 'Kalendářní zobrazení'
+      description: t('calendarView')
     },
     {
       id: 'analytics',
-      label: t('analytics') || 'Analýzy',
+      label: t('analytics'),
       icon: BarChart3,
-      description: t('statisticsAndGraphs') || 'Statistiky a grafy'
+      description: t('statisticsAndGraphs')
     }
   ];
 

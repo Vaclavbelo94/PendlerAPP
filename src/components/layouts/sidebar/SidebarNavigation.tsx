@@ -1,140 +1,171 @@
 
-import React from "react";
-import { Button } from "@/components/ui/button";
-import { useNavigate, useLocation } from "react-router-dom";
+import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { 
   Home, 
-  DollarSign, 
-  Car, 
-  CalendarDays, 
-  GraduationCap, 
-  Scale, 
-  Settings, 
-  MapPin,
+  Calendar, 
+  Calculator,
+  Car,
+  User,
+  Settings,
+  HelpCircle,
+  Book,
+  Plane,
   Languages,
-  Shield
-} from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
-import { useLanguage } from "@/hooks/useLanguage";
+  BarChart3
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 interface SidebarNavigationProps {
-  closeSidebar: () => void;
-  isHorizontal?: boolean;
+  collapsed: boolean;
 }
 
-const SidebarNavigation = ({ closeSidebar, isHorizontal = false }: SidebarNavigationProps) => {
-  const navigate = useNavigate();
+const SidebarNavigation: React.FC<SidebarNavigationProps> = ({ collapsed }) => {
   const location = useLocation();
-  const { user, isAdmin } = useAuth();
-  const { t } = useLanguage();
+  const { t } = useTranslation('common');
 
   const navigationItems = [
-    { nameKey: "home", path: "/", icon: Home, category: "main" },
-    ...(user ? [{ nameKey: "dashboard", path: "/dashboard", icon: Home, category: "main" }] : []),
-    { nameKey: "taxAdvisor", path: "/tax-advisor", icon: DollarSign, category: "tools" },
-    { nameKey: "vehicle", path: "/vehicle", icon: Car, category: "tools" },
-    ...(user ? [{ nameKey: "shifts", path: "/shifts", icon: CalendarDays, category: "work" }] : []),
-    { nameKey: "vocabulary", path: "/vocabulary", icon: GraduationCap, category: "learning" },
-    { nameKey: "translator", path: "/translator", icon: Languages, category: "learning" },
-    { nameKey: "laws", path: "/laws", icon: Scale, category: "legal" },
-    { nameKey: "travel", path: "/travel", icon: MapPin, category: "planning" },
-    { nameKey: "settings", path: "/settings", icon: Settings, category: "system" },
-    ...(isAdmin ? [{ nameKey: "admin", path: "/admin", icon: Shield, category: "admin" }] : []),
+    {
+      title: t('main'),
+      items: [
+        {
+          icon: Home,
+          label: t('dashboard'),
+          href: '/dashboard',
+          isActive: location.pathname === '/dashboard'
+        },
+        {
+          icon: Calendar,
+          label: t('shifts'),
+          href: '/shifts',
+          isActive: location.pathname === '/shifts',
+          badge: '2'
+        },
+        {
+          icon: BarChart3,
+          label: t('analytics'),
+          href: '/analytics',
+          isActive: location.pathname === '/analytics'
+        }
+      ]
+    },
+    {
+      title: t('tools'),
+      items: [
+        {
+          icon: Calculator,
+          label: t('taxAdvisor'),
+          href: '/tax-advisor',
+          isActive: location.pathname === '/tax-advisor'
+        },
+        {
+          icon: Car,
+          label: t('vehicle'),
+          href: '/vehicle',
+          isActive: location.pathname === '/vehicle'
+        },
+        {
+          icon: Plane,
+          label: t('travel'),
+          href: '/travel',
+          isActive: location.pathname === '/travel'
+        },
+        {
+          icon: Languages,
+          label: t('translator'),
+          href: '/translator',
+          isActive: location.pathname === '/translator'
+        },
+        {
+          icon: Book,
+          label: t('laws'),
+          href: '/laws',
+          isActive: location.pathname === '/laws'
+        }
+      ]
+    },
+    {
+      title: t('account'),
+      items: [
+        {
+          icon: User,
+          label: t('profile'),
+          href: '/profile',
+          isActive: location.pathname === '/profile'
+        },
+        {
+          icon: Settings,
+          label: t('settings'),
+          href: '/settings',
+          isActive: location.pathname === '/settings'
+        },
+        {
+          icon: HelpCircle,
+          label: t('help'),
+          href: '/help',
+          isActive: location.pathname === '/help'
+        }
+      ]
+    }
   ];
 
-  const handleNavigation = (path: string) => {
-    navigate(path);
-    closeSidebar();
-  };
-
-  const isActive = (path: string) => {
-    if (path === "/" && location.pathname !== "/") return false;
-    return location.pathname === path || location.pathname.startsWith(path + "/");
-  };
-
-  const getCategoryColor = (category: string) => {
-    switch (category) {
-      case "main": return "from-blue-500/20 to-blue-600/20 border-blue-500/30";
-      case "tools": return "from-green-500/20 to-green-600/20 border-green-500/30";
-      case "work": return "from-purple-500/20 to-purple-600/20 border-purple-500/30";
-      case "learning": return "from-amber-500/20 to-amber-600/20 border-amber-500/30";
-      case "legal": return "from-red-500/20 to-red-600/20 border-red-500/30";
-      case "planning": return "from-indigo-500/20 to-indigo-600/20 border-indigo-500/30";
-      case "system": return "from-gray-500/20 to-gray-600/20 border-gray-500/30";
-      case "admin": return "from-orange-500/20 to-orange-600/20 border-orange-500/30";
-      default: return "from-sidebar-accent/20 to-sidebar-accent/30 border-sidebar-border/30";
-    }
-  };
-
-  // Horizontální layout pro landscape sheet
-  if (isHorizontal) {
-    return (
-      <div className="grid grid-cols-3 gap-1 max-h-[200px] overflow-y-auto">
-        {navigationItems.map((item) => {
-          const Icon = item.icon;
-          const active = isActive(item.path);
-          const categoryColors = getCategoryColor(item.category);
-          
-          return (
-            <Button
-              key={item.path}
-              variant="ghost"
-              size="sm"
-              onClick={() => handleNavigation(item.path)}
-              className={`flex flex-col items-center justify-center h-16 text-[10px] leading-tight p-1 relative group transition-all duration-300 ${
-                active 
-                  ? `bg-gradient-to-br ${categoryColors} text-sidebar-accent-foreground shadow-lg scale-105` 
-                  : "text-sidebar-foreground hover:bg-sidebar-accent/30 hover:scale-105"
-              }`}
-            >
-              <Icon className={`h-4 w-4 mb-1 flex-shrink-0 transition-all duration-300 ${
-                active ? "animate-pulse" : "group-hover:rotate-6"
-              }`} />
-              <span className="text-center break-words max-w-full leading-3 font-medium">{t(item.nameKey)}</span>
-              {active && (
-                <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded-md pointer-events-none" />
-              )}
-            </Button>
-          );
-        })}
-      </div>
-    );
-  }
-
-  // Původní vertikální layout s vylepšeným stylingem
   return (
-    <nav className="space-y-1">
-      {navigationItems.map((item) => {
-        const Icon = item.icon;
-        const active = isActive(item.path);
-        const categoryColors = getCategoryColor(item.category);
-        
-        return (
-          <Button
-            key={item.path}
-            variant="ghost"
-            size="sm"
-            onClick={() => handleNavigation(item.path)}
-            className={`w-full justify-start relative group transition-all duration-300 ${
-              active 
-                ? `bg-gradient-to-r ${categoryColors} text-sidebar-accent-foreground shadow-lg scale-[1.02] font-medium` 
-                : "text-sidebar-foreground hover:bg-gradient-to-r hover:from-sidebar-accent/30 hover:to-sidebar-accent/20 hover:scale-[1.01]"
-            }`}
-          >
-            <Icon className={`h-4 w-4 mr-3 transition-all duration-300 ${
-              active ? "animate-pulse" : "group-hover:rotate-6 group-hover:scale-110"
-            }`} />
-            <span className="font-medium">{t(item.nameKey)}</span>
-            {active && (
-              <>
-                <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent rounded-md pointer-events-none" />
-                <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary to-accent rounded-r-full" />
-              </>
-            )}
-          </Button>
-        );
-      })}
-    </nav>
+    <div className="space-y-6">
+      {navigationItems.map((section, sectionIndex) => (
+        <motion.div
+          key={section.title}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: sectionIndex * 0.1 }}
+        >
+          {!collapsed && (
+            <h3 className="px-3 mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              {section.title}
+            </h3>
+          )}
+          
+          <div className="space-y-1">
+            {section.items.map((item, itemIndex) => (
+              <motion.div
+                key={item.href}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3, delay: (sectionIndex * 0.1) + (itemIndex * 0.05) }}
+              >
+                <Button
+                  variant={item.isActive ? "secondary" : "ghost"}
+                  size="sm"
+                  asChild
+                  className={cn(
+                    "w-full justify-start gap-3 h-9 transition-all duration-200",
+                    collapsed && "px-2 justify-center",
+                    item.isActive && "bg-primary/10 text-primary hover:bg-primary/15 shadow-sm"
+                  )}
+                >
+                  <Link to={item.href}>
+                    <item.icon className="h-4 w-4 flex-shrink-0" />
+                    {!collapsed && (
+                      <div className="flex items-center justify-between flex-1 min-w-0">
+                        <span className="truncate">{item.label}</span>
+                        {item.badge && (
+                          <Badge variant="secondary" className="h-5 text-xs ml-2">
+                            {item.badge}
+                          </Badge>
+                        )}
+                      </div>
+                    )}
+                  </Link>
+                </Button>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      ))}
+    </div>
   );
 };
 

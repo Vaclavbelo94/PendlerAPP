@@ -3,247 +3,260 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { 
   Home, 
-  User, 
-  Car, 
-  Languages, 
   Calendar, 
-  Settings, 
-  Crown, 
-  Shield,
-  Map,
-  Scale,
-  FileText,
-  BarChart3,
-  Contact,
+  Calculator,
+  Car,
+  User,
+  Settings,
   HelpCircle,
   ChevronLeft,
   ChevronRight,
-  Briefcase
+  Book,
+  Plane,
+  Languages,
+  BarChart3
 } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
-import { useLanguage } from '@/hooks/useLanguage';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/hooks/useAuth';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
-interface ModernSidebarProps {
-  closeSidebar?: () => void;
-}
-
-interface NavItem {
-  path: string;
-  title: string;
-  icon: React.ComponentType<any>;
-  badge?: number;
-  adminOnly?: boolean;
-  premium?: boolean;
-}
-
-export const ModernSidebar: React.FC<ModernSidebarProps> = ({ closeSidebar }) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const { user, isPremium, isAdmin } = useAuth();
-  const { t } = useLanguage();
+const ModernSidebar: React.FC = () => {
+  const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
+  const { user } = useAuth();
+  const { t } = useTranslation('common');
 
-  const navItems: NavItem[] = [
+  const navigationItems = [
     {
-      path: '/dashboard',
-      title: t('dashboard') || 'Dashboard',
-      icon: BarChart3
+      title: t('main'),
+      items: [
+        {
+          icon: Home,
+          label: t('dashboard'),
+          href: '/dashboard',
+          isActive: location.pathname === '/dashboard'
+        },
+        {
+          icon: Calendar,
+          label: t('shifts'),
+          href: '/shifts',
+          isActive: location.pathname === '/shifts',
+          badge: '2'
+        },
+        {
+          icon: BarChart3,
+          label: t('analytics'),
+          href: '/analytics',
+          isActive: location.pathname === '/analytics'
+        }
+      ]
     },
     {
-      path: '/shifts',
-      title: t('shifts') || 'Směny',
-      icon: Calendar
+      title: t('tools'),
+      items: [
+        {
+          icon: Calculator,
+          label: t('taxAdvisor'),
+          href: '/tax-advisor',
+          isActive: location.pathname === '/tax-advisor'
+        },
+        {
+          icon: Car,
+          label: t('vehicle'),
+          href: '/vehicle',
+          isActive: location.pathname === '/vehicle'
+        },
+        {
+          icon: Plane,
+          label: t('travel'),
+          href: '/travel',
+          isActive: location.pathname === '/travel'
+        },
+        {
+          icon: Languages,
+          label: t('translator'),
+          href: '/translator',
+          isActive: location.pathname === '/translator'
+        },
+        {
+          icon: Book,
+          label: t('laws'),
+          href: '/laws',
+          isActive: location.pathname === '/laws'
+        }
+      ]
     },
     {
-      path: '/translator',
-      title: t('translator') || 'Překladač',
-      icon: Languages
-    },
-    {
-      path: '/vehicle',
-      title: t('vehicle') || 'Vozidlo',
-      icon: Car
-    },
-    {
-      path: '/tax-advisor',
-      title: t('taxAdvisor') || 'Daňový poradce',
-      icon: FileText
-    },
-    {
-      path: '/travel',
-      title: t('travel') || 'Cestování',
-      icon: Map
-    },
-    {
-      path: '/laws',
-      title: t('laws') || 'Zákony',
-      icon: Scale
-    },
-    {
-      path: '/premium',
-      title: t('premium') || 'Premium',
-      icon: Crown,
-      premium: true
-    },
-    {
-      path: '/settings',
-      title: t('settings') || 'Nastavení',
-      icon: Settings
-    },
-    {
-      path: '/profile',
-      title: t('profile') || 'Profil',
-      icon: User
-    },
-    {
-      path: '/contact',
-      title: t('contact') || 'Kontakt',
-      icon: Contact
-    },
-    {
-      path: '/faq',
-      title: t('faq') || 'FAQ',
-      icon: HelpCircle
+      title: t('account'),
+      items: [
+        {
+          icon: User,
+          label: t('profile'),
+          href: '/profile',
+          isActive: location.pathname === '/profile'
+        },
+        {
+          icon: Settings,
+          label: t('settings'),
+          href: '/settings',
+          isActive: location.pathname === '/settings'
+        },
+        {
+          icon: HelpCircle,
+          label: t('help'),
+          href: '/help',
+          isActive: location.pathname === '/help'
+        }
+      ]
     }
   ];
 
-  // Add admin item if user is admin
-  if (isAdmin) {
-    navItems.push({
-      path: '/admin',
-      title: t('admin') || 'Administrace',
-      icon: Shield,
-      adminOnly: true
-    });
-  }
-
-  const isActive = (path: string) => location.pathname === path;
-
   return (
     <div className={cn(
-      "h-full bg-gradient-to-b from-card to-card/80 border-r border-border/50 transition-all duration-300",
-      isCollapsed ? "w-16" : "w-64"
+      "fixed left-0 top-0 z-30 h-full bg-card border-r border-border transition-all duration-300",
+      collapsed ? "w-16" : "w-64"
     )}>
       <div className="flex flex-col h-full">
         {/* Header */}
-        <div className="p-4 border-b border-border/50">
-          <div className="flex items-center justify-between">
-            {!isCollapsed && (
-              <Link to="/" className="flex items-center space-x-2">
-                <Briefcase className="h-8 w-8 text-primary" />
-                <div>
-                  <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
-                    PendlerApp
-                  </h1>
-                  <p className="text-xs text-muted-foreground">
-                    {user?.email?.split('@')[0] || t('user')}
-                  </p>
+        <div className={cn(
+          "flex items-center justify-between p-4 border-b border-border",
+          collapsed && "justify-center"
+        )}>
+          <AnimatePresence>
+            {!collapsed && (
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="flex items-center gap-2"
+              >
+                <div className="bg-primary text-primary-foreground p-2 rounded-lg">
+                  <span className="font-bold">WA</span>
                 </div>
-              </Link>
+                <span className="text-lg font-bold">WorkAssist</span>
+              </motion.div>
             )}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8"
-              onClick={() => setIsCollapsed(!isCollapsed)}
-            >
-              {isCollapsed ? (
-                <ChevronRight className="h-4 w-4" />
-              ) : (
-                <ChevronLeft className="h-4 w-4" />
-              )}
-            </Button>
-          </div>
+          </AnimatePresence>
+          
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setCollapsed(!collapsed)}
+            className="h-8 w-8 p-0"
+          >
+            {collapsed ? (
+              <ChevronRight className="h-4 w-4" />
+            ) : (
+              <ChevronLeft className="h-4 w-4" />
+            )}
+          </Button>
         </div>
 
         {/* Navigation */}
         <ScrollArea className="flex-1 px-3 py-4">
-          <nav className="space-y-2">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const active = isActive(item.path);
-              
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={cn(
-                    "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group relative",
-                    active 
-                      ? "bg-primary/10 text-primary border border-primary/20" 
-                      : "hover:bg-accent hover:text-accent-foreground",
-                    isCollapsed && "justify-center px-2"
+          <div className="space-y-6">
+            {navigationItems.map((section) => (
+              <div key={section.title}>
+                <AnimatePresence>
+                  {!collapsed && (
+                    <motion.h3
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="px-3 mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider"
+                    >
+                      {section.title}
+                    </motion.h3>
                   )}
-                  title={isCollapsed ? item.title : undefined}
-                >
-                  <Icon className={cn(
-                    "h-5 w-5 flex-shrink-0",
-                    active && "text-primary",
-                    item.premium && "text-amber-500",
-                    item.adminOnly && "text-red-500"
-                  )} />
-                  
-                  {!isCollapsed && (
-                    <>
-                      <span className="flex-1 font-medium">
-                        {item.title}
-                      </span>
-                      
-                      {item.premium && (
-                        <Badge variant="secondary" className="text-xs bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200">
-                          PRO
-                        </Badge>
+                </AnimatePresence>
+                
+                <div className="space-y-1">
+                  {section.items.map((item) => (
+                    <Button
+                      key={item.href}
+                      variant={item.isActive ? "secondary" : "ghost"}
+                      size="sm"
+                      asChild
+                      className={cn(
+                        "w-full justify-start gap-3 h-9",
+                        collapsed && "px-2 justify-center",
+                        item.isActive && "bg-primary/10 text-primary hover:bg-primary/15"
                       )}
-                      
-                      {item.adminOnly && (
-                        <Badge variant="destructive" className="text-xs">
-                          Admin
-                        </Badge>
-                      )}
-                      
-                      {item.badge && (
-                        <Badge variant="secondary" className="text-xs">
-                          {item.badge}
-                        </Badge>
-                      )}
-                    </>
-                  )}
-                  
-                  {active && (
-                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-r-full" />
-                  )}
-                </Link>
-              );
-            })}
-          </nav>
+                    >
+                      <Link to={item.href}>
+                        <item.icon className="h-4 w-4 flex-shrink-0" />
+                        <AnimatePresence>
+                          {!collapsed && (
+                            <motion.div
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              exit={{ opacity: 0, x: -10 }}
+                              className="flex items-center justify-between flex-1 min-w-0"
+                            >
+                              <span className="truncate">{item.label}</span>
+                              {item.badge && (
+                                <Badge variant="secondary" className="h-5 text-xs">
+                                  {item.badge}
+                                </Badge>
+                              )}
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </Link>
+                    </Button>
+                  ))}
+                </div>
+                
+                {section.title !== t('account') && <Separator className="my-4" />}
+              </div>
+            ))}
+          </div>
         </ScrollArea>
 
-        {/* Footer */}
-        {!isCollapsed && (
-          <div className="p-4 border-t border-border/50">
-            <div className="text-center">
-              <div className="text-xs text-muted-foreground mb-2">
-                {isPremium ? (
-                  <div className="flex items-center justify-center gap-1 text-amber-600">
-                    <Crown className="h-3 w-3" />
-                    <span>Premium aktivní</span>
-                  </div>
-                ) : (
-                  <Link to="/premium" className="text-primary hover:underline">
-                    Upgradovat na Premium
-                  </Link>
-                )}
-              </div>
-              <div className="text-xs text-muted-foreground">
-                © 2024 PendlerApp
-              </div>
-            </div>
-          </div>
-        )}
+        {/* User Section */}
+        <div className="p-4 border-t border-border">
+          <AnimatePresence>
+            {!collapsed ? (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                className="flex items-center gap-3 p-2 rounded-lg bg-muted/50"
+              >
+                <div className="bg-primary text-primary-foreground p-2 rounded-full">
+                  <User className="h-4 w-4" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium truncate">
+                    {user?.email?.split('@')[0] || t('user')}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {t('freeAccount')}
+                  </p>
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="flex justify-center"
+              >
+                <div className="bg-primary text-primary-foreground p-2 rounded-full">
+                  <User className="h-4 w-4" />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   );
 };
+
+export default ModernSidebar;

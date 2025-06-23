@@ -1,55 +1,60 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { useAppearanceSettings } from "@/hooks/useAppearanceSettings";
-import { Palette, Moon, Sun, Sparkles, Monitor } from "lucide-react";
+import { Palette, Monitor, Sun, Moon, Eye } from 'lucide-react';
+import { useTheme } from "@/components/theme-provider";
 import { toast } from "sonner";
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 const AppearanceSettings = () => {
-  const { t } = useLanguage();
-  const {
-    darkMode,
-    setDarkMode,
-    colorScheme,
-    handleColorSchemeChange,
-    compactMode,
-    setCompactMode,
-    isLoading,
-    isChangingTheme,
-    error,
-    handleSave
-  } = useAppearanceSettings();
+  const { theme, setTheme } = useTheme();
+  const { t } = useTranslation('settings');
+  const [fontSize, setFontSize] = useState("medium");
+  const [compactMode, setCompactMode] = useState(false);
+  const [animations, setAnimations] = useState(true);
+  const [highContrast, setHighContrast] = useState(false);
 
-  const colorSchemes = [
-    { value: 'purple', label: t('purple') || 'Fialová', color: 'bg-purple-500' },
-    { value: 'blue', label: t('blue') || 'Modrá', color: 'bg-blue-500' },
-    { value: 'green', label: t('green') || 'Zelená', color: 'bg-green-500' },
-    { value: 'amber', label: t('yellow') || 'Žlutá', color: 'bg-amber-500' },
-    { value: 'red', label: t('red') || 'Červená', color: 'bg-red-500' },
-    { value: 'pink', label: t('pink') || 'Růžová', color: 'bg-pink-500' }
-  ];
+  useEffect(() => {
+    // Load appearance settings from localStorage
+    const savedSettings = localStorage.getItem('appearanceSettings');
+    if (savedSettings) {
+      try {
+        const parsed = JSON.parse(savedSettings);
+        setFontSize(parsed.fontSize || "medium");
+        setCompactMode(parsed.compactMode || false);
+        setAnimations(parsed.animations ?? true);
+        setHighContrast(parsed.highContrast || false);
+      } catch (error) {
+        console.error('Error loading appearance settings:', error);
+      }
+    }
+  }, []);
 
-  const handleDarkModeToggle = (checked: boolean) => {
-    setDarkMode(checked);
+  const handleSave = () => {
+    const settings = {
+      fontSize,
+      compactMode,
+      animations,
+      highContrast
+    };
+    
+    localStorage.setItem('appearanceSettings', JSON.stringify(settings));
+    toast.success(t('appearanceSettingsSaved'));
   };
 
-  const handleCompactModeToggle = (checked: boolean) => {
-    setCompactMode(checked);
+  const handleReset = () => {
+    setFontSize("medium");
+    setCompactMode(false);
+    setAnimations(true);
+    setHighContrast(false);
+    localStorage.removeItem('appearanceSettings');
+    toast.success(t('appearanceSettingsReset'));
   };
-
-  const handleSaveClick = async () => {
-    await handleSave();
-  };
-
-  if (error) {
-    toast.error(error);
-  }
 
   return (
     <div className="space-y-6">
@@ -58,122 +63,122 @@ const AppearanceSettings = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Palette className="h-5 w-5" />
-            {t('appTheme') || 'Téma aplikace'}
+            {t('theme')}
           </CardTitle>
           <CardDescription>
-            {t('customizeAppAppearance') || 'Přizpůsobte si vzhled aplikace podle vašich preferencí'}
+            {t('chooseThemePreference')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Dark Mode Toggle */}
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label className="text-base font-medium flex items-center gap-2">
-                {darkMode ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
-                {t('darkMode') || 'Tmavý režim'}
-              </Label>
-              <p className="text-sm text-muted-foreground">
-                {t('switchBetweenLightDarkTheme') || 'Přepnout mezi světlým a tmavým tématem'}
-              </p>
-            </div>
-            <Switch
-              checked={darkMode}
-              onCheckedChange={handleDarkModeToggle}
-              disabled={isChangingTheme}
-            />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Button
+              variant={theme === "light" ? "default" : "outline"}
+              onClick={() => setTheme("light")}
+              className="h-20 flex-col gap-2"
+            >
+              <Sun className="h-6 w-6" />
+              {t('light')}
+            </Button>
+            <Button
+              variant={theme === "dark" ? "default" : "outline"}
+              onClick={() => setTheme("dark")}
+              className="h-20 flex-col gap-2"
+            >
+              <Moon className="h-6 w-6" />
+              {t('dark')}
+            </Button>
+            <Button
+              variant={theme === "system" ? "default" : "outline"}
+              onClick={() => setTheme("system")}
+              className="h-20 flex-col gap-2"
+            >
+              <Monitor className="h-6 w-6" />
+              {t('system')}
+            </Button>
           </div>
+        </CardContent>
+      </Card>
 
-          <Separator />
-
-          {/* Color Scheme Selection */}
-          <div className="space-y-3">
-            <Label className="text-base font-medium flex items-center gap-2">
-              <Sparkles className="h-4 w-4" />
-              {t('colorScheme') || 'Barevné schéma'}
-            </Label>
-            <p className="text-sm text-muted-foreground">
-              {t('selectMainAppColor') || 'Vyberte hlavní barvu aplikace'}
-            </p>
-            <Select value={colorScheme} onValueChange={handleColorSchemeChange}>
-              <SelectTrigger>
-                <SelectValue placeholder={t('selectColorScheme') || 'Vyberte barevné schéma'}>
-                  <div className="flex items-center gap-2">
-                    <div className={`w-4 h-4 rounded-full ${
-                      colorSchemes.find(c => c.value === colorScheme)?.color || 'bg-purple-500'
-                    }`} />
-                    {colorSchemes.find(c => c.value === colorScheme)?.label || t('purple') || 'Fialová'}
-                  </div>
-                </SelectValue>
+      {/* Display Settings */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Eye className="h-5 w-5" />
+            {t('display')}
+          </CardTitle>
+          <CardDescription>
+            {t('customizeDisplaySettings')}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="fontSize">{t('fontSize')}</Label>
+            <Select value={fontSize} onValueChange={setFontSize}>
+              <SelectTrigger id="fontSize">
+                <SelectValue placeholder={t('selectFontSize')} />
               </SelectTrigger>
               <SelectContent>
-                {colorSchemes.map((scheme) => (
-                  <SelectItem key={scheme.value} value={scheme.value}>
-                    <div className="flex items-center gap-2">
-                      <div className={`w-4 h-4 rounded-full ${scheme.color}`} />
-                      {scheme.label}
-                    </div>
-                  </SelectItem>
-                ))}
+                <SelectItem value="small">{t('small')}</SelectItem>
+                <SelectItem value="medium">{t('medium')}</SelectItem>
+                <SelectItem value="large">{t('large')}</SelectItem>
+                <SelectItem value="xl">{t('extraLarge')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <Separator />
 
-          {/* Compact Mode */}
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label className="text-base font-medium flex items-center gap-2">
-                <Monitor className="h-4 w-4" />
-                {t('compactMode') || 'Kompaktní režim'}
-              </Label>
+              <Label htmlFor="compactMode">{t('compactMode')}</Label>
               <p className="text-sm text-muted-foreground">
-                {t('reduceSpacingForMoreContent') || 'Zmenší mezery a velikosti prvků pro více obsahu'}
+                {t('reducePaddingSpacing')}
               </p>
             </div>
             <Switch
+              id="compactMode"
               checked={compactMode}
-              onCheckedChange={handleCompactModeToggle}
+              onCheckedChange={setCompactMode}
+            />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label htmlFor="animations">{t('animations')}</Label>
+              <p className="text-sm text-muted-foreground">
+                {t('enableAnimationsTransitions')}
+              </p>
+            </div>
+            <Switch
+              id="animations"
+              checked={animations}
+              onCheckedChange={setAnimations}
+            />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label htmlFor="highContrast">{t('highContrast')}</Label>
+              <p className="text-sm text-muted-foreground">
+                {t('increaseColorContrast')}
+              </p>
+            </div>
+            <Switch
+              id="highContrast"
+              checked={highContrast}
+              onCheckedChange={setHighContrast}
             />
           </div>
         </CardContent>
       </Card>
 
-      {/* Preview Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('preview') || 'Náhled'}</CardTitle>
-          <CardDescription>
-            {t('previewOfYourThemeSettings') || 'Ukázka vašeho nastaveného tématu'}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className={`p-4 rounded-lg border bg-card ${compactMode ? 'space-y-2' : 'space-y-4'}`}>
-            <div className="flex items-center justify-between">
-              <h3 className={`font-semibold ${compactMode ? 'text-sm' : 'text-base'}`}>
-                {t('sampleTitle') || 'Ukázkový nadpis'}
-              </h3>
-              <div className={`w-3 h-3 rounded-full bg-current opacity-20`} />
-            </div>
-            <p className={`text-muted-foreground ${compactMode ? 'text-xs' : 'text-sm'}`}>
-              {t('sampleTextWithCurrentTheme') || 'Toto je ukázka textu s vaším aktuálním nastavením tématu.'}
-            </p>
-            <div className="flex gap-2">
-              <div className={`px-2 py-1 bg-primary/10 rounded text-primary ${compactMode ? 'text-xs' : 'text-sm'}`}>
-                {t('primary') || 'Primární'}
-              </div>
-              <div className={`px-2 py-1 bg-muted rounded ${compactMode ? 'text-xs' : 'text-sm'}`}>
-                {t('secondary') || 'Sekundární'}
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Save Button */}
-      <div className="flex justify-end">
-        <Button onClick={handleSaveClick} disabled={isLoading}>
-          {isLoading ? (t('saving') || 'Ukládám...') : (t('saveSettings') || 'Uložit nastavení')}
+      {/* Action Buttons */}
+      <div className="flex gap-3">
+        <Button onClick={handleSave} className="gap-2">
+          {t('saveChanges')}
+        </Button>
+        <Button onClick={handleReset} variant="outline" className="gap-2">
+          {t('resetToDefaults')}
         </Button>
       </div>
     </div>

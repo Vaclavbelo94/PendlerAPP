@@ -1,111 +1,77 @@
 
 import React from 'react';
-import { BookOpen, Briefcase, Euro, Users, Heart } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Book, Scale, FileText, Users } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { useLanguage } from '@/hooks/useLanguage';
-import { getLawCategories } from '@/data/lawsData';
+import { useTranslation } from 'react-i18next';
 
 interface LawsNavigationProps {
-  activeCategory: string;
-  onCategoryChange: (categoryId: string) => void;
+  activeSection: string;
+  onSectionChange: (section: string) => void;
 }
 
 export const LawsNavigation: React.FC<LawsNavigationProps> = ({
-  activeCategory,
-  onCategoryChange
+  activeSection,
+  onSectionChange
 }) => {
-  const { t } = useLanguage();
-  
-  const lawsTabs = [
+  const { t } = useTranslation('laws');
+
+  const sections = [
     {
-      id: 'all',
-      icon: BookOpen,
-      label: t('allLaws'),
-      description: t('allLawsDescription')
+      id: 'arbeitsrecht',
+      label: t('laborLaw'),
+      icon: Users,
+      description: t('laborLawDescription')
     },
-    ...getLawCategories(t).map(cat => ({
-      id: cat.id,
-      icon: cat.id === 'work' ? Briefcase : 
-           cat.id === 'tax' ? Euro :
-           cat.id === 'social' ? Users : Heart,
-      label: cat.label,
-      description: cat.id === 'work' ? t('workLawDescription') :
-                  cat.id === 'tax' ? t('taxesDescription') :
-                  cat.id === 'social' ? t('socialSecurityDescription') :
-                  t('healthInsuranceDescription')
-    }))
+    {
+      id: 'steuerrecht',
+      label: t('taxLaw'),
+      icon: FileText,
+      description: t('taxLawDescription')
+    },
+    {
+      id: 'sozialrecht',
+      label: t('socialLaw'),
+      icon: Scale,
+      description: t('socialLawDescription')
+    },
+    {
+      id: 'verkehrsrecht',
+      label: t('trafficLaw'),
+      icon: Book,
+      description: t('trafficLawDescription')
+    }
   ];
 
   return (
-    <div className="flex justify-center mb-8">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 w-full max-w-7xl">
-        {lawsTabs.map((tab, index) => {
-          const Icon = tab.icon;
-          const isActive = activeCategory === tab.id;
-          
-          return (
-            <motion.button
-              key={tab.id}
-              onClick={() => onCategoryChange(tab.id)}
+    <div className="flex flex-wrap gap-3 justify-center sm:justify-start">
+      {sections.map((section, index) => {
+        const Icon = section.icon;
+        const isActive = activeSection === section.id;
+        
+        return (
+          <motion.div
+            key={section.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: index * 0.1 }}
+          >
+            <Button
+              variant={isActive ? "default" : "outline"}
+              onClick={() => onSectionChange(section.id)}
               className={cn(
-                "relative p-4 md:p-6 rounded-2xl border text-center transition-all duration-300 group",
-                "hover:shadow-lg hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
-                isActive 
-                  ? "bg-gradient-to-br from-primary/10 to-accent/10 border-primary/30 shadow-lg" 
-                  : "bg-card/80 backdrop-blur-sm border-border/50 hover:border-primary/20"
+                "transition-all duration-300 hover:scale-105",
+                "bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:text-primary",
+                isActive && "bg-primary/20 border-primary/30 shadow-lg scale-105"
               )}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              whileHover={{ y: -2 }}
-              whileTap={{ scale: 0.98 }}
             >
-              {/* Background gradient for active state */}
-              {isActive && (
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 rounded-2xl"
-                  layoutId="activeLawsTab"
-                  transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                />
-              )}
-              
-              <div className="relative z-10 flex flex-col items-center">
-                <motion.div 
-                  className={cn(
-                    "w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center transition-all duration-300 mb-3",
-                    isActive 
-                      ? "bg-gradient-to-br from-primary/20 to-accent/20 text-primary" 
-                      : "bg-gradient-to-br from-muted/50 to-muted/30 text-muted-foreground group-hover:from-primary/10 group-hover:to-accent/10 group-hover:text-primary"
-                  )}
-                  whileHover={{ scale: 1.1, rotate: 5 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                >
-                  <Icon className="h-5 w-5 md:h-6 md:w-6" />
-                </motion.div>
-                
-                <h3 className={cn(
-                  "font-semibold text-lg transition-colors duration-300 mb-2",
-                  isActive 
-                    ? "text-primary" 
-                    : "text-foreground group-hover:text-primary"
-                )}>
-                  {tab.label}
-                </h3>
-                
-                <p className={cn(
-                  "text-sm transition-colors duration-300",
-                  isActive 
-                    ? "text-muted-foreground" 
-                    : "text-muted-foreground group-hover:text-foreground"
-                )}>
-                  {tab.description}
-                </p>
-              </div>
-            </motion.button>
-          );
-        })}
-      </div>
+              <Icon className="h-4 w-4 mr-2" />
+              {section.label}
+            </Button>
+          </motion.div>
+        );
+      })}
     </div>
   );
 };

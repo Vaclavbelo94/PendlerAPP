@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Calendar, Clock, Edit, Trash } from 'lucide-react';
 import { format } from 'date-fns';
 import { cs } from 'date-fns/locale';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 interface Shift {
   id: string;
@@ -24,14 +24,14 @@ interface ShiftsListProps {
 }
 
 const ShiftsList = ({ shifts, onUpdateShift, onDeleteShift }: ShiftsListProps) => {
-  const { t } = useLanguage();
+  const { t } = useTranslation('shifts');
 
   if (shifts.length === 0) {
     return (
       <Card>
         <CardContent className="text-center py-8">
           <Calendar className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-          <p className="text-muted-foreground">{t('noShiftsToDisplay') || 'Žádné směny k zobrazení'}</p>
+          <p className="text-muted-foreground">{t('noShiftsToDisplay')}</p>
         </CardContent>
       </Card>
     );
@@ -40,11 +40,11 @@ const ShiftsList = ({ shifts, onUpdateShift, onDeleteShift }: ShiftsListProps) =
   const getShiftTypeLabel = (type: string) => {
     switch (type) {
       case 'morning':
-        return t('morningShift') || 'Ranní směna';
+        return t('morningShift');
       case 'afternoon':
-        return t('afternoonShift') || 'Odpolední směna';
+        return t('afternoonShift');
       case 'night':
-        return t('nightShift') || 'Noční směna';
+        return t('nightShift');
       default:
         return type;
     }

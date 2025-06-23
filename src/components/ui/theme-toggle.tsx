@@ -1,79 +1,40 @@
 
-import React from 'react';
-import { Moon, Sun } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useTheme } from '@/hooks/useTheme';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { useLanguage } from '@/hooks/useLanguage';
-import { motion } from 'framer-motion';
+import React from "react"
+import { Moon, Sun } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { useTheme } from "@/components/theme-provider"
+import { useTranslation } from 'react-i18next'
 
-interface ThemeToggleProps {
-  variant?: 'default' | 'outline' | 'secondary' | 'ghost' | 'link';
-  size?: 'default' | 'sm' | 'lg' | 'icon';
-  alwaysShow?: boolean;
-  className?: string;
-}
+export function ThemeToggle() {
+  const { setTheme } = useTheme()
+  const { t } = useTranslation('common')
 
-export function ThemeToggle({ 
-  variant = 'ghost', 
-  size = 'icon',
-  alwaysShow = false,
-  className
-}: ThemeToggleProps) {
-  const { theme, setTheme, isChangingTheme } = useTheme();
-  const { t } = useLanguage();
-  const isMobile = useIsMobile();
-  
-  if (!alwaysShow && isMobile) {
-    return null;
-  }
-  
-  const toggleTheme = () => {
-    if (isChangingTheme) return;
-    
-    setTheme(theme === 'dark' ? 'light' : 'dark');
-  };
-  
-  const lightModeLabel = t('switchToLightMode') || 'Přepnout na světlý režim';
-  const darkModeLabel = t('switchToDarkMode') || 'Přepnout na tmavý režim';
-  
-  const ButtonComponent = (
-    <Button
-      variant={variant}
-      size={size}
-      onClick={toggleTheme}
-      className={className}
-      disabled={isChangingTheme}
-      aria-label={theme === 'dark' ? lightModeLabel : darkModeLabel}
-    >
-      {theme === 'dark' ? (
-        <Sun className="h-[1.2rem] w-[1.2rem] transition-transform duration-200 rotate-0" />
-      ) : (
-        <Moon className="h-[1.2rem] w-[1.2rem] transition-transform duration-200 rotate-0" />
-      )}
-    </Button>
-  );
-
-  if (alwaysShow && isMobile) {
-    return ButtonComponent;
-  }
-  
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <motion.div
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-          >
-            {ButtonComponent}
-          </motion.div>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>{theme === 'dark' ? lightModeLabel : darkModeLabel}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
-  );
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" size="icon">
+          <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+          <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+          <span className="sr-only">{t('toggleTheme')}</span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem onClick={() => setTheme("light")}>
+          {t('light')}
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme("dark")}>
+          {t('dark')}
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme("system")}>
+          {t('system')}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
 }

@@ -1,155 +1,188 @@
 
-import { Link } from "react-router-dom";
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
 import { 
-  Calendar, 
-  GithubIcon, 
-  FacebookIcon, 
-  InstagramIcon, 
-  TwitterIcon, 
-  PhoneIcon, 
-  MailIcon, 
-  GlobeIcon 
-} from "lucide-react";
-import { useLanguage } from '@/hooks/useLanguage';
+  Mail, 
+  Phone, 
+  MapPin, 
+  Facebook, 
+  Twitter, 
+  Instagram, 
+  Linkedin,
+  Heart
+} from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
-const Footer = () => {
+const Footer: React.FC = () => {
+  const { t } = useTranslation('common');
+
   const currentYear = new Date().getFullYear();
-  const { t } = useLanguage();
-  
+
+  const footerLinks = {
+    company: [
+      { label: t('aboutUs'), href: '/about' },
+      { label: t('careers'), href: '/careers' },
+      { label: t('contact'), href: '/contact' },
+      { label: t('blog'), href: '/blog' }
+    ],
+    support: [
+      { label: t('helpCenter'), href: '/help' },
+      { label: 'FAQ', href: '/faq' },
+      { label: t('community'), href: '/community' },
+      { label: t('tutorials'), href: '/tutorials' }
+    ],
+    legal: [
+      { label: t('privacyPolicy'), href: '/privacy' },
+      { label: t('termsOfService'), href: '/terms' },
+      { label: t('cookiePolicy'), href: '/cookies' },
+      { label: 'GDPR', href: '/gdpr' }
+    ],
+    product: [
+      { label: t('features'), href: '/features' },
+      { label: t('pricing'), href: '/pricing' },
+      { label: t('roadmap'), href: '/roadmap' },
+      { label: t('changelog'), href: '/changelog' }
+    ]
+  };
+
+  const socialLinks = [
+    { icon: Facebook, href: 'https://facebook.com', label: 'Facebook' },
+    { icon: Twitter, href: 'https://twitter.com', label: 'Twitter' },
+    { icon: Instagram, href: 'https://instagram.com', label: 'Instagram' },
+    { icon: Linkedin, href: 'https://linkedin.com', label: 'LinkedIn' }
+  ];
+
   return (
-    <footer className="bg-gray-900 text-white pt-16 pb-8">
-      <div className="container mx-auto px-4 max-w-7xl">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 pb-12 border-b border-gray-800">
-          <div className="col-span-1 md:col-span-4">
-            <Link to="/" className="inline-flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white font-bold">
-                PP
+    <footer className="bg-background border-t">
+      <div className="container mx-auto px-4 py-12">
+        {/* Main Footer Content */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-8">
+          {/* Brand Section */}
+          <div className="lg:col-span-1">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="bg-primary text-primary-foreground p-2 rounded-lg">
+                <Heart className="h-6 w-6" />
               </div>
-              <span className="font-bold text-xl">{t('footer.appName')}</span>
-            </Link>
-            <p className="text-gray-400 mb-6 max-w-md">
-              {t('footer.description')}
+              <span className="text-xl font-bold">WorkAssist</span>
+            </div>
+            <p className="text-muted-foreground text-sm mb-4">
+              {t('footerDescription')}
             </p>
-            <div className="flex space-x-4">
-              <a href="#" aria-label="Facebook" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-blue-500 hover:text-white transition-all">
-                <FacebookIcon className="w-5 h-5" />
-              </a>
-              <a href="#" aria-label="Twitter" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-blue-500 hover:text-white transition-all">
-                <TwitterIcon className="w-5 h-5" />
-              </a>
-              <a href="#" aria-label="Instagram" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-blue-500 hover:text-white transition-all">
-                <InstagramIcon className="w-5 h-5" />
-              </a>
-              <a href="#" aria-label="Github" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-blue-500 hover:text-white transition-all">
-                <GithubIcon className="w-5 h-5" />
-              </a>
-            </div>
-          </div>
-          
-          <div className="col-span-1 md:col-span-2">
-            <h3 className="font-semibold text-lg mb-4 text-white">{t('footer.features')}</h3>
-            <ul className="space-y-3">
-              <li>
-                <Link to="/vocabulary" className="text-gray-400 hover:text-blue-400 transition-colors flex items-center gap-2">
-                  <span className="w-1 h-1 bg-gray-400 rounded-full"></span>
-                  {t('footer.germanLessons')}
-                </Link>
-              </li>
-              <li>
-                <Link to="/laws" className="text-gray-400 hover:text-blue-400 transition-colors flex items-center gap-2">
-                  <span className="w-1 h-1 bg-gray-400 rounded-full"></span>
-                  {t('footer.lawsOverview')}
-                </Link>
-              </li>
-              <li>
-                <Link to="/vehicle" className="text-gray-400 hover:text-blue-400 transition-colors flex items-center gap-2">
-                  <span className="w-1 h-1 bg-gray-400 rounded-full"></span>
-                  {t('footer.vehicleManagement')}
-                </Link>
-              </li>
-              <li>
-                <Link to="/shifts" className="text-gray-400 hover:text-blue-400 transition-colors flex items-center gap-2">
-                  <span className="w-1 h-1 bg-gray-400 rounded-full"></span>
-                  {t('footer.shiftPlanning')}
-                </Link>
-              </li>
-            </ul>
-          </div>
-          
-          <div className="col-span-1 md:col-span-2">
-            <h3 className="font-semibold text-lg mb-4 text-white">{t('footer.aboutUs')}</h3>
-            <ul className="space-y-3">
-              <li>
-                <Link to="/contact" className="text-gray-400 hover:text-blue-400 transition-colors flex items-center gap-2">
-                  <span className="w-1 h-1 bg-gray-400 rounded-full"></span>
-                  {t('footer.aboutProject')}
-                </Link>
-              </li>
-              <li>
-                <Link to="/contact" className="text-gray-400 hover:text-blue-400 transition-colors flex items-center gap-2">
-                  <span className="w-1 h-1 bg-gray-400 rounded-full"></span>
-                  {t('contact')}
-                </Link>
-              </li>
-              <li>
-                <Link to="/faq" className="text-gray-400 hover:text-blue-400 transition-colors flex items-center gap-2">
-                  <span className="w-1 h-1 bg-gray-400 rounded-full"></span>
-                  {t('footer.frequentQuestions')}
-                </Link>
-              </li>
-            </ul>
-          </div>
-          
-          <div className="col-span-1 md:col-span-4">
-            <h3 className="font-semibold text-lg mb-4 text-white">{t('contact')}</h3>
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-gray-800 flex items-center justify-center text-blue-400">
-                  <MailIcon className="w-5 h-5" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">{t('contactEmail')}</p>
-                  <p className="text-gray-300">admin@pendlerapp.cz</p>
-                </div>
+            
+            {/* Contact Info */}
+            <div className="space-y-2 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <Mail className="h-4 w-4" />
+                <span>info@workassist.com</span>
               </div>
-              
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-gray-800 flex items-center justify-center text-blue-400">
-                  <PhoneIcon className="w-5 h-5" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">{t('contactPhone')}</p>
-                  <p className="text-gray-300">+420 725 458 395</p>
-                </div>
+              <div className="flex items-center gap-2">
+                <Phone className="h-4 w-4" />
+                <span>+420 123 456 789</span>
               </div>
-              
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-gray-800 flex items-center justify-center text-blue-400">
-                  <GlobeIcon className="w-5 h-5" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">{t('footer.website')}</p>
-                  <p className="text-gray-300">www.pendlerapp.cz</p>
-                </div>
+              <div className="flex items-center gap-2">
+                <MapPin className="h-4 w-4" />
+                <span>Praha, Česká republika</span>
               </div>
             </div>
+          </div>
+
+          {/* Links Sections */}
+          <div>
+            <h3 className="font-semibold mb-4">{t('company')}</h3>
+            <ul className="space-y-2">
+              {footerLinks.company.map((link, index) => (
+                <li key={index}>
+                  <Link 
+                    to={link.href}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="font-semibold mb-4">{t('support')}</h3>
+            <ul className="space-y-2">
+              {footerLinks.support.map((link, index) => (
+                <li key={index}>
+                  <Link 
+                    to={link.href}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="font-semibold mb-4">{t('product')}</h3>
+            <ul className="space-y-2">
+              {footerLinks.product.map((link, index) => (
+                <li key={index}>
+                  <Link 
+                    to={link.href}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="font-semibold mb-4">{t('legal')}</h3>
+            <ul className="space-y-2">
+              {footerLinks.legal.map((link, index) => (
+                <li key={index}>
+                  <Link 
+                    to={link.href}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
-        
-        <div className="mt-8 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-gray-500 text-sm mb-4 md:mb-0">
-            © {currentYear} {t('footer.appName')}. {t('footer.allRightsReserved')}.
-          </p>
-          <div className="flex flex-wrap gap-4 text-sm text-gray-500">
-            <Link to="/terms" className="hover:text-blue-400 transition-colors">
-              {t('footer.termsOfUse')}
-            </Link>
-            <Link to="/privacy" className="hover:text-blue-400 transition-colors">
-              {t('footer.privacyProtection')}
-            </Link>
-            <Link to="/cookies" className="hover:text-blue-400 transition-colors">
-              Cookies
-            </Link>
+
+        <Separator className="mb-8" />
+
+        {/* Bottom Footer */}
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="text-sm text-muted-foreground">
+            © {currentYear} WorkAssist. {t('allRightsReserved')}
+          </div>
+
+          {/* Social Links */}
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground mr-2">{t('followUs')}:</span>
+            {socialLinks.map((social, index) => (
+              <Button
+                key={index}
+                variant="ghost"
+                size="sm"
+                asChild
+                className="h-8 w-8 p-0"
+              >
+                <a
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={social.label}
+                >
+                  <social.icon className="h-4 w-4" />
+                </a>
+              </Button>
+            ))}
           </div>
         </div>
       </div>
