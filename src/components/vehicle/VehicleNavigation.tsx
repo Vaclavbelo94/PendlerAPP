@@ -1,68 +1,48 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Car, Gauge, Wrench } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { cn } from '@/lib/utils';
-import { useLanguage } from '@/hooks/useLanguage';
+import { Car, Fuel, Wrench, FileText } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface VehicleNavigationProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
 }
 
-export const VehicleNavigation: React.FC<VehicleNavigationProps> = ({
+const VehicleNavigation: React.FC<VehicleNavigationProps> = ({
   activeTab,
   onTabChange
 }) => {
-  const { t } = useLanguage();
+  const { t } = useTranslation(['vehicle']);
 
-  const sections = [
-    {
-      id: 'overview',
-      label: t('dashboard') || 'Přehled',
-      icon: Car,
-      description: t('vehicleOverview') || 'Rychlý přehled vozidla'
-    },
-    {
-      id: 'fuel',
-      label: t('fuelConsumption') || 'Spotřeba',
-      icon: Gauge,
-      description: t('fuelAndCosts') || 'Palivo a náklady'
-    },
-    {
-      id: 'service',
-      label: t('maintenance') || 'Servis',
-      icon: Wrench,
-      description: t('maintenanceAndRepairs') || 'Údržba a opravy'
-    }
+  const tabs = [
+    { id: 'overview', label: t('vehicle:overview'), icon: Car },
+    { id: 'fuel', label: t('vehicle:fuel'), icon: Fuel },
+    { id: 'service', label: t('vehicle:service'), icon: Wrench },
+    { id: 'others', label: t('vehicle:others'), icon: FileText }
   ];
 
   return (
-    <div className="flex flex-wrap gap-2">
-      {sections.map((section, index) => {
-        const Icon = section.icon;
-        const isActive = activeTab === section.id;
+    <div className="flex flex-wrap gap-2 p-1 bg-muted/50 rounded-lg">
+      {tabs.map((tab) => {
+        const Icon = tab.icon;
+        const isActive = activeTab === tab.id;
         
         return (
-          <motion.div
-            key={section.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: index * 0.1 }}
+          <Button
+            key={tab.id}
+            variant={isActive ? "default" : "ghost"}
+            size="sm"
+            onClick={() => onTabChange(tab.id)}
+            className={`flex items-center gap-2 transition-all duration-200 ${
+              isActive 
+                ? "bg-background shadow-sm text-foreground" 
+                : "text-muted-foreground hover:text-foreground hover:bg-background/50"
+            }`}
           >
-            <Button
-              variant={isActive ? "default" : "outline"}
-              onClick={() => onTabChange(section.id)}
-              className={cn(
-                "transition-all duration-300 hover:scale-105",
-                isActive && "shadow-lg bg-gradient-to-r from-primary to-accent"
-              )}
-            >
-              <Icon className="h-4 w-4 mr-2" />
-              {section.label}
-            </Button>
-          </motion.div>
+            <Icon className="h-4 w-4" />
+            {tab.label}
+          </Button>
         );
       })}
     </div>
