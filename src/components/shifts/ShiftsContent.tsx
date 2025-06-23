@@ -5,7 +5,7 @@ import { Plus, Calendar, ListFilter, FileSpreadsheet } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { useStandardizedToast } from '@/hooks/useStandardizedToast';
 import { useAuth } from '@/hooks/useAuth';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 import { ShiftCalendar } from './ShiftCalendar';
 import ShiftsList from './ShiftsList';
 import ShiftForm from './ShiftForm';
@@ -18,7 +18,7 @@ import SimpleLoadingSpinner from '@/components/loading/SimpleLoadingSpinner';
 const ShiftsContent = () => {
   const { user, isLoading: authLoading } = useAuth();
   const { success, error } = useStandardizedToast();
-  const { t } = useLanguage();
+  const { t } = useTranslation('shifts');
   const [activeTab, setActiveTab] = useState('calendar');
   const [isAddSheetOpen, setIsAddSheetOpen] = useState(false);
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);

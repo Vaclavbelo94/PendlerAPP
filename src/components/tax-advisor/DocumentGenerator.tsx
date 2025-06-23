@@ -1,10 +1,10 @@
 
 import React from 'react';
 import EnhancedDocumentGenerator from './EnhancedDocumentGenerator';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 const DocumentGenerator = () => {
-  const { t } = useLanguage();
+  const { t } = useTranslation('common');
   
   return <EnhancedDocumentGenerator />;
 };

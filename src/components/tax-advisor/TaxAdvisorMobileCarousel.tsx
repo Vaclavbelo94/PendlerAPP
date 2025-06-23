@@ -1,11 +1,10 @@
-
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 interface TaxAdvisorMobileCarouselProps {
   items: Array<{
@@ -22,7 +21,7 @@ export const TaxAdvisorMobileCarousel: React.FC<TaxAdvisorMobileCarouselProps> =
   activeItem,
   onItemChange
 }) => {
-  const { t } = useLanguage();
+  const { t } = useTranslation('common');
   const itemIds = items.map(item => item.id);
   const { containerRef, currentIndex, canSwipeLeft, canSwipeRight } = useSwipeNavigation({
     items: itemIds,

@@ -3,6 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import EnhancedLawCard from './enhanced/EnhancedLawCard';
+import { Law } from '@/types/laws';
 
 interface LawsGridProps {
   laws: Array<{
@@ -20,6 +21,11 @@ interface LawsGridProps {
 const LawsGrid: React.FC<LawsGridProps> = ({ laws }) => {
   const { t } = useTranslation('laws');
 
+  const handleViewDetails = (law: Law) => {
+    console.log('View details for law:', law.id);
+    // TODO: Implement law details view
+  };
+
   if (laws.length === 0) {
     return (
       <motion.div
@@ -35,13 +41,26 @@ const LawsGrid: React.FC<LawsGridProps> = ({ laws }) => {
 
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {laws.map((law, index) => (
-        <EnhancedLawCard 
-          key={law.id} 
-          law={law} 
-          index={index}
-        />
-      ))}
+      {laws.map((law, index) => {
+        const lawData: Law = {
+          id: law.id,
+          title: law.title,
+          summary: law.description,
+          category: law.category,
+          lastUpdated: law.updated,
+          importance: 4,
+          tags: [law.category]
+        };
+        
+        return (
+          <EnhancedLawCard 
+            key={law.id} 
+            law={lawData} 
+            index={index}
+            onViewDetails={handleViewDetails}
+          />
+        );
+      })}
     </div>
   );
 };

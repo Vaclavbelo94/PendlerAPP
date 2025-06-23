@@ -3,7 +3,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Download, CheckCircle2 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 interface SuccessMessageProps {
   onDownload: () => void;
@@ -11,7 +11,7 @@ interface SuccessMessageProps {
 
 const SuccessMessage: React.FC<SuccessMessageProps> = ({ onDownload }) => {
   const isMobile = useIsMobile();
-  const { t } = useLanguage();
+  const { t } = useTranslation('common');
   
   const handleDownloadClick = () => {
     if (onDownload && typeof onDownload === 'function') {

@@ -6,7 +6,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 import ShiftForm from '@/components/shifts/ShiftForm';
 import { Shift } from '@/hooks/useShiftsManagement';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 interface ShiftsFormSheetsProps {
   isAddSheetOpen: boolean;
@@ -32,7 +32,7 @@ const ShiftsFormSheets: React.FC<ShiftsFormSheetsProps> = ({
   isSaving
 }) => {
   const isMobile = useIsMobile();
-  const { t } = useLanguage();
+  const { t } = useTranslation('shifts');
 
   return (
     <>

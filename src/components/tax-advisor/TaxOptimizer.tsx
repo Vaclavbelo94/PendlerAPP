@@ -6,11 +6,11 @@ import { Calculator, Lightbulb, FileText, TrendingUp } from 'lucide-react';
 import GermanTaxCalculator from './calculators/GermanTaxCalculator';
 import TaxOptimizationTips from './optimization/TaxOptimizationTips';
 import { Badge } from '@/components/ui/badge';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 const TaxOptimizer = () => {
   const [activeTab, setActiveTab] = useState('calculator');
-  const { t } = useLanguage();
+  const { t } = useTranslation('common');
 
   return (
     <div className="space-y-6">

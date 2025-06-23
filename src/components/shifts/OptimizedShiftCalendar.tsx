@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { MobileShiftCalendarGrid } from './mobile/MobileShiftCalendarGrid';
 import { StandardCard } from '@/components/ui/StandardCard';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 interface OptimizedShiftCalendarProps {
   shifts: Shift[];
@@ -26,7 +26,7 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
 }) => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const isMobile = useIsMobile();
-  const { t } = useLanguage();
+  const { t } = useTranslation('shifts');
 
   if (isMobile) {
     return (

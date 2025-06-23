@@ -1,14 +1,9 @@
 
-// Re-export legacy compatibility
+// Re-export legacy compatibility - simplified without deleted modules
 import type { Language, LanguageInfo, Translations } from './types';
 import { languages, defaultLanguage } from './languages';
 import { commonTranslations } from './translations/common';
 import { lawsTranslations } from './translations/laws';
-
-// New centralized system
-export { useCentralizedTranslation } from '@/hooks/useCentralizedTranslation';
-export { getCentralizedTranslation, centralizedTranslations } from './centralized-translations';
-export type { CentralizedLanguage } from './centralized-translations';
 
 // Combine all translations for legacy compatibility
 const allTranslations = {

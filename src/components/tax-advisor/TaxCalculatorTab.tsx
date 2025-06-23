@@ -6,12 +6,12 @@ import { Badge } from '@/components/ui/badge';
 import TaxCalculator from '@/components/calculator/TaxCalculator';
 import { useTaxManagement } from '@/hooks/useTaxManagement';
 import { useAuth } from '@/hooks/auth';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 const TaxCalculatorTab = () => {
   const { user } = useAuth();
   const { saveCalculation, calculations } = useTaxManagement();
-  const { t } = useLanguage();
+  const { t } = useTranslation('common');
 
   const handleCalculation = async (inputs: Record<string, any>, results: Record<string, any>) => {
     if (user?.id && saveCalculation) {

@@ -3,7 +3,7 @@ import React from 'react';
 import { FileTextIcon, BookOpenIcon, CalculatorIcon, UsersIcon, HelpCircleIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 interface TaxAdvisorNavigationProps {
   activeTab: string;
@@ -14,7 +14,7 @@ export const TaxAdvisorNavigation: React.FC<TaxAdvisorNavigationProps> = ({
   activeTab,
   onTabChange
 }) => {
-  const { t } = useLanguage();
+  const { t } = useTranslation('common');
 
   const taxAdvisorTabs = [
     {
