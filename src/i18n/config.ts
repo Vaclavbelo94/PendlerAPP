@@ -1,4 +1,3 @@
-
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
@@ -29,6 +28,7 @@ import deTranslator from './translations/de/translator.json';
 import deTaxAdvisor from './translations/de/taxAdvisor.json';
 import deVehicle from './translations/de/vehicle.json';
 import deForms from './translations/de/forms.json';
+import deUI from './translations/de/ui.json';
 import deProfile from './translations/de/profile.json';
 import deSettings from './translations/de/settings.json';
 import deAuth from './translations/de/auth.json';
@@ -43,6 +43,7 @@ import plTranslator from './translations/pl/translator.json';
 import plTaxAdvisor from './translations/pl/taxAdvisor.json';
 import plVehicle from './translations/pl/vehicle.json';
 import plForms from './translations/pl/forms.json';
+import plUI from './translations/pl/ui.json';
 import plProfile from './translations/pl/profile.json';
 import plSettings from './translations/pl/settings.json';
 import plAuth from './translations/pl/auth.json';
@@ -75,6 +76,7 @@ export const resources = {
     taxAdvisor: deTaxAdvisor,
     vehicle: deVehicle,
     forms: deForms,
+    ui: deUI,
     profile: deProfile,
     settings: deSettings,
     auth: deAuth,
@@ -90,6 +92,7 @@ export const resources = {
     taxAdvisor: plTaxAdvisor,
     vehicle: plVehicle,
     forms: plForms,
+    ui: plUI,
     profile: plProfile,
     settings: plSettings,
     auth: plAuth,

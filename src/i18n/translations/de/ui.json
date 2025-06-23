@@ -1,0 +1,66 @@
+
+{
+  "buttons": {
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "add": "Hinzufügen",
+    "remove": "Entfernen",
+    "submit": "Senden",
+    "confirm": "Bestätigen",
+    "close": "Schließen",
+    "open": "Öffnen",
+    "back": "Zurück",
+    "next": "Weiter",
+    "previous": "Vorherige",
+    "search": "Suchen",
+    "filter": "Filtern",
+    "sort": "Sortieren",
+    "export": "Exportieren",
+    "import": "Importieren",
+    "download": "Herunterladen",
+    "upload": "Hochladen",
+    "refresh": "Aktualisieren",
+    "reload": "Neu laden"
+  },
+  "messages": {
+    "loading": "Laden...",
+    "saving": "Speichern...",
+    "saved": "Gespeichert",
+    "error": "Fehler",
+    "success": "Erfolgreich",
+    "warning": "Warnung",
+    "info": "Information",
+    "noData": "Keine Daten",
+    "noResults": "Keine Ergebnisse",
+    "tryAgain": "Erneut versuchen",
+    "somethingWentWrong": "Etwas ist schief gelaufen"
+  },
+  "status": {
+    "active": "Aktiv",
+    "inactive": "Inaktiv",
+    "pending": "Ausstehend",
+    "completed": "Abgeschlossen",
+    "failed": "Fehlgeschlagen",
+    "cancelled": "Abgebrochen",
+    "draft": "Entwurf",
+    "published": "Veröffentlicht"
+  },
+  "time": {
+    "now": "Jetzt",
+    "today": "Heute",
+    "yesterday": "Gestern",
+    "tomorrow": "Morgen",
+    "thisWeek": "Diese Woche",
+    "thisMonth": "Dieser Monat",
+    "lastWeek": "Letzte Woche",
+    "lastMonth": "Letzter Monat"
+  },
+  "user": "Benutzer",
+  "guest": "Gast",
+  "admin": "Administrator",
+  "moderator": "Moderator",
+  "owner": "Eigentümer",
+  "member": "Mitglied"
+}
