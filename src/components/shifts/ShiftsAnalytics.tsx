@@ -5,6 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 import { motion } from 'framer-motion';
 import { Shift } from '@/hooks/useShiftsManagement';
+import { useTranslation } from 'react-i18next';
 
 interface ShiftsAnalyticsProps {
   shifts?: Shift[];
@@ -12,32 +13,60 @@ interface ShiftsAnalyticsProps {
 
 const ShiftsAnalytics: React.FC<ShiftsAnalyticsProps> = ({ shifts = [] }) => {
   const [period, setPeriod] = useState('month');
+  const { t, i18n } = useTranslation('shifts');
 
-  // Mock data - v reálné aplikaci by se načítalo z API nebo používalo real shifts data
-  const weeklyData = [
-    { name: 'Po', hodiny: 8, vydelky: 320 },
-    { name: 'Út', hodiny: 8, vydelky: 320 },
-    { name: 'St', hodiny: 0, vydelky: 0 },
-    { name: 'Čt', hodiny: 8, vydelky: 320 },
-    { name: 'Pá', hodiny: 8, vydelky: 320 },
-    { name: 'So', hodiny: 0, vydelky: 0 },
-    { name: 'Ne', hodiny: 0, vydelky: 0 }
-  ];
+  // Get localized week days
+  const getWeekDays = () => {
+    return [
+      t('weekDays.monday'),
+      t('weekDays.tuesday'),
+      t('weekDays.wednesday'),
+      t('weekDays.thursday'),
+      t('weekDays.friday'),
+      t('weekDays.saturday'),
+      t('weekDays.sunday')
+    ];
+  };
+
+  // Get localized months
+  const getMonths = () => {
+    return [
+      t('months.january'),
+      t('months.february'),
+      t('months.march'),
+      t('months.april'),
+      t('months.may'),
+      t('months.june'),
+      t('months.july'),
+      t('months.august'),
+      t('months.september'),
+      t('months.october'),
+      t('months.november'),
+      t('months.december')
+    ];
+  };
+
+  const weekDays = getWeekDays();
+  const months = getMonths();
+
+  // Mock data with localized labels
+  const weeklyData = weekDays.map((day, index) => ({
+    name: day,
+    [t('hours')]: index === 2 || index === 5 || index === 6 ? 0 : 8, // No work on Wednesday, Saturday, Sunday
+    [t('earnings')]: index === 2 || index === 5 || index === 6 ? 0 : 320
+  }));
 
   const shiftTypeData = [
-    { name: 'Ranní', value: 60, color: '#3b82f6' },
-    { name: 'Odpolední', value: 30, color: '#f59e0b' },
-    { name: 'Noční', value: 10, color: '#6366f1' }
+    { name: t('morning'), value: 60, color: '#3b82f6' },
+    { name: t('afternoon'), value: 30, color: '#f59e0b' },
+    { name: t('night'), value: 10, color: '#6366f1' }
   ];
 
-  const monthlyTrend = [
-    { mesic: 'Led', hodiny: 160, vydelky: 6400 },
-    { mesic: 'Úno', hodiny: 152, vydelky: 6080 },
-    { mesic: 'Bře', hodiny: 168, vydelky: 6720 },
-    { mesic: 'Dub', hodiny: 144, vydelky: 5760 },
-    { mesic: 'Kvě', hodiny: 176, vydelky: 7040 },
-    { mesic: 'Čer', hodiny: 160, vydelky: 6400 }
-  ];
+  const monthlyTrend = months.slice(0, 6).map((month, index) => ({
+    [t('months')]: month,
+    [t('hours')]: [160, 152, 168, 144, 176, 160][index],
+    [t('earningsEuro')]: [6400, 6080, 6720, 5760, 7040, 6400][index]
+  }));
 
   return (
     <div className="space-y-6">
@@ -48,16 +77,16 @@ const ShiftsAnalytics: React.FC<ShiftsAnalyticsProps> = ({ shifts = [] }) => {
         transition={{ duration: 0.6 }}
         className="flex items-center justify-between"
       >
-        <h2 className="text-2xl font-bold">Analýzy směn</h2>
+        <h2 className="text-2xl font-bold">{t('shiftsAnalytics')}</h2>
         <Select value={period} onValueChange={setPeriod}>
           <SelectTrigger className="w-48">
-            <SelectValue placeholder="Vyberte období" />
+            <SelectValue placeholder={t('selectPeriod')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="week">Tento týden</SelectItem>
-            <SelectItem value="month">Tento měsíc</SelectItem>
-            <SelectItem value="quarter">Toto čtvrtletí</SelectItem>
-            <SelectItem value="year">Tento rok</SelectItem>
+            <SelectItem value="week">{t('thisWeek')}</SelectItem>
+            <SelectItem value="month">{t('thisMonth')}</SelectItem>
+            <SelectItem value="quarter">{t('thisQuarter')}</SelectItem>
+            <SelectItem value="year">{t('thisYear')}</SelectItem>
           </SelectContent>
         </Select>
       </motion.div>
@@ -72,7 +101,7 @@ const ShiftsAnalytics: React.FC<ShiftsAnalyticsProps> = ({ shifts = [] }) => {
         >
           <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
             <CardHeader>
-              <CardTitle>Týdenní odpracované hodiny</CardTitle>
+              <CardTitle>{t('weeklyWorkedHours')}</CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
@@ -81,7 +110,7 @@ const ShiftsAnalytics: React.FC<ShiftsAnalyticsProps> = ({ shifts = [] }) => {
                   <XAxis dataKey="name" />
                   <YAxis />
                   <Tooltip />
-                  <Bar dataKey="hodiny" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey={t('hours')} fill="#3b82f6" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
@@ -96,7 +125,7 @@ const ShiftsAnalytics: React.FC<ShiftsAnalyticsProps> = ({ shifts = [] }) => {
         >
           <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
             <CardHeader>
-              <CardTitle>Rozdělení typů směn</CardTitle>
+              <CardTitle>{t('shiftTypeDistribution')}</CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
@@ -130,18 +159,18 @@ const ShiftsAnalytics: React.FC<ShiftsAnalyticsProps> = ({ shifts = [] }) => {
         >
           <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
             <CardHeader>
-              <CardTitle>Měsíční trend hodin a výdělků</CardTitle>
+              <CardTitle>{t('monthlyTrendHoursEarnings')}</CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={400}>
                 <LineChart data={monthlyTrend}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="mesic" />
+                  <XAxis dataKey={t('months')} />
                   <YAxis yAxisId="left" />
                   <YAxis yAxisId="right" orientation="right" />
                   <Tooltip />
-                  <Bar yAxisId="left" dataKey="hodiny" fill="#3b82f6" name="Hodiny" />
-                  <Line yAxisId="right" type="monotone" dataKey="vydelky" stroke="#10b981" strokeWidth={3} name="Výdělky (€)" />
+                  <Bar yAxisId="left" dataKey={t('hours')} fill="#3b82f6" name={t('hours')} />
+                  <Line yAxisId="right" type="monotone" dataKey={t('earningsEuro')} stroke="#10b981" strokeWidth={3} name={t('earningsEuro')} />
                 </LineChart>
               </ResponsiveContainer>
             </CardContent>
@@ -157,25 +186,25 @@ const ShiftsAnalytics: React.FC<ShiftsAnalyticsProps> = ({ shifts = [] }) => {
       >
         <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
           <CardHeader>
-            <CardTitle>Statistické shrnutí</CardTitle>
+            <CardTitle>{t('statisticalSummary')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center">
                 <p className="text-2xl font-bold text-primary">152</p>
-                <p className="text-sm text-muted-foreground">Celkem hodin</p>
+                <p className="text-sm text-muted-foreground">{t('totalHours')}</p>
               </div>
               <div className="text-center">
                 <p className="text-2xl font-bold text-green-600">€6,080</p>
-                <p className="text-sm text-muted-foreground">Celkem výdělky</p>
+                <p className="text-sm text-muted-foreground">{t('totalEarnings')}</p>
               </div>
               <div className="text-center">
                 <p className="text-2xl font-bold text-blue-600">19</p>
-                <p className="text-sm text-muted-foreground">Směn dokončeno</p>
+                <p className="text-sm text-muted-foreground">{t('shiftsCompleted')}</p>
               </div>
               <div className="text-center">
                 <p className="text-2xl font-bold text-purple-600">€40</p>
-                <p className="text-sm text-muted-foreground">Průměr/hodina</p>
+                <p className="text-sm text-muted-foreground">{t('averagePerHour')}</p>
               </div>
             </div>
           </CardContent>

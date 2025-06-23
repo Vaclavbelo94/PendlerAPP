@@ -1,224 +1,240 @@
 
-import React, { useMemo } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { BarChart3, Clock, TrendingUp, Calendar } from 'lucide-react';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, endOfWeek } from 'date-fns';
-import { cs } from 'date-fns/locale';
+import React, { useState, useMemo } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { TrendingUp, Clock, Calendar, Award } from 'lucide-react';
 import { Shift } from '@/hooks/shifts/useShiftsCRUD';
+import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
+import { cs, de, pl } from 'date-fns/locale';
+import { useTranslation } from 'react-i18next';
 
 interface OptimizedShiftsAnalyticsProps {
   shifts: Shift[];
 }
 
 const OptimizedShiftsAnalytics: React.FC<OptimizedShiftsAnalyticsProps> = ({ shifts }) => {
-  const analytics = useMemo(() => {
+  const [period, setPeriod] = useState<'week' | 'month'>('month');
+  const { t, i18n } = useTranslation('shifts');
+
+  // Get appropriate date-fns locale
+  const getDateLocale = () => {
+    switch (i18n.language) {
+      case 'de': return de;
+      case 'pl': return pl;
+      case 'cs':
+      default: return cs;
+    }
+  };
+
+  const filteredShifts = useMemo(() => {
     const now = new Date();
-    const currentMonth = {
-      start: startOfMonth(now),
-      end: endOfMonth(now)
-    };
+    const start = period === 'week' ? startOfWeek(now, { weekStartsOn: 1 }) : startOfMonth(now);
+    const end = period === 'week' ? endOfWeek(now, { weekStartsOn: 1 }) : endOfMonth(now);
     
-    const currentWeek = {
-      start: startOfWeek(now, { weekStartsOn: 1 }),
-      end: endOfWeek(now, { weekStartsOn: 1 })
-    };
+    return shifts.filter(shift => 
+      isWithinInterval(new Date(shift.date), { start, end })
+    );
+  }, [shifts, period]);
 
-    const thisMonthShifts = shifts.filter(shift => {
-      const shiftDate = new Date(shift.date);
-      return shiftDate >= currentMonth.start && shiftDate <= currentMonth.end;
-    });
-
-    const thisWeekShifts = shifts.filter(shift => {
-      const shiftDate = new Date(shift.date);
-      return shiftDate >= currentWeek.start && shiftDate <= currentWeek.end;
-    });
-
-    const shiftTypeCount = shifts.reduce((acc, shift) => {
+  const analytics = useMemo(() => {
+    const totalShifts = filteredShifts.length;
+    const totalHours = totalShifts * 8; // Assuming 8 hours per shift
+    const totalEarnings = totalHours * 40; // Assuming 40€ per hour
+    
+    const shiftTypes = filteredShifts.reduce((acc, shift) => {
       acc[shift.type] = (acc[shift.type] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
 
-    const totalHours = shifts.length * 8; // Předpokládáme 8h směny
-    const monthlyHours = thisMonthShifts.length * 8;
-    const weeklyHours = thisWeekShifts.length * 8;
-
-    // Průměrné směny za týden
-    const weeksWithShifts = Math.max(1, Math.ceil(shifts.length / 4)); // Hrubý odhad
-    const avgShiftsPerWeek = shifts.length / weeksWithShifts;
-
     return {
-      total: {
-        shifts: shifts.length,
-        hours: totalHours
-      },
-      thisMonth: {
-        shifts: thisMonthShifts.length,
-        hours: monthlyHours
-      },
-      thisWeek: {
-        shifts: thisWeekShifts.length,
-        hours: weeklyHours
-      },
-      byType: shiftTypeCount,
-      averages: {
-        shiftsPerWeek: avgShiftsPerWeek,
-        hoursPerWeek: avgShiftsPerWeek * 8
-      }
+      totalShifts,
+      totalHours,
+      totalEarnings,
+      morningShifts: shiftTypes.morning || 0,
+      afternoonShifts: shiftTypes.afternoon || 0,
+      nightShifts: shiftTypes.night || 0,
+      averagePerShift: totalShifts > 0 ? Math.round(totalEarnings / totalShifts) : 0
     };
-  }, [shifts]);
+  }, [filteredShifts]);
 
-  const getShiftTypeLabel = (type: string) => {
-    switch (type) {
-      case 'morning': return 'Ranní';
-      case 'afternoon': return 'Odpolední';
-      case 'night': return 'Noční';
-      default: return type;
-    }
-  };
+  const chartData = useMemo(() => {
+    return [
+      { name: t('morningShifts'), value: analytics.morningShifts, color: '#3b82f6' },
+      { name: t('afternoonShifts'), value: analytics.afternoonShifts, color: '#f59e0b' },
+      { name: t('nightShifts'), value: analytics.nightShifts, color: '#6366f1' }
+    ].filter(item => item.value > 0);
+  }, [analytics, t]);
 
-  const getShiftTypeColor = (type: string) => {
-    switch (type) {
-      case 'morning': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300';
-      case 'afternoon': return 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300';
-      case 'night': return 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300';
-      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300';
-    }
-  };
+  const trendData = useMemo(() => {
+    return [
+      { name: t('morning'), hours: analytics.morningShifts * 8 },
+      { name: t('afternoon'), hours: analytics.afternoonShifts * 8 },
+      { name: t('night'), hours: analytics.nightShifts * 8 }
+    ];
+  }, [analytics, t]);
 
   return (
     <div className="space-y-6">
-      {/* Celkové statistiky */}
+      {/* Header with Period Selection */}
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold">{t('shiftsAnalytics')}</h2>
+        <Select value={period} onValueChange={(value: 'week' | 'month') => setPeriod(value)}>
+          <SelectTrigger className="w-48">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="week">{t('thisWeek')}</SelectItem>
+            <SelectItem value="month">{t('thisMonth')}</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Celkem směn</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{analytics.total.shifts}</div>
-            <p className="text-xs text-muted-foreground">
-              {analytics.total.hours} hodin celkem
-            </p>
+        <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">{t('totalShifts')}</p>
+                <p className="text-2xl font-bold">{analytics.totalShifts}</p>
+              </div>
+              <Calendar className="h-8 w-8 text-primary" />
+            </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Tento měsíc</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{analytics.thisMonth.shifts}</div>
-            <p className="text-xs text-muted-foreground">
-              {analytics.thisMonth.hours} hodin
-            </p>
+        <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">{t('totalHours')}</p>
+                <p className="text-2xl font-bold">{analytics.totalHours}h</p>
+              </div>
+              <Clock className="h-8 w-8 text-blue-600" />
+            </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Tento týden</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{analytics.thisWeek.shifts}</div>
-            <p className="text-xs text-muted-foreground">
-              {analytics.thisWeek.hours} hodin
-            </p>
+        <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">{t('totalEarnings')}</p>
+                <p className="text-2xl font-bold text-green-600">€{analytics.totalEarnings.toLocaleString()}</p>
+              </div>
+              <TrendingUp className="h-8 w-8 text-green-600" />
+            </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Průměr/týden</CardTitle>
-            <BarChart3 className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{analytics.averages.shiftsPerWeek.toFixed(1)}</div>
-            <p className="text-xs text-muted-foreground">
-              {analytics.averages.hoursPerWeek.toFixed(0)} hodin/týden
-            </p>
+        <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">{t('averagePerShift')}</p>
+                <p className="text-2xl font-bold text-purple-600">€{analytics.averagePerShift}</p>
+              </div>
+              <Award className="h-8 w-8 text-purple-600" />
+            </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Analýza podle typu směn */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Rozdělení podle typu směn</CardTitle>
-          <CardDescription>
-            Přehled vašich směn podle typu
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {Object.keys(analytics.byType).length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {Object.entries(analytics.byType).map(([type, count]) => (
-                <div key={type} className="flex items-center justify-between p-4 border rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <Badge className={getShiftTypeColor(type)}>
-                      {getShiftTypeLabel(type)}
-                    </Badge>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-2xl font-bold">{count}</div>
-                    <div className="text-sm text-muted-foreground">
-                      {((count / analytics.total.shifts) * 100).toFixed(0)}%
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-8 text-muted-foreground">
-              <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>Žádná data pro analýzu</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      {/* Charts */}
+      {filteredShifts.length > 0 ? (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Distribution Chart */}
+          <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
+            <CardHeader>
+              <CardTitle>{t('distribution')}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={chartData}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                    labelLine={false}
+                  >
+                    {chartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
 
-      {/* Nedávná aktivita */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Nedávné směny</CardTitle>
-          <CardDescription>
-            Vaše poslední směny
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {shifts.length > 0 ? (
-            <div className="space-y-3">
-              {shifts
-                .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-                .slice(0, 5)
-                .map((shift) => (
-                  <div key={shift.id} className="flex items-center justify-between p-3 border rounded-lg bg-muted/30">
-                    <div className="flex items-center gap-3">
-                      <Badge className={getShiftTypeColor(shift.type)}>
-                        {getShiftTypeLabel(shift.type)}
-                      </Badge>
-                      <span className="text-sm">
-                        {format(new Date(shift.date), 'dd.MM.yyyy', { locale: cs })}
-                      </span>
-                    </div>
-                    {shift.notes && (
-                      <span className="text-sm text-muted-foreground">
-                        {shift.notes}
-                      </span>
-                    )}
-                  </div>
-                ))}
+          {/* Trend Chart */}
+          <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
+            <CardHeader>
+              <CardTitle>{t('trend')}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={trendData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="hours" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </div>
+      ) : (
+        <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
+          <CardContent className="text-center py-12">
+            <Calendar className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
+            <h3 className="text-lg font-medium mb-2">{t('noShiftsForPeriod')}</h3>
+            <p className="text-muted-foreground">
+              {period === 'week' ? t('thisWeek') : t('thisMonth')}
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Detailed Breakdown */}
+      {filteredShifts.length > 0 && (
+        <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
+          <CardHeader>
+            <CardTitle>{t('shiftTypeDistribution')}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                <div className="text-2xl font-bold text-blue-600">{analytics.morningShifts}</div>
+                <div className="text-sm text-blue-600">{t('morningShifts')}</div>
+                <div className="text-xs text-muted-foreground mt-1">
+                  {analytics.morningShifts * 8}h {t('totalHours').toLowerCase()}
+                </div>
+              </div>
+              <div className="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-lg">
+                <div className="text-2xl font-bold text-amber-600">{analytics.afternoonShifts}</div>
+                <div className="text-sm text-amber-600">{t('afternoonShifts')}</div>
+                <div className="text-xs text-muted-foreground mt-1">
+                  {analytics.afternoonShifts * 8}h {t('totalHours').toLowerCase()}
+                </div>
+              </div>
+              <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg">
+                <div className="text-2xl font-bold text-purple-600">{analytics.nightShifts}</div>
+                <div className="text-sm text-purple-600">{t('nightShifts')}</div>
+                <div className="text-xs text-muted-foreground mt-1">
+                  {analytics.nightShifts * 8}h {t('totalHours').toLowerCase()}
+                </div>
+              </div>
             </div>
-          ) : (
-            <div className="text-center py-8 text-muted-foreground">
-              <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>Žádné směny k zobrazení</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };

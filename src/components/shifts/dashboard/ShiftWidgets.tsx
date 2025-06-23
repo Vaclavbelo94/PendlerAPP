@@ -3,13 +3,26 @@ import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Calendar, Clock, TrendingUp, AlertCircle } from 'lucide-react';
 import { format, addDays, isSameDay } from 'date-fns';
-import { cs } from 'date-fns/locale';
+import { cs, de, pl } from 'date-fns/locale';
+import { useTranslation } from 'react-i18next';
 
 interface ShiftWidgetsProps {
   shifts: any[];
 }
 
 export const ShiftWidgets: React.FC<ShiftWidgetsProps> = ({ shifts }) => {
+  const { t, i18n } = useTranslation('shifts');
+  
+  // Get appropriate date-fns locale
+  const getDateLocale = () => {
+    switch (i18n.language) {
+      case 'de': return de;
+      case 'pl': return pl;
+      case 'cs':
+      default: return cs;
+    }
+  };
+
   const today = new Date();
   const tomorrow = addDays(today, 1);
   
@@ -47,26 +60,34 @@ export const ShiftWidgets: React.FC<ShiftWidgetsProps> = ({ shifts }) => {
     }
   };
 
+  const getShiftTypeName = (type: string) => {
+    switch (type) {
+      case 'morning': return t('morning');
+      case 'afternoon': return t('afternoon');
+      case 'night': return t('night');
+      default: return type;
+    }
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
       {/* Today's shift */}
       <Card className="p-4">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-muted-foreground">Dnes</p>
+            <p className="text-sm text-muted-foreground">{t('today')}</p>
             {todayShifts.length > 0 ? (
               <div className="flex items-center gap-2 mt-1">
                 <span className="text-lg">{getShiftTypeIcon(todayShifts[0].type)}</span>
                 <div>
                   <p className="font-medium">{getShiftTime(todayShifts[0].type)}</p>
                   <p className="text-xs text-muted-foreground">
-                    {todayShifts[0].type === 'morning' ? 'Ranní' : 
-                     todayShifts[0].type === 'afternoon' ? 'Odpolední' : 'Noční'}
+                    {getShiftTypeName(todayShifts[0].type)}
                   </p>
                 </div>
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground mt-1">Žádná směna</p>
+              <p className="text-sm text-muted-foreground mt-1">{t('noShift')}</p>
             )}
           </div>
           <Calendar className="h-5 w-5 text-muted-foreground" />
@@ -77,20 +98,19 @@ export const ShiftWidgets: React.FC<ShiftWidgetsProps> = ({ shifts }) => {
       <Card className="p-4">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-muted-foreground">Zítra</p>
+            <p className="text-sm text-muted-foreground">{t('tomorrow')}</p>
             {tomorrowShifts.length > 0 ? (
               <div className="flex items-center gap-2 mt-1">
                 <span className="text-lg">{getShiftTypeIcon(tomorrowShifts[0].type)}</span>
                 <div>
                   <p className="font-medium">{getShiftTime(tomorrowShifts[0].type)}</p>
                   <p className="text-xs text-muted-foreground">
-                    {tomorrowShifts[0].type === 'morning' ? 'Ranní' : 
-                     tomorrowShifts[0].type === 'afternoon' ? 'Odpolední' : 'Noční'}
+                    {getShiftTypeName(tomorrowShifts[0].type)}
                   </p>
                 </div>
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground mt-1">Žádná směna</p>
+              <p className="text-sm text-muted-foreground mt-1">{t('noShift')}</p>
             )}
           </div>
           <Clock className="h-5 w-5 text-muted-foreground" />
@@ -101,9 +121,9 @@ export const ShiftWidgets: React.FC<ShiftWidgetsProps> = ({ shifts }) => {
       <Card className="p-4">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-muted-foreground">Tento týden</p>
+            <p className="text-sm text-muted-foreground">{t('thisWeek')}</p>
             <p className="text-2xl font-bold mt-1">{thisWeekShifts.length}</p>
-            <p className="text-xs text-muted-foreground">směn</p>
+            <p className="text-xs text-muted-foreground">{t('shifts')}</p>
           </div>
           <TrendingUp className="h-5 w-5 text-muted-foreground" />
         </div>
@@ -113,12 +133,12 @@ export const ShiftWidgets: React.FC<ShiftWidgetsProps> = ({ shifts }) => {
       <Card className="p-4">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-muted-foreground">Stav</p>
+            <p className="text-sm text-muted-foreground">{t('state')}</p>
             <p className="text-sm font-medium mt-1 text-green-600">
-              Synchronizováno
+              {t('synchronised')}
             </p>
             <p className="text-xs text-muted-foreground">
-              {format(new Date(), 'HH:mm', { locale: cs })}
+              {format(new Date(), 'HH:mm', { locale: getDateLocale() })}
             </p>
           </div>
           <div className="h-3 w-3 bg-green-500 rounded-full"></div>
