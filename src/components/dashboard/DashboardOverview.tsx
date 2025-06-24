@@ -137,7 +137,7 @@ const DashboardOverview: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">{t('location')}</p>
-                  <p className="font-medium">{t('workPlace', 'Arbeitsplatz')}</p>
+                  <p className="font-medium">{t('workPlace')}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -145,7 +145,7 @@ const DashboardOverview: React.FC = () => {
                   <TrendingUp className="h-4 w-4 text-primary" />
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">{t('shiftType', 'Schichttyp')}</p>
+                  <p className="text-sm text-muted-foreground">{t('shiftType')}</p>
                   <p className="font-medium">
                     {currentShift.type === 'morning' ? t('morningShift') : 
                      currentShift.type === 'afternoon' ? t('afternoonShift') : t('nightShift')}

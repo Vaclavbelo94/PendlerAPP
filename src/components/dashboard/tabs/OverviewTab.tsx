@@ -247,7 +247,7 @@ const OverviewTab = () => {
         <Card>
           <CardHeader>
             <CardTitle>{t('dashboard:quickActions')}</CardTitle>
-            <CardDescription>{t('dashboard:mostUsedFeatures', 'Nejčastěji používané funkce')}</CardDescription>
+            <CardDescription>{t('dashboard:mostUsedFeatures')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <Button 

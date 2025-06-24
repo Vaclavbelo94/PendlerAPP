@@ -187,5 +187,8 @@
   "noPlannedShift": "Heute keine geplante Schicht",
   "addShiftToday": "Schicht hinzufügen",
   "noShiftsYetDescription": "Noch keine Schichten vorhanden",
-  "addFirstShift": "Erste Schicht hinzufügen"
+  "addFirstShift": "Erste Schicht hinzufügen",
+  "workPlace": "Arbeitsplatz",
+  "shiftType": "Schichttyp",
+  "mostUsedFeatures": "Meist genutzte Funktionen"
 }
