@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,19 +8,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useWorkData } from "@/hooks/useWorkData";
 import { useAddressAutocomplete } from "@/hooks/useAddressAutocomplete";
 import { useTranslation } from 'react-i18next';
+import { useLanguage } from '@/hooks/useLanguage';
 import { DollarSign, Phone, MapPin } from 'lucide-react';
 
 const ProfileWorkData = () => {
   const { t } = useTranslation('profile');
+  const { language } = useLanguage();
   const { workData, loading, saveWorkData, setWorkData } = useWorkData();
   const [tempData, setTempData] = useState(workData);
   const [addressQuery, setAddressQuery] = useState('');
   const { suggestions, loading: addressLoading } = useAddressAutocomplete(addressQuery);
 
   const countryOptions = [
-    { code: 'CZ', label: 'Česká republika (+420)', flag: '🇨🇿' },
-    { code: 'DE', label: 'Deutschland (+49)', flag: '🇩🇪' },
-    { code: 'PL', label: 'Polska (+48)', flag: '🇵🇱' }
+    { code: 'CZ', label: t('czechRepublic', 'Česká republika') + ' (+420)', flag: '🇨🇿' },
+    { code: 'DE', label: t('germany', 'Deutschland') + ' (+49)', flag: '🇩🇪' },
+    { code: 'PL', label: t('poland', 'Polska') + ' (+48)', flag: '🇵🇱' }
   ];
 
   // Hodinové mzdy v eurech pro německý trh
@@ -42,6 +44,35 @@ const ProfileWorkData = () => {
     { value: 40, label: '40,00 €' },
   ];
 
+  // Automatické nastavení country code podle jazyka
+  useEffect(() => {
+    if (workData && (!workData.phone_country_code || workData.phone_country_code === 'CZ')) {
+      let defaultCountryCode = 'CZ';
+      
+      switch (language) {
+        case 'pl':
+          defaultCountryCode = 'PL';
+          break;
+        case 'de':
+          defaultCountryCode = 'DE';
+          break;
+        case 'cs':
+        default:
+          defaultCountryCode = 'CZ';
+          break;
+      }
+
+      if (workData.phone_country_code !== defaultCountryCode) {
+        const updatedData = {
+          ...workData,
+          phone_country_code: defaultCountryCode
+        };
+        setWorkData(updatedData);
+        setTempData(updatedData);
+      }
+    }
+  }, [language, workData, setWorkData]);
+
   const handleSave = async () => {
     const success = await saveWorkData(tempData);
     if (success) {
@@ -58,7 +89,7 @@ const ProfileWorkData = () => {
   };
 
   // Update tempData when workData changes (after fetch)
-  React.useEffect(() => {
+  useEffect(() => {
     setTempData(workData);
   }, [workData]);
 
