@@ -37,6 +37,10 @@ export const EnhancedLawCard: React.FC<EnhancedLawCardProps> = ({
     }
   };
 
+  const handleReadMore = () => {
+    onViewDetails(law);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -45,7 +49,7 @@ export const EnhancedLawCard: React.FC<EnhancedLawCardProps> = ({
       whileHover={{ y: -4, transition: { duration: 0.2 } }}
     >
       <Card className={cn(
-        "h-full transition-all duration-300 hover:shadow-lg border-l-4",
+        "h-full transition-all duration-300 hover:shadow-lg border-l-4 cursor-pointer",
         law.category === 'work' && "border-l-blue-500",
         law.category === 'tax' && "border-l-green-500", 
         law.category === 'social' && "border-l-purple-500",
@@ -90,23 +94,21 @@ export const EnhancedLawCard: React.FC<EnhancedLawCardProps> = ({
               <Button
                 size="sm"
                 variant="outline"
-                onClick={() => onViewDetails(law)}
+                onClick={handleReadMore}
                 className="gap-1"
               >
                 <BookOpen className="h-3 w-3" />
                 {t('common:readMore')}
               </Button>
               
-              {law.officialUrl && (
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => onViewDetails(law)}
-                  className="gap-1"
-                >
-                  <ExternalLink className="h-3 w-3" />
-                </Button>
-              )}
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={handleReadMore}
+                className="gap-1"
+              >
+                <ExternalLink className="h-3 w-3" />
+              </Button>
             </div>
           </div>
         </CardContent>

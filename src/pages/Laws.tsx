@@ -15,6 +15,7 @@ import Layout from '@/components/layouts/Layout';
 import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 import { Law } from '@/types/laws';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 
 const Laws = () => {
   const [activeSection, setActiveSection] = useState("all");
@@ -54,10 +55,14 @@ const Laws = () => {
   });
 
   const handleViewDetails = (law: Law) => {
-    // Use React Router navigation instead of window.open
-    if (law.officialUrl) {
-      navigate(law.officialUrl);
-    }
+    // Show detailed information in a toast for now
+    // In a real app, this would navigate to a detailed page
+    toast.info(t('laws:importantNotice'), {
+      description: law.summary,
+      duration: 5000,
+    });
+    
+    console.log('Viewing details for law:', law.id, law.title);
   };
 
   if (isLoading) {
