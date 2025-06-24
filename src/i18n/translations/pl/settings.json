@@ -2,10 +2,17 @@
 {
   "title": "Ustawienia",
   "general": "Ogólne",
+  "appearance": "Wygląd",
   "language": "Język",
   "theme": "Motyw",
   "notifications": "Powiadomienia",
   "privacy": "Prywatność",
-  "account": "Konto",
-  "advanced": "Zaawansowane"
+  "data": "Dane",
+  "export": "Eksportuj dane",
+  "import": "Importuj dane",
+  "backup": "Kopia zapasowa",
+  "restore": "Przywróć",
+  "reset": "Resetuj ustawienia",
+  "save": "Zapisz",
+  "cancel": "Anuluj"
 }

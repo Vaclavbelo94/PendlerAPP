@@ -2,7 +2,6 @@
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Scale } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 import PremiumCheck from '@/components/premium/PremiumCheck';
 import LawsNavigation from '@/components/laws/LawsNavigation';
 import LawsLoadingSkeleton from '@/components/laws/LawsLoadingSkeleton';
@@ -15,14 +14,12 @@ import Layout from '@/components/layouts/Layout';
 import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 import { Law } from '@/types/laws';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
 
 const Laws = () => {
   const [activeSection, setActiveSection] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
   const isMobile = useIsMobile();
   const { t } = useTranslation(['laws', 'common']);
-  const navigate = useNavigate();
 
   // Simulate initial loading with shorter duration
   React.useEffect(() => {
@@ -55,14 +52,9 @@ const Laws = () => {
   });
 
   const handleViewDetails = (law: Law) => {
-    // Show detailed information in a toast for now
-    // In a real app, this would navigate to a detailed page
-    toast.info(t('laws:importantNotice'), {
-      description: law.summary,
-      duration: 5000,
-    });
-    
-    console.log('Viewing details for law:', law.id, law.title);
+    if (law.officialUrl) {
+      window.open(law.officialUrl, '_blank');
+    }
   };
 
   if (isLoading) {

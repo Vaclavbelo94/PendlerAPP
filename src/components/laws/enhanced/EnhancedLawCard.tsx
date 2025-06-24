@@ -20,26 +20,7 @@ export const EnhancedLawCard: React.FC<EnhancedLawCardProps> = ({
   index,
   onViewDetails
 }) => {
-  const { t } = useTranslation(['laws', 'common']);
-
-  const getCategoryLabel = (category: string) => {
-    switch (category) {
-      case 'work':
-        return t('laws:workLaw');
-      case 'tax':
-        return t('laws:taxes');
-      case 'social':
-        return t('laws:socialSecurity');
-      case 'health':
-        return t('laws:healthInsurance');
-      default:
-        return category;
-    }
-  };
-
-  const handleReadMore = () => {
-    onViewDetails(law);
-  };
+  const { t } = useTranslation('laws');
 
   return (
     <motion.div
@@ -49,16 +30,16 @@ export const EnhancedLawCard: React.FC<EnhancedLawCardProps> = ({
       whileHover={{ y: -4, transition: { duration: 0.2 } }}
     >
       <Card className={cn(
-        "h-full transition-all duration-300 hover:shadow-lg border-l-4 cursor-pointer",
-        law.category === 'work' && "border-l-blue-500",
-        law.category === 'tax' && "border-l-green-500", 
-        law.category === 'social' && "border-l-purple-500",
-        law.category === 'health' && "border-l-red-500"
+        "h-full transition-all duration-300 hover:shadow-lg border-l-4",
+        law.category === 'arbeitsrecht' && "border-l-blue-500",
+        law.category === 'steuerrecht' && "border-l-green-500",
+        law.category === 'sozialrecht' && "border-l-purple-500",
+        law.category === 'verkehrsrecht' && "border-l-orange-500"
       )}>
         <CardHeader className="pb-3">
           <div className="flex justify-between items-start mb-2">
             <Badge variant="secondary" className="text-xs">
-              {getCategoryLabel(law.category)}
+              {law.category}
             </Badge>
             <div className="flex items-center gap-1 text-muted-foreground">
               <Clock className="h-3 w-3" />
@@ -94,21 +75,29 @@ export const EnhancedLawCard: React.FC<EnhancedLawCardProps> = ({
               <Button
                 size="sm"
                 variant="outline"
-                onClick={handleReadMore}
+                onClick={() => onViewDetails(law)}
                 className="gap-1"
               >
                 <BookOpen className="h-3 w-3" />
-                {t('common:readMore')}
+                {t('details')}
               </Button>
               
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={handleReadMore}
-                className="gap-1"
-              >
-                <ExternalLink className="h-3 w-3" />
-              </Button>
+              {law.officialUrl && (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  asChild
+                  className="gap-1"
+                >
+                  <a 
+                    href={law.officialUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                  >
+                    <ExternalLink className="h-3 w-3" />
+                  </a>
+                </Button>
+              )}
             </div>
           </div>
         </CardContent>
