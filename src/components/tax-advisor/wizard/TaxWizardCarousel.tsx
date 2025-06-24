@@ -171,7 +171,7 @@ const TaxWizardCarousel: React.FC = () => {
     }
 
     try {
-      // Převod wizard dat na DocumentData formát s explicitním boolean převodem
+      // Převod wizard dat na DocumentData formát s explicitní boolean konverzí
       const documentData = {
         documentType: 'tax-wizard' as const,
         yearOfTax: new Date().getFullYear().toString(),
@@ -185,8 +185,8 @@ const TaxWizardCarousel: React.FC = () => {
         commuteDistance: wizardData.reisepauschale.commuteDistance.toString(),
         commuteWorkDays: wizardData.reisepauschale.workDaysPerYear.toString(),
         includeCommuteExpenses: true,
-        includeSecondHome: Boolean(wizardData.reisepauschale.hasSecondHome) === true,
-        includeWorkClothes: Boolean(wizardData.deductions.workClothes) === true,
+        includeSecondHome: wizardData.reisepauschale.hasSecondHome === true,
+        includeWorkClothes: wizardData.deductions.workClothes === true,
         additionalNotes: `${t('results.generatedWith')} PendlerApp Wizard. ${t('results.totalDeductions')}: ${result.totalDeductions.toFixed(2)}€, ${t('results.estimatedSaving')}: ${result.estimatedTaxSaving.toFixed(2)}€`
       };
 
