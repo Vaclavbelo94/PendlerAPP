@@ -1,3 +1,4 @@
+
 {
   "title": "Panel",
   "welcome": "Vítejte",
@@ -153,11 +154,10 @@
   "addShift": "Přidat směnu",
   "addShiftDescription": "Rychle přidat novou pracovní směnu",
   "taxAdvisorDescription": "Vypočítat daně a poplatky",
-  "translatorDescription": "Překládat texty pomocí AI",
+  "translatorDescription": "Překládat texty pomocí pokročilých funkcí",
   "vehicleDescription": "Spravovat vozidlo a náklady",
   "quick": "Rychlé",
   "premium": "Premium",
-  "ai": "AI",
   "tomorrow": "Zítra",
   "friday": "Pátek",
   "regular": "Pravidelný",

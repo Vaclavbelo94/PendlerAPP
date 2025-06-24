@@ -3,7 +3,7 @@ import React from 'react';
 import { Bot, Languages, BookOpen, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 interface TranslatorNavigationProps {
   activeTab: string;
@@ -14,7 +14,7 @@ export const TranslatorNavigation: React.FC<TranslatorNavigationProps> = ({
   activeTab,
   onTabChange
 }) => {
-  const { t } = useLanguage();
+  const { t } = useTranslation('translator');
 
   const translatorTabs = [
     {

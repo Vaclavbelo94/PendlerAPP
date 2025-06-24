@@ -41,7 +41,7 @@ const Translator = () => {
         <DashboardBackground variant="default">
           <div className={`container py-6 ${useMobileLayout ? 'pb-32' : ''} ${isSmallLandscape ? 'px-2' : ''}`}>
             <Helmet>
-              <title>{t('translator:aiTranslator')} | {t('common:dashboard')}</title>
+              <title>{t('translator:title')} | {t('common:dashboard')}</title>
               <meta name="description" content={t('translator:translatorDescription')} />
               <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
             </Helmet>
@@ -64,7 +64,7 @@ const Translator = () => {
               
               <h1 className={`${useMobileLayout ? 'text-3xl' : 'text-4xl lg:text-5xl'} font-bold mb-4`}>
                 <span className="bg-gradient-to-r from-primary via-blue-600 to-green-600 bg-clip-text text-transparent">
-                  {t('translator:aiTranslator')}
+                  {t('translator:title')}
                 </span>
               </h1>
               
