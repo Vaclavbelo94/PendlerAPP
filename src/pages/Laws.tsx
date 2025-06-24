@@ -21,7 +21,9 @@ const Laws = () => {
   const [isLoading, setIsLoading] = useState(true);
   const isMobile = useIsMobile();
   const navigate = useNavigate();
-  const { t } = useTranslation(['laws', 'common']);
+  const { t } = useTranslation('laws');
+
+  console.log('Current language:', t('title'));
 
   // Simulate initial loading with shorter duration
   React.useEffect(() => {
@@ -41,8 +43,13 @@ const Laws = () => {
     return lawItems.filter(law => law.category === activeSection);
   }, [activeSection, lawItems]);
 
+  const handleViewDetails = (law: Law) => {
+    console.log('Navigating to law detail:', law.id);
+    navigate(`/laws/${law.id}`);
+  };
+
   // Convert LawItem to Law type for EnhancedLawCard
-  const convertToLaw = (lawItem: any) => ({
+  const convertToLaw = (lawItem: any): Law => ({
     id: lawItem.id,
     title: lawItem.title,
     summary: lawItem.description,
@@ -52,11 +59,6 @@ const Laws = () => {
     tags: [lawItem.category],
     officialUrl: lawItem.path
   });
-
-  const handleViewDetails = (law: Law) => {
-    // Navigate to individual law page
-    navigate(`/laws/${law.id}`);
-  };
 
   if (isLoading) {
     return (

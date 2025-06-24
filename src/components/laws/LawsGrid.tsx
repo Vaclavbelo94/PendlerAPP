@@ -2,6 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import EnhancedLawCard from './enhanced/EnhancedLawCard';
 import { Law } from '@/types/laws';
 
@@ -20,10 +21,11 @@ interface LawsGridProps {
 
 const LawsGrid: React.FC<LawsGridProps> = ({ laws }) => {
   const { t } = useTranslation('laws');
+  const navigate = useNavigate();
 
   const handleViewDetails = (law: Law) => {
-    console.log('View details for law:', law.id);
-    // TODO: Implement law details view
+    console.log('Navigating to law:', law.id);
+    navigate(`/laws/${law.id}`);
   };
 
   if (laws.length === 0) {
@@ -49,7 +51,8 @@ const LawsGrid: React.FC<LawsGridProps> = ({ laws }) => {
           category: law.category,
           lastUpdated: law.updated,
           importance: 4,
-          tags: [law.category]
+          tags: [law.category],
+          officialUrl: law.path
         };
         
         return (

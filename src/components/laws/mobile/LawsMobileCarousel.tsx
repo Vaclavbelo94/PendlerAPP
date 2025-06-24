@@ -3,10 +3,12 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 import { getLawCategories, getLawItems } from '@/data/lawsData';
 import { useTranslation } from 'react-i18next';
-import LawsGrid from '../LawsGrid';
+import EnhancedLawCard from '../enhanced/EnhancedLawCard';
+import { Law } from '@/types/laws';
 
 interface LawsMobileCarouselProps {
   activeCategory: string;
@@ -18,6 +20,7 @@ export const LawsMobileCarousel: React.FC<LawsMobileCarouselProps> = ({
   onCategoryChange
 }) => {
   const { t } = useTranslation('laws');
+  const navigate = useNavigate();
   const allCategories = [{ id: "all", label: t('allLaws'), iconName: "Scale" }, ...getLawCategories(t)];
   const categoryIds = allCategories.map(cat => cat.id);
   const currentIndex = allCategories.findIndex(cat => cat.id === activeCategory);
@@ -37,6 +40,11 @@ export const LawsMobileCarousel: React.FC<LawsMobileCarouselProps> = ({
   const goToNext = () => {
     const nextIndex = (currentIndex + 1) % allCategories.length;
     onCategoryChange(allCategories[nextIndex].id);
+  };
+
+  const handleViewDetails = (law: Law) => {
+    console.log('Mobile navigation to law:', law.id);
+    navigate(`/laws/${law.id}`);
   };
 
   const lawItems = getLawItems(t);
@@ -96,7 +104,28 @@ export const LawsMobileCarousel: React.FC<LawsMobileCarouselProps> = ({
             exit={{ opacity: 0, x: -50 }}
             transition={{ duration: 0.3, ease: 'easeInOut' }}
           >
-            <LawsGrid laws={filteredLaws} />
+            <div className="grid gap-4 md:grid-cols-2">
+              {filteredLaws.map((law, index) => {
+                const lawData: Law = {
+                  id: law.id,
+                  title: law.title,
+                  summary: law.description,
+                  category: law.category,
+                  lastUpdated: law.updated,
+                  importance: 4,
+                  tags: [law.category]
+                };
+                
+                return (
+                  <EnhancedLawCard 
+                    key={law.id} 
+                    law={lawData} 
+                    index={index}
+                    onViewDetails={handleViewDetails}
+                  />
+                );
+              })}
+            </div>
           </motion.div>
         </AnimatePresence>
       </div>
