@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Settings as SettingsIcon, User, Bell, Palette, Globe, Database, Shield, Smartphone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
+import { useTranslation } from 'react-i18next';
 import GeneralSettings from '../GeneralSettings';
 import AccountSettings from '../AccountSettings';
 import AppearanceSettings from '../AppearanceSettings';
@@ -26,15 +27,17 @@ export const SettingsMobileCarousel: React.FC<SettingsMobileCarouselProps> = ({
   syncSettings,
   updateSyncSettings
 }) => {
+  const { t } = useTranslation('settings');
+  
   const tabs = [
-    { id: 'general', label: 'Obecné', icon: SettingsIcon },
-    { id: 'account', label: 'Účet', icon: User },
-    { id: 'appearance', label: 'Vzhled', icon: Palette },
-    { id: 'notifications', label: 'Oznámení', icon: Bell },
-    { id: 'language', label: 'Jazyk', icon: Globe },
-    { id: 'security', label: 'Bezpečnost', icon: Shield },
-    { id: 'device', label: 'Zařízení', icon: Smartphone },
-    { id: 'data', label: 'Data', icon: Database }
+    { id: 'general', label: t('general'), icon: SettingsIcon },
+    { id: 'account', label: t('account'), icon: User },
+    { id: 'appearance', label: t('appearance'), icon: Palette },
+    { id: 'notifications', label: t('notifications'), icon: Bell },
+    { id: 'language', label: t('language'), icon: Globe },
+    { id: 'security', label: t('security'), icon: Shield },
+    { id: 'device', label: t('device'), icon: Smartphone },
+    { id: 'data', label: t('data'), icon: Database }
   ];
 
   const tabIds = tabs.map(tab => tab.id);

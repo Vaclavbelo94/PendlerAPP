@@ -141,5 +141,12 @@
   "clearLocalCache": "Lokalen Cache leeren",
   "permanentlyDeleteAllData": "Alle Ihre Daten dauerhaft löschen",
   "deleteAllData": "Alle Daten löschen",
-  "actionIrreversible": "Diese Aktion ist unumkehrbar und löscht alle Ihre gespeicherten Daten."
+  "actionIrreversible": "Diese Aktion ist unumkehrbar und löscht alle Ihre gespeicherten Daten.",
+  "swipeNavigationTip": "Tipp: Wischen Sie nach links/rechts, um zwischen den Registerkarten zu navigieren",
+  "soundNotifications": "Ton-Benachrichtigungen",
+  "enableSoundNotifications": "Ton-Benachrichtigungen aktivieren",
+  "emailFrequency": "E-Mail-Häufigkeit",
+  "immediate": "Sofort",
+  "daily": "Täglich",
+  "weekly": "Wöchentlich"
 }

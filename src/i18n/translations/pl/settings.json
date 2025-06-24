@@ -141,5 +141,12 @@
   "clearLocalCache": "Wyczyść lokalną pamięć podręczną",
   "permanentlyDeleteAllData": "Trwale usuń wszystkie swoje dane",
   "deleteAllData": "Usuń wszystkie dane",
-  "actionIrreversible": "Ta akcja jest nieodwracalna i usunie wszystkie Twoje zapisane dane."
+  "actionIrreversible": "Ta akcja jest nieodwracalna i usunie wszystkie Twoje zapisane dane.",
+  "swipeNavigationTip": "Wskazówka: Przesuń palcem w lewo/prawo, aby nawigować między zakładkami",
+  "soundNotifications": "Powiadomienia dźwiękowe",
+  "enableSoundNotifications": "Włącz powiadomienia dźwiękowe",
+  "emailFrequency": "Częstotliwość e-maili",
+  "immediate": "Natychmiast",
+  "daily": "Codziennie",
+  "weekly": "Tygodniowo"
 }

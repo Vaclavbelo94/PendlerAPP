@@ -98,7 +98,7 @@ const Settings = () => {
             </div>
             {isMobile && (
               <p className="text-xs text-white/60 text-center px-4">
-                💡 Tip: Přejeďte prstem doleva/doprava pro navigaci mezi záložkami
+                💡 {t('swipeNavigationTip')}
               </p>
             )}
           </motion.div>

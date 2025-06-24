@@ -141,5 +141,12 @@
   "clearLocalCache": "Vymasažit místní cache",
   "permanentlyDeleteAllData": "Permanentně smažte všechna svá data",
   "deleteAllData": "Smazat všechna data",
-  "actionIrreversible": "Tato akce je nevratná a smaže všechna vaše uložená data."
+  "actionIrreversible": "Tato akce je nevratná a smaže všechna vaše uložená data.",
+  "swipeNavigationTip": "Tip: Přejeďte prstem doleva/doprava pro navigaci mezi záložkami",
+  "soundNotifications": "Zvuková oznámení",
+  "enableSoundNotifications": "Povolit zvuková oznámení",
+  "emailFrequency": "Frekvence e-mailů",
+  "immediate": "Okamžitě",
+  "daily": "Denně",
+  "weekly": "Týdně"
 }
