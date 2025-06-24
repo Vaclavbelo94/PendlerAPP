@@ -38,8 +38,8 @@ export const useOAuthCallback = () => {
           return;
         }
 
-        if (data.session && data.user) {
-          console.log('OAuth session retrieved successfully:', data.user.email);
+        if (data.session && data.session.user) {
+          console.log('OAuth session retrieved successfully:', data.session.user.email);
           toast.success('Úspěšně přihlášeno přes Google');
           
           // Clean up the URL
@@ -64,8 +64,8 @@ export const useOAuthCallback = () => {
           setTimeout(async () => {
             const { data: retryData, error: retryError } = await supabase.auth.getSession();
             
-            if (retryData.session && retryData.user) {
-              console.log('OAuth session retrieved on retry:', retryData.user.email);
+            if (retryData.session && retryData.session.user) {
+              console.log('OAuth session retrieved on retry:', retryData.session.user.email);
               toast.success('Úspěšně přihlášeno přes Google');
               window.history.replaceState(null, '', window.location.pathname);
               navigate('/dashboard', { replace: true });
