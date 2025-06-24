@@ -1,11 +1,11 @@
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, User, Eye, Crown } from 'lucide-react';
+import { ChevronLeft, ChevronRight, User, Briefcase, Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 import ProfileOverview from '../ProfileOverview';
-import ProfileAppearance from '../ProfileAppearance';
+import ProfileWorkData from '../ProfileWorkData';
 import ProfileSubscription from '../subscription/ProfileSubscription';
 
 interface ProfileMobileCarouselProps {
@@ -19,7 +19,7 @@ export const ProfileMobileCarousel: React.FC<ProfileMobileCarouselProps> = ({
 }) => {
   const tabs = [
     { id: 'overview', label: 'Přehled', icon: User },
-    { id: 'appearance', label: 'Vzhled', icon: Eye },
+    { id: 'workData', label: 'Údaje', icon: Briefcase },
     { id: 'subscription', label: 'Předplatné', icon: Crown }
   ];
 
@@ -47,8 +47,8 @@ export const ProfileMobileCarousel: React.FC<ProfileMobileCarouselProps> = ({
     switch (activeTab) {
       case 'overview':
         return <ProfileOverview />;
-      case 'appearance':
-        return <ProfileAppearance />;
+      case 'workData':
+        return <ProfileWorkData />;
       case 'subscription':
         return <ProfileSubscription />;
       default:

@@ -5,6 +5,8 @@
   "settings": "Nastavení",
   "appearance": "Vzhled",
   "subscription": "Předplatné",
+  "workData": "Údaje",
+  "workDataDescription": "Pracovní a kontaktní údaje",
   "personalInfo": "Osobní údaje",
   "personalInfoDescription": "Spravujte své osobní informace",
   "workPreferences": "Pracovní preference",
@@ -50,5 +52,14 @@
   "adjustDisplaySettings": "Upravte si základní nastavení zobrazení aplikace. Změny se aplikují okamžitě.",
   "savingSettings": "Ukládání...",
   "saveToProfile": "Uložit do profilu",
-  "changesAppliedImmediately": "Všechny změny se aplikují okamžitě bez nutnosti ukládání"
+  "changesAppliedImmediately": "Všechny změny se aplikují okamžitě bez nutnosti ukládání",
+  "hourlyWage": "Hodinová mzda",
+  "phoneNumber": "Telefonní číslo",
+  "workplaceLocation": "Místo zaměstnání",
+  "countryCode": "Předvolba",
+  "enterHourlyWage": "Zadejte hodinovou mzdu",
+  "enterPhoneNumber": "Zadejte telefonní číslo",
+  "enterWorkplaceLocation": "Zadejte místo zaměstnání",
+  "workDataSaved": "Pracovní údaje byly uloženy",
+  "workDataError": "Chyba při ukládání pracovních údajů"
 }

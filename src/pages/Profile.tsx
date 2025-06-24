@@ -10,7 +10,7 @@ import DashboardBackground from '@/components/common/DashboardBackground';
 import ProfileMobileCarousel from '@/components/profile/mobile/ProfileMobileCarousel';
 import ProfileNavigation from '@/components/profile/ProfileNavigation';
 import ProfileOverview from '@/components/profile/ProfileOverview';
-import ProfileAppearance from '@/components/profile/ProfileAppearance';
+import ProfileWorkData from '@/components/profile/ProfileWorkData';
 import ProfileSubscription from '@/components/profile/subscription/ProfileSubscription';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -61,8 +61,8 @@ const Profile: React.FC = () => {
     switch (activeSection) {
       case 'overview':
         return <ProfileOverview />;
-      case 'appearance':
-        return <ProfileAppearance />;
+      case 'workData':
+        return <ProfileWorkData />;
       case 'subscription':
         return <ProfileSubscription />;
       default:

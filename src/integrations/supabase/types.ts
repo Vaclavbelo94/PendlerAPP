@@ -1347,6 +1347,39 @@ export type Database = {
         }
         Relationships: []
       }
+      user_work_data: {
+        Row: {
+          created_at: string
+          hourly_wage: number | null
+          id: string
+          phone_country_code: string | null
+          phone_number: string | null
+          updated_at: string
+          user_id: string
+          workplace_location: string | null
+        }
+        Insert: {
+          created_at?: string
+          hourly_wage?: number | null
+          id?: string
+          phone_country_code?: string | null
+          phone_number?: string | null
+          updated_at?: string
+          user_id: string
+          workplace_location?: string | null
+        }
+        Update: {
+          created_at?: string
+          hourly_wage?: number | null
+          id?: string
+          phone_country_code?: string | null
+          phone_number?: string | null
+          updated_at?: string
+          user_id?: string
+          workplace_location?: string | null
+        }
+        Relationships: []
+      }
       user_work_preferences: {
         Row: {
           carpool_driver: boolean | null

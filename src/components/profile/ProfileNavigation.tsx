@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { User, Settings, Bell, Shield, CreditCard, FileText } from 'lucide-react';
+import { User, Settings, Bell, Shield, CreditCard, FileText, Briefcase } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
@@ -19,40 +19,22 @@ export const ProfileNavigation: React.FC<ProfileNavigationProps> = ({
 
   const sections = [
     {
-      id: 'personal',
-      label: t('personalInfo'),
+      id: 'overview',
+      label: t('overview'),
       icon: User,
       description: t('personalInfoDescription')
     },
     {
-      id: 'preferences',
-      label: t('preferences'),
-      icon: Settings,
-      description: t('preferencesDescription')
+      id: 'workData',
+      label: t('workData'),
+      icon: Briefcase,
+      description: t('workDataDescription')
     },
     {
-      id: 'notifications',
-      label: t('notifications'),
-      icon: Bell,
-      description: t('notificationsDescription')
-    },
-    {
-      id: 'security',
-      label: t('security'),
-      icon: Shield,
-      description: t('securityDescription')
-    },
-    {
-      id: 'billing',
-      label: t('billing'),
+      id: 'subscription',
+      label: t('subscription'),
       icon: CreditCard,
       description: t('billingDescription')
-    },
-    {
-      id: 'documents',
-      label: t('documents'),
-      icon: FileText,
-      description: t('documentsDescription')
     }
   ];
 

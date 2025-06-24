@@ -4,6 +4,8 @@
   "personalInfo": "Dane osobowe",
   "workInfo": "Dane pracy",
   "preferences": "Preferencje",
+  "workData": "Dane",
+  "workDataDescription": "Dane pracy i kontaktowe",
   "language": "Język",
   "theme": "Motyw",
   "notifications": "Powiadomienia",
@@ -14,5 +16,14 @@
   "cancel": "Anuluj",
   "edit": "Edytuj",
   "updated": "Profil został zaktualizowany",
-  "error": "Błąd podczas aktualizacji profilu"
+  "error": "Błąd podczas aktualizacji profilu",
+  "hourlyWage": "Stawka godzinowa",
+  "phoneNumber": "Numer telefonu",
+  "workplaceLocation": "Miejsce pracy",
+  "countryCode": "Kierunkowy",
+  "enterHourlyWage": "Wprowadź stawkę godzinową",
+  "enterPhoneNumber": "Wprowadź numer telefonu",
+  "enterWorkplaceLocation": "Wprowadź miejsce pracy",
+  "workDataSaved": "Dane pracy zostały zapisane",
+  "workDataError": "Błąd podczas zapisywania danych pracy"
 }
