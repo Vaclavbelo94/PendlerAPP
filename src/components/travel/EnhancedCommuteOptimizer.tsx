@@ -5,8 +5,10 @@ import { Route, MapPin, AlertTriangle, TrendingUp } from 'lucide-react';
 import CommuteOptimizer from './CommuteOptimizer';
 import TrafficMap from './TrafficMap';
 import TravelAnalyticsDashboard from './TravelAnalyticsDashboard';
+import { useTranslation } from 'react-i18next';
 
 const EnhancedCommuteOptimizer: React.FC = () => {
+  const { t } = useTranslation('travel');
   const [origin, setOrigin] = useState('');
   const [destination, setDestination] = useState('');
 
@@ -21,15 +23,15 @@ const EnhancedCommuteOptimizer: React.FC = () => {
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="optimizer" className="flex items-center gap-2">
             <Route className="h-4 w-4" />
-            Optimalizace
+            {t('optimizer')}
           </TabsTrigger>
           <TabsTrigger value="traffic" className="flex items-center gap-2">
             <AlertTriangle className="h-4 w-4" />
-            Doprava live
+            {t('liveTrafficShort')}
           </TabsTrigger>
           <TabsTrigger value="analytics" className="flex items-center gap-2">
             <TrendingUp className="h-4 w-4" />
-            Analýzy
+            {t('analytics')}
           </TabsTrigger>
         </TabsList>
 

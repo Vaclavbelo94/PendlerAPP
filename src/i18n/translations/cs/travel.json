@@ -132,5 +132,13 @@
   "error": "Chyba",
   "success": "Úspěch",
   "cancel": "Zrušit",
-  "confirm": "Potvrdit"
+  "confirm": "Potvrdit",
+  "countryCode": "+420",
+  "currency": "Kč",
+  "unknownDriver": "Neznámý řidič",
+  "optimizer": "Optimalizace",
+  "liveTrafficShort": "Doprava live",
+  "analytics": "Analýzy",
+  "rideSharingTitle": "Sdílení jízd",
+  "findRidemates": "Sdílení jízd a vyhledávání spolucestujících"
 }

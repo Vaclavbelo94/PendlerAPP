@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 
 export interface RideshareOffer {
@@ -41,70 +42,83 @@ export interface RideshareOfferWithDriver extends RideshareOffer {
 
 export const rideshareService = {
   async getRideshareOffers(): Promise<RideshareOfferWithDriver[]> {
-    // First get the offers
-    const { data: offers, error: offersError } = await supabase
-      .from('rideshare_offers')
-      .select('*')
-      .eq('is_active', true)
-      .order('created_at', { ascending: false });
+    try {
+      // First get the offers
+      const { data: offers, error: offersError } = await supabase
+        .from('rideshare_offers')
+        .select('*')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
 
-    if (offersError) {
-      console.error('Error loading rideshare offers:', offersError);
-      throw offersError;
+      if (offersError) {
+        console.error('Error loading rideshare offers:', offersError);
+        throw new Error('Failed to load ride offers');
+      }
+
+      if (!offers || offers.length === 0) {
+        return [];
+      }
+
+      // Get all unique user IDs
+      const userIds = [...new Set(offers.map(offer => offer.user_id))];
+
+      // Get profiles for these users
+      const { data: profiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, username, phone_number')
+        .in('id', userIds);
+
+      if (profilesError) {
+        console.error('Error loading profiles:', profilesError);
+        throw new Error('Failed to load driver profiles');
+      }
+
+      // Create a map of user_id to profile
+      const profilesMap = new Map();
+      profiles?.forEach(profile => {
+        profilesMap.set(profile.id, profile);
+      });
+
+      // Combine offers with profile data
+      return offers.map(offer => {
+        const profile = profilesMap.get(offer.user_id);
+        return {
+          ...offer,
+          driver: {
+            username: profile?.username || '',
+            phone_number: offer.phone_number || profile?.phone_number, // Prefer offer phone number
+            rating: offer.rating,
+            completed_rides: offer.completed_rides
+          }
+        };
+      });
+    } catch (error) {
+      console.error('Service error in getRideshareOffers:', error);
+      throw error;
     }
-
-    if (!offers || offers.length === 0) {
-      return [];
-    }
-
-    // Get all unique user IDs
-    const userIds = [...new Set(offers.map(offer => offer.user_id))];
-
-    // Get profiles for these users
-    const { data: profiles, error: profilesError } = await supabase
-      .from('profiles')
-      .select('id, username, phone_number')
-      .in('id', userIds);
-
-    if (profilesError) {
-      console.error('Error loading profiles:', profilesError);
-      throw profilesError;
-    }
-
-    // Create a map of user_id to profile
-    const profilesMap = new Map();
-    profiles?.forEach(profile => {
-      profilesMap.set(profile.id, profile);
-    });
-
-    // Combine offers with profile data
-    return offers.map(offer => {
-      const profile = profilesMap.get(offer.user_id);
-      return {
-        ...offer,
-        driver: {
-          username: profile?.username || 'Neznámý řidič',
-          phone_number: offer.phone_number || profile?.phone_number, // Prefer offer phone number
-          rating: offer.rating,
-          completed_rides: offer.completed_rides
-        }
-      };
-    });
   },
 
   async createRideshareOffer(offerData: Omit<RideshareOffer, 'id' | 'created_at' | 'rating' | 'completed_rides' | 'is_active'>) {
-    const { data, error } = await supabase
-      .from('rideshare_offers')
-      .insert(offerData)
-      .select()
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from('rideshare_offers')
+        .insert({
+          ...offerData,
+          is_active: true
+        })
+        .select()
+        .single();
 
-    if (error) {
-      console.error('Error creating rideshare offer:', error);
+      if (error) {
+        console.error('Error creating rideshare offer:', error);
+        throw new Error('Failed to create ride offer');
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Service error in createRideshareOffer:', error);
       throw error;
     }
-
-    return data;
   },
 
   async createOffer(offerData: Omit<RideshareOffer, 'id' | 'created_at' | 'rating' | 'completed_rides' | 'is_active'>) {
@@ -112,42 +126,56 @@ export const rideshareService = {
   },
 
   async contactDriver(offerId: string, message: string) {
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    if (!user) {
-      throw new Error('User must be authenticated');
-    }
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        throw new Error('User must be authenticated');
+      }
 
-    const { data, error } = await supabase
-      .from('rideshare_contacts')
-      .insert({
-        offer_id: offerId,
-        requester_user_id: user.id,
-        message: message
-      })
-      .select()
-      .single();
+      const { data, error } = await supabase
+        .from('rideshare_contacts')
+        .insert({
+          offer_id: offerId,
+          requester_user_id: user.id,
+          message: message,
+          status: 'pending'
+        })
+        .select()
+        .single();
 
-    if (error) {
-      console.error('Error contacting driver:', error);
+      if (error) {
+        console.error('Error contacting driver:', error);
+        throw new Error('Failed to send contact request');
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Service error in contactDriver:', error);
       throw error;
     }
-
-    return data;
   },
 
   async createContact(contactData: { offer_id: string; requester_user_id: string; message: string }) {
-    const { data, error } = await supabase
-      .from('rideshare_contacts')
-      .insert(contactData)
-      .select()
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from('rideshare_contacts')
+        .insert({
+          ...contactData,
+          status: 'pending'
+        })
+        .select()
+        .single();
 
-    if (error) {
-      console.error('Error creating contact:', error);
+      if (error) {
+        console.error('Error creating contact:', error);
+        throw new Error('Failed to create contact request');
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Service error in createContact:', error);
       throw error;
     }
-
-    return data;
   }
 };

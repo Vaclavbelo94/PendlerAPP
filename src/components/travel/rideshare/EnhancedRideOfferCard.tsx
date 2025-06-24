@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Clock, MapPin, Calendar, Users, MessageCircle, Phone, Star, Car } from "lucide-react";
 import { RideshareOffer } from "@/services/rideshareService";
 import { useTranslation } from 'react-i18next';
+import { formatPhoneNumber, getDriverDisplayName, getCountryConfig } from '@/utils/countryUtils';
 
 interface EnhancedRideOfferCardProps {
   ride: RideshareOffer & {
@@ -23,14 +24,16 @@ interface EnhancedRideOfferCardProps {
 }
 
 const EnhancedRideOfferCard = ({ ride, onContact, isAuthenticated, currentUserId }: EnhancedRideOfferCardProps) => {
-  const { t } = useTranslation('travel');
+  const { t, i18n } = useTranslation('travel');
   const isOwnRide = ride.user_id === currentUserId;
-  const driverName = ride.driver?.username || t('driver');
+  const driverName = getDriverDisplayName(ride.driver, t);
   const hasPhoneNumber = ride.driver?.phone_number && String(ride.driver.phone_number).length > 4;
+  const countryConfig = getCountryConfig(i18n.language);
 
   const handleCall = () => {
     if (hasPhoneNumber) {
-      window.location.href = `tel:${ride.driver.phone_number}`;
+      const formattedPhone = formatPhoneNumber(ride.driver.phone_number, i18n.language);
+      window.location.href = `tel:${formattedPhone}`;
     }
   };
 
@@ -38,6 +41,15 @@ const EnhancedRideOfferCard = ({ ride, onContact, isAuthenticated, currentUserId
     if (!rating || rating === 0) return t('newDriver');
     return rating.toFixed(1);
   };
+
+  const formatPrice = (price: number) => {
+    if (price === 0) return t('free');
+    return `${price} ${countryConfig.currencySymbol}`;
+  };
+
+  const displayPhoneNumber = hasPhoneNumber 
+    ? formatPhoneNumber(ride.driver.phone_number, i18n.language)
+    : '';
 
   return (
     <Card className="w-full max-w-full transition-shadow rounded-xl shadow-sm border bg-white dark:bg-gray-950
@@ -84,12 +96,10 @@ const EnhancedRideOfferCard = ({ ride, onContact, isAuthenticated, currentUserId
             <Clock className="h-4 w-4 text-muted-foreground" />
             <span className="font-medium text-sm">{ride.departure_time}</span>
           </div>
-          {ride.price_per_person > 0 && (
-            <div className="flex items-center gap-1.5">
-              <span className="text-xs text-muted-foreground">{t('cost')}:</span>
-              <span className="font-semibold text-green-600 text-base">{ride.price_per_person} {t('czk')}</span>
-            </div>
-          )}
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs text-muted-foreground">{t('cost')}:</span>
+            <span className="font-semibold text-green-600 text-base">{formatPrice(ride.price_per_person)}</span>
+          </div>
         </div>
         {/* Route row */}
         <div className="flex flex-row gap-3">
@@ -111,10 +121,10 @@ const EnhancedRideOfferCard = ({ ride, onContact, isAuthenticated, currentUserId
         </div>
         {/* Phone & Notes */}
         <div className="my-2">
-          {ride.driver?.phone_number && (
+          {displayPhoneNumber && (
             <div className="flex items-center gap-2 text-sm mb-1">
               <Phone className="h-4 w-4 text-primary" />
-              <span className="font-medium break-all">{ride.driver.phone_number}</span>
+              <span className="font-medium break-all">{displayPhoneNumber}</span>
             </div>
           )}
           {ride.notes && (

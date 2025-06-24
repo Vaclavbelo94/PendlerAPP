@@ -6,6 +6,7 @@ import EnhancedRideSharing from '../EnhancedRideSharing';
 import TrafficMap from '../TrafficMap';
 import { UniversalMobileNavigation } from '@/components/navigation/UniversalMobileNavigation';
 import { Users, AlertTriangle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface TravelMobileCarouselProps {
   activeTab: string;
@@ -24,6 +25,7 @@ const TravelMobileCarousel: React.FC<TravelMobileCarouselProps> = ({
   onOriginChange,
   onDestinationChange
 }) => {
+  const { t } = useTranslation('travel');
   const tabs = ['ridesharing', 'traffic'];
   
   // Setup swipe navigation between tabs
@@ -34,19 +36,19 @@ const TravelMobileCarousel: React.FC<TravelMobileCarouselProps> = ({
     enabled: true
   });
   
-  // Define tab info
+  // Define tab info with translations
   const tabsInfo = [
     {
       id: 'ridesharing',
-      label: 'Spolujízdy',
+      label: t('ridesharing'),
       icon: Users,
-      description: 'Sdílení jízd a vyhledávání spolucestujících'
+      description: t('findRidemates')
     },
     {
       id: 'traffic',
-      label: 'Live doprava',
+      label: t('liveTrafficShort'),
       icon: AlertTriangle,
-      description: 'Aktuální dopravní situace a předpovědi'
+      description: t('realTimeTraffic')
     }
   ];
   
