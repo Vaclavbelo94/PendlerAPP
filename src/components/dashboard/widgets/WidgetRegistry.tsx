@@ -3,14 +3,12 @@ import React from 'react';
 import { WidgetConfig, WidgetType, WidgetSize } from './types';
 import ShiftsProgress from '../ShiftsProgress';
 import CommuteComparison from '../CommuteComparison';
-import EducationWidget from '../EducationWidget';
-import { Calendar, Car, GraduationCap } from 'lucide-react';
+import { Calendar, Car } from 'lucide-react';
 
-// Widget components map
+// Widget components map - removed education widget
 const WIDGET_COMPONENTS = {
   shifts: require('../ShiftsProgress').default,
   commute: CommuteComparison,
-  education: EducationWidget,
 };
 
 export const DEFAULT_WIDGETS: WidgetConfig[] = [
@@ -32,16 +30,6 @@ export const DEFAULT_WIDGETS: WidgetConfig[] = [
     icon: Car,
     size: 'medium' as WidgetSize,
     order: 1,
-    visible: true,
-  },
-  {
-    id: 'education',
-    type: 'education',
-    title: 'Vzdělávací tipy',
-    description: 'Tipy pro efektivní práci v zahraničí',
-    icon: GraduationCap,
-    size: 'large' as WidgetSize,
-    order: 2,
     visible: true,
   },
 ];

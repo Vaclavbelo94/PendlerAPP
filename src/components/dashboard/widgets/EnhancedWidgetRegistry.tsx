@@ -2,24 +2,22 @@ import React from 'react';
 import { WidgetConfig, WidgetType } from './types';
 import ShiftsProgress from '../ShiftsProgress';
 import CommuteComparison from '../CommuteComparison';
-import EducationWidget from '../EducationWidget';
 import AdvancedAnalyticsWidget from '@/components/analytics/AdvancedAnalyticsWidget';
 import SmartPackWidget from '@/components/language/SmartPackWidget';
-import { Calendar, Languages, Car, GraduationCap, Brain, Package, BarChart3, Sparkles } from 'lucide-react';
+import { Calendar, Languages, Car, Brain, Package } from 'lucide-react';
 
-// Enhanced widget components map
+// Enhanced widget components map - removed education widget
 const WIDGET_COMPONENTS: Record<WidgetType | string, React.ComponentType<any>> = {
   // Original widgets
   shifts: ShiftsProgress,
   commute: CommuteComparison,
-  education: EducationWidget,
   
   // New Phase 4 widgets
   'advanced-analytics': AdvancedAnalyticsWidget,
   'smart-packs': SmartPackWidget,
 };
 
-// Enhanced widget configurations with intelligent positioning
+// Enhanced widget configurations with intelligent positioning - removed education widget
 export const ENHANCED_WIDGETS: WidgetConfig[] = [
   // Core widgets (high priority)
   {
@@ -82,18 +80,6 @@ export const ENHANCED_WIDGETS: WidgetConfig[] = [
     icon: Car,
     size: 'medium',
     order: 4,
-    visible: true,
-    category: 'utility',
-    priority: 'low'
-  },
-  {
-    id: 'education',
-    type: 'education',
-    title: 'Vzdělávací tipy',
-    description: 'Tipy pro efektivní práci v zahraničí',
-    icon: GraduationCap,
-    size: 'large',
-    order: 5,
     visible: true,
     category: 'utility',
     priority: 'low'
