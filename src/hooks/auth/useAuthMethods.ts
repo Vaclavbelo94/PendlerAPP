@@ -39,9 +39,11 @@ export const useAuthMethods = () => {
       // Clean up existing auth state
       cleanupAuthState();
       
-      // Use the current origin with the current path for redirect
+      // Use the current path for redirect - this ensures we stay on the same page
       const currentPath = window.location.pathname;
-      const redirectUrl = `${window.location.origin}${currentPath}`;
+      const currentOrigin = window.location.origin;
+      const redirectUrl = `${currentOrigin}${currentPath}`;
+      
       console.log('Google OAuth redirect URL:', redirectUrl);
       
       const { data, error } = await supabase.auth.signInWithOAuth({

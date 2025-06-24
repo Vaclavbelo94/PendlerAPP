@@ -28,7 +28,53 @@ export const useOAuthCallback = () => {
         
         console.log('OAuth callback detected, processing...');
         
-        // Use Supabase's built-in session handling for OAuth callbacks
+        // Parse hash parameters directly
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        const accessToken = hashParams.get('access_token');
+        const refreshToken = hashParams.get('refresh_token');
+        const error = hashParams.get('error');
+        const errorDescription = hashParams.get('error_description');
+        
+        if (error) {
+          console.error('OAuth error in hash:', error, errorDescription);
+          toast.error(`Chyba při přihlašování: ${errorDescription || error}`);
+          // Clean up URL and redirect to login
+          window.history.replaceState(null, '', window.location.pathname);
+          navigate('/login', { replace: true });
+          return;
+        }
+        
+        if (accessToken) {
+          console.log('OAuth access token found, setting session...');
+          
+          // Set the session with the tokens from URL
+          const { data, error: setSessionError } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken || ''
+          });
+          
+          if (setSessionError) {
+            console.error('Error setting session:', setSessionError);
+            toast.error('Chyba při zpracování přihlášení');
+            navigate('/login', { replace: true });
+            return;
+          }
+          
+          if (data.session && data.session.user) {
+            console.log('OAuth session set successfully:', data.session.user.email);
+            toast.success('Úspěšně přihlášeno přes Google');
+            
+            // Clean up the URL
+            window.history.replaceState(null, '', window.location.pathname);
+            
+            // Navigate to dashboard
+            navigate('/dashboard', { replace: true });
+            return;
+          }
+        }
+        
+        // Fallback: try to get existing session
+        console.log('Trying to get existing session...');
         const { data, error } = await supabase.auth.getSession();
         
         if (error) {
@@ -48,34 +94,11 @@ export const useOAuthCallback = () => {
           // Navigate to dashboard
           navigate('/dashboard', { replace: true });
         } else {
-          // If no session, try to handle the hash parameters manually
-          const hashParams = new URLSearchParams(window.location.hash.substring(1));
-          const error = hashParams.get('error');
-          const errorDescription = hashParams.get('error_description');
-          
-          if (error) {
-            console.error('OAuth error in hash:', error, errorDescription);
-            toast.error(`Chyba při přihlašování: ${errorDescription || error}`);
-            navigate('/login', { replace: true });
-            return;
-          }
-          
-          // Wait a bit for Supabase to process the tokens
-          setTimeout(async () => {
-            const { data: retryData, error: retryError } = await supabase.auth.getSession();
-            
-            if (retryData.session && retryData.session.user) {
-              console.log('OAuth session retrieved on retry:', retryData.session.user.email);
-              toast.success('Úspěšně přihlášeno přes Google');
-              window.history.replaceState(null, '', window.location.pathname);
-              navigate('/dashboard', { replace: true });
-            } else {
-              console.error('No session after OAuth callback');
-              toast.error('Chyba při zpracování přihlášení');
-              navigate('/login', { replace: true });
-            }
-          }, 1000);
+          console.error('No session after OAuth callback');
+          toast.error('Chyba při zpracování přihlášení');
+          navigate('/login', { replace: true });
         }
+        
       } catch (error) {
         console.error('OAuth callback exception:', error);
         toast.error('Chyba při zpracování přihlášení');
