@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Gift, Sparkles } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { redeemPromoCode } from "@/components/admin/promoCode/promoCodeService";
+import { supabase } from "@/integrations/supabase/client";
 
 const QuickPromoCode = () => {
   const { user, isPremium, refreshPremiumStatus } = useAuth();
@@ -17,6 +17,94 @@ const QuickPromoCode = () => {
   if (!user || isPremium) {
     return null;
   }
+
+  const redeemPromoCode = async (userId: string, code: string) => {
+    try {
+      console.log('Aktivuji promo kód:', code, 'pro uživatele:', userId);
+      
+      // Získáme promo kód z databáze
+      const { data: promoCodeData, error: fetchError } = await supabase
+        .from('promo_codes')
+        .select('*')
+        .ilike('code', code.trim())
+        .single();
+
+      if (fetchError || !promoCodeData) {
+        console.error('Promo kód nenalezen:', fetchError);
+        return { success: false, message: "Neplatný promo kód" };
+      }
+
+      // Zkontrolujeme platnost
+      if (new Date(promoCodeData.valid_until) < new Date()) {
+        return { success: false, message: "Tento promo kód již vypršel" };
+      }
+
+      if (promoCodeData.max_uses !== null && promoCodeData.used_count >= promoCodeData.max_uses) {
+        return { success: false, message: "Tento promo kód byl již vyčerpán" };
+      }
+
+      // Zkontrolujeme, zda uživatel už tento kód nepoužil
+      const { data: existingRedemption } = await supabase
+        .from('promo_code_redemptions')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('promo_code_id', promoCodeData.id);
+
+      if (existingRedemption && existingRedemption.length > 0) {
+        return { success: false, message: "Tento promo kód jste již použili" };
+      }
+
+      // Vytvoříme redemption záznam
+      const { error: redemptionError } = await supabase
+        .from('promo_code_redemptions')
+        .insert({
+          user_id: userId,
+          promo_code_id: promoCodeData.id
+        });
+
+      if (redemptionError) {
+        console.error('Chyba při vytváření redemption záznamu:', redemptionError);
+        return { success: false, message: "Chyba při aktivaci promo kódu" };
+      }
+
+      // Nastavíme premium status
+      const premiumExpiry = new Date();
+      premiumExpiry.setMonth(premiumExpiry.getMonth() + promoCodeData.duration);
+
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({ 
+          is_premium: true,
+          premium_expiry: premiumExpiry.toISOString()
+        })
+        .eq('id', userId);
+
+      if (profileError) {
+        console.error('Chyba při aktivaci premium:', profileError);
+        return { success: false, message: "Chyba při aktivaci premium statusu" };
+      }
+
+      // Aktualizujeme počet použití
+      await supabase
+        .from('promo_codes')
+        .update({ 
+          used_count: promoCodeData.used_count + 1 
+        })
+        .eq('id', promoCodeData.id);
+
+      return { 
+        success: true, 
+        promoCode: {
+          ...promoCodeData,
+          discount: promoCodeData.discount,
+          duration: promoCodeData.duration
+        }
+      };
+    } catch (error) {
+      console.error("Chyba při uplatňování promo kódu:", error);
+      return { success: false, message: "Nastala chyba při aktivaci promo kódu" };
+    }
+  };
 
   const handleRedeemCode = async (e: React.FormEvent) => {
     e.preventDefault();
