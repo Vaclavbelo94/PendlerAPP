@@ -1,4 +1,3 @@
-
 {
   "title": "Dashboard",
   "welcome": "Willkommen",
@@ -191,11 +190,7 @@
   "workPlace": "Arbeitsplatz",
   "shiftType": "Schichttyp",
   "mostUsedFeatures": "Meist genutzte Funktionen",
-  "vehicleAdd": "Fahrzeug hinzufügen",
-  "vehicleAddDescription": "Fahrzeug hinzufügen",
   "profile": "Profil",
-  "profileDescription": "Profil bearbeiten",
   "rideshare": "Mitfahrgelegenheit",
-  "rideshareDescription": "Mitfahrer finden",
-  "taxAdvisoryDescription": "Steuerberatung"
+  "rideshareDescription": "Mitfahrer finden"
 }
