@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -151,7 +152,7 @@ const OverviewTab = () => {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Měsíční výdělky</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('dashboard:monthlyEarningsTitle')}</CardTitle>
             <CalendarDays className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -162,11 +163,11 @@ const OverviewTab = () => {
                   currency: 'EUR',
                   minimumFractionDigits: 0,
                   maximumFractionDigits: 0
-                }) : 'Nenastaveno'
+                }) : t('dashboard:notSet')
               }
             </div>
             <p className="text-xs text-muted-foreground">
-              {hasWageSet ? `${monthlyHours}h tento měsíc` : 'Nastavte mzdu v profilu'}
+              {hasWageSet ? `${monthlyHours}h ${t('dashboard:thisMonth')}` : t('dashboard:setWageInProfile')}
             </p>
           </CardContent>
         </Card>
@@ -181,7 +182,7 @@ const OverviewTab = () => {
               {thisWeekHours > 0 ? Math.round((thisWeekHours / 30) * 100) : 0}%
             </div>
             <p className="text-xs text-muted-foreground">
-              Týdenní cíl (30h)
+              {t('dashboard:weeklyTarget')} (30h)
             </p>
           </CardContent>
         </Card>
@@ -212,8 +213,8 @@ const OverviewTab = () => {
                         })()}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        {shift.type === "morning" ? "Ranní" : 
-                         shift.type === "afternoon" ? "Odpolední" : "Noční"} směna
+                        {shift.type === "morning" ? t('dashboard:morningShift') : 
+                         shift.type === "afternoon" ? t('dashboard:afternoonShift') : t('dashboard:nightShift')}
                       </p>
                     </div>
                     <div className="text-sm text-muted-foreground">
@@ -246,7 +247,7 @@ const OverviewTab = () => {
         <Card>
           <CardHeader>
             <CardTitle>{t('dashboard:quickActions')}</CardTitle>
-            <CardDescription>Nejčastěji používané funkce</CardDescription>
+            <CardDescription>{t('dashboard:mostUsedFeatures', 'Nejčastěji používané funkce')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <Button 

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -136,7 +137,7 @@ const DashboardOverview: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">{t('location')}</p>
-                  <p className="font-medium">Pracovní místo</p>
+                  <p className="font-medium">{t('workPlace', 'Arbeitsplatz')}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -144,20 +145,20 @@ const DashboardOverview: React.FC = () => {
                   <TrendingUp className="h-4 w-4 text-primary" />
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Typ směny</p>
+                  <p className="text-sm text-muted-foreground">{t('shiftType', 'Schichttyp')}</p>
                   <p className="font-medium">
-                    {currentShift.type === 'morning' ? 'Ranní' : 
-                     currentShift.type === 'afternoon' ? 'Odpolední' : 'Noční'}
+                    {currentShift.type === 'morning' ? t('morningShift') : 
+                     currentShift.type === 'afternoon' ? t('afternoonShift') : t('nightShift')}
                   </p>
                 </div>
               </div>
             </div>
           ) : (
             <div className="text-center py-8">
-              <p className="text-muted-foreground mb-4">Dnes nemáte naplánovanou žádnou směnu</p>
+              <p className="text-muted-foreground mb-4">{t('noPlannedShift')}</p>
               <Button onClick={() => navigate('/shifts')} className="flex items-center gap-2">
                 <Plus className="h-4 w-4" />
-                Přidat směnu
+                {t('addShift')}
               </Button>
             </div>
           )}
@@ -167,7 +168,7 @@ const DashboardOverview: React.FC = () => {
       {/* Monthly Overview */}
       <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg font-semibold">Měsíční přehled</CardTitle>
+          <CardTitle className="text-lg font-semibold">{t('monthlyOverview')}</CardTitle>
         </CardHeader>
         <CardContent>
           {shifts.length > 0 ? (
@@ -177,11 +178,11 @@ const DashboardOverview: React.FC = () => {
                 <span className="font-medium">{thisWeekHours}h</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Směny tento týden</span>
+                <span className="text-sm text-muted-foreground">{t('shiftsThisWeek')}</span>
                 <span className="font-medium">{thisWeekShifts.length}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Měsíční výdělky</span>
+                <span className="text-sm text-muted-foreground">{t('monthlyEarningsTitle')}</span>
                 <div className="flex items-center gap-1">
                   <Euro className="h-3 w-3 text-muted-foreground" />
                   <span className="font-medium">
@@ -191,7 +192,7 @@ const DashboardOverview: React.FC = () => {
                         currency: 'EUR',
                         minimumFractionDigits: 0,
                         maximumFractionDigits: 0
-                      }) : 'Nenastaveno'
+                      }) : t('notSet')
                     }
                   </span>
                 </div>
@@ -210,17 +211,17 @@ const DashboardOverview: React.FC = () => {
                     className="p-0 h-auto text-xs"
                     onClick={() => navigate('/profile')}
                   >
-                    Nastavte hodinovou mzdu v profilu
+                    {t('setWageInProfile')}
                   </Button>
                 </div>
               )}
             </div>
           ) : (
             <div className="text-center py-6">
-              <p className="text-muted-foreground mb-4">Zatím nemáte žádné směny</p>
+              <p className="text-muted-foreground mb-4">{t('noShiftsYetDescription')}</p>
               <Button onClick={() => navigate('/shifts')} size="sm">
                 <Plus className="h-4 w-4 mr-2" />
-                Přidat první směnu
+                {t('addFirstShift')}
               </Button>
             </div>
           )}

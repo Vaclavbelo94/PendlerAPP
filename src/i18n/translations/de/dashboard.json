@@ -1,3 +1,4 @@
+
 {
   "title": "Dashboard",
   "welcome": "Willkommen",
@@ -177,5 +178,14 @@
   "salaryCalculator": "Gehaltsrechner",
   "taxAdvisor": "Steuerberater",
   "translator": "Übersetzer",
-  "vehicle": "Fahrzeug"
+  "vehicle": "Fahrzeug",
+  "monthlyOverview": "Monatlicher Überblick",
+  "monthlyEarningsTitle": "Monatliche Einnahmen",
+  "notSet": "Nicht festgelegt",
+  "setWageInProfile": "Stundenlohn im Profil festlegen",
+  "weeklyTarget": "Wochenziel",
+  "noPlannedShift": "Heute keine geplante Schicht",
+  "addShiftToday": "Schicht hinzufügen",
+  "noShiftsYetDescription": "Noch keine Schichten vorhanden",
+  "addFirstShift": "Erste Schicht hinzufügen"
 }
