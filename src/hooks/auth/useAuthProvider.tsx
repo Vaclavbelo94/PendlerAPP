@@ -123,7 +123,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
 
     try {
-      console.log("Refreshing premium status for user:", user.id);
+      console.log("=== PREMIUM STATUS REFRESH START ===");
+      console.log("Refreshing premium status for user:", user.id, user.email);
       
       // Double-check user identity before making database calls
       if (user.email !== session?.user?.email) {
@@ -139,6 +140,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         .eq('user_id', user.id)
         .maybeSingle();
 
+      console.log("Subscriber data:", subscriberData, "error:", subscriberError);
+
       if (!subscriberError && subscriberData?.subscribed) {
         const premiumExpiry = subscriberData.subscription_end;
         const isActive = premiumExpiry ? new Date(premiumExpiry) > new Date() : true;
@@ -153,12 +156,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
       }
 
-      // Fallback to profiles table check
+      // Fallback to profiles table check - NEJDŮLEŽITĚJŠÍ ČÁST PRO PROMO KÓDY
+      console.log("Checking profiles table for premium status...");
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('is_premium, premium_expiry')
         .eq('id', user.id)
         .maybeSingle();
+
+      console.log("Profile data:", profileData, "error:", profileError);
 
       if (profileError) {
         console.error('Error fetching profile premium status:', profileError);
@@ -170,7 +176,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       let isActive = profilePremium;
       if (profileExpiry) {
-        isActive = profilePremium && new Date(profileExpiry) > new Date();
+        const expiryDate = new Date(profileExpiry);
+        const now = new Date();
+        isActive = profilePremium && expiryDate > now;
+        console.log("Premium expiry check:", {
+          profilePremium,
+          profileExpiry,
+          expiryDate: expiryDate.toISOString(),
+          now: now.toISOString(),
+          isActive
+        });
       }
 
       // Check for special users
@@ -179,7 +194,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         isActive = true;
       }
 
+      console.log("=== FINAL PREMIUM STATUS ===");
       console.log("Premium status from profile:", { profilePremium, profileExpiry, isActive });
+      console.log("=== PREMIUM STATUS REFRESH END ===");
+      
       setIsPremium(isActive);
       
       if (user && isActive && checkLocalStorageSpace() > 1024) {

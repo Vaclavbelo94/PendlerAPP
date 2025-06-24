@@ -3,15 +3,16 @@ import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Gift, Sparkles } from "lucide-react";
+import { Gift, Sparkles, RefreshCw } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { activatePromoCode } from "@/services/promoCodeService";
+import { activatePromoCode, fixExistingPromoCodeUsers } from "@/services/promoCodeService";
 
 const QuickPromoCode = () => {
   const { user, isPremium, refreshPremiumStatus } = useAuth();
   const [promoCode, setPromoCode] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isFixing, setIsFixing] = useState(false);
 
   // Don't show the widget if user is already premium or not logged in
   if (!user || isPremium) {
@@ -47,28 +48,55 @@ const QuickPromoCode = () => {
       // Refresh premium status after successful redemption
       await refreshPremiumStatus();
       
-      // Krátké zpoždění a pak refresh stránky pro jistotu
-      setTimeout(() => {
-        window.location.reload();
-      }, 1500);
-      
       if (redemptionCode.discount === 100) {
         const premiumExpiry = new Date();
         premiumExpiry.setMonth(premiumExpiry.getMonth() + redemptionCode.duration);
         toast.success(`Premium status byl aktivován do ${premiumExpiry.toLocaleDateString('cs-CZ')}`, {
-          duration: 5000
+          duration: 8000
         });
       } else {
         toast.success(`Promo kód byl použit se slevou ${redemptionCode.discount}%`, {
-          duration: 5000
+          duration: 8000
         });
       }
+
+      // Krátké zpoždění a pak reload pro aktualizaci UI
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+      
     } catch (error) {
       console.error("Error redeeming promo code:", error);
       toast.error("Nastala chyba při aktivaci promo kódu");
     } finally {
       setIsSubmitting(false);
       setPromoCode("");
+    }
+  };
+
+  const handleFixExisting = async () => {
+    if (!user) return;
+    
+    setIsFixing(true);
+    try {
+      console.log('Opravuji existující premium status...');
+      
+      const result = await fixExistingPromoCodeUsers(user.id);
+      
+      if (result.success) {
+        toast.success("Premium status byl opraven!", { duration: 5000 });
+        await refreshPremiumStatus();
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+      } else {
+        toast.error(result.message || "Nepodařilo se opravit premium status");
+      }
+    } catch (error) {
+      console.error("Error fixing existing users:", error);
+      toast.error("Chyba při opravě premium statusu");
+    } finally {
+      setIsFixing(false);
     }
   };
 
@@ -80,7 +108,7 @@ const QuickPromoCode = () => {
           Máte promo kód?
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-4">
         <form onSubmit={handleRedeemCode} className="space-y-3">
           <Input
             value={promoCode}
@@ -104,8 +132,28 @@ const QuickPromoCode = () => {
             )}
           </Button>
         </form>
-        <p className="text-xs text-purple-600 dark:text-purple-400 mt-2">
-          Aktivujte prémiové funkce zdarma!
+        
+        <div className="pt-2 border-t border-purple-200 dark:border-purple-800">
+          <Button 
+            onClick={handleFixExisting}
+            disabled={isFixing}
+            variant="outline"
+            size="sm"
+            className="w-full text-purple-600 border-purple-300 hover:bg-purple-50"
+          >
+            {isFixing ? (
+              "Opravuji..."
+            ) : (
+              <>
+                <RefreshCw className="h-3 w-3 mr-2" />
+                Opravit premium status
+              </>
+            )}
+          </Button>
+        </div>
+        
+        <p className="text-xs text-purple-600 dark:text-purple-400">
+          Aktivujte prémiové funkce zdarma! Pokud máte problém s aktivací, zkuste tlačítko "Opravit premium status".
         </p>
       </CardContent>
     </Card>
