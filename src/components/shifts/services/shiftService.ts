@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { ShiftType } from "../types";
 import { formatDateForDB } from "../utils/dateUtils";
@@ -15,22 +14,73 @@ export interface ShiftData {
  * Now utilizes optimized database indexes
  */
 export const loadUserShifts = async (userId: string) => {
-  // This query now benefits from idx_shifts_user_date index
-  const { data, error } = await supabase
-    .from('shifts')
-    .select('*')
-    .eq('user_id', userId)
-    .order('date', { ascending: false });
+  try {
+    console.log("=== DEBUG: loadUserShifts START ===");
+    console.log("Requested userId:", userId);
+    
+    // Debug: Check current auth status
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    console.log("Current session:", session);
+    console.log("Session error:", sessionError);
+    console.log("Session user ID:", session?.user?.id);
+    console.log("Auth UID match check:", session?.user?.id === userId);
+    
+    // Debug: Try to get current user ID from auth
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    console.log("Current auth user:", user);
+    console.log("User error:", userError);
+    console.log("Auth user ID:", user?.id);
 
-  if (error) throw error;
+    // This query now benefits from idx_shifts_user_date index
+    const { data, error } = await supabase
+      .from('shifts')
+      .select('*')
+      .eq('user_id', userId)
+      .order('date', { ascending: false });
 
-  return data?.map(shift => ({
-    id: shift.id,
-    date: shift.date, // Ponecháváme jako string pro konzistenci s databází
-    type: shift.type as ShiftType,
-    notes: shift.notes || "",
-    userId: shift.user_id
-  })) || [];
+    console.log("Database query result:");
+    console.log("- Data:", data);
+    console.log("- Error:", error);
+    console.log("- Data length:", data?.length || 0);
+    
+    // Debug: Let's also try to fetch ALL shifts to see what's in the database
+    const { data: allShifts, error: allError } = await supabase
+      .from('shifts')
+      .select('*')
+      .order('date', { ascending: false });
+      
+    console.log("ALL shifts in database:");
+    console.log("- All data:", allShifts);
+    console.log("- All error:", allError);
+    console.log("- All data length:", allShifts?.length || 0);
+    
+    if (allShifts) {
+      allShifts.forEach((shift, index) => {
+        console.log(`Shift ${index + 1}:`, {
+          id: shift.id,
+          user_id: shift.user_id,
+          date: shift.date,
+          type: shift.type,
+          user_id_matches: shift.user_id === userId
+        });
+      });
+    }
+
+    console.log("=== DEBUG: loadUserShifts END ===");
+
+    if (error) throw error;
+
+    return data?.map(shift => ({
+      id: shift.id,
+      date: shift.date, // Ponecháváme jako string pro konzistenci s databází
+      type: shift.type as ShiftType,
+      notes: shift.notes || "",
+      userId: shift.user_id
+    })) || [];
+  } catch (error) {
+    console.error("Error in loadUserShifts:", error);
+    throw error;
+  }
 };
 
 /**
