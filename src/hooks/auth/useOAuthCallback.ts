@@ -32,12 +32,12 @@ export const useOAuthCallback = () => {
         const hashParams = new URLSearchParams(window.location.hash.substring(1));
         const accessToken = hashParams.get('access_token');
         const refreshToken = hashParams.get('refresh_token');
-        const error = hashParams.get('error');
+        const oauthError = hashParams.get('error');
         const errorDescription = hashParams.get('error_description');
         
-        if (error) {
-          console.error('OAuth error in hash:', error, errorDescription);
-          toast.error(`Chyba při přihlašování: ${errorDescription || error}`);
+        if (oauthError) {
+          console.error('OAuth error in hash:', oauthError, errorDescription);
+          toast.error(`Chyba při přihlašování: ${errorDescription || oauthError}`);
           // Clean up URL and redirect to login
           window.history.replaceState(null, '', window.location.pathname);
           navigate('/login', { replace: true });
@@ -75,10 +75,10 @@ export const useOAuthCallback = () => {
         
         // Fallback: try to get existing session
         console.log('Trying to get existing session...');
-        const { data, error } = await supabase.auth.getSession();
+        const { data, error: sessionError } = await supabase.auth.getSession();
         
-        if (error) {
-          console.error('Error getting session after OAuth:', error);
+        if (sessionError) {
+          console.error('Error getting session after OAuth:', sessionError);
           toast.error('Chyba při zpracování přihlášení přes Google');
           navigate('/login', { replace: true });
           return;
