@@ -28,14 +28,25 @@ const Register = () => {
   const { signUp, signInWithGoogle, user } = useAuth();
   const { t, i18n } = useTranslation('auth');
   
-  // Handle OAuth callback
+  // Handle OAuth callback - this will process Google auth redirects
   useOAuthCallback();
   
   useEffect(() => {
+    // Check if we have OAuth tokens in URL (Google redirect)
+    const hasOAuthTokens = window.location.hash.includes('access_token');
+    
+    if (hasOAuthTokens) {
+      console.log('OAuth tokens detected in URL, processing callback...');
+      setIsGoogleLoading(true);
+      // The useOAuthCallback hook will handle the rest
+      return;
+    }
+    
     // Redirect user to dashboard if already logged in
     if (user) {
       console.log('User already logged in, redirecting to dashboard');
       navigate("/dashboard");
+      return;
     }
     
     // Check localStorage space and clean if needed
@@ -156,18 +167,22 @@ const Register = () => {
         toast.error(t('googleRegistrationFailed'), {
           description: String(error),
         });
+        setIsGoogleLoading(false);
+        return;
       }
       
       if (url) {
-        console.log('Redirecting to Google OAuth URL');
+        console.log('Redirecting to Google OAuth URL:', url);
+        // Don't set loading to false here as we're redirecting
         window.location.href = url;
+      } else {
+        setIsGoogleLoading(false);
       }
     } catch (error: any) {
       console.error('Google registration exception:', error);
       toast.error(t('registrationError'), {
         description: error?.message || t('unknownErrorOccurred'),
       });
-    } finally {
       setIsGoogleLoading(false);
     }
   };
@@ -209,7 +224,10 @@ const Register = () => {
             disabled={isGoogleLoading}
           >
             {isGoogleLoading ? (
-              t('loading')
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
+                {t('loading')}
+              </div>
             ) : (
               <>
                 <svg viewBox="0 0 24 24" width="16" height="16" xmlns="http://www.w3.org/2000/svg">

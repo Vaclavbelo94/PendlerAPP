@@ -9,7 +9,7 @@ import { cleanupAuthState } from '@/utils/authUtils';
 export const useAuthMethods = () => {
   const signIn = async (email: string, password: string) => {
     try {
-      console.log('Starting sign in process');
+      console.log('Starting sign in process for:', email);
       
       // Clean up existing auth state
       cleanupAuthState();
@@ -18,7 +18,6 @@ export const useAuthMethods = () => {
       try {
         await supabase.auth.signOut({ scope: 'global' });
       } catch (err) {
-        // Continue even if this fails
         console.log('Sign out before sign in failed, continuing anyway');
       }
       
@@ -32,7 +31,7 @@ export const useAuthMethods = () => {
         return { error };
       }
       
-      console.log('Sign in successful');
+      console.log('Sign in successful for:', data.user?.email);
       return { error: null };
     } catch (err: any) {
       console.error('Sign in exception:', err);
@@ -51,14 +50,20 @@ export const useAuthMethods = () => {
       try {
         await supabase.auth.signOut({ scope: 'global' });
       } catch (err) {
-        // Continue even if this fails
         console.log('Sign out before Google sign in failed, continuing anyway');
       }
+      
+      const redirectUrl = `${window.location.origin}/register`;
+      console.log('Google OAuth redirect URL:', redirectUrl);
       
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/dashboard`
+          redirectTo: redirectUrl,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          }
         }
       });
       
@@ -68,7 +73,9 @@ export const useAuthMethods = () => {
         return { error };
       }
       
-      console.log('Google OAuth initiated successfully');
+      console.log('Google OAuth initiated successfully, redirecting...');
+      
+      // The redirect will happen automatically
       return { error: null, url: data?.url };
     } catch (err: any) {
       console.error('Google OAuth exception:', err);
@@ -79,10 +86,12 @@ export const useAuthMethods = () => {
 
   const signUp = async (email: string, password: string, username?: string) => {
     try {
-      console.log('Starting sign up process');
+      console.log('Starting sign up process for:', email);
       
       // Clean up existing auth state
       cleanupAuthState();
+      
+      const redirectUrl = `${window.location.origin}/dashboard`;
       
       const { data, error } = await supabase.auth.signUp({ 
         email, 
@@ -91,7 +100,7 @@ export const useAuthMethods = () => {
           data: {
             username: username || email.split('@')[0]
           },
-          emailRedirectTo: `${window.location.origin}/dashboard`
+          emailRedirectTo: redirectUrl
         }
       });
       
@@ -100,7 +109,7 @@ export const useAuthMethods = () => {
         return { error, user: null };
       }
       
-      console.log('Sign up successful');
+      console.log('Sign up successful for:', data.user?.email);
       return { error: null, user: data.user };
     } catch (err: any) {
       console.error('Sign up exception:', err);
