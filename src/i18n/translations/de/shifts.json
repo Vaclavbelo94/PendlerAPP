@@ -82,6 +82,9 @@
   "fillShiftDetails": "Füllen Sie die Details Ihrer Arbeitsschicht aus. Alle mit * markierten Felder sind erforderlich.",
   "editShiftDetails": "Bearbeiten Sie die Details Ihrer Arbeitsschicht.",
   "cancel": "Abbrechen",
+  "noShifts": "Keine Schichten",
+  "noShiftsDescription": "Sie haben noch keine Schichten hinzugefügt. Erstellen Sie Ihre erste Schicht, um zu beginnen.",
+  "addFirstShift": "Erste Schicht hinzufügen",
   "weekDays": {
     "monday": "Montag",
     "tuesday": "Dienstag",

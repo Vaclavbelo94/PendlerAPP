@@ -82,6 +82,9 @@
   "fillShiftDetails": "Wypełnij szczegóły swojej zmiany roboczej. Wszystkie pola oznaczone * są wymagane.",
   "editShiftDetails": "Edytuj szczegóły swojej zmiany roboczej.",
   "cancel": "Anuluj",
+  "noShifts": "Brak zmian",
+  "noShiftsDescription": "Nie dodałeś jeszcze żadnych zmian. Utwórz swoją pierwszą zmianę, aby rozpocząć.",
+  "addFirstShift": "Dodaj pierwszą zmianę",
   "weekDays": {
     "monday": "Poniedziałek",
     "tuesday": "Wtorek",
