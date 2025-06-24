@@ -19,6 +19,13 @@ const navigationItems = [
   { key: 'laws', path: '/laws' },
 ];
 
+// Additional items for mobile menu only
+const mobileOnlyItems = [
+  { key: 'pricing', path: '/pricing' },
+  { key: 'contact', path: '/contact' },
+  { key: 'faq', path: '/faq' },
+];
+
 export const ModernNavbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { user, signOut } = useAuth();
@@ -95,6 +102,20 @@ export const ModernNavbar: React.FC = () => {
                 {user && navigationItems.map((item) => (
                   <NavLink key={item.key} item={item} mobile />
                 ))}
+                
+                {/* Mobile-only navigation items */}
+                <div className="border-t pt-4 space-y-2">
+                  {mobileOnlyItems.map((item) => (
+                    <Link
+                      key={item.key}
+                      to={item.path}
+                      className="block px-3 py-2 text-base text-muted-foreground hover:text-primary transition-colors"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      {t(item.key)}
+                    </Link>
+                  ))}
+                </div>
                 
                 <div className="border-t pt-4 space-y-2">
                   {user ? (
