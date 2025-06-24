@@ -1,41 +1,16 @@
 
 {
-  "validation": {
-    "required": "Toto pole je povinné",
-    "email": "Zadejte platnou e-mailovou adresu",
-    "password": "Heslo musí mít alespoň 8 znaků",
-    "confirmPassword": "Hesla se neshodují",
-    "phone": "Zadejte platné telefonní číslo",
-    "date": "Zadejte platné datum",
-    "time": "Zadejte platný čas",
-    "number": "Zadejte platné číslo",
-    "url": "Zadejte platnou URL adresu",
-    "minLength": "Minimální délka je {min} znaků",
-    "maxLength": "Maximální délka je {max} znaků",
-    "min": "Minimální hodnota je {min}",
-    "max": "Maximální hodnota je {max}"
-  },
-  "buttons": {
-    "submit": "Odeslat",
-    "save": "Uložit",
-    "cancel": "Zrušit",
-    "delete": "Smazat",
-    "edit": "Upravit",
-    "add": "Přidat",
-    "remove": "Odebrat",
-    "clear": "Vymazat",
-    "reset": "Resetovat",
-    "confirm": "Potvrdit",
-    "close": "Zavřít"
-  },
-  "messages": {
-    "saved": "Úspěšně uloženo",
-    "deleted": "Úspěšně smazáno",
-    "updated": "Úspěšně aktualizováno",
-    "error": "Došlo k chybě",
-    "loading": "Načítání...",
-    "noData": "Žádná data",
-    "confirmDelete": "Opravdu chcete smazat tuto položku?",
-    "unsavedChanges": "Máte neuložené změny. Opravdu chcete odejít?"
-  }
+  "required": "Povinné pole",
+  "invalid": "Neplatné",
+  "submit": "Odeslat",
+  "reset": "Resetovat",
+  "clear": "Vymazat",
+  "name": "Jméno",
+  "email": "E-mail",
+  "password": "Heslo",
+  "confirmPassword": "Potvrdit heslo",
+  "phone": "Telefon",
+  "address": "Adresa",
+  "city": "Město",
+  "country": "Země"
 }

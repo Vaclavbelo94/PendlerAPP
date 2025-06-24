@@ -22,6 +22,21 @@ export const EnhancedLawCard: React.FC<EnhancedLawCardProps> = ({
 }) => {
   const { t } = useTranslation(['laws', 'common']);
 
+  const getCategoryLabel = (category: string) => {
+    switch (category) {
+      case 'work':
+        return t('laws:workLaw');
+      case 'tax':
+        return t('laws:taxes');
+      case 'social':
+        return t('laws:socialSecurity');
+      case 'health':
+        return t('laws:healthInsurance');
+      default:
+        return category;
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -39,7 +54,7 @@ export const EnhancedLawCard: React.FC<EnhancedLawCardProps> = ({
         <CardHeader className="pb-3">
           <div className="flex justify-between items-start mb-2">
             <Badge variant="secondary" className="text-xs">
-              {t(`laws:${law.category}`, law.category)}
+              {getCategoryLabel(law.category)}
             </Badge>
             <div className="flex items-center gap-1 text-muted-foreground">
               <Clock className="h-3 w-3" />

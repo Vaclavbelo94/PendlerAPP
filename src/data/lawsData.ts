@@ -1,5 +1,5 @@
 
-import { Language } from '@/lib/i18n';
+import { TFunction } from 'i18next';
 
 interface LawItem {
   id: string;
@@ -17,12 +17,12 @@ interface LawCategory {
   label: string;
 }
 
-export const getLawItems = (t: (key: string) => string): LawItem[] => [
+export const getLawItems = (t: TFunction): LawItem[] => [
   // Tax laws
   {
     id: 'minimum-wage',
-    title: t('laws.minimumWage'),
-    description: t('laws.minimumWageDescription'),
+    title: t('laws:minimumWage'),
+    description: t('laws:minimumWageDescription'),
     category: 'tax',
     updated: '2025-05-15',
     iconName: 'Euro',
@@ -31,8 +31,8 @@ export const getLawItems = (t: (key: string) => string): LawItem[] => [
   },
   {
     id: 'tax-classes',
-    title: t('laws.taxClasses'),
-    description: t('laws.taxClassesDescription'),
+    title: t('laws:taxClasses'),
+    description: t('laws:taxClassesDescription'),
     category: 'tax',
     updated: '2025-03-28',
     iconName: 'FileText',
@@ -41,8 +41,8 @@ export const getLawItems = (t: (key: string) => string): LawItem[] => [
   },
   {
     id: 'tax-return',
-    title: t('laws.taxReturn'),
-    description: t('laws.taxReturnDescription'),
+    title: t('laws:taxReturn'),
+    description: t('laws:taxReturnDescription'),
     category: 'tax',
     updated: '2025-04-10',
     iconName: 'FileText',
@@ -53,8 +53,8 @@ export const getLawItems = (t: (key: string) => string): LawItem[] => [
   // Work laws
   {
     id: 'work-contract',
-    title: t('laws.workContract'),
-    description: t('laws.workContractDescription'),
+    title: t('laws:workContract'),
+    description: t('laws:workContractDescription'),
     category: 'work',
     updated: '2025-03-18',
     iconName: 'Briefcase',
@@ -63,8 +63,8 @@ export const getLawItems = (t: (key: string) => string): LawItem[] => [
   },
   {
     id: 'employee-protection',
-    title: t('laws.employeeProtection'),
-    description: t('laws.employeeProtectionDescription'),
+    title: t('laws:employeeProtection'),
+    description: t('laws:employeeProtectionDescription'),
     category: 'work',
     updated: '2025-03-30',
     iconName: 'UserCheck',
@@ -73,8 +73,8 @@ export const getLawItems = (t: (key: string) => string): LawItem[] => [
   },
   {
     id: 'working-hours',
-    title: t('laws.workingHours'),
-    description: t('laws.workingHoursDescription'),
+    title: t('laws:workingHours'),
+    description: t('laws:workingHoursDescription'),
     category: 'work',
     updated: '2025-05-10',
     iconName: 'Clock',
@@ -83,8 +83,8 @@ export const getLawItems = (t: (key: string) => string): LawItem[] => [
   },
   {
     id: 'minimum-holidays',
-    title: t('laws.minimumHolidays'),
-    description: t('laws.minimumHolidaysDescription'),
+    title: t('laws:minimumHolidays'),
+    description: t('laws:minimumHolidaysDescription'),
     category: 'work',
     updated: '2025-05-12',
     iconName: 'CalendarDays',
@@ -95,8 +95,8 @@ export const getLawItems = (t: (key: string) => string): LawItem[] => [
   // Social security
   {
     id: 'pension-insurance',
-    title: t('laws.pensionInsurance'),
-    description: t('laws.pensionInsuranceDescription'),
+    title: t('laws:pensionInsurance'),
+    description: t('laws:pensionInsuranceDescription'),
     category: 'social',
     updated: '2025-04-25',
     iconName: 'Users',
@@ -105,8 +105,8 @@ export const getLawItems = (t: (key: string) => string): LawItem[] => [
   },
   {
     id: 'child-benefits',
-    title: t('laws.childBenefits'),
-    description: t('laws.childBenefitsDescription'),
+    title: t('laws:childBenefits'),
+    description: t('laws:childBenefitsDescription'),
     category: 'social',
     updated: '2025-04-05',
     iconName: 'Baby',
@@ -115,8 +115,8 @@ export const getLawItems = (t: (key: string) => string): LawItem[] => [
   },
   {
     id: 'parental-allowance',
-    title: t('laws.parentalAllowance'),
-    description: t('laws.parentalAllowanceDescription'),
+    title: t('laws:parentalAllowance'),
+    description: t('laws:parentalAllowanceDescription'),
     category: 'social',
     updated: '2025-05-15',
     iconName: 'BabyIcon',
@@ -125,8 +125,8 @@ export const getLawItems = (t: (key: string) => string): LawItem[] => [
   },
   {
     id: 'legal-aid',
-    title: t('laws.legalAid'),
-    description: t('laws.legalAidDescription'),
+    title: t('laws:legalAid'),
+    description: t('laws:legalAidDescription'),
     category: 'social',
     updated: '2025-04-20',
     iconName: 'Scale',
@@ -137,8 +137,8 @@ export const getLawItems = (t: (key: string) => string): LawItem[] => [
   // Health insurance
   {
     id: 'health-insurance',
-    title: t('laws.healthInsuranceSystem'),
-    description: t('laws.healthInsuranceSystemDescription'),
+    title: t('laws:healthInsuranceSystem'),
+    description: t('laws:healthInsuranceSystemDescription'),
     category: 'health',
     updated: '2025-04-02',
     iconName: 'Heart',
@@ -147,9 +147,9 @@ export const getLawItems = (t: (key: string) => string): LawItem[] => [
   }
 ];
 
-export const getLawCategories = (t: (key: string) => string): LawCategory[] => [
-  { id: 'work', label: t('laws.workLaw') },
-  { id: 'tax', label: t('laws.taxes') },
-  { id: 'social', label: t('laws.socialSecurity') },
-  { id: 'health', label: t('laws.healthInsurance') }
+export const getLawCategories = (t: TFunction): LawCategory[] => [
+  { id: 'work', label: t('laws:workLaw') },
+  { id: 'tax', label: t('laws:taxes') },
+  { id: 'social', label: t('laws:socialSecurity') },
+  { id: 'health', label: t('laws:healthInsurance') }
 ];
