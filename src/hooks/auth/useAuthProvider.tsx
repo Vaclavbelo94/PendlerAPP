@@ -3,8 +3,8 @@ import * as React from 'react';
 import { useState, useCallback } from 'react';
 import { AuthContext } from './useAuthContext';
 import { useAuthState } from './useAuthState';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { useAuthMethods } from './useAuthMethods';
+import { usePremiumStatus } from '@/hooks/usePremiumStatus';
 import { 
   cleanupAuthState, 
   saveUserToLocalStorage, 
@@ -13,7 +13,7 @@ import {
   initializeLocalStorageCleanup,
   safeLocalStorageSet
 } from '@/utils/authUtils';
-import { usePremiumStatus } from '@/hooks/usePremiumStatus';
+import { supabase } from '@/integrations/supabase/client';
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -24,6 +24,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const { user, session, isLoading, error } = authState;
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminStatusLoaded, setAdminStatusLoaded] = useState(false);
+  const authMethods = useAuthMethods();
 
   // Initialize localStorage cleanup on mount
   React.useEffect(() => {
@@ -43,7 +44,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       console.log("Refreshing admin status for user:", user.id, user.email);
       
-      // Zkontrolovat admin status na základě emailu i databáze
+      // Check admin status based on email and database
       const isAdminByEmail = user.email === 'admin@pendlerapp.com';
       
       if (isAdminByEmail) {
@@ -153,7 +154,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const { isPremium, setIsPremium, isSpecialUser } = usePremiumStatus(user, refreshPremiumStatus, isAdmin);
 
-  // Check admin status when user changes - pouze jednou
+  // Check admin status when user changes - only once
   React.useEffect(() => {
     if (user && !adminStatusLoaded) {
       refreshAdminStatus();
@@ -168,121 +169,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }, [user, refreshAdminStatus, adminStatusLoaded]);
 
-  const signIn = async (email: string, password: string) => {
-    try {
-      // Check storage space first and clean if necessary
-      if (checkLocalStorageSpace() < 1024) {
-        console.log('Low storage space detected, cleaning up before sign in...');
-        cleanupAuthState();
-      }
-
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) return { error: error.message || error };
-      
-      toast.success('Přihlášení proběhlo úspěšně');
-      return { error: null };
-    } catch (error: any) {
-      console.error('Error signing in:', error);
-      
-      let errorMessage = 'Nepodařilo se přihlásit';
-      if (error.message?.includes('quota') || error.message?.includes('storage')) {
-        errorMessage = 'Problém s úložištěm prohlížeče. Vyčišťuji data...';
-        aggressiveCleanup();
-      }
-      
-      toast.error(errorMessage);
-      return { error: error.message || errorMessage };
-    }
-  };
-
-  const signInWithGoogle = async () => {
-    try {
-      // Check storage space first
-      if (checkLocalStorageSpace() < 1024) {
-        cleanupAuthState();
-      }
-
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/`,
-        },
-      });
-
-      if (error) {
-        console.error("Error signing in with Google:", error);
-        toast.error("Nepodařilo se přihlásit přes Google");
-        return { error: error.message || error, url: undefined };
-      }
-
-      console.log("Google OAuth initiation successful, redirecting...");
-      return { error: null, url: data.url };
-    } catch (error: any) {
-      console.error("Error signing in with Google:", error);
-      toast.error("Nepodařilo se přihlásit přes Google");
-      return { error: error.message || error, url: undefined };
-    }
-  };
-
-  const signUp = async (email: string, password: string, username?: string) => {
-    try {
-      // Check storage space first
-      if (checkLocalStorageSpace() < 1024) {
-        cleanupAuthState();
-      }
-
-      const redirectUrl = `${window.location.origin}/`;
-      
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: redirectUrl,
-          data: username ? { username } : {}
-        }
-      });
-
-      if (error) return { error: error.message || error };
-      
-      toast.success('Registrace proběhla úspěšně. Zkontrolujte svůj email.');
-      return { error: null };
-    } catch (error: any) {
-      console.error('Error signing up:', error);
-      
-      let errorMessage = 'Nepodařilo se registrovat';
-      if (error.message?.includes('quota') || error.message?.includes('storage')) {
-        errorMessage = 'Problém s úložištěm prohlížeče. Vyčišťuji data...';
-        aggressiveCleanup();
-      }
-      
-      toast.error(errorMessage);
-      return { error: error.message || errorMessage };
-    }
-  };
-
-  const signOut = async () => {
-    try {
-      // Clean up state first
-      setAdminStatusLoaded(false);
-      aggressiveCleanup();
-      
-      // Attempt global sign out
-      try {
-        await supabase.auth.signOut({ scope: 'global' });
-      } catch (err) {
-        console.log("Global sign out failed, continuing...");
-      }
-      
-      toast.success('Odhlášení proběhlo úspěšně');
-      
-      // Force page reload for clean state
-      window.location.href = '/';
-    } catch (error: any) {
-      console.error('Error signing out:', error);
-      toast.error('Problém při odhlašování');
-    }
-  };
-
   const contextValue = React.useMemo(() => ({
     user,
     session,
@@ -292,10 +178,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     isPremium,
     refreshAdminStatus,
     refreshPremiumStatus,
-    signIn,
-    signInWithGoogle,
-    signUp,
-    signOut
+    ...authMethods
   }), [
     user,
     session,
@@ -304,7 +187,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     isAdmin,
     isPremium,
     refreshAdminStatus,
-    refreshPremiumStatus
+    refreshPremiumStatus,
+    authMethods
   ]);
 
   return (

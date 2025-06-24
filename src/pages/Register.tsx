@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -13,6 +12,7 @@ import { cleanupAuthState, checkLocalStorageSpace } from "@/utils/authUtils";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useTranslation } from 'react-i18next';
+import { useOAuthCallback } from "@/hooks/auth/useOAuthCallback";
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -28,13 +28,17 @@ const Register = () => {
   const { signUp, signInWithGoogle, user } = useAuth();
   const { t, i18n } = useTranslation('auth');
   
+  // Handle OAuth callback
+  useOAuthCallback();
+  
   useEffect(() => {
-    // Redirect user to homepage if already logged in
+    // Redirect user to dashboard if already logged in
     if (user) {
-      navigate("/");
+      console.log('User already logged in, redirecting to dashboard');
+      navigate("/dashboard");
     }
     
-    // Check localStorage space and clean up if needed
+    // Check localStorage space and clean if needed
     if (!checkLocalStorageSpace()) {
       setStorageWarning(true);
       cleanupAuthState();
@@ -83,7 +87,7 @@ const Register = () => {
     setIsLoading(true);
     
     try {
-      cleanupAuthState();
+      console.log('Submitting registration form');
       
       const { error } = await signUp(email, password, username);
       
@@ -117,6 +121,7 @@ const Register = () => {
         navigate("/login");
       }
     } catch (error: any) {
+      console.error('Registration error:', error);
       let errorMessage = t('unknownErrorOccurred');
       
       if (error?.message?.includes("quota") || error?.message?.includes("storage")) {
@@ -142,20 +147,23 @@ const Register = () => {
     setIsGoogleLoading(true);
     
     try {
-      cleanupAuthState();
+      console.log('Starting Google registration');
       
       const { error, url } = await signInWithGoogle();
       
       if (error) {
+        console.error('Google registration error:', error);
         toast.error(t('googleRegistrationFailed'), {
           description: String(error),
         });
       }
       
       if (url) {
+        console.log('Redirecting to Google OAuth URL');
         window.location.href = url;
       }
     } catch (error: any) {
+      console.error('Google registration exception:', error);
       toast.error(t('registrationError'), {
         description: error?.message || t('unknownErrorOccurred'),
       });

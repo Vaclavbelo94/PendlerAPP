@@ -16,6 +16,8 @@ export const useOAuthCallback = () => {
       
       if (accessToken) {
         try {
+          console.log('Processing OAuth callback with access token');
+          
           // Set the session using the tokens from the URL
           const { data, error } = await supabase.auth.setSession({
             access_token: accessToken,
@@ -30,6 +32,7 @@ export const useOAuthCallback = () => {
           }
 
           if (data.session && data.user) {
+            console.log('OAuth session set successfully');
             toast.success('Úspěšně přihlášeno přes Google');
             
             // Clean up the URL by removing the hash
