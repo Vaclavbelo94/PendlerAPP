@@ -14,7 +14,7 @@ interface ResultsStepProps {
 }
 
 const ResultsStep: React.FC<ResultsStepProps> = ({ data, result, onExportPDF }) => {
-  const { t } = useTranslation('taxAdvisor');
+  const { t } = useTranslation(['taxAdvisor', 'common']);
 
   return (
     <div className="space-y-6">
@@ -43,7 +43,7 @@ const ResultsStep: React.FC<ResultsStepProps> = ({ data, result, onExportPDF }) 
             </div>
             
             <div className="bg-purple-50 p-4 rounded-lg">
-              <div className="text-sm text-muted-foreground">{t('common:monthly', { defaultValue: 'Měsíční benefit' })}</div>
+              <div className="text-sm text-muted-foreground">{t('common:monthly')}</div>
               <div className="text-2xl font-bold text-purple-600">
                 {result.monthlyBenefit.toFixed(2)} €
               </div>

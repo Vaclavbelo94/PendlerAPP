@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -80,6 +81,24 @@ const TaxWizardCarousel: React.FC = () => {
     enabled: true
   });
 
+  // Automaticky spustí výpočet když jsou všechna data kompletní
+  useEffect(() => {
+    if (canCalculate()) {
+      calculateTax(wizardData);
+    }
+  }, [wizardData, calculateTax]);
+
+  const canCalculate = () => {
+    return wizardData.personalInfo.firstName && 
+           wizardData.personalInfo.lastName && 
+           wizardData.personalInfo.email &&
+           wizardData.employmentInfo.employerName && 
+           wizardData.employmentInfo.annualIncome > 0 &&
+           wizardData.employmentInfo.commuteDistance > 0 &&
+           wizardData.reisepauschale.commuteDistance > 0 && 
+           wizardData.reisepauschale.workDaysPerYear > 0;
+  };
+
   const updatePersonalInfo = (data: PersonalInfo) => {
     setWizardData(prev => ({ ...prev, personalInfo: data }));
   };
@@ -99,11 +118,6 @@ const TaxWizardCarousel: React.FC = () => {
   const handleNext = () => {
     if (currentStep < 5) {
       setCurrentStep(currentStep + 1);
-    }
-    
-    // Výpočet při přechodu na výsledky
-    if (currentStep === 4) {
-      calculateTax(wizardData);
     }
   };
 
@@ -225,7 +239,14 @@ const TaxWizardCarousel: React.FC = () => {
             result={result}
             onExportPDF={handleExportPDF}
           />
-        ) : null;
+        ) : (
+          <div className="flex justify-center items-center p-8">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+              <p className="text-muted-foreground">{t('common:loading')}</p>
+            </div>
+          </div>
+        );
       default:
         return null;
     }
