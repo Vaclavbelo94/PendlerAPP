@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import UnifiedNavbar from '@/components/layouts/UnifiedNavbar';
 import Footer from '@/components/layouts/Footer';
-import { LanguageSwitcher } from '@/components/i18n/LanguageSwitcher';
 import ProfileMobileCarousel from '@/components/profile/mobile/ProfileMobileCarousel';
 import ProfileNavigation from '@/components/profile/ProfileNavigation';
 import ProfileOverview from '@/components/profile/ProfileOverview';
@@ -33,7 +32,7 @@ const Profile: React.FC = () => {
         </Helmet>
         
         <div className="min-h-screen flex flex-col bg-background">
-          <UnifiedNavbar rightContent={<LanguageSwitcher />} />
+          <UnifiedNavbar />
           
           <main className="flex-1">
             <div className="container mx-auto px-4 py-8">
@@ -88,7 +87,7 @@ const Profile: React.FC = () => {
       </Helmet>
       
       <div className="min-h-screen flex flex-col bg-background">
-        <UnifiedNavbar rightContent={<LanguageSwitcher />} />
+        <UnifiedNavbar />
         
         <main className="flex-1">
           <div className="container mx-auto px-4 py-8">
