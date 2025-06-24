@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,82 +25,52 @@ const OverviewTab = () => {
   const [shifts, setShifts] = useState<ShiftData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Načítání dat při každé změně user nebo při mount komponenty
   useEffect(() => {
-    console.log("OverviewTab useEffect triggered, user:", user?.id);
-    
-    if (!user) {
-      console.log("No user found, resetting state");
+    if (user) {
+      fetchDashboardData();
+    } else {
       setShifts([]);
       setIsLoading(false);
-      return;
     }
-    
-    fetchDashboardData();
   }, [user]);
 
   const fetchDashboardData = async () => {
-    if (!user) {
-      console.log("fetchDashboardData: No user available");
-      return;
-    }
+    if (!user) return;
     
-    console.log("Fetching dashboard data for user:", user.id);
     setIsLoading(true);
     
     try {
-      // Fetch shifts data
       const { data: shiftsData, error } = await supabase
         .from('shifts')
         .select('*')
         .eq('user_id', user.id)
-        .order('date', { ascending: false })
-        .limit(10);
-
-      console.log("Shifts data received:", shiftsData);
-      console.log("Shifts error:", error);
+        .order('date', { ascending: false });
 
       if (error) {
         console.error("Error fetching shifts:", error);
+        setShifts([]);
       } else if (shiftsData) {
-        // Ensure all dates are properly formatted as strings
         const formattedShifts = shiftsData.map(shift => ({
           ...shift,
           date: typeof shift.date === 'string' ? shift.date : new Date(shift.date).toISOString().split('T')[0]
         }));
         setShifts(formattedShifts);
-        console.log("Shifts set to state:", formattedShifts.length, "items");
       }
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
-      // Fallback to localStorage if Supabase fails
-      try {
-        const savedShifts = localStorage.getItem("shifts");
-        if (savedShifts) {
-          const parsedShifts = JSON.parse(savedShifts).map((shift: any) => ({
-            ...shift,
-            date: new Date(shift.date).toISOString().split('T')[0] // Ensure date is string
-          }));
-          setShifts(parsedShifts);
-          console.log("Loaded shifts from localStorage:", parsedShifts.length, "items");
-        }
-      } catch (e) {
-        console.error("Error loading shifts from localStorage:", e);
-      }
+      setShifts([]);
     } finally {
       setIsLoading(false);
-      console.log("Loading finished");
     }
   };
 
-  // Calculate this week's hours - with error handling
   const thisWeekShifts = React.useMemo(() => {
     if (!shifts || shifts.length === 0) return [];
     
     try {
       return shifts.filter(shift => {
         const shiftDate = new Date(shift.date);
-        if (isNaN(shiftDate.getTime())) return false; // Invalid date
+        if (isNaN(shiftDate.getTime())) return false;
         
         const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 });
         const weekEnd = endOfWeek(new Date(), { weekStartsOn: 1 });
@@ -113,14 +84,13 @@ const OverviewTab = () => {
 
   const thisWeekHours = thisWeekShifts.length * 8;
 
-  // Calculate this month's shifts - with error handling
   const thisMonthShifts = React.useMemo(() => {
     if (!shifts || shifts.length === 0) return [];
     
     try {
       return shifts.filter(shift => {
         const shiftDate = new Date(shift.date);
-        if (isNaN(shiftDate.getTime())) return false; // Invalid date
+        if (isNaN(shiftDate.getTime())) return false;
         
         const monthStart = startOfMonth(new Date());
         const monthEnd = endOfMonth(new Date());
@@ -135,14 +105,6 @@ const OverviewTab = () => {
   const recentShifts = React.useMemo(() => {
     return shifts.slice(0, 3);
   }, [shifts]);
-
-  console.log("Rendering OverviewTab:", {
-    isLoading,
-    hasUser: !!user,
-    shiftsCount: shifts.length,
-    thisWeekHours,
-    thisMonthShiftsCount: thisMonthShifts.length
-  });
 
   if (isLoading) {
     return (
@@ -201,7 +163,7 @@ const OverviewTab = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {Math.round((thisWeekHours / 40) * 100)}%
+              {thisWeekHours > 0 ? Math.round((thisWeekHours / 40) * 100) : 0}%
             </div>
             <p className="text-xs text-muted-foreground">
               {t('dashboard:weeklyGoal')}
@@ -235,8 +197,8 @@ const OverviewTab = () => {
                         })()}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        {shift.type === "morning" ? t('dashboard:morningShift') : 
-                         shift.type === "afternoon" ? t('dashboard:afternoonShift') : t('dashboard:nightShift')} {t('dashboard:shift')}
+                        {shift.type === "morning" ? "Ranní" : 
+                         shift.type === "afternoon" ? "Odpolední" : "Noční"} směna
                       </p>
                     </div>
                     <div className="text-sm text-muted-foreground">

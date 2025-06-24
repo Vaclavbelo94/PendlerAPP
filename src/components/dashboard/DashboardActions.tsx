@@ -2,142 +2,118 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { useNavigate } from 'react-router-dom';
 import { 
   Plus, 
-  FileText, 
+  Calculator, 
+  BookOpen, 
   Car, 
-  Globe, 
-  ArrowRight,
-  Clock,
-  MapPin
+  FileText,
+  TrendingUp,
+  Route,
+  Users
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 const DashboardActions: React.FC = () => {
   const { t } = useTranslation('dashboard');
+  const navigate = useNavigate();
 
   const quickActions = [
     {
-      title: t('addShift'),
-      description: t('addShiftDescription'),
       icon: Plus,
-      href: '/shifts',
-      color: 'bg-blue-500 hover:bg-blue-600',
-      badge: t('quick'),
+      label: t('addShift'),
+      description: 'Zaznamenat novou směnu',
+      action: () => navigate('/shifts'),
+      color: 'text-blue-600',
+      bgColor: 'bg-blue-50 dark:bg-blue-900/20'
     },
     {
-      title: t('taxAdvisor'),
-      description: t('taxAdvisorDescription'),
-      icon: FileText,
-      href: '/tax-advisor',
-      color: 'bg-orange-500 hover:bg-orange-600',
-      badge: t('premium'),
+      icon: Calculator,
+      label: t('salaryCalculator'),
+      description: 'Spočítat mzdu',
+      action: () => navigate('/calculator'),
+      color: 'text-green-600',
+      bgColor: 'bg-green-50 dark:bg-green-900/20'
     },
     {
-      title: t('translator'),
-      description: t('translatorDescription'),
-      icon: Globe,
-      href: '/translator',
-      color: 'bg-purple-500 hover:bg-purple-600',
-      badge: t('ai'),
+      icon: BookOpen,
+      label: t('practiceVocabulary'),
+      description: 'Učit se němčinu',
+      action: () => navigate('/language?tab=vocabulary'),
+      color: 'text-purple-600',
+      bgColor: 'bg-purple-50 dark:bg-purple-900/20'
     },
     {
-      title: t('vehicle'),
-      description: t('vehicleDescription'),
       icon: Car,
-      href: '/vehicle',
-      color: 'bg-green-500 hover:bg-green-600',
-      badge: t('premium'),
-    },
-  ];
-
-  const upcomingShifts = [
-    {
-      date: t('tomorrow'),
-      time: '07:00 - 15:00',
-      location: 'Berlin, DE',
-      type: t('regular'),
+      label: 'Vozidla',
+      description: 'Spravovat vozidla',
+      action: () => navigate('/vehicle'),
+      color: 'text-orange-600',
+      bgColor: 'bg-orange-50 dark:bg-orange-900/20'
     },
     {
-      date: t('friday'),
-      time: '08:00 - 16:00',
-      location: 'München, DE',
-      type: t('overtime'),
+      icon: Route,
+      label: 'Trasy',
+      description: 'Najít nejlepší cestu',
+      action: () => navigate('/routes'),
+      color: 'text-indigo-600',
+      bgColor: 'bg-indigo-50 dark:bg-indigo-900/20'
     },
+    {
+      icon: Users,
+      label: 'Spolujízda',
+      description: 'Najít spolucestující',
+      action: () => navigate('/rideshare'),
+      color: 'text-pink-600',
+      bgColor: 'bg-pink-50 dark:bg-pink-900/20'
+    },
+    {
+      icon: FileText,
+      label: t('taxAdvisor'),
+      description: 'Daňové poradenství',
+      action: () => navigate('/tax-advisor'),
+      color: 'text-red-600',
+      bgColor: 'bg-red-50 dark:bg-red-900/20'
+    },
+    {
+      icon: TrendingUp,
+      label: 'Výkazy',
+      description: 'Zobrazit statistiky',
+      action: () => navigate('/shifts?tab=analytics'),
+      color: 'text-teal-600',
+      bgColor: 'bg-teal-50 dark:bg-teal-900/20'
+    }
   ];
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <Card className="lg:col-span-2 bg-card/50 backdrop-blur-sm border-0 shadow-lg">
-        <CardHeader>
-          <CardTitle className="text-xl font-semibold">{t('quickActions')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {quickActions.map((action, index) => (
-              <Link key={index} to={action.href} className="group">
-                <div className="p-4 rounded-lg border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-md">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className={`p-2 rounded-lg text-white ${action.color} transition-transform group-hover:scale-110`}>
-                      <action.icon className="h-5 w-5" />
-                    </div>
-                    <Badge variant="secondary" className="text-xs">
-                      {action.badge}
-                    </Badge>
-                  </div>
-                  <h3 className="font-semibold mb-1 group-hover:text-primary transition-colors">
-                    {action.title}
-                  </h3>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    {action.description}
-                  </p>
-                  <div className="flex items-center text-sm text-primary">
-                    {t('open')}
-                    <ArrowRight className="h-3 w-3 ml-1 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
-        <CardHeader>
-          <CardTitle className="text-xl font-semibold">{t('upcomingShifts')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {upcomingShifts.map((shift, index) => (
-              <div key={index} className="p-3 rounded-lg bg-primary/5 border border-primary/10">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-medium">{shift.date}</span>
-                  <Badge variant={shift.type === t('overtime') ? 'destructive' : 'default'} className="text-xs">
-                    {shift.type}
-                  </Badge>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-                  <Clock className="h-3 w-3" />
-                  <span>{shift.time}</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <MapPin className="h-3 w-3" />
-                  <span>{shift.location}</span>
-                </div>
+    <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
+      <CardHeader>
+        <CardTitle className="text-xl font-semibold">{t('quickActions')}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {quickActions.map((action, index) => (
+            <Button
+              key={index}
+              variant="ghost"
+              onClick={action.action}
+              className="h-auto flex-col items-center justify-center gap-2 p-4 hover:bg-accent/50 transition-all duration-200"
+            >
+              <div className={`p-3 rounded-full ${action.bgColor}`}>
+                <action.icon className={`h-5 w-5 ${action.color}`} />
               </div>
-            ))}
-            <Link to="/shifts">
-              <Button variant="outline" className="w-full">
-                {t('viewAllShifts')}
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </Button>
-            </Link>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+              <div className="text-center">
+                <p className="font-medium text-sm">{action.label}</p>
+                <p className="text-xs text-muted-foreground hidden sm:block">
+                  {action.description}
+                </p>
+              </div>
+            </Button>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 
