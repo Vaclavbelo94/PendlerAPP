@@ -13,7 +13,7 @@ interface AuthContextType {
   refreshPremiumStatus: () => Promise<{ isPremium: boolean; premiumExpiry?: string }>;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signInWithGoogle: () => Promise<{ error: string | null; url?: string }>;
-  signUp: (email: string, password: string, username?: string) => Promise<{ error: string | null }>;
+  signUp: (email: string, password: string, username?: string) => Promise<{ error: string | null; user: User | null }>;
   signOut: () => Promise<void>;
 }
 

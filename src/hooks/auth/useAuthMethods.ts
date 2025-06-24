@@ -1,6 +1,8 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { cleanupAuthState } from '@/utils/authUtils';
+import { User } from '@supabase/supabase-js';
 
 /**
  * Hook for authentication methods (login, register, logout)
@@ -20,14 +22,14 @@ export const useAuthMethods = () => {
       
       if (error) {
         console.error('Sign in error:', error);
-        return { error };
+        return { error: error.message };
       }
       
       console.log('Sign in successful for:', data.user?.email);
       return { error: null };
     } catch (err: any) {
       console.error('Sign in exception:', err);
-      return { error: err };
+      return { error: err.message || 'Unknown error occurred' };
     }
   };
 
@@ -59,7 +61,7 @@ export const useAuthMethods = () => {
       if (error) {
         console.error('Google OAuth error:', error);
         toast.error('Nepodařilo se přihlásit přes Google');
-        return { error };
+        return { error: error.message, url: null };
       }
       
       console.log('Google OAuth initiated successfully');
@@ -68,11 +70,11 @@ export const useAuthMethods = () => {
     } catch (err: any) {
       console.error('Google OAuth exception:', err);
       toast.error('Nepodařilo se přihlásit přes Google');
-      return { error: err };
+      return { error: err.message || 'Unknown error occurred', url: null };
     }
   };
 
-  const signUp = async (email: string, password: string, username?: string) => {
+  const signUp = async (email: string, password: string, username?: string): Promise<{ error: string | null; user: User | null }> => {
     try {
       console.log('Starting sign up process for:', email);
       
@@ -94,14 +96,14 @@ export const useAuthMethods = () => {
       
       if (error) {
         console.error('Sign up error:', error);
-        return { error, user: null };
+        return { error: error.message, user: null };
       }
       
       console.log('Sign up successful for:', data.user?.email);
       return { error: null, user: data.user };
     } catch (err: any) {
       console.error('Sign up exception:', err);
-      return { error: err, user: null };
+      return { error: err.message || 'Unknown error occurred', user: null };
     }
   };
 
