@@ -1,7 +1,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { cleanupAuthState } from '@/utils/authUtils';
+import { cleanupAuthState, aggressiveCleanup } from '@/utils/authUtils';
 import { User } from '@supabase/supabase-js';
 
 /**
@@ -12,8 +12,18 @@ export const useAuthMethods = () => {
     try {
       console.log('Starting sign in process for:', email);
       
-      // Clean up existing auth state
-      cleanupAuthState();
+      // AGGRESSIVE cleanup to prevent cross-user contamination
+      aggressiveCleanup();
+      
+      // Force sign out any existing sessions
+      try {
+        await supabase.auth.signOut({ scope: 'global' });
+      } catch (e) {
+        console.log('No existing session to sign out');
+      }
+      
+      // Wait a moment for cleanup to complete
+      await new Promise(resolve => setTimeout(resolve, 100));
       
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -26,6 +36,12 @@ export const useAuthMethods = () => {
       }
       
       console.log('Sign in successful for:', data.user?.email);
+      
+      // Force page reload to ensure clean state
+      setTimeout(() => {
+        window.location.href = '/dashboard';
+      }, 500);
+      
       return { error: null };
     } catch (err: any) {
       console.error('Sign in exception:', err);
@@ -37,10 +53,16 @@ export const useAuthMethods = () => {
     try {
       console.log('Starting Google OAuth sign in');
       
-      // Clean up existing auth state
-      cleanupAuthState();
+      // AGGRESSIVE cleanup to prevent cross-user contamination
+      aggressiveCleanup();
       
-      // Get the current origin and path
+      // Force sign out any existing sessions
+      try {
+        await supabase.auth.signOut({ scope: 'global' });
+      } catch (e) {
+        console.log('No existing session to sign out');
+      }
+      
       const currentOrigin = window.location.origin;
       const currentPath = window.location.pathname;
       const redirectUrl = `${currentOrigin}${currentPath}`;
@@ -78,8 +100,18 @@ export const useAuthMethods = () => {
     try {
       console.log('Starting sign up process for:', email);
       
-      // Clean up existing auth state
-      cleanupAuthState();
+      // AGGRESSIVE cleanup to prevent cross-user contamination
+      aggressiveCleanup();
+      
+      // Force sign out any existing sessions
+      try {
+        await supabase.auth.signOut({ scope: 'global' });
+      } catch (e) {
+        console.log('No existing session to sign out');
+      }
+      
+      // Wait a moment for cleanup to complete
+      await new Promise(resolve => setTimeout(resolve, 100));
       
       const redirectUrl = `${window.location.origin}/dashboard`;
       
@@ -100,6 +132,17 @@ export const useAuthMethods = () => {
       }
       
       console.log('Sign up successful for:', data.user?.email);
+      
+      // Verify the user data matches what we expect
+      if (data.user && data.user.email !== email) {
+        console.error('CRITICAL: User email mismatch!', {
+          expected: email,
+          received: data.user.email
+        });
+        aggressiveCleanup();
+        return { error: 'Authentication error - please try again', user: null };
+      }
+      
       return { error: null, user: data.user };
     } catch (err: any) {
       console.error('Sign up exception:', err);
@@ -112,19 +155,29 @@ export const useAuthMethods = () => {
       console.log('Starting sign out process');
       
       // Clean up auth state first
-      cleanupAuthState();
+      aggressiveCleanup();
       
       // Attempt global sign out
       await supabase.auth.signOut({ scope: 'global' });
       
       toast.success("Byli jste odhlášeni");
       console.log('Sign out successful');
+      
+      // Force page reload to ensure clean state
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 500);
     } catch (error: any) {
       console.error('Sign out error:', error);
       toast.error("Odhlášení selhalo");
       
       // Force cleanup even if sign out fails
-      cleanupAuthState();
+      aggressiveCleanup();
+      
+      // Force page reload anyway
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 500);
     }
   };
 

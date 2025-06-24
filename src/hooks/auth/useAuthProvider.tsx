@@ -31,6 +31,33 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     initializeLocalStorageCleanup();
   }, []);
 
+  // Critical: Verify user identity when session changes
+  React.useEffect(() => {
+    if (user && session) {
+      console.log('Verifying user identity:', {
+        userId: user.id,
+        userEmail: user.email,
+        sessionUserId: session.user?.id,
+        sessionUserEmail: session.user?.email
+      });
+      
+      // Critical check: ensure session user matches the user object
+      if (session.user.id !== user.id || session.user.email !== user.email) {
+        console.error('CRITICAL: User/Session mismatch detected!', {
+          user: { id: user.id, email: user.email },
+          session: { id: session.user.id, email: session.user.email }
+        });
+        
+        // Force cleanup and redirect to login
+        aggressiveCleanup();
+        window.location.href = '/login?error=session_mismatch';
+        return;
+      }
+      
+      console.log('User identity verified successfully');
+    }
+  }, [user, session]);
+
   const refreshAdminStatus = useCallback(async () => {
     if (!user || adminStatusLoaded) {
       console.log("No user or admin status already loaded");
@@ -43,6 +70,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     try {
       console.log("Refreshing admin status for user:", user.id, user.email);
+      
+      // Double-check user identity before making database calls
+      if (user.email !== session?.user?.email) {
+        console.error('User identity mismatch in admin check');
+        aggressiveCleanup();
+        return;
+      }
       
       // Check admin status based on email and database
       const isAdminByEmail = user.email === 'admin@pendlerapp.com';
@@ -80,7 +114,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsAdmin(false);
       setAdminStatusLoaded(true);
     }
-  }, [user, adminStatusLoaded]);
+  }, [user, adminStatusLoaded, session]);
 
   const refreshPremiumStatus = useCallback(async (): Promise<{ isPremium: boolean; premiumExpiry?: string }> => {
     if (!user) {
@@ -90,6 +124,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     try {
       console.log("Refreshing premium status for user:", user.id);
+      
+      // Double-check user identity before making database calls
+      if (user.email !== session?.user?.email) {
+        console.error('User identity mismatch in premium check');
+        aggressiveCleanup();
+        return { isPremium: false };
+      }
       
       // First check from subscribers table
       const { data: subscriberData, error: subscriberError } = await supabase
@@ -150,7 +191,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.error('Error refreshing premium status:', error);
       return { isPremium: false };
     }
-  }, [user]);
+  }, [user, session]);
 
   const { isPremium, setIsPremium, isSpecialUser } = usePremiumStatus(user, refreshPremiumStatus, isAdmin);
 
