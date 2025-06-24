@@ -1,8 +1,9 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, Clock, TrendingUp, AlertCircle, Plus } from 'lucide-react';
-import { format, addDays, isSameDay } from 'date-fns';
+import { format, addDays, startOfWeek, endOfWeek } from 'date-fns';
 import { cs, de, pl } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
@@ -31,23 +32,26 @@ const ShiftsOverview: React.FC<ShiftsOverviewProps> = ({
     }
   };
 
-  const today = new Date();
-  const tomorrow = addDays(today, 1);
+  // Get today and tomorrow as strings to avoid timezone issues
+  const todayString = format(new Date(), 'yyyy-MM-dd');
+  const tomorrowString = format(addDays(new Date(), 1), 'yyyy-MM-dd');
   
-  const todayShifts = shifts.filter(shift => 
-    isSameDay(new Date(shift.date), today)
-  );
-  
-  const tomorrowShifts = shifts.filter(shift => 
-    isSameDay(new Date(shift.date), tomorrow)
-  );
+  const todayShifts = shifts.filter(shift => shift.date === todayString);
+  const tomorrowShifts = shifts.filter(shift => shift.date === tomorrowString);
 
+  // Calculate this week's shifts using string comparison
   const thisWeekShifts = shifts.filter(shift => {
-    const shiftDate = new Date(shift.date);
-    const weekStart = new Date(today);
-    weekStart.setDate(today.getDate() - today.getDay() + 1);
-    const weekEnd = addDays(weekStart, 6);
-    return shiftDate >= weekStart && shiftDate <= weekEnd;
+    try {
+      const shiftDate = new Date(shift.date);
+      if (isNaN(shiftDate.getTime())) return false;
+      
+      const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 });
+      const weekEnd = endOfWeek(new Date(), { weekStartsOn: 1 });
+      return shiftDate >= weekStart && shiftDate <= weekEnd;
+    } catch (error) {
+      console.error("Error calculating week shifts:", error);
+      return false;
+    }
   });
 
   const getShiftTypeIcon = (type: string) => {
