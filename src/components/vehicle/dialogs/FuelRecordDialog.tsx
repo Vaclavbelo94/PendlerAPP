@@ -9,6 +9,7 @@ import { FuelRecord } from '@/types/vehicle';
 import { saveFuelRecord } from '@/services/vehicleService';
 import { useStandardizedToast } from '@/hooks/useStandardizedToast';
 import { useTranslation } from 'react-i18next';
+import { useCurrencyFormatter } from '@/utils/currencyUtils';
 
 interface FuelRecordDialogProps {
   isOpen: boolean;
@@ -26,6 +27,7 @@ const FuelRecordDialog: React.FC<FuelRecordDialogProps> = ({
   record = null
 }) => {
   const { t } = useTranslation(['vehicle']);
+  const { getCurrencySymbol } = useCurrencyFormatter();
   const [isLoading, setIsLoading] = useState(false);
   const { success, error } = useStandardizedToast();
   const [formData, setFormData] = useState({
@@ -175,7 +177,7 @@ const FuelRecordDialog: React.FC<FuelRecordDialogProps> = ({
             </div>
             
             <div>
-              <Label htmlFor="price_per_liter">{t('vehicle:pricePerLiter')} (Kč) *</Label>
+              <Label htmlFor="price_per_liter">{t('vehicle:pricePerLiter')} ({getCurrencySymbol()}) *</Label>
               <Input
                 id="price_per_liter"
                 type="number"
@@ -187,7 +189,7 @@ const FuelRecordDialog: React.FC<FuelRecordDialogProps> = ({
             </div>
             
             <div>
-              <Label htmlFor="total_cost">{t('vehicle:totalCost')} (Kč) *</Label>
+              <Label htmlFor="total_cost">{t('vehicle:totalCost')} ({getCurrencySymbol()}) *</Label>
               <Input
                 id="total_cost"
                 type="number"

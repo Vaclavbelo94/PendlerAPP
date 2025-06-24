@@ -20,6 +20,7 @@ interface InsuranceCardProps {
 
 const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = false }) => {
   const { t } = useTranslation(['vehicle']);
+  const { formatCurrency } = useCurrencyFormatter();
   const [insuranceRecords, setInsuranceRecords] = useState<InsuranceRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -105,7 +106,7 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = fal
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <ShieldIcon className="h-5 w-5 text-primary" />
-              <CardTitle className="text-lg">{t('vehicle:insurance')}</CardTitle>
+              <CardTitle className="text-lg">{t('vehicle:insuranceRecords')}</CardTitle>
             </div>
             <Button
               variant="outline"
@@ -140,7 +141,7 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = fal
                       <span className="ml-1 font-medium">{getActiveInsurance()?.provider}</span>
                     </div>
                     <div>
-                      <span className="text-muted-foreground">{t('vehicle:insuranceExpiry')}:</span>
+                      <span className="text-muted-foreground">{t('vehicle:validUntil')}:</span>
                       <span className="ml-1 font-medium">{formatDate(getActiveInsurance()!.valid_until)}</span>
                     </div>
                     <div>
@@ -158,13 +159,13 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = fal
               {/* Summary Statistics */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-lg">
-                  <h4 className="text-sm font-medium text-muted-foreground">{t('vehicle:totalInsuranceCost')}</h4>
-                  <p className="text-2xl font-bold text-blue-600">{calculateTotalCost().toFixed(0)} Kč</p>
+                  <h4 className="text-sm font-medium text-muted-foreground">{t('vehicle:monthlyCost')}</h4>
+                  <p className="text-2xl font-bold text-blue-600">{formatCurrency(calculateTotalCost())}</p>
                 </div>
                 <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-4 rounded-lg">
-                  <h4 className="text-sm font-medium text-muted-foreground">{t('vehicle:insuranceStatus')}</h4>
+                  <h4 className="text-sm font-medium text-muted-foreground">{t('vehicle:coverageType')}</h4>
                   <p className="text-2xl font-bold text-purple-600">
-                    {getActiveInsurance() ? t('vehicle:active') : t('vehicle:noActiveInsurance')}
+                    {getActiveInsurance() ? getActiveInsurance()?.coverage_type : t('vehicle:noInsuranceRecords')}
                   </p>
                 </div>
               </div>
@@ -188,7 +189,7 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = fal
                           <Badge variant="outline">{formatDate(record.valid_from)}</Badge>
                           <Badge variant="secondary">{record.coverage_type}</Badge>
                           {getActiveInsurance()?.id === record.id && (
-                            <Badge variant="default">{t('vehicle:active')}</Badge>
+                            <Badge variant="default">Aktivní</Badge>
                           )}
                         </div>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
@@ -198,10 +199,10 @@ const InsuranceCard: React.FC<InsuranceCardProps> = ({ vehicleId, fullView = fal
                           </div>
                           <div>
                             <span className="text-muted-foreground">{t('vehicle:monthlyCost')}:</span>
-                            <span className="ml-1 font-medium">{record.monthly_cost} Kč</span>
+                            <span className="ml-1 font-medium">{formatCurrency(record.monthly_cost)}</span>
                           </div>
                           <div>
-                            <span className="text-muted-foreground">{t('vehicle:insuranceExpiry')}:</span>
+                            <span className="text-muted-foreground">{t('vehicle:validUntil')}:</span>
                             <span className="ml-1 font-medium">{formatDate(record.valid_until)}</span>
                           </div>
                           <div>
