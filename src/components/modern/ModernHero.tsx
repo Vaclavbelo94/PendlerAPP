@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -42,7 +43,7 @@ const ModernHero: React.FC = () => {
           >
             <span className="inline-flex items-center px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
               <span className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
-              {t('heroSubtitle') || 'Pro pendlery v zahraničí'}
+              {t('heroSubtitle')}
             </span>
           </motion.div>
 
@@ -53,7 +54,7 @@ const ModernHero: React.FC = () => {
             className="text-5xl lg:text-7xl font-bold mb-6 leading-tight"
           >
             <span className="bg-gradient-to-r from-primary via-blue-600 to-purple-600 bg-clip-text text-transparent">
-              {t('heroTitle') || 'PendlerApp'}
+              {t('heroTitle')}
             </span>
           </motion.h1>
 
@@ -63,7 +64,7 @@ const ModernHero: React.FC = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-xl lg:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed"
           >
-            {t('heroDescription') || 'Komplexní řešení pro práci v zahraničí'}
+            {t('heroDescription')}
           </motion.p>
 
           <motion.div
@@ -75,7 +76,7 @@ const ModernHero: React.FC = () => {
             {user ? (
               <Button size="lg" className="text-lg px-8 py-4 h-auto group" asChild>
                 <Link to="/dashboard">
-                  {t('dashboard') || 'Přehled'}
+                  {t('dashboard')}
                   <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </Button>
@@ -83,13 +84,13 @@ const ModernHero: React.FC = () => {
               <>
                 <Button size="lg" className="text-lg px-8 py-4 h-auto group" asChild>
                   <Link to="/register">
-                    {t('getStarted') || 'Začít'}
+                    {t('getStarted')}
                     <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </Button>
                 <Button size="lg" variant="outline" className="text-lg px-8 py-4 h-auto" asChild>
                   <Link to="/login">
-                    {t('login') || 'Přihlásit'}
+                    {t('login')}
                   </Link>
                 </Button>
               </>
@@ -132,7 +133,7 @@ const ModernHero: React.FC = () => {
                   <stat.icon className="h-6 w-6 text-primary" />
                 </div>
                 <div className="text-2xl font-bold text-foreground mb-1">{stat.value}</div>
-                <div className="text-sm text-muted-foreground">{t(stat.labelKey) || stat.labelKey}</div>
+                <div className="text-sm text-muted-foreground">{t(stat.labelKey)}</div>
               </CardContent>
             </Card>
           ))}
