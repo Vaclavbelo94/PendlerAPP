@@ -145,7 +145,7 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Languages className="w-5 h-5" />
-              {t('translator:enterText')}
+              Zadejte text
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -202,7 +202,7 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
                     animate={{ opacity: 1, y: 0 }}
                     className="prose prose-sm max-w-none"
                   >
-                    <div className="whitespace-pre-wrap">{latestResponse.content}</div>
+                    <div className="whitespace-pre-wrap text-lg font-medium">{latestResponse.content}</div>
                   </motion.div>
                 ) : (
                   <div className="text-muted-foreground text-sm">
