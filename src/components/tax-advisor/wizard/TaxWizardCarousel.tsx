@@ -108,11 +108,24 @@ const TaxWizardCarousel: React.FC = () => {
   };
 
   const updateReisepauschale = (data: ReisepauschaleInfo) => {
-    setWizardData(prev => ({ ...prev, reisepauschale: data }));
+    // Explicitně zajistíme boolean typ pro hasSecondHome
+    const sanitizedData: ReisepauschaleInfo = {
+      ...data,
+      hasSecondHome: Boolean(data.hasSecondHome) === true
+    };
+    setWizardData(prev => ({ ...prev, reisepauschale: sanitizedData }));
   };
 
   const updateDeductions = (data: AdditionalDeductions) => {
-    setWizardData(prev => ({ ...prev, deductions: data }));
+    // Explicitně zajistíme boolean typy pro všechny deduction fields
+    const sanitizedData: AdditionalDeductions = {
+      ...data,
+      workClothes: Boolean(data.workClothes) === true,
+      education: Boolean(data.education) === true,
+      insurance: Boolean(data.insurance) === true,
+      churchTax: Boolean(data.churchTax) === true
+    };
+    setWizardData(prev => ({ ...prev, deductions: sanitizedData }));
   };
 
   const handleNext = () => {
@@ -172,8 +185,8 @@ const TaxWizardCarousel: React.FC = () => {
         commuteDistance: wizardData.reisepauschale.commuteDistance.toString(),
         commuteWorkDays: wizardData.reisepauschale.workDaysPerYear.toString(),
         includeCommuteExpenses: true,
-        includeSecondHome: !!wizardData.reisepauschale.hasSecondHome,
-        includeWorkClothes: !!wizardData.deductions.workClothes,
+        includeSecondHome: Boolean(wizardData.reisepauschale.hasSecondHome) === true,
+        includeWorkClothes: Boolean(wizardData.deductions.workClothes) === true,
         additionalNotes: `${t('results.generatedWith')} PendlerApp Wizard. ${t('results.totalDeductions')}: ${result.totalDeductions.toFixed(2)}€, ${t('results.estimatedSaving')}: ${result.estimatedTaxSaving.toFixed(2)}€`
       };
 
