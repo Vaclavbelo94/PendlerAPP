@@ -110,7 +110,7 @@ const ResultsStep: React.FC<ResultsStepProps> = ({ data, result, onExportPDF }) 
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Download className="h-5 w-5" />
-            {t('common:export', { defaultValue: 'Export dokumentu' })}
+            {t('common:exportDocument')}
           </CardTitle>
         </CardHeader>
         <CardContent>
