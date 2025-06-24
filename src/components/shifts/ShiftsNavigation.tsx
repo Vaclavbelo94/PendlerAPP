@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Calendar, BarChart3, Eye } from 'lucide-react';
+import { Calendar, BarChart3 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 interface ShiftsNavigationProps {
@@ -16,11 +16,6 @@ const ShiftsNavigation: React.FC<ShiftsNavigationProps> = ({
   const { t } = useTranslation('shifts');
 
   const sections = [
-    {
-      id: 'overview',
-      label: t('overview'),
-      icon: Eye,
-    },
     {
       id: 'calendar',
       label: t('calendar'),

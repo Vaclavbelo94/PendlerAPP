@@ -1,11 +1,10 @@
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Clock, Calendar, BarChart3 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 import { useTranslation } from 'react-i18next';
-import ShiftsOverview from '../ShiftsOverview';
 import ShiftsCalendar from '../ShiftsCalendar';
 import ShiftsAnalytics from '../ShiftsAnalytics';
 
@@ -21,7 +20,6 @@ export const ShiftsMobileCarousel: React.FC<ShiftsMobileCarouselProps> = ({
   const { t } = useTranslation('shifts');
 
   const sections = [
-    { id: 'overview', label: t('overview'), icon: Clock },
     { id: 'calendar', label: t('calendar'), icon: Calendar },
     { id: 'analytics', label: t('analytics'), icon: BarChart3 }
   ];
@@ -48,8 +46,6 @@ export const ShiftsMobileCarousel: React.FC<ShiftsMobileCarouselProps> = ({
 
   const renderSectionContent = () => {
     switch (activeSection) {
-      case 'overview':
-        return <ShiftsOverview />;
       case 'calendar':
         return <ShiftsCalendar />;
       case 'analytics':
@@ -60,7 +56,7 @@ export const ShiftsMobileCarousel: React.FC<ShiftsMobileCarouselProps> = ({
   };
 
   const currentSection = sections[currentIndex];
-  const Icon = currentSection?.icon || Clock;
+  const Icon = currentSection?.icon || Calendar;
 
   return (
     <div className="space-y-4">

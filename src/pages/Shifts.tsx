@@ -9,7 +9,6 @@ import DashboardBackground from '@/components/common/DashboardBackground';
 import ShiftsMobileCarousel from '@/components/shifts/mobile/ShiftsMobileCarousel';
 import ShiftsNavigation from '@/components/shifts/ShiftsNavigation';
 import ShiftsCalendar from '@/components/shifts/ShiftsCalendar';
-import ShiftsOverview from '@/components/shifts/ShiftsOverview';
 import ShiftsAnalytics from '@/components/shifts/ShiftsAnalytics';
 import { useIsMobile } from '@/hooks/use-mobile';
 import Layout from '@/components/layouts/Layout';
@@ -22,8 +21,6 @@ const Shifts: React.FC = () => {
 
   const renderDesktopContent = () => {
     switch (activeSection) {
-      case 'overview':
-        return <ShiftsOverview />;
       case 'calendar':
         return <ShiftsCalendar />;
       case 'analytics':
