@@ -190,5 +190,8 @@
   "addFirstShift": "Přidat první směnu",
   "workPlace": "Pracoviště",
   "shiftType": "Typ směny",
-  "mostUsedFeatures": "Nejpoužívanější funkce"
+  "mostUsedFeatures": "Nejpoužívanější funkce",
+  "profile": "Profil",
+  "rideshare": "Spolujízda",
+  "rideshareDescription": "Najít spolucestující"
 }

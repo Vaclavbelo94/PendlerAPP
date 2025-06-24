@@ -18,24 +18,24 @@ const DashboardActions: React.FC = () => {
   const quickActions = [
     {
       icon: Car,
-      label: 'Vozidlo',
-      description: 'Přidat vozidlo',
+      label: t('vehicle'),
+      description: t('vehicleDescription'),
       action: () => navigate('/vehicle'),
       color: 'text-green-600',
       bgColor: 'bg-green-50 dark:bg-green-900/20'
     },
     {
       icon: User,
-      label: 'Profil',
-      description: 'Upravit profil',
+      label: t('profile'),
+      description: t('editProfile'),
       action: () => navigate('/profile'),
       color: 'text-indigo-600',
       bgColor: 'bg-indigo-50 dark:bg-indigo-900/20'
     },
     {
       icon: Users,
-      label: 'Spolujízda',
-      description: 'Najít spolucestující',
+      label: t('rideshare'),
+      description: t('rideshareDescription'),
       action: () => navigate('/rideshare'),
       color: 'text-pink-600',
       bgColor: 'bg-pink-50 dark:bg-pink-900/20'
@@ -43,7 +43,7 @@ const DashboardActions: React.FC = () => {
     {
       icon: FileText,
       label: t('taxAdvisor'),
-      description: 'Daňové poradenství',
+      description: t('taxAdvisorDescription'),
       action: () => navigate('/tax-advisor'),
       color: 'text-red-600',
       bgColor: 'bg-red-50 dark:bg-red-900/20'

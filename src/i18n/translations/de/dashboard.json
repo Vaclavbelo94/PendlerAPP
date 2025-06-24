@@ -190,5 +190,12 @@
   "addFirstShift": "Erste Schicht hinzufügen",
   "workPlace": "Arbeitsplatz",
   "shiftType": "Schichttyp",
-  "mostUsedFeatures": "Meist genutzte Funktionen"
+  "mostUsedFeatures": "Meist genutzte Funktionen",
+  "vehicleAdd": "Fahrzeug hinzufügen",
+  "vehicleAddDescription": "Fahrzeug hinzufügen",
+  "profile": "Profil",
+  "profileDescription": "Profil bearbeiten",
+  "rideshare": "Mitfahrgelegenheit",
+  "rideshareDescription": "Mitfahrer finden",
+  "taxAdvisoryDescription": "Steuerberatung"
 }

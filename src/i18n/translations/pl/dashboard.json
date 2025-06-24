@@ -190,5 +190,8 @@
   "addFirstShift": "Dodaj pierwszą zmianę",
   "workPlace": "Miejsce pracy",
   "shiftType": "Typ zmiany",
-  "mostUsedFeatures": "Najczęściej używane funkcje"
+  "mostUsedFeatures": "Najczęściej używane funkcje",
+  "profile": "Profil",
+  "rideshare": "Współdzielenie przejazdu",
+  "rideshareDescription": "Znajdź współpasażerów"
 }
