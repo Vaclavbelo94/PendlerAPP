@@ -2,8 +2,8 @@
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
 import { Check, X } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface PromoCodeFieldProps {
   onPromoCodeChange: (code: string, isValid: boolean) => void;
@@ -23,13 +23,46 @@ const PromoCodeField: React.FC<PromoCodeFieldProps> = ({ onPromoCodeChange }) =>
 
     setIsValidating(true);
     
-    // Simulate API call - replace with actual validation
-    setTimeout(() => {
-      const isValid = code.toLowerCase() === 'premium30' || code.toLowerCase() === 'welcome';
-      setValidationResult(isValid ? 'valid' : 'invalid');
-      onPromoCodeChange(code, isValid);
+    try {
+      // Check if promo code exists and is valid
+      const { data: promoCodeData, error } = await supabase
+        .from('promo_codes')
+        .select('*')
+        .ilike('code', code.trim())
+        .single();
+
+      if (error || !promoCodeData) {
+        setValidationResult('invalid');
+        onPromoCodeChange(code, false);
+        setIsValidating(false);
+        return;
+      }
+
+      // Check if code is expired
+      if (new Date(promoCodeData.valid_until) < new Date()) {
+        setValidationResult('invalid');
+        onPromoCodeChange(code, false);
+        setIsValidating(false);
+        return;
+      }
+
+      // Check if code has reached max uses
+      if (promoCodeData.max_uses !== null && promoCodeData.used_count >= promoCodeData.max_uses) {
+        setValidationResult('invalid');
+        onPromoCodeChange(code, false);
+        setIsValidating(false);
+        return;
+      }
+
+      setValidationResult('valid');
+      onPromoCodeChange(code, true);
+    } catch (error) {
+      console.error('Error validating promo code:', error);
+      setValidationResult('invalid');
+      onPromoCodeChange(code, false);
+    } finally {
       setIsValidating(false);
-    }, 500);
+    }
   };
 
   const handleChange = (value: string) => {
