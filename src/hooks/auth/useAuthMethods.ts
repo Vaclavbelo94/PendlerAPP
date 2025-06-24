@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { cleanupAuthState } from '@/utils/authUtils';
@@ -39,9 +38,9 @@ export const useAuthMethods = () => {
       // Clean up existing auth state
       cleanupAuthState();
       
-      // Use the current path for redirect - this ensures we stay on the same page
-      const currentPath = window.location.pathname;
+      // Get the current origin and path
       const currentOrigin = window.location.origin;
+      const currentPath = window.location.pathname;
       const redirectUrl = `${currentOrigin}${currentPath}`;
       
       console.log('Google OAuth redirect URL:', redirectUrl);

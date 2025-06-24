@@ -17,26 +17,41 @@ export const useOAuthCallback = () => {
         
         // Check if we're processing an OAuth callback
         const currentUrl = window.location.href;
-        const hasOAuthParams = currentUrl.includes('access_token') || 
-                              currentUrl.includes('error') ||
-                              window.location.hash.includes('access_token') ||
-                              window.location.search.includes('access_token');
+        const hasHashParams = window.location.hash.includes('access_token') || 
+                             window.location.hash.includes('error');
+        const hasSearchParams = window.location.search.includes('access_token') || 
+                               window.location.search.includes('error');
         
-        if (!hasOAuthParams) {
+        if (!hasHashParams && !hasSearchParams) {
+          console.log('No OAuth parameters detected');
           return;
         }
         
         console.log('OAuth callback detected, processing...');
         
-        // Parse hash parameters directly
-        const hashParams = new URLSearchParams(window.location.hash.substring(1));
-        const accessToken = hashParams.get('access_token');
-        const refreshToken = hashParams.get('refresh_token');
-        const oauthError = hashParams.get('error');
-        const errorDescription = hashParams.get('error_description');
+        // Parse hash parameters first (primary method)
+        let accessToken = null;
+        let refreshToken = null;
+        let oauthError = null;
+        let errorDescription = null;
+        
+        if (hasHashParams) {
+          const hashParams = new URLSearchParams(window.location.hash.substring(1));
+          accessToken = hashParams.get('access_token');
+          refreshToken = hashParams.get('refresh_token');
+          oauthError = hashParams.get('error');
+          errorDescription = hashParams.get('error_description');
+        } else if (hasSearchParams) {
+          // Fallback to search params
+          const searchParams = new URLSearchParams(window.location.search);
+          accessToken = searchParams.get('access_token');
+          refreshToken = searchParams.get('refresh_token');
+          oauthError = searchParams.get('error');
+          errorDescription = searchParams.get('error_description');
+        }
         
         if (oauthError) {
-          console.error('OAuth error in hash:', oauthError, errorDescription);
+          console.error('OAuth error:', oauthError, errorDescription);
           toast.error(`Chyba při přihlašování: ${errorDescription || oauthError}`);
           // Clean up URL and redirect to login
           window.history.replaceState(null, '', window.location.pathname);
@@ -56,6 +71,7 @@ export const useOAuthCallback = () => {
           if (setSessionError) {
             console.error('Error setting session:', setSessionError);
             toast.error('Chyba při zpracování přihlášení');
+            window.history.replaceState(null, '', window.location.pathname);
             navigate('/login', { replace: true });
             return;
           }
@@ -73,8 +89,8 @@ export const useOAuthCallback = () => {
           }
         }
         
-        // Fallback: try to get existing session
-        console.log('Trying to get existing session...');
+        // If no direct token processing worked, try Supabase's built-in session handling
+        console.log('Trying Supabase built-in session handling...');
         const { data, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
@@ -106,7 +122,7 @@ export const useOAuthCallback = () => {
       }
     };
 
-    // Only run if we're on the register/login page and have OAuth parameters
+    // Check if we're on an auth page (register or login) with OAuth parameters
     const isAuthPage = window.location.pathname === '/register' || window.location.pathname === '/login';
     const hasOAuthData = window.location.href.includes('access_token') || 
                         window.location.href.includes('error') ||
