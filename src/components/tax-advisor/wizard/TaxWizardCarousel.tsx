@@ -166,7 +166,7 @@ const TaxWizardCarousel: React.FC = () => {
 
       // Převod wizard dat na DocumentData formát s explicitním boolean převodem
       const documentData = {
-        documentType: 'tax-wizard',
+        documentType: 'tax-wizard' as const,
         yearOfTax: new Date().getFullYear().toString(),
         name: `${wizardData.personalInfo.firstName} ${wizardData.personalInfo.lastName}`,
         taxId: wizardData.personalInfo.taxId,
