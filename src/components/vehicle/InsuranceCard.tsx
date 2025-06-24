@@ -10,6 +10,7 @@ import { InsuranceRecord } from '@/types/vehicle';
 import { fetchInsuranceRecords, deleteInsuranceRecord } from '@/services/vehicleService';
 import { useStandardizedToast } from '@/hooks/useStandardizedToast';
 import { useTranslation } from 'react-i18next';
+import { useCurrencyFormatter } from '@/utils/currencyUtils';
 import InsuranceRecordDialog from './dialogs/InsuranceRecordDialog';
 import { formatDate } from '@/utils/dateUtils';
 

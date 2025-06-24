@@ -6,6 +6,8 @@
   "editVehicle": "Fahrzeug bearbeiten",
   "deleteVehicle": "Fahrzeug löschen",
   "noVehicles": "Keine Fahrzeuge",
+  "noVehiclesFound": "Keine Fahrzeuge gefunden",
+  "getStartedByAdding": "Beginnen Sie mit dem Hinzufügen Ihres ersten Fahrzeugs zur Verwaltung Ihrer Mobilitätsdaten.",
   "vehicleDetails": "Fahrzeugdetails",
   "make": "Marke",
   "model": "Modell",
