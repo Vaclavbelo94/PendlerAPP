@@ -6,7 +6,6 @@ import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import { Crown, Star, Check, Zap, Shield, Rocket } from "lucide-react";
 import { useTranslation } from 'react-i18next';
-import { LanguageSwitcher } from '@/components/i18n/LanguageSwitcher';
 import UnifiedNavbar from '@/components/layouts/UnifiedNavbar';
 import Footer from '@/components/layouts/Footer';
 
@@ -39,7 +38,7 @@ const Premium = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <UnifiedNavbar rightContent={<LanguageSwitcher />} />
+      <UnifiedNavbar />
       
       <main className="flex-1">
         <div className="container mx-auto px-4 py-8 max-w-4xl">
