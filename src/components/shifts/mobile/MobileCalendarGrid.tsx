@@ -2,7 +2,7 @@
 import React from 'react';
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, eachDayOfInterval, isSameMonth, isSameDay, isToday } from 'date-fns';
 import { cs, de, pl } from 'date-fns/locale';
-import { Shift } from '@/hooks/shifts/useOptimizedShiftsManagement';
+import { Shift } from '@/hooks/shifts/useShiftsCRUD';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
 
@@ -50,7 +50,12 @@ export const MobileCalendarGrid: React.FC<MobileCalendarGridProps> = ({
 
   // Get shift for a specific date
   const getShiftForDate = (date: Date) => {
-    return shifts.find(shift => isSameDay(new Date(shift.date), date));
+    const dateString = format(date, 'yyyy-MM-dd');
+    return shifts.find(shift => {
+      // Handle both string dates and Date objects
+      const shiftDate = typeof shift.date === 'string' ? shift.date : format(new Date(shift.date), 'yyyy-MM-dd');
+      return shiftDate === dateString;
+    });
   };
 
   // Get shift type color
