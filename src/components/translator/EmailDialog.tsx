@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Mail } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface EmailDialogProps {
   open: boolean;
@@ -26,6 +27,7 @@ export const EmailDialog: React.FC<EmailDialogProps> = ({
   onSendEmail,
   isLoading
 }) => {
+  const { t } = useTranslation('translator');
   const [email, setEmail] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -42,20 +44,20 @@ export const EmailDialog: React.FC<EmailDialogProps> = ({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Mail className="h-5 w-5" />
-            Odeslat překlad emailem
+            {t('sendTranslationByEmail')}
           </DialogTitle>
           <DialogDescription>
-            Zadejte emailovou adresu, na kterou chcete odeslat strukturované údaje o překladu.
+            {t('sendTranslationByEmailDescription')}
           </DialogDescription>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Emailová adresa</Label>
+            <Label htmlFor="email">{t('emailAddress')}</Label>
             <Input
               id="email"
               type="email"
-              placeholder="priklad@email.cz"
+              placeholder={t('emailPlaceholder')}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -70,13 +72,13 @@ export const EmailDialog: React.FC<EmailDialogProps> = ({
               onClick={() => onOpenChange(false)}
               disabled={isLoading}
             >
-              Zrušit
+              {t('cancel')}
             </Button>
             <Button
               type="submit"
               disabled={!email.trim() || isLoading}
             >
-              {isLoading ? 'Odesílám...' : 'Odeslat email'}
+              {isLoading ? t('sending') : t('sendEmail')}
             </Button>
           </DialogFooter>
         </form>

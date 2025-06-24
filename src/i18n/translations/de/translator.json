@@ -43,6 +43,13 @@
   "removeFromFavorites": "Von Favoriten entfernen",
   "characterCount": "Zeichenanzahl",
   "maxCharacters": "Maximal 5000 Zeichen",
+  "sendTranslationByEmail": "Übersetzung per E-Mail senden",
+  "sendTranslationByEmailDescription": "Geben Sie die E-Mail-Adresse ein, an die Sie die strukturierten Übersetzungsdaten senden möchten.",
+  "emailAddress": "E-Mail-Adresse",
+  "emailPlaceholder": "beispiel@email.de",
+  "cancel": "Abbrechen",
+  "sendEmail": "E-Mail senden",
+  "sending": "Sende...",
   "languages": {
     "czech": "Tschechisch",
     "german": "Deutsch",

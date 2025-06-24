@@ -43,6 +43,13 @@
   "removeFromFavorites": "Usuń z ulubionych",
   "characterCount": "Liczba znaków",
   "maxCharacters": "Maksymalnie 5000 znaków",
+  "sendTranslationByEmail": "Wyślij tłumaczenie e-mailem",
+  "sendTranslationByEmailDescription": "Wprowadź adres e-mail, na który chcesz wysłać ustrukturyzowane dane tłumaczenia.",
+  "emailAddress": "Adres e-mail",
+  "emailPlaceholder": "przyklad@email.pl",
+  "cancel": "Anuluj",
+  "sendEmail": "Wyślij e-mail",
+  "sending": "Wysyłam...",
   "languages": {
     "czech": "Czeski",
     "german": "Niemiecki",
