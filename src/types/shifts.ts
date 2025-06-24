@@ -17,6 +17,7 @@ export interface ShiftCalendarProps {
   onSelectDate: (date: Date | undefined) => void;
   onEditShift?: (shift: Shift) => void;
   onDeleteShift?: (shiftId: string) => void;
+  onAddShift?: (date?: Date) => void;
   isLoading?: boolean;
   className?: string;
 }

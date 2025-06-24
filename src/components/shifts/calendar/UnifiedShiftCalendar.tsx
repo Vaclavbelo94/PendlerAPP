@@ -1,10 +1,9 @@
-
 import React, { useState, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Calendar } from '@/components/ui/calendar';
-import { ChevronLeft, ChevronRight, CalendarDays, Edit, Trash2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CalendarDays, Edit, Trash2, Plus } from 'lucide-react';
 import { format, addMonths, subMonths, isSameDay } from 'date-fns';
 import { cs, de, pl } from 'date-fns/locale';
 import { motion } from 'framer-motion';
@@ -14,12 +13,17 @@ import { cn } from '@/lib/utils';
 import { MobileCalendarGrid } from './MobileCalendarGrid';
 import { useTranslation } from 'react-i18next';
 
-const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = ({
+interface ExtendedShiftCalendarProps extends ShiftCalendarProps {
+  onAddShift?: (date?: Date) => void;
+}
+
+const UnifiedShiftCalendar: React.FC<ExtendedShiftCalendarProps> = ({
   shifts,
   selectedDate,
   onSelectDate,
   onEditShift,
   onDeleteShift,
+  onAddShift,
   isLoading = false,
   className
 }) => {
@@ -145,15 +149,38 @@ const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = ({
         {selectedDate && (
           <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
             <CardHeader className="pb-3">
-              <CardTitle className="text-lg">
-                {format(selectedDate, 'dd. MMMM yyyy', { locale: getDateLocale() })}
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg">
+                  {format(selectedDate, 'dd. MMMM yyyy', { locale: getDateLocale() })}
+                </CardTitle>
+                {onAddShift && (
+                  <Button
+                    onClick={() => onAddShift(selectedDate)}
+                    size="sm"
+                    className="h-8 px-3"
+                  >
+                    <Plus className="h-4 w-4 mr-1" />
+                    Přidat
+                  </Button>
+                )}
+              </div>
             </CardHeader>
             <CardContent className="p-3 pt-0">
               {selectedDateShifts.length === 0 ? (
                 <div className="text-center py-6 text-muted-foreground">
                   <CalendarDays className="h-10 w-10 mx-auto mb-3 opacity-50" />
-                  <p className="text-sm">{t('noShiftsPlannedForThisDay')}</p>
+                  <p className="text-sm mb-3">{t('noShiftsPlannedForThisDay')}</p>
+                  {onAddShift && (
+                    <Button 
+                      onClick={() => onAddShift(selectedDate)}
+                      variant="outline"
+                      size="sm"
+                      className="mt-2"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Přidat první směnu
+                    </Button>
+                  )}
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -319,7 +346,7 @@ const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = ({
                     key={shift.id}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="flex items-center justify-between p-4 border rounde d-lg bg-muted/20 hover:bg-muted/30 transition-colors"
+                    className="flex items-center justify-between p-4 border rounded-lg bg-muted/20 hover:bg-muted/30 transition-colors"
                   >
                     <div className="flex items-center gap-3 min-w-0 flex-1">
                       <Badge className={cn("text-sm flex-shrink-0 px-3 py-1", SHIFT_TYPE_COLORS[shift.type])}>
