@@ -1,3 +1,4 @@
+
 {
   "title": "Panel",
   "welcome": "Witamy",
@@ -172,10 +173,22 @@
   "morningShift": "Zmiana poranna",
   "afternoonShift": "Zmiana popołudniowa",
   "nightShift": "Zmiana nocna",
-  "shift": "zmiana",
+  "shift": "Zmiana",
   "practiceVocabulary": "Ćwicz słownictwo",
   "salaryCalculator": "Kalkulator wynagrodzenia",
   "taxAdvisor": "Doradca podatkowy",
   "translator": "Tłumacz",
-  "vehicle": "Pojazd"
+  "vehicle": "Pojazd",
+  "monthlyOverview": "Przegląd miesięczny",
+  "monthlyEarningsTitle": "Miesięczne zarobki",
+  "notSet": "Nie ustawiono",
+  "setWageInProfile": "Ustaw stawkę godzinową w profilu",
+  "weeklyTarget": "Cel tygodniowy",
+  "noPlannedShift": "Dziś brak planowanej zmiany",
+  "addShiftToday": "Dodaj zmianę",
+  "noShiftsYetDescription": "Nie masz jeszcze żadnych zmian",
+  "addFirstShift": "Dodaj pierwszą zmianę",
+  "workPlace": "Miejsce pracy",
+  "shiftType": "Typ zmiany",
+  "mostUsedFeatures": "Najczęściej używane funkcje"
 }

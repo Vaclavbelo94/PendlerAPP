@@ -79,25 +79,25 @@ const DashboardStats: React.FC = () => {
       title: t('weeklyHours'),
       value: isLoading ? '...' : `${thisWeekHours}h`,
       icon: Clock,
-      description: `${thisWeekShifts.length} směn tento týden`,
+      description: `${thisWeekShifts.length} ${t('shiftsThisWeek')}`,
     },
     {
       title: t('monthlyShifts'),
       value: isLoading ? '...' : thisMonthShifts.length.toString(),
       icon: CalendarDays,
-      description: 'Směny tento měsíc',
+      description: t('shiftsThisMonth'),
     },
     {
-      title: 'Měsíční výdělky',
+      title: t('monthlyEarningsTitle'),
       value: (isLoading || earningsLoading) ? '...' : 
         hasWageSet ? `${monthlyEarnings.toLocaleString('de-DE', { 
           style: 'currency', 
           currency: 'EUR',
           minimumFractionDigits: 0,
           maximumFractionDigits: 0
-        })}` : 'Nenastaveno',
+        })}` : t('notSet'),
       icon: Euro,
-      description: hasWageSet ? `${monthlyHours}h tento měsíc` : 'Nastavte hodinovou mzdu v profilu',
+      description: hasWageSet ? `${monthlyHours}h ${t('thisMonth')}` : t('setWageInProfile'),
     },
   ];
 
