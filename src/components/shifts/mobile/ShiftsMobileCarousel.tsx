@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Clock, Calendar, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
+import { useTranslation } from 'react-i18next';
 import ShiftsOverview from '../ShiftsOverview';
 import ShiftsCalendar from '../ShiftsCalendar';
 import ShiftsAnalytics from '../ShiftsAnalytics';
@@ -17,10 +18,12 @@ export const ShiftsMobileCarousel: React.FC<ShiftsMobileCarouselProps> = ({
   activeSection,
   onSectionChange
 }) => {
+  const { t } = useTranslation('shifts');
+
   const sections = [
-    { id: 'overview', label: 'Přehled', icon: Clock },
-    { id: 'calendar', label: 'Kalendář', icon: Calendar },
-    { id: 'analytics', label: 'Analýzy', icon: BarChart3 }
+    { id: 'overview', label: t('overview'), icon: Clock },
+    { id: 'calendar', label: t('calendar'), icon: Calendar },
+    { id: 'analytics', label: t('analytics'), icon: BarChart3 }
   ];
 
   const sectionIds = sections.map(section => section.id);
