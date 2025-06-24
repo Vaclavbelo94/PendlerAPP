@@ -115,7 +115,7 @@ const TaxWizardCarousel: React.FC = () => {
           stepLabels={stepLabels}
           onPrevious={handlePrevious}
           onNext={handleNext}
-          canGoNext={canGoNext(currentStep)}
+          canGoNext={Boolean(canGoNext(currentStep))}
         />
       )}
 
@@ -145,7 +145,7 @@ const TaxWizardCarousel: React.FC = () => {
       {/* Navigation buttons */}
       <TaxWizardNavigation
         currentStep={currentStep}
-        canGoNext={canGoNext(currentStep)}
+        canGoNext={Boolean(canGoNext(currentStep))}
         result={result}
         onPrevious={handlePrevious}
         onNext={handleNext}
