@@ -15,70 +15,66 @@ export const useOAuthCallback = () => {
         console.log('URL hash:', window.location.hash);
         console.log('URL search params:', window.location.search);
         
-        // Handle both hash and search params for OAuth
-        const hashParams = new URLSearchParams(window.location.hash.substring(1));
-        const searchParams = new URLSearchParams(window.location.search);
+        // Check if we're processing an OAuth callback
+        const currentUrl = window.location.href;
+        const hasOAuthParams = currentUrl.includes('access_token') || 
+                              currentUrl.includes('error') ||
+                              window.location.hash.includes('access_token') ||
+                              window.location.search.includes('access_token');
         
-        // Check for access token in hash first (standard OAuth flow)
-        let accessToken = hashParams.get('access_token');
-        let refreshToken = hashParams.get('refresh_token');
-        let tokenType = hashParams.get('token_type');
-        let error = hashParams.get('error');
-        let errorDescription = hashParams.get('error_description');
-        
-        // If not in hash, check search params
-        if (!accessToken) {
-          accessToken = searchParams.get('access_token');
-          refreshToken = searchParams.get('refresh_token');
-          tokenType = searchParams.get('token_type');
-          error = searchParams.get('error');
-          errorDescription = searchParams.get('error_description');
-        }
-        
-        console.log('OAuth tokens found:', { 
-          accessToken: !!accessToken, 
-          refreshToken: !!refreshToken, 
-          tokenType, 
-          error, 
-          errorDescription 
-        });
-        
-        if (error) {
-          console.error('OAuth error:', error, errorDescription);
-          toast.error(`Chyba při přihlašování: ${errorDescription || error}`);
-          navigate('/login', { replace: true });
+        if (!hasOAuthParams) {
           return;
         }
         
-        if (accessToken && tokenType) {
-          console.log('Setting OAuth session with tokens');
-          
-          const { data, error: sessionError } = await supabase.auth.setSession({
-            access_token: accessToken,
-            refresh_token: refreshToken || '',
-          });
+        console.log('OAuth callback detected, processing...');
+        
+        // Use Supabase's built-in session handling for OAuth callbacks
+        const { data, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('Error getting session after OAuth:', error);
+          toast.error('Chyba při zpracování přihlášení přes Google');
+          navigate('/login', { replace: true });
+          return;
+        }
 
-          if (sessionError) {
-            console.error('Error setting OAuth session:', sessionError);
-            toast.error('Chyba při zpracování přihlášení přes Google');
+        if (data.session && data.user) {
+          console.log('OAuth session retrieved successfully:', data.user.email);
+          toast.success('Úspěšně přihlášeno přes Google');
+          
+          // Clean up the URL
+          window.history.replaceState(null, '', window.location.pathname);
+          
+          // Navigate to dashboard
+          navigate('/dashboard', { replace: true });
+        } else {
+          // If no session, try to handle the hash parameters manually
+          const hashParams = new URLSearchParams(window.location.hash.substring(1));
+          const error = hashParams.get('error');
+          const errorDescription = hashParams.get('error_description');
+          
+          if (error) {
+            console.error('OAuth error in hash:', error, errorDescription);
+            toast.error(`Chyba při přihlašování: ${errorDescription || error}`);
             navigate('/login', { replace: true });
             return;
           }
-
-          if (data.session && data.user) {
-            console.log('OAuth session set successfully:', data.user.email);
-            toast.success('Úspěšně přihlášeno přes Google');
+          
+          // Wait a bit for Supabase to process the tokens
+          setTimeout(async () => {
+            const { data: retryData, error: retryError } = await supabase.auth.getSession();
             
-            // Clean up the URL
-            window.history.replaceState(null, '', window.location.pathname);
-            
-            // Navigate to dashboard
-            navigate('/dashboard', { replace: true });
-          } else {
-            console.error('No session or user after setting session');
-            toast.error('Chyba při zpracování přihlášení');
-            navigate('/login', { replace: true });
-          }
+            if (retryData.session && retryData.user) {
+              console.log('OAuth session retrieved on retry:', retryData.user.email);
+              toast.success('Úspěšně přihlášeno přes Google');
+              window.history.replaceState(null, '', window.location.pathname);
+              navigate('/dashboard', { replace: true });
+            } else {
+              console.error('No session after OAuth callback');
+              toast.error('Chyba při zpracování přihlášení');
+              navigate('/login', { replace: true });
+            }
+          }, 1000);
         }
       } catch (error) {
         console.error('OAuth callback exception:', error);
@@ -87,14 +83,15 @@ export const useOAuthCallback = () => {
       }
     };
 
-    // Check if we have OAuth data in URL
-    const hasOAuthData = window.location.hash.includes('access_token') || 
-                        window.location.search.includes('access_token') || 
-                        window.location.hash.includes('error') || 
-                        window.location.search.includes('error');
+    // Only run if we're on the register/login page and have OAuth parameters
+    const isAuthPage = window.location.pathname === '/register' || window.location.pathname === '/login';
+    const hasOAuthData = window.location.href.includes('access_token') || 
+                        window.location.href.includes('error') ||
+                        window.location.hash.includes('access_token') ||
+                        window.location.search.includes('access_token');
     
-    if (hasOAuthData) {
-      console.log('OAuth data detected in URL, processing callback...');
+    if (isAuthPage && hasOAuthData) {
+      console.log('OAuth data detected on auth page, processing callback...');
       handleOAuthCallback();
     }
   }, [navigate]);

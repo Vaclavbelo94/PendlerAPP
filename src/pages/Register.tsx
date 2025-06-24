@@ -34,8 +34,8 @@ const Register = () => {
   
   useEffect(() => {
     // Check if we have OAuth tokens in URL
-    const hasOAuthTokens = window.location.hash.includes('access_token') || 
-                          window.location.search.includes('access_token');
+    const hasOAuthTokens = window.location.href.includes('access_token') || 
+                          window.location.href.includes('error');
     
     if (hasOAuthTokens) {
       console.log('OAuth tokens detected in URL, processing callback...');
@@ -59,8 +59,8 @@ const Register = () => {
 
   // Reset loading state when not processing OAuth
   useEffect(() => {
-    const hasOAuthTokens = window.location.hash.includes('access_token') || 
-                          window.location.search.includes('access_token');
+    const hasOAuthTokens = window.location.href.includes('access_token') || 
+                          window.location.href.includes('error');
     
     if (!hasOAuthTokens && isGoogleLoading) {
       setIsGoogleLoading(false);
@@ -184,6 +184,7 @@ const Register = () => {
       
       if (url) {
         console.log('Redirecting to Google OAuth URL:', url);
+        // Don't redirect immediately, let the OAuth flow handle it
         window.location.href = url;
       } else {
         console.error('No URL returned from Google OAuth');
