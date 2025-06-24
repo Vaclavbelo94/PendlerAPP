@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Calendar, Plus, Share, Settings } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useTranslation } from 'react-i18next';
 import ScheduleShareDialog from '@/components/sharing/ScheduleShareDialog';
 
 interface MobileShiftActionsProps {
@@ -17,6 +18,7 @@ const MobileShiftActions = ({
   onShareSchedule
 }: MobileShiftActionsProps) => {
   const isMobile = useIsMobile();
+  const { t } = useTranslation('shifts');
 
   if (!isMobile) {
     return null;
@@ -24,7 +26,7 @@ const MobileShiftActions = ({
 
   return (
     <div className="mb-6 p-4 bg-card rounded-lg border">
-      <h3 className="text-sm font-medium mb-3 text-muted-foreground">Rychlé akce</h3>
+      <h3 className="text-sm font-medium mb-3 text-muted-foreground">{t('quickActions', 'Rychlé akce')}</h3>
       <div className="grid grid-cols-2 gap-3">
         <Button
           variant="outline"
@@ -33,7 +35,7 @@ const MobileShiftActions = ({
           className="flex items-center gap-2 justify-start"
         >
           <Plus className="h-4 w-4" />
-          <span>Přidat směnu</span>
+          <span>{t('addShift')}</span>
         </Button>
         
         <ScheduleShareDialog />
