@@ -7,30 +7,32 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import { Crown, Star, Check, Zap, Shield, Rocket } from "lucide-react";
+import { useTranslation } from 'react-i18next';
 
 const Premium = () => {
   const { isPremium } = useAuth();
+  const { t } = useTranslation('premium');
 
   const premiumFeatures = [
     {
       icon: Star,
-      title: 'Bez reklam',
-      description: 'Používejte aplikaci bez jakýchkoliv reklam'
+      title: t('features.noAds.title'),
+      description: t('features.noAds.description')
     },
     {
       icon: Zap,
-      title: 'Neomezený přístup',
-      description: 'Přístup ke všem funkcím a nástrojům'
+      title: t('features.unlimitedAccess.title'),
+      description: t('features.unlimitedAccess.description')
     },
     {
       icon: Shield,
-      title: 'Prioritní podpora',
-      description: 'Rychlejší řešení problémů a dotazů'
+      title: t('features.prioritySupport.title'),
+      description: t('features.prioritySupport.description')
     },
     {
       icon: Rocket,
-      title: 'Pokročilé funkce',
-      description: 'Exkluzivní nástroje pro premium uživatele'
+      title: t('features.advancedFeatures.title'),
+      description: t('features.advancedFeatures.description')
     }
   ];
 
@@ -41,10 +43,10 @@ const Premium = () => {
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold mb-4 flex items-center justify-center gap-2">
               <Crown className="h-8 w-8 text-amber-500" />
-              Premium Předplatné
+              {t('title')}
             </h1>
             <p className="text-muted-foreground text-lg">
-              Odemkněte plný potenciál Pendlerova Pomocníka
+              {t('subtitle')}
             </p>
           </div>
 
@@ -53,10 +55,10 @@ const Premium = () => {
               <CardHeader className="text-center">
                 <CardTitle className="flex items-center justify-center gap-2 text-amber-700 dark:text-amber-300">
                   <Crown className="h-6 w-6" />
-                  Jste Premium uživatel!
+                  {t('premiumUser.title')}
                 </CardTitle>
                 <CardDescription>
-                  Děkujeme za vaši podporu. Využíváte všechny Premium výhody.
+                  {t('premiumUser.description')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -79,29 +81,29 @@ const Premium = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center justify-center gap-2">
                     <Crown className="h-6 w-6 text-amber-500" />
-                    Přejděte na Premium
+                    {t('upgrade.title')}
                   </CardTitle>
                   <CardDescription>
-                    Získejte přístup ke všem funkcím bez omezení
+                    {t('upgrade.description')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="text-4xl font-bold mb-4">
-                    <span className="text-3xl text-muted-foreground">od</span> 99 Kč
-                    <span className="text-lg text-muted-foreground">/měsíc</span>
+                    <span className="text-3xl text-muted-foreground">{t('upgrade.priceFrom')}</span> 99 Kč
+                    <span className="text-lg text-muted-foreground">{t('upgrade.priceMonth')}</span>
                   </div>
                   <Button size="lg" className="w-full max-w-sm">
                     <Crown className="h-4 w-4 mr-2" />
-                    Aktivovat Premium
+                    {t('upgrade.activateButton')}
                   </Button>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Premium výhody</CardTitle>
+                  <CardTitle>{t('benefits.title')}</CardTitle>
                   <CardDescription>
-                    Co získáte s Premium předplatným
+                    {t('benefits.description')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>

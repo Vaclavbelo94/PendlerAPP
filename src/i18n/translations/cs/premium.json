@@ -1,0 +1,38 @@
+
+{
+  "title": "Premium Předplatné",
+  "subtitle": "Odemkněte plný potenciál Pendlerova Pomocníka",
+  "features": {
+    "noAds": {
+      "title": "Bez reklam",
+      "description": "Používejte aplikaci bez jakýchkoliv reklam"
+    },
+    "unlimitedAccess": {
+      "title": "Neomezený přístup",
+      "description": "Přístup ke všem funkcím a nástrojům"
+    },
+    "prioritySupport": {
+      "title": "Prioritní podpora",
+      "description": "Rychlejší řešení problémů a dotazů"
+    },
+    "advancedFeatures": {
+      "title": "Pokročilé funkce",
+      "description": "Exkluzivní nástroje pro premium uživatele"
+    }
+  },
+  "premiumUser": {
+    "title": "Jste Premium uživatel!",
+    "description": "Děkujeme za vaši podporu. Využíváte všechny Premium výhody."
+  },
+  "upgrade": {
+    "title": "Přejděte na Premium",
+    "description": "Získejte přístup ke všem funkcím bez omezení",
+    "priceFrom": "od",
+    "priceMonth": "/měsíc",
+    "activateButton": "Aktivovat Premium"
+  },
+  "benefits": {
+    "title": "Premium výhody",
+    "description": "Co získáte s Premium předplatným"
+  }
+}

@@ -1,0 +1,38 @@
+
+{
+  "title": "Premium-Abonnement",
+  "subtitle": "Schöpfen Sie das volle Potenzial des Pendler-Assistenten aus",
+  "features": {
+    "noAds": {
+      "title": "Werbefrei",
+      "description": "Nutzen Sie die App ohne jegliche Werbung"
+    },
+    "unlimitedAccess": {
+      "title": "Unbegrenzter Zugang",
+      "description": "Zugang zu allen Funktionen und Tools"
+    },
+    "prioritySupport": {
+      "title": "Prioritäts-Support",
+      "description": "Schnellere Lösung von Problemen und Anfragen"
+    },
+    "advancedFeatures": {
+      "title": "Erweiterte Funktionen",
+      "description": "Exklusive Tools für Premium-Nutzer"
+    }
+  },
+  "premiumUser": {
+    "title": "Sie sind Premium-Nutzer!",
+    "description": "Vielen Dank für Ihre Unterstützung. Sie nutzen alle Premium-Vorteile."
+  },
+  "upgrade": {
+    "title": "Auf Premium upgraden",
+    "description": "Erhalten Sie unbegrenzten Zugang zu allen Funktionen",
+    "priceFrom": "ab",
+    "priceMonth": "/Monat",
+    "activateButton": "Premium aktivieren"
+  },
+  "benefits": {
+    "title": "Premium-Vorteile",
+    "description": "Was Sie mit dem Premium-Abonnement erhalten"
+  }
+}

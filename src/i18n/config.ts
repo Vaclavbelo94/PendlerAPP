@@ -1,3 +1,4 @@
+
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
@@ -17,6 +18,7 @@ import csUI from './translations/cs/ui.json';
 import csProfile from './translations/cs/profile.json';
 import csSettings from './translations/cs/settings.json';
 import csAuth from './translations/cs/auth.json';
+import csPremium from './translations/cs/premium.json';
 
 import deCommon from './translations/de/common.json';
 import deNavigation from './translations/de/navigation.json';
@@ -32,6 +34,7 @@ import deUI from './translations/de/ui.json';
 import deProfile from './translations/de/profile.json';
 import deSettings from './translations/de/settings.json';
 import deAuth from './translations/de/auth.json';
+import dePremium from './translations/de/premium.json';
 
 import plCommon from './translations/pl/common.json';
 import plNavigation from './translations/pl/navigation.json';
@@ -47,6 +50,7 @@ import plUI from './translations/pl/ui.json';
 import plProfile from './translations/pl/profile.json';
 import plSettings from './translations/pl/settings.json';
 import plAuth from './translations/pl/auth.json';
+import plPremium from './translations/pl/premium.json';
 
 export const resources = {
   cs: {
@@ -64,6 +68,7 @@ export const resources = {
     profile: csProfile,
     settings: csSettings,
     auth: csAuth,
+    premium: csPremium,
   },
   de: {
     common: deCommon,
@@ -80,6 +85,7 @@ export const resources = {
     profile: deProfile,
     settings: deSettings,
     auth: deAuth,
+    premium: dePremium,
   },
   pl: {
     common: plCommon,
@@ -96,6 +102,7 @@ export const resources = {
     profile: plProfile,
     settings: plSettings,
     auth: plAuth,
+    premium: plPremium,
   },
 };
 
@@ -117,7 +124,7 @@ i18n
     },
 
     defaultNS: 'common',
-    ns: ['common', 'navigation', 'dashboard', 'laws', 'shifts', 'travel', 'translator', 'taxAdvisor', 'vehicle', 'forms', 'ui', 'profile', 'settings', 'auth'],
+    ns: ['common', 'navigation', 'dashboard', 'laws', 'shifts', 'travel', 'translator', 'taxAdvisor', 'vehicle', 'forms', 'ui', 'profile', 'settings', 'auth', 'premium'],
   });
 
 export default i18n;
