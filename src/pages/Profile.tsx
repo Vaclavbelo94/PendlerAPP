@@ -6,7 +6,8 @@ import { User } from 'lucide-react';
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import DashboardBackground from '@/components/common/DashboardBackground';
+import OptimizedLayout from '@/components/layouts/OptimizedLayout';
+import { LanguageSwitcher } from '@/components/i18n/LanguageSwitcher';
 import ProfileMobileCarousel from '@/components/profile/mobile/ProfileMobileCarousel';
 import ProfileNavigation from '@/components/profile/ProfileNavigation';
 import ProfileOverview from '@/components/profile/ProfileOverview';
@@ -28,7 +29,7 @@ const Profile: React.FC = () => {
           <meta name="description" content="Správa uživatelského profilu" />
         </Helmet>
         
-        <DashboardBackground variant="default">
+        <OptimizedLayout navbarRightContent={<LanguageSwitcher />}>
           <div className="container mx-auto px-4 py-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -36,12 +37,12 @@ const Profile: React.FC = () => {
               transition={{ duration: 0.6 }}
               className="text-center"
             >
-              <div className="p-8 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20 max-w-md mx-auto">
-                <User className="h-12 w-12 mx-auto mb-4 text-white" />
-                <h1 className="text-2xl font-bold text-white mb-4 text-center">
+              <div className="p-8 bg-card border rounded-2xl max-w-md mx-auto">
+                <User className="h-12 w-12 mx-auto mb-4 text-primary" />
+                <h1 className="text-2xl font-bold mb-4 text-center">
                   Přístup odepřen
                 </h1>
-                <p className="text-white/80 mb-6 text-center">
+                <p className="text-muted-foreground mb-6 text-center">
                   Pro zobrazení profilu se musíte přihlásit.
                 </p>
                 <div className="flex justify-center">
@@ -52,7 +53,7 @@ const Profile: React.FC = () => {
               </div>
             </motion.div>
           </div>
-        </DashboardBackground>
+        </OptimizedLayout>
       </>
     );
   }
@@ -77,9 +78,9 @@ const Profile: React.FC = () => {
         <meta name="description" content="Správa uživatelského profilu a nastavení účtu" />
       </Helmet>
       
-      <DashboardBackground variant="default">
+      <OptimizedLayout navbarRightContent={<LanguageSwitcher />}>
         <div className="container mx-auto px-4 py-8">
-          {/* Header section with dashboard-style animation */}
+          {/* Header section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -87,14 +88,14 @@ const Profile: React.FC = () => {
             className="mb-8"
           >
             <div className={`flex items-center gap-3 mb-4 ${isMobile ? 'flex-col text-center' : ''}`}>
-              <div className={`${isMobile ? 'p-2' : 'p-3'} rounded-full bg-white/10 backdrop-blur-sm border border-white/20`}>
-                <User className={`${isMobile ? 'h-6 w-6' : 'h-8 w-8'} text-white`} />
+              <div className={`${isMobile ? 'p-2' : 'p-3'} rounded-full bg-primary/10 border`}>
+                <User className={`${isMobile ? 'h-6 w-6' : 'h-8 w-8'} text-primary`} />
               </div>
               <div className={isMobile ? 'text-center' : ''}>
-                <h1 className={`${isMobile ? 'text-2xl' : 'text-4xl'} font-bold tracking-tight text-white ${isMobile ? 'text-center' : ''}`}>
+                <h1 className={`${isMobile ? 'text-2xl' : 'text-4xl'} font-bold tracking-tight ${isMobile ? 'text-center' : ''}`}>
                   {isMobile ? 'Profil' : 'Můj profil'}
                 </h1>
-                <p className={`text-white/80 ${isMobile ? 'text-sm mt-2 text-center' : 'text-lg mt-2'} max-w-3xl`}>
+                <p className={`text-muted-foreground ${isMobile ? 'text-sm mt-2 text-center' : 'text-lg mt-2'} max-w-3xl`}>
                   {isMobile 
                     ? 'Správa účtu a osobních nastavení.' 
                     : 'Spravujte své informace, nastavení účtu a sledujte svůj pokrok v aplikaci.'
@@ -103,7 +104,7 @@ const Profile: React.FC = () => {
               </div>
             </div>
             {isMobile && (
-              <p className="text-xs text-white/60 text-center px-4">
+              <p className="text-xs text-muted-foreground text-center px-4">
                 💡 Tip: Přejeďte prstem doleva/doprava pro navigaci mezi záložkami
               </p>
             )}
@@ -146,7 +147,7 @@ const Profile: React.FC = () => {
             </>
           )}
         </div>
-      </DashboardBackground>
+      </OptimizedLayout>
     </>
   );
 };
