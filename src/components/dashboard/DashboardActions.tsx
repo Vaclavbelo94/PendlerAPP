@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { 
-  Plus, 
   Car, 
   User, 
   FileText,
@@ -17,14 +16,6 @@ const DashboardActions: React.FC = () => {
   const navigate = useNavigate();
 
   const quickActions = [
-    {
-      icon: Plus,
-      label: t('addShift'),
-      description: 'Zaznamenat novou směnu',
-      action: () => navigate('/shifts'),
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50 dark:bg-blue-900/20'
-    },
     {
       icon: Car,
       label: 'Vozidlo',
