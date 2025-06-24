@@ -37,7 +37,7 @@ const RegisterForm = () => {
 
   const activatePromoCode = async (userId: string, promoCodeValue: string) => {
     try {
-      console.log('Aktivuji promo kód:', promoCodeValue, 'pro uživatele:', userId);
+      console.log('Aktivuji promo kód při registraci:', promoCodeValue, 'pro uživatele:', userId);
       
       // Získáme promo kód z databáze
       const { data: promoCodeData, error: fetchError } = await supabase
@@ -51,6 +51,8 @@ const RegisterForm = () => {
         return false;
       }
 
+      console.log('Nalezen promo kód při registraci:', promoCodeData);
+
       // Zkontrolujeme platnost
       if (new Date(promoCodeData.valid_until) < new Date()) {
         console.error('Promo kód je již prošlý');
@@ -59,6 +61,25 @@ const RegisterForm = () => {
 
       if (promoCodeData.max_uses !== null && promoCodeData.used_count >= promoCodeData.max_uses) {
         console.error('Promo kód byl již vyčerpán');
+        return false;
+      }
+
+      // Nastavíme premium status v profiles
+      const premiumExpiry = new Date();
+      premiumExpiry.setMonth(premiumExpiry.getMonth() + promoCodeData.duration);
+
+      console.log('Aktivuji premium status do:', premiumExpiry.toISOString());
+
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({ 
+          is_premium: true,
+          premium_expiry: premiumExpiry.toISOString()
+        })
+        .eq('id', userId);
+
+      if (profileError) {
+        console.error('Chyba při aktivaci premium v profiles:', profileError);
         return false;
       }
 
@@ -72,24 +93,7 @@ const RegisterForm = () => {
 
       if (redemptionError) {
         console.error('Chyba při vytváření redemption záznamu:', redemptionError);
-        return false;
-      }
-
-      // Nastavíme premium status v profiles
-      const premiumExpiry = new Date();
-      premiumExpiry.setMonth(premiumExpiry.getMonth() + promoCodeData.duration);
-
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .update({ 
-          is_premium: true,
-          premium_expiry: premiumExpiry.toISOString()
-        })
-        .eq('id', userId);
-
-      if (profileError) {
-        console.error('Chyba při aktivaci premium v profiles:', profileError);
-        return false;
+        // Nevrátíme false, protože premium už je aktivován
       }
 
       // Aktualizujeme počet použití promo kódu
@@ -105,7 +109,7 @@ const RegisterForm = () => {
         // Nevracíme false, protože premium již bylo aktivováno
       }
 
-      console.log('Promo kód úspěšně aktivován, premium do:', premiumExpiry.toISOString());
+      console.log('Promo kód úspěšně aktivován při registraci, premium do:', premiumExpiry.toISOString());
       return true;
     } catch (error) {
       console.error('Výjimka při aktivaci promo kódu:', error);
@@ -160,8 +164,8 @@ const RegisterForm = () => {
       } else if (signUpResult.user) {
         console.log('Registrace úspěšná, uživatel:', signUpResult.user.id);
         
-        // Počkáme chvíli, aby se dokončil trigger pro vytvoření profilu
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        // Počkáme déle, aby se dokončil trigger pro vytvoření profilu
+        await new Promise(resolve => setTimeout(resolve, 3000));
         
         if (isPromoValid && promoCode && signUpResult.user.id) {
           console.log('Aktivuji promo kód pro nového uživatele:', promoCode);
@@ -170,16 +174,18 @@ const RegisterForm = () => {
           if (promoActivated) {
             toast.success(t('accountCreatedWithPremium'), { 
               description: `Premium aktivován s kódem ${promoCode}. Nyní se můžete přihlásit.`,
-              duration: 5000
+              duration: 8000
             });
           } else {
             toast.success(t('accountCreatedSuccessfully'), { 
-              description: t('nowYouCanLogin') + ' (Promo kód se nepodařilo aktivovat - zkuste jej použít po přihlášení)'
+              description: t('nowYouCanLogin') + ' (Promo kód se nepodařilo aktivovat - zkuste jej použít po přihlášení)',
+              duration: 8000
             });
           }
         } else {
           toast.success(t('accountCreatedSuccessfully'), { 
-            description: t('nowYouCanLogin')
+            description: t('nowYouCanLogin'),
+            duration: 5000
           });
         }
         

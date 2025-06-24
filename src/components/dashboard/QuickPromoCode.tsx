@@ -34,6 +34,8 @@ const QuickPromoCode = () => {
         return { success: false, message: "Neplatný promo kód" };
       }
 
+      console.log('Nalezen promo kód:', promoCodeData);
+
       // Zkontrolujeme platnost
       if (new Date(promoCodeData.valid_until) < new Date()) {
         return { success: false, message: "Tento promo kód již vypršel" };
@@ -54,22 +56,13 @@ const QuickPromoCode = () => {
         return { success: false, message: "Tento promo kód jste již použili" };
       }
 
-      // Vytvoříme redemption záznam
-      const { error: redemptionError } = await supabase
-        .from('promo_code_redemptions')
-        .insert({
-          user_id: userId,
-          promo_code_id: promoCodeData.id
-        });
-
-      if (redemptionError) {
-        console.error('Chyba při vytváření redemption záznamu:', redemptionError);
-        return { success: false, message: "Chyba při aktivaci promo kódu" };
-      }
+      console.log('Promo kód je platný, aktivuji premium...');
 
       // Nastavíme premium status
       const premiumExpiry = new Date();
       premiumExpiry.setMonth(premiumExpiry.getMonth() + promoCodeData.duration);
+      
+      console.log('Nastavuji premium do:', premiumExpiry.toISOString());
 
       const { error: profileError } = await supabase
         .from('profiles')
@@ -84,13 +77,35 @@ const QuickPromoCode = () => {
         return { success: false, message: "Chyba při aktivaci premium statusu" };
       }
 
+      console.log('Premium status nastaven, vytvářím redemption záznam...');
+
+      // Vytvoříme redemption záznam
+      const { error: redemptionError } = await supabase
+        .from('promo_code_redemptions')
+        .insert({
+          user_id: userId,
+          promo_code_id: promoCodeData.id
+        });
+
+      if (redemptionError) {
+        console.error('Chyba při vytváření redemption záznamu:', redemptionError);
+        // Nevrátíme chybu, protože premium už je aktivován
+      }
+
       // Aktualizujeme počet použití
-      await supabase
+      const { error: updateError } = await supabase
         .from('promo_codes')
         .update({ 
           used_count: promoCodeData.used_count + 1 
         })
         .eq('id', promoCodeData.id);
+
+      if (updateError) {
+        console.error('Chyba při aktualizaci počtu použití:', updateError);
+        // Nevrátíme chybu, protože premium už je aktivován
+      }
+
+      console.log('Promo kód úspěšně aktivován!');
 
       return { 
         success: true, 
@@ -112,6 +127,8 @@ const QuickPromoCode = () => {
     
     setIsSubmitting(true);
     try {
+      console.log('Spouštím aktivaci promo kódu:', promoCode.trim());
+      
       const result = await redeemPromoCode(user.id, promoCode.trim());
       
       if (!result.success) {
@@ -125,15 +142,26 @@ const QuickPromoCode = () => {
         return;
       }
 
+      console.log('Promo kód aktivován, obnovuji premium status...');
+      
       // Refresh premium status after successful redemption
       await refreshPremiumStatus();
+      
+      // Malé zpoždění a pak refresh stránky pro jistotu
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
       
       if (redemptionCode.discount === 100) {
         const premiumExpiry = new Date();
         premiumExpiry.setMonth(premiumExpiry.getMonth() + redemptionCode.duration);
-        toast.success(`Premium status byl aktivován do ${premiumExpiry.toLocaleDateString('cs-CZ')}`);
+        toast.success(`Premium status byl aktivován do ${premiumExpiry.toLocaleDateString('cs-CZ')}`, {
+          duration: 5000
+        });
       } else {
-        toast.success(`Promo kód byl použit se slevou ${redemptionCode.discount}%`);
+        toast.success(`Promo kód byl použit se slevou ${redemptionCode.discount}%`, {
+          duration: 5000
+        });
       }
     } catch (error) {
       console.error("Error redeeming promo code:", error);
@@ -156,8 +184,8 @@ const QuickPromoCode = () => {
         <form onSubmit={handleRedeemCode} className="space-y-3">
           <Input
             value={promoCode}
-            onChange={(e) => setPromoCode(e.target.value)}
-            placeholder="PROMO-PENDLER2025"
+            onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+            placeholder="PREMIUM2024"
             className="bg-white/50 dark:bg-black/20"
             disabled={isSubmitting}
           />
