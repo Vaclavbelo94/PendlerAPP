@@ -1,320 +1,277 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
-import { TrendingUp, Clock, Calendar, Award, Euro } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
-import { useOptimizedShiftsManagement } from '@/hooks/shifts/useOptimizedShiftsManagement';
-import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, getDay, startOfYear, endOfYear } from 'date-fns';
-import { cs, de, pl } from 'date-fns/locale';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell, LineChart, Line, ResponsiveContainer } from 'recharts';
+import { Calendar, Clock, TrendingUp, Euro } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { Shift } from '@/types/shifts';
 
-const ShiftsAnalytics: React.FC = () => {
-  const [period, setPeriod] = useState<'week' | 'month' | 'year'>('month');
-  const { t, i18n } = useTranslation('shifts');
-  const { user } = useAuth();
-  const { shifts, isLoading } = useOptimizedShiftsManagement(user?.id);
+interface ShiftsAnalyticsProps {
+  shifts?: Shift[];
+}
 
-  // Get appropriate date-fns locale
-  const getDateLocale = () => {
-    switch (i18n.language) {
-      case 'de': return de;
-      case 'pl': return pl;
-      case 'cs':
-      default: return cs;
-    }
-  };
+const ShiftsAnalytics: React.FC<ShiftsAnalyticsProps> = ({ shifts = [] }) => {
+  const { t } = useTranslation('shifts');
 
-  const filteredShifts = useMemo(() => {
-    if (!shifts.length) return [];
-    
-    const now = new Date();
-    let start: Date, end: Date;
-    
-    switch (period) {
-      case 'week':
-        start = startOfWeek(now, { weekStartsOn: 1 });
-        end = endOfWeek(now, { weekStartsOn: 1 });
-        break;
-      case 'year':
-        start = startOfYear(now);
-        end = endOfYear(now);
-        break;
-      case 'month':
-      default:
-        start = startOfMonth(now);
-        end = endOfMonth(now);
-        break;
-    }
-    
-    return shifts.filter(shift => {
-      try {
-        const shiftDate = new Date(shift.date);
-        return !isNaN(shiftDate.getTime()) && isWithinInterval(shiftDate, { start, end });
-      } catch (error) {
-        console.error("Error filtering shifts:", error);
-        return false;
-      }
-    });
-  }, [shifts, period]);
-
+  // Calculate analytics from real shifts data
   const analytics = useMemo(() => {
-    const totalShifts = filteredShifts.length;
-    const totalHours = totalShifts * 8; // Assuming 8 hours per shift
-    const hourlyRate = 40; // €40 per hour - could be made configurable
-    const totalEarnings = totalHours * hourlyRate;
+    if (shifts.length === 0) {
+      return {
+        totalShifts: 0,
+        totalHours: 0,
+        totalEarnings: 0,
+        averagePerShift: 0,
+        weeklyData: [],
+        shiftTypeData: [],
+        monthlyTrend: []
+      };
+    }
+
+    // Calculate total shifts and basic stats
+    const totalShifts = shifts.length;
     
-    const shiftTypes = filteredShifts.reduce((acc, shift) => {
+    // Assuming 8 hours per shift for calculation
+    const hoursPerShift = 8;
+    const totalHours = totalShifts * hoursPerShift;
+    
+    // Assuming €40 per hour for calculation
+    const hourlyRate = 40;
+    const totalEarnings = totalHours * hourlyRate;
+    const averagePerShift = totalShifts > 0 ? totalEarnings / totalShifts : 0;
+
+    // Count shift types
+    const shiftTypeCounts = shifts.reduce((acc, shift) => {
       acc[shift.type] = (acc[shift.type] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
+
+    const shiftTypeData = [
+      { 
+        name: t('morning'), 
+        value: shiftTypeCounts.morning || 0, 
+        color: '#3b82f6' 
+      },
+      { 
+        name: t('afternoon'), 
+        value: shiftTypeCounts.afternoon || 0, 
+        color: '#f59e0b' 
+      },
+      { 
+        name: t('night'), 
+        value: shiftTypeCounts.night || 0, 
+        color: '#6366f1' 
+      }
+    ].filter(item => item.value > 0);
+
+    // Weekly data - group shifts by day of week
+    const weekDays = [
+      t('monday'), t('tuesday'), t('wednesday'), t('thursday'), 
+      t('friday'), t('saturday'), t('sunday')
+    ];
+
+    const weeklyShifts = Array(7).fill(0);
+    shifts.forEach(shift => {
+      const date = new Date(shift.date);
+      const dayOfWeek = (date.getDay() + 6) % 7; // Convert Sunday=0 to Monday=0
+      weeklyShifts[dayOfWeek]++;
+    });
+
+    const weeklyData = weekDays.map((day, index) => ({
+      name: day,
+      [t('hours')]: weeklyShifts[index] * hoursPerShift,
+      [t('earnings')]: weeklyShifts[index] * hoursPerShift * hourlyRate
+    }));
+
+    // Monthly trend - group shifts by month
+    const monthlyShifts = shifts.reduce((acc, shift) => {
+      const date = new Date(shift.date);
+      const monthKey = `${date.getFullYear()}-${date.getMonth()}`;
+      acc[monthKey] = (acc[monthKey] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    const months = [
+      t('january'), t('february'), t('march'), t('april'), 
+      t('may'), t('june'), t('july'), t('august'),
+      t('september'), t('october'), t('november'), t('december')
+    ];
+
+    const monthlyTrend = Object.entries(monthlyShifts)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .slice(-6) // Last 6 months
+      .map(([monthKey, shiftsCount]) => {
+        const [year, monthIndex] = monthKey.split('-');
+        const monthName = months[parseInt(monthIndex)];
+        const monthHours = shiftsCount * hoursPerShift;
+        const monthEarnings = monthHours * hourlyRate;
+        
+        return {
+          [t('months')]: monthName,
+          [t('hours')]: monthHours,
+          [t('earningsEuro')]: monthEarnings
+        };
+      });
 
     return {
       totalShifts,
       totalHours,
       totalEarnings,
-      morningShifts: shiftTypes.morning || 0,
-      afternoonShifts: shiftTypes.afternoon || 0,
-      nightShifts: shiftTypes.night || 0,
-      averagePerShift: totalShifts > 0 ? Math.round(totalEarnings / totalShifts) : 0,
-      hourlyRate
+      averagePerShift,
+      weeklyData,
+      shiftTypeData,
+      monthlyTrend
     };
-  }, [filteredShifts]);
+  }, [shifts, t]);
 
-  const chartData = useMemo(() => {
-    return [
-      { name: t('morningShifts'), value: analytics.morningShifts, color: '#3b82f6' },
-      { name: t('afternoonShifts'), value: analytics.afternoonShifts, color: '#f59e0b' },
-      { name: t('nightShifts'), value: analytics.nightShifts, color: '#6366f1' }
-    ].filter(item => item.value > 0);
-  }, [analytics, t]);
-
-  const weeklyTrendData = useMemo(() => {
-    if (period !== 'week') return [];
-    
-    const weekDays = ['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'];
-    const dayShifts = new Array(7).fill(0);
-    
-    filteredShifts.forEach(shift => {
-      const shiftDate = new Date(shift.date);
-      const dayIndex = (getDay(shiftDate) + 6) % 7; // Convert Sunday=0 to Monday=0
-      dayShifts[dayIndex]++;
-    });
-    
-    return weekDays.map((day, index) => ({
-      name: day,
-      shifts: dayShifts[index],
-      hours: dayShifts[index] * 8,
-      earnings: dayShifts[index] * 8 * analytics.hourlyRate
-    }));
-  }, [filteredShifts, period, analytics.hourlyRate]);
-
-  if (isLoading) {
+  if (shifts.length === 0) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="space-y-6">
+        <div className="text-center py-12">
+          <Calendar className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            {t('noShiftsForPeriod')}
+          </h3>
+          <p className="text-gray-500">
+            {t('noShiftsYet')}
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      {/* Header with Period Selection */}
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">{t('shiftsAnalytics')}</h2>
-        <Select value={period} onValueChange={(value: 'week' | 'month' | 'year') => setPeriod(value)}>
-          <SelectTrigger className="w-48">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="week">{t('thisWeek')}</SelectItem>
-            <SelectItem value="month">{t('thisMonth')}</SelectItem>
-            <SelectItem value="year">{t('thisYear')}</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* Key Metrics */}
+      {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">{t('totalShifts')}</p>
-                <p className="text-2xl font-bold">{analytics.totalShifts}</p>
-              </div>
-              <Calendar className="h-8 w-8 text-primary" />
-            </div>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">{t('totalShifts')}</CardTitle>
+            <Calendar className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-primary">{analytics.totalShifts}</div>
+            <p className="text-xs text-muted-foreground">
+              {t('shifts')}
+            </p>
           </CardContent>
         </Card>
 
-        <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">{t('totalHours')}</p>
-                <p className="text-2xl font-bold">{analytics.totalHours}h</p>
-              </div>
-              <Clock className="h-8 w-8 text-blue-600" />
-            </div>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">{t('totalHours')}</CardTitle>
+            <Clock className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-primary">{analytics.totalHours}</div>
+            <p className="text-xs text-muted-foreground">
+              {t('hours')}
+            </p>
           </CardContent>
         </Card>
 
-        <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">{t('totalEarnings')}</p>
-                <p className="text-2xl font-bold text-green-600">€{analytics.totalEarnings.toLocaleString()}</p>
-              </div>
-              <Euro className="h-8 w-8 text-green-600" />
-            </div>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">{t('totalEarnings')}</CardTitle>
+            <Euro className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-600">€{analytics.totalEarnings.toLocaleString()}</div>
+            <p className="text-xs text-muted-foreground">
+              {t('earnings')}
+            </p>
           </CardContent>
         </Card>
 
-        <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">{t('averagePerShift')}</p>
-                <p className="text-2xl font-bold text-purple-600">€{analytics.averagePerShift}</p>
-              </div>
-              <Award className="h-8 w-8 text-purple-600" />
-            </div>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">{t('averagePerShift')}</CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-blue-600">€{Math.round(analytics.averagePerShift)}</div>
+            <p className="text-xs text-muted-foreground">
+              {t('averagePerShift')}
+            </p>
           </CardContent>
         </Card>
       </div>
 
       {/* Charts */}
-      {filteredShifts.length > 0 ? (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Distribution Chart */}
-          <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
-            <CardHeader>
-              <CardTitle>{t('shiftTypeDistribution')}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {chartData.length > 0 ? (
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={chartData}
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                      labelLine={false}
-                    >
-                      {chartData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-              ) : (
-                <div className="flex items-center justify-center h-[300px] text-muted-foreground">
-                  <p>{t('noShiftsForPeriod')}</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Weekly Trend Chart (only for week period) */}
-          {period === 'week' && (
-            <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle>{t('weeklyTrend')}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={weeklyTrendData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip formatter={(value, name) => [value, name === 'shifts' ? t('shifts') : name === 'hours' ? t('hours') : '€']} />
-                    <Bar dataKey="shifts" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Summary Stats for other periods */}
-          {period !== 'week' && (
-            <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle>{t('summary')}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center p-3 bg-muted/30 rounded-lg">
-                    <span className="text-sm font-medium">{t('hourlyRate')}</span>
-                    <span className="font-bold text-green-600">€{analytics.hourlyRate}</span>
-                  </div>
-                  <div className="flex justify-between items-center p-3 bg-muted/30 rounded-lg">
-                    <span className="text-sm font-medium">{t('averageShiftsPerWeek')}</span>
-                    <span className="font-bold">{period === 'month' ? Math.round(analytics.totalShifts / 4) : Math.round(analytics.totalShifts / 52)}</span>
-                  </div>
-                  {analytics.totalShifts > 0 && (
-                    <div className="flex justify-between items-center p-3 bg-muted/30 rounded-lg">
-                      <span className="text-sm font-medium">{t('mostCommonShift')}</span>
-                      <span className="font-bold">
-                        {analytics.morningShifts >= analytics.afternoonShifts && analytics.morningShifts >= analytics.nightShifts ? t('morning') :
-                         analytics.afternoonShifts >= analytics.nightShifts ? t('afternoon') : t('night')}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-        </div>
-      ) : (
-        <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
-          <CardContent className="text-center py-12">
-            <Calendar className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
-            <h3 className="text-lg font-medium mb-2">{t('noShiftsForPeriod')}</h3>
-            <p className="text-muted-foreground">
-              {period === 'week' ? t('thisWeek') : period === 'year' ? t('thisYear') : t('thisMonth')}
-            </p>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Detailed Breakdown */}
-      {filteredShifts.length > 0 && (
-        <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Weekly Hours Chart */}
+        <Card>
           <CardHeader>
-            <CardTitle>{t('detailedBreakdown')}</CardTitle>
+            <CardTitle>{t('weeklyTrend')}</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
-                <div className="text-2xl font-bold text-blue-600">{analytics.morningShifts}</div>
-                <div className="text-sm text-blue-600">{t('morningShifts')}</div>
-                <div className="text-xs text-muted-foreground mt-1">
-                  {analytics.morningShifts * 8}h • €{analytics.morningShifts * 8 * analytics.hourlyRate}
-                </div>
-              </div>
-              <div className="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-lg">
-                <div className="text-2xl font-bold text-amber-600">{analytics.afternoonShifts}</div>
-                <div className="text-sm text-amber-600">{t('afternoonShifts')}</div>
-                <div className="text-xs text-muted-foreground mt-1">
-                  {analytics.afternoonShifts * 8}h • €{analytics.afternoonShifts * 8 * analytics.hourlyRate}
-                </div>
-              </div>
-              <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg">
-                <div className="text-2xl font-bold text-purple-600">{analytics.nightShifts}</div>
-                <div className="text-sm text-purple-600">{t('nightShifts')}</div>
-                <div className="text-xs text-muted-foreground mt-1">
-                  {analytics.nightShifts * 8}h • €{analytics.nightShifts * 8 * analytics.hourlyRate}
-                </div>
-              </div>
-            </div>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={analytics.weeklyData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Bar dataKey={t('hours')} fill="#3b82f6" />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        {/* Shift Type Distribution */}
+        <Card>
+          <CardHeader>
+            <CardTitle>{t('shiftTypeDistribution')}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={analytics.shiftTypeData}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={80}
+                  dataKey="value"
+                  label={({ name, value }) => `${name}: ${value}`}
+                >
+                  {analytics.shiftTypeData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Monthly Trend */}
+      {analytics.monthlyTrend.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>{t('monthlyTrend')}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={analytics.monthlyTrend}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey={t('months')} />
+                <YAxis />
+                <Tooltip />
+                <Line 
+                  type="monotone" 
+                  dataKey={t('hours')} 
+                  stroke="#3b82f6" 
+                  strokeWidth={2}
+                  name={t('hours')}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey={t('earningsEuro')} 
+                  stroke="#10b981" 
+                  strokeWidth={2}
+                  name={t('earnings')}
+                />
+              </LineChart>
+            </ResponsiveContainer>
           </CardContent>
         </Card>
       )}
