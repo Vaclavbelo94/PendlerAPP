@@ -20,7 +20,7 @@ export const EnhancedLawCard: React.FC<EnhancedLawCardProps> = ({
   index,
   onViewDetails
 }) => {
-  const { t } = useTranslation('laws');
+  const { t } = useTranslation(['laws', 'common']);
 
   return (
     <motion.div
@@ -31,15 +31,15 @@ export const EnhancedLawCard: React.FC<EnhancedLawCardProps> = ({
     >
       <Card className={cn(
         "h-full transition-all duration-300 hover:shadow-lg border-l-4",
-        law.category === 'arbeitsrecht' && "border-l-blue-500",
-        law.category === 'steuerrecht' && "border-l-green-500",
-        law.category === 'sozialrecht' && "border-l-purple-500",
-        law.category === 'verkehrsrecht' && "border-l-orange-500"
+        law.category === 'work' && "border-l-blue-500",
+        law.category === 'tax' && "border-l-green-500", 
+        law.category === 'social' && "border-l-purple-500",
+        law.category === 'health' && "border-l-red-500"
       )}>
         <CardHeader className="pb-3">
           <div className="flex justify-between items-start mb-2">
             <Badge variant="secondary" className="text-xs">
-              {law.category}
+              {t(`laws:${law.category}`, law.category)}
             </Badge>
             <div className="flex items-center gap-1 text-muted-foreground">
               <Clock className="h-3 w-3" />
@@ -79,23 +79,17 @@ export const EnhancedLawCard: React.FC<EnhancedLawCardProps> = ({
                 className="gap-1"
               >
                 <BookOpen className="h-3 w-3" />
-                {t('details')}
+                {t('common:readMore')}
               </Button>
               
               {law.officialUrl && (
                 <Button
                   size="sm"
                   variant="ghost"
-                  asChild
+                  onClick={() => onViewDetails(law)}
                   className="gap-1"
                 >
-                  <a 
-                    href={law.officialUrl} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                  >
-                    <ExternalLink className="h-3 w-3" />
-                  </a>
+                  <ExternalLink className="h-3 w-3" />
                 </Button>
               )}
             </div>

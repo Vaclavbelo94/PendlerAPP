@@ -2,17 +2,10 @@
 {
   "title": "Profil",
   "personalInfo": "Dane osobowe",
-  "workInfo": "Dane pracy",
+  "settings": "Ustawienia",
   "preferences": "Preferencje",
-  "language": "Język",
-  "theme": "Motyw",
+  "security": "Bezpieczeństwo",
   "notifications": "Powiadomienia",
   "privacy": "Prywatność",
-  "security": "Bezpieczeństwo",
-  "deleteAccount": "Usuń konto",
-  "save": "Zapisz zmiany",
-  "cancel": "Anuluj",
-  "edit": "Edytuj",
-  "updated": "Profil został zaktualizowany",
-  "error": "Błąd podczas aktualizacji profilu"
+  "account": "Konto"
 }

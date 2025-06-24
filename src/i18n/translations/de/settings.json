@@ -2,17 +2,10 @@
 {
   "title": "Einstellungen",
   "general": "Allgemein",
-  "appearance": "Erscheinungsbild",
   "language": "Sprache",
   "theme": "Design",
   "notifications": "Benachrichtigungen",
   "privacy": "Datenschutz",
-  "data": "Daten",
-  "export": "Daten exportieren",
-  "import": "Daten importieren",
-  "backup": "Sicherung",
-  "restore": "Wiederherstellen",
-  "reset": "Einstellungen zurücksetzen",
-  "save": "Speichern",
-  "cancel": "Abbrechen"
+  "account": "Konto",
+  "advanced": "Erweitert"
 }

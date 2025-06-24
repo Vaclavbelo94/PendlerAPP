@@ -2,6 +2,7 @@
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Scale } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import PremiumCheck from '@/components/premium/PremiumCheck';
 import LawsNavigation from '@/components/laws/LawsNavigation';
 import LawsLoadingSkeleton from '@/components/laws/LawsLoadingSkeleton';
@@ -20,6 +21,7 @@ const Laws = () => {
   const [isLoading, setIsLoading] = useState(true);
   const isMobile = useIsMobile();
   const { t } = useTranslation(['laws', 'common']);
+  const navigate = useNavigate();
 
   // Simulate initial loading with shorter duration
   React.useEffect(() => {
@@ -52,8 +54,9 @@ const Laws = () => {
   });
 
   const handleViewDetails = (law: Law) => {
+    // Use React Router navigation instead of window.open
     if (law.officialUrl) {
-      window.open(law.officialUrl, '_blank');
+      navigate(law.officialUrl);
     }
   };
 
