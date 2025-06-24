@@ -5,7 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useOptimizedShiftsManagement } from '@/hooks/shifts/useOptimizedShiftsManagement';
 import UnifiedShiftCalendar from './calendar/UnifiedShiftCalendar';
 import ShiftsFormSheets from './ShiftsFormSheets';
-import { Shift } from '@/types/shifts';
+import { Shift } from '@/types/shifts'; // Using the updated consistent type
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 
@@ -49,7 +49,13 @@ const ShiftsCalendar: React.FC<ShiftsCalendarProps> = ({
 
   const handleAddShift = async (formData: any) => {
     try {
-      await shiftsManagement.addShift(formData);
+      // Ensure user_id is provided since it's required
+      const shiftData = {
+        ...formData,
+        user_id: user?.id || '', // Provide user_id as required
+        date: selectedDate ? format(selectedDate, 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd')
+      };
+      await shiftsManagement.addShift(shiftData);
       setIsAddSheetOpen(false);
     } catch (error) {
       console.error('Error adding shift:', error);

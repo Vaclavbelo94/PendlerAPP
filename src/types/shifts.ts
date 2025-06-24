@@ -3,7 +3,7 @@ export type ShiftType = 'morning' | 'afternoon' | 'night';
 
 export interface Shift {
   id?: string;
-  user_id?: string;
+  user_id: string; // Made required to match useShiftsManagement
   date: string; // ISO string format YYYY-MM-DD
   type: ShiftType;
   notes?: string;
