@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -171,8 +172,8 @@ const TaxWizardCarousel: React.FC = () => {
         commuteDistance: wizardData.reisepauschale.commuteDistance.toString(),
         commuteWorkDays: wizardData.reisepauschale.workDaysPerYear.toString(),
         includeCommuteExpenses: true,
-        includeSecondHome: !!wizardData.reisepauschale.hasSecondHome,
-        includeWorkClothes: !!wizardData.deductions.workClothes,
+        includeSecondHome: Boolean(wizardData.reisepauschale.hasSecondHome) === true,
+        includeWorkClothes: Boolean(wizardData.deductions.workClothes) === true,
         additionalNotes: `${t('results.generatedWith')} PendlerApp Wizard. ${t('results.totalDeductions')}: ${result.totalDeductions.toFixed(2)}€, ${t('results.estimatedSaving')}: ${result.estimatedTaxSaving.toFixed(2)}€`
       };
 
