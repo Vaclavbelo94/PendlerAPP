@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CalendarDays, Clock, TrendingUp, Euro } from 'lucide-react';
+import { CalendarDays, Clock, Euro } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
 import { useMonthlyEarnings } from '@/hooks/useMonthlyEarnings';
@@ -99,16 +99,10 @@ const DashboardStats: React.FC = () => {
       icon: Euro,
       description: hasWageSet ? `${monthlyHours}h tento měsíc` : 'Nastavte hodinovou mzdu v profilu',
     },
-    {
-      title: t('progress'),
-      value: isLoading ? '...' : `${Math.round((thisWeekHours / 30) * 100)}%`,
-      icon: TrendingUp,
-      description: 'Týdenní cíl (30h)',
-    },
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {stats.map((stat, index) => (
         <Card key={index} className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
