@@ -8,7 +8,6 @@ import {
   Car, 
   User, 
   FileText,
-  Route,
   Users
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -41,14 +40,6 @@ const DashboardActions: React.FC = () => {
       action: () => navigate('/profile'),
       color: 'text-indigo-600',
       bgColor: 'bg-indigo-50 dark:bg-indigo-900/20'
-    },
-    {
-      icon: Route,
-      label: 'Trasy',
-      description: 'Najít nejlepší cestu',
-      action: () => navigate('/routes'),
-      color: 'text-cyan-600',
-      bgColor: 'bg-cyan-50 dark:bg-cyan-900/20'
     },
     {
       icon: Users,
