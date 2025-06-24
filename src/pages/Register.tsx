@@ -14,6 +14,7 @@ import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useTranslation } from 'react-i18next';
 import { useOAuthCallback } from "@/hooks/auth/useOAuthCallback";
+import { supabase } from '@/integrations/supabase/client';
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -86,6 +87,57 @@ const Register = () => {
     }
   };
 
+  const activatePromoCode = async (userId: string, promoCodeValue: string) => {
+    try {
+      console.log('Aktivuji promo kód:', promoCodeValue, 'pro uživatele:', userId);
+      
+      // Get promo code details
+      const { data: promoCodeData, error: fetchError } = await supabase
+        .from('promo_codes')
+        .select('*')
+        .ilike('code', promoCodeValue.trim())
+        .single();
+
+      if (fetchError || !promoCodeData) {
+        console.error('Chyba při načítání promo kódu:', fetchError);
+        return false;
+      }
+
+      // Update user's premium status
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ 
+          is_premium: true,
+          premium_expiry: promoCodeData.valid_until 
+        })
+        .eq('id', userId);
+
+      if (updateError) {
+        console.error('Chyba při aktivaci premium:', updateError);
+        return false;
+      }
+
+      // Increment promo code usage count
+      const { error: incrementError } = await supabase
+        .from('promo_codes')
+        .update({ 
+          used_count: promoCodeData.used_count + 1 
+        })
+        .eq('id', promoCodeData.id);
+
+      if (incrementError) {
+        console.error('Chyba při aktualizaci počtu použití:', incrementError);
+        // This is not critical, continue anyway
+      }
+
+      console.log('Promo kód úspěšně aktivován');
+      return true;
+    } catch (error) {
+      console.error('Výjimka při aktivaci promo kódu:', error);
+      return false;
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -111,7 +163,7 @@ const Register = () => {
     try {
       console.log('Submitting registration form');
       
-      const { error } = await signUp(email, password, username);
+      const { error, user: newUser } = await signUp(email, password, username);
       
       if (error) {
         let errorMessage = t('registerCheckDataRetry');
@@ -130,17 +182,34 @@ const Register = () => {
         toast.error(t('registrationFailed'), {
           description: errorMessage,
         });
-      } else {
-        let successMessage = t('accountCreatedSuccessfully');
-        let description = t('nowYouCanLogin');
+      } else if (newUser) {
+        console.log('Registrace úspěšná, uživatel:', newUser.id);
         
-        if (isPromoValid && promoCode) {
-          successMessage = t('accountCreatedWithPremium');
-          description = t('promoCodeActivated').replace('{code}', promoCode);
+        // Activate promo code if valid
+        if (isPromoValid && promoCode && newUser.id) {
+          console.log('Aktivuji promo kód pro nového uživatele');
+          const promoActivated = await activatePromoCode(newUser.id, promoCode);
+          
+          if (promoActivated) {
+            toast.success(t('accountCreatedWithPremium'), { 
+              description: t('promoCodeActivated').replace('{code}', promoCode)
+            });
+          } else {
+            toast.success(t('accountCreatedSuccessfully'), { 
+              description: t('nowYouCanLogin') + ' (Promo kód se nepodařilo aktivovat)'
+            });
+          }
+        } else {
+          toast.success(t('accountCreatedSuccessfully'), { 
+            description: t('nowYouCanLogin')
+          });
         }
         
-        toast.success(successMessage, { description });
         navigate("/login");
+      } else {
+        toast.error(t('registrationError'), {
+          description: 'Neočekávaná chyba při registraci',
+        });
       }
     } catch (error: any) {
       console.error('Registration error:', error);
@@ -184,7 +253,6 @@ const Register = () => {
       
       if (url) {
         console.log('Redirecting to Google OAuth URL:', url);
-        // Don't redirect immediately, let the OAuth flow handle it
         window.location.href = url;
       } else {
         console.error('No URL returned from Google OAuth');
