@@ -46,5 +46,21 @@
   "privacy": "Soukromí",
   "terms": "Podmínky",
   "cookies": "Cookies",
-  "allRightsReserved": "Všechna práva vyhrazena"
+  "allRightsReserved": "Všechna práva vyhrazena",
+  "company": "Společnost",
+  "support": "Podpora",
+  "product": "Produkt",
+  "legal": "Právní",
+  "helpCenter": "Centrum nápovědy",
+  "community": "Komunita",
+  "tutorials": "Návody",
+  "careers": "Kariéra", 
+  "blog": "Blog",
+  "privacyPolicy": "Zásady ochrany osobních údajů",
+  "termsOfService": "Obchodní podmínky",
+  "cookiePolicy": "Zásady cookies",
+  "roadmap": "Plán vývoje",
+  "changelog": "Seznam změn",
+  "followUs": "Sledujte nás",
+  "footerDescription": "Komplexní řešení pro práci v zahraničí"
 }
