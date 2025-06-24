@@ -260,56 +260,58 @@ const VehicleForm: React.FC<VehicleFormProps> = ({
         </div>
       </div>
 
-      {/* Financial Information */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-medium">{t('vehicle:financialInformation')}</h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="purchase_price">{t('vehicle:purchasePrice')} (Kč)</Label>
-            <Input
-              id="purchase_price"
-              type="text"
-              value={formData.purchase_price}
-              onChange={(e) => handleChange('purchase_price', e.target.value)}
-              placeholder={t('vehicle:pricePlaceholder')}
-            />
-          </div>
+      {/* Financial Information - pouze při editaci */}
+      {vehicle && (
+        <div className="space-y-4">
+          <h3 className="text-lg font-medium">{t('vehicle:financialInformation')}</h3>
           
-          <div>
-            <Label htmlFor="insurance_monthly">{t('vehicle:insuranceCost')} {t('vehicle:monthlyAverage')} (Kč)</Label>
-            <Input
-              id="insurance_monthly"
-              type="text"
-              value={formData.insurance_monthly}
-              onChange={(e) => handleChange('insurance_monthly', e.target.value)}
-              placeholder={t('vehicle:insurancePlaceholder')}
-            />
-          </div>
-          
-          <div>
-            <Label htmlFor="tax_yearly">{t('vehicle:taxPlaceholder')} (Kč)</Label>
-            <Input
-              id="tax_yearly"
-              type="text"
-              value={formData.tax_yearly}
-              onChange={(e) => handleChange('tax_yearly', e.target.value)}
-              placeholder={t('vehicle:taxPlaceholder')}
-            />
-          </div>
-          
-          <div>
-            <Label htmlFor="last_repair_cost">{t('vehicle:lastService')} {t('vehicle:repair')} (Kč)</Label>
-            <Input
-              id="last_repair_cost"
-              type="text"
-              value={formData.last_repair_cost}
-              onChange={(e) => handleChange('last_repair_cost', e.target.value)}
-              placeholder={t('vehicle:repairPlaceholder')}
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="purchase_price">{t('vehicle:purchasePrice')} (Kč)</Label>
+              <Input
+                id="purchase_price"
+                type="text"
+                value={formData.purchase_price}
+                onChange={(e) => handleChange('purchase_price', e.target.value)}
+                placeholder={t('vehicle:pricePlaceholder')}
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="insurance_monthly">{t('vehicle:insuranceCost')} {t('vehicle:monthlyAverage')} (Kč)</Label>
+              <Input
+                id="insurance_monthly"
+                type="text"
+                value={formData.insurance_monthly}
+                onChange={(e) => handleChange('insurance_monthly', e.target.value)}
+                placeholder={t('vehicle:insurancePlaceholder')}
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="tax_yearly">{t('vehicle:taxPlaceholder')} (Kč)</Label>
+              <Input
+                id="tax_yearly"
+                type="text"
+                value={formData.tax_yearly}
+                onChange={(e) => handleChange('tax_yearly', e.target.value)}
+                placeholder={t('vehicle:taxPlaceholder')}
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="last_repair_cost">{t('vehicle:lastService')} {t('vehicle:repair')} (Kč)</Label>
+              <Input
+                id="last_repair_cost"
+                type="text"
+                value={formData.last_repair_cost}
+                onChange={(e) => handleChange('last_repair_cost', e.target.value)}
+                placeholder={t('vehicle:repairPlaceholder')}
+              />
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Buttons */}
       <div className="flex gap-4 pt-6">
