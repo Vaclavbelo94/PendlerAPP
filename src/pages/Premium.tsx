@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import { Crown, Star, Check, Zap, Shield, Rocket } from "lucide-react";
 import { useTranslation } from 'react-i18next';
+import { LanguageSwitcher } from '@/components/i18n/LanguageSwitcher';
 
 const Premium = () => {
   const { isPremium } = useAuth();
@@ -40,6 +41,11 @@ const Premium = () => {
     <OptimizedLayout>
       <DashboardBackground variant="default">
         <div className="container mx-auto px-4 py-8 max-w-4xl">
+          {/* Language switcher in top right corner */}
+          <div className="flex justify-end mb-4">
+            <LanguageSwitcher />
+          </div>
+
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold mb-4 flex items-center justify-center gap-2">
               <Crown className="h-8 w-8 text-amber-500" />
