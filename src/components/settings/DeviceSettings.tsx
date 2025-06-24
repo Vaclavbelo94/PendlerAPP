@@ -1,324 +1,193 @@
 
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { 
-  Smartphone, 
-  Battery, 
-  Wifi, 
-  HardDrive, 
-  Camera, 
-  Mic, 
-  MapPin,
-  Bell
-} from 'lucide-react';
+import { Smartphone, Wifi, Battery, Volume2, Vibrate } from 'lucide-react';
 import { toast } from "sonner";
 import { useTranslation } from 'react-i18next';
 
 const DeviceSettings = () => {
   const { t } = useTranslation('settings');
-  const [permissions, setPermissions] = useState({
-    camera: false,
-    microphone: false,
-    location: false,
-    notifications: false
-  });
-  const [deviceInfo, setDeviceInfo] = useState({
-    storage: 65,
-    battery: 85,
-    connection: 'wifi'
-  });
+  const [pushNotifications, setPushNotifications] = useState(true);
+  const [backgroundSync, setBackgroundSync] = useState(true);
+  const [vibration, setVibration] = useState(true);
+  const [soundEffects, setSoundEffects] = useState(true);
+  const [offlineMode, setOfflineMode] = useState(false);
+  const [batteryOptimization, setBatteryOptimization] = useState(true);
 
   useEffect(() => {
-    // Check current permissions
-    checkPermissions();
-    // Update device info
-    updateDeviceInfo();
+    // Load device settings from localStorage
+    const savedSettings = localStorage.getItem('deviceSettings');
+    if (savedSettings) {
+      try {
+        const parsed = JSON.parse(savedSettings);
+        setPushNotifications(parsed.pushNotifications ?? true);
+        setBackgroundSync(parsed.backgroundSync ?? true);
+        setVibration(parsed.vibration ?? true);
+        setSoundEffects(parsed.soundEffects ?? true);
+        setOfflineMode(parsed.offlineMode ?? false);
+        setBatteryOptimization(parsed.batteryOptimization ?? true);
+      } catch (error) {
+        console.error('Error loading device settings:', error);
+      }
+    }
   }, []);
 
-  const checkPermissions = async () => {
-    try {
-      // Check camera permission
-      const cameraPermission = await navigator.permissions.query({ name: 'camera' as PermissionName });
-      
-      // Check microphone permission
-      const micPermission = await navigator.permissions.query({ name: 'microphone' as PermissionName });
-      
-      // Check location permission
-      const locationPermission = await navigator.permissions.query({ name: 'geolocation' as PermissionName });
-      
-      // Check notification permission
-      const notificationPermission = Notification.permission;
-
-      setPermissions({
-        camera: cameraPermission.state === 'granted',
-        microphone: micPermission.state === 'granted',
-        location: locationPermission.state === 'granted',
-        notifications: notificationPermission === 'granted'
-      });
-    } catch (error) {
-      console.error('Error checking permissions:', error);
-    }
+  const handleSave = () => {
+    const settings = {
+      pushNotifications,
+      backgroundSync,
+      vibration,
+      soundEffects,
+      offlineMode,
+      batteryOptimization
+    };
+    
+    localStorage.setItem('deviceSettings', JSON.stringify(settings));
+    toast.success(t('settingsSaved'));
   };
 
-  const updateDeviceInfo = () => {
-    // Get storage info (mock for now)
-    if ('storage' in navigator && 'estimate' in navigator.storage) {
-      navigator.storage.estimate().then(estimate => {
-        if (estimate.quota && estimate.usage) {
-          const percentage = (estimate.usage / estimate.quota) * 100;
-          setDeviceInfo(prev => ({ ...prev, storage: Math.round(percentage) }));
-        }
-      });
-    }
-
-    // Get battery info
-    if ('getBattery' in navigator) {
-      (navigator as any).getBattery().then((battery: any) => {
-        setDeviceInfo(prev => ({ 
-          ...prev, 
-          battery: Math.round(battery.level * 100) 
-        }));
-      });
-    }
-
-    // Get connection info
-    if ('connection' in navigator) {
-      const connection = (navigator as any).connection;
-      setDeviceInfo(prev => ({ 
-        ...prev, 
-        connection: connection.effectiveType || 'unknown' 
-      }));
-    }
-  };
-
-  const requestPermission = async (type: keyof typeof permissions) => {
-    try {
-      switch (type) {
-        case 'camera':
-          await navigator.mediaDevices.getUserMedia({ video: true });
-          break;
-        case 'microphone':
-          await navigator.mediaDevices.getUserMedia({ audio: true });
-          break;
-        case 'location':
-          navigator.geolocation.getCurrentPosition(() => {});
-          break;
-        case 'notifications':
-          await Notification.requestPermission();
-          break;
-      }
-      
-      setTimeout(checkPermissions, 1000);
-      toast.success(t('permissionGranted'));
-    } catch (error) {
-      console.error('Permission denied:', error);
-      toast.error(t('permissionDenied'));
-    }
-  };
-
-  const clearAppData = () => {
-    localStorage.clear();
-    sessionStorage.clear();
-    toast.success(t('appDataCleared'));
+  const handleReset = () => {
+    setPushNotifications(true);
+    setBackgroundSync(true);
+    setVibration(true);
+    setSoundEffects(true);
+    setOfflineMode(false);
+    setBatteryOptimization(true);
+    localStorage.removeItem('deviceSettings');
+    toast.success(t('settingsReset'));
   };
 
   return (
     <div className="space-y-6">
-      {/* Device Info */}
+      {/* Device Features */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Smartphone className="h-5 w-5" />
-            {t('deviceInformation')}
+            Funkce zařízení
           </CardTitle>
           <CardDescription>
-            {t('currentDeviceStatus')}
+            Spravujte funkce specifické pro vaše zařízení
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <HardDrive className="h-4 w-4" />
-                <Label>{t('storage')}</Label>
-              </div>
-              <Progress value={deviceInfo.storage} className="h-2" />
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label>Push oznámení</Label>
               <p className="text-sm text-muted-foreground">
-                {deviceInfo.storage}% {t('used')}
+                Povolit přijímání push oznámení
               </p>
             </div>
+            <Switch
+              checked={pushNotifications}
+              onCheckedChange={setPushNotifications}
+            />
+          </div>
 
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Battery className="h-4 w-4" />
-                <Label>{t('battery')}</Label>
-              </div>
-              <Progress value={deviceInfo.battery} className="h-2" />
-              <p className="text-sm text-muted-foreground">
-                {deviceInfo.battery}% {t('charged')}
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label className="flex items-center gap-2">
                 <Wifi className="h-4 w-4" />
-                <Label>{t('connection')}</Label>
-              </div>
-              <Badge variant="secondary" className="w-fit">
-                {deviceInfo.connection}
-              </Badge>
+                Synchronizace na pozadí
+              </Label>
+              <p className="text-sm text-muted-foreground">
+                Synchronizovat data i když aplikace není aktivní
+              </p>
             </div>
+            <Switch
+              checked={backgroundSync}
+              onCheckedChange={setBackgroundSync}
+            />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label className="flex items-center gap-2">
+                <Vibrate className="h-4 w-4" />
+                Vibrace
+              </Label>
+              <p className="text-sm text-muted-foreground">
+                Zapnout vibrační odezvu při oznámeních
+              </p>
+            </div>
+            <Switch
+              checked={vibration}
+              onCheckedChange={setVibration}
+            />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label className="flex items-center gap-2">
+                <Volume2 className="h-4 w-4" />
+                Zvukové efekty
+              </Label>
+              <p className="text-sm text-muted-foreground">
+                Přehrávat zvuky při interakcích s aplikací
+              </p>
+            </div>
+            <Switch
+              checked={soundEffects}
+              onCheckedChange={setSoundEffects}
+            />
           </div>
         </CardContent>
       </Card>
 
-      {/* Permissions */}
+      {/* Performance & Battery */}
       <Card>
         <CardHeader>
-          <CardTitle>{t('permissions')}</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Battery className="h-5 w-5" />
+            Výkon a baterie
+          </CardTitle>
           <CardDescription>
-            {t('manageAppPermissions')}
+            Optimalizujte výkon aplikace a spotřebu baterie
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Camera className="h-4 w-4" />
-                <div>
-                  <Label>{t('camera')}</Label>
-                  <p className="text-sm text-muted-foreground">
-                    {t('accessCameraForPhotos')}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Badge variant={permissions.camera ? "default" : "secondary"}>
-                  {permissions.camera ? t('granted') : t('denied')}
-                </Badge>
-                {!permissions.camera && (
-                  <Button
-                    size="sm"
-                    onClick={() => requestPermission('camera')}
-                  >
-                    {t('enable')}
-                  </Button>
-                )}
-              </div>
-            </div>
-
-            <Separator />
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Mic className="h-4 w-4" />
-                <div>
-                  <Label>{t('microphone')}</Label>
-                  <p className="text-sm text-muted-foreground">
-                    {t('accessMicrophoneForRecording')}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Badge variant={permissions.microphone ? "default" : "secondary"}>
-                  {permissions.microphone ? t('granted') : t('denied')}
-                </Badge>
-                {!permissions.microphone && (
-                  <Button
-                    size="sm"
-                    onClick={() => requestPermission('microphone')}
-                  >
-                    {t('enable')}
-                  </Button>
-                )}
-              </div>
-            </div>
-
-            <Separator />
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <MapPin className="h-4 w-4" />
-                <div>
-                  <Label>{t('location')}</Label>
-                  <p className="text-sm text-muted-foreground">
-                    {t('accessLocationForFeatures')}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Badge variant={permissions.location ? "default" : "secondary"}>
-                  {permissions.location ? t('granted') : t('denied')}
-                </Badge>
-                {!permissions.location && (
-                  <Button
-                    size="sm"
-                    onClick={() => requestPermission('location')}
-                  >
-                    {t('enable')}
-                  </Button>
-                )}
-              </div>
-            </div>
-
-            <Separator />
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Bell className="h-4 w-4" />
-                <div>
-                  <Label>{t('notifications')}</Label>
-                  <p className="text-sm text-muted-foreground">
-                    {t('receiveImportantNotifications')}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Badge variant={permissions.notifications ? "default" : "secondary"}>
-                  {permissions.notifications ? t('granted') : t('denied')}
-                </Badge>
-                {!permissions.notifications && (
-                  <Button
-                    size="sm"
-                    onClick={() => requestPermission('notifications')}
-                  >
-                    {t('enable')}
-                  </Button>
-                )}
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Data Management */}
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('dataManagement')}</CardTitle>
-          <CardDescription>
-            {t('manageAppData')}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col gap-4">
-            <div className="p-4 border rounded-lg">
-              <h4 className="font-medium mb-2">{t('clearAppData')}</h4>
-              <p className="text-sm text-muted-foreground mb-4">
-                {t('clearAllLocalData')}
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label>{t('offlineMode')}</Label>
+              <p className="text-sm text-muted-foreground">
+                {t('allowWorkingOffline')}
               </p>
-              <Button variant="destructive" onClick={clearAppData}>
-                {t('clearData')}
-              </Button>
             </div>
+            <Switch
+              checked={offlineMode}
+              onCheckedChange={setOfflineMode}
+            />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label>Optimalizace baterie</Label>
+              <p className="text-sm text-muted-foreground">
+                Snížit spotřebu baterie při běhu na pozadí
+              </p>
+            </div>
+            <Switch
+              checked={batteryOptimization}
+              onCheckedChange={setBatteryOptimization}
+            />
           </div>
         </CardContent>
       </Card>
+
+      {/* Action Buttons */}
+      <div className="flex gap-3">
+        <Button onClick={handleSave} className="gap-2">
+          {t('saveChanges')}
+        </Button>
+        <Button onClick={handleReset} variant="outline" className="gap-2">
+          {t('resetToDefaults')}
+        </Button>
+      </div>
     </div>
   );
 };

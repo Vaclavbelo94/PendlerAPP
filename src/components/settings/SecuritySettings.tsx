@@ -1,314 +1,221 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Shield, Key, Smartphone, Eye, EyeOff, AlertTriangle, Check } from 'lucide-react';
+import { Shield, Lock, Key, Eye, AlertTriangle } from 'lucide-react';
 import { toast } from "sonner";
-import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from 'react-i18next';
 
 const SecuritySettings = () => {
-  const { user } = useAuth();
   const { t } = useTranslation('settings');
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
-  const [loginAlerts, setLoginAlerts] = useState(true);
-  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [twoFactorAuth, setTwoFactorAuth] = useState(false);
+  const [autoLogout, setAutoLogout] = useState(true);
+  const [sessionTimeout, setSessionTimeout] = useState('30');
+  const [loginNotifications, setLoginNotifications] = useState(true);
+  const [suspiciousActivityAlerts, setSuspiciousActivityAlerts] = useState(true);
+  const [dataEncryption, setDataEncryption] = useState(true);
 
-  const handlePasswordChange = async (e: React.FormEvent) => {
-    e.preventDefault();
+  useEffect(() => {
+    // Load security settings from localStorage
+    const savedSettings = localStorage.getItem('securitySettings');
+    if (savedSettings) {
+      try {
+        const parsed = JSON.parse(savedSettings);
+        setTwoFactorAuth(parsed.twoFactorAuth ?? false);
+        setAutoLogout(parsed.autoLogout ?? true);
+        setSessionTimeout(parsed.sessionTimeout ?? '30');
+        setLoginNotifications(parsed.loginNotifications ?? true);
+        setSuspiciousActivityAlerts(parsed.suspiciousActivityAlerts ?? true);
+        setDataEncryption(parsed.dataEncryption ?? true);
+      } catch (error) {
+        console.error('Error loading security settings:', error);
+      }
+    }
+  }, []);
+
+  const handleSave = () => {
+    const settings = {
+      twoFactorAuth,
+      autoLogout,
+      sessionTimeout,
+      loginNotifications,
+      suspiciousActivityAlerts,
+      dataEncryption
+    };
     
-    if (newPassword !== confirmPassword) {
-      toast.error(t('passwordsDontMatch'));
-      return;
-    }
-
-    if (newPassword.length < 8) {
-      toast.error(t('passwordTooShort'));
-      return;
-    }
-
-    setIsChangingPassword(true);
-    
-    try {
-      // Here you would implement actual password change logic
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Mock API call
-      
-      toast.success(t('passwordChanged'));
-      setCurrentPassword('');
-      setNewPassword('');
-      setConfirmPassword('');
-    } catch (error) {
-      toast.error(t('passwordChangeError'));
-    } finally {
-      setIsChangingPassword(false);
-    }
+    localStorage.setItem('securitySettings', JSON.stringify(settings));
+    toast.success(t('settingsSaved'));
   };
 
-  const getPasswordStrength = (password: string) => {
-    let score = 0;
-    if (password.length >= 8) score++;
-    if (/[A-Z]/.test(password)) score++;
-    if (/[a-z]/.test(password)) score++;
-    if (/[0-9]/.test(password)) score++;
-    if (/[^A-Za-z0-9]/.test(password)) score++;
-    
-    return score;
+  const handleReset = () => {
+    setTwoFactorAuth(false);
+    setAutoLogout(true);
+    setSessionTimeout('30');
+    setLoginNotifications(true);
+    setSuspiciousActivityAlerts(true);
+    setDataEncryption(true);
+    localStorage.removeItem('securitySettings');
+    toast.success(t('settingsReset'));
   };
-
-  const getPasswordStrengthLabel = (score: number) => {
-    switch (score) {
-      case 0:
-      case 1: return { label: t('weak'), color: 'bg-red-500' };
-      case 2: return { label: t('fair'), color: 'bg-orange-500' };
-      case 3: return { label: t('good'), color: 'bg-yellow-500' };
-      case 4: return { label: t('strong'), color: 'bg-green-500' };
-      case 5: return { label: t('veryStrong'), color: 'bg-green-600' };
-      default: return { label: '', color: '' };
-    }
-  };
-
-  const passwordStrength = getPasswordStrength(newPassword);
-  const strengthInfo = getPasswordStrengthLabel(passwordStrength);
 
   return (
     <div className="space-y-6">
-      {/* Password Change */}
+      {/* Authentication Security */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Key className="h-5 w-5" />
-            {t('changePassword')}
+            <Shield className="h-5 w-5" />
+            Zabezpečení ověření
           </CardTitle>
           <CardDescription>
-            {t('updateAccountPassword')}
+            {t('securityAndPrivacySettings')}
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handlePasswordChange} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="currentPassword">{t('currentPassword')}</Label>
-              <div className="relative">
-                <Input
-                  id="currentPassword"
-                  type={showCurrentPassword ? "text" : "password"}
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                  placeholder={t('enterCurrentPassword')}
-                  required
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                >
-                  {showCurrentPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="newPassword">{t('newPassword')}</Label>
-              <div className="relative">
-                <Input
-                  id="newPassword"
-                  type={showNewPassword ? "text" : "password"}
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder={t('enterNewPassword')}
-                  required
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                  onClick={() => setShowNewPassword(!showNewPassword)}
-                >
-                  {showNewPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
-              {newPassword && (
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <div className="flex-1 bg-muted rounded-full h-2">
-                      <div 
-                        className={`h-2 rounded-full transition-all ${strengthInfo.color}`}
-                        style={{ width: `${(passwordStrength / 5) * 100}%` }}
-                      />
-                    </div>
-                    <Badge variant="outline" className="text-xs">
-                      {strengthInfo.label}
-                    </Badge>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">{t('confirmPassword')}</Label>
-              <div className="relative">
-                <Input
-                  id="confirmPassword"
-                  type={showConfirmPassword ? "text" : "password"}
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder={t('confirmNewPassword')}
-                  required
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                >
-                  {showConfirmPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
-              {confirmPassword && newPassword !== confirmPassword && (
-                <p className="text-sm text-destructive flex items-center gap-1">
-                  <AlertTriangle className="h-3 w-3" />
-                  {t('passwordsDontMatch')}
-                </p>
-              )}
-              {confirmPassword && newPassword === confirmPassword && (
-                <p className="text-sm text-green-600 flex items-center gap-1">
-                  <Check className="h-3 w-3" />
-                  {t('passwordsMatch')}
-                </p>
-              )}
-            </div>
-
-            <Button 
-              type="submit" 
-              disabled={isChangingPassword || !currentPassword || !newPassword || newPassword !== confirmPassword}
-              className="w-full"
-            >
-              {isChangingPassword ? t('changingPassword') : t('changePassword')}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-
-      {/* Two-Factor Authentication */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Smartphone className="h-5 w-5" />
-            {t('twoFactorAuth')}
-          </CardTitle>
-          <CardDescription>
-            {t('twoFactorAuthDescription')}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label>{t('enable2FA')}</Label>
+              <Label>{t('twoFactorAuth')}</Label>
               <p className="text-sm text-muted-foreground">
-                {t('enable2FADescription')}
+                {t('additionalAccountProtection')}
               </p>
             </div>
             <Switch
-              checked={twoFactorEnabled}
-              onCheckedChange={setTwoFactorEnabled}
+              checked={twoFactorAuth}
+              onCheckedChange={setTwoFactorAuth}
             />
           </div>
-          
-          {twoFactorEnabled && (
-            <div className="p-4 border rounded-lg bg-muted/50">
-              <h4 className="font-medium mb-2">{t('setupRequired')}</h4>
-              <p className="text-sm text-muted-foreground mb-3">
-                {t('setup2FAInstructions')}
+
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label>{t('autoLogout')}</Label>
+              <p className="text-sm text-muted-foreground">
+                {t('logoutAfter30MinInactivity')}
               </p>
-              <Button size="sm">
-                {t('setup2FA')}
-              </Button>
+            </div>
+            <Switch
+              checked={autoLogout}
+              onCheckedChange={setAutoLogout}
+            />
+          </div>
+
+          {autoLogout && (
+            <div className="space-y-2">
+              <Label>Časový limit relace (minuty)</Label>
+              <Select value={sessionTimeout} onValueChange={setSessionTimeout}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Vyberte časový limit" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="15">15 minut</SelectItem>
+                  <SelectItem value="30">30 minut</SelectItem>
+                  <SelectItem value="60">1 hodina</SelectItem>
+                  <SelectItem value="120">2 hodiny</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           )}
         </CardContent>
       </Card>
 
-      {/* Security Alerts */}
+      {/* Privacy & Alerts */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Shield className="h-5 w-5" />
-            {t('securityAlerts')}
+            <AlertTriangle className="h-5 w-5" />
+            Oznámení o zabezpečení
           </CardTitle>
           <CardDescription>
-            {t('securityAlertsDescription')}
+            Spravujte upozornění na bezpečnostní události
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-6">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label>{t('loginAlerts')}</Label>
+              <Label>Oznámení o přihlášení</Label>
               <p className="text-sm text-muted-foreground">
-                {t('loginAlertsDescription')}
+                Upozornit na nová přihlášení do účtu
               </p>
             </div>
             <Switch
-              checked={loginAlerts}
-              onCheckedChange={setLoginAlerts}
+              checked={loginNotifications}
+              onCheckedChange={setLoginNotifications}
+            />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label>Podezřelé aktivity</Label>
+              <p className="text-sm text-muted-foreground">
+                Upozornit na neobvyklé aktivity v účtu
+              </p>
+            </div>
+            <Switch
+              checked={suspiciousActivityAlerts}
+              onCheckedChange={setSuspiciousActivityAlerts}
+            />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label className="flex items-center gap-2">
+                <Lock className="h-4 w-4" />
+                Šifrování dat
+              </Label>
+              <p className="text-sm text-muted-foreground">
+                Šifrovat citlivá data uložená lokálně
+              </p>
+            </div>
+            <Switch
+              checked={dataEncryption}
+              onCheckedChange={setDataEncryption}
             />
           </div>
         </CardContent>
       </Card>
 
-      {/* Active Sessions */}
+      {/* Security Actions */}
       <Card>
         <CardHeader>
-          <CardTitle>{t('activeSessions')}</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Key className="h-5 w-5" />
+            Bezpečnostní akce
+          </CardTitle>
           <CardDescription>
-            {t('activeSessionsDescription')}
+            Nástroje pro správu zabezpečení účtu
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            <div className="flex items-center justify-between p-3 border rounded-lg">
-              <div>
-                <p className="font-medium">{t('currentDevice')}</p>
-                <p className="text-sm text-muted-foreground">
-                  {t('lastActive')}: {t('now')}
-                </p>
-              </div>
-              <Badge variant="default">{t('current')}</Badge>
-            </div>
-            
-            <div className="text-center py-4">
-              <p className="text-sm text-muted-foreground">
-                {t('noOtherSessions')}
-              </p>
-            </div>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Button variant="outline" className="w-full">
+              <Eye className="h-4 w-4 mr-2" />
+              Zobrazit aktivní relace
+            </Button>
+            <Button variant="outline" className="w-full">
+              <Shield className="h-4 w-4 mr-2" />
+              Historie zabezpečení
+            </Button>
           </div>
+          <Button variant="destructive" className="w-full">
+            <AlertTriangle className="h-4 w-4 mr-2" />
+            Odhlásit ze všech zařízení
+          </Button>
         </CardContent>
       </Card>
+
+      {/* Action Buttons */}
+      <div className="flex gap-3">
+        <Button onClick={handleSave} className="gap-2">
+          {t('saveChanges')}
+        </Button>
+        <Button onClick={handleReset} variant="outline" className="gap-2">
+          {t('resetToDefaults')}
+        </Button>
+      </div>
     </div>
   );
 };
