@@ -17,9 +17,7 @@ import {
   Calendar,
   CheckCircle,
   AlertCircle,
-  ArrowRight,
-  Download,
-  Upload
+  ArrowRight
 } from "lucide-react";
 
 interface ProfileOverviewProps {
@@ -55,13 +53,6 @@ const ProfileOverview: React.FC<ProfileOverviewProps> = ({ userId }) => {
       description: 'Zobrazit přehled aktivit',
       action: () => navigate('/dashboard'),
       color: 'text-green-600'
-    },
-    {
-      icon: Download,
-      label: 'Export dat',
-      description: 'Stáhnout vaše data',
-      action: () => console.log('Export data'),
-      color: 'text-purple-600'
     }
   ];
 
@@ -193,26 +184,36 @@ const ProfileOverview: React.FC<ProfileOverviewProps> = ({ userId }) => {
         </CardContent>
       </Card>
 
-      {/* Account Status */}
+      {/* Account Status - Now functional */}
       <Card>
         <CardHeader>
           <CardTitle>Stav účtu</CardTitle>
+          <CardDescription>
+            Aktuální stav vašeho účtu a předplatného
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
               <div className="flex items-center gap-2">
                 <CheckCircle className="h-5 w-5 text-green-600" />
-                <span>Účet je aktivní</span>
+                <span className="font-medium">Účet je aktivní</span>
               </div>
-              <Badge variant="secondary">Ověřeno</Badge>
+              <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                Ověřeno
+              </Badge>
             </div>
             
             {isPremium ? (
               <div className="flex items-center justify-between p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800">
                 <div className="flex items-center gap-2">
                   <Crown className="h-5 w-5 text-amber-600" />
-                  <span>Premium předplatné aktivní</span>
+                  <div>
+                    <span className="font-medium block">Premium předplatné aktivní</span>
+                    <span className="text-sm text-muted-foreground">
+                      Přístup ke všem funkcím
+                    </span>
+                  </div>
                 </div>
                 <Button variant="outline" size="sm" onClick={() => navigate('/settings')}>
                   Spravovat
@@ -222,7 +223,12 @@ const ProfileOverview: React.FC<ProfileOverviewProps> = ({ userId }) => {
               <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
                 <div className="flex items-center gap-2">
                   <User className="h-5 w-5 text-blue-600" />
-                  <span>Základní účet</span>
+                  <div>
+                    <span className="font-medium block">Základní účet</span>
+                    <span className="text-sm text-muted-foreground">
+                      Upgradujte pro více funkcí
+                    </span>
+                  </div>
                 </div>
                 <Button onClick={() => navigate('/premium')} size="sm">
                   <Crown className="h-4 w-4 mr-2" />
@@ -230,6 +236,21 @@ const ProfileOverview: React.FC<ProfileOverviewProps> = ({ userId }) => {
                 </Button>
               </div>
             )}
+
+            <div className="pt-4 border-t">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                <div>
+                  <span className="text-muted-foreground">Registrace:</span>
+                  <p className="font-medium">
+                    {new Date(user?.created_at || '').toLocaleDateString('cs-CZ')}
+                  </p>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Status:</span>
+                  <p className="font-medium text-green-600">Aktivní</p>
+                </div>
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
