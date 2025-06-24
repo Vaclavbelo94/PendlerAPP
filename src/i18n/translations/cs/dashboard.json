@@ -1,4 +1,3 @@
-
 {
   "title": "Panel",
   "welcome": "Vítejte",
@@ -6,6 +5,7 @@
   "workAssistant": "ve vašem pracovním asistentovi",
   "czechWorkersHelper": "Pomocník českých pracovníků",
   "completeGermanySolution": "Kompletní řešení pro práci v Německu",
+  "dashboardSubtitle": "Váš osobní pracovní asistent pro Německo",
   "overview": "Přehled",
   "quickStats": "Rychlé statistiky",
   "recentActivity": "Nedávná aktivita",
@@ -170,9 +170,12 @@
   "yourRecentShifts": "Vaše nedávné směny",
   "noShiftsYet": "Zatím žádné směny",
   "morningShift": "Ranní",
-  "afternoonShift": "Odpolední", 
+  "afternoonShift": "Odpolední",
   "nightShift": "Noční",
   "shift": "směna",
   "practiceVocabulary": "Procvičovat slovíčka",
-  "salaryCalculator": "Kalkulačka mzdy"
+  "salaryCalculator": "Kalkulačka mzdy",
+  "taxAdvisor": "Daňový poradce",
+  "translator": "Překladač",
+  "vehicle": "Vozidlo"
 }
