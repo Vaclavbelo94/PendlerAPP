@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Gift, Sparkles } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { activatePromoCode } from "@/services/promoCodeService";
 
 const QuickPromoCode = () => {
   const { user, isPremium, refreshPremiumStatus } = useAuth();
@@ -18,118 +18,18 @@ const QuickPromoCode = () => {
     return null;
   }
 
-  const redeemPromoCode = async (userId: string, code: string) => {
-    try {
-      console.log('Aktivuji promo kód:', code, 'pro uživatele:', userId);
-      
-      // Získáme promo kód z databáze
-      const { data: promoCodeData, error: fetchError } = await supabase
-        .from('promo_codes')
-        .select('*')
-        .ilike('code', code.trim())
-        .single();
-
-      if (fetchError || !promoCodeData) {
-        console.error('Promo kód nenalezen:', fetchError);
-        return { success: false, message: "Neplatný promo kód" };
-      }
-
-      console.log('Nalezen promo kód:', promoCodeData);
-
-      // Zkontrolujeme platnost
-      if (new Date(promoCodeData.valid_until) < new Date()) {
-        return { success: false, message: "Tento promo kód již vypršel" };
-      }
-
-      if (promoCodeData.max_uses !== null && promoCodeData.used_count >= promoCodeData.max_uses) {
-        return { success: false, message: "Tento promo kód byl již vyčerpán" };
-      }
-
-      // Zkontrolujeme, zda uživatel už tento kód nepoužil
-      const { data: existingRedemption } = await supabase
-        .from('promo_code_redemptions')
-        .select('id')
-        .eq('user_id', userId)
-        .eq('promo_code_id', promoCodeData.id);
-
-      if (existingRedemption && existingRedemption.length > 0) {
-        return { success: false, message: "Tento promo kód jste již použili" };
-      }
-
-      console.log('Promo kód je platný, aktivuji premium...');
-
-      // Nastavíme premium status
-      const premiumExpiry = new Date();
-      premiumExpiry.setMonth(premiumExpiry.getMonth() + promoCodeData.duration);
-      
-      console.log('Nastavuji premium do:', premiumExpiry.toISOString());
-
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .update({ 
-          is_premium: true,
-          premium_expiry: premiumExpiry.toISOString()
-        })
-        .eq('id', userId);
-
-      if (profileError) {
-        console.error('Chyba při aktivaci premium:', profileError);
-        return { success: false, message: "Chyba při aktivaci premium statusu" };
-      }
-
-      console.log('Premium status nastaven, vytvářím redemption záznam...');
-
-      // Vytvoříme redemption záznam
-      const { error: redemptionError } = await supabase
-        .from('promo_code_redemptions')
-        .insert({
-          user_id: userId,
-          promo_code_id: promoCodeData.id
-        });
-
-      if (redemptionError) {
-        console.error('Chyba při vytváření redemption záznamu:', redemptionError);
-        // Nevrátíme chybu, protože premium už je aktivován
-      }
-
-      // Aktualizujeme počet použití
-      const { error: updateError } = await supabase
-        .from('promo_codes')
-        .update({ 
-          used_count: promoCodeData.used_count + 1 
-        })
-        .eq('id', promoCodeData.id);
-
-      if (updateError) {
-        console.error('Chyba při aktualizaci počtu použití:', updateError);
-        // Nevrátíme chybu, protože premium už je aktivován
-      }
-
-      console.log('Promo kód úspěšně aktivován!');
-
-      return { 
-        success: true, 
-        promoCode: {
-          ...promoCodeData,
-          discount: promoCodeData.discount,
-          duration: promoCodeData.duration
-        }
-      };
-    } catch (error) {
-      console.error("Chyba při uplatňování promo kódu:", error);
-      return { success: false, message: "Nastala chyba při aktivaci promo kódu" };
-    }
-  };
-
   const handleRedeemCode = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || !promoCode.trim()) return;
+    if (!user || !promoCode.trim()) {
+      toast.error("Zadejte platný promo kód");
+      return;
+    }
     
     setIsSubmitting(true);
     try {
       console.log('Spouštím aktivaci promo kódu:', promoCode.trim());
       
-      const result = await redeemPromoCode(user.id, promoCode.trim());
+      const result = await activatePromoCode(user.id, promoCode.trim());
       
       if (!result.success) {
         toast.error(result.message || "Neplatný promo kód");
@@ -185,7 +85,7 @@ const QuickPromoCode = () => {
           <Input
             value={promoCode}
             onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-            placeholder="PREMIUM2024"
+            placeholder="DHL2025"
             className="bg-white/50 dark:bg-black/20"
             disabled={isSubmitting}
           />
@@ -199,7 +99,7 @@ const QuickPromoCode = () => {
             ) : (
               <>
                 <Sparkles className="h-4 w-4 mr-2" />
-                Aktivovat
+                Aktivovat promo kód
               </>
             )}
           </Button>

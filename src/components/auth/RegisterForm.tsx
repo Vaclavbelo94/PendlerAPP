@@ -7,8 +7,8 @@ import { toast } from "sonner";
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import PromoCodeField from './PromoCodeField';
-import { supabase } from '@/integrations/supabase/client';
 import { checkLocalStorageSpace } from '@/utils/authUtils';
+import { activatePromoCode } from '@/services/promoCodeService';
 
 const RegisterForm = () => {
   const [email, setEmail] = useState("");
@@ -32,88 +32,6 @@ const RegisterForm = () => {
       case 'de': return 'ihre@email.de';
       case 'pl': return 'twoj@email.pl';
       default: return 'vas@email.cz';
-    }
-  };
-
-  const activatePromoCode = async (userId: string, promoCodeValue: string) => {
-    try {
-      console.log('Aktivuji promo kód při registraci:', promoCodeValue, 'pro uživatele:', userId);
-      
-      // Získáme promo kód z databáze
-      const { data: promoCodeData, error: fetchError } = await supabase
-        .from('promo_codes')
-        .select('*')
-        .ilike('code', promoCodeValue.trim())
-        .single();
-
-      if (fetchError || !promoCodeData) {
-        console.error('Chyba při načítání promo kódu:', fetchError);
-        return false;
-      }
-
-      console.log('Nalezen promo kód při registraci:', promoCodeData);
-
-      // Zkontrolujeme platnost
-      if (new Date(promoCodeData.valid_until) < new Date()) {
-        console.error('Promo kód je již prošlý');
-        return false;
-      }
-
-      if (promoCodeData.max_uses !== null && promoCodeData.used_count >= promoCodeData.max_uses) {
-        console.error('Promo kód byl již vyčerpán');
-        return false;
-      }
-
-      // Nastavíme premium status v profiles
-      const premiumExpiry = new Date();
-      premiumExpiry.setMonth(premiumExpiry.getMonth() + promoCodeData.duration);
-
-      console.log('Aktivuji premium status do:', premiumExpiry.toISOString());
-
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .update({ 
-          is_premium: true,
-          premium_expiry: premiumExpiry.toISOString()
-        })
-        .eq('id', userId);
-
-      if (profileError) {
-        console.error('Chyba při aktivaci premium v profiles:', profileError);
-        return false;
-      }
-
-      // Vytvoříme redemption záznam
-      const { error: redemptionError } = await supabase
-        .from('promo_code_redemptions')
-        .insert({
-          user_id: userId,
-          promo_code_id: promoCodeData.id
-        });
-
-      if (redemptionError) {
-        console.error('Chyba při vytváření redemption záznamu:', redemptionError);
-        // Nevrátíme false, protože premium už je aktivován
-      }
-
-      // Aktualizujeme počet použití promo kódu
-      const { error: incrementError } = await supabase
-        .from('promo_codes')
-        .update({ 
-          used_count: promoCodeData.used_count + 1 
-        })
-        .eq('id', promoCodeData.id);
-
-      if (incrementError) {
-        console.error('Chyba při aktualizaci počtu použití:', incrementError);
-        // Nevracíme false, protože premium již bylo aktivováno
-      }
-
-      console.log('Promo kód úspěšně aktivován při registraci, premium do:', premiumExpiry.toISOString());
-      return true;
-    } catch (error) {
-      console.error('Výjimka při aktivaci promo kódu:', error);
-      return false;
     }
   };
 
@@ -169,9 +87,9 @@ const RegisterForm = () => {
         
         if (isPromoValid && promoCode && signUpResult.user.id) {
           console.log('Aktivuji promo kód pro nového uživatele:', promoCode);
-          const promoActivated = await activatePromoCode(signUpResult.user.id, promoCode);
+          const result = await activatePromoCode(signUpResult.user.id, promoCode);
           
-          if (promoActivated) {
+          if (result.success) {
             toast.success(t('accountCreatedWithPremium'), { 
               description: `Premium aktivován s kódem ${promoCode}. Nyní se můžete přihlásit.`,
               duration: 8000
