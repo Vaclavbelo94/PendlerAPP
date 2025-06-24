@@ -13,68 +13,70 @@ import {
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useTranslation } from 'react-i18next';
 
 interface ModernSettingsNavigationProps {
   activeTab: string;
   onTabChange: (tabId: string) => void;
 }
 
-const settingsTabs = [
-  {
-    id: 'general',
-    icon: SettingsIcon,
-    label: 'Obecné',
-    description: 'Základní nastavení aplikace'
-  },
-  {
-    id: 'account',
-    icon: User,
-    label: 'Účet',
-    description: 'Správa uživatelského účtu'
-  },
-  {
-    id: 'appearance',
-    icon: Palette,
-    label: 'Vzhled',
-    description: 'Témata a zobrazení'
-  },
-  {
-    id: 'notifications',
-    icon: Bell,
-    label: 'Oznámení',
-    description: 'Nastavení upozornění'
-  },
-  {
-    id: 'language',
-    icon: Globe,
-    label: 'Jazyk',
-    description: 'Jazykové preference'
-  },
-  {
-    id: 'security',
-    icon: Shield,
-    label: 'Bezpečnost',
-    description: 'Zabezpečení a soukromí'
-  },
-  {
-    id: 'device',
-    icon: Smartphone,
-    label: 'Zařízení',
-    description: 'Nastavení zařízení'
-  },
-  {
-    id: 'data',
-    icon: Database,
-    label: 'Data',
-    description: 'Správa dat a zálohy'
-  }
-];
-
 export const ModernSettingsNavigation: React.FC<ModernSettingsNavigationProps> = ({
   activeTab,
   onTabChange
 }) => {
   const isMobile = useIsMobile();
+  const { t } = useTranslation('settings');
+
+  const settingsTabs = [
+    {
+      id: 'general',
+      icon: SettingsIcon,
+      label: t('general'),
+      description: t('basicSettings')
+    },
+    {
+      id: 'account',
+      icon: User,
+      label: t('account'),
+      description: t('accountInfo')
+    },
+    {
+      id: 'appearance',
+      icon: Palette,
+      label: t('appearance'),
+      description: t('display')
+    },
+    {
+      id: 'notifications',
+      icon: Bell,
+      label: t('notifications'),
+      description: t('shiftNotifications')
+    },
+    {
+      id: 'language',
+      icon: Globe,
+      label: t('language'),
+      description: t('languageSettings')
+    },
+    {
+      id: 'security',
+      icon: Shield,
+      label: t('security'),
+      description: t('privacy')
+    },
+    {
+      id: 'device',
+      icon: Smartphone,
+      label: t('device'),
+      description: t('system')
+    },
+    {
+      id: 'data',
+      icon: Database,
+      label: t('data'),
+      description: t('dataManagement')
+    }
+  ];
 
   return (
     <div className="flex justify-center">

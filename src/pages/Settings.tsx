@@ -19,11 +19,13 @@ import DashboardBackground from '@/components/common/DashboardBackground';
 import { useSyncSettings } from '@/hooks/useSyncSettings';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
+import { useTranslation } from 'react-i18next';
 
 const Settings = () => {
   const { settings: syncSettings, saveSettings: updateSyncSettings } = useSyncSettings();
   const isMobile = useIsMobile();
   const [activeTab, setActiveTab] = useState("general");
+  const { t } = useTranslation('settings');
 
   // All available settings tabs for swipe navigation
   const allSettingsTabs = [
@@ -65,8 +67,8 @@ const Settings = () => {
   return (
     <>
       <Helmet>
-        <title>Nastavení | PendlerApp</title>
-        <meta name="description" content="Správa nastavení aplikace a osobních preferencí" />
+        <title>{t('title')} | PendlerApp</title>
+        <meta name="description" content={t('title')} />
       </Helmet>
       
       <DashboardBackground variant="default">
@@ -84,12 +86,12 @@ const Settings = () => {
               </div>
               <div>
                 <h1 className={`${isMobile ? 'text-2xl' : 'text-4xl'} font-bold tracking-tight text-white`}>
-                  {isMobile ? 'Nastavení' : 'Nastavení aplikace'}
+                  {t('title')}
                 </h1>
                 <p className={`text-white/80 ${isMobile ? 'text-sm mt-2' : 'text-lg mt-2'} max-w-3xl`}>
                   {isMobile 
-                    ? 'Spravujte své preference a nastavení.' 
-                    : 'Přizpůsobte si aplikaci podle vašich potřeb a preferencí.'
+                    ? t('basicSettings') 
+                    : t('applicationBehavior')
                   }
                 </p>
               </div>

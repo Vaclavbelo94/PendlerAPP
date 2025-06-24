@@ -4,7 +4,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Shield, Lock, Key, Eye, AlertTriangle } from 'lucide-react';
@@ -70,7 +69,7 @@ const SecuritySettings = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Shield className="h-5 w-5" />
-            Zabezpečení ověření
+            {t('security')}
           </CardTitle>
           <CardDescription>
             {t('securityAndPrivacySettings')}
@@ -105,16 +104,16 @@ const SecuritySettings = () => {
 
           {autoLogout && (
             <div className="space-y-2">
-              <Label>Časový limit relace (minuty)</Label>
+              <Label>{t('reminderTime')}</Label>
               <Select value={sessionTimeout} onValueChange={setSessionTimeout}>
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Vyberte časový limit" />
+                  <SelectValue placeholder={t('select')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="15">15 minut</SelectItem>
-                  <SelectItem value="30">30 minut</SelectItem>
-                  <SelectItem value="60">1 hodina</SelectItem>
-                  <SelectItem value="120">2 hodiny</SelectItem>
+                  <SelectItem value="15">15 {t('never')}</SelectItem>
+                  <SelectItem value="30">30 {t('never')}</SelectItem>
+                  <SelectItem value="60">1 {t('never')}</SelectItem>
+                  <SelectItem value="120">2 {t('never')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -127,18 +126,18 @@ const SecuritySettings = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <AlertTriangle className="h-5 w-5" />
-            Oznámení o zabezpečení
+            {t('privacy')}
           </CardTitle>
           <CardDescription>
-            Spravujte upozornění na bezpečnostní události
+            {t('notifications')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label>Oznámení o přihlášení</Label>
+              <Label>{t('emailNotifications')}</Label>
               <p className="text-sm text-muted-foreground">
-                Upozornit na nová přihlášení do účtu
+                {t('weeklySummaries')}
               </p>
             </div>
             <Switch
@@ -149,9 +148,9 @@ const SecuritySettings = () => {
 
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label>Podezřelé aktivity</Label>
+              <Label>{t('systemNotifications')}</Label>
               <p className="text-sm text-muted-foreground">
-                Upozornit na neobvyklé aktivity v účtu
+                {t('shiftNotifications')}
               </p>
             </div>
             <Switch
@@ -164,10 +163,10 @@ const SecuritySettings = () => {
             <div className="space-y-0.5">
               <Label className="flex items-center gap-2">
                 <Lock className="h-4 w-4" />
-                Šifrování dat
+                {t('data')}
               </Label>
               <p className="text-sm text-muted-foreground">
-                Šifrovat citlivá data uložená lokálně
+                {t('dataManagement')}
               </p>
             </div>
             <Switch
@@ -183,26 +182,26 @@ const SecuritySettings = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Key className="h-5 w-5" />
-            Bezpečnostní akce
+            {t('dangerZone')}
           </CardTitle>
           <CardDescription>
-            Nástroje pro správu zabezpečení účtu
+            {t('irreversibleActions')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Button variant="outline" className="w-full">
               <Eye className="h-4 w-4 mr-2" />
-              Zobrazit aktivní relace
+              {t('export')}
             </Button>
             <Button variant="outline" className="w-full">
               <Shield className="h-4 w-4 mr-2" />
-              Historie zabezpečení
+              {t('backup')}
             </Button>
           </div>
           <Button variant="destructive" className="w-full">
             <AlertTriangle className="h-4 w-4 mr-2" />
-            Odhlásit ze všech zařízení
+            {t('deleteAccount')}
           </Button>
         </CardContent>
       </Card>

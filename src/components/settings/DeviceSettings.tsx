@@ -4,7 +4,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Smartphone, Wifi, Battery, Volume2, Vibrate } from 'lucide-react';
 import { toast } from "sonner";
@@ -69,18 +68,18 @@ const DeviceSettings = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Smartphone className="h-5 w-5" />
-            Funkce zařízení
+            {t('device')}
           </CardTitle>
           <CardDescription>
-            Spravujte funkce specifické pro vaše zařízení
+            {t('system')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label>Push oznámení</Label>
+              <Label>{t('notifications')}</Label>
               <p className="text-sm text-muted-foreground">
-                Povolit přijímání push oznámení
+                {t('enableShiftReminders')}
               </p>
             </div>
             <Switch
@@ -93,10 +92,10 @@ const DeviceSettings = () => {
             <div className="space-y-0.5">
               <Label className="flex items-center gap-2">
                 <Wifi className="h-4 w-4" />
-                Synchronizace na pozadí
+                {t('synchronization')}
               </Label>
               <p className="text-sm text-muted-foreground">
-                Synchronizovat data i když aplikace není aktivní
+                {t('syncDataWithCloud')}
               </p>
             </div>
             <Switch
@@ -109,10 +108,10 @@ const DeviceSettings = () => {
             <div className="space-y-0.5">
               <Label className="flex items-center gap-2">
                 <Vibrate className="h-4 w-4" />
-                Vibrace
+                {t('systemNotifications')}
               </Label>
               <p className="text-sm text-muted-foreground">
-                Zapnout vibrační odezvu při oznámeních
+                {t('shiftNotifications')}
               </p>
             </div>
             <Switch
@@ -125,10 +124,10 @@ const DeviceSettings = () => {
             <div className="space-y-0.5">
               <Label className="flex items-center gap-2">
                 <Volume2 className="h-4 w-4" />
-                Zvukové efekty
+                {t('animations')}
               </Label>
               <p className="text-sm text-muted-foreground">
-                Přehrávat zvuky při interakcích s aplikací
+                {t('enableAnimationsTransitions')}
               </p>
             </div>
             <Switch
@@ -144,10 +143,10 @@ const DeviceSettings = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Battery className="h-5 w-5" />
-            Výkon a baterie
+            {t('appPerformance')}
           </CardTitle>
           <CardDescription>
-            Optimalizujte výkon aplikace a spotřebu baterie
+            {t('speedAndPerformanceOptimization')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -166,9 +165,9 @@ const DeviceSettings = () => {
 
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label>Optimalizace baterie</Label>
+              <Label>{t('hardwareAcceleration')}</Label>
               <p className="text-sm text-muted-foreground">
-                Snížit spotřebu baterie při běhu na pozadí
+                {t('useGpuForBetterPerformance')}
               </p>
             </div>
             <Switch
