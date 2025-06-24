@@ -69,5 +69,13 @@
   "shiftNotifications": "Powiadomienia o zmianach",
   "receiveShiftStartNotifications": "Otrzymuj powiadomienia o rozpoczęciu zmiany",
   "languageReminders": "Przypomnienia językowe",
-  "receiveVocabularyReminders": "Otrzymuj przypomnienia o słownictwie"
+  "receiveVocabularyReminders": "Otrzymuj przypomnienia o słownictwie",
+  "myProfile": "Mój profil",
+  "shortDescription": "Zarządzanie kontem i ustawieniami osobistymi.",
+  "longDescription": "Zarządzaj swoimi informacjami, ustawieniami konta i śledź swoje postępy w aplikacji.",
+  "swipeTip": "💡 Wskazówka: Przesuń palcem w lewo/prawo, aby nawigować między kartami",
+  "profileDescription": "Zarządzanie profilem użytkownika i ustawieniami konta",
+  "accessDenied": "Dostęp zabroniony",
+  "loginRequired": "Aby wyświetlić profil, musisz się zalogować.",
+  "loginButton": "Zaloguj się"
 }

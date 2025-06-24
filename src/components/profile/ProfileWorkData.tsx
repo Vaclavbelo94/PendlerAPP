@@ -44,32 +44,31 @@ const ProfileWorkData = () => {
     { value: 40, label: '40,00 €' },
   ];
 
-  // Automatické nastavení country code podle jazyka
+  // Automatické nastavení country code podle jazyka při změně jazyka
   useEffect(() => {
-    if (workData && (!workData.phone_country_code || workData.phone_country_code === 'CZ')) {
-      let defaultCountryCode = 'CZ';
-      
-      switch (language) {
-        case 'pl':
-          defaultCountryCode = 'PL';
-          break;
-        case 'de':
-          defaultCountryCode = 'DE';
-          break;
-        case 'cs':
-        default:
-          defaultCountryCode = 'CZ';
-          break;
-      }
+    let defaultCountryCode = 'CZ';
+    
+    switch (language) {
+      case 'pl':
+        defaultCountryCode = 'PL';
+        break;
+      case 'de':
+        defaultCountryCode = 'DE';
+        break;
+      case 'cs':
+      default:
+        defaultCountryCode = 'CZ';
+        break;
+    }
 
-      if (workData.phone_country_code !== defaultCountryCode) {
-        const updatedData = {
-          ...workData,
-          phone_country_code: defaultCountryCode
-        };
-        setWorkData(updatedData);
-        setTempData(updatedData);
-      }
+    // Pokud se data načetla a předvolba není nastavena nebo se liší od očekávané
+    if (workData && (!workData.phone_country_code || workData.phone_country_code !== defaultCountryCode)) {
+      const updatedData = {
+        ...workData,
+        phone_country_code: defaultCountryCode
+      };
+      setWorkData(updatedData);
+      setTempData(updatedData);
     }
   }, [language, workData, setWorkData]);
 

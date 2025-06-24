@@ -69,5 +69,13 @@
   "shiftNotifications": "Oznámení směn",
   "receiveShiftStartNotifications": "Dostávat upozornění na začátek směny",
   "languageReminders": "Jazykové připomínky",
-  "receiveVocabularyReminders": "Dostávat připomínky na slovíčka"
+  "receiveVocabularyReminders": "Dostávat připomínky na slovíčka",
+  "myProfile": "Můj profil",
+  "shortDescription": "Správa účtu a osobních nastavení.",
+  "longDescription": "Spravujte své informace, nastavení účtu a sledujte svůj pokrok v aplikaci.",
+  "swipeTip": "💡 Tip: Přejeďte prstem doleva/doprava pro navigaci mezi záložkami",
+  "profileDescription": "Správa uživatelského profilu a nastavení účtu",
+  "accessDenied": "Přístup odepřen",
+  "loginRequired": "Pro zobrazení profilu se musíte přihlásit.",
+  "loginButton": "Přihlásit se"
 }
