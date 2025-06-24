@@ -109,11 +109,11 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
   const getServiceBadge = () => {
     switch (currentService) {
       case 'gemini':
-        return <Badge variant="default" className="bg-green-500"><Sparkles className="w-3 h-3 mr-1" />AI Aktivní</Badge>;
+        return <Badge variant="default" className="bg-green-500"><Sparkles className="w-3 h-3 mr-1" />{t('translator:aiActive')}</Badge>;
       case 'google-translate':
-        return <Badge variant="secondary"><Languages className="w-3 h-3 mr-1" />Google Translate</Badge>;
+        return <Badge variant="secondary"><Languages className="w-3 h-3 mr-1" />{t('translator:googleTranslate')}</Badge>;
       default:
-        return <Badge variant="outline">Offline</Badge>;
+        return <Badge variant="outline">{t('translator:offline')}</Badge>;
     }
   };
 
@@ -145,14 +145,14 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Languages className="w-5 h-5" />
-              Zadejte text
+              {t('translator:enterText')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <Textarea
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              placeholder="Zadejte český nebo polský text k překladu do němčiny..."
+              placeholder={t('translator:enterTextPlaceholder')}
               className="min-h-32 resize-none"
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && e.ctrlKey) {
@@ -166,7 +166,7 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
                 disabled={isLoading || !inputText.trim()}
                 className="flex-1"
               >
-                {isLoading ? 'Překládám...' : 'Přeložit do němčiny'}
+                {isLoading ? t('translator:translating') : t('translator:translateToGerman')}
               </Button>
               <Button variant="outline" size="icon" onClick={handleClear}>
                 <Trash2 className="w-4 h-4" />
@@ -180,7 +180,7 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <ArrowLeftRight className="w-5 h-5" />
-              Německý překlad
+              {t('translator:germanTranslation')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -194,7 +194,7 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
                     className="flex items-center justify-center h-24"
                   >
                     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                    <span className="ml-2 text-sm text-muted-foreground">Překládám...</span>
+                    <span className="ml-2 text-sm text-muted-foreground">{t('translator:translating')}</span>
                   </motion.div>
                 ) : isAIResponse ? (
                   <motion.div
@@ -206,7 +206,7 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
                   </motion.div>
                 ) : (
                   <div className="text-muted-foreground text-sm">
-                    Zde se zobrazí německý překlad...
+                    {t('translator:translationPlaceholder')}
                   </div>
                 )}
               </AnimatePresence>
@@ -221,7 +221,7 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
                   className="flex items-center gap-2"
                 >
                   <Copy className="w-4 h-4" />
-                  Kopírovat
+                  {t('translator:copy')}
                 </Button>
                 <Button 
                   variant="outline" 
@@ -230,7 +230,7 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
                   className="flex items-center gap-2"
                 >
                   <Volume2 className="w-4 h-4" />
-                  Přehrát
+                  {t('translator:play')}
                 </Button>
                 <Button 
                   variant="outline" 
@@ -239,7 +239,7 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
                   className="flex items-center gap-2"
                 >
                   <Mail className="w-4 h-4" />
-                  Odeslat emailem
+                  {t('translator:sendByEmail')}
                 </Button>
               </div>
             )}
@@ -260,11 +260,11 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
                 <div className="flex justify-between items-center">
                   <CardTitle className="flex items-center gap-2">
                     <History className="w-5 h-5" />
-                    Historie překladů
+                    {t('translator:translationHistory')}
                   </CardTitle>
                   {messages.length > 0 && (
                     <Button variant="outline" size="sm" onClick={clearConversation}>
-                      Vymazat historii
+                      {t('translator:clearHistory')}
                     </Button>
                   )}
                 </div>
@@ -272,7 +272,7 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
               <CardContent>
                 {messages.length === 0 ? (
                   <div className="text-center text-muted-foreground py-8">
-                    Žádná historie překladů
+                    {t('translator:noTranslationHistory')}
                   </div>
                 ) : (
                   <div className="space-y-4 max-h-64 overflow-y-auto">
@@ -280,7 +280,7 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
                       <div key={message.id} className="border rounded-lg p-3">
                         <div className="flex justify-between items-start mb-2">
                           <Badge variant={message.role === 'user' ? 'default' : 'secondary'}>
-                            {message.role === 'user' ? 'Vstup' : 'Německý překlad'}
+                            {message.role === 'user' ? t('translator:input') : t('translator:germanTranslation')}
                           </Badge>
                           <span className="text-xs text-muted-foreground">
                             {message.timestamp.toLocaleTimeString()}
