@@ -1,22 +1,79 @@
 
 {
   "title": "Tłumacz",
+  "aiTranslator": "Tłumacz AI",
+  "translatorDescription": "Zaawansowany tłumacz AI do szybkich i dokładnych tłumaczeń między czeskim, niemieckim i polskim",
+  "translatorDescriptionMobile": "Tłumacz AI do szybkich tłumaczeń",
+  "howTranslatorWorks": "Jak działa tłumacz",
+  "translatorInstructions": "Wprowadź tekst do lewego pola, wybierz język docelowy, a tłumacz automatycznie wykryje język źródłowy i utworzy tłumaczenie.",
+  "translateText": "Przetłumacz tekst",
+  "sourceLanguage": "Język źródłowy",
+  "targetLanguage": "Język docelowy",
   "subtitle": "Profesjonalne tłumaczenie między niemieckim a czeskim",
   "translateFrom": "Tłumacz z",
   "translateTo": "Tłumacz na",
-  "enterText": "Wprowadź tekst do przetłumaczenia...",
+  "enterText": "Wprowadź tekst do przetłumaczenia",
   "translation": "Tłumaczenie",
   "noTranslation": "Brak tłumaczenia do wyświetlenia",
   "translating": "Tłumaczę...",
   "copyTranslation": "Kopiuj tłumaczenie",
   "clearText": "Wyczyść tekst",
   "swapLanguages": "Zamień języki",
+  "detectLanguage": "Wykryj język",
   "history": "Historia",
   "favorites": "Ulubione",
+  "phrasebook": "Słownik fraz",
   "recentTranslations": "Ostatnie tłumaczenia",
   "noHistory": "Brak historii tłumaczeń",
   "addToFavorites": "Dodaj do ulubionych",
   "removeFromFavorites": "Usuń z ulubionych",
   "characterCount": "Liczba znaków",
-  "maxCharacters": "Maksymalnie 5000 znaków"
+  "maxCharacters": "Maksymalnie 5000 znaków",
+  "languages": {
+    "czech": "Czeski",
+    "german": "Niemiecki",
+    "english": "Angielski",
+    "polish": "Polski",
+    "slovak": "Słowacki",
+    "auto": "Automatycznie"
+  },
+  "common": {
+    "hello": "Cześć",
+    "goodbye": "Do widzenia",
+    "please": "Proszę",
+    "thankyou": "Dziękuję",
+    "sorry": "Przepraszam",
+    "yes": "Tak",
+    "no": "Nie",
+    "help": "Pomoc",
+    "excuse": "Przepraszam"
+  },
+  "work": {
+    "title": "Praca",
+    "shift": "Zmiana",
+    "overtime": "Nadgodziny",
+    "break": "Przerwa",
+    "salary": "Pensja",
+    "contract": "Umowa",
+    "colleague": "Kolega",
+    "boss": "Szef",
+    "meeting": "Spotkanie"
+  },
+  "daily": {
+    "title": "Codzienność",
+    "morning": "Rano",
+    "afternoon": "Popołudnie",
+    "evening": "Wieczór",
+    "night": "Noc",
+    "eat": "Jeść",
+    "drink": "Pić",
+    "sleep": "Spać",
+    "shopping": "Zakupy"
+  },
+  "errors": {
+    "translationFailed": "Tłumaczenie nie powiodło się",
+    "networkError": "Błąd sieci",
+    "textTooLong": "Tekst jest za długi",
+    "unsupportedLanguage": "Nieobsługiwany język"
+  }
 }

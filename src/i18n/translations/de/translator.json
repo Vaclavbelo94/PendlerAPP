@@ -1,22 +1,79 @@
 
 {
   "title": "Übersetzer",
+  "aiTranslator": "KI-Übersetzer",
+  "translatorDescription": "Fortschrittlicher KI-Übersetzer für schnelle und genaue Übersetzungen zwischen Tschechisch, Deutsch und Polnisch",
+  "translatorDescriptionMobile": "KI-Übersetzer für schnelle Übersetzungen",
+  "howTranslatorWorks": "Wie der Übersetzer funktioniert",
+  "translatorInstructions": "Geben Sie Text in das linke Feld ein, wählen Sie die Zielsprache aus und der Übersetzer erkennt automatisch die Quellsprache und erstellt eine Übersetzung.",
+  "translateText": "Text übersetzen",
+  "sourceLanguage": "Quellsprache",
+  "targetLanguage": "Zielsprache",
   "subtitle": "Professionelle Übersetzung zwischen Deutsch und Tschechisch",
   "translateFrom": "Übersetzen von",
   "translateTo": "Übersetzen nach",
-  "enterText": "Text zum Übersetzen eingeben...",
+  "enterText": "Text zum Übersetzen eingeben",
   "translation": "Übersetzung",
   "noTranslation": "Keine Übersetzung anzuzeigen",
   "translating": "Übersetze...",
   "copyTranslation": "Übersetzung kopieren",
   "clearText": "Text löschen",
   "swapLanguages": "Sprachen tauschen",
+  "detectLanguage": "Sprache erkennen",
   "history": "Verlauf",
   "favorites": "Favoriten",
+  "phrasebook": "Phrasenbuch",
   "recentTranslations": "Letzte Übersetzungen",
   "noHistory": "Kein Übersetzungsverlauf",
   "addToFavorites": "Zu Favoriten hinzufügen",
   "removeFromFavorites": "Von Favoriten entfernen",
   "characterCount": "Zeichenanzahl",
-  "maxCharacters": "Maximal 5000 Zeichen"
+  "maxCharacters": "Maximal 5000 Zeichen",
+  "languages": {
+    "czech": "Tschechisch",
+    "german": "Deutsch",
+    "english": "Englisch",
+    "polish": "Polnisch",
+    "slovak": "Slowakisch",
+    "auto": "Automatisch"
+  },
+  "common": {
+    "hello": "Hallo",
+    "goodbye": "Auf Wiedersehen",
+    "please": "Bitte",
+    "thankyou": "Danke",
+    "sorry": "Entschuldigung",
+    "yes": "Ja",
+    "no": "Nein",
+    "help": "Hilfe",
+    "excuse": "Entschuldigen Sie"
+  },
+  "work": {
+    "title": "Arbeit",
+    "shift": "Schicht",
+    "overtime": "Überstunden",
+    "break": "Pause",
+    "salary": "Gehalt",
+    "contract": "Vertrag",
+    "colleague": "Kollege",
+    "boss": "Chef",
+    "meeting": "Besprechung"
+  },
+  "daily": {
+    "title": "Alltag",
+    "morning": "Morgen",
+    "afternoon": "Nachmittag",
+    "evening": "Abend",
+    "night": "Nacht",
+    "eat": "Essen",
+    "drink": "Trinken",
+    "sleep": "Schlafen",
+    "shopping": "Einkaufen"
+  },
+  "errors": {
+    "translationFailed": "Übersetzung fehlgeschlagen",
+    "networkError": "Netzwerkfehler",
+    "textTooLong": "Text ist zu lang",
+    "unsupportedLanguage": "Nicht unterstützte Sprache"
+  }
 }
