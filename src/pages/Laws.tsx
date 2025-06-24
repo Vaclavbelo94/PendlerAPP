@@ -2,6 +2,7 @@
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Scale } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import PremiumCheck from '@/components/premium/PremiumCheck';
 import LawsNavigation from '@/components/laws/LawsNavigation';
 import LawsLoadingSkeleton from '@/components/laws/LawsLoadingSkeleton';
@@ -19,6 +20,7 @@ const Laws = () => {
   const [activeSection, setActiveSection] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
   const { t } = useTranslation(['laws', 'common']);
 
   // Simulate initial loading with shorter duration
@@ -52,9 +54,8 @@ const Laws = () => {
   });
 
   const handleViewDetails = (law: Law) => {
-    if (law.officialUrl) {
-      window.open(law.officialUrl, '_blank');
-    }
+    // Navigate to individual law page
+    navigate(`/laws/${law.id}`);
   };
 
   if (isLoading) {
@@ -87,10 +88,10 @@ const Laws = () => {
                 </div>
                 <div>
                   <h1 className={`${isMobile ? 'text-2xl' : 'text-4xl'} font-bold tracking-tight text-white`}>
-                    {isMobile ? t('laws:germanLaws') : t('laws:lawsGuide')}
+                    {isMobile ? t('germanLaws') : t('lawsGuide')}
                   </h1>
                   <p className={`text-white/80 ${isMobile ? 'text-sm mt-2' : 'text-lg mt-2'} max-w-3xl`}>
-                    {isMobile ? t('laws:lawsDescriptionMobile') : t('laws:lawsDescription')}
+                    {isMobile ? t('lawsDescriptionMobile') : t('lawsDescription')}
                   </p>
                 </div>
               </div>
@@ -128,14 +129,21 @@ const Laws = () => {
                   transition={{ duration: 0.6, delay: 0.2 }}
                   className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
                 >
-                  {filteredLaws.map((law, index) => (
-                    <EnhancedLawCard 
-                      key={law.id} 
-                      law={convertToLaw(law)} 
-                      index={index}
-                      onViewDetails={handleViewDetails}
-                    />
-                  ))}
+                  {filteredLaws.length === 0 ? (
+                    <div className="col-span-full text-center py-12">
+                      <div className="text-white/60 text-lg mb-2">{t('noLawsFound')}</div>
+                      <div className="text-white/40 text-sm">{t('tryChangeCategory')}</div>
+                    </div>
+                  ) : (
+                    filteredLaws.map((law, index) => (
+                      <EnhancedLawCard 
+                        key={law.id} 
+                        law={convertToLaw(law)} 
+                        index={index}
+                        onViewDetails={handleViewDetails}
+                      />
+                    ))
+                  )}
                 </motion.div>
               </>
             )}

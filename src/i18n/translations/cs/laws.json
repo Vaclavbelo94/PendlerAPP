@@ -14,6 +14,11 @@
   "noLawsFound": "Nebyly nalezeny žádné zákony",
   "tryChangeCategory": "Zkuste změnit kategorii",
   "lawsCount": "zákonů",
+  "overview": "Přehled",
+  "details": "Detaily",
+  "officialSource": "Oficiální zdroj",
+  "updated": "Aktualizováno",
+  
   "workLaw": "Pracovní právo",
   "workLawDescription": "Zákony týkající se pracovních smluv a práv zaměstnanců",
   "taxes": "Daně",
@@ -22,6 +27,11 @@
   "socialSecurityDescription": "Systém sociálního zabezpečení a dávky",
   "healthInsurance": "Zdravotní pojištění",
   "healthInsuranceDescription": "Systém zdravotního pojištění a pokrytí",
+  "tax": "Daně",
+  "work": "Práce",
+  "social": "Sociální",
+  "health": "Zdravotní",
+  
   "minimumWage": "Minimální mzda",
   "minimumWageDescription": "Aktuální sazby minimální mzdy a pravidla pro zaměstnance",
   "workContract": "Pracovní smlouva",
@@ -45,5 +55,15 @@
   "healthInsuranceSystem": "Systém zdravotního pojištění",
   "healthInsuranceSystemDescription": "Přehled německého systému zdravotního pojištění",
   "legalAid": "Právní pomoc",
-  "legalAidDescription": "Možnosti bezplatné právní pomoci pro zahraniční pracovníky"
+  "legalAidDescription": "Možnosti bezplatné právní pomoci pro zahraniční pracovníky",
+  
+  "currentMinimumWage": "Aktuální minimální mzda",
+  "perHour": "za hodinu",
+  "currentWageDescription": "Platí od 1. ledna 2024 pro všechny zaměstnance nad 18 let.",
+  "whoIsEntitled": "Kdo má nárok",
+  "allEmployeesOver18": "Všichni zaměstnanci starší 18 let",
+  "partTimeWorkers": "Zaměstnanci na částečný úvazek",
+  "temporaryWorkers": "Dočasní pracovníci",
+  "internsWithExceptions": "Stážisté (s výjimkami)",
+  "taxClassesOverview": "Přehled daňových tříd"
 }
