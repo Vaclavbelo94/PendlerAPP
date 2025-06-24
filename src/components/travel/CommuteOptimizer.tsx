@@ -6,6 +6,7 @@ import OptimizerForm from './optimizer/OptimizerForm';
 import ResultsDisplay from './optimizer/ResultsDisplay';
 import { useAuth } from '@/hooks/useAuth';
 import { routeService } from '@/services/routeService';
+import { useTranslation } from 'react-i18next';
 
 const CommuteOptimizer = () => {
   const [origin, setOrigin] = useState('');
@@ -16,6 +17,7 @@ const CommuteOptimizer = () => {
   const [optimized, setOptimized] = useState(false);
   const isMobile = useIsMobile();
   const { user } = useAuth();
+  const { t } = useTranslation('travel');
   
   const handleTransportToggle = (mode: string) => {
     setTransportModes(prev => 
@@ -44,8 +46,8 @@ const CommuteOptimizer = () => {
     }
     
     toast({
-      title: "Trasa optimalizována",
-      description: `Byla nalezena nejlepší trasa pro ${origin} → ${destination}.`,
+      title: t('routeOptions'),
+      description: `${t('fastestRoute')}: ${origin} → ${destination}`,
     });
     
     setOptimized(true);

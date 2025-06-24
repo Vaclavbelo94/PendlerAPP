@@ -8,6 +8,7 @@ import { MapPin, Clock, AlertTriangle, TrendingUp, Navigation } from 'lucide-rea
 import { trafficService, TrafficData, WeatherImpact } from '@/services/trafficService';
 import { toast } from '@/hooks/use-toast';
 import OptimizedAddressAutocomplete from './OptimizedAddressAutocomplete';
+import { useTranslation } from 'react-i18next';
 
 interface TrafficMapProps {
   origin: string;
@@ -26,6 +27,7 @@ const TrafficMap: React.FC<TrafficMapProps> = ({
   const [weatherData, setWeatherData] = useState<WeatherImpact | null>(null);
   const [loading, setLoading] = useState(false);
   const [showRouteForm, setShowRouteForm] = useState(false);
+  const { t } = useTranslation('travel');
 
   useEffect(() => {
     if (origin && destination) {
@@ -45,8 +47,8 @@ const TrafficMap: React.FC<TrafficMapProps> = ({
     } catch (error) {
       console.error('Error loading traffic data:', error);
       toast({
-        title: "Chyba",
-        description: "Nepodařilo se načíst dopravní data.",
+        title: t('trafficAlerts'),
+        description: t('delays'),
         variant: "destructive"
       });
     } finally {
@@ -72,6 +74,15 @@ const TrafficMap: React.FC<TrafficMapProps> = ({
     }
   };
 
+  const getTrafficLabel = (condition: string) => {
+    switch (condition) {
+      case 'light': return t('fastestRoute');
+      case 'normal': return t('currentTraffic');
+      case 'heavy': return t('delays');
+      default: return t('currentTraffic');
+    }
+  };
+
   return (
     <div className="space-y-4">
       {/* Route Selection */}
@@ -80,14 +91,14 @@ const TrafficMap: React.FC<TrafficMapProps> = ({
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               <Navigation className="h-5 w-5" />
-              Trasa
+              {t('routes')}
             </CardTitle>
             <Button
               variant="outline"
               size="sm"
               onClick={() => setShowRouteForm(!showRouteForm)}
             >
-              {showRouteForm ? 'Skrýt' : 'Změnit trasu'}
+              {showRouteForm ? t('routeOptions') : t('alternativeRoute')}
             </Button>
           </div>
         </CardHeader>
@@ -95,23 +106,23 @@ const TrafficMap: React.FC<TrafficMapProps> = ({
           {showRouteForm ? (
             <div className="space-y-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium">Výchozí místo</label>
+                <label className="text-sm font-medium">{t('origin')}</label>
                 <OptimizedAddressAutocomplete
                   value={origin}
                   onChange={onOriginChange || (() => {})}
-                  placeholder="Zadejte výchozí adresu"
+                  placeholder={t('origin')}
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Cílové místo</label>
+                <label className="text-sm font-medium">{t('destination')}</label>
                 <OptimizedAddressAutocomplete
                   value={destination}
                   onChange={onDestinationChange || (() => {})}
-                  placeholder="Zadejte cílovou adresu"
+                  placeholder={t('destination')}
                 />
               </div>
               <Button onClick={loadTrafficData} className="w-full">
-                Aktualizovat dopravní informace
+                {t('trafficUpdates')}
               </Button>
             </div>
           ) : (
@@ -130,39 +141,38 @@ const TrafficMap: React.FC<TrafficMapProps> = ({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <MapPin className="h-5 w-5" />
-            Aktuální dopravní situace
+            {t('currentTraffic')}
           </CardTitle>
         </CardHeader>
         <CardContent>
           {loading ? (
             <div className="text-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-              <p className="text-muted-foreground">Načítám dopravní data...</p>
+              <p className="text-muted-foreground">{t('trafficUpdates')}...</p>
             </div>
           ) : trafficData?.routes ? (
             <div className="space-y-4">
               {trafficData.routes.map((route, index) => (
                 <div key={index} className="border rounded-lg p-4 space-y-3">
                   <div className="flex items-center justify-between">
-                    <h3 className="font-medium">Trasa {index + 1}</h3>
+                    <h3 className="font-medium">{t('routes')} {index + 1}</h3>
                     <Badge className={getTrafficColor(route.traffic_conditions)}>
-                      {route.traffic_conditions === 'light' ? 'Plynulá' :
-                       route.traffic_conditions === 'normal' ? 'Normální' : 'Hustá'}
+                      {getTrafficLabel(route.traffic_conditions)}
                     </Badge>
                   </div>
                   
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
                     <div className="flex items-center gap-2">
                       <Clock className="h-4 w-4 text-muted-foreground" />
-                      <span>Běžně: {route.duration}</span>
+                      <span>{t('duration')}: {route.duration}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                      <span>S provozem: {route.duration_in_traffic}</span>
+                      <span>{t('currentTraffic')}: {route.duration_in_traffic}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <MapPin className="h-4 w-4 text-muted-foreground" />
-                      <span>Vzdálenost: {route.distance}</span>
+                      <span>{t('distance')}: {route.distance}</span>
                     </div>
                   </div>
                 </div>
@@ -172,7 +182,7 @@ const TrafficMap: React.FC<TrafficMapProps> = ({
             <Alert>
               <AlertTriangle className="h-4 w-4" />
               <AlertDescription>
-                Nepodařilo se načíst dopravní data. Zkuste to později.
+                {t('delays')}
               </AlertDescription>
             </Alert>
           )}
@@ -185,7 +195,7 @@ const TrafficMap: React.FC<TrafficMapProps> = ({
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <AlertTriangle className="h-5 w-5" />
-              Vliv počasí na dopravu
+              {t('weatherConditions')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -197,14 +207,14 @@ const TrafficMap: React.FC<TrafficMapProps> = ({
                   <p className="text-sm text-muted-foreground">{weatherData.temperature}°C</p>
                 </div>
                 <Badge className={getWeatherImpactColor(weatherData.trafficImpact)}>
-                  {weatherData.trafficImpact === 'low' ? 'Nízký vliv' :
-                   weatherData.trafficImpact === 'medium' ? 'Střední vliv' : 'Vysoký vliv'}
+                  {weatherData.trafficImpact === 'low' ? t('roadConditions') :
+                   weatherData.trafficImpact === 'medium' ? t('delays') : t('trafficAlerts')}
                 </Badge>
               </div>
               
               {weatherData.recommendations.length > 0 && (
                 <div>
-                  <h4 className="font-medium mb-2">Doporučení:</h4>
+                  <h4 className="font-medium mb-2">{t('travelWarnings')}:</h4>
                   <ul className="space-y-1">
                     {weatherData.recommendations.map((rec, index) => (
                       <li key={index} className="text-sm flex items-start gap-2">

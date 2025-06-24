@@ -3,10 +3,10 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Users } from 'lucide-react';
 import RideSharing from './RideSharing';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 const EnhancedRideSharing: React.FC = () => {
-  const { t } = useLanguage();
+  const { t } = useTranslation('travel');
 
   return (
     <div className="space-y-6">

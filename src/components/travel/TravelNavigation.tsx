@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Users, AlertTriangle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 interface TravelNavigationProps {
   activeTab: string;
@@ -15,7 +15,7 @@ export const TravelNavigation: React.FC<TravelNavigationProps> = ({
   activeTab,
   onTabChange
 }) => {
-  const { t } = useLanguage();
+  const { t } = useTranslation('travel');
 
   const sections = [
     {
