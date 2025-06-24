@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,6 +24,7 @@ const DataSettings = () => {
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const [importDialogOpen, setImportDialogOpen] = useState(false);
   const [isLoadingStats, setIsLoadingStats] = useState(true);
+  const [isExporting, setIsExporting] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -47,10 +47,32 @@ const DataSettings = () => {
   };
 
   const handleExportData = () => {
+    console.log('Opening export dialog');
     setExportDialogOpen(true);
   };
 
+  const handleQuickExport = async () => {
+    if (!user) {
+      toast.error('Musíte být přihlášeni pro export dat');
+      return;
+    }
+
+    setIsExporting(true);
+    try {
+      console.log('Starting quick JSON export...');
+      const userData = await dataExportService.getAllUserData(user.id);
+      await dataExportService.exportToJSON(userData);
+      toast.success('Export dat byl úspěšně dokončen');
+    } catch (error) {
+      console.error('Export error:', error);
+      toast.error(error instanceof Error ? error.message : 'Chyba při exportu dat');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   const handleImportData = () => {
+    console.log('Opening import dialog');
     setImportDialogOpen(true);
   };
 
@@ -81,10 +103,22 @@ const DataSettings = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4">
+            {/* Advanced Export Button */}
             <Button onClick={handleExportData} className="w-full">
               <Download className="h-4 w-4 mr-2" />
-              {t('exportData') || 'Exportovat data'}
+              {t('exportData') || 'Exportovat data'} (Pokročilé)
+            </Button>
+
+            {/* Quick Export Button for Mobile */}
+            <Button 
+              onClick={handleQuickExport} 
+              variant="outline" 
+              className="w-full"
+              disabled={isExporting}
+            >
+              <Download className="h-4 w-4 mr-2" />
+              {isExporting ? 'Exportuji...' : 'Rychlý export (JSON)'}
             </Button>
             
             <Button onClick={handleImportData} variant="outline" className="w-full">

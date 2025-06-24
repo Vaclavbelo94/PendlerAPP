@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import * as XLSX from 'xlsx';
 
@@ -128,94 +127,173 @@ class DataExportService {
   }
 
   async exportToJSON(userData: UserDataExport): Promise<void> {
-    const dataStr = JSON.stringify(userData, null, 2);
-    const blob = new Blob([dataStr], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `pendler-data-export-${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    try {
+      const dataStr = JSON.stringify(userData, null, 2);
+      const blob = new Blob([dataStr], { type: 'application/json' });
+      
+      // Enhanced mobile support for file download
+      if (navigator.share && /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        // Try to use Web Share API on mobile if available
+        try {
+          const file = new File([blob], `pendler-data-export-${new Date().toISOString().split('T')[0]}.json`, {
+            type: 'application/json'
+          });
+          
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              title: 'Export dat z PendlerApp',
+              files: [file]
+            });
+            return;
+          }
+        } catch (shareError) {
+          console.log('Web Share API not available, falling back to download:', shareError);
+        }
+      }
+      
+      // Fallback to traditional download
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `pendler-data-export-${new Date().toISOString().split('T')[0]}.json`;
+      
+      // Enhanced mobile download support
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      
+      // Trigger download with user interaction for mobile compatibility
+      setTimeout(() => {
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 100);
+      
+    } catch (error) {
+      console.error('Error in exportToJSON:', error);
+      throw new Error('Nepodařilo se exportovat data do JSON formátu');
+    }
   }
 
   async exportToExcel(userData: UserDataExport): Promise<void> {
-    const workbook = XLSX.utils.book_new();
+    try {
+      const workbook = XLSX.utils.book_new();
 
-    // Create sheets for different data types
-    if (userData.shifts.length > 0) {
-      const shiftsSheet = XLSX.utils.json_to_sheet(userData.shifts);
-      XLSX.utils.book_append_sheet(workbook, shiftsSheet, 'Směny');
+      // Create sheets for different data types
+      if (userData.shifts.length > 0) {
+        const shiftsSheet = XLSX.utils.json_to_sheet(userData.shifts);
+        XLSX.utils.book_append_sheet(workbook, shiftsSheet, 'Směny');
+      }
+
+      if (userData.vehicles.length > 0) {
+        const vehiclesSheet = XLSX.utils.json_to_sheet(userData.vehicles);
+        XLSX.utils.book_append_sheet(workbook, vehiclesSheet, 'Vozidla');
+      }
+
+      if (userData.taxCalculations.length > 0) {
+        const taxSheet = XLSX.utils.json_to_sheet(userData.taxCalculations);
+        XLSX.utils.book_append_sheet(workbook, taxSheet, 'Daňové výpočty');
+      }
+
+      if (userData.vocabularyData.length > 0) {
+        const vocabSheet = XLSX.utils.json_to_sheet(userData.vocabularyData);
+        XLSX.utils.book_append_sheet(workbook, vocabSheet, 'Slovíčka');
+      }
+
+      // Add metadata sheet
+      const metadataSheet = XLSX.utils.json_to_sheet([userData.metadata]);
+      XLSX.utils.book_append_sheet(workbook, metadataSheet, 'Metadata');
+
+      // Generate and download file with mobile support
+      const fileName = `pendler-data-export-${new Date().toISOString().split('T')[0]}.xlsx`;
+      
+      // Enhanced mobile support
+      if (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        // For mobile devices, use writeFile with additional options
+        XLSX.writeFile(workbook, fileName, { 
+          bookType: 'xlsx',
+          type: 'binary'
+        });
+      } else {
+        XLSX.writeFile(workbook, fileName);
+      }
+    } catch (error) {
+      console.error('Error in exportToExcel:', error);
+      throw new Error('Nepodařilo se exportovat data do Excel formátu');
     }
-
-    if (userData.vehicles.length > 0) {
-      const vehiclesSheet = XLSX.utils.json_to_sheet(userData.vehicles);
-      XLSX.utils.book_append_sheet(workbook, vehiclesSheet, 'Vozidla');
-    }
-
-    if (userData.taxCalculations.length > 0) {
-      const taxSheet = XLSX.utils.json_to_sheet(userData.taxCalculations);
-      XLSX.utils.book_append_sheet(workbook, taxSheet, 'Daňové výpočty');
-    }
-
-    if (userData.vocabularyData.length > 0) {
-      const vocabSheet = XLSX.utils.json_to_sheet(userData.vocabularyData);
-      XLSX.utils.book_append_sheet(workbook, vocabSheet, 'Slovíčka');
-    }
-
-    // Add metadata sheet
-    const metadataSheet = XLSX.utils.json_to_sheet([userData.metadata]);
-    XLSX.utils.book_append_sheet(workbook, metadataSheet, 'Metadata');
-
-    // Generate and download file
-    const fileName = `pendler-data-export-${new Date().toISOString().split('T')[0]}.xlsx`;
-    XLSX.writeFile(workbook, fileName);
   }
 
   async exportToCSV(userData: UserDataExport, dataType: string): Promise<void> {
-    let data: any[] = [];
-    let fileName = '';
+    try {
+      let data: any[] = [];
+      let fileName = '';
 
-    switch (dataType) {
-      case 'shifts':
-        data = userData.shifts;
-        fileName = 'smeny';
-        break;
-      case 'vehicles':
-        data = userData.vehicles;
-        fileName = 'vozidla';
-        break;
-      case 'taxCalculations':
-        data = userData.taxCalculations;
-        fileName = 'danove-vypocty';
-        break;
-      case 'vocabulary':
-        data = userData.vocabularyData;
-        fileName = 'slovicka';
-        break;
-      default:
-        throw new Error('Unsupported data type for CSV export');
+      switch (dataType) {
+        case 'shifts':
+          data = userData.shifts;
+          fileName = 'smeny';
+          break;
+        case 'vehicles':
+          data = userData.vehicles;
+          fileName = 'vozidla';
+          break;
+        case 'taxCalculations':
+          data = userData.taxCalculations;
+          fileName = 'danove-vypocty';
+          break;
+        case 'vocabulary':
+          data = userData.vocabularyData;
+          fileName = 'slovicka';
+          break;
+        default:
+          throw new Error('Unsupported data type for CSV export');
+      }
+
+      if (data.length === 0) {
+        throw new Error('Žádná data k exportu');
+      }
+
+      const worksheet = XLSX.utils.json_to_sheet(data);
+      const csv = XLSX.utils.sheet_to_csv(worksheet);
+      
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      
+      // Enhanced mobile support for CSV download
+      const finalFileName = `${fileName}-${new Date().toISOString().split('T')[0]}.csv`;
+      
+      if (navigator.share && /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        try {
+          const file = new File([blob], finalFileName, { type: 'text/csv' });
+          
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              title: `Export ${fileName} z PendlerApp`,
+              files: [file]
+            });
+            return;
+          }
+        } catch (shareError) {
+          console.log('Web Share API not available for CSV, falling back to download:', shareError);
+        }
+      }
+      
+      // Fallback to traditional download
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = finalFileName;
+      link.style.display = 'none';
+      
+      document.body.appendChild(link);
+      setTimeout(() => {
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 100);
+      
+    } catch (error) {
+      console.error('Error in exportToCSV:', error);
+      throw error;
     }
-
-    if (data.length === 0) {
-      throw new Error('Žádná data k exportu');
-    }
-
-    const worksheet = XLSX.utils.json_to_sheet(data);
-    const csv = XLSX.utils.sheet_to_csv(worksheet);
-    
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${fileName}-${new Date().toISOString().split('T')[0]}.csv`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
   }
 
   async importFromJSON(file: File, userId: string): Promise<void> {
