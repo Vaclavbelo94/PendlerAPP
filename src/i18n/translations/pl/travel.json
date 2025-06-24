@@ -132,5 +132,13 @@
   "error": "Błąd",
   "success": "Sukces",
   "cancel": "Anuluj",
-  "confirm": "Potwierdź"
+  "confirm": "Potwierdź",
+  "countryCode": "+48",
+  "currency": "zł",
+  "unknownDriver": "Nieznany kierowca",
+  "optimizer": "Optymalizacja",
+  "liveTrafficShort": "Ruch na żywo",
+  "analytics": "Analityka",
+  "rideSharingTitle": "Wspólne przejazdy",
+  "findRidemates": "Znajdź lub zaoferuj wspólny przejazd"
 }

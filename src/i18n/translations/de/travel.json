@@ -132,5 +132,13 @@
   "error": "Fehler",
   "success": "Erfolg",
   "cancel": "Abbrechen",
-  "confirm": "Bestätigen"
+  "confirm": "Bestätigen",
+  "countryCode": "+49",
+  "currency": "€",
+  "unknownDriver": "Unbekannter Fahrer",
+  "optimizer": "Optimierung",
+  "liveTrafficShort": "Live-Verkehr",
+  "analytics": "Analysen",
+  "rideSharingTitle": "Mitfahrgelegenheiten",
+  "findRidemates": "Mitfahrgelegenheiten finden und anbieten"
 }
