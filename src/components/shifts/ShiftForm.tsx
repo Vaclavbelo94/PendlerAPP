@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Shift } from '@/hooks/shifts/useOptimizedShiftsManagement';
 import DateSelector from './DateSelector';
+import { useTranslation } from 'react-i18next';
 
 interface ShiftFormProps {
   onSubmit: (data: any) => void;
@@ -20,6 +21,7 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
   isLoading = false,
   shift
 }) => {
+  const { t } = useTranslation('shifts');
   const [date, setDate] = useState<Date | undefined>(
     shift ? new Date(shift.date) : new Date()
   );
@@ -64,29 +66,29 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
       <DateSelector
         value={date}
         onChange={setDate}
-        label="Datum směny"
+        label={t('selectDate')}
         required
       />
 
       <div className="space-y-2">
-        <Label htmlFor="type">Typ směny *</Label>
+        <Label htmlFor="type">{t('shiftType')} *</Label>
         <Select value={type} onValueChange={handleTypeChange}>
           <SelectTrigger>
-            <SelectValue placeholder="Vyberte typ směny" />
+            <SelectValue placeholder={t('selectShiftType')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="morning">Ranní směna</SelectItem>
-            <SelectItem value="afternoon">Odpolední směna</SelectItem>
-            <SelectItem value="night">Noční směna</SelectItem>
+            <SelectItem value="morning">{t('morningShift')}</SelectItem>
+            <SelectItem value="afternoon">{t('afternoonShift')}</SelectItem>
+            <SelectItem value="night">{t('nightShift')}</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="notes">Poznámky</Label>
+        <Label htmlFor="notes">{t('notes')}</Label>
         <Textarea
           id="notes"
-          placeholder="Volitelné poznámky k směně..."
+          placeholder={t('optionalShiftNote')}
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           rows={3}
@@ -100,13 +102,13 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
           onClick={onCancel}
           disabled={isLoading}
         >
-          Zrušit
+          {t('cancel')}
         </Button>
         <Button
           type="submit"
           disabled={isLoading || !date}
         >
-          {isLoading ? 'Ukládám...' : shift ? 'Upravit směnu' : 'Přidat směnu'}
+          {isLoading ? t('saving', 'Ukládám...') : shift ? t('updateShift') : t('addShift')}
         </Button>
       </div>
     </form>

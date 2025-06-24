@@ -9,6 +9,7 @@
   "shiftsAnalytics": "Schichtenanalyse",
   "shiftDetails": "Schichtdetails",
   "addShift": "Schicht hinzufügen",
+  "addNewShift": "Neue Schicht hinzufügen",
   "editShift": "Schicht bearbeiten",
   "deleteShift": "Schicht löschen",
   "saveShift": "Schicht speichern",
@@ -77,6 +78,9 @@
   "synchronised": "Synchronisiert",
   "noShiftsYet": "Noch keine Schichten",
   "shiftsForPeriod": "Schichten im Zeitraum",
+  "fillShiftDetails": "Füllen Sie die Details Ihrer Arbeitsschicht aus. Alle mit * markierten Felder sind erforderlich.",
+  "editShiftDetails": "Bearbeiten Sie die Details Ihrer Arbeitsschicht.",
+  "cancel": "Abbrechen",
   "weekDays": {
     "monday": "Montag",
     "tuesday": "Dienstag",

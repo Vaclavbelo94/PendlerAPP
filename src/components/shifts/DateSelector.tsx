@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useTranslation } from 'react-i18next';
 
 interface DateSelectorProps {
   value?: Date;
@@ -13,9 +14,10 @@ interface DateSelectorProps {
 const DateSelector: React.FC<DateSelectorProps> = ({
   value,
   onChange,
-  label = "Datum",
+  label,
   required = false
 }) => {
+  const { t } = useTranslation('shifts');
   const [day, setDay] = useState<string>('');
   const [month, setMonth] = useState<string>('');
   const [year, setYear] = useState<string>('');
@@ -81,18 +83,18 @@ const DateSelector: React.FC<DateSelectorProps> = ({
   };
 
   const months = [
-    { value: '1', label: 'Leden' },
-    { value: '2', label: 'Únor' },
-    { value: '3', label: 'Březen' },
-    { value: '4', label: 'Duben' },
-    { value: '5', label: 'Květen' },
-    { value: '6', label: 'Červen' },
-    { value: '7', label: 'Červenec' },
-    { value: '8', label: 'Srpen' },
-    { value: '9', label: 'Září' },
-    { value: '10', label: 'Říjen' },
-    { value: '11', label: 'Listopad' },
-    { value: '12', label: 'Prosinec' }
+    { value: '1', label: t('months.january') },
+    { value: '2', label: t('months.february') },
+    { value: '3', label: t('months.march') },
+    { value: '4', label: t('months.april') },
+    { value: '5', label: t('months.may') },
+    { value: '6', label: t('months.june') },
+    { value: '7', label: t('months.july') },
+    { value: '8', label: t('months.august') },
+    { value: '9', label: t('months.september') },
+    { value: '10', label: t('months.october') },
+    { value: '11', label: t('months.november') },
+    { value: '12', label: t('months.december') }
   ];
 
   // Get maximum days for current month/year selection
@@ -102,14 +104,14 @@ const DateSelector: React.FC<DateSelectorProps> = ({
   return (
     <div className="space-y-2">
       <Label htmlFor="date-selector">
-        {label} {required && '*'}
+        {label || t('selectDate')} {required && '*'}
       </Label>
       <div className="grid grid-cols-3 gap-2">
         {/* Day */}
         <div>
           <Select value={day} onValueChange={handleDayChange}>
             <SelectTrigger className="h-10">
-              <SelectValue placeholder="Den" />
+              <SelectValue placeholder={t('weekDays.monday', 'Den')} />
             </SelectTrigger>
             <SelectContent>
               {days.map((dayNum) => (
@@ -125,7 +127,7 @@ const DateSelector: React.FC<DateSelectorProps> = ({
         <div>
           <Select value={month} onValueChange={handleMonthChange}>
             <SelectTrigger className="h-10">
-              <SelectValue placeholder="Měsíc" />
+              <SelectValue placeholder={t('months.january', 'Měsíc')} />
             </SelectTrigger>
             <SelectContent>
               {months.map((monthItem) => (

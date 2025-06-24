@@ -9,6 +9,7 @@
   "shiftsAnalytics": "Analityka zmian", 
   "shiftDetails": "Szczegóły zmiany",
   "addShift": "Dodaj zmianę",
+  "addNewShift": "Dodaj nową zmianę",
   "editShift": "Edytuj zmianę",
   "deleteShift": "Usuń zmianę",
   "saveShift": "Zapisz zmianę",
@@ -77,6 +78,9 @@
   "synchronised": "Zsynchronizowano",
   "noShiftsYet": "Jeszcze brak zmian",
   "shiftsForPeriod": "zmian za okres",
+  "fillShiftDetails": "Wypełnij szczegóły swojej zmiany roboczej. Wszystkie pola oznaczone * są wymagane.",
+  "editShiftDetails": "Edytuj szczegóły swojej zmiany roboczej.",
+  "cancel": "Anuluj",
   "weekDays": {
     "monday": "Poniedziałek",
     "tuesday": "Wtorek",
