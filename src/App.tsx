@@ -17,6 +17,7 @@ import LawDetail from "./pages/LawDetail";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import Vehicle from "./pages/Vehicle";
+import Premium from "./pages/Premium";
 import { LoadingSpinner } from "./components/ui/LoadingSpinner";
 import "./i18n/config";
 
@@ -42,6 +43,7 @@ function App() {
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/settings" element={<Settings />} />
                   <Route path="/vehicle" element={<Vehicle />} />
+                  <Route path="/premium" element={<Premium />} />
                 </Routes>
               </Suspense>
               <Toaster />
