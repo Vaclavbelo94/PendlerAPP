@@ -55,7 +55,7 @@ export const ModernFooter: React.FC = () => {
               <span className="font-bold text-xl">{t('appName')}</span>
             </Link>
             <p className="text-sm text-muted-foreground mb-4">
-              {t('heroSubtitle')}
+              {t('footerDescription')}
             </p>
             <div className="flex space-x-4">
               <Link to="/contact" className="text-muted-foreground hover:text-primary transition-colors">
