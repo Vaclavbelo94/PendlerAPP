@@ -63,15 +63,15 @@ const NotificationSettings = ({ syncSettings, updateSyncSettings }: Notification
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Calendar className="h-5 w-5" />
-            {t('shiftNotifications') || 'Oznámení o směnách'}
+            {t('shiftNotifications')}
           </CardTitle>
           <CardDescription>
-            {t('setShiftNotificationPreferences') || 'Nastavte, kdy chcete být upozorněni na nadcházející směny'}
+            {t('setShiftNotificationPreferences')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex items-center justify-between">
-            <Label htmlFor="shift-reminders">{t('enableShiftReminders') || 'Povolit připomínky směn'}</Label>
+            <Label htmlFor="shift-reminders">{t('enableShiftReminders')}</Label>
             <Switch
               id="shift-reminders"
               checked={localPreferences?.shift_reminders || false}
@@ -80,7 +80,7 @@ const NotificationSettings = ({ syncSettings, updateSyncSettings }: Notification
           </div>
           
           <div className="flex items-center justify-between">
-            <Label htmlFor="email-notifications">{t('emailNotifications') || 'E-mailová oznámení'}</Label>
+            <Label htmlFor="email-notifications">{t('emailNotifications')}</Label>
             <Switch
               id="email-notifications"
               checked={localPreferences?.email_notifications || false}
@@ -89,7 +89,7 @@ const NotificationSettings = ({ syncSettings, updateSyncSettings }: Notification
           </div>
           
           <div className="flex items-center justify-between">
-            <Label htmlFor="weekly-summaries">{t('weeklySummaries') || 'Týdenní souhrny'}</Label>
+            <Label htmlFor="weekly-summaries">{t('weeklySummaries')}</Label>
             <Switch
               id="weekly-summaries"
               checked={localPreferences?.weekly_summaries || false}
@@ -98,7 +98,7 @@ const NotificationSettings = ({ syncSettings, updateSyncSettings }: Notification
           </div>
           
           <div className="flex items-center justify-between">
-            <Label htmlFor="system-updates">{t('systemNotifications') || 'Systémová oznámení'}</Label>
+            <Label htmlFor="system-updates">{t('systemNotifications')}</Label>
             <Switch
               id="system-updates"
               checked={localPreferences?.system_updates || false}
@@ -109,7 +109,7 @@ const NotificationSettings = ({ syncSettings, updateSyncSettings }: Notification
           <div className="space-y-2">
             <Label className="flex items-center gap-2">
               <Clock className="h-4 w-4" />
-              {t('reminderTime') || 'Čas připomínky'}
+              {t('reminderTime')}
             </Label>
             <Select
               value={localPreferences?.reminder_time || '08:00:00'}
@@ -131,8 +131,36 @@ const NotificationSettings = ({ syncSettings, updateSyncSettings }: Notification
           <Separator />
 
           <Button onClick={handleSavePreferences} className="w-full">
-            {t('savePreferences') || 'Uložit předvolby'}
+            {t('savePreferences')}
           </Button>
+        </CardContent>
+      </Card>
+
+      {/* General Notifications Card */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Bell className="h-5 w-5" />
+            {t('systemNotifications')}
+          </CardTitle>
+          <CardDescription>
+            {t('basicSettings')}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label htmlFor="syncNotifications">{t('synchronization')}</Label>
+              <p className="text-sm text-muted-foreground">
+                {t('syncStatus')}
+              </p>
+            </div>
+            <Switch
+              id="syncNotifications"
+              checked={syncSettings.showSyncNotifications}
+              onCheckedChange={(checked) => updateSyncSettings({ showSyncNotifications: checked })}
+            />
+          </div>
         </CardContent>
       </Card>
     </div>

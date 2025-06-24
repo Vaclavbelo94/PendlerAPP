@@ -114,7 +114,6 @@
   "highContrast": "Vysoký kontrast",
   "increaseColorContrast": "Zvýšit barevný kontrast",
   "saveChanges": "Uložit změny",
-  "resetToDefaults": "Resetovat na výchozí",
   "appearanceSettingsSaved": "Nastavení vzhledu uloženo",
   "appearanceSettingsReset": "Nastavení vzhledu resetováno",
   "shiftNotifications": "Oznámení o směnách",
@@ -139,7 +138,7 @@
   "results": "výsledků",
   "manageSyncBetweenDevices": "Spravujte synchronizaci dat mezi zařízeními",
   "synchronize": "Synchronizovat",
-  "clearLocalCache": "Vymazat místní cache",
+  "clearLocalCache": "Vymasažit místní cache",
   "permanentlyDeleteAllData": "Permanentně smažte všechna svá data",
   "deleteAllData": "Smazat všechna data",
   "actionIrreversible": "Tato akce je nevratná a smaže všechna vaše uložená data."

@@ -5,8 +5,10 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Mail } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export const EmailNotificationSettings = () => {
+  const { t } = useTranslation('settings');
   const [emailEnabled, setEmailEnabled] = useState(true);
   const [frequency, setFrequency] = useState('daily');
 
@@ -15,15 +17,15 @@ export const EmailNotificationSettings = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Mail className="h-5 w-5" />
-          E-mailová oznámení
+          {t('emailNotifications')}
         </CardTitle>
         <CardDescription>
-          Nastavte, jak často chcete dostávat e-mailová oznámení
+          {t('setShiftNotificationPreferences')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-center justify-between">
-          <Label htmlFor="email-enabled">Povolit e-mailová oznámení</Label>
+          <Label htmlFor="email-enabled">{t('emailNotifications')}</Label>
           <Switch
             id="email-enabled"
             checked={emailEnabled}
@@ -33,15 +35,15 @@ export const EmailNotificationSettings = () => {
         
         {emailEnabled && (
           <div className="space-y-2">
-            <Label>Frekvence oznámení</Label>
+            <Label>{t('reminderTime')}</Label>
             <Select value={frequency} onValueChange={setFrequency}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="immediate">Okamžitě</SelectItem>
-                <SelectItem value="daily">Denní souhrn</SelectItem>
-                <SelectItem value="weekly">Týdenní souhrn</SelectItem>
+                <SelectItem value="immediate">{t('systemNotifications')}</SelectItem>
+                <SelectItem value="daily">{t('weeklySummaries')}</SelectItem>
+                <SelectItem value="weekly">{t('weeklySummaries')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
