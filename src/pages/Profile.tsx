@@ -14,19 +14,21 @@ import ProfileOverview from '@/components/profile/ProfileOverview';
 import ProfileWorkData from '@/components/profile/ProfileWorkData';
 import ProfileSubscription from '@/components/profile/subscription/ProfileSubscription';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useTranslation } from 'react-i18next';
 
 const Profile: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState('overview');
   const isMobile = useIsMobile();
+  const { t } = useTranslation('profile');
 
   if (!user) {
     return (
       <>
         <Helmet>
-          <title>Profil | PendlerApp</title>
-          <meta name="description" content="Správa uživatelského profilu" />
+          <title>{t('title') || 'Profil'} | PendlerApp</title>
+          <meta name="description" content={t('description') || 'Správa uživatelského profilu'} />
         </Helmet>
         
         <OptimizedLayout navbarRightContent={<LanguageSwitcher />}>
@@ -40,14 +42,14 @@ const Profile: React.FC = () => {
               <div className="p-8 bg-card border rounded-2xl max-w-md mx-auto">
                 <User className="h-12 w-12 mx-auto mb-4 text-primary" />
                 <h1 className="text-2xl font-bold mb-4 text-center">
-                  Přístup odepřen
+                  {t('accessDenied') || 'Přístup odepřen'}
                 </h1>
                 <p className="text-muted-foreground mb-6 text-center">
-                  Pro zobrazení profilu se musíte přihlásit.
+                  {t('loginRequired') || 'Pro zobrazení profilu se musíte přihlásit.'}
                 </p>
                 <div className="flex justify-center">
                   <Button onClick={() => navigate('/login')} size="lg">
-                    Přihlásit se
+                    {t('loginButton') || 'Přihlásit se'}
                   </Button>
                 </div>
               </div>
@@ -74,8 +76,8 @@ const Profile: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>Profil | PendlerApp</title>
-        <meta name="description" content="Správa uživatelského profilu a nastavení účtu" />
+        <title>{t('title') || 'Profil'} | PendlerApp</title>
+        <meta name="description" content={t('profileDescription') || 'Správa uživatelského profilu a nastavení účtu'} />
       </Helmet>
       
       <OptimizedLayout navbarRightContent={<LanguageSwitcher />}>
@@ -93,19 +95,19 @@ const Profile: React.FC = () => {
               </div>
               <div className={isMobile ? 'text-center' : ''}>
                 <h1 className={`${isMobile ? 'text-2xl' : 'text-4xl'} font-bold tracking-tight ${isMobile ? 'text-center' : ''}`}>
-                  {isMobile ? 'Profil' : 'Můj profil'}
+                  {isMobile ? (t('title') || 'Profil') : (t('myProfile') || 'Můj profil')}
                 </h1>
                 <p className={`text-muted-foreground ${isMobile ? 'text-sm mt-2 text-center' : 'text-lg mt-2'} max-w-3xl`}>
                   {isMobile 
-                    ? 'Správa účtu a osobních nastavení.' 
-                    : 'Spravujte své informace, nastavení účtu a sledujte svůj pokrok v aplikaci.'
+                    ? (t('shortDescription') || 'Správa účtu a osobních nastavení.') 
+                    : (t('longDescription') || 'Spravujte své informace, nastavení účtu a sledujte svůj pokrok v aplikaci.')
                   }
                 </p>
               </div>
             </div>
             {isMobile && (
               <p className="text-xs text-muted-foreground text-center px-4">
-                💡 Tip: Přejeďte prstem doleva/doprava pro navigaci mezi záložkami
+                {t('swipeTip') || '💡 Tip: Přejeďte prstem doleva/doprava pro navigaci mezi záložkami'}
               </p>
             )}
           </motion.div>

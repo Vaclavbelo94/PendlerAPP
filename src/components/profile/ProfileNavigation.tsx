@@ -20,21 +20,21 @@ export const ProfileNavigation: React.FC<ProfileNavigationProps> = ({
   const sections = [
     {
       id: 'overview',
-      label: t('overview'),
+      label: t('overview') || 'Přehled',
       icon: User,
-      description: t('personalInfoDescription')
+      description: t('personalInfoDescription') || 'Osobní informace a nastavení'
     },
     {
       id: 'workData',
-      label: t('workData'),
+      label: t('workData') || 'Pracovní údaje',
       icon: Briefcase,
-      description: t('workDataDescription')
+      description: t('workDataDescription') || 'Informace o práci a zaměstnání'
     },
     {
       id: 'subscription',
-      label: t('subscription'),
+      label: t('subscription') || 'Předplatné',
       icon: CreditCard,
-      description: t('billingDescription')
+      description: t('billingDescription') || 'Správa předplatného a plateb'
     }
   ];
 
@@ -56,8 +56,7 @@ export const ProfileNavigation: React.FC<ProfileNavigationProps> = ({
               onClick={() => onSectionChange(section.id)}
               className={cn(
                 "transition-all duration-300 hover:scale-105",
-                "bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:text-primary",
-                isActive && "bg-primary/20 border-primary/30 shadow-lg scale-105"
+                isActive && "shadow-lg scale-105"
               )}
             >
               <Icon className="h-4 w-4 mr-2" />
