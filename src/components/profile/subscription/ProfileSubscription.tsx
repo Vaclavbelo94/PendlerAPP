@@ -6,19 +6,21 @@ import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { Crown, Star, Check, ArrowRight } from "lucide-react";
+import { useTranslation } from 'react-i18next';
 
 const ProfileSubscription = () => {
   const { isPremium } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation('profile');
 
   const premiumFeatures = [
-    'Bez reklam v celé aplikaci',
-    'Přístup ke všem jazykovým lekcím',
-    'Pokročilé statistiky a analýzy',
-    'Neomezená synchronizace',
-    'Prioritní podpora',
-    'Export dat a reportů',
-    'Offline režim pro všechny funkce'
+    t('withoutAdsInApp'),
+    t('accessToAllLanguageLessons'),
+    t('advancedStatisticsAndAnalytics'),
+    t('unlimitedSynchronization'),
+    t('prioritySupport'),
+    t('dataAndReportsExport'),
+    t('offlineModeForAllFeatures')
   ];
 
   if (isPremium) {
@@ -27,19 +29,19 @@ const ProfileSubscription = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-amber-700 dark:text-amber-300">
             <Crown className="h-5 w-5" />
-            Premium účet aktivní
+            {t('premiumAccountActive')}
           </CardTitle>
           <CardDescription>
-            Užíváte si všechny Premium výhody naší aplikace
+            {t('enjoyingAllFeatures')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center gap-2">
             <Badge className="bg-amber-500 text-white">
               <Star className="h-3 w-3 mr-1" />
-              Premium
+              {t('premium')}
             </Badge>
-            <span className="text-sm text-muted-foreground">Aktivní předplatné</span>
+            <span className="text-sm text-muted-foreground">{t('activePremiumSubscription')}</span>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -57,7 +59,7 @@ const ProfileSubscription = () => {
               onClick={() => navigate('/premium')}
               className="w-full"
             >
-              Spravovat předplatné
+              {t('manageSubscription')}
               <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
           </div>
@@ -71,23 +73,23 @@ const ProfileSubscription = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Crown className="h-5 w-5" />
-          Upgrade na Premium
+          {t('upgradeToPremiumTitle')}
         </CardTitle>
         <CardDescription>
-          Odemkněte všechny funkce a využijte plný potenciál aplikace
+          {t('unlockAllFeaturesDescription')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="text-center p-6 bg-gradient-to-br from-primary/10 to-accent/10 rounded-lg border border-primary/20">
           <Crown className="h-12 w-12 mx-auto mb-3 text-primary" />
-          <h3 className="text-lg font-semibold mb-2">Staňte se Premium uživatelem</h3>
+          <h3 className="text-lg font-semibold mb-2">{t('becomePremiumUser')}</h3>
           <p className="text-sm text-muted-foreground mb-4">
-            Získejte přístup ke všem funkcím bez omezení
+            {t('getAccessToAllFeatures')}
           </p>
         </div>
 
         <div className="space-y-3">
-          <h4 className="font-medium">Premium výhody:</h4>
+          <h4 className="font-medium">{t('premiumBenefits')}</h4>
           <div className="grid grid-cols-1 gap-2">
             {premiumFeatures.map((feature, index) => (
               <div key={index} className="flex items-center gap-2 text-sm">
@@ -105,7 +107,7 @@ const ProfileSubscription = () => {
             size="lg"
           >
             <Crown className="h-4 w-4 mr-2" />
-            Aktivovat Premium
+            {t('activatePremium')}
           </Button>
         </div>
       </CardContent>

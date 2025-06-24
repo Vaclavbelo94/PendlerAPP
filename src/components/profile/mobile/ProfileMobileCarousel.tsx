@@ -7,6 +7,7 @@ import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 import ProfileOverview from '../ProfileOverview';
 import ProfileWorkData from '../ProfileWorkData';
 import ProfileSubscription from '../subscription/ProfileSubscription';
+import { useTranslation } from 'react-i18next';
 
 interface ProfileMobileCarouselProps {
   activeTab: string;
@@ -17,10 +18,12 @@ export const ProfileMobileCarousel: React.FC<ProfileMobileCarouselProps> = ({
   activeTab,
   onTabChange
 }) => {
+  const { t } = useTranslation('profile');
+
   const tabs = [
-    { id: 'overview', label: 'Přehled', icon: User },
-    { id: 'workData', label: 'Údaje', icon: Briefcase },
-    { id: 'subscription', label: 'Předplatné', icon: Crown }
+    { id: 'overview', label: t('overview'), icon: User },
+    { id: 'workData', label: t('workData'), icon: Briefcase },
+    { id: 'subscription', label: t('subscription'), icon: Crown }
   ];
 
   const tabIds = tabs.map(tab => tab.id);
