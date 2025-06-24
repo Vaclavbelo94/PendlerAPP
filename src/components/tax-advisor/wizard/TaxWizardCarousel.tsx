@@ -157,13 +157,6 @@ const TaxWizardCarousel: React.FC = () => {
     }
 
     try {
-      // Helper function to ensure boolean conversion
-      const toBool = (value: any): boolean => {
-        if (typeof value === 'boolean') return value;
-        if (typeof value === 'string') return value === 'true';
-        return Boolean(value);
-      };
-
       // Převod wizard dat na DocumentData formát s explicitním boolean převodem
       const documentData = {
         documentType: 'tax-wizard' as const,
@@ -178,8 +171,8 @@ const TaxWizardCarousel: React.FC = () => {
         commuteDistance: wizardData.reisepauschale.commuteDistance.toString(),
         commuteWorkDays: wizardData.reisepauschale.workDaysPerYear.toString(),
         includeCommuteExpenses: true,
-        includeSecondHome: toBool(wizardData.reisepauschale.hasSecondHome),
-        includeWorkClothes: toBool(wizardData.deductions.workClothes),
+        includeSecondHome: Boolean(wizardData.reisepauschale.hasSecondHome),
+        includeWorkClothes: Boolean(wizardData.deductions.workClothes),
         additionalNotes: `${t('results.generatedWith')} PendlerApp Wizard. ${t('results.totalDeductions')}: ${result.totalDeductions.toFixed(2)}€, ${t('results.estimatedSaving')}: ${result.estimatedTaxSaving.toFixed(2)}€`
       };
 

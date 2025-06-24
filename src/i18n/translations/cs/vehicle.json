@@ -1,7 +1,7 @@
 
 {
   "vehicleManagement": "Správa vozidel",
-  "vehicleInfo": "Informace o vozidlech",
+  "vehicleInfo": "Informace o vozidle",
   "brand": "Značka",
   "model": "Model",
   "year": "Rok výroby",
@@ -11,8 +11,8 @@
   "selectBrand": "Vyberte značku",
   "selectModel": "Vyberte model",
   "selectYear": "Vyberte rok",
-  "searchBrand": "Vyhledat značku...",
-  "searchModel": "Vyhledat model...",
+  "searchBrand": "Hledat značku...",
+  "searchModel": "Hledat model...",
   "noBrandFound": "Žádná značka nenalezena",
   "noModelFound": "Žádný model nenalezen",
   "enterModel": "Zadejte model",
