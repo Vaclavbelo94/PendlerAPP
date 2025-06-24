@@ -1,10 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Clock, MapPin, TrendingUp, Plus } from 'lucide-react';
+import { Calendar, Clock, MapPin, TrendingUp, Plus, Euro } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
+import { useMonthlyEarnings } from '@/hooks/useMonthlyEarnings';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
@@ -24,6 +24,12 @@ const DashboardOverview: React.FC = () => {
   const navigate = useNavigate();
   const [shifts, setShifts] = useState<Shift[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { 
+    amount: monthlyEarnings, 
+    hoursWorked: monthlyHours,
+    hasWageSet,
+    isLoading: earningsLoading 
+  } = useMonthlyEarnings();
 
   useEffect(() => {
     if (user) {
@@ -158,10 +164,10 @@ const DashboardOverview: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Weekly Overview */}
+      {/* Monthly Overview */}
       <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg font-semibold">{t('weeklyOverview')}</CardTitle>
+          <CardTitle className="text-lg font-semibold">Měsíční přehled</CardTitle>
         </CardHeader>
         <CardContent>
           {shifts.length > 0 ? (
@@ -175,15 +181,39 @@ const DashboardOverview: React.FC = () => {
                 <span className="font-medium">{thisWeekShifts.length}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Celkem směn</span>
-                <span className="font-medium">{shifts.length}</span>
+                <span className="text-sm text-muted-foreground">Měsíční výdělky</span>
+                <div className="flex items-center gap-1">
+                  <Euro className="h-3 w-3 text-muted-foreground" />
+                  <span className="font-medium">
+                    {earningsLoading ? '...' : 
+                      hasWageSet ? monthlyEarnings.toLocaleString('de-DE', { 
+                        style: 'currency', 
+                        currency: 'EUR',
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0
+                      }) : 'Nenastaveno'
+                    }
+                  </span>
+                </div>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground">{t('progress')}</span>
                 <span className="font-medium text-green-600">
-                  {Math.round((thisWeekHours / 40) * 100)}%
+                  {Math.round((thisWeekHours / 30) * 100)}%
                 </span>
               </div>
+              {!hasWageSet && (
+                <div className="text-xs text-muted-foreground">
+                  <Button 
+                    variant="link" 
+                    size="sm" 
+                    className="p-0 h-auto text-xs"
+                    onClick={() => navigate('/profile')}
+                  >
+                    Nastavte hodinovou mzdu v profilu
+                  </Button>
+                </div>
+              )}
             </div>
           ) : (
             <div className="text-center py-6">

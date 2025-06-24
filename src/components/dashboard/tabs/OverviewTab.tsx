@@ -1,9 +1,9 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useMonthlyEarnings } from "@/hooks/useMonthlyEarnings";
 import { supabase } from "@/integrations/supabase/client";
 import { CalendarDays, Clock, TrendingUp, Plus, FileText } from "lucide-react";
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from "date-fns";
@@ -24,6 +24,12 @@ const OverviewTab = () => {
   const { t } = useTranslation(['dashboard', 'ui']);
   const [shifts, setShifts] = useState<ShiftData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { 
+    amount: monthlyEarnings, 
+    hoursWorked: monthlyHours,
+    hasWageSet,
+    isLoading: earningsLoading 
+  } = useMonthlyEarnings();
 
   useEffect(() => {
     if (user) {
@@ -145,13 +151,22 @@ const OverviewTab = () => {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('dashboard:monthlyShifts')}</CardTitle>
+            <CardTitle className="text-sm font-medium">Měsíční výdělky</CardTitle>
             <CalendarDays className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{thisMonthShifts.length}</div>
+            <div className="text-2xl font-bold">
+              {earningsLoading ? '...' : 
+                hasWageSet ? monthlyEarnings.toLocaleString('de-DE', { 
+                  style: 'currency', 
+                  currency: 'EUR',
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0
+                }) : 'Nenastaveno'
+              }
+            </div>
             <p className="text-xs text-muted-foreground">
-              {format(new Date(), "MMMM yyyy", { locale: cs })}
+              {hasWageSet ? `${monthlyHours}h tento měsíc` : 'Nastavte mzdu v profilu'}
             </p>
           </CardContent>
         </Card>
@@ -163,10 +178,10 @@ const OverviewTab = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {thisWeekHours > 0 ? Math.round((thisWeekHours / 40) * 100) : 0}%
+              {thisWeekHours > 0 ? Math.round((thisWeekHours / 30) * 100) : 0}%
             </div>
             <p className="text-xs text-muted-foreground">
-              {t('dashboard:weeklyGoal')}
+              Týdenní cíl (30h)
             </p>
           </CardContent>
         </Card>

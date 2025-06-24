@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CalendarDays, Clock, TrendingUp, Euro } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
+import { useMonthlyEarnings } from '@/hooks/useMonthlyEarnings';
 import { supabase } from '@/integrations/supabase/client';
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns';
 
@@ -18,6 +19,13 @@ const DashboardStats: React.FC = () => {
   const { user } = useAuth();
   const [shifts, setShifts] = useState<Shift[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { 
+    amount: monthlyEarnings, 
+    hoursWorked: monthlyHours,
+    shiftsCount: monthlyShiftsCount,
+    hasWageSet,
+    isLoading: earningsLoading 
+  } = useMonthlyEarnings();
 
   useEffect(() => {
     if (user) {
@@ -65,7 +73,6 @@ const DashboardStats: React.FC = () => {
   });
 
   const thisWeekHours = thisWeekShifts.length * 8;
-  const estimatedWeeklyEarnings = thisWeekHours * 200; // Assuming 200 CZK per hour
 
   const stats = [
     {
@@ -81,16 +88,22 @@ const DashboardStats: React.FC = () => {
       description: 'Směny tento měsíc',
     },
     {
-      title: 'Odhadované výdělky',
-      value: isLoading ? '...' : `${estimatedWeeklyEarnings.toLocaleString()} Kč`,
+      title: 'Měsíční výdělky',
+      value: (isLoading || earningsLoading) ? '...' : 
+        hasWageSet ? `${monthlyEarnings.toLocaleString('de-DE', { 
+          style: 'currency', 
+          currency: 'EUR',
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0
+        })}` : 'Nenastaveno',
       icon: Euro,
-      description: 'Tento týden',
+      description: hasWageSet ? `${monthlyHours}h tento měsíc` : 'Nastavte hodinovou mzdu v profilu',
     },
     {
       title: t('progress'),
-      value: isLoading ? '...' : `${Math.round((thisWeekHours / 40) * 100)}%`,
+      value: isLoading ? '...' : `${Math.round((thisWeekHours / 30) * 100)}%`,
       icon: TrendingUp,
-      description: t('weeklyGoal'),
+      description: 'Týdenní cíl (30h)',
     },
   ];
 
