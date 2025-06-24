@@ -41,6 +41,7 @@
   "lastServiceDate": "Ostatnia data serwisu",
   
   "fuelConsumption": "Zużycie paliwa",
+  "averageFuelConsumption": "Średnie zużycie paliwa",
   "fuelRecords": "Dane tankowania",
   "addFuelRecord": "Dodaj dane tankowania",
   "editFuelRecord": "Edytuj dane tankowania",

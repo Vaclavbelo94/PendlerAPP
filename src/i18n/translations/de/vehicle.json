@@ -41,6 +41,7 @@
   "lastServiceDate": "Letztes Servicedatum",
   
   "fuelConsumption": "Kraftstoffverbrauch",
+  "averageFuelConsumption": "Durchschnittlicher Kraftstoffverbrauch",
   "fuelRecords": "Tankdaten",
   "addFuelRecord": "Tankdaten hinzufügen",
   "editFuelRecord": "Tankdaten bearbeiten",
