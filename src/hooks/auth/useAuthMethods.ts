@@ -14,13 +14,6 @@ export const useAuthMethods = () => {
       // Clean up existing auth state
       cleanupAuthState();
       
-      // Attempt global sign out first to clear any existing sessions
-      try {
-        await supabase.auth.signOut({ scope: 'global' });
-      } catch (err) {
-        console.log('Sign out before sign in failed, continuing anyway');
-      }
-      
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
@@ -46,13 +39,7 @@ export const useAuthMethods = () => {
       // Clean up existing auth state
       cleanupAuthState();
       
-      // Attempt global sign out first to clear any existing sessions
-      try {
-        await supabase.auth.signOut({ scope: 'global' });
-      } catch (err) {
-        console.log('Sign out before Google sign in failed, continuing anyway');
-      }
-      
+      // Use the current origin for redirect
       const redirectUrl = `${window.location.origin}/register`;
       console.log('Google OAuth redirect URL:', redirectUrl);
       
@@ -73,9 +60,8 @@ export const useAuthMethods = () => {
         return { error };
       }
       
-      console.log('Google OAuth initiated successfully, redirecting...');
+      console.log('Google OAuth initiated successfully');
       
-      // The redirect will happen automatically
       return { error: null, url: data?.url };
     } catch (err: any) {
       console.error('Google OAuth exception:', err);

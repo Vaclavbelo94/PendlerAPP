@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -28,17 +29,17 @@ const Register = () => {
   const { signUp, signInWithGoogle, user } = useAuth();
   const { t, i18n } = useTranslation('auth');
   
-  // Handle OAuth callback - this will process Google auth redirects
+  // Handle OAuth callback
   useOAuthCallback();
   
   useEffect(() => {
-    // Check if we have OAuth tokens in URL (Google redirect)
-    const hasOAuthTokens = window.location.hash.includes('access_token');
+    // Check if we have OAuth tokens in URL
+    const hasOAuthTokens = window.location.hash.includes('access_token') || 
+                          window.location.search.includes('access_token');
     
     if (hasOAuthTokens) {
       console.log('OAuth tokens detected in URL, processing callback...');
       setIsGoogleLoading(true);
-      // The useOAuthCallback hook will handle the rest
       return;
     }
     
@@ -55,6 +56,16 @@ const Register = () => {
       cleanupAuthState();
     }
   }, [user, navigate]);
+
+  // Reset loading state when not processing OAuth
+  useEffect(() => {
+    const hasOAuthTokens = window.location.hash.includes('access_token') || 
+                          window.location.search.includes('access_token');
+    
+    if (!hasOAuthTokens && isGoogleLoading) {
+      setIsGoogleLoading(false);
+    }
+  }, [isGoogleLoading]);
 
   const handlePromoCodeChange = (code: string, isValid: boolean) => {
     setPromoCode(code);
@@ -173,9 +184,10 @@ const Register = () => {
       
       if (url) {
         console.log('Redirecting to Google OAuth URL:', url);
-        // Don't set loading to false here as we're redirecting
         window.location.href = url;
       } else {
+        console.error('No URL returned from Google OAuth');
+        toast.error('Chyba při přesměrování na Google');
         setIsGoogleLoading(false);
       }
     } catch (error: any) {
