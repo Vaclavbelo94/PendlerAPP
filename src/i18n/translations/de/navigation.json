@@ -2,20 +2,14 @@
 {
   "home": "Startseite",
   "dashboard": "Dashboard",
-  "translator": "Übersetzer",
-  "taxAdvisor": "Steuerberater",
-  "shifts": "Schichten",
-  "vehicle": "Fahrzeug",
-  "travel": "Reisen",
-  "laws": "Gesetze",
+  "profile": "Profil", 
   "settings": "Einstellungen",
-  "premium": "Premium",
-  "pricing": "Preise",
-  "contact": "Kontakt",
-  "faq": "FAQ",
-  "language": "Sprache",
-  "profile": "Profil",
   "logout": "Abmelden",
   "login": "Anmelden",
-  "register": "Registrieren"
+  "register": "Registrieren",
+  "menu": "Menü",
+  "close": "Schließen",
+  "back": "Zurück",
+  "forward": "Vor",
+  "refresh": "Aktualisieren"
 }

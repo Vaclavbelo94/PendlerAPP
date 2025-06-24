@@ -1,21 +1,15 @@
 
 {
-  "home": "Dom",
+  "home": "Strona główna",
   "dashboard": "Panel",
-  "translator": "Tłumacz",
-  "taxAdvisor": "Doradca podatkowy",
-  "shifts": "Zmiany",
-  "vehicle": "Pojazd",
-  "travel": "Podróże",
-  "laws": "Prawo",
-  "settings": "Ustawienia",
-  "premium": "Premium",
-  "pricing": "Cennik",
-  "contact": "Kontakt",
-  "faq": "FAQ",
-  "language": "Język",
   "profile": "Profil",
+  "settings": "Ustawienia",
   "logout": "Wyloguj się",
   "login": "Zaloguj się",
-  "register": "Zarejestruj się"
+  "register": "Zarejestruj się",
+  "menu": "Menu",
+  "close": "Zamknij",
+  "back": "Wstecz",
+  "forward": "Dalej",
+  "refresh": "Odśwież"
 }
