@@ -90,7 +90,7 @@ const PromoCodeRedemption = () => {
               id="promo-code"
               value={promoCode}
               onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-              placeholder="DHL2025, FERI"
+              placeholder="Zadejte váš promo kód"
               disabled={isSubmitting}
               className="bg-white dark:bg-gray-800"
             />
@@ -108,7 +108,7 @@ const PromoCodeRedemption = () => {
         <div className="mt-4 p-3 bg-amber-100 dark:bg-amber-900 rounded-lg">
           <p className="text-sm text-amber-800 dark:text-amber-200">
             <strong>Tip:</strong> Po úspěšné aktivaci budete přesměrováni na dashboard.
-            Zkuste kódy: DHL2025, FERI
+            Promo kódy získáte za účast v komunitních aktivitách.
           </p>
         </div>
       </CardContent>
