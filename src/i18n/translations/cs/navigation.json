@@ -7,7 +7,7 @@
   "shifts": "Směny",
   "vehicle": "Vozidlo",
   "travel": "Cestování",
-  "laws": "Zákony",
+  "laws": "Právo",
   "settings": "Nastavení",
   "premium": "Premium",
   "pricing": "Ceník",
@@ -17,5 +17,12 @@
   "profile": "Profil",
   "logout": "Odhlásit se",
   "login": "Přihlásit se",
-  "register": "Registrovat se"
+  "register": "Registrovat se",
+  "help": "Nápověda",
+  "account": "Účet",
+  "main": "Hlavní",
+  "tools": "Nástroje",
+  "analytics": "Analýzy",
+  "workAssistant": "Pracovní asistent",
+  "czechWorkersHelper": "Pomocník pro české pracovníky"
 }

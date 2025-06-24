@@ -52,7 +52,7 @@ export const ModernNavbar: React.FC = () => {
         <Link to="/" className="mr-6 flex items-center space-x-2">
           <Briefcase className="h-6 w-6 text-primary" />
           <span className="font-bold text-xl bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
-            PendlerApp
+            {t('workAssistant')}
           </span>
         </Link>
 
@@ -122,7 +122,7 @@ export const ModernNavbar: React.FC = () => {
                     <>
                       <Link to="/profile" onClick={() => setIsOpen(false)}>
                         <Button variant="ghost" className="w-full justify-start">
-                          {t('profile') || 'Profil'}
+                          {t('profile')}
                         </Button>
                       </Link>
                       <Button 
@@ -133,19 +133,19 @@ export const ModernNavbar: React.FC = () => {
                           setIsOpen(false);
                         }}
                       >
-                        {t('logout') || 'Odhlásit'}
+                        {t('logout')}
                       </Button>
                     </>
                   ) : (
                     <>
                       <Link to="/login" onClick={() => setIsOpen(false)}>
                         <Button variant="ghost" className="w-full justify-start">
-                          {t('login') || 'Přihlásit'}
+                          {t('login')}
                         </Button>
                       </Link>
                       <Link to="/register" onClick={() => setIsOpen(false)}>
                         <Button className="w-full justify-start">
-                          {t('register') || 'Registrovat'}
+                          {t('register')}
                         </Button>
                       </Link>
                     </>

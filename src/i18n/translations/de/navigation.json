@@ -17,5 +17,12 @@
   "profile": "Profil",
   "logout": "Abmelden",
   "login": "Anmelden",
-  "register": "Registrieren"
+  "register": "Registrieren",
+  "help": "Hilfe",
+  "account": "Konto",
+  "main": "Hauptmenü",
+  "tools": "Werkzeuge",
+  "analytics": "Analytics",
+  "workAssistant": "Arbeitsassistent",
+  "czechWorkersHelper": "Helfer für tschechische Arbeiter"
 }

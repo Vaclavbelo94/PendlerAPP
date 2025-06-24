@@ -16,7 +16,7 @@ import {
 
 export interface NavigationItem {
   path: string;
-  title: string;
+  titleKey: string; // Changed from title to titleKey for translation
   icon: any;
   badge?: number;
   adminOnly?: boolean;
@@ -26,57 +26,57 @@ export interface NavigationItem {
 export const navigationItems: NavigationItem[] = [
   {
     path: '/',
-    title: 'Domů',
+    titleKey: 'home',
     icon: Home
   },
   {
     path: '/dashboard',
-    title: 'Dashboard',
+    titleKey: 'dashboard',
     icon: User
   },
   {
     path: '/vehicle',
-    title: 'Vozidlo',
+    titleKey: 'vehicle',
     icon: Car
   },
   {
     path: '/translator',
-    title: 'Překladač',
+    titleKey: 'translator',
     icon: Languages
   },
   {
     path: '/shifts',
-    title: 'Směny',
+    titleKey: 'shifts',
     icon: Calendar
   },
   {
     path: '/travel',
-    title: 'Cestování',
+    titleKey: 'travel',
     icon: Map
   },
   {
     path: '/laws',
-    title: 'Zákony',
+    titleKey: 'laws',
     icon: Scale
   },
   {
     path: '/tax-advisor',
-    title: 'Daňový poradce',
+    titleKey: 'taxAdvisor',
     icon: FileText
   },
   {
     path: '/premium',
-    title: 'Premium',
+    titleKey: 'premium',
     icon: Crown
   },
   {
     path: '/settings',
-    title: 'Nastavení',
+    titleKey: 'settings',
     icon: Settings
   },
   {
     path: '/admin',
-    title: 'Admin',
+    titleKey: 'admin',
     icon: Shield,
     adminOnly: true
   }
