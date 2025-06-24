@@ -69,7 +69,7 @@ const TaxWizardCarousel: React.FC = () => {
     if (canCalculate()) {
       calculateTax(wizardData);
     }
-  }, [wizardData, calculateTax]);
+  }, [wizardData, calculateTax, canCalculate]);
 
   const handleExportPDF = async () => {
     if (!result) {
