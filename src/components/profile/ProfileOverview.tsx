@@ -19,6 +19,7 @@ import {
   AlertCircle,
   ArrowRight
 } from "lucide-react";
+import { useTranslation } from 'react-i18next';
 
 interface ProfileOverviewProps {
   userId?: string;
@@ -28,6 +29,7 @@ const ProfileOverview: React.FC<ProfileOverviewProps> = ({ userId }) => {
   const { user, isPremium, isAdmin } = useAuth();
   const navigate = useNavigate();
   const [profileCompletion, setProfileCompletion] = useState(65);
+  const { t } = useTranslation('profile');
 
   useEffect(() => {
     // Calculate profile completion based on available data
@@ -42,15 +44,15 @@ const ProfileOverview: React.FC<ProfileOverviewProps> = ({ userId }) => {
   const quickActions = [
     {
       icon: Settings,
-      label: 'Nastavení účtu',
-      description: 'Upravte svá nastavení',
+      label: t('accountSettings'),
+      description: t('editSettings'),
       action: () => navigate('/settings'),
       color: 'text-blue-600'
     },
     {
       icon: Activity,
-      label: 'Dashboard',
-      description: 'Zobrazit přehled aktivit',
+      label: t('dashboard'),
+      description: t('viewActivityOverview'),
       action: () => navigate('/dashboard'),
       color: 'text-green-600'
     }
@@ -59,8 +61,8 @@ const ProfileOverview: React.FC<ProfileOverviewProps> = ({ userId }) => {
   if (!isPremium) {
     quickActions.push({
       icon: Crown,
-      label: 'Upgradovat na Premium',
-      description: 'Odemknout všechny funkce',
+      label: t('upgradeToPremium'),
+      description: t('unlockAllFeatures'),
       action: () => navigate('/premium'),
       color: 'text-amber-600'
     });
@@ -103,7 +105,7 @@ const ProfileOverview: React.FC<ProfileOverviewProps> = ({ userId }) => {
               <div className="flex items-center gap-2 text-muted-foreground justify-center sm:justify-start">
                 <Calendar className="h-4 w-4" />
                 <span className="text-sm">
-                  Člen od {new Date(user?.created_at || '').toLocaleDateString('cs-CZ')}
+                  {t('memberSince')} {new Date(user?.created_at || '').toLocaleDateString('cs-CZ')}
                 </span>
               </div>
             </div>
@@ -116,16 +118,16 @@ const ProfileOverview: React.FC<ProfileOverviewProps> = ({ userId }) => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <CheckCircle className="h-5 w-5 text-green-600" />
-            Dokončenost profilu
+            {t('profileCompletion')}
           </CardTitle>
           <CardDescription>
-            Dokončete svůj profil pro lepší zážitek z aplikace
+            {t('profileCompletionDescription')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Celkový pokrok</span>
+              <span className="text-sm font-medium">{t('overallProgress')}</span>
               <span className="text-sm text-muted-foreground">{profileCompletion}%</span>
             </div>
             <Progress value={profileCompletion} className="h-2" />
@@ -133,7 +135,7 @@ const ProfileOverview: React.FC<ProfileOverviewProps> = ({ userId }) => {
             <div className="grid grid-cols-2 gap-4 mt-4">
               <div className="flex items-center gap-2">
                 <CheckCircle className="h-4 w-4 text-green-600" />
-                <span className="text-sm">E-mail ověřen</span>
+                <span className="text-sm">{t('emailVerified')}</span>
               </div>
               <div className="flex items-center gap-2">
                 {isPremium ? (
@@ -141,7 +143,7 @@ const ProfileOverview: React.FC<ProfileOverviewProps> = ({ userId }) => {
                 ) : (
                   <AlertCircle className="h-4 w-4 text-orange-600" />
                 )}
-                <span className="text-sm">Premium účet</span>
+                <span className="text-sm">{t('premiumAccount')}</span>
               </div>
             </div>
           </div>
@@ -151,9 +153,9 @@ const ProfileOverview: React.FC<ProfileOverviewProps> = ({ userId }) => {
       {/* Quick Actions */}
       <Card>
         <CardHeader>
-          <CardTitle>Rychlé akce</CardTitle>
+          <CardTitle>{t('quickActions')}</CardTitle>
           <CardDescription>
-            Nejčastěji používané funkce v jednom místě
+            {t('quickActionsDescription')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -184,12 +186,12 @@ const ProfileOverview: React.FC<ProfileOverviewProps> = ({ userId }) => {
         </CardContent>
       </Card>
 
-      {/* Account Status - Now functional */}
+      {/* Account Status */}
       <Card>
         <CardHeader>
-          <CardTitle>Stav účtu</CardTitle>
+          <CardTitle>{t('accountStatus')}</CardTitle>
           <CardDescription>
-            Aktuální stav vašeho účtu a předplatného
+            {t('accountStatusDescription')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -197,10 +199,10 @@ const ProfileOverview: React.FC<ProfileOverviewProps> = ({ userId }) => {
             <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
               <div className="flex items-center gap-2">
                 <CheckCircle className="h-5 w-5 text-green-600" />
-                <span className="font-medium">Účet je aktivní</span>
+                <span className="font-medium">{t('accountActive')}</span>
               </div>
               <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                Ověřeno
+                {t('verified')}
               </Badge>
             </div>
             
@@ -209,14 +211,14 @@ const ProfileOverview: React.FC<ProfileOverviewProps> = ({ userId }) => {
                 <div className="flex items-center gap-2">
                   <Crown className="h-5 w-5 text-amber-600" />
                   <div>
-                    <span className="font-medium block">Premium předplatné aktivní</span>
+                    <span className="font-medium block">{t('premiumSubscriptionActive')}</span>
                     <span className="text-sm text-muted-foreground">
-                      Přístup ke všem funkcím
+                      {t('accessToAllFeatures')}
                     </span>
                   </div>
                 </div>
                 <Button variant="outline" size="sm" onClick={() => navigate('/premium')}>
-                  Spravovat
+                  {t('manage')}
                 </Button>
               </div>
             ) : (
@@ -224,15 +226,15 @@ const ProfileOverview: React.FC<ProfileOverviewProps> = ({ userId }) => {
                 <div className="flex items-center gap-2">
                   <User className="h-5 w-5 text-blue-600" />
                   <div>
-                    <span className="font-medium block">Základní účet</span>
+                    <span className="font-medium block">{t('basicAccount')}</span>
                     <span className="text-sm text-muted-foreground">
-                      Upgradujte pro více funkcí
+                      {t('upgradeForMoreFeatures')}
                     </span>
                   </div>
                 </div>
                 <Button onClick={() => navigate('/premium')} size="sm">
                   <Crown className="h-4 w-4 mr-2" />
-                  Upgrade
+                  {t('upgrade')}
                 </Button>
               </div>
             )}
@@ -240,14 +242,14 @@ const ProfileOverview: React.FC<ProfileOverviewProps> = ({ userId }) => {
             <div className="pt-4 border-t">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span className="text-muted-foreground">Registrace:</span>
+                  <span className="text-muted-foreground">{t('registration')}:</span>
                   <p className="font-medium">
                     {new Date(user?.created_at || '').toLocaleDateString('cs-CZ')}
                   </p>
                 </div>
                 <div>
-                  <span className="text-muted-foreground">Status:</span>
-                  <p className="font-medium text-green-600">Aktivní</p>
+                  <span className="text-muted-foreground">{t('status')}:</span>
+                  <p className="font-medium text-green-600">{t('active')}</p>
                 </div>
               </div>
             </div>

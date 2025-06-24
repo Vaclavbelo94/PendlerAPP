@@ -9,8 +9,10 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CheckCircle, Phone } from "lucide-react";
 import { useProfileSettings } from "./settings/useProfileSettings";
+import { useTranslation } from 'react-i18next';
 
 const ProfileSettings = () => {
+  const { t } = useTranslation('profile');
   const {
     loading,
     profileSettings,
@@ -39,21 +41,21 @@ const ProfileSettings = () => {
       {/* Personal Information */}
       <Card>
         <CardHeader>
-          <CardTitle>Osobní informace</CardTitle>
+          <CardTitle>{t('personalInformation')}</CardTitle>
           <CardDescription>
-            Spravujte své základní informace a kontaktní údaje
+            {t('personalInfoManage')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="displayName">Zobrazované jméno</Label>
+              <Label htmlFor="displayName">{t('displayName')}</Label>
               <div className="relative">
                 <Input
                   id="displayName"
                   value={profileSettings.displayName}
                   onChange={(e) => handleInputChange('displayName', e.target.value)}
-                  placeholder="Vaše zobrazované jméno"
+                  placeholder={t('yourDisplayName')}
                 />
                 {filledFields.displayName && (
                   <CheckCircle className="absolute right-3 top-3 h-4 w-4 text-green-500" />
@@ -62,7 +64,7 @@ const ProfileSettings = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="phoneNumber">Telefonní číslo</Label>
+              <Label htmlFor="phoneNumber">{t('phoneNumber')}</Label>
               <div className="relative">
                 <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -78,19 +80,19 @@ const ProfileSettings = () => {
                 )}
               </div>
               <p className="text-xs text-muted-foreground">
-                Telefon se zobrazí řidičům pro rychlé kontaktování
+                {t('phoneDisplayNote')}
               </p>
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="location">Umístění</Label>
+            <Label htmlFor="location">{t('location')}</Label>
             <div className="relative">
               <Input
                 id="location"
                 value={profileSettings.location}
                 onChange={(e) => handleInputChange('location', e.target.value)}
-                placeholder="Město, kraj"
+                placeholder={t('cityRegion')}
               />
               {filledFields.location && (
                 <CheckCircle className="absolute right-3 top-3 h-4 w-4 text-green-500" />
@@ -99,7 +101,7 @@ const ProfileSettings = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="website">Webová stránka</Label>
+            <Label htmlFor="website">{t('website')}</Label>
             <div className="relative">
               <Input
                 id="website"
@@ -115,13 +117,13 @@ const ProfileSettings = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="bio">O mně</Label>
+            <Label htmlFor="bio">{t('aboutMe')}</Label>
             <div className="relative">
               <Textarea
                 id="bio"
                 value={profileSettings.bio}
                 onChange={(e) => handleInputChange('bio', e.target.value)}
-                placeholder="Napište něco o sobě..."
+                placeholder={t('writeSomethingAboutYourself')}
                 rows={3}
               />
               {filledFields.bio && (
@@ -135,18 +137,18 @@ const ProfileSettings = () => {
       {/* Notification Settings */}
       <Card>
         <CardHeader>
-          <CardTitle>Nastavení notifikací</CardTitle>
+          <CardTitle>{t('notificationSettings')}</CardTitle>
           <CardDescription>
-            Spravujte jak a kdy chcete dostávat upozornění
+            {t('notificationManage')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label>E-mailové notifikace</Label>
+                <Label>{t('emailNotifications')}</Label>
                 <p className="text-sm text-muted-foreground">
-                  Dostávat upozornění na e-mail
+                  {t('receiveEmailNotifications')}
                 </p>
               </div>
               <Switch
@@ -157,9 +159,9 @@ const ProfileSettings = () => {
 
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label>Notifikace směn</Label>
+                <Label>{t('shiftNotifications')}</Label>
                 <p className="text-sm text-muted-foreground">
-                  Upozornění na nové a změněné směny
+                  {t('shiftNotificationsDescription')}
                 </p>
               </div>
               <Switch
@@ -170,9 +172,9 @@ const ProfileSettings = () => {
 
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label>Jazykové připomínky</Label>
+                <Label>{t('languageReminders')}</Label>
                 <p className="text-sm text-muted-foreground">
-                  Připomínky pro denní jazykové lekce
+                  {t('languageRemindersDescription')}
                 </p>
               </div>
               <Switch
@@ -187,25 +189,25 @@ const ProfileSettings = () => {
       {/* Language Preferences */}
       <Card>
         <CardHeader>
-          <CardTitle>Jazykové předvolby</CardTitle>
+          <CardTitle>{t('languagePreferences')}</CardTitle>
           <CardDescription>
-            Nastavte si preferovaný jazyk aplikace
+            {t('languagePreferencesDescription')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            <Label htmlFor="language">Preferovaný jazyk</Label>
+            <Label htmlFor="language">{t('preferredLanguage')}</Label>
             <Select
               value={profileSettings.preferredLanguage}
               onValueChange={(value) => handleInputChange('preferredLanguage', value)}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Vyberte jazyk" />
+                <SelectValue placeholder={t('selectLanguage')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="cs">Čeština</SelectItem>
+                <SelectItem value="cs">{t('czech')}</SelectItem>
                 <SelectItem value="en">English</SelectItem>
-                <SelectItem value="de">Deutsch</SelectItem>
+                <SelectItem value="de">{t('german')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -215,7 +217,7 @@ const ProfileSettings = () => {
       {/* Save Button */}
       <div className="flex justify-end">
         <Button onClick={handleSaveProfile} disabled={loading}>
-          {loading ? "Ukládám..." : "Uložit změny"}
+          {loading ? t('saving') : t('saveChanges')}
         </Button>
       </div>
     </div>
