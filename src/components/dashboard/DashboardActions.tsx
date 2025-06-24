@@ -5,11 +5,9 @@ import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { 
   Plus, 
-  Calculator, 
-  BookOpen, 
+  Car, 
   User, 
   FileText,
-  TrendingUp,
   Route,
   Users
 } from 'lucide-react';
@@ -29,20 +27,12 @@ const DashboardActions: React.FC = () => {
       bgColor: 'bg-blue-50 dark:bg-blue-900/20'
     },
     {
-      icon: Calculator,
-      label: t('salaryCalculator'),
-      description: 'Spočítat mzdu',
-      action: () => navigate('/calculator'),
+      icon: Car,
+      label: 'Vozidlo',
+      description: 'Přidat vozidlo',
+      action: () => navigate('/vehicle'),
       color: 'text-green-600',
       bgColor: 'bg-green-50 dark:bg-green-900/20'
-    },
-    {
-      icon: BookOpen,
-      label: t('practiceVocabulary'),
-      description: 'Učit se němčinu',
-      action: () => navigate('/language?tab=vocabulary'),
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-50 dark:bg-purple-900/20'
     },
     {
       icon: User,
@@ -75,14 +65,6 @@ const DashboardActions: React.FC = () => {
       action: () => navigate('/tax-advisor'),
       color: 'text-red-600',
       bgColor: 'bg-red-50 dark:bg-red-900/20'
-    },
-    {
-      icon: TrendingUp,
-      label: 'Výkazy',
-      description: 'Zobrazit statistiky',
-      action: () => navigate('/shifts?tab=analytics'),
-      color: 'text-teal-600',
-      bgColor: 'bg-teal-50 dark:bg-teal-900/20'
     }
   ];
 
@@ -92,7 +74,7 @@ const DashboardActions: React.FC = () => {
         <CardTitle className="text-xl font-semibold">{t('quickActions')}</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {quickActions.map((action, index) => (
             <Button
               key={index}
