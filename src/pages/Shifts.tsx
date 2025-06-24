@@ -4,30 +4,50 @@ import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import { Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/hooks/useAuth';
 import PremiumCheck from '@/components/premium/PremiumCheck';
 import DashboardBackground from '@/components/common/DashboardBackground';
 import ShiftsMobileCarousel from '@/components/shifts/mobile/ShiftsMobileCarousel';
 import ShiftsNavigation from '@/components/shifts/ShiftsNavigation';
 import ShiftsCalendar from '@/components/shifts/ShiftsCalendar';
 import ShiftsAnalytics from '@/components/shifts/ShiftsAnalytics';
+import { useOptimizedShiftsManagement } from '@/hooks/shifts/useOptimizedShiftsManagement';
 import { useIsMobile } from '@/hooks/use-mobile';
 import Layout from '@/components/layouts/Layout';
 import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 
 const Shifts: React.FC = () => {
   const { t } = useTranslation('shifts');
+  const { user } = useAuth();
   const [activeSection, setActiveSection] = useState('calendar');
   const isMobile = useIsMobile();
+
+  const {
+    shifts,
+    isLoading,
+    error
+  } = useOptimizedShiftsManagement(user?.id);
 
   const renderDesktopContent = () => {
     switch (activeSection) {
       case 'calendar':
         return <ShiftsCalendar />;
       case 'analytics':
-        return <ShiftsAnalytics />;
+        return <ShiftsAnalytics shifts={shifts} />;
       default:
         return <ShiftsCalendar />;
     }
+  };
+
+  const renderMobileContent = () => {
+    return (
+      <ShiftsMobileCarousel
+        activeSection={activeSection}
+        onSectionChange={setActiveSection}
+        shifts={shifts}
+        isLoading={isLoading}
+      />
+    );
   };
 
   return (
@@ -62,6 +82,17 @@ const Shifts: React.FC = () => {
               </div>
             </motion.div>
 
+            {/* Error state */}
+            {error && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="mb-6 p-4 bg-red-500/10 backdrop-blur-sm rounded-lg border border-red-500/20"
+              >
+                <p className="text-red-400 text-sm">{error}</p>
+              </motion.div>
+            )}
+
             {/* Mobile: Swipe Carousel */}
             {isMobile ? (
               <motion.div
@@ -69,10 +100,7 @@ const Shifts: React.FC = () => {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
               >
-                <ShiftsMobileCarousel
-                  activeSection={activeSection}
-                  onSectionChange={setActiveSection}
-                />
+                {renderMobileContent()}
               </motion.div>
             ) : (
               /* Desktop: Traditional Navigation + Content */
@@ -94,7 +122,13 @@ const Shifts: React.FC = () => {
                   transition={{ duration: 0.6, delay: 0.2 }}
                   className="bg-background/95 backdrop-blur-sm rounded-2xl border border-white/10 shadow-2xl p-8"
                 >
-                  {renderDesktopContent()}
+                  {isLoading ? (
+                    <div className="flex items-center justify-center py-12">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                    </div>
+                  ) : (
+                    renderDesktopContent()
+                  )}
                 </motion.div>
               </div>
             )}

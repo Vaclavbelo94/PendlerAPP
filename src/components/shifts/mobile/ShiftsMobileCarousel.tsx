@@ -7,15 +7,20 @@ import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 import { useTranslation } from 'react-i18next';
 import ShiftsCalendar from '../ShiftsCalendar';
 import ShiftsAnalytics from '../ShiftsAnalytics';
+import { Shift } from '@/hooks/shifts/useShiftsCRUD';
 
 interface ShiftsMobileCarouselProps {
   activeSection: string;
   onSectionChange: (section: string) => void;
+  shifts?: Shift[];
+  isLoading?: boolean;
 }
 
 export const ShiftsMobileCarousel: React.FC<ShiftsMobileCarouselProps> = ({
   activeSection,
-  onSectionChange
+  onSectionChange,
+  shifts = [],
+  isLoading = false
 }) => {
   const { t } = useTranslation('shifts');
 
@@ -45,11 +50,19 @@ export const ShiftsMobileCarousel: React.FC<ShiftsMobileCarouselProps> = ({
   };
 
   const renderSectionContent = () => {
+    if (isLoading) {
+      return (
+        <div className="flex items-center justify-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      );
+    }
+
     switch (activeSection) {
       case 'calendar':
         return <ShiftsCalendar />;
       case 'analytics':
-        return <ShiftsAnalytics />;
+        return <ShiftsAnalytics shifts={shifts} />;
       default:
         return <ShiftsCalendar />;
     }
@@ -123,6 +136,9 @@ export const ShiftsMobileCarousel: React.FC<ShiftsMobileCarouselProps> = ({
       {/* Section info */}
       <div className="text-center text-sm text-white/70 px-4">
         {currentIndex + 1} z {sections.length} • {currentSection?.label}
+        {!isLoading && shifts.length > 0 && (
+          <span className="ml-2">({shifts.length} {t('shifts')})</span>
+        )}
       </div>
     </div>
   );
