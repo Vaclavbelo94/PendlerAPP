@@ -7,12 +7,14 @@ import { Label } from "@/components/ui/label";
 import { Gift, Sparkles } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { redeemPromoCode } from "@/components/admin/promoCode/promoCodeService";
+import { useNavigate } from "react-router-dom";
+import { activatePromoCode } from "@/services/promoCodeService";
 
 const PromoCodeRedemption = () => {
   const { user, refreshPremiumStatus } = useAuth();
   const [promoCode, setPromoCode] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
 
   const handleRedeemCode = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,7 +25,9 @@ const PromoCodeRedemption = () => {
     
     setIsSubmitting(true);
     try {
-      const result = await redeemPromoCode(user.id, promoCode.trim());
+      console.log('Aktivuji promo kód na premium stránce:', promoCode.trim());
+      
+      const result = await activatePromoCode(user.id, promoCode.trim());
       
       if (!result.success) {
         toast.error(result.message || "Neplatný promo kód");
@@ -36,16 +40,28 @@ const PromoCodeRedemption = () => {
         return;
       }
 
+      console.log('Promo kód aktivován, obnovuji premium status...');
+      
       // Refresh premium status after successful redemption
       await refreshPremiumStatus();
       
       if (redemptionCode.discount === 100) {
         const premiumExpiry = new Date();
         premiumExpiry.setMonth(premiumExpiry.getMonth() + redemptionCode.duration);
-        toast.success(`Premium status byl aktivován do ${premiumExpiry.toLocaleDateString('cs-CZ')}`);
+        toast.success(`Premium status byl aktivován do ${premiumExpiry.toLocaleDateString('cs-CZ')}`, {
+          duration: 5000
+        });
       } else {
-        toast.success(`Promo kód byl použit se slevou ${redemptionCode.discount}%`);
+        toast.success(`Promo kód byl použit se slevou ${redemptionCode.discount}%`, {
+          duration: 5000
+        });
       }
+
+      // Přesměruj na dashboard po úspěšné aktivaci
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 2000);
+      
     } catch (error) {
       console.error("Error redeeming promo code:", error);
       toast.error("Nastala chyba při aktivaci promo kódu");
@@ -74,7 +90,7 @@ const PromoCodeRedemption = () => {
               id="promo-code"
               value={promoCode}
               onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-              placeholder="PREMIUM2024"
+              placeholder="DHL2025, FERI"
               disabled={isSubmitting}
               className="bg-white dark:bg-gray-800"
             />
@@ -91,8 +107,8 @@ const PromoCodeRedemption = () => {
         
         <div className="mt-4 p-3 bg-amber-100 dark:bg-amber-900 rounded-lg">
           <p className="text-sm text-amber-800 dark:text-amber-200">
-            <strong>Tip:</strong> Promo kódy získáte za účast v komunitních aktivitách, 
-            referrals nebo speciálních akcích.
+            <strong>Tip:</strong> Po úspěšné aktivaci budete přesměrováni na dashboard.
+            Zkuste kódy: DHL2025, FERI
           </p>
         </div>
       </CardContent>
