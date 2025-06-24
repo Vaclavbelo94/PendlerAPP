@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface TaxWizardProgressProps {
   currentStep: number;
@@ -17,19 +18,25 @@ const TaxWizardProgress: React.FC<TaxWizardProgressProps> = ({
   stepLabels
 }) => {
   const { t } = useTranslation('common');
+  const isMobile = useIsMobile();
+  
+  // Na mobilech nezobrazujeme tento progress - používáme carousel
+  if (isMobile) {
+    return null;
+  }
   
   return (
     <div className="mb-8">
       {/* Progress bar */}
       <div className="relative">
-        <div className="flex items-center justify-between mb-4 overflow-x-auto">
+        <div className="flex items-center justify-between mb-4 gap-4">
           {stepLabels.map((label, index) => {
             const stepNumber = index + 1;
             const isCompleted = stepNumber < currentStep;
             const isCurrent = stepNumber === currentStep;
             
             return (
-              <div key={index} className="flex flex-col items-center relative min-w-0 flex-1">
+              <div key={index} className="flex flex-col items-center relative flex-1 min-w-0">
                 <motion.div
                   className={cn(
                     "w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-300",
@@ -50,7 +57,7 @@ const TaxWizardProgress: React.FC<TaxWizardProgressProps> = ({
                 </motion.div>
                 
                 <span className={cn(
-                  "text-xs mt-2 text-center max-w-20 truncate",
+                  "text-xs mt-2 text-center px-1 leading-tight",
                   isCurrent ? "text-primary font-medium" : "text-muted-foreground"
                 )}>
                   {label}
@@ -58,7 +65,7 @@ const TaxWizardProgress: React.FC<TaxWizardProgressProps> = ({
                 
                 {/* Connection line */}
                 {index < stepLabels.length - 1 && (
-                  <div className="absolute top-4 left-8 right-[-2rem] h-0.5 bg-muted -z-10 hidden sm:block">
+                  <div className="absolute top-4 left-8 right-[-2rem] h-0.5 bg-muted -z-10 hidden lg:block">
                     <motion.div
                       className="h-full bg-primary"
                       initial={{ width: "0%" }}

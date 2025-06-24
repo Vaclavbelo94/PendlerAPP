@@ -1,9 +1,9 @@
-
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { useTaxCalculator } from './hooks/useTaxCalculator';
 import { TaxWizardData, PersonalInfo, EmploymentInfo, ReisepauschaleInfo, AdditionalDeductions } from './types';
 import { generateModernTaxDocument } from '@/utils/pdf/modern/ModernTaxPDFGenerator';
@@ -17,11 +17,13 @@ import ReisepauschaleStep from './steps/ReisepauschaleStep';
 import DeductionsStep from './steps/DeductionsStep';
 import ResultsStep from './steps/ResultsStep';
 import TaxWizardProgress from './TaxWizardProgress';
+import TaxWizardMobileProgress from './TaxWizardMobileProgress';
 
 const TaxWizardCarousel: React.FC = () => {
   const { toast } = useToast();
   const { t } = useTranslation(['taxAdvisor', 'common']);
   const { result, calculateTax } = useTaxCalculator();
+  const isMobile = useIsMobile();
   
   const [currentStep, setCurrentStep] = useState(1);
   const [wizardData, setWizardData] = useState<TaxWizardData>({
@@ -231,11 +233,24 @@ const TaxWizardCarousel: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6" ref={containerRef}>
+      {/* Desktop Progress */}
       <TaxWizardProgress
         currentStep={currentStep}
         totalSteps={5}
         stepLabels={stepLabels}
       />
+
+      {/* Mobile Progress */}
+      {isMobile && (
+        <TaxWizardMobileProgress
+          currentStep={currentStep}
+          totalSteps={5}
+          stepLabels={stepLabels}
+          onPrevious={handlePrevious}
+          onNext={handleNext}
+          canGoNext={canGoNext()}
+        />
+      )}
 
       <div className="overflow-hidden">
         <AnimatePresence mode="wait">
@@ -251,37 +266,39 @@ const TaxWizardCarousel: React.FC = () => {
         </AnimatePresence>
       </div>
 
-      {/* Navigation buttons */}
-      <div className="flex flex-col sm:flex-row justify-between gap-4 mt-8">
-        <Button
-          variant="outline"
-          onClick={handlePrevious}
-          disabled={currentStep === 1}
-          className="flex items-center gap-2 w-full sm:w-auto"
-        >
-          <ChevronLeft className="h-4 w-4" />
-          {t('common:back')}
-        </Button>
+      {/* Navigation buttons - hidden on mobile as they're in mobile progress */}
+      {!isMobile && (
+        <div className="flex flex-col sm:flex-row justify-between gap-4 mt-8">
+          <Button
+            variant="outline"
+            onClick={handlePrevious}
+            disabled={currentStep === 1}
+            className="flex items-center gap-2 w-full sm:w-auto"
+          >
+            <ChevronLeft className="h-4 w-4" />
+            {t('common:back')}
+          </Button>
 
-        {currentStep < 5 ? (
-          <Button
-            onClick={handleNext}
-            disabled={!canGoNext()}
-            className="flex items-center gap-2 w-full sm:w-auto"
-          >
-            {t('common:next')}
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        ) : (
-          <Button
-            onClick={handleExportPDF}
-            disabled={!result}
-            className="flex items-center gap-2 w-full sm:w-auto"
-          >
-            {t('wizard.results.exportPdf')}
-          </Button>
-        )}
-      </div>
+          {currentStep < 5 ? (
+            <Button
+              onClick={handleNext}
+              disabled={!canGoNext()}
+              className="flex items-center gap-2 w-full sm:w-auto"
+            >
+              {t('common:next')}
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          ) : (
+            <Button
+              onClick={handleExportPDF}
+              disabled={!result}
+              className="flex items-center gap-2 w-full sm:w-auto"
+            >
+              {t('wizard.results.exportPdf')}
+            </Button>
+          )}
+        </div>
+      )}
     </div>
   );
 };
