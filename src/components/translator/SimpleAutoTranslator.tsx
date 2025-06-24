@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeftRight, Volume2, Copy, Trash2, History, Languages, Sparkles } from 'lucide-react';
 import { useAITranslator } from '@/hooks/useAITranslator';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 import { toast } from '@/components/ui/use-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -15,7 +15,7 @@ interface SimpleAutoTranslatorProps {
 }
 
 const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpeech }) => {
-  const { t } = useLanguage();
+  const { t } = useTranslation(['translator', 'common']);
   const { messages, isLoading, currentService, sendMessage, clearConversation, loadHistory } = useAITranslator();
   const [inputText, setInputText] = useState('');
   const [showHistory, setShowHistory] = useState(false);
@@ -28,8 +28,8 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
     if (!inputText.trim()) {
       toast({
         variant: "destructive",
-        title: t('error'),
-        description: t('enterTextToTranslate')
+        title: t('common:error'),
+        description: t('translator:enterText')
       });
       return;
     }
@@ -40,8 +40,8 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
     toast({
-      title: t('success'),
-      description: t('textCopied')
+      title: t('common:success'),
+      description: t('translator:copyTranslation')
     });
   };
 
@@ -84,7 +84,7 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
           className="flex items-center gap-2"
         >
           <History className="w-4 h-4" />
-          {t('translationHistory')}
+          {t('translator:history')}
         </Button>
       </div>
 
@@ -95,14 +95,14 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Languages className="w-5 h-5" />
-              {t('enterText')}
+              {t('translator:enterText')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <Textarea
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              placeholder={`${t('enterText')}...`}
+              placeholder={`${t('translator:enterText')}...`}
               className="min-h-32 resize-none"
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && e.ctrlKey) {
@@ -116,7 +116,7 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
                 disabled={isLoading || !inputText.trim()}
                 className="flex-1"
               >
-                {isLoading ? t('translating') : t('translate')}
+                {isLoading ? t('translator:translating') : t('translator:translateText')}
               </Button>
               <Button variant="outline" size="icon" onClick={handleClear}>
                 <Trash2 className="w-4 h-4" />
@@ -130,7 +130,7 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <ArrowLeftRight className="w-5 h-5" />
-              {t('translatedText')}
+              {t('translator:translation')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -144,7 +144,7 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
                     className="flex items-center justify-center h-24"
                   >
                     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                    <span className="ml-2 text-sm text-muted-foreground">{t('translating')}</span>
+                    <span className="ml-2 text-sm text-muted-foreground">{t('translator:translating')}</span>
                   </motion.div>
                 ) : isAIResponse ? (
                   <motion.div
@@ -156,7 +156,7 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
                   </motion.div>
                 ) : (
                   <div className="text-muted-foreground text-sm">
-                    {t('translatedText')}...
+                    {t('translator:translation')}...
                   </div>
                 )}
               </AnimatePresence>
@@ -171,7 +171,7 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
                   className="flex items-center gap-2"
                 >
                   <Copy className="w-4 h-4" />
-                  {t('copyText')}
+                  {t('translator:copyTranslation')}
                 </Button>
                 <Button 
                   variant="outline" 
@@ -180,7 +180,7 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
                   className="flex items-center gap-2"
                 >
                   <Volume2 className="w-4 h-4" />
-                  {t('playAudio')}
+                  Přehrát
                 </Button>
               </div>
             )}
@@ -201,11 +201,11 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
                 <div className="flex justify-between items-center">
                   <CardTitle className="flex items-center gap-2">
                     <History className="w-5 h-5" />
-                    {t('translationHistory')}
+                    {t('translator:history')}
                   </CardTitle>
                   {messages.length > 0 && (
                     <Button variant="outline" size="sm" onClick={clearConversation}>
-                      {t('clearHistory')}
+                      {t('translator:clearText')}
                     </Button>
                   )}
                 </div>
@@ -213,7 +213,7 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
               <CardContent>
                 {messages.length === 0 ? (
                   <div className="text-center text-muted-foreground py-8">
-                    {t('noHistory')}
+                    {t('translator:noHistory')}
                   </div>
                 ) : (
                   <div className="space-y-4 max-h-64 overflow-y-auto">
