@@ -16,6 +16,82 @@ export const activatePromoCode = async (userId: string, promoCodeValue: string) 
     
     console.log('Současný profil uživatele:', currentProfile, 'error:', profileCheckError);
     
+    // Zkontrolujeme, zda uživatel už tento kód nepoužil a má aktivní premium
+    console.log('Kontroluji existující redemption záznamy...');
+    const { data: existingRedemptions, error: redemptionCheckError } = await supabase
+      .from('promo_code_redemptions')
+      .select(`
+        id,
+        promo_codes (
+          id,
+          code,
+          discount,
+          duration,
+          valid_until
+        )
+      `)
+      .eq('user_id', userId);
+
+    console.log('Existující redemptions:', existingRedemptions, 'error:', redemptionCheckError);
+
+    // Pokud má uživatel redemption záznamy, ale není premium, aktivujeme mu premium
+    if (existingRedemptions && existingRedemptions.length > 0) {
+      // Najdeme redemption pro zadaný kód
+      const codeRedemption = existingRedemptions.find(r => 
+        r.promo_codes && r.promo_codes.code.toLowerCase() === promoCodeValue.toLowerCase()
+      );
+      
+      if (codeRedemption && codeRedemption.promo_codes) {
+        // Pokud už má premium aktivní, vrátíme úspěch
+        if (currentProfile?.is_premium && currentProfile?.premium_expiry) {
+          const premiumExpiry = new Date(currentProfile.premium_expiry);
+          if (premiumExpiry > new Date()) {
+            console.log('Uživatel už má aktivní premium');
+            return { 
+              success: true, 
+              promoCode: {
+                id: codeRedemption.promo_codes.id,
+                code: codeRedemption.promo_codes.code,
+                discount: codeRedemption.promo_codes.discount,
+                duration: codeRedemption.promo_codes.duration,
+                usedCount: 0 // Nepotřebujeme skutečný počet
+              }
+            };
+          }
+        }
+        
+        // Aktivujeme premium na základě existujícího redemption záznamu
+        console.log('Aktivuji premium na základě existujícího redemption záznamu...');
+        const premiumExpiry = new Date();
+        premiumExpiry.setMonth(premiumExpiry.getMonth() + codeRedemption.promo_codes.duration);
+        
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update({ 
+            is_premium: true,
+            premium_expiry: premiumExpiry.toISOString()
+          })
+          .eq('id', userId);
+
+        if (updateError) {
+          console.error('Chyba při aktivaci premium:', updateError);
+          return { success: false, message: "Chyba při aktivaci premium statusu" };
+        }
+
+        console.log('Premium aktivován na základě existujícího redemption záznamu');
+        return { 
+          success: true, 
+          promoCode: {
+            id: codeRedemption.promo_codes.id,
+            code: codeRedemption.promo_codes.code,
+            discount: codeRedemption.promo_codes.discount,
+            duration: codeRedemption.promo_codes.duration,
+            usedCount: 0
+          }
+        };
+      }
+    }
+    
     // Získáme promo kód z databáze
     console.log('Hledám promo kód v databázi...');
     const { data: promoCodeData, error: fetchError } = await supabase
@@ -45,17 +121,63 @@ export const activatePromoCode = async (userId: string, promoCodeValue: string) 
 
     // Zkontrolujeme, zda uživatel už tento kód nepoužil
     console.log('Kontroluji, zda uživatel už kód nepoužil...');
-    const { data: existingRedemption, error: redemptionCheckError } = await supabase
+    const { data: specificRedemption, error: specificRedemptionError } = await supabase
       .from('promo_code_redemptions')
       .select('id')
       .eq('user_id', userId)
       .eq('promo_code_id', promoCodeData.id);
 
-    console.log('Existující redemption:', existingRedemption, 'error:', redemptionCheckError);
+    console.log('Specifický redemption:', specificRedemption, 'error:', specificRedemptionError);
 
-    if (existingRedemption && existingRedemption.length > 0) {
-      console.log('Uživatel už tento kód použil');
-      return { success: false, message: "Tento promo kód jste již použili" };
+    if (specificRedemption && specificRedemption.length > 0) {
+      console.log('Uživatel už tento kód použil - aktivuji premium pokud není aktivní');
+      
+      // Pokud už má premium aktivní, vrátíme úspěch
+      if (currentProfile?.is_premium && currentProfile?.premium_expiry) {
+        const premiumExpiry = new Date(currentProfile.premium_expiry);
+        if (premiumExpiry > new Date()) {
+          return { 
+            success: true, 
+            message: "Premium je již aktivní",
+            promoCode: {
+              id: promoCodeData.id,
+              code: promoCodeData.code,
+              discount: promoCodeData.discount,
+              duration: promoCodeData.duration,
+              usedCount: promoCodeData.used_count
+            }
+          };
+        }
+      }
+      
+      // Aktivujeme premium
+      const premiumExpiry = new Date();
+      premiumExpiry.setMonth(premiumExpiry.getMonth() + promoCodeData.duration);
+      
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ 
+          is_premium: true,
+          premium_expiry: premiumExpiry.toISOString()
+        })
+        .eq('id', userId);
+
+      if (updateError) {
+        console.error('Chyba při aktivaci premium:', updateError);
+        return { success: false, message: "Chyba při aktivaci premium statusu" };
+      }
+
+      console.log('Premium aktivován pro již použitý promo kód');
+      return { 
+        success: true, 
+        promoCode: {
+          id: promoCodeData.id,
+          code: promoCodeData.code,
+          discount: promoCodeData.discount,
+          duration: promoCodeData.duration,
+          usedCount: promoCodeData.used_count
+        }
+      };
     }
 
     console.log('=== ZAČÍNÁM AKTIVACI PREMIUM ===');
@@ -118,26 +240,6 @@ export const activatePromoCode = async (userId: string, promoCodeValue: string) 
       .select();
 
     console.log('Počet použití aktualizován:', incrementData, 'error:', incrementError);
-
-    if (incrementError) {
-      console.error('Chyba při aktualizaci počtu použití:', incrementError);
-      // Nevrátíme chybu, protože premium už je aktivován
-    }
-
-    // KROK 4: Ověříme, že se premium skutečně nastavil
-    console.log('Ověřuji nastavení premium...');
-    const { data: verifyProfile, error: verifyError } = await supabase
-      .from('profiles')
-      .select('is_premium, premium_expiry')
-      .eq('id', userId)
-      .single();
-
-    console.log('Premium status ověřen:', verifyProfile, 'error:', verifyError);
-
-    if (verifyError || !verifyProfile?.is_premium) {
-      console.error('Ověření premium statusu selhalo:', verifyError, verifyProfile);
-      return { success: false, message: "Premium se nepodařilo aktivovat správně" };
-    }
 
     console.log('=== PROMO CODE ACTIVATION SUCCESS ===');
     console.log('Premium aktivován do:', premiumExpiry.toISOString());
