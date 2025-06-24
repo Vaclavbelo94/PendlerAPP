@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,6 +12,7 @@ import { toast } from '@/hooks/use-toast';
 import OptimizedAddressAutocomplete from './OptimizedAddressAutocomplete';
 import EnhancedRideOfferCard from './rideshare/EnhancedRideOfferCard';
 import { rideshareService, RideshareOfferWithDriver } from '@/services/rideshareService';
+import { useTranslation } from 'react-i18next';
 
 interface RideshareOffer {
   id: string;
@@ -28,6 +30,7 @@ interface RideshareOffer {
 
 const RideSharing: React.FC = () => {
   const { user } = useAuth();
+  const { t } = useTranslation('travel');
   const [offers, setOffers] = useState<RideshareOfferWithDriver[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -56,8 +59,8 @@ const RideSharing: React.FC = () => {
     } catch (error) {
       console.error('Error loading offers:', error);
       toast({
-        title: "Chyba",
-        description: "Nepodařilo se načíst nabídky sdílení jízd.",
+        title: t('error'),
+        description: t('loadingOffers'),
         variant: "destructive"
       });
     } finally {
@@ -69,16 +72,16 @@ const RideSharing: React.FC = () => {
     e.preventDefault();
     if (!user) {
       toast({
-        title: "Chyba",
-        description: "Pro vytvoření nabídky musíte být přihlášeni.",
+        title: t('error'),
+        description: t('phoneRequired'),
         variant: "destructive"
       });
       return;
     }
     if (!formData.phone_number || formData.phone_number.length < 4) {
       toast({
-        title: "Chyba",
-        description: "Zadejte prosím telefonní číslo pro spojení.",
+        title: t('error'),
+        description: t('phoneNumberRequired'),
         variant: "destructive"
       });
       return;
@@ -90,8 +93,8 @@ const RideSharing: React.FC = () => {
       });
 
       toast({
-        title: "Úspěch",
-        description: "Nabídka sdílení jízdy byla vytvořena."
+        title: t('success'),
+        description: t('offerCreated')
       });
 
       setFormData({
@@ -111,8 +114,8 @@ const RideSharing: React.FC = () => {
     } catch (error) {
       console.error('Error creating offer:', error);
       toast({
-        title: "Chyba",
-        description: "Nepodařilo se vytvořit nabídku.",
+        title: t('error'),
+        description: t('createOfferError'),
         variant: "destructive"
       });
     }
@@ -121,25 +124,25 @@ const RideSharing: React.FC = () => {
   const handleContactDriver = async (ride: RideshareOfferWithDriver) => {
     if (!user) {
       toast({
-        title: "Chyba",
-        description: "Pro kontaktování řidiče musíte být přihlášeni.",
+        title: t('error'),
+        description: t('loginRequired'),
         variant: "destructive"
       });
       return;
     }
 
     try {
-      await rideshareService.contactDriver(ride.id, 'Mám zájem o vaši nabídku sdílení jízdy.');
+      await rideshareService.contactDriver(ride.id, t('ridesharingDesc'));
       
       toast({
-        title: "Úspěch",
-        description: "Žádost o kontakt byla odeslána řidiči."
+        title: t('success'),
+        description: t('contactRequestSent')
       });
     } catch (error) {
       console.error('Error contacting driver:', error);
       toast({
-        title: "Chyba",
-        description: "Nepodařilo se odeslat žádost o kontakt.",
+        title: t('error'),
+        description: t('contactError'),
         variant: "destructive"
       });
     }
@@ -159,8 +162,8 @@ const RideSharing: React.FC = () => {
     <div className="space-y-6">
       <Tabs defaultValue="browse" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="browse">Procházet nabídky</TabsTrigger>
-          <TabsTrigger value="create">Vytvořit nabídku</TabsTrigger>
+          <TabsTrigger value="browse">{t('browseOffers')}</TabsTrigger>
+          <TabsTrigger value="create">{t('createOffer')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="browse" className="space-y-6">
@@ -169,14 +172,14 @@ const RideSharing: React.FC = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Search className="h-5 w-5" />
-                Najít jízdu
+                {t('findRide')}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex gap-4">
                 <div className="flex-1">
                   <Input
-                    placeholder="Hledat podle města nebo jména řidiče..."
+                    placeholder={t('searchByCity')}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
@@ -193,22 +196,22 @@ const RideSharing: React.FC = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Users className="h-5 w-5" />
-                Dostupné nabídky ({filteredOffers.length})
+                {t('availableOffers')} ({filteredOffers.length})
               </CardTitle>
             </CardHeader>
             <CardContent>
               {loading ? (
                 <div className="text-center py-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-                  <p className="text-muted-foreground">Načítám nabídky...</p>
+                  <p className="text-muted-foreground">{t('loadingOffers')}</p>
                 </div>
               ) : filteredOffers.length === 0 ? (
                 <div className="text-center text-muted-foreground py-8">
                   <Car className="mx-auto h-12 w-12 mb-4 opacity-50" />
                   <p>
                     {searchQuery 
-                      ? `Žádné nabídky nenalezeny pro "${searchQuery}"`
-                      : 'Momentálně nejsou dostupné žádné nabídky sdílení jízd.'
+                      ? `${t('noOffersFound')} "${searchQuery}"`
+                      : t('noOffersAvailable')
                     }
                   </p>
                 </div>
@@ -241,33 +244,33 @@ const RideSharing: React.FC = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Plus className="h-5 w-5" />
-                Vytvořit nabídku sdílení jízdy
+                {t('createRideOfferTitle')}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="origin">Výchozí místo</Label>
+                    <Label htmlFor="origin">{t('originPlace')}</Label>
                     <OptimizedAddressAutocomplete
                       value={formData.origin_address}
                       onChange={(value) => setFormData(prev => ({ ...prev, origin_address: value }))}
-                      placeholder="Zadejte výchozí adresu"
+                      placeholder={t('enterOriginAddress')}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="destination">Cílové místo</Label>
+                    <Label htmlFor="destination">{t('destinationPlace')}</Label>
                     <OptimizedAddressAutocomplete
                       value={formData.destination_address}
                       onChange={(value) => setFormData(prev => ({ ...prev, destination_address: value }))}
-                      placeholder="Zadejte cílovou adresu"
+                      placeholder={t('enterDestinationAddress')}
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="date">Datum odjezdu</Label>
+                    <Label htmlFor="date">{t('departureDate')}</Label>
                     <Input
                       id="date"
                       type="date"
@@ -277,7 +280,7 @@ const RideSharing: React.FC = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="time">Čas odjezdu</Label>
+                    <Label htmlFor="time">{t('departureTime')}</Label>
                     <Input
                       id="time"
                       type="time"
@@ -287,7 +290,7 @@ const RideSharing: React.FC = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="seats">Počet míst</Label>
+                    <Label htmlFor="seats">{t('numberOfSeats')}</Label>
                     <Input
                       id="seats"
                       type="number"
@@ -301,22 +304,22 @@ const RideSharing: React.FC = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="price">Cena za osobu (Kč)</Label>
+                  <Label htmlFor="price">{t('pricePerPerson')}</Label>
                   <Input
                     id="price"
                     type="number"
                     min="0"
-                    placeholder="0 = zdarma"
+                    placeholder={t('freeRide')}
                     value={formData.price_per_person}
                     onChange={(e) => setFormData(prev => ({ ...prev, price_per_person: parseFloat(e.target.value) || 0 }))}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="notes">Poznámky</Label>
+                  <Label htmlFor="notes">{t('notes')}</Label>
                   <Textarea
                     id="notes"
-                    placeholder="Doplňující informace o jízdě..."
+                    placeholder={t('additionalInfo')}
                     value={formData.notes}
                     onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
                   />
@@ -324,7 +327,7 @@ const RideSharing: React.FC = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="phone_number">Telefonní číslo *</Label>
+                    <Label htmlFor="phone_number">{t('phoneNumber')} *</Label>
                     <Input
                       id="phone_number"
                       type="tel"
@@ -338,7 +341,7 @@ const RideSharing: React.FC = () => {
                 </div>
 
                 <Button type="submit" className="w-full">
-                  Vytvořit nabídku
+                  {t('createOffer')}
                 </Button>
               </form>
             </CardContent>

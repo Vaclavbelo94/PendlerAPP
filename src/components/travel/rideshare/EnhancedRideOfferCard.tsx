@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Clock, MapPin, Calendar, Users, MessageCircle, Phone, Star, Car } from "lucide-react";
 import { RideshareOffer } from "@/services/rideshareService";
+import { useTranslation } from 'react-i18next';
 
 interface EnhancedRideOfferCardProps {
   ride: RideshareOffer & {
@@ -22,8 +23,9 @@ interface EnhancedRideOfferCardProps {
 }
 
 const EnhancedRideOfferCard = ({ ride, onContact, isAuthenticated, currentUserId }: EnhancedRideOfferCardProps) => {
+  const { t } = useTranslation('travel');
   const isOwnRide = ride.user_id === currentUserId;
-  const driverName = ride.driver?.username || 'Neznámý řidič';
+  const driverName = ride.driver?.username || t('driver');
   const hasPhoneNumber = ride.driver?.phone_number && String(ride.driver.phone_number).length > 4;
 
   const handleCall = () => {
@@ -33,7 +35,7 @@ const EnhancedRideOfferCard = ({ ride, onContact, isAuthenticated, currentUserId
   };
 
   const formatRating = (rating?: number) => {
-    if (!rating || rating === 0) return 'Nový řidič';
+    if (!rating || rating === 0) return t('newDriver');
     return rating.toFixed(1);
   };
 
@@ -59,13 +61,13 @@ const EnhancedRideOfferCard = ({ ride, onContact, isAuthenticated, currentUserId
               <span className="hidden sm:inline">•</span>
               <div className="flex items-center">
                 <Car className="h-3.5 w-3.5 mr-1" />
-                <span>{ride.completed_rides || 0} jízd</span>
+                <span>{ride.completed_rides || 0} {t('completedRides')}</span>
               </div>
             </div>
           </div>
           <Badge variant="outline" className="flex items-center gap-1 text-xs sm:text-sm py-1 px-2 whitespace-nowrap">
             <Users className="h-3.5 w-3.5" />
-            {ride.seats_available} míst
+            {ride.seats_available} {t('seats')}
           </Badge>
         </div>
       </CardHeader>
@@ -84,8 +86,8 @@ const EnhancedRideOfferCard = ({ ride, onContact, isAuthenticated, currentUserId
           </div>
           {ride.price_per_person > 0 && (
             <div className="flex items-center gap-1.5">
-              <span className="text-xs text-muted-foreground">Cena:</span>
-              <span className="font-semibold text-green-600 text-base">{ride.price_per_person} Kč</span>
+              <span className="text-xs text-muted-foreground">{t('cost')}:</span>
+              <span className="font-semibold text-green-600 text-base">{ride.price_per_person} {t('czk')}</span>
             </div>
           )}
         </div>
@@ -98,11 +100,11 @@ const EnhancedRideOfferCard = ({ ride, onContact, isAuthenticated, currentUserId
           </div>
           <div className="flex-1 flex flex-col gap-0.5">
             <div>
-              <p className="text-xs text-muted-foreground mb-0.5">Odkud</p>
+              <p className="text-xs text-muted-foreground mb-0.5">{t('from')}</p>
               <p className="text-sm font-medium break-words leading-tight">{ride.origin_address}</p>
             </div>
             <div>
-              <p className="text-xs text-muted-foreground mb-0.5">Kam</p>
+              <p className="text-xs text-muted-foreground mb-0.5">{t('to')}</p>
               <p className="text-sm font-medium break-words leading-tight">{ride.destination_address}</p>
             </div>
           </div>
@@ -127,7 +129,7 @@ const EnhancedRideOfferCard = ({ ride, onContact, isAuthenticated, currentUserId
       <CardFooter className="p-0 pt-2 mt-1 border-t-0 bg-transparent">
         {isOwnRide ? (
           <div className="w-full text-center">
-            <Badge variant="secondary">Vaše nabídka</Badge>
+            <Badge variant="secondary">{t('yourOffer')}</Badge>
           </div>
         ) : (
           <div className="w-full space-y-1">
@@ -140,7 +142,7 @@ const EnhancedRideOfferCard = ({ ride, onContact, isAuthenticated, currentUserId
                   size="sm"
                 >
                   <Phone className="h-4 w-4 mr-2" />
-                  Zavolat
+                  {t('callDriver')}
                 </Button>
                 <Button 
                   variant="outline"
@@ -150,7 +152,7 @@ const EnhancedRideOfferCard = ({ ride, onContact, isAuthenticated, currentUserId
                   size="sm"
                 >
                   <MessageCircle className="h-4 w-4 mr-2" />
-                  Zpráva
+                  {t('sendMessage')}
                 </Button>
               </div>
             ) : (
@@ -161,12 +163,12 @@ const EnhancedRideOfferCard = ({ ride, onContact, isAuthenticated, currentUserId
                 size="sm"
               >
                 <MessageCircle className="h-4 w-4 mr-2" />
-                Kontaktovat řidiče
+                {t('contactDriver')}
               </Button>
             )}
             {!isAuthenticated && (
               <p className="text-xs text-center text-muted-foreground mt-1">
-                Pro kontaktování se musíte přihlásit
+                {t('loginToContact')}
               </p>
             )}
           </div>
