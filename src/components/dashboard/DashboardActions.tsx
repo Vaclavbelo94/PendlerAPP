@@ -36,7 +36,7 @@ const DashboardActions: React.FC = () => {
       icon: Users,
       label: t('rideshare'),
       description: t('rideshareDescription'),
-      action: () => navigate('/rideshare'),
+      action: () => navigate('/travel'),
       color: 'text-pink-600',
       bgColor: 'bg-pink-50 dark:bg-pink-900/20'
     },
