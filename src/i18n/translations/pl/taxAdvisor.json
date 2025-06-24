@@ -1,6 +1,8 @@
 
 {
   "title": "Doradca podatkowy",
+  "taxAdvisor": "Doradca podatkowy",
+  "taxAdvisorDescription": "Kompleksowe narzędzie do optymalizacji podatków i obliczania oszczędności podczas pracy w Niemczech",
   "calculator": "Kalkulator",
   "taxCalculation": "Obliczenie podatku",
   "grossSalary": "Wynagrodzenie brutto",
@@ -51,7 +53,8 @@
     "documentDownloaded": "Dokument został pobrany",
     "exportError": "Błąd eksportu",
     "failedToGenerate": "Nie udało się wygenerować dokumentu PDF",
-    "taxWizard": "Asystent_Podatkowy"
+    "taxWizard": "Asystent_Podatkowy",
+    "monthlyBenefit": "Miesięczne korzyści"
   },
   "tips": {
     "title": "Porady podatkowe",
@@ -124,6 +127,7 @@
       "totalDeductions": "Całkowite odliczenia",
       "estimatedSaving": "Szacowane oszczędności",
       "annualBenefit": "Roczne korzyści",
+      "monthlyBenefit": "Miesięczne korzyści",
       "exportPdf": "Eksportuj PDF",
       "breakdown": "Zestawienie",
       "reisepauschaleAmount": "Kwota ryczałtu na dojazdy",

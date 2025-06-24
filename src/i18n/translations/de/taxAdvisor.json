@@ -1,6 +1,8 @@
 
 {
   "title": "Steuerberater",
+  "taxAdvisor": "Steuerberater", 
+  "taxAdvisorDescription": "Umfassendes Tool zur Steueroptimierung und Berechnung von Ersparnissen bei der Arbeit in Deutschland",
   "calculator": "Rechner",
   "taxCalculation": "Steuerberechnung",
   "grossSalary": "Bruttogehalt",
@@ -51,7 +53,8 @@
     "documentDownloaded": "Dokument wurde heruntergeladen",
     "exportError": "Fehler beim Export",
     "failedToGenerate": "PDF-Dokument konnte nicht erstellt werden",
-    "taxWizard": "Steuer_Assistent"
+    "taxWizard": "Steuer_Assistent",
+    "monthlyBenefit": "Monatlicher Nutzen"
   },
   "tips": {
     "title": "Steuertipps",
@@ -75,7 +78,7 @@
       "firstName": "Vorname",
       "lastName": "Nachname",
       "address": "Adresse",
-      "taxId": "Steuer-ID",
+      "taxId": "Steuerliche Identifikationsnummer",
       "email": "E-Mail",
       "dateOfBirth": "Geburtsdatum",
       "required": "Pflichtfeld"
@@ -124,6 +127,7 @@
       "totalDeductions": "Gesamte Abzüge",
       "estimatedSaving": "Geschätzte Ersparnis",
       "annualBenefit": "Jährlicher Nutzen",
+      "monthlyBenefit": "Monatlicher Nutzen",
       "exportPdf": "PDF exportieren",
       "breakdown": "Aufschlüsselung",
       "reisepauschaleAmount": "Entfernungspauschale",

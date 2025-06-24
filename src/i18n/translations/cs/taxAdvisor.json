@@ -1,6 +1,8 @@
 
 {
   "title": "Daňový poradce",
+  "taxAdvisor": "Daňový poradce",
+  "taxAdvisorDescription": "Komplexní nástroj pro optimalizaci daní a výpočet úspor při práci v Německu",
   "calculator": "Kalkulačka",
   "taxCalculation": "Výpočet daně",
   "grossSalary": "Hrubá mzda",
@@ -57,6 +59,7 @@
     "totalDeductions": "Celkové odpočty",
     "estimatedSaving": "Odhadovaná úspora",
     "annualBenefit": "Roční benefit",
+    "monthlyBenefit": "Měsíční benefit",
     "exportPdf": "Stáhnout PDF dokument",
     "breakdown": "Detailní rozpis odpočtů",
     "reisepauschaleAmount": "Cestovní náhrady",
@@ -135,6 +138,7 @@
       "totalDeductions": "Celkové odpočty",
       "estimatedSaving": "Odhadovaná úspora",
       "annualBenefit": "Roční benefit",
+      "monthlyBenefit": "Měsíční benefit",
       "exportPdf": "Stáhnout PDF dokument",
       "breakdown": "Detailní rozpis odpočtů",
       "reisepauschaleAmount": "Cestovní náhrady",
