@@ -23,27 +23,36 @@ const PromoCodeRedemption = () => {
       return;
     }
     
+    console.log('=== COMPONENT: Starting promo code redemption ===');
+    console.log('User:', { id: user.id, email: user.email });
+    console.log('Promo code:', promoCode.trim());
+    
     setIsSubmitting(true);
     try {
-      console.log('Aktivuji promo kód na premium stránce:', promoCode.trim());
+      console.log('Volám activatePromoCode...');
       
       const result = await activatePromoCode(user.id, promoCode.trim());
       
+      console.log('Výsledek aktivace:', result);
+      
       if (!result.success) {
+        console.log('Aktivace neúspěšná:', result.message);
         toast.error(result.message || "Neplatný promo kód");
         return;
       }
       
       const redemptionCode = result.promoCode;
       if (!redemptionCode) {
+        console.error('Chybí promo kód data v odpovědi');
         toast.error("Nastala chyba při získávání informací o promo kódu");
         return;
       }
 
-      console.log('Promo kód aktivován, obnovuji premium status...');
+      console.log('Promo kód úspěšně aktivován, obnovuji premium status...');
       
       // Refresh premium status after successful redemption
-      await refreshPremiumStatus();
+      const premiumStatusResult = await refreshPremiumStatus();
+      console.log('Premium status refreshen:', premiumStatusResult);
       
       if (redemptionCode.discount === 100) {
         const premiumExpiry = new Date();
@@ -51,19 +60,23 @@ const PromoCodeRedemption = () => {
         toast.success(`Premium status byl aktivován do ${premiumExpiry.toLocaleDateString('cs-CZ')}`, {
           duration: 5000
         });
+        console.log('Zobrazuji success toast pro 100% slevu');
       } else {
         toast.success(`Promo kód byl použit se slevou ${redemptionCode.discount}%`, {
           duration: 5000
         });
+        console.log('Zobrazuji success toast pro slevu:', redemptionCode.discount + '%');
       }
 
+      console.log('Přesměrovávám na dashboard za 2 sekundy...');
       // Přesměruj na dashboard po úspěšné aktivaci
       setTimeout(() => {
+        console.log('Navigating to dashboard...');
         navigate('/dashboard');
       }, 2000);
       
     } catch (error) {
-      console.error("Error redeeming promo code:", error);
+      console.error("=== COMPONENT: Error redeeming promo code ===", error);
       toast.error("Nastala chyba při aktivaci promo kódu");
     } finally {
       setIsSubmitting(false);
