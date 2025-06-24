@@ -215,7 +215,7 @@ const ProfileOverview: React.FC<ProfileOverviewProps> = ({ userId }) => {
                     </span>
                   </div>
                 </div>
-                <Button variant="outline" size="sm" onClick={() => navigate('/settings')}>
+                <Button variant="outline" size="sm" onClick={() => navigate('/premium')}>
                   Spravovat
                 </Button>
               </div>
