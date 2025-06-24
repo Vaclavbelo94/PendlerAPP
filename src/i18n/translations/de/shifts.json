@@ -61,6 +61,8 @@
   "noShiftsForPeriod": "Keine Schichten für den Zeitraum",
   "distribution": "Verteilung",
   "trend": "Trend",
+  "weeklyTrend": "Wöchentlicher Trend",
+  "monthlyTrend": "Monatlicher Trend",
   "totalShifts": "Gesamte Schichten",
   "averagePerShift": "Durchschnitt pro Schicht",
   "morningShifts": "Morgenschichten",

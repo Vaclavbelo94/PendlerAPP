@@ -61,6 +61,8 @@
   "noShiftsForPeriod": "Brak zmian w tym okresie",
   "distribution": "Rozkład",
   "trend": "Trend",
+  "weeklyTrend": "Trend tygodniowy",
+  "monthlyTrend": "Trend miesięczny",
   "totalShifts": "Łączne zmiany",
   "averagePerShift": "Średnia na zmianę",
   "morningShifts": "Zmiany poranne",

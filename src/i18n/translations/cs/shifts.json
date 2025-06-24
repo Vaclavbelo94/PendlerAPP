@@ -22,7 +22,7 @@
   "nightShift": "Noční směna",
   "types": {
     "morning": "Ranní",
-    "afternoon": "Odpolední", 
+    "afternoon": "Odpolední",
     "night": "Noční"
   },
   "notes": "Poznámky",
@@ -61,6 +61,8 @@
   "noShiftsForPeriod": "Žádné směny pro dané období",
   "distribution": "Distribuce",
   "trend": "Trend",
+  "weeklyTrend": "Týdenní trend",
+  "monthlyTrend": "Měsíční trend",
   "totalShifts": "Celkem směn",
   "averagePerShift": "Průměr na směnu",
   "morningShifts": "Ranní směny",
