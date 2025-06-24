@@ -24,5 +24,9 @@
   "tools": "Nástroje",
   "analytics": "Analýzy",
   "workAssistant": "Pracovní asistent",
-  "czechWorkersHelper": "Pomocník pro české pracovníky"
+  "czechWorkersHelper": "Pomocník pro české pracovníky",
+  "freeAccount": "Bezplatný účet",
+  "premiumAccount": "Premium účet",
+  "upgradeToPremium": "Přejít na Premium",
+  "user": "Uživatel"
 }
