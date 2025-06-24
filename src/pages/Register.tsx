@@ -163,11 +163,11 @@ const Register = () => {
     try {
       console.log('Submitting registration form');
       
-      const { error, user: newUser } = await signUp(email, password, username);
+      const signUpResult = await signUp(email, password, username);
       
-      if (error) {
+      if (signUpResult.error) {
         let errorMessage = t('registerCheckDataRetry');
-        const errorStr = String(error);
+        const errorStr = String(signUpResult.error);
         
         if (errorStr.includes("User already registered") || errorStr.includes("user_already_exists")) {
           errorMessage = t('userAlreadyExists');
@@ -182,13 +182,13 @@ const Register = () => {
         toast.error(t('registrationFailed'), {
           description: errorMessage,
         });
-      } else if (newUser) {
-        console.log('Registrace úspěšná, uživatel:', newUser.id);
+      } else if (signUpResult.user) {
+        console.log('Registrace úspěšná, uživatel:', signUpResult.user.id);
         
         // Activate promo code if valid
-        if (isPromoValid && promoCode && newUser.id) {
+        if (isPromoValid && promoCode && signUpResult.user.id) {
           console.log('Aktivuji promo kód pro nového uživatele');
-          const promoActivated = await activatePromoCode(newUser.id, promoCode);
+          const promoActivated = await activatePromoCode(signUpResult.user.id, promoCode);
           
           if (promoActivated) {
             toast.success(t('accountCreatedWithPremium'), { 
