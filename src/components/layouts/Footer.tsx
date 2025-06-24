@@ -34,15 +34,15 @@ const Footer: React.FC = () => {
 
   return (
     <footer className="bg-background border-t">
-      <div className="container mx-auto px-4 py-6">
+      <div className="container mx-auto px-4 py-4">
         {/* Main Footer Content */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-3">
           {/* Brand Section */}
           <div className="flex items-center gap-2">
             <div className="bg-primary text-primary-foreground p-1.5 rounded-lg">
               <Heart className="h-4 w-4" />
             </div>
-            <span className="text-lg font-bold">WorkAssist</span>
+            <span className="text-lg font-bold">PendlerApp</span>
           </div>
 
           {/* Links */}
@@ -81,11 +81,11 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
-        <Separator className="my-4" />
+        <Separator className="my-3" />
 
         {/* Bottom Footer */}
         <div className="text-center text-sm text-muted-foreground">
-          © {currentYear} WorkAssist. {t('allRightsReserved')}
+          © {currentYear} PendlerApp. {t('allRightsReserved')}
         </div>
       </div>
     </footer>
