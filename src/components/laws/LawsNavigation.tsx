@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Book, Scale, FileText, Users } from 'lucide-react';
+import { Briefcase, FileText, Users, Heart } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
@@ -19,33 +19,39 @@ export const LawsNavigation: React.FC<LawsNavigationProps> = ({
 
   const sections = [
     {
-      id: 'arbeitsrecht',
-      label: t('laborLaw'),
-      icon: Users,
-      description: t('laborLawDescription')
+      id: 'all',
+      label: t('allLaws'),
+      icon: Briefcase,
+      description: t('allLawsDescription')
     },
     {
-      id: 'steuerrecht',
-      label: t('taxLaw'),
+      id: 'work',
+      label: t('work'),
+      icon: Briefcase,
+      description: t('workLawDescription')
+    },
+    {
+      id: 'tax',
+      label: t('tax'),
       icon: FileText,
-      description: t('taxLawDescription')
+      description: t('taxesDescription')
     },
     {
-      id: 'sozialrecht',
-      label: t('socialLaw'),
-      icon: Scale,
-      description: t('socialLawDescription')
+      id: 'social',
+      label: t('social'),
+      icon: Users,
+      description: t('socialSecurityDescription')
     },
     {
-      id: 'verkehrsrecht',
-      label: t('trafficLaw'),
-      icon: Book,
-      description: t('trafficLawDescription')
+      id: 'health',
+      label: t('health'),
+      icon: Heart,
+      description: t('healthInsuranceDescription')
     }
   ];
 
   return (
-    <div className="flex flex-wrap gap-3 justify-center sm:justify-start">
+    <div className="flex flex-wrap gap-3 justify-center sm:justify-start mb-8">
       {sections.map((section, index) => {
         const Icon = section.icon;
         const isActive = activeSection === section.id;
