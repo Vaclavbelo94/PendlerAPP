@@ -171,8 +171,8 @@ const TaxWizardCarousel: React.FC = () => {
         commuteDistance: wizardData.reisepauschale.commuteDistance.toString(),
         commuteWorkDays: wizardData.reisepauschale.workDaysPerYear.toString(),
         includeCommuteExpenses: true,
-        includeSecondHome: Boolean(wizardData.reisepauschale.hasSecondHome),
-        includeWorkClothes: Boolean(wizardData.deductions.workClothes),
+        includeSecondHome: !!wizardData.reisepauschale.hasSecondHome,
+        includeWorkClothes: !!wizardData.deductions.workClothes,
         additionalNotes: `${t('results.generatedWith')} PendlerApp Wizard. ${t('results.totalDeductions')}: ${result.totalDeductions.toFixed(2)}€, ${t('results.estimatedSaving')}: ${result.estimatedTaxSaving.toFixed(2)}€`
       };
 

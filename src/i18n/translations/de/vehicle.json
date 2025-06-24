@@ -61,5 +61,10 @@
   "saving": "Speichern...",
   "addChanges": "Änderungen speichern",
   "addVehicleButton": "Fahrzeug hinzufügen",
-  "cancel": "Abbrechen"
+  "cancel": "Abbrechen",
+  "noVehiclesFound": "Sie haben noch keine Fahrzeuge",
+  "getStartedByAdding": "Beginnen Sie mit dem Hinzufügen Ihres ersten Fahrzeugs und verfolgen Sie alle wichtigen Informationen an einem Ort.",
+  "addVehicle": "Fahrzeug hinzufügen",
+  "initializing": "Initialisierung...",
+  "loadingVehicles": "Fahrzeuge werden geladen..."
 }

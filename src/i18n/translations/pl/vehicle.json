@@ -61,5 +61,10 @@
   "saving": "Zapisywanie...",
   "addChanges": "Zapisz zmiany",
   "addVehicleButton": "Dodaj pojazd",
-  "cancel": "Anuluj"
+  "cancel": "Anuluj",
+  "noVehiclesFound": "Nie masz jeszcze żadnych pojazdów",
+  "getStartedByAdding": "Zacznij od dodania swojego pierwszego pojazdu i śledź wszystkie ważne informacje w jednym miejscu.",
+  "addVehicle": "Dodaj pojazd",
+  "initializing": "Inicjalizacja...",
+  "loadingVehicles": "Ładowanie pojazdów..."
 }

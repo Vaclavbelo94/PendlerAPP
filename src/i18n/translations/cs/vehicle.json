@@ -61,5 +61,10 @@
   "saving": "Ukládá se...",
   "addChanges": "Uložit změny",
   "addVehicleButton": "Přidat vozidlo",
-  "cancel": "Zrušit"
+  "cancel": "Zrušit",
+  "noVehiclesFound": "Zatím nemáte žádná vozidla",
+  "getStartedByAdding": "Začněte přidáním svého prvního vozidla a sledujte všechny důležité informace na jednom místě.",
+  "addVehicle": "Přidat vozidlo",
+  "initializing": "Inicializuje se...",
+  "loadingVehicles": "Načítají se vozidla..."
 }
