@@ -273,10 +273,10 @@ const UnifiedNavbar: React.FC<UnifiedNavbarProps> = ({ rightContent }) => {
             </>
           ) : (
             <div className="flex items-center space-x-2">
-              <Button variant="ghost" size="sm" onClick={() => navigate('/auth/signin')}>
+              <Button variant="ghost" size="sm" onClick={() => navigate('/login')}>
                 {t('common:signIn')}
               </Button>
-              <Button size="sm" onClick={() => navigate('/auth/signup')}>
+              <Button size="sm" onClick={() => navigate('/register')}>
                 {t('common:signUp')}
               </Button>
             </div>
