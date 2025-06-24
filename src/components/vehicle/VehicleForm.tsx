@@ -6,6 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { VehicleData } from '@/types/vehicle';
 import { useTranslation } from 'react-i18next';
+import { BrandSelector, ModelSelector, YearSelector } from './VehicleFormField';
+import { findBrandByName } from '@/data/vehicleUtils';
 
 interface VehicleFormProps {
   onSubmit: (data: any) => void;
@@ -21,6 +23,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({
   vehicle
 }) => {
   const { t } = useTranslation(['vehicle']);
+  const [selectedBrandId, setSelectedBrandId] = useState<string>('');
   const [formData, setFormData] = useState({
     brand: '',
     model: '',
@@ -64,6 +67,12 @@ const VehicleForm: React.FC<VehicleFormProps> = ({
         next_inspection: vehicle.next_inspection || '',
         last_repair_cost: vehicle.last_repair_cost || ''
       });
+
+      // Najdeme brand ID pro existující vozidlo
+      const existingBrand = findBrandByName(vehicle.brand || '');
+      if (existingBrand) {
+        setSelectedBrandId(existingBrand.id);
+      }
     }
   }, [vehicle]);
 
@@ -76,6 +85,14 @@ const VehicleForm: React.FC<VehicleFormProps> = ({
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const handleBrandChange = (brandId: string) => {
+    setSelectedBrandId(brandId);
+    // Vyčistíme model při změně značky
+    if (brandId !== selectedBrandId) {
+      handleChange('model', '');
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Basic Information */}
@@ -83,38 +100,25 @@ const VehicleForm: React.FC<VehicleFormProps> = ({
         <h3 className="text-lg font-medium">{t('vehicle:basicInformation')}</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="brand">{t('vehicle:brand')} *</Label>
-            <Input
-              id="brand"
-              type="text"
-              value={formData.brand}
-              onChange={(e) => handleChange('brand', e.target.value)}
-              required
-            />
-          </div>
+          <BrandSelector
+            value={formData.brand}
+            onChange={(value) => handleChange('brand', value)}
+            onBrandChange={handleBrandChange}
+            required
+          />
           
-          <div>
-            <Label htmlFor="model">{t('vehicle:model')} *</Label>
-            <Input
-              id="model"
-              type="text"
-              value={formData.model}
-              onChange={(e) => handleChange('model', e.target.value)}
-              required
-            />
-          </div>
+          <ModelSelector
+            value={formData.model}
+            onChange={(value) => handleChange('model', value)}
+            brandId={selectedBrandId}
+            required
+          />
           
-          <div>
-            <Label htmlFor="year">{t('vehicle:year')} *</Label>
-            <Input
-              id="year"
-              type="text"
-              value={formData.year}
-              onChange={(e) => handleChange('year', e.target.value)}
-              required
-            />
-          </div>
+          <YearSelector
+            value={formData.year}
+            onChange={(value) => handleChange('year', value)}
+            required
+          />
           
           <div>
             <Label htmlFor="license_plate">{t('vehicle:licensePlate')} *</Label>
