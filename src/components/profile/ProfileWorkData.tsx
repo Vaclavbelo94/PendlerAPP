@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useWorkData } from "@/hooks/useWorkData";
+import { useAddressAutocomplete } from "@/hooks/useAddressAutocomplete";
 import { useTranslation } from 'react-i18next';
 import { DollarSign, Phone, MapPin } from 'lucide-react';
 
@@ -13,6 +14,8 @@ const ProfileWorkData = () => {
   const { t } = useTranslation('profile');
   const { workData, loading, saveWorkData, setWorkData } = useWorkData();
   const [tempData, setTempData] = useState(workData);
+  const [addressQuery, setAddressQuery] = useState('');
+  const { suggestions, loading: addressLoading } = useAddressAutocomplete(addressQuery);
 
   const countryOptions = [
     { code: 'CZ', label: 'Česká republika (+420)', flag: '🇨🇿' },
@@ -20,11 +23,38 @@ const ProfileWorkData = () => {
     { code: 'PL', label: 'Polska (+48)', flag: '🇵🇱' }
   ];
 
+  // Hodinové mzdy v eurech pro německý trh
+  const hourlyWageOptions = [
+    { value: 12, label: '12,00 €' },
+    { value: 13, label: '13,00 €' },
+    { value: 14, label: '14,00 €' },
+    { value: 15, label: '15,00 €' },
+    { value: 16, label: '16,00 €' },
+    { value: 17, label: '17,00 €' },
+    { value: 18, label: '18,00 €' },
+    { value: 19, label: '19,00 €' },
+    { value: 20, label: '20,00 €' },
+    { value: 22, label: '22,00 €' },
+    { value: 25, label: '25,00 €' },
+    { value: 28, label: '28,00 €' },
+    { value: 30, label: '30,00 €' },
+    { value: 35, label: '35,00 €' },
+    { value: 40, label: '40,00 €' },
+  ];
+
   const handleSave = async () => {
     const success = await saveWorkData(tempData);
     if (success) {
       setWorkData(tempData);
     }
+  };
+
+  const handleAddressSelect = (suggestion: any) => {
+    setTempData({
+      ...tempData,
+      workplace_location: suggestion.display_name
+    });
+    setAddressQuery('');
   };
 
   // Update tempData when workData changes (after fetch)
@@ -61,21 +91,25 @@ const ProfileWorkData = () => {
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="hourlyWage">{t('hourlyWage')}</Label>
-            <div className="relative">
-              <Input
-                id="hourlyWage"
-                type="number"
-                min="0"
-                step="0.5"
-                value={tempData.hourly_wage || ''}
-                onChange={(e) => setTempData({
-                  ...tempData,
-                  hourly_wage: e.target.value ? parseFloat(e.target.value) : null
-                })}
-                placeholder={t('enterHourlyWage')}
-              />
-            </div>
+            <Label htmlFor="hourlyWage">{t('hourlyWage')} (EUR)</Label>
+            <Select
+              value={tempData.hourly_wage?.toString() || ''}
+              onValueChange={(value) => setTempData({
+                ...tempData,
+                hourly_wage: parseFloat(value)
+              })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder={t('enterHourlyWage')} />
+              </SelectTrigger>
+              <SelectContent>
+                {hourlyWageOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value.toString()}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">
@@ -125,14 +159,36 @@ const ProfileWorkData = () => {
               <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
                 id="workplaceLocation"
-                value={tempData.workplace_location}
-                onChange={(e) => setTempData({
-                  ...tempData,
-                  workplace_location: e.target.value
-                })}
+                value={addressQuery || tempData.workplace_location}
+                onChange={(e) => {
+                  setAddressQuery(e.target.value);
+                  setTempData({
+                    ...tempData,
+                    workplace_location: e.target.value
+                  });
+                }}
                 placeholder={t('enterWorkplaceLocation')}
                 className="pl-10"
               />
+              {addressQuery && suggestions.length > 0 && (
+                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-auto">
+                  {suggestions.map((suggestion) => (
+                    <button
+                      key={suggestion.place_id}
+                      type="button"
+                      className="w-full px-4 py-2 text-left hover:bg-gray-100 focus:bg-gray-100 text-sm"
+                      onClick={() => handleAddressSelect(suggestion)}
+                    >
+                      {suggestion.display_name}
+                    </button>
+                  ))}
+                </div>
+              )}
+              {addressLoading && (
+                <div className="absolute right-3 top-3">
+                  <div className="animate-spin h-4 w-4 border-2 border-gray-300 border-t-blue-600 rounded-full"></div>
+                </div>
+              )}
             </div>
           </div>
 
