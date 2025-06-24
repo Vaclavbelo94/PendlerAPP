@@ -7,7 +7,7 @@ import {
   Plus, 
   Calculator, 
   BookOpen, 
-  Car, 
+  User, 
   FileText,
   TrendingUp,
   Route,
@@ -45,20 +45,20 @@ const DashboardActions: React.FC = () => {
       bgColor: 'bg-purple-50 dark:bg-purple-900/20'
     },
     {
-      icon: Car,
-      label: 'Vozidla',
-      description: 'Spravovat vozidla',
-      action: () => navigate('/vehicle'),
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-50 dark:bg-orange-900/20'
+      icon: User,
+      label: 'Profil',
+      description: 'Upravit profil',
+      action: () => navigate('/profile'),
+      color: 'text-indigo-600',
+      bgColor: 'bg-indigo-50 dark:bg-indigo-900/20'
     },
     {
       icon: Route,
       label: 'Trasy',
       description: 'Najít nejlepší cestu',
       action: () => navigate('/routes'),
-      color: 'text-indigo-600',
-      bgColor: 'bg-indigo-50 dark:bg-indigo-900/20'
+      color: 'text-cyan-600',
+      bgColor: 'bg-cyan-50 dark:bg-cyan-900/20'
     },
     {
       icon: Users,
