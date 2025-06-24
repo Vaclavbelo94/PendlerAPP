@@ -1,21 +1,57 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Database, Download, Upload, Trash2, RefreshCw } from 'lucide-react';
 import { toast } from "sonner";
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/hooks/useAuth';
+import { dataExportService, DataStats } from '@/services/dataExportService';
+import { DataExportDialog } from './DataExportDialog';
+import { DataImportDialog } from './DataImportDialog';
 
 const DataSettings = () => {
   const { t } = useTranslation('settings');
+  const { user } = useAuth();
+  const [dataStats, setDataStats] = useState<DataStats>({
+    shifts: 0,
+    vehicles: 0,
+    taxCalculations: 0,
+    vocabulary: 0,
+    tests: 0,
+    reports: 0
+  });
+  const [exportDialogOpen, setExportDialogOpen] = useState(false);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
+  const [isLoadingStats, setIsLoadingStats] = useState(true);
+
+  useEffect(() => {
+    if (user) {
+      loadDataStats();
+    }
+  }, [user]);
+
+  const loadDataStats = async () => {
+    if (!user) return;
+    
+    setIsLoadingStats(true);
+    try {
+      const stats = await dataExportService.getDataStats(user.id);
+      setDataStats(stats);
+    } catch (error) {
+      console.error('Error loading data stats:', error);
+    } finally {
+      setIsLoadingStats(false);
+    }
+  };
 
   const handleExportData = () => {
-    toast.success(t('dataExportStarted') || "Export dat byl zahájen. Soubor bude stažen za chvíli.");
+    setExportDialogOpen(true);
   };
 
   const handleImportData = () => {
-    toast.info(t('importFeatureComingSoon') || "Funkce importu dat bude implementována v budoucí verzi");
+    setImportDialogOpen(true);
   };
 
   const handleClearCache = () => {
@@ -61,20 +97,43 @@ const DataSettings = () => {
 
           <div className="space-y-3">
             <h4 className="font-medium">{t('dataStatistics') || 'Statistiky dat'}</h4>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-              <div className="p-3 bg-muted rounded-lg">
-                <p className="font-medium">{t('vocabulary') || 'Slovíčka'}</p>
-                <p className="text-muted-foreground">1,247 {t('items') || 'položek'}</p>
+            {isLoadingStats ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="p-3 bg-muted rounded-lg animate-pulse">
+                    <div className="h-4 bg-muted-foreground/20 rounded mb-2"></div>
+                    <div className="h-3 bg-muted-foreground/20 rounded w-2/3"></div>
+                  </div>
+                ))}
               </div>
-              <div className="p-3 bg-muted rounded-lg">
-                <p className="font-medium">{t('shifts') || 'Směny'}</p>
-                <p className="text-muted-foreground">156 {t('records') || 'záznamů'}</p>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                <div className="p-3 bg-muted rounded-lg">
+                  <p className="font-medium">{t('shifts') || 'Směny'}</p>
+                  <p className="text-muted-foreground">{dataStats.shifts} {t('records') || 'záznamů'}</p>
+                </div>
+                <div className="p-3 bg-muted rounded-lg">
+                  <p className="font-medium">{t('vehicles') || 'Vozidla'}</p>
+                  <p className="text-muted-foreground">{dataStats.vehicles} {t('items') || 'položek'}</p>
+                </div>
+                <div className="p-3 bg-muted rounded-lg">
+                  <p className="font-medium">{t('vocabulary') || 'Slovíčka'}</p>
+                  <p className="text-muted-foreground">{dataStats.vocabulary} {t('items') || 'položek'}</p>
+                </div>
+                <div className="p-3 bg-muted rounded-lg">
+                  <p className="font-medium">{t('tests') || 'Testy'}</p>
+                  <p className="text-muted-foreground">{dataStats.tests} {t('results') || 'výsledků'}</p>
+                </div>
+                <div className="p-3 bg-muted rounded-lg">
+                  <p className="font-medium">Daňové výpočty</p>
+                  <p className="text-muted-foreground">{dataStats.taxCalculations} {t('records') || 'záznamů'}</p>
+                </div>
+                <div className="p-3 bg-muted rounded-lg">
+                  <p className="font-medium">{t('reports') || 'Reporty'}</p>
+                  <p className="text-muted-foreground">{dataStats.reports} {t('records') || 'záznamů'}</p>
+                </div>
               </div>
-              <div className="p-3 bg-muted rounded-lg">
-                <p className="font-medium">{t('tests') || 'Testy'}</p>
-                <p className="text-muted-foreground">89 {t('results') || 'výsledků'}</p>
-              </div>
-            </div>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -114,7 +173,7 @@ const DataSettings = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-destructive">
             <Trash2 className="h-5 w-5" />
-            {t('dangerZone') || 'Smazání dat'}
+            {t('dangerZone') || 'Nebezpečná zóna'}
           </CardTitle>
           <CardDescription>
             {t('permanentlyDeleteAllData') || 'Permanentně smažte všechna svá data'}
@@ -134,6 +193,16 @@ const DataSettings = () => {
           </p>
         </CardContent>
       </Card>
+
+      <DataExportDialog 
+        open={exportDialogOpen} 
+        onOpenChange={setExportDialogOpen} 
+      />
+      
+      <DataImportDialog 
+        open={importDialogOpen} 
+        onOpenChange={setImportDialogOpen} 
+      />
     </div>
   );
 };

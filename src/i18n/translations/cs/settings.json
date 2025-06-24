@@ -138,7 +138,7 @@
   "results": "výsledků",
   "manageSyncBetweenDevices": "Spravujte synchronizaci dat mezi zařízeními",
   "synchronize": "Synchronizovat",
-  "clearLocalCache": "Vymasažit místní cache",
+  "clearLocalCache": "Vymazat místní cache",
   "permanentlyDeleteAllData": "Permanentně smažte všechna svá data",
   "deleteAllData": "Smazat všechna data",
   "actionIrreversible": "Tato akce je nevratná a smaže všechna vaše uložená data.",
@@ -148,5 +148,7 @@
   "emailFrequency": "Frekvence e-mailů",
   "immediate": "Okamžitě",
   "daily": "Denně",
-  "weekly": "Týdně"
+  "weekly": "Týdně",
+  "vehicles": "Vozidla",
+  "reports": "Reporty"
 }
