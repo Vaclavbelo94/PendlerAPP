@@ -88,7 +88,7 @@ export const activatePromoCode = async (userId: string, promoCodeValue: string) 
       // Nevrátíme chybu, protože premium už je aktivován
     }
 
-    console.log('Promo kód úspěšně aktivován při registraci, premium do:', premiumExpiry.toISOString());
+    console.log('Promo kód úspěšně aktivován, premium do:', premiumExpiry.toISOString());
     
     return { 
       success: true, 

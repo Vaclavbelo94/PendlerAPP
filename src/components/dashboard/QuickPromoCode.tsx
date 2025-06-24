@@ -47,10 +47,10 @@ const QuickPromoCode = () => {
       // Refresh premium status after successful redemption
       await refreshPremiumStatus();
       
-      // Malé zpoždění a pak refresh stránky pro jistotu
+      // Krátké zpoždění a pak refresh stránky pro jistotu
       setTimeout(() => {
         window.location.reload();
-      }, 1000);
+      }, 1500);
       
       if (redemptionCode.discount === 100) {
         const premiumExpiry = new Date();
