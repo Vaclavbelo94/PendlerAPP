@@ -54,7 +54,7 @@ const ProfileSubscription = () => {
           <div className="pt-4 border-t">
             <Button 
               variant="outline" 
-              onClick={() => navigate('/settings')}
+              onClick={() => navigate('/premium')}
               className="w-full"
             >
               Spravovat předplatné
