@@ -6,6 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { UnifiedMobileSidebar } from "./sidebar/UnifiedMobileSidebar";
+import { useTranslation } from "react-i18next";
 
 interface OptimizedLayoutProps {
   children: ReactNode;
@@ -17,6 +18,7 @@ const OptimizedLayout = ({ children, navbarRightContent }: OptimizedLayoutProps)
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const location = useLocation();
   const { user } = useAuth();
+  const { i18n } = useTranslation();
   
   // Simplified responsive detection
   useEffect(() => {
@@ -33,10 +35,17 @@ const OptimizedLayout = ({ children, navbarRightContent }: OptimizedLayoutProps)
     setSidebarOpen(false);
   }, [location.pathname]);
   
+  // Force sidebar re-render when language changes
+  const [sidebarKey, setSidebarKey] = useState(0);
+  useEffect(() => {
+    setSidebarKey(prev => prev + 1);
+  }, [i18n.language]);
+  
   if (isMobile) {
     return (
       <div className="flex min-h-screen bg-background">
         <UnifiedMobileSidebar
+          key={`mobile-${sidebarKey}`}
           isOpen={sidebarOpen}
           closeSidebar={() => setSidebarOpen(false)}
           variant="overlay"
@@ -65,6 +74,7 @@ const OptimizedLayout = ({ children, navbarRightContent }: OptimizedLayoutProps)
     <div className="flex min-h-screen bg-background">
       <div className="fixed top-0 left-0 h-full z-40">
         <UnifiedMobileSidebar
+          key={`desktop-${sidebarKey}`}
           isOpen={true}
           closeSidebar={() => {}}
           variant="compact"
