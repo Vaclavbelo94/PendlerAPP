@@ -1,6 +1,6 @@
 
 import React from 'react';
-import Layout from '@/components/layouts/Layout';
+import OptimizedLayout from '@/components/layouts/OptimizedLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -37,13 +37,8 @@ const Premium = () => {
   ];
 
   return (
-    <Layout>
+    <OptimizedLayout navbarRightContent={<LanguageSwitcher />}>
       <div className="container mx-auto px-4 py-8 max-w-4xl">
-        {/* Language switcher in top right corner */}
-        <div className="flex justify-end mb-4">
-          <LanguageSwitcher />
-        </div>
-
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold mb-4 flex items-center justify-center gap-2">
             <Crown className="h-8 w-8 text-amber-500" />
@@ -127,7 +122,7 @@ const Premium = () => {
           </div>
         )}
       </div>
-    </Layout>
+    </OptimizedLayout>
   );
 };
 
