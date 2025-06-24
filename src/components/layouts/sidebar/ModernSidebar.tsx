@@ -29,7 +29,7 @@ const ModernSidebar: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
   const { user } = useAuth();
-  const { t } = useTranslation('common');
+  const { t } = useTranslation('navigation');
 
   const navigationItems = [
     {
@@ -138,7 +138,7 @@ const ModernSidebar: React.FC = () => {
                 <div className="bg-primary text-primary-foreground p-2 rounded-lg">
                   <span className="font-bold">WA</span>
                 </div>
-                <span className="text-lg font-bold">WorkAssist</span>
+                <span className="text-lg font-bold">{t('workAssistant')}</span>
               </motion.div>
             )}
           </AnimatePresence>
