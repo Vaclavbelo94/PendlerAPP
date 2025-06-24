@@ -212,5 +212,38 @@
       "antrag-lohnsteuerermassigung": "Žádost o snížení daně ze mzdy",
       "arbeitsmittelnachweis": "Doklad o pracovních prostředcích"
     }
+  },
+  "pdf": {
+    "title": "Daňový dokument – Zdaňovací období 2025",
+    "sections": {
+      "personalData": "Osobní údaje",
+      "employmentData": "Údaje o zaměstnání",
+      "deductibleItems": "Odpočitatelné položky",
+      "taxSavings": "Daňová úspora",
+      "additionalNotes": "Doplňující poznámky"
+    },
+    "fields": {
+      "fullName": "Jméno a příjmení",
+      "taxId": "DIČ",
+      "address": "Adresa",
+      "dateOfBirth": "Datum narození",
+      "email": "E-mail",
+      "employer": "Zaměstnavatel",
+      "annualIncome": "Roční příjem",
+      "commuteExpenses": "Náklady na dojíždění",
+      "secondHomeExpenses": "Náklady na druhé bydliště",
+      "workClothesExpenses": "Náklady na pracovní oblečení",
+      "educationExpenses": "Náklady na vzdělávání",
+      "insuranceExpenses": "Náklady na pojištění"
+    },
+    "calculations": {
+      "commuteFormula": "Dojíždění: {distance} km × {days} dní × 0,30 € = {total} €",
+      "savingsNote": "S těmito odpočty můžete ušetřit až {amount} € ročně na dani."
+    },
+    "footer": {
+      "generatedBy": "Vygenerováno systémem PendlerApp",
+      "contact": "www.pendlerapp.cz | info@pendlerapp.cz",
+      "date": "Datum vygenerování"
+    }
   }
 }

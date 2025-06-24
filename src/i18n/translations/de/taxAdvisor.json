@@ -201,5 +201,38 @@
       "antrag-lohnsteuerermassigung": "Antrag auf Lohnsteuerermäßigung",
       "arbeitsmittelnachweis": "Nachweis Arbeitsmittel"
     }
+  },
+  "pdf": {
+    "title": "Steuerdokument – Steuerzeitraum 2025",
+    "sections": {
+      "personalData": "Persönliche Daten",
+      "employmentData": "Beschäftigungsdaten",
+      "deductibleItems": "Abzugsfähige Posten",
+      "taxSavings": "Steuerersparnis",
+      "additionalNotes": "Zusätzliche Hinweise"
+    },
+    "fields": {
+      "fullName": "Vor- und Nachname",
+      "taxId": "Steuer-ID",
+      "address": "Adresse",
+      "dateOfBirth": "Geburtsdatum",
+      "email": "E-Mail",
+      "employer": "Arbeitgeber",
+      "annualIncome": "Jahreseinkommen",
+      "commuteExpenses": "Fahrtkosten",
+      "secondHomeExpenses": "Kosten zweiter Wohnsitz",
+      "workClothesExpenses": "Kosten Berufskleidung",
+      "educationExpenses": "Bildungskosten",
+      "insuranceExpenses": "Versicherungskosten"
+    },
+    "calculations": {
+      "commuteFormula": "Fahrtkosten: {distance} km × {days} Tage × 0,30 € = {total} €",
+      "savingsNote": "Mit diesen Abzügen können Sie bis zu {amount} € jährlich an Steuern sparen."
+    },
+    "footer": {
+      "generatedBy": "Erstellt mit PendlerApp",
+      "contact": "www.pendlerapp.cz | info@pendlerapp.cz",
+      "date": "Erstellungsdatum"
+    }
   }
 }

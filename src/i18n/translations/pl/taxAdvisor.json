@@ -201,5 +201,38 @@
       "antrag-lohnsteuerermassigung": "Wniosek o obniżenie podatku od wynagrodzeń",
       "arbeitsmittelnachweis": "Potwierdzenie narzędzi pracy"
     }
+  },
+  "pdf": {
+    "title": "Dokument podatkowy – Okres rozliczeniowy 2025",
+    "sections": {
+      "personalData": "Dane osobowe",
+      "employmentData": "Dane o zatrudnieniu",
+      "deductibleItems": "Pozycje odliczalne",
+      "taxSavings": "Oszczędność podatkowa",
+      "additionalNotes": "Dodatkowe uwagi"
+    },
+    "fields": {
+      "fullName": "Imię i nazwisko",
+      "taxId": "NIP",
+      "address": "Adres",
+      "dateOfBirth": "Data urodzenia",
+      "email": "E-mail",
+      "employer": "Pracodawca",
+      "annualIncome": "Roczny dochód",
+      "commuteExpenses": "Koszty dojazdu",
+      "secondHomeExpenses": "Koszty drugiego miejsca zamieszkania",
+      "workClothesExpenses": "Koszty odzieży roboczej",
+      "educationExpenses": "Koszty edukacji",
+      "insuranceExpenses": "Koszty ubezpieczenia"
+    },
+    "calculations": {
+      "commuteFormula": "Dojazdy: {distance} km × {days} dni × 0,30 € = {total} €",
+      "savingsNote": "Dzięki tym odliczeniom możesz zaoszczędzić do {amount} € rocznie na podatkach."
+    },
+    "footer": {
+      "generatedBy": "Wygenerowano przez PendlerApp",
+      "contact": "www.pendlerapp.cz | info@pendlerapp.cz",
+      "date": "Data wygenerowania"
+    }
   }
 }
