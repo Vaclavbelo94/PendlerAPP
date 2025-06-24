@@ -46,6 +46,11 @@
   "cancel": "Zrušit",
   "sendEmail": "Odeslat email",
   "sending": "Odesílám...",
+  "emailSent": "Email odeslán",
+  "translationSentTo": "Překlad byl odeslán na",
+  "emailSendError": "Chyba",
+  "createTranslationFirst": "Nejprve vytvořte překlad",
+  "emailSendFailed": "Nepodařilo se odeslat email",
   "languages": {
     "czech": "Čeština",
     "german": "Němčina",

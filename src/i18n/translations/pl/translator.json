@@ -50,6 +50,11 @@
   "cancel": "Anuluj",
   "sendEmail": "Wyślij e-mail",
   "sending": "Wysyłam...",
+  "emailSent": "E-mail wysłany",
+  "translationSentTo": "Tłumaczenie zostało wysłane na",
+  "emailSendError": "Błąd",
+  "createTranslationFirst": "Najpierw utwórz tłumaczenie",
+  "emailSendFailed": "Nie udało się wysłać e-maila",
   "languages": {
     "czech": "Czeski",
     "german": "Niemiecki",

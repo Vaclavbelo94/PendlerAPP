@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -67,8 +66,8 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
     if (!latestResponse || latestResponse.role !== 'assistant') {
       toast({
         variant: "destructive",
-        title: "Chyba",
-        description: "Nejprve vytvořte překlad"
+        title: t('translator:emailSendError'),
+        description: t('translator:createTranslationFirst')
       });
       return;
     }
@@ -89,8 +88,8 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
       if (error) throw error;
 
       toast({
-        title: "Email odeslán",
-        description: `Překlad byl odeslán na ${email}`
+        title: t('translator:emailSent'),
+        description: `${t('translator:translationSentTo')} ${email}`
       });
       
       setShowEmailDialog(false);
@@ -98,8 +97,8 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
       console.error('Error sending email:', error);
       toast({
         variant: "destructive",
-        title: "Chyba",
-        description: "Nepodařilo se odeslat email"
+        title: t('translator:emailSendError'),
+        description: t('translator:emailSendFailed')
       });
     } finally {
       setIsEmailLoading(false);
