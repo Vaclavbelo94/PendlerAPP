@@ -19,7 +19,7 @@ export const MobileCalendarGrid: React.FC<MobileCalendarGridProps> = ({
   shifts,
   onDateSelect
 }) => {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation('shifts');
 
   // Get appropriate date-fns locale
   const getDateLocale = () => {

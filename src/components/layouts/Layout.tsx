@@ -61,8 +61,8 @@ const Layout: React.FC<LayoutProps> = ({ children, navbarRightContent }) => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-xl font-semibold mb-2">Access Required</h2>
-          <p className="text-muted-foreground">Please log in to access this page.</p>
+          <h2 className="text-xl font-semibold mb-2">{t('accessRequired', 'Access Required')}</h2>
+          <p className="text-muted-foreground">{t('loginRequiredMessage', 'Please log in to access this page.')}</p>
         </div>
       </div>
     );

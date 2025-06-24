@@ -2,6 +2,7 @@
 import React from 'react';
 import { Shift } from '@/hooks/shifts/useOptimizedShiftsManagement';
 import { MobileShiftCalendarGrid } from './MobileShiftCalendarGrid';
+import { useTranslation } from 'react-i18next';
 import './MobileCalendarStyles.css';
 
 interface MobileShiftCalendarProps {
@@ -15,6 +16,8 @@ export const MobileShiftCalendar: React.FC<MobileShiftCalendarProps> = React.mem
   onEditShift,
   onDeleteShift
 }) => {
+  const { t } = useTranslation('shifts');
+
   return (
     <div className="mobile-calendar">
       <MobileShiftCalendarGrid

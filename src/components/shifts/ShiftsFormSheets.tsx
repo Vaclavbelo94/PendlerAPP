@@ -41,10 +41,10 @@ const ShiftsFormSheets: React.FC<ShiftsFormSheetsProps> = ({
           <SheetHeader>
             <SheetTitle className="flex items-center gap-2">
               <Calendar className="h-5 w-5" />
-              {t('addNewShift') || 'Přidat novou směnu'}
+              {t('addNewShift')}
             </SheetTitle>
             <SheetDescription>
-              {t('fillShiftDetails') || 'Vyplňte údaje o vaší pracovní směně. Všechna pole označená * jsou povinná.'}
+              {t('fillShiftDetails')}
             </SheetDescription>
           </SheetHeader>
           
@@ -63,10 +63,10 @@ const ShiftsFormSheets: React.FC<ShiftsFormSheetsProps> = ({
           <SheetHeader>
             <SheetTitle className="flex items-center gap-2">
               <Calendar className="h-5 w-5" />
-              {t('editShift') || 'Upravit směnu'}
+              {t('editShift')}
             </SheetTitle>
             <SheetDescription>
-              {t('editShiftDetails') || 'Upravte údaje o vaší pracovní směně.'}
+              {t('editShiftDetails')}
             </SheetDescription>
           </SheetHeader>
           
