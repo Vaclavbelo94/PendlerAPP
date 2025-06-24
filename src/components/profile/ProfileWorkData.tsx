@@ -156,7 +156,7 @@ const ProfileWorkData = () => {
           <div className="space-y-2">
             <Label htmlFor="workplaceLocation">{t('workplaceLocation')}</Label>
             <div className="relative">
-              <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground z-10" />
               <Input
                 id="workplaceLocation"
                 value={addressQuery || tempData.workplace_location}
@@ -171,21 +171,26 @@ const ProfileWorkData = () => {
                 className="pl-10"
               />
               {addressQuery && suggestions.length > 0 && (
-                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-auto">
+                <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg max-h-60 overflow-auto">
                   {suggestions.map((suggestion) => (
                     <button
                       key={suggestion.place_id}
                       type="button"
-                      className="w-full px-4 py-2 text-left hover:bg-gray-100 focus:bg-gray-100 text-sm"
+                      className="w-full px-4 py-3 text-left hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 text-sm border-b border-gray-100 dark:border-gray-700 last:border-b-0 transition-colors"
                       onClick={() => handleAddressSelect(suggestion)}
                     >
-                      {suggestion.display_name}
+                      <div className="flex items-start gap-2">
+                        <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                        <span className="text-gray-900 dark:text-gray-100 break-words">
+                          {suggestion.display_name}
+                        </span>
+                      </div>
                     </button>
                   ))}
                 </div>
               )}
               {addressLoading && (
-                <div className="absolute right-3 top-3">
+                <div className="absolute right-3 top-3 z-10">
                   <div className="animate-spin h-4 w-4 border-2 border-gray-300 border-t-blue-600 rounded-full"></div>
                 </div>
               )}
