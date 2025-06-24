@@ -7,7 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Crown, Star, Check, Zap, Shield, Rocket } from "lucide-react";
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '@/components/i18n/LanguageSwitcher';
-import { ModernLayout } from '@/components/modern/ModernLayout';
+import OptimizedLayout from '@/components/layouts/OptimizedLayout';
 
 const Premium = () => {
   const { isPremium } = useAuth();
@@ -37,12 +37,8 @@ const Premium = () => {
   ];
 
   return (
-    <ModernLayout>
+    <OptimizedLayout navbarRightContent={<LanguageSwitcher />}>
       <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <div className="flex justify-end mb-4">
-          <LanguageSwitcher />
-        </div>
-        
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold mb-4 flex items-center justify-center gap-2">
             <Crown className="h-8 w-8 text-amber-500" />
@@ -126,7 +122,7 @@ const Premium = () => {
           </div>
         )}
       </div>
-    </ModernLayout>
+    </OptimizedLayout>
   );
 };
 
