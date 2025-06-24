@@ -71,6 +71,7 @@ export const useShiftsData = ({ userId }: UseShiftsDataOptions) => {
       console.log('🌐 Loading from database...');
       const data = await optimizedErrorHandler.executeWithRetry(
         async () => {
+          // Využívá nový index idx_shifts_user_date pro optimální výkon
           const { data, error: fetchError } = await supabase
             .from('shifts')
             .select('*')
@@ -89,10 +90,17 @@ export const useShiftsData = ({ userId }: UseShiftsDataOptions) => {
         { maxRetries: isOnline ? 2 : 0 }
       );
 
-      const typedShifts = (data || []).map(shift => ({
-        ...shift,
-        type: shift.type as 'morning' | 'afternoon' | 'night'
-      }));
+      // Ensure proper type validation - now with SQL constraint backup
+      const typedShifts = (data || []).map(shift => {
+        // Type validation now backed by SQL constraint
+        if (!['morning', 'afternoon', 'night'].includes(shift.type)) {
+          console.warn('Invalid shift type detected:', shift.type, 'for shift:', shift.id);
+        }
+        return {
+          ...shift,
+          type: shift.type as 'morning' | 'afternoon' | 'night'
+        };
+      });
 
       console.log('📊 Processed shifts:', typedShifts.length);
       setShifts(typedShifts);
