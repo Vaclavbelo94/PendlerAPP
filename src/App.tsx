@@ -1,4 +1,3 @@
-
 import React, { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import './i18n/config'; // Initialize i18next
@@ -19,6 +18,7 @@ const Laws = lazy(() => import('@/pages/Laws'));
 const Settings = lazy(() => import('@/pages/Settings'));
 const Profile = lazy(() => import('@/pages/Profile'));
 const Premium = lazy(() => import('@/pages/Premium'));
+const Pricing = lazy(() => import('@/pages/Pricing'));
 const Contact = lazy(() => import('@/pages/Contact'));
 const FAQ = lazy(() => import('@/pages/FAQ'));
 const Admin = lazy(() => import('@/pages/Admin'));
@@ -125,7 +125,7 @@ function App() {
                   <Route path="/settings" element={<SafeLazyRoute Component={Settings} />} />
                   <Route path="/profile" element={<SafeLazyRoute Component={Profile} />} />
                   <Route path="/premium" element={<SafeLazyRoute Component={Premium} />} />
-                  <Route path="/pricing" element={<Navigate to="/premium" replace />} />
+                  <Route path="/pricing" element={<SafeLazyRoute Component={Pricing} />} />
                   <Route path="/contact" element={<SafeLazyRoute Component={Contact} />} />
                   <Route path="/faq" element={<SafeLazyRoute Component={FAQ} />} />
                   <Route path="/admin" element={<SafeLazyRoute Component={Admin} />} />
