@@ -1,7 +1,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { toast } from "sonner";
-import { useTheme } from "@/hooks/useTheme";
+import { useTheme } from "next-themes";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -15,22 +15,7 @@ export const useAppearanceSettings = (
     compactMode: boolean;
   }) => void
 ) => {
-  // Safely access theme context with fallback
-  let themeContext;
-  try {
-    themeContext = useTheme();
-  } catch (error) {
-    console.warn('ThemeProvider not available, using fallback values');
-    themeContext = {
-      theme: 'light',
-      setTheme: () => {},
-      colorScheme: 'purple',
-      setColorScheme: () => {},
-      isChangingTheme: false
-    };
-  }
-
-  const { theme, setTheme, colorScheme, setColorScheme, isChangingTheme } = themeContext;
+  const { theme, setTheme } = useTheme();
   const { user } = useAuth();
   
   // Add initialization state to prevent cycles
@@ -38,9 +23,11 @@ export const useAppearanceSettings = (
   const [hasLoadedFromDB, setHasLoadedFromDB] = useState(false);
   
   const [darkMode, setDarkMode] = useState(initialDarkMode);
+  const [colorScheme, setColorScheme] = useState(initialColorScheme);
   const [compactMode, setCompactMode] = useState(initialCompactMode);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isChangingTheme, setIsChangingTheme] = useState(false);
 
   // Debug logging
   useEffect(() => {
@@ -92,16 +79,13 @@ export const useAppearanceSettings = (
         
         // Set all states at once to prevent multiple re-renders
         setDarkMode(data.dark_mode);
+        setColorScheme(data.color_scheme);
         setCompactMode(data.compact_mode);
         
         // Apply theme settings from database
         const newTheme = data.dark_mode ? 'dark' : 'light';
-        if (setTheme && theme !== newTheme) {
+        if (theme !== newTheme) {
           setTheme(newTheme);
-        }
-        
-        if (setColorScheme && colorScheme !== data.color_scheme) {
-          setColorScheme(data.color_scheme as any);
         }
         
         setHasLoadedFromDB(true);
@@ -120,7 +104,7 @@ export const useAppearanceSettings = (
         setIsInitializing(false);
       }, 100);
     }
-  }, [user, setColorScheme, setTheme, theme, colorScheme]);
+  }, [user, setTheme, theme]);
 
   useEffect(() => {
     loadAppearanceSettings();
@@ -132,11 +116,15 @@ export const useAppearanceSettings = (
     
     console.log('AppearanceSettings: Manual dark mode change', { newDarkMode });
     setDarkMode(newDarkMode);
+    setIsChangingTheme(true);
     
-    if (setTheme) {
-      const newTheme = newDarkMode ? 'dark' : 'light';
-      setTheme(newTheme);
-    }
+    const newTheme = newDarkMode ? 'dark' : 'light';
+    setTheme(newTheme);
+    
+    // Reset changing theme state after a short delay
+    setTimeout(() => {
+      setIsChangingTheme(false);
+    }, 300);
   }, [isInitializing, isChangingTheme, setTheme]);
   
   const handleSave = useCallback(async () => {
@@ -206,10 +194,8 @@ export const useAppearanceSettings = (
     if (isInitializing) return;
     
     console.log('AppearanceSettings: Color scheme changing to', value);
-    if (setColorScheme) {
-      setColorScheme(value as any);
-    }
-  }, [setColorScheme, isInitializing]);
+    setColorScheme(value);
+  }, [isInitializing]);
 
   return {
     darkMode,
