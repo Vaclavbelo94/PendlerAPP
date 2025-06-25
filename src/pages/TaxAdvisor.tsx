@@ -1,75 +1,51 @@
 
-import React, { useState } from 'react';
-import { Helmet } from 'react-helmet';
-import { Calculator } from 'lucide-react';
+import React from "react";
+import { motion } from "framer-motion";
+import PremiumCheck from '@/components/premium/PremiumCheck';
+import TaxWizardCarousel from "@/components/tax-advisor/wizard/TaxWizardCarousel";
 import Layout from '@/components/layouts/Layout';
-import TaxAdvisorNavigation from '@/components/tax-advisor/TaxAdvisorNavigation';
-import TaxCalculatorTab from '@/components/tax-advisor/TaxCalculatorTab';
-import DocumentGenerator from '@/components/tax-advisor/DocumentGenerator';
-import TaxReturnGuide from '@/components/tax-advisor/TaxReturnGuide';
-import TaxAdvisorMobileCarousel from '@/components/tax-advisor/TaxAdvisorMobileCarousel';
-import DashboardBackground from '@/components/common/DashboardBackground';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 import { useTranslation } from 'react-i18next';
 
 const TaxAdvisor = () => {
   const { t } = useTranslation('common');
-  const [activeTab, setActiveTab] = useState('pendler');
-  const isMobile = useIsMobile();
-
-  const renderContent = () => {
-    switch (activeTab) {
-      case 'pendler':
-      case 'calculator':
-        return <TaxCalculatorTab />;
-      case 'documents':
-        return <DocumentGenerator />;
-      case 'guide':
-        return <TaxReturnGuide />;
-      case 'interactive':
-        return <TaxCalculatorTab />;
-      default:
-        return <TaxCalculatorTab />;
-    }
-  };
 
   return (
-    <Layout>
-      <Helmet>
-        <title>Daňový poradce | PendlerApp</title>
-        <meta name="description" content="Daňové poradenství a kalkulace" />
-      </Helmet>
-      
-      <DashboardBackground variant="default">
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="p-3 rounded-full bg-white/10 backdrop-blur-sm border border-white/20">
-              <Calculator className="h-8 w-8 text-white" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold text-white">Daňový poradce</h1>
-              <p className="text-white/80">Kalkulace daní a optimalizace</p>
-            </div>
+    <Layout navbarRightContent={<NavbarRightContent />}>
+      <PremiumCheck featureKey="tax-advisor">
+        <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-secondary/5">
+          <div className="fixed inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-20 right-10 w-32 h-32 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-full blur-xl animate-pulse" />
+            <div className="absolute bottom-20 left-20 w-24 h-24 bg-gradient-to-r from-green-500/20 to-purple-500/20 rounded-full blur-xl animate-pulse delay-1000" />
           </div>
 
-          {isMobile ? (
-            <TaxAdvisorMobileCarousel
-              activeTab={activeTab}
-              onTabChange={setActiveTab}
-            />
-          ) : (
-            <>
-              <TaxAdvisorNavigation
-                activeTab={activeTab}
-                onTabChange={setActiveTab}
-              />
-              <div className="mt-8">
-                {renderContent()}
-              </div>
-            </>
-          )}
+          <div className="relative z-10">
+            <div className="container max-w-6xl py-8 px-4">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="mb-8"
+              >
+                <h1 className="text-3xl md:text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-4">
+                  {t('taxAdvisor')}
+                </h1>
+                <p className="text-lg text-muted-foreground">
+                  {t('taxAdvisorDescription')}
+                </p>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+              >
+                <TaxWizardCarousel />
+              </motion.div>
+            </div>
+          </div>
         </div>
-      </DashboardBackground>
+      </PremiumCheck>
     </Layout>
   );
 };
