@@ -14,12 +14,17 @@ export const manuallyActivatePremiumForTestUser = async () => {
       // Fallback: try direct profile query
       const { data: userData, error: userError } = await supabase
         .from('profiles')
-        .select('*')
+        .select('id, email')
         .eq('email', 'test@gmail.com')
         .maybeSingle();
       
-      if (userError || !userData) {
-        console.error('User test@gmail.com not found:', userError);
+      if (userError) {
+        console.error('Error fetching user profile:', userError);
+        return { success: false, message: 'Database error' };
+      }
+      
+      if (!userData) {
+        console.error('User test@gmail.com not found');
         return { success: false, message: 'User not found' };
       }
       
