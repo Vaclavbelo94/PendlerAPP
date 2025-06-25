@@ -6,61 +6,27 @@ export const manuallyActivatePremiumForTestUser = async () => {
   console.log('=== MANUAL PREMIUM ACTIVATION START ===');
   
   try {
-    // Find the test user using a different approach to avoid 406 error
-    const { data: { users }, error: listUsersError } = await supabase.auth.admin.listUsers();
+    // Try to find the test user directly via profiles table to avoid auth admin issues
+    const { data: userData, error: userError } = await supabase
+      .from('profiles')
+      .select('id, email')
+      .eq('email', 'test@gmail.com')
+      .maybeSingle();
     
-    if (listUsersError) {
-      console.error('Error listing users:', listUsersError);
-      // Fallback: try direct profile query
-      const { data: userData, error: userError } = await supabase
-        .from('profiles')
-        .select('id, email')
-        .eq('email', 'test@gmail.com')
-        .maybeSingle();
-      
-      if (userError) {
-        console.error('Error fetching user profile:', userError);
-        return { success: false, message: 'Database error' };
-      }
-      
-      if (!userData) {
-        console.error('User test@gmail.com not found');
-        return { success: false, message: 'User not found' };
-      }
-      
-      console.log('Found test user via profiles:', userData);
-      
-      // Activate premium with DHL2025 promo code
-      const result = await activatePromoCode(userData.id, 'DHL2025');
-      
-      console.log('Manual activation result:', result);
-      
-      if (result.success) {
-        console.log('Premium successfully activated for test@gmail.com');
-        return { success: true, message: 'Premium activated successfully' };
-      } else {
-        console.error('Failed to activate premium:', result.message);
-        return { success: false, message: result.message };
-      }
+    if (userError) {
+      console.error('Error fetching user profile:', userError);
+      return { success: false, message: 'Database error' };
     }
-
-    // If we got here, listUsers was successful
-    if (!users) {
-      console.error('No users returned from listUsers');
-      return { success: false, message: 'No users found' };
-    }
-
-    const testUser = users.find(user => user.email === 'test@gmail.com');
     
-    if (!testUser) {
-      console.error('User test@gmail.com not found in user list');
+    if (!userData) {
+      console.error('User test@gmail.com not found');
       return { success: false, message: 'User not found' };
     }
     
-    console.log('Found test user:', testUser);
+    console.log('Found test user via profiles:', userData);
     
     // Activate premium with DHL2025 promo code
-    const result = await activatePromoCode(testUser.id, 'DHL2025');
+    const result = await activatePromoCode(userData.id, 'DHL2025');
     
     console.log('Manual activation result:', result);
     
