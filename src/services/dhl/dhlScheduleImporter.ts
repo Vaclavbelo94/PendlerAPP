@@ -80,6 +80,22 @@ export const importDHLSchedule = async (data: ImportScheduleData): Promise<Impor
       throw new Error('Authentication required');
     }
 
+    // Prepare metadata with proper typing for JSON field
+    const metadata = {
+      validation_summary: {
+        totalDays: validation.summary.totalDays,
+        totalShifts: validation.summary.totalShifts,
+        dateRange: validation.summary.dateRange,
+        detectedWoche: validation.summary.detectedWoche
+      },
+      import_timestamp: new Date().toISOString(),
+      warnings: validation.warnings.map(warning => ({
+        field: warning.field,
+        message: warning.message,
+        line: warning.line || null
+      }))
+    };
+
     // Log the import
     const { data: importData, error: importError } = await supabase
       .from('dhl_schedule_imports')
@@ -89,11 +105,7 @@ export const importDHLSchedule = async (data: ImportScheduleData): Promise<Impor
         file_name: data.fileName,
         import_status: 'success',
         records_processed: validation.summary.totalShifts,
-        metadata: {
-          validation_summary: validation.summary,
-          import_timestamp: new Date().toISOString(),
-          warnings: validation.warnings
-        }
+        metadata: metadata
       })
       .select('id')
       .single();
@@ -122,6 +134,17 @@ export const importDHLSchedule = async (data: ImportScheduleData): Promise<Impor
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
+        const errorMetadata = {
+          validation_summary: {
+            totalDays: validation.summary.totalDays,
+            totalShifts: validation.summary.totalShifts,
+            dateRange: validation.summary.dateRange,
+            detectedWoche: validation.summary.detectedWoche
+          },
+          import_timestamp: new Date().toISOString(),
+          error_details: error instanceof Error ? error.message : 'Unknown error'
+        };
+
         await supabase
           .from('dhl_schedule_imports')
           .insert({
@@ -131,11 +154,7 @@ export const importDHLSchedule = async (data: ImportScheduleData): Promise<Impor
             import_status: 'failed',
             records_processed: 0,
             error_message: error instanceof Error ? error.message : 'Unknown error',
-            metadata: {
-              validation_summary: validation.summary,
-              import_timestamp: new Date().toISOString(),
-              error_details: error
-            }
+            metadata: errorMetadata
           });
       }
     } catch (logError) {

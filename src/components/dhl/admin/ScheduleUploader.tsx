@@ -68,10 +68,16 @@ export const ScheduleUploader: React.FC = () => {
     event.preventDefault();
     const file = event.dataTransfer.files[0];
     if (file) {
-      // Create a synthetic event to reuse handleFileSelect
+      // Create a proper event object
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.files = event.dataTransfer.files;
+      
       const syntheticEvent = {
-        target: { files: [file] }
+        target: fileInput,
+        currentTarget: fileInput
       } as React.ChangeEvent<HTMLInputElement>;
+      
       handleFileSelect(syntheticEvent);
     }
   }, [handleFileSelect]);
