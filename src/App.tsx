@@ -20,6 +20,7 @@ import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import Vehicle from "./pages/Vehicle";
 import Premium from "./pages/Premium";
+import Admin from "./pages/Admin";
 import { LoadingSpinner } from "./components/ui/LoadingSpinner";
 import "./i18n/config";
 
@@ -48,6 +49,7 @@ function App() {
                   <Route path="/settings" element={<Settings />} />
                   <Route path="/vehicle" element={<Vehicle />} />
                   <Route path="/premium" element={<Premium />} />
+                  <Route path="/admin" element={<Admin />} />
                 </Routes>
               </Suspense>
               <Toaster />
