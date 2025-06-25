@@ -24,6 +24,8 @@ export const useDHLData = (userId?: string): UseDHLDataReturn => {
     try {
       setIsLoading(true);
       setError(null);
+      
+      console.log('Fetching DHL data...');
 
       // Načtení pozic
       const { data: positionsData, error: positionsError } = await supabase
@@ -37,6 +39,8 @@ export const useDHLData = (userId?: string): UseDHLDataReturn => {
         throw positionsError;
       }
 
+      console.log('Positions loaded:', positionsData);
+
       // Načtení pracovních skupin
       const { data: workGroupsData, error: workGroupsError } = await supabase
         .from('dhl_work_groups')
@@ -49,9 +53,13 @@ export const useDHLData = (userId?: string): UseDHLDataReturn => {
         throw workGroupsError;
       }
 
+      console.log('Work groups loaded:', workGroupsData);
+
       // Načtení uživatelského přiřazení (pokud je userId poskytnut)
       let assignmentData = null;
       if (userId) {
+        console.log('Fetching user assignment for user:', userId);
+        
         const { data, error: assignmentError } = await supabase
           .from('user_dhl_assignments')
           .select(`
@@ -67,6 +75,8 @@ export const useDHLData = (userId?: string): UseDHLDataReturn => {
           console.error('Error fetching assignment:', assignmentError);
           throw assignmentError;
         }
+        
+        console.log('User assignment loaded:', data);
         assignmentData = data;
       }
 
@@ -74,7 +84,7 @@ export const useDHLData = (userId?: string): UseDHLDataReturn => {
       setWorkGroups(workGroupsData || []);
       setUserAssignment(assignmentData);
 
-      console.log('DHL Data loaded:', {
+      console.log('DHL Data loaded successfully:', {
         positions: positionsData?.length,
         workGroups: workGroupsData?.length,
         userAssignment: assignmentData

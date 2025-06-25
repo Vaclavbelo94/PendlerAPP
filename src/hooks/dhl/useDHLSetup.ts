@@ -22,6 +22,8 @@ export const useDHLSetup = () => {
     setIsSubmitting(true);
     
     try {
+      console.log('Submitting DHL setup data:', data);
+      
       // Zkontrolujeme, zda už uživatel nemá DHL přiřazení
       const { data: existingAssignment, error: checkError } = await supabase
         .from('user_dhl_assignments')
@@ -35,6 +37,8 @@ export const useDHLSetup = () => {
         throw checkError;
       }
 
+      console.log('Existing assignment:', existingAssignment);
+
       if (existingAssignment) {
         // Aktualizujeme existující přiřazení
         const { error: updateError } = await supabase
@@ -46,7 +50,12 @@ export const useDHLSetup = () => {
           })
           .eq('id', existingAssignment.id);
 
-        if (updateError) throw updateError;
+        if (updateError) {
+          console.error('Error updating assignment:', updateError);
+          throw updateError;
+        }
+        
+        console.log('DHL assignment updated successfully');
       } else {
         // Vytvoříme nové přiřazení
         const { error: insertError } = await supabase
@@ -58,14 +67,19 @@ export const useDHLSetup = () => {
             is_active: true
           });
 
-        if (insertError) throw insertError;
+        if (insertError) {
+          console.error('Error creating assignment:', insertError);
+          throw insertError;
+        }
+        
+        console.log('DHL assignment created successfully');
       }
 
       toast.success('DHL nastavení bylo úspěšně uloženo!');
       return true;
     } catch (error) {
       console.error('Error saving DHL setup:', error);
-      toast.error('Chyba při ukládání nastavení');
+      toast.error('Chyba při ukládání nastavení: ' + (error as Error).message);
       return false;
     } finally {
       setIsSubmitting(false);
