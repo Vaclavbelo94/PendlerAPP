@@ -6,7 +6,7 @@ export const testDHL2026PromoCode = async () => {
   console.log('=== TESTING DHL2026 PROMO CODE ===');
   
   try {
-    // Nejdříve zkontrolujeme, zda promo kód existuje v databázi
+    // Kontrola existence DHL2026 v databázi
     console.log('1. Kontroluji existenci DHL2026 v databázi...');
     const { data: promoCode, error: fetchError } = await supabase
       .from('promo_codes')
@@ -21,7 +21,7 @@ export const testDHL2026PromoCode = async () => {
     
     console.log('✅ DHL2026 nalezen:', promoCode);
     
-    // Zkontrolujeme platnost
+    // Kontrola platnosti
     const validUntil = new Date(promoCode.valid_until);
     const now = new Date();
     console.log('2. Kontroluji platnost:', {
@@ -35,7 +35,7 @@ export const testDHL2026PromoCode = async () => {
       return { success: false, message: 'Promo kód vypršel' };
     }
     
-    // Zkontrolujeme počet použití
+    // Kontrola počtu použití
     console.log('3. Kontroluji limity použití:', {
       usedCount: promoCode.used_count,
       maxUses: promoCode.max_uses,
@@ -93,12 +93,12 @@ export const testPromoCodeActivation = async (userId: string) => {
   }
 };
 
-// Auto-spuštění testů při importu v prohlížeči
+// Optimalizované auto-spuštění testů
 if (typeof window !== 'undefined') {
   (window as any).testDHL2026PromoCode = testDHL2026PromoCode;
   (window as any).testPromoCodeActivation = testPromoCodeActivation;
   
-  // Automatický test při načtení
+  // Automatický test s optimalizovaným timingem
   setTimeout(() => {
     testDHL2026PromoCode().then(result => {
       console.log('=== VÝSLEDEK AUTOMATICKÉHO TESTU DHL2026 ===');
@@ -108,6 +108,8 @@ if (typeof window !== 'undefined') {
       } else {
         console.log('❌ Test selhal:', result.message);
       }
+    }).catch(error => {
+      console.error('❌ Chyba v automatickém testu:', error);
     });
-  }, 3000);
+  }, 2000);
 }
