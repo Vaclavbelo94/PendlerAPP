@@ -7,6 +7,12 @@ export interface Shift {
   notes?: string;
   created_at?: string;
   updated_at?: string;
+  // DHL specific fields
+  dhl_position_id?: string;
+  dhl_work_group_id?: string;
+  is_dhl_managed?: boolean;
+  dhl_override?: boolean;
+  original_dhl_data?: any;
 }
 
 export interface UseShiftsManagementReturn {

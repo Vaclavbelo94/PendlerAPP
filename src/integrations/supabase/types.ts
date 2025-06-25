@@ -87,6 +87,176 @@ export type Database = {
         }
         Relationships: []
       }
+      dhl_notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean
+          message: string
+          metadata: Json | null
+          notification_type: string
+          shift_id: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message: string
+          metadata?: Json | null
+          notification_type: string
+          shift_id?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          metadata?: Json | null
+          notification_type?: string
+          shift_id?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dhl_notifications_shift_id_fkey"
+            columns: ["shift_id"]
+            isOneToOne: false
+            referencedRelation: "shifts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dhl_positions: {
+        Row: {
+          created_at: string
+          description: string | null
+          hourly_rate: number | null
+          id: string
+          is_active: boolean
+          name: string
+          position_type: Database["public"]["Enums"]["dhl_position_type"]
+          requirements: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          hourly_rate?: number | null
+          id?: string
+          is_active?: boolean
+          name: string
+          position_type: Database["public"]["Enums"]["dhl_position_type"]
+          requirements?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          hourly_rate?: number | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          position_type?: Database["public"]["Enums"]["dhl_position_type"]
+          requirements?: string[] | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      dhl_shift_templates: {
+        Row: {
+          break_duration: number | null
+          created_at: string
+          day_of_week: number
+          end_time: string
+          id: string
+          is_required: boolean
+          position_id: string | null
+          start_time: string
+          updated_at: string
+          work_group_id: string | null
+        }
+        Insert: {
+          break_duration?: number | null
+          created_at?: string
+          day_of_week: number
+          end_time: string
+          id?: string
+          is_required?: boolean
+          position_id?: string | null
+          start_time: string
+          updated_at?: string
+          work_group_id?: string | null
+        }
+        Update: {
+          break_duration?: number | null
+          created_at?: string
+          day_of_week?: number
+          end_time?: string
+          id?: string
+          is_required?: boolean
+          position_id?: string | null
+          start_time?: string
+          updated_at?: string
+          work_group_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dhl_shift_templates_position_id_fkey"
+            columns: ["position_id"]
+            isOneToOne: false
+            referencedRelation: "dhl_positions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dhl_shift_templates_work_group_id_fkey"
+            columns: ["work_group_id"]
+            isOneToOne: false
+            referencedRelation: "dhl_work_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dhl_work_groups: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          shift_pattern: Json | null
+          updated_at: string
+          week_number: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          shift_pattern?: Json | null
+          updated_at?: string
+          week_number: number
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          shift_pattern?: Json | null
+          updated_at?: string
+          week_number?: number
+        }
+        Relationships: []
+      }
       email_logs: {
         Row: {
           email_type: string
@@ -841,8 +1011,13 @@ export type Database = {
         Row: {
           created_at: string | null
           date: string
+          dhl_override: boolean | null
+          dhl_position_id: string | null
+          dhl_work_group_id: string | null
           id: string
+          is_dhl_managed: boolean | null
           notes: string | null
+          original_dhl_data: Json | null
           type: string
           updated_at: string | null
           user_id: string
@@ -850,8 +1025,13 @@ export type Database = {
         Insert: {
           created_at?: string | null
           date: string
+          dhl_override?: boolean | null
+          dhl_position_id?: string | null
+          dhl_work_group_id?: string | null
           id?: string
+          is_dhl_managed?: boolean | null
           notes?: string | null
+          original_dhl_data?: Json | null
           type: string
           updated_at?: string | null
           user_id: string
@@ -859,13 +1039,33 @@ export type Database = {
         Update: {
           created_at?: string | null
           date?: string
+          dhl_override?: boolean | null
+          dhl_position_id?: string | null
+          dhl_work_group_id?: string | null
           id?: string
+          is_dhl_managed?: boolean | null
           notes?: string | null
+          original_dhl_data?: Json | null
           type?: string
           updated_at?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "shifts_dhl_position_id_fkey"
+            columns: ["dhl_position_id"]
+            isOneToOne: false
+            referencedRelation: "dhl_positions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shifts_dhl_work_group_id_fkey"
+            columns: ["dhl_work_group_id"]
+            isOneToOne: false
+            referencedRelation: "dhl_work_groups"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       subscribers: {
         Row: {
@@ -1124,6 +1324,54 @@ export type Database = {
           year?: string
         }
         Relationships: []
+      }
+      user_dhl_assignments: {
+        Row: {
+          assigned_at: string
+          created_at: string
+          dhl_position_id: string
+          dhl_work_group_id: string
+          id: string
+          is_active: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          assigned_at?: string
+          created_at?: string
+          dhl_position_id: string
+          dhl_work_group_id: string
+          id?: string
+          is_active?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          assigned_at?: string
+          created_at?: string
+          dhl_position_id?: string
+          dhl_work_group_id?: string
+          id?: string
+          is_active?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_dhl_assignments_dhl_position_id_fkey"
+            columns: ["dhl_position_id"]
+            isOneToOne: false
+            referencedRelation: "dhl_positions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_dhl_assignments_dhl_work_group_id_fkey"
+            columns: ["dhl_work_group_id"]
+            isOneToOne: false
+            referencedRelation: "dhl_work_groups"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_extended_profiles: {
         Row: {
@@ -1608,7 +1856,13 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      dhl_position_type:
+        | "technik"
+        | "rangierer"
+        | "verlader"
+        | "sortierer"
+        | "fahrer"
+        | "other"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1723,6 +1977,15 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      dhl_position_type: [
+        "technik",
+        "rangierer",
+        "verlader",
+        "sortierer",
+        "fahrer",
+        "other",
+      ],
+    },
   },
 } as const
