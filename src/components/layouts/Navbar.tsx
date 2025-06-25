@@ -1,9 +1,11 @@
+
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, User, LogOut, Crown, Shield } from "lucide-react";
+import { Menu, User, LogOut, Crown, Shield, Truck } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { canAccessDHLFeatures, canAccessDHLAdmin } from "@/utils/dhlAuthUtils";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,11 +26,17 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen }: NavbarProps) => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
 
+  // Check DHL access
+  const isDHLEmployee = canAccessDHLFeatures(user);
+  const isDHLAdmin = canAccessDHLAdmin(user);
+
   // Debug admin status
   React.useEffect(() => {
     console.log('Navbar Debug - User:', user?.email);
     console.log('Navbar Debug - isAdmin:', isAdmin);
-  }, [user, isAdmin]);
+    console.log('Navbar Debug - isDHLEmployee:', isDHLEmployee);
+    console.log('Navbar Debug - isDHLAdmin:', isDHLAdmin);
+  }, [user, isAdmin, isDHLEmployee, isDHLAdmin]);
 
   const handleSignOut = async () => {
     await signOut();
@@ -74,6 +82,27 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen }: NavbarProps) => {
         Premium
         {isPremium && <span className="text-xs bg-green-100 text-green-800 px-1 rounded">Active</span>}
       </Link>
+      {/* DHL Links */}
+      {isDHLEmployee && (
+        <Link
+          to="/dhl-dashboard"
+          className={`${mobile ? 'block py-2' : ''} text-foreground hover:text-yellow-600 transition-colors flex items-center gap-1`}
+          onClick={onLinkClick}
+        >
+          <Truck className="h-4 w-4 text-yellow-600" />
+          DHL Dashboard
+        </Link>
+      )}
+      {isDHLAdmin && (
+        <Link
+          to="/dhl-admin"
+          className={`${mobile ? 'block py-2' : ''} text-foreground hover:text-yellow-600 transition-colors flex items-center gap-1`}
+          onClick={onLinkClick}
+        >
+          <Truck className="h-4 w-4 text-yellow-600" />
+          DHL Admin
+        </Link>
+      )}
       {isAdmin && (
         <Link
           to="/admin"
@@ -139,6 +168,12 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen }: NavbarProps) => {
                                 <span className="text-xs text-muted-foreground">Admin</span>
                               </div>
                             )}
+                            {isDHLEmployee && (
+                              <div className="flex items-center gap-1">
+                                <Truck className="h-3 w-3 text-yellow-600" />
+                                <span className="text-xs text-muted-foreground">DHL</span>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -151,6 +186,19 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen }: NavbarProps) => {
                         <Crown className="mr-2 h-4 w-4 text-yellow-500" />
                         Premium
                       </DropdownMenuItem>
+                      {/* DHL Dropdown Items */}
+                      {isDHLEmployee && (
+                        <DropdownMenuItem onClick={() => navigate('/dhl-dashboard')}>
+                          <Truck className="mr-2 h-4 w-4 text-yellow-600" />
+                          DHL Dashboard
+                        </DropdownMenuItem>
+                      )}
+                      {isDHLAdmin && (
+                        <DropdownMenuItem onClick={() => navigate('/dhl-admin')}>
+                          <Truck className="mr-2 h-4 w-4 text-yellow-600" />
+                          DHL Admin
+                        </DropdownMenuItem>
+                      )}
                       {isAdmin && (
                         <DropdownMenuItem onClick={() => navigate('/admin')}>
                           <Shield className="mr-2 h-4 w-4 text-red-500" />
@@ -196,10 +244,39 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen }: NavbarProps) => {
                                   <span className="text-xs text-muted-foreground">Admin</span>
                                 </div>
                               )}
+                              {isDHLEmployee && (
+                                <div className="flex items-center gap-1">
+                                  <Truck className="h-3 w-3 text-yellow-600" />
+                                  <span className="text-xs text-muted-foreground">DHL</span>
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>
                         <NavLinks mobile onLinkClick={() => setIsOpen(false)} />
+                        
+                        {/* Mobile DHL Buttons */}
+                        {isDHLEmployee && (
+                          <Button 
+                            variant="outline" 
+                            onClick={() => { navigate('/dhl-dashboard'); setIsOpen(false); }}
+                            className="border-yellow-200 hover:bg-yellow-50"
+                          >
+                            <Truck className="mr-2 h-4 w-4 text-yellow-600" />
+                            DHL Dashboard
+                          </Button>
+                        )}
+                        {isDHLAdmin && (
+                          <Button 
+                            variant="outline" 
+                            onClick={() => { navigate('/dhl-admin'); setIsOpen(false); }}
+                            className="border-yellow-200 hover:bg-yellow-50"
+                          >
+                            <Truck className="mr-2 h-4 w-4 text-yellow-600" />
+                            DHL Admin
+                          </Button>
+                        )}
+                        
                         <Button variant="outline" onClick={() => { navigate('/profile'); setIsOpen(false); }}>
                           <User className="mr-2 h-4 w-4" />
                           Profil
