@@ -1,4 +1,3 @@
-
 import { parseTimeToMinutes } from '@/utils/dhl/wocheCalculator';
 
 export interface ValidationError {
@@ -20,6 +19,48 @@ export interface ValidationResult {
 }
 
 /**
+ * Convert entries-based JSON format to internal format
+ */
+const convertEntriesToInternalFormat = (data: any): any => {
+  console.log('Converting entries format to internal format...');
+  
+  if (!data.entries || !Array.isArray(data.entries)) {
+    console.log('No entries array found, assuming already in internal format');
+    return data;
+  }
+
+  const converted: any = {
+    base_date: data.base_date || null,
+    woche: null, // Will be extracted from first entry
+    position: data.position || null,
+    description: data.description || null
+  };
+
+  // Convert entries to date-keyed format
+  data.entries.forEach((entry: any, index: number) => {
+    if (!entry.date) {
+      console.warn(`Entry ${index} missing date field`);
+      return;
+    }
+
+    // Extract Woche from first valid entry
+    if (converted.woche === null && entry.woche) {
+      converted.woche = entry.woche;
+    }
+
+    converted[entry.date] = {
+      start_time: entry.start || entry.start_time,
+      end_time: entry.end || entry.end_time,
+      day: entry.day,
+      woche: entry.woche
+    };
+  });
+
+  console.log('Converted format:', converted);
+  return converted;
+};
+
+/**
  * Validate imported DHL schedule JSON data
  */
 export const validateScheduleData = (data: any, fileName: string): ValidationResult => {
@@ -33,7 +74,7 @@ export const validateScheduleData = (data: any, fileName: string): ValidationRes
 
   console.log('=== SCHEDULE VALIDATION START ===');
   console.log('File name:', fileName);
-  console.log('Data structure:', data);
+  console.log('Original data structure:', data);
 
   // Check basic structure
   if (!data || typeof data !== 'object') {
@@ -49,9 +90,13 @@ export const validateScheduleData = (data: any, fileName: string): ValidationRes
     };
   }
 
+  // Convert to internal format if needed
+  const internalData = convertEntriesToInternalFormat(data);
+  console.log('Using internal format:', internalData);
+
   // Check for required root fields
-  if (data.base_date) {
-    if (!isValidDate(data.base_date)) {
+  if (internalData.base_date) {
+    if (!isValidDate(internalData.base_date)) {
       errors.push({
         field: 'base_date',
         message: 'Invalid base_date format. Expected YYYY-MM-DD.'
@@ -64,8 +109,8 @@ export const validateScheduleData = (data: any, fileName: string): ValidationRes
     });
   }
 
-  if (data.woche) {
-    const woche = parseInt(data.woche);
+  if (internalData.woche) {
+    const woche = parseInt(internalData.woche);
     if (isNaN(woche) || woche < 1 || woche > 15) {
       errors.push({
         field: 'woche',
@@ -82,8 +127,8 @@ export const validateScheduleData = (data: any, fileName: string): ValidationRes
   }
 
   // Validate shift entries - improved to handle different JSON structures
-  Object.keys(data).forEach(key => {
-    console.log('Processing key:', key, 'Value:', data[key]);
+  Object.keys(internalData).forEach(key => {
+    console.log('Processing key:', key, 'Value:', internalData[key]);
     
     // Skip metadata fields
     if (['base_date', 'woche', 'position', 'description'].includes(key)) {
@@ -98,7 +143,7 @@ export const validateScheduleData = (data: any, fileName: string): ValidationRes
       if (!minDate || key < minDate) minDate = key;
       if (!maxDate || key > maxDate) maxDate = key;
 
-      const dayData = data[key];
+      const dayData = internalData[key];
       console.log('Processing date:', key, 'Data:', dayData);
       
       if (!dayData || typeof dayData !== 'object') {
@@ -281,14 +326,17 @@ const isValidDayOfWeek = (day: string): boolean => {
 };
 
 /**
- * Extract metadata from schedule for preview
+ * Extract metadata from schedule for preview - updated for entries format
  */
 export const extractScheduleMetadata = (data: any) => {
+  // Convert to internal format first
+  const internalData = convertEntriesToInternalFormat(data);
+  
   const metadata = {
-    baseDate: data.base_date || null,
-    woche: data.woche || null,
-    position: data.position || null,
-    description: data.description || null,
+    baseDate: internalData.base_date || null,
+    woche: internalData.woche || null,
+    position: internalData.position || null,
+    description: internalData.description || null,
     shiftCount: 0,
     dateRange: null as { start: string; end: string } | null,
     weekDays: [] as string[]
@@ -297,14 +345,14 @@ export const extractScheduleMetadata = (data: any) => {
   const dates: string[] = [];
   const weekDays = new Set<string>();
 
-  Object.keys(data).forEach(key => {
+  Object.keys(internalData).forEach(key => {
     if (isValidDate(key)) {
       dates.push(key);
       const date = new Date(key);
       const dayName = date.toLocaleDateString('cs-CZ', { weekday: 'long' });
       weekDays.add(dayName);
       
-      if (data[key] && (data[key].start_time || data[key].end_time)) {
+      if (internalData[key] && (internalData[key].start_time || internalData[key].end_time)) {
         metadata.shiftCount++;
       }
     }

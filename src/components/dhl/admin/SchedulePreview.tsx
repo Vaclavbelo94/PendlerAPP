@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -24,15 +23,59 @@ export const SchedulePreview: React.FC<SchedulePreviewProps> = ({
     );
   }
 
-  // Extract shift entries (dates with time data)
-  const shiftEntries = Object.entries(scheduleData)
-    .filter(([key, value]) => 
-      key.match(/^\d{4}-\d{2}-\d{2}$/) && 
-      value && 
-      typeof value === 'object' && 
-      (value as any).start_time
-    )
-    .slice(0, 5); // Show first 5 entries
+  // Handle both formats - entries array and direct date keys
+  const getShiftEntries = (data: any) => {
+    // If data has entries array, use it
+    if (data.entries && Array.isArray(data.entries)) {
+      return data.entries
+        .filter((entry: any) => entry.date && (entry.start || entry.start_time))
+        .slice(0, 5)
+        .map((entry: any) => [
+          entry.date,
+          {
+            start_time: entry.start || entry.start_time,
+            end_time: entry.end || entry.end_time,
+            day: entry.day,
+            woche: entry.woche
+          }
+        ]);
+    }
+
+    // Otherwise extract from date keys
+    return Object.entries(data)
+      .filter(([key, value]) => 
+        key.match(/^\d{4}-\d{2}-\d{2}$/) && 
+        value && 
+        typeof value === 'object' && 
+        (value as any).start_time
+      )
+      .slice(0, 5);
+  };
+
+  const shiftEntries = getShiftEntries(scheduleData);
+
+  // Extract metadata based on format
+  const getMetadata = (data: any) => {
+    if (data.entries && Array.isArray(data.entries)) {
+      // Entries format
+      return {
+        base_date: data.base_date,
+        woche: data.entries.length > 0 ? data.entries[0].woche : null,
+        position: data.position,
+        description: data.description
+      };
+    }
+    
+    // Direct format
+    return {
+      base_date: data.base_date,
+      woche: data.woche,
+      position: data.position,
+      description: data.description
+    };
+  };
+
+  const metadata = getMetadata(scheduleData);
 
   return (
     <div className="space-y-4">
@@ -49,19 +92,26 @@ export const SchedulePreview: React.FC<SchedulePreviewProps> = ({
         <CardContent className="space-y-4">
           {/* Metadata */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {scheduleData.base_date && (
+            {metadata.base_date && (
               <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4 text-muted-foreground" />
                 <div className="text-sm">
                   <div className="font-medium">Referenční datum</div>
-                  <div className="text-muted-foreground">{scheduleData.base_date}</div>
+                  <div className="text-muted-foreground">{metadata.base_date}</div>
                 </div>
               </div>
             )}
             
-            {scheduleData.woche && (
+            {metadata.woche && (
               <div className="flex items-center gap-2">
-                <Badge variant="secondary">Woche {scheduleData.woche}</Badge>
+                <Badge variant="secondary">Woche {metadata.woche}</Badge>
+              </div>
+            )}
+
+            {metadata.position && (
+              <div className="text-sm">
+                <div className="font-medium">Pozice</div>
+                <div className="text-muted-foreground">{metadata.position}</div>
               </div>
             )}
             
@@ -95,6 +145,9 @@ export const SchedulePreview: React.FC<SchedulePreviewProps> = ({
                           {shiftData.day && (
                             <div className="text-sm text-muted-foreground">{shiftData.day}</div>
                           )}
+                          {shiftData.woche && (
+                            <div className="text-xs text-muted-foreground">Woche {shiftData.woche}</div>
+                          )}
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
@@ -106,15 +159,21 @@ export const SchedulePreview: React.FC<SchedulePreviewProps> = ({
                     </div>
                   );
                 })}
-                {Object.keys(scheduleData).filter(key => 
-                  key.match(/^\d{4}-\d{2}-\d{2}$/) && scheduleData[key]?.start_time
-                ).length > 5 && (
-                  <div className="text-sm text-muted-foreground text-center py-2">
-                    ... a {Object.keys(scheduleData).filter(key => 
-                      key.match(/^\d{4}-\d{2}-\d{2}$/) && scheduleData[key]?.start_time
-                    ).length - 5} dalších směn
-                  </div>
-                )}
+                
+                {/* Count total shifts for display */}
+                {(() => {
+                  const totalShifts = scheduleData.entries 
+                    ? scheduleData.entries.filter((entry: any) => entry.date && (entry.start || entry.start_time)).length
+                    : Object.keys(scheduleData).filter(key => 
+                        key.match(/^\d{4}-\d{2}-\d{2}$/) && scheduleData[key]?.start_time
+                      ).length;
+                  
+                  return totalShifts > 5 && (
+                    <div className="text-sm text-muted-foreground text-center py-2">
+                      ... a {totalShifts - 5} dalších směn
+                    </div>
+                  );
+                })()}
               </div>
             </div>
           )}

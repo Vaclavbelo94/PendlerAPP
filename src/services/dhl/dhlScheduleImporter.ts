@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { validateScheduleData, ValidationResult } from './scheduleValidator';
 import { toast } from 'sonner';
@@ -18,6 +17,46 @@ export interface ImportResult {
   validation: ValidationResult;
   message: string;
 }
+
+/**
+ * Convert entries format to internal storage format
+ */
+const convertToStorageFormat = (data: any): any => {
+  console.log('Converting data for storage...');
+  
+  // If data has entries array, convert it
+  if (data.entries && Array.isArray(data.entries)) {
+    const converted: any = {
+      base_date: data.base_date || new Date().toISOString().split('T')[0],
+      woche: null,
+      position: data.position,
+      description: data.description
+    };
+
+    // Convert entries to date-keyed format
+    data.entries.forEach((entry: any) => {
+      if (entry.date) {
+        // Extract Woche from first valid entry
+        if (converted.woche === null && entry.woche) {
+          converted.woche = entry.woche;
+        }
+
+        converted[entry.date] = {
+          start_time: entry.start || entry.start_time,
+          end_time: entry.end || entry.end_time,
+          day: entry.day,
+          woche: entry.woche
+        };
+      }
+    });
+
+    console.log('Converted to storage format:', converted);
+    return converted;
+  }
+
+  // Already in internal format
+  return data;
+};
 
 /**
  * Import DHL schedule from JSON data
@@ -40,9 +79,12 @@ export const importDHLSchedule = async (data: ImportScheduleData): Promise<Impor
   }
 
   try {
-    // Extract base information from JSON
-    const baseDate = data.jsonData.base_date || new Date().toISOString().split('T')[0];
-    const baseWoche = data.jsonData.woche || 1;
+    // Convert to storage format
+    const storageData = convertToStorageFormat(data.jsonData);
+    
+    // Extract base information from converted data
+    const baseDate = storageData.base_date || new Date().toISOString().split('T')[0];
+    const baseWoche = storageData.woche || 1;
 
     console.log('Inserting schedule data:', {
       positionId: data.positionId,
@@ -59,7 +101,7 @@ export const importDHLSchedule = async (data: ImportScheduleData): Promise<Impor
         position_id: data.positionId,
         work_group_id: data.workGroupId,
         schedule_name: data.scheduleName,
-        schedule_data: data.jsonData,
+        schedule_data: storageData, // Store converted format
         base_date: baseDate,
         base_woche: baseWoche,
         is_active: true
@@ -249,10 +291,11 @@ export const updateSchedule = async (scheduleId: string, updates: Partial<Import
   }
   
   if (updates.jsonData) {
-    updateData.schedule_data = updates.jsonData;
+    const storageData = convertToStorageFormat(updates.jsonData);
+    updateData.schedule_data = storageData;
     // Re-extract base information
-    updateData.base_date = updates.jsonData.base_date || updateData.base_date;
-    updateData.base_woche = updates.jsonData.woche || updateData.base_woche;
+    updateData.base_date = storageData.base_date || updateData.base_date;
+    updateData.base_woche = storageData.woche || updateData.base_woche;
   }
 
   const { error } = await supabase

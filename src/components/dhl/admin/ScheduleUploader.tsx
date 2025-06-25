@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -41,16 +40,23 @@ export const ScheduleUploader: React.FC = () => {
       try {
         const content = e.target?.result as string;
         const parsed = JSON.parse(content);
+        console.log('Parsed JSON data:', parsed);
         setJsonData(parsed);
         
         // Validate immediately
         const validationResult = validateScheduleData(parsed, file.name);
+        console.log('Validation result:', validationResult);
         setValidation(validationResult);
         
         // Auto-fill schedule name if not set
         if (!formData.scheduleName) {
           const baseName = file.name.replace('.json', '');
           setFormData(prev => ({ ...prev, scheduleName: baseName }));
+        }
+        
+        // Show success message for entries format
+        if (parsed.entries && Array.isArray(parsed.entries)) {
+          toast.success(`Detekován entries formát s ${parsed.entries.length} záznamy`);
         }
         
       } catch (error) {
@@ -64,6 +70,7 @@ export const ScheduleUploader: React.FC = () => {
     reader.readAsText(file);
   }, [formData.scheduleName]);
 
+  
   const handleDrop = useCallback((event: React.DragEvent) => {
     event.preventDefault();
     const file = event.dataTransfer.files[0];
@@ -106,6 +113,14 @@ export const ScheduleUploader: React.FC = () => {
     setIsImporting(true);
 
     try {
+      console.log('Starting import with data:', {
+        positionId: formData.positionId,
+        workGroupId: formData.workGroupId,
+        scheduleName: formData.scheduleName,
+        jsonDataType: jsonData.entries ? 'entries' : 'direct',
+        fileName: selectedFile.name
+      });
+
       const importData: ImportScheduleData = {
         positionId: formData.positionId,
         workGroupId: formData.workGroupId,
@@ -118,6 +133,8 @@ export const ScheduleUploader: React.FC = () => {
 
       if (result.success) {
         toast.success(result.message);
+        console.log('Import successful:', result);
+        
         // Reset form
         clearFile();
         setFormData({
@@ -127,6 +144,7 @@ export const ScheduleUploader: React.FC = () => {
         });
       } else {
         toast.error(`Import failed: ${result.message}`);
+        console.error('Import failed:', result);
       }
     } catch (error) {
       console.error('Import error:', error);
@@ -168,6 +186,11 @@ export const ScheduleUploader: React.FC = () => {
                 <p className="text-sm text-muted-foreground">
                   {(selectedFile.size / 1024).toFixed(1)} KB
                 </p>
+                {jsonData?.entries && (
+                  <p className="text-xs text-blue-600">
+                    Entries formát • {jsonData.entries.length} záznamů
+                  </p>
+                )}
               </div>
               <Button 
                 variant="ghost" 
@@ -201,8 +224,14 @@ export const ScheduleUploader: React.FC = () => {
                   {validation.summary.detectedWoche && (
                     <p>Detekované Woche: <Badge variant="secondary">{validation.summary.detectedWoche}</Badge></p>
                   )}
+                  {validation.summary.dateRange && (
+                    <p className="text-xs text-muted-foreground">
+                      {validation.summary.dateRange.start} - {validation.summary.dateRange.end}
+                    </p>
+                  )}
                 </div>
 
+                
                 {validation.errors.length > 0 && (
                   <div className="mt-4 p-3 bg-red-50 dark:bg-red-950/20 rounded border border-red-200">
                     <h4 className="font-medium text-red-800 dark:text-red-200 mb-2">Chyby:</h4>
@@ -232,7 +261,9 @@ export const ScheduleUploader: React.FC = () => {
             <Upload className="h-12 w-12 text-muted-foreground mx-auto" />
             <div>
               <p className="text-lg font-medium">Přetáhněte JSON soubor nebo klikněte pro výběr</p>
-              <p className="text-sm text-muted-foreground">Podporované formáty: JSON</p>
+              <p className="text-sm text-muted-foreground">
+                Podporované formáty: JSON (s entries array nebo přímé datum-klíče)
+              </p>
             </div>
             <Input
               type="file"
@@ -244,6 +275,8 @@ export const ScheduleUploader: React.FC = () => {
         )}
       </div>
 
+      
+      
       {/* Import Form */}
       {selectedFile && validation?.isValid && (
         <Card>
@@ -294,7 +327,7 @@ export const ScheduleUploader: React.FC = () => {
                 id="scheduleName"
                 value={formData.scheduleName}
                 onChange={(e) => setFormData(prev => ({ ...prev, scheduleName: e.target.value }))}
-                placeholder="Např. Technik - Týden 1 - Leden 2025"
+                placeholder="Např. Sortierer - Týden 1 - Leden 2025"
               />
             </div>
 
