@@ -1,11 +1,10 @@
+
 import React from 'react';
 import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import { AuthProvider } from '@/hooks/auth';
 import { StandardizedToast } from '@/components/ui/standardized-toast';
 import Dashboard from '@/pages/Dashboard';
@@ -35,6 +34,7 @@ import Contact from '@/pages/Contact';
 import About from '@/pages/About';
 import DHLDashboard from '@/pages/DHLDashboard';
 import DHLAdmin from '@/pages/DHLAdmin';
+import DHLSetup from '@/pages/DHLSetup';
 
 const queryClient = new QueryClient();
 
@@ -147,6 +147,10 @@ const router = createBrowserRouter([
   {
     path: "/dhl-admin",
     element: <DHLAdmin />,
+  },
+  {
+    path: "/dhl-setup",
+    element: <DHLSetup />,
   },
 ]);
 
