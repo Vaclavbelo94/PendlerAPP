@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -24,8 +23,15 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { canAccessDHLFeatures, isDHLAdmin } from '@/utils/dhlAuthUtils';
+import { ReactNode } from 'react';
 
-const Navbar = () => {
+interface NavbarProps {
+  toggleSidebar?: () => void;
+  rightContent?: ReactNode;
+  sidebarOpen?: boolean;
+}
+
+const Navbar = ({ toggleSidebar, rightContent, sidebarOpen }: NavbarProps) => {
   const { user, isAdmin, isPremium } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -264,10 +270,13 @@ const Navbar = () => {
             )}
           </div>
 
+          {/* Custom right content */}
+          {rightContent}
+
           {/* Mobile Menu */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild className="md:hidden">
-              <Button variant="outline" size="icon">
+              <Button variant="outline" size="icon" onClick={toggleSidebar}>
                 <Menu className="h-4 w-4" />
               </Button>
             </SheetTrigger>
