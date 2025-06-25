@@ -21,12 +21,6 @@ export const useDHLAuth = () => {
         const authState = await getDHLAuthState(user);
         console.log('DHL auth state loaded:', authState);
         setDhlAuthState(authState);
-        
-        // Handle automatic redirects only if user needs setup
-        if (authState.needsSetup && window.location.pathname !== '/dhl-setup') {
-          console.log('User needs DHL setup, redirecting...');
-          window.location.href = '/dhl-setup';
-        }
       } catch (error) {
         console.error('Error loading DHL auth state:', error);
         setDhlAuthState(null);

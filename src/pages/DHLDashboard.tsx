@@ -1,8 +1,9 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
-import { Truck, Calendar, Clock, MapPin } from 'lucide-react';
+import { Truck, Calendar, Clock, MapPin, AlertCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
 import { useDHLAuth } from '@/hooks/useDHLAuth';
@@ -10,11 +11,13 @@ import Layout from '@/components/layouts/Layout';
 import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 
 const DHLDashboard: React.FC = () => {
   const { t } = useTranslation(['common']);
+  const navigate = useNavigate();
   const { user } = useAuth();
-  const { canAccessDHLFeatures, isLoading, dhlAuthState } = useDHLAuth();
+  const { dhlAuthState, isLoading } = useDHLAuth();
 
   // Show loading state
   if (isLoading) {
@@ -30,21 +33,37 @@ const DHLDashboard: React.FC = () => {
     );
   }
 
+  // Check if user needs setup
+  if (dhlAuthState?.needsSetup) {
+    return (
+      <Layout navbarRightContent={<NavbarRightContent />}>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center space-y-4">
+            <AlertCircle className="h-16 w-16 text-yellow-500 mx-auto" />
+            <h2 className="text-xl font-semibold">Dokončete DHL nastavení</h2>
+            <p className="text-muted-foreground">
+              Před přístupem k dashboardu musíte dokončit nastavení.
+            </p>
+            <Button onClick={() => navigate('/dhl-setup')}>
+              Dokončit nastavení
+            </Button>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
   // Check access
-  if (!canAccessDHLFeatures) {
+  if (!dhlAuthState?.canAccessDHLFeatures) {
     return (
       <Layout navbarRightContent={<NavbarRightContent />}>
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
+            <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
             <h2 className="text-xl font-semibold mb-2">Přístup zamítnut</h2>
             <p className="text-muted-foreground">
               Nemáte oprávnění k přístupu do DHL dashboardu.
             </p>
-            {dhlAuthState?.needsSetup && (
-              <p className="text-sm text-blue-600 mt-2">
-                Dokončete prosím DHL nastavení.
-              </p>
-            )}
           </div>
         </div>
       </Layout>
