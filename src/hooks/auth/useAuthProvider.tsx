@@ -1,11 +1,10 @@
-
 import * as React from 'react';
 import { useState, useCallback } from 'react';
 import { AuthContext } from './useAuthContext';
 import { useAuthState } from './useAuthState';
 import { useAuthMethods } from './useAuthMethods';
 import { usePremiumStatus } from '@/hooks/usePremiumStatus';
-import { getDHLRedirectPath, canAccessDHLAdmin } from '@/utils/dhlAuthUtils';
+import { getDHLRedirectPath, canAccessDHLAdmin, isDHLEmployee } from '@/utils/dhlAuthUtils';
 import { 
   cleanupAuthState, 
   saveUserToLocalStorage, 
@@ -25,6 +24,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const { user, session, isLoading, error } = authState;
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminStatusLoaded, setAdminStatusLoaded] = useState(false);
+  const [hasCheckedDHLRedirect, setHasCheckedDHLRedirect] = useState(false);
   const authMethods = useAuthMethods();
 
   // Initialize localStorage cleanup on mount
@@ -56,18 +56,78 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
       
       console.log('User identity verified successfully');
-      
-      // Handle DHL admin redirect
-      if (canAccessDHLAdmin(user)) {
-        const currentPath = window.location.pathname;
-        if (currentPath === '/dashboard' || currentPath === '/') {
-          console.log('Redirecting DHL admin to DHL admin panel');
-          window.location.href = '/dhl-admin';
-          return;
-        }
-      }
     }
   }, [user, session]);
+
+  // DHL automatic redirection logic
+  React.useEffect(() => {
+    if (!user || isLoading || hasCheckedDHLRedirect) return;
+
+    const handleDHLRedirect = async () => {
+      console.log('=== DHL REDIRECT CHECK ===');
+      console.log('User:', user.email);
+      console.log('Current path:', window.location.pathname);
+      
+      const isDHL = isDHLEmployee(user);
+      console.log('Is DHL Employee:', isDHL);
+
+      if (!isDHL) {
+        setHasCheckedDHLRedirect(true);
+        return;
+      }
+
+      // Skip redirect if user is already on DHL pages
+      const currentPath = window.location.pathname;
+      if (currentPath.startsWith('/dhl-')) {
+        console.log('User already on DHL page, skipping redirect');
+        setHasCheckedDHLRedirect(true);
+        return;
+      }
+
+      // Check if user has DHL assignment
+      try {
+        console.log('Checking DHL assignment for user:', user.id);
+        const { data: assignment, error } = await supabase
+          .from('user_dhl_assignments')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('is_active', true)
+          .maybeSingle();
+
+        if (error) {
+          console.error('Error checking DHL assignment:', error);
+          setHasCheckedDHLRedirect(true);
+          return;
+        }
+
+        console.log('DHL assignment found:', !!assignment);
+
+        // Redirect based on assignment status
+        if (!assignment) {
+          console.log('DHL user without assignment - redirecting to setup');
+          window.location.href = '/dhl-setup';
+        } else if (currentPath === '/' || currentPath === '/dashboard') {
+          console.log('DHL user with assignment - redirecting to dashboard');
+          window.location.href = '/dhl-dashboard';
+        }
+      } catch (error) {
+        console.error('Error in DHL redirect check:', error);
+      } finally {
+        setHasCheckedDHLRedirect(true);
+      }
+    };
+
+    // Small delay to ensure user data is fully loaded
+    const timer = setTimeout(handleDHLRedirect, 1000);
+    return () => clearTimeout(timer);
+  }, [user, isLoading, hasCheckedDHLRedirect]);
+
+  // Reset redirect check when user changes
+  React.useEffect(() => {
+    if (!user) {
+      setHasCheckedDHLRedirect(false);
+    }
+  }, [user]);
 
   const refreshAdminStatus = useCallback(async () => {
     if (!user || adminStatusLoaded) {

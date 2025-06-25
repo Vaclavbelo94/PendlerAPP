@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import PromoCodeField from './PromoCodeField';
 import { checkLocalStorageSpace } from '@/utils/authUtils';
 import { activatePromoCode } from '@/services/promoCodeService';
+import { isDHLEmployee } from '@/utils/dhlAuthUtils';
 
 const RegisterForm = () => {
   const [email, setEmail] = useState("");
@@ -137,7 +138,24 @@ const RegisterForm = () => {
           });
         }
         
-        navigate("/login");
+        // Check if this is a DHL employee and redirect accordingly
+        const isDHL = isDHLEmployee({ email } as any);
+        console.log('=== DHL CHECK AFTER REGISTRATION ===');
+        console.log('Email:', email);
+        console.log('Is DHL Employee:', isDHL);
+        
+        if (isDHL) {
+          console.log('DHL uživatel registrován - přesměrovávám na DHL setup');
+          toast.success('DHL účet vytvořen!', {
+            description: 'Nyní dokončete nastavení svého DHL profilu.',
+            duration: 6000
+          });
+          // Store flag that user came from registration
+          localStorage.setItem('dhl-from-registration', 'true');
+          navigate('/dhl-setup');
+        } else {
+          navigate("/login");
+        }
       } else {
         toast.error(t('registrationError'), {
           description: 'Neočekávaná chyba při registraci',

@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import { Truck, ArrowRight, CheckCircle } from 'lucide-react';
@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
 import { useDHLData } from '@/hooks/dhl/useDHLData';
 import { useDHLSetup } from '@/hooks/dhl/useDHLSetup';
+import { useDHLRouteGuard } from '@/hooks/dhl/useDHLRouteGuard';
 import Layout from '@/components/layouts/Layout';
 import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,11 +23,29 @@ const DHLSetup: React.FC = () => {
   const { submitSetup, isSubmitting } = useDHLSetup();
   const [selectedPosition, setSelectedPosition] = useState<string>('');
   const [selectedWorkGroup, setSelectedWorkGroup] = useState<string>('');
+  const [isFromRegistration, setIsFromRegistration] = useState(false);
+
+  // Use DHL route guard to protect this page
+  const { canAccess, isLoading: isRouteGuardLoading } = useDHLRouteGuard(false);
+
+  useEffect(() => {
+    // Check if user came from registration
+    const fromRegistration = localStorage.getItem('dhl-from-registration');
+    if (fromRegistration === 'true') {
+      setIsFromRegistration(true);
+      localStorage.removeItem('dhl-from-registration'); // Clean up
+    }
+  }, []);
 
   const handleSubmit = async () => {
     if (!selectedPosition || !selectedWorkGroup) {
       return;
     }
+
+    console.log('=== DHL SETUP SUBMISSION ===');
+    console.log('Selected position:', selectedPosition);
+    console.log('Selected work group:', selectedWorkGroup);
+    console.log('Is from registration:', isFromRegistration);
 
     const success = await submitSetup({
       position_id: selectedPosition,
@@ -34,13 +53,22 @@ const DHLSetup: React.FC = () => {
     });
 
     if (success) {
+      console.log('DHL setup completed successfully');
+      
+      // Show different success message based on context
+      if (isFromRegistration) {
+        console.log('Redirecting to DHL dashboard after registration setup');
+      } else {
+        console.log('Redirecting to DHL dashboard after profile update');
+      }
+      
       setTimeout(() => {
         navigate('/dhl-dashboard');
       }, 1500);
     }
   };
 
-  if (isLoading) {
+  if (isLoading || isRouteGuardLoading) {
     return (
       <Layout navbarRightContent={<NavbarRightContent />}>
         <div className="min-h-screen flex items-center justify-center">
@@ -51,6 +79,11 @@ const DHLSetup: React.FC = () => {
         </div>
       </Layout>
     );
+  }
+
+  // If user can't access, route guard will handle redirect
+  if (!canAccess) {
+    return null;
   }
 
   return (
@@ -75,10 +108,13 @@ const DHLSetup: React.FC = () => {
               </div>
             </div>
             <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-yellow-600 to-red-600 bg-clip-text text-transparent mb-4">
-              Vítejte v DHL systému
+              {isFromRegistration ? 'Vítejte v DHL systému' : 'Nastavení DHL profilu'}
             </h1>
             <p className="text-lg text-muted-foreground">
-              Dokončete nastavení svého DHL profilu pro správu směn a rozvrhu
+              {isFromRegistration 
+                ? 'Dokončete nastavení svého DHL profilu pro správu směn a rozvrhu'
+                : 'Upravte nastavení svého DHL profilu'
+              }
             </p>
           </motion.div>
 
