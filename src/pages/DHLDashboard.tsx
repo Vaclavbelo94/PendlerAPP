@@ -5,28 +5,20 @@ import { motion } from 'framer-motion';
 import { Truck, Calendar, Clock, MapPin } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
+import { useDHLData } from '@/hooks/dhl/useDHLData';
 import Layout from '@/components/layouts/Layout';
 import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 
 const DHLDashboard: React.FC = () => {
   const { t } = useTranslation(['common']);
   const { user } = useAuth();
+  const { userAssignment, isLoading } = useDHLData(user?.id);
 
-  // Mock data - in real implementation, this would come from the database
-  const userProfile = {
-    position: 'Techniker',
-    workGroup: 'Skupina 1',
-    nextShift: {
-      date: '2025-01-02',
-      startTime: '06:00',
-      endTime: '14:00',
-      type: 'morning' as const,
-      location: 'DHL Hub Praha'
-    }
-  };
-
+  // Mock upcoming shifts - in real implementation, this would come from shift templates
   const upcomingShifts = [
     {
       id: '1',
@@ -74,6 +66,42 @@ const DHLDashboard: React.FC = () => {
       default: return 'bg-gray-100 text-gray-800';
     }
   };
+
+  if (isLoading) {
+    return (
+      <Layout navbarRightContent={<NavbarRightContent />}>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-600 mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Načítám DHL data...</p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (!userAssignment) {
+    return (
+      <Layout navbarRightContent={<NavbarRightContent />}>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center max-w-md">
+            <div className="p-6 rounded-full bg-gradient-to-r from-yellow-500/20 to-red-500/20 backdrop-blur-sm mb-6 inline-block">
+              <Truck className="h-12 w-12 text-yellow-600" />
+            </div>
+            <h2 className="text-2xl font-bold mb-4">DHL profil není nastaven</h2>
+            <p className="text-muted-foreground mb-6">
+              Nejprve je potřeba dokončit nastavení vašeho DHL profilu.
+            </p>
+            <Button asChild size="lg">
+              <Link to="/dhl-setup">
+                Dokončit nastavení
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout navbarRightContent={<NavbarRightContent />}>
@@ -125,7 +153,7 @@ const DHLDashboard: React.FC = () => {
                     </div>
                     <div>
                       <div className="text-sm text-muted-foreground">Pozice</div>
-                      <div className="font-medium">{userProfile.position}</div>
+                      <div className="font-medium">{userAssignment.dhl_position?.name || 'Neznámá pozice'}</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
@@ -134,7 +162,7 @@ const DHLDashboard: React.FC = () => {
                     </div>
                     <div>
                       <div className="text-sm text-muted-foreground">Pracovní skupina</div>
-                      <div className="font-medium">{userProfile.workGroup}</div>
+                      <div className="font-medium">{userAssignment.dhl_work_group?.name || 'Neznámá skupina'}</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
@@ -144,7 +172,7 @@ const DHLDashboard: React.FC = () => {
                     <div>
                       <div className="text-sm text-muted-foreground">Další směna</div>
                       <div className="font-medium">
-                        {userProfile.nextShift.date} {userProfile.nextShift.startTime}
+                        {upcomingShifts[0]?.date} {upcomingShifts[0]?.startTime}
                       </div>
                     </div>
                   </div>
@@ -171,17 +199,17 @@ const DHLDashboard: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <div className="space-y-2">
                     <div className="text-2xl font-bold text-yellow-800">
-                      {userProfile.nextShift.date}
+                      {upcomingShifts[0]?.date}
                     </div>
                     <div className="text-yellow-700">
-                      {userProfile.nextShift.startTime} - {userProfile.nextShift.endTime}
+                      {upcomingShifts[0]?.startTime} - {upcomingShifts[0]?.endTime}
                     </div>
                     <div className="text-sm text-yellow-600">
-                      {userProfile.nextShift.location}
+                      {upcomingShifts[0]?.location}
                     </div>
                   </div>
                   <div className="text-right">
-                    <Badge className={getShiftTypeColor(userProfile.nextShift.type)}>
+                    <Badge className={getShiftTypeColor(upcomingShifts[0]?.type || 'morning')}>
                       Ranní směna
                     </Badge>
                   </div>

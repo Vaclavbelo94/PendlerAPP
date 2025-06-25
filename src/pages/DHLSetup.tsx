@@ -5,62 +5,53 @@ import { motion } from 'framer-motion';
 import { Truck, ArrowRight, CheckCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
+import { useDHLData } from '@/hooks/dhl/useDHLData';
+import { useDHLSetup } from '@/hooks/dhl/useDHLSetup';
 import Layout from '@/components/layouts/Layout';
 import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 const DHLSetup: React.FC = () => {
   const { t } = useTranslation(['common']);
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const { positions, workGroups, isLoading } = useDHLData();
+  const { submitSetup, isSubmitting } = useDHLSetup();
   const [selectedPosition, setSelectedPosition] = useState<string>('');
   const [selectedWorkGroup, setSelectedWorkGroup] = useState<string>('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Mock data - in real implementation, this would come from the database
-  const positions = [
-    { id: '1', name: 'Techniker', description: 'Technická pozice' },
-    { id: '2', name: 'Rangierer', description: 'Rangování vozidel' },
-    { id: '3', name: 'Verlader', description: 'Nakládání/vykládání' },
-    { id: '4', name: 'Sortierer', description: 'Třídění zásilek' },
-    { id: '5', name: 'Fahrer', description: 'Řidič' }
-  ];
-
-  const workGroups = [
-    { id: '1', name: 'Skupina 1', description: 'Ranní týden 1-15' },
-    { id: '2', name: 'Skupina 2', description: 'Ranní týden 2-16' },
-    { id: '3', name: 'Skupina 3', description: 'Odpolední směny' },
-    { id: '4', name: 'Skupina 4', description: 'Noční směny' }
-  ];
 
   const handleSubmit = async () => {
     if (!selectedPosition || !selectedWorkGroup) {
-      toast.error('Prosím vyberte pozici a pracovní skupinu');
       return;
     }
 
-    setIsSubmitting(true);
-    
-    try {
-      // Here would be the actual API call to save the DHL assignment
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Mock delay
-      
-      toast.success('DHL nastavení bylo úspěšně dokončeno!');
-      
-      // Redirect to DHL dashboard
+    const success = await submitSetup({
+      position_id: selectedPosition,
+      work_group_id: selectedWorkGroup
+    });
+
+    if (success) {
       setTimeout(() => {
-        window.location.href = '/dhl-dashboard';
+        navigate('/dhl-dashboard');
       }, 1500);
-      
-    } catch (error) {
-      console.error('Error saving DHL setup:', error);
-      toast.error('Chyba při ukládání nastavení');
-    } finally {
-      setIsSubmitting(false);
     }
   };
+
+  if (isLoading) {
+    return (
+      <Layout navbarRightContent={<NavbarRightContent />}>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-600 mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Načítám DHL data...</p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout navbarRightContent={<NavbarRightContent />}>

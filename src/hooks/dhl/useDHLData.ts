@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { DHLPosition, DHLWorkGroup, UserDHLAssignment } from '@/types/dhl';
-import { useStandardizedToast } from '@/hooks/useStandardizedToast';
+import { toast } from 'sonner';
 
 interface UseDHLDataReturn {
   positions: DHLPosition[];
@@ -19,7 +19,6 @@ export const useDHLData = (userId?: string): UseDHLDataReturn => {
   const [userAssignment, setUserAssignment] = useState<UserDHLAssignment | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { error: showError } = useStandardizedToast();
 
   const fetchDHLData = async () => {
     try {
@@ -33,7 +32,10 @@ export const useDHLData = (userId?: string): UseDHLDataReturn => {
         .eq('is_active', true)
         .order('name');
 
-      if (positionsError) throw positionsError;
+      if (positionsError) {
+        console.error('Error fetching positions:', positionsError);
+        throw positionsError;
+      }
 
       // Načtení pracovních skupin
       const { data: workGroupsData, error: workGroupsError } = await supabase
@@ -42,7 +44,10 @@ export const useDHLData = (userId?: string): UseDHLDataReturn => {
         .eq('is_active', true)
         .order('week_number');
 
-      if (workGroupsError) throw workGroupsError;
+      if (workGroupsError) {
+        console.error('Error fetching work groups:', workGroupsError);
+        throw workGroupsError;
+      }
 
       // Načtení uživatelského přiřazení (pokud je userId poskytnut)
       let assignmentData = null;
@@ -58,7 +63,10 @@ export const useDHLData = (userId?: string): UseDHLDataReturn => {
           .eq('is_active', true)
           .maybeSingle();
 
-        if (assignmentError) throw assignmentError;
+        if (assignmentError) {
+          console.error('Error fetching assignment:', assignmentError);
+          throw assignmentError;
+        }
         assignmentData = data;
       }
 
@@ -66,10 +74,16 @@ export const useDHLData = (userId?: string): UseDHLDataReturn => {
       setWorkGroups(workGroupsData || []);
       setUserAssignment(assignmentData);
 
+      console.log('DHL Data loaded:', {
+        positions: positionsData?.length,
+        workGroups: workGroupsData?.length,
+        userAssignment: assignmentData
+      });
+
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Nepodařilo se načíst DHL data';
       setError(errorMessage);
-      showError('Chyba', errorMessage);
+      toast.error(errorMessage);
       console.error('Error fetching DHL data:', err);
     } finally {
       setIsLoading(false);
