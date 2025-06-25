@@ -6,6 +6,7 @@ import { Toaster } from 'sonner';
 import { AuthProvider } from '@/hooks/auth';
 import { ThemeProvider } from '@/components/theme-provider';
 import { AdSenseProvider } from '@/components/ads/AdSenseProvider';
+import { GDPRConsentProvider } from '@/contexts/GDPRConsentContext';
 import ErrorBoundaryWithFallback from '@/components/common/ErrorBoundaryWithFallback';
 import PWAInstallPrompt from '@/components/common/PWAInstallPrompt';
 import { GlobalScrollToTop } from '@/components/common/GlobalScrollToTop';
@@ -35,25 +36,27 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
           <AuthProvider>
-            <AdSenseProvider>
-              <Router>
-                <div className="App">
-                  <GlobalScrollToTop />
-                  <Routes>
-                    <Route path="/" element={<Index />} />
-                    <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/profile" element={<Profile />} />
-                    <Route path="/settings" element={<Settings />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route path="/admin" element={<Admin />} />
-                    <Route path="*" element={<Navigate to="/" replace />} />
-                  </Routes>
-                  <PWAInstallPrompt />
-                  <Toaster />
-                </div>
-              </Router>
-            </AdSenseProvider>
+            <GDPRConsentProvider>
+              <AdSenseProvider>
+                <Router>
+                  <div className="App">
+                    <GlobalScrollToTop />
+                    <Routes>
+                      <Route path="/" element={<Index />} />
+                      <Route path="/dashboard" element={<Dashboard />} />
+                      <Route path="/profile" element={<Profile />} />
+                      <Route path="/settings" element={<Settings />} />
+                      <Route path="/login" element={<Login />} />
+                      <Route path="/register" element={<Register />} />
+                      <Route path="/admin" element={<Admin />} />
+                      <Route path="*" element={<Navigate to="/" replace />} />
+                    </Routes>
+                    <PWAInstallPrompt />
+                    <Toaster />
+                  </div>
+                </Router>
+              </AdSenseProvider>
+            </GDPRConsentProvider>
           </AuthProvider>
         </ThemeProvider>
       </QueryClientProvider>
