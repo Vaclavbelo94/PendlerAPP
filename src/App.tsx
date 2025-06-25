@@ -1,3 +1,4 @@
+
 import { Suspense } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -25,6 +26,8 @@ import "./i18n/config";
 
 // Import manual premium activation utility
 import "@/utils/manualPremiumActivation";
+// Import promo code fix utility
+import "@/utils/fixPromoCodeIssues";
 
 const queryClient = new QueryClient();
 

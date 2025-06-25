@@ -6,22 +6,50 @@ export const manuallyActivatePremiumForTestUser = async () => {
   console.log('=== MANUAL PREMIUM ACTIVATION START ===');
   
   try {
-    // Find the test user
-    const { data: userData, error: userError } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('email', 'test@gmail.com')
-      .single();
+    // Find the test user using a different approach to avoid 406 error
+    const { data: { users }, error: listUsersError } = await supabase.auth.admin.listUsers();
     
-    if (userError || !userData) {
-      console.error('User test@gmail.com not found:', userError);
+    if (listUsersError) {
+      console.error('Error listing users:', listUsersError);
+      // Fallback: try direct profile query
+      const { data: userData, error: userError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('email', 'test@gmail.com')
+        .maybeSingle();
+      
+      if (userError || !userData) {
+        console.error('User test@gmail.com not found:', userError);
+        return { success: false, message: 'User not found' };
+      }
+      
+      console.log('Found test user via profiles:', userData);
+      
+      // Activate premium with DHL2025 promo code
+      const result = await activatePromoCode(userData.id, 'DHL2025');
+      
+      console.log('Manual activation result:', result);
+      
+      if (result.success) {
+        console.log('Premium successfully activated for test@gmail.com');
+        return { success: true, message: 'Premium activated successfully' };
+      } else {
+        console.error('Failed to activate premium:', result.message);
+        return { success: false, message: result.message };
+      }
+    }
+
+    const testUser = users?.find(user => user.email === 'test@gmail.com');
+    
+    if (!testUser) {
+      console.error('User test@gmail.com not found in user list');
       return { success: false, message: 'User not found' };
     }
     
-    console.log('Found test user:', userData);
+    console.log('Found test user:', testUser);
     
     // Activate premium with DHL2025 promo code
-    const result = await activatePromoCode(userData.id, 'DHL2025');
+    const result = await activatePromoCode(testUser.id, 'DHL2025');
     
     console.log('Manual activation result:', result);
     

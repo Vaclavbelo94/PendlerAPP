@@ -94,7 +94,7 @@ const RegisterForm = () => {
         console.log('Čekám na vytvoření profilu...');
         await new Promise(resolve => setTimeout(resolve, 5000)); // Zvýšeno z 3 na 5 sekund
         
-        // Promo kód aktivace
+        // Promo kód aktivace - OPRAVA: kontrolujeme promoCode, ne isPromoValid
         if (promoCode && promoCode.trim()) {
           console.log('=== AKTIVACE PROMO KÓDU ===');
           console.log('Promo kód:', promoCode);
