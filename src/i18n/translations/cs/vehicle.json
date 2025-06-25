@@ -162,5 +162,11 @@
   "additionalInformation": "Dodatečné informace...",
   "enterNewDocumentDetails": "Zadejte údaje o novém dokumentu",
   "documentSavedSuccessfully": "Dokument byl úspěšně přidán",
-  "errorSavingDocument": "Chyba při ukládání dokumentu"
+  "errorSavingDocument": "Chyba při ukládání dokumentu",
+  "overview": "Přehled",
+  "fuel": "Palivo",
+  "service": "Servis",
+  "others": "Ostatní",
+  "basicInfo": "Základní informace o vozidle",
+  "maintenance": "Servis a údržba"
 }

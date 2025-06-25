@@ -162,5 +162,11 @@
   "additionalInformation": "Zusätzliche Informationen...",
   "enterNewDocumentDetails": "Geben Sie die Details des neuen Dokuments ein",
   "documentSavedSuccessfully": "Dokument wurde erfolgreich hinzugefügt",
-  "errorSavingDocument": "Fehler beim Speichern des Dokuments"
+  "errorSavingDocument": "Fehler beim Speichern des Dokuments",
+  "overview": "Übersicht",
+  "fuel": "Kraftstoff",
+  "service": "Service",
+  "others": "Sonstiges",
+  "basicInfo": "Grundlegende Fahrzeuginformationen",
+  "maintenance": "Service und Wartung"
 }
