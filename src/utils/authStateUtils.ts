@@ -1,5 +1,6 @@
 
 import { User } from '@supabase/supabase-js';
+import { getDHLAuthState, DHLAuthState } from './dhlAuthUtils';
 
 export interface UnifiedAuthState {
   user: User | null;
@@ -7,6 +8,11 @@ export interface UnifiedAuthState {
   isPremium: boolean;
   isSpecialUser: boolean;
   isLoading: boolean;
+  // DHL specific states
+  isDHLAdmin: boolean;
+  isDHLEmployee: boolean;
+  canAccessDHLAdmin: boolean;
+  canAccessDHLFeatures: boolean;
 }
 
 /**
@@ -18,15 +24,23 @@ export const getUnifiedAuthState = (
   isPremium: boolean,
   isLoading: boolean
 ): UnifiedAuthState => {
-  const specialEmails = ['uzivatel@pendlerapp.com', 'admin@pendlerapp.com'];
+  const specialEmails = ['uzivatel@pendlerapp.com', 'admin@pendlerapp.com', 'admin_dhl@pendlerapp.com'];
   const isSpecialUser = user?.email ? specialEmails.includes(user.email) : false;
+  
+  // Get DHL auth state
+  const dhlAuthState = getDHLAuthState(user);
 
   return {
     user,
-    isAdmin: isAdmin || isSpecialUser,
+    isAdmin: isAdmin || isSpecialUser || dhlAuthState.isDHLAdmin,
     isPremium: isPremium || isSpecialUser,
     isSpecialUser,
-    isLoading
+    isLoading,
+    // DHL states
+    isDHLAdmin: dhlAuthState.isDHLAdmin,
+    isDHLEmployee: dhlAuthState.isDHLEmployee,
+    canAccessDHLAdmin: dhlAuthState.canAccessDHLAdmin,
+    canAccessDHLFeatures: dhlAuthState.canAccessDHLFeatures
   };
 };
 
@@ -42,4 +56,18 @@ export const canAccessAdmin = (authState: UnifiedAuthState): boolean => {
  */
 export const canAccessPremium = (authState: UnifiedAuthState): boolean => {
   return authState.isPremium || authState.isSpecialUser;
+};
+
+/**
+ * Check if user can access DHL admin features
+ */
+export const canAccessDHLAdmin = (authState: UnifiedAuthState): boolean => {
+  return authState.canAccessDHLAdmin;
+};
+
+/**
+ * Check if user can access DHL features
+ */
+export const canAccessDHLFeatures = (authState: UnifiedAuthState): boolean => {
+  return authState.canAccessDHLFeatures;
 };

@@ -11,7 +11,8 @@ import {
   Shield,
   Map,
   Scale,
-  FileText
+  FileText,
+  Truck
 } from 'lucide-react';
 
 export interface NavigationItem {
@@ -21,6 +22,8 @@ export interface NavigationItem {
   badge?: number;
   adminOnly?: boolean;
   premium?: boolean;
+  dhlOnly?: boolean; // New DHL-specific flag
+  dhlAdminOnly?: boolean; // New DHL admin-specific flag
 }
 
 export const navigationItems: NavigationItem[] = [
@@ -79,5 +82,18 @@ export const navigationItems: NavigationItem[] = [
     titleKey: 'admin',
     icon: Shield,
     adminOnly: true
+  },
+  // DHL specific navigation items
+  {
+    path: '/dhl-admin',
+    titleKey: 'dhlAdmin',
+    icon: Truck,
+    dhlAdminOnly: true
+  },
+  {
+    path: '/dhl-dashboard',
+    titleKey: 'dhlDashboard',
+    icon: Truck,
+    dhlOnly: true
   }
 ];

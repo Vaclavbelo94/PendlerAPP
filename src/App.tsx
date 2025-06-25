@@ -21,6 +21,10 @@ import Settings from "./pages/Settings";
 import Vehicle from "./pages/Vehicle";
 import Premium from "./pages/Premium";
 import Admin from "./pages/Admin";
+// DHL Routes
+import DHLAdmin from "./pages/DHLAdmin";
+import DHLSetup from "./pages/DHLSetup";
+import DHLDashboard from "./pages/DHLDashboard";
 import { LoadingSpinner } from "./components/ui/LoadingSpinner";
 import "./i18n/config";
 
@@ -55,6 +59,10 @@ function App() {
                   <Route path="/vehicle" element={<Vehicle />} />
                   <Route path="/premium" element={<Premium />} />
                   <Route path="/admin" element={<Admin />} />
+                  {/* DHL Routes */}
+                  <Route path="/dhl-admin" element={<DHLAdmin />} />
+                  <Route path="/dhl-setup" element={<DHLSetup />} />
+                  <Route path="/dhl-dashboard" element={<DHLDashboard />} />
                 </Routes>
               </Suspense>
               <Toaster />

@@ -5,6 +5,7 @@ import { AuthContext } from './useAuthContext';
 import { useAuthState } from './useAuthState';
 import { useAuthMethods } from './useAuthMethods';
 import { usePremiumStatus } from '@/hooks/usePremiumStatus';
+import { getDHLRedirectPath, canAccessDHLAdmin } from '@/utils/dhlAuthUtils';
 import { 
   cleanupAuthState, 
   saveUserToLocalStorage, 
@@ -55,6 +56,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
       
       console.log('User identity verified successfully');
+      
+      // Handle DHL admin redirect
+      if (canAccessDHLAdmin(user)) {
+        const currentPath = window.location.pathname;
+        if (currentPath === '/dashboard' || currentPath === '/') {
+          console.log('Redirecting DHL admin to DHL admin panel');
+          window.location.href = '/dhl-admin';
+          return;
+        }
+      }
     }
   }, [user, session]);
 
@@ -79,7 +90,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
       
       // Check admin status based on email and database
-      const isAdminByEmail = user.email === 'admin@pendlerapp.com';
+      const isAdminByEmail = user.email === 'admin@pendlerapp.com' || user.email === 'admin_dhl@pendlerapp.com';
       
       if (isAdminByEmail) {
         console.log("User is admin by email");
@@ -188,7 +199,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         });
       }
 
-      // Check for special users
+      // Check for special users (including DHL admin)
       if (!isActive && isSpecialUser()) {
         console.log("Setting premium for special user");
         isActive = true;
