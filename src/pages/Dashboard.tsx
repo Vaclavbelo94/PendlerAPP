@@ -4,6 +4,8 @@ import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from 'react-i18next';
+import Layout from '@/components/layouts/Layout';
+import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 import DashboardOverview from '@/components/dashboard/DashboardOverview';
 import DashboardStats from '@/components/dashboard/DashboardStats';
 import DashboardActions from '@/components/dashboard/DashboardActions';
@@ -16,7 +18,7 @@ const Dashboard: React.FC = () => {
   const username = user?.email?.split('@')[0] || t('ui:user');
 
   return (
-    <>
+    <Layout navbarRightContent={<NavbarRightContent />}>
       <Helmet>
         <title>{t('dashboard:title')} | PendlerApp</title>
         <meta name="description" content={t('dashboard:dashboardSubtitle')} />
@@ -90,7 +92,7 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
       </div>
-    </>
+    </Layout>
   );
 };
 

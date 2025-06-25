@@ -79,8 +79,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
       
       // Check admin status based on email and database
-      const adminEmails = ['admin@pendlerapp.com', 'admin_dhl@pendlerapp.com'];
-      const isAdminByEmail = user.email ? adminEmails.includes(user.email) : false;
+      const isAdminByEmail = user.email === 'admin@pendlerapp.com';
       
       if (isAdminByEmail) {
         console.log("User is admin by email");
@@ -132,16 +131,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         console.error('User identity mismatch in premium check');
         aggressiveCleanup();
         return { isPremium: false };
-      }
-      
-      // Check if user is admin by email (auto premium)
-      const adminEmails = ['admin@pendlerapp.com', 'admin_dhl@pendlerapp.com'];
-      const isAdminByEmail = user.email ? adminEmails.includes(user.email) : false;
-      
-      if (isAdminByEmail) {
-        console.log("User has premium by admin email");
-        setIsPremium(true);
-        return { isPremium: true };
       }
       
       // First check from subscribers table

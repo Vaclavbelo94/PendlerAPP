@@ -6,7 +6,6 @@ export interface UnifiedAuthState {
   isAdmin: boolean;
   isPremium: boolean;
   isSpecialUser: boolean;
-  isDHLAdmin: boolean;
   isLoading: boolean;
 }
 
@@ -20,19 +19,13 @@ export const getUnifiedAuthState = (
   isLoading: boolean
 ): UnifiedAuthState => {
   const specialEmails = ['uzivatel@pendlerapp.com', 'admin@pendlerapp.com'];
-  const dhlAdminEmails = ['admin_dhl@pendlerapp.com'];
-  const allAdminEmails = [...specialEmails, ...dhlAdminEmails];
-  
   const isSpecialUser = user?.email ? specialEmails.includes(user.email) : false;
-  const isDHLAdmin = user?.email ? dhlAdminEmails.includes(user.email) : false;
-  const isAdminByEmail = user?.email ? allAdminEmails.includes(user.email) : false;
 
   return {
     user,
-    isAdmin: isAdmin || isAdminByEmail,
-    isPremium: isPremium || isAdminByEmail,
+    isAdmin: isAdmin || isSpecialUser,
+    isPremium: isPremium || isSpecialUser,
     isSpecialUser,
-    isDHLAdmin,
     isLoading
   };
 };
@@ -49,18 +42,4 @@ export const canAccessAdmin = (authState: UnifiedAuthState): boolean => {
  */
 export const canAccessPremium = (authState: UnifiedAuthState): boolean => {
   return authState.isPremium || authState.isSpecialUser;
-};
-
-/**
- * Check if user can access DHL admin features - POUZE admin_dhl@pendlerapp.com
- */
-export const canAccessDHLAdmin = (authState: UnifiedAuthState): boolean => {
-  return authState.isDHLAdmin;
-};
-
-/**
- * Check if user can see DHL features in navigation
- */
-export const canSeeDHLFeatures = (authState: UnifiedAuthState): boolean => {
-  return authState.isDHLAdmin;
 };

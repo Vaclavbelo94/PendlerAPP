@@ -1,60 +1,52 @@
 
-import React from 'react';
-import { Helmet } from 'react-helmet';
-import { motion } from 'framer-motion';
-import { FileText } from 'lucide-react';
+import React from "react";
+import { motion } from "framer-motion";
+import PremiumCheck from '@/components/premium/PremiumCheck';
+import TaxWizardCarousel from "@/components/tax-advisor/wizard/TaxWizardCarousel";
+import Layout from '@/components/layouts/Layout';
+import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 import { useTranslation } from 'react-i18next';
 
-const TaxAdvisor: React.FC = () => {
+const TaxAdvisor = () => {
   const { t } = useTranslation('common');
 
   return (
-    <>
-      <Helmet>
-        <title>{t('taxAdvisor') || 'Daňový poradce'} | PendlerApp</title>
-        <meta name="description" content="Daňové poradny a kalkulace pro pendlery v Německu" />
-      </Helmet>
-      
-      <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-primary/5">
-        <div className="container mx-auto px-4 py-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="mb-8"
-          >
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-3 rounded-full bg-primary/10 border">
-                <FileText className="h-8 w-8 text-primary" />
-              </div>
-              <div>
-                <h1 className="text-4xl font-bold tracking-tight">
-                  {t('taxAdvisor') || 'Daňový poradce'}
-                </h1>
-                <p className="text-lg text-muted-foreground mt-2">
-                  Daňové poradny a kalkulace pro pendlery
-                </p>
-              </div>
-            </div>
-          </motion.div>
+    <Layout navbarRightContent={<NavbarRightContent />}>
+      <PremiumCheck featureKey="tax-advisor">
+        <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-secondary/5">
+          <div className="fixed inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-20 right-10 w-32 h-32 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-full blur-xl animate-pulse" />
+            <div className="absolute bottom-20 left-20 w-24 h-24 bg-gradient-to-r from-green-500/20 to-purple-500/20 rounded-full blur-xl animate-pulse delay-1000" />
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="bg-card/80 backdrop-blur-sm rounded-2xl border border-border/50 shadow-lg p-8"
-          >
-            <div className="text-center py-12">
-              <FileText className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-              <h2 className="text-2xl font-semibold mb-4">Daňový poradce</h2>
-              <p className="text-muted-foreground">
-                Tato funkce je ve vývoji. Brzy zde najdete daňové kalkulace a poradny pro pendlery.
-              </p>
+          <div className="relative z-10">
+            <div className="container max-w-6xl py-8 px-4">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="mb-8"
+              >
+                <h1 className="text-3xl md:text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-4">
+                  {t('taxAdvisor')}
+                </h1>
+                <p className="text-lg text-muted-foreground">
+                  {t('taxAdvisorDescription')}
+                </p>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+              >
+                <TaxWizardCarousel />
+              </motion.div>
             </div>
-          </motion.div>
+          </div>
         </div>
-      </div>
-    </>
+      </PremiumCheck>
+    </Layout>
   );
 };
 

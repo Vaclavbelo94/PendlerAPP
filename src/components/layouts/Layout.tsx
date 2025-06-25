@@ -21,15 +21,9 @@ const Layout: React.FC<LayoutProps> = ({ children, navbarRightContent }) => {
   const isMobile = useIsMobile();
   const { t } = useTranslation('common');
 
-  // Public pages (no auth required)
-  const isPublicPage = ['/', '/about', '/contact', '/pricing'].includes(location.pathname);
-  
-  // Protected pages that require authentication
-  const isProtectedPage = [
-    '/dashboard', '/profile', '/settings', '/shifts', '/travel', 
-    '/vehicle', '/translator', '/tax-advisor', '/laws', '/admin', 
-    '/dhl-admin', '/dhl-dashboard'
-  ].some(path => location.pathname.startsWith(path));
+  // Don't show layout on auth pages
+  const isAuthPage = location.pathname.startsWith('/auth');
+  const isPublicPage = ['/', '/about', '/contact', '/features', '/pricing'].includes(location.pathname);
 
   if (isLoading) {
     return (
@@ -39,8 +33,17 @@ const Layout: React.FC<LayoutProps> = ({ children, navbarRightContent }) => {
     );
   }
 
-  // For public pages or when user is not authenticated
-  if (isPublicPage || (!user && !isProtectedPage)) {
+  if (isAuthPage) {
+    return (
+      <>
+        {children || <Outlet />}
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+
+  // Public pages layout
+  if (isPublicPage && !user) {
     return (
       <div className="min-h-screen flex flex-col">
         <UnifiedNavbar rightContent={navbarRightContent} />
@@ -53,20 +56,18 @@ const Layout: React.FC<LayoutProps> = ({ children, navbarRightContent }) => {
     );
   }
 
-  // For protected pages, redirect to login if not authenticated
-  if (isProtectedPage && !user) {
+  // Protected layout with sidebar
+  if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-xl font-semibold mb-4">{t('authRequired') || 'Přihlášení vyžadováno'}</h2>
-          <p className="text-muted-foreground mb-4">{t('pleaseLogin') || 'Pro přístup k této stránce se musíte přihlásit'}</p>
-          <a href="/login" className="text-primary hover:underline">{t('goToLogin') || 'Přejít na přihlášení'}</a>
+          <h2 className="text-xl font-semibold mb-2">{t('accessRequired', 'Access Required')}</h2>
+          <p className="text-muted-foreground">{t('loginRequiredMessage', 'Please log in to access this page.')}</p>
         </div>
       </div>
     );
   }
 
-  // Protected layout with sidebar for authenticated users
   return (
     <div className="min-h-screen bg-background">
       {/* Desktop Layout */}

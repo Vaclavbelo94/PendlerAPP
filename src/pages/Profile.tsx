@@ -6,6 +6,8 @@ import { User } from 'lucide-react';
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import UnifiedNavbar from '@/components/layouts/UnifiedNavbar';
+import Footer from '@/components/layouts/Footer';
 import ProfileMobileCarousel from '@/components/profile/mobile/ProfileMobileCarousel';
 import ProfileNavigation from '@/components/profile/ProfileNavigation';
 import ProfileOverview from '@/components/profile/ProfileOverview';
@@ -29,28 +31,36 @@ const Profile: React.FC = () => {
           <meta name="description" content={t('description') || 'Správa uživatelského profilu'} />
         </Helmet>
         
-        <div className="min-h-screen flex items-center justify-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center"
-          >
-            <div className="p-8 bg-card border rounded-2xl max-w-md mx-auto">
-              <User className="h-12 w-12 mx-auto mb-4 text-primary" />
-              <h1 className="text-2xl font-bold mb-4 text-center">
-                {t('accessDenied') || 'Přístup odepřen'}
-              </h1>
-              <p className="text-muted-foreground mb-6 text-center">
-                {t('loginRequired') || 'Pro zobrazení profilu se musíte přihlásit.'}
-              </p>
-              <div className="flex justify-center">
-                <Button onClick={() => navigate('/login')} size="lg">
-                  {t('loginButton') || 'Přihlásit se'}
-                </Button>
-              </div>
+        <div className="min-h-screen flex flex-col bg-background">
+          <UnifiedNavbar />
+          
+          <main className="flex-1">
+            <div className="container mx-auto px-4 py-8">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="text-center"
+              >
+                <div className="p-8 bg-card border rounded-2xl max-w-md mx-auto">
+                  <User className="h-12 w-12 mx-auto mb-4 text-primary" />
+                  <h1 className="text-2xl font-bold mb-4 text-center">
+                    {t('accessDenied') || 'Přístup odepřen'}
+                  </h1>
+                  <p className="text-muted-foreground mb-6 text-center">
+                    {t('loginRequired') || 'Pro zobrazení profilu se musíte přihlásit.'}
+                  </p>
+                  <div className="flex justify-center">
+                    <Button onClick={() => navigate('/login')} size="lg">
+                      {t('loginButton') || 'Přihlásit se'}
+                    </Button>
+                  </div>
+                </div>
+              </motion.div>
             </div>
-          </motion.div>
+          </main>
+          
+          <Footer />
         </div>
       </>
     );
@@ -77,6 +87,8 @@ const Profile: React.FC = () => {
       </Helmet>
       
       <div className="min-h-screen flex flex-col bg-background">
+        <UnifiedNavbar />
+        
         <main className="flex-1">
           <div className="container mx-auto px-4 py-8">
             {/* Header section */}
@@ -147,6 +159,8 @@ const Profile: React.FC = () => {
             )}
           </div>
         </main>
+        
+        <Footer />
       </div>
     </>
   );
