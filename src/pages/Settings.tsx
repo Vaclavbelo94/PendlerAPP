@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import { Settings as SettingsIcon } from 'lucide-react';
+import Layout from '@/components/layouts/Layout';
 import ProfileErrorBoundary from '@/components/profile/ProfileErrorBoundary';
 import GeneralSettings from '@/components/settings/GeneralSettings';
 import NotificationSettings from '@/components/settings/NotificationSettings';
@@ -65,7 +66,7 @@ const Settings = () => {
   };
 
   return (
-    <>
+    <Layout>
       <Helmet>
         <title>{t('title')} | PendlerApp</title>
         <meta name="description" content={t('title')} />
@@ -146,7 +147,7 @@ const Settings = () => {
           </ProfileErrorBoundary>
         </div>
       </DashboardBackground>
-    </>
+    </Layout>
   );
 };
 
