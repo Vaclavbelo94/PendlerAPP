@@ -1,4 +1,3 @@
-
 // DHL System Types
 
 export type DHLPositionType = 'technik' | 'rangierer' | 'verlader' | 'sortierer' | 'fahrer' | 'other';
@@ -116,4 +115,68 @@ export interface DHLAnalytics {
   work_group_distribution: Record<number, number>;
   monthly_hours: number;
   override_count: number;
+}
+
+// New types for DHL Import System
+export interface DHLShiftSchedule {
+  id: string;
+  position_id: string;
+  work_group_id: string;
+  schedule_name: string;
+  schedule_data: any; // JSONB
+  base_date: string;
+  base_woche: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  // Relations
+  dhl_position?: DHLPosition;
+  dhl_work_group?: DHLWorkGroup;
+}
+
+export interface DHLScheduleImport {
+  id: string;
+  admin_user_id: string;
+  imported_schedule_id?: string;
+  file_name: string;
+  import_status: 'success' | 'failed' | 'processing';
+  records_processed: number;
+  error_message?: string;
+  metadata?: any; // JSONB
+  created_at: string;
+  // Relations
+  dhl_shift_schedule?: DHLShiftSchedule;
+}
+
+export interface WocheCalculationResult {
+  currentWoche: number;
+  weekStartDate: Date;
+  weekEndDate: Date;
+  cyclePosition: number;
+}
+
+export interface DHLImportValidation {
+  isValid: boolean;
+  errors: Array<{
+    field: string;
+    message: string;
+    line?: number;
+  }>;
+  warnings: Array<{
+    field: string;
+    message: string;
+    line?: number;
+  }>;
+  summary: {
+    totalDays: number;
+    totalShifts: number;
+    dateRange: { start: string; end: string } | null;
+    detectedWoche: number | null;
+  };
+}
+
+// Extended UserDHLAssignment with reference tracking
+export interface ExtendedUserDHLAssignment extends UserDHLAssignment {
+  reference_date?: string;
+  reference_woche?: number;
 }

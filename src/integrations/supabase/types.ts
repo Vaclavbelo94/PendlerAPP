@@ -170,6 +170,104 @@ export type Database = {
         }
         Relationships: []
       }
+      dhl_schedule_imports: {
+        Row: {
+          admin_user_id: string
+          created_at: string
+          error_message: string | null
+          file_name: string
+          id: string
+          import_status: string
+          imported_schedule_id: string | null
+          metadata: Json | null
+          records_processed: number
+        }
+        Insert: {
+          admin_user_id: string
+          created_at?: string
+          error_message?: string | null
+          file_name: string
+          id?: string
+          import_status?: string
+          imported_schedule_id?: string | null
+          metadata?: Json | null
+          records_processed?: number
+        }
+        Update: {
+          admin_user_id?: string
+          created_at?: string
+          error_message?: string | null
+          file_name?: string
+          id?: string
+          import_status?: string
+          imported_schedule_id?: string | null
+          metadata?: Json | null
+          records_processed?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dhl_schedule_imports_imported_schedule_id_fkey"
+            columns: ["imported_schedule_id"]
+            isOneToOne: false
+            referencedRelation: "dhl_shift_schedules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dhl_shift_schedules: {
+        Row: {
+          base_date: string
+          base_woche: number
+          created_at: string
+          id: string
+          is_active: boolean
+          position_id: string | null
+          schedule_data: Json
+          schedule_name: string
+          updated_at: string
+          work_group_id: string | null
+        }
+        Insert: {
+          base_date: string
+          base_woche: number
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          position_id?: string | null
+          schedule_data: Json
+          schedule_name: string
+          updated_at?: string
+          work_group_id?: string | null
+        }
+        Update: {
+          base_date?: string
+          base_woche?: number
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          position_id?: string | null
+          schedule_data?: Json
+          schedule_name?: string
+          updated_at?: string
+          work_group_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dhl_shift_schedules_position_id_fkey"
+            columns: ["position_id"]
+            isOneToOne: false
+            referencedRelation: "dhl_positions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dhl_shift_schedules_work_group_id_fkey"
+            columns: ["work_group_id"]
+            isOneToOne: false
+            referencedRelation: "dhl_work_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dhl_shift_templates: {
         Row: {
           break_duration: number | null
@@ -1333,6 +1431,8 @@ export type Database = {
           dhl_work_group_id: string
           id: string
           is_active: boolean
+          reference_date: string | null
+          reference_woche: number | null
           updated_at: string
           user_id: string
         }
@@ -1343,6 +1443,8 @@ export type Database = {
           dhl_work_group_id: string
           id?: string
           is_active?: boolean
+          reference_date?: string | null
+          reference_woche?: number | null
           updated_at?: string
           user_id: string
         }
@@ -1353,6 +1455,8 @@ export type Database = {
           dhl_work_group_id?: string
           id?: string
           is_active?: boolean
+          reference_date?: string | null
+          reference_woche?: number | null
           updated_at?: string
           user_id?: string
         }
