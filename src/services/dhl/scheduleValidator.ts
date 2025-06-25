@@ -31,6 +31,10 @@ export const validateScheduleData = (data: any, fileName: string): ValidationRes
   let maxDate: string | null = null;
   let detectedWoche: number | null = null;
 
+  console.log('=== SCHEDULE VALIDATION START ===');
+  console.log('File name:', fileName);
+  console.log('Data structure:', data);
+
   // Check basic structure
   if (!data || typeof data !== 'object') {
     errors.push({
@@ -53,6 +57,11 @@ export const validateScheduleData = (data: any, fileName: string): ValidationRes
         message: 'Invalid base_date format. Expected YYYY-MM-DD.'
       });
     }
+  } else {
+    warnings.push({
+      field: 'base_date',
+      message: 'No base_date found. Using current date as fallback.'
+    });
   }
 
   if (data.woche) {
@@ -65,16 +74,23 @@ export const validateScheduleData = (data: any, fileName: string): ValidationRes
     } else {
       detectedWoche = woche;
     }
+  } else {
+    warnings.push({
+      field: 'woche',
+      message: 'No woche found. Please specify Woche number (1-15).'
+    });
   }
 
-  // Validate shift entries
+  // Validate shift entries - improved to handle different JSON structures
   Object.keys(data).forEach(key => {
+    console.log('Processing key:', key, 'Value:', data[key]);
+    
     // Skip metadata fields
     if (['base_date', 'woche', 'position', 'description'].includes(key)) {
       return;
     }
 
-    // Check if key is a date
+    // Check if key is a date (YYYY-MM-DD format)
     if (isValidDate(key)) {
       totalDays++;
       
@@ -83,83 +99,130 @@ export const validateScheduleData = (data: any, fileName: string): ValidationRes
       if (!maxDate || key > maxDate) maxDate = key;
 
       const dayData = data[key];
+      console.log('Processing date:', key, 'Data:', dayData);
       
       if (!dayData || typeof dayData !== 'object') {
         errors.push({
           field: key,
-          message: 'Invalid day data structure.'
+          message: 'Invalid day data structure. Expected object with shift information.'
         });
         return;
       }
 
-      // Validate shift times
-      if (dayData.start_time) {
-        if (!isValidTime(dayData.start_time)) {
-          errors.push({
+      // Check for shift data - handle different possible structures
+      let hasShiftData = false;
+      
+      // Check for direct time fields
+      if (dayData.start_time || dayData.end_time) {
+        hasShiftData = true;
+        
+        // Validate start time
+        if (dayData.start_time) {
+          if (!isValidTime(dayData.start_time)) {
+            errors.push({
+              field: `${key}.start_time`,
+              message: `Invalid start_time format: "${dayData.start_time}". Expected HH:MM.`
+            });
+          }
+        } else {
+          warnings.push({
             field: `${key}.start_time`,
-            message: 'Invalid start_time format. Expected HH:MM.'
+            message: 'Missing start_time for shift.'
           });
         }
-      }
 
-      if (dayData.end_time) {
-        if (!isValidTime(dayData.end_time)) {
-          errors.push({
+        // Validate end time
+        if (dayData.end_time) {
+          if (!isValidTime(dayData.end_time)) {
+            errors.push({
+              field: `${key}.end_time`,
+              message: `Invalid end_time format: "${dayData.end_time}". Expected HH:MM.`
+            });
+          }
+        } else {
+          warnings.push({
             field: `${key}.end_time`,
-            message: 'Invalid end_time format. Expected HH:MM.'
-          });
-        }
-      }
-
-      // Validate time logic
-      if (dayData.start_time && dayData.end_time) {
-        const startMinutes = parseTimeToMinutes(dayData.start_time);
-        const endMinutes = parseTimeToMinutes(dayData.end_time);
-        
-        if (startMinutes >= endMinutes) {
-          warnings.push({
-            field: `${key}`,
-            message: 'End time should be after start time (night shifts crossing midnight are handled separately).'
+            message: 'Missing end_time for shift.'
           });
         }
 
-        // Check for reasonable shift duration (4-12 hours)
-        const durationMinutes = endMinutes > startMinutes ? 
-          endMinutes - startMinutes : 
-          (24 * 60) - startMinutes + endMinutes;
+        // Validate time logic
+        if (dayData.start_time && dayData.end_time && isValidTime(dayData.start_time) && isValidTime(dayData.end_time)) {
+          const startMinutes = parseTimeToMinutes(dayData.start_time);
+          const endMinutes = parseTimeToMinutes(dayData.end_time);
           
-        if (durationMinutes < 240) { // Less than 4 hours
+          if (startMinutes >= endMinutes) {
+            warnings.push({
+              field: `${key}`,
+              message: 'End time should be after start time (night shifts crossing midnight need special handling).'
+            });
+          }
+
+          // Check for reasonable shift duration (4-12 hours)
+          const durationMinutes = endMinutes > startMinutes ? 
+            endMinutes - startMinutes : 
+            (24 * 60) - startMinutes + endMinutes;
+            
+          if (durationMinutes < 240) { // Less than 4 hours
+            warnings.push({
+              field: `${key}`,
+              message: `Shift duration is ${Math.round(durationMinutes/60)}h which is less than 4 hours.`
+            });
+          } else if (durationMinutes > 720) { // More than 12 hours
+            warnings.push({
+              field: `${key}`,
+              message: `Shift duration is ${Math.round(durationMinutes/60)}h which is more than 12 hours.`
+            });
+          }
+          
+          totalShifts++;
+        }
+      }
+      
+      // Check for nested shift objects or arrays
+      if (!hasShiftData) {
+        const dayKeys = Object.keys(dayData);
+        if (dayKeys.length > 0) {
           warnings.push({
-            field: `${key}`,
-            message: 'Shift duration is less than 4 hours.'
-          });
-        } else if (durationMinutes > 720) { // More than 12 hours
-          warnings.push({
-            field: `${key}`,
-            message: 'Shift duration is more than 12 hours.'
+            field: key,
+            message: `Found data for ${key} but no recognizable shift structure. Expected start_time and end_time fields.`
           });
         }
-        
-        totalShifts++;
       }
 
-      // Check day of week
+      // Check day of week consistency
       if (dayData.day) {
-        if (!isValidDayOfWeek(dayData.day)) {
+        const actualDay = new Date(key).toLocaleDateString('cs-CZ', { weekday: 'long' }).toLowerCase();
+        const providedDay = dayData.day.toLowerCase();
+        if (actualDay !== providedDay) {
           warnings.push({
             field: `${key}.day`,
-            message: 'Invalid or inconsistent day of week.'
+            message: `Day mismatch: ${key} is ${actualDay}, but data says ${providedDay}.`
           });
         }
       }
     }
   });
 
+  console.log('Validation summary:', {
+    totalDays,
+    totalShifts,
+    dateRange: minDate && maxDate ? { start: minDate, end: maxDate } : null,
+    detectedWoche,
+    errorsCount: errors.length,
+    warningsCount: warnings.length
+  });
+
   // Check for empty schedule
-  if (totalShifts === 0) {
+  if (totalShifts === 0 && totalDays > 0) {
+    warnings.push({
+      field: 'schedule',
+      message: `Found ${totalDays} date entries but no valid shifts. Check that each date has start_time and end_time fields.`
+    });
+  } else if (totalDays === 0) {
     errors.push({
       field: 'schedule',
-      message: 'No valid shifts found in schedule.'
+      message: 'No date entries found. Schedule should contain dates in YYYY-MM-DD format.'
     });
   }
 
@@ -169,10 +232,12 @@ export const validateScheduleData = (data: any, fileName: string): ValidationRes
     if (daysDiff > 105) { // More than 15 weeks
       warnings.push({
         field: 'dateRange',
-        message: 'Schedule spans more than 15 weeks, which exceeds typical Woche cycle.'
+        message: `Schedule spans ${daysDiff} days (more than 15 weeks), which exceeds typical Woche cycle.`
       });
     }
   }
+
+  console.log('=== SCHEDULE VALIDATION END ===');
 
   return {
     isValid: errors.length === 0,
@@ -200,7 +265,7 @@ const isValidDate = (dateStr: string): boolean => {
 };
 
 /**
- * Check if string is valid time format (HH:MM)
+ * Check if string is valid time format (HH:MM or H:MM)
  */
 const isValidTime = (timeStr: string): boolean => {
   const regex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
@@ -239,7 +304,7 @@ export const extractScheduleMetadata = (data: any) => {
       const dayName = date.toLocaleDateString('cs-CZ', { weekday: 'long' });
       weekDays.add(dayName);
       
-      if (data[key].start_time && data[key].end_time) {
+      if (data[key] && (data[key].start_time || data[key].end_time)) {
         metadata.shiftCount++;
       }
     }

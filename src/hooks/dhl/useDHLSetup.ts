@@ -7,6 +7,8 @@ import { toast } from 'sonner';
 interface DHLSetupData {
   position_id: string;
   work_group_id: string;
+  reference_date?: string;
+  reference_woche?: number;
 }
 
 export const useDHLSetup = () => {
@@ -39,15 +41,19 @@ export const useDHLSetup = () => {
 
       console.log('Existing assignment:', existingAssignment);
 
+      const updateData = {
+        dhl_position_id: data.position_id,
+        dhl_work_group_id: data.work_group_id,
+        updated_at: new Date().toISOString(),
+        ...(data.reference_date && { reference_date: data.reference_date }),
+        ...(data.reference_woche && { reference_woche: data.reference_woche })
+      };
+
       if (existingAssignment) {
         // Aktualizujeme existující přiřazení
         const { error: updateError } = await supabase
           .from('user_dhl_assignments')
-          .update({
-            dhl_position_id: data.position_id,
-            dhl_work_group_id: data.work_group_id,
-            updated_at: new Date().toISOString()
-          })
+          .update(updateData)
           .eq('id', existingAssignment.id);
 
         if (updateError) {
@@ -64,7 +70,9 @@ export const useDHLSetup = () => {
             user_id: user.id,
             dhl_position_id: data.position_id,
             dhl_work_group_id: data.work_group_id,
-            is_active: true
+            is_active: true,
+            ...(data.reference_date && { reference_date: data.reference_date }),
+            ...(data.reference_woche && { reference_woche: data.reference_woche })
           });
 
         if (insertError) {

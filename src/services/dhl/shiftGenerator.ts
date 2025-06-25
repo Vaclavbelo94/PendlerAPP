@@ -1,33 +1,28 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { calculateCurrentWoche, generateWocheRange, findShiftForDate, determineShiftType, WocheReference } from '@/utils/dhl/wocheCalculator';
+import { calculateCurrentWoche, findShiftForDate } from '@/utils/dhl/wocheCalculator';
 import { toast } from 'sonner';
 
-export interface GenerateShiftsParams {
+interface GenerateShiftsParams {
   scheduleId: string;
-  userId?: string; // If specified, generate only for this user
-  startDate?: Date;
-  endDate?: Date; // If not specified, generate for next 3 months
-  forceRegenerate?: boolean; // Replace existing shifts
+  startDate?: string;
+  endDate?: string;
+  targetUserId?: string; // Optional: generate for specific user
 }
 
-export interface GeneratedShift {
-  userId: string;
-  date: string;
-  type: 'morning' | 'afternoon' | 'night';
-  notes?: string;
-  dhlPositionId: string;
-  dhlWorkGroupId: string;
-  isDhlManaged: boolean;
-  originalDhlData: any;
+interface GenerateShiftsResult {
+  success: boolean;
+  message: string;
+  generatedCount?: number;
+  skippedCount?: number;
 }
 
 /**
- * Generate shifts for users based on imported schedule
+ * Generate shifts from imported schedule
  */
-export const generateShiftsFromSchedule = async (params: GenerateShiftsParams) => {
-  console.log('=== SHIFT GENERATION START ===');
-  console.log('Parameters:', params);
+export const generateShiftsFromSchedule = async (params: GenerateShiftsParams): Promise<GenerateShiftsResult> => {
+  console.log('=== GENERATE SHIFTS FROM SCHEDULE ===');
+  console.log('Params:', params);
 
   try {
     // Get the schedule data
@@ -35,7 +30,7 @@ export const generateShiftsFromSchedule = async (params: GenerateShiftsParams) =
       .from('dhl_shift_schedules')
       .select(`
         *,
-        dhl_positions(id, name),
+        dhl_positions(id, name, position_type),
         dhl_work_groups(id, name, week_number)
       `)
       .eq('id', params.scheduleId)
@@ -44,256 +39,227 @@ export const generateShiftsFromSchedule = async (params: GenerateShiftsParams) =
 
     if (scheduleError || !schedule) {
       console.error('Schedule not found:', scheduleError);
-      throw new Error('Schedule not found');
+      return {
+        success: false,
+        message: 'Plán směn nebyl nalezen'
+      };
     }
 
-    console.log('Using schedule:', schedule);
+    console.log('Found schedule:', schedule);
 
-    // Get users with matching position and work group assignments
+    // Get users with matching position and work group
     let userQuery = supabase
       .from('user_dhl_assignments')
       .select(`
-        user_id,
-        reference_date,
-        reference_woche,
-        dhl_position_id,
-        dhl_work_group_id
+        *,
+        profiles(id, email, username)
       `)
       .eq('dhl_position_id', schedule.position_id)
       .eq('dhl_work_group_id', schedule.work_group_id)
       .eq('is_active', true);
 
-    if (params.userId) {
-      userQuery = userQuery.eq('user_id', params.userId);
+    if (params.targetUserId) {
+      userQuery = userQuery.eq('user_id', params.targetUserId);
     }
 
     const { data: users, error: usersError } = await userQuery;
 
     if (usersError) {
       console.error('Error fetching users:', usersError);
-      throw new Error('Failed to fetch users');
-    }
-
-    if (!users || users.length === 0) {
-      console.log('No users found for this position/work group combination');
       return {
-        success: true,
-        message: 'No users found for this position/work group combination',
-        generatedCount: 0
+        success: false,
+        message: 'Chyba při načítání uživatelů'
       };
     }
 
-    console.log('Found users:', users);
+    if (!users || users.length === 0) {
+      return {
+        success: false,
+        message: 'Nebyli nalezeni žádní uživatelé s odpovídající pozicí a pracovní skupinou'
+      };
+    }
 
-    // Set date range
-    const startDate = params.startDate || new Date();
-    const endDate = params.endDate || new Date(Date.now() + 90 * 24 * 60 * 60 * 1000); // 3 months
+    console.log('Found users:', users.length);
 
-    console.log('Date range:', { startDate, endDate });
-
-    let totalGenerated = 0;
-    const generatedShifts: GeneratedShift[] = [];
+    let generatedCount = 0;
+    let skippedCount = 0;
 
     // Generate shifts for each user
-    for (const user of users) {
-      console.log('Processing user:', user.user_id);
+    for (const userAssignment of users) {
+      console.log('Generating shifts for user:', userAssignment.user_id);
 
-      // Create reference point for user
-      let userReference: WocheReference;
-      
-      if (user.reference_date && user.reference_woche) {
-        userReference = {
-          referenceDate: new Date(user.reference_date),
-          referenceWoche: user.reference_woche
-        };
-        console.log('Using user reference:', userReference);
-      } else {
-        // Use schedule base as reference
-        userReference = {
-          referenceDate: new Date(schedule.base_date),
-          referenceWoche: schedule.base_woche
-        };
-        console.log('Using schedule reference:', userReference);
-      }
+      // Determine date range
+      const startDate = params.startDate ? new Date(params.startDate) : new Date();
+      const endDate = params.endDate ? new Date(params.endDate) : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days from now
 
-      // Generate Woche range for the period
-      const wocheRange = generateWocheRange(userReference, startDate, endDate);
-      console.log('Generated Woche range:', wocheRange.length, 'weeks');
+      console.log('Date range:', startDate.toISOString(), 'to', endDate.toISOString());
 
-      // Generate shifts for each week
-      for (const wocheCalc of wocheRange) {
-        console.log('Processing Woche:', wocheCalc.currentWoche);
+      // Get user's reference point for Woche calculation
+      const referenceDate = userAssignment.reference_date ? 
+        new Date(userAssignment.reference_date) : 
+        new Date(schedule.base_date);
+      const referenceWoche = userAssignment.reference_woche || schedule.base_woche;
 
-        // Check each day of the week
-        for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
-          const currentDate = new Date(wocheCalc.weekStartDate);
-          currentDate.setDate(currentDate.getDate() + dayOffset);
+      console.log('Reference point:', referenceDate, 'Woche', referenceWoche);
 
-          // Skip dates outside our range
-          if (currentDate < startDate || currentDate > endDate) {
+      // Iterate through each day in the range
+      const currentDate = new Date(startDate);
+      while (currentDate <= endDate) {
+        const dateStr = currentDate.toISOString().split('T')[0];
+        
+        // Calculate Woche for this date
+        const wocheCalc = calculateCurrentWoche(
+          { referenceDate, referenceWoche },
+          new Date(currentDate)
+        );
+
+        console.log('Processing date:', dateStr, 'Woche:', wocheCalc.currentWoche);
+
+        // Find shift data for this date and Woche
+        const shiftData = findShiftForDate(schedule.schedule_data, wocheCalc.currentWoche, currentDate);
+
+        if (shiftData && shiftData.start_time && shiftData.end_time) {
+          console.log('Found shift data for', dateStr, ':', shiftData);
+
+          // Check if shift already exists
+          const { data: existingShift, error: checkError } = await supabase
+            .from('shifts')
+            .select('id')
+            .eq('user_id', userAssignment.user_id)
+            .eq('date', dateStr)
+            .maybeSingle();
+
+          if (checkError) {
+            console.error('Error checking existing shift:', checkError);
             continue;
           }
 
-          // Look for shift data for this date/Woche
-          const shiftData = findShiftForDate(
-            schedule.schedule_data, 
-            wocheCalc.currentWoche, 
-            currentDate
-          );
-
-          if (shiftData && shiftData.start_time && shiftData.end_time) {
-            console.log('Found shift data for', currentDate.toISOString().split('T')[0], ':', shiftData);
-
-            // Check if shift already exists (unless force regenerate)
-            if (!params.forceRegenerate) {
-              const { data: existingShift } = await supabase
-                .from('shifts')
-                .select('id')
-                .eq('user_id', user.user_id)
-                .eq('date', currentDate.toISOString().split('T')[0])
-                .maybeSingle();
-
-              if (existingShift) {
-                console.log('Shift already exists, skipping');
-                continue;
-              }
+          if (existingShift) {
+            console.log('Shift already exists for', dateStr, '- skipping');
+            skippedCount++;
+          } else {
+            // Determine shift type based on start time
+            const startHour = parseInt(shiftData.start_time.split(':')[0]);
+            let shiftType: 'morning' | 'afternoon' | 'night' = 'morning';
+            
+            if (startHour >= 6 && startHour < 14) {
+              shiftType = 'morning';
+            } else if (startHour >= 14 && startHour < 22) {
+              shiftType = 'afternoon';
+            } else {
+              shiftType = 'night';
             }
 
-            // Create shift object
-            const shift: GeneratedShift = {
-              userId: user.user_id,
-              date: currentDate.toISOString().split('T')[0],
-              type: determineShiftType(shiftData.start_time),
-              notes: `Auto-generated from DHL schedule (Woche ${wocheCalc.currentWoche})`,
-              dhlPositionId: schedule.position_id,
-              dhlWorkGroupId: schedule.work_group_id,
-              isDhlManaged: true,
-              originalDhlData: {
-                scheduleId: schedule.id,
-                woche: wocheCalc.currentWoche,
-                startTime: shiftData.start_time,
-                endTime: shiftData.end_time,
-                originalData: shiftData
-              }
-            };
+            // Create new shift
+            const { error: insertError } = await supabase
+              .from('shifts')
+              .insert({
+                user_id: userAssignment.user_id,
+                date: dateStr,
+                type: shiftType,
+                dhl_position_id: schedule.position_id,
+                dhl_work_group_id: schedule.work_group_id,
+                is_dhl_managed: true,
+                original_dhl_data: {
+                  start_time: shiftData.start_time,
+                  end_time: shiftData.end_time,
+                  woche: wocheCalc.currentWoche,
+                  schedule_id: schedule.id,
+                  generated_at: new Date().toISOString()
+                }
+              });
 
-            generatedShifts.push(shift);
+            if (insertError) {
+              console.error('Error creating shift:', insertError);
+            } else {
+              console.log('Created shift for', dateStr);
+              generatedCount++;
+            }
           }
         }
+
+        // Move to next day
+        currentDate.setDate(currentDate.getDate() + 1);
       }
     }
 
-    console.log('Generated shifts total:', generatedShifts.length);
-
-    // Insert shifts in batches
-    if (generatedShifts.length > 0) {
-      // Delete existing shifts if force regenerate
-      if (params.forceRegenerate) {
-        const userIds = users.map(u => u.user_id);
-        const { error: deleteError } = await supabase
-          .from('shifts')
-          .delete()
-          .in('user_id', userIds)
-          .gte('date', startDate.toISOString().split('T')[0])
-          .lte('date', endDate.toISOString().split('T')[0])
-          .eq('is_dhl_managed', true);
-
-        if (deleteError) {
-          console.error('Error deleting existing shifts:', deleteError);
-        }
-      }
-
-      // Insert new shifts
-      const shiftsToInsert = generatedShifts.map(shift => ({
-        user_id: shift.userId,
-        date: shift.date,
-        type: shift.type,
-        notes: shift.notes,
-        dhl_position_id: shift.dhlPositionId,
-        dhl_work_group_id: shift.dhlWorkGroupId,
-        is_dhl_managed: shift.isDhlManaged,
-        dhl_override: false,
-        original_dhl_data: shift.originalDhlData
-      }));
-
-      console.log('Inserting shifts:', shiftsToInsert.length);
-
-      const { data: insertedShifts, error: insertError } = await supabase
-        .from('shifts')
-        .insert(shiftsToInsert)
-        .select('id');
-
-      if (insertError) {
-        console.error('Error inserting shifts:', insertError);
-        throw new Error(`Failed to insert shifts: ${insertError.message}`);
-      }
-
-      totalGenerated = insertedShifts?.length || 0;
-    }
-
-    console.log('=== SHIFT GENERATION SUCCESS ===');
-    console.log('Total generated:', totalGenerated);
+    console.log('=== GENERATION COMPLETE ===');
+    console.log('Generated:', generatedCount, 'Skipped:', skippedCount);
 
     return {
       success: true,
-      message: `Successfully generated ${totalGenerated} shifts for ${users.length} users`,
-      generatedCount: totalGenerated,
-      usersProcessed: users.length
+      message: `Úspěšně vygenerováno ${generatedCount} směn${skippedCount > 0 ? `, přeskočeno ${skippedCount} existujících` : ''}`,
+      generatedCount,
+      skippedCount
     };
 
   } catch (error) {
-    console.error('Shift generation error:', error);
-    throw error;
+    console.error('Error generating shifts:', error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : 'Neočekávaná chyba při generování směn'
+    };
   }
 };
 
 /**
- * Set user's reference Woche point
+ * Generate shifts for specific user and date range
  */
-export const setUserWocheReference = async (userId: string, referenceDate: Date, referenceWoche: number) => {
-  console.log('Setting user Woche reference:', { userId, referenceDate, referenceWoche });
+export const generateUserShifts = async (userId: string, startDate: string, endDate: string): Promise<GenerateShiftsResult> => {
+  console.log('=== GENERATE USER SHIFTS ===');
+  console.log('User:', userId, 'Range:', startDate, 'to', endDate);
 
-  const { error } = await supabase
-    .from('user_dhl_assignments')
-    .update({
-      reference_date: referenceDate.toISOString().split('T')[0],
-      reference_woche: referenceWoche
-    })
-    .eq('user_id', userId)
-    .eq('is_active', true);
+  try {
+    // Get user's DHL assignment
+    const { data: assignment, error: assignmentError } = await supabase
+      .from('user_dhl_assignments')
+      .select(`
+        *,
+        dhl_positions(id, name, position_type),
+        dhl_work_groups(id, name, week_number)
+      `)
+      .eq('user_id', userId)
+      .eq('is_active', true)
+      .single();
 
-  if (error) {
-    console.error('Error setting user reference:', error);
-    throw error;
+    if (assignmentError || !assignment) {
+      return {
+        success: false,
+        message: 'Uživatel nemá přiřazení DHL pozice a pracovní skupiny'
+      };
+    }
+
+    // Get active schedule for this position and work group
+    const { data: schedule, error: scheduleError } = await supabase
+      .from('dhl_shift_schedules')
+      .select('*')
+      .eq('position_id', assignment.dhl_position_id)
+      .eq('work_group_id', assignment.dhl_work_group_id)
+      .eq('is_active', true)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (scheduleError || !schedule) {
+      return {
+        success: false,
+        message: 'Nebyl nalezen aktivní plán směn pro tuto pozici a pracovní skupinu'
+      };
+    }
+
+    // Use the schedule-based generation
+    return await generateShiftsFromSchedule({
+      scheduleId: schedule.id,
+      startDate,
+      endDate,
+      targetUserId: userId
+    });
+
+  } catch (error) {
+    console.error('Error generating user shifts:', error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : 'Neočekávaná chyba při generování směn'
+    };
   }
-
-  toast.success('User Woche reference updated successfully');
-};
-
-/**
- * Get user's current Woche information
- */
-export const getUserCurrentWoche = async (userId: string) => {
-  const { data: assignment, error } = await supabase
-    .from('user_dhl_assignments')
-    .select('reference_date, reference_woche, dhl_position_id, dhl_work_group_id')
-    .eq('user_id', userId)
-    .eq('is_active', true)
-    .maybeSingle();
-
-  if (error) {
-    console.error('Error fetching user assignment:', error);
-    return null;
-  }
-
-  if (!assignment || !assignment.reference_date || !assignment.reference_woche) {
-    return null;
-  }
-
-  const reference: WocheReference = {
-    referenceDate: new Date(assignment.reference_date),
-    referenceWoche: assignment.reference_woche
-  };
-
-  return calculateCurrentWoche(reference);
 };
