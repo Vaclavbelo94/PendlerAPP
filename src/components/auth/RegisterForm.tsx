@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,8 +25,13 @@ const RegisterForm = () => {
   const handlePromoCodeChange = (code: string, isValid: boolean) => {
     console.log('=== PROMO CODE CHANGE ===');
     console.log('Code:', code, 'Is Valid:', isValid);
+    console.log('Updating states - promoCode from', promoCode, 'to', code);
+    console.log('Updating states - isPromoValid from', isPromoValid, 'to', isValid);
+    
     setPromoCode(code);
     setIsPromoValid(isValid);
+    
+    console.log('States updated');
   };
 
   const getEmailPlaceholder = () => {
@@ -45,6 +49,8 @@ const RegisterForm = () => {
     console.log('Email:', email);
     console.log('Promo Code:', promoCode);
     console.log('Is Promo Valid:', isPromoValid);
+    console.log('Promo Code length:', promoCode.length);
+    console.log('Promo Code trimmed:', promoCode.trim());
     
     if (password !== confirmPassword) {
       toast.error(t('passwordsDoNotMatch'));
@@ -92,10 +98,16 @@ const RegisterForm = () => {
         
         // Počkáme déle, aby se dokončil trigger pro vytvoření profilu
         console.log('Čekám na vytvoření profilu...');
-        await new Promise(resolve => setTimeout(resolve, 5000)); // Zvýšeno z 3 na 5 sekund
+        await new Promise(resolve => setTimeout(resolve, 5000));
         
-        // Promo kód aktivace - OPRAVA: kontrolujeme promoCode, ne isPromoValid
-        if (promoCode && promoCode.trim()) {
+        // OPRAVENO: kontrolujeme promoCode místo isPromoValid
+        console.log('=== KONTROLA PROMO KÓDU PRO AKTIVACI ===');
+        console.log('promoCode:', promoCode);
+        console.log('promoCode.trim():', promoCode.trim());
+        console.log('promoCode.trim().length:', promoCode.trim().length);
+        console.log('isPromoValid:', isPromoValid);
+        
+        if (promoCode && promoCode.trim().length > 0) {
           console.log('=== AKTIVACE PROMO KÓDU ===');
           console.log('Promo kód:', promoCode);
           console.log('Je validní:', isPromoValid);
@@ -118,7 +130,7 @@ const RegisterForm = () => {
             });
           }
         } else {
-          console.log('Žádný promo kód k aktivaci');
+          console.log('Žádný promo kód k aktivaci nebo prázdný kód');
           toast.success(t('accountCreatedSuccessfully'), { 
             description: t('nowYouCanLogin'),
             duration: 5000

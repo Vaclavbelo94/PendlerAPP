@@ -88,9 +88,9 @@ const PromoCodeField: React.FC<PromoCodeFieldProps> = ({ onPromoCodeChange }) =>
     console.log('Promo code input changed:', value);
     setPromoCode(value);
     setValidationResult(null);
-    if (!value.trim()) {
-      onPromoCodeChange('', false);
-    }
+    
+    // OPRAVA: Vždy volej callback s aktuální hodnotou, i když není validní
+    onPromoCodeChange(value, false);
   };
 
   const handleBlur = () => {
