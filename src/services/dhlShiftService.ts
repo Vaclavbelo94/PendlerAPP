@@ -247,12 +247,21 @@ export class DHLShiftService {
         };
       }
 
+      // Type check for original_dhl_data
+      const originalData = shift.original_dhl_data as any;
+      if (!originalData || typeof originalData !== 'object') {
+        return {
+          success: false,
+          message: 'Neplatná původní DHL data'
+        };
+      }
+
       // Obnovení na původní stav
       const { error: updateError } = await supabase
         .from('shifts')
         .update({
           dhl_override: false,
-          notes: `Automaticky vygenerováno - ${shift.original_dhl_data.start_time} - ${shift.original_dhl_data.end_time}`
+          notes: `Automaticky vygenerováno - ${originalData.start_time || 'N/A'} - ${originalData.end_time || 'N/A'}`
         })
         .eq('id', shiftId)
         .eq('user_id', userId);

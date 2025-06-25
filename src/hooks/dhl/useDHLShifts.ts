@@ -67,6 +67,12 @@ export const useDHLShifts = (userId?: string): UseDHLShiftsReturn => {
 
       if (shiftsError) throw shiftsError;
 
+      // Convert and validate shift data
+      const validatedShifts: DHLShift[] = (shifts || []).map(shift => ({
+        ...shift,
+        type: shift.type as 'morning' | 'afternoon' | 'night' // Type assertion for database compatibility
+      }));
+
       // Fetch shift templates for user's assignment
       const { data: templates, error: templatesError } = await supabase
         .from('dhl_shift_templates')
@@ -81,7 +87,7 @@ export const useDHLShifts = (userId?: string): UseDHLShiftsReturn => {
 
       if (templatesError) throw templatesError;
 
-      setDhlShifts(shifts || []);
+      setDhlShifts(validatedShifts);
       setShiftTemplates(templates || []);
 
     } catch (err) {
