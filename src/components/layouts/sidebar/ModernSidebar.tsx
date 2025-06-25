@@ -6,31 +6,28 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
+import { useDHLAuth } from "@/hooks/useDHLAuth";
 import { useTranslation } from "react-i18next";
 import SidebarLogo from "./SidebarLogo";
 import SidebarUserSection from "./SidebarUserSection";
 import SidebarThemeSwitcher from "./SidebarThemeSwitcher";
 import { navigationItems } from "@/data/navigationData";
-import { canAccessDHLAdmin, canAccessDHLFeatures } from "@/utils/dhlAuthUtils";
 
 const ModernSidebar = () => {
   const location = useLocation();
   const { user, isAdmin } = useAuth();
+  const { canAccessDHLAdmin, canAccessDHLFeatures } = useDHLAuth();
   const { t } = useTranslation('common');
-
-  // Check DHL access
-  const isDHLAdmin = canAccessDHLAdmin(user);
-  const canAccessDHL = canAccessDHLFeatures(user);
 
   const filteredNavigationItems = navigationItems.filter(item => {
     // Regular admin check
     if (item.adminOnly && !isAdmin) return false;
     
     // DHL admin check
-    if (item.dhlAdminOnly && !isDHLAdmin) return false;
+    if (item.dhlAdminOnly && !canAccessDHLAdmin) return false;
     
     // DHL employee check
-    if (item.dhlOnly && !canAccessDHL) return false;
+    if (item.dhlOnly && !canAccessDHLFeatures) return false;
     
     return true;
   });
@@ -82,7 +79,7 @@ const ModernSidebar = () => {
             </div>
 
             {/* DHL Section */}
-            {canAccessDHL && (
+            {canAccessDHLFeatures && (
               <>
                 <Separator />
                 <div className="pb-4">

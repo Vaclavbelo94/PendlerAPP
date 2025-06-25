@@ -1,42 +1,67 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import { Truck, ArrowRight, CheckCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
+import { useDHLAuth } from '@/hooks/useDHLAuth';
 import Layout from '@/components/layouts/Layout';
 import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
+import { createDHLAssignment } from '@/utils/dhlAuthUtils';
+import { supabase } from '@/integrations/supabase/client';
 
 const DHLSetup: React.FC = () => {
   const { t } = useTranslation(['common']);
   const { user } = useAuth();
+  const { needsSetup, refreshDHLAuthState } = useDHLAuth();
   const [selectedPosition, setSelectedPosition] = useState<string>('');
   const [selectedWorkGroup, setSelectedWorkGroup] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [positions, setPositions] = useState<any[]>([]);
+  const [workGroups, setWorkGroups] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Mock data - in real implementation, this would come from the database
-  const positions = [
-    { id: '1', name: 'Techniker', description: 'Technická pozice' },
-    { id: '2', name: 'Rangierer', description: 'Rangování vozidel' },
-    { id: '3', name: 'Verlader', description: 'Nakládání/vykládání' },
-    { id: '4', name: 'Sortierer', description: 'Třídění zásilek' },
-    { id: '5', name: 'Fahrer', description: 'Řidič' }
-  ];
+  // Load positions and work groups from database
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [positionsResult, workGroupsResult] = await Promise.all([
+          supabase.from('dhl_positions').select('*').eq('is_active', true),
+          supabase.from('dhl_work_groups').select('*').eq('is_active', true)
+        ]);
 
-  const workGroups = [
-    { id: '1', name: 'Skupina 1', description: 'Ranní týden 1-15' },
-    { id: '2', name: 'Skupina 2', description: 'Ranní týden 2-16' },
-    { id: '3', name: 'Skupina 3', description: 'Odpolední směny' },
-    { id: '4', name: 'Skupina 4', description: 'Noční směny' }
-  ];
+        if (positionsResult.data) {
+          setPositions(positionsResult.data);
+        }
+        
+        if (workGroupsResult.data) {
+          setWorkGroups(workGroupsResult.data);
+        }
+      } catch (error) {
+        console.error('Error loading DHL data:', error);
+        toast.error('Chyba při načítání dat DHL');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  // Redirect if user doesn't need setup
+  useEffect(() => {
+    if (!loading && !needsSetup && user) {
+      window.location.href = '/dhl-dashboard';
+    }
+  }, [loading, needsSetup, user]);
 
   const handleSubmit = async () => {
-    if (!selectedPosition || !selectedWorkGroup) {
+    if (!selectedPosition || !selectedWorkGroup || !user) {
       toast.error('Prosím vyberte pozici a pracovní skupinu');
       return;
     }
@@ -44,16 +69,21 @@ const DHLSetup: React.FC = () => {
     setIsSubmitting(true);
     
     try {
-      // Here would be the actual API call to save the DHL assignment
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Mock delay
+      const result = await createDHLAssignment(user.id, selectedPosition, selectedWorkGroup);
       
-      toast.success('DHL nastavení bylo úspěšně dokončeno!');
-      
-      // Redirect to DHL dashboard
-      setTimeout(() => {
-        window.location.href = '/dhl-dashboard';
-      }, 1500);
-      
+      if (result.success) {
+        toast.success('DHL nastavení bylo úspěšně dokončeno!');
+        
+        // Refresh DHL auth state
+        await refreshDHLAuthState();
+        
+        // Redirect to DHL dashboard
+        setTimeout(() => {
+          window.location.href = '/dhl-dashboard';
+        }, 1500);
+      } else {
+        toast.error(result.error || 'Chyba při ukládání nastavení');
+      }
     } catch (error) {
       console.error('Error saving DHL setup:', error);
       toast.error('Chyba při ukládání nastavení');
@@ -61,6 +91,19 @@ const DHLSetup: React.FC = () => {
       setIsSubmitting(false);
     }
   };
+
+  if (loading) {
+    return (
+      <Layout navbarRightContent={<NavbarRightContent />}>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p>Načítám DHL data...</p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout navbarRightContent={<NavbarRightContent />}>
@@ -120,7 +163,9 @@ const DHLSetup: React.FC = () => {
                         <SelectItem key={position.id} value={position.id}>
                           <div>
                             <div className="font-medium">{position.name}</div>
-                            <div className="text-xs text-muted-foreground">{position.description}</div>
+                            {position.description && (
+                              <div className="text-xs text-muted-foreground">{position.description}</div>
+                            )}
                           </div>
                         </SelectItem>
                       ))}
@@ -140,7 +185,9 @@ const DHLSetup: React.FC = () => {
                         <SelectItem key={group.id} value={group.id}>
                           <div>
                             <div className="font-medium">{group.name}</div>
-                            <div className="text-xs text-muted-foreground">{group.description}</div>
+                            {group.description && (
+                              <div className="text-xs text-muted-foreground">{group.description}</div>
+                            )}
                           </div>
                         </SelectItem>
                       ))}
