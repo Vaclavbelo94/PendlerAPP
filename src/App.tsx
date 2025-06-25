@@ -3,6 +3,7 @@ import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/auth";
 import { OptimizedProviderStack } from "@/components/providers/OptimizedProviderStack";
+import HomePage from "./pages/HomePage";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -28,7 +29,8 @@ function App() {
             <Routes>
               {/* Public routes */}
               <Route path="/" element={<Layout />}>
-                <Route index element={<About />} />
+                <Route index element={<HomePage />} />
+                <Route path="about" element={<About />} />
                 <Route path="login" element={<Login />} />
                 <Route path="register" element={<Register />} />
                 <Route path="pricing" element={<Pricing />} />
