@@ -6,7 +6,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { Toaster as Sonner } from 'sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { AuthProvider } from '@/hooks/useAuth';
-import { ThemeProvider } from '@/hooks/useTheme';
+import { ThemeProvider } from 'next-themes';
 import SimpleLoadingSpinner from '@/components/loading/SimpleLoadingSpinner';
 
 // Lazy load non-critical providers
@@ -35,7 +35,7 @@ export const OptimizedProviderStack: React.FC<OptimizedProviderStackProps> = ({
   return (
     <QueryClientProvider client={queryClient}>
       <Router>
-        <ThemeProvider>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           <TooltipProvider>
             <AuthProvider>
               <Suspense fallback={<SimpleLoadingSpinner />}>
