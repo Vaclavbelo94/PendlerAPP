@@ -12,15 +12,43 @@ export interface DHLAuthState {
  * Check if user is DHL admin
  */
 export const isDHLAdmin = (user: User | null): boolean => {
-  return user?.email === 'admin_dhl@pendlerapp.com';
+  const isAdmin = user?.email === 'admin_dhl@pendlerapp.com';
+  console.log('DHL Admin check:', { email: user?.email, isAdmin });
+  return isAdmin;
 };
 
 /**
  * Check if user is DHL employee (has DHL assignment)
  */
 export const isDHLEmployee = (user: User | null): boolean => {
-  // This will be enhanced later with actual DHL assignment check
-  return user?.email?.includes('@dhl.') || false;
+  if (!user?.email) {
+    console.log('DHL Employee check: No email provided');
+    return false;
+  }
+  
+  // Support various DHL email formats
+  const dhlEmailPatterns = [
+    '@dhl.com',        // Standard DHL email
+    '@dhl.de',         // German DHL
+    'test@dhl.com',    // Test account
+    'admin_dhl@pendlerapp.com' // DHL admin
+  ];
+  
+  const isDHLEmp = dhlEmailPatterns.some(pattern => {
+    if (pattern.startsWith('@')) {
+      return user.email!.includes(pattern);
+    } else {
+      return user.email === pattern;
+    }
+  });
+  
+  console.log('DHL Employee check:', { 
+    email: user.email, 
+    isDHLEmployee: isDHLEmp,
+    checkedPatterns: dhlEmailPatterns 
+  });
+  
+  return isDHLEmp;
 };
 
 /**
@@ -30,12 +58,15 @@ export const getDHLAuthState = (user: User | null): DHLAuthState => {
   const isAdmin = isDHLAdmin(user);
   const isEmployee = isDHLEmployee(user);
 
-  return {
+  const authState = {
     isDHLAdmin: isAdmin,
     isDHLEmployee: isEmployee,
     canAccessDHLAdmin: isAdmin,
     canAccessDHLFeatures: isAdmin || isEmployee
   };
+
+  console.log('DHL Auth State:', authState);
+  return authState;
 };
 
 /**
