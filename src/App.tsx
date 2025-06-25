@@ -1,4 +1,3 @@
-
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/auth";
@@ -15,6 +14,7 @@ import Contact from "./pages/Contact";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 import DHLSetupPage from "@/pages/DHLSetup";
+import DHLDashboardPage from "@/pages/DHLDashboard";
 import Layout from "./components/layouts/Layout";
 
 function App() {
@@ -47,8 +47,11 @@ function App() {
                 <Route index element={<Admin />} />
               </Route>
 
-              {/* DHL Setup */}
+              {/* DHL routes */}
               <Route path="/dhl-setup" element={<DHLSetupPage />} />
+              <Route path="/dhl-dashboard" element={<Layout />}>
+                <Route index element={<DHLDashboardPage />} />
+              </Route>
             </Routes>
           </OptimizedProviderStack>
         </AuthProvider>
