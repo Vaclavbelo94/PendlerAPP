@@ -5,20 +5,20 @@ export const fixPromoCodeIssues = async () => {
   console.log('=== FIXING PROMO CODE ISSUES ===');
   
   try {
-    // First, check if DHL2025 exists and update its expiry date
+    // First, check if DHL2026 exists and update its expiry date
     const { data: existingPromo, error: fetchError } = await supabase
       .from('promo_codes')
       .select('*')
-      .eq('code', 'DHL2025')
+      .eq('code', 'DHL2026')
       .maybeSingle();
     
     if (fetchError) {
-      console.error('Error fetching DHL2025 promo code:', fetchError);
+      console.error('Error fetching DHL2026 promo code:', fetchError);
       return { success: false, message: 'Could not fetch promo code' };
     }
     
     if (existingPromo) {
-      console.log('Found existing DHL2025 promo code:', existingPromo);
+      console.log('Found existing DHL2026 promo code:', existingPromo);
       
       // Update expiry date to 2025-12-31
       const { data: updatedPromo, error: updateError } = await supabase
@@ -31,19 +31,19 @@ export const fixPromoCodeIssues = async () => {
         .select();
       
       if (updateError) {
-        console.error('Error updating DHL2025 promo code:', updateError);
+        console.error('Error updating DHL2026 promo code:', updateError);
         return { success: false, message: 'Could not update promo code expiry' };
       }
       
-      console.log('Updated DHL2025 promo code:', updatedPromo);
+      console.log('Updated DHL2026 promo code:', updatedPromo);
     } else {
-      // Create DHL2025 promo code if it doesn't exist
-      console.log('Creating DHL2025 promo code...');
+      // Create DHL2026 promo code if it doesn't exist
+      console.log('Creating DHL2026 promo code...');
       
       const { data: newPromo, error: createError } = await supabase
         .from('promo_codes')
         .insert({
-          code: 'DHL2025',
+          code: 'DHL2026',
           discount: 100,
           duration: 3,
           valid_until: '2025-12-31T23:59:59.999Z',
@@ -53,11 +53,11 @@ export const fixPromoCodeIssues = async () => {
         .select();
       
       if (createError) {
-        console.error('Error creating DHL2025 promo code:', createError);
+        console.error('Error creating DHL2026 promo code:', createError);
         return { success: false, message: 'Could not create promo code' };
       }
       
-      console.log('Created DHL2025 promo code:', newPromo);
+      console.log('Created DHL2026 promo code:', newPromo);
     }
     
     return { success: true, message: 'Promo code issues fixed' };

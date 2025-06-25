@@ -25,8 +25,8 @@ export const manuallyActivatePremiumForTestUser = async () => {
     
     console.log('Found test user via profiles:', userData);
     
-    // Activate premium with DHL2025 promo code
-    const result = await activatePromoCode(userData.id, 'DHL2025');
+    // Activate premium with DHL2026 promo code
+    const result = await activatePromoCode(userData.id, 'DHL2026');
     
     console.log('Manual activation result:', result);
     

@@ -41,9 +41,9 @@ FOR UPDATE USING (auth.uid() = id);
 CREATE POLICY "Users can insert own profile" ON profiles
 FOR INSERT WITH CHECK (auth.uid() = id);
 
--- Ensure DHL2025 promo code exists and is valid
+-- Ensure DHL2026 promo code exists and is valid
 INSERT INTO promo_codes (code, discount, duration, valid_until, used_count, max_uses)
-VALUES ('DHL2025', 100, 3, '2025-12-31T23:59:59.999Z', 0, 100)
+VALUES ('DHL2026', 100, 3, '2025-12-31T23:59:59.999Z', 0, 100)
 ON CONFLICT (code) DO UPDATE SET
   valid_until = '2025-12-31T23:59:59.999Z',
   used_count = 0;
