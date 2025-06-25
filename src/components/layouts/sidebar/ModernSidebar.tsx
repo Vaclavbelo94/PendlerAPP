@@ -7,10 +7,10 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { useTranslation } from "react-i18next";
-import { SidebarLogo } from "./SidebarLogo";
-import { SidebarUserSection } from "./SidebarUserSection";
-import { SidebarThemeSwitcher } from "./SidebarThemeSwitcher";
-import { navigationItems } from "./modernNavigationData";
+import SidebarLogo from "./SidebarLogo";
+import SidebarUserSection from "./SidebarUserSection";
+import SidebarThemeSwitcher from "./SidebarThemeSwitcher";
+import { navigationItems } from "@/data/navigationData";
 import { canAccessDHLAdmin, canAccessDHLFeatures } from "@/utils/dhlAuthUtils";
 
 const ModernSidebar = () => {
@@ -40,7 +40,7 @@ const ModernSidebar = () => {
       <div className="flex h-full max-h-screen flex-col gap-2">
         {/* Logo */}
         <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
-          <SidebarLogo />
+          <SidebarLogo closeSidebar={() => {}} />
         </div>
 
         {/* Navigation */}
@@ -166,7 +166,7 @@ const ModernSidebar = () => {
         {/* Footer */}
         <div className="mt-auto border-t p-4">
           <SidebarThemeSwitcher />
-          <SidebarUserSection />
+          <SidebarUserSection collapsed={false} />
         </div>
       </div>
     </div>

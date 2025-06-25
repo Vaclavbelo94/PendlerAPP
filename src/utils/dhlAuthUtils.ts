@@ -46,6 +46,14 @@ export const canAccessDHLAdmin = (user: User | null): boolean => {
 };
 
 /**
+ * Check if user can access DHL features
+ */
+export const canAccessDHLFeatures = (user: User | null): boolean => {
+  const authState = getDHLAuthState(user);
+  return authState.canAccessDHLFeatures;
+};
+
+/**
  * Get DHL redirect path based on user type
  */
 export const getDHLRedirectPath = (user: User | null): string | null => {
