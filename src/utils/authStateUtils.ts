@@ -16,19 +16,19 @@ export interface UnifiedAuthState {
 }
 
 /**
- * Utility funkce pro standardizovaný auth state
+ * Utility funkce pro standardizovaný auth state (async version)
  */
-export const getUnifiedAuthState = (
+export const getUnifiedAuthState = async (
   user: User | null,
   isAdmin: boolean,
   isPremium: boolean,
   isLoading: boolean
-): UnifiedAuthState => {
+): Promise<UnifiedAuthState> => {
   const specialEmails = ['uzivatel@pendlerapp.com', 'admin@pendlerapp.com', 'admin_dhl@pendlerapp.com'];
   const isSpecialUser = user?.email ? specialEmails.includes(user.email) : false;
   
-  // Get DHL auth state
-  const dhlAuthState = getDHLAuthState(user);
+  // Get DHL auth state (now properly awaited)
+  const dhlAuthState = await getDHLAuthState(user);
 
   return {
     user,
@@ -41,6 +41,27 @@ export const getUnifiedAuthState = (
     isDHLEmployee: dhlAuthState.isDHLEmployee,
     canAccessDHLAdmin: dhlAuthState.canAccessDHLAdmin,
     canAccessDHLFeatures: dhlAuthState.canAccessDHLFeatures
+  };
+};
+
+/**
+ * Synchronous version for compatibility (basic checks only)
+ */
+export const getUnifiedAuthStateSync = (
+  user: User | null,
+  isAdmin: boolean,
+  isPremium: boolean,
+  isLoading: boolean
+): Omit<UnifiedAuthState, 'isDHLAdmin' | 'isDHLEmployee' | 'canAccessDHLAdmin' | 'canAccessDHLFeatures'> => {
+  const specialEmails = ['uzivatel@pendlerapp.com', 'admin@pendlerapp.com', 'admin_dhl@pendlerapp.com'];
+  const isSpecialUser = user?.email ? specialEmails.includes(user.email) : false;
+  
+  return {
+    user,
+    isAdmin: isAdmin || isSpecialUser,
+    isPremium: isPremium || isSpecialUser,
+    isSpecialUser,
+    isLoading
   };
 };
 
