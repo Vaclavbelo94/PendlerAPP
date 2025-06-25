@@ -44,7 +44,13 @@ export const manuallyActivatePremiumForTestUser = async () => {
       }
     }
 
-    const testUser = users?.find(user => user.email === 'test@gmail.com');
+    // If we got here, listUsers was successful
+    if (!users) {
+      console.error('No users returned from listUsers');
+      return { success: false, message: 'No users found' };
+    }
+
+    const testUser = users.find(user => user.email === 'test@gmail.com');
     
     if (!testUser) {
       console.error('User test@gmail.com not found in user list');
