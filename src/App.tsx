@@ -1,5 +1,4 @@
 
-
 import { Suspense } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,6 +7,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "@/hooks/auth";
 import Index from "./pages/Index";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Shifts from "./pages/Shifts";
 import TravelPlanning from "./pages/TravelPlanning";
@@ -34,6 +35,8 @@ function App() {
               <Suspense fallback={<LoadingSpinner />}>
                 <Routes>
                   <Route path="/" element={<Index />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/shifts" element={<Shifts />} />
                   <Route path="/travel" element={<TravelPlanning />} />
@@ -57,4 +60,3 @@ function App() {
 }
 
 export default App;
-
