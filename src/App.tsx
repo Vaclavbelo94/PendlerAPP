@@ -1,68 +1,72 @@
-
-import { Suspense } from 'react';
-import { Toaster } from "@/components/ui/toaster";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "@/hooks/auth";
-import Index from "./pages/Index";
+import { QueryProvider } from "@/components/providers/OptimizedProviderStack";
+import { OptimizedProviderStack } from "@/components/providers/OptimizedProviderStack";
+import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Dashboard from "./pages/Dashboard";
-import Shifts from "./pages/Shifts";
-import TravelPlanning from "./pages/TravelPlanning";
-import Translator from "./pages/Translator";
-import TaxAdvisor from "./pages/TaxAdvisor";
-import Laws from "./pages/Laws";
-import LawDetail from "./pages/LawDetail";
+import Admin from "./pages/Admin";
+import Premium from "./pages/Premium";
+import Pricing from "./pages/Pricing";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
-import Vehicle from "./pages/Vehicle";
-import Premium from "./pages/Premium";
-import Admin from "./pages/Admin";
-import { LoadingSpinner } from "./components/ui/LoadingSpinner";
-import "./i18n/config";
-
-// Import manual premium activation utility
-import "@/utils/manualPremiumActivation";
-// Import promo code fix utility
-import "@/utils/fixPromoCodeIssues";
-
-const queryClient = new QueryClient();
+import Logout from "./pages/Logout";
+import PasswordReset from "./pages/PasswordReset";
+import PasswordUpdate from "./pages/PasswordUpdate";
+import VerifyEmail from "./pages/VerifyEmail";
+import Impressum from "./pages/Impressum";
+import DataPrivacy from "./pages/DataPrivacy";
+import TermsOfService from "./pages/TermsOfService";
+import Contact from "./pages/Contact";
+import About from "./pages/About";
+import NotFound from "./pages/NotFound";
+import PublicLayout from "./layouts/PublicLayout";
+import AppLayout from "./layouts/AppLayout";
+import AdminLayout from "./layouts/AdminLayout";
+import DHLSetupPage from "@/pages/DHLSetup";
 
 function App() {
   return (
-    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <AuthProvider>
-            <BrowserRouter>
-              <Suspense fallback={<LoadingSpinner />}>
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/shifts" element={<Shifts />} />
-                  <Route path="/travel" element={<TravelPlanning />} />
-                  <Route path="/translator" element={<Translator />} />
-                  <Route path="/tax-advisor" element={<TaxAdvisor />} />
-                  <Route path="/laws" element={<Laws />} />
-                  <Route path="/laws/:lawId" element={<LawDetail />} />
-                  <Route path="/profile" element={<Profile />} />
-                  <Route path="/settings" element={<Settings />} />
-                  <Route path="/vehicle" element={<Vehicle />} />
-                  <Route path="/premium" element={<Premium />} />
-                  <Route path="/admin" element={<Admin />} />
-                </Routes>
-              </Suspense>
-              <Toaster />
-            </BrowserRouter>
-          </AuthProvider>
-        </TooltipProvider>
-      </QueryClientProvider>
-    </ThemeProvider>
+    <div className="flex flex-col min-h-screen">
+      <BrowserRouter>
+        <AuthProvider>
+          <QueryProvider>
+            <OptimizedProviderStack>
+              <Routes>
+                <Route path="/" element={<PublicLayout />} >
+                  <Route index element={<About />} />
+                  <Route path="login" element={<Login />} />
+                  <Route path="register" element={<Register />} />
+                  <Route path="pricing" element={<Pricing />} />
+                  <Route path="password-reset" element={<PasswordReset />} />
+                  <Route path="password-update" element={<PasswordUpdate />} />
+                  <Route path="verify-email" element={<VerifyEmail />} />
+                  <Route path="impressum" element={<Impressum />} />
+                  <Route path="data-privacy" element={<DataPrivacy />} />
+                  <Route path="terms-of-service" element={<TermsOfService />} />
+                  <Route path="contact" element={<Contact />} />
+                  <Route path="*" element={<NotFound />} />
+                </Route>
+
+                <Route path="/dashboard" element={<AppLayout />} >
+                  <Route index element={<Dashboard />} />
+                  <Route path="premium" element={<Premium />} />
+                  <Route path="profile" element={<Profile />} />
+                  <Route path="settings" element={<Settings />} />
+                  <Route path="logout" element={<Logout />} />
+                </Route>
+
+                <Route path="/admin" element={<AdminLayout />} >
+                  <Route index element={<Admin />} />
+                </Route>
+                <Route path="/dhl-setup" element={<DHLSetupPage />} />
+              </Routes>
+            </OptimizedProviderStack>
+          </QueryProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    </div>
   );
 }
 

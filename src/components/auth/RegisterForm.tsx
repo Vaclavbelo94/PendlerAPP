@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import PromoCodeField from './PromoCodeField';
 import { checkLocalStorageSpace } from '@/utils/authUtils';
 import { activatePromoCode } from '@/services/promoCodeService';
+import { isDHL2026PromoCode } from '@/utils/dhl/dhlUtils';
 
 const RegisterForm = () => {
   const [email, setEmail] = useState("");
@@ -49,8 +51,7 @@ const RegisterForm = () => {
     console.log('Email:', email);
     console.log('Promo Code:', promoCode);
     console.log('Is Promo Valid:', isPromoValid);
-    console.log('Promo Code length:', promoCode.length);
-    console.log('Promo Code trimmed:', promoCode.trim());
+    console.log('Is DHL2026 Code:', isDHL2026PromoCode(promoCode));
     
     if (password !== confirmPassword) {
       toast.error(t('passwordsDoNotMatch'));
@@ -100,11 +101,11 @@ const RegisterForm = () => {
         console.log('Čekám na vytvoření profilu...');
         await new Promise(resolve => setTimeout(resolve, 5000));
         
-        // OPRAVENO: kontrolujeme promoCode místo isPromoValid
+        // KONTROLA: zjistíme zda je to DHL2026 promo kód
+        const isDHLCode = isDHL2026PromoCode(promoCode);
         console.log('=== KONTROLA PROMO KÓDU PRO AKTIVACI ===');
         console.log('promoCode:', promoCode);
-        console.log('promoCode.trim():', promoCode.trim());
-        console.log('promoCode.trim().length:', promoCode.trim().length);
+        console.log('isDHLCode:', isDHLCode);
         console.log('isPromoValid:', isPromoValid);
         
         if (promoCode && promoCode.trim().length > 0) {
@@ -118,16 +119,28 @@ const RegisterForm = () => {
           console.log('Výsledek aktivace promo kódu:', result);
           
           if (result.success) {
-            toast.success(t('accountCreatedWithPremium'), { 
-              description: `Premium aktivován s kódem ${promoCode}. Nyní se můžete přihlásit.`,
-              duration: 8000
-            });
+            if (isDHLCode) {
+              // DHL2026 kód - přesměrovat na DHL setup
+              toast.success('DHL účet aktivován!', { 
+                description: `Premium aktivován s kódem ${promoCode}. Nyní dokončete nastavení DHL profilu.`,
+                duration: 8000
+              });
+              navigate("/dhl-setup");
+            } else {
+              // Jiný promo kód - normální flow
+              toast.success(t('accountCreatedWithPremium'), { 
+                description: `Premium aktivován s kódem ${promoCode}. Nyní se můžete přihlásit.`,
+                duration: 8000
+              });
+              navigate("/login");
+            }
           } else {
             console.error('Chyba při aktivaci promo kódu:', result.message);
             toast.success(t('accountCreatedSuccessfully'), { 
               description: t('nowYouCanLogin') + ` (Promo kód se nepodařilo aktivovat: ${result.message})`,
               duration: 8000
             });
+            navigate("/login");
           }
         } else {
           console.log('Žádný promo kód k aktivaci nebo prázdný kód');
@@ -135,9 +148,8 @@ const RegisterForm = () => {
             description: t('nowYouCanLogin'),
             duration: 5000
           });
+          navigate("/login");
         }
-        
-        navigate("/login");
       } else {
         toast.error(t('registrationError'), {
           description: 'Neočekávaná chyba při registraci',
