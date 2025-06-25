@@ -3,16 +3,18 @@ import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Gift, Sparkles, RefreshCw } from "lucide-react";
+import { Gift, Sparkles, RefreshCw, TestTube } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { activatePromoCode, fixExistingPromoCodeUsers } from "@/services/promoCodeService";
+import { testDHL2026PromoCode } from "@/utils/testPromoCode";
 
 const QuickPromoCode = () => {
   const { user, isPremium, refreshPremiumStatus } = useAuth();
   const [promoCode, setPromoCode] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isFixing, setIsFixing] = useState(false);
+  const [isTesting, setIsTesting] = useState(false);
 
   // Don't show the widget if user is already premium or not logged in
   if (!user || isPremium) {
@@ -100,6 +102,30 @@ const QuickPromoCode = () => {
     }
   };
 
+  const handleTestPromoCode = async () => {
+    setIsTesting(true);
+    try {
+      console.log('Spouštím test DHL2026...');
+      const result = await testDHL2026PromoCode();
+      
+      if (result.success && result.summary) {
+        toast.success(`✅ DHL2026 test úspěšný!`, {
+          description: `Sleva: ${result.summary.discount}%, Délka: ${result.summary.duration} měsíců, Platný do: ${result.summary.validUntil}`,
+          duration: 6000
+        });
+        console.log('✅ Test výsledek:', result.summary);
+      } else {
+        toast.error(`❌ Test selhal: ${result.message}`);
+        console.error('❌ Test selhal:', result.message);
+      }
+    } catch (error) {
+      console.error('Chyba při testování:', error);
+      toast.error("Chyba při testování promo kódu");
+    } finally {
+      setIsTesting(false);
+    }
+  };
+
   return (
     <Card className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/50 dark:to-pink-950/50 border-purple-200 dark:border-purple-800">
       <CardHeader className="pb-3">
@@ -133,7 +159,7 @@ const QuickPromoCode = () => {
           </Button>
         </form>
         
-        <div className="pt-2 border-t border-purple-200 dark:border-purple-800">
+        <div className="space-y-2 pt-2 border-t border-purple-200 dark:border-purple-800">
           <Button 
             onClick={handleFixExisting}
             disabled={isFixing}
@@ -150,10 +176,27 @@ const QuickPromoCode = () => {
               </>
             )}
           </Button>
+          
+          <Button 
+            onClick={handleTestPromoCode}
+            disabled={isTesting}
+            variant="outline"
+            size="sm"
+            className="w-full text-green-600 border-green-300 hover:bg-green-50"
+          >
+            {isTesting ? (
+              "Testuji..."
+            ) : (
+              <>
+                <TestTube className="h-3 w-3 mr-2" />
+                Test DHL2026
+              </>
+            )}
+          </Button>
         </div>
         
         <p className="text-xs text-purple-600 dark:text-purple-400">
-          Aktivujte prémiové funkce zdarma! Pokud máte problém s aktivací, zkuste tlačítko "Opravit premium status".
+          Aktivujte prémiové funkce zdarma! Pokud máte problém s aktivací, zkuste tlačítko "Opravit premium status" nebo "Test DHL2026" pro diagnostiku.
         </p>
       </CardContent>
     </Card>
