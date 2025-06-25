@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Truck, Calendar, Clock, MapPin } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
+import { useDHLAuth } from '@/hooks/useDHLAuth';
 import Layout from '@/components/layouts/Layout';
 import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,6 +14,42 @@ import { Badge } from '@/components/ui/badge';
 const DHLDashboard: React.FC = () => {
   const { t } = useTranslation(['common']);
   const { user } = useAuth();
+  const { canAccessDHLFeatures, isLoading, dhlAuthState } = useDHLAuth();
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <Layout navbarRightContent={<NavbarRightContent />}>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p>Načítám DHL dashboard...</p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  // Check access
+  if (!canAccessDHLFeatures) {
+    return (
+      <Layout navbarRightContent={<NavbarRightContent />}>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <h2 className="text-xl font-semibold mb-2">Přístup zamítnut</h2>
+            <p className="text-muted-foreground">
+              Nemáte oprávnění k přístupu do DHL dashboardu.
+            </p>
+            {dhlAuthState?.needsSetup && (
+              <p className="text-sm text-blue-600 mt-2">
+                Dokončete prosím DHL nastavení.
+              </p>
+            )}
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   // Mock data - in real implementation, this would come from the database
   const userProfile = {

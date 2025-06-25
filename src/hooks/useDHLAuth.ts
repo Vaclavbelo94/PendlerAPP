@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { getDHLAuthState, getDHLRedirectPath, DHLAuthState } from '@/utils/dhlAuthUtils';
+import { getDHLAuthState, DHLAuthState } from '@/utils/dhlAuthUtils';
 
 export const useDHLAuth = () => {
   const { user } = useAuth();
@@ -17,11 +17,14 @@ export const useDHLAuth = () => {
       }
 
       try {
+        console.log('Loading DHL auth state for user:', user.id, user.email);
         const authState = await getDHLAuthState(user);
+        console.log('DHL auth state loaded:', authState);
         setDhlAuthState(authState);
         
-        // Handle automatic redirects
+        // Handle automatic redirects only if user needs setup
         if (authState.needsSetup && window.location.pathname !== '/dhl-setup') {
+          console.log('User needs DHL setup, redirecting...');
           window.location.href = '/dhl-setup';
         }
       } catch (error) {
@@ -40,7 +43,9 @@ export const useDHLAuth = () => {
     
     setIsLoading(true);
     try {
+      console.log('Refreshing DHL auth state...');
       const authState = await getDHLAuthState(user);
+      console.log('DHL auth state refreshed:', authState);
       setDhlAuthState(authState);
     } catch (error) {
       console.error('Error refreshing DHL auth state:', error);
