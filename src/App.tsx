@@ -1,3 +1,4 @@
+
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/auth";
@@ -6,6 +7,7 @@ import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Admin from "./pages/Admin";
+import DHLAdmin from "./pages/DHLAdmin";
 import Premium from "./pages/Premium";
 import Pricing from "./pages/Pricing";
 import Profile from "./pages/Profile";
@@ -45,6 +47,11 @@ function App() {
               {/* Admin routes */}
               <Route path="/admin" element={<Layout />}>
                 <Route index element={<Admin />} />
+              </Route>
+
+              {/* DHL Admin routes */}
+              <Route path="/dhl-admin" element={<Layout />}>
+                <Route index element={<DHLAdmin />} />
               </Route>
 
               {/* DHL routes */}

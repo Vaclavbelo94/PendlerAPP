@@ -10,7 +10,16 @@ const DHLAdmin: React.FC = () => {
   const { isAdmin, user, isLoading } = useAuth();
 
   useEffect(() => {
-    if (!isLoading && (!isAdmin && user?.email !== 'admin@pendlerapp.com')) {
+    if (!isLoading && user) {
+      // Povolit přístup pro admin účty a speciální DHL admin
+      const canAccessDHLAdmin = isAdmin || 
+        user.email === 'admin@pendlerapp.com' || 
+        user.email === 'admin_dhl@pendlerapp.com';
+      
+      if (!canAccessDHLAdmin) {
+        navigate('/');
+      }
+    } else if (!isLoading && !user) {
       navigate('/');
     }
   }, [isAdmin, user, isLoading, navigate]);
@@ -25,7 +34,12 @@ const DHLAdmin: React.FC = () => {
     );
   }
 
-  if (!isAdmin && user?.email !== 'admin@pendlerapp.com') {
+  // Zkontrolovat oprávnění
+  const canAccessDHLAdmin = isAdmin || 
+    user?.email === 'admin@pendlerapp.com' || 
+    user?.email === 'admin_dhl@pendlerapp.com';
+
+  if (!canAccessDHLAdmin) {
     return null;
   }
 
