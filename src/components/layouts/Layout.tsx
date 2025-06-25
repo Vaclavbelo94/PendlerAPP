@@ -21,13 +21,15 @@ const Layout: React.FC<LayoutProps> = ({ children, navbarRightContent }) => {
   const isMobile = useIsMobile();
   const { t } = useTranslation('common');
 
-  // Auth pages don't need layout
-  const isAuthPage = location.pathname.startsWith('/auth') || 
-                     location.pathname === '/login' || 
-                     location.pathname === '/register';
-  
   // Public pages (no auth required)
   const isPublicPage = ['/', '/about', '/contact', '/pricing'].includes(location.pathname);
+  
+  // Protected pages that require authentication
+  const isProtectedPage = [
+    '/dashboard', '/profile', '/settings', '/shifts', '/travel', 
+    '/vehicle', '/translator', '/tax-advisor', '/laws', '/admin', 
+    '/dhl-admin', '/dhl-dashboard'
+  ].some(path => location.pathname.startsWith(path));
 
   if (isLoading) {
     return (
@@ -37,17 +39,8 @@ const Layout: React.FC<LayoutProps> = ({ children, navbarRightContent }) => {
     );
   }
 
-  if (isAuthPage) {
-    return (
-      <>
-        {children || <Outlet />}
-        <Toaster position="top-right" />
-      </>
-    );
-  }
-
-  // Public pages layout (for non-authenticated users or public content)
-  if (isPublicPage || !user) {
+  // For public pages or when user is not authenticated
+  if (isPublicPage || (!user && !isProtectedPage)) {
     return (
       <div className="min-h-screen flex flex-col">
         <UnifiedNavbar rightContent={navbarRightContent} />
@@ -56,6 +49,19 @@ const Layout: React.FC<LayoutProps> = ({ children, navbarRightContent }) => {
         </main>
         <Footer />
         <Toaster position="top-right" />
+      </div>
+    );
+  }
+
+  // For protected pages, redirect to login if not authenticated
+  if (isProtectedPage && !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold mb-4">{t('authRequired') || 'Přihlášení vyžadováno'}</h2>
+          <p className="text-muted-foreground mb-4">{t('pleaseLogin') || 'Pro přístup k této stránce se musíte přihlásit'}</p>
+          <a href="/login" className="text-primary hover:underline">{t('goToLogin') || 'Přejít na přihlášení'}</a>
+        </div>
       </div>
     );
   }

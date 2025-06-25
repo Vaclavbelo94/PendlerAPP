@@ -2,17 +2,17 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
-import { Languages } from 'lucide-react';
+import { Map } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-const Translator: React.FC = () => {
+const Travel: React.FC = () => {
   const { t } = useTranslation('common');
 
   return (
     <>
       <Helmet>
-        <title>{t('translator') || 'Překladač'} | PendlerApp</title>
-        <meta name="description" content="Německo-český překladač a jazykové nástroje pro pendlery" />
+        <title>{t('travel') || 'Cestování'} | PendlerApp</title>
+        <meta name="description" content="Plánování cest a cestovní náklady pro pendlery" />
       </Helmet>
       
       <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-primary/5">
@@ -25,14 +25,14 @@ const Translator: React.FC = () => {
           >
             <div className="flex items-center gap-3 mb-4">
               <div className="p-3 rounded-full bg-primary/10 border">
-                <Languages className="h-8 w-8 text-primary" />
+                <Map className="h-8 w-8 text-primary" />
               </div>
               <div>
                 <h1 className="text-4xl font-bold tracking-tight">
-                  {t('translator') || 'Překladač'}
+                  {t('travel') || 'Cestování'}
                 </h1>
                 <p className="text-lg text-muted-foreground mt-2">
-                  Německo-český překladač a jazykové nástroje
+                  Plánování cest a sledování cestovních nákladů
                 </p>
               </div>
             </div>
@@ -45,10 +45,10 @@ const Translator: React.FC = () => {
             className="bg-card/80 backdrop-blur-sm rounded-2xl border border-border/50 shadow-lg p-8"
           >
             <div className="text-center py-12">
-              <Languages className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-              <h2 className="text-2xl font-semibold mb-4">Překladač a jazykové nástroje</h2>
+              <Map className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
+              <h2 className="text-2xl font-semibold mb-4">Cestovní modul</h2>
               <p className="text-muted-foreground">
-                Tato funkce je ve vývoji. Brzy zde najdete překladač a další jazykové nástroje pro pendlery.
+                Tato funkce je ve vývoji. Brzy zde najdete nástroje pro plánování cest a sledování nákladů.
               </p>
             </div>
           </motion.div>
@@ -58,4 +58,4 @@ const Translator: React.FC = () => {
   );
 };
 
-export default Translator;
+export default Travel;
