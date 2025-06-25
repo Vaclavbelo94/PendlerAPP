@@ -172,7 +172,7 @@ const DHLSetup: React.FC = () => {
                             <div className="flex items-center justify-between w-full">
                               <span>{position.name}</span>
                               <Badge variant="outline" className="ml-2">
-                                {position.code}
+                                {position.position_type}
                               </Badge>
                             </div>
                           </SelectItem>
