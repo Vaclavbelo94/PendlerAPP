@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
-import { Truck, ArrowRight, CheckCircle } from 'lucide-react';
+import { Truck, ArrowRight, CheckCircle, AlertCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
 import { useDHLAuth } from '@/hooks/useDHLAuth';
@@ -11,54 +11,113 @@ import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'sonner';
 import { createDHLAssignment } from '@/utils/dhlAuthUtils';
 import { supabase } from '@/integrations/supabase/client';
 
+interface DHLPosition {
+  id: string;
+  name: string;
+  description?: string;
+}
+
+interface DHLWorkGroup {
+  id: string;
+  name: string;
+  description?: string;
+}
+
 const DHLSetup: React.FC = () => {
   const { t } = useTranslation(['common']);
   const { user } = useAuth();
-  const { needsSetup, refreshDHLAuthState } = useDHLAuth();
+  const { needsSetup, isDHLEmployee, isLoading: authLoading, refreshDHLAuthState } = useDHLAuth();
+  
   const [selectedPosition, setSelectedPosition] = useState<string>('');
   const [selectedWorkGroup, setSelectedWorkGroup] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [positions, setPositions] = useState<any[]>([]);
-  const [workGroups, setWorkGroups] = useState<any[]>([]);
+  const [positions, setPositions] = useState<DHLPosition[]>([]);
+  const [workGroups, setWorkGroups] = useState<DHLWorkGroup[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Load positions and work groups from database
   useEffect(() => {
     const loadData = async () => {
+      if (!user || !isDHLEmployee) {
+        setLoading(false);
+        return;
+      }
+
       try {
+        setError(null);
+        console.log('Loading DHL positions and work groups...');
+        
         const [positionsResult, workGroupsResult] = await Promise.all([
-          supabase.from('dhl_positions').select('*').eq('is_active', true),
-          supabase.from('dhl_work_groups').select('*').eq('is_active', true)
+          supabase
+            .from('dhl_positions')
+            .select('id, name, description')
+            .eq('is_active', true)
+            .order('name'),
+          supabase
+            .from('dhl_work_groups')
+            .select('id, name, description')
+            .eq('is_active', true)
+            .order('week_number')
         ]);
 
-        if (positionsResult.data) {
-          setPositions(positionsResult.data);
+        if (positionsResult.error) {
+          console.error('Error loading positions:', positionsResult.error);
+          throw new Error('Chyba při načítání pozic: ' + positionsResult.error.message);
         }
         
-        if (workGroupsResult.data) {
-          setWorkGroups(workGroupsResult.data);
+        if (workGroupsResult.error) {
+          console.error('Error loading work groups:', workGroupsResult.error);
+          throw new Error('Chyba při načítání pracovních skupin: ' + workGroupsResult.error.message);
+        }
+
+        console.log('Loaded positions:', positionsResult.data?.length || 0);
+        console.log('Loaded work groups:', workGroupsResult.data?.length || 0);
+
+        setPositions(positionsResult.data || []);
+        setWorkGroups(workGroupsResult.data || []);
+
+        if (!positionsResult.data?.length) {
+          setError('Nejsou dostupné žádné pozice. Kontaktujte administrátora.');
+        } else if (!workGroupsResult.data?.length) {
+          setError('Nejsou dostupné žádné pracovní skupiny. Kontaktujte administrátora.');
         }
       } catch (error) {
         console.error('Error loading DHL data:', error);
-        toast.error('Chyba při načítání dat DHL');
+        const errorMessage = error instanceof Error ? error.message : 'Neočekávaná chyba při načítání dat';
+        setError(errorMessage);
+        toast.error(errorMessage);
       } finally {
         setLoading(false);
       }
     };
 
-    loadData();
-  }, []);
-
-  // Redirect if user doesn't need setup
-  useEffect(() => {
-    if (!loading && !needsSetup && user) {
-      window.location.href = '/dhl-dashboard';
+    // Wait for auth state to be loaded
+    if (!authLoading) {
+      loadData();
     }
-  }, [loading, needsSetup, user]);
+  }, [user, isDHLEmployee, authLoading]);
+
+  // Handle redirects after auth state is loaded
+  useEffect(() => {
+    if (!authLoading && user) {
+      if (!isDHLEmployee) {
+        console.log('User is not DHL employee, redirecting to dashboard...');
+        window.location.href = '/dashboard';
+      } else if (!needsSetup) {
+        console.log('User does not need setup, redirecting to DHL dashboard...');
+        window.location.href = '/dhl-dashboard';
+      }
+    } else if (!authLoading && !user) {
+      console.log('No user, redirecting to login...');
+      window.location.href = '/login';
+    }
+  }, [authLoading, user, isDHLEmployee, needsSetup]);
 
   const handleSubmit = async () => {
     if (!selectedPosition || !selectedWorkGroup || !user) {
@@ -66,9 +125,24 @@ const DHLSetup: React.FC = () => {
       return;
     }
 
+    // Validate selections exist in loaded data
+    const selectedPositionExists = positions.some(p => p.id === selectedPosition);
+    const selectedWorkGroupExists = workGroups.some(w => w.id === selectedWorkGroup);
+
+    if (!selectedPositionExists || !selectedWorkGroupExists) {
+      toast.error('Neplatný výběr pozice nebo pracovní skupiny');
+      return;
+    }
+
     setIsSubmitting(true);
     
     try {
+      console.log('Creating DHL assignment...', {
+        userId: user.id,
+        positionId: selectedPosition,
+        workGroupId: selectedWorkGroup
+      });
+
       const result = await createDHLAssignment(user.id, selectedPosition, selectedWorkGroup);
       
       if (result.success) {
@@ -77,21 +151,39 @@ const DHLSetup: React.FC = () => {
         // Refresh DHL auth state
         await refreshDHLAuthState();
         
-        // Redirect to DHL dashboard
+        // Small delay to ensure state is updated
         setTimeout(() => {
           window.location.href = '/dhl-dashboard';
-        }, 1500);
+        }, 1000);
       } else {
-        toast.error(result.error || 'Chyba při ukládání nastavení');
+        const errorMessage = result.error || 'Chyba při ukládání nastavení';
+        console.error('Assignment creation failed:', errorMessage);
+        toast.error(errorMessage);
       }
     } catch (error) {
       console.error('Error saving DHL setup:', error);
-      toast.error('Chyba při ukládání nastavení');
+      const errorMessage = error instanceof Error ? error.message : 'Neočekávaná chyba při ukládání nastavení';
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  // Show loading while auth is loading
+  if (authLoading) {
+    return (
+      <Layout navbarRightContent={<NavbarRightContent />}>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p>Ověřuji přístup...</p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  // Show loading while data is loading
   if (loading) {
     return (
       <Layout navbarRightContent={<NavbarRightContent />}>
@@ -130,9 +222,24 @@ const DHLSetup: React.FC = () => {
               Vítejte v DHL systému
             </h1>
             <p className="text-lg text-muted-foreground">
-              Dokončete nastavení svého DHL profilu pro správu směn a rozvrhu
+              Dokončete nastavení svého DHL profilu pro správu směn a rozvrh
             </p>
           </motion.div>
+
+          {/* Error Alert */}
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="mb-6"
+            >
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            </motion.div>
+          )}
 
           {/* Setup Form */}
           <motion.div
@@ -154,9 +261,15 @@ const DHLSetup: React.FC = () => {
                 {/* Position Selection */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Pozice</label>
-                  <Select value={selectedPosition} onValueChange={setSelectedPosition}>
+                  <Select 
+                    value={selectedPosition} 
+                    onValueChange={setSelectedPosition}
+                    disabled={!positions.length || isSubmitting}
+                  >
                     <SelectTrigger>
-                      <SelectValue placeholder="Vyberte svou pozici" />
+                      <SelectValue placeholder={
+                        positions.length ? "Vyberte svou pozici" : "Žádné pozice k dispozici"
+                      } />
                     </SelectTrigger>
                     <SelectContent>
                       {positions.map((position) => (
@@ -176,9 +289,15 @@ const DHLSetup: React.FC = () => {
                 {/* Work Group Selection */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Pracovní skupina</label>
-                  <Select value={selectedWorkGroup} onValueChange={setSelectedWorkGroup}>
+                  <Select 
+                    value={selectedWorkGroup} 
+                    onValueChange={setSelectedWorkGroup}
+                    disabled={!workGroups.length || isSubmitting}
+                  >
                     <SelectTrigger>
-                      <SelectValue placeholder="Vyberte pracovní skupinu" />
+                      <SelectValue placeholder={
+                        workGroups.length ? "Vyberte pracovní skupinu" : "Žádné skupiny k dispozici"
+                      } />
                     </SelectTrigger>
                     <SelectContent>
                       {workGroups.map((group) => (
@@ -205,12 +324,15 @@ const DHLSetup: React.FC = () => {
                 {/* Submit Button */}
                 <Button 
                   onClick={handleSubmit}
-                  disabled={!selectedPosition || !selectedWorkGroup || isSubmitting}
+                  disabled={!selectedPosition || !selectedWorkGroup || isSubmitting || !!error}
                   className="w-full"
                   size="lg"
                 >
                   {isSubmitting ? (
-                    'Ukládám...'
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Ukládám...
+                    </>
                   ) : (
                     <>
                       Dokončit nastavení
