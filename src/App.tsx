@@ -27,18 +27,17 @@ function App() {
         <AuthProvider>
           <OptimizedProviderStack>
             <Routes>
-              {/* Public routes */}
+              {/* Public routes with Layout */}
               <Route path="/" element={<Layout />}>
                 <Route index element={<HomePage />} />
                 <Route path="about" element={<About />} />
+                <Route path="contact" element={<Contact />} />
+                <Route path="pricing" element={<Pricing />} />
                 <Route path="login" element={<Login />} />
                 <Route path="register" element={<Register />} />
-                <Route path="pricing" element={<Pricing />} />
-                <Route path="contact" element={<Contact />} />
-                <Route path="*" element={<NotFound />} />
               </Route>
 
-              {/* Protected routes */}
+              {/* Protected routes with Layout */}
               <Route path="/dashboard" element={<Layout />}>
                 <Route index element={<Dashboard />} />
                 <Route path="premium" element={<Premium />} />
@@ -46,21 +45,24 @@ function App() {
                 <Route path="settings" element={<Settings />} />
               </Route>
 
-              {/* Admin routes */}
+              {/* Admin routes with Layout */}
               <Route path="/admin" element={<Layout />}>
                 <Route index element={<Admin />} />
               </Route>
 
-              {/* DHL Admin routes */}
+              {/* DHL Admin routes with Layout - POUZE pro admin_dhl@pendlerapp.com */}
               <Route path="/dhl-admin" element={<Layout />}>
                 <Route index element={<DHLAdmin />} />
               </Route>
 
-              {/* DHL routes */}
+              {/* Specialized DHL routes */}
               <Route path="/dhl-setup" element={<DHLSetupPage />} />
               <Route path="/dhl-dashboard" element={<Layout />}>
                 <Route index element={<DHLDashboardPage />} />
               </Route>
+
+              {/* 404 route */}
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </OptimizedProviderStack>
         </AuthProvider>

@@ -21,12 +21,13 @@ const Layout: React.FC<LayoutProps> = ({ children, navbarRightContent }) => {
   const isMobile = useIsMobile();
   const { t } = useTranslation('common');
 
-  // Don't show layout on auth pages
+  // Auth pages don't need layout
   const isAuthPage = location.pathname.startsWith('/auth') || 
                      location.pathname === '/login' || 
                      location.pathname === '/register';
   
-  const isPublicPage = ['/', '/about', '/contact', '/features', '/pricing'].includes(location.pathname);
+  // Public pages (no auth required)
+  const isPublicPage = ['/', '/about', '/contact', '/pricing'].includes(location.pathname);
 
   if (isLoading) {
     return (
@@ -45,8 +46,8 @@ const Layout: React.FC<LayoutProps> = ({ children, navbarRightContent }) => {
     );
   }
 
-  // Public pages layout - original website design
-  if (isPublicPage && !user) {
+  // Public pages layout (for non-authenticated users or public content)
+  if (isPublicPage || !user) {
     return (
       <div className="min-h-screen flex flex-col">
         <UnifiedNavbar rightContent={navbarRightContent} />
@@ -60,17 +61,6 @@ const Layout: React.FC<LayoutProps> = ({ children, navbarRightContent }) => {
   }
 
   // Protected layout with sidebar for authenticated users
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-xl font-semibold mb-2">{t('accessRequired', 'Access Required')}</h2>
-          <p className="text-muted-foreground">{t('loginRequiredMessage', 'Please log in to access this page.')}</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-background">
       {/* Desktop Layout */}
