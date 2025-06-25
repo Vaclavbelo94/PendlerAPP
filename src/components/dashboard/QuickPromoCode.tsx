@@ -113,7 +113,7 @@ const QuickPromoCode = () => {
           <Input
             value={promoCode}
             onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-            placeholder="DHL2025"
+            placeholder="DHL2026"
             className="bg-white/50 dark:bg-black/20"
             disabled={isSubmitting}
           />
