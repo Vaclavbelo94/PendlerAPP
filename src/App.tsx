@@ -1,4 +1,3 @@
-
 import { Suspense } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -23,6 +22,9 @@ import Premium from "./pages/Premium";
 import Admin from "./pages/Admin";
 import { LoadingSpinner } from "./components/ui/LoadingSpinner";
 import "./i18n/config";
+
+// Import manual premium activation utility
+import "@/utils/manualPremiumActivation";
 
 const queryClient = new QueryClient();
 

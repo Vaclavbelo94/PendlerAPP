@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,6 +24,8 @@ const RegisterForm = () => {
   const { t, i18n } = useTranslation('auth');
 
   const handlePromoCodeChange = (code: string, isValid: boolean) => {
+    console.log('=== PROMO CODE CHANGE ===');
+    console.log('Code:', code, 'Is Valid:', isValid);
     setPromoCode(code);
     setIsPromoValid(isValid);
   };
@@ -37,6 +40,11 @@ const RegisterForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    console.log('=== REGISTRATION START ===');
+    console.log('Email:', email);
+    console.log('Promo Code:', promoCode);
+    console.log('Is Promo Valid:', isPromoValid);
     
     if (password !== confirmPassword) {
       toast.error(t('passwordsDoNotMatch'));
@@ -83,11 +91,19 @@ const RegisterForm = () => {
         console.log('Registrace úspěšná, uživatel:', signUpResult.user.id);
         
         // Počkáme déle, aby se dokončil trigger pro vytvoření profilu
-        await new Promise(resolve => setTimeout(resolve, 3000));
+        console.log('Čekám na vytvoření profilu...');
+        await new Promise(resolve => setTimeout(resolve, 5000)); // Zvýšeno z 3 na 5 sekund
         
-        if (isPromoValid && promoCode && signUpResult.user.id) {
-          console.log('Aktivuji promo kód pro nového uživatele:', promoCode);
-          const result = await activatePromoCode(signUpResult.user.id, promoCode);
+        // Promo kód aktivace
+        if (promoCode && promoCode.trim()) {
+          console.log('=== AKTIVACE PROMO KÓDU ===');
+          console.log('Promo kód:', promoCode);
+          console.log('Je validní:', isPromoValid);
+          console.log('User ID:', signUpResult.user.id);
+          
+          const result = await activatePromoCode(signUpResult.user.id, promoCode.trim());
+          
+          console.log('Výsledek aktivace promo kódu:', result);
           
           if (result.success) {
             toast.success(t('accountCreatedWithPremium'), { 
@@ -95,12 +111,14 @@ const RegisterForm = () => {
               duration: 8000
             });
           } else {
+            console.error('Chyba při aktivaci promo kódu:', result.message);
             toast.success(t('accountCreatedSuccessfully'), { 
-              description: t('nowYouCanLogin') + ' (Promo kód se nepodařilo aktivovat - zkuste jej použít po přihlášení)',
+              description: t('nowYouCanLogin') + ` (Promo kód se nepodařilo aktivovat: ${result.message})`,
               duration: 8000
             });
           }
         } else {
+          console.log('Žádný promo kód k aktivaci');
           toast.success(t('accountCreatedSuccessfully'), { 
             description: t('nowYouCanLogin'),
             duration: 5000

@@ -15,7 +15,11 @@ const PromoCodeField: React.FC<PromoCodeFieldProps> = ({ onPromoCodeChange }) =>
   const [validationResult, setValidationResult] = useState<'valid' | 'invalid' | null>(null);
 
   const validatePromoCode = async (code: string) => {
+    console.log('=== PROMO CODE VALIDATION START ===');
+    console.log('Validating code:', code);
+    
     if (!code.trim()) {
+      console.log('Empty code, setting to null');
       setValidationResult(null);
       onPromoCodeChange('', false);
       return;
@@ -31,7 +35,10 @@ const PromoCodeField: React.FC<PromoCodeFieldProps> = ({ onPromoCodeChange }) =>
         .ilike('code', code.trim())
         .single();
 
+      console.log('Promo code query result:', { data: promoCodeData, error });
+
       if (error || !promoCodeData) {
+        console.log('Promo code not found or error:', error);
         setValidationResult('invalid');
         onPromoCodeChange(code, false);
         setIsValidating(false);
@@ -39,7 +46,12 @@ const PromoCodeField: React.FC<PromoCodeFieldProps> = ({ onPromoCodeChange }) =>
       }
 
       // Check if code is expired
-      if (new Date(promoCodeData.valid_until) < new Date()) {
+      const validUntil = new Date(promoCodeData.valid_until);
+      const now = new Date();
+      console.log('Expiry check:', { validUntil, now, isExpired: validUntil < now });
+      
+      if (validUntil < now) {
+        console.log('Promo code expired');
         setValidationResult('invalid');
         onPromoCodeChange(code, false);
         setIsValidating(false);
@@ -47,13 +59,19 @@ const PromoCodeField: React.FC<PromoCodeFieldProps> = ({ onPromoCodeChange }) =>
       }
 
       // Check if code has reached max uses
-      if (promoCodeData.max_uses !== null && promoCodeData.used_count >= promoCodeData.max_uses) {
+      const maxUses = promoCodeData.max_uses;
+      const usedCount = promoCodeData.used_count || 0;
+      console.log('Usage check:', { maxUses, usedCount, isMaxedOut: maxUses !== null && usedCount >= maxUses });
+      
+      if (maxUses !== null && usedCount >= maxUses) {
+        console.log('Promo code usage limit reached');
         setValidationResult('invalid');
         onPromoCodeChange(code, false);
         setIsValidating(false);
         return;
       }
 
+      console.log('Promo code is valid!');
       setValidationResult('valid');
       onPromoCodeChange(code, true);
     } catch (error) {
@@ -62,14 +80,23 @@ const PromoCodeField: React.FC<PromoCodeFieldProps> = ({ onPromoCodeChange }) =>
       onPromoCodeChange(code, false);
     } finally {
       setIsValidating(false);
+      console.log('=== PROMO CODE VALIDATION END ===');
     }
   };
 
   const handleChange = (value: string) => {
+    console.log('Promo code input changed:', value);
     setPromoCode(value);
     setValidationResult(null);
     if (!value.trim()) {
       onPromoCodeChange('', false);
+    }
+  };
+
+  const handleBlur = () => {
+    console.log('Promo code field blurred, validating:', promoCode);
+    if (promoCode.trim()) {
+      validatePromoCode(promoCode);
     }
   };
 
@@ -83,7 +110,7 @@ const PromoCodeField: React.FC<PromoCodeFieldProps> = ({ onPromoCodeChange }) =>
           placeholder="Zadejte promo kód"
           value={promoCode}
           onChange={(e) => handleChange(e.target.value)}
-          onBlur={() => validatePromoCode(promoCode)}
+          onBlur={handleBlur}
           className={`pr-10 ${
             validationResult === 'valid' ? 'border-green-500' : 
             validationResult === 'invalid' ? 'border-red-500' : ''
