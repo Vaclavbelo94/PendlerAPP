@@ -7,22 +7,20 @@ import DHLAdminPanel from '@/components/admin/dhl/DHLAdminPanel';
 
 const DHLAdmin: React.FC = () => {
   const navigate = useNavigate();
-  const { isAdmin, user, isLoading } = useAuth();
+  const { user, isLoading } = useAuth();
 
   useEffect(() => {
     if (!isLoading && user) {
-      // Povolit přístup pro admin účty a speciální DHL admin
-      const canAccessDHLAdmin = isAdmin || 
-        user.email === 'admin@pendlerapp.com' || 
-        user.email === 'admin_dhl@pendlerapp.com';
+      // DHL admin přístup POUZE pro admin_dhl@pendlerapp.com
+      const canAccessDHLAdmin = user.email === 'admin_dhl@pendlerapp.com';
       
       if (!canAccessDHLAdmin) {
-        navigate('/');
+        navigate('/dashboard');
       }
     } else if (!isLoading && !user) {
-      navigate('/');
+      navigate('/login');
     }
-  }, [isAdmin, user, isLoading, navigate]);
+  }, [user, isLoading, navigate]);
 
   if (isLoading) {
     return (
@@ -34,10 +32,8 @@ const DHLAdmin: React.FC = () => {
     );
   }
 
-  // Zkontrolovat oprávnění
-  const canAccessDHLAdmin = isAdmin || 
-    user?.email === 'admin@pendlerapp.com' || 
-    user?.email === 'admin_dhl@pendlerapp.com';
+  // Zkontrolovat oprávnění - POUZE admin_dhl@pendlerapp.com
+  const canAccessDHLAdmin = user?.email === 'admin_dhl@pendlerapp.com';
 
   if (!canAccessDHLAdmin) {
     return null;

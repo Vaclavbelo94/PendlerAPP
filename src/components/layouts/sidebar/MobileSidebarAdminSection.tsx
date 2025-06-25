@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Shield, Building2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
+import { canAccessDHLAdmin } from '@/utils/authStateUtils';
 
 interface MobileSidebarAdminSectionProps {
   handleLinkClick: () => void;
@@ -20,15 +21,14 @@ export const MobileSidebarAdminSection: React.FC<MobileSidebarAdminSectionProps>
     return null;
   }
 
-  // Check if user can access DHL admin
-  const canAccessDHLAdmin = isAdmin || 
-    user.email === 'admin@pendlerapp.com' || 
-    user.email === 'admin_dhl@pendlerapp.com';
+  // Check if user can access DHL admin - POUZE admin_dhl@pendlerapp.com
+  const isDHLAdminUser = user.email === 'admin_dhl@pendlerapp.com';
 
   return (
     <div className="mb-6">
       <h3 className="text-sm font-medium text-muted-foreground mb-3">Administrace</h3>
       <div className="space-y-2">
+        {/* Standard admin section - pro všechny admin uživatele */}
         <Button
           asChild
           variant={location.pathname === '/admin' ? "secondary" : "ghost"}
@@ -46,7 +46,8 @@ export const MobileSidebarAdminSection: React.FC<MobileSidebarAdminSectionProps>
           </Link>
         </Button>
 
-        {canAccessDHLAdmin && (
+        {/* DHL Admin section - POUZE pro admin_dhl@pendlerapp.com */}
+        {isDHLAdminUser && (
           <Button
             asChild
             variant={location.pathname === '/dhl-admin' ? "secondary" : "ghost"}

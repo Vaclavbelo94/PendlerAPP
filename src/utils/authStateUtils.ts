@@ -41,19 +41,26 @@ export const getUnifiedAuthState = (
  * Check if user can access admin features
  */
 export const canAccessAdmin = (authState: UnifiedAuthState): boolean => {
-  return authState.isAdmin || authState.isSpecialUser || authState.isDHLAdmin;
+  return authState.isAdmin || authState.isSpecialUser;
 };
 
 /**
  * Check if user can access premium features
  */
 export const canAccessPremium = (authState: UnifiedAuthState): boolean => {
-  return authState.isPremium || authState.isSpecialUser || authState.isDHLAdmin;
+  return authState.isPremium || authState.isSpecialUser;
 };
 
 /**
- * Check if user can access DHL admin features
+ * Check if user can access DHL admin features - POUZE admin_dhl@pendlerapp.com
  */
 export const canAccessDHLAdmin = (authState: UnifiedAuthState): boolean => {
-  return authState.isDHLAdmin || authState.isAdmin || authState.isSpecialUser;
+  return authState.isDHLAdmin;
+};
+
+/**
+ * Check if user can see DHL features in navigation
+ */
+export const canSeeDHLFeatures = (authState: UnifiedAuthState): boolean => {
+  return authState.isDHLAdmin;
 };

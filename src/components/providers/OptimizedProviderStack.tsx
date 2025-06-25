@@ -1,11 +1,9 @@
 
 import React, { lazy, Suspense } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BrowserRouter as Router } from 'react-router-dom';
 import { Toaster } from '@/components/ui/toaster';
 import { Toaster as Sonner } from 'sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import { AuthProvider } from '@/hooks/useAuth';
 import { ThemeProvider } from 'next-themes';
 import SimpleLoadingSpinner from '@/components/loading/SimpleLoadingSpinner';
 
@@ -34,38 +32,34 @@ export const OptimizedProviderStack: React.FC<OptimizedProviderStackProps> = ({
 }) => {
   return (
     <QueryClientProvider client={queryClient}>
-      <Router>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-          <TooltipProvider>
-            <AuthProvider>
-              <Suspense fallback={<SimpleLoadingSpinner />}>
-                <StateManagerProvider>
-                  <GDPRConsentProvider>
-                    <AnalyticsProvider>
-                      <AdSenseProvider clientId="ca-pub-5766122497657850">
-                        {children}
-                      </AdSenseProvider>
-                    </AnalyticsProvider>
-                  </GDPRConsentProvider>
-                </StateManagerProvider>
-              </Suspense>
-              
-              <Toaster />
-              <Sonner 
-                position="bottom-right"
-                toastOptions={{
-                  duration: 2500,
-                  style: {
-                    background: 'hsl(var(--background))',
-                    color: 'hsl(var(--foreground))',
-                    border: '1px solid hsl(var(--border))',
-                  },
-                }}
-              />
-            </AuthProvider>
-          </TooltipProvider>
-        </ThemeProvider>
-      </Router>
+      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+        <TooltipProvider>
+          <Suspense fallback={<SimpleLoadingSpinner />}>
+            <StateManagerProvider>
+              <GDPRConsentProvider>
+                <AnalyticsProvider>
+                  <AdSenseProvider clientId="ca-pub-5766122497657850">
+                    {children}
+                  </AdSenseProvider>
+                </AnalyticsProvider>
+              </GDPRConsentProvider>
+            </StateManagerProvider>
+          </Suspense>
+          
+          <Toaster />
+          <Sonner 
+            position="bottom-right"
+            toastOptions={{
+              duration: 2500,
+              style: {
+                background: 'hsl(var(--background))',
+                color: 'hsl(var(--foreground))',
+                border: '1px solid hsl(var(--border))',
+              },
+            }}
+          />
+        </TooltipProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 };

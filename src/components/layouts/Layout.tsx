@@ -22,7 +22,10 @@ const Layout: React.FC<LayoutProps> = ({ children, navbarRightContent }) => {
   const { t } = useTranslation('common');
 
   // Don't show layout on auth pages
-  const isAuthPage = location.pathname.startsWith('/auth');
+  const isAuthPage = location.pathname.startsWith('/auth') || 
+                     location.pathname === '/login' || 
+                     location.pathname === '/register';
+  
   const isPublicPage = ['/', '/about', '/contact', '/features', '/pricing'].includes(location.pathname);
 
   if (isLoading) {
@@ -42,7 +45,7 @@ const Layout: React.FC<LayoutProps> = ({ children, navbarRightContent }) => {
     );
   }
 
-  // Public pages layout
+  // Public pages layout - original website design
   if (isPublicPage && !user) {
     return (
       <div className="min-h-screen flex flex-col">
@@ -56,7 +59,7 @@ const Layout: React.FC<LayoutProps> = ({ children, navbarRightContent }) => {
     );
   }
 
-  // Protected layout with sidebar
+  // Protected layout with sidebar for authenticated users
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
