@@ -8,8 +8,8 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { AdSenseProvider } from '@/components/ads/AdSenseProvider';
 import ErrorBoundaryWithFallback from '@/components/common/ErrorBoundaryWithFallback';
 import PWAInstallPrompt from '@/components/common/PWAInstallPrompt';
-import GlobalScrollToTop from '@/components/common/GlobalScrollToTop';
-import '@/i18n/i18n';
+import { GlobalScrollToTop } from '@/components/common/GlobalScrollToTop';
+import '@/i18n/config';
 
 // Pages
 import Index from '@/pages/Index';
