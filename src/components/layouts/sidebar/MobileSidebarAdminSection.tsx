@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Shield, Truck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
-import { useDHLAuth } from '@/hooks/useDHLAuth';
+import { canAccessDHLAdmin } from '@/utils/dhlAuthUtils';
 
 interface MobileSidebarAdminSectionProps {
   handleLinkClick: () => void;
@@ -16,10 +16,10 @@ export const MobileSidebarAdminSection: React.FC<MobileSidebarAdminSectionProps>
 }) => {
   const location = useLocation();
   const { user, isAdmin } = useAuth();
-  const { canAccessDHLAdmin } = useDHLAuth();
+  const isDHLAdmin = canAccessDHLAdmin(user);
 
   // Don't show if user has no admin privileges
-  if (!user || (!isAdmin && !canAccessDHLAdmin)) {
+  if (!user || (!isAdmin && !isDHLAdmin)) {
     return null;
   }
 
@@ -48,7 +48,7 @@ export const MobileSidebarAdminSection: React.FC<MobileSidebarAdminSectionProps>
         )}
 
         {/* DHL Admin */}
-        {canAccessDHLAdmin && (
+        {isDHLAdmin && (
           <Button
             asChild
             variant={location.pathname === '/dhl-admin' ? "secondary" : "ghost"}

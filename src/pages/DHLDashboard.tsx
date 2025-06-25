@@ -1,74 +1,18 @@
 
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
-import { Truck, Calendar, Clock, MapPin, AlertCircle } from 'lucide-react';
+import { Truck, Calendar, Clock, MapPin } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
-import { useDHLAuth } from '@/hooks/useDHLAuth';
 import Layout from '@/components/layouts/Layout';
 import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 
 const DHLDashboard: React.FC = () => {
   const { t } = useTranslation(['common']);
-  const navigate = useNavigate();
   const { user } = useAuth();
-  const { dhlAuthState, isLoading } = useDHLAuth();
-
-  // Show loading state
-  if (isLoading) {
-    return (
-      <Layout navbarRightContent={<NavbarRightContent />}>
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-            <p>Načítám DHL dashboard...</p>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
-
-  // Check if user needs setup
-  if (dhlAuthState?.needsSetup) {
-    return (
-      <Layout navbarRightContent={<NavbarRightContent />}>
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center space-y-4">
-            <AlertCircle className="h-16 w-16 text-yellow-500 mx-auto" />
-            <h2 className="text-xl font-semibold">Dokončete DHL nastavení</h2>
-            <p className="text-muted-foreground">
-              Před přístupem k dashboardu musíte dokončit nastavení.
-            </p>
-            <Button onClick={() => navigate('/dhl-setup')}>
-              Dokončit nastavení
-            </Button>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
-
-  // Check access
-  if (!dhlAuthState?.canAccessDHLFeatures) {
-    return (
-      <Layout navbarRightContent={<NavbarRightContent />}>
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold mb-2">Přístup zamítnut</h2>
-            <p className="text-muted-foreground">
-              Nemáte oprávnění k přístupu do DHL dashboardu.
-            </p>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
 
   // Mock data - in real implementation, this would come from the database
   const userProfile = {

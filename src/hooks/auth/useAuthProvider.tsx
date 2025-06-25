@@ -1,3 +1,4 @@
+
 import * as React from 'react';
 import { useState, useCallback } from 'react';
 import { AuthContext } from './useAuthContext';
@@ -65,19 +66,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           return;
         }
       }
-      
-      // Handle DHL employee setup redirect (async)
-      (async () => {
-        try {
-          const dhlRedirectPath = await getDHLRedirectPath(user);
-          if (dhlRedirectPath && window.location.pathname !== dhlRedirectPath) {
-            console.log('Redirecting DHL user to:', dhlRedirectPath);
-            window.location.href = dhlRedirectPath;
-          }
-        } catch (error) {
-          console.error('Error checking DHL redirect:', error);
-        }
-      })();
     }
   }, [user, session]);
 
