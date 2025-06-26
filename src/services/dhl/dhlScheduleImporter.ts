@@ -139,7 +139,7 @@ export const importDHLSchedule = async (data: ImportScheduleData): Promise<Impor
     console.error('Access denied: User does not have admin privileges');
     return {
       success: false,
-      validation: { isValid: false, errors: [], warnings: [], summary: { totalDays: 0, totalShifts: 0, dateRange: '', detectedWoche: null } },
+      validation: { isValid: false, errors: [], warnings: [], summary: { totalDays: 0, totalShifts: 0, dateRange: null, detectedWoche: null } },
       message: 'Access denied: Admin privileges required for importing schedules'
     };
   }
@@ -206,7 +206,7 @@ export const importDHLSchedule = async (data: ImportScheduleData): Promise<Impor
       validation_summary: {
         totalDays: validation.summary.totalDays,
         totalShifts: validation.summary.totalShifts,
-        dateRange: validation.summary.dateRange,
+        dateRange: validation.summary.dateRange ? `${validation.summary.dateRange.start} - ${validation.summary.dateRange.end}` : '',
         detectedWoche: validation.summary.detectedWoche
       },
       import_timestamp: new Date().toISOString(),
@@ -259,7 +259,7 @@ export const importDHLSchedule = async (data: ImportScheduleData): Promise<Impor
           validation_summary: {
             totalDays: validation.summary.totalDays,
             totalShifts: validation.summary.totalShifts,
-            dateRange: validation.summary.dateRange,
+            dateRange: validation.summary.dateRange ? `${validation.summary.dateRange.start} - ${validation.summary.dateRange.end}` : '',
             detectedWoche: validation.summary.detectedWoche
           },
           import_timestamp: new Date().toISOString(),
