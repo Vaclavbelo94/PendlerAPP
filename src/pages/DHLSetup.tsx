@@ -1,198 +1,280 @@
 
-import React, { useState } from 'react';
-import { Helmet } from 'react-helmet';
-import { motion } from 'framer-motion';
-import { Truck, Users, MapPin, Clock, ArrowRight } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useDHLData } from '@/hooks/dhl/useDHLData';
+import { useDHLSetup } from '@/hooks/dhl/useDHLSetup';
+import { canAccessDHLFeatures } from '@/utils/dhlAuthUtils';
 import { DHLLayout } from '@/components/dhl/DHLLayout';
-import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Loader2, CheckCircle, Truck, Calendar, MapPin, Users } from 'lucide-react';
+import { toast } from 'sonner';
 
 const DHLSetup: React.FC = () => {
   const { user } = useAuth();
-  const { userAssignment, isLoading } = useDHLData(user?.id);
-  const [activeStep, setActiveStep] = useState(1);
+  const navigate = useNavigate();
+  const { userAssignment, positions, workGroups, isLoading: isDataLoading } = useDHLData(user?.id);
+  const { submitSetup, isSubmitting } = useDHLSetup();
 
-  const setupSteps = [
-    {
-      number: 1,
-      title: 'Ověření účtu',
-      description: 'Ověřujeme váš DHL zaměstnanecký účet',
-      icon: Users,
-      status: user ? 'completed' : 'current'
-    },
-    {
-      number: 2,
-      title: 'Přiřazení pozice',
-      description: 'Čekáme na přiřazení vaší DHL pozice administrátorem',
-      icon: MapPin,
-      status: userAssignment ? 'completed' : 'pending'
-    },
-    {
-      number: 3,
-      title: 'Import směn',
-      description: 'Vaše směny budou automaticky importovány z DHL systému',
-      icon: Clock,
-      status: 'pending'
-    },
-    {
-      number: 4,
-      title: 'Dokončeno',
-      description: 'Váš DHL profil je připraven k použití',
-      icon: Truck,
-      status: 'pending'
+  const [selectedPosition, setSelectedPosition] = React.useState('');
+  const [selectedWorkGroup, setSelectedWorkGroup] = React.useState('');
+  const [referenceDate, setReferenceDate] = React.useState('');
+  const [referenceWoche, setReferenceWoche] = React.useState('');
+
+  // Populate form if user already has assignment
+  React.useEffect(() => {
+    if (userAssignment) {
+      setSelectedPosition(userAssignment.dhl_position_id);
+      setSelectedWorkGroup(userAssignment.dhl_work_group_id);
+      setReferenceDate(userAssignment.reference_date || '');
+      setReferenceWoche(userAssignment.reference_woche?.toString() || '');
     }
-  ];
+  }, [userAssignment]);
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'completed': return 'bg-green-100 text-green-800 border-green-200';
-      case 'current': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'pending': return 'bg-gray-100 text-gray-600 border-gray-200';
-      default: return 'bg-gray-100 text-gray-600 border-gray-200';
+  // Redirect if user doesn't have DHL access
+  React.useEffect(() => {
+    if (user && !canAccessDHLFeatures(user)) {
+      navigate('/dashboard');
+      toast.error('Nemáte oprávnění pro přístup k DHL funkcím');
+    }
+  }, [user, navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!selectedPosition || !selectedWorkGroup) {
+      toast.error('Prosím vyberte pozici a pracovní skupinu');
+      return;
+    }
+
+    const setupData = {
+      position_id: selectedPosition,
+      work_group_id: selectedWorkGroup,
+      ...(referenceDate && { reference_date: referenceDate }),
+      ...(referenceWoche && { reference_woche: parseInt(referenceWoche) })
+    };
+
+    const success = await submitSetup(setupData);
+    if (success) {
+      navigate('/dhl-dashboard');
     }
   };
 
-  if (isLoading) {
+  if (isDataLoading) {
     return (
-      <DHLLayout navbarRightContent={<NavbarRightContent />}>
-        <div className="min-h-screen flex items-center justify-center">
+      <DHLLayout>
+        <div className="flex items-center justify-center min-h-96">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-600 mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Načítám DHL nastavení...</p>
+            <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+            <p className="text-muted-foreground">Načítám DHL data...</p>
           </div>
         </div>
       </DHLLayout>
     );
   }
 
-  return (
-    <DHLLayout navbarRightContent={<NavbarRightContent />}>
-      <Helmet>
-        <title>DHL Nastavení | PendlerApp</title>
-        <meta name="description" content="Nastavení vašeho DHL účtu" />
-      </Helmet>
-      
-      <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-yellow-500/5">
-        <div className="container max-w-4xl py-8 px-4">
-          {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-8"
-          >
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <div className="p-3 rounded-full bg-gradient-to-r from-yellow-500/20 to-red-500/20 backdrop-blur-sm">
-                <Truck className="h-8 w-8 text-yellow-600" />
+  // If user already has complete setup, show success state
+  if (userAssignment && selectedPosition && selectedWorkGroup) {
+    return (
+      <DHLLayout>
+        <div className="container max-w-2xl mx-auto px-4 py-8">
+          <Card className="border-green-200 bg-green-50">
+            <CardHeader className="text-center">
+              <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                <CheckCircle className="h-8 w-8 text-green-600" />
               </div>
-              <div>
-                <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-yellow-600 to-red-600 bg-clip-text text-transparent">
-                  DHL Nastavení
-                </h1>
-                <p className="text-lg text-muted-foreground mt-2">
-                  Nastavte si váš DHL zaměstnanecký profil
-                </p>
+              <CardTitle className="text-green-800">DHL Setup dokončen!</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-4 bg-white rounded-lg border">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Truck className="h-4 w-4 text-yellow-600" />
+                    <span className="font-medium">Pozice</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    {userAssignment.dhl_position?.name}
+                  </p>
+                </div>
+                <div className="p-4 bg-white rounded-lg border">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Users className="h-4 w-4 text-yellow-600" />
+                    <span className="font-medium">Pracovní skupina</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    {userAssignment.dhl_work_group?.name}
+                  </p>
+                </div>
               </div>
-            </div>
-          </motion.div>
-
-          {/* Setup Steps */}
-          <div className="space-y-6">
-            {setupSteps.map((step, index) => {
-              const Icon = step.icon;
-              const isCompleted = step.status === 'completed';
-              const isCurrent = step.status === 'current';
               
-              return (
-                <motion.div
-                  key={step.number}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
+              <div className="flex gap-4 pt-4">
+                <Button onClick={() => navigate('/dhl-dashboard')} className="flex-1">
+                  Přejít na Dashboard
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setSelectedPosition('')} 
+                  className="flex-1"
                 >
-                  <Card className={`border-2 ${isCompleted ? 'border-green-300 bg-green-50/50' : isCurrent ? 'border-yellow-300 bg-yellow-50/50' : 'border-gray-200'}`}>
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <div className={`p-3 rounded-full ${isCompleted ? 'bg-green-100' : isCurrent ? 'bg-yellow-100' : 'bg-gray-100'}`}>
-                            <Icon className={`h-6 w-6 ${isCompleted ? 'text-green-600' : isCurrent ? 'text-yellow-600' : 'text-gray-400'}`} />
-                          </div>
-                          <div>
-                            <CardTitle className="flex items-center gap-2">
-                              Krok {step.number}: {step.title}
-                              {isCompleted && <Badge className="bg-green-100 text-green-800">Dokončeno</Badge>}
-                              {isCurrent && <Badge className="bg-yellow-100 text-yellow-800">Aktuální</Badge>}
-                            </CardTitle>
-                            <CardDescription>{step.description}</CardDescription>
-                          </div>
-                        </div>
-                        {index < setupSteps.length - 1 && (
-                          <ArrowRight className="h-5 w-5 text-gray-400" />
-                        )}
-                      </div>
-                    </CardHeader>
-                    
-                    {step.number === 2 && !userAssignment && (
-                      <CardContent>
-                        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                          <p className="text-sm text-yellow-800">
-                            <strong>Čekáme na administrátora:</strong> Váš účet byl ověřen, ale ještě vám nebyla přiřazena DHL pozice. 
-                            Kontaktujte prosím vašeho DHL administrátora pro dokončení nastavení.
-                          </p>
-                        </div>
-                      </CardContent>
-                    )}
-
-                    {step.number === 2 && userAssignment && (
-                      <CardContent>
-                        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                          <p className="text-sm text-green-800 mb-2">
-                            <strong>Pozice přiřazena:</strong>
-                          </p>
-                          <div className="grid grid-cols-2 gap-4 text-sm">
-                            <div>
-                              <span className="font-medium">Pozice:</span> {userAssignment.dhl_position?.name}
-                            </div>
-                            <div>
-                              <span className="font-medium">Skupina:</span> {userAssignment.dhl_work_group?.name}
-                            </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    )}
-                  </Card>
-                </motion.div>
-              );
-            })}
-          </div>
-
-          {/* Action Button */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="text-center mt-8"
-          >
-            {userAssignment ? (
-              <Button 
-                size="lg" 
-                className="bg-gradient-to-r from-yellow-600 to-red-600 hover:from-yellow-700 hover:to-red-700"
-                onClick={() => window.location.href = '/dhl-dashboard'}
-              >
-                Přejít na DHL Dashboard
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            ) : (
-              <div className="text-muted-foreground">
-                <p>Čekáme na dokončení nastavení administrátorem...</p>
+                  Upravit nastavení
+                </Button>
               </div>
-            )}
-          </motion.div>
+            </CardContent>
+          </Card>
         </div>
+      </DHLLayout>
+    );
+  }
+
+  return (
+    <DHLLayout>
+      <div className="container max-w-2xl mx-auto px-4 py-8">
+        <div className="mb-8 text-center">
+          <div className="mx-auto w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
+            <Truck className="h-8 w-8 text-yellow-600" />
+          </div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">DHL Setup</h1>
+          <p className="text-gray-600">
+            Nastavte svou DHL pozici a pracovní skupinu pro automatické generování směn
+          </p>
+        </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Základní nastavení</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Position Selection */}
+              <div className="space-y-2">
+                <Label htmlFor="position" className="flex items-center gap-2">
+                  <Truck className="h-4 w-4" />
+                  DHL Pozice *
+                </Label>
+                <Select value={selectedPosition} onValueChange={setSelectedPosition} required>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Vyberte svou DHL pozici" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {positions.map((position) => (
+                      <SelectItem key={position.id} value={position.id}>
+                        <div>
+                          <div className="font-medium">{position.name}</div>
+                          {position.description && (
+                            <div className="text-sm text-muted-foreground">
+                              {position.description}
+                            </div>
+                          )}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Work Group Selection */}
+              <div className="space-y-2">
+                <Label htmlFor="workGroup" className="flex items-center gap-2">
+                  <Users className="h-4 w-4" />
+                  Pracovní skupina *
+                </Label>
+                <Select value={selectedWorkGroup} onValueChange={setSelectedWorkGroup} required>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Vyberte pracovní skupinu" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {workGroups.map((group) => (
+                      <SelectItem key={group.id} value={group.id}>
+                        <div>
+                          <div className="font-medium">{group.name}</div>
+                          <div className="text-sm text-muted-foreground">
+                            Týden {group.week_number}
+                            {group.description && ` - ${group.description}`}
+                          </div>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Optional Reference Settings */}
+              <div className="border-t pt-6">
+                <h3 className="text-lg font-medium mb-4 flex items-center gap-2">
+                  <Calendar className="h-5 w-5" />
+                  Referenční bod (volitelné)
+                </h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Nastavte referenční datum a Woche pro přesné generování směn podle vašeho plánu
+                </p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="referenceDate">Referenční datum</Label>
+                    <Input
+                      id="referenceDate"
+                      type="date"
+                      value={referenceDate}
+                      onChange={(e) => setReferenceDate(e.target.value)}
+                      placeholder="Vyberte datum"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="referenceWoche">Referenční Woche</Label>
+                    <Input
+                      id="referenceWoche"
+                      type="number"
+                      min="1"
+                      max="15"
+                      value={referenceWoche}
+                      onChange={(e) => setReferenceWoche(e.target.value)}
+                      placeholder="1-15"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <Alert>
+                <MapPin className="h-4 w-4" />
+                <AlertDescription>
+                  Po dokončení setupu budete automaticky směrováni na DHL Dashboard, 
+                  kde můžete spravovat své směny a generovat nové podle vašeho plánu.
+                </AlertDescription>
+              </Alert>
+
+              <div className="flex gap-4 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => navigate('/dashboard')}
+                  className="flex-1"
+                >
+                  Zrušit
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting || !selectedPosition || !selectedWorkGroup}
+                  className="flex-1"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      Ukládám...
+                    </>
+                  ) : (
+                    'Dokončit setup'
+                  )}
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
       </div>
     </DHLLayout>
   );
