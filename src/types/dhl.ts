@@ -9,6 +9,7 @@ export interface DHLPosition {
   description?: string;
   hourly_rate?: number;
   requirements?: string[];
+  cycle_weeks?: number[]; // Array of week numbers (1-15) that this position has in its cycle
   is_active: boolean;
   created_at: string;
   updated_at: string;

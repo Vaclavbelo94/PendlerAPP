@@ -1,15 +1,16 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { Upload, FileText, CheckCircle, AlertTriangle, X } from 'lucide-react';
+import { Upload, FileText, CheckCircle, AlertTriangle } from 'lucide-react';
 import { useDHLData } from '@/hooks/dhl/useDHLData';
-import { importDHLSchedule, ImportScheduleData } from '@/services/dhl/dhlScheduleImporter';
 import { validateScheduleData } from '@/services/dhl/scheduleValidator';
+import { importDHLSchedule } from '@/services/dhl/dhlScheduleImporter';
+import { SchedulePreview } from './SchedulePreview';
 import { toast } from 'sonner';
+import './MobileDHLStyles.css';
 
 export const ScheduleUploader: React.FC = () => {
   const { positions, workGroups, isLoading } = useDHLData();
@@ -21,87 +22,63 @@ export const ScheduleUploader: React.FC = () => {
     workGroupId: '',
     scheduleName: ''
   });
-  const [isImporting, setIsImporting] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [step, setStep] = useState<'select' | 'preview' | 'success'>('select');
 
-  const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    if (!file.name.toLowerCase().endsWith('.json')) {
+    if (!file.name.endsWith('.json')) {
       toast.error('Prosím vyberte JSON soubor');
       return;
     }
 
-    setSelectedFile(file);
-    
-    // Read and parse JSON
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const content = e.target?.result as string;
-        const parsed = JSON.parse(content);
-        console.log('Parsed JSON data:', parsed);
-        setJsonData(parsed);
-        
-        // Validate immediately
-        const validationResult = validateScheduleData(parsed, file.name);
-        console.log('Validation result:', validationResult);
-        setValidation(validationResult);
-        
-        // Auto-fill schedule name if not set
-        if (!formData.scheduleName) {
-          const baseName = file.name.replace('.json', '');
-          setFormData(prev => ({ ...prev, scheduleName: baseName }));
-        }
-        
-        // Show success message for entries format
-        if (parsed.entries && Array.isArray(parsed.entries)) {
-          toast.success(`Detekován entries formát s ${parsed.entries.length} záznamy`);
-        }
-        
-      } catch (error) {
-        console.error('JSON parse error:', error);
-        toast.error('Neplatný JSON soubor');
-        setSelectedFile(null);
-        setJsonData(null);
-        setValidation(null);
+    try {
+      setSelectedFile(file);
+      const text = await file.text();
+      const data = JSON.parse(text);
+      setJsonData(data);
+      
+      // Validate with position context if available
+      const validationResult = await validateScheduleData(
+        data, 
+        file.name, 
+        formData.positionId || undefined
+      );
+      setValidation(validationResult);
+      
+      if (validationResult.isValid) {
+        setStep('preview');
+      } else {
+        toast.error('Soubor obsahuje chyby, prosím zkontrolujte a opravte je');
       }
-    };
-    reader.readAsText(file);
-  }, [formData.scheduleName]);
-
-  
-  const handleDrop = useCallback((event: React.DragEvent) => {
-    event.preventDefault();
-    const file = event.dataTransfer.files[0];
-    if (file) {
-      // Create a proper event object
-      const fileInput = document.createElement('input');
-      fileInput.type = 'file';
-      fileInput.files = event.dataTransfer.files;
-      
-      const syntheticEvent = {
-        target: fileInput,
-        currentTarget: fileInput
-      } as React.ChangeEvent<HTMLInputElement>;
-      
-      handleFileSelect(syntheticEvent);
+    } catch (error) {
+      console.error('Error parsing file:', error);
+      toast.error('Chyba při čtení souboru - neplatný JSON formát');
+      setSelectedFile(null);
+      setJsonData(null);
+      setValidation(null);
     }
-  }, [handleFileSelect]);
+  };
 
-  const handleDragOver = useCallback((event: React.DragEvent) => {
-    event.preventDefault();
-  }, []);
-
-  const clearFile = () => {
-    setSelectedFile(null);
-    setJsonData(null);
-    setValidation(null);
+  const handlePositionChange = async (positionId: string) => {
+    setFormData(prev => ({ ...prev, positionId }));
+    
+    // Re-validate if we have data
+    if (jsonData && selectedFile) {
+      const validationResult = await validateScheduleData(
+        jsonData, 
+        selectedFile.name, 
+        positionId || undefined
+      );
+      setValidation(validationResult);
+    }
   };
 
   const handleImport = async () => {
     if (!selectedFile || !jsonData || !validation?.isValid) {
-      toast.error('Prosím vyberte platný soubor a vyplňte všechna pole');
+      toast.error('Nelze importovat - chybí data nebo jsou neplatná');
       return;
     }
 
@@ -110,247 +87,158 @@ export const ScheduleUploader: React.FC = () => {
       return;
     }
 
-    setIsImporting(true);
-
     try {
-      console.log('Starting import with data:', {
-        positionId: formData.positionId,
-        workGroupId: formData.workGroupId,
-        scheduleName: formData.scheduleName,
-        jsonDataType: jsonData.entries ? 'entries' : 'direct',
-        fileName: selectedFile.name
-      });
-
-      const importData: ImportScheduleData = {
+      setIsProcessing(true);
+      
+      const result = await importDHLSchedule({
         positionId: formData.positionId,
         workGroupId: formData.workGroupId,
         scheduleName: formData.scheduleName,
         jsonData: jsonData,
         fileName: selectedFile.name
-      };
-
-      const result = await importDHLSchedule(importData);
+      });
 
       if (result.success) {
         toast.success(result.message);
-        console.log('Import successful:', result);
+        setStep('success');
         
-        // Reset form
-        clearFile();
-        setFormData({
-          positionId: '',
-          workGroupId: '',
-          scheduleName: ''
-        });
+        // Reset form after successful import
+        setTimeout(() => {
+          setStep('select');
+          setSelectedFile(null);
+          setJsonData(null);
+          setValidation(null);
+          setFormData({
+            positionId: '',
+            workGroupId: '',
+            scheduleName: ''
+          });
+        }, 3000);
       } else {
-        toast.error(`Import failed: ${result.message}`);
-        console.error('Import failed:', result);
+        toast.error(result.message);
       }
     } catch (error) {
       console.error('Import error:', error);
-      toast.error('Chyba při importu souboru');
+      toast.error('Chyba při importu dat');
     } finally {
-      setIsImporting(false);
+      setIsProcessing(false);
     }
   };
 
-  if (isLoading) {
+  const resetUpload = () => {
+    setStep('select');
+    setSelectedFile(null);
+    setJsonData(null);
+    setValidation(null);
+  };
+
+  if (step === 'select') {
+    return (
+      <div className="space-y-4">
+        {/* Form fields */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="position">Pozice *</Label>
+            <Select 
+              value={formData.positionId} 
+              onValueChange={handlePositionChange}
+              disabled={isLoading}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Vyberte pozici" />
+              </SelectTrigger>
+              <SelectContent>
+                {positions.map((position) => (
+                  <SelectItem key={position.id} value={position.id}>
+                    {position.name} ({position.position_type})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <Label htmlFor="workGroup">Pracovní skupina *</Label>
+            <Select 
+              value={formData.workGroupId} 
+              onValueChange={(value) => setFormData(prev => ({ ...prev, workGroupId: value }))}
+              disabled={isLoading}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Vyberte skupinu" />
+              </SelectTrigger>
+              <SelectContent>
+                {workGroups.map((group) => (
+                  <SelectItem key={group.id} value={group.id}>
+                    {group.name} (Týden {group.week_number})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        <div>
+          <Label htmlFor="scheduleName">Název plánu *</Label>
+          <Input
+            id="scheduleName"
+            value={formData.scheduleName}
+            onChange={(e) => setFormData(prev => ({ ...prev, scheduleName: e.target.value }))}
+            placeholder="např. Sortierer Woche 1 - Leden 2024"
+          />
+        </div>
+
+        {/* File upload */}
+        <div>
+          <Label htmlFor="file">JSON soubor s plánem směn *</Label>
+          <Input
+            id="file"
+            type="file"
+            accept=".json"
+            onChange={handleFileSelect}
+            className="cursor-pointer"
+          />
+        </div>
+
+        {validation && !validation.isValid && (
+          <div className="p-3 bg-red-50 dark:bg-red-950/20 rounded border border-red-200">
+            <div className="flex items-center gap-2 mb-2">
+              <AlertTriangle className="h-4 w-4 text-red-600" />
+              <span className="font-medium text-red-800 dark:text-red-200">Chyby ve validaci</span>
+            </div>
+            <ul className="text-sm text-red-700 dark:text-red-300 space-y-1">
+              {validation.errors.map((error: any, index: number) => (
+                <li key={index}>• {error.message}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  if (step === 'preview') {
+    return (
+      <SchedulePreview
+        jsonData={jsonData}
+        validation={validation}
+        formData={formData}
+        handleImport={handleImport}
+        resetUpload={resetUpload}
+      />
+    );
+  }
+
+  if (step === 'success') {
     return (
       <div className="flex items-center justify-center p-8">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
-          <p className="text-muted-foreground">Načítám DHL data...</p>
+          <p className="text-muted-foreground">Import úspěšně dokončen</p>
         </div>
       </div>
     );
   }
 
-  return (
-    <div className="space-y-6">
-      {/* File Upload Area */}
-      <div 
-        className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-          selectedFile 
-            ? 'border-green-300 bg-green-50 dark:bg-green-950/20' 
-            : 'border-muted-foreground/25 hover:border-muted-foreground/50'
-        }`}
-        onDrop={handleDrop}
-        onDragOver={handleDragOver}
-      >
-        {selectedFile ? (
-          <div className="space-y-4">
-            <div className="flex items-center justify-center gap-2">
-              <FileText className="h-8 w-8 text-green-600" />
-              <div className="text-left">
-                <p className="font-medium">{selectedFile.name}</p>
-                <p className="text-sm text-muted-foreground">
-                  {(selectedFile.size / 1024).toFixed(1)} KB
-                </p>
-                {jsonData?.entries && (
-                  <p className="text-xs text-blue-600">
-                    Entries formát • {jsonData.entries.length} záznamů
-                  </p>
-                )}
-              </div>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={clearFile}
-                className="ml-2"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-            
-            {validation && (
-              <div className="space-y-2">
-                <div className="flex items-center justify-center gap-2">
-                  {validation.isValid ? (
-                    <>
-                      <CheckCircle className="h-5 w-5 text-green-600" />
-                      <span className="text-green-600 font-medium">Soubor je platný</span>
-                    </>
-                  ) : (
-                    <>
-                      <AlertTriangle className="h-5 w-5 text-red-600" />
-                      <span className="text-red-600 font-medium">Soubor obsahuje chyby</span>
-                    </>
-                  )}
-                </div>
-                
-                <div className="text-sm space-y-1">
-                  <p>Celkem směn: <Badge variant="secondary">{validation.summary.totalShifts}</Badge></p>
-                  <p>Celkem dní: <Badge variant="secondary">{validation.summary.totalDays}</Badge></p>
-                  {validation.summary.detectedWoche && (
-                    <p>Detekované Woche: <Badge variant="secondary">{validation.summary.detectedWoche}</Badge></p>
-                  )}
-                  {validation.summary.dateRange && (
-                    <p className="text-xs text-muted-foreground">
-                      {validation.summary.dateRange.start} - {validation.summary.dateRange.end}
-                    </p>
-                  )}
-                </div>
-
-                
-                {validation.errors.length > 0 && (
-                  <div className="mt-4 p-3 bg-red-50 dark:bg-red-950/20 rounded border border-red-200">
-                    <h4 className="font-medium text-red-800 dark:text-red-200 mb-2">Chyby:</h4>
-                    <ul className="text-sm text-red-700 dark:text-red-300 space-y-1">
-                      {validation.errors.map((error: any, index: number) => (
-                        <li key={index}>• {error.message}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {validation.warnings.length > 0 && (
-                  <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-950/20 rounded border border-yellow-200">
-                    <h4 className="font-medium text-yellow-800 dark:text-yellow-200 mb-2">Varování:</h4>
-                    <ul className="text-sm text-yellow-700 dark:text-yellow-300 space-y-1">
-                      {validation.warnings.map((warning: any, index: number) => (
-                        <li key={index}>• {warning.message}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className="space-y-4">
-            <Upload className="h-12 w-12 text-muted-foreground mx-auto" />
-            <div>
-              <p className="text-lg font-medium">Přetáhněte JSON soubor nebo klikněte pro výběr</p>
-              <p className="text-sm text-muted-foreground">
-                Podporované formáty: JSON (s entries array nebo přímé datum-klíče)
-              </p>
-            </div>
-            <Input
-              type="file"
-              accept=".json"
-              onChange={handleFileSelect}
-              className="max-w-xs mx-auto"
-            />
-          </div>
-        )}
-      </div>
-
-      
-      
-      {/* Import Form */}
-      {selectedFile && validation?.isValid && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Nastavení importu</CardTitle>
-            <CardDescription>
-              Vyberte pozici a pracovní skupinu pro tento plán směn
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="position">Pozice</Label>
-                <Select value={formData.positionId} onValueChange={(value) => setFormData(prev => ({ ...prev, positionId: value }))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Vyberte pozici" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {positions.map((position) => (
-                      <SelectItem key={position.id} value={position.id}>
-                        {position.name} ({position.position_type})
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="workGroup">Pracovní skupina</Label>
-                <Select value={formData.workGroupId} onValueChange={(value) => setFormData(prev => ({ ...prev, workGroupId: value }))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Vyberte pracovní skupinu" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {workGroups.map((group) => (
-                      <SelectItem key={group.id} value={group.id}>
-                        {group.name} (Týden {group.week_number})
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="scheduleName">Název plánu</Label>
-              <Input
-                id="scheduleName"
-                value={formData.scheduleName}
-                onChange={(e) => setFormData(prev => ({ ...prev, scheduleName: e.target.value }))}
-                placeholder="Např. Sortierer - Týden 1 - Leden 2025"
-              />
-            </div>
-
-            <Button 
-              onClick={handleImport} 
-              disabled={isImporting || !formData.positionId || !formData.workGroupId || !formData.scheduleName}
-              className="w-full"
-            >
-              {isImporting ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Importuji...
-                </>
-              ) : (
-                <>
-                  <Upload className="h-4 w-4 mr-2" />
-                  Importovat plán směn
-                </>
-              )}
-            </Button>
-          </CardContent>
-        </Card>
-      )}
-    </div>
-  );
+  return null;
 };

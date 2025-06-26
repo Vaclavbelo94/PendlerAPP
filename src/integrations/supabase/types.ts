@@ -137,6 +137,7 @@ export type Database = {
       dhl_positions: {
         Row: {
           created_at: string
+          cycle_weeks: number[] | null
           description: string | null
           hourly_rate: number | null
           id: string
@@ -148,6 +149,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          cycle_weeks?: number[] | null
           description?: string | null
           hourly_rate?: number | null
           id?: string
@@ -159,6 +161,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          cycle_weeks?: number[] | null
           description?: string | null
           hourly_rate?: number | null
           id?: string

@@ -1,6 +1,13 @@
-import { parseTimeToMinutes } from '@/utils/dhl/wocheCalculator';
+
+import { supabase } from '@/integrations/supabase/client';
 
 export interface ValidationError {
+  field: string;
+  message: string;
+  line?: number;
+}
+
+export interface ValidationWarning {
   field: string;
   message: string;
   line?: number;
@@ -9,7 +16,7 @@ export interface ValidationError {
 export interface ValidationResult {
   isValid: boolean;
   errors: ValidationError[];
-  warnings: ValidationError[];
+  warnings: ValidationWarning[];
   summary: {
     totalDays: number;
     totalShifts: number;
@@ -19,388 +26,174 @@ export interface ValidationResult {
 }
 
 /**
- * Convert different JSON formats to internal format
+ * Validate DHL schedule data before import
  */
-const convertToInternalFormat = (data: any): any => {
-  console.log('Converting to internal format...');
+export const validateScheduleData = async (
+  data: any, 
+  fileName: string,
+  positionId?: string
+): Promise<ValidationResult> => {
+  console.log('Validating schedule data:', { data, fileName, positionId });
   
-  // Handle new shifts format (with shifts array)
-  if (data.shifts && Array.isArray(data.shifts)) {
-    console.log('Converting shifts format to internal format');
-    
-    const converted: any = {
-      base_date: data.valid_from || new Date().toISOString().split('T')[0],
-      woche: data.woche || null,
-      position: data.position || 'Sortierer',
-      description: data.description || `Směny pro pozici Sortierer – Woche ${data.woche || 'N/A'}`
-    };
-
-    // Convert shifts to date-keyed format
-    data.shifts.forEach((shift: any, index: number) => {
-      if (!shift.date) {
-        console.warn(`Shift ${index} missing date field`);
-        return;
-      }
-
-      converted[shift.date] = {
-        start_time: shift.start || shift.start_time,
-        end_time: shift.end || shift.end_time,
-        day: shift.day,
-        woche: data.woche // Use woche from root level
-      };
-    });
-
-    console.log('Converted shifts format:', converted);
-    return converted;
-  }
-  
-  // Handle entries format (previous format)
-  if (data.entries && Array.isArray(data.entries)) {
-    console.log('Converting entries format to internal format');
-    
-    const converted: any = {
-      base_date: data.base_date || null,
-      woche: null, // Will be extracted from first entry
-      position: data.position || null,
-      description: data.description || null
-    };
-
-    // Convert entries to date-keyed format
-    data.entries.forEach((entry: any, index: number) => {
-      if (!entry.date) {
-        console.warn(`Entry ${index} missing date field`);
-        return;
-      }
-
-      // Extract Woche from first valid entry
-      if (converted.woche === null && entry.woche) {
-        converted.woche = entry.woche;
-      }
-
-      converted[entry.date] = {
-        start_time: entry.start || entry.start_time,
-        end_time: entry.end || entry.end_time,
-        day: entry.day,
-        woche: entry.woche
-      };
-    });
-
-    console.log('Converted entries format:', converted);
-    return converted;
-  }
-
-  // Already in internal format
-  console.log('Data already in internal format');
-  return data;
-};
-
-/**
- * Validate imported DHL schedule JSON data
- */
-export const validateScheduleData = (data: any, fileName: string): ValidationResult => {
   const errors: ValidationError[] = [];
-  const warnings: ValidationError[] = [];
-  let totalShifts = 0;
+  const warnings: ValidationWarning[] = [];
   let totalDays = 0;
-  let minDate: string | null = null;
-  let maxDate: string | null = null;
+  let totalShifts = 0;
   let detectedWoche: number | null = null;
+  let dateRange: { start: string; end: string } | null = null;
 
-  console.log('=== SCHEDULE VALIDATION START ===');
-  console.log('File name:', fileName);
-  console.log('Original data structure:', data);
+  try {
+    // Basic structure validation
+    if (!data || typeof data !== 'object') {
+      errors.push({
+        field: 'root',
+        message: 'Neplatný formát dat - očekává se JSON objekt'
+      });
+      return { isValid: false, errors, warnings, summary: { totalDays, totalShifts, dateRange, detectedWoche } };
+    }
 
-  // Check basic structure
-  if (!data || typeof data !== 'object') {
-    errors.push({
-      field: 'root',
-      message: 'Invalid JSON structure. Expected object.'
+    // Detect format and extract woche
+    if (data.shifts && Array.isArray(data.shifts)) {
+      // New shifts format
+      detectedWoche = data.woche;
+      totalShifts = data.shifts.filter((shift: any) => shift.date && (shift.start || shift.start_time)).length;
+      
+      const validDates = data.shifts
+        .filter((shift: any) => shift.date)
+        .map((shift: any) => shift.date)
+        .sort();
+      
+      if (validDates.length > 0) {
+        dateRange = { start: validDates[0], end: validDates[validDates.length - 1] };
+      }
+    } else if (data.entries && Array.isArray(data.entries)) {
+      // Entries format
+      detectedWoche = data.entries.length > 0 ? data.entries[0].woche : null;
+      totalShifts = data.entries.filter((entry: any) => entry.date && (entry.start || entry.start_time)).length;
+      
+      const validDates = data.entries
+        .filter((entry: any) => entry.date)
+        .map((entry: any) => entry.date)
+        .sort();
+      
+      if (validDates.length > 0) {
+        dateRange = { start: validDates[0], end: validDates[validDates.length - 1] };
+      }
+    } else {
+      // Direct format
+      detectedWoche = data.woche;
+      
+      // Count date-based shifts
+      const dateKeys = Object.keys(data).filter(key => key.match(/^\d{4}-\d{2}-\d{2}$/));
+      totalShifts = dateKeys.filter(key => data[key] && data[key].start_time).length;
+      
+      if (dateKeys.length > 0) {
+        const sortedDates = dateKeys.sort();
+        dateRange = { start: sortedDates[0], end: sortedDates[sortedDates.length - 1] };
+      }
+    }
+
+    totalDays = totalShifts; // Each shift is typically one day
+
+    // Validate woche is present
+    if (!detectedWoche) {
+      errors.push({
+        field: 'woche',
+        message: 'Chybí informace o týdnu (woche) v datech'
+      });
+    } else if (detectedWoche < 1 || detectedWoche > 15) {
+      errors.push({
+        field: 'woche',
+        message: `Neplatný týden ${detectedWoche} - musí být mezi 1 a 15`
+      });
+    }
+
+    // Validate against position's cycle weeks if position is provided
+    if (positionId && detectedWoche) {
+      try {
+        const { data: position, error: positionError } = await supabase
+          .from('dhl_positions')
+          .select('name, cycle_weeks')
+          .eq('id', positionId)
+          .single();
+
+        if (positionError) {
+          warnings.push({
+            field: 'position',
+            message: 'Nelze ověřit kompatibilitu s pozicí - pozice nenalezena'
+          });
+        } else if (position.cycle_weeks && position.cycle_weeks.length > 0) {
+          if (!position.cycle_weeks.includes(detectedWoche)) {
+            errors.push({
+              field: 'woche',
+              message: `Týden ${detectedWoche} není podporován pozicí "${position.name}". Podporované týdny: ${position.cycle_weeks.join(', ')}`
+            });
+          }
+        }
+      } catch (positionValidationError) {
+        console.error('Error validating position compatibility:', positionValidationError);
+        warnings.push({
+          field: 'position',
+          message: 'Chyba při ověřování kompatibility s pozicí'
+        });
+      }
+    }
+
+    // Validate shifts have required fields
+    if (totalShifts === 0) {
+      errors.push({
+        field: 'shifts',
+        message: 'Nenalezeny žádné platné směny v datech'
+      });
+    }
+
+    // Add warnings for common issues
+    if (totalShifts < 5) {
+      warnings.push({
+        field: 'shifts',
+        message: `Pouze ${totalShifts} směn nalezeno - je to správně?`
+      });
+    }
+
+    if (!dateRange) {
+      warnings.push({
+        field: 'dates',
+        message: 'Nelze určit časový rozsah směn'
+      });
+    }
+
+    console.log('Validation completed:', {
+      isValid: errors.length === 0,
+      errors: errors.length,
+      warnings: warnings.length,
+      totalShifts,
+      detectedWoche
     });
+
+    return {
+      isValid: errors.length === 0,
+      errors,
+      warnings,
+      summary: {
+        totalDays,
+        totalShifts,
+        dateRange,
+        detectedWoche
+      }
+    };
+
+  } catch (error) {
+    console.error('Validation error:', error);
+    errors.push({
+      field: 'validation',
+      message: 'Chyba při validaci dat'
+    });
+
     return {
       isValid: false,
       errors,
       warnings,
-      summary: { totalDays: 0, totalShifts: 0, dateRange: null, detectedWoche: null }
+      summary: { totalDays, totalShifts, dateRange, detectedWoche }
     };
   }
-
-  // Convert to internal format if needed
-  const internalData = convertToInternalFormat(data);
-  console.log('Using internal format:', internalData);
-
-  // Check for required root fields
-  if (internalData.base_date) {
-    if (!isValidDate(internalData.base_date)) {
-      errors.push({
-        field: 'base_date',
-        message: 'Invalid base_date format. Expected YYYY-MM-DD.'
-      });
-    }
-  } else {
-    warnings.push({
-      field: 'base_date',
-      message: 'No base_date found. Using current date as fallback.'
-    });
-  }
-
-  if (internalData.woche) {
-    const woche = parseInt(internalData.woche);
-    if (isNaN(woche) || woche < 1 || woche > 15) {
-      errors.push({
-        field: 'woche',
-        message: 'Invalid woche value. Must be between 1 and 15.'
-      });
-    } else {
-      detectedWoche = woche;
-    }
-  } else {
-    warnings.push({
-      field: 'woche',
-      message: 'No woche found. Please specify Woche number (1-15).'
-    });
-  }
-
-  // Validate shift entries - improved to handle different JSON structures
-  Object.keys(internalData).forEach(key => {
-    console.log('Processing key:', key, 'Value:', internalData[key]);
-    
-    // Skip metadata fields
-    if (['base_date', 'woche', 'position', 'description', 'valid_from'].includes(key)) {
-      return;
-    }
-
-    // Check if key is a date (YYYY-MM-DD format)
-    if (isValidDate(key)) {
-      totalDays++;
-      
-      // Track date range
-      if (!minDate || key < minDate) minDate = key;
-      if (!maxDate || key > maxDate) maxDate = key;
-
-      const dayData = internalData[key];
-      console.log('Processing date:', key, 'Data:', dayData);
-      
-      if (!dayData || typeof dayData !== 'object') {
-        errors.push({
-          field: key,
-          message: 'Invalid day data structure. Expected object with shift information.'
-        });
-        return;
-      }
-
-      // Check for shift data - handle different possible structures
-      let hasShiftData = false;
-      
-      // Check for direct time fields
-      if (dayData.start_time || dayData.end_time) {
-        hasShiftData = true;
-        
-        // Validate start time
-        if (dayData.start_time) {
-          if (!isValidTime(dayData.start_time)) {
-            errors.push({
-              field: `${key}.start_time`,
-              message: `Invalid start_time format: "${dayData.start_time}". Expected HH:MM.`
-            });
-          }
-        } else {
-          warnings.push({
-            field: `${key}.start_time`,
-            message: 'Missing start_time for shift.'
-          });
-        }
-
-        // Validate end time
-        if (dayData.end_time) {
-          if (!isValidTime(dayData.end_time)) {
-            errors.push({
-              field: `${key}.end_time`,
-              message: `Invalid end_time format: "${dayData.end_time}". Expected HH:MM.`
-            });
-          }
-        } else {
-          warnings.push({
-            field: `${key}.end_time`,
-            message: 'Missing end_time for shift.'
-          });
-        }
-
-        // Validate time logic
-        if (dayData.start_time && dayData.end_time && isValidTime(dayData.start_time) && isValidTime(dayData.end_time)) {
-          const startMinutes = parseTimeToMinutes(dayData.start_time);
-          const endMinutes = parseTimeToMinutes(dayData.end_time);
-          
-          if (startMinutes >= endMinutes) {
-            warnings.push({
-              field: `${key}`,
-              message: 'End time should be after start time (night shifts crossing midnight need special handling).'
-            });
-          }
-
-          // Check for reasonable shift duration (4-12 hours)
-          const durationMinutes = endMinutes > startMinutes ? 
-            endMinutes - startMinutes : 
-            (24 * 60) - startMinutes + endMinutes;
-            
-          if (durationMinutes < 240) { // Less than 4 hours
-            warnings.push({
-              field: `${key}`,
-              message: `Shift duration is ${Math.round(durationMinutes/60)}h which is less than 4 hours.`
-            });
-          } else if (durationMinutes > 720) { // More than 12 hours
-            warnings.push({
-              field: `${key}`,
-              message: `Shift duration is ${Math.round(durationMinutes/60)}h which is more than 12 hours.`
-            });
-          }
-          
-          totalShifts++;
-        }
-      }
-      
-      // Check for nested shift objects or arrays
-      if (!hasShiftData) {
-        const dayKeys = Object.keys(dayData);
-        if (dayKeys.length > 0) {
-          warnings.push({
-            field: key,
-            message: `Found data for ${key} but no recognizable shift structure. Expected start_time and end_time fields.`
-          });
-        }
-      }
-
-      // Check day of week consistency
-      if (dayData.day) {
-        const actualDay = new Date(key).toLocaleDateString('cs-CZ', { weekday: 'long' }).toLowerCase();
-        const providedDay = dayData.day.toLowerCase();
-        if (actualDay !== providedDay) {
-          warnings.push({
-            field: `${key}.day`,
-            message: `Day mismatch: ${key} is ${actualDay}, but data says ${providedDay}.`
-          });
-        }
-      }
-    }
-  });
-
-  console.log('Validation summary:', {
-    totalDays,
-    totalShifts,
-    dateRange: minDate && maxDate ? { start: minDate, end: maxDate } : null,
-    detectedWoche,
-    errorsCount: errors.length,
-    warningsCount: warnings.length
-  });
-
-  // Check for empty schedule
-  if (totalShifts === 0 && totalDays > 0) {
-    warnings.push({
-      field: 'schedule',
-      message: `Found ${totalDays} date entries but no valid shifts. Check that each date has start_time and end_time fields.`
-    });
-  } else if (totalDays === 0) {
-    errors.push({
-      field: 'schedule',
-      message: 'No date entries found. Schedule should contain dates in YYYY-MM-DD format.'
-    });
-  }
-
-  // Check date consistency
-  if (minDate && maxDate) {
-    const daysDiff = Math.ceil((new Date(maxDate).getTime() - new Date(minDate).getTime()) / (1000 * 60 * 60 * 24));
-    if (daysDiff > 105) { // More than 15 weeks
-      warnings.push({
-        field: 'dateRange',
-        message: `Schedule spans ${daysDiff} days (more than 15 weeks), which exceeds typical Woche cycle.`
-      });
-    }
-  }
-
-  console.log('=== SCHEDULE VALIDATION END ===');
-
-  return {
-    isValid: errors.length === 0,
-    errors,
-    warnings,
-    summary: {
-      totalDays,
-      totalShifts,
-      dateRange: minDate && maxDate ? { start: minDate, end: maxDate } : null,
-      detectedWoche
-    }
-  };
-};
-
-/**
- * Check if string is valid date format (YYYY-MM-DD)
- */
-const isValidDate = (dateStr: string): boolean => {
-  const regex = /^\d{4}-\d{2}-\d{2}$/;
-  if (!regex.test(dateStr)) return false;
-  
-  const date = new Date(dateStr);
-  return date instanceof Date && !isNaN(date.getTime()) && 
-         date.toISOString().split('T')[0] === dateStr;
-};
-
-/**
- * Check if string is valid time format (HH:MM or H:MM)
- */
-const isValidTime = (timeStr: string): boolean => {
-  const regex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
-  return regex.test(timeStr);
-};
-
-/**
- * Check if day name is valid
- */
-const isValidDayOfWeek = (day: string): boolean => {
-  const validDays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-  return validDays.includes(day.toLowerCase());
-};
-
-/**
- * Extract metadata from schedule for preview - updated for all formats
- */
-export const extractScheduleMetadata = (data: any) => {
-  // Convert to internal format first
-  const internalData = convertToInternalFormat(data);
-  
-  const metadata = {
-    baseDate: internalData.base_date || internalData.valid_from || null,
-    woche: internalData.woche || null,
-    position: internalData.position || null,
-    description: internalData.description || null,
-    shiftCount: 0,
-    dateRange: null as { start: string; end: string } | null,
-    weekDays: [] as string[]
-  };
-
-  const dates: string[] = [];
-  const weekDays = new Set<string>();
-
-  Object.keys(internalData).forEach(key => {
-    if (isValidDate(key)) {
-      dates.push(key);
-      const date = new Date(key);
-      const dayName = date.toLocaleDateString('cs-CZ', { weekday: 'long' });
-      weekDays.add(dayName);
-      
-      if (internalData[key] && (internalData[key].start_time || internalData[key].end_time)) {
-        metadata.shiftCount++;
-      }
-    }
-  });
-
-  if (dates.length > 0) {
-    dates.sort();
-    metadata.dateRange = {
-      start: dates[0],
-      end: dates[dates.length - 1]
-    };
-  }
-
-  metadata.weekDays = Array.from(weekDays);
-
-  return metadata;
 };

@@ -3,12 +3,13 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Upload, FileText, CheckCircle, AlertTriangle, Trash2, Download } from 'lucide-react';
+import { Upload, FileText, CheckCircle, AlertTriangle, Trash2, Download, Users } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScheduleUploader } from './ScheduleUploader';
 import { SchedulePreview } from './SchedulePreview';
 import { ImportHistory } from './ImportHistory';
 import { SchedulesList } from './SchedulesList';
+import { PositionManagementPanel } from './PositionManagementPanel';
 import './MobileDHLStyles.css';
 
 const DHLImportPanel: React.FC = () => {
@@ -29,7 +30,7 @@ const DHLImportPanel: React.FC = () => {
       {/* Main Content */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <div className="dhl-mobile-tabs">
-          <TabsList className="tabs-list grid w-full grid-cols-2 sm:grid-cols-4 gap-1">
+          <TabsList className="tabs-list grid w-full grid-cols-2 sm:grid-cols-5 gap-1">
             <TabsTrigger value="upload" className="dhl-mobile-tab-trigger flex items-center gap-1 sm:gap-2">
               <Upload className="h-3 w-3 sm:h-4 sm:w-4" />
               <span className="hidden sm:inline">Import</span>
@@ -39,6 +40,11 @@ const DHLImportPanel: React.FC = () => {
               <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
               <span className="hidden sm:inline">Plány směn</span>
               <span className="sm:hidden">Plány</span>
+            </TabsTrigger>
+            <TabsTrigger value="positions" className="dhl-mobile-tab-trigger flex items-center gap-1 sm:gap-2">
+              <Users className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Pozice</span>
+              <span className="sm:hidden">Pozice</span>
             </TabsTrigger>
             <TabsTrigger value="history" className="dhl-mobile-tab-trigger flex items-center gap-1 sm:gap-2">
               <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -104,6 +110,11 @@ const DHLImportPanel: React.FC = () => {
         {/* Schedules Tab */}
         <TabsContent value="schedules" className="space-y-6">
           <SchedulesList />
+        </TabsContent>
+
+        {/* Positions Tab - NEW */}
+        <TabsContent value="positions" className="space-y-6">
+          <PositionManagementPanel />
         </TabsContent>
 
         {/* History Tab */}
