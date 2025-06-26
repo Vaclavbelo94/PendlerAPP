@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { CheckCircle, AlertTriangle, FileText, Calendar, User } from 'lucide-react';
 import { getImportHistory } from '@/services/dhl/dhlScheduleImporter';
 import { toast } from 'sonner';
+import './MobileDHLStyles.css';
 
 export const ImportHistory: React.FC = () => {
   const [history, setHistory] = useState<any[]>([]);
@@ -63,7 +64,7 @@ export const ImportHistory: React.FC = () => {
 
   if (history.length === 0) {
     return (
-      <Card>
+      <Card className="dhl-mobile-card">
         <CardContent className="p-8 text-center">
           <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
           <h3 className="text-lg font-medium mb-2">Žádná historie</h3>
@@ -77,93 +78,120 @@ export const ImportHistory: React.FC = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <h3 className="text-lg font-medium">Historie importů ({history.length})</h3>
-        <Button onClick={loadHistory} variant="outline" size="sm">
+        <Button onClick={loadHistory} variant="outline" size="sm" className="w-full sm:w-auto">
           Obnovit
         </Button>
       </div>
 
       <div className="space-y-3">
         {history.map((record) => (
-          <Card key={record.id}>
-            <CardContent className="p-4">
-              <div className="flex items-start justify-between">
-                <div className="flex items-start gap-3 flex-1">
-                  <div className="mt-0.5">
+          <Card key={record.id} className="dhl-mobile-card">
+            <CardContent className="dhl-mobile-card-content">
+              <div className="space-y-3">
+                {/* Header with status */}
+                <div className="flex items-start gap-3">
+                  <div className="mt-0.5 flex-shrink-0">
                     {getStatusIcon(record.import_status)}
                   </div>
                   
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h4 className="font-medium truncate">{record.file_name}</h4>
-                      <Badge className={getStatusColor(record.import_status)}>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
+                      <h4 className="font-medium text-sm sm:text-base dhl-text-truncate flex-1">
+                        {record.file_name}
+                      </h4>
+                      <Badge className={`${getStatusColor(record.import_status)} text-xs flex-shrink-0`}>
                         {record.import_status === 'success' ? 'Úspěch' : 
                          record.import_status === 'failed' ? 'Chyba' : record.import_status}
                       </Badge>
                     </div>
                     
-                    <div className="text-sm text-muted-foreground space-y-1">
-                      <div className="flex items-center gap-4">
-                        <span className="flex items-center gap-1">
-                          <Calendar className="h-3 w-3" />
+                    {/* Date and basic info */}
+                    <div className="dhl-mobile-schedule-item">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Calendar className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                        <span className="text-xs sm:text-sm text-muted-foreground">
                           {new Date(record.created_at).toLocaleString('cs-CZ')}
                         </span>
-                        
-                        {record.import_status === 'success' && (
-                          <span>
-                            Zpracováno: {record.records_processed} směn
-                          </span>
-                        )}
                       </div>
                       
+                      {record.import_status === 'success' && (
+                        <div className="text-xs sm:text-sm text-muted-foreground">
+                          Zpracováno: {record.records_processed} směn
+                        </div>
+                      )}
+                      
                       {record.dhl_shift_schedules && (
-                        <div>
+                        <div className="text-xs sm:text-sm text-muted-foreground mt-1">
                           Plán: {record.dhl_shift_schedules.schedule_name}
                         </div>
                       )}
-                      
-                      {record.error_message && (
-                        <div className="text-red-600 dark:text-red-400">
-                          Chyba: {record.error_message}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Metrics Grid - Mobile Optimized */}
+                {record.metadata?.validation_summary && (
+                  <div className="dhl-mobile-summary">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      <div className="dhl-mobile-summary-item">
+                        <span className="dhl-mobile-summary-label">Směny:</span>
+                        <span className="dhl-mobile-summary-value">
+                          {record.metadata.validation_summary.totalShifts}
+                        </span>
+                      </div>
+                      <div className="dhl-mobile-summary-item">
+                        <span className="dhl-mobile-summary-label">Dny:</span>
+                        <span className="dhl-mobile-summary-value">
+                          {record.metadata.validation_summary.totalDays}
+                        </span>
+                      </div>
+                      {record.metadata.validation_summary.detectedWoche && (
+                        <div className="dhl-mobile-summary-item col-span-2 sm:col-span-1">
+                          <span className="dhl-mobile-summary-label">Woche:</span>
+                          <span className="dhl-mobile-summary-value">
+                            {record.metadata.validation_summary.detectedWoche}
+                          </span>
                         </div>
                       )}
                     </div>
                   </div>
-                </div>
+                )}
 
-                <div className="text-right text-sm text-muted-foreground">
-                  {record.metadata?.validation_summary && (
+                {/* Error Message */}
+                {record.error_message && (
+                  <div className="p-3 bg-red-50 dark:bg-red-950/20 rounded border border-red-200">
+                    <div className="text-xs sm:text-sm text-red-600 dark:text-red-400 dhl-text-wrap">
+                      <span className="font-medium">Chyba:</span> {record.error_message}
+                    </div>
+                  </div>
+                )}
+
+                {/* Warnings - Mobile Optimized */}
+                {record.metadata?.warnings && record.metadata.warnings.length > 0 && (
+                  <div className="p-3 bg-yellow-50 dark:bg-yellow-950/20 rounded border border-yellow-200">
+                    <div className="flex items-center gap-2 mb-2">
+                      <AlertTriangle className="h-4 w-4 text-yellow-600 flex-shrink-0" />
+                      <span className="font-medium text-yellow-800 dark:text-yellow-200 text-xs sm:text-sm">
+                        Varování při importu
+                      </span>
+                    </div>
                     <div className="space-y-1">
-                      <div>Směny: {record.metadata.validation_summary.totalShifts}</div>
-                      <div>Dny: {record.metadata.validation_summary.totalDays}</div>
-                      
-                      {record.metadata.validation_summary.detectedWoche && (
-                        <div>Woche: {record.metadata.validation_summary.detectedWoche}</div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Warnings */}
-              {record.metadata?.warnings && record.metadata.warnings.length > 0 && (
-                <div className="mt-3 p-2 bg-yellow-50 dark:bg-yellow-950/20 rounded border border-yellow-200">
-                  <div className="text-sm">
-                    <div className="font-medium text-yellow-800 dark:text-yellow-200 mb-1">
-                      Varování při importu:
-                    </div>
-                    <ul className="text-yellow-700 dark:text-yellow-300 space-y-0.5">
                       {record.metadata.warnings.slice(0, 3).map((warning: any, index: number) => (
-                        <li key={index} className="text-xs">• {warning.message}</li>
+                        <div key={index} className="text-xs text-yellow-700 dark:text-yellow-300 dhl-text-wrap">
+                          • {warning.message}
+                        </div>
                       ))}
                       {record.metadata.warnings.length > 3 && (
-                        <li className="text-xs">... a {record.metadata.warnings.length - 3} dalších</li>
+                        <div className="text-xs text-yellow-700 dark:text-yellow-300">
+                          ... a {record.metadata.warnings.length - 3} dalších varování
+                        </div>
                       )}
-                    </ul>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </CardContent>
           </Card>
         ))}
