@@ -8,7 +8,13 @@ interface OptimizedSupabaseOptions {
   staleTime?: number;
 }
 
-export const useOptimizedSupabase = (options: OptimizedSupabaseOptions = {}) => {
+interface OptimizedSupabaseReturn {
+  optimizedQuery: (queryKey: string, queryFn: () => Promise<any>) => Promise<any>;
+  batchOperations: (operations: Array<() => Promise<any>>) => Promise<any[]>;
+  isLoading: boolean;
+}
+
+export const useOptimizedSupabase = (options: OptimizedSupabaseOptions = {}): OptimizedSupabaseReturn => {
   const {
     enableCaching = true,
     cacheTime = 10 * 60 * 1000, // 10 minut
