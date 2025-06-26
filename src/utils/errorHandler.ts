@@ -1,6 +1,12 @@
 
+export interface AppError {
+  message: string;
+  code?: string;
+  context?: any;
+}
+
 export const errorHandler = {
-  handleError: (error: any, context?: { operation?: string; userId?: string }) => {
+  handleError: (error: any, context?: { operation?: string; userId?: string; shiftId?: string; conflictId?: string }) => {
     console.error('Error occurred:', {
       error,
       context,
