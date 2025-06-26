@@ -18,7 +18,7 @@ export const PositionManagementPanel = () => {
   const [editingPosition, setEditingPosition] = useState<DHLPosition | null>(null);
   const [formData, setFormData] = useState({
     name: '',
-    weeks_in_cycle: ''
+    cycle_weeks: ''
   });
 
   useEffect(() => {
@@ -50,7 +50,7 @@ export const PositionManagementPanel = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name.trim() || !formData.weeks_in_cycle.trim()) {
+    if (!formData.name.trim() || !formData.cycle_weeks.trim()) {
       toast({
         title: "Chyba",
         description: "Vyplňte všechna povinná pole",
@@ -59,7 +59,7 @@ export const PositionManagementPanel = () => {
       return;
     }
 
-    const weeksArray = formData.weeks_in_cycle
+    const weeksArray = formData.cycle_weeks
       .split(',')
       .map(w => parseInt(w.trim()))
       .filter(w => !isNaN(w) && w >= 1 && w <= 15);
@@ -76,7 +76,8 @@ export const PositionManagementPanel = () => {
     try {
       const positionData = {
         name: formData.name.trim(),
-        weeks_in_cycle: weeksArray
+        cycle_weeks: weeksArray,
+        position_type: 'other' as DHLPositionType // Default position type since it's required
       };
 
       if (editingPosition) {
@@ -120,7 +121,7 @@ export const PositionManagementPanel = () => {
     setEditingPosition(position);
     setFormData({
       name: position.name,
-      weeks_in_cycle: position.weeks_in_cycle.join(', ')
+      cycle_weeks: position.cycle_weeks.join(', ')
     });
     setIsCreating(true);
   };
@@ -157,7 +158,7 @@ export const PositionManagementPanel = () => {
   const resetForm = () => {
     setFormData({
       name: '',
-      weeks_in_cycle: ''
+      cycle_weeks: ''
     });
     setIsCreating(false);
     setEditingPosition(null);
@@ -207,11 +208,11 @@ export const PositionManagementPanel = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="weeks_in_cycle">Týdny v cyklu (oddělené čárkou) *</Label>
+                <Label htmlFor="cycle_weeks">Týdny v cyklu (oddělené čárkou) *</Label>
                 <Input
-                  id="weeks_in_cycle"
-                  value={formData.weeks_in_cycle}
-                  onChange={(e) => setFormData({ ...formData, weeks_in_cycle: e.target.value })}
+                  id="cycle_weeks"
+                  value={formData.cycle_weeks}
+                  onChange={(e) => setFormData({ ...formData, cycle_weeks: e.target.value })}
                   placeholder="1, 2, 3, 4, 5"
                   required
                 />
@@ -244,7 +245,7 @@ export const PositionManagementPanel = () => {
                   <div className="flex-1">
                     <h4 className="font-medium">{position.name}</h4>
                     <p className="text-sm text-muted-foreground">
-                      Týdny v cyklu: {position.weeks_in_cycle.join(', ')}
+                      Týdny v cyklu: {position.cycle_weeks.join(', ')}
                     </p>
                   </div>
                   <div className="flex gap-2">
