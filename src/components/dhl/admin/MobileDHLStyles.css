@@ -1,0 +1,291 @@
+
+/* Mobile-specific styles for DHL Admin components */
+
+/* DHL Admin Mobile Container */
+@media screen and (max-width: 768px) {
+  .dhl-admin-container {
+    padding: 0.5rem;
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+  
+  .dhl-admin-header {
+    padding: 1rem 0.5rem;
+    text-align: left;
+  }
+  
+  .dhl-admin-header h2 {
+    font-size: 1.25rem;
+    line-height: 1.4;
+    margin-bottom: 0.5rem;
+  }
+  
+  .dhl-admin-header p {
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+  
+  /* Mobile Tabs */
+  .dhl-mobile-tabs {
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  
+  .dhl-mobile-tabs::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .dhl-mobile-tabs .tabs-list {
+    width: max-content;
+    min-width: 100%;
+    padding: 0.25rem;
+    gap: 0.25rem;
+  }
+  
+  .dhl-mobile-tab-trigger {
+    min-width: 80px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  
+  /* Mobile Cards */
+  .dhl-mobile-card {
+    margin-bottom: 0.75rem;
+    border-radius: 0.5rem;
+    overflow: hidden;
+  }
+  
+  .dhl-mobile-card-header {
+    padding: 0.75rem;
+    border-bottom: 1px solid hsl(var(--border));
+  }
+  
+  .dhl-mobile-card-content {
+    padding: 0.75rem;
+  }
+  
+  .dhl-mobile-card-title {
+    font-size: 1rem;
+    line-height: 1.4;
+    margin-bottom: 0.25rem;
+    word-break: break-word;
+  }
+  
+  .dhl-mobile-card-description {
+    font-size: 0.75rem;
+    line-height: 1.4;
+    color: hsl(var(--muted-foreground));
+  }
+  
+  /* Mobile Schedule Info Grid */
+  .dhl-mobile-schedule-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .dhl-mobile-schedule-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.5rem;
+    background: hsl(var(--muted) / 0.3);
+    border-radius: 0.375rem;
+  }
+  
+  .dhl-mobile-schedule-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: hsl(var(--muted-foreground));
+  }
+  
+  .dhl-mobile-schedule-value {
+    font-size: 0.875rem;
+    font-weight: 400;
+    word-break: break-word;
+  }
+  
+  /* Mobile Summary Box */
+  .dhl-mobile-summary {
+    background: hsl(var(--muted) / 0.5);
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    margin: 0.75rem 0;
+  }
+  
+  .dhl-mobile-summary-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  
+  .dhl-mobile-summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.75rem;
+  }
+  
+  .dhl-mobile-summary-label {
+    font-weight: 500;
+    color: hsl(var(--muted-foreground));
+  }
+  
+  .dhl-mobile-summary-value {
+    font-weight: 600;
+    text-align: right;
+  }
+  
+  /* Mobile Button Groups */
+  .dhl-mobile-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid hsl(var(--border));
+  }
+  
+  .dhl-mobile-button {
+    width: 100%;
+    min-height: 44px;
+    font-size: 0.875rem;
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  
+  .dhl-mobile-button-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+  
+  .dhl-mobile-button-secondary {
+    font-size: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    min-height: 36px;
+  }
+  
+  /* Mobile Shift Preview */
+  .dhl-mobile-shift-preview {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .dhl-mobile-shift-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .dhl-mobile-shift-date {
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+  
+  .dhl-mobile-shift-day {
+    font-size: 0.75rem;
+    color: hsl(var(--muted-foreground));
+  }
+  
+  .dhl-mobile-shift-time {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+  }
+  
+  /* Responsive text handling */
+  .dhl-text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .dhl-text-wrap {
+    word-break: break-word;
+    hyphens: auto;
+  }
+  
+  /* Upload section mobile */
+  .dhl-mobile-upload-section {
+    padding: 0.75rem;
+  }
+  
+  .dhl-mobile-format-info {
+    background: hsl(var(--muted) / 0.3);
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    margin-top: 1rem;
+  }
+  
+  .dhl-mobile-format-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  
+  .dhl-mobile-format-list {
+    font-size: 0.75rem;
+    line-height: 1.5;
+    color: hsl(var(--muted-foreground));
+  }
+  
+  .dhl-mobile-format-list li {
+    margin-bottom: 0.25rem;
+  }
+  
+  .dhl-mobile-format-list code {
+    background: hsl(var(--muted));
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+    font-size: 0.625rem;
+  }
+}
+
+/* Landscape mobile optimizations */
+@media screen and (orientation: landscape) and (max-height: 500px) {
+  .dhl-admin-container {
+    padding: 0.25rem;
+  }
+  
+  .dhl-admin-header {
+    padding: 0.5rem 0.25rem;
+  }
+  
+  .dhl-admin-header h2 {
+    font-size: 1.125rem;
+    margin-bottom: 0.25rem;
+  }
+  
+  .dhl-mobile-card {
+    margin-bottom: 0.5rem;
+  }
+  
+  .dhl-mobile-card-header,
+  .dhl-mobile-card-content {
+    padding: 0.5rem;
+  }
+  
+  .dhl-mobile-actions {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+  }
+  
+  .dhl-mobile-button {
+    min-height: 36px;
+    font-size: 0.75rem;
+    padding: 0.5rem 0.75rem;
+  }
+}

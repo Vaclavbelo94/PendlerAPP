@@ -3,6 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { FileText, Calendar, Clock, AlertTriangle } from 'lucide-react';
+import './MobileDHLStyles.css';
 
 interface SchedulePreviewProps {
   scheduleData: any;
@@ -15,7 +16,7 @@ export const SchedulePreview: React.FC<SchedulePreviewProps> = ({
 }) => {
   if (!scheduleData) {
     return (
-      <Card>
+      <Card className="dhl-mobile-card">
         <CardContent className="p-8 text-center">
           <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
           <p className="text-muted-foreground">Žádná data k náhledu</p>
@@ -106,82 +107,92 @@ export const SchedulePreview: React.FC<SchedulePreviewProps> = ({
 
   return (
     <div className="space-y-4">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5" />
-            Náhled plánu směn
+      <Card className="dhl-mobile-card">
+        <CardHeader className="dhl-mobile-card-header">
+          <CardTitle className="dhl-mobile-card-title flex items-center gap-2">
+            <FileText className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
+            <span>Náhled plánu směn</span>
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="dhl-mobile-card-description">
             Preview importovaných dat před finálním uložením
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Metadata */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {metadata.base_date && (
-              <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-                <div className="text-sm">
-                  <div className="font-medium">Referenční datum</div>
-                  <div className="text-muted-foreground">{metadata.base_date}</div>
+        <CardContent className="dhl-mobile-card-content space-y-4">
+          {/* Metadata - Mobile Layout */}
+          <div className="dhl-mobile-summary">
+            <div className="space-y-3">
+              {metadata.base_date && (
+                <div className="dhl-mobile-schedule-item">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                    <div className="min-w-0 flex-1">
+                      <div className="dhl-mobile-schedule-label">Referenční datum</div>
+                      <div className="dhl-mobile-schedule-value">{metadata.base_date}</div>
+                    </div>
+                  </div>
                 </div>
+              )}
+              
+              <div className="flex flex-wrap gap-2">
+                {metadata.woche && (
+                  <Badge variant="secondary" className="text-xs">
+                    Woche {metadata.woche}
+                  </Badge>
+                )}
+                {metadata.position && (
+                  <Badge variant="outline" className="text-xs">
+                    {metadata.position}
+                  </Badge>
+                )}
               </div>
-            )}
-            
-            {metadata.woche && (
-              <div className="flex items-center gap-2">
-                <Badge variant="secondary">Woche {metadata.woche}</Badge>
-              </div>
-            )}
 
-            {metadata.position && (
-              <div className="text-sm">
-                <div className="font-medium">Pozice</div>
-                <div className="text-muted-foreground">{metadata.position}</div>
-              </div>
-            )}
-            
-            {validation?.summary && (
-              <>
-                <div className="text-sm">
-                  <div className="font-medium">Celkem směn</div>
-                  <div className="text-muted-foreground">{validation.summary.totalShifts}</div>
+              {validation?.summary && (
+                <div className="grid grid-cols-2 gap-2 pt-2 border-t">
+                  <div className="dhl-mobile-summary-item">
+                    <span className="dhl-mobile-summary-label">Celkem směn:</span>
+                    <span className="dhl-mobile-summary-value">{validation.summary.totalShifts}</span>
+                  </div>
+                  <div className="dhl-mobile-summary-item">
+                    <span className="dhl-mobile-summary-label">Celkem dní:</span>
+                    <span className="dhl-mobile-summary-value">{validation.summary.totalDays}</span>
+                  </div>
                 </div>
-                <div className="text-sm">
-                  <div className="font-medium">Celkem dní</div>
-                  <div className="text-muted-foreground">{validation.summary.totalDays}</div>
-                </div>
-              </>
-            )}
+              )}
+            </div>
           </div>
 
-          {/* Sample shifts */}
+          {/* Sample shifts - Mobile Layout */}
           {shiftEntries.length > 0 && (
             <div>
-              <h4 className="font-medium mb-3">Ukázka směn:</h4>
+              <h4 className="font-medium mb-3 text-sm sm:text-base">Ukázka směn:</h4>
               <div className="space-y-2">
                 {shiftEntries.map(([date, shift]) => {
                   const shiftData = shift as any;
                   return (
-                    <div key={date} className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <Calendar className="h-4 w-4 text-muted-foreground" />
-                        <div>
-                          <div className="font-medium">{date}</div>
-                          {shiftData.day && (
-                            <div className="text-sm text-muted-foreground">{shiftData.day}</div>
-                          )}
+                    <div key={date} className="dhl-mobile-shift-preview">
+                      <div className="dhl-mobile-shift-header">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2 min-w-0 flex-1">
+                            <Calendar className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                            <div className="min-w-0 flex-1">
+                              <div className="dhl-mobile-shift-date dhl-text-truncate">{date}</div>
+                              {shiftData.day && (
+                                <div className="dhl-mobile-shift-day">{shiftData.day}</div>
+                              )}
+                            </div>
+                          </div>
                           {shiftData.woche && (
-                            <div className="text-xs text-muted-foreground">Woche {shiftData.woche}</div>
+                            <Badge variant="outline" className="text-xs flex-shrink-0">
+                              W{shiftData.woche}
+                            </Badge>
                           )}
                         </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Clock className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm">
-                          {shiftData.start_time} - {shiftData.end_time}
-                        </span>
+                        <div className="dhl-mobile-shift-time">
+                          <Clock className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                          <span>
+                            {shiftData.start_time} - {shiftData.end_time}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   );
@@ -206,7 +217,7 @@ export const SchedulePreview: React.FC<SchedulePreviewProps> = ({
                   }
                   
                   return totalShifts > 5 && (
-                    <div className="text-sm text-muted-foreground text-center py-2">
+                    <div className="text-xs sm:text-sm text-muted-foreground text-center py-2 bg-muted/30 rounded">
                       ... a {totalShifts - 5} dalších směn
                     </div>
                   );
@@ -215,18 +226,18 @@ export const SchedulePreview: React.FC<SchedulePreviewProps> = ({
             </div>
           )}
 
-          {/* Validation warnings */}
+          {/* Validation warnings - Mobile Layout */}
           {validation?.warnings && validation.warnings.length > 0 && (
             <div className="p-3 bg-yellow-50 dark:bg-yellow-950/20 rounded border border-yellow-200">
               <div className="flex items-center gap-2 mb-2">
-                <AlertTriangle className="h-4 w-4 text-yellow-600" />
-                <span className="font-medium text-yellow-800 dark:text-yellow-200">
+                <AlertTriangle className="h-4 w-4 text-yellow-600 flex-shrink-0" />
+                <span className="font-medium text-yellow-800 dark:text-yellow-200 text-sm">
                   Varování
                 </span>
               </div>
-              <ul className="text-sm text-yellow-700 dark:text-yellow-300 space-y-1">
+              <ul className="text-xs sm:text-sm text-yellow-700 dark:text-yellow-300 space-y-1">
                 {validation.warnings.slice(0, 3).map((warning: any, index: number) => (
-                  <li key={index}>• {warning.message}</li>
+                  <li key={index} className="dhl-text-wrap">• {warning.message}</li>
                 ))}
                 {validation.warnings.length > 3 && (
                   <li>... a {validation.warnings.length - 3} dalších varování</li>
