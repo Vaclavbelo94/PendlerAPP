@@ -47,15 +47,13 @@ export const isDHLAdmin = (user: User | null): boolean => {
 
 /**
  * Check if user can access DHL features
- * For now, we'll allow all authenticated users
- * In production, this would check for specific DHL employee status
+ * Only DHL employees should have access to DHL features
  */
 export const canAccessDHLFeatures = (user: User | null): boolean => {
   if (!user) return false;
   
-  // For demo purposes, allow all authenticated users
-  // In production, you would check against a DHL employee database or specific user roles
-  return true;
+  // Only DHL employees can access DHL features
+  return isDHLEmployee(user);
 };
 
 /**
