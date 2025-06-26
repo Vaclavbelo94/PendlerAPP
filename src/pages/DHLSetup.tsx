@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
-import { Truck, ArrowRight, CheckCircle, Calendar } from 'lucide-react';
+import { Truck, ArrowRight, CheckCircle, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
 import { useDHLData } from '@/hooks/dhl/useDHLData';
@@ -12,7 +12,6 @@ import Layout from '@/components/layouts/Layout';
 import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useNavigate } from 'react-router-dom';
@@ -25,7 +24,6 @@ const DHLSetup: React.FC = () => {
   const { submitSetup, isSubmitting } = useDHLSetup();
   const [selectedPosition, setSelectedPosition] = useState<string>('');
   const [selectedWorkGroup, setSelectedWorkGroup] = useState<string>('');
-  const [referenceDate, setReferenceDate] = useState<string>('');
   const [referenceWoche, setReferenceWoche] = useState<string>('');
   const [isFromRegistration, setIsFromRegistration] = useState(false);
 
@@ -39,28 +37,22 @@ const DHLSetup: React.FC = () => {
       setIsFromRegistration(true);
       localStorage.removeItem('dhl-from-registration'); // Clean up
     }
-    
-    // Set default reference date to today
-    const today = new Date().toISOString().split('T')[0];
-    setReferenceDate(today);
   }, []);
 
   const handleSubmit = async () => {
-    if (!selectedPosition || !selectedWorkGroup || !referenceDate || !referenceWoche) {
+    if (!selectedPosition || !selectedWorkGroup || !referenceWoche) {
       return;
     }
 
     console.log('=== DHL SETUP SUBMISSION ===');
     console.log('Selected position:', selectedPosition);
     console.log('Selected work group:', selectedWorkGroup);
-    console.log('Reference date:', referenceDate);
     console.log('Reference woche:', referenceWoche);
     console.log('Is from registration:', isFromRegistration);
 
     const success = await submitSetup({
       position_id: selectedPosition,
       work_group_id: selectedWorkGroup,
-      reference_date: referenceDate,
       reference_woche: parseInt(referenceWoche)
     });
 
@@ -143,7 +135,7 @@ const DHLSetup: React.FC = () => {
                   Nastavení DHL profilu
                 </CardTitle>
                 <CardDescription>
-                  Vyberte svou pozici, pracovní skupinu a nastavte referenční bod pro výpočet Woche
+                  Vyberte svou pozici, pracovní skupinu a nastavte referenční Woche
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -187,20 +179,6 @@ const DHLSetup: React.FC = () => {
                   </Select>
                 </div>
 
-                {/* Reference Date */}
-                <div className="space-y-2">
-                  <Label htmlFor="referenceDate">Referenční datum</Label>
-                  <Input
-                    id="referenceDate"
-                    type="date"
-                    value={referenceDate}
-                    onChange={(e) => setReferenceDate(e.target.value)}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Datum, od kterého se počítá váš Woche cyklus
-                  </p>
-                </div>
-
                 {/* Reference Woche */}
                 <div className="space-y-2">
                   <Label htmlFor="referenceWoche">Referenční Woche</Label>
@@ -217,17 +195,17 @@ const DHLSetup: React.FC = () => {
                     </SelectContent>
                   </Select>
                   <p className="text-xs text-muted-foreground">
-                    Jaké Woche číslo máte k referenčnímu datumu
+                    Jaké Woche číslo aktuálně máte podle vašeho rozvrhu
                   </p>
                 </div>
 
                 {/* Info Box */}
                 <div className="p-4 rounded-lg bg-blue-50 border border-blue-200">
                   <div className="flex items-start gap-3">
-                    <Calendar className="h-5 w-5 text-blue-600 mt-0.5" />
+                    <Users className="h-5 w-5 text-blue-600 mt-0.5" />
                     <div className="text-sm text-blue-800">
-                      <strong>Referenční bod:</strong> Tento bod se používá pro výpočet vašeho aktuálního Woche cyklu. 
-                      Pokud si nejste jisti, nastavte dnešní datum a číslo Woche, které aktuálně máte.
+                      <strong>Woche cyklus:</strong> DHL používá rotační rozvrh kde se směny opakují v 15týdenním cyklu. 
+                      Nastavte číslo Woche (1-15), které aktuálně máte podle vašeho rozvrhu.
                     </div>
                   </div>
                 </div>
@@ -235,7 +213,7 @@ const DHLSetup: React.FC = () => {
                 {/* Submit Button */}
                 <Button 
                   onClick={handleSubmit}
-                  disabled={!selectedPosition || !selectedWorkGroup || !referenceDate || !referenceWoche || isSubmitting}
+                  disabled={!selectedPosition || !selectedWorkGroup || !referenceWoche || isSubmitting}
                   className="w-full"
                   size="lg"
                 >

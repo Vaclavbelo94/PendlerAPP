@@ -7,7 +7,6 @@ import { toast } from 'sonner';
 interface DHLSetupData {
   position_id: string;
   work_group_id: string;
-  reference_date?: string;
   reference_woche?: number;
 }
 
@@ -45,7 +44,6 @@ export const useDHLSetup = () => {
         dhl_position_id: data.position_id,
         dhl_work_group_id: data.work_group_id,
         updated_at: new Date().toISOString(),
-        ...(data.reference_date && { reference_date: data.reference_date }),
         ...(data.reference_woche && { reference_woche: data.reference_woche })
       };
 
@@ -71,7 +69,6 @@ export const useDHLSetup = () => {
             dhl_position_id: data.position_id,
             dhl_work_group_id: data.work_group_id,
             is_active: true,
-            ...(data.reference_date && { reference_date: data.reference_date }),
             ...(data.reference_woche && { reference_woche: data.reference_woche })
           });
 
