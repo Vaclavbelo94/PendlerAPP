@@ -1,117 +1,72 @@
 
-import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React from 'react';
+import { useLocation, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Truck } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
-import { useTranslation } from 'react-i18next';
-import { LanguageSwitcher } from '@/components/i18n/LanguageSwitcher';
-import { cn } from '@/lib/utils';
-import { canAccessDHLAdmin } from '@/utils/dhlAuthUtils';
-
-const dhlNavigationItems = [
-  { key: 'dhlDashboard', path: '/dhl-dashboard' },
-  { key: 'shifts', path: '/shifts' },
-];
-
-const dhlAdminItems = [
-  { key: 'dhlAdmin', path: '/dhl-admin' },
-  { key: 'dhlDashboard', path: '/dhl-dashboard' },
-  { key: 'shifts', path: '/shifts' },
-];
+import { Badge } from '@/components/ui/badge';
+import { Truck, Menu, Bell } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { dhlNavigationItems } from '@/data/dhlNavigationData';
 
 export const DHLNavbar: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const { user, signOut } = useAuth();
-  const { t } = useTranslation('navigation');
   const location = useLocation();
-  
-  const isDHLAdmin = canAccessDHLAdmin(user);
-  const navigationItems = isDHLAdmin ? dhlAdminItems : dhlNavigationItems;
-
-  const DHLNavLink = ({ item, mobile = false }: { item: typeof navigationItems[0], mobile?: boolean }) => (
-    <Link
-      to={item.path}
-      className={cn(
-        "text-sm font-medium transition-colors hover:text-yellow-600",
-        location.pathname === item.path ? "text-yellow-600" : "text-muted-foreground",
-        mobile && "block px-3 py-2 text-base"
-      )}
-      onClick={() => mobile && setIsOpen(false)}
-    >
-      {t(item.key)}
-    </Link>
-  );
+  const isMobile = useIsMobile();
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center">
-        <Link to="/dhl-dashboard" className="mr-6 flex items-center space-x-2">
-          <Truck className="h-6 w-6 text-yellow-600" />
-          <span className="font-bold text-xl bg-gradient-to-r from-yellow-600 to-red-600 bg-clip-text text-transparent">
-            DHL Portal
-          </span>
-        </Link>
+    <nav className="bg-gradient-to-r from-yellow-600 to-red-600 text-white shadow-lg">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <div className="flex items-center space-x-3">
+            <div className="p-2 rounded-lg bg-white/10">
+              <Truck className="h-6 w-6" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold">DHL Portal</h1>
+              <p className="text-xs text-yellow-100">Zaměstnanecký systém</p>
+            </div>
+          </div>
 
-        <div className="hidden md:flex items-center space-x-6 flex-1">
-          {navigationItems.map((item) => (
-            <DHLNavLink key={item.key} item={item} />
-          ))}
-        </div>
-
-        <div className="flex items-center space-x-4">
-          <LanguageSwitcher />
-          
-          {user && (
-            <div className="hidden md:flex items-center space-x-4">
-              <Link to="/profile">
-                <Button variant="ghost" size="sm">
-                  {t('profile')}
-                </Button>
-              </Link>
-              <Button variant="outline" size="sm" onClick={signOut}>
-                {t('logout')}
-              </Button>
+          {/* Navigation - Desktop */}
+          {!isMobile && (
+            <div className="hidden md:flex items-center space-x-1">
+              {dhlNavigationItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = location.pathname === item.path;
+                
+                return (
+                  <Link key={item.path} to={item.path}>
+                    <Button
+                      variant={isActive ? "secondary" : "ghost"}
+                      size="sm"
+                      className={`text-white hover:bg-white/10 ${
+                        isActive ? 'bg-white/20' : ''
+                      }`}
+                    >
+                      <Icon className="h-4 w-4 mr-2" />
+                      {item.title}
+                      {item.badge && (
+                        <Badge variant="secondary" className="ml-2">
+                          {item.badge}
+                        </Badge>
+                      )}
+                    </Button>
+                  </Link>
+                );
+              })}
             </div>
           )}
 
-          <Sheet open={isOpen} onOpenChange={setIsOpen}>
-            <SheetTrigger asChild className="md:hidden">
-              <Button variant="ghost" size="sm">
-                <Menu className="h-5 w-5" />
+          {/* Right side */}
+          <div className="flex items-center space-x-2">
+            <Button variant="ghost" size="sm" className="text-white hover:bg-white/10">
+              <Bell className="h-4 w-4" />
+            </Button>
+            {isMobile && (
+              <Button variant="ghost" size="sm" className="text-white hover:bg-white/10">
+                <Menu className="h-4 w-4" />
               </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-80">
-              <div className="flex flex-col space-y-4 mt-6">
-                {navigationItems.map((item) => (
-                  <DHLNavLink key={item.key} item={item} mobile />
-                ))}
-                
-                <div className="border-t pt-4 space-y-2">
-                  {user && (
-                    <>
-                      <Link to="/profile" onClick={() => setIsOpen(false)}>
-                        <Button variant="ghost" className="w-full justify-start">
-                          {t('profile')}
-                        </Button>
-                      </Link>
-                      <Button 
-                        variant="outline" 
-                        className="w-full justify-start" 
-                        onClick={() => {
-                          signOut();
-                          setIsOpen(false);
-                        }}
-                      >
-                        {t('logout')}
-                      </Button>
-                    </>
-                  )}
-                </div>
-              </div>
-            </SheetContent>
-          </Sheet>
+            )}
+          </div>
         </div>
       </div>
     </nav>
