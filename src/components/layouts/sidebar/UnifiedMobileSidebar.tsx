@@ -16,7 +16,9 @@ import {
   Settings,
   Crown,
   LogOut,
-  Briefcase
+  Briefcase,
+  Menu,
+  X
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -66,6 +68,18 @@ export const UnifiedMobileSidebar: React.FC<UnifiedMobileSidebarProps> = ({
 
   return (
     <>
+      {/* Mobile trigger button for overlay variant */}
+      {variant === 'overlay' && (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="fixed top-4 left-4 z-60 bg-background/80 backdrop-blur-sm shadow-sm"
+          onClick={() => isOpen ? closeSidebar() : {}}
+        >
+          {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </Button>
+      )}
+
       {/* Backdrop for overlay variant */}
       {variant === 'overlay' && isOpen && (
         <div 
