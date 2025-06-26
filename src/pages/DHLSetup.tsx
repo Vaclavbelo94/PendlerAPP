@@ -32,6 +32,42 @@ const DHLSetup: React.FC = () => {
   // Use DHL route guard to protect this page
   const { canAccess, isLoading: isRouteGuardLoading } = useDHLRouteGuard(false);
 
+  // Filter work groups based on selected position's cycle_weeks
+  const getFilteredWorkGroups = () => {
+    if (!selectedPosition) {
+      return workGroups; // Show all weeks if no position selected
+    }
+    
+    const selectedPositionData = positions.find(p => p.id === selectedPosition);
+    if (!selectedPositionData?.cycle_weeks || selectedPositionData.cycle_weeks.length === 0) {
+      return workGroups; // Show all weeks if position has no cycle_weeks defined
+    }
+    
+    return workGroups.filter(group => 
+      selectedPositionData.cycle_weeks.includes(group.week_number)
+    );
+  };
+
+  // Filter reference weeks based on selected position's cycle_weeks
+  const getFilteredReferenceWeeks = () => {
+    if (!selectedPosition) {
+      return Array.from({ length: 15 }, (_, i) => i + 1); // Show all weeks 1-15 if no position selected
+    }
+    
+    const selectedPositionData = positions.find(p => p.id === selectedPosition);
+    if (!selectedPositionData?.cycle_weeks || selectedPositionData.cycle_weeks.length === 0) {
+      return Array.from({ length: 15 }, (_, i) => i + 1); // Show all weeks if position has no cycle_weeks defined
+    }
+    
+    return selectedPositionData.cycle_weeks.sort((a, b) => a - b);
+  };
+
+  const handlePositionChange = (positionId: string) => {
+    setSelectedPosition(positionId);
+    setSelectedWorkGroup(''); // Clear work group when position changes
+    setReferenceWoche(''); // Clear reference woche when position changes
+  };
+
   useEffect(() => {
     // Check if user came from registration
     const fromRegistration = localStorage.getItem('dhl-from-registration');
@@ -98,6 +134,9 @@ const DHLSetup: React.FC = () => {
     return null;
   }
 
+  const filteredWorkGroups = getFilteredWorkGroups();
+  const filteredReferenceWeeks = getFilteredReferenceWeeks();
+
   return (
     <Layout navbarRightContent={<NavbarRightContent />}>
       <Helmet>
@@ -143,14 +182,14 @@ const DHLSetup: React.FC = () => {
                   Nastavení DHL profilu
                 </CardTitle>
                 <CardDescription>
-                  Vyberte svou pozici, pracovní skupinu a nastavte referenční bod pro výpočet Woche
+                  Vyberte svou pozici, pracovní týden a nastavte referenční bod pro výpočet Woche
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Position Selection */}
                 <div className="space-y-2">
                   <Label htmlFor="position">Pozice</Label>
-                  <Select value={selectedPosition} onValueChange={setSelectedPosition}>
+                  <Select value={selectedPosition} onValueChange={handlePositionChange}>
                     <SelectTrigger>
                       <SelectValue placeholder="Vyberte svou pozici" />
                     </SelectTrigger>
@@ -169,22 +208,28 @@ const DHLSetup: React.FC = () => {
 
                 {/* Work Group Selection */}
                 <div className="space-y-2">
-                  <Label htmlFor="workGroup">Pracovní skupina</Label>
-                  <Select value={selectedWorkGroup} onValueChange={setSelectedWorkGroup}>
+                  <Label htmlFor="workGroup">Pracovní týden</Label>
+                  <Select 
+                    value={selectedWorkGroup} 
+                    onValueChange={setSelectedWorkGroup}
+                    disabled={!selectedPosition}
+                  >
                     <SelectTrigger>
-                      <SelectValue placeholder="Vyberte pracovní skupinu" />
+                      <SelectValue placeholder={selectedPosition ? "Vyberte pracovní týden" : "Nejprve vyberte pozici"} />
                     </SelectTrigger>
                     <SelectContent>
-                      {workGroups.map((group) => (
+                      {filteredWorkGroups.map((group) => (
                         <SelectItem key={group.id} value={group.id}>
-                          <div>
-                            <div className="font-medium">{group.name}</div>
-                            <div className="text-xs text-muted-foreground">{group.description}</div>
-                          </div>
+                          Týden {group.week_number}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
+                  {selectedPosition && filteredWorkGroups.length === 0 && (
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Pro vybranou pozici nejsou k dispozici žádné pracovní týdny
+                    </p>
+                  )}
                 </div>
 
                 {/* Reference Date */}
@@ -204,12 +249,16 @@ const DHLSetup: React.FC = () => {
                 {/* Reference Woche */}
                 <div className="space-y-2">
                   <Label htmlFor="referenceWoche">Referenční Woche</Label>
-                  <Select value={referenceWoche} onValueChange={setReferenceWoche}>
+                  <Select 
+                    value={referenceWoche} 
+                    onValueChange={setReferenceWoche}
+                    disabled={!selectedPosition}
+                  >
                     <SelectTrigger>
-                      <SelectValue placeholder="Vyberte Woche" />
+                      <SelectValue placeholder={selectedPosition ? "Vyberte Woche" : "Nejprve vyberte pozici"} />
                     </SelectTrigger>
                     <SelectContent>
-                      {Array.from({ length: 15 }, (_, i) => i + 1).map(week => (
+                      {filteredReferenceWeeks.map(week => (
                         <SelectItem key={week} value={week.toString()}>
                           Woche {week}
                         </SelectItem>
@@ -219,6 +268,11 @@ const DHLSetup: React.FC = () => {
                   <p className="text-xs text-muted-foreground">
                     Jaké Woche číslo máte k referenčnímu datumu
                   </p>
+                  {selectedPosition && filteredReferenceWeeks.length === 0 && (
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Pro vybranou pozici nejsou k dispozici žádné Woche týdny
+                    </p>
+                  )}
                 </div>
 
                 {/* Info Box */}
