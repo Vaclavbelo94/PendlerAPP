@@ -31,11 +31,18 @@ export const useShiftsContainer = () => {
   }, []);
 
   const handleAddShift = useCallback(async (shiftData: Omit<Shift, 'id' | 'user_id' | 'created_at' | 'updated_at'>): Promise<void> => {
-    const result = await addShiftOriginal(shiftData);
+    if (!user?.id) return;
+    
+    const shiftDataWithUserId = {
+      ...shiftData,
+      user_id: user.id
+    };
+    
+    const result = await addShiftOriginal(shiftDataWithUserId);
     if (result) {
       setIsAddSheetOpen(false);
     }
-  }, [addShiftOriginal]);
+  }, [addShiftOriginal, user?.id]);
 
   const handleEditShift = useCallback(async (shiftData: Shift): Promise<void> => {
     const result = await updateShiftOriginal(shiftData);
