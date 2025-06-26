@@ -1,349 +1,280 @@
 
 import React from 'react';
-import { Helmet } from 'react-helmet';
-import { motion } from 'framer-motion';
-import { Truck, Calendar, Clock, MapPin, AlertCircle } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
-import { useDHLData } from '@/hooks/dhl/useDHLData';
-import { useOptimizedShiftsManagement } from '@/hooks/shifts/useOptimizedShiftsManagement';
-import { useDHLShiftsIntegration } from '@/hooks/shifts/useDHLShiftsIntegration';
 import { useDHLRouteGuard } from '@/hooks/dhl/useDHLRouteGuard';
+import { useDHLData } from '@/hooks/dhl/useDHLData';
+import { canAccessDHLFeatures } from '@/utils/dhlAuthUtils';
 import { DHLLayout } from '@/components/dhl/DHLLayout';
-import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { calculateCurrentWoche } from '@/utils/dhl/wocheCalculator';
+import { 
+  Truck, 
+  Calendar, 
+  Clock, 
+  Users, 
+  TrendingUp, 
+  CheckCircle,
+  AlertCircle,
+  MapPin,
+  Loader2
+} from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const DHLDashboard: React.FC = () => {
-  const { t } = useTranslation(['common']);
   const { user } = useAuth();
-  const { userAssignment, isLoading } = useDHLData(user?.id);
-  const { shifts, isLoading: isShiftsLoading } = useOptimizedShiftsManagement(user?.id);
-  const { enhancedShifts, dhlStats } = useDHLShiftsIntegration(shifts, userAssignment);
-  
-  // Use DHL route guard - requires setup to access dashboard
-  const { canAccess, hasAssignment, isLoading: isRouteGuardLoading } = useDHLRouteGuard(true);
+  const { canAccess, isLoading, hasAssignment } = useDHLRouteGuard(true);
+  const { userAssignment, shifts, isLoading: isDataLoading } = useDHLData(user?.id);
 
-  // Get current Woche information
-  const currentWocheInfo = React.useMemo(() => {
-    if (!userAssignment) return null;
-    
-    const referenceDate = userAssignment.reference_date ? 
-      new Date(userAssignment.reference_date) : 
-      new Date();
-    const referenceWoche = userAssignment.reference_woche || 1;
-    
-    return calculateCurrentWoche(
-      { referenceDate, referenceWoche },
-      new Date()
-    );
-  }, [userAssignment]);
-
-  // Get upcoming shifts (next 7 days)
-  const upcomingShifts = React.useMemo(() => {
-    const today = new Date();
-    const nextWeek = new Date();
-    nextWeek.setDate(today.getDate() + 7);
-    
-    return enhancedShifts
-      .filter(shift => {
-        const shiftDate = new Date(shift.date);
-        return shiftDate >= today && shiftDate <= nextWeek;
-      })
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-      .slice(0, 5); // Show max 5 upcoming shifts
-  }, [enhancedShifts]);
-
-  // Get next shift
-  const nextShift = upcomingShifts[0];
-
-  const getShiftTypeLabel = (type: string) => {
-    switch (type) {
-      case 'morning': return 'Ranní směna';
-      case 'afternoon': return 'Odpolední směna';
-      case 'night': return 'Noční směna';
-      default: return 'Směna';
-    }
-  };
-
-  const getShiftTypeColor = (type: string) => {
-    switch (type) {
-      case 'morning': return 'bg-green-100 text-green-800';
-      case 'afternoon': return 'bg-blue-100 text-blue-800';
-      case 'night': return 'bg-purple-100 text-purple-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('cs-CZ', {
-      weekday: 'short',
-      day: 'numeric',
-      month: 'short'
-    });
-  };
-
-  if (isLoading || isRouteGuardLoading || isShiftsLoading) {
+  if (isLoading || isDataLoading) {
     return (
-      <DHLLayout navbarRightContent={<NavbarRightContent />}>
-        <div className="min-h-screen flex items-center justify-center">
+      <DHLLayout>
+        <div className="flex items-center justify-center min-h-96">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-600 mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Načítám DHL data...</p>
+            <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+            <p className="text-muted-foreground">Načítám DHL dashboard...</p>
           </div>
         </div>
       </DHLLayout>
     );
   }
 
-  // Route guard will handle redirects if needed
-  if (!canAccess || !hasAssignment) {
+  if (!canAccess) {
     return null;
   }
 
-  return (
-    <DHLLayout navbarRightContent={<NavbarRightContent />}>
-      <Helmet>
-        <title>DHL Dashboard | PendlerApp</title>
-        <meta name="description" content="Your DHL shifts and schedule dashboard" />
-      </Helmet>
-      
-      <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-yellow-500/5">
-        <div className="container max-w-6xl py-8 px-4">
-          {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="mb-8"
-          >
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-3 rounded-full bg-gradient-to-r from-yellow-500/20 to-red-500/20 backdrop-blur-sm">
+  // If user doesn't have assignment, show setup prompt
+  if (!hasAssignment) {
+    return (
+      <DHLLayout>
+        <div className="container max-w-2xl mx-auto px-4 py-8">
+          <Card className="border-yellow-200 bg-yellow-50">
+            <CardHeader className="text-center">
+              <div className="mx-auto w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
                 <Truck className="h-8 w-8 text-yellow-600" />
               </div>
-              <div>
-                <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-yellow-600 to-red-600 bg-clip-text text-transparent">
-                  DHL Dashboard
-                </h1>
-                <p className="text-lg text-muted-foreground mt-2">
-                  Váš rozvrh směn a pracovní informace
-                </p>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Profile Info */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="mb-6"
-          >
-            <Card>
-              <CardHeader>
-                <CardTitle>Váš DHL profil</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-blue-100">
-                      <MapPin className="h-4 w-4 text-blue-600" />
-                    </div>
-                    <div>
-                      <div className="text-sm text-muted-foreground">Pozice</div>
-                      <div className="font-medium">{userAssignment?.dhl_position?.name || 'Neznámá pozice'}</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-green-100">
-                      <Calendar className="h-4 w-4 text-green-600" />
-                    </div>
-                    <div>
-                      <div className="text-sm text-muted-foreground">Pracovní skupina</div>
-                      <div className="font-medium">{userAssignment?.dhl_work_group?.name || 'Neznámá skupina'}</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-orange-100">
-                      <Clock className="h-4 w-4 text-orange-600" />
-                    </div>
-                    <div>
-                      <div className="text-sm text-muted-foreground">Aktuální Woche</div>
-                      <div className="font-medium">
-                        {currentWocheInfo ? `Woche ${currentWocheInfo.currentWoche}` : 'Neznámá'}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-purple-100">
-                      <Clock className="h-4 w-4 text-purple-600" />
-                    </div>
-                    <div>
-                      <div className="text-sm text-muted-foreground">Další směna</div>
-                      <div className="font-medium">
-                        {nextShift ? formatDate(nextShift.date) : 'Žádná naplánována'}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* DHL Stats */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.15 }}
-            className="mb-6"
-          >
-            <Card>
-              <CardHeader>
-                <CardTitle>DHL Statistiky</CardTitle>
-                <CardDescription>Přehled vašich DHL směn</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="text-center p-4 rounded-lg bg-gradient-to-r from-yellow-50 to-orange-50">
-                    <div className="text-2xl font-bold text-yellow-600">{dhlStats.totalShifts}</div>
-                    <div className="text-sm text-yellow-700">Celkem směn</div>
-                  </div>
-                  <div className="text-center p-4 rounded-lg bg-gradient-to-r from-green-50 to-emerald-50">
-                    <div className="text-2xl font-bold text-green-600">{dhlStats.dhlManagedShifts}</div>
-                    <div className="text-sm text-green-700">DHL generované</div>
-                  </div>
-                  <div className="text-center p-4 rounded-lg bg-gradient-to-r from-blue-50 to-cyan-50">
-                    <div className="text-2xl font-bold text-blue-600">{dhlStats.manualShifts}</div>
-                    <div className="text-sm text-blue-700">Manuální</div>
-                  </div>
-                  <div className="text-center p-4 rounded-lg bg-gradient-to-r from-purple-50 to-pink-50">
-                    <div className="text-2xl font-bold text-purple-600">{upcomingShifts.length}</div>
-                    <div className="text-sm text-purple-700">Nadcházející</div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Next Shift Highlight */}
-          {nextShift ? (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="mb-6"
-            >
-              <Card className="border-yellow-200 bg-gradient-to-r from-yellow-50 to-orange-50">
-                <CardHeader>
-                  <CardTitle className="text-yellow-800">Další směna</CardTitle>
-                  <CardDescription className="text-yellow-700">
-                    Vaše nejbližší plánovaná směna
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-2">
-                      <div className="text-2xl font-bold text-yellow-800">
-                        {formatDate(nextShift.date)}
-                      </div>
-                      <div className="text-yellow-700">
-                        {getShiftTypeLabel(nextShift.type)}
-                      </div>
-                      {nextShift.notes && (
-                        <div className="text-sm text-yellow-600">
-                          {nextShift.notes}
-                        </div>
-                      )}
-                    </div>
-                    <div className="text-right space-y-2">
-                      <Badge className={getShiftTypeColor(nextShift.type)}>
-                        {getShiftTypeLabel(nextShift.type)}
-                      </Badge>
-                      {(nextShift as any).isDHLManaged && (
-                        <div>
-                          <Badge className="bg-yellow-100 text-yellow-800">
-                            DHL Generovaná
-                          </Badge>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ) : (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="mb-6"
-            >
-              <Alert>
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>
-                  V nadcházejících 7 dnech nemáte naplánované žádné směny.
-                </AlertDescription>
-              </Alert>
-            </motion.div>
-          )}
-
-          {/* Upcoming Shifts */}
-          {upcomingShifts.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-            >
-              <Card>
-                <CardHeader>
-                  <CardTitle>Nadcházející směny</CardTitle>
-                  <CardDescription>Váš rozvrh na následující období</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {upcomingShifts.map((shift) => (
-                      <div key={shift.id} className="flex items-center justify-between p-4 rounded-lg border bg-card/50">
-                        <div className="flex items-center gap-4">
-                          <div className="text-center">
-                            <div className="font-bold">{formatDate(shift.date)}</div>
-                            <div className="text-sm text-muted-foreground">
-                              {getShiftTypeLabel(shift.type)}
-                            </div>
-                          </div>
-                          <div>
-                            <div className="font-medium">
-                              {(shift as any).dhl_position_name || dhlStats.dhlPosition}
-                            </div>
-                            {shift.notes && (
-                              <div className="text-sm text-muted-foreground">{shift.notes}</div>
-                            )}
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Badge className={getShiftTypeColor(shift.type)}>
-                            {shift.type === 'morning' ? 'Ranní' : 
-                             shift.type === 'afternoon' ? 'Odpolední' : 'Noční'}
-                          </Badge>
-                          {(shift as any).isDHLManaged ? (
-                            <Badge className="bg-yellow-100 text-yellow-800">
-                              DHL
-                            </Badge>
-                          ) : (
-                            <Badge variant="outline" className="bg-blue-50 text-blue-700">
-                              Manuální
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          )}
+              <CardTitle className="text-yellow-800">DHL Setup požadován</CardTitle>
+            </CardHeader>
+            <CardContent className="text-center space-y-4">
+              <p className="text-muted-foreground">
+                Pro používání DHL Dashboard je potřeba dokončit základní nastavení.
+              </p>
+              <Button asChild>
+                <Link to="/dhl-setup">
+                  Dokončit DHL Setup
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
         </div>
+      </DHLLayout>
+    );
+  }
+
+  const currentWeek = new Date().getWeek || 1;
+  const currentMonth = new Date().toLocaleDateString('cs-CZ', { month: 'long' });
+  const totalShifts = shifts?.length || 0;
+  const thisMonthShifts = shifts?.filter(shift => {
+    const shiftDate = new Date(shift.date);
+    const currentDate = new Date();
+    return shiftDate.getMonth() === currentDate.getMonth() && 
+           shiftDate.getFullYear() === currentDate.getFullYear();
+  }).length || 0;
+
+  return (
+    <DHLLayout>
+      <div className="container mx-auto px-4 py-6 space-y-6">
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">DHL Dashboard</h1>
+            <p className="text-gray-600 mt-1">
+              Vítejte zpět, {user?.email?.split('@')[0]}!
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="text-yellow-600 border-yellow-300">
+              <Truck className="h-3 w-3 mr-1" />
+              {userAssignment?.dhl_position?.name}
+            </Badge>
+            <Badge variant="outline" className="text-blue-600 border-blue-300">
+              <Users className="h-3 w-3 mr-1" />
+              {userAssignment?.dhl_work_group?.name}
+            </Badge>
+          </div>
+        </div>
+
+        {/* Quick Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center">
+                <div className="p-2 bg-yellow-100 rounded-lg">
+                  <Calendar className="h-6 w-6 text-yellow-600" />
+                </div>
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-600">Směny celkem</p>
+                  <p className="text-2xl font-bold text-gray-900">{totalShifts}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center">
+                <div className="p-2 bg-blue-100 rounded-lg">
+                  <TrendingUp className="h-6 w-6 text-blue-600" />
+                </div>
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-600">Tento měsíc</p>
+                  <p className="text-2xl font-bold text-gray-900">{thisMonthShifts}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center">
+                <div className="p-2 bg-green-100 rounded-lg">
+                  <Clock className="h-6 w-6 text-green-600" />
+                </div>
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-600">Aktuální Woche</p>
+                  <p className="text-2xl font-bold text-gray-900">{currentWeek}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center">
+                <div className="p-2 bg-purple-100 rounded-lg">
+                  <CheckCircle className="h-6 w-6 text-purple-600" />
+                </div>
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-600">Status</p>
+                  <p className="text-sm font-bold text-green-600">Aktivní</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Current Assignment Info */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <Card className="lg:col-span-2">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <MapPin className="h-5 w-5" />
+                Aktuální přiřazení
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <h4 className="font-medium text-gray-900 mb-2">DHL Pozice</h4>
+                  <p className="text-gray-600">{userAssignment?.dhl_position?.name}</p>
+                  {userAssignment?.dhl_position?.description && (
+                    <p className="text-sm text-gray-500 mt-1">
+                      {userAssignment.dhl_position.description}
+                    </p>
+                  )}
+                </div>
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <h4 className="font-medium text-gray-900 mb-2">Pracovní skupina</h4>
+                  <p className="text-gray-600">{userAssignment?.dhl_work_group?.name}</p>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Týden {userAssignment?.dhl_work_group?.week_number}
+                  </p>
+                </div>
+              </div>
+              
+              {userAssignment?.reference_date && (
+                <div className="p-4 bg-blue-50 rounded-lg">
+                  <h4 className="font-medium text-blue-900 mb-2">Referenční bod</h4>
+                  <p className="text-blue-700">
+                    Datum: {new Date(userAssignment.reference_date).toLocaleDateString('cs-CZ')}
+                  </p>
+                  {userAssignment.reference_woche && (
+                    <p className="text-blue-700">
+                      Woche: {userAssignment.reference_woche}
+                    </p>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Rychlé akce</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Button asChild variant="default" className="w-full justify-start">
+                <Link to="/shifts">
+                  <Calendar className="h-4 w-4 mr-2" />
+                  Zobrazit směny
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="w-full justify-start">
+                <Link to="/dhl-setup">
+                  <Settings className="h-4 w-4 mr-2" />
+                  Upravit nastavení
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="w-full justify-start">
+                <Link to="/profile">
+                  <User className="h-4 w-4 mr-2" />
+                  Můj profil
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Recent Activity */}
+        {shifts && shifts.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Poslední směny</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {shifts.slice(-5).reverse().map((shift) => (
+                  <div key={shift.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-yellow-100 rounded-lg">
+                        <Calendar className="h-4 w-4 text-yellow-600" />
+                      </div>
+                      <div>
+                        <p className="font-medium">
+                          {new Date(shift.date).toLocaleDateString('cs-CZ')}
+                        </p>
+                        <p className="text-sm text-gray-600">{shift.type}</p>
+                      </div>
+                    </div>
+                    <Badge variant={shift.is_dhl_managed ? "default" : "secondary"}>
+                      {shift.is_dhl_managed ? "DHL" : "Manuální"}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Tips and Info */}
+        <Alert>
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            Vaše směny jsou automaticky generovány podle vašeho DHL plánu. 
+            Můžete je upravovat v sekci Směny nebo měnit nastavení v DHL Setup.
+          </AlertDescription>
+        </Alert>
       </div>
     </DHLLayout>
   );

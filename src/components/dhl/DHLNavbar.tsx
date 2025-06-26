@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Truck, Menu, Bell } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { NotificationIndicator } from '@/components/notifications/NotificationIndicator';
 import { dhlNavigationItems } from '@/data/dhlNavigationData';
 
 export const DHLNavbar: React.FC = () => {
@@ -58,9 +59,7 @@ export const DHLNavbar: React.FC = () => {
 
           {/* Right side */}
           <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="sm" className="text-white hover:bg-white/10">
-              <Bell className="h-4 w-4" />
-            </Button>
+            <NotificationIndicator />
             {isMobile && (
               <Button variant="ghost" size="sm" className="text-white hover:bg-white/10">
                 <Menu className="h-4 w-4" />

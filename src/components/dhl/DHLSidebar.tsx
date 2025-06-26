@@ -8,6 +8,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Truck } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { canAccessDHLAdmin } from '@/utils/dhlAuthUtils';
+import { NotificationIndicator } from '@/components/notifications/NotificationIndicator';
 import { dhlNavigationItems, dhlAdminNavigationItems } from '@/data/dhlNavigationData';
 
 export const DHLSidebar: React.FC = () => {
@@ -82,6 +83,13 @@ export const DHLSidebar: React.FC = () => {
           </div>
         </div>
       </ScrollArea>
+
+      {/* Footer with Notifications */}
+      <div className="p-4 border-t border-white/10">
+        <div className="flex items-center justify-center">
+          <NotificationIndicator />
+        </div>
+      </div>
     </div>
   );
 };
