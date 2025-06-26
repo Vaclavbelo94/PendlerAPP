@@ -16,11 +16,9 @@ import {
   Settings,
   Crown,
   LogOut,
-  Briefcase,
-  Truck
+  Briefcase
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { canAccessDHLFeatures } from '@/utils/dhlAuthUtils';
 
 interface UnifiedMobileSidebarProps {
   isOpen: boolean;
@@ -28,7 +26,7 @@ interface UnifiedMobileSidebarProps {
   variant: 'compact' | 'overlay';
 }
 
-const standardNavigationItems = [
+const navigationItems = [
   { key: 'dashboard', path: '/dashboard', icon: Home },
   { key: 'shifts', path: '/shifts', icon: Calendar },
   { key: 'taxAdvisor', path: '/tax-advisor', icon: Calculator },
@@ -37,13 +35,6 @@ const standardNavigationItems = [
   { key: 'travel', path: '/travel', icon: Map },
   { key: 'laws', path: '/laws', icon: Scale },
   { key: 'premium', path: '/premium', icon: Crown },
-];
-
-const dhlNavigationItems = [
-  { key: 'dhlDashboard', path: '/dhl-dashboard', icon: Home, label: 'DHL Dashboard' },
-  { key: 'shifts', path: '/shifts', icon: Calendar, label: 'Směny' },
-  { key: 'profile', path: '/profile', icon: User, label: 'Profil' },
-  { key: 'settings', path: '/settings', icon: Settings, label: 'Nastavení' },
 ];
 
 export const UnifiedMobileSidebar: React.FC<UnifiedMobileSidebarProps> = ({
@@ -55,14 +46,6 @@ export const UnifiedMobileSidebar: React.FC<UnifiedMobileSidebarProps> = ({
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation('navigation');
-
-  // Check if we're on DHL routes
-  const isDHLRoute = location.pathname.startsWith('/dhl-');
-  const canAccessDHL = canAccessDHLFeatures(user);
-  const shouldShowDHLNavigation = canAccessDHL && isDHLRoute;
-  
-  // Choose navigation items based on context
-  const navigationItems = shouldShowDHLNavigation ? dhlNavigationItems : standardNavigationItems;
 
   const handleNavigation = (path: string) => {
     navigate(path);
@@ -101,18 +84,9 @@ export const UnifiedMobileSidebar: React.FC<UnifiedMobileSidebarProps> = ({
           {/* Logo */}
           <div className={cn("p-4 border-b border-border", isCompact && "p-2")}>
             <div className="flex items-center gap-2">
-              {shouldShowDHLNavigation ? (
-                <Truck className="h-6 w-6 text-yellow-600 flex-shrink-0" />
-              ) : (
-                <Briefcase className="h-6 w-6 text-primary flex-shrink-0" />
-              )}
+              <Briefcase className="h-6 w-6 text-primary flex-shrink-0" />
               {!isCompact && (
-                <span className={cn(
-                  "font-semibold text-lg",
-                  shouldShowDHLNavigation && "text-yellow-700"
-                )}>
-                  {shouldShowDHLNavigation ? 'DHL' : 'PendlerApp'}
-                </span>
+                <span className="font-semibold text-lg">PendlerApp</span>
               )}
             </div>
           </div>
@@ -123,9 +97,6 @@ export const UnifiedMobileSidebar: React.FC<UnifiedMobileSidebarProps> = ({
               {navigationItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.path;
-                const displayText: string = ('label' in item && typeof item.label === 'string') 
-                  ? item.label 
-                  : String(t(item.key));
                 
                 return (
                   <Button
@@ -136,11 +107,11 @@ export const UnifiedMobileSidebar: React.FC<UnifiedMobileSidebarProps> = ({
                       isCompact && "px-2 justify-center"
                     )}
                     onClick={() => handleNavigation(item.path)}
-                    title={isCompact ? displayText : undefined}
+                    title={isCompact ? t(item.key) : undefined}
                   >
                     <Icon className="h-5 w-5 flex-shrink-0" />
                     {!isCompact && (
-                      <span className="truncate">{displayText}</span>
+                      <span className="truncate">{t(item.key)}</span>
                     )}
                   </Button>
                 );
@@ -151,39 +122,35 @@ export const UnifiedMobileSidebar: React.FC<UnifiedMobileSidebarProps> = ({
           {/* User section */}
           {user && (
             <div className="border-t border-border p-2 space-y-1">
-              {!shouldShowDHLNavigation && (
-                <Button
-                  variant="ghost"
-                  className={cn(
-                    "w-full justify-start gap-3 h-10",
-                    isCompact && "px-2 justify-center"
-                  )}
-                  onClick={() => handleNavigation('/profile')}
-                  title={isCompact ? String(t('profile')) : undefined}
-                >
-                  <User className="h-5 w-5 flex-shrink-0" />
-                  {!isCompact && (
-                    <span className="truncate">{String(t('profile'))}</span>
-                  )}
-                </Button>
-              )}
+              <Button
+                variant="ghost"
+                className={cn(
+                  "w-full justify-start gap-3 h-10",
+                  isCompact && "px-2 justify-center"
+                )}
+                onClick={() => handleNavigation('/profile')}
+                title={isCompact ? t('profile') : undefined}
+              >
+                <User className="h-5 w-5 flex-shrink-0" />
+                {!isCompact && (
+                  <span className="truncate">{t('profile')}</span>
+                )}
+              </Button>
               
-              {!shouldShowDHLNavigation && (
-                <Button
-                  variant="ghost"
-                  className={cn(
-                    "w-full justify-start gap-3 h-10",
-                    isCompact && "px-2 justify-center"
-                  )}
-                  onClick={() => handleNavigation('/settings')}
-                  title={isCompact ? String(t('settings')) : undefined}
-                >
-                  <Settings className="h-5 w-5 flex-shrink-0" />
-                  {!isCompact && (
-                    <span className="truncate">{String(t('settings'))}</span>
-                  )}
-                </Button>
-              )}
+              <Button
+                variant="ghost"
+                className={cn(
+                  "w-full justify-start gap-3 h-10",
+                  isCompact && "px-2 justify-center"
+                )}
+                onClick={() => handleNavigation('/settings')}
+                title={isCompact ? t('settings') : undefined}
+              >
+                <Settings className="h-5 w-5 flex-shrink-0" />
+                {!isCompact && (
+                  <span className="truncate">{t('settings')}</span>
+                )}
+              </Button>
               
               <Button
                 variant="ghost"
@@ -192,11 +159,11 @@ export const UnifiedMobileSidebar: React.FC<UnifiedMobileSidebarProps> = ({
                   isCompact && "px-2 justify-center"
                 )}
                 onClick={handleSignOut}
-                title={isCompact ? String(t('logout')) : undefined}
+                title={isCompact ? t('logout') : undefined}
               >
                 <LogOut className="h-5 w-5 flex-shrink-0" />
                 {!isCompact && (
-                  <span className="truncate">{String(t('logout'))}</span>
+                  <span className="truncate">{t('logout')}</span>
                 )}
               </Button>
             </div>

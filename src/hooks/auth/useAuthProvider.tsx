@@ -1,3 +1,4 @@
+
 import * as React from 'react';
 import { useState, useCallback } from 'react';
 import { AuthContext } from './useAuthContext';
@@ -59,7 +60,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }, [user, session]);
 
-  // Enhanced DHL automatic redirection logic
+  // DHL automatic redirection logic
   React.useEffect(() => {
     if (!user || isLoading || hasCheckedDHLRedirect) return;
 
@@ -69,9 +70,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.log('Current path:', window.location.pathname);
       
       const isDHL = isDHLEmployee(user);
-      const isDHLAdminUser = canAccessDHLAdmin(user);
       console.log('Is DHL Employee:', isDHL);
-      console.log('Is DHL Admin:', isDHLAdminUser);
 
       if (!isDHL) {
         setHasCheckedDHLRedirect(true);
@@ -86,17 +85,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return;
       }
 
-      // For DHL admin, redirect to admin panel
-      if (isDHLAdminUser) {
-        console.log('DHL admin detected - redirecting to DHL admin');
-        if (currentPath === '/' || currentPath === '/dashboard' || currentPath === '/admin') {
-          window.location.href = '/dhl-admin';
-        }
-        setHasCheckedDHLRedirect(true);
-        return;
-      }
-
-      // For regular DHL employees, check assignment and redirect appropriately
+      // Check if user has DHL assignment
       try {
         console.log('Checking DHL assignment for user:', user.id);
         const { data: assignment, error } = await supabase
@@ -117,9 +106,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         // Redirect based on assignment status
         if (!assignment) {
           console.log('DHL user without assignment - redirecting to setup');
-          if (currentPath === '/' || currentPath === '/dashboard') {
-            window.location.href = '/dhl-setup';
-          }
+          window.location.href = '/dhl-setup';
         } else if (currentPath === '/' || currentPath === '/dashboard') {
           console.log('DHL user with assignment - redirecting to dashboard');
           window.location.href = '/dhl-dashboard';

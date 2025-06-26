@@ -27,22 +27,22 @@ const ModernSidebar = () => {
   const isDHLRoute = location.pathname.startsWith('/dhl-');
   const shouldShowDHLNavigation = canAccessDHL && isDHLRoute;
 
-  // Choose navigation items based on context - REPLACE completely, don't mix
-  const getCurrentNavigationItems = () => {
+  // Choose navigation items based on context
+  const getNavigationItems = () => {
     if (shouldShowDHLNavigation) {
       return isDHLAdmin ? dhlAdminNavigationItems : dhlNavigationItems;
     }
     
-    // Standard navigation with DHL items filtered out
+    // Standard navigation with DHL items filtered
     return navigationItems.filter(item => {
       if (item.adminOnly && !isAdmin) return false;
-      if ('dhlAdminOnly' in item && item.dhlAdminOnly) return false;
-      if ('dhlOnly' in item && item.dhlOnly) return false;
+      if (item.dhlAdminOnly && !isDHLAdmin) return false;
+      if (item.dhlOnly && !canAccessDHL) return false;
       return true;
     });
   };
 
-  const currentNavigationItems = getCurrentNavigationItems();
+  const currentNavigationItems = getNavigationItems();
 
   return (
     <div className="fixed left-0 top-0 z-40 h-screen w-64 border-r bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -55,8 +55,8 @@ const ModernSidebar = () => {
         {/* Navigation */}
         <ScrollArea className="flex-1 px-3">
           <div className="space-y-1 p-2">
-            {shouldShowDHLNavigation ? (
-              /* DHL Navigation - complete replacement */
+            {/* DHL Navigation */}
+            {shouldShowDHLNavigation && (
               <div className="pb-4">
                 <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight text-yellow-600 flex items-center gap-2">
                   DHL Navigation
@@ -88,8 +88,10 @@ const ModernSidebar = () => {
                   })}
                 </div>
               </div>
-            ) : (
-              /* Standard Navigation */
+            )}
+
+            {/* Standard Navigation */}
+            {!shouldShowDHLNavigation && (
               <>
                 {/* Main Navigation */}
                 <div className="pb-4">
@@ -98,10 +100,9 @@ const ModernSidebar = () => {
                   </h2>
                   <div className="space-y-1">
                     {currentNavigationItems
-                      .filter(item => !item.adminOnly)
+                      .filter(item => !item.adminOnly && !item.dhlAdminOnly && !item.dhlOnly)
                       .map((item) => {
                         const Icon = item.icon;
-                        const titleKey = 'titleKey' in item ? item.titleKey : '';
                         return (
                           <Button
                             key={item.path}
@@ -114,7 +115,7 @@ const ModernSidebar = () => {
                           >
                             <Link to={item.path}>
                               <Icon className="mr-2 h-4 w-4" />
-                              {titleKey ? t(titleKey) : ('title' in item ? item.title : '')}
+                              {t(item.titleKey)}
                               {item.badge && (
                                 <span className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
                                   {item.badge}
@@ -127,20 +128,19 @@ const ModernSidebar = () => {
                   </div>
                 </div>
 
-                {/* Admin Section */}
-                {isAdmin && (
+                {/* DHL Section */}
+                {canAccessDHL && (
                   <>
                     <Separator />
                     <div className="pb-4">
-                      <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight text-red-600">
-                        {t('administration')}
+                      <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight text-yellow-600">
+                        DHL
                       </h2>
                       <div className="space-y-1">
                         {currentNavigationItems
-                          .filter(item => item.adminOnly)
+                          .filter(item => item.dhlOnly || item.dhlAdminOnly)
                           .map((item) => {
                             const Icon = item.icon;
-                            const titleKey = 'titleKey' in item ? item.titleKey : '';
                             return (
                               <Button
                                 key={item.path}
@@ -153,7 +153,47 @@ const ModernSidebar = () => {
                               >
                                 <Link to={item.path}>
                                   <Icon className="mr-2 h-4 w-4" />
-                                  {titleKey ? t(titleKey) : ('title' in item ? item.title : '')}
+                                  {item.dhlAdminOnly ? 'DHL Admin' : 'DHL Dashboard'}
+                                  {item.badge && (
+                                    <span className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
+                                      {item.badge}
+                                    </span>
+                                  )}
+                                </Link>
+                              </Button>
+                            );
+                          })}
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {/* Admin Section */}
+                {isAdmin && (
+                  <>
+                    <Separator />
+                    <div className="pb-4">
+                      <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight text-red-600">
+                        {t('administration')}
+                      </h2>
+                      <div className="space-y-1">
+                        {currentNavigationItems
+                          .filter(item => item.adminOnly && !item.dhlAdminOnly)
+                          .map((item) => {
+                            const Icon = item.icon;
+                            return (
+                              <Button
+                                key={item.path}
+                                asChild
+                                variant={location.pathname === item.path ? "secondary" : "ghost"}
+                                className={cn(
+                                  "w-full justify-start",
+                                  location.pathname === item.path && "bg-muted font-medium"
+                                )}
+                              >
+                                <Link to={item.path}>
+                                  <Icon className="mr-2 h-4 w-4" />
+                                  {t(item.titleKey)}
                                   {item.badge && (
                                     <span className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
                                       {item.badge}
