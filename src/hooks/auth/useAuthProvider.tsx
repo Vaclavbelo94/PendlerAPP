@@ -1,3 +1,4 @@
+
 import * as React from 'react';
 import { useState, useCallback } from 'react';
 import { AuthContext } from './useAuthContext';
@@ -59,7 +60,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }, [user, session]);
 
-  // DHL automatic redirection logic - POUZE PRO DHL ZAMĚSTNANCE
+  // DHL automatic redirection logic
   React.useEffect(() => {
     if (!user || isLoading || hasCheckedDHLRedirect) return;
 
@@ -68,12 +69,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.log('User:', user.email);
       console.log('Current path:', window.location.pathname);
       
-      // KRITICKÁ ZMĚNA: Kontrola pouze pro skutečné DHL zaměstnance
       const isDHL = isDHLEmployee(user);
       console.log('Is DHL Employee:', isDHL);
 
       if (!isDHL) {
-        console.log('User is not DHL employee, skipping DHL redirect');
         setHasCheckedDHLRedirect(true);
         return;
       }

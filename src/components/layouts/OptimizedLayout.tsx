@@ -49,11 +49,18 @@ const OptimizedLayout = ({ children, navbarRightContent }: OptimizedLayoutProps)
           isOpen={sidebarOpen}
           closeSidebar={() => setSidebarOpen(false)}
           variant="overlay"
-          onOpenSidebar={() => setSidebarOpen(true)}
         />
         
         <div className="flex-1 flex flex-col min-w-0">
-          <main className="flex-1 px-4 py-4 pt-16">
+          <div className="sticky top-0 z-30">
+            <Navbar 
+              toggleSidebar={() => setSidebarOpen(!sidebarOpen)} 
+              rightContent={navbarRightContent}
+              sidebarOpen={sidebarOpen}
+            />
+          </div>
+          
+          <main className="flex-1 px-4 py-4">
             {children}
           </main>
           <Footer />

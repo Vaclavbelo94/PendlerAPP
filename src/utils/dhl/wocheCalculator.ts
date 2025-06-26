@@ -1,123 +1,126 @@
 
+// Utility for calculating DHL Woche cycles and shift schedules
+
 export interface WocheReference {
   referenceDate: Date;
   referenceWoche: number;
 }
 
-export interface WocheCalculationResult {
+export interface WocheCalculation {
   currentWoche: number;
   weekStartDate: Date;
   weekEndDate: Date;
-  cyclePosition: number;
+  cyclePosition: number; // Position in 15-week cycle
 }
 
 /**
- * Calculate current Woche based on reference point
+ * Calculate current Woche for a user based on their reference point
  */
-export const calculateCurrentWoche = (
-  reference: WocheReference,
-  targetDate: Date
-): WocheCalculationResult => {
-  const refDate = new Date(reference.referenceDate);
-  const target = new Date(targetDate);
+export const calculateCurrentWoche = (reference: WocheReference, targetDate: Date = new Date()): WocheCalculation => {
+  const { referenceDate, referenceWoche } = reference;
   
-  // Get start of week (Monday) for both dates
-  const refWeekStart = getWeekStart(refDate);
-  const targetWeekStart = getWeekStart(target);
-  
-  // Calculate difference in weeks
-  const diffInWeeks = Math.floor((targetWeekStart.getTime() - refWeekStart.getTime()) / (7 * 24 * 60 * 60 * 1000));
+  // Calculate weeks difference from reference
+  const msPerWeek = 7 * 24 * 60 * 60 * 1000;
+  const weeksDiff = Math.floor((targetDate.getTime() - referenceDate.getTime()) / msPerWeek);
   
   // Calculate current Woche (1-15 cycle)
-  let currentWoche = ((reference.referenceWoche - 1 + diffInWeeks) % 15) + 1;
+  let currentWoche = ((referenceWoche - 1 + weeksDiff) % 15) + 1;
   if (currentWoche <= 0) {
     currentWoche += 15;
   }
   
-  // Calculate week boundaries
-  const weekStartDate = new Date(targetWeekStart);
-  const weekEndDate = new Date(targetWeekStart);
+  // Calculate week start date (Monday)
+  const weekStartDate = new Date(targetDate);
+  const dayOfWeek = weekStartDate.getDay();
+  const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+  weekStartDate.setDate(weekStartDate.getDate() + mondayOffset);
+  weekStartDate.setHours(0, 0, 0, 0);
+  
+  // Calculate week end date (Sunday)
+  const weekEndDate = new Date(weekStartDate);
   weekEndDate.setDate(weekEndDate.getDate() + 6);
+  weekEndDate.setHours(23, 59, 59, 999);
   
   return {
     currentWoche,
     weekStartDate,
     weekEndDate,
-    cyclePosition: ((currentWoche - 1) % 15) + 1
+    cyclePosition: weeksDiff % 15
   };
 };
 
 /**
- * Get Monday of the week for a given date
+ * Generate Woche dates for a range
  */
-const getWeekStart = (date: Date): Date => {
-  const d = new Date(date);
-  const day = d.getDay();
-  const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Adjust for Sunday
-  return new Date(d.setDate(diff));
+export const generateWocheRange = (
+  reference: WocheReference, 
+  startDate: Date, 
+  endDate: Date
+): WocheCalculation[] => {
+  const result: WocheCalculation[] = [];
+  const current = new Date(startDate);
+  
+  while (current <= endDate) {
+    result.push(calculateCurrentWoche(reference, new Date(current)));
+    current.setDate(current.getDate() + 7); // Move to next week
+  }
+  
+  return result;
 };
 
 /**
- * Find shift data for a specific date and Woche from schedule
+ * Find the matching shift data for a specific date and Woche
  */
-export const findShiftForDate = (
-  scheduleData: any,
-  woche: number,
-  date: Date
-): { start_time?: string; end_time?: string } | null => {
-  if (!scheduleData || typeof scheduleData !== 'object') {
-    return null;
-  }
-
-  const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, etc.
-  const wocheKey = `woche_${woche}`;
+export const findShiftForDate = (scheduleData: any, woche: number, date: Date): any => {
+  // Format date as YYYY-MM-DD
+  const dateStr = date.toISOString().split('T')[0];
   
-  // Check if this Woche exists in schedule
-  if (!scheduleData[wocheKey]) {
-    return null;
+  // Look for exact date match first
+  if (scheduleData[dateStr]) {
+    return scheduleData[dateStr];
   }
-
-  const wocheData = scheduleData[wocheKey];
   
-  // Map day of week to day name
+  // Fallback to day pattern matching if available
+  const dayOfWeek = date.getDay();
   const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
   const dayName = dayNames[dayOfWeek];
   
-  // Get shift for this day
-  const dayShift = wocheData[dayName];
-  
-  if (dayShift && dayShift.start_time && dayShift.end_time) {
-    return {
-      start_time: dayShift.start_time,
-      end_time: dayShift.end_time
-    };
+  // Check for day-based patterns in the schedule
+  if (scheduleData.pattern && scheduleData.pattern[dayName]) {
+    return scheduleData.pattern[dayName];
   }
   
   return null;
 };
 
 /**
- * Get Woche for a specific date given a reference point
+ * Parse time string to minutes from midnight
  */
-export const getWocheForDate = (
-  referenceDate: Date,
-  referenceWoche: number,
-  targetDate: Date
-): number => {
-  const result = calculateCurrentWoche(
-    { referenceDate, referenceWoche },
-    targetDate
-  );
-  
-  return result.currentWoche;
+export const parseTimeToMinutes = (timeStr: string): number => {
+  const [hours, minutes] = timeStr.split(':').map(Number);
+  return hours * 60 + minutes;
 };
 
 /**
- * Check if a position works in a specific Woche
+ * Format minutes to HH:MM time string
  */
-export const isPositionActiveInWoche = (
-  positionCycleWeeks: number[],
-  woche: number
-): boolean => {
-  return positionCycleWeeks.includes(woche);
+export const formatMinutesToTime = (minutes: number): string => {
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+};
+
+/**
+ * Determine shift type based on start time
+ */
+export const determineShiftType = (startTime: string): 'morning' | 'afternoon' | 'night' => {
+  const startMinutes = parseTimeToMinutes(startTime);
+  
+  if (startMinutes >= 360 && startMinutes < 780) { // 6:00 - 13:00
+    return 'morning';
+  } else if (startMinutes >= 780 && startMinutes < 1320) { // 13:00 - 22:00
+    return 'afternoon';
+  } else {
+    return 'night';
+  }
 };

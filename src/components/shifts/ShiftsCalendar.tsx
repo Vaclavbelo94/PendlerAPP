@@ -5,7 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useOptimizedShiftsManagement } from '@/hooks/shifts/useOptimizedShiftsManagement';
 import UnifiedShiftCalendar from './calendar/UnifiedShiftCalendar';
 import ShiftsFormSheets from './ShiftsFormSheets';
-import { Shift } from '@/hooks/shifts/useOptimizedShiftsManagement';
+import { Shift } from '@/types/shifts'; // Using the updated consistent type
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 

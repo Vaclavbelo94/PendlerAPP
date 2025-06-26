@@ -1,282 +1,259 @@
 
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet';
+import { motion } from 'framer-motion';
+import { Truck, ArrowRight, CheckCircle, Calendar } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
 import { useDHLData } from '@/hooks/dhl/useDHLData';
 import { useDHLSetup } from '@/hooks/dhl/useDHLSetup';
-import { canAccessDHLFeatures } from '@/utils/dhlAuthUtils';
-import { DHLLayout } from '@/components/dhl/DHLLayout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useDHLRouteGuard } from '@/hooks/dhl/useDHLRouteGuard';
+import Layout from '@/components/layouts/Layout';
+import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, CheckCircle, Truck, Calendar, MapPin, Users } from 'lucide-react';
-import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 const DHLSetup: React.FC = () => {
+  const { t } = useTranslation(['common']);
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { userAssignment, positions, workGroups, isLoading: isDataLoading } = useDHLData(user?.id);
+  const { positions, workGroups, isLoading } = useDHLData();
   const { submitSetup, isSubmitting } = useDHLSetup();
+  const [selectedPosition, setSelectedPosition] = useState<string>('');
+  const [selectedWorkGroup, setSelectedWorkGroup] = useState<string>('');
+  const [referenceDate, setReferenceDate] = useState<string>('');
+  const [referenceWoche, setReferenceWoche] = useState<string>('');
+  const [isFromRegistration, setIsFromRegistration] = useState(false);
 
-  const [selectedPosition, setSelectedPosition] = React.useState('');
-  const [selectedWorkGroup, setSelectedWorkGroup] = React.useState('');
-  const [referenceDate, setReferenceDate] = React.useState('');
-  const [referenceWoche, setReferenceWoche] = React.useState('');
+  // Use DHL route guard to protect this page
+  const { canAccess, isLoading: isRouteGuardLoading } = useDHLRouteGuard(false);
 
-  // Populate form if user already has assignment
-  React.useEffect(() => {
-    if (userAssignment) {
-      setSelectedPosition(userAssignment.dhl_position_id);
-      setSelectedWorkGroup(userAssignment.dhl_work_group_id);
-      setReferenceDate(userAssignment.reference_date || '');
-      setReferenceWoche(userAssignment.reference_woche?.toString() || '');
+  useEffect(() => {
+    // Check if user came from registration
+    const fromRegistration = localStorage.getItem('dhl-from-registration');
+    if (fromRegistration === 'true') {
+      setIsFromRegistration(true);
+      localStorage.removeItem('dhl-from-registration'); // Clean up
     }
-  }, [userAssignment]);
-
-  // Redirect if user doesn't have DHL access
-  React.useEffect(() => {
-    if (user && !canAccessDHLFeatures(user)) {
-      navigate('/dashboard');
-      toast.error('Nemáte oprávnění pro přístup k DHL funkcím');
-    }
-  }, [user, navigate]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
     
-    if (!selectedPosition || !selectedWorkGroup) {
-      toast.error('Prosím vyberte pozici a pracovní skupinu');
+    // Set default reference date to today
+    const today = new Date().toISOString().split('T')[0];
+    setReferenceDate(today);
+  }, []);
+
+  const handleSubmit = async () => {
+    if (!selectedPosition || !selectedWorkGroup || !referenceDate || !referenceWoche) {
       return;
     }
 
-    const setupData = {
+    console.log('=== DHL SETUP SUBMISSION ===');
+    console.log('Selected position:', selectedPosition);
+    console.log('Selected work group:', selectedWorkGroup);
+    console.log('Reference date:', referenceDate);
+    console.log('Reference woche:', referenceWoche);
+    console.log('Is from registration:', isFromRegistration);
+
+    const success = await submitSetup({
       position_id: selectedPosition,
       work_group_id: selectedWorkGroup,
-      ...(referenceDate && { reference_date: referenceDate }),
-      ...(referenceWoche && { reference_woche: parseInt(referenceWoche) })
-    };
+      reference_date: referenceDate,
+      reference_woche: parseInt(referenceWoche)
+    });
 
-    const success = await submitSetup(setupData);
     if (success) {
-      navigate('/dhl-dashboard');
+      console.log('DHL setup completed successfully');
+      
+      // Show different success message based on context
+      if (isFromRegistration) {
+        console.log('Redirecting to DHL dashboard after registration setup');
+      } else {
+        console.log('Redirecting to DHL dashboard after profile update');
+      }
+      
+      setTimeout(() => {
+        navigate('/dhl-dashboard');
+      }, 1500);
     }
   };
 
-  if (isDataLoading) {
+  if (isLoading || isRouteGuardLoading) {
     return (
-      <DHLLayout>
-        <div className="flex items-center justify-center min-h-96">
+      <Layout navbarRightContent={<NavbarRightContent />}>
+        <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
-            <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-600 mx-auto mb-4"></div>
             <p className="text-muted-foreground">Načítám DHL data...</p>
           </div>
         </div>
-      </DHLLayout>
+      </Layout>
     );
   }
 
-  // If user already has complete setup, show success state
-  if (userAssignment && selectedPosition && selectedWorkGroup) {
-    return (
-      <DHLLayout>
-        <div className="container max-w-2xl mx-auto px-4 py-8">
-          <Card className="border-green-200 bg-green-50">
-            <CardHeader className="text-center">
-              <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                <CheckCircle className="h-8 w-8 text-green-600" />
-              </div>
-              <CardTitle className="text-green-800">DHL Setup dokončen!</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-4 bg-white rounded-lg border">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Truck className="h-4 w-4 text-yellow-600" />
-                    <span className="font-medium">Pozice</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    {userAssignment.dhl_position?.name}
-                  </p>
-                </div>
-                <div className="p-4 bg-white rounded-lg border">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Users className="h-4 w-4 text-yellow-600" />
-                    <span className="font-medium">Pracovní skupina</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    {userAssignment.dhl_work_group?.name}
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex gap-4 pt-4">
-                <Button onClick={() => navigate('/dhl-dashboard')} className="flex-1">
-                  Přejít na Dashboard
-                </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={() => setSelectedPosition('')} 
-                  className="flex-1"
-                >
-                  Upravit nastavení
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </DHLLayout>
-    );
+  // If user can't access, route guard will handle redirect
+  if (!canAccess) {
+    return null;
   }
 
   return (
-    <DHLLayout>
-      <div className="container max-w-2xl mx-auto px-4 py-8">
-        <div className="mb-8 text-center">
-          <div className="mx-auto w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
-            <Truck className="h-8 w-8 text-yellow-600" />
-          </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">DHL Setup</h1>
-          <p className="text-gray-600">
-            Nastavte svou DHL pozici a pracovní skupinu pro automatické generování směn
-          </p>
-        </div>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Základní nastavení</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Position Selection */}
-              <div className="space-y-2">
-                <Label htmlFor="position" className="flex items-center gap-2">
-                  <Truck className="h-4 w-4" />
-                  DHL Pozice *
-                </Label>
-                <Select value={selectedPosition} onValueChange={setSelectedPosition} required>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Vyberte svou DHL pozici" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {positions.map((position) => (
-                      <SelectItem key={position.id} value={position.id}>
-                        <div>
-                          <div className="font-medium">{position.name}</div>
-                          {position.description && (
-                            <div className="text-sm text-muted-foreground">
-                              {position.description}
-                            </div>
-                          )}
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+    <Layout navbarRightContent={<NavbarRightContent />}>
+      <Helmet>
+        <title>DHL Nastavení | PendlerApp</title>
+        <meta name="description" content="Setup your DHL employee profile and work preferences" />
+      </Helmet>
+      
+      <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-yellow-500/5">
+        <div className="container max-w-2xl py-8 px-4">
+          {/* Header */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-8"
+          >
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <div className="p-3 rounded-full bg-gradient-to-r from-yellow-500/20 to-red-500/20 backdrop-blur-sm">
+                <Truck className="h-8 w-8 text-yellow-600" />
               </div>
+            </div>
+            <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-yellow-600 to-red-600 bg-clip-text text-transparent mb-4">
+              {isFromRegistration ? 'Vítejte v DHL systému' : 'Nastavení DHL profilu'}
+            </h1>
+            <p className="text-lg text-muted-foreground">
+              {isFromRegistration 
+                ? 'Dokončete nastavení svého DHL profilu pro správu směn a rozvrhu'
+                : 'Upravte nastavení svého DHL profilu'
+              }
+            </p>
+          </motion.div>
 
-              {/* Work Group Selection */}
-              <div className="space-y-2">
-                <Label htmlFor="workGroup" className="flex items-center gap-2">
-                  <Users className="h-4 w-4" />
-                  Pracovní skupina *
-                </Label>
-                <Select value={selectedWorkGroup} onValueChange={setSelectedWorkGroup} required>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Vyberte pracovní skupinu" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {workGroups.map((group) => (
-                      <SelectItem key={group.id} value={group.id}>
-                        <div>
-                          <div className="font-medium">{group.name}</div>
-                          <div className="text-sm text-muted-foreground">
-                            Týden {group.week_number}
-                            {group.description && ` - ${group.description}`}
+          {/* Setup Form */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <CheckCircle className="h-5 w-5 text-green-600" />
+                  Nastavení DHL profilu
+                </CardTitle>
+                <CardDescription>
+                  Vyberte svou pozici, pracovní skupinu a nastavte referenční bod pro výpočet Woche
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Position Selection */}
+                <div className="space-y-2">
+                  <Label htmlFor="position">Pozice</Label>
+                  <Select value={selectedPosition} onValueChange={setSelectedPosition}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Vyberte svou pozici" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {positions.map((position) => (
+                        <SelectItem key={position.id} value={position.id}>
+                          <div>
+                            <div className="font-medium">{position.name}</div>
+                            <div className="text-xs text-muted-foreground">{position.description}</div>
                           </div>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-              {/* Optional Reference Settings */}
-              <div className="border-t pt-6">
-                <h3 className="text-lg font-medium mb-4 flex items-center gap-2">
-                  <Calendar className="h-5 w-5" />
-                  Referenční bod (volitelné)
-                </h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Nastavte referenční datum a Woche pro přesné generování směn podle vašeho plánu
-                </p>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="referenceDate">Referenční datum</Label>
-                    <Input
-                      id="referenceDate"
-                      type="date"
-                      value={referenceDate}
-                      onChange={(e) => setReferenceDate(e.target.value)}
-                      placeholder="Vyberte datum"
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="referenceWoche">Referenční Woche</Label>
-                    <Input
-                      id="referenceWoche"
-                      type="number"
-                      min="1"
-                      max="15"
-                      value={referenceWoche}
-                      onChange={(e) => setReferenceWoche(e.target.value)}
-                      placeholder="1-15"
-                    />
+                {/* Work Group Selection */}
+                <div className="space-y-2">
+                  <Label htmlFor="workGroup">Pracovní skupina</Label>
+                  <Select value={selectedWorkGroup} onValueChange={setSelectedWorkGroup}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Vyberte pracovní skupinu" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {workGroups.map((group) => (
+                        <SelectItem key={group.id} value={group.id}>
+                          <div>
+                            <div className="font-medium">{group.name}</div>
+                            <div className="text-xs text-muted-foreground">{group.description}</div>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Reference Date */}
+                <div className="space-y-2">
+                  <Label htmlFor="referenceDate">Referenční datum</Label>
+                  <Input
+                    id="referenceDate"
+                    type="date"
+                    value={referenceDate}
+                    onChange={(e) => setReferenceDate(e.target.value)}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Datum, od kterého se počítá váš Woche cyklus
+                  </p>
+                </div>
+
+                {/* Reference Woche */}
+                <div className="space-y-2">
+                  <Label htmlFor="referenceWoche">Referenční Woche</Label>
+                  <Select value={referenceWoche} onValueChange={setReferenceWoche}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Vyberte Woche" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.from({ length: 15 }, (_, i) => i + 1).map(week => (
+                        <SelectItem key={week} value={week.toString()}>
+                          Woche {week}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">
+                    Jaké Woche číslo máte k referenčnímu datumu
+                  </p>
+                </div>
+
+                {/* Info Box */}
+                <div className="p-4 rounded-lg bg-blue-50 border border-blue-200">
+                  <div className="flex items-start gap-3">
+                    <Calendar className="h-5 w-5 text-blue-600 mt-0.5" />
+                    <div className="text-sm text-blue-800">
+                      <strong>Referenční bod:</strong> Tento bod se používá pro výpočet vašeho aktuálního Woche cyklu. 
+                      Pokud si nejste jisti, nastavte dnešní datum a číslo Woche, které aktuálně máte.
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <Alert>
-                <MapPin className="h-4 w-4" />
-                <AlertDescription>
-                  Po dokončení setupu budete automaticky směrováni na DHL Dashboard, 
-                  kde můžete spravovat své směny a generovat nové podle vašeho plánu.
-                </AlertDescription>
-              </Alert>
-
-              <div className="flex gap-4 pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => navigate('/dashboard')}
-                  className="flex-1"
-                >
-                  Zrušit
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={isSubmitting || !selectedPosition || !selectedWorkGroup}
-                  className="flex-1"
+                {/* Submit Button */}
+                <Button 
+                  onClick={handleSubmit}
+                  disabled={!selectedPosition || !selectedWorkGroup || !referenceDate || !referenceWoche || isSubmitting}
+                  className="w-full"
+                  size="lg"
                 >
                   {isSubmitting ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                      Ukládám...
-                    </>
+                    'Ukládám...'
                   ) : (
-                    'Dokončit setup'
+                    <>
+                      Dokončit nastavení
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </>
                   )}
                 </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
       </div>
-    </DHLLayout>
+    </Layout>
   );
 };
 

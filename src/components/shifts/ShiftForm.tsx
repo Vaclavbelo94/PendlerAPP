@@ -25,15 +25,13 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
   const [date, setDate] = useState<Date | undefined>(
     shift ? new Date(shift.date) : new Date()
   );
-  const [type, setType] = useState<'morning' | 'afternoon' | 'night'>(
-    shift?.type as 'morning' | 'afternoon' | 'night' || 'morning'
-  );
+  const [type, setType] = useState<'morning' | 'afternoon' | 'night'>(shift?.type || 'morning');
   const [notes, setNotes] = useState(shift?.notes || '');
 
   useEffect(() => {
     if (shift) {
       setDate(new Date(shift.date));
-      setType(shift.type as 'morning' | 'afternoon' | 'night');
+      setType(shift.type);
       setNotes(shift.notes || '');
     }
   }, [shift]);

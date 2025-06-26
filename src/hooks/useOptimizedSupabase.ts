@@ -1,5 +1,5 @@
 
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useRef } from 'react';
 import { useCacheManager } from './useCacheManager';
 
 interface OptimizedSupabaseOptions {
@@ -8,13 +8,7 @@ interface OptimizedSupabaseOptions {
   staleTime?: number;
 }
 
-interface OptimizedSupabaseReturn {
-  optimizedQuery: (queryKey: string, queryFn: () => Promise<any>) => Promise<any>;
-  batchOperations: (operations: Array<() => Promise<any>>) => Promise<any[]>;
-  isLoading: boolean;
-}
-
-export const useOptimizedSupabase = (options: OptimizedSupabaseOptions = {}): OptimizedSupabaseReturn => {
+export const useOptimizedSupabase = (options: OptimizedSupabaseOptions = {}) => {
   const {
     enableCaching = true,
     cacheTime = 10 * 60 * 1000, // 10 minut
@@ -27,7 +21,6 @@ export const useOptimizedSupabase = (options: OptimizedSupabaseOptions = {}): Op
   });
 
   const pendingRequests = useRef(new Map<string, Promise<any>>());
-  const [isLoading, setIsLoading] = useState(false);
 
   // Optimized query with caching and deduplication
   const optimizedQuery = useCallback(async (
@@ -48,9 +41,6 @@ export const useOptimizedSupabase = (options: OptimizedSupabaseOptions = {}): Op
       return pendingRequest;
     }
 
-    // Set loading state
-    setIsLoading(true);
-
     // Create new request
     const request = queryFn().then(result => {
       // Cache the result
@@ -60,13 +50,11 @@ export const useOptimizedSupabase = (options: OptimizedSupabaseOptions = {}): Op
       
       // Remove from pending
       pendingRequests.current.delete(queryKey);
-      setIsLoading(false);
       
       return result;
     }).catch(error => {
       // Remove from pending on error
       pendingRequests.current.delete(queryKey);
-      setIsLoading(false);
       throw error;
     });
 
@@ -79,22 +67,18 @@ export const useOptimizedSupabase = (options: OptimizedSupabaseOptions = {}): Op
   // Batch operations for better performance
   const batchOperations = useCallback(async (operations: Array<() => Promise<any>>) => {
     try {
-      setIsLoading(true);
       const results = await Promise.allSettled(operations.map(op => op()));
-      setIsLoading(false);
       return results.map(result => 
         result.status === 'fulfilled' ? result.value : null
       );
     } catch (error) {
       console.error('Batch operations failed:', error);
-      setIsLoading(false);
       throw error;
     }
   }, []);
 
   return {
     optimizedQuery,
-    batchOperations,
-    isLoading
+    batchOperations
   };
 };

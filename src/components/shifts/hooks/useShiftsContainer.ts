@@ -2,7 +2,8 @@
 import { useState, useCallback, useMemo } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useOptimizedNetworkStatus } from '@/hooks/useOptimizedNetworkStatus';
-import { useOptimizedShiftsManagement, Shift } from '@/hooks/shifts/useOptimizedShiftsManagement';
+import { useRefactoredShiftsManagement } from '@/hooks/shifts/useRefactoredShiftsManagement';
+import { Shift } from '@/hooks/shifts/useShiftsCRUD';
 
 export const useShiftsContainer = () => {
   const { user } = useAuth();
@@ -21,8 +22,9 @@ export const useShiftsContainer = () => {
     error,
     addShift: addShiftOriginal,
     updateShift: updateShiftOriginal,
-    deleteShift
-  } = useOptimizedShiftsManagement(user?.id);
+    deleteShift,
+    refreshShifts
+  } = useRefactoredShiftsManagement(user?.id);
 
   const handleSectionChange = useCallback((section: string) => {
     setIsChanging(true);
@@ -31,18 +33,11 @@ export const useShiftsContainer = () => {
   }, []);
 
   const handleAddShift = useCallback(async (shiftData: Omit<Shift, 'id' | 'user_id' | 'created_at' | 'updated_at'>): Promise<void> => {
-    if (!user?.id) return;
-    
-    const shiftDataWithUserId = {
-      ...shiftData,
-      user_id: user.id
-    };
-    
-    const result = await addShiftOriginal(shiftDataWithUserId);
+    const result = await addShiftOriginal(shiftData);
     if (result) {
       setIsAddSheetOpen(false);
     }
-  }, [addShiftOriginal, user?.id]);
+  }, [addShiftOriginal]);
 
   const handleEditShift = useCallback(async (shiftData: Shift): Promise<void> => {
     const result = await updateShiftOriginal(shiftData);
@@ -58,9 +53,8 @@ export const useShiftsContainer = () => {
   }, []);
 
   const handleRetry = useCallback(async () => {
-    // Refresh functionality would be implemented here
-    console.log('Retrying...');
-  }, []);
+    await refreshShifts();
+  }, [refreshShifts]);
 
   const handleOpenAddSheet = useCallback(() => {
     setIsAddSheetOpen(true);

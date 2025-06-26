@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { CalendarDays, Edit, Trash2 } from 'lucide-react';
 import { format, isSameDay } from 'date-fns';
 import { cs, de, pl } from 'date-fns/locale';
-import { Shift } from '@/hooks/shifts/useOptimizedShiftsManagement';
+import { Shift } from '@/hooks/shifts/useShiftsCRUD';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { MobileShiftCalendarGrid } from './mobile/MobileShiftCalendarGrid';
@@ -154,7 +154,7 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => onDeleteShift(shift.id)}
+                      onClick={() => shift.id && onDeleteShift(shift.id)}
                       className="h-7 w-7 p-0 hover:bg-destructive/10"
                     >
                       <Trash2 className="h-3 w-3" />
