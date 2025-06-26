@@ -7,12 +7,10 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
 import { useDHLData } from '@/hooks/dhl/useDHLData';
 import { useDHLRouteGuard } from '@/hooks/dhl/useDHLRouteGuard';
-import Layout from '@/components/layouts/Layout';
+import { DHLLayout } from '@/components/dhl/DHLLayout';
 import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
 
 const DHLDashboard: React.FC = () => {
   const { t } = useTranslation(['common']);
@@ -73,14 +71,14 @@ const DHLDashboard: React.FC = () => {
 
   if (isLoading || isRouteGuardLoading) {
     return (
-      <Layout navbarRightContent={<NavbarRightContent />}>
+      <DHLLayout navbarRightContent={<NavbarRightContent />}>
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-600 mx-auto mb-4"></div>
             <p className="text-muted-foreground">Načítám DHL data...</p>
           </div>
         </div>
-      </Layout>
+      </DHLLayout>
     );
   }
 
@@ -90,7 +88,7 @@ const DHLDashboard: React.FC = () => {
   }
 
   return (
-    <Layout navbarRightContent={<NavbarRightContent />}>
+    <DHLLayout navbarRightContent={<NavbarRightContent />}>
       <Helmet>
         <title>DHL Dashboard | PendlerApp</title>
         <meta name="description" content="Your DHL shifts and schedule dashboard" />
@@ -249,7 +247,7 @@ const DHLDashboard: React.FC = () => {
           </motion.div>
         </div>
       </div>
-    </Layout>
+    </DHLLayout>
   );
 };
 
