@@ -1,11 +1,10 @@
-
 import * as React from 'react';
 import { useState, useCallback } from 'react';
 import { AuthContext } from './useAuthContext';
 import { useAuthState } from './useAuthState';
 import { useAuthMethods } from './useAuthMethods';
 import { usePremiumStatus } from '@/hooks/usePremiumStatus';
-import { getDHLRedirectPath, canAccessDHLAdmin, isDHLEmployee } from '@/utils/dhlAuthUtils';
+import { isDHLEmployee, getDHLSetupPath } from '@/utils/dhlAuthUtils';
 import { 
   cleanupAuthState, 
   saveUserToLocalStorage, 
@@ -60,12 +59,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }, [user, session]);
 
-  // DHL automatic redirection logic
+  // Unified DHL redirect logic - simplified
   React.useEffect(() => {
     if (!user || isLoading || hasCheckedDHLRedirect) return;
 
     const handleDHLRedirect = async () => {
-      console.log('=== DHL REDIRECT CHECK ===');
+      console.log('=== UNIFIED DHL REDIRECT CHECK ===');
       console.log('User:', user.email);
       console.log('Current path:', window.location.pathname);
       
@@ -77,10 +76,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return;
       }
 
-      // Skip redirect if user is already on DHL pages
+      // Skip redirect if user is already on DHL setup page
       const currentPath = window.location.pathname;
-      if (currentPath.startsWith('/dhl-')) {
-        console.log('User already on DHL page, skipping redirect');
+      if (currentPath === '/dhl-setup') {
+        console.log('User already on DHL setup page, skipping redirect');
         setHasCheckedDHLRedirect(true);
         return;
       }
@@ -103,13 +102,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         console.log('DHL assignment found:', !!assignment);
 
-        // Redirect based on assignment status
-        if (!assignment) {
+        // Redirect to setup only if no assignment and on index/dashboard pages
+        const setupPath = getDHLSetupPath(user, !!assignment);
+        if (setupPath && (currentPath === '/' || currentPath === '/dashboard')) {
           console.log('DHL user without assignment - redirecting to setup');
-          window.location.href = '/dhl-setup';
-        } else if (currentPath === '/' || currentPath === '/dashboard') {
-          console.log('DHL user with assignment - redirecting to dashboard');
-          window.location.href = '/dhl-dashboard';
+          window.location.href = setupPath;
         }
       } catch (error) {
         console.error('Error in DHL redirect check:', error);

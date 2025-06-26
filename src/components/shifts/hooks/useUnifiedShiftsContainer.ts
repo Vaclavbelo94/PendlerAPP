@@ -3,11 +3,15 @@ import { useState, useCallback, useMemo } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useOptimizedNetworkStatus } from '@/hooks/useOptimizedNetworkStatus';
 import { useRefactoredShiftsManagement } from '@/hooks/shifts/useRefactoredShiftsManagement';
+import { useDHLData } from '@/hooks/dhl/useDHLData';
+import { isDHLEmployee } from '@/utils/dhlAuthUtils';
 import { Shift } from '@/hooks/shifts/useShiftsCRUD';
 
-export const useShiftsContainer = () => {
+export const useUnifiedShiftsContainer = () => {
   const { user } = useAuth();
   const { isOnline, isSlowConnection } = useOptimizedNetworkStatus();
+  const { userAssignment, isLoading: isDHLDataLoading } = useDHLData(user?.id);
+  
   const [isInitialized, setIsInitialized] = useState(true);
   const [activeSection, setActiveSection] = useState('calendar');
   const [isChanging, setIsChanging] = useState(false);
@@ -25,6 +29,10 @@ export const useShiftsContainer = () => {
     deleteShift,
     refreshShifts
   } = useRefactoredShiftsManagement(user?.id);
+
+  // Check if user is DHL employee with assignment
+  const isDHLUser = useMemo(() => isDHLEmployee(user), [user]);
+  const hasDHLAssignment = useMemo(() => isDHLUser && !!userAssignment, [isDHLUser, userAssignment]);
 
   const handleSectionChange = useCallback((section: string) => {
     setIsChanging(true);
@@ -73,7 +81,7 @@ export const useShiftsContainer = () => {
     editingShift,
     setEditingShift,
     shifts,
-    isLoading,
+    isLoading: isLoading || isDHLDataLoading,
     error,
     isSaving,
     isChanging,
@@ -83,6 +91,10 @@ export const useShiftsContainer = () => {
     openEditDialog,
     handleRetry,
     handleOpenAddSheet,
-    deleteShift
+    deleteShift,
+    // DHL specific data
+    isDHLUser,
+    hasDHLAssignment,
+    userAssignment
   };
 };

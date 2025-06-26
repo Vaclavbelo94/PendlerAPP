@@ -2,23 +2,13 @@
 import { User } from '@supabase/supabase-js';
 
 export interface DHLAuthState {
-  isDHLAdmin: boolean;
   isDHLEmployee: boolean;
-  canAccessDHLAdmin: boolean;
+  hasAssignment: boolean;
   canAccessDHLFeatures: boolean;
 }
 
 /**
- * Check if user is DHL admin
- */
-export const isDHLAdmin = (user: User | null): boolean => {
-  const isAdmin = user?.email === 'admin_dhl@pendlerapp.com';
-  console.log('DHL Admin check:', { email: user?.email, isAdmin });
-  return isAdmin;
-};
-
-/**
- * Check if user is DHL employee (has DHL assignment)
+ * Check if user is DHL employee (has used DHL2026 promo code or has DHL assignment)
  */
 export const isDHLEmployee = (user: User | null): boolean => {
   if (!user?.email) {
@@ -26,7 +16,7 @@ export const isDHLEmployee = (user: User | null): boolean => {
     return false;
   }
   
-  // Support various DHL email formats
+  // Support various DHL email formats and admin
   const dhlEmailPatterns = [
     '@dhl.com',        // Standard DHL email
     '@dhl.de',         // German DHL
@@ -52,17 +42,24 @@ export const isDHLEmployee = (user: User | null): boolean => {
 };
 
 /**
+ * Check if user is DHL admin
+ */
+export const isDHLAdmin = (user: User | null): boolean => {
+  const isAdmin = user?.email === 'admin_dhl@pendlerapp.com';
+  console.log('DHL Admin check:', { email: user?.email, isAdmin });
+  return isAdmin;
+};
+
+/**
  * Get unified DHL auth state
  */
 export const getDHLAuthState = (user: User | null): DHLAuthState => {
-  const isAdmin = isDHLAdmin(user);
   const isEmployee = isDHLEmployee(user);
 
   const authState = {
-    isDHLAdmin: isAdmin,
     isDHLEmployee: isEmployee,
-    canAccessDHLAdmin: isAdmin,
-    canAccessDHLFeatures: isAdmin || isEmployee
+    hasAssignment: false, // Will be checked in components via useDHLData
+    canAccessDHLFeatures: isEmployee
   };
 
   console.log('DHL Auth State:', authState);
@@ -77,22 +74,18 @@ export const canAccessDHLAdmin = (user: User | null): boolean => {
 };
 
 /**
- * Check if user can access DHL features
+ * Check if user can access DHL features (unified approach)
  */
 export const canAccessDHLFeatures = (user: User | null): boolean => {
-  const authState = getDHLAuthState(user);
-  return authState.canAccessDHLFeatures;
+  return isDHLEmployee(user);
 };
 
 /**
- * Get DHL redirect path based on user type
+ * Get DHL setup redirect path if needed
  */
-export const getDHLRedirectPath = (user: User | null): string | null => {
-  if (isDHLAdmin(user)) {
-    return '/dhl-admin';
-  }
-  if (isDHLEmployee(user)) {
-    return '/dhl-dashboard';
+export const getDHLSetupPath = (user: User | null, hasAssignment: boolean): string | null => {
+  if (isDHLEmployee(user) && !hasAssignment) {
+    return '/dhl-setup';
   }
   return null;
 };

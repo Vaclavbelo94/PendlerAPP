@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useShiftsContainer } from './hooks/useShiftsContainer';
+import { useUnifiedShiftsContainer } from './hooks/useUnifiedShiftsContainer';
 import FastLoadingSkeleton from './FastLoadingSkeleton';
 import ShiftsPageHeader from './ShiftsPageHeader';
 import ShiftsFormSheets from './ShiftsFormSheets';
@@ -9,10 +9,10 @@ import ShiftsErrorHandler from './ShiftsErrorHandler';
 import ShiftsContentRenderer from './ShiftsContentRenderer';
 import ShiftsNavigation from './ShiftsNavigation';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Info } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-const ShiftsMainContainer: React.FC = () => {
+const UnifiedShiftsMainContainer: React.FC = () => {
   const { t } = useTranslation('shifts');
   const {
     user,
@@ -37,8 +37,11 @@ const ShiftsMainContainer: React.FC = () => {
     openEditDialog,
     handleRetry,
     handleOpenAddSheet,
-    deleteShift
-  } = useShiftsContainer();
+    deleteShift,
+    isDHLUser,
+    hasDHLAssignment,
+    userAssignment
+  } = useUnifiedShiftsContainer();
 
   if (!isInitialized || (isLoading && shifts.length === 0)) {
     return <FastLoadingSkeleton onRetry={handleRetry} timeoutMs={8000} />;
@@ -60,6 +63,15 @@ const ShiftsMainContainer: React.FC = () => {
   if (shifts.length === 0 && !isLoading) {
     return (
       <div className="container max-w-7xl mx-auto px-4">
+        {isDHLUser && hasDHLAssignment && (
+          <Alert className="mb-6">
+            <Info className="h-4 w-4" />
+            <AlertDescription>
+              DHL zaměstnanec: Vaše směny budou importovány administrátorem na základě vaší pozice ({userAssignment?.dhl_position?.name}) a týdnů ({userAssignment?.dhl_work_group?.name}).
+            </AlertDescription>
+          </Alert>
+        )}
+        
         <EmptyShiftsState onAddShift={handleOpenAddSheet} />
         <ShiftsFormSheets
           isAddSheetOpen={isAddSheetOpen}
@@ -84,6 +96,16 @@ const ShiftsMainContainer: React.FC = () => {
         error={error}
         onRetry={handleRetry}
       />
+
+      {isDHLUser && hasDHLAssignment && (
+        <Alert className="mb-6">
+          <Info className="h-4 w-4" />
+          <AlertDescription>
+            DHL zaměstnanec: Pozice {userAssignment?.dhl_position?.name}, {userAssignment?.dhl_work_group?.name}. 
+            Směny jsou importovány administrátorem. Můžete je upravovat podle potřeby.
+          </AlertDescription>
+        </Alert>
+      )}
 
       <ShiftsPageHeader onAddShift={handleOpenAddSheet} />
 
@@ -117,4 +139,4 @@ const ShiftsMainContainer: React.FC = () => {
   );
 };
 
-export default ShiftsMainContainer;
+export default UnifiedShiftsMainContainer;
