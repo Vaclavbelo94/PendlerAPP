@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -139,7 +140,7 @@ const DHLAdmin: React.FC = () => {
           <TabsList className="tabs-list grid w-full grid-cols-2 sm:grid-cols-5 gap-1">
             <TabsTrigger value="upload" className="dhl-mobile-tab-trigger flex items-center gap-1 sm:gap-2">
               <Upload className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">Import</span>
+              <span className="hidden sm:inline">Import dat</span>
               <span className="sm:hidden">Import</span>
             </TabsTrigger>
             <TabsTrigger value="schedules" className="dhl-mobile-tab-trigger flex items-center gap-1 sm:gap-2">
@@ -165,7 +166,7 @@ const DHLAdmin: React.FC = () => {
           </TabsList>
         </div>
 
-        {/* Upload Tab */}
+        {/* Upload Tab - only import functionality */}
         <TabsContent value="upload" className="space-y-6">
           {renderUploadContent()}
         </TabsContent>
@@ -175,7 +176,7 @@ const DHLAdmin: React.FC = () => {
           {renderSchedulesContent()}
         </TabsContent>
 
-        {/* Positions Tab - NOW WITH ACTUAL COMPONENT */}
+        {/* Positions Tab - dedicated for position management */}
         <TabsContent value="positions" className="space-y-6">
           {renderPositionsContent()}
         </TabsContent>
