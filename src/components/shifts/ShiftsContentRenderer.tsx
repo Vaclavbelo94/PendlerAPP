@@ -1,14 +1,9 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { RefreshCw } from 'lucide-react';
 import OptimizedShiftCalendar from './OptimizedShiftCalendar';
 import OptimizedShiftsAnalytics from './OptimizedShiftsAnalytics';
-import ShiftsReports from './ShiftsReports';
-import ShiftsSettings from './ShiftsSettings';
-import ShiftsExport from './ShiftsExport';
-import BulkOperations from './BulkOperations';
 import { Shift } from '@/hooks/shifts/useShiftsCRUD';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTranslation } from 'react-i18next';
 
 interface ShiftsContentRendererProps {
@@ -27,38 +22,6 @@ const ShiftsContentRenderer: React.FC<ShiftsContentRendererProps> = ({
   onDeleteShift
 }) => {
   const { t } = useTranslation('shifts');
-  const [selectedShifts, setSelectedShifts] = useState<string[]>([]);
-
-  const handleShiftSelect = (shiftId: string) => {
-    setSelectedShifts(prev => 
-      prev.includes(shiftId) 
-        ? prev.filter(id => id !== shiftId)
-        : [...prev, shiftId]
-    );
-  };
-
-  const handleSelectAll = () => {
-    const allShiftIds = shifts.map(shift => shift.id!).filter(Boolean);
-    setSelectedShifts(allShiftIds);
-  };
-
-  const handleClearSelection = () => {
-    setSelectedShifts([]);
-  };
-
-  const handleBulkDelete = async (shiftIds: string[]) => {
-    for (const shiftId of shiftIds) {
-      await onDeleteShift(shiftId);
-    }
-    setSelectedShifts([]);
-  };
-
-  const handleBulkEdit = (shiftIds: string[]) => {
-    const firstShift = shifts.find(shift => shift.id === shiftIds[0]);
-    if (firstShift) {
-      onEditShift(firstShift);
-    }
-  };
 
   if (isChanging) {
     return (
@@ -71,46 +34,25 @@ const ShiftsContentRenderer: React.FC<ShiftsContentRendererProps> = ({
   switch (activeSection) {
     case 'calendar':
       return (
-        <Tabs defaultValue="calendar" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="calendar">{t('calendarView')}</TabsTrigger>
-            <TabsTrigger value="bulk">{t('bulkOperations')}</TabsTrigger>
-          </TabsList>
-          <TabsContent value="calendar" className="mt-6">
-            <OptimizedShiftCalendar
-              shifts={shifts}
-              onEditShift={onEditShift}
-              onDeleteShift={onDeleteShift}
-            />
-          </TabsContent>
-          <TabsContent value="bulk" className="mt-6">
-            <BulkOperations
-              shifts={shifts}
-              selectedShifts={selectedShifts}
-              onShiftSelect={handleShiftSelect}
-              onSelectAll={handleSelectAll}
-              onClearSelection={handleClearSelection}
-              onBulkDelete={handleBulkDelete}
-              onBulkEdit={handleBulkEdit}
-            />
-          </TabsContent>
-        </Tabs>
+        <div className="w-full">
+          <OptimizedShiftCalendar
+            shifts={shifts}
+            onEditShift={onEditShift}
+            onDeleteShift={onDeleteShift}
+          />
+        </div>
       );
     case 'analytics':
       return <OptimizedShiftsAnalytics shifts={shifts} />;
-    case 'reports':
-      return <ShiftsReports shifts={shifts} />;
-    case 'export':
-      return <ShiftsExport shifts={shifts} />;
-    case 'settings':
-      return <ShiftsSettings />;
     default:
       return (
-        <OptimizedShiftCalendar
-          shifts={shifts}
-          onEditShift={onEditShift}
-          onDeleteShift={onDeleteShift}
-        />
+        <div className="w-full">
+          <OptimizedShiftCalendar
+            shifts={shifts}
+            onEditShift={onEditShift}
+            onDeleteShift={onDeleteShift}
+          />
+        </div>
       );
   }
 };

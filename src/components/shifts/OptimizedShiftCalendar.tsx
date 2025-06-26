@@ -10,6 +10,7 @@ import { Shift } from '@/hooks/shifts/useShiftsCRUD';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { MobileShiftCalendarGrid } from './mobile/MobileShiftCalendarGrid';
+import ShiftCalendarCarousel from './calendar/ShiftCalendarCarousel';
 import { StandardCard } from '@/components/ui/StandardCard';
 import { useTranslation } from 'react-i18next';
 
@@ -25,6 +26,7 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
   onDeleteShift
 }) => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const [viewMode, setViewMode] = useState<'calendar' | 'carousel'>('carousel');
   const isMobile = useIsMobile();
   const { t, i18n } = useTranslation('shifts');
 
@@ -97,74 +99,108 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
 
   return (
     <div className="w-full space-y-6">
-      <StandardCard 
-        title={t('shiftsCalendar')}
-        description={t('clickDateToViewShifts')}
-        className="w-full"
-      >
-        <div className="w-full max-w-none">
-          <Calendar
-            mode="single"
-            selected={selectedDate}
-            onSelect={setSelectedDate}
-            locale={getDateLocale()}
-            modifiers={modifiers}
-            modifiersClassNames={modifiersClassNames}
-            className="w-full mx-auto [&_.rdp-table]:w-full [&_.rdp-months]:justify-center [&_.rdp-month]:w-full [&_.rdp-head_row]:grid [&_.rdp-head_row]:grid-cols-7 [&_.rdp-row]:grid [&_.rdp-row]:grid-cols-7 [&_.rdp-cell]:aspect-square [&_.rdp-day]:w-full [&_.rdp-day]:h-full"
-          />
-        </div>
-      </StandardCard>
-
-      {selectedDate && (
-        <StandardCard 
-          title={format(selectedDate, 'dd. MMMM yyyy', { locale: getDateLocale() })}
-          description={selectedDateShifts.length === 0 
-            ? t('noShiftsForThisDay')
-            : `${selectedDateShifts.length} ${t('shifts').toLowerCase()}${selectedDateShifts.length > 1 ? 'y' : 'a'}`
-          }
+      {/* View Mode Toggle */}
+      <div className="flex gap-2">
+        <Button
+          variant={viewMode === 'carousel' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setViewMode('carousel')}
         >
-          {selectedDateShifts.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              <CalendarDays className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p className="text-sm">{t('noShiftsPlannedForThisDay')}</p>
-            </div>
-          ) : (
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {selectedDateShifts.map((shift) => (
-                <div key={shift.id} className="flex items-center justify-between p-3 border rounded-lg bg-muted/30">
-                  <div className="flex items-center gap-2 min-w-0 flex-1">
-                    <Badge className={cn("text-xs flex-shrink-0", getShiftTypeColor(shift.type))}>
-                      {getShiftTypeLabel(shift.type)}
-                    </Badge>
-                    {shift.notes && (
-                      <span className="text-xs text-muted-foreground truncate">
-                        {shift.notes}
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-1 flex-shrink-0">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => onEditShift(shift)}
-                      className="h-7 w-7 p-0"
-                    >
-                      <Edit className="h-3 w-3" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => shift.id && onDeleteShift(shift.id)}
-                      className="h-7 w-7 p-0 hover:bg-destructive/10"
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+          {t('weeklyView')}
+        </Button>
+        <Button
+          variant={viewMode === 'calendar' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setViewMode('calendar')}
+        >
+          {t('monthlyView')}
+        </Button>
+      </div>
+
+      {viewMode === 'carousel' ? (
+        <StandardCard 
+          title={t('shiftsCalendar')}
+          description={t('weeklyShiftsView')}
+          className="w-full"
+        >
+          <ShiftCalendarCarousel
+            shifts={shifts}
+            onEditShift={onEditShift}
+            onDeleteShift={onDeleteShift}
+          />
         </StandardCard>
+      ) : (
+        <>
+          <StandardCard 
+            title={t('shiftsCalendar')}
+            description={t('clickDateToViewShifts')}
+            className="w-full"
+          >
+            <div className="w-full max-w-none">
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={setSelectedDate}
+                locale={getDateLocale()}
+                modifiers={modifiers}
+                modifiersClassNames={modifiersClassNames}
+                className="w-full mx-auto [&_.rdp-table]:w-full [&_.rdp-months]:justify-center [&_.rdp-month]:w-full [&_.rdp-head_row]:grid [&_.rdp-head_row]:grid-cols-7 [&_.rdp-row]:grid [&_.rdp-row]:grid-cols-7 [&_.rdp-cell]:aspect-square [&_.rdp-day]:w-full [&_.rdp-day]:h-full"
+              />
+            </div>
+          </StandardCard>
+
+          {selectedDate && (
+            <StandardCard 
+              title={format(selectedDate, 'dd. MMMM yyyy', { locale: getDateLocale() })}
+              description={selectedDateShifts.length === 0 
+                ? t('noShiftsForThisDay')
+                : `${selectedDateShifts.length} ${t('shifts').toLowerCase()}${selectedDateShifts.length > 1 ? 'y' : 'a'}`
+              }
+            >
+              {selectedDateShifts.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <CalendarDays className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p className="text-sm">{t('noShiftsPlannedForThisDay')}</p>
+                </div>
+              ) : (
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {selectedDateShifts.map((shift) => (
+                    <div key={shift.id} className="flex items-center justify-between p-3 border rounded-lg bg-muted/30">
+                      <div className="flex items-center gap-2 min-w-0 flex-1">
+                        <Badge className={cn("text-xs flex-shrink-0", getShiftTypeColor(shift.type))}>
+                          {getShiftTypeLabel(shift.type)}
+                        </Badge>
+                        {shift.notes && (
+                          <span className="text-xs text-muted-foreground truncate">
+                            {shift.notes}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1 flex-shrink-0">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => onEditShift(shift)}
+                          className="h-7 w-7 p-0"
+                        >
+                          <Edit className="h-3 w-3" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => shift.id && onDeleteShift(shift.id)}
+                          className="h-7 w-7 p-0 hover:bg-destructive/10"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </StandardCard>
+          )}
+        </>
       )}
     </div>
   );

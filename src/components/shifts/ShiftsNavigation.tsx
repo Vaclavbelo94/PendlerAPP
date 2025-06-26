@@ -29,7 +29,7 @@ const ShiftsNavigation: React.FC<ShiftsNavigationProps> = ({
   ];
 
   return (
-    <div className="flex flex-wrap gap-2 p-1 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10">
+    <div className="flex gap-1 p-1 bg-muted/30 rounded-lg border">
       {sections.map((section) => {
         const Icon = section.icon;
         return (
@@ -37,10 +37,10 @@ const ShiftsNavigation: React.FC<ShiftsNavigationProps> = ({
             key={section.id}
             variant={activeSection === section.id ? 'default' : 'ghost'}
             onClick={() => onSectionChange(section.id)}
-            className={`flex-1 min-w-0 flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+            className={`flex-1 flex items-center gap-2 px-4 py-2 rounded-md transition-all ${
               activeSection === section.id
-                ? 'bg-white text-gray-900 shadow-lg'
-                : 'text-white/80 hover:text-white hover:bg-white/10'
+                ? 'bg-background text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
             }`}
           >
             <Icon className="h-4 w-4 flex-shrink-0" />
