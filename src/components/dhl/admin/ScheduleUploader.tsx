@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -24,6 +25,22 @@ export const ScheduleUploader: React.FC = () => {
   });
   const [isProcessing, setIsProcessing] = useState(false);
   const [step, setStep] = useState<'select' | 'preview' | 'success'>('select');
+
+  // Filter work groups based on selected position's cycle_weeks
+  const getFilteredWorkGroups = () => {
+    if (!formData.positionId) {
+      return workGroups; // Show all weeks if no position selected
+    }
+    
+    const selectedPosition = positions.find(p => p.id === formData.positionId);
+    if (!selectedPosition?.cycle_weeks || selectedPosition.cycle_weeks.length === 0) {
+      return workGroups; // Show all weeks if position has no cycle_weeks defined
+    }
+    
+    return workGroups.filter(group => 
+      selectedPosition.cycle_weeks.includes(group.week_number)
+    );
+  };
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -63,7 +80,7 @@ export const ScheduleUploader: React.FC = () => {
   };
 
   const handlePositionChange = async (positionId: string) => {
-    setFormData(prev => ({ ...prev, positionId }));
+    setFormData(prev => ({ ...prev, positionId, workGroupId: '' })); // Clear work group when position changes
     
     // Re-validate if we have data
     if (jsonData && selectedFile) {
@@ -132,6 +149,8 @@ export const ScheduleUploader: React.FC = () => {
     setValidation(null);
   };
 
+  const filteredWorkGroups = getFilteredWorkGroups();
+
   if (step === 'select') {
     return (
       <div className="space-y-4">
@@ -158,23 +177,28 @@ export const ScheduleUploader: React.FC = () => {
           </div>
 
           <div>
-            <Label htmlFor="workGroup">Pracovní skupina *</Label>
+            <Label htmlFor="workGroup">Pracovní týden *</Label>
             <Select 
               value={formData.workGroupId} 
               onValueChange={(value) => setFormData(prev => ({ ...prev, workGroupId: value }))}
-              disabled={isLoading}
+              disabled={isLoading || !formData.positionId}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Vyberte skupinu" />
+                <SelectValue placeholder={formData.positionId ? "Vyberte týden" : "Nejprve vyberte pozici"} />
               </SelectTrigger>
               <SelectContent>
-                {workGroups.map((group) => (
+                {filteredWorkGroups.map((group) => (
                   <SelectItem key={group.id} value={group.id}>
-                    {group.name} (Týden {group.week_number})
+                    Týden {group.week_number}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
+            {formData.positionId && filteredWorkGroups.length === 0 && (
+              <p className="text-sm text-muted-foreground mt-1">
+                Pro vybranou pozici nejsou k dispozici žádné pracovní týdny
+              </p>
+            )}
           </div>
         </div>
 
