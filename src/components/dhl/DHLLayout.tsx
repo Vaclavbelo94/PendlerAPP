@@ -2,6 +2,7 @@
 import React from 'react';
 import { DHLNavbar } from './DHLNavbar';
 import { DHLSidebar } from './DHLSidebar';
+import DHLMobileNavigation from './DHLMobileNavigation';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 interface DHLLayoutProps {
@@ -15,9 +16,10 @@ export const DHLLayout: React.FC<DHLLayoutProps> = ({ children }) => {
     return (
       <div className="min-h-screen flex flex-col bg-background">
         <DHLNavbar />
-        <main className="flex-1 p-4">
+        <main className="flex-1 p-4 pb-20">
           {children}
         </main>
+        <DHLMobileNavigation />
       </div>
     );
   }

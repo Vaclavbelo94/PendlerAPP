@@ -45,6 +45,9 @@ import AdminPanel from '@/pages/AdminPanel';
 import DHLDashboard from '@/pages/DHLDashboard';
 import DHLAdmin from '@/pages/DHLAdmin';
 import DHLSetup from '@/pages/DHLSetup';
+import DHLShifts from '@/pages/DHLShifts';
+import DHLProfile from '@/pages/DHLProfile';
+import DHLVehicle from '@/pages/DHLVehicle';
 import NotFound from '@/pages/NotFound';
 
 const queryClient = new QueryClient();
@@ -112,6 +115,9 @@ const AppContent: React.FC = () => {
               <Route path="/dhl-dashboard" element={<DHLDashboard />} />
               <Route path="/dhl-admin" element={<DHLAdmin />} />
               <Route path="/dhl-setup" element={<DHLSetup />} />
+              <Route path="/dhl-shifts" element={<DHLShifts />} />
+              <Route path="/dhl-profile" element={<DHLProfile />} />
+              <Route path="/dhl-vehicle" element={<DHLVehicle />} />
 
               {/* 404 route */}
               <Route path="*" element={<NotFound />} />
