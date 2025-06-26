@@ -15,6 +15,8 @@ export const errorHandler = {
     action?: string;
     item?: any;
     date?: string;
+    data?: any;
+    maxRetriesReached?: boolean;
   }) => {
     console.error('Error occurred:', {
       error,

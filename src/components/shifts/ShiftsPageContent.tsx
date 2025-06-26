@@ -8,7 +8,7 @@ import ShiftsReports from '@/components/shifts/ShiftsReports';
 import ShiftsSettings from '@/components/shifts/ShiftsSettings';
 import EmptyShiftsState from '@/components/shifts/EmptyShiftsState';
 import { ErrorBoundaryWithFallback } from '@/components/common/ErrorBoundaryWithFallback';
-import { Shift } from '@/hooks/useShiftsManagement';
+import { Shift } from '@/hooks/shifts/useOptimizedShiftsManagement';
 import { useTranslation } from 'react-i18next';
 
 interface ShiftsPageContentProps {

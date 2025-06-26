@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { ShiftType } from "../types";
 import { formatDateForDB } from "../utils/dateUtils";
@@ -140,7 +141,7 @@ export class EnhancedShiftService {
         }
 
         return { savedShift, isUpdate };
-      }, 3, 1000);
+      }, 3);
     } catch (error) {
       // Save to offline queue for later sync
       await this.saveToOfflineQueue('UPSERT', shiftData);
@@ -186,7 +187,7 @@ export class EnhancedShiftService {
           await errorHandler.retryOperation(async () => {
             const { error } = await supabase.from('shifts').upsert(item.data);
             if (error) throw error;
-          }, 2, 500);
+          }, 2);
           processedItems.push(item.id);
         }
       } catch (error) {

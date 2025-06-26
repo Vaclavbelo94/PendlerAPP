@@ -196,7 +196,7 @@ export const useOptimizedShifts = (): UseOptimizedShiftsReturn => {
       localStorage.setItem(`shifts_cache_${user.id}`, JSON.stringify(updatedShifts));
 
     } catch (err) {
-      errorHandler.handleError(err, { operation: 'saveShift', date, type, notes });
+      errorHandler.handleError(err, { operation: 'saveShift', date: formatDateForDB(date), shiftData: { type, notes } });
       throw err;
     }
   }, [user, isOffline, shiftsLookup, shifts]);
