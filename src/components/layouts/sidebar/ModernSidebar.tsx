@@ -33,11 +33,11 @@ const ModernSidebar = () => {
       return isDHLAdmin ? dhlAdminNavigationItems : dhlNavigationItems;
     }
     
-    // Standard navigation with DHL items filtered
+    // Standard navigation with DHL items filtered - fix the property access
     return navigationItems.filter(item => {
       if (item.adminOnly && !isAdmin) return false;
-      if (item.dhlAdminOnly && !isDHLAdmin) return false;
-      if (item.dhlOnly && !canAccessDHL) return false;
+      if ('dhlAdminOnly' in item && item.dhlAdminOnly && !isDHLAdmin) return false;
+      if ('dhlOnly' in item && item.dhlOnly && !canAccessDHL) return false;
       return true;
     });
   };
@@ -100,9 +100,10 @@ const ModernSidebar = () => {
                   </h2>
                   <div className="space-y-1">
                     {currentNavigationItems
-                      .filter(item => !item.adminOnly && !item.dhlAdminOnly && !item.dhlOnly)
+                      .filter(item => !item.adminOnly && !('dhlAdminOnly' in item && item.dhlAdminOnly) && !('dhlOnly' in item && item.dhlOnly))
                       .map((item) => {
                         const Icon = item.icon;
+                        const titleKey = 'titleKey' in item ? item.titleKey : '';
                         return (
                           <Button
                             key={item.path}
@@ -115,7 +116,7 @@ const ModernSidebar = () => {
                           >
                             <Link to={item.path}>
                               <Icon className="mr-2 h-4 w-4" />
-                              {t(item.titleKey)}
+                              {titleKey ? t(titleKey) : ('title' in item ? item.title : '')}
                               {item.badge && (
                                 <span className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
                                   {item.badge}
@@ -138,9 +139,10 @@ const ModernSidebar = () => {
                       </h2>
                       <div className="space-y-1">
                         {currentNavigationItems
-                          .filter(item => item.dhlOnly || item.dhlAdminOnly)
+                          .filter(item => ('dhlOnly' in item && item.dhlOnly) || ('dhlAdminOnly' in item && item.dhlAdminOnly))
                           .map((item) => {
                             const Icon = item.icon;
+                            const titleKey = 'titleKey' in item ? item.titleKey : '';
                             return (
                               <Button
                                 key={item.path}
@@ -153,7 +155,7 @@ const ModernSidebar = () => {
                               >
                                 <Link to={item.path}>
                                   <Icon className="mr-2 h-4 w-4" />
-                                  {item.dhlAdminOnly ? 'DHL Admin' : 'DHL Dashboard'}
+                                  {'dhlAdminOnly' in item && item.dhlAdminOnly ? 'DHL Admin' : 'DHL Dashboard'}
                                   {item.badge && (
                                     <span className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
                                       {item.badge}
@@ -178,9 +180,10 @@ const ModernSidebar = () => {
                       </h2>
                       <div className="space-y-1">
                         {currentNavigationItems
-                          .filter(item => item.adminOnly && !item.dhlAdminOnly)
+                          .filter(item => item.adminOnly && !('dhlAdminOnly' in item && item.dhlAdminOnly))
                           .map((item) => {
                             const Icon = item.icon;
+                            const titleKey = 'titleKey' in item ? item.titleKey : '';
                             return (
                               <Button
                                 key={item.path}
@@ -193,7 +196,7 @@ const ModernSidebar = () => {
                               >
                                 <Link to={item.path}>
                                   <Icon className="mr-2 h-4 w-4" />
-                                  {t(item.titleKey)}
+                                  {titleKey ? t(titleKey) : ('title' in item ? item.title : '')}
                                   {item.badge && (
                                     <span className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
                                       {item.badge}

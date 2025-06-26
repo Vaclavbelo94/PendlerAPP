@@ -17,6 +17,8 @@ export interface DHLNavigationItem {
   icon: any;
   badge?: number;
   adminOnly?: boolean;
+  dhlOnly?: boolean; // Added missing property
+  dhlAdminOnly?: boolean; // Added missing property
 }
 
 export const dhlNavigationItems: DHLNavigationItem[] = [
@@ -52,7 +54,7 @@ export const dhlAdminNavigationItems: DHLNavigationItem[] = [
     titleKey: 'dhlAdmin',
     title: 'DHL Admin',
     icon: Truck,
-    adminOnly: true
+    dhlAdminOnly: true
   },
   {
     path: '/dhl-dashboard',
