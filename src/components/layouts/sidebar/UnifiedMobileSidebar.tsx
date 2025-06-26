@@ -123,7 +123,9 @@ export const UnifiedMobileSidebar: React.FC<UnifiedMobileSidebarProps> = ({
               {navigationItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.path;
-                const displayText = 'label' in item ? item.label : t(item.key);
+                const displayText: string = ('label' in item && typeof item.label === 'string') 
+                  ? item.label 
+                  : String(t(item.key));
                 
                 return (
                   <Button
@@ -157,11 +159,11 @@ export const UnifiedMobileSidebar: React.FC<UnifiedMobileSidebarProps> = ({
                     isCompact && "px-2 justify-center"
                   )}
                   onClick={() => handleNavigation('/profile')}
-                  title={isCompact ? t('profile') : undefined}
+                  title={isCompact ? String(t('profile')) : undefined}
                 >
                   <User className="h-5 w-5 flex-shrink-0" />
                   {!isCompact && (
-                    <span className="truncate">{t('profile')}</span>
+                    <span className="truncate">{String(t('profile'))}</span>
                   )}
                 </Button>
               )}
@@ -174,11 +176,11 @@ export const UnifiedMobileSidebar: React.FC<UnifiedMobileSidebarProps> = ({
                     isCompact && "px-2 justify-center"
                   )}
                   onClick={() => handleNavigation('/settings')}
-                  title={isCompact ? t('settings') : undefined}
+                  title={isCompact ? String(t('settings')) : undefined}
                 >
                   <Settings className="h-5 w-5 flex-shrink-0" />
                   {!isCompact && (
-                    <span className="truncate">{t('settings')}</span>
+                    <span className="truncate">{String(t('settings'))}</span>
                   )}
                 </Button>
               )}
@@ -190,11 +192,11 @@ export const UnifiedMobileSidebar: React.FC<UnifiedMobileSidebarProps> = ({
                   isCompact && "px-2 justify-center"
                 )}
                 onClick={handleSignOut}
-                title={isCompact ? t('logout') : undefined}
+                title={isCompact ? String(t('logout')) : undefined}
               >
                 <LogOut className="h-5 w-5 flex-shrink-0" />
                 {!isCompact && (
-                  <span className="truncate">{t('logout')}</span>
+                  <span className="truncate">{String(t('logout'))}</span>
                 )}
               </Button>
             </div>

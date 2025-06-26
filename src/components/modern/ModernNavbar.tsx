@@ -48,19 +48,25 @@ export const ModernNavbar: React.FC = () => {
   // Choose navigation items based on context
   const navigationItems = shouldShowDHLNavigation ? dhlNavigationItems : standardNavigationItems;
 
-  const NavLink = ({ item, mobile = false }: { item: typeof navigationItems[0], mobile?: boolean }) => (
-    <Link
-      to={item.path}
-      className={cn(
-        "text-sm font-medium transition-colors hover:text-primary",
-        location.pathname === item.path ? "text-primary" : "text-muted-foreground",
-        mobile && "block px-3 py-2 text-base"
-      )}
-      onClick={() => mobile && setIsOpen(false)}
-    >
-      {'label' in item ? item.label : t(item.key)}
-    </Link>
-  );
+  const NavLink = ({ item, mobile = false }: { item: typeof navigationItems[0], mobile?: boolean }) => {
+    const displayText: string = ('label' in item && typeof item.label === 'string') 
+      ? item.label 
+      : String(t(item.key));
+    
+    return (
+      <Link
+        to={item.path}
+        className={cn(
+          "text-sm font-medium transition-colors hover:text-primary",
+          location.pathname === item.path ? "text-primary" : "text-muted-foreground",
+          mobile && "block px-3 py-2 text-base"
+        )}
+        onClick={() => mobile && setIsOpen(false)}
+      >
+        {displayText}
+      </Link>
+    );
+  };
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -77,7 +83,7 @@ export const ModernNavbar: React.FC = () => {
               ? "from-yellow-600 to-red-600" 
               : "from-primary to-blue-600"
           )}>
-            {shouldShowDHLNavigation ? 'DHL Workspace' : t('workAssistant')}
+            {shouldShowDHLNavigation ? 'DHL Workspace' : String(t('workAssistant'))}
           </span>
         </Link>
 
@@ -94,23 +100,23 @@ export const ModernNavbar: React.FC = () => {
             <div className="hidden md:flex items-center space-x-4">
               <Link to="/profile">
                 <Button variant="ghost" size="sm">
-                  {t('profile')}
+                  {String(t('profile'))}
                 </Button>
               </Link>
               <Button variant="outline" size="sm" onClick={signOut}>
-                {t('logout')}
+                {String(t('logout'))}
               </Button>
             </div>
           ) : (
             <div className="hidden md:flex items-center space-x-2">
               <Link to="/login">
                 <Button variant="ghost" size="sm">
-                  {t('login')}
+                  {String(t('login'))}
                 </Button>
               </Link>
               <Link to="/register">
                 <Button size="sm">
-                  {t('register')}
+                  {String(t('register'))}
                 </Button>
               </Link>
             </div>
@@ -138,7 +144,7 @@ export const ModernNavbar: React.FC = () => {
                         className="block px-3 py-2 text-base text-muted-foreground hover:text-primary transition-colors"
                         onClick={() => setIsOpen(false)}
                       >
-                        {t(item.key)}
+                        {String(t(item.key))}
                       </Link>
                     ))}
                   </div>
@@ -149,7 +155,7 @@ export const ModernNavbar: React.FC = () => {
                     <>
                       <Link to="/profile" onClick={() => setIsOpen(false)}>
                         <Button variant="ghost" className="w-full justify-start">
-                          {t('profile')}
+                          {String(t('profile'))}
                         </Button>
                       </Link>
                       <Button 
@@ -160,19 +166,19 @@ export const ModernNavbar: React.FC = () => {
                           setIsOpen(false);
                         }}
                       >
-                        {t('logout')}
+                        {String(t('logout'))}
                       </Button>
                     </>
                   ) : (
                     <>
                       <Link to="/login" onClick={() => setIsOpen(false)}>
                         <Button variant="ghost" className="w-full justify-start">
-                          {t('login')}
+                          {String(t('login'))}
                         </Button>
                       </Link>
                       <Link to="/register" onClick={() => setIsOpen(false)}>
                         <Button className="w-full justify-start">
-                          {t('register')}
+                          {String(t('register'))}
                         </Button>
                       </Link>
                     </>
