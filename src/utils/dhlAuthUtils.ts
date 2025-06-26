@@ -11,6 +11,40 @@ interface Profile {
   // Add other profile properties as needed
 }
 
+export interface DHLAuthState {
+  isDHLAdmin: boolean;
+  isDHLEmployee: boolean;
+  canAccessDHLAdmin: boolean;
+  canAccessDHLFeatures: boolean;
+}
+
+/**
+ * Check if user is DHL employee based on email domain
+ */
+export const isDHLEmployee = (user: User | null): boolean => {
+  if (!user?.email) return false;
+  
+  // Check for DHL email domains
+  const dhlDomains = ['@dhl.com', '@dhl.de', '@dhl.cz'];
+  const email = user.email.toLowerCase();
+  
+  // Also include specific test emails
+  const testEmails = ['admin_dhl@pendlerapp.com', 'vaclavbelo94@gmail.com'];
+  
+  return dhlDomains.some(domain => email.includes(domain)) || testEmails.includes(email);
+};
+
+/**
+ * Check if user is DHL admin
+ */
+export const isDHLAdmin = (user: User | null): boolean => {
+  if (!user?.email) return false;
+  
+  // DHL admin emails
+  const adminEmails = ['admin_dhl@pendlerapp.com', 'vaclavbelo94@gmail.com'];
+  return adminEmails.includes(user.email);
+};
+
 /**
  * Check if user can access DHL features
  * For now, we'll allow all authenticated users
@@ -36,7 +70,7 @@ export const canAccessDHLAdmin = (user: User | null): boolean => {
 };
 
 /**
- * Check if user has DHL management permissions
+ * Check if user can access DHL management permissions
  */
 export const canManageDHLUsers = (user: User | null): boolean => {
   return canAccessDHLAdmin(user);
@@ -47,4 +81,34 @@ export const canManageDHLUsers = (user: User | null): boolean => {
  */
 export const canGenerateDHLShifts = (user: User | null): boolean => {
   return canAccessDHLAdmin(user);
+};
+
+/**
+ * Get comprehensive DHL auth state for a user
+ */
+export const getDHLAuthState = (user: User | null): DHLAuthState => {
+  return {
+    isDHLAdmin: isDHLAdmin(user),
+    isDHLEmployee: isDHLEmployee(user),
+    canAccessDHLAdmin: canAccessDHLAdmin(user),
+    canAccessDHLFeatures: canAccessDHLFeatures(user)
+  };
+};
+
+/**
+ * Get DHL redirect path based on user status
+ */
+export const getDHLRedirectPath = (user: User | null): string | null => {
+  if (!user) return null;
+  
+  const isDHL = isDHLEmployee(user);
+  const isAdmin = isDHLAdmin(user);
+  
+  if (!isDHL) return null;
+  
+  if (isAdmin) {
+    return '/dhl-admin';
+  } else {
+    return '/dhl-dashboard';
+  }
 };
