@@ -4,35 +4,42 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { Plus, Edit, Trash2, Settings, Users } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { Separator } from '@/components/ui/separator';
+import { Plus, Edit, Trash2, Save, X } from 'lucide-react';
 import { toast } from 'sonner';
-import { DHLPosition } from '@/types/dhl';
-
-const POSITION_TYPES = [
-  { value: 'fahrer', label: 'Fahrer' },
-  { value: 'beifahrer', label: 'Beifahrer' },
-  { value: 'sortierer', label: 'Sortierer' },
-  { value: 'other', label: 'Ostatní' }
-];
+import { supabase } from '@/integrations/supabase/client';
+import { DHLPosition, DHLPositionType } from '@/types/dhl';
 
 export const PositionManagementPanel: React.FC = () => {
   const [positions, setPositions] = useState<DHLPosition[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingPosition, setEditingPosition] = useState<DHLPosition | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
+
+  // Form state
   const [formData, setFormData] = useState({
     name: '',
+    position_type: '' as DHLPositionType,
     description: '',
-    position_type: 'fahrer' as const,
     requirements: [] as string[],
     cycle_weeks: [] as number[]
   });
+
+  const positionTypes: { value: DHLPositionType; label: string }[] = [
+    { value: 'technik', label: 'Technik' },
+    { value: 'rangierer', label: 'Rangierer' },
+    { value: 'verlader', label: 'Verlader' },
+    { value: 'sortierer', label: 'Sortierer' },
+    { value: 'fahrer', label: 'Fahrer' },
+    { value: 'other', label: 'Ostatní' }
+  ];
+
+  useEffect(() => {
+    loadPositions();
+  }, []);
 
   const loadPositions = async () => {
     try {
@@ -52,48 +59,48 @@ export const PositionManagementPanel: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    loadPositions();
-  }, []);
-
   const resetForm = () => {
     setFormData({
       name: '',
+      position_type: '' as DHLPositionType,
       description: '',
-      position_type: 'fahrer',
       requirements: [],
       cycle_weeks: []
     });
     setEditingPosition(null);
+    setIsCreating(false);
   };
 
-  const openCreateDialog = () => {
-    resetForm();
-    setIsDialogOpen(true);
-  };
-
-  const openEditDialog = (position: DHLPosition) => {
+  const handleEdit = (position: DHLPosition) => {
+    setEditingPosition(position);
     setFormData({
       name: position.name,
-      description: position.description || '',
       position_type: position.position_type,
+      description: position.description || '',
       requirements: position.requirements || [],
       cycle_weeks: position.cycle_weeks || []
     });
-    setEditingPosition(position);
-    setIsDialogOpen(true);
+    setIsCreating(false);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const handleCreate = () => {
+    resetForm();
+    setIsCreating(true);
+  };
+
+  const handleSave = async () => {
+    if (!formData.name || !formData.position_type) {
+      toast.error('Vyplňte všechna povinná pole');
+      return;
+    }
+
     try {
       const positionData = {
         name: formData.name,
-        description: formData.description,
         position_type: formData.position_type,
-        requirements: formData.requirements,
-        cycle_weeks: formData.cycle_weeks,
+        description: formData.description || null,
+        requirements: formData.requirements.length > 0 ? formData.requirements : null,
+        cycle_weeks: formData.cycle_weeks.length > 0 ? formData.cycle_weeks : null,
         is_active: true
       };
 
@@ -104,19 +111,18 @@ export const PositionManagementPanel: React.FC = () => {
           .eq('id', editingPosition.id);
 
         if (error) throw error;
-        toast.success('Pozice byla aktualizována');
+        toast.success('Pozice byla úspěšně upravena');
       } else {
         const { error } = await supabase
           .from('dhl_positions')
-          .insert(positionData);
+          .insert([positionData]);
 
         if (error) throw error;
-        toast.success('Pozice byla vytvořena');
+        toast.success('Pozice byla úspěšně vytvořena');
       }
 
-      setIsDialogOpen(false);
-      resetForm();
       loadPositions();
+      resetForm();
     } catch (error) {
       console.error('Error saving position:', error);
       toast.error('Chyba při ukládání pozice');
@@ -124,14 +130,18 @@ export const PositionManagementPanel: React.FC = () => {
   };
 
   const handleDelete = async (positionId: string) => {
+    if (!confirm('Opravdu chcete smazat tuto pozici?')) {
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('dhl_positions')
-        .update({ is_active: false })
+        .delete()
         .eq('id', positionId);
 
       if (error) throw error;
-      toast.success('Pozice byla deaktivována');
+      toast.success('Pozice byla úspěšně smazána');
       loadPositions();
     } catch (error) {
       console.error('Error deleting position:', error);
@@ -139,221 +149,275 @@ export const PositionManagementPanel: React.FC = () => {
     }
   };
 
-  const handleRequirementsChange = (value: string) => {
-    const requirements = value.split('\n').filter(req => req.trim() !== '');
-    setFormData(prev => ({ ...prev, requirements }));
+  const addRequirement = () => {
+    setFormData(prev => ({
+      ...prev,
+      requirements: [...prev.requirements, '']
+    }));
   };
 
-  const handleCycleWeeksChange = (value: string) => {
-    const weeks = value.split(',').map(w => parseInt(w.trim())).filter(w => !isNaN(w) && w > 0);
-    setFormData(prev => ({ ...prev, cycle_weeks: weeks }));
+  const updateRequirement = (index: number, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      requirements: prev.requirements.map((req, i) => i === index ? value : req)
+    }));
+  };
+
+  const removeRequirement = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      requirements: prev.requirements.filter((_, i) => i !== index)
+    }));
+  };
+
+  const addCycleWeek = () => {
+    const week = prompt('Zadejte číslo týdne (1-15):');
+    if (week && !isNaN(Number(week))) {
+      const weekNum = Number(week);
+      if (weekNum >= 1 && weekNum <= 15 && !formData.cycle_weeks.includes(weekNum)) {
+        setFormData(prev => ({
+          ...prev,
+          cycle_weeks: [...prev.cycle_weeks, weekNum].sort((a, b) => a - b)
+        }));
+      }
+    }
+  };
+
+  const removeCycleWeek = (week: number) => {
+    setFormData(prev => ({
+      ...prev,
+      cycle_weeks: prev.cycle_weeks.filter(w => w !== week)
+    }));
   };
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
-          <p className="text-muted-foreground">Načítám pozice...</p>
-        </div>
-      </div>
+      <Card>
+        <CardContent className="p-6">
+          <div className="text-center">Načítám pozice...</div>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold">Správa pozic</h2>
-          <p className="text-muted-foreground">
-            Spravujte DHL pozice a jejich vlastnosti
-          </p>
-        </div>
-        <Button onClick={openCreateDialog}>
-          <Plus className="h-4 w-4 mr-2" />
-          Nová pozice
-        </Button>
-      </div>
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Správa pozic</CardTitle>
+              <CardDescription>
+                Spravujte DHL pozice a jejich nastavení
+              </CardDescription>
+            </div>
+            <Button onClick={handleCreate} className="gap-2" disabled={isCreating || editingPosition}>
+              <Plus className="h-4 w-4" />
+              Nová pozice
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {/* Form for creating/editing */}
+          {(isCreating || editingPosition) && (
+            <div className="border rounded-lg p-4 mb-6 bg-muted/20">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-medium">
+                  {editingPosition ? 'Upravit pozici' : 'Nová pozice'}
+                </h3>
+                <Button variant="ghost" size="sm" onClick={resetForm}>
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
 
-      <div className="grid gap-4">
-        {positions.map((position) => (
-          <Card key={position.id}>
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-lg">{position.name}</CardTitle>
-                  <CardDescription>{position.description}</CardDescription>
+              <div className="grid gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Název pozice *</Label>
+                    <Input
+                      id="name"
+                      value={formData.name}
+                      onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                      placeholder="Např. Rangierer - Směna A"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="position_type">Typ pozice *</Label>
+                    <Select
+                      value={formData.position_type}
+                      onValueChange={(value: DHLPositionType) => 
+                        setFormData(prev => ({ ...prev, position_type: value }))
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Vyberte typ pozice" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {positionTypes.map((type) => (
+                          <SelectItem key={type.value} value={type.value}>
+                            {type.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant="secondary">
-                    {POSITION_TYPES.find(t => t.value === position.position_type)?.label}
-                  </Badge>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => openEditDialog(position)}
-                  >
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="outline" size="sm">
-                        <Trash2 className="h-4 w-4" />
+
+                <div className="space-y-2">
+                  <Label htmlFor="description">Popis</Label>
+                  <Textarea
+                    id="description"
+                    value={formData.description}
+                    onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                    placeholder="Popis pozice a jejích specifik"
+                    rows={3}
+                  />
+                </div>
+
+                {/* Requirements */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label>Požadavky</Label>
+                    <Button type="button" variant="outline" size="sm" onClick={addRequirement}>
+                      <Plus className="h-3 w-3 mr-1" />
+                      Přidat
+                    </Button>
+                  </div>
+                  {formData.requirements.map((req, index) => (
+                    <div key={index} className="flex gap-2">
+                      <Input
+                        value={req}
+                        onChange={(e) => updateRequirement(index, e.target.value)}
+                        placeholder="Požadavek"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => removeRequirement(index)}
+                      >
+                        <X className="h-3 w-3" />
                       </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Deaktivovat pozici</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Opravdu chcete deaktivovat pozici "{position.name}"? 
-                          Tato akce je vratná - pozici můžete znovu aktivovat.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Zrušit</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleDelete(position.id)}>
-                          Deaktivovat
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Cycle Weeks */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label>Cyklus týdnů</Label>
+                    <Button type="button" variant="outline" size="sm" onClick={addCycleWeek}>
+                      <Plus className="h-3 w-3 mr-1" />
+                      Přidat týden
+                    </Button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {formData.cycle_weeks.map((week) => (
+                      <Badge key={week} variant="secondary" className="gap-1">
+                        Týden {week}
+                        <button
+                          type="button"
+                          onClick={() => removeCycleWeek(week)}
+                          className="ml-1 hover:text-destructive"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex gap-2 pt-4">
+                  <Button onClick={handleSave} className="gap-2">
+                    <Save className="h-4 w-4" />
+                    {editingPosition ? 'Uložit změny' : 'Vytvořit pozici'}
+                  </Button>
+                  <Button variant="outline" onClick={resetForm}>
+                    Zrušit
+                  </Button>
                 </div>
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                {position.requirements && position.requirements.length > 0 && (
-                  <div>
-                    <div className="font-medium mb-1 flex items-center gap-1">
-                      <Settings className="h-3 w-3" />
-                      Požadavky
-                    </div>
-                    <ul className="list-disc list-inside text-muted-foreground">
-                      {position.requirements.map((req, idx) => (
-                        <li key={idx}>{req}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-                
-                {position.cycle_weeks && position.cycle_weeks.length > 0 && (
-                  <div>
-                    <div className="font-medium mb-1 flex items-center gap-1">
-                      <Users className="h-3 w-3" />
-                      Cyklus týdnů
-                    </div>
-                    <div className="flex flex-wrap gap-1">
-                      {position.cycle_weeks.map((week, idx) => (
-                        <Badge key={idx} variant="outline" className="text-xs">
-                          {week}
+            </div>
+          )}
+
+          {/* Positions List */}
+          <div className="space-y-4">
+            {positions.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                Žádné pozice nejsou vytvořeny
+              </div>
+            ) : (
+              positions.map((position) => (
+                <div key={position.id} className="border rounded-lg p-4">
+                  <div className="flex items-start justify-between">
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-medium">{position.name}</h3>
+                        <Badge variant="outline">
+                          {positionTypes.find(t => t.value === position.position_type)?.label}
                         </Badge>
-                      ))}
+                        {!position.is_active && (
+                          <Badge variant="destructive">Neaktivní</Badge>
+                        )}
+                      </div>
+                      
+                      {position.description && (
+                        <p className="text-sm text-muted-foreground">
+                          {position.description}
+                        </p>
+                      )}
+
+                      {position.requirements && position.requirements.length > 0 && (
+                        <div>
+                          <p className="text-sm font-medium mb-1">Požadavky:</p>
+                          <ul className="text-sm text-muted-foreground list-disc list-inside">
+                            {position.requirements.map((req, index) => (
+                              <li key={index}>{req}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {position.cycle_weeks && position.cycle_weeks.length > 0 && (
+                        <div>
+                          <p className="text-sm font-medium mb-1">Cyklus týdnů:</p>
+                          <div className="flex flex-wrap gap-1">
+                            {position.cycle_weeks.map((week) => (
+                              <Badge key={week} variant="secondary" className="text-xs">
+                                {week}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleEdit(position)}
+                        disabled={isCreating || editingPosition}
+                      >
+                        <Edit className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDelete(position.id)}
+                        disabled={isCreating || editingPosition}
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
                     </div>
                   </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>
-              {editingPosition ? 'Upravit pozici' : 'Nová pozice'}
-            </DialogTitle>
-            <DialogDescription>
-              {editingPosition 
-                ? 'Upravte detaily pozice' 
-                : 'Vytvořte novou DHL pozici'
-              }
-            </DialogDescription>
-          </DialogHeader>
-          
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Název pozice *</Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder="např. Řidič nákladního vozidla"
-                  required
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="position_type">Typ pozice *</Label>
-                <Select
-                  value={formData.position_type}
-                  onValueChange={(value: any) => setFormData(prev => ({ ...prev, position_type: value }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {POSITION_TYPES.map((type) => (
-                      <SelectItem key={type.value} value={type.value}>
-                        {type.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="description">Popis</Label>
-              <Textarea
-                id="description"
-                value={formData.description}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                placeholder="Podrobný popis pozice..."
-                rows={3}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="requirements">Požadavky (každý na novém řádku)</Label>
-              <Textarea
-                id="requirements"
-                value={formData.requirements.join('\n')}
-                onChange={(e) => handleRequirementsChange(e.target.value)}
-                placeholder="např.&#10;Řidičský průkaz C+E&#10;Profesní způsobilost&#10;Zkušenosti s nákladní dopravou"
-                rows={4}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="cycle_weeks">Cyklus týdnů (čárkou oddělené)</Label>
-              <Input
-                id="cycle_weeks"
-                value={formData.cycle_weeks.join(', ')}
-                onChange={(e) => handleCycleWeeksChange(e.target.value)}
-                placeholder="např. 1, 2, 3, 4"
-              />
-              <p className="text-xs text-muted-foreground">
-                Zadejte čísla týdnů v cyklu, například: 1, 2, 3, 4
-              </p>
-            </div>
-
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setIsDialogOpen(false)}
-              >
-                Zrušit
-              </Button>
-              <Button type="submit">
-                {editingPosition ? 'Uložit změny' : 'Vytvořit pozici'}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
+                </div>
+              ))
+            )}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
