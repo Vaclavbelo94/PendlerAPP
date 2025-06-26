@@ -1,339 +1,196 @@
-
 import React, { useState } from 'react';
-import { Helmet } from 'react-helmet';
-import { motion } from 'framer-motion';
-import { Truck, Users, Calendar, Settings, Upload, Database, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
-import { useAuth } from '@/hooks/useAuth';
-import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
-import Layout from '@/components/layouts/Layout';
-import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
-import { canAccessDHLAdmin } from '@/utils/dhlAuthUtils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
-import DHLImportPanel from '@/components/dhl/admin/DHLImportPanel';
+import { Badge } from '@/components/ui/badge';
+import { Upload, FileText, CheckCircle, AlertTriangle, Trash2, Download, Users } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ScheduleUploader } from '@/components/dhl/admin/ScheduleUploader';
+import { SchedulePreview } from '@/components/dhl/admin/SchedulePreview';
+import { ImportHistory } from '@/components/dhl/admin/ImportHistory';
+import { SchedulesList } from '@/components/dhl/admin/SchedulesList';
+import { PositionManagementPanel } from '@/components/dhl/admin/PositionManagementPanel';
+import '@/components/dhl/admin/MobileDHLStyles.css';
 
 const DHLAdmin: React.FC = () => {
-  const { t } = useTranslation(['common']);
-  const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState('upload');
 
-  const tabs = ['overview', 'import', 'positions', 'settings'];
-  
-  const { containerRef, currentIndex } = useSwipeNavigation({
-    items: tabs,
-    currentItem: activeTab,
-    onItemChange: setActiveTab,
-    enabled: true
-  });
-
-  // Check access
-  if (!canAccessDHLAdmin(user)) {
+  const renderUploadContent = () => {
     return (
-      <Layout navbarRightContent={<NavbarRightContent />}>
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <h2 className="text-xl font-semibold mb-2">Přístup zamítnut</h2>
-            <p className="text-muted-foreground">Nemáte oprávnění k přístupu do DHL admin panelu.</p>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
-
-  const adminCards = [
-    {
-      title: 'Správa pozic',
-      description: 'Spravujte DHL pozice a jejich nastavení',
-      icon: Users,
-      action: 'Spravovat pozice',
-      href: '#positions',
-      count: '0 pozic'
-    },
-    {
-      title: 'Pracovní skupiny',
-      description: 'Konfigurace pracovních skupin a směn',
-      icon: Calendar,
-      action: 'Spravovat skupiny',
-      href: '#workgroups',
-      count: '0 skupin'
-    },
-    {
-      title: 'Import dat',
-      description: 'Import směn a dat z DHL systémů',
-      icon: Upload,
-      action: 'Importovat data',
-      href: '#import',
-      count: 'Nová funkce'
-    },
-    {
-      title: 'Nastavení systému',
-      description: 'Obecná nastavení DHL modulu',
-      icon: Settings,
-      action: 'Nastavení',
-      href: '#settings',
-      count: 'Konfigurace'
-    }
-  ];
-
-  const tabTitles = {
-    overview: 'Přehled',
-    import: 'Import dat',
-    positions: 'Pozice',
-    settings: 'Nastavení'
-  };
-
-  const renderOverviewContent = () => (
-    <div className="space-y-6">
-      {/* Admin Cards Grid */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
-      >
-        <Carousel className="w-full">
-          <CarouselContent className="-ml-2 md:-ml-4">
-            {adminCards.map((card) => {
-              const Icon = card.icon;
-              return (
-                <CarouselItem key={card.title} className="pl-2 md:pl-4 md:basis-1/2">
-                  <Card className="hover:shadow-lg transition-shadow h-full">
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="p-2 rounded-lg bg-primary/10">
-                            <Icon className="h-6 w-6 text-primary" />
-                          </div>
-                          <div>
-                            <CardTitle className="text-lg">{card.title}</CardTitle>
-                            <CardDescription>{card.description}</CardDescription>
-                          </div>
-                        </div>
-                        <div className="text-right text-sm text-muted-foreground">
-                          {card.count}
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <Button 
-                        className="w-full" 
-                        variant="outline"
-                        onClick={() => {
-                          if (card.href === '#import') {
-                            setActiveTab('import');
-                          }
-                        }}
-                      >
-                        {card.action}
-                      </Button>
-                    </CardContent>
-                  </Card>
-                </CarouselItem>
-              );
-            })}
-          </CarouselContent>
-          <CarouselPrevious className="hidden md:flex" />
-          <CarouselNext className="hidden md:flex" />
-        </Carousel>
-      </motion.div>
-
-      {/* System Status */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.4 }}
-        className="mt-8"
-      >
-        <Card>
-          <CardHeader>
-            <CardTitle>Stav systému</CardTitle>
-            <CardDescription>Aktuální stav DHL modulu</CardDescription>
+      <>
+        <Card className="dhl-mobile-card">
+          <CardHeader className="dhl-mobile-card-header">
+            <CardTitle className="dhl-mobile-card-title flex items-center gap-2">
+              <Upload className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
+              <span>Nahrát plán směn</span>
+            </CardTitle>
+            <CardDescription className="dhl-mobile-card-description">
+              Nahrajte JSON soubor s plánem směn pro konkrétní pozici a pracovní skupinu
+            </CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="text-center p-4 rounded-lg bg-green-50 border border-green-200 dark:bg-green-950/20 dark:border-green-800">
-                <div className="text-2xl font-bold text-green-600">Aktivní</div>
-                <div className="text-sm text-green-700 dark:text-green-300">DHL modul</div>
+          <CardContent className="dhl-mobile-card-content dhl-mobile-upload-section">
+            <ScheduleUploader />
+          </CardContent>
+        </Card>
+
+        <Card className="dhl-mobile-card">
+          <CardHeader className="dhl-mobile-card-header">
+            <CardTitle className="dhl-mobile-card-title">Formát JSON souboru</CardTitle>
+            <CardDescription className="dhl-mobile-card-description">
+              Požadovaná struktura pro import plánů směn
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="dhl-mobile-card-content">
+            <div className="space-y-4">
+              <div className="dhl-mobile-format-info">
+                <h4 className="dhl-mobile-format-title">Povinné pole:</h4>
+                <ul className="dhl-mobile-format-list space-y-1">
+                  <li><code>base_date</code> - Referenční datum (YYYY-MM-DD)</li>
+                  <li><code>woche</code> - Číslo týdne v cyklu (1-15)</li>
+                  <li><code>YYYY-MM-DD</code> - Konkrétní data se směnami</li>
+                </ul>
               </div>
-              <div className="text-center p-4 rounded-lg bg-blue-50 border border-blue-200 dark:bg-blue-950/20 dark:border-blue-800">
-                <div className="text-2xl font-bold text-blue-600">0</div>
-                <div className="text-sm text-blue-700 dark:text-blue-300">Registrovaní zaměstnanci</div>
-              </div>
-              <div className="text-center p-4 rounded-lg bg-purple-50 border border-purple-200 dark:bg-purple-950/20 dark:border-purple-800">
-                <div className="text-2xl font-bold text-purple-600">0</div>
-                <div className="text-sm text-purple-700 dark:text-purple-300">Aktivní směny</div>
-              </div>
-              <div className="text-center p-4 rounded-lg bg-orange-50 border border-orange-200 dark:bg-orange-950/20 dark:border-orange-800">
-                <div className="text-2xl font-bold text-orange-600">0</div>
-                <div className="text-sm text-orange-700 dark:text-orange-300">Importované plány</div>
+              
+              <div className="dhl-mobile-format-info">
+                <h4 className="dhl-mobile-format-title">Struktura směny:</h4>
+                <ul className="dhl-mobile-format-list space-y-1">
+                  <li><code>start_time</code> - Začátek směny (HH:MM)</li>
+                  <li><code>end_time</code> - Konec směny (HH:MM)</li>
+                  <li><code>day</code> - Den v týdnu (volitelné)</li>
+                </ul>
               </div>
             </div>
           </CardContent>
         </Card>
-      </motion.div>
-    </div>
-  );
+      </>
+    );
+  };
 
-  const renderImportContent = () => <DHLImportPanel />;
+  const renderSchedulesContent = () => {
+    return <SchedulesList />;
+  };
 
-  const renderPositionsContent = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle>Správa pozic</CardTitle>
-        <CardDescription>
-          Konfigurace DHL pozic a jejich vlastností
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="text-center py-8">
-          <Database className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <p className="text-muted-foreground">Funkce bude brzy k dispozici</p>
-        </div>
-      </CardContent>
-    </Card>
-  );
+  const renderPositionsContent = () => {
+    return <PositionManagementPanel />;
+  };
 
-  const renderSettingsContent = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle>Systémové nastavení</CardTitle>
-        <CardDescription>
-          Obecná konfigurace DHL modulu
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="text-center py-8">
-          <Settings className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <p className="text-muted-foreground">Funkce bude brzy k dispozici</p>
-        </div>
-      </CardContent>
-    </Card>
-  );
+  const renderHistoryContent = () => {
+    return <ImportHistory />;
+  };
 
-  const renderContent = () => {
-    switch (activeTab) {
-      case 'overview':
-        return renderOverviewContent();
-      case 'import':
-        return renderImportContent();
-      case 'positions':
-        return renderPositionsContent();
-      case 'settings':
-        return renderSettingsContent();
-      default:
-        return renderOverviewContent();
-    }
+  const renderGenerateContent = () => {
+    return (
+      <Card className="dhl-mobile-card">
+        <CardHeader className="dhl-mobile-card-header">
+          <CardTitle className="dhl-mobile-card-title">Generování směn</CardTitle>
+          <CardDescription className="dhl-mobile-card-description">
+            Automatické generování směn pro zaměstnance na základě importovaných plánů
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="dhl-mobile-card-content">
+          <div className="space-y-4">
+            <div className="dhl-mobile-schedule-item border rounded-lg">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4">
+                <div className="min-w-0 flex-1">
+                  <h4 className="font-medium text-sm sm:text-base dhl-text-wrap">Bulk generování směn</h4>
+                  <p className="text-xs sm:text-sm text-muted-foreground mt-1 dhl-text-wrap">
+                    Vygeneruje směny pro všechny zaměstnance na základě jejich pozice a pracovní skupiny
+                  </p>
+                </div>
+                <Button className="w-full sm:w-auto dhl-mobile-button sm:dhl-mobile-button-secondary">
+                  Generovat všechny směny
+                </Button>
+              </div>
+            </div>
+
+            <div className="dhl-mobile-schedule-item border rounded-lg">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4">
+                <div className="min-w-0 flex-1">
+                  <h4 className="font-medium text-sm sm:text-base dhl-text-wrap">Nastavení Woche referenčních bodů</h4>
+                  <p className="text-xs sm:text-sm text-muted-foreground mt-1 dhl-text-wrap">
+                    Správa individuálních referenčních bodů zaměstnanců pro výpočet Woche
+                  </p>
+                </div>
+                <Button variant="outline" className="w-full sm:w-auto dhl-mobile-button sm:dhl-mobile-button-secondary">
+                  Spravovat reference
+                </Button>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
   };
 
   return (
-    <Layout navbarRightContent={<NavbarRightContent />}>
-      <Helmet>
-        <title>DHL Admin Panel | PendlerApp</title>
-        <meta name="description" content="DHL administration panel for managing positions, work groups, and shifts" />
-      </Helmet>
-      
-      <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-primary/5">
-        <div className="container max-w-7xl py-8 px-4">
-          {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="mb-8"
-          >
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-3 rounded-full bg-gradient-to-r from-yellow-500/20 to-red-500/20 backdrop-blur-sm">
-                <Truck className="h-8 w-8 text-yellow-600" />
-              </div>
-              <div>
-                <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-yellow-600 to-red-600 bg-clip-text text-transparent">
-                  DHL Admin Panel
-                </h1>
-                <p className="text-lg text-muted-foreground mt-2">
-                  Správa DHL systému a zaměstnanců
-                </p>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Tab Navigation with Swipe Support */}
-          <div className="mb-6" ref={containerRef}>
-            <div className="flex items-center justify-between mb-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  const currentIdx = tabs.indexOf(activeTab);
-                  if (currentIdx > 0) {
-                    setActiveTab(tabs[currentIdx - 1]);
-                  }
-                }}
-                disabled={currentIndex === 0}
-                className="md:hidden"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              
-              <div className="flex-1 text-center">
-                <h2 className="text-xl font-semibold">{tabTitles[activeTab as keyof typeof tabTitles]}</h2>
-                <div className="flex justify-center gap-2 mt-2">
-                  {tabs.map((tab, index) => (
-                    <div
-                      key={tab}
-                      className={`h-2 w-8 rounded-full transition-colors ${
-                        index === currentIndex ? 'bg-primary' : 'bg-muted'
-                      }`}
-                    />
-                  ))}
-                </div>
-              </div>
-              
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  const currentIdx = tabs.indexOf(activeTab);
-                  if (currentIdx < tabs.length - 1) {
-                    setActiveTab(tabs[currentIdx + 1]);
-                  }
-                }}
-                disabled={currentIndex === tabs.length - 1}
-                className="md:hidden"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
-
-            {/* Desktop Tab Navigation */}
-            <div className="hidden md:flex gap-2 p-1 bg-muted rounded-lg">
-              {tabs.map((tab) => (
-                <Button
-                  key={tab}
-                  variant={activeTab === tab ? "default" : "ghost"}
-                  onClick={() => setActiveTab(tab)}
-                  className="flex-1"
-                >
-                  {tabTitles[tab as keyof typeof tabTitles]}
-                </Button>
-              ))}
-            </div>
-          </div>
-
-          {/* Content */}
-          <motion.div
-            key={activeTab}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.3 }}
-            className="space-y-6"
-          >
-            {renderContent()}
-          </motion.div>
+    <div className="dhl-admin-container space-y-6">
+      {/* Header */}
+      <div className="dhl-admin-header">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight">DHL Import dat</h2>
+          <p className="text-muted-foreground mt-2">
+            Import plánů směn z JSON souborů a automatické generování směn pro zaměstnance
+          </p>
         </div>
       </div>
-    </Layout>
+
+      {/* Main Content */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <div className="dhl-mobile-tabs">
+          <TabsList className="tabs-list grid w-full grid-cols-2 sm:grid-cols-5 gap-1">
+            <TabsTrigger value="upload" className="dhl-mobile-tab-trigger flex items-center gap-1 sm:gap-2">
+              <Upload className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Import</span>
+              <span className="sm:hidden">Import</span>
+            </TabsTrigger>
+            <TabsTrigger value="schedules" className="dhl-mobile-tab-trigger flex items-center gap-1 sm:gap-2">
+              <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Plány směn</span>
+              <span className="sm:hidden">Plány</span>
+            </TabsTrigger>
+            <TabsTrigger value="positions" className="dhl-mobile-tab-trigger flex items-center gap-1 sm:gap-2">
+              <Users className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Pozice</span>
+              <span className="sm:hidden">Pozice</span>
+            </TabsTrigger>
+            <TabsTrigger value="history" className="dhl-mobile-tab-trigger flex items-center gap-1 sm:gap-2">
+              <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Historie</span>
+              <span className="sm:hidden">Historie</span>
+            </TabsTrigger>
+            <TabsTrigger value="generate" className="dhl-mobile-tab-trigger flex items-center gap-1 sm:gap-2">
+              <Download className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Generování</span>
+              <span className="sm:hidden">Gen.</span>
+            </TabsTrigger>
+          </TabsList>
+        </div>
+
+        {/* Upload Tab */}
+        <TabsContent value="upload" className="space-y-6">
+          {renderUploadContent()}
+        </TabsContent>
+
+        {/* Schedules Tab */}
+        <TabsContent value="schedules" className="space-y-6">
+          {renderSchedulesContent()}
+        </TabsContent>
+
+        {/* Positions Tab - NOW WITH ACTUAL COMPONENT */}
+        <TabsContent value="positions" className="space-y-6">
+          {renderPositionsContent()}
+        </TabsContent>
+
+        {/* History Tab */}
+        <TabsContent value="history" className="space-y-6">
+          {renderHistoryContent()}
+        </TabsContent>
+
+        {/* Generate Tab */}
+        <TabsContent value="generate" className="space-y-6">
+          {renderGenerateContent()}
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 };
 
