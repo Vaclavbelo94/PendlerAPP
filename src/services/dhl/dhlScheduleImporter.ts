@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { validateScheduleData, ValidationResult } from './scheduleValidator';
 import { toast } from 'sonner';
@@ -144,8 +143,8 @@ export const importDHLSchedule = async (data: ImportScheduleData): Promise<Impor
     };
   }
 
-  // Validate the JSON data first
-  const validation = validateScheduleData(data.jsonData, data.fileName);
+  // Validate the JSON data first - await the result
+  const validation = await validateScheduleData(data.jsonData, data.fileName);
   console.log('Validation result:', validation);
 
   if (!validation.isValid) {

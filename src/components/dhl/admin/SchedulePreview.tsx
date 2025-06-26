@@ -1,20 +1,30 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { FileText, Calendar, Clock, AlertTriangle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { FileText, Calendar, Clock, AlertTriangle, Upload, ArrowLeft } from 'lucide-react';
 import './MobileDHLStyles.css';
 
 interface SchedulePreviewProps {
-  scheduleData: any;
+  jsonData: any;
   validation?: any;
+  formData?: {
+    positionId: string;
+    workGroupId: string;
+    scheduleName: string;
+  };
+  handleImport?: () => Promise<void>;
+  resetUpload?: () => void;
 }
 
 export const SchedulePreview: React.FC<SchedulePreviewProps> = ({ 
-  scheduleData, 
-  validation 
+  jsonData, 
+  validation,
+  formData,
+  handleImport,
+  resetUpload
 }) => {
-  if (!scheduleData) {
+  if (!jsonData) {
     return (
       <Card className="dhl-mobile-card">
         <CardContent className="p-8 text-center">
@@ -70,7 +80,7 @@ export const SchedulePreview: React.FC<SchedulePreviewProps> = ({
       .slice(0, 5);
   };
 
-  const shiftEntries = getShiftEntries(scheduleData);
+  const shiftEntries = getShiftEntries(jsonData);
 
   // Extract metadata based on format
   const getMetadata = (data: any) => {
@@ -103,7 +113,7 @@ export const SchedulePreview: React.FC<SchedulePreviewProps> = ({
     };
   };
 
-  const metadata = getMetadata(scheduleData);
+  const metadata = getMetadata(jsonData);
 
   return (
     <div className="space-y-4">
@@ -202,17 +212,17 @@ export const SchedulePreview: React.FC<SchedulePreviewProps> = ({
                 {(() => {
                   let totalShifts = 0;
                   
-                  if (scheduleData.shifts) {
-                    totalShifts = scheduleData.shifts.filter((shift: any) => 
+                  if (jsonData.shifts) {
+                    totalShifts = jsonData.shifts.filter((shift: any) => 
                       shift.date && (shift.start || shift.start_time)
                     ).length;
-                  } else if (scheduleData.entries) {
-                    totalShifts = scheduleData.entries.filter((entry: any) => 
+                  } else if (jsonData.entries) {
+                    totalShifts = jsonData.entries.filter((entry: any) => 
                       entry.date && (entry.start || entry.start_time)
                     ).length;
                   } else {
-                    totalShifts = Object.keys(scheduleData).filter(key => 
-                      key.match(/^\d{4}-\d{2}-\d{2}$/) && scheduleData[key]?.start_time
+                    totalShifts = Object.keys(jsonData).filter(key => 
+                      key.match(/^\d{4}-\d{2}-\d{2}$/) && jsonData[key]?.start_time
                     ).length;
                   }
                   
@@ -243,6 +253,26 @@ export const SchedulePreview: React.FC<SchedulePreviewProps> = ({
                   <li>... a {validation.warnings.length - 3} dalších varování</li>
                 )}
               </ul>
+            </div>
+          )}
+
+          {/* Action buttons */}
+          {handleImport && resetUpload && (
+            <div className="dhl-mobile-actions">
+              <div className="dhl-mobile-button-group">
+                <Button variant="outline" onClick={resetUpload} className="dhl-mobile-button-secondary">
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Zpět
+                </Button>
+                <Button 
+                  onClick={handleImport} 
+                  disabled={!validation?.isValid}
+                  className="dhl-mobile-button-secondary"
+                >
+                  <Upload className="h-4 w-4 mr-2" />
+                  Importovat
+                </Button>
+              </div>
             </div>
           )}
         </CardContent>
