@@ -5,7 +5,6 @@ import { useOptimizedShiftsManagement } from '@/hooks/shifts/useOptimizedShiftsM
 import { useDHLShiftsIntegration } from '@/hooks/shifts/useDHLShiftsIntegration';
 import { canAccessDHLFeatures } from '@/utils/dhlAuthUtils';
 import { DHLLayout } from './DHLLayout';
-import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 import Layout from '@/components/layouts/Layout';
 import ShiftsMainContainer from '@/components/shifts/ShiftsMainContainer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -21,7 +20,7 @@ const DHLAwareShifts: React.FC = () => {
   // If user has DHL access and assignment, use DHL layout with enhanced stats
   if (isDHLUser && userAssignment) {
     return (
-      <DHLLayout navbarRightContent={<NavbarRightContent />}>
+      <DHLLayout>
         <div className="space-y-6">
           {/* DHL Stats Card */}
           <Card className="bg-gradient-to-r from-yellow-500/10 to-red-500/10 border-yellow-200">
@@ -61,7 +60,7 @@ const DHLAwareShifts: React.FC = () => {
 
   // Otherwise use standard layout
   return (
-    <Layout navbarRightContent={<NavbarRightContent />}>
+    <Layout>
       <ShiftsMainContainer />
     </Layout>
   );

@@ -3,6 +3,7 @@ import React from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useDHLRouteGuard } from '@/hooks/dhl/useDHLRouteGuard';
 import { useDHLData } from '@/hooks/dhl/useDHLData';
+import { useOptimizedShiftsManagement } from '@/hooks/shifts/useOptimizedShiftsManagement';
 import { canAccessDHLFeatures } from '@/utils/dhlAuthUtils';
 import { DHLLayout } from '@/components/dhl/DHLLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,16 +19,19 @@ import {
   CheckCircle,
   AlertCircle,
   MapPin,
-  Loader2
+  Loader2,
+  Settings,
+  User
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const DHLDashboard: React.FC = () => {
   const { user } = useAuth();
   const { canAccess, isLoading, hasAssignment } = useDHLRouteGuard(true);
-  const { userAssignment, shifts, isLoading: isDataLoading } = useDHLData(user?.id);
+  const { userAssignment, isLoading: isDataLoading } = useDHLData(user?.id);
+  const { shifts, isLoading: isShiftsLoading } = useOptimizedShiftsManagement(user?.id);
 
-  if (isLoading || isDataLoading) {
+  if (isLoading || isDataLoading || isShiftsLoading) {
     return (
       <DHLLayout>
         <div className="flex items-center justify-center min-h-96">
@@ -72,7 +76,16 @@ const DHLDashboard: React.FC = () => {
     );
   }
 
-  const currentWeek = new Date().getWeek || 1;
+  // Get current week number using proper calculation
+  const getCurrentWeek = () => {
+    const now = new Date();
+    const start = new Date(now.getFullYear(), 0, 1);
+    const diff = now.getTime() - start.getTime();
+    const oneWeek = 1000 * 60 * 60 * 24 * 7;
+    return Math.floor(diff / oneWeek) + 1;
+  };
+
+  const currentWeek = getCurrentWeek();
   const currentMonth = new Date().toLocaleDateString('cs-CZ', { month: 'long' });
   const totalShifts = shifts?.length || 0;
   const thisMonthShifts = shifts?.filter(shift => {
@@ -142,7 +155,7 @@ const DHLDashboard: React.FC = () => {
                   <Clock className="h-6 w-6 text-green-600" />
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Aktuální Woche</p>
+                  <p className="text-sm font-medium text-gray-600">Aktuální týden</p>
                   <p className="text-2xl font-bold text-gray-900">{currentWeek}</p>
                 </div>
               </div>
