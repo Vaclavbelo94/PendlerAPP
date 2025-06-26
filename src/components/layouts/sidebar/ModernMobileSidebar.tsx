@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
+import { canAccessDHLFeatures, canAccessDHLAdmin } from '@/utils/dhlAuthUtils';
 import { 
   User, 
   LogIn, 
@@ -13,10 +14,13 @@ import {
   LogOut,
   Crown,
   Lock,
-  X
+  X,
+  Truck,
+  ArrowLeftRight
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { modernNavigationItems, getCategoryItems, getCategoryTitle } from './modernNavigationData';
+import { dhlNavigationItems, dhlAdminNavigationItems } from '@/data/dhlNavigationData';
 
 interface ModernMobileSidebarProps {
   closeSidebar: () => void;
@@ -27,6 +31,9 @@ export const ModernMobileSidebar: React.FC<ModernMobileSidebarProps> = ({ closeS
   const { user, isPremium, isAdmin, signOut } = useAuth();
   
   const isAdminUser = user?.email === 'admin@pendlerapp.com' || isAdmin;
+  const canAccessDHL = canAccessDHLFeatures(user);
+  const isDHLAdmin = canAccessDHLAdmin(user);
+  const isDHLRoute = location.pathname.startsWith('/dhl-');
 
   const handleLogout = async () => {
     await signOut();
@@ -34,6 +41,15 @@ export const ModernMobileSidebar: React.FC<ModernMobileSidebarProps> = ({ closeS
   };
 
   const handleLinkClick = () => {
+    closeSidebar();
+  };
+
+  const handleContextSwitch = () => {
+    if (isDHLRoute) {
+      window.location.href = '/dashboard';
+    } else {
+      window.location.href = '/dhl-dashboard';
+    }
     closeSidebar();
   };
 
@@ -47,7 +63,7 @@ export const ModernMobileSidebar: React.FC<ModernMobileSidebarProps> = ({ closeS
   };
 
   const NavigationCard = ({ item }: { item: any }) => {
-    const isActive = location.pathname === item.href;
+    const isActive = location.pathname === item.href || location.pathname === item.path;
     const needsPremium = item.isPremium && !isPremium && !isAdminUser;
     const Icon = item.icon;
 
@@ -65,7 +81,7 @@ export const ModernMobileSidebar: React.FC<ModernMobileSidebarProps> = ({ closeS
         )}>
           <CardContent className="p-4">
             <Link 
-              to={item.href} 
+              to={item.href || item.path} 
               className="block"
               onClick={handleLinkClick}
             >
@@ -75,7 +91,7 @@ export const ModernMobileSidebar: React.FC<ModernMobileSidebarProps> = ({ closeS
                   "w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300",
                   isActive 
                     ? "bg-white/20" 
-                    : `bg-gradient-to-r ${item.gradient}`
+                    : `bg-gradient-to-r ${item.gradient || 'from-blue-500 to-purple-600'}`
                 )}>
                   <Icon className={cn(
                     "h-6 w-6",
@@ -93,7 +109,7 @@ export const ModernMobileSidebar: React.FC<ModernMobileSidebarProps> = ({ closeS
                       "font-semibold",
                       isActive ? "text-white" : "text-gray-900"
                     )}>
-                      {item.label}
+                      {item.label || item.title}
                     </h3>
                     {item.isPremium && isPremium && (
                       <Crown className="h-4 w-4 text-amber-500" />
@@ -108,7 +124,7 @@ export const ModernMobileSidebar: React.FC<ModernMobileSidebarProps> = ({ closeS
                     "text-sm",
                     isActive ? "text-white/80" : "text-gray-600"
                   )}>
-                    {item.description}
+                    {item.description || 'Navigate to this section'}
                   </p>
                 </div>
               </div>
@@ -116,6 +132,35 @@ export const ModernMobileSidebar: React.FC<ModernMobileSidebarProps> = ({ closeS
           </CardContent>
         </Card>
       </motion.div>
+    );
+  };
+
+  const DHLNavigationSection = () => {
+    const dhlItems = isDHLAdmin ? dhlAdminNavigationItems : dhlNavigationItems;
+    
+    return (
+      <div className="mb-6">
+        <motion.h3 
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="text-lg font-bold text-yellow-600 mb-4 flex items-center"
+        >
+          <Truck className="mr-2 h-5 w-5" />
+          DHL Navigation
+        </motion.h3>
+        <div className="grid grid-cols-1 gap-3">
+          {dhlItems.map((item, index) => (
+            <motion.div
+              key={item.path}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+            >
+              <NavigationCard item={item} />
+            </motion.div>
+          ))}
+        </div>
+      </div>
     );
   };
 
@@ -155,17 +200,37 @@ export const ModernMobileSidebar: React.FC<ModernMobileSidebarProps> = ({ closeS
       animate={{ x: 0 }}
       exit={{ x: '-100%' }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      className="fixed inset-0 z-50 bg-gradient-to-br from-blue-50 to-purple-50"
+      className={cn(
+        "fixed inset-0 z-50",
+        isDHLRoute 
+          ? "bg-gradient-to-br from-yellow-50 to-orange-50" 
+          : "bg-gradient-to-br from-blue-50 to-purple-50"
+      )}
     >
       {/* Header */}
-      <div className="flex items-center justify-between p-6 bg-white/80 backdrop-blur-sm border-b border-gray-200">
+      <div className={cn(
+        "flex items-center justify-between p-6 bg-white/80 backdrop-blur-sm border-b border-gray-200"
+      )}>
         <div className="flex items-center space-x-3">
-          <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
-            <span className="text-white font-bold text-lg">PA</span>
+          <div className={cn(
+            "w-12 h-12 rounded-xl flex items-center justify-center",
+            isDHLRoute 
+              ? "bg-gradient-to-r from-yellow-500 to-red-500" 
+              : "bg-gradient-to-r from-blue-600 to-purple-600"
+          )}>
+            {isDHLRoute ? (
+              <Truck className="text-white h-6 w-6" />
+            ) : (
+              <span className="text-white font-bold text-lg">PA</span>
+            )}
           </div>
           <div>
-            <h2 className="text-xl font-bold text-gray-900">PendlerApp</h2>
-            <p className="text-sm text-gray-600">Mobilní verze</p>
+            <h2 className="text-xl font-bold text-gray-900">
+              {isDHLRoute ? 'DHL Workspace' : 'PendlerApp'}
+            </h2>
+            <p className="text-sm text-gray-600">
+              {isDHLRoute ? 'DHL zaměstnanci' : 'Mobilní verze'}
+            </p>
           </div>
         </div>
         <Button
@@ -180,12 +245,47 @@ export const ModernMobileSidebar: React.FC<ModernMobileSidebarProps> = ({ closeS
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto p-6">
+        {/* Context Switcher */}
+        {canAccessDHL && (
+          <Card className="mb-6 bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+            <CardContent className="p-4">
+              <Button
+                onClick={handleContextSwitch}
+                className={cn(
+                  "w-full flex items-center justify-center gap-2",
+                  isDHLRoute 
+                    ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700" 
+                    : "bg-gradient-to-r from-yellow-500 to-red-500 hover:from-yellow-600 hover:to-red-600"
+                )}
+              >
+                {isDHLRoute ? (
+                  <>
+                    <User className="h-4 w-4" />
+                    Přepnout na standardní režim
+                  </>
+                ) : (
+                  <>
+                    <Truck className="h-4 w-4" />
+                    Přepnout na DHL režim
+                  </>
+                )}
+                <ArrowLeftRight className="h-4 w-4" />
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
         {/* User section */}
         {user ? (
           <Card className="mb-6 bg-white/80 backdrop-blur-sm border-0 shadow-lg">
             <CardContent className="p-4">
               <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
+                <div className={cn(
+                  "w-12 h-12 rounded-full flex items-center justify-center",
+                  isDHLRoute 
+                    ? "bg-gradient-to-r from-yellow-500 to-red-500" 
+                    : "bg-gradient-to-r from-blue-500 to-purple-600"
+                )}>
                   <User className="h-6 w-6 text-white" />
                 </div>
                 <div className="flex-1">
@@ -202,6 +302,11 @@ export const ModernMobileSidebar: React.FC<ModernMobileSidebarProps> = ({ closeS
                     {isAdminUser && (
                       <Badge variant="destructive" className="text-xs">
                         Admin
+                      </Badge>
+                    )}
+                    {canAccessDHL && (
+                      <Badge className="bg-yellow-100 text-yellow-800 border-yellow-300 text-xs">
+                        DHL
                       </Badge>
                     )}
                   </div>
@@ -229,10 +334,16 @@ export const ModernMobileSidebar: React.FC<ModernMobileSidebarProps> = ({ closeS
         )}
 
         {/* Navigation */}
-        <CategorySection category="main" />
-        <CategorySection category="tools" />
-        <CategorySection category="support" />
-        {isAdminUser && <CategorySection category="admin" />}
+        {isDHLRoute && canAccessDHL ? (
+          <DHLNavigationSection />
+        ) : (
+          <>
+            <CategorySection category="main" />
+            <CategorySection category="tools" />
+            <CategorySection category="support" />
+            {isAdminUser && <CategorySection category="admin" />}
+          </>
+        )}
 
         {/* Logout button */}
         {user && (
