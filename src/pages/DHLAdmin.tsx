@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,10 +9,13 @@ import { SchedulePreview } from '@/components/dhl/admin/SchedulePreview';
 import { ImportHistory } from '@/components/dhl/admin/ImportHistory';
 import { SchedulesList } from '@/components/dhl/admin/SchedulesList';
 import { PositionManagementPanel } from '@/components/dhl/admin/PositionManagementPanel';
+import { DHLAdminMobileCarousel } from '@/components/dhl/admin/DHLAdminMobileCarousel';
+import { useResponsive } from '@/hooks/useResponsive';
 import '@/components/dhl/admin/MobileDHLStyles.css';
 
 const DHLAdmin: React.FC = () => {
   const [activeTab, setActiveTab] = useState('upload');
+  const { isMobile } = useResponsive();
 
   const renderUploadContent = () => {
     return (
@@ -134,63 +136,70 @@ const DHLAdmin: React.FC = () => {
         </div>
       </div>
 
-      {/* Main Content */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <div className="dhl-mobile-tabs">
-          <TabsList className="tabs-list grid w-full grid-cols-2 sm:grid-cols-5 gap-1">
-            <TabsTrigger value="upload" className="dhl-mobile-tab-trigger flex items-center gap-1 sm:gap-2">
-              <Upload className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">Import dat</span>
-              <span className="sm:hidden">Import</span>
-            </TabsTrigger>
-            <TabsTrigger value="schedules" className="dhl-mobile-tab-trigger flex items-center gap-1 sm:gap-2">
-              <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">Plány směn</span>
-              <span className="sm:hidden">Plány</span>
-            </TabsTrigger>
-            <TabsTrigger value="positions" className="dhl-mobile-tab-trigger flex items-center gap-1 sm:gap-2">
-              <Users className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">Pozice</span>
-              <span className="sm:hidden">Pozice</span>
-            </TabsTrigger>
-            <TabsTrigger value="history" className="dhl-mobile-tab-trigger flex items-center gap-1 sm:gap-2">
-              <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">Historie</span>
-              <span className="sm:hidden">Historie</span>
-            </TabsTrigger>
-            <TabsTrigger value="generate" className="dhl-mobile-tab-trigger flex items-center gap-1 sm:gap-2">
-              <Download className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">Generování</span>
-              <span className="sm:hidden">Gen.</span>
-            </TabsTrigger>
-          </TabsList>
-        </div>
+      {/* Main Content - Responsive rendering */}
+      {isMobile ? (
+        <DHLAdminMobileCarousel
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
+      ) : (
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <div className="dhl-mobile-tabs">
+            <TabsList className="tabs-list grid w-full grid-cols-2 sm:grid-cols-5 gap-1">
+              <TabsTrigger value="upload" className="dhl-mobile-tab-trigger flex items-center gap-1 sm:gap-2">
+                <Upload className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">Import dat</span>
+                <span className="sm:hidden">Import</span>
+              </TabsTrigger>
+              <TabsTrigger value="schedules" className="dhl-mobile-tab-trigger flex items-center gap-1 sm:gap-2">
+                <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">Plány směn</span>
+                <span className="sm:hidden">Plány</span>
+              </TabsTrigger>
+              <TabsTrigger value="positions" className="dhl-mobile-tab-trigger flex items-center gap-1 sm:gap-2">
+                <Users className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">Pozice</span>
+                <span className="sm:hidden">Pozice</span>
+              </TabsTrigger>
+              <TabsTrigger value="history" className="dhl-mobile-tab-trigger flex items-center gap-1 sm:gap-2">
+                <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">Historie</span>
+                <span className="sm:hidden">Historie</span>
+              </TabsTrigger>
+              <TabsTrigger value="generate" className="dhl-mobile-tab-trigger flex items-center gap-1 sm:gap-2">
+                <Download className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">Generování</span>
+                <span className="sm:hidden">Gen.</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
-        {/* Upload Tab - only import functionality */}
-        <TabsContent value="upload" className="space-y-6">
-          {renderUploadContent()}
-        </TabsContent>
+          {/* Upload Tab - only import functionality */}
+          <TabsContent value="upload" className="space-y-6">
+            {renderUploadContent()}
+          </TabsContent>
 
-        {/* Schedules Tab */}
-        <TabsContent value="schedules" className="space-y-6">
-          {renderSchedulesContent()}
-        </TabsContent>
+          {/* Schedules Tab */}
+          <TabsContent value="schedules" className="space-y-6">
+            {renderSchedulesContent()}
+          </TabsContent>
 
-        {/* Positions Tab - dedicated for position management */}
-        <TabsContent value="positions" className="space-y-6">
-          {renderPositionsContent()}
-        </TabsContent>
+          {/* Positions Tab - dedicated for position management */}
+          <TabsContent value="positions" className="space-y-6">
+            {renderPositionsContent()}
+          </TabsContent>
 
-        {/* History Tab */}
-        <TabsContent value="history" className="space-y-6">
-          {renderHistoryContent()}
-        </TabsContent>
+          {/* History Tab */}
+          <TabsContent value="history" className="space-y-6">
+            {renderHistoryContent()}
+          </TabsContent>
 
-        {/* Generate Tab */}
-        <TabsContent value="generate" className="space-y-6">
-          {renderGenerateContent()}
-        </TabsContent>
-      </Tabs>
+          {/* Generate Tab */}
+          <TabsContent value="generate" className="space-y-6">
+            {renderGenerateContent()}
+          </TabsContent>
+        </Tabs>
+      )}
     </div>
   );
 };
