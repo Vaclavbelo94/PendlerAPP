@@ -89,3 +89,14 @@ export const getDHLSetupPath = (user: User | null, hasAssignment: boolean): stri
   }
   return null;
 };
+
+/**
+ * Get DHL redirect path for login/register
+ */
+export const getDHLRedirectPath = (user: User | null): string | null => {
+  if (isDHLEmployee(user)) {
+    // Check if user needs setup (this will be determined by checking assignment in component)
+    return null; // Let the component handle the redirect logic
+  }
+  return null;
+};

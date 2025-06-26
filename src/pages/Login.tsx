@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,7 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { useTranslation } from 'react-i18next';
 import LoginForm from "@/components/auth/LoginForm";
 import GoogleAuthButton from "@/components/auth/GoogleAuthButton";
-import { getDHLRedirectPath } from '@/utils/dhlAuthUtils';
+import { isDHLEmployee } from '@/utils/dhlAuthUtils';
 
 const Login = () => {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
@@ -16,11 +17,11 @@ const Login = () => {
   
   useEffect(() => {
     if (user) {
-      // Check for DHL redirect first
-      const dhlRedirectPath = getDHLRedirectPath(user);
+      // Check for DHL employee - redirect will be handled by auth provider
+      const isDHL = isDHLEmployee(user);
       
-      if (dhlRedirectPath) {
-        navigate(dhlRedirectPath);
+      if (isDHL) {
+        navigate("/dashboard"); // Auth provider will handle DHL setup redirect if needed
       } else if (isAdmin || user.email === 'admin@pendlerapp.com') {
         navigate("/admin");
       } else {

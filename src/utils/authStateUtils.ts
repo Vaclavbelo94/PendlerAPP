@@ -1,6 +1,6 @@
 
 import { User } from '@supabase/supabase-js';
-import { getDHLAuthState, DHLAuthState } from './dhlAuthUtils';
+import { getDHLAuthState, isDHLAdmin, canAccessDHLAdmin, DHLAuthState } from './dhlAuthUtils';
 
 export interface UnifiedAuthState {
   user: User | null;
@@ -29,17 +29,18 @@ export const getUnifiedAuthState = (
   
   // Get DHL auth state
   const dhlAuthState = getDHLAuthState(user);
+  const isDHLAdminUser = isDHLAdmin(user);
 
   return {
     user,
-    isAdmin: isAdmin || isSpecialUser || dhlAuthState.isDHLAdmin,
+    isAdmin: isAdmin || isSpecialUser || isDHLAdminUser,
     isPremium: isPremium || isSpecialUser,
     isSpecialUser,
     isLoading,
     // DHL states
-    isDHLAdmin: dhlAuthState.isDHLAdmin,
+    isDHLAdmin: isDHLAdminUser,
     isDHLEmployee: dhlAuthState.isDHLEmployee,
-    canAccessDHLAdmin: dhlAuthState.canAccessDHLAdmin,
+    canAccessDHLAdmin: canAccessDHLAdmin(user),
     canAccessDHLFeatures: dhlAuthState.canAccessDHLFeatures
   };
 };
@@ -61,7 +62,7 @@ export const canAccessPremium = (authState: UnifiedAuthState): boolean => {
 /**
  * Check if user can access DHL admin features
  */
-export const canAccessDHLAdmin = (authState: UnifiedAuthState): boolean => {
+export const canAccessDHLAdminFeatures = (authState: UnifiedAuthState): boolean => {
   return authState.canAccessDHLAdmin;
 };
 

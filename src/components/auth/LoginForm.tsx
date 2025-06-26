@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,7 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { useTranslation } from 'react-i18next';
 import { useNavigate, Link } from 'react-router-dom';
-import { getDHLRedirectPath } from '@/utils/dhlAuthUtils';
+import { isDHLEmployee } from '@/utils/dhlAuthUtils';
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -30,12 +31,13 @@ const LoginForm = () => {
       } else {
         toast.success(t('accountCreatedSuccessfully'));
         
-        // Create a temporary user object for DHL redirect check
+        // Create a temporary user object for DHL check
         const tempUser = { email } as any;
-        const dhlRedirectPath = getDHLRedirectPath(tempUser);
+        const isDHL = isDHLEmployee(tempUser);
         
-        if (dhlRedirectPath) {
-          navigate(dhlRedirectPath);
+        if (isDHL) {
+          // DHL users will be redirected by auth provider if they need setup
+          navigate("/dashboard");
         } else if (email === 'admin@pendlerapp.com' || isAdmin) {
           navigate("/admin");
         } else {

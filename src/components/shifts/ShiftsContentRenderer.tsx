@@ -7,7 +7,7 @@ import ShiftsReports from './ShiftsReports';
 import ShiftsSettings from './ShiftsSettings';
 import ShiftsExport from './ShiftsExport';
 import BulkOperations from './BulkOperations';
-import { Shift } from '@/hooks/shifts/useOptimizedShiftsManagement';
+import { Shift } from '@/hooks/shifts/useShiftsCRUD';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTranslation } from 'react-i18next';
 
