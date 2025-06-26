@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -23,8 +24,24 @@ export const SchedulePreview: React.FC<SchedulePreviewProps> = ({
     );
   }
 
-  // Handle both formats - entries array and direct date keys
+  // Handle all formats - shifts array, entries array and direct date keys
   const getShiftEntries = (data: any) => {
+    // Handle new shifts format
+    if (data.shifts && Array.isArray(data.shifts)) {
+      return data.shifts
+        .filter((shift: any) => shift.date && (shift.start || shift.start_time))
+        .slice(0, 5)
+        .map((shift: any) => [
+          shift.date,
+          {
+            start_time: shift.start || shift.start_time,
+            end_time: shift.end || shift.end_time,
+            day: shift.day,
+            woche: data.woche // Use woche from root level
+          }
+        ]);
+    }
+    
     // If data has entries array, use it
     if (data.entries && Array.isArray(data.entries)) {
       return data.entries
@@ -56,8 +73,18 @@ export const SchedulePreview: React.FC<SchedulePreviewProps> = ({
 
   // Extract metadata based on format
   const getMetadata = (data: any) => {
+    // Handle new shifts format
+    if (data.shifts && Array.isArray(data.shifts)) {
+      return {
+        base_date: data.valid_from || data.base_date,
+        woche: data.woche,
+        position: data.position || 'Sortierer',
+        description: data.description
+      };
+    }
+    
+    // Handle entries format
     if (data.entries && Array.isArray(data.entries)) {
-      // Entries format
       return {
         base_date: data.base_date,
         woche: data.entries.length > 0 ? data.entries[0].woche : null,
@@ -162,11 +189,21 @@ export const SchedulePreview: React.FC<SchedulePreviewProps> = ({
                 
                 {/* Count total shifts for display */}
                 {(() => {
-                  const totalShifts = scheduleData.entries 
-                    ? scheduleData.entries.filter((entry: any) => entry.date && (entry.start || entry.start_time)).length
-                    : Object.keys(scheduleData).filter(key => 
-                        key.match(/^\d{4}-\d{2}-\d{2}$/) && scheduleData[key]?.start_time
-                      ).length;
+                  let totalShifts = 0;
+                  
+                  if (scheduleData.shifts) {
+                    totalShifts = scheduleData.shifts.filter((shift: any) => 
+                      shift.date && (shift.start || shift.start_time)
+                    ).length;
+                  } else if (scheduleData.entries) {
+                    totalShifts = scheduleData.entries.filter((entry: any) => 
+                      entry.date && (entry.start || entry.start_time)
+                    ).length;
+                  } else {
+                    totalShifts = Object.keys(scheduleData).filter(key => 
+                      key.match(/^\d{4}-\d{2}-\d{2}$/) && scheduleData[key]?.start_time
+                    ).length;
+                  }
                   
                   return totalShifts > 5 && (
                     <div className="text-sm text-muted-foreground text-center py-2">

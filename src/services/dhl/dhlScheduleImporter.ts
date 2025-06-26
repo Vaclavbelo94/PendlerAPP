@@ -19,12 +19,39 @@ export interface ImportResult {
 }
 
 /**
- * Convert entries format to internal storage format
+ * Convert different JSON formats to internal storage format
  */
 const convertToStorageFormat = (data: any): any => {
   console.log('Converting data for storage...');
   
-  // If data has entries array, convert it
+  // Handle new shifts format (with shifts array)
+  if (data.shifts && Array.isArray(data.shifts)) {
+    console.log('Converting shifts format for storage');
+    
+    const converted: any = {
+      base_date: data.valid_from || new Date().toISOString().split('T')[0],
+      woche: data.woche || 1,
+      position: data.position || 'Sortierer',
+      description: data.description || `Směny pro pozici Sortierer – Woche ${data.woche || 'N/A'}`
+    };
+
+    // Convert shifts to date-keyed format
+    data.shifts.forEach((shift: any) => {
+      if (shift.date) {
+        converted[shift.date] = {
+          start_time: shift.start || shift.start_time,
+          end_time: shift.end || shift.end_time,
+          day: shift.day,
+          woche: data.woche // Use woche from root level
+        };
+      }
+    });
+
+    console.log('Converted shifts to storage format:', converted);
+    return converted;
+  }
+  
+  // Handle entries format (previous format)
   if (data.entries && Array.isArray(data.entries)) {
     const converted: any = {
       base_date: data.base_date || new Date().toISOString().split('T')[0],
@@ -50,7 +77,7 @@ const convertToStorageFormat = (data: any): any => {
       }
     });
 
-    console.log('Converted to storage format:', converted);
+    console.log('Converted entries to storage format:', converted);
     return converted;
   }
 

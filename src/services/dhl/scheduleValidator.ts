@@ -19,45 +19,79 @@ export interface ValidationResult {
 }
 
 /**
- * Convert entries-based JSON format to internal format
+ * Convert different JSON formats to internal format
  */
-const convertEntriesToInternalFormat = (data: any): any => {
-  console.log('Converting entries format to internal format...');
+const convertToInternalFormat = (data: any): any => {
+  console.log('Converting to internal format...');
   
-  if (!data.entries || !Array.isArray(data.entries)) {
-    console.log('No entries array found, assuming already in internal format');
-    return data;
+  // Handle new shifts format (with shifts array)
+  if (data.shifts && Array.isArray(data.shifts)) {
+    console.log('Converting shifts format to internal format');
+    
+    const converted: any = {
+      base_date: data.valid_from || new Date().toISOString().split('T')[0],
+      woche: data.woche || null,
+      position: data.position || 'Sortierer',
+      description: data.description || `Směny pro pozici Sortierer – Woche ${data.woche || 'N/A'}`
+    };
+
+    // Convert shifts to date-keyed format
+    data.shifts.forEach((shift: any, index: number) => {
+      if (!shift.date) {
+        console.warn(`Shift ${index} missing date field`);
+        return;
+      }
+
+      converted[shift.date] = {
+        start_time: shift.start || shift.start_time,
+        end_time: shift.end || shift.end_time,
+        day: shift.day,
+        woche: data.woche // Use woche from root level
+      };
+    });
+
+    console.log('Converted shifts format:', converted);
+    return converted;
+  }
+  
+  // Handle entries format (previous format)
+  if (data.entries && Array.isArray(data.entries)) {
+    console.log('Converting entries format to internal format');
+    
+    const converted: any = {
+      base_date: data.base_date || null,
+      woche: null, // Will be extracted from first entry
+      position: data.position || null,
+      description: data.description || null
+    };
+
+    // Convert entries to date-keyed format
+    data.entries.forEach((entry: any, index: number) => {
+      if (!entry.date) {
+        console.warn(`Entry ${index} missing date field`);
+        return;
+      }
+
+      // Extract Woche from first valid entry
+      if (converted.woche === null && entry.woche) {
+        converted.woche = entry.woche;
+      }
+
+      converted[entry.date] = {
+        start_time: entry.start || entry.start_time,
+        end_time: entry.end || entry.end_time,
+        day: entry.day,
+        woche: entry.woche
+      };
+    });
+
+    console.log('Converted entries format:', converted);
+    return converted;
   }
 
-  const converted: any = {
-    base_date: data.base_date || null,
-    woche: null, // Will be extracted from first entry
-    position: data.position || null,
-    description: data.description || null
-  };
-
-  // Convert entries to date-keyed format
-  data.entries.forEach((entry: any, index: number) => {
-    if (!entry.date) {
-      console.warn(`Entry ${index} missing date field`);
-      return;
-    }
-
-    // Extract Woche from first valid entry
-    if (converted.woche === null && entry.woche) {
-      converted.woche = entry.woche;
-    }
-
-    converted[entry.date] = {
-      start_time: entry.start || entry.start_time,
-      end_time: entry.end || entry.end_time,
-      day: entry.day,
-      woche: entry.woche
-    };
-  });
-
-  console.log('Converted format:', converted);
-  return converted;
+  // Already in internal format
+  console.log('Data already in internal format');
+  return data;
 };
 
 /**
@@ -91,7 +125,7 @@ export const validateScheduleData = (data: any, fileName: string): ValidationRes
   }
 
   // Convert to internal format if needed
-  const internalData = convertEntriesToInternalFormat(data);
+  const internalData = convertToInternalFormat(data);
   console.log('Using internal format:', internalData);
 
   // Check for required root fields
@@ -131,7 +165,7 @@ export const validateScheduleData = (data: any, fileName: string): ValidationRes
     console.log('Processing key:', key, 'Value:', internalData[key]);
     
     // Skip metadata fields
-    if (['base_date', 'woche', 'position', 'description'].includes(key)) {
+    if (['base_date', 'woche', 'position', 'description', 'valid_from'].includes(key)) {
       return;
     }
 
@@ -326,14 +360,14 @@ const isValidDayOfWeek = (day: string): boolean => {
 };
 
 /**
- * Extract metadata from schedule for preview - updated for entries format
+ * Extract metadata from schedule for preview - updated for all formats
  */
 export const extractScheduleMetadata = (data: any) => {
   // Convert to internal format first
-  const internalData = convertEntriesToInternalFormat(data);
+  const internalData = convertToInternalFormat(data);
   
   const metadata = {
-    baseDate: internalData.base_date || null,
+    baseDate: internalData.base_date || internalData.valid_from || null,
     woche: internalData.woche || null,
     position: internalData.position || null,
     description: internalData.description || null,
