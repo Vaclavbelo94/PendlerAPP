@@ -23,6 +23,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { canAccessDHLFeatures, isDHLAdmin } from '@/utils/dhlAuthUtils';
+import { dhlNavigationItems, dhlAdminNavigationItems } from '@/data/dhlNavigationData';
 import { ReactNode } from 'react';
 
 interface NavbarProps {
@@ -40,6 +41,10 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen }: NavbarProps) => {
   // DHL authentication checks with debug logging
   const isDHLUser = canAccessDHLFeatures(user);
   const isDHLAdminUser = isDHLAdmin(user);
+  
+  // Check if we're on a DHL route
+  const isDHLRoute = location.pathname.startsWith('/dhl-');
+  const shouldShowDHLNavigation = isDHLUser && isDHLRoute;
 
   useEffect(() => {
     console.log('Navbar DHL checks:', {
@@ -47,9 +52,11 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen }: NavbarProps) => {
       isDHLUser,
       isDHLAdminUser,
       isAdmin,
-      isPremium
+      isPremium,
+      isDHLRoute,
+      shouldShowDHLNavigation
     });
-  }, [user, isDHLUser, isDHLAdminUser, isAdmin, isPremium]);
+  }, [user, isDHLUser, isDHLAdminUser, isAdmin, isPremium, isDHLRoute, shouldShowDHLNavigation]);
 
   const handleSignOut = async () => {
     try {
@@ -64,46 +71,65 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen }: NavbarProps) => {
     }
   };
 
-  const NavLinks = () => (
-    <>
-      {/* Regular navigation links */}
-      <Link to="/dashboard">
-        <Button variant="ghost" className="text-foreground hover:text-primary">
-          Dashboard
-        </Button>
-      </Link>
-      <Link to="/shifts">
-        <Button variant="ghost" className="text-foreground hover:text-primary">
-          Směny
-        </Button>
-      </Link>
-      <Link to="/translator">
-        <Button variant="ghost" className="text-foreground hover:text-primary">
-          Překladač
-        </Button>
-      </Link>
-
-      {/* DHL Links - only show for DHL users */}
-      {isDHLUser && (
+  const NavLinks = () => {
+    // DHL-specific navigation
+    if (shouldShowDHLNavigation) {
+      const dhlItems = isDHLAdminUser ? dhlAdminNavigationItems : dhlNavigationItems;
+      return (
         <>
-          <Link to="/dhl-dashboard">
-            <Button variant="ghost" className="text-yellow-600 hover:text-yellow-700 flex items-center gap-2">
-              <Truck className="h-4 w-4" />
-              DHL Dashboard
-            </Button>
-          </Link>
-          {isDHLAdminUser && (
-            <Link to="/dhl-admin">
+          {dhlItems.map((item) => (
+            <Link key={item.path} to={item.path}>
               <Button variant="ghost" className="text-yellow-600 hover:text-yellow-700 flex items-center gap-2">
-                <Truck className="h-4 w-4" />
-                DHL Admin
+                <item.icon className="h-4 w-4" />
+                {item.title}
               </Button>
             </Link>
-          )}
+          ))}
         </>
-      )}
-    </>
-  );
+      );
+    }
+
+    // Standard navigation
+    return (
+      <>
+        <Link to="/dashboard">
+          <Button variant="ghost" className="text-foreground hover:text-primary">
+            Dashboard
+          </Button>
+        </Link>
+        <Link to="/shifts">
+          <Button variant="ghost" className="text-foreground hover:text-primary">
+            Směny
+          </Button>
+        </Link>
+        <Link to="/translator">
+          <Button variant="ghost" className="text-foreground hover:text-primary">
+            Překladač
+          </Button>
+        </Link>
+
+        {/* DHL Links - only show for DHL users when not on DHL routes */}
+        {isDHLUser && !isDHLRoute && (
+          <>
+            <Link to="/dhl-dashboard">
+              <Button variant="ghost" className="text-yellow-600 hover:text-yellow-700 flex items-center gap-2">
+                <Truck className="h-4 w-4" />
+                DHL Dashboard
+              </Button>
+            </Link>
+            {isDHLAdminUser && (
+              <Link to="/dhl-admin">
+                <Button variant="ghost" className="text-yellow-600 hover:text-yellow-700 flex items-center gap-2">
+                  <Truck className="h-4 w-4" />
+                  DHL Admin
+                </Button>
+              </Link>
+            )}
+          </>
+        )}
+      </>
+    );
+  };
 
   const UserDropdownContent = () => (
     <>
@@ -120,8 +146,8 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen }: NavbarProps) => {
         </Link>
       </DropdownMenuItem>
       
-      {/* DHL Dashboard for DHL users */}
-      {isDHLUser && (
+      {/* DHL Dashboard for DHL users when not on DHL routes */}
+      {isDHLUser && !isDHLRoute && (
         <DropdownMenuItem asChild>
           <Link to="/dhl-dashboard" className="flex items-center gap-2 text-yellow-600">
             <Truck className="h-4 w-4" />
@@ -130,8 +156,8 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen }: NavbarProps) => {
         </DropdownMenuItem>
       )}
       
-      {/* DHL Admin for DHL admins only */}
-      {isDHLAdminUser && (
+      {/* DHL Admin for DHL admins only when not on DHL routes */}
+      {isDHLAdminUser && !isDHLRoute && (
         <DropdownMenuItem asChild>
           <Link to="/dhl-admin" className="flex items-center gap-2 text-yellow-600">
             <Truck className="h-4 w-4" />
@@ -148,77 +174,117 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen }: NavbarProps) => {
     </>
   );
 
-  const MobileMenuContent = () => (
-    <div className="flex flex-col space-y-4 p-4">
-      <Link to="/dashboard" onClick={() => setIsOpen(false)}>
-        <Button variant="ghost" className="w-full justify-start">
-          Dashboard
-        </Button>
-      </Link>
-      <Link to="/shifts" onClick={() => setIsOpen(false)}>
-        <Button variant="ghost" className="w-full justify-start">
-          Směny
-        </Button>
-      </Link>
-      <Link to="/translator" onClick={() => setIsOpen(false)}>
-        <Button variant="ghost" className="w-full justify-start">
-          Překladač
-        </Button>
-      </Link>
-      
-      {/* DHL Section for mobile */}
-      {isDHLUser && (
-        <>
-          <div className="border-t pt-4">
-            <div className="flex items-center gap-2 mb-2 px-2">
-              <Truck className="h-4 w-4 text-yellow-600" />
-              <span className="text-sm font-medium text-yellow-600">DHL</span>
+  const MobileMenuContent = () => {
+    // DHL-specific mobile navigation
+    if (shouldShowDHLNavigation) {
+      const dhlItems = isDHLAdminUser ? dhlAdminNavigationItems : dhlNavigationItems;
+      return (
+        <div className="flex flex-col space-y-4 p-4">
+          <div className="border-b pb-4">
+            <div className="flex items-center gap-2 mb-4 px-2">
+              <Truck className="h-5 w-5 text-yellow-600" />
+              <span className="text-lg font-medium text-yellow-600">DHL Navigation</span>
             </div>
-            <Link to="/dhl-dashboard" onClick={() => setIsOpen(false)}>
-              <Button variant="ghost" className="w-full justify-start text-yellow-600 hover:text-yellow-700">
-                <Truck className="h-4 w-4 mr-2" />
-                DHL Dashboard
-              </Button>
-            </Link>
-            {isDHLAdminUser && (
-              <Link to="/dhl-admin" onClick={() => setIsOpen(false)}>
-                <Button variant="ghost" className="w-full justify-start text-yellow-600 hover:text-yellow-700">
-                  <Truck className="h-4 w-4 mr-2" />
-                  DHL Admin
+            {dhlItems.map((item) => (
+              <Link key={item.path} to={item.path} onClick={() => setIsOpen(false)}>
+                <Button variant="ghost" className="w-full justify-start mb-2">
+                  <item.icon className="h-4 w-4 mr-2" />
+                  {item.title}
                 </Button>
               </Link>
-            )}
+            ))}
           </div>
-        </>
-      )}
 
-      <div className="border-t pt-4">
-        <Link to="/profile" onClick={() => setIsOpen(false)}>
+          <div className="border-t pt-4">
+            <Button 
+              variant="ghost" 
+              className="w-full justify-start text-red-600" 
+              onClick={() => {
+                setIsOpen(false);
+                handleSignOut();
+              }}
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Odhlásit se
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
+    // Standard mobile navigation
+    return (
+      <div className="flex flex-col space-y-4 p-4">
+        <Link to="/dashboard" onClick={() => setIsOpen(false)}>
           <Button variant="ghost" className="w-full justify-start">
-            <User className="h-4 w-4 mr-2" />
-            Profil
+            Dashboard
           </Button>
         </Link>
-        <Link to="/settings" onClick={() => setIsOpen(false)}>
+        <Link to="/shifts" onClick={() => setIsOpen(false)}>
           <Button variant="ghost" className="w-full justify-start">
-            <Settings className="h-4 w-4 mr-2" />
-            Nastavení
+            Směny
           </Button>
         </Link>
-        <Button 
-          variant="ghost" 
-          className="w-full justify-start text-red-600" 
-          onClick={() => {
-            setIsOpen(false);
-            handleSignOut();
-          }}
-        >
-          <LogOut className="h-4 w-4 mr-2" />
-          Odhlásit se
-        </Button>
+        <Link to="/translator" onClick={() => setIsOpen(false)}>
+          <Button variant="ghost" className="w-full justify-start">
+            Překladač
+          </Button>
+        </Link>
+        
+        {/* DHL Section for mobile */}
+        {isDHLUser && (
+          <>
+            <div className="border-t pt-4">
+              <div className="flex items-center gap-2 mb-2 px-2">
+                <Truck className="h-4 w-4 text-yellow-600" />
+                <span className="text-sm font-medium text-yellow-600">DHL</span>
+              </div>
+              <Link to="/dhl-dashboard" onClick={() => setIsOpen(false)}>
+                <Button variant="ghost" className="w-full justify-start text-yellow-600 hover:text-yellow-700">
+                  <Truck className="h-4 w-4 mr-2" />
+                  DHL Dashboard
+                </Button>
+              </Link>
+              {isDHLAdminUser && (
+                <Link to="/dhl-admin" onClick={() => setIsOpen(false)}>
+                  <Button variant="ghost" className="w-full justify-start text-yellow-600 hover:text-yellow-700">
+                    <Truck className="h-4 w-4 mr-2" />
+                    DHL Admin
+                  </Button>
+                </Link>
+              )}
+            </div>
+          </>
+        )}
+
+        <div className="border-t pt-4">
+          <Link to="/profile" onClick={() => setIsOpen(false)}>
+            <Button variant="ghost" className="w-full justify-start">
+              <User className="h-4 w-4 mr-2" />
+              Profil
+            </Button>
+          </Link>
+          <Link to="/settings" onClick={() => setIsOpen(false)}>
+            <Button variant="ghost" className="w-full justify-start">
+              <Settings className="h-4 w-4 mr-2" />
+              Nastavení
+            </Button>
+          </Link>
+          <Button 
+            variant="ghost" 
+            className="w-full justify-start text-red-600" 
+            onClick={() => {
+              setIsOpen(false);
+              handleSignOut();
+            }}
+          >
+            <LogOut className="h-4 w-4 mr-2" />
+            Odhlásit se
+          </Button>
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   if (!user) {
     return (

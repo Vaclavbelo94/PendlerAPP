@@ -11,6 +11,7 @@ import SidebarLogo from "./SidebarLogo";
 import SidebarUserSection from "./SidebarUserSection";
 import SidebarThemeSwitcher from "./SidebarThemeSwitcher";
 import { navigationItems } from "@/data/navigationData";
+import { dhlNavigationItems, dhlAdminNavigationItems } from "@/data/dhlNavigationData";
 import { canAccessDHLAdmin, canAccessDHLFeatures } from "@/utils/dhlAuthUtils";
 
 const ModernSidebar = () => {
@@ -21,19 +22,27 @@ const ModernSidebar = () => {
   // Check DHL access
   const isDHLAdmin = canAccessDHLAdmin(user);
   const canAccessDHL = canAccessDHLFeatures(user);
+  
+  // Check if we're on a DHL route
+  const isDHLRoute = location.pathname.startsWith('/dhl-');
+  const shouldShowDHLNavigation = canAccessDHL && isDHLRoute;
 
-  const filteredNavigationItems = navigationItems.filter(item => {
-    // Regular admin check
-    if (item.adminOnly && !isAdmin) return false;
+  // Choose navigation items based on context
+  const getNavigationItems = () => {
+    if (shouldShowDHLNavigation) {
+      return isDHLAdmin ? dhlAdminNavigationItems : dhlNavigationItems;
+    }
     
-    // DHL admin check
-    if (item.dhlAdminOnly && !isDHLAdmin) return false;
-    
-    // DHL employee check
-    if (item.dhlOnly && !canAccessDHL) return false;
-    
-    return true;
-  });
+    // Standard navigation with DHL items filtered
+    return navigationItems.filter(item => {
+      if (item.adminOnly && !isAdmin) return false;
+      if (item.dhlAdminOnly && !isDHLAdmin) return false;
+      if (item.dhlOnly && !canAccessDHL) return false;
+      return true;
+    });
+  };
+
+  const currentNavigationItems = getNavigationItems();
 
   return (
     <div className="fixed left-0 top-0 z-40 h-screen w-64 border-r bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -46,15 +55,14 @@ const ModernSidebar = () => {
         {/* Navigation */}
         <ScrollArea className="flex-1 px-3">
           <div className="space-y-1 p-2">
-            {/* Main Navigation */}
-            <div className="pb-4">
-              <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">
-                {t('navigation')}
-              </h2>
-              <div className="space-y-1">
-                {filteredNavigationItems
-                  .filter(item => !item.adminOnly && !item.dhlAdminOnly && !item.dhlOnly)
-                  .map((item) => {
+            {/* DHL Navigation */}
+            {shouldShowDHLNavigation && (
+              <div className="pb-4">
+                <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight text-yellow-600 flex items-center gap-2">
+                  DHL Navigation
+                </h2>
+                <div className="space-y-1">
+                  {currentNavigationItems.map((item) => {
                     const Icon = item.icon;
                     return (
                       <Button
@@ -68,7 +76,7 @@ const ModernSidebar = () => {
                       >
                         <Link to={item.path}>
                           <Icon className="mr-2 h-4 w-4" />
-                          {t(item.titleKey)}
+                          {item.title}
                           {item.badge && (
                             <span className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
                               {item.badge}
@@ -78,60 +86,21 @@ const ModernSidebar = () => {
                       </Button>
                     );
                   })}
-              </div>
-            </div>
-
-            {/* DHL Section */}
-            {canAccessDHL && (
-              <>
-                <Separator />
-                <div className="pb-4">
-                  <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight text-yellow-600">
-                    DHL
-                  </h2>
-                  <div className="space-y-1">
-                    {filteredNavigationItems
-                      .filter(item => item.dhlOnly || item.dhlAdminOnly)
-                      .map((item) => {
-                        const Icon = item.icon;
-                        return (
-                          <Button
-                            key={item.path}
-                            asChild
-                            variant={location.pathname === item.path ? "secondary" : "ghost"}
-                            className={cn(
-                              "w-full justify-start",
-                              location.pathname === item.path && "bg-muted font-medium"
-                            )}
-                          >
-                            <Link to={item.path}>
-                              <Icon className="mr-2 h-4 w-4" />
-                              {item.dhlAdminOnly ? 'DHL Admin' : 'DHL Dashboard'}
-                              {item.badge && (
-                                <span className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
-                                  {item.badge}
-                                </span>
-                              )}
-                            </Link>
-                          </Button>
-                        );
-                      })}
-                  </div>
                 </div>
-              </>
+              </div>
             )}
 
-            {/* Admin Section */}
-            {isAdmin && (
+            {/* Standard Navigation */}
+            {!shouldShowDHLNavigation && (
               <>
-                <Separator />
+                {/* Main Navigation */}
                 <div className="pb-4">
-                  <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight text-red-600">
-                    {t('administration')}
+                  <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">
+                    {t('navigation')}
                   </h2>
                   <div className="space-y-1">
-                    {filteredNavigationItems
-                      .filter(item => item.adminOnly && !item.dhlAdminOnly)
+                    {currentNavigationItems
+                      .filter(item => !item.adminOnly && !item.dhlAdminOnly && !item.dhlOnly)
                       .map((item) => {
                         const Icon = item.icon;
                         return (
@@ -158,6 +127,86 @@ const ModernSidebar = () => {
                       })}
                   </div>
                 </div>
+
+                {/* DHL Section */}
+                {canAccessDHL && (
+                  <>
+                    <Separator />
+                    <div className="pb-4">
+                      <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight text-yellow-600">
+                        DHL
+                      </h2>
+                      <div className="space-y-1">
+                        {currentNavigationItems
+                          .filter(item => item.dhlOnly || item.dhlAdminOnly)
+                          .map((item) => {
+                            const Icon = item.icon;
+                            return (
+                              <Button
+                                key={item.path}
+                                asChild
+                                variant={location.pathname === item.path ? "secondary" : "ghost"}
+                                className={cn(
+                                  "w-full justify-start",
+                                  location.pathname === item.path && "bg-muted font-medium"
+                                )}
+                              >
+                                <Link to={item.path}>
+                                  <Icon className="mr-2 h-4 w-4" />
+                                  {item.dhlAdminOnly ? 'DHL Admin' : 'DHL Dashboard'}
+                                  {item.badge && (
+                                    <span className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
+                                      {item.badge}
+                                    </span>
+                                  )}
+                                </Link>
+                              </Button>
+                            );
+                          })}
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {/* Admin Section */}
+                {isAdmin && (
+                  <>
+                    <Separator />
+                    <div className="pb-4">
+                      <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight text-red-600">
+                        {t('administration')}
+                      </h2>
+                      <div className="space-y-1">
+                        {currentNavigationItems
+                          .filter(item => item.adminOnly && !item.dhlAdminOnly)
+                          .map((item) => {
+                            const Icon = item.icon;
+                            return (
+                              <Button
+                                key={item.path}
+                                asChild
+                                variant={location.pathname === item.path ? "secondary" : "ghost"}
+                                className={cn(
+                                  "w-full justify-start",
+                                  location.pathname === item.path && "bg-muted font-medium"
+                                )}
+                              >
+                                <Link to={item.path}>
+                                  <Icon className="mr-2 h-4 w-4" />
+                                  {t(item.titleKey)}
+                                  {item.badge && (
+                                    <span className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
+                                      {item.badge}
+                                    </span>
+                                  )}
+                                </Link>
+                              </Button>
+                            );
+                          })}
+                      </div>
+                    </div>
+                  </>
+                )}
               </>
             )}
           </div>
