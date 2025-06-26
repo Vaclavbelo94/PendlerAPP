@@ -26,6 +26,7 @@ interface UnifiedMobileSidebarProps {
   isOpen: boolean;
   closeSidebar: () => void;
   variant: 'compact' | 'overlay';
+  onOpenSidebar?: () => void;
 }
 
 const navigationItems = [
@@ -42,7 +43,8 @@ const navigationItems = [
 export const UnifiedMobileSidebar: React.FC<UnifiedMobileSidebarProps> = ({
   isOpen,
   closeSidebar,
-  variant
+  variant,
+  onOpenSidebar
 }) => {
   const { user, signOut, isPremium } = useAuth();
   const navigate = useNavigate();
@@ -69,14 +71,14 @@ export const UnifiedMobileSidebar: React.FC<UnifiedMobileSidebarProps> = ({
   return (
     <>
       {/* Mobile trigger button for overlay variant */}
-      {variant === 'overlay' && (
+      {variant === 'overlay' && onOpenSidebar && (
         <Button
           variant="ghost"
           size="sm"
           className="fixed top-4 left-4 z-60 bg-background/80 backdrop-blur-sm shadow-sm"
-          onClick={() => isOpen ? closeSidebar() : {}}
+          onClick={onOpenSidebar}
         >
-          {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          <Menu className="h-5 w-5" />
         </Button>
       )}
 

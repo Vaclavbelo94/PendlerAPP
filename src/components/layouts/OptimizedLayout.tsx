@@ -6,8 +6,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { UnifiedMobileSidebar } from "./sidebar/UnifiedMobileSidebar";
-import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 interface OptimizedLayoutProps {
@@ -46,21 +44,12 @@ const OptimizedLayout = ({ children, navbarRightContent }: OptimizedLayoutProps)
   if (isMobile) {
     return (
       <div className="flex min-h-screen bg-background">
-        {/* Mobile menu trigger */}
-        <Button
-          variant="ghost"
-          size="sm"
-          className="fixed top-4 left-4 z-60 bg-background/80 backdrop-blur-sm shadow-sm"
-          onClick={() => setSidebarOpen(true)}
-        >
-          <Menu className="h-5 w-5" />
-        </Button>
-
         <UnifiedMobileSidebar
           key={`mobile-${sidebarKey}`}
           isOpen={sidebarOpen}
           closeSidebar={() => setSidebarOpen(false)}
           variant="overlay"
+          onOpenSidebar={() => setSidebarOpen(true)}
         />
         
         <div className="flex-1 flex flex-col min-w-0">
