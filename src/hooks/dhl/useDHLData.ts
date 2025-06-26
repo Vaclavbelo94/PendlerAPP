@@ -1,66 +1,48 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { DHLPosition, DHLWorkGroup, UserDHLAssignment } from '@/types/dhl';
-import { toast } from 'sonner';
+import { errorHandler } from '@/utils/errorHandler';
 
-interface UseDHLDataReturn {
-  positions: DHLPosition[];
-  workGroups: DHLWorkGroup[];
-  userAssignment: UserDHLAssignment | null;
-  isLoading: boolean;
-  error: string | null;
-  refetch: () => Promise<void>;
+export interface DHLUserAssignment {
+  id: string;
+  user_id: string;
+  dhl_position_id: string;
+  dhl_work_group_id: string;
+  reference_date: string | null;
+  reference_woche: number | null;
+  is_active: boolean;
+  dhl_position?: {
+    id: string;
+    name: string;
+    description?: string;
+    position_type: string;
+    hourly_rate?: number;
+  };
+  dhl_work_group?: {
+    id: string;
+    name: string;
+    description?: string;
+    week_number: number;
+  };
 }
 
-export const useDHLData = (userId?: string): UseDHLDataReturn => {
-  const [positions, setPositions] = useState<DHLPosition[]>([]);
-  const [workGroups, setWorkGroups] = useState<DHLWorkGroup[]>([]);
-  const [userAssignment, setUserAssignment] = useState<UserDHLAssignment | null>(null);
+export const useDHLData = (userId?: string) => {
+  const [userAssignment, setUserAssignment] = useState<DHLUserAssignment | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchDHLData = async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      
-      console.log('Fetching DHL data...');
-
-      // Načtení pozic
-      const { data: positionsData, error: positionsError } = await supabase
-        .from('dhl_positions')
-        .select('*')
-        .eq('is_active', true)
-        .order('name');
-
-      if (positionsError) {
-        console.error('Error fetching positions:', positionsError);
-        throw positionsError;
+  useEffect(() => {
+    const loadDHLData = async () => {
+      if (!userId) {
+        setIsLoading(false);
+        return;
       }
 
-      console.log('Positions loaded:', positionsData);
+      try {
+        setIsLoading(true);
+        setError(null);
 
-      // Načtení pracovních skupin
-      const { data: workGroupsData, error: workGroupsError } = await supabase
-        .from('dhl_work_groups')
-        .select('*')
-        .eq('is_active', true)
-        .order('week_number');
-
-      if (workGroupsError) {
-        console.error('Error fetching work groups:', workGroupsError);
-        throw workGroupsError;
-      }
-
-      console.log('Work groups loaded:', workGroupsData);
-
-      // Načtení uživatelského přiřazení (pokud je userId poskytnut)
-      let assignmentData = null;
-      if (userId) {
-        console.log('Fetching user assignment for user:', userId);
-        
-        const { data, error: assignmentError } = await supabase
+        const { data: assignment, error: assignmentError } = await supabase
           .from('user_dhl_assignments')
           .select(`
             *,
@@ -72,44 +54,26 @@ export const useDHLData = (userId?: string): UseDHLDataReturn => {
           .maybeSingle();
 
         if (assignmentError) {
-          console.error('Error fetching assignment:', assignmentError);
           throw assignmentError;
         }
-        
-        console.log('User assignment loaded:', data);
-        assignmentData = data;
+
+        setUserAssignment(assignment);
+      } catch (err) {
+        const errorMessage = 'Nepodařilo se načíst DHL data';
+        setError(errorMessage);
+        errorHandler.handleError(err, { operation: 'loadDHLData', userId });
+      } finally {
+        setIsLoading(false);
       }
+    };
 
-      setPositions(positionsData || []);
-      setWorkGroups(workGroupsData || []);
-      setUserAssignment(assignmentData);
-
-      console.log('DHL Data loaded successfully:', {
-        positions: positionsData?.length,
-        workGroups: workGroupsData?.length,
-        userAssignment: assignmentData
-      });
-
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Nepodařilo se načíst DHL data';
-      setError(errorMessage);
-      toast.error(errorMessage);
-      console.error('Error fetching DHL data:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchDHLData();
+    loadDHLData();
   }, [userId]);
 
   return {
-    positions,
-    workGroups,
     userAssignment,
     isLoading,
     error,
-    refetch: fetchDHLData
+    hasDHLAssignment: !!userAssignment
   };
 };

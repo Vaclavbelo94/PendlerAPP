@@ -1,43 +1,53 @@
 
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { canAccessDHLFeatures } from '@/utils/dhlAuthUtils';
 import { useDHLData } from './useDHLData';
+import { canAccessDHLFeatures, canAccessDHLAdmin } from '@/utils/dhlAuthUtils';
 
-export const useDHLRouteGuard = (requiresSetup = false) => {
-  const { user, isLoading } = useAuth();
+export const useDHLRouteGuard = (requiresSetup: boolean = false) => {
+  const { user } = useAuth();
+  const { userAssignment, isLoading } = useDHLData(user?.id);
   const navigate = useNavigate();
-  const { userAssignment, isLoading: isDHLDataLoading } = useDHLData(user?.id);
+  const location = useLocation();
+
+  const canAccessDHL = canAccessDHLFeatures(user);
+  const canAccessAdmin = canAccessDHLAdmin(user);
+  const hasAssignment = !!userAssignment;
 
   useEffect(() => {
-    if (isLoading || isDHLDataLoading) return;
+    if (isLoading) return;
 
-    // Check if user can access DHL features
-    if (!canAccessDHLFeatures(user)) {
-      console.log('User cannot access DHL features, redirecting to dashboard');
+    // If user doesn't have DHL access at all, redirect to main dashboard
+    if (!canAccessDHL) {
       navigate('/dashboard');
       return;
     }
 
-    // If setup is required but user doesn't have assignment, redirect to setup
-    if (requiresSetup && !userAssignment) {
-      console.log('DHL user needs setup, redirecting to setup page');
+    // If accessing admin routes but not admin
+    if (location.pathname.includes('/dhl-admin') && !canAccessAdmin) {
+      navigate('/dhl-dashboard');
+      return;
+    }
+
+    // If requires setup (dashboard access) but no assignment, redirect to setup
+    if (requiresSetup && !hasAssignment && location.pathname !== '/dhl-setup') {
       navigate('/dhl-setup');
       return;
     }
 
-    // If user has assignment but is on setup page, redirect to dashboard
-    if (!requiresSetup && userAssignment && window.location.pathname === '/dhl-setup') {
-      console.log('DHL user already has setup, redirecting to dashboard');
+    // If has assignment but on setup page, redirect to dashboard
+    if (hasAssignment && location.pathname === '/dhl-setup') {
       navigate('/dhl-dashboard');
       return;
     }
-  }, [user, userAssignment, isLoading, isDHLDataLoading, requiresSetup, navigate]);
+  }, [canAccessDHL, canAccessAdmin, hasAssignment, requiresSetup, isLoading, navigate, location.pathname]);
 
   return {
-    canAccess: !isLoading && !isDHLDataLoading && canAccessDHLFeatures(user),
-    hasAssignment: !!userAssignment,
-    isLoading: isLoading || isDHLDataLoading
+    canAccess: canAccessDHL,
+    canAccessAdmin,
+    hasAssignment,
+    isLoading,
+    shouldRedirect: isLoading || (!canAccessDHL || (requiresSetup && !hasAssignment))
   };
 };
