@@ -45,7 +45,13 @@ export const useOptimizedShiftsManagement = (userId?: string) => {
           throw shiftsError;
         }
 
-        setShifts(data || []);
+        // Transform the data to ensure proper typing
+        const transformedShifts: Shift[] = (data || []).map(shift => ({
+          ...shift,
+          type: shift.type as 'morning' | 'afternoon' | 'night'
+        }));
+
+        setShifts(transformedShifts);
       } catch (err) {
         console.error('Error loading shifts:', err);
         setError('Nepodařilo se načíst směny');
@@ -70,7 +76,10 @@ export const useOptimizedShiftsManagement = (userId?: string) => {
 
       if (insertError) throw insertError;
 
-      const newShift = data as Shift;
+      const newShift: Shift = {
+        ...data,
+        type: data.type as 'morning' | 'afternoon' | 'night'
+      };
       setShifts(prev => [newShift, ...prev]);
       return newShift;
     } catch (err) {
@@ -99,7 +108,10 @@ export const useOptimizedShiftsManagement = (userId?: string) => {
 
       if (updateError) throw updateError;
 
-      const updatedShift = data as Shift;
+      const updatedShift: Shift = {
+        ...data,
+        type: data.type as 'morning' | 'afternoon' | 'night'
+      };
       setShifts(prev => prev.map(shift => shift.id === updatedShift.id ? updatedShift : shift));
       return updatedShift;
     } catch (err) {

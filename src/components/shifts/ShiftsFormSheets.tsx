@@ -5,7 +5,7 @@ import { Calendar } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 import ShiftForm from '@/components/shifts/ShiftForm';
-import { Shift } from '@/hooks/useShiftsManagement';
+import { Shift } from '@/hooks/shifts/useOptimizedShiftsManagement';
 import { useTranslation } from 'react-i18next';
 
 interface ShiftsFormSheetsProps {
