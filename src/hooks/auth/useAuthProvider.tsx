@@ -1,3 +1,4 @@
+
 import * as React from 'react';
 import { useState, useCallback } from 'react';
 import { AuthContext } from './useAuthContext';
@@ -130,12 +131,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, [user]);
 
   const refreshAdminStatus = useCallback(async () => {
-    if (!user || adminStatusLoaded) {
-      console.log("No user or admin status already loaded");
-      if (!user) {
-        setIsAdmin(false);
-        setAdminStatusLoaded(true);
-      }
+    if (!user) {
+      console.log("No user for admin status refresh");
+      setIsAdmin(false);
+      setAdminStatusLoaded(true);
       return;
     }
 
@@ -149,7 +148,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return;
       }
       
-      // Check admin status based on email and database
+      // Check admin status based on email first for DHL admin
       const isAdminByEmail = user.email === 'admin@pendlerapp.com' || user.email === 'admin_dhl@pendlerapp.com';
       
       if (isAdminByEmail) {
@@ -160,6 +159,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return;
       }
       
+      // Check database for admin status
       const { data, error } = await supabase
         .from('profiles')
         .select('is_admin')
@@ -185,7 +185,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsAdmin(false);
       setAdminStatusLoaded(true);
     }
-  }, [user, adminStatusLoaded, session]);
+  }, [user, session]);
 
   const refreshPremiumStatus = useCallback(async (): Promise<{ isPremium: boolean; premiumExpiry?: string }> => {
     if (!user) {
@@ -284,9 +284,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const { isPremium, setIsPremium, isSpecialUser } = usePremiumStatus(user, refreshPremiumStatus, isAdmin);
 
-  // Check admin status when user changes - only once
+  // Check admin status when user changes - ensure it runs for DHL admin
   React.useEffect(() => {
-    if (user && !adminStatusLoaded) {
+    if (user && (!adminStatusLoaded || user.email === 'admin_dhl@pendlerapp.com')) {
+      console.log('Refreshing admin status for user:', user.email);
+      setAdminStatusLoaded(false); // Force refresh for DHL admin
       refreshAdminStatus();
     } else if (!user) {
       setIsAdmin(false);
@@ -297,7 +299,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         console.warn('Could not remove adminLoggedIn from localStorage');
       }
     }
-  }, [user, refreshAdminStatus, adminStatusLoaded]);
+  }, [user, refreshAdminStatus]);
 
   const contextValue = React.useMemo(() => ({
     user,

@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { validateScheduleData, ValidationResult } from './scheduleValidator';
 import { toast } from 'sonner';
@@ -86,11 +87,62 @@ const convertToStorageFormat = (data: any): any => {
 };
 
 /**
+ * Verify user has admin privileges
+ */
+const verifyAdminAccess = async (): Promise<boolean> => {
+  try {
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
+      console.error('No authenticated user found');
+      return false;
+    }
+
+    console.log('Checking admin access for user:', user.email);
+
+    // First check if this is the DHL admin email
+    if (user.email === 'admin_dhl@pendlerapp.com') {
+      console.log('User is DHL admin by email');
+      return true;
+    }
+
+    // Check database for admin status
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('is_admin')
+      .eq('id', user.id)
+      .single();
+
+    if (profileError) {
+      console.error('Error checking admin status:', profileError);
+      return false;
+    }
+
+    const isAdmin = profile?.is_admin || false;
+    console.log('User admin status from database:', isAdmin);
+    return isAdmin;
+  } catch (error) {
+    console.error('Error verifying admin access:', error);
+    return false;
+  }
+};
+
+/**
  * Import DHL schedule from JSON data
  */
 export const importDHLSchedule = async (data: ImportScheduleData): Promise<ImportResult> => {
   console.log('=== DHL SCHEDULE IMPORT START ===');
   console.log('Import data:', data);
+
+  // Verify admin access first
+  const hasAdminAccess = await verifyAdminAccess();
+  if (!hasAdminAccess) {
+    console.error('Access denied: User does not have admin privileges');
+    return {
+      success: false,
+      validation: { isValid: false, errors: [], warnings: [], summary: { totalDays: 0, totalShifts: 0, dateRange: '', detectedWoche: null } },
+      message: 'Access denied: Admin privileges required for importing schedules'
+    };
+  }
 
   // Validate the JSON data first
   const validation = validateScheduleData(data.jsonData, data.fileName);
@@ -143,7 +195,7 @@ export const importDHLSchedule = async (data: ImportScheduleData): Promise<Impor
 
     console.log('Schedule inserted with ID:', scheduleData.id);
 
-    // Get current user ID
+    // Get current user ID for logging
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
       throw new Error('Authentication required');
