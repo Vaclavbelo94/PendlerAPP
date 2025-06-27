@@ -13,6 +13,9 @@ interface AuthContextType {
   isPremium: boolean;
   refreshAdminStatus: () => Promise<void>;
   refreshPremiumStatus: () => Promise<{ isPremium: boolean; premiumExpiry?: string }>;
+  signIn: (email: string, password: string) => Promise<{ error: string | null }>;
+  signInWithGoogle: () => Promise<{ error: string | null; url?: string }>;
+  signUp: (email: string, password: string, username?: string) => Promise<{ error: string | null; user: User | null }>;
   signOut: () => Promise<void>;
 }
 
@@ -108,6 +111,46 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, [refreshAdminStatus, setIsAdmin, setAuthStatusPremium, setPremiumStatusPremium]);
 
+  const signIn = async (email: string, password: string) => {
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      return { error: error?.message || null };
+    } catch (error) {
+      return { error: 'Neočekávaná chyba při přihlašování' };
+    }
+  };
+
+  const signInWithGoogle = async () => {
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+      });
+      return { error: error?.message || null, url: data.url };
+    } catch (error) {
+      return { error: 'Chyba při přihlašování přes Google' };
+    }
+  };
+
+  const signUp = async (email: string, password: string, username?: string) => {
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            username: username || email.split('@')[0]
+          }
+        }
+      });
+      return { error: error?.message || null, user: data.user };
+    } catch (error) {
+      return { error: 'Neočekávaná chyba při registraci', user: null };
+    }
+  };
+
   const signOut = async () => {
     try {
       console.log('Signing out...');
@@ -135,6 +178,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     isPremium,
     refreshAdminStatus,
     refreshPremiumStatus,
+    signIn,
+    signInWithGoogle,
+    signUp,
     signOut,
   };
 
