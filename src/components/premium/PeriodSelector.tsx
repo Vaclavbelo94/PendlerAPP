@@ -2,38 +2,51 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useTranslation } from 'react-i18next';
 
 export type PaymentPeriod = 'monthly' | 'yearly';
+
+interface PricingInfo {
+  currency: string;
+  monthlyPrice: number;
+  yearlyPrice: number;
+  savings: string;
+}
 
 interface PeriodSelectorProps {
   selectedPeriod: PaymentPeriod;
   onPeriodChange: (period: PaymentPeriod) => void;
+  pricing: PricingInfo;
 }
 
-const PeriodSelector = ({ selectedPeriod, onPeriodChange }: PeriodSelectorProps) => {
+const PeriodSelector = ({ selectedPeriod, onPeriodChange, pricing }: PeriodSelectorProps) => {
+  const { t } = useTranslation('premium');
+
   const periods = [
     {
       id: 'monthly' as PaymentPeriod,
-      label: 'Měsíční',
-      price: 99,
-      description: 'Placeno každý měsíc',
+      label: t('periods.monthly', 'Měsíční'),
+      price: pricing.monthlyPrice,
+      description: t('periods.monthlyDesc', 'Placeno každý měsíc'),
       savings: null
     },
     {
       id: 'yearly' as PaymentPeriod,
-      label: 'Roční',
-      price: 990,
-      description: 'Placeno jednou ročně',
-      savings: '17% úspora'
+      label: t('periods.yearly', 'Roční'),
+      price: pricing.yearlyPrice,
+      description: t('periods.yearlyDesc', 'Placeno jednou ročně'),
+      savings: t('periods.yearlySavings', `${pricing.savings} úspora`)
     }
   ];
 
   return (
     <div className="space-y-4">
       <div className="text-center">
-        <h3 className="text-lg font-semibold mb-2">Vyberte období platby</h3>
+        <h3 className="text-lg font-semibold mb-2">
+          {t('periods.selectTitle', 'Vyberte období platby')}
+        </h3>
         <p className="text-sm text-muted-foreground">
-          Ušetřete s ročním předplatným
+          {t('periods.selectSubtitle', 'Ušetřete s ročním předplatným')}
         </p>
       </div>
       
@@ -53,21 +66,21 @@ const PeriodSelector = ({ selectedPeriod, onPeriodChange }: PeriodSelectorProps)
                 <div className="flex items-center justify-between mb-2">
                   <h4 className="font-semibold">{period.label}</h4>
                   {period.savings && (
-                    <Badge variant="secondary" className="bg-green-100 text-green-800">
+                    <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
                       {period.savings}
                     </Badge>
                   )}
                 </div>
                 <div className="mb-2">
-                  <span className="text-2xl font-bold">{period.price} Kč</span>
+                  <span className="text-2xl font-bold">{period.price} {pricing.currency}</span>
                   <span className="text-sm text-muted-foreground ml-1">
-                    {period.id === 'yearly' ? '/rok' : '/měsíc'}
+                    {period.id === 'yearly' ? t('periods.perYear', '/rok') : t('periods.perMonth', '/měsíc')}
                   </span>
                 </div>
                 <p className="text-sm text-muted-foreground">{period.description}</p>
                 {period.id === 'yearly' && (
                   <p className="text-xs text-green-600 mt-1">
-                    Odpovídá 82,5 Kč/měsíc
+                    {t('periods.yearlyEquivalent', `Odpovídá ${(pricing.yearlyPrice / 12).toFixed(2)} ${pricing.currency}/měsíc`)}
                   </p>
                 )}
               </div>

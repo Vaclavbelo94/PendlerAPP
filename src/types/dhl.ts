@@ -1,3 +1,4 @@
+
 // DHL System Types
 
 export type DHLPositionType = 'technik' | 'rangierer' | 'verlader' | 'sortierer' | 'fahrer' | 'other';
@@ -64,6 +65,8 @@ export interface UserDHLAssignment {
   is_active: boolean;
   created_at: string;
   updated_at: string;
+  reference_date?: string;
+  reference_woche?: number;
   // Relations
   dhl_position?: DHLPosition;
   dhl_work_group?: DHLWorkGroup;

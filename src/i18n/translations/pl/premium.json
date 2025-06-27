@@ -29,10 +29,29 @@
     "description": "Uzyskaj dostęp do wszystkich funkcji bez ograniczeń",
     "priceFrom": "od",
     "priceMonth": "/miesiąc",
-    "activateButton": "Aktywuj Premium"
+    "priceYear": "/rok",
+    "activateButton": "Aktywuj Premium",
+    "processing": "Przetwarzanie...",
+    "yearlySavings": "Oszczędzasz {{savings}}"
   },
   "benefits": {
     "title": "Korzyści Premium",
     "description": "Co otrzymasz z abonamentem Premium"
+  },
+  "periods": {
+    "selectTitle": "Wybierz okres płatności",
+    "selectSubtitle": "Oszczędzaj z rocznym abonamentem",
+    "monthly": "Miesięczny",
+    "yearly": "Roczny",
+    "monthlyDesc": "Płacone co miesiąc",
+    "yearlyDesc": "Płacone raz w roku",
+    "yearlySavings": "17% oszczędności",
+    "perMonth": "/miesiąc",
+    "perYear": "/rok",
+    "yearlyEquivalent": "Odpowiada {{amount}}/miesiąc"
+  },
+  "errors": {
+    "paymentFailed": "Płatność nie powiodła się. Spróbuj ponownie.",
+    "networkError": "Błąd połączenia. Sprawdź połączenie internetowe."
   }
 }

@@ -29,10 +29,29 @@
     "description": "Získejte přístup ke všem funkcím bez omezení",
     "priceFrom": "od",
     "priceMonth": "/měsíc",
-    "activateButton": "Aktivovat Premium"
+    "priceYear": "/rok",
+    "activateButton": "Aktivovat Premium",
+    "processing": "Zpracovává se...",
+    "yearlySavings": "Ušetříte {{savings}}"
   },
   "benefits": {
     "title": "Premium výhody",
     "description": "Co získáte s Premium předplatným"
+  },
+  "periods": {
+    "selectTitle": "Vyberte období platby",
+    "selectSubtitle": "Ušetřete s ročním předplatným",
+    "monthly": "Měsíční",
+    "yearly": "Roční",
+    "monthlyDesc": "Placeno každý měsíc",
+    "yearlyDesc": "Placeno jednou ročně",
+    "yearlySavings": "17% úspora",
+    "perMonth": "/měsíc",
+    "perYear": "/rok",
+    "yearlyEquivalent": "Odpovídá {{amount}}/měsíc"
+  },
+  "errors": {
+    "paymentFailed": "Platba se nezdařila. Zkuste to prosím znovu.",
+    "networkError": "Chyba připojení. Zkontrolujte internetové připojení."
   }
 }

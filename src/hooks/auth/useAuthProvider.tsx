@@ -1,380 +1,160 @@
 
 import * as React from 'react';
-import { useState, useCallback } from 'react';
-import { AuthContext } from './useAuthContext';
-import { useAuthState } from './useAuthState';
-import { useAuthMethods } from './useAuthMethods';
-import { usePremiumStatus } from '@/hooks/usePremiumStatus';
-import { isDHLEmployee, getDHLSetupPath } from '@/utils/dhlAuthUtils';
-import { 
-  cleanupAuthState, 
-  saveUserToLocalStorage, 
-  checkLocalStorageSpace, 
-  aggressiveCleanup,
-  initializeLocalStorageCleanup,
-  safeLocalStorageSet
-} from '@/utils/authUtils';
+import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { AuthContext, AuthError } from './useAuthContext';
+import { useAuthStatus } from './useAuthStatus';
+import { usePremiumStatus } from '@/hooks/usePremiumStatus';
 
-interface AuthProviderProps {
-  children: React.ReactNode;
-}
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [user, setUser] = React.useState<User | null>(null);
+  const [session, setSession] = React.useState<Session | null>(null);
+  const [isLoading, setIsLoading] = React.useState(true);
 
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const authState = useAuthState();
-  const { user, session, isLoading, error } = authState;
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [adminStatusLoaded, setAdminStatusLoaded] = useState(false);
-  const [hasCheckedDHLRedirect, setHasCheckedDHLRedirect] = useState(false);
-  const authMethods = useAuthMethods();
+  const { 
+    isAdmin, 
+    isPremium: premiumStatus, 
+    setIsAdmin, 
+    setIsPremium, 
+    refreshAdminStatus, 
+    refreshPremiumStatus 
+  } = useAuthStatus(user?.id);
 
-  // Initialize localStorage cleanup on mount
+  const { 
+    isPremium: premiumFromHook,
+    setIsPremium: setPremiumFromHook 
+  } = usePremiumStatus(user, refreshPremiumStatus, isAdmin);
+
+  // Use the premium status from the hook as the primary source
+  const isPremium = premiumFromHook || premiumStatus;
+
   React.useEffect(() => {
-    initializeLocalStorageCleanup();
-  }, []);
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setIsLoading(false);
+    });
 
-  // Critical: Verify user identity when session changes
-  React.useEffect(() => {
-    if (user && session) {
-      console.log('Verifying user identity:', {
-        userId: user.id,
-        userEmail: user.email,
-        sessionUserId: session.user?.id,
-        sessionUserEmail: session.user?.email
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log('Auth event:', event, session?.user?.email);
+        setSession(session);
+        setUser(session?.user ?? null);
+        setIsLoading(false);
+
+        if (event === 'SIGNED_IN' && session?.user) {
+          // Defer heavy operations to prevent deadlocks
+          setTimeout(() => {
+            refreshAdminStatus();
+            refreshPremiumStatus();
+          }, 0);
+        }
+
+        if (event === 'SIGNED_OUT') {
+          setIsAdmin(false);
+          setIsPremium(false);
+          setPremiumFromHook(false);
+        }
+      }
+    );
+
+    return () => subscription.unsubscribe();
+  }, [refreshAdminStatus, refreshPremiumStatus, setIsAdmin, setIsPremium, setPremiumFromHook]);
+
+  const signIn = async (email: string, password: string) => {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
       });
       
-      // Critical check: ensure session user matches the user object
-      if (session.user.id !== user.id || session.user.email !== user.email) {
-        console.error('CRITICAL: User/Session mismatch detected!', {
-          user: { id: user.id, email: user.email },
-          session: { id: session.user.id, email: session.user.email }
-        });
-        
-        // Force cleanup and redirect to login
-        aggressiveCleanup();
-        window.location.href = '/login?error=session_mismatch';
-        return;
-      }
-      
-      console.log('User identity verified successfully');
-    }
-  }, [user, session]);
-
-  // Unified DHL redirect logic - simplified
-  React.useEffect(() => {
-    if (!user || isLoading || hasCheckedDHLRedirect) return;
-
-    const handleDHLRedirect = async () => {
-      console.log('=== UNIFIED DHL REDIRECT CHECK ===');
-      console.log('User:', user.email);
-      console.log('Current path:', window.location.pathname);
-      
-      const isDHL = isDHLEmployee(user);
-      console.log('Is DHL Employee:', isDHL);
-
-      if (!isDHL) {
-        setHasCheckedDHLRedirect(true);
-        return;
-      }
-
-      // Skip redirect if user is already on DHL setup page
-      const currentPath = window.location.pathname;
-      if (currentPath === '/dhl-setup') {
-        console.log('User already on DHL setup page, skipping redirect');
-        setHasCheckedDHLRedirect(true);
-        return;
-      }
-
-      // Check if user has DHL assignment
-      try {
-        console.log('Checking DHL assignment for user:', user.id);
-        const { data: assignment, error } = await supabase
-          .from('user_dhl_assignments')
-          .select('id')
-          .eq('user_id', user.id)
-          .eq('is_active', true)
-          .maybeSingle();
-
-        if (error) {
-          console.error('Error checking DHL assignment:', error);
-          setHasCheckedDHLRedirect(true);
-          return;
-        }
-
-        console.log('DHL assignment found:', !!assignment);
-
-        // Redirect to setup only if no assignment and on index/dashboard pages
-        const setupPath = getDHLSetupPath(user, !!assignment);
-        if (setupPath && (currentPath === '/' || currentPath === '/dashboard')) {
-          console.log('DHL user without assignment - redirecting to setup');
-          window.location.href = setupPath;
-        }
-      } catch (error) {
-        console.error('Error in DHL redirect check:', error);
-      } finally {
-        setHasCheckedDHLRedirect(true);
-      }
-    };
-
-    // Small delay to ensure user data is fully loaded
-    const timer = setTimeout(handleDHLRedirect, 1000);
-    return () => clearTimeout(timer);
-  }, [user, isLoading, hasCheckedDHLRedirect]);
-
-  // Reset redirect check when user changes
-  React.useEffect(() => {
-    if (!user) {
-      setHasCheckedDHLRedirect(false);
-    }
-  }, [user]);
-
-  const refreshAdminStatus = useCallback(async () => {
-    if (!user) {
-      console.log("No user for admin status refresh");
-      setIsAdmin(false);
-      setAdminStatusLoaded(true);
-      return;
-    }
-
-    try {
-      console.log("Refreshing admin status for user:", user.id, user.email);
-      
-      // Double-check user identity before making database calls
-      if (user.email !== session?.user?.email) {
-        console.error('User identity mismatch in admin check');
-        aggressiveCleanup();
-        return;
-      }
-      
-      // Check admin status based on email first for DHL admin
-      const isAdminByEmail = user.email === 'admin@pendlerapp.com' || user.email === 'admin_dhl@pendlerapp.com';
-      
-      if (isAdminByEmail) {
-        console.log("User is admin by email");
-        setIsAdmin(true);
-        setAdminStatusLoaded(true);
-        safeLocalStorageSet('adminLoggedIn', 'true');
-        return;
-      }
-      
-      // Check database for admin status
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('is_admin')
-        .eq('id', user.id)
-        .maybeSingle();
-
       if (error) {
-        console.error('Error fetching admin status:', error);
-        setIsAdmin(false);
-        setAdminStatusLoaded(true);
-        return;
+        return { error: error.message };
       }
-
-      const adminStatus = data?.is_admin || false;
-      console.log("Admin status from database:", adminStatus);
-      setIsAdmin(adminStatus);
-      setAdminStatusLoaded(true);
-
-      // Store admin status with safe localStorage
-      safeLocalStorageSet('adminLoggedIn', adminStatus ? 'true' : 'false');
+      
+      return { error: null };
     } catch (error) {
-      console.error('Error checking admin status:', error);
-      setIsAdmin(false);
-      setAdminStatusLoaded(true);
+      return { error: 'Neočekávaná chyba při přihlášení' };
     }
-  }, [user, session]);
+  };
 
-  const refreshPremiumStatus = useCallback(async (): Promise<{ isPremium: boolean; premiumExpiry?: string }> => {
-    if (!user) {
-      console.log("No user for premium status refresh");
-      return { isPremium: false };
-    }
-
+  const signInWithGoogle = async () => {
     try {
-      console.log("=== PREMIUM STATUS REFRESH START ===");
-      console.log("Refreshing premium status for user:", user.id, user.email);
-      
-      // Double-check user identity before making database calls
-      if (user.email !== session?.user?.email) {
-        console.error('User identity mismatch in premium check');
-        aggressiveCleanup();
-        return { isPremium: false };
-      }
-      
-      // **CRITICAL FIX: Check if user is DHL employee FIRST**
-      const isDHL = isDHLEmployee(user);
-      console.log("Is DHL Employee:", isDHL);
-      
-      if (isDHL) {
-        console.log('DHL employee detected - activating premium automatically');
-        
-        // Set premium status and calculate expiry date (1 year from now for DHL)
-        const oneYearLater = new Date();
-        oneYearLater.setFullYear(oneYearLater.getFullYear() + 1);
-        
-        // **FORCE UPDATE** - Update their premium status in the database immediately
-        const { error: updateError } = await supabase
-          .from('profiles')
-          .update({ 
-            is_premium: true,
-            premium_expiry: oneYearLater.toISOString()
-          })
-          .eq('id', user.id);
-          
-        if (updateError) {
-          console.error('Error updating DHL premium status:', updateError);
-        } else {
-          console.log('DHL premium status updated successfully');
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/dashboard`
         }
-        
-        // Save to localStorage for immediate access
-        if (user && checkLocalStorageSpace() > 1024) {
-          saveUserToLocalStorage(user, true, oneYearLater.toISOString());
-        }
-        
-        return {
-          isPremium: true,
-          premiumExpiry: oneYearLater.toISOString()
-        };
+      });
+      
+      if (error) {
+        return { error: error.message };
       }
       
-      // Special users get premium automatically
-      const specialEmails = ['uzivatel@pendlerapp.com', 'admin@pendlerapp.com'];
-      const isSpecialUser = userData?.email && specialEmails.includes(userData.email);
-      
-      if (isSpecialUser) {
-        // Set premium status and calculate expiry date (3 months from now)
-        const threeMonthsLater = new Date();
-        threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
-        
-        // Update their premium status in the database
-        await supabase
-          .from('profiles')
-          .update({ 
-            is_premium: true,
-            premium_expiry: threeMonthsLater.toISOString()
-          })
-          .eq('id', user.id);
-          
-        return {
-          isPremium: true,
-          premiumExpiry: threeMonthsLater.toISOString()
-        };
-      }
-      
-      // First check from subscribers table
-      const { data: subscriberData, error: subscriberError } = await supabase
-        .from('subscribers')
-        .select('subscribed, subscription_end')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      console.log("Subscriber data:", subscriberData, "error:", subscriberError);
-
-      if (!subscriberError && subscriberData?.subscribed) {
-        const premiumExpiry = subscriberData.subscription_end;
-        const isActive = premiumExpiry ? new Date(premiumExpiry) > new Date() : true;
-        
-        if (isActive) {
-          console.log("User has active Stripe subscription");
-          if (user && checkLocalStorageSpace() > 1024) {
-            saveUserToLocalStorage(user, true, premiumExpiry);
-          }
-          return { isPremium: true, premiumExpiry };
-        }
-      }
-
-      // Fallback to profiles table check
-      console.log("Checking profiles table for premium status...");
-      const { data: profileData, error: profileError } = await supabase
-        .from('profiles')
-        .select('is_premium, premium_expiry')
-        .eq('id', user.id)
-        .maybeSingle();
-
-      console.log("Profile data:", profileData, "error:", profileError);
-
-      if (profileError) {
-        console.error('Error fetching profile premium status:', profileError);
-        return { isPremium: false };
-      }
-
-      const profilePremium = profileData?.is_premium || false;
-      const profileExpiry = profileData?.premium_expiry;
-      
-      let isActive = profilePremium;
-      if (profileExpiry) {
-        const expiryDate = new Date(profileExpiry);
-        const now = new Date();
-        isActive = profilePremium && expiryDate > now;
-        console.log("Premium expiry check:", {
-          profilePremium,
-          profileExpiry,
-          expiryDate: expiryDate.toISOString(),
-          now: now.toISOString(),
-          isActive
-        });
-      }
-
-      console.log("=== FINAL PREMIUM STATUS ===");
-      console.log("Premium status from profile:", { profilePremium, profileExpiry, isActive });
-      console.log("=== PREMIUM STATUS REFRESH END ===");
-      
-      if (user && isActive && checkLocalStorageSpace() > 1024) {
-        saveUserToLocalStorage(user, true, profileExpiry);
-      }
-
-      return { isPremium: isActive, premiumExpiry: profileExpiry };
+      return { error: null, url: data.url };
     } catch (error) {
-      console.error('Error refreshing premium status:', error);
-      return { isPremium: false };
+      return { error: 'Neočekávaná chyba při přihlášení přes Google' };
     }
-  }, [user, session]);
+  };
 
-  const { isPremium, setIsPremium, isSpecialUser } = usePremiumStatus(user, refreshPremiumStatus, isAdmin);
-
-  // Check admin status when user changes - ensure it runs for DHL admin
-  React.useEffect(() => {
-    if (user && (!adminStatusLoaded || user.email === 'admin_dhl@pendlerapp.com')) {
-      console.log('Refreshing admin status for user:', user.email);
-      setAdminStatusLoaded(false); // Force refresh for DHL admin
-      refreshAdminStatus();
-    } else if (!user) {
-      setIsAdmin(false);
-      setAdminStatusLoaded(false);
-      try {
-        localStorage.removeItem('adminLoggedIn');
-      } catch (e) {
-        console.warn('Could not remove adminLoggedIn from localStorage');
+  const signUp = async (email: string, password: string, username?: string) => {
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/dashboard`,
+          data: {
+            username: username || email.split('@')[0]
+          }
+        }
+      });
+      
+      if (error) {
+        return { error: error.message };
       }
+      
+      return { error: null };
+    } catch (error) {
+      return { error: 'Neočekávaná chyba při registraci' };
     }
-  }, [user, refreshAdminStatus]);
+  };
 
-  const contextValue = React.useMemo(() => ({
+  const signOut = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('Error signing out:', error);
+      }
+      // Clear all auth state immediately
+      setUser(null);
+      setSession(null);
+      setIsAdmin(false);
+      setIsPremium(false);
+      setPremiumFromHook(false);
+    } catch (error) {
+      console.error('Unexpected error during sign out:', error);
+    }
+  };
+
+  const value = {
     user,
     session,
     isLoading,
-    error,
     isAdmin,
     isPremium,
+    signIn,
+    signInWithGoogle,
+    signUp,
+    signOut,
     refreshAdminStatus,
     refreshPremiumStatus,
-    ...authMethods
-  }), [
-    user,
-    session,
-    isLoading,
-    error,
-    isAdmin,
-    isPremium,
-    refreshAdminStatus,
-    refreshPremiumStatus,
-    authMethods
-  ]);
+  };
 
   return (
-    <AuthContext.Provider value={contextValue}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

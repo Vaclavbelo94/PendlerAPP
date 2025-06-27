@@ -29,10 +29,29 @@
     "description": "Erhalten Sie unbegrenzten Zugang zu allen Funktionen",
     "priceFrom": "ab",
     "priceMonth": "/Monat",
-    "activateButton": "Premium aktivieren"
+    "priceYear": "/Jahr",
+    "activateButton": "Premium aktivieren",
+    "processing": "Wird verarbeitet...",
+    "yearlySavings": "Sie sparen {{savings}}"
   },
   "benefits": {
     "title": "Premium-Vorteile",
     "description": "Was Sie mit dem Premium-Abonnement erhalten"
+  },
+  "periods": {
+    "selectTitle": "Zahlungszeitraum wählen",
+    "selectSubtitle": "Sparen Sie mit dem Jahresabonnement",
+    "monthly": "Monatlich",
+    "yearly": "Jährlich",
+    "monthlyDesc": "Monatlich bezahlt",
+    "yearlyDesc": "Einmal jährlich bezahlt",
+    "yearlySavings": "17% Ersparnis",
+    "perMonth": "/Monat",
+    "perYear": "/Jahr",
+    "yearlyEquivalent": "Entspricht {{amount}}/Monat"
+  },
+  "errors": {
+    "paymentFailed": "Zahlung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+    "networkError": "Verbindungsfehler. Überprüfen Sie Ihre Internetverbindung."
   }
 }
