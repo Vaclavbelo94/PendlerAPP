@@ -1,6 +1,7 @@
 
 import React from 'react';
-import { useIsMobile, useOrientation } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { useScreenOrientation } from '@/hooks/useScreenOrientation';
 import { cn } from '@/lib/utils';
 
 interface ResponsivePageProps {
@@ -17,7 +18,7 @@ export const ResponsivePage: React.FC<ResponsivePageProps> = ({
   enableMobileSafeArea = true
 }) => {
   const isMobile = useIsMobile();
-  const orientation = useOrientation();
+  const { orientation } = useScreenOrientation();
   
   const isLandscapeMobile = isMobile && orientation === 'landscape';
   const isPortraitMobile = isMobile && orientation === 'portrait';
