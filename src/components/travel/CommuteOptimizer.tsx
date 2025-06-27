@@ -4,7 +4,7 @@ import { toast } from "@/components/ui/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import OptimizerForm from './optimizer/OptimizerForm';
 import ResultsDisplay from './optimizer/ResultsDisplay';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/auth';
 import { routeService } from '@/services/routeService';
 import { useTranslation } from 'react-i18next';
 

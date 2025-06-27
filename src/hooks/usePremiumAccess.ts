@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { useAuth } from './useAuth';
+import { useAuth } from '@/hooks/auth';
 import { supabase } from '@/integrations/supabase/client';
 
 interface PremiumAccessState {

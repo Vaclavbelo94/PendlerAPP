@@ -1,8 +1,7 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from './useAuth';
 import { toast } from 'sonner';
+import { useAuth } from '@/hooks/auth';
 
 interface TravelPreferences {
   homeAddress: string;

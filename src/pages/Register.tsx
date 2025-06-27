@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/auth";
 import { Separator } from "@/components/ui/separator";
 import { checkLocalStorageSpace } from "@/utils/authUtils";
 import { useTranslation } from 'react-i18next';

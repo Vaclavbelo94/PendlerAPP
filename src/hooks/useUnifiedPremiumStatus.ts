@@ -1,112 +1,65 @@
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/auth';
 
-import { useEffect, useState, useCallback, useMemo } from 'react';
-import { useAuth } from './useAuth';
-import { usePremiumVerification } from './usePremiumVerification';
+interface UnifiedPremiumStatus {
+  isPremium: boolean | null;
+  isLoading: boolean;
+  error: string | null;
+}
 
-/**
- * A unified hook for checking premium status across the application
- * Combines all verification methods in one place
- * 
- * @param featureKey Optional feature key for specific premium feature checks
- * @returns Object with premium status and verification information
- */
-export const useUnifiedPremiumStatus = (featureKey?: string) => {
-  const { user, isPremium: authIsPremium } = useAuth();
-  const [isVerifying, setIsVerifying] = useState(true);
-  const [canAccess, setCanAccess] = useState(false);
-  const [isPremiumFeature, setIsPremiumFeature] = useState(false);
-  
-  // Use our dedicated verification hook for thorough premium checks
-  const { 
-    verifyPremiumStatus, 
-    isSpecialUser,
-    getPremiumStatusFromLocalStorage
-  } = usePremiumVerification();
+export const useUnifiedPremiumStatus = () => {
+  const { user } = useAuth();
+  const [status, setStatus] = useState<UnifiedPremiumStatus>({
+    isPremium: null,
+    isLoading: true,
+    error: null,
+  });
 
-  // Memoize special user check to prevent unnecessary re-computations
-  const isUserSpecial = useMemo(() => {
-    return isSpecialUser();
-  }, [user?.email]);
-
-  // Memoize premium status from localStorage
-  const localStoragePremium = useMemo(() => {
-    return getPremiumStatusFromLocalStorage();
-  }, []);
-
-  // Optimized access check with proper dependency management
-  const checkAccess = useCallback(async () => {
-    // Quick exit for special users
-    if (isUserSpecial) {
-      setCanAccess(true);
-      setIsVerifying(false);
-      return;
-    }
-
-    // If no user, deny access
-    if (!user) {
-      setCanAccess(false);
-      setIsVerifying(false);
-      return;
-    }
-
-    setIsVerifying(true);
-    
-    try {
-      // Set feature as premium if featureKey is provided
-      if (featureKey) {
-        setIsPremiumFeature(true);
-      }
-      
-      // Check premium status with timeout
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Premium check timeout')), 2000)
-      );
-      
-      const statusPromise = verifyPremiumStatus();
-      
-      const hasPremiumStatus = await Promise.race([
-        statusPromise,
-        timeoutPromise
-      ]) as boolean;
-      
-      // User can access if:
-      // 1. Feature is not premium, OR
-      // 2. User has premium status from any verification source, OR
-      // 3. User has premium from auth context
-      const hasAccess = !isPremiumFeature || hasPremiumStatus || authIsPremium || localStoragePremium;
-      
-      setCanAccess(hasAccess);
-    } catch (error) {
-      console.error('Error in premium access check:', error);
-      // Failsafe: allow access on error for better UX
-      setCanAccess(true);
-    } finally {
-      setIsVerifying(false);
-    }
-  }, [featureKey, user, authIsPremium, isUserSpecial, localStoragePremium, verifyPremiumStatus, isPremiumFeature]);
-  
-  // Effect with proper cleanup and dependencies
   useEffect(() => {
     let isMounted = true;
-    
-    const runCheck = async () => {
-      if (isMounted) {
-        await checkAccess();
+
+    const checkPremiumStatus = async () => {
+      if (!user?.id) {
+        if (isMounted) {
+          setStatus({ isPremium: false, isLoading: false, error: null });
+        }
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('is_premium')
+          .eq('id', user.id)
+          .single();
+
+        if (error) {
+          console.error('Error fetching premium status:', error);
+          if (isMounted) {
+            setStatus({ isPremium: false, isLoading: false, error: error.message });
+          }
+          return;
+        }
+
+        if (isMounted) {
+          setStatus({ isPremium: data?.is_premium || false, isLoading: false, error: null });
+        }
+      } catch (error: any) {
+        console.error('Unexpected error checking premium status:', error);
+        if (isMounted) {
+          setStatus({ isPremium: false, isLoading: false, error: error.message || 'Unknown error' });
+        }
       }
     };
-    
-    runCheck();
-    
+
+    setStatus(prev => ({ ...prev, isLoading: true, error: null }));
+    checkPremiumStatus();
+
     return () => {
       isMounted = false;
     };
-  }, [checkAccess]);
-  
-  return {
-    isVerifying,
-    canAccess,
-    isPremiumFeature,
-    isSpecialUser: isUserSpecial,
-    isPremiumFromLocalStorage: localStoragePremium
-  };
+  }, [user?.id]);
+
+  return status;
 };

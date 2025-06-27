@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User, Settings, Activity, Crown } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/auth";
 import { motion } from "framer-motion";
 
 // Import profile components
@@ -13,7 +13,7 @@ import ProfileActivitySection from "@/components/profile/unified/ProfileActivity
 import SubscriptionManagement from "@/components/profile/SubscriptionManagement";
 
 const UnifiedProfile = () => {
-  const { user, isPremium } = useAuth();
+  const { user, unifiedUser } = useAuth();
   const [activeTab, setActiveTab] = useState("overview");
 
   if (!user) {

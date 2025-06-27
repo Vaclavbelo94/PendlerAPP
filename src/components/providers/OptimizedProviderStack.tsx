@@ -5,7 +5,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { Toaster } from '@/components/ui/toaster';
 import { Toaster as Sonner } from 'sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import { AuthProvider } from '@/hooks/useAuth';
+import { AuthProvider } from '@/hooks/auth';
 import { ThemeProvider } from 'next-themes';
 import SimpleLoadingSpinner from '@/components/loading/SimpleLoadingSpinner';
 
