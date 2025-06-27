@@ -26,7 +26,7 @@ const LoginForm = () => {
       
       if (error) {
         toast.error(t('registrationFailed'), {
-          description: error || t('registerCheckDataRetry'),
+          description: String(error) || t('registerCheckDataRetry'),
         });
       } else {
         toast.success(t('accountCreatedSuccessfully'));

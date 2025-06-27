@@ -1,19 +1,20 @@
+
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Shield, Users, Settings, BarChart3, Database } from 'lucide-react';
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/auth";
 import { UserAdminPanel } from "./UserAdminPanel";
 import { PremiumFeaturesPanel } from "./PremiumFeaturesPanel";
 import { PromoCodesPanel } from "./PromoCodesPanel";
 
 const AdminPanelDialog = () => {
   const [open, setOpen] = useState(false);
-  const { isAdmin } = useAuth();
+  const { unifiedUser } = useAuth();
 
-  if (!isAdmin) {
+  if (!unifiedUser?.isAdmin) {
     return null;
   }
 

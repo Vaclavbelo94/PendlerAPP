@@ -1,6 +1,6 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/auth';
 import { supabase } from '@/integrations/supabase/client';
 
 interface AdminStats {
@@ -35,7 +35,7 @@ interface AdminProviderProps {
 }
 
 export const AdminProvider: React.FC<AdminProviderProps> = ({ children }) => {
-  const { isAdmin } = useAuth();
+  const { unifiedUser } = useAuth();
   const [stats, setStats] = useState<AdminStats>({
     totalUsers: 0,
     premiumUsers: 0,
@@ -48,7 +48,7 @@ export const AdminProvider: React.FC<AdminProviderProps> = ({ children }) => {
   const [currentSection, setCurrentSection] = useState<string | null>(null);
 
   const refreshStats = async () => {
-    if (!isAdmin) return;
+    if (!unifiedUser?.isAdmin) return;
     
     setIsLoading(true);
     try {
@@ -103,7 +103,7 @@ export const AdminProvider: React.FC<AdminProviderProps> = ({ children }) => {
   };
 
   useEffect(() => {
-    if (isAdmin) {
+    if (unifiedUser?.isAdmin) {
       refreshStats();
       
       // Set up real-time subscriptions for live updates
@@ -127,7 +127,7 @@ export const AdminProvider: React.FC<AdminProviderProps> = ({ children }) => {
         supabase.removeChannel(channel);
       };
     }
-  }, [isAdmin]);
+  }, [unifiedUser?.isAdmin]);
 
   const value = {
     stats,

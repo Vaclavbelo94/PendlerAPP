@@ -1,60 +1,101 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { LogIn, UserPlus, LogOut, User } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
+import { Button } from '@/components/ui/button';
+import { Crown, LogOut, User } from 'lucide-react';
+import { useAuth } from '@/hooks/auth';
+import { useNavigate } from 'react-router-dom';
 
 interface MobileSidebarUserSectionProps {
-  handleLinkClick: () => void;
-  handleLogout: () => void;
+  compact?: boolean;
 }
 
-export const MobileSidebarUserSection: React.FC<MobileSidebarUserSectionProps> = ({
-  handleLinkClick,
-  handleLogout
+export const MobileSidebarUserSection: React.FC<MobileSidebarUserSectionProps> = ({ 
+  compact = false 
 }) => {
-  const { user, isPremium, isAdmin } = useAuth();
+  const { user, unifiedUser, signOut } = useAuth();
+  const navigate = useNavigate();
 
-  if (user) {
+  if (!user) return null;
+
+  const handleLogout = async () => {
+    await signOut();
+  };
+
+  const handleProfileClick = () => {
+    navigate('/profile');
+  };
+
+  const getInitials = (email: string) => {
+    return email.substring(0, 2).toUpperCase();
+  };
+
+  if (compact) {
     return (
-      <div className="mb-6 p-4 bg-muted rounded-lg">
-        <div className="flex items-center gap-3 mb-3">
-          <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-            <User className="h-5 w-5" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="font-medium text-sm truncate">
-              {user.user_metadata?.username || user.email?.split('@')[0] || 'Uživatel'}
-            </p>
-            <p className="text-xs text-muted-foreground truncate">
-              {user.email}
-            </p>
-          </div>
-        </div>
-        <div className="flex gap-2 flex-wrap">
-          {isPremium && <Badge className="bg-amber-500 text-xs">Premium</Badge>}
-          {isAdmin && <Badge className="bg-red-500 text-xs">Admin</Badge>}
-        </div>
+      <div className="flex flex-col items-center space-y-2">
+        <Avatar className="h-8 w-8">
+          <AvatarFallback className="text-xs">
+            {user.email ? getInitials(user.email) : 'U'}
+          </AvatarFallback>
+        </Avatar>
+        {unifiedUser?.isPremium && (
+          <Crown className="h-3 w-3 text-amber-500" />
+        )}
       </div>
     );
   }
 
   return (
-    <div className="mb-6 space-y-2">
-      <Button asChild variant="outline" className="w-full justify-start" onClick={handleLinkClick}>
-        <Link to="/login">
-          <LogIn className="h-4 w-4 mr-2" />
-          Přihlásit se
-        </Link>
-      </Button>
-      <Button asChild className="w-full justify-start" onClick={handleLinkClick}>
-        <Link to="/register">
-          <UserPlus className="h-4 w-4 mr-2" />
-          Registrovat se
-        </Link>
-      </Button>
+    <div className="bg-muted/50 rounded-lg p-4">
+      <div className="flex items-center space-x-3 mb-3">
+        <Avatar className="h-10 w-10">
+          <AvatarFallback>
+            {user.email ? getInitials(user.email) : 'U'}
+          </AvatarFallback>
+        </Avatar>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium truncate">
+            {user.email?.split('@')[0] || 'Uživatel'}
+          </p>
+          <p className="text-xs text-muted-foreground truncate">
+            {user.email}
+          </p>
+        </div>
+      </div>
+      
+      <div className="flex items-center justify-between mb-3">
+        {unifiedUser?.isPremium && (
+          <Badge variant="secondary" className="text-xs bg-amber-100 text-amber-800">
+            <Crown className="h-3 w-3 mr-1" />
+            Premium
+          </Badge>
+        )}
+        {unifiedUser?.isAdmin && (
+          <Badge variant="secondary" className="text-xs bg-red-100 text-red-800">
+            Admin
+          </Badge>
+        )}
+      </div>
+      
+      <div className="flex space-x-2">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="flex-1"
+          onClick={handleProfileClick}
+        >
+          <User className="h-4 w-4 mr-1" />
+          Profil
+        </Button>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={handleLogout}
+        >
+          <LogOut className="h-4 w-4" />
+        </Button>
+      </div>
     </div>
   );
 };

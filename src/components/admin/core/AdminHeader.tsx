@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Bell, RefreshCw, LogOut, User, Settings } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/auth';
 import { useAdminContext } from './AdminProvider';
 
 export const AdminHeader: React.FC = () => {
