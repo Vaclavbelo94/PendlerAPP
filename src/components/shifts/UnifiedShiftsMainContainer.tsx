@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useUnifiedShiftsContainer } from './hooks/useUnifiedShiftsContainer';
+import { useUnifiedShiftsContainer } from '@/hooks/shifts/useUnifiedShiftsContainer';
 import FastLoadingSkeleton from './FastLoadingSkeleton';
 import ShiftsPageHeader from './ShiftsPageHeader';
 import ShiftsFormSheets from './ShiftsFormSheets';

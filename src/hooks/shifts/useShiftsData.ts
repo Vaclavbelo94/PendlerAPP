@@ -24,11 +24,9 @@ export const useShiftsData = ({ userId }: UseShiftsDataOptions) => {
   useEffect(() => {
     if (lastUserIdRef.current && lastUserIdRef.current !== userId) {
       console.log('🔄 User changed, clearing cache:', lastUserIdRef.current, '->', userId);
-      // Clear all cached shifts data
       Object.keys(localStorage).forEach(key => {
         if (key.startsWith('shifts_')) {
           localStorage.removeItem(key);
-          console.log('🗑️ Cleared cache:', key);
         }
       });
     }
@@ -37,41 +35,41 @@ export const useShiftsData = ({ userId }: UseShiftsDataOptions) => {
 
   const loadShifts = useCallback(async (force = false) => {
     if (!userId || !cacheKey) {
-      console.log('❌ No userId or cacheKey, skipping load');
       setIsLoading(false);
       return;
     }
-
-    console.log('🚀 Loading shifts for user:', userId, 'force:', force);
 
     try {
       setIsLoading(true);
       setError(null);
 
+      // Set loading timeout
+      if (loadingTimeoutRef.current) {
+        clearTimeout(loadingTimeoutRef.current);
+      }
+      
       loadingTimeoutRef.current = setTimeout(() => {
-        console.log('⏰ Loading timeout reached');
         setError('Načítání trvá příliš dlouho. Zkontrolujte připojení.');
         setIsLoading(false);
       }, 10000);
 
+      // Try cache first if offline
       if (!isOnline && !force) {
-        console.log('📴 Offline mode, checking cache');
         const cachedData = localStorage.getItem(cacheKey);
         if (cachedData) {
           const parsed = JSON.parse(cachedData);
-          console.log('💾 Loaded from cache:', parsed.length, 'shifts');
           setShifts(parsed.map((shift: any) => ({
             ...shift,
             type: shift.type as 'morning' | 'afternoon' | 'night'
           })));
+          setIsLoading(false);
           return;
         }
       }
 
-      console.log('🌐 Loading from database...');
+      // Load from database
       const data = await optimizedErrorHandler.executeWithRetry(
         async () => {
-          // Využívá nový index idx_shifts_user_date pro optimální výkon
           const { data, error: fetchError } = await supabase
             .from('shifts')
             .select('*')
@@ -79,35 +77,26 @@ export const useShiftsData = ({ userId }: UseShiftsDataOptions) => {
             .order('date', { ascending: false });
 
           if (fetchError) {
-            console.error('❌ Database error:', fetchError);
             throw fetchError;
           }
           
-          console.log('✅ Database query successful:', data?.length || 0, 'shifts found');
           return data;
         },
         `loadShifts_${userId}`,
         { maxRetries: isOnline ? 2 : 0 }
       );
 
-      // Ensure proper type validation - now with SQL constraint backup
-      const typedShifts = (data || []).map(shift => {
-        // Type validation now backed by SQL constraint
-        if (!['morning', 'afternoon', 'night'].includes(shift.type)) {
-          console.warn('Invalid shift type detected:', shift.type, 'for shift:', shift.id);
-        }
-        return {
-          ...shift,
-          type: shift.type as 'morning' | 'afternoon' | 'night'
-        };
-      });
+      // Process and validate shifts
+      const typedShifts = (data || []).map(shift => ({
+        ...shift,
+        type: shift.type as 'morning' | 'afternoon' | 'night'
+      }));
 
-      console.log('📊 Processed shifts:', typedShifts.length);
       setShifts(typedShifts);
       
+      // Cache the data
       if (cacheKey) {
         localStorage.setItem(cacheKey, JSON.stringify(typedShifts));
-        console.log('💾 Cached to localStorage:', cacheKey);
       }
 
     } catch (err) {
@@ -115,15 +104,14 @@ export const useShiftsData = ({ userId }: UseShiftsDataOptions) => {
         ? 'Nejste připojeni. Zobrazuji uložená data.'
         : 'Nepodařilo se načíst směny';
       
-      console.error('❌ Error loading shifts:', err);
       setError(errorMessage);
       errorHandler.handleError(err, { operation: 'loadShifts', userId });
       
+      // Try fallback to cache
       if (!isOnline && cacheKey) {
         const cachedData = localStorage.getItem(cacheKey);
         if (cachedData) {
           const parsed = JSON.parse(cachedData);
-          console.log('💾 Fallback to cache after error:', parsed.length, 'shifts');
           setShifts(parsed);
         }
       }
@@ -136,7 +124,6 @@ export const useShiftsData = ({ userId }: UseShiftsDataOptions) => {
   }, [userId, cacheKey, isOnline]);
 
   const refreshShifts = useCallback(async () => {
-    console.log('🔄 Force refreshing shifts');
     optimizedErrorHandler.clearCache();
     await loadShifts(true);
   }, [loadShifts]);
@@ -145,18 +132,17 @@ export const useShiftsData = ({ userId }: UseShiftsDataOptions) => {
     setShifts(updater);
   }, []);
 
-  // Load shifts when userId changes or component mounts
+  // Load shifts when userId changes
   useEffect(() => {
     if (userId) {
-      console.log('👤 User changed or component mounted, loading shifts for:', userId);
       loadShifts();
     } else {
-      console.log('❌ No user, clearing shifts');
       setShifts([]);
       setIsLoading(false);
     }
   }, [userId, loadShifts]);
 
+  // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (loadingTimeoutRef.current) {
