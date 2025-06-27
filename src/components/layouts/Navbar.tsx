@@ -83,10 +83,10 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen }: NavbarProps) => {
         </Button>
       </Link>
 
-      {/* DHL Links - only show for DHL users */}
+      {/* DHL Links - redirect to main dashboard */}
       {isDHLUser && (
         <>
-          <Link to="/dhl-dashboard">
+          <Link to="/dashboard">
             <Button variant="ghost" className="text-yellow-600 hover:text-yellow-700 flex items-center gap-2">
               <Truck className="h-4 w-4" />
               DHL Dashboard
@@ -120,10 +120,10 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen }: NavbarProps) => {
         </Link>
       </DropdownMenuItem>
       
-      {/* DHL Dashboard for DHL users */}
+      {/* DHL Dashboard for DHL users - redirect to main dashboard */}
       {isDHLUser && (
         <DropdownMenuItem asChild>
-          <Link to="/dhl-dashboard" className="flex items-center gap-2 text-yellow-600">
+          <Link to="/dashboard" className="flex items-center gap-2 text-yellow-600">
             <Truck className="h-4 w-4" />
             DHL Dashboard
           </Link>
@@ -166,7 +166,7 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen }: NavbarProps) => {
         </Button>
       </Link>
       
-      {/* DHL Section for mobile */}
+      {/* DHL Section for mobile - redirect to main dashboard */}
       {isDHLUser && (
         <>
           <div className="border-t pt-4">
@@ -174,7 +174,7 @@ const Navbar = ({ toggleSidebar, rightContent, sidebarOpen }: NavbarProps) => {
               <Truck className="h-4 w-4 text-yellow-600" />
               <span className="text-sm font-medium text-yellow-600">DHL</span>
             </div>
-            <Link to="/dhl-dashboard" onClick={() => setIsOpen(false)}>
+            <Link to="/dashboard" onClick={() => setIsOpen(false)}>
               <Button variant="ghost" className="w-full justify-start text-yellow-600 hover:text-yellow-700">
                 <Truck className="h-4 w-4 mr-2" />
                 DHL Dashboard

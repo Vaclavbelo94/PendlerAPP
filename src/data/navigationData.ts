@@ -83,7 +83,7 @@ export const navigationItems: NavigationItem[] = [
     icon: Shield,
     adminOnly: true
   },
-  // DHL specific navigation items
+  // DHL specific navigation items - redirect DHL dashboard to main dashboard
   {
     path: '/dhl-admin',
     titleKey: 'dhlAdmin',
@@ -91,7 +91,7 @@ export const navigationItems: NavigationItem[] = [
     dhlAdminOnly: true
   },
   {
-    path: '/dhl-dashboard',
+    path: '/dashboard', // Redirect DHL dashboard to main dashboard
     titleKey: 'dhlDashboard',
     icon: Truck,
     dhlOnly: true

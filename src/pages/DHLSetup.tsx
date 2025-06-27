@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
@@ -67,15 +66,15 @@ const DHLSetup: React.FC = () => {
     if (success) {
       console.log('DHL setup completed successfully');
       
-      // Show different success message based on context
+      // Redirect to main dashboard instead of dhl-dashboard
       if (isFromRegistration) {
-        console.log('Redirecting to DHL dashboard after registration setup');
+        console.log('Redirecting to main dashboard after registration setup');
       } else {
-        console.log('Redirecting to DHL dashboard after profile update');
+        console.log('Redirecting to main dashboard after profile update');
       }
       
       setTimeout(() => {
-        navigate('/dhl-dashboard');
+        navigate('/dashboard');
       }, 1500);
     }
   };
