@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CalendarDays, Clock, Euro } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -44,7 +44,7 @@ const DashboardStats: React.FC = () => {
         console.error('❌ Error fetching shifts:', error);
         setShifts([]);
       } else {
-        console.log('✅ Shifts loaded:', data?.length || 0);
+        console.log('✅ Shifts loaded for dashboard:', data?.length || 0);
         setShifts(data || []);
       }
     } catch (error) {
@@ -56,7 +56,7 @@ const DashboardStats: React.FC = () => {
   };
 
   // Calculate statistics based on real data
-  const calculateStats = () => {
+  const stats = useMemo(() => {
     const now = new Date();
     
     // This week's shifts
@@ -85,11 +85,12 @@ const DashboardStats: React.FC = () => {
       ? monthlyHours * workData.hourly_wage 
       : 0;
 
-    console.log('📊 Stats calculated:', {
+    console.log('📊 Dashboard stats calculated:', {
       weeklyHours,
       monthlyShifts: thisMonthShifts.length,
       monthlyEarnings,
-      hasWage: !!workData?.hourly_wage
+      hasWage: !!workData?.hourly_wage,
+      hourlyWage: workData?.hourly_wage
     });
 
     return {
@@ -99,9 +100,8 @@ const DashboardStats: React.FC = () => {
       monthlyEarnings,
       hasWageSet: !!workData?.hourly_wage
     };
-  };
+  }, [shifts, workData]);
 
-  const stats = calculateStats();
   const isDataLoading = isLoading || workDataLoading;
 
   const statsData = [
