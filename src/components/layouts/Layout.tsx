@@ -2,7 +2,7 @@
 import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { Toaster } from '@/components/ui/sonner';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/auth';
 import UnifiedNavbar from './UnifiedNavbar';
 import Footer from './Footer';
 import ModernSidebar from './sidebar/ModernSidebar';

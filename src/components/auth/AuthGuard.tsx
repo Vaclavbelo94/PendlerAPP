@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/auth';
 import { UserRole, UserStatus } from '@/types/auth';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
@@ -18,7 +18,7 @@ const AuthGuard: React.FC<AuthGuardProps> = ({
   requireSetup = false,
   redirectTo 
 }) => {
-  const { user, unifiedUser, isLoading } = useAuth();
+  const { user, unifiedUser, isLoading, canAccess } = useAuth();
   const location = useLocation();
 
   if (isLoading) {
@@ -44,7 +44,7 @@ const AuthGuard: React.FC<AuthGuardProps> = ({
   }
 
   // Role-based access control
-  if (requiredRole && !unifiedUser.canAccess?.(requiredRole)) {
+  if (requiredRole && !canAccess(requiredRole)) {
     return <Navigate to="/unauthorized" replace />;
   }
 

@@ -6,7 +6,7 @@ import { AuthContext } from './useAuthContext';
 import { AuthError, UserRole, UnifiedUser, AuthProviderProps } from '@/types/auth';
 import { useAuthStatus } from './useAuthStatus';
 import { usePremiumStatus } from '@/hooks/usePremiumStatus';
-import { createUnifiedUser, getRedirectPath } from '@/utils/authRoleUtils';
+import { createUnifiedUser, getRedirectPath, hasRole, canAccess } from '@/utils/authRoleUtils';
 import { isDHLPromoCode } from '@/utils/dhlAuthUtils';
 import { activatePromoCode } from '@/services/promoCodeService';
 
@@ -235,23 +235,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     ]);
   };
 
-  const hasRole = (role: UserRole): boolean => {
-    if (!unifiedUser) return false;
-    return unifiedUser.role === role || unifiedUser.isAdmin;
+  // Role checking methods that use the unified user
+  const hasRoleMethod = (role: UserRole): boolean => {
+    return hasRole(unifiedUser, role);
   };
 
-  const canAccess = (requiredRole: UserRole): boolean => {
-    if (!unifiedUser) return false;
-    
-    const roleHierarchy = {
-      [UserRole.STANDARD]: 1,
-      [UserRole.PREMIUM]: 2,
-      [UserRole.DHL_EMPLOYEE]: 3,
-      [UserRole.ADMIN]: 4,
-      [UserRole.DHL_ADMIN]: 4
-    };
-    
-    return roleHierarchy[unifiedUser.role] >= roleHierarchy[requiredRole];
+  const canAccessMethod = (requiredRole: UserRole): boolean => {
+    return canAccess(unifiedUser, requiredRole);
   };
 
   const value = {
@@ -267,8 +257,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     refreshUserStatus,
     refreshAdminStatus,
     refreshPremiumStatus,
-    hasRole,
-    canAccess,
+    hasRole: hasRoleMethod,
+    canAccess: canAccessMethod,
   };
 
   return (
