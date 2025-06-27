@@ -1,88 +1,98 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from '@/hooks/auth';
-import { User, Crown, Shield, Mail, Phone, MapPin, Calendar, Edit } from "lucide-react";
+import { Edit, Save, X } from 'lucide-react';
 
-interface ProfileOverviewSectionProps {
-  onEdit: () => void;
+export interface ProfileOverviewSectionProps {
+  onEdit?: () => void;
+  onSave?: () => void;
+  onCancel?: () => void;
+  isEditing?: boolean;
 }
 
-export const ProfileOverviewSection: React.FC<ProfileOverviewSectionProps> = ({ onEdit }) => {
-  const { user, unifiedUser } = useAuth();
-
-  if (!user) return null;
-
-  const username = user.user_metadata?.username || user.email?.split('@')[0] || 'User';
-  const joinDate = new Date(user.created_at).toLocaleDateString('cs-CZ');
+const ProfileOverviewSection: React.FC<ProfileOverviewSectionProps> = ({
+  onEdit = () => {},
+  onSave = () => {},
+  onCancel = () => {},
+  isEditing = false
+}) => {
+  const { user } = useAuth();
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Přehled profilu</CardTitle>
-        <CardDescription>
-          Základní informace o vašem účtu
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="flex items-center space-x-4">
-          <Avatar className="h-20 w-20">
-            <AvatarImage src={user.user_metadata?.avatar_url} />
-            <AvatarFallback className="text-lg">
-              <User className="h-8 w-8" />
-            </AvatarFallback>
-          </Avatar>
-          
-          <div className="flex-1 space-y-2">
-            <div>
-              <h3 className="text-xl font-semibold">{username}</h3>
-              <p className="text-muted-foreground">{user.email}</p>
-            </div>
-            
-            <div className="flex items-center space-x-2">
-              {unifiedUser?.isPremium && (
-                <Badge variant="secondary" className="bg-amber-100 text-amber-800">
-                  <Crown className="h-3 w-3 mr-1" />
-                  Premium
-                </Badge>
-              )}
-              {unifiedUser?.isAdmin && (
-                <Badge variant="secondary" className="bg-green-100 text-green-800">
-                  <Shield className="h-3 w-3 mr-1" />
-                  Admin
-                </Badge>
-              )}
-            </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle>Základní informace</CardTitle>
+            {!isEditing ? (
+              <Button onClick={onEdit} variant="outline" size="sm">
+                <Edit className="h-4 w-4 mr-2" />
+                Upravit
+              </Button>
+            ) : (
+              <div className="flex gap-2">
+                <Button onClick={onSave} size="sm">
+                  <Save className="h-4 w-4 mr-2" />
+                  Uložit
+                </Button>
+                <Button onClick={onCancel} variant="outline" size="sm">
+                  <X className="h-4 w-4 mr-2" />
+                  Zrušit
+                </Button>
+              </div>
+            )}
           </div>
-          
-          <Button variant="outline" size="sm" onClick={onEdit}>
-            <Edit className="h-4 w-4 mr-2" />
-            Upravit
-          </Button>
-        </div>
+          <CardDescription>
+            Vaše základní profilové údaje
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <label className="text-sm font-medium">Email</label>
+            <p className="text-sm text-muted-foreground">{user?.email}</p>
+          </div>
+          <div>
+            <label className="text-sm font-medium">Uživatelské jméno</label>
+            <p className="text-sm text-muted-foreground">
+              {user?.user_metadata?.username || 'Nenastaveno'}
+            </p>
+          </div>
+          <div>
+            <label className="text-sm font-medium">Registrace</label>
+            <p className="text-sm text-muted-foreground">
+              {user?.created_at ? new Date(user.created_at).toLocaleDateString('cs-CZ') : 'Neznámé'}
+            </p>
+          </div>
+        </CardContent>
+      </Card>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t">
-          <div className="flex items-center space-x-3">
-            <Mail className="h-4 w-4 text-muted-foreground" />
-            <div>
-              <p className="text-sm font-medium">Email</p>
-              <p className="text-sm text-muted-foreground">{user.email}</p>
-            </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Statistiky</CardTitle>
+          <CardDescription>
+            Přehled vaší aktivity
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex justify-between">
+            <span className="text-sm">Počet směn</span>
+            <span className="text-sm font-medium">0</span>
           </div>
-          
-          <div className="flex items-center space-x-3">
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-            <div>
-              <p className="text-sm font-medium">Člen od</p>
-              <p className="text-sm text-muted-foreground">{joinDate}</p>
-            </div>
+          <div className="flex justify-between">
+            <span className="text-sm">Vozidla</span>
+            <span className="text-sm font-medium">0</span>
           </div>
-        </div>
-      </CardContent>
-    </Card>
+          <div className="flex justify-between">
+            <span className="text-sm">Aktivní od</span>
+            <span className="text-sm font-medium">
+              {user?.created_at ? new Date(user.created_at).toLocaleDateString('cs-CZ') : 'Neznámé'}
+            </span>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 

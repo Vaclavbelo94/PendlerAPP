@@ -1,49 +1,48 @@
+
 import React from 'react';
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { useAuth } from '@/hooks/auth';
-import { User, Crown, Shield } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Crown, Shield, User } from 'lucide-react';
 
-interface ProfileHeaderProps {
-  compact?: boolean;
-}
-
-export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ compact = false }) => {
+export const ProfileHeader: React.FC = () => {
   const { user, unifiedUser } = useAuth();
 
-  if (!user) return null;
-
-  const username = user.user_metadata?.username || user.email?.split('@')[0] || 'User';
-
   return (
-    <div className={`flex items-center gap-3 p-3 bg-muted/50 rounded-lg ${compact ? 'justify-center' : ''}`}>
-      <Avatar className="h-10 w-10">
-        <AvatarImage src={user.user_metadata?.avatar_url} />
-        <AvatarFallback>
-          <User className="h-5 w-5" />
-        </AvatarFallback>
-      </Avatar>
-      
-      {!compact && (
-        <div className="flex-1 min-w-0">
-          <p className="font-medium text-sm truncate">{username}</p>
-          <p className="text-xs text-muted-foreground truncate">{user.email}</p>
-          <div className="flex items-center space-x-1 mt-1">
-            {unifiedUser?.isAdmin && (
-              <Badge variant="secondary" className="bg-green-100 text-green-800">
-                <Shield className="h-3 w-3 mr-1" />
-                Admin
-              </Badge>
-            )}
-            {unifiedUser?.isPremium && (
-              <Badge variant="secondary" className="bg-amber-100 text-amber-800">
-                <Crown className="h-3 w-3 mr-1" />
-                Premium
-              </Badge>
-            )}
-          </div>
-        </div>
-      )}
+    <div className="bg-gradient-to-r from-primary/10 to-accent/10 border-b">
+      <div className="container py-8 max-w-6xl">
+        <Card className="bg-background/80 backdrop-blur-sm border border-border/50 shadow-lg">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                <User className="h-8 w-8 text-primary" />
+              </div>
+              <div className="flex-1">
+                <h1 className="text-2xl font-bold">
+                  {user?.user_metadata?.username || user?.email?.split('@')[0] || 'Uživatel'}
+                </h1>
+                <p className="text-muted-foreground">{user?.email}</p>
+                <div className="flex gap-2 mt-2">
+                  {unifiedUser?.isPremium && (
+                    <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white">
+                      <Crown className="h-3 w-3 mr-1" />
+                      Premium
+                    </Badge>
+                  )}
+                  {unifiedUser?.isAdmin && (
+                    <Badge variant="secondary">
+                      <Shield className="h-3 w-3 mr-1" />
+                      Admin
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
+
+export default ProfileHeader;

@@ -38,6 +38,8 @@ export interface AuthContextType {
   session: Session | null;
   unifiedUser: UnifiedUser | null;
   isLoading: boolean;
+  isPremium: boolean;
+  isAdmin: boolean;
   error?: AuthError | null;
   
   // Authentication methods

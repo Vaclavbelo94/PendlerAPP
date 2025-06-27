@@ -1,476 +1,234 @@
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { 
-  Search, 
-  Filter, 
-  Sparkles, 
-  Clock, 
-  TrendingUp,
-  X
-} from 'lucide-react';
+import { Search, Filter, Clock, Star, TrendingUp, X } from 'lucide-react';
 import { useDataSharing } from '@/hooks/useDataSharing';
-import { dataSharingService } from '@/services/DataSharingService';
+import { cn } from '@/lib/utils';
 
 interface SearchResult {
   id: string;
   title: string;
   description: string;
-  module: string;
-  type: string;
+  category: string;
+  url?: string;
   relevance: number;
-  data: any;
-  path?: string;
+  metadata?: Record<string, any>;
 }
 
-interface SearchFilters {
-  modules: string[];
-  types: string[];
-  dateRange?: {
-    from: Date;
-    to: Date;
-  };
+interface GlobalSearchEnhancedProps {
+  onResultSelect?: (result: SearchResult) => void;
+  placeholder?: string;
+  maxResults?: number;
+  categories?: string[];
 }
 
-const GlobalSearchEnhanced: React.FC = () => {
+const GlobalSearchEnhanced: React.FC<GlobalSearchEnhancedProps> = ({
+  onResultSelect,
+  placeholder = "Hledat napříč aplikací...",
+  maxResults = 10,
+  categories = []
+}) => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
-  const [filters, setFilters] = useState<SearchFilters>({
-    modules: [],
-    types: []
-  });
-  const [showFilters, setShowFilters] = useState(false);
-  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
-
+  
   const { getAllData } = useDataSharing('search');
 
-  // Load recent searches from localStorage
-  useEffect(() => {
-    const saved = localStorage.getItem('recent_searches');
-    if (saved) {
-      setRecentSearches(JSON.parse(saved));
-    }
-  }, []);
+  // Mock search data including vocabulary
+  const searchData = useMemo(() => {
+    const allData = getAllData();
+    return {
+      ...allData,
+      vocabulary: [
+        { term: 'Pendler', definition: 'Osoba dojíždějící za prací', category: 'general' },
+        { term: 'Směna', definition: 'Pracovní doba', category: 'work' },
+        { term: 'Kalkulačka', definition: 'Nástroj pro výpočty', category: 'tools' }
+      ]
+    };
+  }, [getAllData]);
 
-  // Enhanced search function
-  const performSearch = useCallback(async (searchQuery: string, searchFilters: SearchFilters) => {
-    if (!searchQuery.trim()) {
+  useEffect(() => {
+    if (query.length < 2) {
       setResults([]);
       return;
     }
 
     setIsSearching(true);
-    try {
-      const allData = getAllData();
-      const searchResults: SearchResult[] = [];
-
-      // Search in shifts
-      if (!searchFilters.modules.length || searchFilters.modules.includes('shifts')) {
-        const shifts = allData.shifts || [];
-        shifts.forEach((shift: any) => {
-          const relevance = calculateRelevance(searchQuery, [
-            shift.type,
-            shift.notes,
-            shift.date
-          ]);
-          
-          if (relevance > 0.1) {
-            searchResults.push({
-              id: `shift_${shift.id}`,
-              title: `Směna - ${shift.type}`,
-              description: shift.notes || `Směna na ${shift.date}`,
-              module: 'shifts',
-              type: 'shift',
-              relevance,
-              data: shift,
-              path: '/shifts'
-            });
-          }
-        });
-      }
-
-      // Search in vehicles
-      if (!searchFilters.modules.length || searchFilters.modules.includes('vehicles')) {
-        const vehicles = allData.vehicles || [];
-        vehicles.forEach((vehicle: any) => {
-          const relevance = calculateRelevance(searchQuery, [
-            vehicle.brand,
-            vehicle.model,
-            vehicle.license_plate,
-            vehicle.vin
-          ]);
-          
-          if (relevance > 0.1) {
-            searchResults.push({
-              id: `vehicle_${vehicle.id}`,
-              title: `${vehicle.brand} ${vehicle.model}`,
-              description: `SPZ: ${vehicle.license_plate}`,
-              module: 'vehicles',
-              type: 'vehicle',
-              relevance,
-              data: vehicle,
-              path: '/vehicles'
-            });
-          }
-        });
-      }
-
-      // Search in language data
-      if (!searchFilters.modules.length || searchFilters.modules.includes('language')) {
-        const languageData = allData.language || {};
-        if (languageData.vocabulary) {
-          languageData.vocabulary.forEach((word: any) => {
-            const relevance = calculateRelevance(searchQuery, [
-              word.german,
-              word.czech,
-              word.category
-            ]);
-            
-            if (relevance > 0.1) {
-              searchResults.push({
-                id: `vocab_${word.id}`,
-                title: `${word.german} - ${word.czech}`,
-                description: `Kategorie: ${word.category}`,
-                module: 'language',
-                type: 'vocabulary',
-                relevance,
-                data: word,
-                path: '/language'
-              });
-            }
-          });
-        }
-      }
-
-      // Search in analytics insights
-      if (!searchFilters.modules.length || searchFilters.modules.includes('analytics')) {
-        const insights = dataSharingService.getCrossModuleInsights();
-        insights.forEach((insight) => {
-          const relevance = calculateRelevance(searchQuery, [
-            insight.title,
-            insight.description,
-            insight.type
-          ]);
-          
-          if (relevance > 0.1) {
-            searchResults.push({
-              id: `insight_${insight.id}`,
-              title: insight.title,
-              description: insight.description,
-              module: 'analytics',
-              type: 'insight',
-              relevance,
-              data: insight,
-              path: '/dashboard'
-            });
-          }
-        });
-      }
-
-      // Sort by relevance and apply filters
-      let filteredResults = searchResults.sort((a, b) => b.relevance - a.relevance);
-      
-      if (searchFilters.types.length) {
-        filteredResults = filteredResults.filter(result => 
-          searchFilters.types.includes(result.type)
-        );
-      }
-
-      setResults(filteredResults.slice(0, 20)); // Limit to 20 results
-      
-      // Save to recent searches
-      const newRecentSearches = [searchQuery, ...recentSearches.filter(s => s !== searchQuery)].slice(0, 5);
-      setRecentSearches(newRecentSearches);
-      localStorage.setItem('recent_searches', JSON.stringify(newRecentSearches));
-      
-    } catch (error) {
-      console.error('Search error:', error);
-    } finally {
+    
+    const searchTimeout = setTimeout(() => {
+      performSearch(query);
       setIsSearching(false);
-    }
-  }, [getAllData, recentSearches]);
-
-  // Calculate search relevance
-  const calculateRelevance = (query: string, fields: (string | undefined)[]): number => {
-    const queryLower = query.toLowerCase();
-    let relevance = 0;
-    
-    fields.forEach(field => {
-      if (!field) return;
-      
-      const fieldLower = field.toLowerCase();
-      
-      // Exact match
-      if (fieldLower === queryLower) {
-        relevance += 1;
-      }
-      // Starts with query
-      else if (fieldLower.startsWith(queryLower)) {
-        relevance += 0.8;
-      }
-      // Contains query
-      else if (fieldLower.includes(queryLower)) {
-        relevance += 0.5;
-      }
-      // Fuzzy match (simplified)
-      else if (calculateFuzzyScore(queryLower, fieldLower) > 0.7) {
-        relevance += 0.3;
-      }
-    });
-    
-    return relevance / fields.length;
-  };
-
-  // Simplified fuzzy matching
-  const calculateFuzzyScore = (query: string, target: string): number => {
-    if (query.length === 0) return 1;
-    if (target.length === 0) return 0;
-    
-    const matches = query.split('').filter(char => target.includes(char)).length;
-    return matches / query.length;
-  };
-
-  // Generate search suggestions
-  const generateSuggestions = useCallback((input: string) => {
-    if (!input.trim()) {
-      setSuggestions([]);
-      return;
-    }
-
-    const allData = getAllData();
-    const suggestionSet = new Set<string>();
-
-    // Add suggestions from recent data
-    (allData.shifts || []).forEach((shift: any) => {
-      if (shift.type?.toLowerCase().includes(input.toLowerCase())) {
-        suggestionSet.add(shift.type);
-      }
-    });
-
-    (allData.vehicles || []).forEach((vehicle: any) => {
-      const brand = vehicle.brand?.toLowerCase();
-      const model = vehicle.model?.toLowerCase();
-      if (brand?.includes(input.toLowerCase())) {
-        suggestionSet.add(vehicle.brand);
-      }
-      if (model?.includes(input.toLowerCase())) {
-        suggestionSet.add(vehicle.model);
-      }
-    });
-
-    setSuggestions(Array.from(suggestionSet).slice(0, 5));
-  }, [getAllData]);
-
-  // Debounced search
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (query) {
-        performSearch(query, filters);
-        generateSuggestions(query);
-      } else {
-        setResults([]);
-        setSuggestions([]);
-      }
     }, 300);
 
-    return () => clearTimeout(timer);
-  }, [query, filters, performSearch, generateSuggestions]);
+    return () => clearTimeout(searchTimeout);
+  }, [query, selectedCategory]);
 
-  // Available modules and types for filtering
-  const availableModules = ['shifts', 'vehicles', 'language', 'analytics'];
-  const availableTypes = ['shift', 'vehicle', 'vocabulary', 'insight'];
+  const performSearch = (searchQuery: string) => {
+    const mockResults: SearchResult[] = [
+      {
+        id: '1',
+        title: 'Kalkulačka pohonných hmot',
+        description: 'Vypočítejte náklady na pohonné hmoty pro vaše cesty',
+        category: 'tools',
+        url: '/calculator/fuel',
+        relevance: 0.9
+      },
+      {
+        id: '2',
+        title: 'Správa vozidel',
+        description: 'Spravujte informace o vašich vozidlech',
+        category: 'vehicles',
+        url: '/vehicles',
+        relevance: 0.8
+      }
+    ];
+
+    // Add vocabulary results if available
+    if (searchData.vocabulary) {
+      const vocabularyResults = searchData.vocabulary
+        .filter((item: any) => 
+          item.term.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.definition.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+        .map((item: any) => ({
+          id: `vocab-${item.term}`,
+          title: item.term,
+          description: item.definition,
+          category: 'vocabulary',
+          relevance: 0.7
+        }));
+      
+      mockResults.push(...vocabularyResults);
+    }
+
+    const filteredResults = selectedCategory === 'all' 
+      ? mockResults 
+      : mockResults.filter(result => result.category === selectedCategory);
+
+    setResults(filteredResults.slice(0, maxResults));
+  };
+
+  const handleResultClick = (result: SearchResult) => {
+    // Add to recent searches
+    setRecentSearches(prev => {
+      const updated = [query, ...prev.filter(s => s !== query)].slice(0, 5);
+      return updated;
+    });
+
+    if (onResultSelect) {
+      onResultSelect(result);
+    }
+    
+    setQuery('');
+    setResults([]);
+  };
+
+  const clearSearch = () => {
+    setQuery('');
+    setResults([]);
+  };
 
   return (
     <div className="relative w-full max-w-2xl mx-auto">
-      {/* Search Input */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
         <Input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Vyhledejte směny, vozidla, slovní zásobu..."
-          className="pl-10 pr-20"
+          placeholder={placeholder}
+          className="pl-10 pr-10"
         />
-        <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex gap-1">
+        {query && (
           <Button
-            size="sm"
             variant="ghost"
-            onClick={() => setShowFilters(!showFilters)}
-            className="h-6 w-6 p-0"
+            size="sm"
+            onClick={clearSearch}
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0"
           >
-            <Filter className="h-3 w-3" />
+            <X className="h-3 w-3" />
           </Button>
-          {query && (
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={() => {
-                setQuery('');
-                setResults([]);
-              }}
-              className="h-6 w-6 p-0"
-            >
-              <X className="h-3 w-3" />
-            </Button>
-          )}
-        </div>
+        )}
       </div>
 
-      {/* Filters */}
-      {showFilters && (
-        <Card className="mt-2 absolute w-full z-50 bg-white">
-          <CardContent className="p-4">
-            <div className="space-y-3">
-              <div>
-                <label className="text-sm font-medium">Moduly:</label>
-                <div className="flex flex-wrap gap-1 mt-1">
-                  {availableModules.map(module => (
-                    <Badge
-                      key={module}
-                      variant={filters.modules.includes(module) ? "default" : "outline"}
-                      className="cursor-pointer"
-                      onClick={() => {
-                        setFilters(prev => ({
-                          ...prev,
-                          modules: prev.modules.includes(module)
-                            ? prev.modules.filter(m => m !== module)
-                            : [...prev.modules, module]
-                        }));
-                      }}
-                    >
-                      {module}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-              
-              <div>
-                <label className="text-sm font-medium">Typy:</label>
-                <div className="flex flex-wrap gap-1 mt-1">
-                  {availableTypes.map(type => (
-                    <Badge
-                      key={type}
-                      variant={filters.types.includes(type) ? "default" : "outline"}
-                      className="cursor-pointer"
-                      onClick={() => {
-                        setFilters(prev => ({
-                          ...prev,
-                          types: prev.types.includes(type)
-                            ? prev.types.filter(t => t !== type)
-                            : [...prev.types, type]
-                        }));
-                      }}
-                    >
-                      {type}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Category filters */}
+      {categories.length > 0 && (
+        <div className="flex gap-2 mt-2 flex-wrap">
+          <Badge
+            variant={selectedCategory === 'all' ? 'default' : 'secondary'}
+            className="cursor-pointer"
+            onClick={() => setSelectedCategory('all')}
+          >
+            Vše
+          </Badge>
+          {categories.map(category => (
+            <Badge
+              key={category}
+              variant={selectedCategory === category ? 'default' : 'secondary'}
+              className="cursor-pointer"
+              onClick={() => setSelectedCategory(category)}
+            >
+              {category}
+            </Badge>
+          ))}
+        </div>
       )}
 
-      {/* Suggestions */}
-      {suggestions.length > 0 && !showFilters && (
-        <Card className="mt-2 absolute w-full z-40 bg-white">
-          <CardContent className="p-2">
-            <div className="flex items-center gap-1 text-xs text-gray-500 mb-2">
-              <Sparkles className="h-3 w-3" />
-              Návrhy:
+      {/* Search results */}
+      {(results.length > 0 || isSearching) && (
+        <div className="absolute top-full left-0 right-0 mt-2 bg-background border rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
+          {isSearching ? (
+            <div className="p-4 text-center text-muted-foreground">
+              Hledám...
             </div>
-            {suggestions.map((suggestion, index) => (
-              <div
-                key={index}
-                className="px-2 py-1 hover:bg-gray-100 cursor-pointer rounded text-sm"
-                onClick={() => setQuery(suggestion)}
-              >
-                {suggestion}
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+          ) : (
+            <div className="p-2">
+              {results.map(result => (
+                <div
+                  key={result.id}
+                  onClick={() => handleResultClick(result)}
+                  className="p-3 hover:bg-muted rounded cursor-pointer transition-colors"
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <h4 className="font-medium text-sm">{result.title}</h4>
+                      <p className="text-xs text-muted-foreground mt-1">{result.description}</p>
+                    </div>
+                    <Badge variant="outline" className="text-xs ml-2">
+                      {result.category}
+                    </Badge>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       )}
 
-      {/* Recent Searches */}
-      {!query && recentSearches.length > 0 && (
-        <Card className="mt-2 absolute w-full z-30 bg-white">
-          <CardContent className="p-2">
-            <div className="flex items-center gap-1 text-xs text-gray-500 mb-2">
+      {/* Recent searches */}
+      {query.length === 0 && recentSearches.length > 0 && (
+        <div className="absolute top-full left-0 right-0 mt-2 bg-background border rounded-lg shadow-lg z-50">
+          <div className="p-3 border-b">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium">
               <Clock className="h-3 w-3" />
-              Nedávná vyhledávání:
+              Nedávná hledání
             </div>
+          </div>
+          <div className="p-2">
             {recentSearches.map((search, index) => (
               <div
                 key={index}
-                className="px-2 py-1 hover:bg-gray-100 cursor-pointer rounded text-sm"
                 onClick={() => setQuery(search)}
+                className="p-2 hover:bg-muted rounded cursor-pointer text-sm transition-colors"
               >
                 {search}
               </div>
             ))}
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Search Results */}
-      {results.length > 0 && (
-        <Card className="mt-2 absolute w-full z-20 bg-white max-h-96 overflow-y-auto">
-          <CardContent className="p-2">
-            <div className="flex items-center gap-1 text-xs text-gray-500 mb-2">
-              <TrendingUp className="h-3 w-3" />
-              Nalezeno {results.length} výsledků:
-            </div>
-            {results.map((result) => (
-              <div
-                key={result.id}
-                className="p-3 hover:bg-gray-50 cursor-pointer rounded border-b last:border-b-0"
-                onClick={() => {
-                  if (result.path) {
-                    window.location.href = result.path;
-                  }
-                }}
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="font-medium text-sm">{result.title}</div>
-                    <div className="text-xs text-gray-600 mt-1">{result.description}</div>
-                    <div className="flex items-center gap-2 mt-2">
-                      <Badge variant="outline" className="text-xs">
-                        {result.module}
-                      </Badge>
-                      <Badge variant="secondary" className="text-xs">
-                        {result.type}
-                      </Badge>
-                    </div>
-                  </div>
-                  <div className="text-xs text-gray-400 ml-2">
-                    {Math.round(result.relevance * 100)}%
-                  </div>
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      )}
-
-      {/* No Results */}
-      {query && !isSearching && results.length === 0 && (
-        <Card className="mt-2 absolute w-full z-20 bg-white">
-          <CardContent className="p-4 text-center">
-            <div className="text-sm text-gray-600">
-              Žádné výsledky pro "{query}"
-            </div>
-            <div className="text-xs text-gray-400 mt-1">
-              Zkuste jiné klíčové slovo nebo upravte filtry
-            </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
     </div>
   );
