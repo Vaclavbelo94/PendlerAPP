@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Download, FileText, Table, Database } from 'lucide-react';
 import { toast } from 'sonner';
 import { dataExportService } from '@/services/dataExportService';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/auth';
 import { useTranslation } from 'react-i18next';
 
 interface DataExportDialogProps {

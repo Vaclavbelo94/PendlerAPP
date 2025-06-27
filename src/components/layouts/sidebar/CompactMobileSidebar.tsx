@@ -2,7 +2,7 @@
 import React from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { X, Home, Calendar, Car, Settings } from 'lucide-react';
+import { Home, Calendar, Car, Settings } from 'lucide-react';
 import { useAuth } from '@/hooks/auth';
 import { useNavigate } from 'react-router-dom';
 

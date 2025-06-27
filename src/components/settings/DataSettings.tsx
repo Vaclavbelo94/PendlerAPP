@@ -5,7 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import { Database, Download, Upload, Trash2, RefreshCw } from 'lucide-react';
 import { toast } from "sonner";
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/auth';
 import { dataExportService, DataStats } from '@/services/dataExportService';
 import { DataExportDialog } from './DataExportDialog';
 import { DataImportDialog } from './DataImportDialog';

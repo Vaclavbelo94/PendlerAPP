@@ -24,11 +24,16 @@ import {
   BarChart3
 } from 'lucide-react';
 import { useAuth } from '@/hooks/auth';
-import { ThemeToggle } from '@/components/theme-toggle';
-import { LanguageToggle } from '@/components/language-toggle';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { useTranslation } from 'react-i18next';
 
-const Navbar = () => {
+interface NavbarProps {
+  toggleSidebar?: () => void;
+  rightContent?: React.ReactNode;
+  sidebarOpen?: boolean;
+}
+
+const Navbar: React.FC<NavbarProps> = ({ toggleSidebar, rightContent, sidebarOpen }) => {
   const { user, unifiedUser, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -95,8 +100,8 @@ const Navbar = () => {
 
         {/* Right Side */}
         <div className="flex items-center space-x-2">
-          <LanguageToggle />
           <ThemeToggle />
+          {rightContent}
           
           {user ? (
             <DropdownMenu>
@@ -167,8 +172,8 @@ const Navbar = () => {
           )}
 
           {/* Mobile Menu */}
-          {user && (
-            <Button variant="ghost" size="icon" className="md:hidden">
+          {user && toggleSidebar && (
+            <Button variant="ghost" size="icon" className="md:hidden" onClick={toggleSidebar}>
               <Menu className="h-5 w-5" />
             </Button>
           )}
