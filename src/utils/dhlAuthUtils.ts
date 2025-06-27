@@ -18,7 +18,7 @@ export const isDHLEmployee = (user: User | null): boolean => {
   
   // Support various DHL email formats and admin
   const dhlEmailPatterns = [
-    '@dhl.com',        // Standard DHL email
+    '@dhl.com',        // Standard DHL email (this will match moment@dhl.com)
     '@dhl.de',         // German DHL
     'test@dhl.com',    // Test account
     'admin_dhl@pendlerapp.com' // DHL admin
@@ -26,7 +26,7 @@ export const isDHLEmployee = (user: User | null): boolean => {
   
   const isDHLEmp = dhlEmailPatterns.some(pattern => {
     if (pattern.startsWith('@')) {
-      return user.email!.includes(pattern);
+      return user.email!.endsWith(pattern); // Changed from includes to endsWith for proper domain matching
     } else {
       return user.email === pattern;
     }

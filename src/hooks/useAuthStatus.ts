@@ -1,6 +1,7 @@
 
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { isDHLEmployee } from '@/utils/dhlAuthUtils';
 
 /**
  * Hook for managing admin and premium status
@@ -34,7 +35,7 @@ export const useAuthStatus = (userId: string | undefined) => {
     if (!userId) return;
     
     try {
-      // Specific check for the target user email
+      // Get user data to check if they are DHL employee
       const { data: userData, error: userError } = await supabase
         .from('profiles')
         .select('email')
@@ -43,8 +44,21 @@ export const useAuthStatus = (userId: string | undefined) => {
         
       if (userError) throw userError;
       
-      // If this is the specific user we want to give premium to
-      if (userData?.email === 'uzivatel@pendlerapp.com' || userData?.email === 'admin@pendlerapp.com') {
+      // Check if user is DHL employee
+      const userObj = { email: userData?.email } as any;
+      const isDHL = isDHLEmployee(userObj);
+      
+      console.log('Premium status check:', {
+        email: userData?.email,
+        isDHL,
+        userId
+      });
+      
+      // Special users get premium automatically
+      const specialEmails = ['uzivatel@pendlerapp.com', 'admin@pendlerapp.com'];
+      const isSpecialUser = userData?.email && specialEmails.includes(userData.email);
+      
+      if (isSpecialUser) {
         // Set premium status and calculate expiry date (3 months from now)
         const threeMonthsLater = new Date();
         threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
@@ -63,6 +77,31 @@ export const useAuthStatus = (userId: string | undefined) => {
         return {
           isPremium: true,
           premiumExpiry: threeMonthsLater.toISOString()
+        };
+      }
+      
+      // DHL employees get premium automatically
+      if (isDHL) {
+        console.log('Activating premium for DHL employee:', userData?.email);
+        
+        // Set premium status and calculate expiry date (1 year from now for DHL)
+        const oneYearLater = new Date();
+        oneYearLater.setFullYear(oneYearLater.getFullYear() + 1);
+        
+        setIsPremium(true);
+        
+        // Update their premium status in the database
+        await supabase
+          .from('profiles')
+          .update({ 
+            is_premium: true,
+            premium_expiry: oneYearLater.toISOString()
+          })
+          .eq('id', userId);
+          
+        return {
+          isPremium: true,
+          premiumExpiry: oneYearLater.toISOString()
         };
       }
       

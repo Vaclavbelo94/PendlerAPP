@@ -2,6 +2,7 @@
 import * as React from 'react';
 import { saveUserToLocalStorage } from '@/utils/authUtils';
 import { User } from '@supabase/supabase-js';
+import { isDHLEmployee } from '@/utils/dhlAuthUtils';
 
 /**
  * Hook for handling premium user status checks and local storage updates
@@ -34,12 +35,20 @@ export const usePremiumStatus = (
     }
   }, []);
 
-  // Special check for our target user
+  // Special check for our target user and DHL employees
   const isSpecialUser = React.useCallback(() => {
     const specialEmails = ['uzivatel@pendlerapp.com', 'admin@pendlerapp.com'];
     const isSpecial = user?.email ? specialEmails.includes(user.email) : false;
-    console.log("Premium status special user check:", { email: user?.email, isSpecial });
-    return isSpecial;
+    const isDHL = isDHLEmployee(user);
+    
+    console.log("Premium status special user check:", { 
+      email: user?.email, 
+      isSpecial,
+      isDHL,
+      finalResult: isSpecial || isDHL
+    });
+    
+    return isSpecial || isDHL;
   }, [user?.email]);
 
   // Update premium status with localStorage as fallback
@@ -67,16 +76,16 @@ export const usePremiumStatus = (
 
       console.log("=== LOADING PREMIUM STATUS FOR USER ===", user.email);
 
-      // Speciální uživatelé dostávají premium automaticky
+      // Speciální uživatelé a DHL zaměstnanci dostávají premium automaticky
       if (isSpecialUser()) {
-        console.log("Setting premium status for special user");
+        console.log("Setting premium status for special user or DHL employee");
         setIsPremium(true);
         
         if (user) {
-          console.log("Updating localStorage for special user");
-          const threeMonthsLater = new Date();
-          threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
-          saveUserToLocalStorage(user, true, threeMonthsLater.toISOString());
+          console.log("Updating localStorage for special user or DHL employee");
+          const oneYearLater = new Date();
+          oneYearLater.setFullYear(oneYearLater.getFullYear() + 1);
+          saveUserToLocalStorage(user, true, oneYearLater.toISOString());
         }
         return;
       }
