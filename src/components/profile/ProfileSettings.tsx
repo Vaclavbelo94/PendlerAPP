@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,14 +20,64 @@ const ProfileSettings = () => {
   const isDHLUser = canAccessDHLFeatures(user);
   
   const {
-    loading,
-    profileSettings,
-    filledFields,
-    handleInputChange,
-    handleSaveProfile
+    isLoading,
+    settings,
+    error,
+    isSaving,
+    saveSettings
   } = useProfileSettings();
 
-  if (loading) {
+  // Local state for form management
+  const [profileSettings, setProfileSettings] = useState({
+    displayName: settings?.username || '',
+    phoneNumber: '',
+    location: settings?.location || '',
+    website: settings?.website || '',
+    bio: settings?.bio || '',
+    emailNotifications: true,
+    shiftNotifications: true,
+    languageReminders: true,
+    preferredLanguage: 'cs'
+  });
+
+  // Update local state when settings load
+  React.useEffect(() => {
+    if (settings) {
+      setProfileSettings(prev => ({
+        ...prev,
+        displayName: settings.username || '',
+        location: settings.location || '',
+        website: settings.website || '',
+        bio: settings.bio || '',
+      }));
+    }
+  }, [settings]);
+
+  const handleInputChange = (field: string, value: any) => {
+    setProfileSettings(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleSaveProfile = async () => {
+    if (settings) {
+      await saveSettings({
+        username: profileSettings.displayName,
+        fullName: profileSettings.displayName,
+        bio: profileSettings.bio,
+        location: profileSettings.location,
+        website: profileSettings.website
+      });
+    }
+  };
+
+  const filledFields = {
+    displayName: !!profileSettings.displayName,
+    phoneNumber: !!profileSettings.phoneNumber,
+    location: !!profileSettings.location,
+    website: !!profileSettings.website,
+    bio: !!profileSettings.bio,
+  };
+
+  if (isLoading) {
     return (
       <Card>
         <CardContent className="p-6">
@@ -225,8 +275,8 @@ const ProfileSettings = () => {
 
       {/* Save Button */}
       <div className="flex justify-end">
-        <Button onClick={handleSaveProfile} disabled={loading}>
-          {loading ? t('saving') : t('saveChanges')}
+        <Button onClick={handleSaveProfile} disabled={isSaving}>
+          {isSaving ? t('saving') : t('saveChanges')}
         </Button>
       </div>
     </div>
