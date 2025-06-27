@@ -249,6 +249,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     session,
     unifiedUser,
     isLoading,
+    isPremium,
+    isAdmin,
     error,
     signIn,
     signInWithGoogle,
