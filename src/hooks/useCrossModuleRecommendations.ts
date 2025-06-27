@@ -2,8 +2,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-
-// Types
 import { useAuth } from '@/hooks/auth';
 
 interface Recommendation {
@@ -14,22 +12,36 @@ interface Recommendation {
   link: string;
 }
 
+interface SmartRecommendation {
+  id: string;
+  type: string;
+  sourceModules: string[];
+  targetModule: string;
+  confidence: number;
+  title: string;
+  description: string;
+  reasoning: string;
+  estimatedBenefit: string;
+  actionable: boolean;
+  action?: {
+    label: string;
+    type: string;
+    payload?: any;
+  };
+}
+
 interface CrossModuleRecommendationsState {
   recommendations: Recommendation[] | null;
   isLoading: boolean;
   error: string | null;
-  executeRecommendation: (id: string) => Promise<void>;
-  dismissRecommendation: (id: string) => Promise<void>;
 }
 
-export const useCrossModuleRecommendations = () => {
+export const useCrossModuleRecommendations = (currentModule?: string) => {
   const { user } = useAuth();
   const [state, setState] = useState<CrossModuleRecommendationsState>({
     recommendations: null,
     isLoading: true,
     error: null,
-    executeRecommendation: async () => {},
-    dismissRecommendation: async () => {}
   });
 
   useEffect(() => {
@@ -75,7 +87,8 @@ export const useCrossModuleRecommendations = () => {
     fetchRecommendations();
   }, [user]);
 
-  const executeRecommendation = async (id: string) => {
+  const executeRecommendation = async (recommendation: SmartRecommendation | string) => {
+    const id = typeof recommendation === 'string' ? recommendation : recommendation.id;
     console.log('Executing recommendation:', id);
     toast.success('Doporučení bylo provedeno');
   };

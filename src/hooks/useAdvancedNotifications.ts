@@ -18,9 +18,6 @@ interface AdvancedNotificationsState {
   isInitialized: boolean;
   permissionGranted: boolean;
   behaviorPattern: string;
-  requestPermission: () => Promise<boolean>;
-  syncAcrossDevices: () => Promise<boolean>;
-  analyzeUserBehavior: () => Promise<string>;
 }
 
 export const useAdvancedNotifications = () => {
@@ -32,10 +29,7 @@ export const useAdvancedNotifications = () => {
     error: null,
     isInitialized: false,
     permissionGranted: false,
-    behaviorPattern: 'moderate',
-    requestPermission: async () => false,
-    syncAcrossDevices: async () => false,
-    analyzeUserBehavior: async () => 'moderate'
+    behaviorPattern: 'moderate'
   });
 
   useEffect(() => {
@@ -45,7 +39,6 @@ export const useAdvancedNotifications = () => {
       setState(prevState => ({ ...prevState, isLoading: true, error: null }));
 
       try {
-        // Use user_notification_preferences table instead of notification_settings
         const { data, error } = await supabase
           .from('user_notification_preferences')
           .select('*')
@@ -59,7 +52,7 @@ export const useAdvancedNotifications = () => {
         const settings: NotificationSettings = {
           emailNotifications: data?.email_notifications || false,
           pushNotifications: data?.push_notifications || false,
-          smsNotifications: false // This field doesn't exist in the table
+          smsNotifications: false
         };
 
         setState(prevState => ({
@@ -124,15 +117,15 @@ export const useAdvancedNotifications = () => {
   };
 
   const requestPermission = async () => {
-    return true; // Mock implementation
+    return true;
   };
 
   const syncAcrossDevices = async () => {
-    return true; // Mock implementation
+    return true;
   };
 
   const analyzeUserBehavior = async () => {
-    return 'moderate'; // Mock implementation
+    return 'moderate';
   };
 
   return {

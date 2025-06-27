@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -63,20 +64,20 @@ export const useAppearanceSettings = () => {
 
       try {
         const { data, error } = await supabase
-          .from('user_settings')
-          .select('theme, primary_color, accent_color')
+          .from('user_appearance_settings')
+          .select('dark_mode, color_scheme, compact_mode')
           .eq('user_id', user.id)
           .single();
 
-        if (error) {
+        if (error && error.code !== 'PGRST116') {
           throw error;
         }
 
         setState(prevState => ({
           ...prevState,
-          theme: data?.theme || 'system',
-          primaryColor: data?.primary_color || defaultColors.light.primary,
-          accentColor: data?.accent_color || defaultColors.light.primary,
+          theme: data?.dark_mode ? 'dark' : 'light',
+          primaryColor: data?.color_scheme || defaultColors.light.primary,
+          accentColor: data?.color_scheme || defaultColors.light.primary,
           isLoading: false,
         }));
       } catch (error: any) {
@@ -99,12 +100,12 @@ export const useAppearanceSettings = () => {
 
     try {
       const { error } = await supabase
-        .from('user_settings')
+        .from('user_appearance_settings')
         .upsert({
           user_id: user.id,
-          theme: newTheme,
-          primary_color: newPrimaryColor,
-          accent_color: newAccentColor,
+          dark_mode: newTheme === 'dark',
+          color_scheme: newPrimaryColor,
+          compact_mode: false,
           updated_at: new Date().toISOString(),
         }, { onConflict: 'user_id' });
 
