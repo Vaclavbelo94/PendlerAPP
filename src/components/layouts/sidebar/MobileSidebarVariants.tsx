@@ -16,10 +16,10 @@ export const MobileSidebarVariants: React.FC<MobileSidebarVariantsProps> = ({
 }) => {
   switch (variant) {
     case 'compact':
-      return <CompactMobileSidebar closeSidebar={closeSidebar} />;
+      return <CompactMobileSidebar isOpen={true} onClose={closeSidebar} />;
     case 'full':
-      return <ModernMobileSidebar closeSidebar={closeSidebar} />;
+      return <ModernMobileSidebar isOpen={true} onClose={closeSidebar} />;
     default:
-      return <CompactMobileSidebar closeSidebar={closeSidebar} />;
+      return <CompactMobileSidebar isOpen={true} onClose={closeSidebar} />;
   }
 };

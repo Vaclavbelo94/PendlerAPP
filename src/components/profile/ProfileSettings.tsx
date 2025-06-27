@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { CheckCircle, Phone } from "lucide-react";
 import { useProfileSettings } from "./settings/useProfileSettings";
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/auth';
 import { canAccessDHLFeatures } from '@/utils/dhlAuthUtils';
 import DHLProfileSettings from './DHLProfileSettings';
 

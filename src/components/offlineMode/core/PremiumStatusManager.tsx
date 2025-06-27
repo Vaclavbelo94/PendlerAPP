@@ -1,6 +1,6 @@
 
 import React, { useEffect, useRef } from 'react';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/auth';
 import { useSyncSettings } from '@/hooks/useSyncSettings';
 import { toast } from '@/hooks/use-toast';
 

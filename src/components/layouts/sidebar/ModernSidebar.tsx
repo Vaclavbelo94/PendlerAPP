@@ -1,174 +1,85 @@
 
-import React from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
-import { useAuth } from "@/hooks/useAuth";
-import { useTranslation } from "react-i18next";
-import SidebarLogo from "./SidebarLogo";
-import SidebarUserSection from "./SidebarUserSection";
-import SidebarThemeSwitcher from "./SidebarThemeSwitcher";
-import { navigationItems } from "@/data/navigationData";
-import { canAccessDHLAdmin, canAccessDHLFeatures } from "@/utils/dhlAuthUtils";
+import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { 
+  Home, 
+  Calendar, 
+  Car, 
+  Settings, 
+  BarChart3,
+  Crown,
+  User
+} from 'lucide-react';
+import { useAuth } from '@/hooks/auth';
+import { cn } from '@/lib/utils';
 
 const ModernSidebar = () => {
+  const { user, unifiedUser } = useAuth();
   const location = useLocation();
-  const { user, isAdmin } = useAuth();
-  const { t } = useTranslation('common');
 
-  // Check DHL access
-  const isDHLAdmin = canAccessDHLAdmin(user);
-  const canAccessDHL = canAccessDHLFeatures(user);
+  const navigationItems = [
+    { icon: Home, label: 'Dashboard', path: '/dashboard' },
+    { icon: Calendar, label: 'Směny', path: '/shifts' },
+    { icon: Car, label: 'Vozidla', path: '/vehicles' },
+    { icon: BarChart3, label: 'Analytika', path: '/analytics', premium: true },
+    { icon: Settings, label: 'Nastavení', path: '/settings' },
+    { icon: User, label: 'Profil', path: '/profile' },
+  ];
 
-  const filteredNavigationItems = navigationItems.filter(item => {
-    // Regular admin check
-    if (item.adminOnly && !isAdmin) return false;
-    
-    // DHL admin check
-    if (item.dhlAdminOnly && !isDHLAdmin) return false;
-    
-    // DHL employee check
-    if (item.dhlOnly && !canAccessDHL) return false;
-    
-    return true;
-  });
+  const isActive = (path: string) => location.pathname === path;
+
+  if (!user) return null;
 
   return (
-    <div className="fixed left-0 top-0 z-40 h-screen w-64 border-r bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="flex h-full max-h-screen flex-col gap-2">
-        {/* Logo */}
-        <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
-          <SidebarLogo closeSidebar={() => {}} />
-        </div>
-
-        {/* Navigation */}
-        <ScrollArea className="flex-1 px-3">
-          <div className="space-y-1 p-2">
-            {/* Main Navigation */}
-            <div className="pb-4">
-              <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">
-                {t('navigation')}
-              </h2>
-              <div className="space-y-1">
-                {filteredNavigationItems
-                  .filter(item => !item.adminOnly && !item.dhlAdminOnly && !item.dhlOnly)
-                  .map((item) => {
-                    const Icon = item.icon;
-                    return (
-                      <Button
-                        key={item.path}
-                        asChild
-                        variant={location.pathname === item.path ? "secondary" : "ghost"}
-                        className={cn(
-                          "w-full justify-start",
-                          location.pathname === item.path && "bg-muted font-medium"
-                        )}
-                      >
-                        <Link to={item.path}>
-                          <Icon className="mr-2 h-4 w-4" />
-                          {t(item.titleKey)}
-                          {item.badge && (
-                            <span className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
-                              {item.badge}
-                            </span>
-                          )}
-                        </Link>
-                      </Button>
-                    );
-                  })}
-              </div>
-            </div>
-
-            {/* DHL Section */}
-            {canAccessDHL && (
-              <>
-                <Separator />
-                <div className="pb-4">
-                  <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight text-yellow-600">
-                    DHL
-                  </h2>
-                  <div className="space-y-1">
-                    {filteredNavigationItems
-                      .filter(item => item.dhlOnly || item.dhlAdminOnly)
-                      .map((item) => {
-                        const Icon = item.icon;
-                        return (
-                          <Button
-                            key={item.path}
-                            asChild
-                            variant={location.pathname === item.path ? "secondary" : "ghost"}
-                            className={cn(
-                              "w-full justify-start",
-                              location.pathname === item.path && "bg-muted font-medium"
-                            )}
-                          >
-                            <Link to={item.path}>
-                              <Icon className="mr-2 h-4 w-4" />
-                              {item.dhlAdminOnly ? 'DHL Admin' : 'DHL Dashboard'}
-                              {item.badge && (
-                                <span className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
-                                  {item.badge}
-                                </span>
-                              )}
-                            </Link>
-                          </Button>
-                        );
-                      })}
-                  </div>
-                </div>
-              </>
-            )}
-
-            {/* Admin Section */}
-            {isAdmin && (
-              <>
-                <Separator />
-                <div className="pb-4">
-                  <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight text-red-600">
-                    {t('administration')}
-                  </h2>
-                  <div className="space-y-1">
-                    {filteredNavigationItems
-                      .filter(item => item.adminOnly && !item.dhlAdminOnly)
-                      .map((item) => {
-                        const Icon = item.icon;
-                        return (
-                          <Button
-                            key={item.path}
-                            asChild
-                            variant={location.pathname === item.path ? "secondary" : "ghost"}
-                            className={cn(
-                              "w-full justify-start",
-                              location.pathname === item.path && "bg-muted font-medium"
-                            )}
-                          >
-                            <Link to={item.path}>
-                              <Icon className="mr-2 h-4 w-4" />
-                              {t(item.titleKey)}
-                              {item.badge && (
-                                <span className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
-                                  {item.badge}
-                                </span>
-                              )}
-                            </Link>
-                          </Button>
-                        );
-                      })}
-                  </div>
-                </div>
-              </>
-            )}
+    <div className="w-64 bg-card border-r h-full flex flex-col">
+      <div className="p-4 border-b">
+        <div className="flex items-center space-x-2">
+          <div className="h-8 w-8 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center">
+            <span className="text-white font-bold text-sm">PA</span>
           </div>
-        </ScrollArea>
-
-        {/* Footer */}
-        <div className="mt-auto border-t p-4">
-          <SidebarThemeSwitcher />
-          <SidebarUserSection collapsed={false} />
+          <span className="font-bold">PendlerApp</span>
         </div>
       </div>
+
+      <div className="flex-1 p-4">
+        <nav className="space-y-2">
+          {navigationItems.map((item) => {
+            const Icon = item.icon;
+            const isLocked = item.premium && !unifiedUser?.isPremium;
+            
+            return (
+              <Link 
+                key={item.path}
+                to={isLocked ? '/premium' : item.path}
+                className={cn(
+                  "flex items-center space-x-3 px-3 py-2 rounded-md text-sm transition-colors",
+                  isActive(item.path) 
+                    ? 'bg-accent text-accent-foreground' 
+                    : 'text-muted-foreground hover:text-foreground hover:bg-accent/50',
+                  isLocked && 'opacity-60'
+                )}
+              >
+                <Icon className="h-4 w-4" />
+                <span className="flex-1">{item.label}</span>
+                {item.premium && !unifiedUser?.isPremium && (
+                  <Crown className="h-3 w-3 text-amber-500" />
+                )}
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
+
+      {unifiedUser?.isPremium && (
+        <div className="p-4 border-t">
+          <Badge variant="secondary" className="bg-amber-100 text-amber-800">
+            <Crown className="h-3 w-3 mr-1" />
+            Premium
+          </Badge>
+        </div>
+      )}
     </div>
   );
 };
