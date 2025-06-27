@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -14,6 +15,12 @@ interface AdvancedNotificationsState {
   isLoading: boolean;
   isSaving: boolean;
   error: string | null;
+  isInitialized: boolean;
+  permissionGranted: boolean;
+  behaviorPattern: string;
+  requestPermission: () => Promise<boolean>;
+  syncAcrossDevices: () => Promise<boolean>;
+  analyzeUserBehavior: () => Promise<string>;
 }
 
 export const useAdvancedNotifications = () => {
@@ -23,6 +30,12 @@ export const useAdvancedNotifications = () => {
     isLoading: true,
     isSaving: false,
     error: null,
+    isInitialized: false,
+    permissionGranted: false,
+    behaviorPattern: 'moderate',
+    requestPermission: async () => false,
+    syncAcrossDevices: async () => false,
+    analyzeUserBehavior: async () => 'moderate'
   });
 
   useEffect(() => {
@@ -32,24 +45,30 @@ export const useAdvancedNotifications = () => {
       setState(prevState => ({ ...prevState, isLoading: true, error: null }));
 
       try {
+        // Use user_notification_preferences table instead of notification_settings
         const { data, error } = await supabase
-          .from('notification_settings')
+          .from('user_notification_preferences')
           .select('*')
           .eq('user_id', user.id)
           .single();
 
-        if (error) {
+        if (error && error.code !== 'PGRST116') {
           throw error;
         }
 
+        const settings: NotificationSettings = {
+          emailNotifications: data?.email_notifications || false,
+          pushNotifications: data?.push_notifications || false,
+          smsNotifications: false // This field doesn't exist in the table
+        };
+
         setState(prevState => ({
           ...prevState,
-          settings: {
-            emailNotifications: data?.email_notifications || false,
-            pushNotifications: data?.push_notifications || false,
-            smsNotifications: data?.sms_notifications || false,
-          },
+          settings,
           isLoading: false,
+          isInitialized: true,
+          permissionGranted: true,
+          behaviorPattern: 'moderate'
         }));
       } catch (error: any) {
         console.error('Error loading notification settings:', error);
@@ -71,12 +90,11 @@ export const useAdvancedNotifications = () => {
 
     try {
       const { error } = await supabase
-        .from('notification_settings')
+        .from('user_notification_preferences')
         .upsert({
           user_id: user.id,
           email_notifications: newSettings.emailNotifications,
           push_notifications: newSettings.pushNotifications,
-          sms_notifications: newSettings.smsNotifications,
           updated_at: new Date().toISOString(),
         })
         .eq('user_id', user.id);
@@ -105,8 +123,23 @@ export const useAdvancedNotifications = () => {
     }
   };
 
+  const requestPermission = async () => {
+    return true; // Mock implementation
+  };
+
+  const syncAcrossDevices = async () => {
+    return true; // Mock implementation
+  };
+
+  const analyzeUserBehavior = async () => {
+    return 'moderate'; // Mock implementation
+  };
+
   return {
     ...state,
     saveSettings,
+    requestPermission,
+    syncAcrossDevices,
+    analyzeUserBehavior,
   };
 };

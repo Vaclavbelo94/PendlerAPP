@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/auth';
@@ -7,6 +8,7 @@ interface Vehicle {
   name: string;
   type: string;
   fuelConsumption: number;
+  synced?: boolean;
 }
 
 export const useOfflineVehicles = () => {
@@ -37,7 +39,15 @@ export const useOfflineVehicles = () => {
         }
 
         if (data) {
-          setVehicles(data);
+          // Map the database structure to our Vehicle interface
+          const mappedVehicles: Vehicle[] = data.map(vehicle => ({
+            id: vehicle.id,
+            name: `${vehicle.brand} ${vehicle.model}`,
+            type: vehicle.fuel_type || 'Unknown',
+            fuelConsumption: parseFloat(vehicle.average_consumption || '0'),
+            synced: true // Assume all vehicles from database are synced
+          }));
+          setVehicles(mappedVehicles);
         }
       } catch (err: any) {
         setError(err.message || 'Chyba při načítání vozidel');
@@ -55,4 +65,3 @@ export const useOfflineVehicles = () => {
     error,
   };
 };
-
