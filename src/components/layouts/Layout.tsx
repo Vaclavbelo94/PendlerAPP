@@ -93,7 +93,7 @@ const Layout: React.FC<LayoutProps> = ({ children, navbarRightContent }) => {
         </div>
       )}
 
-      {/* Mobile Layout - with hamburger menu and language toggle */}
+      {/* Mobile Layout - pouze jazyk a hamburger menu */}
       {isMobile && (
         <div className="flex flex-col min-h-screen">
           <UnifiedNavbar 

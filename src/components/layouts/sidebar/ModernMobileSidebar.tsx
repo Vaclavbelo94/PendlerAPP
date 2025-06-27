@@ -56,8 +56,8 @@ export const ModernMobileSidebar: React.FC<ModernMobileSidebarProps> = ({
         onClick={onClose}
       />
       
-      {/* Sidebar */}
-      <div className="fixed top-0 left-0 h-full w-80 bg-black text-white z-50 flex flex-col transform transition-transform duration-300">
+      {/* Sidebar - vysouvání zprava */}
+      <div className="fixed top-0 right-0 h-full w-80 bg-black text-white z-50 flex flex-col transform transition-transform duration-300">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-700">
           <div className="flex items-center space-x-2">
