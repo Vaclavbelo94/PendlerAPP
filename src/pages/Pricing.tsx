@@ -1,12 +1,11 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CheckIcon, StarIcon } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
-import { ModernLayout } from "@/components/modern/ModernLayout";
+import { useAuth } from "@/hooks/auth";
+import ModernLayout from "@/components/modern/ModernLayout";
 
 const Pricing = () => {
   const { user, isPremium } = useAuth();

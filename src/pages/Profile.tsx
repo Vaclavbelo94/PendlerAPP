@@ -1,9 +1,8 @@
-
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import { User } from 'lucide-react';
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/auth";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import UnifiedNavbar from '@/components/layouts/UnifiedNavbar';
@@ -13,14 +12,18 @@ import ProfileNavigation from '@/components/profile/ProfileNavigation';
 import ProfileOverview from '@/components/profile/ProfileOverview';
 import ProfileWorkData from '@/components/profile/ProfileWorkData';
 import ProfileSubscription from '@/components/profile/subscription/ProfileSubscription';
+import DashboardBackground from '@/components/common/DashboardBackground';
+import ProfileErrorBoundary from '@/components/profile/ProfileErrorBoundary';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 import { useTranslation } from 'react-i18next';
 
-const Profile: React.FC = () => {
-  const { user } = useAuth();
+const Profile = () => {
+  const { user, unifiedUser } = useAuth();
   const navigate = useNavigate();
-  const [activeSection, setActiveSection] = useState('overview');
   const isMobile = useIsMobile();
+  const [activeTab, setActiveTab] = useState("overview");
+  const [isEditing, setIsEditing] = useState(false);
   const { t } = useTranslation('profile');
 
   if (!user) {
@@ -66,50 +69,73 @@ const Profile: React.FC = () => {
     );
   }
 
+  const { containerRef } = useSwipeNavigation({
+    items: ["overview", "workData", "subscription"],
+    currentItem: activeTab,
+    onItemChange: setActiveTab,
+    enabled: isMobile
+  });
+
+  const handleEdit = () => setIsEditing(true);
+  const handleSave = () => setIsEditing(false);
+  const handleCancel = () => setIsEditing(false);
+
   const renderDesktopContent = () => {
-    switch (activeSection) {
+    switch (activeTab) {
       case 'overview':
-        return <ProfileOverview />;
+        return (
+          <ProfileOverview 
+            onEdit={handleEdit}
+            onSave={handleSave}
+            onCancel={handleCancel}
+            isEditing={isEditing}
+          />
+        );
       case 'workData':
         return <ProfileWorkData />;
       case 'subscription':
-        return <ProfileSubscription />;
+        return <ProfileSubscription isPremium={unifiedUser?.isPremium || false} />;
       default:
-        return <ProfileOverview />;
+        return (
+          <ProfileOverview 
+            onEdit={handleEdit}
+            onSave={handleSave}
+            onCancel={handleCancel}
+            isEditing={isEditing}
+          />
+        );
     }
   };
 
   return (
     <>
       <Helmet>
-        <title>{t('title') || 'Profil'} | PendlerApp</title>
-        <meta name="description" content={t('profileDescription') || 'Správa uživatelského profilu a nastavení účtu'} />
+        <title>{t('title')} | PendlerApp</title>
+        <meta name="description" content={t('title')} />
       </Helmet>
       
-      <div className="min-h-screen flex flex-col bg-background">
-        <UnifiedNavbar />
-        
-        <main className="flex-1">
-          <div className="container mx-auto px-4 py-8">
-            {/* Header section */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="mb-8"
-            >
-              <div className={`flex items-center gap-3 mb-4 ${isMobile ? 'flex-col text-center' : ''}`}>
-                <div className={`${isMobile ? 'p-2' : 'p-3'} rounded-full bg-primary/10 border`}>
-                  <User className={`${isMobile ? 'h-6 w-6' : 'h-8 w-8'} text-primary`} />
-                </div>
-                <div className={isMobile ? 'text-center' : ''}>
-                  <h1 className={`${isMobile ? 'text-2xl' : 'text-4xl'} font-bold tracking-tight ${isMobile ? 'text-center' : ''}`}>
-                    {isMobile ? (t('title') || 'Profil') : (t('myProfile') || 'Můj profil')}
-                  </h1>
-                  <p className={`text-muted-foreground ${isMobile ? 'text-sm mt-2 text-center' : 'text-lg mt-2'} max-w-3xl`}>
-                    {isMobile 
-                      ? (t('shortDescription') || 'Správa účtu a osobních nastavení.') 
-                      : (t('longDescription') || 'Spravujte své informace, nastavení účtu a sledujte svůj pokrok v aplikaci.')
+      <UnifiedNavbar />
+      
+      <DashboardBackground variant="default">
+        <div className="container mx-auto px-4 py-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="mb-8"
+          >
+            <div className={`flex items-center gap-3 mb-4 ${isMobile ? 'flex-col text-center' : ''}`}>
+              <div className={`${isMobile ? 'p-2' : 'p-3'} rounded-full bg-primary/10 border`}>
+                <User className={`${isMobile ? 'h-6 w-6' : 'h-8 w-8'} text-primary`} />
+              </div>
+              <div className={isMobile ? 'text-center' : ''}>
+                <h1 className={`${isMobile ? 'text-2xl' : 'text-4xl'} font-bold tracking-tight ${isMobile ? 'text-center' : ''}`}>
+                  {isMobile ? (t('title') || 'Profil') : (t('myProfile') || 'Můj profil')}
+                </h1>
+                <p className={`text-muted-foreground ${isMobile ? 'text-sm mt-2 text-center' : 'text-lg mt-2'} max-w-3xl`}>
+                  {isMobile 
+                    ? (t('shortDescription') || 'Správa účtu a osobních nastavení.') 
+                    : (t('longDescription') || 'Spravujte své informace, nastavení účtu a sledujte svůj pokrok v aplikaci.')
                     }
                   </p>
                 </div>
@@ -121,20 +147,20 @@ const Profile: React.FC = () => {
               )}
             </motion.div>
 
-            {/* Mobile: Swipe Carousel */}
+          <ProfileErrorBoundary>
             {isMobile ? (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
+                ref={containerRef}
               >
                 <ProfileMobileCarousel
-                  activeTab={activeSection}
-                  onTabChange={setActiveSection}
+                  activeTab={activeTab}
+                  onTabChange={setActiveTab}
                 />
               </motion.div>
             ) : (
-              /* Desktop: Traditional Navigation + Content */
               <>
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -142,8 +168,8 @@ const Profile: React.FC = () => {
                   transition={{ duration: 0.6, delay: 0.1 }}
                 >
                   <ProfileNavigation
-                    activeSection={activeSection}
-                    onSectionChange={setActiveSection}
+                    activeTab={activeTab}
+                    onTabChange={setActiveTab}
                   />
                 </motion.div>
                 
@@ -157,11 +183,11 @@ const Profile: React.FC = () => {
                 </motion.div>
               </>
             )}
-          </div>
-        </main>
-        
-        <Footer />
-      </div>
+          </ProfileErrorBoundary>
+        </div>
+      </DashboardBackground>
+      
+      <Footer />
     </>
   );
 };

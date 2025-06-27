@@ -1,110 +1,68 @@
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
-import { useState, useEffect, useCallback } from 'react';
-import { 
-  crossModuleRecommendationsService, 
-  SmartRecommendation 
-} from '@/services/CrossModuleRecommendationsService';
-import { useAuth } from '@/hooks/useAuth';
-import { useDataSharing } from '@/hooks/useDataSharing';
+// Types
+import { useAuth } from '@/hooks/auth';
 
-export const useCrossModuleRecommendations = (currentModule: string) => {
+interface Recommendation {
+  id: string;
+  title: string;
+  description: string;
+  module: string;
+  link: string;
+}
+
+interface CrossModuleRecommendationsState {
+  recommendations: Recommendation[] | null;
+  isLoading: boolean;
+  error: string | null;
+}
+
+export const useCrossModuleRecommendations = () => {
   const { user } = useAuth();
-  const { getAllData } = useDataSharing(currentModule);
-  const [recommendations, setRecommendations] = useState<SmartRecommendation[]>([]);
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [state, setState] = useState<CrossModuleRecommendationsState>({
+    recommendations: null,
+    isLoading: true,
+    error: null,
+  });
 
-  // Generate recommendations based on current context
-  const generateRecommendations = useCallback(async () => {
-    if (!user) return;
-
-    setIsGenerating(true);
-    try {
-      const allData = getAllData();
-      
-      // Convert data to activity format for recommendation engine
-      const recentActivity = [
-        ...((allData.shifts || []).map((shift: any) => ({ ...shift, type: 'shift' }))),
-        ...((allData.vehicles || []).map((vehicle: any) => ({ ...vehicle, type: 'vehicle' }))),
-        ...(allData.analytics ? [{ ...allData.analytics, type: 'analytics' }] : []),
-        ...(allData.language ? [{ ...allData.language, type: 'language' }] : [])
-      ];
-
-      const context = {
-        userId: user.id,
-        currentModule,
-        timestamp: new Date(),
-        userPreferences: {}, // Could be loaded from user settings
-        recentActivity
-      };
-
-      const newRecommendations = await crossModuleRecommendationsService.generateRecommendations(context);
-      setRecommendations(newRecommendations);
-    } catch (error) {
-      console.error('Error generating recommendations:', error);
-    } finally {
-      setIsGenerating(false);
-    }
-  }, [user, currentModule, getAllData]);
-
-  // Get recommendations for current module
-  const getModuleRecommendations = useCallback(() => {
-    if (!user) return [];
-    return crossModuleRecommendationsService.getRecommendationsByModule(user.id, currentModule);
-  }, [user, currentModule]);
-
-  // Dismiss recommendation
-  const dismissRecommendation = useCallback((recommendationId: string) => {
-    if (!user) return;
-    
-    crossModuleRecommendationsService.dismissRecommendation(user.id, recommendationId);
-    setRecommendations(prev => prev.filter(rec => rec.id !== recommendationId));
-  }, [user]);
-
-  // Execute recommendation action
-  const executeRecommendation = useCallback((recommendation: SmartRecommendation) => {
-    if (!recommendation.action) return;
-
-    // Emit event for other components to handle
-    window.dispatchEvent(new CustomEvent('execute-recommendation', {
-      detail: {
-        type: recommendation.action.type,
-        payload: recommendation.action.payload,
-        sourceModule: recommendation.sourceModules[0],
-        targetModule: recommendation.targetModule
-      }
-    }));
-
-    // Optionally dismiss after execution
-    dismissRecommendation(recommendation.id);
-  }, [dismissRecommendation]);
-
-  // Auto-generate recommendations when data changes
   useEffect(() => {
-    const timer = setTimeout(() => {
-      generateRecommendations();
-    }, 2000); // Delay to avoid excessive generation
+    const fetchRecommendations = async () => {
+      if (!user) return;
 
-    return () => clearTimeout(timer);
-  }, [generateRecommendations]);
+      setState(prevState => ({ ...prevState, isLoading: true, error: null }));
 
-  // Cleanup expired recommendations periodically
-  useEffect(() => {
-    const interval = setInterval(() => {
-      crossModuleRecommendationsService.cleanupExpiredRecommendations();
-      if (user) {
-        setRecommendations(crossModuleRecommendationsService.getRecommendations(user.id));
+      try {
+        // Fetch recommendations from Supabase table
+        const { data, error } = await supabase
+          .from('cross_module_recommendations')
+          .select('*');
+
+        if (error) {
+          throw error;
+        }
+
+        setState(prevState => ({
+          ...prevState,
+          recommendations: data,
+          isLoading: false,
+        }));
+      } catch (error: any) {
+        console.error('Error fetching cross-module recommendations:', error);
+        setState(prevState => ({
+          ...prevState,
+          error: error.message || 'Chyba při načítání doporučení',
+          isLoading: false,
+        }));
       }
-    }, 5 * 60 * 1000); // Every 5 minutes
+    };
 
-    return () => clearInterval(interval);
+    fetchRecommendations();
   }, [user]);
 
   return {
-    recommendations,
-    isGenerating,
-    generateRecommendations,
-    getModuleRecommendations,
-    dismissRecommendation,
-    executeRecommendation
+    ...state,
   };
 };
+

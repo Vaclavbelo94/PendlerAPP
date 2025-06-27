@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, User, Briefcase, Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -8,6 +8,7 @@ import ProfileOverview from '../ProfileOverview';
 import ProfileWorkData from '../ProfileWorkData';
 import ProfileSubscription from '../subscription/ProfileSubscription';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/hooks/auth';
 
 interface ProfileMobileCarouselProps {
   activeTab: string;
@@ -19,6 +20,8 @@ export const ProfileMobileCarousel: React.FC<ProfileMobileCarouselProps> = ({
   onTabChange
 }) => {
   const { t } = useTranslation('profile');
+  const { unifiedUser } = useAuth();
+  const [isEditing, setIsEditing] = useState(false);
 
   const tabs = [
     { id: 'overview', label: t('overview'), icon: User },
@@ -46,16 +49,34 @@ export const ProfileMobileCarousel: React.FC<ProfileMobileCarouselProps> = ({
     onTabChange(tabs[nextIndex].id);
   };
 
+  const handleEdit = () => setIsEditing(true);
+  const handleSave = () => setIsEditing(false);
+  const handleCancel = () => setIsEditing(false);
+
   const renderTabContent = () => {
     switch (activeTab) {
       case 'overview':
-        return <ProfileOverview />;
+        return (
+          <ProfileOverview 
+            onEdit={handleEdit}
+            onSave={handleSave}
+            onCancel={handleCancel}
+            isEditing={isEditing}
+          />
+        );
       case 'workData':
         return <ProfileWorkData />;
       case 'subscription':
-        return <ProfileSubscription />;
+        return <ProfileSubscription isPremium={unifiedUser?.isPremium || false} />;
       default:
-        return <ProfileOverview />;
+        return (
+          <ProfileOverview 
+            onEdit={handleEdit}
+            onSave={handleSave}
+            onCancel={handleCancel}
+            isEditing={isEditing}
+          />
+        );
     }
   };
 

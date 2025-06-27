@@ -1,236 +1,165 @@
-
-import { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '@/hooks/useAuth';
-import { useOfflineStatus } from '@/hooks/useOfflineStatus';
-import { getAllData, deleteItemById, saveData } from '@/utils/offlineStorage';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from '@/hooks/use-toast';
-import { useSyncErrorHandler } from '@/hooks/useSyncErrorHandler';
+import { useAuth } from '@/hooks/auth';
 
-export interface SyncQueueItem {
+interface SyncQueueItem {
   id: string;
-  entity_type: string;
-  entity_id: string;
-  action: 'INSERT' | 'UPDATE' | 'DELETE';
+  operation: 'create' | 'update' | 'delete';
+  table: string;
   data: any;
-  user_id: string;
-  created_at: string;
-  retry_count: number;
-  last_attempt?: string;
+  userId: string;
+  createdAt: string;
+}
+
+interface SyncQueueState {
+  queue: SyncQueueItem[];
+  isSyncing: boolean;
+  error: string | null;
 }
 
 export const useSyncQueue = () => {
   const { user } = useAuth();
-  const { isOffline } = useOfflineStatus();
-  const { addErrorFromException } = useSyncErrorHandler();
-  const [queueItems, setQueueItems] = useState<SyncQueueItem[]>([]);
-  const [isSyncing, setIsSyncing] = useState(false);
+  const [state, setState] = useState<SyncQueueState>({
+    queue: [],
+    isSyncing: false,
+    error: null,
+  });
 
-  // Load queue items
-  const loadQueueItems = useCallback(async () => {
+  useEffect(() => {
+    const loadQueue = async () => {
+      if (!user) return;
+
+      try {
+        const { data, error } = await supabase
+          .from('sync_queue')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: true });
+
+        if (error) {
+          throw error;
+        }
+
+        setState(prevState => ({ ...prevState, queue: data || [] }));
+      } catch (error: any) {
+        console.error('Error loading sync queue:', error);
+        setState(prevState => ({
+          ...prevState,
+          error: error.message || 'Chyba při načítání fronty synchronizace',
+        }));
+      }
+    };
+
+    loadQueue();
+  }, [user]);
+
+  const enqueue = async (
+    operation: 'create' | 'update' | 'delete',
+    table: string,
+    data: any
+  ) => {
     if (!user) return;
-    
-    try {
-      const items = await getAllData<SyncQueueItem>('syncQueue');
-      setQueueItems(items.filter(item => item.user_id === user.id));
-    } catch (error) {
-      console.error('Error loading sync queue:', error);
-      addErrorFromException(error, 'syncQueue', undefined, 'Chyba při načítání fronty synchronizace');
-    }
-  }, [user, addErrorFromException]);
 
-  // Add item to queue
-  const addToQueue = useCallback(async (item: Omit<SyncQueueItem, 'id' | 'retry_count' | 'user_id' | 'created_at'>) => {
-    if (!user) return;
-
-    const queueItem: SyncQueueItem = {
-      ...item,
-      id: `${item.entity_type}-${item.entity_id}-${Date.now()}`,
-      user_id: user.id,
-      created_at: new Date().toISOString(),
-      retry_count: 0
+    const newItem = {
+      operation,
+      table,
+      data,
+      userId: user.id,
+      createdAt: new Date().toISOString(),
     };
 
     try {
-      await saveData('syncQueue', queueItem);
-      setQueueItems(prev => [...prev, queueItem]);
-    } catch (error) {
-      console.error('Error adding to sync queue:', error);
-      addErrorFromException(error, 'syncQueue', queueItem.id, 'Chyba při přidávání do fronty synchronizace');
-    }
-  }, [user, addErrorFromException]);
+      const { data: insertedData, error } = await supabase
+        .from('sync_queue')
+        .insert({
+          operation: newItem.operation,
+          table: newItem.table,
+          data: newItem.data,
+          user_id: newItem.userId,
+        })
+        .select('*')
+        .single();
 
-  // Process single queue item
-  const processSyncItem = async (item: SyncQueueItem): Promise<boolean> => {
-    try {
-      let success = false;
-      
-      switch (item.entity_type) {
-        case 'shifts':
-          if (item.action === 'INSERT') {
-            const { error } = await supabase
-              .from('shifts')
-              .insert(item.data);
-            if (error) throw error;
-            success = true;
-          } else if (item.action === 'UPDATE') {
-            const { error } = await supabase
-              .from('shifts')
-              .update(item.data)
-              .eq('id', item.entity_id)
-              .eq('user_id', user?.id);
-            if (error) throw error;
-            success = true;
-          } else if (item.action === 'DELETE') {
-            const { error } = await supabase
-              .from('shifts')
-              .delete()
-              .eq('id', item.entity_id)
-              .eq('user_id', user?.id);
-            if (error) throw error;
-            success = true;
-          }
-          break;
-
-        case 'vehicles':
-          if (item.action === 'INSERT') {
-            const { error } = await supabase
-              .from('vehicles')
-              .insert(item.data);
-            if (error) throw error;
-            success = true;
-          } else if (item.action === 'UPDATE') {
-            const { error } = await supabase
-              .from('vehicles')
-              .update(item.data)
-              .eq('id', item.entity_id)
-              .eq('user_id', user?.id);
-            if (error) throw error;
-            success = true;
-          } else if (item.action === 'DELETE') {
-            const { error } = await supabase
-              .from('vehicles')
-              .delete()
-              .eq('id', item.entity_id)
-              .eq('user_id', user?.id);
-            if (error) throw error;
-            success = true;
-          }
-          break;
-
-        case 'calculation_history':
-          if (item.action === 'INSERT') {
-            const { error } = await supabase
-              .from('calculation_history')
-              .insert(item.data);
-            if (error) throw error;
-            success = true;
-          }
-          break;
+      if (error) {
+        throw error;
       }
 
-      return success;
-    } catch (error) {
-      console.error('Error processing sync item:', error);
-      addErrorFromException(
-        error, 
-        item.entity_type, 
-        item.entity_id, 
-        `Chyba při synchronizaci ${item.entity_type}`
-      );
-      return false;
+      setState(prevState => ({
+        ...prevState,
+        queue: [...prevState.queue, insertedData],
+      }));
+    } catch (error: any) {
+      console.error('Error enqueuing item:', error);
+      setState(prevState => ({
+        ...prevState,
+        error: error.message || 'Chyba při zařazování položky do fronty',
+      }));
     }
   };
 
-  // Process entire queue
-  const processQueue = useCallback(async () => {
-    if (!user || isOffline || queueItems.length === 0) return;
+  const sync = async () => {
+    if (!user || state.isSyncing) return;
 
-    setIsSyncing(true);
-    const processed: string[] = [];
-    const failed: SyncQueueItem[] = [];
+    setState(prevState => ({ ...prevState, isSyncing: true, error: null }));
 
-    for (const item of queueItems) {
-      const success = await processSyncItem(item);
-      
-      if (success) {
-        processed.push(item.id);
+    try {
+      const queueCopy = [...state.queue];
+      for (const item of queueCopy) {
         try {
-          await deleteItemById('syncQueue', item.id);
-        } catch (error) {
-          console.error('Error removing processed item:', error);
-        }
-      } else {
-        // Increment retry count
-        const updatedItem = {
-          ...item,
-          retry_count: item.retry_count + 1,
-          last_attempt: new Date().toISOString()
-        };
-        
-        if (updatedItem.retry_count < 3) {
-          try {
-            await saveData('syncQueue', updatedItem);
-            failed.push(updatedItem);
-          } catch (error) {
-            console.error('Error updating failed item:', error);
+          switch (item.operation) {
+            case 'create':
+              await supabase.from(item.table).insert(item.data);
+              break;
+            case 'update':
+              await supabase.from(item.table).update(item.data).eq('id', item.data.id);
+              break;
+            case 'delete':
+              await supabase.from(item.table).delete().eq('id', item.data.id);
+              break;
+            default:
+              console.warn('Unknown operation:', item.operation);
           }
-        } else {
-          // Max retries reached, remove from queue
-          try {
-            await deleteItemById('syncQueue', item.id);
-            addErrorFromException(
-              new Error('Maximální počet pokusů dosažen'),
-              item.entity_type,
-              item.entity_id,
-              `Synchronizace ${item.entity_type} selhala po 3 pokusech`
-            );
-          } catch (error) {
-            console.error('Error removing failed item:', error);
+
+          // Remove item from queue after successful sync
+          const { error: deleteError } = await supabase
+            .from('sync_queue')
+            .delete()
+            .eq('id', item.id);
+
+          if (deleteError) {
+            throw deleteError;
           }
+
+          setState(prevState => ({
+            ...prevState,
+            queue: prevState.queue.filter(q => q.id !== item.id),
+          }));
+        } catch (syncError: any) {
+          console.error(`Error syncing item ${item.id}:`, syncError);
+          setState(prevState => ({
+            ...prevState,
+            error:
+              syncError.message ||
+              `Chyba při synchronizaci položky ${item.id}`,
+          }));
+          break; // Stop syncing on first error
         }
       }
+
+      setState(prevState => ({ ...prevState, isSyncing: false }));
+    } catch (error: any) {
+      console.error('Error during sync:', error);
+      setState(prevState => ({
+        ...prevState,
+        isSyncing: false,
+        error: error.message || 'Chyba během synchronizace',
+      }));
     }
-
-    // Update local state
-    setQueueItems(failed);
-    
-    if (processed.length > 0) {
-      toast({
-        title: "Synchronizace dokončena",
-        description: `Synchronizováno ${processed.length} položek`
-      });
-    }
-
-    if (failed.length > 0) {
-      toast({
-        title: "Částečná synchronizace",
-        description: `${failed.length} položek se nepodařilo synchronizovat`,
-        variant: "destructive"
-      });
-    }
-
-    setIsSyncing(false);
-  }, [user, isOffline, queueItems, addErrorFromException]);
-
-  // Auto-sync when coming online
-  useEffect(() => {
-    if (!isOffline && queueItems.length > 0) {
-      processQueue();
-    }
-  }, [isOffline, processQueue, queueItems.length]);
-
-  // Load queue on mount
-  useEffect(() => {
-    loadQueueItems();
-  }, [loadQueueItems]);
+  };
 
   return {
-    queueItems,
-    isSyncing,
-    addToQueue,
-    processQueue,
-    loadQueueItems,
-    queueCount: queueItems.length
+    ...state,
+    enqueue,
+    sync,
   };
 };

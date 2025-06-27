@@ -7,9 +7,23 @@ export interface AuthError {
   code?: string;
 }
 
+export interface UnifiedUser {
+  id: string;
+  email: string | null;
+  username?: string;
+  role: 'user' | 'admin' | 'dhl_employee';
+  status: 'active' | 'setup_required';
+  setupRequired: boolean;
+  isAdmin: boolean;
+  isDHLEmployee: boolean;
+  isPremium: boolean;
+  premiumExpiry?: string;
+}
+
 export interface AuthContextType {
   user: User | null;
   session: Session | null;
+  unifiedUser: UnifiedUser | null;
   isLoading: boolean;
   isAdmin: boolean;
   isPremium: boolean;

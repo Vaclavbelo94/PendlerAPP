@@ -1,8 +1,7 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import { useAuth } from '@/hooks/auth';
 import { useTranslation } from 'react-i18next';
 
 interface WorkData {

@@ -1,8 +1,9 @@
-
-import React, { useState } from 'react';
+import React from 'react';
+import { Helmet } from 'react-helmet';
+import { motion } from 'framer-motion';
+import { useAuth } from '@/hooks/auth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/hooks/useAuth";
 import { Crown, Star, Check, Zap, Shield, Rocket, Loader2 } from "lucide-react";
 import { useTranslation } from 'react-i18next';
 import { useStripePayments, PaymentPeriod } from '@/hooks/useStripePayments';

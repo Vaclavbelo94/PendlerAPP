@@ -1,11 +1,10 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ShieldCheck } from "lucide-react";
 import AdminLoginDialog from "@/components/admin/AdminLoginDialog";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/auth";
 import { SectionHeader } from "@/components/ui/section-header";
 import { InfoCard } from "@/components/ui/design-system/InfoCard";
 import { AdminLayout } from "@/components/admin/core/AdminLayout";
@@ -20,6 +19,7 @@ import { PasswordResetPanel } from "@/components/admin/PasswordResetPanel";
 import SystemMonitoringPanel from "@/components/admin/monitoring/SystemMonitoringPanel";
 import DatabasePanel from "@/components/admin/database/DatabasePanel";
 import AdminNavigation from "@/components/admin/AdminNavigation";
+import { Truck, Shield } from "lucide-react";
 
 const AdminContent = () => {
   const { currentSection, setCurrentSection } = useAdminContext();

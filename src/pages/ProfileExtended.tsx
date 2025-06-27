@@ -1,8 +1,7 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -20,7 +19,8 @@ const ProfileExtended = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, isAdmin } = useAuth();
+  const { user, unifiedUser } = useAuth();
+  const [isEditing, setIsEditing] = useState(false);
   
   // Get tab from URL query parameters
   const queryParams = new URLSearchParams(location.search);
@@ -36,14 +36,17 @@ const ProfileExtended = () => {
   }, [tabParam]);
   
   const isOwnProfile = !userId || userId === user?.id;
-  const showAdminControls = isAdmin && !isOwnProfile;
+  const showAdminControls = unifiedUser?.isAdmin && !isOwnProfile;
   
   if (!user && !userId) {
     navigate("/login");
     return null;
   }
 
-  // Update URL when tab changes
+  const handleEdit = () => setIsEditing(true);
+  const handleSave = () => setIsEditing(false);
+  const handleCancel = () => setIsEditing(false);
+
   const handleTabChange = (value: string) => {
     setActiveTab(value);
     navigate(`/profile-extended${value !== "overview" ? `?tab=${value}` : ""}`, { replace: true });
@@ -128,13 +131,18 @@ const ProfileExtended = () => {
 
                   <Separator />
                   
-                  <ProfileOverview userId={userId} />
+                  <ProfileOverview 
+                    onEdit={handleEdit}
+                    onSave={handleSave}
+                    onCancel={handleCancel}
+                    isEditing={isEditing}
+                  />
                 </CardContent>
               </Card>
             </div>
 
             <div>
-              <SocialLinks userId={userId} readOnly={!isOwnProfile} />
+              <SocialLinks />
             </div>
           </div>
         </TabsContent>
@@ -146,11 +154,11 @@ const ProfileExtended = () => {
         )}
         
         <TabsContent value="education">
-          <EducationCertificates userId={userId} readOnly={!isOwnProfile} />
+          <EducationCertificates />
         </TabsContent>
         
         <TabsContent value="work">
-          <WorkPreferences userId={userId} readOnly={!isOwnProfile} />
+          <WorkPreferences />
         </TabsContent>
       </Tabs>
     </div>

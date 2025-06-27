@@ -1,212 +1,141 @@
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { Colors } from '@/types/appearance';
+import { useAuth } from '@/hooks/auth';
 
-import { useState, useEffect, useCallback, useMemo } from "react";
-import { toast } from "sonner";
-import { useTheme } from "next-themes";
-import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
+interface AppearanceSettingsState {
+  theme: 'light' | 'dark' | 'system';
+  primaryColor: string;
+  accentColor: string;
+  isLoading: boolean;
+  error: string | null;
+}
 
-export const useAppearanceSettings = (
-  initialDarkMode = false,
-  initialColorScheme = "purple",
-  initialCompactMode = false,
-  onSave?: (settings: {
-    darkMode: boolean;
-    colorScheme: string;
-    compactMode: boolean;
-  }) => void
-) => {
-  const { theme, setTheme } = useTheme();
+const defaultColors: Colors = {
+  light: {
+    primary: '#0ea5e9',
+    secondary: '#64748b',
+    background: '#f9fafb',
+    foreground: '#020617',
+    card: '#ffffff',
+    cardForeground: '#020617',
+    muted: '#f3f4f6',
+    mutedForeground: '#64748b',
+    popover: '#ffffff',
+    popoverForeground: '#020617',
+    border: '#e5e7eb',
+    input: '#e5e7eb',
+    ring: '#0ea5e9',
+  },
+  dark: {
+    primary: '#22d3ee',
+    secondary: '#94a3b8',
+    background: '#0f172a',
+    foreground: '#cbd5e1',
+    card: '#1e293b',
+    cardForeground: '#cbd5e1',
+    muted: '#334155',
+    mutedForeground: '#94a3b8',
+    popover: '#1e293b',
+    popoverForeground: '#cbd5e1',
+    border: '#475569',
+    input: '#475569',
+    ring: '#22d3ee',
+  },
+};
+
+export const useAppearanceSettings = () => {
   const { user } = useAuth();
-  
-  // Add initialization state to prevent cycles
-  const [isInitializing, setIsInitializing] = useState(true);
-  const [hasLoadedFromDB, setHasLoadedFromDB] = useState(false);
-  
-  const [darkMode, setDarkMode] = useState(initialDarkMode);
-  const [colorScheme, setColorScheme] = useState(initialColorScheme);
-  const [compactMode, setCompactMode] = useState(initialCompactMode);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [isChangingTheme, setIsChangingTheme] = useState(false);
+  const [state, setState] = useState<AppearanceSettingsState>({
+    theme: 'system',
+    primaryColor: defaultColors.light.primary,
+    accentColor: defaultColors.light.primary,
+    isLoading: true,
+    error: null,
+  });
 
-  // Debug logging
   useEffect(() => {
-    console.log('AppearanceSettings: State change', { 
-      user: !!user, 
-      isLoading, 
-      isInitializing,
-      hasLoadedFromDB,
-      darkMode, 
-      colorScheme, 
-      compactMode,
-      error 
-    });
-  }, [user, isLoading, isInitializing, hasLoadedFromDB, darkMode, colorScheme, compactMode, error]);
+    const loadSettings = async () => {
+      if (!user) return;
 
-  // Memoized settings object
-  const currentSettings = useMemo(() => ({
-    darkMode,
-    colorScheme,
-    compactMode
-  }), [darkMode, colorScheme, compactMode]);
+      setState(prevState => ({ ...prevState, isLoading: true, error: null }));
 
-  // Load settings from database when component mounts
-  const loadAppearanceSettings = useCallback(async () => {
-    if (!user) {
-      setIsLoading(false);
-      setIsInitializing(false);
-      return;
-    }
-    
-    console.log('AppearanceSettings: Loading settings for user', user.id);
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      const { data, error: dbError } = await supabase
-        .from('user_appearance_settings')
-        .select('*')
-        .eq('user_id', user.id)
-        .maybeSingle();
-      
-      if (dbError && dbError.code !== 'PGRST116') {
-        console.error('AppearanceSettings: Database error:', dbError);
-        throw dbError;
-      }
+      try {
+        const { data, error } = await supabase
+          .from('user_settings')
+          .select('theme, primary_color, accent_color')
+          .eq('user_id', user.id)
+          .single();
 
-      if (data) {
-        console.log('AppearanceSettings: Loaded settings', data);
-        
-        // Set all states at once to prevent multiple re-renders
-        setDarkMode(data.dark_mode);
-        setColorScheme(data.color_scheme);
-        setCompactMode(data.compact_mode);
-        
-        // Apply theme settings from database
-        const newTheme = data.dark_mode ? 'dark' : 'light';
-        if (theme !== newTheme) {
-          setTheme(newTheme);
+        if (error) {
+          throw error;
         }
-        
-        setHasLoadedFromDB(true);
-      } else {
-        console.log('AppearanceSettings: No settings found, using defaults');
-        setHasLoadedFromDB(true);
-      }
-    } catch (error) {
-      console.error('AppearanceSettings: Error loading settings:', error);
-      setError("Nepodařilo se načíst nastavení vzhledu");
-      toast.error("Nepodařilo se načíst nastavení vzhledu");
-    } finally {
-      setIsLoading(false);
-      // Small delay to ensure smooth initialization
-      setTimeout(() => {
-        setIsInitializing(false);
-      }, 100);
-    }
-  }, [user, setTheme, theme]);
 
-  useEffect(() => {
-    loadAppearanceSettings();
-  }, [loadAppearanceSettings]);
-  
-  // Handle manual dark mode changes (from user interactions)
-  const handleDarkModeChange = useCallback((newDarkMode: boolean) => {
-    if (isInitializing || isChangingTheme) return;
-    
-    console.log('AppearanceSettings: Manual dark mode change', { newDarkMode });
-    setDarkMode(newDarkMode);
-    setIsChangingTheme(true);
-    
-    const newTheme = newDarkMode ? 'dark' : 'light';
-    setTheme(newTheme);
-    
-    // Reset changing theme state after a short delay
-    setTimeout(() => {
-      setIsChangingTheme(false);
-    }, 300);
-  }, [isInitializing, isChangingTheme, setTheme]);
-  
-  const handleSave = useCallback(async () => {
-    if (!user) {
-      console.warn('AppearanceSettings: No user for save operation');
-      return;
-    }
-    
-    console.log('AppearanceSettings: Saving settings', currentSettings);
-    setIsLoading(true);
-    setError(null);
-    
+        setState(prevState => ({
+          ...prevState,
+          theme: data?.theme || 'system',
+          primaryColor: data?.primary_color || defaultColors.light.primary,
+          accentColor: data?.accent_color || defaultColors.light.primary,
+          isLoading: false,
+        }));
+      } catch (error: any) {
+        console.error('Error loading appearance settings:', error);
+        setState(prevState => ({
+          ...prevState,
+          error: error.message || 'Chyba při načítání nastavení vzhledu',
+          isLoading: false,
+        }));
+      }
+    };
+
+    loadSettings();
+  }, [user]);
+
+  const saveSettings = async (newTheme: string, newPrimaryColor: string, newAccentColor: string) => {
+    if (!user) return false;
+
+    setState(prevState => ({ ...prevState, isLoading: true, error: null }));
+
     try {
-      // Check if settings already exist
-      const { data: existingSettings, error: checkError } = await supabase
-        .from('user_appearance_settings')
-        .select('id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-      
-      if (checkError && checkError.code !== 'PGRST116') {
-        throw checkError;
+      const { error } = await supabase
+        .from('user_settings')
+        .upsert({
+          user_id: user.id,
+          theme: newTheme,
+          primary_color: newPrimaryColor,
+          accent_color: newAccentColor,
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'user_id' });
+
+      if (error) {
+        throw error;
       }
 
-      const settingsData = {
-        user_id: user.id,
-        dark_mode: darkMode,
-        color_scheme: colorScheme,
-        compact_mode: compactMode,
-        updated_at: new Date().toISOString()
-      };
+      setState(prevState => ({
+        ...prevState,
+        theme: newTheme as 'light' | 'dark' | 'system',
+        primaryColor: newPrimaryColor,
+        accentColor: newAccentColor,
+        isLoading: false,
+      }));
 
-      let result;
-      if (existingSettings) {
-        // Update existing settings
-        result = await supabase
-          .from('user_appearance_settings')
-          .update(settingsData)
-          .eq('user_id', user.id);
-      } else {
-        // Create new settings
-        result = await supabase
-          .from('user_appearance_settings')
-          .insert(settingsData);
-      }
-
-      if (result.error) {
-        throw result.error;
-      }
-
-      console.log('AppearanceSettings: Settings saved successfully');
-      toast.success("Nastavení vzhledu bylo uloženo");
-      
-      if (onSave) {
-        onSave(currentSettings);
-      }
-    } catch (error) {
-      console.error('AppearanceSettings: Error saving settings:', error);
-      setError("Nepodařilo se uložit nastavení vzhledu");
-      toast.error("Nepodařilo se uložit nastavení vzhledu");
-    } finally {
-      setIsLoading(false);
+      toast.success('Nastavení vzhledu uloženo!');
+      return true;
+    } catch (error: any) {
+      console.error('Error saving appearance settings:', error);
+      setState(prevState => ({
+        ...prevState,
+        error: error.message || 'Chyba při ukládání nastavení vzhledu',
+        isLoading: false,
+      }));
+      toast.error('Chyba při ukládání nastavení vzhledu.');
+      return false;
     }
-  }, [user, currentSettings, darkMode, colorScheme, compactMode, onSave]);
-
-  const handleColorSchemeChange = useCallback((value: string) => {
-    if (isInitializing) return;
-    
-    console.log('AppearanceSettings: Color scheme changing to', value);
-    setColorScheme(value);
-  }, [isInitializing]);
+  };
 
   return {
-    darkMode,
-    setDarkMode: handleDarkModeChange,
-    colorScheme,
-    handleColorSchemeChange,
-    compactMode,
-    setCompactMode,
-    isLoading,
-    isChangingTheme,
-    error,
-    handleSave
+    ...state,
+    saveSettings,
   };
 };

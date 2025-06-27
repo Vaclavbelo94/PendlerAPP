@@ -1,243 +1,107 @@
-
-import { useState, useCallback } from 'react';
-import { useAuth } from '@/hooks/useAuth';
-import { useStandardizedToast } from '@/hooks/useStandardizedToast';
-import { ConflictData, ConflictResolution, advancedConflictResolver } from '@/components/conflicts/ConflictResolutionService';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/auth';
+
+interface Conflict {
+  id: string;
+  table_name: string;
+  record_id: string;
+  user_id: string;
+  created_at: string;
+  resolved: boolean;
+  resolution_data: any;
+}
+
+interface ConflictManagerState {
+  conflicts: Conflict[] | null;
+  isLoading: boolean;
+  error: string | null;
+}
 
 export const useConflictManager = () => {
   const { user } = useAuth();
-  const { success, error: showError } = useStandardizedToast();
-  const [conflicts, setConflicts] = useState<ConflictData[]>([]);
-  const [isResolvingConflicts, setIsResolvingConflicts] = useState(false);
-  const [showConflictDialog, setShowConflictDialog] = useState(false);
+  const [state, setState] = useState<ConflictManagerState>({
+    conflicts: null,
+    isLoading: true,
+    error: null,
+  });
 
-  const detectAndShowConflicts = useCallback(async (
-    localData: any[],
-    remoteData: any[],
-    entityType: string
-  ) => {
+  useEffect(() => {
+    const fetchConflicts = async () => {
+      if (!user) return;
+
+      setState(prevState => ({ ...prevState, isLoading: true, error: null }));
+
+      try {
+        const { data, error } = await supabase
+          .from('conflicts')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('resolved', false);
+
+        if (error) {
+          throw error;
+        }
+
+        setState(prevState => ({
+          ...prevState,
+          conflicts: data,
+          isLoading: false,
+        }));
+      } catch (error: any) {
+        console.error('Error fetching conflicts:', error);
+        setState(prevState => ({
+          ...prevState,
+          error: error.message || 'Chyba při načítání konfliktů',
+          isLoading: false,
+        }));
+      }
+    };
+
+    fetchConflicts();
+  }, [user]);
+
+  const resolveConflict = async (conflictId: string, resolutionData: any) => {
+    if (!user) return false;
+
+    setState(prevState => ({ ...prevState, isLoading: true, error: null }));
+
     try {
-      const detectedConflicts = await advancedConflictResolver.detectConflicts(
-        localData,
-        remoteData,
-        entityType
-      );
+      const { error } = await supabase
+        .from('conflicts')
+        .update({
+          resolved: true,
+          resolution_data: resolutionData,
+        })
+        .eq('id', conflictId);
 
-      if (detectedConflicts.length > 0) {
-        setConflicts(detectedConflicts);
-        setShowConflictDialog(true);
-        return true; // Has conflicts
+      if (error) {
+        throw error;
       }
 
-      return false; // No conflicts
-    } catch (error) {
-      console.error('Error detecting conflicts:', error);
-      showError('Chyba', 'Nepodařilo se detekovat konflikty');
+      // Update local state
+      setState(prevState => ({
+        ...prevState,
+        conflicts: prevState.conflicts?.map(conflict =>
+          conflict.id === conflictId ? { ...conflict, resolved: true, resolution_data: resolutionData } : conflict
+        ) || null,
+        isLoading: false,
+      }));
+
+      return true;
+    } catch (error: any) {
+      console.error('Error resolving conflict:', error);
+      setState(prevState => ({
+        ...prevState,
+        error: error.message || 'Chyba při řešení konfliktu',
+        isLoading: false,
+      }));
       return false;
     }
-  }, [showError]);
-
-  const resolveConflicts = useCallback(async (
-    resolutions: Map<string, ConflictResolution>
-  ): Promise<void> => {
-    if (!user) return;
-
-    setIsResolvingConflicts(true);
-    
-    try {
-      const resolvedItems: any[] = [];
-      
-      for (const [conflictId, resolution] of resolutions.entries()) {
-        const conflict = conflicts.find(c => c.id === conflictId);
-        if (!conflict) continue;
-
-        let resolvedItem: any;
-
-        switch (resolution.action) {
-          case 'keep_local':
-            resolvedItem = conflict.localItem;
-            break;
-          case 'keep_remote':
-            resolvedItem = conflict.remoteItem;
-            break;
-          case 'merge':
-            resolvedItem = await performMerge(conflict, resolution);
-            break;
-          case 'create_duplicate':
-            // Create duplicate with suffix
-            const duplicateItem = {
-              ...conflict.localItem,
-              id: `${conflict.localItem.id}_duplicate_${Date.now()}`,
-              notes: `${conflict.localItem.notes || ''}\n\n[Duplikát kvůli konfliktu]`
-            };
-            resolvedItems.push(duplicateItem);
-            resolvedItem = conflict.remoteItem;
-            break;
-          default:
-            resolvedItem = conflict.localItem;
-        }
-
-        resolvedItems.push(resolvedItem);
-      }
-
-      // Apply resolutions to database
-      await applyResolutionsToDatabase(resolvedItems, conflicts[0]?.entityType);
-      
-      success('Konflikty vyřešeny', `Úspěšně vyřešeno ${resolutions.size} konfliktů`);
-      setShowConflictDialog(false);
-      setConflicts([]);
-      
-    } catch (error) {
-      console.error('Error resolving conflicts:', error);
-      showError('Chyba při řešení', 'Nepodařilo se vyřešit konflikty');
-    } finally {
-      setIsResolvingConflicts(false);
-    }
-  }, [user, conflicts, success, showError]);
-
-  const performMerge = async (
-    conflict: ConflictData, 
-    resolution: ConflictResolution
-  ): Promise<any> => {
-    const merged = { ...conflict.localItem };
-    
-    if (resolution.selectedFields) {
-      for (const [field, choice] of Object.entries(resolution.selectedFields)) {
-        switch (choice) {
-          case 'remote':
-            merged[field] = conflict.remoteItem[field];
-            break;
-          case 'merged':
-            if (typeof conflict.localItem[field] === 'string' && 
-                typeof conflict.remoteItem[field] === 'string') {
-              merged[field] = `${conflict.localItem[field]}\n\n[Sloučeno]: ${conflict.remoteItem[field]}`;
-            } else {
-              merged[field] = conflict.localItem[field];
-            }
-            break;
-          case 'local':
-          default:
-            // Keep local value (already in merged object)
-            break;
-        }
-      }
-    }
-    
-    merged.updated_at = new Date().toISOString();
-    return merged;
   };
-
-  const applyResolutionsToDatabase = async (
-    resolvedItems: any[],
-    entityType: string
-  ): Promise<void> => {
-    if (!user) return;
-
-    const updates = resolvedItems.map(item => ({
-      ...item,
-      user_id: user.id
-    }));
-
-    // Type-safe table name mapping
-    switch (entityType) {
-      case 'shifts': {
-        const { error } = await supabase
-          .from('shifts')
-          .upsert(updates, { 
-            onConflict: 'id',
-            ignoreDuplicates: false 
-          });
-        if (error) throw error;
-        break;
-      }
-      case 'vehicles': {
-        const { error } = await supabase
-          .from('vehicles')
-          .upsert(updates, { 
-            onConflict: 'id',
-            ignoreDuplicates: false 
-          });
-        if (error) throw error;
-        break;
-      }
-      case 'calculations': {
-        const { error } = await supabase
-          .from('calculation_history')
-          .upsert(updates, { 
-            onConflict: 'id',
-            ignoreDuplicates: false 
-          });
-        if (error) throw error;
-        break;
-      }
-      default:
-        throw new Error(`Unsupported entity type: ${entityType}`);
-    }
-  };
-
-  const closeConflictDialog = useCallback(() => {
-    setShowConflictDialog(false);
-    setConflicts([]);
-  }, []);
-
-  // Auto-resolve simple conflicts
-  const autoResolveSimpleConflicts = useCallback(async (
-    localData: any[],
-    remoteData: any[],
-    entityType: string
-  ): Promise<{ resolved: any[], unresolved: ConflictData[] }> => {
-    const detectedConflicts = await advancedConflictResolver.detectConflicts(
-      localData,
-      remoteData,
-      entityType
-    );
-
-    const resolved: any[] = [];
-    const unresolved: ConflictData[] = [];
-
-    for (const conflict of detectedConflicts) {
-      try {
-        const resolution = await advancedConflictResolver.resolveConflictAutomatically(conflict);
-        
-        if (resolution.action !== 'manual') {
-          let resolvedItem: any;
-          
-          switch (resolution.action) {
-            case 'keep_local':
-              resolvedItem = conflict.localItem;
-              break;
-            case 'keep_remote':
-              resolvedItem = conflict.remoteItem;
-              break;
-            case 'merge':
-              resolvedItem = await performMerge(conflict, resolution);
-              break;
-            default:
-              unresolved.push(conflict);
-              continue;
-          }
-          
-          resolved.push(resolvedItem);
-        } else {
-          unresolved.push(conflict);
-        }
-      } catch (error) {
-        console.error('Auto-resolve failed for conflict:', conflict.id, error);
-        unresolved.push(conflict);
-      }
-    }
-
-    return { resolved, unresolved };
-  }, []);
 
   return {
-    conflicts,
-    showConflictDialog,
-    isResolvingConflicts,
-    detectAndShowConflicts,
-    resolveConflicts,
-    closeConflictDialog,
-    autoResolveSimpleConflicts
+    ...state,
+    resolveConflict,
   };
 };
