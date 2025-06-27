@@ -18,12 +18,13 @@ interface AuthContextType {
   signOut: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [authError, setAuthError] = useState<string | null>(null);
   
   const {
     isAdmin,
@@ -42,13 +43,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Use the premium status from usePremiumStatus as it's more comprehensive
   const isPremium = premiumStatusPremium || authStatusPremium;
 
+  // Simplified premium activation for DHL users
   const activatePremiumForDHLUser = useCallback(async (currentUser: User) => {
     if (!isDHLEmployee(currentUser)) return;
 
     console.log('Activating premium for DHL user:', currentUser.email);
     
     try {
-      // Get current user data
       const { data: currentData, error: fetchError } = await supabase
         .from('profiles')
         .select('is_premium, premium_expiry')
@@ -60,7 +61,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      // Check if already premium and not expired
       const isCurrentlyPremium = currentData?.is_premium && 
         (!currentData?.premium_expiry || new Date(currentData.premium_expiry) > new Date());
 
@@ -71,7 +71,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      // Set premium status for 1 year for DHL employees
       const oneYearLater = new Date();
       oneYearLater.setFullYear(oneYearLater.getFullYear() + 1);
 
@@ -88,7 +87,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      // Update local state
       setAuthStatusPremium(true);
       setPremiumStatusPremium(true);
       
@@ -100,18 +98,45 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [setAuthStatusPremium, setPremiumStatusPremium]);
 
+  // Initialize auth state
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setIsLoading(false);
-      
-      // Auto-activate premium for DHL users
-      if (session?.user) {
-        activatePremiumForDHLUser(session.user);
+    let mounted = true;
+
+    const initializeAuth = async () => {
+      try {
+        console.log('Initializing auth...');
+        
+        // Get initial session
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('Error getting session:', error);
+          setAuthError(error.message);
+        }
+        
+        if (mounted) {
+          setSession(session);
+          setUser(session?.user ?? null);
+          setIsLoading(false);
+          
+          if (session?.user) {
+            console.log('User found in session:', session.user.email);
+            // Activate premium for DHL users without blocking
+            setTimeout(() => {
+              activatePremiumForDHLUser(session.user);
+            }, 100);
+          }
+        }
+      } catch (error) {
+        console.error('Error initializing auth:', error);
+        if (mounted) {
+          setAuthError('Failed to initialize authentication');
+          setIsLoading(false);
+        }
       }
-    });
+    };
+
+    initializeAuth();
 
     // Listen for auth changes
     const {
@@ -119,43 +144,63 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state changed:', event, session?.user?.email);
       
-      setSession(session);
-      setUser(session?.user ?? null);
-      setIsLoading(false);
+      if (mounted) {
+        setSession(session);
+        setUser(session?.user ?? null);
+        setIsLoading(false);
+        setAuthError(null);
 
-      if (event === 'SIGNED_IN' && session?.user) {
-        console.log('User signed in:', session.user.email);
-        
-        // Defer status loading to prevent conflicts
-        setTimeout(async () => {
-          try {
-            await refreshAdminStatus();
-            await activatePremiumForDHLUser(session.user);
-          } catch (error) {
-            console.error('Error loading user status:', error);
-          }
-        }, 100);
-      }
+        if (event === 'SIGNED_IN' && session?.user) {
+          console.log('User signed in:', session.user.email);
+          
+          // Load user status with delay to prevent conflicts
+          setTimeout(async () => {
+            try {
+              await refreshAdminStatus();
+              await activatePremiumForDHLUser(session.user);
+            } catch (error) {
+              console.error('Error loading user status:', error);
+            }
+          }, 200);
+        }
 
-      if (event === 'SIGNED_OUT') {
-        console.log('User signed out');
-        setIsAdmin(false);
-        setAuthStatusPremium(false);
-        setPremiumStatusPremium(false);
+        if (event === 'SIGNED_OUT') {
+          console.log('User signed out');
+          setIsAdmin(false);
+          setAuthStatusPremium(false);
+          setPremiumStatusPremium(false);
+        }
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, [refreshAdminStatus, setIsAdmin, setAuthStatusPremium, setPremiumStatusPremium, activatePremiumForDHLUser]);
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
   };
 
   const refreshPremiumStatus = async () => {
-    const result = await refreshAuthPremiumStatus();
-    return result;
+    try {
+      const result = await refreshAuthPremiumStatus();
+      return result;
+    } catch (error) {
+      console.error('Error refreshing premium status:', error);
+      return { isPremium: false };
+    }
   };
+
+  // Show error state if there's a critical auth error
+  if (authError && !user) {
+    console.error('Critical auth error:', authError);
+  }
 
   const value = {
     user,
@@ -173,12 +218,4 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       {children}
     </AuthContext.Provider>
   );
-}
-
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
 }
