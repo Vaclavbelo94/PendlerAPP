@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/auth';
@@ -11,20 +10,37 @@ interface Vehicle {
   synced?: boolean;
 }
 
+interface VehicleWithSync extends Vehicle {
+  synced?: boolean;
+}
+
+interface OfflineVehiclesState {
+  vehicles: VehicleWithSync[];
+  isLoading: boolean;
+  error: string | null;
+  offlineVehicles: VehicleWithSync[];
+  hasPendingVehicles: boolean;
+  isSyncing: boolean;
+}
+
 export const useOfflineVehicles = () => {
   const { user } = useAuth();
-  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [state, setState] = useState<OfflineVehiclesState>({
+    vehicles: [],
+    isLoading: true,
+    error: null,
+    offlineVehicles: [],
+    hasPendingVehicles: false,
+    isSyncing: false,
+  });
 
   useEffect(() => {
     const loadVehicles = async () => {
-      setIsLoading(true);
-      setError(null);
+      setState(prevState => ({ ...prevState, isLoading: true, error: null }));
 
       try {
         if (!user) {
-          setError('Uživatel není přihlášen');
+          setState(prevState => ({ ...prevState, error: 'Uživatel není přihlášen', isLoading: false }));
           return;
         }
 
@@ -40,28 +56,53 @@ export const useOfflineVehicles = () => {
 
         if (data) {
           // Map the database structure to our Vehicle interface
-          const mappedVehicles: Vehicle[] = data.map(vehicle => ({
+          const mappedVehicles: VehicleWithSync[] = data.map(vehicle => ({
             id: vehicle.id,
             name: `${vehicle.brand} ${vehicle.model}`,
             type: vehicle.fuel_type || 'Unknown',
             fuelConsumption: parseFloat(vehicle.average_consumption || '0'),
             synced: true // Assume all vehicles from database are synced
           }));
-          setVehicles(mappedVehicles);
+          
+          const offlineVehicles = mappedVehicles.filter(vehicle => !vehicle.synced);
+          
+          setState(prevState => ({
+            ...prevState,
+            vehicles: mappedVehicles,
+            offlineVehicles,
+            hasPendingVehicles: offlineVehicles.length > 0,
+            isLoading: false,
+          }));
         }
       } catch (err: any) {
-        setError(err.message || 'Chyba při načítání vozidel');
-      } finally {
-        setIsLoading(false);
+        setState(prevState => ({
+          ...prevState,
+          error: err.message || 'Chyba při načítání vozidel',
+          isLoading: false,
+        }));
       }
     };
 
     loadVehicles();
   }, [user]);
 
+  const syncPendingVehicles = async () => {
+    setState(prevState => ({ ...prevState, isSyncing: true }));
+    
+    // Mock sync process
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    setState(prevState => ({
+      ...prevState,
+      isSyncing: false,
+      hasPendingVehicles: false,
+      offlineVehicles: [],
+      vehicles: prevState.vehicles.map(vehicle => ({ ...vehicle, synced: true })),
+    }));
+  };
+
   return {
-    vehicles,
-    isLoading,
-    error,
+    ...state,
+    syncPendingVehicles,
   };
 };

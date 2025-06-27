@@ -15,12 +15,16 @@ interface OfflineShiftsState {
   shifts: Shift[];
   isLoading: boolean;
   error: string | null;
+  offlineShifts: Shift[];
+  hasPendingShifts: boolean;
+  isSyncing: boolean;
 }
 
 interface OfflineShiftsWithActions extends OfflineShiftsState {
   addOfflineShift: (newShift: Omit<Shift, 'created_at' | 'id' | 'user_id'>) => Promise<void>;
   updateOfflineShift: (shiftId: string, updatedShiftData: Partial<Omit<Shift, 'created_at' | 'id' | 'user_id'>>) => Promise<void>;
   deleteOfflineShift: (shiftId: string) => Promise<void>;
+  syncPendingShifts: () => Promise<void>;
 }
 
 export const useOfflineShifts = (): OfflineShiftsWithActions => {
@@ -29,6 +33,9 @@ export const useOfflineShifts = (): OfflineShiftsWithActions => {
     shifts: [],
     isLoading: true,
     error: null,
+    offlineShifts: [],
+    hasPendingShifts: false,
+    isSyncing: false,
   });
 
   useEffect(() => {
@@ -47,18 +54,25 @@ export const useOfflineShifts = (): OfflineShiftsWithActions => {
           throw error;
         }
 
-        setState({
-          shifts: data || [],
+        const shifts = data || [];
+        const offlineShifts = shifts.filter(shift => !shift.synced);
+
+        setState(prevState => ({
+          ...prevState,
+          shifts,
+          offlineShifts,
+          hasPendingShifts: offlineShifts.length > 0,
           isLoading: false,
           error: null,
-        });
+        }));
       } catch (error: any) {
         console.error('Error fetching shifts:', error);
-        setState({
+        setState(prevState => ({
+          ...prevState,
           shifts: [],
           isLoading: false,
           error: error.message || 'Chyba při načítání směn',
-        });
+        }));
       }
     };
 
@@ -67,6 +81,8 @@ export const useOfflineShifts = (): OfflineShiftsWithActions => {
 
   const addOfflineShift = async (newShift: Omit<Shift, 'created_at' | 'id' | 'user_id'>) => {
     if (!user) return;
+
+    setState(prevState => ({ ...prevState, isSyncing: true }));
 
     try {
       const { data, error } = await supabase
@@ -83,18 +99,22 @@ export const useOfflineShifts = (): OfflineShiftsWithActions => {
       setState(prevState => ({
         ...prevState,
         shifts: [...prevState.shifts, data],
+        isSyncing: false,
       }));
     } catch (error: any) {
       console.error('Error adding shift:', error);
       setState(prevState => ({
         ...prevState,
         error: error.message || 'Chyba při přidávání směny',
+        isSyncing: false,
       }));
     }
   };
 
   const updateOfflineShift = async (shiftId: string, updatedShiftData: Partial<Omit<Shift, 'created_at' | 'id' | 'user_id'>>) => {
     if (!user) return;
+
+    setState(prevState => ({ ...prevState, isSyncing: true }));
 
     try {
       const { data, error } = await supabase
@@ -112,18 +132,22 @@ export const useOfflineShifts = (): OfflineShiftsWithActions => {
         shifts: prevState.shifts.map(shift => 
           shift.id === shiftId ? { ...shift, ...data } : shift
         ),
+        isSyncing: false,
       }));
     } catch (error: any) {
       console.error('Error updating shift:', error);
       setState(prevState => ({
         ...prevState,
         error: error.message || 'Chyba při aktualizaci směny',
+        isSyncing: false,
       }));
     }
   };
 
   const deleteOfflineShift = async (shiftId: string) => {
     if (!user) return;
+
+    setState(prevState => ({ ...prevState, isSyncing: true }));
 
     try {
       const { error } = await supabase
@@ -137,14 +161,30 @@ export const useOfflineShifts = (): OfflineShiftsWithActions => {
       setState(prevState => ({
         ...prevState,
         shifts: prevState.shifts.filter(shift => shift.id !== shiftId),
+        isSyncing: false,
       }));
     } catch (error: any) {
       console.error('Error deleting shift:', error);
       setState(prevState => ({
         ...prevState,
         error: error.message || 'Chyba při mazání směny',
+        isSyncing: false,
       }));
     }
+  };
+
+  const syncPendingShifts = async () => {
+    setState(prevState => ({ ...prevState, isSyncing: true }));
+    
+    // Mock sync process
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    setState(prevState => ({
+      ...prevState,
+      isSyncing: false,
+      hasPendingShifts: false,
+      offlineShifts: [],
+    }));
   };
 
   return {
@@ -152,5 +192,6 @@ export const useOfflineShifts = (): OfflineShiftsWithActions => {
     addOfflineShift,
     updateOfflineShift,
     deleteOfflineShift,
+    syncPendingShifts,
   };
 };

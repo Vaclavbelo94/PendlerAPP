@@ -21,8 +21,16 @@ export const useDataSharing = (currentModule: string) => {
     setCrossModuleInsights(prev => prev.filter(insight => insight.id !== id));
   };
 
+  const getAllData = () => {
+    return {
+      insights: crossModuleInsights,
+      module: currentModule,
+    };
+  };
+
   return {
     crossModuleInsights,
     dismissInsight,
+    getAllData,
   };
 };
