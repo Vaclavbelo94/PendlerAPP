@@ -10,6 +10,7 @@ import MobileSidebar from './MobileSidebar';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
+import LanguageToggle from '../common/LanguageToggle';
 
 interface LayoutProps {
   children?: React.ReactNode;
@@ -92,13 +93,13 @@ const Layout: React.FC<LayoutProps> = ({ children, navbarRightContent }) => {
         </div>
       )}
 
-      {/* Mobile Layout - with hamburger menu */}
+      {/* Mobile Layout - with hamburger menu and language toggle */}
       {isMobile && (
         <div className="flex flex-col min-h-screen">
           <UnifiedNavbar 
             rightContent={
               <div className="flex items-center gap-2">
-                {navbarRightContent}
+                <LanguageToggle />
                 <button
                   onClick={toggleSidebar}
                   className="p-2 hover:bg-accent rounded-md transition-colors"
@@ -127,8 +128,8 @@ const Layout: React.FC<LayoutProps> = ({ children, navbarRightContent }) => {
             </div>
           </main>
           
-          {/* Mobile Sidebar */}
-          <MobileSidebar closeSidebar={closeSidebar} />
+          {/* Mobile Sidebar - only show when open */}
+          {sidebarOpen && <MobileSidebar closeSidebar={closeSidebar} />}
         </div>
       )}
 
