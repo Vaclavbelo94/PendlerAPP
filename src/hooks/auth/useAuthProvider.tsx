@@ -2,8 +2,8 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuthStatus } from './useAuthStatus';
-import { usePremiumStatus } from '@/hooks/usePremiumStatus';
+import { useSimpleAuthStatus } from './useSimpleAuthStatus';
+import { useDHLStatus } from './useDHLStatus';
 
 interface AuthContextType {
   user: User | null;
@@ -11,6 +11,7 @@ interface AuthContextType {
   isLoading: boolean;
   isAdmin: boolean;
   isPremium: boolean;
+  isDHL: boolean;
   refreshAdminStatus: () => Promise<void>;
   refreshPremiumStatus: () => Promise<{ isPremium: boolean; premiumExpiry?: string }>;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
@@ -25,26 +26,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [initError, setInitError] = useState<string | null>(null);
   
   console.log('AuthProvider initializing...');
   
+  // Use simplified hooks
   const {
     isAdmin,
-    isPremium: authStatusPremium,
+    isPremium,
     setIsAdmin,
-    setIsPremium: setAuthStatusPremium,
+    setIsPremium,
     refreshAdminStatus,
-    refreshPremiumStatus: refreshAuthPremiumStatus
-  } = useAuthStatus(user?.id);
+    refreshPremiumStatus
+  } = useSimpleAuthStatus(user?.id);
 
-  const {
-    isPremium: premiumStatusPremium,
-    setIsPremium: setPremiumStatusPremium,
-  } = usePremiumStatus(user, refreshAuthPremiumStatus, isAdmin);
+  const { isDHL } = useDHLStatus(user);
 
-  const isPremium = premiumStatusPremium || authStatusPremium;
-
-  // Initialize auth state - simplified version
+  // Simplified initialization with proper error handling
   useEffect(() => {
     let mounted = true;
 
@@ -56,6 +54,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         
         if (error) {
           console.error('Error getting session:', error);
+          setInitError(error.message);
         }
         
         if (mounted) {
@@ -63,44 +62,56 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setSession(session);
           setUser(session?.user ?? null);
           setIsLoading(false);
+          setInitError(null);
         }
       } catch (error) {
         console.error('Error initializing auth:', error);
         if (mounted) {
+          setInitError(error instanceof Error ? error.message : 'Unknown auth error');
           setIsLoading(false);
+          // Set fallback values to prevent app crash
+          setSession(null);
+          setUser(null);
         }
       }
     };
 
     initializeAuth();
 
-    // Listen for auth changes
+    // Set up auth state listener with error handling
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state changed:', event, session?.user?.email || 'no user');
       
       if (mounted) {
-        setSession(session);
-        setUser(session?.user ?? null);
-        setIsLoading(false);
+        try {
+          setSession(session);
+          setUser(session?.user ?? null);
+          setIsLoading(false);
+          setInitError(null);
 
-        if (event === 'SIGNED_IN' && session?.user) {
-          console.log('User signed in, loading status...');
-          setTimeout(async () => {
-            try {
-              await refreshAdminStatus();
-            } catch (error) {
-              console.error('Error loading user status:', error);
-            }
-          }, 500);
-        }
+          // Lazy load user status after successful auth
+          if (event === 'SIGNED_IN' && session?.user) {
+            console.log('User signed in, loading status...');
+            setTimeout(async () => {
+              try {
+                await refreshAdminStatus();
+              } catch (error) {
+                console.error('Error loading user status:', error);
+                // Don't crash the app, just log the error
+              }
+            }, 500);
+          }
 
-        if (event === 'SIGNED_OUT') {
-          console.log('User signed out, clearing status...');
-          setIsAdmin(false);
-          setAuthStatusPremium(false);
-          setPremiumStatusPremium(false);
+          if (event === 'SIGNED_OUT') {
+            console.log('User signed out, clearing status...');
+            setIsAdmin(false);
+            setIsPremium(false);
+          }
+        } catch (error) {
+          console.error('Error in auth state change:', error);
+          // Don't crash the app
         }
       }
     });
@@ -109,7 +120,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       mounted = false;
       subscription.unsubscribe();
     };
-  }, [refreshAdminStatus, setIsAdmin, setAuthStatusPremium, setPremiumStatusPremium]);
+  }, [refreshAdminStatus, setIsAdmin, setIsPremium]);
 
   const signIn = async (email: string, password: string) => {
     try {
@@ -119,6 +130,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
       return { error: error?.message || null };
     } catch (error) {
+      console.error('Sign in error:', error);
       return { error: 'Neočekávaná chyba při přihlašování' };
     }
   };
@@ -130,6 +142,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
       return { error: error?.message || null, url: data.url };
     } catch (error) {
+      console.error('Google sign in error:', error);
       return { error: 'Chyba při přihlašování přes Google' };
     }
   };
@@ -147,6 +160,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
       return { error: error?.message || null, user: data.user };
     } catch (error) {
+      console.error('Sign up error:', error);
       return { error: 'Neočekávaná chyba při registraci', user: null };
     }
   };
@@ -157,25 +171,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await supabase.auth.signOut();
     } catch (error) {
       console.error('Error signing out:', error);
+      // Don't throw, just log
     }
   };
 
-  const refreshPremiumStatus = async () => {
-    try {
-      const result = await refreshAuthPremiumStatus();
-      return result;
-    } catch (error) {
-      console.error('Error refreshing premium status:', error);
-      return { isPremium: false };
-    }
-  };
-
+  // If there's an init error but we can still provide basic functionality, do so
   const value = {
     user,
     session,
     isLoading,
     isAdmin,
     isPremium,
+    isDHL,
     refreshAdminStatus,
     refreshPremiumStatus,
     signIn,
@@ -188,8 +195,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     hasUser: !!user, 
     isLoading, 
     isAdmin, 
-    isPremium 
+    isPremium,
+    isDHL,
+    initError 
   });
+
+  // Show error boundary fallback if there's a critical init error
+  if (initError && !user && !isLoading) {
+    console.error('Critical auth initialization error:', initError);
+    // Still provide the context to prevent crashes
+  }
 
   return (
     <AuthContext.Provider value={value}>

@@ -1,3 +1,3 @@
 
 // Clean re-export to prevent circular dependencies
-export { useAuth, AuthProvider } from './auth';
+export { useAuthContext as useAuth, AuthProvider } from './auth';
