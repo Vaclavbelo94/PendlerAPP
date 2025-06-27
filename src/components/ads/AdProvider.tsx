@@ -1,6 +1,6 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/auth';
 
 interface AdContextType {
   shouldShowAds: boolean;
@@ -36,7 +36,7 @@ interface AdminAdSettings {
 }
 
 export const AdProvider: React.FC<AdProviderProps> = ({ children }) => {
-  const { isPremium } = useAuth();
+  const { unifiedUser } = useAuth();
   const [adViews, setAdViews] = useState(0);
   const [adClicks, setAdClicks] = useState(0);
   const [adminSettings, setAdminSettings] = useState<AdminAdSettings>({
@@ -75,7 +75,7 @@ export const AdProvider: React.FC<AdProviderProps> = ({ children }) => {
   }, []);
 
   // Determine if ads should be shown based on premium status and admin settings
-  const shouldShowAds = !isPremium && 
+  const shouldShowAds = !unifiedUser?.isPremium && 
                        adminSettings.adsEnabled && 
                        !adminSettings.globalAdOverride;
 
@@ -92,7 +92,7 @@ export const AdProvider: React.FC<AdProviderProps> = ({ children }) => {
     console.log(`Ad view tracked: ${adType}`, {
       timestamp: new Date().toISOString(),
       adType,
-      userPremium: isPremium,
+      userPremium: unifiedUser?.isPremium,
       adminSettings
     });
     
@@ -107,7 +107,7 @@ export const AdProvider: React.FC<AdProviderProps> = ({ children }) => {
     console.log(`Ad click tracked: ${adType}`, {
       timestamp: new Date().toISOString(),
       adType,
-      userPremium: isPremium,
+      userPremium: unifiedUser?.isPremium,
       adminSettings
     });
     

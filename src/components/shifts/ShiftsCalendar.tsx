@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/auth';
 import { useOptimizedShiftsManagement } from '@/hooks/shifts/useOptimizedShiftsManagement';
 import UnifiedShiftCalendar from './calendar/UnifiedShiftCalendar';
 import ShiftsFormSheets from './ShiftsFormSheets';

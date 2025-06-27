@@ -1,6 +1,6 @@
 
 import { useState, useCallback, useMemo } from 'react';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/auth';
 import { useOptimizedNetworkStatus } from '@/hooks/useOptimizedNetworkStatus';
 import { useRefactoredShiftsManagement } from '@/hooks/shifts/useRefactoredShiftsManagement';
 import { useDHLData } from '@/hooks/dhl/useDHLData';

@@ -4,16 +4,16 @@ import { AdminSidebar } from './AdminSidebar';
 import { AdminHeader } from './AdminHeader';
 import { AdminProvider } from './AdminProvider';
 import { AdminErrorBoundary } from './AdminErrorBoundary';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/auth';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
 }
 
 export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
-  const { isAdmin } = useAuth();
+  const { unifiedUser } = useAuth();
 
-  if (!isAdmin) {
+  if (!unifiedUser?.isAdmin) {
     return null;
   }
 

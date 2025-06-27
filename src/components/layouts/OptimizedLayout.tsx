@@ -4,7 +4,7 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useLocation } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/auth";
 import { UnifiedMobileSidebar } from "./sidebar/UnifiedMobileSidebar";
 import { useTranslation } from "react-i18next";
 

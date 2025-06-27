@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/auth";
 import { toast } from "sonner";
 import { useTranslation } from 'react-i18next';
 import { useNavigate, Link } from 'react-router-dom';
@@ -14,7 +14,7 @@ const LoginForm = () => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { signIn, isAdmin } = useAuth();
+  const { signIn, unifiedUser } = useAuth();
   const { t } = useTranslation('auth');
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -38,7 +38,7 @@ const LoginForm = () => {
         if (isDHL) {
           // DHL users will be redirected by auth provider if they need setup
           navigate("/dashboard");
-        } else if (email === 'admin@pendlerapp.com' || isAdmin) {
+        } else if (email === 'admin@pendlerapp.com' || unifiedUser?.isAdmin) {
           navigate("/admin");
         } else {
           navigate("/dashboard");
