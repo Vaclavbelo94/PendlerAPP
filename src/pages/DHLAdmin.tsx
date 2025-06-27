@@ -123,7 +123,7 @@ const DHLAdmin = () => {
           title={`Vítejte, ${user?.email}`}
           description="Máte přístup k DHL administraci. Zde můžete spravovat DHL zaměstnance, rozvrhy a systémové nastavení."
           icon={<ShieldCheck className="h-5 w-5 text-yellow-600" />}
-          variant="default"
+          variant="primary"
           className="mb-8 border-yellow-200 bg-yellow-50 dark:bg-yellow-950/20"
         />
 
