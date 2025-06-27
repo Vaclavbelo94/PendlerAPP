@@ -1,10 +1,11 @@
+
 import React from 'react';
 import { X } from 'lucide-react';
 import { useAuth } from '@/hooks/auth';
 import { cn } from '@/lib/utils';
-import { MobileSidebarNavigationGrid } from './sidebar/MobileSidebarNavigationGrid';
-import { MobileSidebarUserSection } from './sidebar/MobileSidebarUserSection';
-import { MobileSidebarFooter } from './sidebar/MobileSidebarFooter';
+import { MobileSidebarNavigationGrid } from './MobileSidebarNavigationGrid';
+import { MobileSidebarUserSection } from './MobileSidebarUserSection';
+import { MobileSidebarFooter } from './MobileSidebarFooter';
 
 interface UnifiedMobileSidebarProps {
   isOpen: boolean;

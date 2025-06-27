@@ -21,7 +21,7 @@ export const OnlineSyncManager: React.FC<OnlineSyncManagerProps> = ({
   hasShownOnlineToast,
   onOnlineToastShown
 }) => {
-  const { user, isPremium } = useAuth();
+  const { user, unifiedUser } = useAuth();
   const { isOffline } = useOfflineStatus();
   const { settings } = useSyncSettings();
 
@@ -39,7 +39,7 @@ export const OnlineSyncManager: React.FC<OnlineSyncManagerProps> = ({
       }
       
       // In native app, we don't need to check premium status for sync
-      if (!isPremium && !isNativeMode) {
+      if (!unifiedUser?.isPremium && !isNativeMode) {
         if (settings.showSyncNotifications) {
           const notificationShown = sessionStorage.getItem('syncNotificationShown');
           if (!notificationShown) {
@@ -110,7 +110,7 @@ export const OnlineSyncManager: React.FC<OnlineSyncManagerProps> = ({
     return () => {
       isMounted = false;
     };
-  }, [isOffline, user, isPremium, isCheckingStatus, hasShownOnlineToast, isInitialized, isNativeMode, settings, onOnlineToastShown]);
+  }, [isOffline, user, unifiedUser?.isPremium, isCheckingStatus, hasShownOnlineToast, isInitialized, isNativeMode, settings, onOnlineToastShown]);
 
   return null;
 };

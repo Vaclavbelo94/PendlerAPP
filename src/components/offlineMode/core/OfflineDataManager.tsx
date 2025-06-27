@@ -19,7 +19,7 @@ export const OfflineDataManager: React.FC<OfflineDataManagerProps> = ({
   isCheckingStatus,
   onOfflineToastReset
 }) => {
-  const { user, isPremium } = useAuth();
+  const { user, unifiedUser } = useAuth();
   const { isOffline } = useOfflineStatus();
   const { settings } = useSyncSettings();
 
@@ -33,7 +33,7 @@ export const OfflineDataManager: React.FC<OfflineDataManagerProps> = ({
       }
       
       // In native app, we don't need to check premium status for offline functionality
-      if (!isPremium && !isNativeMode) {
+      if (!unifiedUser?.isPremium && !isNativeMode) {
         if (settings.showSyncNotifications) {
           const notificationShown = sessionStorage.getItem('syncNotificationShown');
           if (!notificationShown) {
@@ -89,7 +89,7 @@ export const OfflineDataManager: React.FC<OfflineDataManagerProps> = ({
     return () => {
       isMounted = false;
     };
-  }, [isOffline, user, isPremium, isCheckingStatus, isInitialized, isNativeMode, settings, onOfflineToastReset]);
+  }, [isOffline, user, unifiedUser?.isPremium, isCheckingStatus, isInitialized, isNativeMode, settings, onOfflineToastReset]);
 
   return null;
 };
