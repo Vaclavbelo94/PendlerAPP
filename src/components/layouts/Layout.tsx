@@ -1,12 +1,12 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { Toaster } from '@/components/ui/sonner';
 import { useAuth } from '@/hooks/auth';
 import UnifiedNavbar from './UnifiedNavbar';
 import Footer from './Footer';
 import ModernSidebar from './sidebar/ModernSidebar';
-import MobileNavigation from './MobileNavigation';
+import MobileSidebar from './MobileSidebar';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
@@ -21,6 +21,7 @@ const Layout: React.FC<LayoutProps> = ({ children, navbarRightContent }) => {
   const location = useLocation();
   const isMobile = useIsMobile();
   const { t } = useTranslation('common');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Don't show layout on auth pages
   const isAuthPage = location.pathname.startsWith('/auth') || 
@@ -71,6 +72,9 @@ const Layout: React.FC<LayoutProps> = ({ children, navbarRightContent }) => {
     );
   }
 
+  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+  const closeSidebar = () => setSidebarOpen(false);
+
   return (
     <div className="min-h-screen bg-background">
       {/* Desktop Layout */}
@@ -88,16 +92,43 @@ const Layout: React.FC<LayoutProps> = ({ children, navbarRightContent }) => {
         </div>
       )}
 
-      {/* Mobile Layout - with bottom navigation */}
+      {/* Mobile Layout - with hamburger menu */}
       {isMobile && (
-        <div className="flex flex-col min-h-screen pb-16">
-          <UnifiedNavbar rightContent={navbarRightContent} />
+        <div className="flex flex-col min-h-screen">
+          <UnifiedNavbar 
+            rightContent={
+              <div className="flex items-center gap-2">
+                {navbarRightContent}
+                <button
+                  onClick={toggleSidebar}
+                  className="p-2 hover:bg-accent rounded-md transition-colors"
+                  aria-label="Toggle menu"
+                >
+                  <svg
+                    className="h-6 w-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 6h16M4 12h16M4 18h16"
+                    />
+                  </svg>
+                </button>
+              </div>
+            }
+          />
           <main className="flex-1 p-4">
             <div className="max-w-7xl mx-auto">
               {children || <Outlet />}
             </div>
           </main>
-          <MobileNavigation />
+          
+          {/* Mobile Sidebar */}
+          <MobileSidebar closeSidebar={closeSidebar} />
         </div>
       )}
 

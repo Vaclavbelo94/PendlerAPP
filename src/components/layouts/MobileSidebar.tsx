@@ -10,12 +10,12 @@ interface MobileSidebarProps {
 
 const MobileSidebar: React.FC<MobileSidebarProps> = ({ 
   closeSidebar, 
-  variant = 'compact' 
+  variant = 'overlay' 
 }) => {
   const isMobile = useIsMobile();
   
-  // Use compact variant by default for mobile
-  const sidebarVariant = isMobile ? variant : 'full';
+  // Use overlay variant for mobile
+  const sidebarVariant = isMobile ? 'overlay' : 'full';
   
   return (
     <MobileSidebarVariants 
