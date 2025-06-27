@@ -15,7 +15,7 @@ export interface AuthContextType {
   isPremium: boolean;
   signIn: (email: string, password: string) => Promise<{error: AuthError | string | null}>;
   signInWithGoogle: () => Promise<{error: AuthError | string | null, url?: string}>;
-  signUp: (email: string, password: string, username?: string) => Promise<{error: AuthError | string | null}>;
+  signUp: (email: string, password: string, username?: string) => Promise<{error: AuthError | string | null, user: User | null}>;
   signOut: () => Promise<void>;
   refreshAdminStatus: () => Promise<void>;
   refreshPremiumStatus: () => Promise<{ isPremium: boolean; premiumExpiry?: string }>;

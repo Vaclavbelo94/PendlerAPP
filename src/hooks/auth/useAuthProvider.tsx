@@ -113,12 +113,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
       
       if (error) {
-        return { error: error.message };
+        return { error: error.message, user: null };
       }
       
-      return { error: null };
+      return { error: null, user: data.user };
     } catch (error) {
-      return { error: 'Neočekávaná chyba při registraci' };
+      return { error: 'Neočekávaná chyba při registraci', user: null };
     }
   };
 
