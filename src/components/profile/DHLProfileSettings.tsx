@@ -33,7 +33,9 @@ interface UserDHLAssignment {
 const DHLProfileSettings = () => {
   const { t } = useTranslation('profile');
   const { user } = useAuth();
-  const { positions, workGroups } = useDHLData();
+  
+  // Pass user.id to useDHLData to properly load assignment data
+  const { positions, workGroups, userAssignment, isLoading: dhlDataLoading, error: dhlDataError } = useDHLData(user?.id);
   const { submitSetup, isSubmitting } = useDHLSetup();
   
   const [assignment, setAssignment] = useState<UserDHLAssignment | null>(null);
@@ -43,50 +45,37 @@ const DHLProfileSettings = () => {
   const [referenceDate, setReferenceDate] = useState<string>('');
   const [referenceWoche, setReferenceWoche] = useState<string>('');
 
+  console.log('DHLProfileSettings - User:', user?.email);
+  console.log('DHLProfileSettings - DHL Data Loading:', dhlDataLoading);
+  console.log('DHLProfileSettings - DHL Data Error:', dhlDataError);
+  console.log('DHLProfileSettings - User Assignment:', userAssignment);
+  console.log('DHLProfileSettings - Positions:', positions.length);
+  console.log('DHLProfileSettings - Work Groups:', workGroups.length);
+
   useEffect(() => {
-    const loadDHLAssignment = async () => {
-      if (!user) return;
-      
-      setLoading(true);
-      try {
-        const { data, error } = await supabase
-          .from('user_dhl_assignments')
-          .select(`
-            *,
-            dhl_position:dhl_positions(name, description),
-            dhl_work_group:dhl_work_groups(name, description)
-          `)
-          .eq('user_id', user.id)
-          .eq('is_active', true)
-          .single();
-
-        if (error && error.code !== 'PGRST116') {
-          throw error;
-        }
-
-        if (data) {
-          setAssignment(data);
-          setSelectedPosition(data.dhl_position_id);
-          setSelectedWorkGroup(data.dhl_work_group_id);
-          setReferenceDate(data.reference_date || '');
-          setReferenceWoche(data.reference_woche?.toString() || '');
-        }
-      } catch (error) {
-        console.error('Chyba při načítání DHL assignment:', error);
-        toast.error("Nepodařilo se načíst DHL nastavení");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadDHLAssignment();
-  }, [user]);
+    // Use the userAssignment from useDHLData hook
+    if (userAssignment) {
+      setAssignment(userAssignment);
+      setSelectedPosition(userAssignment.dhl_position_id);
+      setSelectedWorkGroup(userAssignment.dhl_work_group_id);
+      setReferenceDate(userAssignment.reference_date || '');
+      setReferenceWoche(userAssignment.reference_woche?.toString() || '');
+    }
+    setLoading(dhlDataLoading);
+  }, [userAssignment, dhlDataLoading]);
 
   const handleSave = async () => {
     if (!selectedPosition || !selectedWorkGroup || !referenceDate || !referenceWoche) {
       toast.error('Vyplňte všechna povinná pole');
       return;
     }
+
+    console.log('DHLProfileSettings - Saving setup:', {
+      position_id: selectedPosition,
+      work_group_id: selectedWorkGroup,
+      reference_date: referenceDate,
+      reference_woche: parseInt(referenceWoche)
+    });
 
     const success = await submitSetup({
       position_id: selectedPosition,
@@ -102,14 +91,48 @@ const DHLProfileSettings = () => {
     }
   };
 
+  // Show error state if there's an error loading DHL data
+  if (dhlDataError) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-red-600">
+            <Truck className="h-5 w-5" />
+            Chyba načítání DHL dat
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-red-600">Nepodařilo se načíst DHL data: {dhlDataError}</p>
+          <Button 
+            onClick={() => window.location.reload()} 
+            className="mt-4"
+            variant="outline"
+          >
+            Zkusit znovu
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
   if (loading) {
     return (
-      <div className="animate-pulse space-y-4">
-        <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-        <div className="h-10 bg-gray-200 rounded"></div>
-        <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-        <div className="h-10 bg-gray-200 rounded"></div>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Truck className="h-5 w-5 text-yellow-600" />
+            DHL Nastavení
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="animate-pulse space-y-4">
+            <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+            <div className="h-10 bg-gray-200 rounded"></div>
+            <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+            <div className="h-10 bg-gray-200 rounded"></div>
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 

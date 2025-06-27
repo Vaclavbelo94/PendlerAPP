@@ -1,3 +1,4 @@
+
 import * as React from 'react';
 import { useState, useCallback } from 'react';
 import { AuthContext } from './useAuthContext';
@@ -201,6 +202,67 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return { isPremium: false };
       }
       
+      // **CRITICAL FIX: Check if user is DHL employee FIRST**
+      const isDHL = isDHLEmployee(user);
+      console.log("Is DHL Employee:", isDHL);
+      
+      if (isDHL) {
+        console.log('DHL employee detected - activating premium automatically');
+        
+        // Set premium status and calculate expiry date (1 year from now for DHL)
+        const oneYearLater = new Date();
+        oneYearLater.setFullYear(oneYearLater.getFullYear() + 1);
+        
+        // **FORCE UPDATE** - Update their premium status in the database immediately
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update({ 
+            is_premium: true,
+            premium_expiry: oneYearLater.toISOString()
+          })
+          .eq('id', user.id);
+          
+        if (updateError) {
+          console.error('Error updating DHL premium status:', updateError);
+        } else {
+          console.log('DHL premium status updated successfully');
+        }
+        
+        // Save to localStorage for immediate access
+        if (user && checkLocalStorageSpace() > 1024) {
+          saveUserToLocalStorage(user, true, oneYearLater.toISOString());
+        }
+        
+        return {
+          isPremium: true,
+          premiumExpiry: oneYearLater.toISOString()
+        };
+      }
+      
+      // Special users get premium automatically
+      const specialEmails = ['uzivatel@pendlerapp.com', 'admin@pendlerapp.com'];
+      const isSpecialUser = userData?.email && specialEmails.includes(userData.email);
+      
+      if (isSpecialUser) {
+        // Set premium status and calculate expiry date (3 months from now)
+        const threeMonthsLater = new Date();
+        threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
+        
+        // Update their premium status in the database
+        await supabase
+          .from('profiles')
+          .update({ 
+            is_premium: true,
+            premium_expiry: threeMonthsLater.toISOString()
+          })
+          .eq('id', user.id);
+          
+        return {
+          isPremium: true,
+          premiumExpiry: threeMonthsLater.toISOString()
+        };
+      }
+      
       // First check from subscribers table
       const { data: subscriberData, error: subscriberError } = await supabase
         .from('subscribers')
@@ -216,7 +278,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         
         if (isActive) {
           console.log("User has active Stripe subscription");
-          setIsPremium(true);
           if (user && checkLocalStorageSpace() > 1024) {
             saveUserToLocalStorage(user, true, premiumExpiry);
           }
@@ -224,7 +285,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
       }
 
-      // Fallback to profiles table check - NEJDŮLEŽITĚJŠÍ ČÁST PRO PROMO KÓDY
+      // Fallback to profiles table check
       console.log("Checking profiles table for premium status...");
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
@@ -256,17 +317,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         });
       }
 
-      // Check for special users (including DHL admin)
-      if (!isActive && isSpecialUser()) {
-        console.log("Setting premium for special user");
-        isActive = true;
-      }
-
       console.log("=== FINAL PREMIUM STATUS ===");
       console.log("Premium status from profile:", { profilePremium, profileExpiry, isActive });
       console.log("=== PREMIUM STATUS REFRESH END ===");
-      
-      setIsPremium(isActive);
       
       if (user && isActive && checkLocalStorageSpace() > 1024) {
         saveUserToLocalStorage(user, true, profileExpiry);
