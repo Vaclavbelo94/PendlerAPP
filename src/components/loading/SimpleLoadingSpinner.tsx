@@ -12,9 +12,7 @@ const SimpleLoadingSpinner = ({
   size = 'md' 
 }: SimpleLoadingSpinnerProps) => {
   return (
-    <div className="flex items-center justify-center p-6">
-      <LoadingSpinner size={size} message={message} />
-    </div>
+    <LoadingSpinner size={size} message={message} />
   );
 };
 
