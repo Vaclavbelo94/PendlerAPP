@@ -4,9 +4,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Import unified responsive styles */
-@import './styles/responsive-unified.css';
-
 @layer base {
   :root {
     --background: 0 0% 100%;

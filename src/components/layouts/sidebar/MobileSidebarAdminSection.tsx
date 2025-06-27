@@ -4,7 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Shield, Truck } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/auth';
 import { canAccessDHLAdmin } from '@/utils/dhlAuthUtils';
 
 interface MobileSidebarAdminSectionProps {
@@ -15,11 +15,11 @@ export const MobileSidebarAdminSection: React.FC<MobileSidebarAdminSectionProps>
   handleLinkClick
 }) => {
   const location = useLocation();
-  const { user, isAdmin } = useAuth();
+  const { user, unifiedUser } = useAuth();
   const isDHLAdmin = canAccessDHLAdmin(user);
 
   // Don't show if user has no admin privileges
-  if (!user || (!isAdmin && !isDHLAdmin)) {
+  if (!user || (!unifiedUser?.isAdmin && !isDHLAdmin)) {
     return null;
   }
 
@@ -28,7 +28,7 @@ export const MobileSidebarAdminSection: React.FC<MobileSidebarAdminSectionProps>
       <h3 className="text-sm font-medium text-muted-foreground mb-3">Administrace</h3>
       <div className="space-y-2">
         {/* Regular Admin */}
-        {isAdmin && (
+        {unifiedUser?.isAdmin && (
           <Button
             asChild
             variant={location.pathname === '/admin' ? "secondary" : "ghost"}

@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useCallback } from 'react';
-import { useAuth } from './useAuth';
+import { useAuth } from './auth';
 import { supabase } from '@/integrations/supabase/client';
 
 export interface SyncSettings {

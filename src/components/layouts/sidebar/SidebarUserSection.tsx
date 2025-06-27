@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { User, Crown } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/auth';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
@@ -12,11 +12,11 @@ interface SidebarUserSectionProps {
 }
 
 const SidebarUserSection: React.FC<SidebarUserSectionProps> = ({ collapsed }) => {
-  const { user } = useAuth();
+  const { user, unifiedUser } = useAuth();
   const { t } = useTranslation('common');
 
   const displayName = user?.email?.split('@')[0] || t('user');
-  const isPremium = false; // This would come from user data
+  const isPremium = unifiedUser?.isPremium || false;
 
   return (
     <div className="p-4 border-t border-border">
