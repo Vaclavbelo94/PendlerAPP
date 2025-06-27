@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Truck, ShieldCheck } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/auth";
 import { SectionHeader } from "@/components/ui/section-header";
 import { InfoCard } from "@/components/ui/design-system/InfoCard";
 import { canAccessDHLAdmin } from "@/utils/dhlAuthUtils";

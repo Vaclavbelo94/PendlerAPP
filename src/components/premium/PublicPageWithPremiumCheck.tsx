@@ -1,11 +1,11 @@
 
 import React from 'react';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/auth';
 import PremiumFeatureAlert from '@/components/PremiumFeatureAlert';
 
 interface PublicPageWithPremiumCheckProps {
   children: React.ReactNode;
-  featureName: string;
+  featureName: string;  
   description?: string;
   allowPublicAccess?: boolean;
 }
@@ -16,13 +16,13 @@ const PublicPageWithPremiumCheck: React.FC<PublicPageWithPremiumCheckProps> = ({
   description,
   allowPublicAccess = false
 }) => {
-  const { user, isPremium, isAdmin } = useAuth();
+  const { user, unifiedUser } = useAuth();
 
   // Allow access if:
   // 1. Public access is allowed, OR
   // 2. User has premium, OR
   // 3. User is admin
-  const hasAccess = allowPublicAccess || isPremium || isAdmin;
+  const hasAccess = allowPublicAccess || unifiedUser?.isPremium || unifiedUser?.isAdmin;
 
   if (!hasAccess) {
     return (

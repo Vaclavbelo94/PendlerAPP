@@ -4,10 +4,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Crown, User, Mail } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/auth";
 
 const ProfileBio = () => {
-  const { user, isPremium } = useAuth();
+  const { user, unifiedUser } = useAuth();
 
   const getInitials = (email: string) => {
     return email.split('@')[0].slice(0, 2).toUpperCase();
@@ -41,7 +41,7 @@ const ProfileBio = () => {
             </div>
             
             <div className="flex justify-center">
-              {isPremium ? (
+              {unifiedUser?.isPremium ? (
                 <Badge variant="default" className="bg-amber-500 hover:bg-amber-600">
                   <Crown className="h-3 w-3 mr-1" />
                   Premium

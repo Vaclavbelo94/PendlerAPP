@@ -1,7 +1,7 @@
 
 import React from "react";
 import { NotificationIndicator } from "@/components/notifications/NotificationIndicator";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/auth";
 
 export const NavbarRightContent = () => {
   const { user } = useAuth();
