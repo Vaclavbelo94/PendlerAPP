@@ -1,10 +1,11 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { ShieldIcon, LockIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { usePremiumAccess } from "@/hooks/usePremiumAccess";
-import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 interface PremiumCheckProps {
   featureKey: string;
@@ -20,7 +21,8 @@ const PremiumCheck: React.FC<PremiumCheckProps> = ({ featureKey, children }) => 
     return (
       <div className="flex justify-center items-center w-full p-12">
         <div className="text-center">
-          <LoadingSpinner size="md" message="Ověřuji přístup..." className="mx-auto mb-4" />
+          <LoadingSpinner size="md" className="mx-auto mb-4" />
+          <p className="text-sm text-muted-foreground">Ověřuji přístup...</p>
         </div>
       </div>
     );

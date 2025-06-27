@@ -1,5 +1,9 @@
 
+// This is a re-export file to maintain backward compatibility
+// as we refactor the auth hooks into smaller files
 
-// Clean re-export to prevent circular dependencies
-export { useAuth, AuthProvider } from './auth';
+import { useAuth, AuthProvider } from './auth';
 
+export { useAuth, AuthProvider };
+
+export default useAuth;

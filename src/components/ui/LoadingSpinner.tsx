@@ -1,33 +1,35 @@
 
 import React from 'react';
+import { cn } from '@/lib/utils';
 
 interface LoadingSpinnerProps {
-  message?: string;
   size?: 'sm' | 'md' | 'lg';
   className?: string;
+  message?: string;
 }
 
 export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ 
-  message = "Načítám aplikaci...", 
-  size = 'md',
-  className = ''
+  size = 'md', 
+  className = '',
+  message 
 }) => {
   const sizeClasses = {
-    sm: 'h-6 w-6',
-    md: 'h-12 w-12', 
-    lg: 'h-16 w-16'
+    sm: 'h-4 w-4',
+    md: 'h-8 w-8', 
+    lg: 'h-12 w-12'
   };
 
-  const containerClasses = size === 'sm' 
-    ? 'flex items-center justify-center p-4'
-    : 'min-h-screen flex items-center justify-center bg-background';
-
   return (
-    <div className={`${containerClasses} ${className}`}>
-      <div className="flex flex-col items-center space-y-4">
-        <div className={`animate-spin rounded-full ${sizeClasses[size]} border-b-2 border-primary`}></div>
-        <p className="text-muted-foreground">{message}</p>
-      </div>
+    <div className={cn("flex flex-col items-center justify-center", className)}>
+      <div 
+        className={cn(
+          "animate-spin rounded-full border-2 border-primary border-t-transparent",
+          sizeClasses[size]
+        )}
+      />
+      {message && (
+        <p className="text-sm text-muted-foreground mt-2">{message}</p>
+      )}
     </div>
   );
 };

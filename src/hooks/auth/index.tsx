@@ -1,6 +1,8 @@
 
-// Export the hook with the correct name
-export { useAuthContext as useAuth } from './useAuthContext';
+import * as React from 'react';
+import { AuthProvider } from './useAuthProvider';
+import { useAuthContext } from './useAuthContext';
 
-// Export the provider
-export { AuthProvider } from './useAuthProvider';
+export const useAuth = useAuthContext;
+
+export { AuthProvider };
