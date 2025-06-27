@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/auth';
@@ -35,7 +36,7 @@ export const useProfileSettings = () => {
       try {
         const { data, error } = await supabase
           .from('profiles')
-          .select('username, full_name, bio, location, website')
+          .select('username, email, phone_number')
           .eq('id', user.id)
           .single();
 
@@ -47,10 +48,10 @@ export const useProfileSettings = () => {
           ...prevState,
           settings: {
             username: data?.username || '',
-            fullName: data?.full_name || '',
-            bio: data?.bio || '',
-            location: data?.location || '',
-            website: data?.website || '',
+            fullName: data?.username || '', // Using username as fullName since full_name doesn't exist
+            bio: '', // bio doesn't exist in profiles table
+            location: '', // location doesn't exist in profiles table
+            website: '', // website doesn't exist in profiles table
           },
           isLoading: false,
         }));
@@ -77,10 +78,6 @@ export const useProfileSettings = () => {
         .from('profiles')
         .update({
           username: newSettings.username,
-          full_name: newSettings.fullName,
-          bio: newSettings.bio,
-          location: newSettings.location,
-          website: newSettings.website,
           updated_at: new Date().toISOString(),
         })
         .eq('id', user.id);

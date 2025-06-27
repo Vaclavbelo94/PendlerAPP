@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from '@/hooks/auth';
@@ -23,10 +24,18 @@ const WorkPreferences: React.FC<WorkPreferencesProps> = ({ /* props */ }) => {
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value, type } = e.target;
+    const checked = (e.target as HTMLInputElement).checked;
     setFormData(prevData => ({
       ...prevData,
       [name]: type === 'checkbox' ? checked : value,
+    }));
+  };
+
+  const handleSwitchChange = (checked: boolean) => {
+    setFormData(prevData => ({
+      ...prevData,
+      remoteWork: checked,
     }));
   };
 
@@ -104,7 +113,7 @@ const WorkPreferences: React.FC<WorkPreferencesProps> = ({ /* props */ }) => {
               id="remoteWork"
               name="remoteWork"
               checked={formData.remoteWork}
-              onCheckedChange={(checked) => handleChange({ target: { name: 'remoteWork', type: 'checkbox', checked } } as any)}
+              onCheckedChange={handleSwitchChange}
             />
           </div>
           <Button type="submit" className="w-full">

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Users, Star, MapPin, Clock, MessageCircle } from 'lucide-react';
 import { enhancedRideshareService, RideshareMatch } from '@/services/enhancedRideshareService';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/auth';
 import { toast } from '@/hooks/use-toast';
 import ContactDriverDialog from './rideshare/ContactDriverDialog';
 

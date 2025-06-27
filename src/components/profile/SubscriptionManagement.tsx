@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -90,7 +91,7 @@ const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({ /* prop
           <>
             {isSubscriptionActive ? (
               <>
-                <Alert variant="success">
+                <Alert>
                   <CheckCircle className="h-4 w-4" />
                   <AlertDescription>
                     Vaše Premium je aktivní.

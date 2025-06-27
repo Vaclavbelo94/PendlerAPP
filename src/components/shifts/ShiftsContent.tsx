@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Plus, Calendar, ListFilter, FileSpreadsheet } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { useStandardizedToast } from '@/hooks/useStandardizedToast';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/auth';
 import { useTranslation } from 'react-i18next';
 import { ShiftCalendar } from './ShiftCalendar';
 import ShiftsList from './ShiftsList';

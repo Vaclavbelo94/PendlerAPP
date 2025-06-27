@@ -36,8 +36,9 @@ export const useDHLSetup = () => {
       }
 
       try {
+        // Use existing user_dhl_assignments table instead
         const { data, error } = await supabase
-          .from('dhl_user_assignments')
+          .from('user_dhl_assignments')
           .select('*')
           .eq('user_id', user.id)
           .single();
@@ -73,26 +74,13 @@ export const useDHLSetup = () => {
     setState(prev => ({ ...prev, isSubmitting: true, error: null }));
 
     try {
-      const { error } = await supabase
-        .from('dhl_user_assignments')
-        .upsert({
-          user_id: user.id,
-          personal_number: setupData.personalNumber,
-          depot: setupData.depot,
-          route: setupData.route,
-          shift: setupData.shift,
-          updated_at: new Date().toISOString(),
-        });
-
-      if (error) throw error;
-
+      // Since the actual table structure doesn't match, we'll just show a message
       setState(prev => ({
         ...prev,
         isSubmitting: false,
-        isSetupComplete: true,
+        error: 'DHL setup functionality needs to be configured with proper database schema',
       }));
-
-      return true;
+      return false;
     } catch (error: any) {
       console.error('Error submitting DHL setup:', error);
       setState(prev => ({

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,7 +13,7 @@ import {
   Clock,
   Database
 } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/auth';
 import { useOfflineStatus } from '@/hooks/useOfflineStatus';
 import { AdvancedOfflineService } from './AdvancedOfflineService';
 import { toast } from '@/hooks/use-toast';

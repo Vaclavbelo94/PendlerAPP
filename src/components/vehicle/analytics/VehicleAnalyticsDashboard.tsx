@@ -1,10 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { Car, Fuel, DollarSign, Wrench, Calendar, TrendingUp, AlertTriangle } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/auth';
 import { useVehicleData } from '@/hooks/vehicle/useVehicleData';
 import { fetchFuelRecords, fetchServiceRecords, calculateConsumption } from '@/services/vehicleService';
 import { VehicleData, FuelRecord, ServiceRecord } from '@/types/vehicle';

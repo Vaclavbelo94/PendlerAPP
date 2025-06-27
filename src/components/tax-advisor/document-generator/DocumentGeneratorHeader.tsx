@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   CardTitle,
@@ -6,7 +5,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from '@/hooks/auth';
 
 interface DocumentGeneratorHeaderProps {
   onLoadProfile: () => void;
