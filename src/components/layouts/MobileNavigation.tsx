@@ -2,13 +2,15 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Home, Calendar, Settings, User, Car, Calculator } from 'lucide-react';
+import { Home, Calendar, Settings, User, Car, Languages } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/hooks/auth';
 
 const MobileNavigation: React.FC = () => {
   const location = useLocation();
-  const { t } = useTranslation('common');
+  const { t } = useTranslation('navigation');
+  const { unifiedUser } = useAuth();
 
   const navItems = [
     {
@@ -18,21 +20,21 @@ const MobileNavigation: React.FC = () => {
       isActive: location.pathname === '/dashboard'
     },
     {
-      icon: Calendar,
-      label: t('shifts'),
-      href: '/shifts',
-      isActive: location.pathname === '/shifts'
+      icon: Languages,
+      label: t('translator'),
+      href: '/translator',
+      isActive: location.pathname === '/translator'
     },
     {
-      icon: Calculator,
-      label: t('taxAdvisor'),
-      href: '/tax-advisor',
-      isActive: location.pathname === '/tax-advisor'
+      icon: Calendar,
+      label: t('shifts'),
+      href: unifiedUser?.isPremium ? '/shifts' : '/premium',
+      isActive: location.pathname === '/shifts'
     },
     {
       icon: Car,
       label: t('vehicle'),
-      href: '/vehicle',
+      href: unifiedUser?.isPremium ? '/vehicle' : '/premium',
       isActive: location.pathname === '/vehicle'
     },
     {

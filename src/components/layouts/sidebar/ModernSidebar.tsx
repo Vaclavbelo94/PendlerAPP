@@ -10,22 +10,31 @@ import {
   Settings, 
   BarChart3,
   Crown,
-  User
+  User,
+  Languages,
+  FileText,
+  Map,
+  Scale
 } from 'lucide-react';
 import { useAuth } from '@/hooks/auth';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 const ModernSidebar = () => {
   const { user, unifiedUser } = useAuth();
   const location = useLocation();
+  const { t } = useTranslation('navigation');
 
   const navigationItems = [
-    { icon: Home, label: 'Dashboard', path: '/dashboard' },
-    { icon: Calendar, label: 'Směny', path: '/shifts' },
-    { icon: Car, label: 'Vozidla', path: '/vehicles' },
-    { icon: BarChart3, label: 'Analytika', path: '/analytics', premium: true },
-    { icon: Settings, label: 'Nastavení', path: '/settings' },
-    { icon: User, label: 'Profil', path: '/profile' },
+    { icon: Home, label: t('dashboard'), path: '/dashboard' },
+    { icon: Languages, label: t('translator'), path: '/translator' },
+    { icon: Calendar, label: t('shifts'), path: '/shifts', premium: true },
+    { icon: Car, label: t('vehicle'), path: '/vehicle', premium: true },
+    { icon: Map, label: t('travel'), path: '/travel', premium: true },
+    { icon: FileText, label: t('taxAdvisor'), path: '/tax-advisor', premium: true },
+    { icon: Scale, label: t('laws'), path: '/laws' },
+    { icon: User, label: t('profile'), path: '/profile' },
+    { icon: Settings, label: t('settings'), path: '/settings' },
   ];
 
   const isActive = (path: string) => location.pathname === path;

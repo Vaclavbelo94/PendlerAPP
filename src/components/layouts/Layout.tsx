@@ -6,6 +6,7 @@ import { useAuth } from '@/hooks/auth';
 import UnifiedNavbar from './UnifiedNavbar';
 import Footer from './Footer';
 import ModernSidebar from './sidebar/ModernSidebar';
+import MobileNavigation from './MobileNavigation';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
@@ -22,7 +23,9 @@ const Layout: React.FC<LayoutProps> = ({ children, navbarRightContent }) => {
   const { t } = useTranslation('common');
 
   // Don't show layout on auth pages
-  const isAuthPage = location.pathname.startsWith('/auth');
+  const isAuthPage = location.pathname.startsWith('/auth') || 
+    location.pathname === '/login' || 
+    location.pathname === '/register';
   const isPublicPage = ['/', '/about', '/contact', '/features', '/pricing'].includes(location.pathname);
 
   if (isLoading) {
@@ -74,7 +77,7 @@ const Layout: React.FC<LayoutProps> = ({ children, navbarRightContent }) => {
       {!isMobile && (
         <div className="flex">
           <ModernSidebar />
-          <div className="flex-1 flex flex-col min-h-screen ml-64">
+          <div className="flex-1 flex flex-col min-h-screen">
             <UnifiedNavbar rightContent={navbarRightContent} />
             <main className="flex-1 p-6">
               <div className="max-w-7xl mx-auto">
@@ -85,15 +88,16 @@ const Layout: React.FC<LayoutProps> = ({ children, navbarRightContent }) => {
         </div>
       )}
 
-      {/* Mobile Layout - with hamburger menu in navbar */}
+      {/* Mobile Layout - with bottom navigation */}
       {isMobile && (
-        <div className="flex flex-col min-h-screen">
+        <div className="flex flex-col min-h-screen pb-16">
           <UnifiedNavbar rightContent={navbarRightContent} />
           <main className="flex-1 p-4">
             <div className="max-w-7xl mx-auto">
               {children || <Outlet />}
             </div>
           </main>
+          <MobileNavigation />
         </div>
       )}
 
