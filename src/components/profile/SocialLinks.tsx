@@ -1,325 +1,166 @@
-
-import React, { useState, useEffect } from "react";
-import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
+import React, { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAuth } from '@/hooks/auth';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
-import { Twitter, Facebook, Instagram, Linkedin, Github } from "lucide-react";
+import { Github, Linkedin, Twitter, Globe, Plus, Trash2 } from "lucide-react";
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
-interface SocialLinksProps {
-  userId?: string;
-  readOnly?: boolean;
+interface SocialLink {
+  id: number;
+  platform: string;
+  url: string;
 }
 
-interface SocialLinksData {
-  twitter: string;
-  facebook: string;
-  instagram: string;
-  linkedin: string;
-  github: string;
-}
-
-const SocialLinks = ({ userId, readOnly = false }: SocialLinksProps) => {
+const SocialLinks: React.FC = () => {
   const { user } = useAuth();
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [links, setLinks] = useState<SocialLinksData>({
-    twitter: "",
-    facebook: "",
-    instagram: "",
-    linkedin: "",
-    github: ""
-  });
-
-  const targetUserId = userId || user?.id;
+  const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
+  const [newLink, setNewLink] = useState({ platform: '', url: '' });
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const loadSocialLinks = async () => {
-      if (!targetUserId) return;
-      
-      setLoading(true);
+    const fetchSocialLinks = async () => {
+      if (!user?.id) return;
+
+      setIsLoading(true);
       try {
         const { data, error } = await supabase
-          .from('user_social_links')
+          .from('social_links')
           .select('*')
-          .eq('user_id', targetUserId)
-          .maybeSingle();
-        
-        if (error && error.code !== 'PGRST116') {
-          console.error('Chyba při načítání sociálních odkazů:', error);
-          throw error;
+          .eq('user_id', user.id);
+
+        if (error) {
+          console.error('Error fetching social links:', error);
+          toast.error('Failed to load social links');
         }
 
-        if (data) {
-          setLinks({
-            twitter: data.twitter || '',
-            facebook: data.facebook || '',
-            instagram: data.instagram || '',
-            linkedin: data.linkedin || '',
-            github: data.github || ''
-          });
-        }
-      } catch (error) {
-        console.error('Chyba při načítání sociálních odkazů:', error);
+        setSocialLinks(data || []);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
 
-    loadSocialLinks();
-  }, [targetUserId]);
+    fetchSocialLinks();
+  }, [user?.id]);
 
-  const handleSaveLinks = async () => {
-    if (!user?.id) return;
-    
-    setSaving(true);
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
+    setNewLink({ ...newLink, [field]: e.target.value });
+  };
+
+  const handleAddLink = async () => {
+    if (!user?.id || !newLink.platform || !newLink.url) return;
+
     try {
-      // Kontrola, zda záznam existuje
-      const { data: existingData, error: checkError } = await supabase
-        .from('user_social_links')
-        .select('user_id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-        
-      if (checkError && checkError.code !== 'PGRST116') {
-        throw checkError;
+      const { data, error } = await supabase
+        .from('social_links')
+        .insert([{ user_id: user.id, platform: newLink.platform, url: newLink.url }])
+        .select('*')
+        .single();
+
+      if (error) {
+        console.error('Error adding social link:', error);
+        toast.error('Failed to add social link');
+        return;
       }
-      
-      let result;
-      if (existingData) {
-        // Aktualizace existujícího záznamu
-        result = await supabase
-          .from('user_social_links')
-          .update({
-            twitter: links.twitter || null,
-            facebook: links.facebook || null,
-            instagram: links.instagram || null,
-            linkedin: links.linkedin || null,
-            github: links.github || null,
-            updated_at: new Date().toISOString()
-          })
-          .eq('user_id', user.id);
-      } else {
-        // Vytvoření nového záznamu
-        result = await supabase
-          .from('user_social_links')
-          .insert({
-            user_id: user.id,
-            twitter: links.twitter || null,
-            facebook: links.facebook || null,
-            instagram: links.instagram || null,
-            linkedin: links.linkedin || null,
-            github: links.github || null
-          });
-      }
-      
-      if (result.error) {
-        throw result.error;
-      }
-      
-      toast.success("Sociální odkazy byly úspěšně uloženy");
+
+      setSocialLinks([...socialLinks, data]);
+      setNewLink({ platform: '', url: '' });
+      toast.success('Social link added successfully');
     } catch (error) {
-      console.error('Chyba při ukládání sociálních odkazů:', error);
-      toast.error("Nepodařilo se uložit sociální odkazy");
-    } finally {
-      setSaving(false);
+      console.error('Unexpected error adding social link:', error);
+      toast.error('Failed to add social link');
     }
   };
 
-  const formatSocialLink = (platform: string, username: string): string => {
-    if (!username) return "";
-    
-    // Odstranit @ z uživatelského jména, pokud existuje
-    const cleanUsername = username.startsWith('@') ? username.substring(1) : username;
-    
-    // Pokud už obsahuje celý URL, vrátit jak je
-    if (username.startsWith('http://') || username.startsWith('https://')) {
-      return username;
-    }
-    
-    // Jinak sestavit URL podle platformy
-    switch (platform) {
-      case 'twitter': return `https://twitter.com/${cleanUsername}`;
-      case 'facebook': return `https://facebook.com/${cleanUsername}`;
-      case 'instagram': return `https://instagram.com/${cleanUsername}`;
-      case 'linkedin': return `https://linkedin.com/in/${cleanUsername}`;
-      case 'github': return `https://github.com/${cleanUsername}`;
-      default: return username;
+  const handleDeleteLink = async (id: number) => {
+    try {
+      const { error } = await supabase
+        .from('social_links')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        console.error('Error deleting social link:', error);
+        toast.error('Failed to delete social link');
+        return;
+      }
+
+      setSocialLinks(socialLinks.filter(link => link.id !== id));
+      toast.success('Social link deleted successfully');
+    } catch (error) {
+      console.error('Unexpected error deleting social link:', error);
+      toast.error('Failed to delete social link');
     }
   };
 
-  if (loading) {
-    return (
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex justify-center">
-            <div className="h-6 w-6 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
+  const getIcon = (platform: string) => {
+    switch (platform.toLowerCase()) {
+      case 'github':
+        return <Github className="h-4 w-4 mr-2" />;
+      case 'linkedin':
+        return <Linkedin className="h-4 w-4 mr-2" />;
+      case 'twitter':
+        return <Twitter className="h-4 w-4 mr-2" />;
+      default:
+        return <Globe className="h-4 w-4 mr-2" />;
+    }
+  };
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Sociální sítě</CardTitle>
-        <CardDescription>
-          {readOnly 
-            ? "Profil na sociálních sítích" 
-            : "Propojte svůj profil se sociálními sítěmi"}
-        </CardDescription>
+        <CardTitle>Social Links</CardTitle>
+        <CardDescription>Add links to your social media profiles.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {readOnly ? (
-          // Zobrazení odkazů pro čtení
-          <div className="space-y-3">
-            {links.twitter && (
-              <a 
-                href={formatSocialLink('twitter', links.twitter)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 text-blue-500 hover:underline"
-              >
-                <Twitter className="h-5 w-5" />
-                <span>Twitter</span>
-              </a>
-            )}
-            
-            {links.facebook && (
-              <a 
-                href={formatSocialLink('facebook', links.facebook)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 text-blue-600 hover:underline"
-              >
-                <Facebook className="h-5 w-5" />
-                <span>Facebook</span>
-              </a>
-            )}
-            
-            {links.instagram && (
-              <a 
-                href={formatSocialLink('instagram', links.instagram)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 text-pink-600 hover:underline"
-              >
-                <Instagram className="h-5 w-5" />
-                <span>Instagram</span>
-              </a>
-            )}
-            
-            {links.linkedin && (
-              <a 
-                href={formatSocialLink('linkedin', links.linkedin)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 text-blue-700 hover:underline"
-              >
-                <Linkedin className="h-5 w-5" />
-                <span>LinkedIn</span>
-              </a>
-            )}
-            
-            {links.github && (
-              <a 
-                href={formatSocialLink('github', links.github)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 hover:underline"
-              >
-                <Github className="h-5 w-5" />
-                <span>GitHub</span>
-              </a>
-            )}
-            
-            {!links.twitter && !links.facebook && !links.instagram && !links.linkedin && !links.github && (
-              <p className="text-muted-foreground text-center py-2">
-                Tento uživatel nemá přidány žádné sociální sítě
-              </p>
-            )}
-          </div>
+        {isLoading ? (
+          <p>Loading social links...</p>
         ) : (
-          // Formulář pro editaci
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <Twitter className="h-5 w-5 shrink-0 text-blue-500" />
-              <div className="flex-1">
-                <Label htmlFor="twitter" className="sr-only">Twitter</Label>
-                <Input
-                  id="twitter"
-                  value={links.twitter}
-                  onChange={(e) => setLinks(prev => ({ ...prev, twitter: e.target.value }))}
-                  placeholder="@uživatelské_jméno nebo URL"
-                />
+          <div className="space-y-2">
+            {socialLinks.map(link => (
+              <div key={link.id} className="flex items-center justify-between">
+                <div className="flex items-center">
+                  {getIcon(link.platform)}
+                  <a href={link.url} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                    {link.platform}
+                  </a>
+                </div>
+                <Button variant="ghost" size="sm" onClick={() => handleDeleteLink(link.id)}>
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete
+                </Button>
               </div>
-            </div>
-            
-            <div className="flex items-center gap-3">
-              <Facebook className="h-5 w-5 shrink-0 text-blue-600" />
-              <div className="flex-1">
-                <Label htmlFor="facebook" className="sr-only">Facebook</Label>
-                <Input
-                  id="facebook"
-                  value={links.facebook}
-                  onChange={(e) => setLinks(prev => ({ ...prev, facebook: e.target.value }))}
-                  placeholder="uživatelské_jméno nebo URL"
-                />
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-3">
-              <Instagram className="h-5 w-5 shrink-0 text-pink-600" />
-              <div className="flex-1">
-                <Label htmlFor="instagram" className="sr-only">Instagram</Label>
-                <Input
-                  id="instagram"
-                  value={links.instagram}
-                  onChange={(e) => setLinks(prev => ({ ...prev, instagram: e.target.value }))}
-                  placeholder="uživatelské_jméno nebo URL"
-                />
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-3">
-              <Linkedin className="h-5 w-5 shrink-0 text-blue-700" />
-              <div className="flex-1">
-                <Label htmlFor="linkedin" className="sr-only">LinkedIn</Label>
-                <Input
-                  id="linkedin"
-                  value={links.linkedin}
-                  onChange={(e) => setLinks(prev => ({ ...prev, linkedin: e.target.value }))}
-                  placeholder="uživatelské_jméno nebo URL"
-                />
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-3">
-              <Github className="h-5 w-5 shrink-0" />
-              <div className="flex-1">
-                <Label htmlFor="github" className="sr-only">GitHub</Label>
-                <Input
-                  id="github"
-                  value={links.github}
-                  onChange={(e) => setLinks(prev => ({ ...prev, github: e.target.value }))}
-                  placeholder="uživatelské_jméno nebo URL"
-                />
-              </div>
-            </div>
+            ))}
           </div>
         )}
+
+        <div className="grid gap-2">
+          <Label htmlFor="platform">Platform</Label>
+          <Input
+            id="platform"
+            type="text"
+            placeholder="e.g., GitHub"
+            value={newLink.platform}
+            onChange={(e) => handleInputChange(e, 'platform')}
+          />
+        </div>
+        <div className="grid gap-2">
+          <Label htmlFor="url">URL</Label>
+          <Input
+            id="url"
+            type="url"
+            placeholder="e.g., https://github.com/your-username"
+            value={newLink.url}
+            onChange={(e) => handleInputChange(e, 'url')}
+          />
+        </div>
+        <Button onClick={handleAddLink} disabled={!newLink.platform || !newLink.url}>
+          <Plus className="h-4 w-4 mr-2" />
+          Add Link
+        </Button>
       </CardContent>
-      {!readOnly && (
-        <CardFooter>
-          <Button onClick={handleSaveLinks} disabled={saving} className="ml-auto">
-            {saving ? "Ukládání..." : "Uložit odkazy"}
-          </Button>
-        </CardFooter>
-      )}
     </Card>
   );
 };

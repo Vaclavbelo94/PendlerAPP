@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,7 @@ import { useUnifiedPremiumStatus } from "@/hooks/useUnifiedPremiumStatus";
 
 export const IndexBanners = () => {
   const { user } = useAuth();
-  const { canAccess } = useUnifiedPremiumStatus();
+  const { isPremium } = useUnifiedPremiumStatus();
 
   return (
     <AnimatePresence>
@@ -36,7 +37,7 @@ export const IndexBanners = () => {
         </motion.div>
       )}
         
-      {user && !canAccess && (
+      {user && !isPremium && (
         <motion.div 
           className="bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 py-3 px-4 text-center relative overflow-hidden"
           initial={{ opacity: 0, y: -20 }}

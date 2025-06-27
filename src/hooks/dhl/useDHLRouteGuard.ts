@@ -1,7 +1,7 @@
 
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/auth';
 import { isDHLEmployee, getDHLSetupPath } from '@/utils/dhlAuthUtils';
 import { useDHLData } from './useDHLData';
 

@@ -1,262 +1,138 @@
-
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { useAuth } from "@/hooks/useAuth";
-import { useNavigate } from "react-router-dom";
-import { 
-  User, 
-  Crown, 
-  Settings, 
-  Activity, 
-  Shield, 
-  Mail,
-  Calendar,
-  CheckCircle,
-  AlertCircle,
-  ArrowRight
-} from "lucide-react";
-import { useTranslation } from 'react-i18next';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useAuth } from '@/hooks/auth';
+import { User, Mail, Calendar, MapPin, Briefcase, Edit2, Save, X } from "lucide-react";
 
 interface ProfileOverviewProps {
-  userId?: string;
+  onEdit: () => void;
+  onSave: () => void;
+  onCancel: () => void;
+  isEditing: boolean;
 }
 
-const ProfileOverview: React.FC<ProfileOverviewProps> = ({ userId }) => {
-  const { user, isPremium, isAdmin } = useAuth();
-  const navigate = useNavigate();
-  const [profileCompletion, setProfileCompletion] = useState(65);
-  const { t } = useTranslation('profile');
+const ProfileOverview: React.FC<ProfileOverviewProps> = ({ onEdit, onSave, onCancel, isEditing }) => {
+  const { user } = useAuth();
+  const [username, setUsername] = useState('');
+  const [location, setLocation] = useState('');
+  const [bio, setBio] = useState('');
 
   useEffect(() => {
-    // Calculate profile completion based on available data
-    let completion = 0;
-    if (user?.email) completion += 25;
-    if (user?.created_at) completion += 25;
-    if (isPremium) completion += 25;
-    if (localStorage.getItem('generalSettings')) completion += 25;
-    setProfileCompletion(completion);
-  }, [user, isPremium]);
-
-  const quickActions = [
-    {
-      icon: Settings,
-      label: t('accountSettings'),
-      description: t('editSettings'),
-      action: () => navigate('/settings'),
-      color: 'text-blue-600'
-    },
-    {
-      icon: Activity,
-      label: t('dashboard'),
-      description: t('viewActivityOverview'),
-      action: () => navigate('/dashboard'),
-      color: 'text-green-600'
+    if (user) {
+      setUsername(user.user_metadata?.username || '');
+      setLocation(user.user_metadata?.location || '');
+      setBio(user.user_metadata?.bio || '');
     }
-  ];
+  }, [user]);
 
-  if (!isPremium) {
-    quickActions.push({
-      icon: Crown,
-      label: t('upgradeToPremium'),
-      description: t('unlockAllFeatures'),
-      action: () => navigate('/premium'),
-      color: 'text-amber-600'
-    });
+  if (!user) {
+    return <p>Načítání profilu...</p>;
   }
 
   return (
-    <div className="space-y-6">
-      {/* Profile Header Card */}
-      <Card className="bg-gradient-to-br from-card/80 to-card/60 backdrop-blur-sm border border-border/50">
-        <CardContent className="p-6">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-6">
-            <Avatar className="h-20 w-20 mx-auto sm:mx-0 border-4 border-primary/20">
-              <AvatarFallback className="text-2xl bg-gradient-to-br from-primary/20 to-accent/20">
-                {user?.email?.charAt(0).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            
-            <div className="flex-1 text-center sm:text-left">
-              <div className="flex items-center gap-2 justify-center sm:justify-start mb-2">
-                <h2 className="text-2xl font-bold">{user?.email}</h2>
-                {isPremium && (
-                  <Badge className="bg-amber-500">
-                    <Crown className="h-3 w-3 mr-1" />
-                    Premium
-                  </Badge>
-                )}
-                {isAdmin && (
-                  <Badge className="bg-red-500">
-                    <Shield className="h-3 w-3 mr-1" />
-                    Admin
-                  </Badge>
-                )}
-              </div>
-              
-              <div className="flex items-center gap-2 text-muted-foreground justify-center sm:justify-start mb-4">
-                <Mail className="h-4 w-4" />
-                <span className="text-sm">{user?.email}</span>
-              </div>
-              
-              <div className="flex items-center gap-2 text-muted-foreground justify-center sm:justify-start">
-                <Calendar className="h-4 w-4" />
-                <span className="text-sm">
-                  {t('memberSince')} {new Date(user?.created_at || '').toLocaleDateString('cs-CZ')}
-                </span>
-              </div>
-            </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Přehled profilu</CardTitle>
+        <CardDescription>Zde jsou vaše základní informace.</CardDescription>
+      </CardHeader>
+      <CardContent className="grid gap-6">
+        <div className="flex items-center space-x-4">
+          <Avatar className="h-12 w-12">
+            <AvatarImage src={user.user_metadata?.avatar_url} />
+            <AvatarFallback>
+              <User className="h-5 w-5" />
+            </AvatarFallback>
+          </Avatar>
+          <div>
+            <h2 className="text-lg font-semibold">{username}</h2>
+            <Badge variant="secondary">
+              <Mail className="h-3 w-3 mr-1" />
+              {user.email}
+            </Badge>
           </div>
-        </CardContent>
-      </Card>
+        </div>
 
-      {/* Profile Completion */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <CheckCircle className="h-5 w-5 text-green-600" />
-            {t('profileCompletion')}
-          </CardTitle>
-          <CardDescription>
-            {t('profileCompletionDescription')}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">{t('overallProgress')}</span>
-              <span className="text-sm text-muted-foreground">{profileCompletion}%</span>
-            </div>
-            <Progress value={profileCompletion} className="h-2" />
-            
-            <div className="grid grid-cols-2 gap-4 mt-4">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-600" />
-                <span className="text-sm">{t('emailVerified')}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                {isPremium ? (
-                  <CheckCircle className="h-4 w-4 text-green-600" />
-                ) : (
-                  <AlertCircle className="h-4 w-4 text-orange-600" />
-                )}
-                <span className="text-sm">{t('premiumAccount')}</span>
-              </div>
-            </div>
+        <div className="space-y-2">
+          <Label htmlFor="username">Uživatelské jméno</Label>
+          {isEditing ? (
+            <Input
+              id="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              <User className="h-4 w-4 mr-2 inline-block" />
+              {username || 'Nezadáno'}
+            </p>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="location">Lokace</Label>
+          {isEditing ? (
+            <Input
+              id="location"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+            />
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              <MapPin className="h-4 w-4 mr-2 inline-block" />
+              {location || 'Nezadáno'}
+            </p>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="bio">Bio</Label>
+          {isEditing ? (
+            <Input
+              id="bio"
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
+            />
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              <Briefcase className="h-4 w-4 mr-2 inline-block" />
+              {bio || 'Nezadáno'}
+            </p>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <Label>Datum registrace</Label>
+          <p className="text-sm text-muted-foreground">
+            <Calendar className="h-4 w-4 mr-2 inline-block" />
+            {user.created_at}
+          </p>
+        </div>
+
+        {!isEditing && (
+          <Button onClick={onEdit} className="w-full">
+            <Edit2 className="h-4 w-4 mr-2" />
+            Upravit profil
+          </Button>
+        )}
+
+        {isEditing && (
+          <div className="flex justify-end space-x-2">
+            <Button variant="ghost" onClick={onCancel}>
+              <X className="h-4 w-4 mr-2" />
+              Zrušit
+            </Button>
+            <Button onClick={onSave}>
+              <Save className="h-4 w-4 mr-2" />
+              Uložit
+            </Button>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Quick Actions */}
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('quickActions')}</CardTitle>
-          <CardDescription>
-            {t('quickActionsDescription')}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {quickActions.map((action, index) => (
-              <button
-                key={index}
-                onClick={action.action}
-                className="p-4 text-left rounded-lg border border-border hover:bg-accent/50 transition-colors group"
-              >
-                <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-lg bg-muted group-hover:bg-background transition-colors`}>
-                    <action.icon className={`h-5 w-5 ${action.color}`} />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-medium group-hover:text-foreground">
-                      {action.label}
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      {action.description}
-                    </p>
-                  </div>
-                  <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
-                </div>
-              </button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Account Status */}
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('accountStatus')}</CardTitle>
-          <CardDescription>
-            {t('accountStatusDescription')}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="h-5 w-5 text-green-600" />
-                <span className="font-medium">{t('accountActive')}</span>
-              </div>
-              <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                {t('verified')}
-              </Badge>
-            </div>
-            
-            {isPremium ? (
-              <div className="flex items-center justify-between p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800">
-                <div className="flex items-center gap-2">
-                  <Crown className="h-5 w-5 text-amber-600" />
-                  <div>
-                    <span className="font-medium block">{t('premiumSubscriptionActive')}</span>
-                    <span className="text-sm text-muted-foreground">
-                      {t('accessToAllFeatures')}
-                    </span>
-                  </div>
-                </div>
-                <Button variant="outline" size="sm" onClick={() => navigate('/premium')}>
-                  {t('manage')}
-                </Button>
-              </div>
-            ) : (
-              <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                <div className="flex items-center gap-2">
-                  <User className="h-5 w-5 text-blue-600" />
-                  <div>
-                    <span className="font-medium block">{t('basicAccount')}</span>
-                    <span className="text-sm text-muted-foreground">
-                      {t('upgradeForMoreFeatures')}
-                    </span>
-                  </div>
-                </div>
-                <Button onClick={() => navigate('/premium')} size="sm">
-                  <Crown className="h-4 w-4 mr-2" />
-                  {t('upgrade')}
-                </Button>
-              </div>
-            )}
-
-            <div className="pt-4 border-t">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                <div>
-                  <span className="text-muted-foreground">{t('registration')}:</span>
-                  <p className="font-medium">
-                    {new Date(user?.created_at || '').toLocaleDateString('cs-CZ')}
-                  </p>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">{t('status')}:</span>
-                  <p className="font-medium text-green-600">{t('active')}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+        )}
+      </CardContent>
+    </Card>
   );
 };
 

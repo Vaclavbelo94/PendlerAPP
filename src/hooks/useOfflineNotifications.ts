@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { useOfflineStatus } from './useOfflineStatus';
@@ -12,22 +13,20 @@ export const useOfflineNotifications = () => {
   const [onlineToastShown, setOnlineToastShown] = useState(false);
 
   useEffect(() => {
-    if (isOffline && user && settings.showOfflineNotifications && !offlineToastShown) {
-      toast({
-        title: 'Offline režim',
+    if (isOffline && user && settings.showSyncNotifications && !offlineToastShown) {
+      toast('Offline režim', {
         description: 'Aplikace je nyní v offline režimu.',
       });
       setOfflineToastShown(true);
       setOnlineToastShown(false);
-    } else if (!isOffline && user && settings.showOfflineNotifications && !onlineToastShown) {
-      toast({
-        title: 'Online režim',
+    } else if (!isOffline && user && settings.showSyncNotifications && !onlineToastShown) {
+      toast('Online režim', {
         description: 'Aplikace je nyní v online režimu.',
       });
       setOnlineToastShown(true);
       setOfflineToastShown(false);
     }
-  }, [isOffline, user, settings.showOfflineNotifications, offlineToastShown, onlineToastShown]);
+  }, [isOffline, user, settings.showSyncNotifications, offlineToastShown, onlineToastShown]);
 
   return { offlineToastShown, onlineToastShown };
 };

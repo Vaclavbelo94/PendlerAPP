@@ -1,101 +1,112 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/hooks/useAuth';
-import { toast } from 'sonner';
+import { useAuth } from '@/hooks/auth';
+import { isDHLEmployee } from '@/utils/dhlAuthUtils';
 
 interface DHLSetupData {
-  position_id: string;
-  work_group_id: string;
-  reference_date?: string;
-  reference_woche?: number;
+  personalNumber: string;
+  depot: string;
+  route: string;
+  shift: string;
+}
+
+interface DHLSetupState {
+  isLoading: boolean;
+  isSubmitting: boolean;
+  error: string | null;
+  isSetupComplete: boolean;
 }
 
 export const useDHLSetup = () => {
   const { user } = useAuth();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [state, setState] = useState<DHLSetupState>({
+    isLoading: true,
+    isSubmitting: false,
+    error: null,
+    isSetupComplete: false,
+  });
 
-  const submitSetup = async (data: DHLSetupData) => {
-    if (!user) {
-      toast.error('Musíte být přihlášeni');
+  // Check if user already has DHL setup
+  useEffect(() => {
+    const checkSetupStatus = async () => {
+      if (!user || !isDHLEmployee(user)) {
+        setState(prev => ({ ...prev, isLoading: false }));
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from('dhl_user_assignments')
+          .select('*')
+          .eq('user_id', user.id)
+          .single();
+
+        if (error && error.code !== 'PGRST116') {
+          throw error;
+        }
+
+        setState(prev => ({
+          ...prev,
+          isLoading: false,
+          isSetupComplete: !!data,
+        }));
+      } catch (error) {
+        console.error('Error checking DHL setup status:', error);
+        setState(prev => ({
+          ...prev,
+          isLoading: false,
+          error: 'Chyba při načítání nastavení DHL',
+        }));
+      }
+    };
+
+    checkSetupStatus();
+  }, [user]);
+
+  const submitSetup = async (setupData: DHLSetupData) => {
+    if (!user || !isDHLEmployee(user)) {
+      setState(prev => ({ ...prev, error: 'Neautorizovaný přístup' }));
       return false;
     }
 
-    setIsSubmitting(true);
-    
+    setState(prev => ({ ...prev, isSubmitting: true, error: null }));
+
     try {
-      console.log('Submitting DHL setup data:', data);
-      
-      // Zkontrolujeme, zda už uživatel nemá DHL přiřazení
-      const { data: existingAssignment, error: checkError } = await supabase
-        .from('user_dhl_assignments')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('is_active', true)
-        .maybeSingle();
+      const { error } = await supabase
+        .from('dhl_user_assignments')
+        .upsert({
+          user_id: user.id,
+          personal_number: setupData.personalNumber,
+          depot: setupData.depot,
+          route: setupData.route,
+          shift: setupData.shift,
+          updated_at: new Date().toISOString(),
+        });
 
-      if (checkError) {
-        console.error('Error checking existing assignment:', checkError);
-        throw checkError;
-      }
+      if (error) throw error;
 
-      console.log('Existing assignment:', existingAssignment);
+      setState(prev => ({
+        ...prev,
+        isSubmitting: false,
+        isSetupComplete: true,
+      }));
 
-      const updateData = {
-        dhl_position_id: data.position_id,
-        dhl_work_group_id: data.work_group_id,
-        updated_at: new Date().toISOString(),
-        ...(data.reference_date && { reference_date: data.reference_date }),
-        ...(data.reference_woche && { reference_woche: data.reference_woche })
-      };
-
-      if (existingAssignment) {
-        // Aktualizujeme existující přiřazení
-        const { error: updateError } = await supabase
-          .from('user_dhl_assignments')
-          .update(updateData)
-          .eq('id', existingAssignment.id);
-
-        if (updateError) {
-          console.error('Error updating assignment:', updateError);
-          throw updateError;
-        }
-        
-        console.log('DHL assignment updated successfully');
-      } else {
-        // Vytvoříme nové přiřazení
-        const { error: insertError } = await supabase
-          .from('user_dhl_assignments')
-          .insert({
-            user_id: user.id,
-            dhl_position_id: data.position_id,
-            dhl_work_group_id: data.work_group_id,
-            is_active: true,
-            ...(data.reference_date && { reference_date: data.reference_date }),
-            ...(data.reference_woche && { reference_woche: data.reference_woche })
-          });
-
-        if (insertError) {
-          console.error('Error creating assignment:', insertError);
-          throw insertError;
-        }
-        
-        console.log('DHL assignment created successfully');
-      }
-
-      toast.success('DHL nastavení bylo úspěšně uloženo!');
       return true;
-    } catch (error) {
-      console.error('Error saving DHL setup:', error);
-      toast.error('Chyba při ukládání nastavení: ' + (error as Error).message);
+    } catch (error: any) {
+      console.error('Error submitting DHL setup:', error);
+      setState(prev => ({
+        ...prev,
+        isSubmitting: false,
+        error: error.message || 'Chyba při ukládání nastavení',
+      }));
       return false;
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
   return {
+    ...state,
     submitSetup,
-    isSubmitting
+    canAccess: isDHLEmployee(user),
   };
 };
