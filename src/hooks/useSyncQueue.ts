@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/auth';
@@ -15,14 +16,22 @@ interface SyncQueueState {
   queue: SyncQueueItem[];
   isSyncing: boolean;
   error: string | null;
+  queueCount: number;
 }
 
-export const useSyncQueue = () => {
+interface SyncQueueWithActions extends SyncQueueState {
+  enqueue: (operation: 'create' | 'update' | 'delete', table: string, data: any) => Promise<void>;
+  sync: () => Promise<void>;
+  processQueue: () => Promise<void>;
+}
+
+export const useSyncQueue = (): SyncQueueWithActions => {
   const { user } = useAuth();
   const [state, setState] = useState<SyncQueueState>({
     queue: [],
     isSyncing: false,
     error: null,
+    queueCount: 0,
   });
 
   useEffect(() => {
@@ -40,7 +49,11 @@ export const useSyncQueue = () => {
           throw error;
         }
 
-        setState(prevState => ({ ...prevState, queue: data || [] }));
+        setState(prevState => ({ 
+          ...prevState, 
+          queue: data || [],
+          queueCount: data?.length || 0
+        }));
       } catch (error: any) {
         console.error('Error loading sync queue:', error);
         setState(prevState => ({
@@ -87,6 +100,7 @@ export const useSyncQueue = () => {
       setState(prevState => ({
         ...prevState,
         queue: [...prevState.queue, insertedData],
+        queueCount: prevState.queueCount + 1,
       }));
     } catch (error: any) {
       console.error('Error enqueuing item:', error);
@@ -133,6 +147,7 @@ export const useSyncQueue = () => {
           setState(prevState => ({
             ...prevState,
             queue: prevState.queue.filter(q => q.id !== item.id),
+            queueCount: prevState.queueCount - 1,
           }));
         } catch (syncError: any) {
           console.error(`Error syncing item ${item.id}:`, syncError);
@@ -157,9 +172,14 @@ export const useSyncQueue = () => {
     }
   };
 
+  const processQueue = async () => {
+    await sync();
+  };
+
   return {
     ...state,
     enqueue,
     sync,
+    processQueue,
   };
 };

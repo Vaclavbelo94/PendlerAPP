@@ -4,7 +4,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { useOfflineMaster } from '@/hooks/useOfflineMaster';
+import { useOfflineStatus } from '@/hooks/useOfflineStatus';
+import { useSyncQueue } from '@/hooks/useSyncQueue';
+import { useOfflineShifts } from '@/hooks/useOfflineShifts';
+import { useOfflineVehicles } from '@/hooks/useOfflineVehicles';
+import { useOfflineCalculations } from '@/hooks/useOfflineCalculations';
 import { 
   CloudOff, 
   Wifi, 
@@ -18,16 +22,21 @@ import {
 import { SyncStatusIndicator } from './SyncStatusIndicator';
 
 const OfflineStatusPanel: React.FC = () => {
-  const {
-    isOffline,
-    totalPendingItems,
-    isSyncing,
-    syncAllPendingData,
-    shifts,
-    vehicles,
-    calculations,
-    syncQueue
-  } = useOfflineMaster();
+  const { isOffline } = useOfflineStatus();
+  const { queueCount, isSyncing, processQueue } = useSyncQueue();
+  const { shifts, isLoading: shiftsLoading } = useOfflineShifts();
+  const { vehicles, isLoading: vehiclesLoading } = useOfflineVehicles();
+  const { isLoading: calculationsLoading, syncCalculations } = useOfflineCalculations();
+
+  // Calculate pending items
+  const pendingShifts = shifts.filter(shift => !shift.synced).length;
+  const pendingVehicles = vehicles.filter(vehicle => !vehicle.synced).length;
+  const totalPendingItems = pendingShifts + pendingVehicles + queueCount;
+
+  const syncAllPendingData = async () => {
+    await processQueue();
+    await syncCalculations();
+  };
 
   return (
     <Card className="w-full max-w-md">
@@ -72,43 +81,33 @@ const OfflineStatusPanel: React.FC = () => {
             
             {/* Breakdown by category */}
             <div className="space-y-1 text-xs">
-              {shifts.hasPendingShifts && (
+              {pendingShifts > 0 && (
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1">
                     <Calendar className="h-3 w-3" />
                     <span>Směny</span>
                   </div>
-                  <span>{shifts.offlineShifts.filter(s => !s.synced).length}</span>
+                  <span>{pendingShifts}</span>
                 </div>
               )}
               
-              {vehicles.hasPendingVehicles && (
+              {pendingVehicles > 0 && (
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1">
                     <Car className="h-3 w-3" />
                     <span>Vozidla</span>
                   </div>
-                  <span>{vehicles.offlineVehicles.filter(v => !v.synced).length}</span>
-                </div>
-              )}
-              
-              {calculations.hasPendingCalculations && (
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1">
-                    <Calculator className="h-3 w-3" />
-                    <span>Výpočty</span>
-                  </div>
-                  <span>{calculations.offlineCalculations.filter(c => !c.synced).length}</span>
+                  <span>{pendingVehicles}</span>
                 </div>
               )}
 
-              {syncQueue.queueCount > 0 && (
+              {queueCount > 0 && (
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1">
                     <Clock className="h-3 w-3" />
                     <span>Ve frontě</span>
                   </div>
-                  <span>{syncQueue.queueCount}</span>
+                  <span>{queueCount}</span>
                 </div>
               )}
             </div>

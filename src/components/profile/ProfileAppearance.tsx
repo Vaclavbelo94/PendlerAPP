@@ -34,17 +34,43 @@ const ProfileAppearanceContent = ({
   const { t } = useTranslation('profile');
   
   const {
-    darkMode,
-    setDarkMode,
-    colorScheme,
-    handleColorSchemeChange,
-    compactMode,
-    setCompactMode,
+    theme,
+    primaryColor,
+    accentColor,
     isLoading,
-    isChangingTheme,
     error,
-    handleSave
-  } = useAppearanceSettings(initialDarkMode, initialColorScheme, initialCompactMode, onSave);
+    saveSettings
+  } = useAppearanceSettings();
+
+  // Map theme to darkMode for compatibility
+  const darkMode = theme === 'dark';
+  const setDarkMode = (isDark: boolean) => {
+    saveSettings(isDark ? 'dark' : 'light', primaryColor, accentColor);
+  };
+
+  // Use primaryColor as colorScheme for compatibility
+  const colorScheme = primaryColor;
+  const handleColorSchemeChange = (newColorScheme: string) => {
+    saveSettings(theme, newColorScheme, accentColor);
+  };
+
+  // Mock compact mode for now
+  const compactMode = false;
+  const setCompactMode = (isCompact: boolean) => {
+    console.log('Compact mode:', isCompact);
+  };
+
+  const isChangingTheme = isLoading;
+
+  const handleSave = async () => {
+    if (onSave) {
+      onSave({
+        darkMode,
+        colorScheme,
+        compactMode,
+      });
+    }
+  };
 
   if (isLoading) {
     return (

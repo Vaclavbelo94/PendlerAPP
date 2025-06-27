@@ -1,16 +1,14 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/auth';
 
 interface Shift {
   id: string;
-  start_time: string;
-  end_time: string;
-  break_duration: number;
-  hourly_rate: number;
-  vehicle_id: string | null;
-  created_at: string;
-  user_id: string;
+  date: string;
+  type: string;
+  notes?: string;
+  synced?: boolean;
 }
 
 interface OfflineShiftsState {
@@ -19,7 +17,13 @@ interface OfflineShiftsState {
   error: string | null;
 }
 
-export const useOfflineShifts = () => {
+interface OfflineShiftsWithActions extends OfflineShiftsState {
+  addOfflineShift: (newShift: Omit<Shift, 'created_at' | 'id' | 'user_id'>) => Promise<void>;
+  updateOfflineShift: (shiftId: string, updatedShiftData: Partial<Omit<Shift, 'created_at' | 'id' | 'user_id'>>) => Promise<void>;
+  deleteOfflineShift: (shiftId: string) => Promise<void>;
+}
+
+export const useOfflineShifts = (): OfflineShiftsWithActions => {
   const { user } = useAuth();
   const [state, setState] = useState<OfflineShiftsState>({
     shifts: [],
@@ -28,116 +32,92 @@ export const useOfflineShifts = () => {
   });
 
   useEffect(() => {
-    const loadOfflineShifts = async () => {
+    const fetchShifts = async () => {
       if (!user) return;
 
       setState(prevState => ({ ...prevState, isLoading: true, error: null }));
 
       try {
-        // Fetch shifts from local storage
-        const storedShifts = localStorage.getItem(`offline_shifts_${user.id}`);
-        const parsedShifts: Shift[] = storedShifts ? JSON.parse(storedShifts) : [];
+        const { data, error } = await supabase
+          .from('shifts')
+          .select('*')
+          .eq('user_id', user.id);
 
-        setState(prevState => ({
-          ...prevState,
-          shifts: parsedShifts,
+        if (error) {
+          throw error;
+        }
+
+        setState({
+          shifts: data || [],
           isLoading: false,
-        }));
+          error: null,
+        });
       } catch (error: any) {
-        console.error('Error loading offline shifts:', error);
-        setState(prevState => ({
-          ...prevState,
-          error: error.message || 'Chyba při načítání směn z lokálního úložiště',
+        console.error('Error fetching shifts:', error);
+        setState({
+          shifts: [],
           isLoading: false,
-        }));
+          error: error.message || 'Chyba při načítání směn',
+        });
       }
     };
 
-    loadOfflineShifts();
+    fetchShifts();
   }, [user]);
 
-  const addOfflineShift = async (newShift: Omit<Shift, 'id' | 'created_at' | 'user_id'>) => {
+  const addOfflineShift = async (newShift: Omit<Shift, 'created_at' | 'id' | 'user_id'>) => {
     if (!user) return;
 
     try {
-      // Generate a unique ID for the new shift
-      const id = Math.random().toString(36).substring(2, 15);
-      const created_at = new Date().toISOString();
+      const { data, error } = await supabase
+        .from('shifts')
+        .insert({
+          ...newShift,
+          user_id: user.id,
+        })
+        .select()
+        .single();
 
-      const shiftToAdd: Shift = {
-        id,
-        created_at,
-        user_id: user.id,
-        ...newShift,
-      };
+      if (error) throw error;
 
-      // Get existing shifts from local storage
-      const storedShifts = localStorage.getItem(`offline_shifts_${user.id}`);
-      const parsedShifts: Shift[] = storedShifts ? JSON.parse(storedShifts) : [];
-
-      // Add the new shift to the array
-      const updatedShifts = [...parsedShifts, shiftToAdd];
-
-      // Store the updated shifts array back in local storage
-      localStorage.setItem(`offline_shifts_${user.id}`, JSON.stringify(updatedShifts));
-
-      // Update the state with the new shift
       setState(prevState => ({
         ...prevState,
-        shifts: updatedShifts,
-        error: null,
+        shifts: [...prevState.shifts, data],
       }));
     } catch (error: any) {
-      console.error('Error adding offline shift:', error);
+      console.error('Error adding shift:', error);
       setState(prevState => ({
         ...prevState,
-        error: error.message || 'Chyba při ukládání směny do lokálního úložiště',
+        error: error.message || 'Chyba při přidávání směny',
       }));
     }
   };
 
-  const updateOfflineShift = async (shiftId: string, updatedShiftData: Partial<Omit<Shift, 'id' | 'created_at' | 'user_id'>>) => {
+  const updateOfflineShift = async (shiftId: string, updatedShiftData: Partial<Omit<Shift, 'created_at' | 'id' | 'user_id'>>) => {
     if (!user) return;
 
     try {
-      // Get existing shifts from local storage
-      const storedShifts = localStorage.getItem(`offline_shifts_${user.id}`);
-      const parsedShifts: Shift[] = storedShifts ? JSON.parse(storedShifts) : [];
+      const { data, error } = await supabase
+        .from('shifts')
+        .update(updatedShiftData)
+        .eq('id', shiftId)
+        .eq('user_id', user.id)
+        .select()
+        .single();
 
-      // Find the shift to update
-      const shiftIndex = parsedShifts.findIndex(shift => shift.id === shiftId);
+      if (error) throw error;
 
-      if (shiftIndex === -1) {
-        throw new Error('Směna nenalezena v lokálním úložišti');
-      }
-
-      // Update the shift with the new data
-      const updatedShift = {
-        ...parsedShifts[shiftIndex],
-        ...updatedShiftData,
-      };
-
-      // Replace the old shift with the updated shift in the array
-      const updatedShifts = [
-        ...parsedShifts.slice(0, shiftIndex),
-        updatedShift as Shift,
-        ...parsedShifts.slice(shiftIndex + 1),
-      ];
-
-      // Store the updated shifts array back in local storage
-      localStorage.setItem(`offline_shifts_${user.id}`, JSON.stringify(updatedShifts));
-
-      // Update the state with the updated shift
       setState(prevState => ({
         ...prevState,
-        shifts: updatedShifts,
-        error: null,
+        shifts: prevState.shifts.map(shift => 
+          shift.id === shiftId ? { ...shift, ...data } : shift
+        ),
       }));
     } catch (error: any) {
-      console.error('Error updating offline shift:', error);
+      console.error('Error updating shift:', error);
       setState(prevState => ({
         ...prevState,
-        error: error.message || 'Chyba při aktualizaci směny v lokálním úložišti',
+        error: error.message || 'Chyba při aktualizaci směny',
       }));
     }
   };
@@ -146,27 +126,23 @@ export const useOfflineShifts = () => {
     if (!user) return;
 
     try {
-      // Get existing shifts from local storage
-      const storedShifts = localStorage.getItem(`offline_shifts_${user.id}`);
-      const parsedShifts: Shift[] = storedShifts ? JSON.parse(storedShifts) : [];
+      const { error } = await supabase
+        .from('shifts')
+        .delete()
+        .eq('id', shiftId)
+        .eq('user_id', user.id);
 
-      // Filter out the shift to delete
-      const updatedShifts = parsedShifts.filter(shift => shift.id !== shiftId);
+      if (error) throw error;
 
-      // Store the updated shifts array back in local storage
-      localStorage.setItem(`offline_shifts_${user.id}`, JSON.stringify(updatedShifts));
-
-      // Update the state with the updated shifts
       setState(prevState => ({
         ...prevState,
-        shifts: updatedShifts,
-        error: null,
+        shifts: prevState.shifts.filter(shift => shift.id !== shiftId),
       }));
     } catch (error: any) {
-      console.error('Error deleting offline shift:', error);
+      console.error('Error deleting shift:', error);
       setState(prevState => ({
         ...prevState,
-        error: error.message || 'Chyba při mazání směny z lokálního úložiště',
+        error: error.message || 'Chyba při mazání směny',
       }));
     }
   };

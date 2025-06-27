@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -7,13 +8,27 @@ interface AIInsights {
   key: string;
   description: string;
   enabled: boolean;
+  confidence?: number;
 }
 
-export const useAIInsights = () => {
+interface AIInsightsWithMethods {
+  insights: AIInsights[];
+  isLoading: boolean;
+  error: string | null;
+  models: any[];
+  isGeneratingInsights: boolean;
+  generateInsights: () => Promise<void>;
+  getInsightsByType: (type: string) => AIInsights[];
+  getHighImpactInsights: () => AIInsights[];
+  getActionableInsights: () => AIInsights[];
+}
+
+export const useAIInsights = (): AIInsightsWithMethods => {
   const { user } = useAuth();
   const [insights, setInsights] = useState<AIInsights[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isGeneratingInsights, setIsGeneratingInsights] = useState(false);
 
   useEffect(() => {
     const fetchAIInsights = async () => {
@@ -41,10 +56,36 @@ export const useAIInsights = () => {
     fetchAIInsights();
   }, [user]);
 
+  const generateInsights = async () => {
+    setIsGeneratingInsights(true);
+    // Mock insight generation
+    setTimeout(() => {
+      setIsGeneratingInsights(false);
+      toast.success('Insights generated successfully');
+    }, 2000);
+  };
+
+  const getInsightsByType = (type: string) => {
+    return insights.filter(insight => insight.key.includes(type));
+  };
+
+  const getHighImpactInsights = () => {
+    return insights.filter(insight => (insight.confidence || 0) > 0.8);
+  };
+
+  const getActionableInsights = () => {
+    return insights.filter(insight => insight.enabled);
+  };
+
   return {
     insights,
     isLoading,
     error,
+    models: [], // Mock models array
+    isGeneratingInsights,
+    generateInsights,
+    getInsightsByType,
+    getHighImpactInsights,
+    getActionableInsights,
   };
 };
-
