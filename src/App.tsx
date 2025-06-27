@@ -26,11 +26,6 @@ import DHLSetup from "./pages/DHLSetup";
 import { LoadingSpinner } from "./components/ui/LoadingSpinner";
 import "./i18n/config";
 
-// Import manual premium activation utility
-import "@/utils/manualPremiumActivation";
-// Import promo code fix utility
-import "@/utils/fixPromoCodeIssues";
-
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -42,6 +37,8 @@ const queryClient = new QueryClient({
 });
 
 function App() {
+  console.log('App component rendering...');
+  
   return (
     <AppErrorBoundary>
       <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
