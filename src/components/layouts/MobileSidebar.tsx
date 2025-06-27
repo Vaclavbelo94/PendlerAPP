@@ -14,8 +14,8 @@ const MobileSidebar: React.FC<MobileSidebarProps> = ({
 }) => {
   const isMobile = useIsMobile();
   
-  // Use overlay variant for mobile
-  const sidebarVariant = isMobile ? 'overlay' : 'full';
+  // Use overlay variant for mobile (full screen sidebar)
+  const sidebarVariant = isMobile ? 'overlay' : 'overlay';
   
   return (
     <MobileSidebarVariants 

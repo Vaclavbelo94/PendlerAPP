@@ -3,7 +3,7 @@ import React from 'react';
 import { CompactMobileSidebar } from './CompactMobileSidebar';
 import { ModernMobileSidebar } from './ModernMobileSidebar';
 
-export type MobileSidebarVariant = 'compact' | 'full';
+export type MobileSidebarVariant = 'compact' | 'full' | 'overlay';
 
 interface MobileSidebarVariantsProps {
   variant: MobileSidebarVariant;
@@ -19,7 +19,8 @@ export const MobileSidebarVariants: React.FC<MobileSidebarVariantsProps> = ({
       return <CompactMobileSidebar isOpen={true} onClose={closeSidebar} />;
     case 'full':
       return <ModernMobileSidebar isOpen={true} onClose={closeSidebar} />;
+    case 'overlay':
     default:
-      return <CompactMobileSidebar isOpen={true} onClose={closeSidebar} />;
+      return <ModernMobileSidebar isOpen={true} onClose={closeSidebar} />;
   }
 };

@@ -1,10 +1,20 @@
 
 import React from 'react';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Button } from '@/components/ui/button';
-import { Home, Calendar, Car, Settings, BarChart3, Crown } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+import { X, User, LogOut, Crown } from 'lucide-react';
+import { 
+  Home, 
+  Calendar, 
+  FileText, 
+  Car, 
+  Map, 
+  Languages, 
+  Scale 
+} from 'lucide-react';
 import { useAuth } from '@/hooks/auth';
-import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 
 interface ModernMobileSidebarProps {
   isOpen: boolean;
@@ -15,47 +25,132 @@ export const ModernMobileSidebar: React.FC<ModernMobileSidebarProps> = ({
   isOpen,
   onClose
 }) => {
-  const { user, unifiedUser } = useAuth();
-  const navigate = useNavigate();
+  const { user, unifiedUser, signOut } = useAuth();
+  const location = useLocation();
+  const { t } = useTranslation('navigation');
 
   const navigationItems = [
-    { icon: Home, label: 'Dashboard', path: '/dashboard' },
-    { icon: Calendar, label: 'Směny', path: '/shifts' },
-    { icon: Car, label: 'Vozidla', path: '/vehicles' },
-    { icon: BarChart3, label: 'Analytika', path: '/analytics', premium: true },
-    { icon: Settings, label: 'Nastavení', path: '/settings' },
+    { icon: Home, label: t('dashboard'), path: '/dashboard' },
+    { icon: Calendar, label: t('shifts'), path: '/shifts', premium: true },
+    { icon: FileText, label: t('taxAdvisor'), path: '/tax-advisor', premium: true },
+    { icon: Car, label: t('vehicle'), path: '/vehicle', premium: true },
+    { icon: Map, label: t('travel'), path: '/travel', premium: true },
+    { icon: Languages, label: t('translator'), path: '/translator' },
+    { icon: Scale, label: t('laws'), path: '/laws' },
   ];
 
+  const isActive = (path: string) => location.pathname === path;
+
+  const handleLogout = async () => {
+    await signOut();
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
   return (
-    <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent side="left" className="w-80">
-        <SheetHeader className="space-y-2">
-          <SheetTitle>Menu</SheetTitle>
-        </SheetHeader>
-        <div className="grid gap-4 mt-4">
-          {navigationItems.map((item) => {
-            const isLocked = item.premium && !unifiedUser?.isPremium;
-            
-            return (
-              <Button
-                key={item.path}
-                variant="ghost"
-                className="justify-start"
-                onClick={() => {
-                  navigate(isLocked ? '/premium' : item.path);
-                  onClose();
-                }}
-              >
-                <item.icon className="mr-2 h-4 w-4" />
-                {item.label}
-                {item.premium && !unifiedUser?.isPremium && (
-                  <Crown className="ml-auto h-3 w-3 text-amber-500" />
-                )}
-              </Button>
-            );
-          })}
+    <>
+      {/* Backdrop */}
+      <div 
+        className="fixed inset-0 bg-black/50 z-40"
+        onClick={onClose}
+      />
+      
+      {/* Sidebar */}
+      <div className="fixed top-0 left-0 h-full w-80 bg-black text-white z-50 flex flex-col transform transition-transform duration-300">
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 border-b border-gray-700">
+          <div className="flex items-center space-x-2">
+            <div className="h-8 w-8 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center">
+              <span className="text-white font-bold text-sm">PA</span>
+            </div>
+            <span className="font-bold text-white">PendlerApp</span>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-gray-800 rounded-md transition-colors"
+          >
+            <X className="h-5 w-5 text-white" />
+          </button>
         </div>
-      </SheetContent>
-    </Sheet>
+
+        {/* Navigation */}
+        <div className="flex-1 overflow-y-auto py-4">
+          <nav className="space-y-1 px-3">
+            {navigationItems.map((item) => {
+              const Icon = item.icon;
+              const isLocked = item.premium && !unifiedUser?.isPremium;
+              const active = isActive(item.path);
+              
+              return (
+                <Link
+                  key={item.path}
+                  to={isLocked ? '/premium' : item.path}
+                  onClick={onClose}
+                  className={`flex items-center space-x-3 px-3 py-3 rounded-md text-base transition-colors ${
+                    active 
+                      ? 'bg-gray-800 text-white' 
+                      : 'text-gray-300 hover:text-white hover:bg-gray-800'
+                  } ${isLocked ? 'opacity-60' : ''}`}
+                >
+                  <Icon className="h-5 w-5" />
+                  <span className="flex-1">{item.label}</span>
+                  {item.premium && !unifiedUser?.isPremium && (
+                    <Crown className="h-4 w-4 text-amber-500" />
+                  )}
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+
+        {/* User Section */}
+        {user && (
+          <div className="border-t border-gray-700 p-4 space-y-4">
+            {/* User Info */}
+            <div className="flex items-center space-x-3">
+              <Avatar className="h-10 w-10">
+                <AvatarFallback className="bg-gray-700 text-white">
+                  <User className="h-5 w-5" />
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <p className="font-medium text-white truncate">
+                  {user.email?.split('@')[0] || 'Uživatel'}
+                </p>
+                <p className="text-sm text-gray-400 truncate">{user.email}</p>
+                {unifiedUser?.isPremium && (
+                  <Badge variant="secondary" className="mt-1 bg-amber-100 text-amber-800">
+                    <Crown className="h-3 w-3 mr-1" />
+                    Premium
+                  </Badge>
+                )}
+              </div>
+            </div>
+
+            {/* Profile Link */}
+            <Link
+              to="/profile"
+              onClick={onClose}
+              className={`flex items-center space-x-3 px-3 py-2 rounded-md text-gray-300 hover:text-white hover:bg-gray-800 transition-colors ${
+                isActive('/profile') ? 'bg-gray-800 text-white' : ''
+              }`}
+            >
+              <User className="h-5 w-5" />
+              <span>{t('profile')}</span>
+            </Link>
+
+            {/* Logout */}
+            <button
+              onClick={handleLogout}
+              className="flex items-center space-x-3 px-3 py-2 rounded-md text-gray-300 hover:text-white hover:bg-gray-800 transition-colors w-full"
+            >
+              <LogOut className="h-5 w-5" />
+              <span>Odhlásit se</span>
+            </button>
+          </div>
+        )}
+      </div>
+    </>
   );
 };
