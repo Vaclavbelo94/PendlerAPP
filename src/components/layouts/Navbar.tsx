@@ -1,305 +1,177 @@
-import { useState, useEffect } from 'react';
+
+import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuSeparator, 
-  DropdownMenuTrigger 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { 
-  Menu, 
   User, 
-  LogOut, 
   Settings, 
-  Crown,
-  Truck
+  LogOut, 
+  Crown, 
+  Menu,
+  Home,
+  CalendarDays,
+  Car,
+  BarChart3
 } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
-import { canAccessDHLFeatures, isDHLAdmin } from '@/utils/dhlAuthUtils';
-import { ReactNode } from 'react';
+import { useAuth } from '@/hooks/auth';
+import { ThemeToggle } from '@/components/theme-toggle';
+import { LanguageToggle } from '@/components/language-toggle';
+import { useTranslation } from 'react-i18next';
 
-interface NavbarProps {
-  toggleSidebar?: () => void;
-  rightContent?: ReactNode;
-  sidebarOpen?: boolean;
-}
-
-const Navbar = ({ toggleSidebar, rightContent, sidebarOpen }: NavbarProps) => {
-  const { user, isAdmin, isPremium } = useAuth();
+const Navbar = () => {
+  const { user, unifiedUser, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [isOpen, setIsOpen] = useState(false);
+  const { t } = useTranslation(['navigation', 'auth']);
 
-  // DHL authentication checks with debug logging
-  const isDHLUser = canAccessDHLFeatures(user);
-  const isDHLAdminUser = isDHLAdmin(user);
-
-  useEffect(() => {
-    console.log('Navbar DHL checks:', {
-      user: user?.email,
-      isDHLUser,
-      isDHLAdminUser,
-      isAdmin,
-      isPremium
-    });
-  }, [user, isDHLUser, isDHLAdminUser, isAdmin, isPremium]);
-
-  const handleSignOut = async () => {
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      
-      navigate('/login');
-      toast.success('Úspěšně jste se odhlásili');
-    } catch (error) {
-      console.error('Error signing out:', error);
-      toast.error('Chyba při odhlašování');
-    }
+  const handleLogout = async () => {
+    await signOut();
+    navigate('/');
   };
 
-  const NavLinks = () => (
-    <>
-      {/* Regular navigation links */}
-      <Link to="/dashboard">
-        <Button variant="ghost" className="text-foreground hover:text-primary">
-          Dashboard
-        </Button>
-      </Link>
-      <Link to="/shifts">
-        <Button variant="ghost" className="text-foreground hover:text-primary">
-          Směny
-        </Button>
-      </Link>
-      <Link to="/translator">
-        <Button variant="ghost" className="text-foreground hover:text-primary">
-          Překladač
-        </Button>
-      </Link>
+  const getInitials = (email: string) => {
+    return email.substring(0, 2).toUpperCase();
+  };
 
-      {/* DHL Links - redirect to main dashboard */}
-      {isDHLUser && (
-        <>
-          <Link to="/dashboard">
-            <Button variant="ghost" className="text-yellow-600 hover:text-yellow-700 flex items-center gap-2">
-              <Truck className="h-4 w-4" />
-              DHL Dashboard
-            </Button>
-          </Link>
-          {isDHLAdminUser && (
-            <Link to="/dhl-admin">
-              <Button variant="ghost" className="text-yellow-600 hover:text-yellow-700 flex items-center gap-2">
-                <Truck className="h-4 w-4" />
-                DHL Admin
-              </Button>
-            </Link>
-          )}
-        </>
-      )}
-    </>
-  );
+  const navItems = [
+    { path: '/dashboard', label: t('dashboard'), icon: Home },
+    { path: '/shifts', label: t('shifts'), icon: CalendarDays },
+    { path: '/vehicles', label: t('vehicles'), icon: Car },
+    { path: '/analytics', label: t('analytics'), icon: BarChart3, premium: true },
+  ];
 
-  const UserDropdownContent = () => (
-    <>
-      <DropdownMenuItem asChild>
-        <Link to="/profile" className="flex items-center gap-2">
-          <User className="h-4 w-4" />
-          Profil
-        </Link>
-      </DropdownMenuItem>
-      <DropdownMenuItem asChild>
-        <Link to="/settings" className="flex items-center gap-2">
-          <Settings className="h-4 w-4" />
-          Nastavení
-        </Link>
-      </DropdownMenuItem>
-      
-      {/* DHL Dashboard for DHL users - redirect to main dashboard */}
-      {isDHLUser && (
-        <DropdownMenuItem asChild>
-          <Link to="/dashboard" className="flex items-center gap-2 text-yellow-600">
-            <Truck className="h-4 w-4" />
-            DHL Dashboard
-          </Link>
-        </DropdownMenuItem>
-      )}
-      
-      {/* DHL Admin for DHL admins only */}
-      {isDHLAdminUser && (
-        <DropdownMenuItem asChild>
-          <Link to="/dhl-admin" className="flex items-center gap-2 text-yellow-600">
-            <Truck className="h-4 w-4" />
-            DHL Admin
-          </Link>
-        </DropdownMenuItem>
-      )}
-      
-      <DropdownMenuSeparator />
-      <DropdownMenuItem onClick={handleSignOut} className="text-red-600">
-        <LogOut className="h-4 w-4 mr-2" />
-        Odhlásit se
-      </DropdownMenuItem>
-    </>
-  );
-
-  const MobileMenuContent = () => (
-    <div className="flex flex-col space-y-4 p-4">
-      <Link to="/dashboard" onClick={() => setIsOpen(false)}>
-        <Button variant="ghost" className="w-full justify-start">
-          Dashboard
-        </Button>
-      </Link>
-      <Link to="/shifts" onClick={() => setIsOpen(false)}>
-        <Button variant="ghost" className="w-full justify-start">
-          Směny
-        </Button>
-      </Link>
-      <Link to="/translator" onClick={() => setIsOpen(false)}>
-        <Button variant="ghost" className="w-full justify-start">
-          Překladač
-        </Button>
-      </Link>
-      
-      {/* DHL Section for mobile - redirect to main dashboard */}
-      {isDHLUser && (
-        <>
-          <div className="border-t pt-4">
-            <div className="flex items-center gap-2 mb-2 px-2">
-              <Truck className="h-4 w-4 text-yellow-600" />
-              <span className="text-sm font-medium text-yellow-600">DHL</span>
-            </div>
-            <Link to="/dashboard" onClick={() => setIsOpen(false)}>
-              <Button variant="ghost" className="w-full justify-start text-yellow-600 hover:text-yellow-700">
-                <Truck className="h-4 w-4 mr-2" />
-                DHL Dashboard
-              </Button>
-            </Link>
-            {isDHLAdminUser && (
-              <Link to="/dhl-admin" onClick={() => setIsOpen(false)}>
-                <Button variant="ghost" className="w-full justify-start text-yellow-600 hover:text-yellow-700">
-                  <Truck className="h-4 w-4 mr-2" />
-                  DHL Admin
-                </Button>
-              </Link>
-            )}
-          </div>
-        </>
-      )}
-
-      <div className="border-t pt-4">
-        <Link to="/profile" onClick={() => setIsOpen(false)}>
-          <Button variant="ghost" className="w-full justify-start">
-            <User className="h-4 w-4 mr-2" />
-            Profil
-          </Button>
-        </Link>
-        <Link to="/settings" onClick={() => setIsOpen(false)}>
-          <Button variant="ghost" className="w-full justify-start">
-            <Settings className="h-4 w-4 mr-2" />
-            Nastavení
-          </Button>
-        </Link>
-        <Button 
-          variant="ghost" 
-          className="w-full justify-start text-red-600" 
-          onClick={() => {
-            setIsOpen(false);
-            handleSignOut();
-          }}
-        >
-          <LogOut className="h-4 w-4 mr-2" />
-          Odhlásit se
-        </Button>
-      </div>
-    </div>
-  );
-
-  if (!user) {
-    return (
-      <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-14 items-center justify-between">
-          <Link to="/" className="font-bold">
-            PendlerApp
-          </Link>
-          <div className="flex items-center space-x-4">
-            <Link to="/login">
-              <Button variant="ghost">Přihlásit se</Button>
-            </Link>
-            <Link to="/register">
-              <Button>Registrovat se</Button>
-            </Link>
-          </div>
-        </div>
-      </nav>
-    );
-  }
+  const isActive = (path: string) => location.pathname === path;
 
   return (
-    <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center justify-between">
-        <Link to="/" className="font-bold">
-          PendlerApp
+    <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-16 items-center justify-between">
+        {/* Logo */}
+        <Link to="/" className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2">
+            <div className="h-8 w-8 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center">
+              <span className="text-white font-bold text-sm">PA</span>
+            </div>
+            <span className="hidden font-bold sm:inline-block">PendlerApp</span>
+          </div>
         </Link>
 
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center space-x-4">
-          <NavLinks />
-        </div>
-
-        {/* User Menu */}
-        <div className="flex items-center gap-4">
-          {/* Status badges */}
-          <div className="hidden sm:flex items-center gap-2">
-            {isPremium && (
-              <Badge variant="secondary" className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
-                <Crown className="h-3 w-3 mr-1" />
-                Premium
-              </Badge>
-            )}
-            {isDHLUser && (
-              <Badge variant="secondary" className="bg-gradient-to-r from-yellow-500 to-red-500 text-white">
-                <Truck className="h-3 w-3 mr-1" />
-                DHL
-              </Badge>
-            )}
+        {/* Navigation Links - Desktop */}
+        {user && (
+          <div className="hidden md:flex items-center space-x-6">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isLocked = item.premium && !unifiedUser?.isPremium;
+              
+              return (
+                <Link 
+                  key={item.path}
+                  to={isLocked ? '/premium' : item.path}
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    isActive(item.path) 
+                      ? 'bg-accent text-accent-foreground' 
+                      : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
+                  } ${isLocked ? 'opacity-60' : ''}`}
+                >
+                  <Icon className="h-4 w-4" />
+                  <span>{item.label}</span>
+                  {item.premium && !unifiedUser?.isPremium && (
+                    <Crown className="h-3 w-3 text-amber-500" />
+                  )}
+                </Link>
+              );
+            })}
           </div>
+        )}
 
-          {/* Custom right content */}
-          {rightContent}
+        {/* Right Side */}
+        <div className="flex items-center space-x-2">
+          <LanguageToggle />
+          <ThemeToggle />
+          
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                  <Avatar className="h-8 w-8">
+                    <AvatarFallback>
+                      {user.email ? getInitials(user.email) : 'U'}
+                    </AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">
+                      {user.email?.split('@')[0] || t('auth:user')}
+                    </p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                      {user.email}
+                    </p>
+                    <div className="flex items-center gap-2 mt-2">
+                      {unifiedUser?.isPremium && (
+                        <Badge variant="secondary" className="text-xs bg-amber-100 text-amber-800">
+                          <Crown className="h-3 w-3 mr-1" />
+                          Premium
+                        </Badge>
+                      )}
+                      {unifiedUser?.isAdmin && (
+                        <Badge variant="secondary" className="text-xs bg-red-100 text-red-800">
+                          Admin
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => navigate('/profile')}>
+                  <User className="mr-2 h-4 w-4" />
+                  <span>{t('profile')}</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/settings')}>
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span>{t('settings')}</span>
+                </DropdownMenuItem>
+                {unifiedUser?.isAdmin && (
+                  <DropdownMenuItem onClick={() => navigate('/admin')}>
+                    <Crown className="mr-2 h-4 w-4" />
+                    <span>{t('admin')}</span>
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>{t('auth:logout')}</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <div className="flex items-center space-x-2">
+              <Button variant="ghost" asChild>
+                <Link to="/login">{t('auth:login')}</Link>
+              </Button>
+              <Button asChild>
+                <Link to="/register">{t('auth:register')}</Link>
+              </Button>
+            </div>
+          )}
 
           {/* Mobile Menu */}
-          <Sheet open={isOpen} onOpenChange={setIsOpen}>
-            <SheetTrigger asChild className="md:hidden">
-              <Button variant="outline" size="icon" onClick={toggleSidebar}>
-                <Menu className="h-4 w-4" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right">
-              <MobileMenuContent />
-            </SheetContent>
-          </Sheet>
-
-          {/* Desktop User Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild className="hidden md:flex">
-              <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                <Avatar className="h-8 w-8">
-                  <AvatarFallback>
-                    {user.email?.charAt(0).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56" align="end" forceMount>
-              <UserDropdownContent />
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {user && (
+            <Button variant="ghost" size="icon" className="md:hidden">
+              <Menu className="h-5 w-5" />
+            </Button>
+          )}
         </div>
       </div>
     </nav>

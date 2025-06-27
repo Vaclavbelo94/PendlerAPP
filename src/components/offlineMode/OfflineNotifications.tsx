@@ -4,7 +4,7 @@ import { useOfflineStatus } from '@/hooks/useOfflineStatus';
 import { useSyncQueue } from '@/hooks/useSyncQueue';
 import { toast } from '@/hooks/use-toast';
 import { useSyncSettings } from '@/hooks/useSyncSettings';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/auth';
 
 interface OfflineNotification {
   id: string;

@@ -1,6 +1,6 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/auth';
 import { useGDPRConsent } from '@/contexts/GDPRConsentContext';
 
 interface AdSenseContextType {
@@ -39,7 +39,7 @@ export const AdSenseProvider: React.FC<AdSenseProviderProps> = ({
   children, 
   clientId = "ca-pub-5766122497657850" 
 }) => {
-  const { isPremium } = useAuth();
+  const { unifiedUser } = useAuth();
   const { hasConsent, preferences } = useGDPRConsent();
   const [isAdSenseLoaded, setIsAdSenseLoaded] = useState(false);
 
@@ -47,7 +47,7 @@ export const AdSenseProvider: React.FC<AdSenseProviderProps> = ({
   // 1. Uživatel není premium
   // 2. Má souhlas s reklamními cookies (GDPR)
   const hasAdvertisingConsent = hasConsent && preferences.advertising;
-  const shouldShowAds = !isPremium && hasAdvertisingConsent;
+  const shouldShowAds = !unifiedUser?.isPremium && hasAdvertisingConsent;
 
   useEffect(() => {
     // Načíst AdSense script pouze pokud má uživatel souhlas
@@ -103,7 +103,7 @@ export const AdSenseProvider: React.FC<AdSenseProviderProps> = ({
     console.log(`AdSense view tracked: ${adType}`, {
       timestamp: new Date().toISOString(),
       adType,
-      userPremium: isPremium,
+      userPremium: unifiedUser?.isPremium,
       hasConsent: hasConsent,
       advertisingConsent: preferences.advertising
     });
@@ -122,7 +122,7 @@ export const AdSenseProvider: React.FC<AdSenseProviderProps> = ({
     console.log(`AdSense click tracked: ${adType}`, {
       timestamp: new Date().toISOString(),
       adType,
-      userPremium: isPremium,
+      userPremium: unifiedUser?.isPremium,
       hasConsent: hasConsent,
       advertisingConsent: preferences.advertising
     });

@@ -2,7 +2,7 @@
 import React, { useEffect, useCallback } from 'react';
 import { useOfflineStatus } from '@/hooks/useOfflineStatus';
 import { useSyncQueue } from '@/hooks/useSyncQueue';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/auth';
 import { toast } from '@/hooks/use-toast';
 
 interface AutoSyncManagerProps {

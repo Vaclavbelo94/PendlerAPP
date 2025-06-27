@@ -1,5 +1,6 @@
+
 import React, { useState, useRef } from 'react';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/auth';
 import { useSyncSettings } from '@/hooks/useSyncSettings';
 import { syncWithLocalStorage } from '@/utils/offlineStorage';
 import { useStandardizedToast } from '@/hooks/useStandardizedToast';
