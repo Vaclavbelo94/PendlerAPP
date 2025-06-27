@@ -37,7 +37,7 @@ export const useOfflineCalculations = () => {
       setState(prevState => ({ ...prevState, isLoading: true, error: null }));
 
       try {
-        // Since offline_calculations_sync table doesn't exist, use mock data
+        // Using mock data since offline_calculations_sync table doesn't exist
         const mockCalculations: OfflineCalculation[] = [
           {
             id: '1',

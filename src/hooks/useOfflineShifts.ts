@@ -54,7 +54,15 @@ export const useOfflineShifts = (): OfflineShiftsWithActions => {
           throw error;
         }
 
-        const shifts = data || [];
+        // Map shifts and add synced property (defaulting to true for existing DB records)
+        const shifts: Shift[] = (data || []).map(shift => ({
+          id: shift.id,
+          date: shift.date,
+          type: shift.type,
+          notes: shift.notes || '',
+          synced: true // All DB records are considered synced
+        }));
+        
         const offlineShifts = shifts.filter(shift => !shift.synced);
 
         setState(prevState => ({
@@ -96,9 +104,14 @@ export const useOfflineShifts = (): OfflineShiftsWithActions => {
 
       if (error) throw error;
 
+      const newShiftWithSync: Shift = {
+        ...data,
+        synced: true
+      };
+
       setState(prevState => ({
         ...prevState,
-        shifts: [...prevState.shifts, data],
+        shifts: [...prevState.shifts, newShiftWithSync],
         isSyncing: false,
       }));
     } catch (error: any) {
@@ -130,7 +143,7 @@ export const useOfflineShifts = (): OfflineShiftsWithActions => {
       setState(prevState => ({
         ...prevState,
         shifts: prevState.shifts.map(shift => 
-          shift.id === shiftId ? { ...shift, ...data } : shift
+          shift.id === shiftId ? { ...shift, ...data, synced: true } : shift
         ),
         isSyncing: false,
       }));

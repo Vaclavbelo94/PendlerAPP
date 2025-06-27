@@ -25,6 +25,9 @@ export const useDataSharing = (currentModule: string) => {
     return {
       insights: crossModuleInsights,
       module: currentModule,
+      shifts: [], // Mock shifts data
+      vehicles: [], // Mock vehicles data
+      language: 'cs', // Mock language preference
     };
   };
 
