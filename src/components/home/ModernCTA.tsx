@@ -1,8 +1,9 @@
+
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowRight, Star, Check, Zap } from 'lucide-react';
+import { ArrowRight, Star, Check, Zap, Crown } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/auth';
 import { motion } from 'framer-motion';
@@ -37,10 +38,10 @@ const ModernCTA = () => {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
+            <h2 className="text-4xl lg:text-5xl font-bold text-foreground mb-6">
               Připraveni začít svou cestu?
             </h2>
-            <p className="text-xl text-blue-100 max-w-3xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
               Připojte se k tisícům spokojených pendlerů a začněte efektivněji spravovat svou práci v zahraničí.
             </p>
           </motion.div>
@@ -53,14 +54,14 @@ const ModernCTA = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
               viewport={{ once: true }}
             >
-              <Card className="bg-white/10 backdrop-blur-sm border-white/20">
+              <Card className="bg-card/50 backdrop-blur-sm border-primary/20">
                 <CardContent className="p-8">
                   <div className="flex items-center mb-6">
-                    <Zap className="h-8 w-8 text-yellow-400 mr-3" />
-                    <h3 className="text-2xl font-bold text-white">Začněte zdarma</h3>
+                    <Zap className="h-8 w-8 text-primary mr-3" />
+                    <h3 className="text-2xl font-bold">Začněte zdarma</h3>
                   </div>
                   
-                  <p className="text-blue-100 mb-6">
+                  <p className="text-muted-foreground mb-6">
                     Vyzkoušejte všechny základní funkce bez jakýchkoliv poplatků. 
                     Registrace trvá méně než minutu.
                   </p>
@@ -68,7 +69,7 @@ const ModernCTA = () => {
                   <div className="space-y-4 mb-8">
                     <Button 
                       size="lg" 
-                      className="bg-white text-blue-600 hover:bg-blue-50 font-semibold group"
+                      className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold group"
                       asChild
                     >
                       <Link to="/register">
@@ -79,7 +80,7 @@ const ModernCTA = () => {
                   </div>
 
                   <div className="text-center">
-                    <p className="text-blue-200 text-sm">
+                    <p className="text-muted-foreground text-sm">
                       ✓ Bez kreditní karty  ✓ Okamžitý přístup  ✓ Zrušitelné kdykoliv
                     </p>
                   </div>

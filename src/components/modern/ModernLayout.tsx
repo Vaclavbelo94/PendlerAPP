@@ -1,20 +1,17 @@
 
 import React from 'react';
-import { ModernNavbar } from './ModernNavbar';
-import { ModernFooter } from './ModernFooter';
+import { Outlet } from 'react-router-dom';
+import ModernNavbar from './ModernNavbar';
 
-interface ModernLayoutProps {
-  children: React.ReactNode;
-}
-
-export const ModernLayout: React.FC<ModernLayoutProps> = ({ children }) => {
+const ModernLayout = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen bg-background">
       <ModernNavbar />
       <main className="flex-1">
-        {children}
+        <Outlet />
       </main>
-      <ModernFooter />
     </div>
   );
 };
+
+export default ModernLayout;
