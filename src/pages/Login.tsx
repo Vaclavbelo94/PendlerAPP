@@ -7,40 +7,29 @@ import { Separator } from "@/components/ui/separator";
 import { useTranslation } from 'react-i18next';
 import LoginForm from "@/components/auth/LoginForm";
 import GoogleAuthButton from "@/components/auth/GoogleAuthButton";
-import { getAdminRedirectPath } from '@/utils/dhlAuthUtils';
+import { getRedirectPath } from '@/utils/authRoleUtils';
+import RoleIndicator from '@/components/auth/RoleIndicator';
 
 const Login = () => {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const navigate = useNavigate();
-  const { user, isAdmin } = useAuth();
+  const { user, unifiedUser, isLoading } = useAuth();
   const { t } = useTranslation('auth');
   
   useEffect(() => {
-    if (user) {
-      console.log('=== LOGIN REDIRECT LOGIC ===');
+    if (isLoading) return;
+    
+    if (user && unifiedUser) {
+      console.log('=== ENHANCED LOGIN REDIRECT LOGIC ===');
       console.log('User:', user.email);
-      console.log('isAdmin:', isAdmin);
+      console.log('Unified User:', unifiedUser);
       
-      // Check for admin redirect first
-      const adminPath = getAdminRedirectPath(user);
-      if (adminPath) {
-        console.log('Redirecting admin to:', adminPath);
-        navigate(adminPath);
-        return;
-      }
+      const redirectPath = getRedirectPath(unifiedUser);
+      console.log('Redirecting to:', redirectPath);
       
-      // Check if regular admin
-      if (isAdmin || user.email === 'admin@pendlerapp.com') {
-        console.log('Redirecting regular admin to /admin');
-        navigate("/admin");
-        return;
-      }
-      
-      // Default redirect to dashboard
-      console.log('Redirecting to dashboard');
-      navigate("/dashboard");
+      navigate(redirectPath);
     }
-  }, [user, isAdmin, navigate]);
+  }, [user, unifiedUser, isLoading, navigate]);
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
@@ -58,6 +47,19 @@ const Login = () => {
             <CardDescription>
               {t('registerDescription')}
             </CardDescription>
+            
+            {/* Show current user info if logged in (for debugging) */}
+            {unifiedUser && (
+              <div className="mt-4 p-3 bg-muted rounded-lg">
+                <p className="text-sm text-muted-foreground mb-2">Aktuálně přihlášen:</p>
+                <p className="font-medium">{unifiedUser.email}</p>
+                <RoleIndicator 
+                  role={unifiedUser.role} 
+                  status={unifiedUser.status}
+                  className="mt-2"
+                />
+              </div>
+            )}
           </CardHeader>
           <CardContent className="grid gap-4">
             <div className="space-y-4">
