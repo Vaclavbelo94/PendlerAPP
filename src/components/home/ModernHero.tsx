@@ -1,23 +1,16 @@
-
 import React from 'react';
-import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { ArrowRight, Users, TrendingUp, Globe } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { ArrowRight, PlayCircle, Star, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
+import { motion } from 'framer-motion';
+import { useAuth } from '@/hooks/auth';
 
-export const ModernHero = () => {
+const ModernHero = () => {
   const { user } = useAuth();
 
-  const statsCards = [
-    { icon: Users, label: 'Aktivních uživatelů', value: '15,000+', color: 'from-blue-500 to-blue-600' },
-    { icon: TrendingUp, label: 'Úspěšných směn', value: '200,000+', color: 'from-green-500 to-green-600' },
-    { icon: Globe, label: 'Podporovaných regionů', value: '50+', color: 'from-purple-500 to-purple-600' },
-  ];
-
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl animate-pulse" />
@@ -90,27 +83,6 @@ export const ModernHero = () => {
             )}
           </motion.div>
         </div>
-
-        {/* Stats cards */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto"
-        >
-          {statsCards.map((stat, index) => (
-            <Card key={index} className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border-0 shadow-xl">
-              <CardContent className="p-6 text-center">
-                <div className={`inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-r ${stat.color} mb-4`}>
-                  <stat.icon className="h-6 w-6 text-white" />
-                </div>
-                <div className="text-2xl font-bold text-foreground mb-1">{stat.value}</div>
-                <div className="text-sm text-muted-foreground">{stat.label}</div>
-              </CardContent>
-            </Card>
-          ))}
-        </motion.div>
-      </div>
     </section>
   );
 };

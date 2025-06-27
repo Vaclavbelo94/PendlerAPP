@@ -1,5 +1,6 @@
+
 import React, { useState } from 'react';
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from '@/hooks/auth';
 import { useToast } from '@/hooks/use-toast';
 import { grammarExercises as germanExercises } from "@/data/exercises/grammarExercises";
 import DailyProgressCards from '../exercise/DailyProgressCards';
@@ -7,7 +8,7 @@ import LevelSelector from '../exercise/LevelSelector';
 import { useExerciseProgress } from '../exercise/hooks/useExerciseProgress';
 
 const ExercisesTab = () => {
-  const { isPremium } = useAuth();
+  const { unifiedUser } = useAuth();
   const { toast } = useToast();
   
   const [selectedLevel, setSelectedLevel] = useState("beginner");
@@ -54,7 +55,7 @@ const ExercisesTab = () => {
         activeExercise={activeExercise}
         setActiveExercise={setActiveExercise}
         onComplete={handleCompleteExercise}
-        isPremium={isPremium}
+        isPremium={unifiedUser?.isPremium || false}
       />
     </div>
   );

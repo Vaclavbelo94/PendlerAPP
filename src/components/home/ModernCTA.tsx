@@ -1,14 +1,14 @@
-
 import React from 'react';
-import { motion } from 'framer-motion';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { ArrowRight, Star, Check, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Crown, Check, Zap } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/auth';
+import { motion } from 'framer-motion';
 
-export const ModernCTA = () => {
-  const { user, isPremium } = useAuth();
+const ModernCTA = () => {
+  const { user } = useAuth();
 
   const premiumFeatures = [
     'Neomezené směny a události',
@@ -20,7 +20,7 @@ export const ModernCTA = () => {
   ];
 
   return (
-    <section className="py-20 bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 relative overflow-hidden">
+    <section className="py-20 bg-gradient-to-br from-primary/5 via-accent/5 to-primary/10">
       {/* Background decoration */}
       <div className="absolute inset-0 opacity-20">
         <div className="w-full h-full bg-repeat" style={{
@@ -66,41 +66,16 @@ export const ModernCTA = () => {
                   </p>
 
                   <div className="space-y-4 mb-8">
-                    {!user ? (
-                      <div className="flex flex-col sm:flex-row gap-4">
-                        <Button 
-                          size="lg" 
-                          className="bg-white text-blue-600 hover:bg-blue-50 font-semibold group flex-1"
-                          asChild
-                        >
-                          <Link to="/register">
-                            Registrovat zdarma
-                            <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                          </Link>
-                        </Button>
-                        <Button 
-                          size="lg" 
-                          variant="outline" 
-                          className="border-white/30 text-white hover:bg-white/10 flex-1"
-                          asChild
-                        >
-                          <Link to="/login">
-                            Přihlásit se
-                          </Link>
-                        </Button>
-                      </div>
-                    ) : (
-                      <Button 
-                        size="lg" 
-                        className="bg-white text-blue-600 hover:bg-blue-50 font-semibold group w-full"
-                        asChild
-                      >
-                        <Link to="/dashboard">
-                          Přejít na Dashboard
-                          <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                        </Link>
-                      </Button>
-                    )}
+                    <Button 
+                      size="lg" 
+                      className="bg-white text-blue-600 hover:bg-blue-50 font-semibold group"
+                      asChild
+                    >
+                      <Link to="/register">
+                        Registrovat zdarma
+                        <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                      </Link>
+                    </Button>
                   </div>
 
                   <div className="text-center">
@@ -113,43 +88,41 @@ export const ModernCTA = () => {
             </motion.div>
 
             {/* Right side - Premium features */}
-            {!isPremium && (
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-                viewport={{ once: true }}
-              >
-                <Card className="bg-gradient-to-br from-amber-400 to-orange-500 border-0 shadow-2xl">
-                  <CardContent className="p-8">
-                    <div className="flex items-center mb-6">
-                      <Crown className="h-8 w-8 text-white mr-3" />
-                      <h3 className="text-2xl font-bold text-white">Premium výhody</h3>
-                    </div>
-                    
-                    <div className="space-y-3 mb-8">
-                      {premiumFeatures.map((feature, index) => (
-                        <div key={index} className="flex items-center text-white">
-                          <Check className="h-5 w-5 mr-3 flex-shrink-0" />
-                          <span>{feature}</span>
-                        </div>
-                      ))}
-                    </div>
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              viewport={{ once: true }}
+            >
+              <Card className="bg-gradient-to-br from-amber-400 to-orange-500 border-0 shadow-2xl">
+                <CardContent className="p-8">
+                  <div className="flex items-center mb-6">
+                    <Crown className="h-8 w-8 text-white mr-3" />
+                    <h3 className="text-2xl font-bold text-white">Premium výhody</h3>
+                  </div>
+                  
+                  <div className="space-y-3 mb-8">
+                    {premiumFeatures.map((feature, index) => (
+                      <div key={index} className="flex items-center text-white">
+                        <Check className="h-5 w-5 mr-3 flex-shrink-0" />
+                        <span>{feature}</span>
+                      </div>
+                    ))}
+                  </div>
 
-                    <Button 
-                      size="lg" 
-                      className="w-full bg-white text-orange-600 hover:bg-orange-50 font-semibold group"
-                      asChild
-                    >
-                      <Link to="/premium">
-                        Upgradovat na Premium
-                        <Crown className="ml-2 h-5 w-5 group-hover:scale-110 transition-transform" />
-                      </Link>
-                    </Button>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            )}
+                  <Button 
+                    size="lg" 
+                    className="w-full bg-white text-orange-600 hover:bg-orange-50 font-semibold group"
+                    asChild
+                  >
+                    <Link to="/premium">
+                      Upgradovat na Premium
+                      <Crown className="ml-2 h-5 w-5 group-hover:scale-110 transition-transform" />
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            </motion.div>
           </div>
         </div>
       </div>

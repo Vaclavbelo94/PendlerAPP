@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/auth';
 import { useOfflineStatus } from '@/hooks/useOfflineStatus';
 import { useSyncSettings } from '@/hooks/useSyncSettings';
 import { OfflineDataManager } from './core/OfflineDataManager';
