@@ -23,6 +23,7 @@ import Premium from "./pages/Premium";
 import Admin from "./pages/Admin";
 // DHL Routes - only setup and admin remain
 import DHLSetup from "./pages/DHLSetup";
+import DHLAdmin from "./pages/DHLAdmin"; // NEW DHL Admin route
 import { LoadingSpinner } from "./components/ui/LoadingSpinner";
 import "./i18n/config";
 
@@ -57,6 +58,7 @@ function App() {
                   <Route path="/vehicle" element={<Vehicle />} />
                   <Route path="/premium" element={<Premium />} />
                   <Route path="/admin" element={<Admin />} />
+                  <Route path="/DHLAdmin" element={<DHLAdmin />} />
                   {/* DHL Routes - unified approach, only setup remains separate */}
                   <Route path="/dhl-setup" element={<DHLSetup />} />
                 </Routes>

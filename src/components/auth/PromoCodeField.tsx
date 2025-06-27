@@ -2,17 +2,19 @@
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Check, X } from 'lucide-react';
+import { Check, X, Truck } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { isDHLPromoCode } from '@/utils/dhlAuthUtils';
 
 interface PromoCodeFieldProps {
-  onPromoCodeChange: (code: string, isValid: boolean) => void;
+  onPromoCodeChange: (code: string, isValid: boolean, isDHL?: boolean) => void;
 }
 
 const PromoCodeField: React.FC<PromoCodeFieldProps> = ({ onPromoCodeChange }) => {
   const [promoCode, setPromoCode] = useState('');
   const [isValidating, setIsValidating] = useState(false);
   const [validationResult, setValidationResult] = useState<'valid' | 'invalid' | null>(null);
+  const [isDHL, setIsDHL] = useState(false);
 
   const validatePromoCode = async (code: string) => {
     console.log('=== PROMO CODE VALIDATION START ===');
@@ -21,11 +23,17 @@ const PromoCodeField: React.FC<PromoCodeFieldProps> = ({ onPromoCodeChange }) =>
     if (!code.trim()) {
       console.log('Empty code, setting to null');
       setValidationResult(null);
-      onPromoCodeChange('', false);
+      setIsDHL(false);
+      onPromoCodeChange('', false, false);
       return;
     }
 
     setIsValidating(true);
+    
+    // Check if it's a DHL promo code first
+    const isDHLCode = isDHLPromoCode(code);
+    console.log('Is DHL promo code:', isDHLCode);
+    setIsDHL(isDHLCode);
     
     try {
       // Check if promo code exists and is valid
@@ -40,7 +48,7 @@ const PromoCodeField: React.FC<PromoCodeFieldProps> = ({ onPromoCodeChange }) =>
       if (error || !promoCodeData) {
         console.log('Promo code not found or error:', error);
         setValidationResult('invalid');
-        onPromoCodeChange(code, false);
+        onPromoCodeChange(code, false, isDHLCode);
         setIsValidating(false);
         return;
       }
@@ -53,7 +61,7 @@ const PromoCodeField: React.FC<PromoCodeFieldProps> = ({ onPromoCodeChange }) =>
       if (validUntil < now) {
         console.log('Promo code expired');
         setValidationResult('invalid');
-        onPromoCodeChange(code, false);
+        onPromoCodeChange(code, false, isDHLCode);
         setIsValidating(false);
         return;
       }
@@ -66,18 +74,18 @@ const PromoCodeField: React.FC<PromoCodeFieldProps> = ({ onPromoCodeChange }) =>
       if (maxUses !== null && usedCount >= maxUses) {
         console.log('Promo code usage limit reached');
         setValidationResult('invalid');
-        onPromoCodeChange(code, false);
+        onPromoCodeChange(code, false, isDHLCode);
         setIsValidating(false);
         return;
       }
 
       console.log('Promo code is valid!');
       setValidationResult('valid');
-      onPromoCodeChange(code, true);
+      onPromoCodeChange(code, true, isDHLCode);
     } catch (error) {
       console.error('Error validating promo code:', error);
       setValidationResult('invalid');
-      onPromoCodeChange(code, false);
+      onPromoCodeChange(code, false, isDHLCode);
     } finally {
       setIsValidating(false);
       console.log('=== PROMO CODE VALIDATION END ===');
@@ -88,9 +96,10 @@ const PromoCodeField: React.FC<PromoCodeFieldProps> = ({ onPromoCodeChange }) =>
     console.log('Promo code input changed:', value);
     setPromoCode(value);
     setValidationResult(null);
+    setIsDHL(false);
     
-    // OPRAVA: Vždy volej callback s aktuální hodnotou, i když není validní
-    onPromoCodeChange(value, false);
+    // Always call callback with current value, even if not valid
+    onPromoCodeChange(value, false, false);
   };
 
   const handleBlur = () => {
@@ -107,14 +116,14 @@ const PromoCodeField: React.FC<PromoCodeFieldProps> = ({ onPromoCodeChange }) =>
         <Input
           id="promoCode"
           type="text"
-          placeholder="Zadejte promo kód"
+          placeholder="Zadejte promo kód (např. DHL2026)"
           value={promoCode}
           onChange={(e) => handleChange(e.target.value)}
           onBlur={handleBlur}
           className={`pr-10 ${
             validationResult === 'valid' ? 'border-green-500' : 
             validationResult === 'invalid' ? 'border-red-500' : ''
-          }`}
+          } ${isDHL ? 'border-yellow-500 bg-yellow-50' : ''}`}
         />
         {isValidating && (
           <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -127,12 +136,27 @@ const PromoCodeField: React.FC<PromoCodeFieldProps> = ({ onPromoCodeChange }) =>
         {!isValidating && validationResult === 'invalid' && (
           <X className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-red-500" />
         )}
+        {isDHL && !isValidating && (
+          <Truck className="absolute right-8 top-1/2 transform -translate-y-1/2 h-4 w-4 text-yellow-600" />
+        )}
       </div>
-      {validationResult === 'valid' && (
+      {validationResult === 'valid' && isDHL && (
+        <p className="text-sm text-yellow-600 flex items-center gap-1">
+          <Truck className="h-3 w-3" />
+          ✓ DHL promo kód aktivován! Budete přesměrováni na DHL setup po registraci.
+        </p>
+      )}
+      {validationResult === 'valid' && !isDHL && (
         <p className="text-sm text-green-600">✓ Platný promo kód! Premium bude aktivován po registraci.</p>
       )}
       {validationResult === 'invalid' && (
         <p className="text-sm text-red-600">✗ Neplatný promo kód</p>
+      )}
+      {isDHL && validationResult === null && promoCode.trim() && (
+        <p className="text-sm text-yellow-600 flex items-center gap-1">
+          <Truck className="h-3 w-3" />
+          DHL promo kód detekován - pokračujte v registraci
+        </p>
       )}
     </div>
   );

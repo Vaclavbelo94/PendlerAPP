@@ -21,7 +21,7 @@ export const isDHLEmployee = (user: User | null): boolean => {
     '@dhl.com',        // Standard DHL email (this will match moment@dhl.com)
     '@dhl.de',         // German DHL
     'test@dhl.com',    // Test account
-    'admin_dhl@pendlerapp.com' // DHL admin
+    'admindhl@pendlerapp.com' // DHL admin - UPDATED
   ];
   
   const isDHLEmp = dhlEmailPatterns.some(pattern => {
@@ -45,8 +45,17 @@ export const isDHLEmployee = (user: User | null): boolean => {
  * Check if user is DHL admin
  */
 export const isDHLAdmin = (user: User | null): boolean => {
-  const isAdmin = user?.email === 'admin_dhl@pendlerapp.com';
+  const isAdmin = user?.email === 'admindhl@pendlerapp.com'; // UPDATED
   console.log('DHL Admin check:', { email: user?.email, isAdmin });
+  return isAdmin;
+};
+
+/**
+ * Check if user is regular admin
+ */
+export const isRegularAdmin = (user: User | null): boolean => {
+  const isAdmin = user?.email === 'admin@pendlerapp.com';
+  console.log('Regular Admin check:', { email: user?.email, isAdmin });
   return isAdmin;
 };
 
@@ -99,4 +108,25 @@ export const getDHLRedirectPath = (user: User | null): string | null => {
     return null; // Let the component handle the redirect logic
   }
   return null;
+};
+
+/**
+ * Get admin redirect path based on user type
+ */
+export const getAdminRedirectPath = (user: User | null): string | null => {
+  if (isDHLAdmin(user)) {
+    return '/DHLAdmin';
+  }
+  if (isRegularAdmin(user)) {
+    return '/admin';
+  }
+  return null;
+};
+
+/**
+ * Check if promo code is DHL related
+ */
+export const isDHLPromoCode = (promoCode: string): boolean => {
+  const dhlPromoCodes = ['DHL2026', 'DHL2025', 'DHLSPECIAL'];
+  return dhlPromoCodes.includes(promoCode.toUpperCase());
 };

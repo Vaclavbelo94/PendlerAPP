@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { 
   Dialog,
@@ -12,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
+import { isRegularAdmin, isDHLAdmin } from "@/utils/dhlAuthUtils";
 
 interface AdminLoginDialogProps {
   isOpen: boolean;
@@ -42,10 +44,13 @@ const AdminLoginDialog = ({ isOpen, onClose, onSuccess }: AdminLoginDialogProps)
       
       // Malé zpoždění pro zpracování admin statusu
       setTimeout(() => {
-        const isAdmin = localStorage.getItem("adminLoggedIn") === "true";
+        // Check if user is any type of admin
+        const userObj = { email } as any;
+        const isRegAdmin = isRegularAdmin(userObj);
+        const isDHLAdm = isDHLAdmin(userObj);
         
-        if (isAdmin) {
-          toast.success("Přihlášení do administrace úspěšné");
+        if (isRegAdmin || isDHLAdm) {
+          toast.success(`Přihlášení do ${isDHLAdm ? 'DHL ' : ''}administrace úspěšné`);
           setEmail("");
           setPassword("");
           onSuccess();
@@ -93,10 +98,10 @@ const AdminLoginDialog = ({ isOpen, onClose, onSuccess }: AdminLoginDialogProps)
               required
             />
           </div>
-          <div className="text-sm bg-muted p-2 rounded">
-            <p>Testovací admin přístup:</p>
-            <p>Email: <strong>admin@pendlerapp.com</strong></p>
-            <p>Heslo: <strong>admin123</strong></p>
+          <div className="text-sm bg-muted p-2 rounded space-y-1">
+            <p>Testovací admin přístupy:</p>
+            <p><strong>Hlavní admin:</strong> admin@pendlerapp.com / admin123</p>
+            <p><strong>DHL admin:</strong> admindhl@pendlerapp.com / admin123</p>
           </div>
           <DialogFooter>
             <Button 

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import PromoCodeField from './PromoCodeField';
 import { checkLocalStorageSpace } from '@/utils/authUtils';
 import { activatePromoCode } from '@/services/promoCodeService';
-import { isDHLEmployee } from '@/utils/dhlAuthUtils';
+import { isDHLPromoCode } from '@/utils/dhlAuthUtils';
 
 const RegisterForm = () => {
   const [email, setEmail] = useState("");
@@ -18,19 +19,19 @@ const RegisterForm = () => {
   const [username, setUsername] = useState("");
   const [promoCode, setPromoCode] = useState("");
   const [isPromoValid, setIsPromoValid] = useState(false);
+  const [isDHLCode, setIsDHLCode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { signUp } = useAuth();
   const { t, i18n } = useTranslation('auth');
 
-  const handlePromoCodeChange = (code: string, isValid: boolean) => {
+  const handlePromoCodeChange = (code: string, isValid: boolean, isDHL: boolean = false) => {
     console.log('=== PROMO CODE CHANGE ===');
-    console.log('Code:', code, 'Is Valid:', isValid);
-    console.log('Updating states - promoCode from', promoCode, 'to', code);
-    console.log('Updating states - isPromoValid from', isPromoValid, 'to', isValid);
+    console.log('Code:', code, 'Is Valid:', isValid, 'Is DHL:', isDHL);
     
     setPromoCode(code);
     setIsPromoValid(isValid);
+    setIsDHLCode(isDHL);
     
     console.log('States updated');
   };
@@ -50,8 +51,7 @@ const RegisterForm = () => {
     console.log('Email:', email);
     console.log('Promo Code:', promoCode);
     console.log('Is Promo Valid:', isPromoValid);
-    console.log('Promo Code length:', promoCode.length);
-    console.log('Promo Code trimmed:', promoCode.trim());
+    console.log('Is DHL Code:', isDHLCode);
     
     if (password !== confirmPassword) {
       toast.error(t('passwordsDoNotMatch'));
@@ -97,21 +97,18 @@ const RegisterForm = () => {
       } else if (signUpResult.user) {
         console.log('Registrace úspěšná, uživatel:', signUpResult.user.id);
         
-        // Počkáme déle, aby se dokončil trigger pro vytvoření profilu
+        // Wait for profile creation
         console.log('Čekám na vytvoření profilu...');
         await new Promise(resolve => setTimeout(resolve, 5000));
         
-        // OPRAVENO: kontrolujeme promoCode místo isPromoValid
+        // Handle promo code activation
         console.log('=== KONTROLA PROMO KÓDU PRO AKTIVACI ===');
-        console.log('promoCode:', promoCode);
-        console.log('promoCode.trim():', promoCode.trim());
-        console.log('promoCode.trim().length:', promoCode.trim().length);
-        console.log('isPromoValid:', isPromoValid);
         
         if (promoCode && promoCode.trim().length > 0) {
           console.log('=== AKTIVACE PROMO KÓDU ===');
           console.log('Promo kód:', promoCode);
           console.log('Je validní:', isPromoValid);
+          console.log('Je DHL:', isDHLCode);
           console.log('User ID:', signUpResult.user.id);
           
           const result = await activatePromoCode(signUpResult.user.id, promoCode.trim());
@@ -119,43 +116,48 @@ const RegisterForm = () => {
           console.log('Výsledek aktivace promo kódu:', result);
           
           if (result.success) {
-            toast.success(t('accountCreatedWithPremium'), { 
-              description: `Premium aktivován s kódem ${promoCode}. Nyní se můžete přihlásit.`,
-              duration: 8000
-            });
+            if (isDHLCode) {
+              toast.success('DHL účet vytvořen!', { 
+                description: `Premium aktivován s kódem ${promoCode}. Nyní dokončete nastavení svého DHL profilu.`,
+                duration: 8000
+              });
+              // Store flag that user came from registration with DHL code
+              localStorage.setItem('dhl-from-registration', 'true');
+              localStorage.setItem('dhl-promo-activated', 'true');
+              navigate('/dhl-setup');
+              return;
+            } else {
+              toast.success(t('accountCreatedWithPremium'), { 
+                description: `Premium aktivován s kódem ${promoCode}. Nyní se můžete přihlásit.`,
+                duration: 8000
+              });
+            }
           } else {
             console.error('Chyba při aktivaci promo kódu:', result.message);
-            toast.success(t('accountCreatedSuccessfully'), { 
-              description: t('nowYouCanLogin') + ` (Promo kód se nepodařilo aktivovat: ${result.message})`,
-              duration: 8000
-            });
+            if (isDHLCode) {
+              toast.success('DHL účet vytvořen!', { 
+                description: `Registrace úspěšná, ale promo kód se nepodařilo aktivovat: ${result.message}. Dokončete nastavení DHL profilu.`,
+                duration: 8000
+              });
+              localStorage.setItem('dhl-from-registration', 'true');
+              navigate('/dhl-setup');
+              return;
+            } else {
+              toast.success(t('accountCreatedSuccessfully'), { 
+                description: t('nowYouCanLogin') + ` (Promo kód se nepodařilo aktivovat: ${result.message})`,
+                duration: 8000
+              });
+            }
           }
         } else {
-          console.log('Žádný promo kód k aktivaci nebo prázdný kód');
+          console.log('Žádný promo kód k aktivaci');
           toast.success(t('accountCreatedSuccessfully'), { 
             description: t('nowYouCanLogin'),
             duration: 5000
           });
         }
         
-        // Check if this is a DHL employee and redirect accordingly
-        const isDHL = isDHLEmployee({ email } as any);
-        console.log('=== DHL CHECK AFTER REGISTRATION ===');
-        console.log('Email:', email);
-        console.log('Is DHL Employee:', isDHL);
-        
-        if (isDHL) {
-          console.log('DHL uživatel registrován - přesměrovávám na DHL setup');
-          toast.success('DHL účet vytvořen!', {
-            description: 'Nyní dokončete nastavení svého DHL profilu.',
-            duration: 6000
-          });
-          // Store flag that user came from registration
-          localStorage.setItem('dhl-from-registration', 'true');
-          navigate('/dhl-setup');
-        } else {
-          navigate("/login");
-        }
+        navigate("/login");
       } else {
         toast.error(t('registrationError'), {
           description: 'Neočekávaná chyba při registraci',

@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { useTranslation } from 'react-i18next';
 import LoginForm from "@/components/auth/LoginForm";
 import GoogleAuthButton from "@/components/auth/GoogleAuthButton";
-import { isDHLEmployee } from '@/utils/dhlAuthUtils';
+import { getAdminRedirectPath } from '@/utils/dhlAuthUtils';
 
 const Login = () => {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
@@ -17,16 +17,28 @@ const Login = () => {
   
   useEffect(() => {
     if (user) {
-      // Check for DHL employee - redirect will be handled by auth provider
-      const isDHL = isDHLEmployee(user);
+      console.log('=== LOGIN REDIRECT LOGIC ===');
+      console.log('User:', user.email);
+      console.log('isAdmin:', isAdmin);
       
-      if (isDHL) {
-        navigate("/dashboard"); // Auth provider will handle DHL setup redirect if needed
-      } else if (isAdmin || user.email === 'admin@pendlerapp.com') {
-        navigate("/admin");
-      } else {
-        navigate("/dashboard");
+      // Check for admin redirect first
+      const adminPath = getAdminRedirectPath(user);
+      if (adminPath) {
+        console.log('Redirecting admin to:', adminPath);
+        navigate(adminPath);
+        return;
       }
+      
+      // Check if regular admin
+      if (isAdmin || user.email === 'admin@pendlerapp.com') {
+        console.log('Redirecting regular admin to /admin');
+        navigate("/admin");
+        return;
+      }
+      
+      // Default redirect to dashboard
+      console.log('Redirecting to dashboard');
+      navigate("/dashboard");
     }
   }, [user, isAdmin, navigate]);
 
