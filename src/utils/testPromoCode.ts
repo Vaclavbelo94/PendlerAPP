@@ -93,23 +93,23 @@ export const testPromoCodeActivation = async (userId: string) => {
   }
 };
 
-// Optimalizované auto-spuštění testů
+// Expose functions globally but disable auto-execution
 if (typeof window !== 'undefined') {
   (window as any).testDHL2026PromoCode = testDHL2026PromoCode;
   (window as any).testPromoCodeActivation = testPromoCodeActivation;
   
-  // Automatický test s optimalizovaným timingem
-  setTimeout(() => {
-    testDHL2026PromoCode().then(result => {
-      console.log('=== VÝSLEDEK AUTOMATICKÉHO TESTU DHL2026 ===');
-      if (result.success) {
-        console.log('✅ Test proběhl úspěšně');
-        console.log('📊 Shrnutí:', result.summary);
-      } else {
-        console.log('❌ Test selhal:', result.message);
-      }
-    }).catch(error => {
-      console.error('❌ Chyba v automatickém testu:', error);
-    });
-  }, 2000);
+  // DEACTIVATED: Automatic test execution commented out
+  // setTimeout(() => {
+  //   testDHL2026PromoCode().then(result => {
+  //     console.log('=== VÝSLEDEK AUTOMATICKÉHO TESTU DHL2026 ===');
+  //     if (result.success) {
+  //       console.log('✅ Test proběhl úspěšně');
+  //       console.log('📊 Shrnutí:', result.summary);
+  //     } else {
+  //       console.log('❌ Test selhal:', result.message);
+  //     }
+  //   }).catch(error => {
+  //     console.error('❌ Chyba v automatickém testu:', error);
+  //   });
+  // }, 2000);
 }

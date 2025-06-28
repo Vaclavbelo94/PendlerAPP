@@ -67,16 +67,16 @@ export const fixPromoCodeIssues = async () => {
   }
 };
 
-// Optimalizované auto-execution
+// Expose function globally but disable auto-execution
 if (typeof window !== 'undefined') {
   (window as any).fixPromoCodeIssues = fixPromoCodeIssues;
   
-  // Automatická oprava s optimalizovaným timingem
-  setTimeout(() => {
-    fixPromoCodeIssues().then(result => {
-      console.log('Auto promo code fix result:', result);
-    }).catch(error => {
-      console.error('Error in auto promo code fix:', error);
-    });
-  }, 1000);
+  // DEACTIVATED: Automatic execution commented out
+  // setTimeout(() => {
+  //   fixPromoCodeIssues().then(result => {
+  //     console.log('Auto promo code fix result:', result);
+  //   }).catch(error => {
+  //     console.error('Error in auto promo code fix:', error);
+  //   });
+  // }, 1000);
 }

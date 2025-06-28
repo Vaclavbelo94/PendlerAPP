@@ -43,16 +43,16 @@ export const manuallyActivatePremiumForTestUser = async () => {
   }
 };
 
-// Optimalizované auto-execution
+// Expose function globally but disable auto-execution
 if (typeof window !== 'undefined') {
   (window as any).manuallyActivatePremiumForTestUser = manuallyActivatePremiumForTestUser;
   
-  // Automatická aktivace s optimalizovaným timingem
-  setTimeout(() => {
-    manuallyActivatePremiumForTestUser().then(result => {
-      console.log('Auto premium activation result:', result);
-    }).catch(error => {
-      console.error('Error in auto premium activation:', error);
-    });
-  }, 1500);
+  // DEACTIVATED: Automatic execution commented out
+  // setTimeout(() => {
+  //   manuallyActivatePremiumForTestUser().then(result => {
+  //     console.log('Auto premium activation result:', result);
+  //   }).catch(error => {
+  //     console.error('Error in auto premium activation:', error);
+  //   });
+  // }, 1500);
 }
