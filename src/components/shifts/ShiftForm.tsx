@@ -25,17 +25,22 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
 }) => {
   const { t } = useTranslation('shifts');
   
-  // Initialize date state with priority: shift date > initialDate > today
-  const [date, setDate] = useState<Date | undefined>(() => {
+  // Helper function to get the correct initial date
+  const getInitialDate = (): Date => {
     if (shift) {
+      console.log('ShiftForm: Using shift date:', shift.date);
       return new Date(shift.date);
     }
     if (initialDate) {
+      console.log('ShiftForm: Using initialDate:', initialDate);
       return initialDate;
     }
+    console.log('ShiftForm: Using current date as fallback');
     return new Date();
-  });
-  
+  };
+
+  // Initialize state with the correct date
+  const [date, setDate] = useState<Date | undefined>(getInitialDate);
   const [type, setType] = useState<'morning' | 'afternoon' | 'night'>(shift?.type || 'morning');
   const [notes, setNotes] = useState(shift?.notes || '');
 
@@ -43,20 +48,29 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
 
   // Update form when shift or initialDate changes
   useEffect(() => {
+    console.log('ShiftForm useEffect triggered:', { shift: !!shift, initialDate });
+    
     if (shift) {
+      console.log('ShiftForm: Updating with shift data:', shift.date);
       setDate(new Date(shift.date));
       setType(shift.type);
       setNotes(shift.notes || '');
     } else if (initialDate) {
-      console.log('Setting form date from initialDate:', initialDate);
+      console.log('ShiftForm: Updating with initialDate:', initialDate);
       setDate(initialDate);
+      // Reset other fields when it's a new shift
+      setType('morning');
+      setNotes('');
     }
   }, [shift, initialDate]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!date) return;
+    if (!date) {
+      console.error('ShiftForm: No date selected');
+      return;
+    }
     
     // Ensure proper date formatting for database
     const year = date.getFullYear();
@@ -64,7 +78,7 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
     const day = String(date.getDate()).padStart(2, '0');
     const formattedDate = `${year}-${month}-${day}`;
     
-    console.log('Submitting shift for date:', formattedDate, 'from selected date:', date);
+    console.log('ShiftForm: Submitting shift for date:', formattedDate, 'from selected date:', date);
     
     const shiftData = {
       date: formattedDate,
