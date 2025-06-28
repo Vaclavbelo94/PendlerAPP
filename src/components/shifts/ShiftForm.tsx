@@ -24,20 +24,31 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
   initialDate
 }) => {
   const { t } = useTranslation('shifts');
-  const [date, setDate] = useState<Date | undefined>(
-    shift ? new Date(shift.date) : initialDate || new Date()
-  );
+  
+  // Initialize date state with priority: shift date > initialDate > today
+  const [date, setDate] = useState<Date | undefined>(() => {
+    if (shift) {
+      return new Date(shift.date);
+    }
+    if (initialDate) {
+      return initialDate;
+    }
+    return new Date();
+  });
+  
   const [type, setType] = useState<'morning' | 'afternoon' | 'night'>(shift?.type || 'morning');
   const [notes, setNotes] = useState(shift?.notes || '');
 
   const isEditMode = Boolean(shift && shift.id);
 
+  // Update form when shift or initialDate changes
   useEffect(() => {
     if (shift) {
       setDate(new Date(shift.date));
       setType(shift.type);
       setNotes(shift.notes || '');
     } else if (initialDate) {
+      console.log('Setting form date from initialDate:', initialDate);
       setDate(initialDate);
     }
   }, [shift, initialDate]);
