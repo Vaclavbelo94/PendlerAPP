@@ -10,7 +10,9 @@ import { Shift } from '@/hooks/shifts/useShiftsCRUD';
 export const useUnifiedShiftsContainer = () => {
   const { user } = useAuth();
   const { isOnline, isSlowConnection } = useOptimizedNetworkStatus();
-  const { userAssignment, isLoading: isDHLDataLoading } = useDHLData(user?.id);
+  
+  // Always call hooks in the same order - don't conditionally call them
+  const { userAssignment, isLoading: isDHLDataLoading } = useDHLData(user?.id || null);
   
   const [isInitialized, setIsInitialized] = useState(true);
   const [activeSection, setActiveSection] = useState('calendar');
@@ -19,6 +21,7 @@ export const useUnifiedShiftsContainer = () => {
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
   const [editingShift, setEditingShift] = useState<Shift | null>(null);
 
+  // Always call this hook - pass null if no user
   const {
     shifts,
     isLoading,
@@ -28,11 +31,16 @@ export const useUnifiedShiftsContainer = () => {
     updateShift: updateShiftOriginal,
     deleteShift,
     refreshShifts
-  } = useRefactoredShiftsManagement(user?.id);
+  } = useRefactoredShiftsManagement(user?.id || null);
 
-  // Check if user is DHL employee with assignment
-  const isDHLUser = useMemo(() => isDHLEmployee(user), [user]);
-  const hasDHLAssignment = useMemo(() => isDHLUser && !!userAssignment, [isDHLUser, userAssignment]);
+  // Memoize expensive calculations to prevent re-renders
+  const isDHLUser = useMemo(() => {
+    return user ? isDHLEmployee(user) : false;
+  }, [user]);
+  
+  const hasDHLAssignment = useMemo(() => {
+    return isDHLUser && !!userAssignment;
+  }, [isDHLUser, userAssignment]);
 
   const handleSectionChange = useCallback((section: string) => {
     setIsChanging(true);
@@ -41,19 +49,21 @@ export const useUnifiedShiftsContainer = () => {
   }, []);
 
   const handleAddShift = useCallback(async (shiftData: Omit<Shift, 'id' | 'user_id' | 'created_at' | 'updated_at'>): Promise<void> => {
+    if (!user?.id) return;
     const result = await addShiftOriginal(shiftData);
     if (result) {
       setIsAddSheetOpen(false);
     }
-  }, [addShiftOriginal]);
+  }, [addShiftOriginal, user?.id]);
 
   const handleEditShift = useCallback(async (shiftData: Shift): Promise<void> => {
+    if (!user?.id) return;
     const result = await updateShiftOriginal(shiftData);
     if (result) {
       setIsEditSheetOpen(false);
       setEditingShift(null);
     }
-  }, [updateShiftOriginal]);
+  }, [updateShiftOriginal, user?.id]);
 
   const openEditDialog = useCallback((shift: Shift) => {
     setEditingShift(shift);

@@ -1,11 +1,10 @@
-
 import * as React from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { AuthContext } from './useAuthContext';
 import { AuthError, UserRole, UnifiedUser, AuthProviderProps } from '@/types/auth';
 import { createUnifiedUser, getRedirectPath, hasRole, canAccess } from '@/utils/authRoleUtils';
-import { isDHLPromoCode, isDHLEmployee } from '@/utils/dhlAuthUtils';
+import { isDHLEmployee } from '@/utils/dhlAuthUtils';
 import { activatePromoCode } from '@/services/promoCodeService';
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
@@ -17,12 +16,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isAdmin, setIsAdmin] = React.useState(false);
   const [error, setError] = React.useState<AuthError | null>(null);
 
-  // Unified premium status check
+  // Memoize DHL check to prevent repeated calculations
+  const isDHLUser = React.useMemo(() => {
+    return user ? isDHLEmployee(user) : false;
+  }, [user]);
+
+  // Unified premium status check with memoization
   const checkPremiumStatus = React.useCallback(async (userId: string, email: string) => {
     try {
-      // Check if user is DHL employee
-      const userObj = { email } as any;
-      const isDHL = isDHLEmployee(userObj);
+      console.log('Premium status check:', { email, isDHL: isDHLUser, userId });
       
       // Special users get premium automatically
       const specialEmails = ['uzivatel@pendlerapp.com', 'admin@pendlerapp.com'];
@@ -46,7 +48,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
       
       // DHL employees get premium automatically
-      if (isDHL) {
+      if (isDHLUser) {
         console.log('Activating premium for DHL employee:', email);
         
         const oneYearLater = new Date();
@@ -88,9 +90,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsPremium(false);
       return { isPremium: false };
     }
-  }, []);
+  }, [isDHLUser]);
 
-  // Admin status check
+  // Admin status check with memoization
   const checkAdminStatus = React.useCallback(async (userId: string) => {
     try {
       const { data, error } = await supabase
@@ -126,6 +128,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   React.useEffect(() => {
     let isMounted = true;
+    let statusCheckTimeout: NodeJS.Timeout;
 
     const initialize = async () => {
       try {
@@ -141,13 +144,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               setError(null);
 
               if (event === 'SIGNED_IN' && session?.user) {
-                // Defer heavy operations to prevent deadlocks
-                setTimeout(() => {
+                // Clear any existing timeout
+                if (statusCheckTimeout) {
+                  clearTimeout(statusCheckTimeout);
+                }
+                
+                // Defer heavy operations with debouncing
+                statusCheckTimeout = setTimeout(() => {
                   if (isMounted) {
-                    checkAdminStatus(session.user.id);
-                    checkPremiumStatus(session.user.id, session.user.email || '');
+                    Promise.all([
+                      checkAdminStatus(session.user.id),
+                      checkPremiumStatus(session.user.id, session.user.email || '')
+                    ]).catch(console.error);
                   }
-                }, 0);
+                }, 500);
               }
 
               if (event === 'SIGNED_OUT') {
@@ -175,14 +185,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           setUser(session?.user ?? null);
           setIsLoading(false);
           
-          // Check status for existing session
+          // Check status for existing session with debouncing
           if (session?.user) {
-            setTimeout(() => {
+            statusCheckTimeout = setTimeout(() => {
               if (isMounted) {
-                checkAdminStatus(session.user.id);
-                checkPremiumStatus(session.user.id, session.user.email || '');
+                Promise.all([
+                  checkAdminStatus(session.user.id),
+                  checkPremiumStatus(session.user.id, session.user.email || '')
+                ]).catch(console.error);
               }
-            }, 0);
+            }, 500);
           }
         }
 
@@ -202,6 +214,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     return () => {
       isMounted = false;
+      if (statusCheckTimeout) {
+        clearTimeout(statusCheckTimeout);
+      }
     };
   }, [checkAdminStatus, checkPremiumStatus]);
 
@@ -282,11 +297,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setTimeout(async () => {
           const result = await activatePromoCode(data.user!.id, promoCode.trim());
           console.log('Promo code activation result:', result);
-          
-          if (result.success && isDHLPromoCode(promoCode)) {
-            localStorage.setItem('dhl-from-registration', 'true');
-            localStorage.setItem('dhl-promo-activated', 'true');
-          }
         }, 5000);
       }
       
