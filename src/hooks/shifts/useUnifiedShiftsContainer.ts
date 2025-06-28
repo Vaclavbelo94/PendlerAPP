@@ -19,6 +19,7 @@ export const useUnifiedShiftsContainer = () => {
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
   const [editingShift, setEditingShift] = useState<Shift | null>(null);
   const [selectedDateForNewShift, setSelectedDateForNewShift] = useState<Date | null>(null);
+  // Initialize calendar with today's date
   const [calendarSelectedDate, setCalendarSelectedDate] = useState<Date | undefined>(new Date());
 
   const {
@@ -77,7 +78,7 @@ export const useUnifiedShiftsContainer = () => {
   }, [refreshShifts]);
 
   const handleOpenAddSheet = useCallback(() => {
-    // Use the currently selected date from calendar
+    // Use the currently selected date from calendar (which defaults to today)
     console.log('Opening add sheet - calendarSelectedDate:', calendarSelectedDate);
     setSelectedDateForNewShift(calendarSelectedDate || new Date());
     setIsAddSheetOpen(true);

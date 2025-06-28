@@ -33,13 +33,15 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
   selectedDate: externalSelectedDate,
   onDateChange
 }) => {
-  // ALL HOOKS MUST BE CALLED AT THE TOP LEVEL - NO CONDITIONAL HOOKS
-  const [internalSelectedDate, setInternalSelectedDate] = useState<Date | undefined>(externalSelectedDate || new Date());
+  // Initialize with today's date if no external date is provided
+  const [internalSelectedDate, setInternalSelectedDate] = useState<Date | undefined>(() => {
+    return externalSelectedDate || new Date();
+  });
   const [viewMode, setViewMode] = useState<'calendar' | 'carousel'>('carousel');
   const isMobile = useIsMobile();
   const { t, i18n } = useTranslation('shifts');
 
-  // Use external selected date if provided, otherwise use internal state
+  // Use external selected date if provided, otherwise use internal state (which defaults to today)
   const selectedDate = externalSelectedDate || internalSelectedDate;
 
   // Get appropriate date-fns locale
