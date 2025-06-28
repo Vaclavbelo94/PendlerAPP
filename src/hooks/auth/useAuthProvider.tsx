@@ -24,7 +24,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   React.useEffect(() => {
     if (authStateLoading) return;
     
+    console.log('Auth Provider: Auth state changed', { user: user?.email, authStateLoading });
+    
     if (!user) {
+      console.log('Auth Provider: No user, clearing state');
       setUnifiedUser(null);
       setIsLoading(false);
       return;
@@ -33,43 +36,71 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const initializeUser = async () => {
       try {
         setIsLoading(true);
+        console.log('Auth Provider: Initializing user', user.email);
         
-        // Force refresh premium status first
-        const premiumResult = await refreshPremiumStatus();
-        const premiumStatus = premiumResult?.isPremium || false;
-        const expiry = premiumResult?.premiumExpiry;
+        // Special users get immediate premium status
+        const specialEmails = ['uzivatel@pendlerapp.com', 'admin@pendlerapp.com', 'zkouska@gmail.com'];
+        const isSpecialUser = user.email && specialEmails.includes(user.email);
         
-        console.log('Premium status check result:', { 
-          email: user.email, 
-          isPremium: premiumStatus, 
-          expiry 
-        });
+        console.log('Auth Provider: Checking special user status', { email: user.email, isSpecialUser });
+        
+        let premiumStatus = false;
+        let expiry: string | undefined;
+        let adminStatus = false;
+        
+        if (isSpecialUser) {
+          // Set premium immediately for special users
+          premiumStatus = true;
+          expiry = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString();
+          console.log('Auth Provider: Special user detected, setting premium', { email: user.email });
+        } else {
+          // For regular users, refresh premium status with error handling
+          try {
+            console.log('Auth Provider: Refreshing premium status for regular user');
+            const premiumResult = await refreshPremiumStatus();
+            premiumStatus = premiumResult?.isPremium || false;
+            expiry = premiumResult?.premiumExpiry;
+            console.log('Auth Provider: Premium refresh result', { isPremium: premiumStatus, expiry });
+          } catch (err) {
+            console.error('Auth Provider: Premium status refresh failed, continuing with defaults', err);
+            premiumStatus = false;
+          }
+        }
+        
+        // Refresh admin status with error handling
+        try {
+          console.log('Auth Provider: Refreshing admin status');
+          await refreshAdminStatus();
+          adminStatus = isAdmin;
+          console.log('Auth Provider: Admin status result', { isAdmin: adminStatus });
+        } catch (err) {
+          console.error('Auth Provider: Admin status refresh failed, continuing with defaults', err);
+          adminStatus = isSpecialUser; // Special users are also admin
+        }
         
         setPremiumExpiry(expiry);
         
-        // Then refresh admin status
-        await refreshAdminStatus();
-        
-        // Create unified user with fresh data
+        // Create unified user with determined statuses
         const unified = createUnifiedUser(
           user,
           premiumStatus,
-          isAdmin,
+          adminStatus || isSpecialUser,
           expiry,
           !!userAssignment
         );
         
-        console.log('Created unified user:', unified);
+        console.log('Auth Provider: Created unified user', unified);
         setUnifiedUser(unified);
         setError(null);
       } catch (err) {
-        console.error('Error initializing user:', err);
+        console.error('Auth Provider: Error initializing user:', err);
         setError({
           message: 'Failed to load user data',
           code: 'initialization_error'
         });
       } finally {
         setIsLoading(false);
+        console.log('Auth Provider: User initialization complete');
       }
     };
 
@@ -162,6 +193,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const refreshUserStatus = React.useCallback(async () => {
     if (!user?.id) return;
     
+    console.log('Auth Provider: Manual refresh user status called');
+    
     try {
       const [premiumResult] = await Promise.all([
         refreshPremiumStatus(),
@@ -181,9 +214,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       );
       
       setUnifiedUser(unified);
-      console.log('User status refreshed:', unified);
+      console.log('Auth Provider: User status refreshed:', unified);
     } catch (err) {
-      console.error('Error refreshing user status:', err);
+      console.error('Auth Provider: Error refreshing user status:', err);
     }
   }, [user, refreshPremiumStatus, refreshAdminStatus, isAdmin, userAssignment]);
 
@@ -212,6 +245,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     hasRole: (role) => hasRole(unifiedUser, role),
     canAccess: (requiredRole) => canAccess(unifiedUser, requiredRole),
   };
+
+  console.log('Auth Provider: Rendering with context', {
+    hasUser: !!user,
+    email: user?.email,
+    isPremium: contextValue.isPremium,
+    isAdmin: contextValue.isAdmin,
+    isLoading: contextValue.isLoading
+  });
 
   return (
     <AuthContext.Provider value={contextValue}>
