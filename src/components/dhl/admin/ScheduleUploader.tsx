@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Upload, FileText, CheckCircle, AlertTriangle } from 'lucide-react';
 import { useDHLData } from '@/hooks/dhl/useDHLData';
+import { useAuth } from '@/hooks/auth';
 import { validateScheduleData } from '@/services/dhl/scheduleValidator';
 import { importDHLSchedule } from '@/services/dhl/dhlScheduleImporter';
 import { SchedulePreview } from './SchedulePreview';
@@ -13,7 +14,8 @@ import { toast } from 'sonner';
 import './MobileDHLStyles.css';
 
 export const ScheduleUploader: React.FC = () => {
-  const { positions, workGroups, isLoading } = useDHLData();
+  const { user } = useAuth();
+  const { positions, workGroups, isLoading } = useDHLData(user?.id || null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [jsonData, setJsonData] = useState<any>(null);
   const [validation, setValidation] = useState<any>(null);

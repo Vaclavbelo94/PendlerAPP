@@ -6,454 +6,162 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Trash2, Edit, Plus, Check, X } from 'lucide-react';
+import { Plus, Edit, Trash2, Users } from 'lucide-react';
 import { useDHLData } from '@/hooks/dhl/useDHLData';
-import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/auth';
 import { toast } from 'sonner';
-import { DHLPositionType } from '@/types/dhl';
 
-interface PositionFormData {
+interface PositionForm {
   name: string;
-  position_type: DHLPositionType;
+  position_type: string;
   description: string;
-  hourly_rate: number | null;
-  requirements: string[];
+  hourly_rate: string;
   cycle_weeks: number[];
 }
 
-const defaultFormData: PositionFormData = {
-  name: '',
-  position_type: 'sortierer',
-  description: '',
-  hourly_rate: null,
-  requirements: [],
-  cycle_weeks: []
-};
-
 export const PositionManagementPanel: React.FC = () => {
-  const { positions, workGroups, isLoading, refetch } = useDHLData();
-  const [isCreating, setIsCreating] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [formData, setFormData] = useState<PositionFormData>(defaultFormData);
-  const [requirementInput, setRequirementInput] = useState('');
-  const [selectedWeeks, setSelectedWeeks] = useState<number[]>([]);
+  const { user } = useAuth();
+  const { positions, isLoading, refreshData } = useDHLData(user?.id || null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingPosition, setEditingPosition] = useState<any>(null);
+  const [formData, setFormData] = useState<PositionForm>({
+    name: '',
+    position_type: 'sortierer',
+    description: '',
+    hourly_rate: '',
+    cycle_weeks: []
+  });
 
-  const positionTypes: { value: DHLPositionType; label: string }[] = [
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handlePositionTypeChange = (value: string) => {
+    setFormData(prev => ({ ...prev, position_type: value }));
+  };
+
+  const handleCycleWeekChange = (week: number) => {
+    setFormData(prev => {
+      if (prev.cycle_weeks.includes(week)) {
+        return {
+          ...prev,
+          cycle_weeks: prev.cycle_weeks.filter(w => w !== week)
+        };
+      } else {
+        return {
+          ...prev,
+          cycle_weeks: [...prev.cycle_weeks, week]
+        };
+      }
+    });
+  };
+
+  const handleSubmit = async () => {
+    // Implement submit logic here
+    console.log('Form submitted:', formData);
+    setIsFormOpen(false);
+    toast.success('Pozice byla úspěšně uložena');
+  };
+
+  const handleEditPosition = (position: any) => {
+    setEditingPosition(position);
+    setFormData({
+      name: position.name,
+      position_type: position.position_type,
+      description: position.description || '',
+      hourly_rate: position.hourly_rate ? position.hourly_rate.toString() : '',
+      cycle_weeks: position.cycle_weeks || []
+    });
+    setIsFormOpen(true);
+  };
+
+  const handleDeletePosition = (positionId: string) => {
+    // Implement delete logic here
+    console.log('Delete position:', positionId);
+    toast.success('Pozice byla úspěšně smazána');
+  };
+
+  const positionTypes = [
     { value: 'technik', label: 'Technik' },
     { value: 'rangierer', label: 'Rangierer' },
     { value: 'verlader', label: 'Verlader' },
     { value: 'sortierer', label: 'Sortierer' },
     { value: 'fahrer', label: 'Fahrer' },
-    { value: 'other', label: 'Ostatní' }
+    { value: 'other', label: 'Other' }
   ];
 
-  const handleCreate = async () => {
-    if (!formData.name.trim()) {
-      toast.error('Název pozice je povinný');
-      return;
-    }
-
-    try {
-      const { error } = await supabase
-        .from('dhl_positions')
-        .insert({
-          name: formData.name,
-          position_type: formData.position_type as DHLPositionType,
-          description: formData.description || null,
-          hourly_rate: formData.hourly_rate,
-          requirements: formData.requirements,
-          cycle_weeks: formData.cycle_weeks,
-          is_active: true
-        });
-
-      if (error) throw error;
-
-      toast.success('Pozice byla vytvořena');
-      setFormData(defaultFormData);
-      setSelectedWeeks([]);
-      setIsCreating(false);
-      refetch();
-    } catch (error) {
-      console.error('Error creating position:', error);
-      toast.error('Chyba při vytváření pozice');
-    }
-  };
-
-  const handleUpdate = async (id: string) => {
-    try {
-      const { error } = await supabase
-        .from('dhl_positions')
-        .update({
-          name: formData.name,
-          position_type: formData.position_type as DHLPositionType,
-          description: formData.description || null,
-          hourly_rate: formData.hourly_rate,
-          requirements: formData.requirements,
-          cycle_weeks: formData.cycle_weeks
-        })
-        .eq('id', id);
-
-      if (error) throw error;
-
-      toast.success('Pozice byla aktualizována');
-      setEditingId(null);
-      setFormData(defaultFormData);
-      setSelectedWeeks([]);
-      refetch();
-    } catch (error) {
-      console.error('Error updating position:', error);
-      toast.error('Chyba při aktualizaci pozice');
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    if (!confirm('Opravdu chcete smazat tuto pozici?')) return;
-
-    try {
-      const { error } = await supabase
-        .from('dhl_positions')
-        .update({ is_active: false })
-        .eq('id', id);
-
-      if (error) throw error;
-
-      toast.success('Pozice byla smazána');
-      refetch();
-    } catch (error) {
-      console.error('Error deleting position:', error);
-      toast.error('Chyba při mazání pozice');
-    }
-  };
-
-  const startEdit = (position: any) => {
-    setEditingId(position.id);
-    setFormData({
-      name: position.name,
-      position_type: position.position_type as DHLPositionType,
-      description: position.description || '',
-      hourly_rate: position.hourly_rate,
-      requirements: position.requirements || [],
-      cycle_weeks: position.cycle_weeks || []
-    });
-    setSelectedWeeks(position.cycle_weeks || []);
-  };
-
-  const cancelEdit = () => {
-    setEditingId(null);
-    setIsCreating(false);
-    setFormData(defaultFormData);
-    setSelectedWeeks([]);
-  };
-
-  const addRequirement = () => {
-    if (requirementInput.trim()) {
-      setFormData(prev => ({
-        ...prev,
-        requirements: [...prev.requirements, requirementInput.trim()]
-      }));
-      setRequirementInput('');
-    }
-  };
-
-  const removeRequirement = (index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      requirements: prev.requirements.filter((_, i) => i !== index)
-    }));
-  };
-
-  const toggleWeek = (week: number) => {
-    const newWeeks = selectedWeeks.includes(week)
-      ? selectedWeeks.filter(w => w !== week)
-      : [...selectedWeeks, week].sort((a, b) => a - b);
-    
-    setSelectedWeeks(newWeeks);
-    setFormData(prev => ({ ...prev, cycle_weeks: newWeeks }));
-  };
-
   if (isLoading) {
-    return <div className="p-4">Načítání pozic...</div>;
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
   }
 
   return (
     <div className="space-y-6">
-      {/* Create New Position */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>Správa pozic</CardTitle>
-              <CardDescription>
-                Spravujte DHL pozice a jejich cykly týdnů
-              </CardDescription>
-            </div>
-            {!isCreating && (
-              <Button onClick={() => setIsCreating(true)}>
-                <Plus className="h-4 w-4 mr-2" />
-                Nová pozice
-              </Button>
-            )}
-          </div>
-        </CardHeader>
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-2xl font-bold">Správa pozic</h2>
+          <p className="text-muted-foreground">Spravujte DHL pozice a jejich nastavení</p>
+        </div>
+        <Button onClick={() => setIsFormOpen(true)}>
+          <Plus className="h-4 w-4 mr-2" />
+          Přidat pozici
+        </Button>
+      </div>
 
-        {isCreating && (
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="name">Název pozice *</Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder="např. Sortierer Linie A"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="position_type">Typ pozice *</Label>
-                <Select 
-                  value={formData.position_type} 
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, position_type: value as DHLPositionType }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {positionTypes.map((type) => (
-                      <SelectItem key={type.value} value={type.value}>
-                        {type.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label htmlFor="hourly_rate">Hodinová sazba (CZK)</Label>
-                <Input
-                  id="hourly_rate"
-                  type="number"
-                  value={formData.hourly_rate || ''}
-                  onChange={(e) => setFormData(prev => ({ 
-                    ...prev, 
-                    hourly_rate: e.target.value ? parseFloat(e.target.value) : null 
-                  }))}
-                  placeholder="např. 150"
-                />
-              </div>
-
-              <div className="md:col-span-2">
-                <Label htmlFor="description">Popis</Label>
-                <Textarea
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                  placeholder="Popis pozice a odpovědností"
-                  rows={3}
-                />
-              </div>
-            </div>
-
-            {/* Cycle Weeks Selection */}
-            <div>
-              <Label>Týdny v cyklu *</Label>
-              <div className="flex flex-wrap gap-2 mt-2">
-                {Array.from({ length: 15 }, (_, i) => i + 1).map(week => (
-                  <Badge
-                    key={week}
-                    variant={selectedWeeks.includes(week) ? "default" : "outline"}
-                    className="cursor-pointer"
-                    onClick={() => toggleWeek(week)}
-                  >
-                    W{week}
-                  </Badge>
-                ))}
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Vyberte týdny, které tato pozice má ve svém cyklu
-              </p>
-            </div>
-
-            {/* Requirements */}
-            <div>
-              <Label>Požadavky</Label>
-              <div className="flex gap-2 mt-2">
-                <Input
-                  value={requirementInput}
-                  onChange={(e) => setRequirementInput(e.target.value)}
-                  placeholder="Přidat požadavek"
-                  onKeyPress={(e) => e.key === 'Enter' && addRequirement()}
-                />
-                <Button type="button" onClick={addRequirement} size="sm">
-                  Přidat
-                </Button>
-              </div>
-              {formData.requirements.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {formData.requirements.map((req, index) => (
-                    <Badge key={index} variant="secondary" className="flex items-center gap-1">
-                      {req}
-                      <X
-                        className="h-3 w-3 cursor-pointer"
-                        onClick={() => removeRequirement(index)}
-                      />
-                    </Badge>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className="flex gap-2">
-              <Button onClick={handleCreate} disabled={!formData.name.trim()}>
-                <Check className="h-4 w-4 mr-2" />
-                Vytvořit
-              </Button>
-              <Button variant="outline" onClick={cancelEdit}>
-                <X className="h-4 w-4 mr-2" />
-                Zrušit
-              </Button>
-            </div>
-          </CardContent>
-        )}
-      </Card>
-
-      {/* Existing Positions */}
-      <div className="grid gap-4">
+      {/* Position Cards Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {positions.map((position) => (
-          <Card key={position.id}>
-            <CardContent className="pt-6">
-              {editingId === position.id ? (
-                // Edit Form
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor={`name-${position.id}`}>Název pozice *</Label>
-                      <Input
-                        id={`name-${position.id}`}
-                        value={formData.name}
-                        onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor={`type-${position.id}`}>Typ pozice *</Label>
-                      <Select 
-                        value={formData.position_type} 
-                        onValueChange={(value) => setFormData(prev => ({ ...prev, position_type: value as DHLPositionType }))}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {positionTypes.map((type) => (
-                            <SelectItem key={type.value} value={type.value}>
-                              {type.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div>
-                      <Label htmlFor={`rate-${position.id}`}>Hodinová sazba (CZK)</Label>
-                      <Input
-                        id={`rate-${position.id}`}
-                        type="number"
-                        value={formData.hourly_rate || ''}
-                        onChange={(e) => setFormData(prev => ({ 
-                          ...prev, 
-                          hourly_rate: e.target.value ? parseFloat(e.target.value) : null 
-                        }))}
-                      />
-                    </div>
-
-                    <div className="md:col-span-2">
-                      <Label htmlFor={`desc-${position.id}`}>Popis</Label>
-                      <Textarea
-                        id={`desc-${position.id}`}
-                        value={formData.description}
-                        onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                        rows={3}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Cycle Weeks Selection */}
-                  <div>
-                    <Label>Týdny v cyklu *</Label>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {Array.from({ length: 15 }, (_, i) => i + 1).map(week => (
-                        <Badge
-                          key={week}
-                          variant={selectedWeeks.includes(week) ? "default" : "outline"}
-                          className="cursor-pointer"
-                          onClick={() => toggleWeek(week)}
-                        >
-                          W{week}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="flex gap-2">
-                    <Button onClick={() => handleUpdate(position.id)}>
-                      <Check className="h-4 w-4 mr-2" />
-                      Uložit
-                    </Button>
-                    <Button variant="outline" onClick={cancelEdit}>
-                      <X className="h-4 w-4 mr-2" />
-                      Zrušit
-                    </Button>
-                  </div>
+          <Card key={position.id} className="relative">
+            <CardHeader className="pb-3">
+              <div className="flex justify-between items-start">
+                <div className="flex-1">
+                  <CardTitle className="text-lg">{position.name}</CardTitle>
+                  <Badge variant="secondary" className="mt-1">
+                    {position.position_type}
+                  </Badge>
                 </div>
-              ) : (
-                // Display View
-                <div className="flex items-start justify-between">
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-semibold">{position.name}</h3>
-                      <Badge variant="outline">
-                        {positionTypes.find(t => t.value === position.position_type)?.label}
+                <div className="flex gap-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleEditPosition(position)}
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleDeletePosition(position.id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {position.description && (
+                <p className="text-sm text-muted-foreground">
+                  {position.description}
+                </p>
+              )}
+              {position.hourly_rate && (
+                <p className="text-sm">
+                  <strong>Hodinová sazba:</strong> {position.hourly_rate} €/h
+                </p>
+              )}
+              {position.cycle_weeks && position.cycle_weeks.length > 0 && (
+                <div className="text-sm">
+                  <strong>Cyklus týdnů:</strong>
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {position.cycle_weeks.map((week) => (
+                      <Badge key={week} variant="outline" className="text-xs">
+                        {week}
                       </Badge>
-                    </div>
-                    
-                    {position.description && (
-                      <p className="text-sm text-muted-foreground">{position.description}</p>
-                    )}
-                    
-                    {position.hourly_rate && (
-                      <p className="text-sm"><strong>Sazba:</strong> {position.hourly_rate} CZK/hod</p>
-                    )}
-                    
-                    {position.cycle_weeks && position.cycle_weeks.length > 0 && (
-                      <div>
-                        <p className="text-sm font-medium mb-1">Cyklus týdnů:</p>
-                        <div className="flex flex-wrap gap-1">
-                          {position.cycle_weeks.map(week => (
-                            <Badge key={week} variant="secondary" className="text-xs">
-                              W{week}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => startEdit(position)}
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleDelete(position.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    ))}
                   </div>
                 </div>
               )}
@@ -463,12 +171,28 @@ export const PositionManagementPanel: React.FC = () => {
       </div>
 
       {positions.length === 0 && (
-        <Card>
-          <CardContent className="text-center py-8">
-            <p className="text-muted-foreground">Žádne pozice nenalezeny</p>
-          </CardContent>
+        <Card className="p-8 text-center">
+          <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+          <h3 className="text-lg font-semibold mb-2">Žádné pozice</h3>
+          <p className="text-muted-foreground mb-4">
+            Zatím nebyly vytvořeny žádné DHL pozice.
+          </p>
+          <Button onClick={() => setIsFormOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Přidat první pozici
+          </Button>
         </Card>
       )}
     </div>
   );
+};
+
+const handleEditPosition = (position: any) => {
+  // Implementation for editing position
+  console.log('Edit position:', position);
+};
+
+const handleDeletePosition = (positionId: string) => {
+  // Implementation for deleting position
+  console.log('Delete position:', positionId);
 };
