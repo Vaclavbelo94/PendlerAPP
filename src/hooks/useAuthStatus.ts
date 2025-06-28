@@ -32,61 +32,43 @@ export const useAuthStatus = (userId: string | undefined) => {
   };
   
   const refreshPremiumStatus = async () => {
-    if (!userId) return;
+    if (!userId) return { isPremium: false };
     
     try {
-      // Get user data to check if they are DHL employee
+      // Get user data to check if they are DHL employee or special user
       const { data: userData, error: userError } = await supabase
         .from('profiles')
-        .select('email')
+        .select('email, is_premium, premium_expiry')
         .eq('id', userId)
         .single();
         
       if (userError) throw userError;
       
+      console.log('Checking premium status for user:', userData);
+      
       // Check if user is DHL employee
       const userObj = { email: userData?.email } as any;
       const isDHL = isDHLEmployee(userObj);
       
-      console.log('Premium status check:', {
-        email: userData?.email,
-        isDHL,
-        userId
-      });
-      
-      // Special users get premium automatically
-      const specialEmails = ['uzivatel@pendlerapp.com', 'admin@pendlerapp.com'];
+      // Special users get premium automatically - including zkouska@gmail.com
+      const specialEmails = ['uzivatel@pendlerapp.com', 'admin@pendlerapp.com', 'zkouska@gmail.com'];
       const isSpecialUser = userData?.email && specialEmails.includes(userData.email);
       
-      if (isSpecialUser) {
-        // Set premium status and calculate expiry date (3 months from now)
-        const threeMonthsLater = new Date();
-        threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
-        
-        setIsPremium(true);
-        
-        // Update their premium status in the database
-        await supabase
-          .from('profiles')
-          .update({ 
-            is_premium: true,
-            premium_expiry: threeMonthsLater.toISOString()
-          })
-          .eq('id', userId);
-          
-        return {
-          isPremium: true,
-          premiumExpiry: threeMonthsLater.toISOString()
-        };
-      }
+      console.log('Premium check details:', {
+        email: userData?.email,
+        isDHL,
+        isSpecialUser,
+        currentPremium: userData?.is_premium,
+        premiumExpiry: userData?.premium_expiry
+      });
       
-      // DHL employees get premium automatically
-      if (isDHL) {
-        console.log('Activating premium for DHL employee:', userData?.email);
+      if (isSpecialUser || isDHL) {
+        console.log('Activating premium for special/DHL user:', userData?.email);
         
-        // Set premium status and calculate expiry date (1 year from now for DHL)
-        const oneYearLater = new Date();
-        oneYearLater.setFullYear(oneYearLater.getFullYear() + 1);
+        // Set premium status and calculate expiry date
+        const expiryDate = isSpecialUser 
+          ? new Date(Date.now() + 365 * 24 * 60 * 60 * 1000) // 1 year for special users
+          : new Date(Date.now() + 365 * 24 * 60 * 60 * 1000); // 1 year for DHL too
         
         setIsPremium(true);
         
@@ -95,33 +77,25 @@ export const useAuthStatus = (userId: string | undefined) => {
           .from('profiles')
           .update({ 
             is_premium: true,
-            premium_expiry: oneYearLater.toISOString()
+            premium_expiry: expiryDate.toISOString()
           })
           .eq('id', userId);
           
         return {
           isPremium: true,
-          premiumExpiry: oneYearLater.toISOString()
+          premiumExpiry: expiryDate.toISOString()
         };
       }
       
       // For all other users, check their premium status as usual
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('is_premium, premium_expiry')
-        .eq('id', userId)
-        .single();
-        
-      if (error) throw error;
-      
-      const isPremiumActive = data.is_premium && 
-        (!data.premium_expiry || new Date(data.premium_expiry) > new Date());
+      const isPremiumActive = userData.is_premium && 
+        (!userData.premium_expiry || new Date(userData.premium_expiry) > new Date());
         
       setIsPremium(isPremiumActive);
       
       return {
         isPremium: isPremiumActive,
-        premiumExpiry: data.premium_expiry
+        premiumExpiry: userData.premium_expiry
       };
     } catch (error) {
       console.error('Chyba při získávání premium statusu:', error);
