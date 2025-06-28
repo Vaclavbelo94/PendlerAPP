@@ -1,9 +1,8 @@
-
 import React, { useState, useMemo, useCallback } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { CalendarDays, Edit, Trash2 } from 'lucide-react';
+import { CalendarDays, Edit, Trash2, Plus } from 'lucide-react';
 import { format, isSameDay } from 'date-fns';
 import { cs, de, pl } from 'date-fns/locale';
 import { Shift } from '@/hooks/shifts/useShiftsCRUD';
@@ -18,12 +17,14 @@ interface OptimizedShiftCalendarProps {
   shifts: Shift[];
   onEditShift: (shift: Shift) => void;
   onDeleteShift: (shiftId: string) => void;
+  onAddShift?: () => void;
 }
 
 const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
   shifts,
   onEditShift,
-  onDeleteShift
+  onDeleteShift,
+  onAddShift
 }) => {
   // ALL HOOKS MUST BE CALLED AT THE TOP LEVEL - NO CONDITIONAL HOOKS
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
@@ -91,16 +92,27 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
   // Handle mobile case first to avoid conditional hook issues
   if (isMobile) {
     return (
-      <MobileShiftCalendarGrid
-        shifts={shifts}
-        onEditShift={onEditShift}
-        onDeleteShift={onDeleteShift}
-      />
+      <div className="relative">
+        <MobileShiftCalendarGrid
+          shifts={shifts}
+          onEditShift={onEditShift}
+          onDeleteShift={onDeleteShift}
+        />
+        {onAddShift && (
+          <Button
+            onClick={onAddShift}
+            className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg z-50"
+            size="icon"
+          >
+            <Plus className="h-6 w-6" />
+          </Button>
+        )}
+      </div>
     );
   }
 
   return (
-    <div className="w-full space-y-6">
+    <div className="w-full space-y-6 relative">
       {/* View Mode Toggle */}
       <div className="flex gap-2">
         <Button
@@ -203,6 +215,17 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
             </StandardCard>
           )}
         </>
+      )}
+
+      {/* Floating Add Button for Desktop */}
+      {onAddShift && (
+        <Button
+          onClick={onAddShift}
+          className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg z-50"
+          size="icon"
+        >
+          <Plus className="h-6 w-6" />
+        </Button>
       )}
     </div>
   );

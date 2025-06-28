@@ -23,6 +23,7 @@ const UnifiedShiftsMainContainer: React.FC = () => {
     handleEditShift,
     openEditDialog,
     deleteShift,
+    handleOpenAddSheet,
     isSaving,
     isOnline,
     isSlowConnection
@@ -49,6 +50,7 @@ const UnifiedShiftsMainContainer: React.FC = () => {
         {...containerProps} 
         onEditShift={openEditDialog}
         onDeleteShift={deleteShift}
+        onAddShift={handleOpenAddSheet}
       />
       
       <ShiftsFormSheets

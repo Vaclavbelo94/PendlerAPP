@@ -3,6 +3,7 @@ import React from 'react';
 import { RefreshCw } from 'lucide-react';
 import OptimizedShiftCalendar from './OptimizedShiftCalendar';
 import OptimizedShiftsAnalytics from './OptimizedShiftsAnalytics';
+import EmptyShiftsState from './EmptyShiftsState';
 import { Shift } from '@/hooks/shifts/useShiftsCRUD';
 import { useTranslation } from 'react-i18next';
 
@@ -12,6 +13,7 @@ interface ShiftsContentRendererProps {
   shifts: Shift[];
   onEditShift: (shift: Shift) => void;
   onDeleteShift: (shiftId: string) => void;
+  onAddShift?: () => void;
 }
 
 const ShiftsContentRenderer: React.FC<ShiftsContentRendererProps> = ({
@@ -19,7 +21,8 @@ const ShiftsContentRenderer: React.FC<ShiftsContentRendererProps> = ({
   isChanging,
   shifts,
   onEditShift,
-  onDeleteShift
+  onDeleteShift,
+  onAddShift
 }) => {
   const { t } = useTranslation('shifts');
 
@@ -31,6 +34,11 @@ const ShiftsContentRenderer: React.FC<ShiftsContentRendererProps> = ({
     );
   }
 
+  // Show empty state if no shifts exist
+  if (shifts.length === 0 && onAddShift) {
+    return <EmptyShiftsState onAddShift={onAddShift} />;
+  }
+
   switch (activeSection) {
     case 'calendar':
       return (
@@ -39,6 +47,7 @@ const ShiftsContentRenderer: React.FC<ShiftsContentRendererProps> = ({
             shifts={shifts}
             onEditShift={onEditShift}
             onDeleteShift={onDeleteShift}
+            onAddShift={onAddShift}
           />
         </div>
       );
@@ -51,6 +60,7 @@ const ShiftsContentRenderer: React.FC<ShiftsContentRendererProps> = ({
             shifts={shifts}
             onEditShift={onEditShift}
             onDeleteShift={onDeleteShift}
+            onAddShift={onAddShift}
           />
         </div>
       );
