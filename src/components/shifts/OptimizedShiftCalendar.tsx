@@ -4,7 +4,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { CalendarDays, Edit, Trash2, Plus } from 'lucide-react';
-import { format, isSameDay } from 'date-fns';
+import { format, isSameDay, isToday } from 'date-fns';
 import { cs, de, pl } from 'date-fns/locale';
 import { Shift } from '@/hooks/shifts/useShiftsCRUD';
 import { cn } from '@/lib/utils';
@@ -82,16 +82,56 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
     }
   }, []);
 
+  // Updated modifiers - removed hasShift to avoid conflicts
   const modifiers = useMemo(() => ({
+    today: (date: Date) => isToday(date),
     hasShift: (date: Date) => {
       const dateKey = format(date, 'yyyy-MM-dd');
       return shiftsMap.has(dateKey);
     }
   }), [shiftsMap]);
 
+  // Updated modifier classNames - removed background colors that conflict with selected state
   const modifiersClassNames = useMemo(() => ({
-    hasShift: 'bg-primary/20 font-bold'
+    today: 'font-bold border-2 border-primary/50',
+    hasShift: 'relative'
   }), []);
+
+  // Custom components for the calendar
+  const components = useMemo(() => ({
+    Day: ({ date, displayMonth, ...props }: any) => {
+      const dateKey = format(date, 'yyyy-MM-dd');
+      const hasShift = shiftsMap.has(dateKey);
+      const isSelected = selectedDate && isSameDay(date, selectedDate);
+      const isTodayDate = isToday(date);
+      
+      return (
+        <div className="relative w-full h-full">
+          <button
+            {...props}
+            className={cn(
+              "w-full h-full p-0 font-normal relative flex items-center justify-center",
+              "hover:bg-accent hover:text-accent-foreground transition-colors duration-200",
+              "focus:bg-accent focus:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+              isSelected && "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+              isTodayDate && !isSelected && "font-bold border-2 border-primary/30",
+              date.getMonth() !== displayMonth.getMonth() && "text-muted-foreground opacity-50"
+            )}
+          >
+            <span className="relative z-10">
+              {date.getDate()}
+            </span>
+            {hasShift && !isSelected && (
+              <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 bg-primary rounded-full" />
+            )}
+            {hasShift && isSelected && (
+              <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 bg-primary-foreground rounded-full" />
+            )}
+          </button>
+        </div>
+      );
+    }
+  }), [shiftsMap, selectedDate]);
 
   // Handle date selection - clear logging and ensure clean selection
   const handleDateSelect = useCallback((date: Date | undefined) => {
@@ -171,6 +211,7 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
             locale={getDateLocale()}
             modifiers={modifiers}
             modifiersClassNames={modifiersClassNames}
+            components={components}
             className="w-full mx-auto [&_.rdp-table]:w-full [&_.rdp-months]:justify-center [&_.rdp-month]:w-full [&_.rdp-head_row]:grid [&_.rdp-head_row]:grid-cols-7 [&_.rdp-row]:grid [&_.rdp-row]:grid-cols-7 [&_.rdp-cell]:aspect-square [&_.rdp-day]:w-full [&_.rdp-day]:h-full"
           />
         </div>
