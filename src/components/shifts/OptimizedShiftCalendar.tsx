@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo, useCallback } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { Badge } from '@/components/ui/badge';
@@ -91,13 +92,23 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
     hasShift: 'bg-primary/20 font-bold'
   }), []);
 
+  // Oprava: Při kliknutí na tlačítko + použít skutečně vybrané datum
   const handleAddShiftClick = useCallback(() => {
+    console.log('Add shift clicked with selected date:', selectedDate);
     if (onAddShiftForDate && selectedDate) {
       onAddShiftForDate(selectedDate);
     } else if (onAddShift) {
       onAddShift();
     }
   }, [onAddShiftForDate, onAddShift, selectedDate]);
+
+  // Oprava: Při kliknutí na "Přidat směnu" v prázdném datu použít vybrané datum
+  const handleAddShiftForSelectedDate = useCallback(() => {
+    console.log('Adding shift for selected date:', selectedDate);
+    if (onAddShiftForDate && selectedDate) {
+      onAddShiftForDate(selectedDate);
+    }
+  }, [onAddShiftForDate, selectedDate]);
 
   // Handle mobile case first to avoid conditional hook issues
   if (isMobile) {
@@ -187,7 +198,7 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
                   <p className="text-sm">{t('noShiftsPlannedForThisDay')}</p>
                   {onAddShiftForDate && (
                     <Button 
-                      onClick={() => onAddShiftForDate(selectedDate)}
+                      onClick={handleAddShiftForSelectedDate}
                       className="mt-4"
                       size="sm"
                     >
