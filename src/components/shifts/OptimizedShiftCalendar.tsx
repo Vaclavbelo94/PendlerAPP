@@ -1,5 +1,5 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -25,30 +25,21 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
   onEditShift,
   onDeleteShift
 }) => {
+  // ALL HOOKS MUST BE CALLED AT THE TOP LEVEL - NO CONDITIONAL HOOKS
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [viewMode, setViewMode] = useState<'calendar' | 'carousel'>('carousel');
   const isMobile = useIsMobile();
   const { t, i18n } = useTranslation('shifts');
 
   // Get appropriate date-fns locale
-  const getDateLocale = () => {
+  const getDateLocale = useCallback(() => {
     switch (i18n.language) {
       case 'de': return de;
       case 'pl': return pl;
       case 'cs':
       default: return cs;
     }
-  };
-
-  if (isMobile) {
-    return (
-      <MobileShiftCalendarGrid
-        shifts={shifts}
-        onEditShift={onEditShift}
-        onDeleteShift={onDeleteShift}
-      />
-    );
-  }
+  }, [i18n.language]);
 
   const shiftsMap = useMemo(() => {
     const map = new Map<string, Shift[]>();
@@ -68,23 +59,23 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
     return shiftsMap.get(dateKey) || [];
   }, [selectedDate, shiftsMap]);
 
-  const getShiftTypeLabel = (type: string) => {
+  const getShiftTypeLabel = useCallback((type: string) => {
     switch (type) {
       case 'morning': return t('morningShift');
       case 'afternoon': return t('afternoonShift');
       case 'night': return t('nightShift');
       default: return type;
     }
-  };
+  }, [t]);
 
-  const getShiftTypeColor = (type: string) => {
+  const getShiftTypeColor = useCallback((type: string) => {
     switch (type) {
       case 'morning': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300';
       case 'afternoon': return 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300';
       case 'night': return 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300';
       default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300';
     }
-  };
+  }, []);
 
   const modifiers = useMemo(() => ({
     hasShift: (date: Date) => {
@@ -93,9 +84,20 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
     }
   }), [shiftsMap]);
 
-  const modifiersClassNames = {
+  const modifiersClassNames = useMemo(() => ({
     hasShift: 'bg-primary/20 font-bold'
-  };
+  }), []);
+
+  // Handle mobile case first to avoid conditional hook issues
+  if (isMobile) {
+    return (
+      <MobileShiftCalendarGrid
+        shifts={shifts}
+        onEditShift={onEditShift}
+        onDeleteShift={onDeleteShift}
+      />
+    );
+  }
 
   return (
     <div className="w-full space-y-6">

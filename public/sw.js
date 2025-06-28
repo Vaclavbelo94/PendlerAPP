@@ -1,7 +1,7 @@
 
-const CACHE_NAME = 'pendleruv-pomocnik-v2.0';
-const STATIC_CACHE = 'static-v2.0';
-const DYNAMIC_CACHE = 'dynamic-v2.0';
+const CACHE_NAME = 'pendleruv-pomocnik-v2.1';
+const STATIC_CACHE = 'static-v2.1';
+const DYNAMIC_CACHE = 'dynamic-v2.1';
 
 // Resources to cache immediately
 const STATIC_ASSETS = [
@@ -98,6 +98,7 @@ async function networkFirstStrategy(request) {
     const networkResponse = await fetch(request);
     if (networkResponse.ok) {
       const cache = await caches.open(DYNAMIC_CACHE);
+      // Clone the response before caching to avoid "already used" error
       cache.put(request, networkResponse.clone());
     }
     return networkResponse;
@@ -128,19 +129,23 @@ async function cacheFirstStrategy(request) {
   }
 }
 
-// Stale-while-revalidate strategy (for app pages)
+// Fixed stale-while-revalidate strategy
 async function staleWhileRevalidateStrategy(request) {
   const cachedResponse = await caches.match(request);
   
+  // Start network request in background
   const fetchPromise = fetch(request).then(networkResponse => {
     if (networkResponse.ok) {
-      const cache = caches.open(DYNAMIC_CACHE);
-      cache.then(c => c.put(request, networkResponse.clone()));
+      caches.open(DYNAMIC_CACHE).then(cache => {
+        // Clone before caching to prevent "already used" error
+        cache.put(request, networkResponse.clone());
+      });
     }
     return networkResponse;
-  }).catch(() => cachedResponse);
+  }).catch(() => null);
 
-  return cachedResponse || fetchPromise;
+  // Return cached response immediately if available, otherwise wait for network
+  return cachedResponse || fetchPromise || new Response('Content not available', { status: 503 });
 }
 
 // Network-first with offline fallback
@@ -184,7 +189,6 @@ self.addEventListener('sync', (event) => {
 async function syncOfflineData() {
   try {
     console.log('[SW] Starting offline data sync...');
-    // Implementation would sync with IndexedDB and send to server
     const offlineData = await getOfflineDataFromIDB();
     
     for (const item of offlineData) {

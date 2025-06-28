@@ -16,13 +16,31 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isAdmin, setIsAdmin] = React.useState(false);
   const [error, setError] = React.useState<AuthError | null>(null);
 
-  // Memoize DHL check to prevent repeated calculations
+  // Memoized DHL check with enhanced caching
   const isDHLUser = React.useMemo(() => {
-    return user ? isDHLEmployee(user) : false;
-  }, [user]);
+    if (!user?.email) return false;
+    
+    // Cache the result to prevent repeated calculations
+    const cacheKey = `dhl_check_${user.email}`;
+    const cached = sessionStorage.getItem(cacheKey);
+    
+    if (cached !== null) {
+      return cached === 'true';
+    }
+    
+    const result = isDHLEmployee(user);
+    sessionStorage.setItem(cacheKey, result.toString());
+    return result;
+  }, [user?.email]);
 
-  // Unified premium status check with memoization and debouncing
+  // Enhanced premium status check with aggressive debouncing
   const checkPremiumStatus = React.useCallback(async (userId: string, email: string) => {
+    // Prevent duplicate calls with a lock mechanism
+    const lockKey = `premium_check_${userId}`;
+    if (sessionStorage.getItem(lockKey)) return { isPremium: false };
+    
+    sessionStorage.setItem(lockKey, 'true');
+    
     try {
       console.log('Premium status check:', { email, isDHL: isDHLUser, userId });
       
@@ -89,11 +107,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.error('Error checking premium status:', error);
       setIsPremium(false);
       return { isPremium: false };
+    } finally {
+      // Remove lock after a delay
+      setTimeout(() => {
+        sessionStorage.removeItem(lockKey);
+      }, 2000);
     }
   }, [isDHLUser]);
 
-  // Admin status check with memoization
+  // Enhanced admin status check with caching
   const checkAdminStatus = React.useCallback(async (userId: string) => {
+    const lockKey = `admin_check_${userId}`;
+    if (sessionStorage.getItem(lockKey)) return false;
+    
+    sessionStorage.setItem(lockKey, 'true');
+    
     try {
       const { data, error } = await supabase
         .from('profiles')
@@ -112,6 +140,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.error('Error checking admin status:', error);
       setIsAdmin(false);
       return false;
+    } finally {
+      setTimeout(() => {
+        sessionStorage.removeItem(lockKey);
+      }, 2000);
     }
   }, []);
 
@@ -129,11 +161,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   React.useEffect(() => {
     let isMounted = true;
     let statusCheckTimeout: NodeJS.Timeout;
+    let subscription: any;
 
     const initialize = async () => {
       try {
         // Set up auth state listener first
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(
+        const { data } = supabase.auth.onAuthStateChange(
           (event, session) => {
             console.log('Auth state change:', event, session?.user?.email);
             
@@ -149,15 +182,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                   clearTimeout(statusCheckTimeout);
                 }
                 
-                // Defer heavy operations with aggressive debouncing
+                // Aggressive debouncing - only check once every 3 seconds
                 statusCheckTimeout = setTimeout(() => {
-                  if (isMounted) {
+                  if (isMounted && !sessionStorage.getItem(`status_check_${session.user.id}`)) {
+                    sessionStorage.setItem(`status_check_${session.user.id}`, 'true');
                     Promise.all([
                       checkAdminStatus(session.user.id),
                       checkPremiumStatus(session.user.id, session.user.email || '')
-                    ]).catch(console.error);
+                    ]).catch(console.error).finally(() => {
+                      // Clear the lock after 5 seconds
+                      setTimeout(() => {
+                        sessionStorage.removeItem(`status_check_${session.user.id}`);
+                      }, 5000);
+                    });
                   }
-                }, 1000); // Increased debounce time
+                }, 3000);
               }
 
               if (event === 'SIGNED_OUT') {
@@ -165,13 +204,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 setIsPremium(false);
                 setUnifiedUser(null);
                 localStorage.removeItem('adminLoggedIn');
+                // Clear all session locks
+                Object.keys(sessionStorage).forEach(key => {
+                  if (key.includes('_check_') || key.includes('dhl_check_')) {
+                    sessionStorage.removeItem(key);
+                  }
+                });
               }
             }
           }
         );
 
+        subscription = data.subscription;
+
         // Then check for existing session
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
           console.error('Session error:', sessionError);
@@ -181,26 +228,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
         
         if (isMounted) {
-          setSession(session);
-          setUser(session?.user ?? null);
+          setSession(sessionData.session);
+          setUser(sessionData.session?.user ?? null);
           setIsLoading(false);
           
-          // Check status for existing session with aggressive debouncing
-          if (session?.user) {
+          // Check status for existing session with enhanced debouncing
+          if (sessionData.session?.user && !sessionStorage.getItem(`status_check_${sessionData.session.user.id}`)) {
+            sessionStorage.setItem(`status_check_${sessionData.session.user.id}`, 'true');
             statusCheckTimeout = setTimeout(() => {
               if (isMounted) {
                 Promise.all([
-                  checkAdminStatus(session.user.id),
-                  checkPremiumStatus(session.user.id, session.user.email || '')
-                ]).catch(console.error);
+                  checkAdminStatus(sessionData.session.user.id),
+                  checkPremiumStatus(sessionData.session.user.id, sessionData.session.user.email || '')
+                ]).catch(console.error).finally(() => {
+                  setTimeout(() => {
+                    sessionStorage.removeItem(`status_check_${sessionData.session.user.id}`);
+                  }, 5000);
+                });
               }
-            }, 1000); // Increased debounce time
+            }, 3000);
           }
         }
-
-        return () => {
-          subscription.unsubscribe();
-        };
       } catch (error) {
         console.error('Auth initialization error:', error);
         if (isMounted) {
@@ -216,6 +264,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       isMounted = false;
       if (statusCheckTimeout) {
         clearTimeout(statusCheckTimeout);
+      }
+      if (subscription) {
+        subscription.unsubscribe();
       }
     };
   }, [checkAdminStatus, checkPremiumStatus]);
