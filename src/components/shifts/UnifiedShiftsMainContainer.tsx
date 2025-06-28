@@ -18,8 +18,14 @@ const UnifiedShiftsMainContainer: React.FC = () => {
     isEditSheetOpen,
     setIsEditSheetOpen,
     editingShift,
-    handleShiftSubmit, // Use the universal handler
-    isSaving
+    setEditingShift,
+    handleAddShift,
+    handleEditShift,
+    openEditDialog,
+    deleteShift,
+    isSaving,
+    isOnline,
+    isSlowConnection
   } = containerProps;
 
   if (isLoading) {
@@ -27,12 +33,23 @@ const UnifiedShiftsMainContainer: React.FC = () => {
   }
 
   if (error) {
-    return <ShiftsErrorHandler error={error} onRetry={handleRetry} />;
+    return (
+      <ShiftsErrorHandler 
+        error={error} 
+        onRetry={handleRetry}
+        isOnline={isOnline}
+        isSlowConnection={isSlowConnection}
+      />
+    );
   }
 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-6">
-      <ShiftsContentRenderer {...containerProps} />
+      <ShiftsContentRenderer 
+        {...containerProps} 
+        onEditShift={openEditDialog}
+        onDeleteShift={deleteShift}
+      />
       
       <ShiftsFormSheets
         isAddSheetOpen={isAddSheetOpen}
@@ -40,8 +57,10 @@ const UnifiedShiftsMainContainer: React.FC = () => {
         isEditSheetOpen={isEditSheetOpen}
         setIsEditSheetOpen={setIsEditSheetOpen}
         editingShift={editingShift}
-        onSubmit={handleShiftSubmit} // Use universal handler
-        isLoading={isSaving}
+        setEditingShift={setEditingShift}
+        onAddShift={handleAddShift}
+        onEditShift={handleEditShift}
+        isSaving={isSaving}
       />
     </div>
   );
