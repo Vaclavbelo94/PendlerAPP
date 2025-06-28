@@ -1,4 +1,5 @@
-import React, { useState, useMemo, useCallback } from 'react';
+
+import React, { useMemo, useCallback } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -29,19 +30,12 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
   onDeleteShift,
   onAddShift,
   onAddShiftForDate,
-  selectedDate: externalSelectedDate,
+  selectedDate,
   onDateChange
 }) => {
-  // Initialize with today's date if no external date is provided
-  const [internalSelectedDate, setInternalSelectedDate] = useState<Date | undefined>(() => {
-    return externalSelectedDate || new Date();
-  });
   const [viewMode, setViewMode] = useState<'calendar' | 'carousel'>('carousel');
   const isMobile = useIsMobile();
   const { t, i18n } = useTranslation('shifts');
-
-  // Determine selected date correctly - prioritize external, fall back to internal
-  const selectedDate = externalSelectedDate !== undefined ? externalSelectedDate : internalSelectedDate;
 
   // Get appropriate date-fns locale
   const getDateLocale = useCallback(() => {
@@ -100,14 +94,11 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
     hasShift: 'bg-primary/20 font-bold'
   }), []);
 
-  // Handle date selection and sync with external state
+  // Handle date selection - only call external handler
   const handleDateSelect = useCallback((date: Date | undefined) => {
     console.log('Calendar date selected:', date);
     
-    // Always update internal state
-    setInternalSelectedDate(date);
-    
-    // If we have an external handler, call it
+    // Call external handler if provided
     if (onDateChange) {
       onDateChange(date);
     }
