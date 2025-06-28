@@ -4,7 +4,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { CalendarDays, Edit, Trash2, Plus } from 'lucide-react';
-import { format, isSameDay, isToday } from 'date-fns';
+import { format, isSameDay, isToday, isValid } from 'date-fns';
 import { cs, de, pl } from 'date-fns/locale';
 import { Shift } from '@/hooks/shifts/useShiftsCRUD';
 import { cn } from '@/lib/utils';
@@ -86,6 +86,7 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
   const modifiers = useMemo(() => ({
     today: (date: Date) => isToday(date),
     hasShift: (date: Date) => {
+      if (!isValid(date)) return false;
       const dateKey = format(date, 'yyyy-MM-dd');
       return shiftsMap.has(dateKey);
     }
@@ -100,6 +101,16 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
   // Custom components for the calendar
   const components = useMemo(() => ({
     Day: ({ date, displayMonth, ...props }: any) => {
+      // Validate date before using it
+      if (!date || !isValid(date)) {
+        console.warn('Invalid date received in Day component:', date);
+        return (
+          <div className="w-full h-full flex items-center justify-center">
+            <span className="text-muted-foreground">?</span>
+          </div>
+        );
+      }
+
       const dateKey = format(date, 'yyyy-MM-dd');
       const hasShift = shiftsMap.has(dateKey);
       const isSelected = selectedDate && isSameDay(date, selectedDate);
