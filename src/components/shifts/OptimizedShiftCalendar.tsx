@@ -1,5 +1,5 @@
 
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -33,7 +33,6 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
   selectedDate,
   onDateChange
 }) => {
-  const [viewMode, setViewMode] = useState<'calendar' | 'carousel'>('carousel');
   const isMobile = useIsMobile();
   const { t, i18n } = useTranslation('shifts');
 
@@ -94,17 +93,18 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
     hasShift: 'bg-primary/20 font-bold'
   }), []);
 
-  // Handle date selection - only call external handler
+  // Handle date selection - clear logging and ensure clean selection
   const handleDateSelect = useCallback((date: Date | undefined) => {
     console.log('Calendar date selected:', date);
+    console.log('Previous selected date was:', selectedDate);
     
-    // Call external handler if provided
+    // Always call the external handler to update parent state
     if (onDateChange) {
       onDateChange(date);
     }
-  }, [onDateChange]);
+  }, [onDateChange, selectedDate]);
 
-  // Handle add shift click - use currently selected date
+  // Handle add shift click
   const handleAddShiftClick = useCallback(() => {
     console.log('Add shift clicked with selected date:', selectedDate);
     if (onAddShiftForDate && selectedDate) {
@@ -146,118 +146,96 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
 
   return (
     <div className="w-full space-y-6 relative">
-      {/* View Mode Toggle */}
-      <div className="flex gap-2">
-        <Button
-          variant={viewMode === 'carousel' ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => setViewMode('carousel')}
-        >
-          {t('weeklyView')}
-        </Button>
-        <Button
-          variant={viewMode === 'calendar' ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => setViewMode('calendar')}
-        >
-          {t('monthlyView')}
-        </Button>
-      </div>
+      <StandardCard 
+        title={t('shiftsCalendar')}
+        description={t('weeklyShiftsView')}
+        className="w-full"
+      >
+        <ShiftCalendarCarousel
+          shifts={shifts}
+          onEditShift={onEditShift}
+          onDeleteShift={onDeleteShift}
+        />
+      </StandardCard>
 
-      {viewMode === 'carousel' ? (
-        <StandardCard 
-          title={t('shiftsCalendar')}
-          description={t('weeklyShiftsView')}
-          className="w-full"
-        >
-          <ShiftCalendarCarousel
-            shifts={shifts}
-            onEditShift={onEditShift}
-            onDeleteShift={onDeleteShift}
+      <StandardCard 
+        title={t('shiftsCalendar')}
+        description={t('clickDateToViewShifts')}
+        className="w-full"
+      >
+        <div className="w-full max-w-none">
+          <Calendar
+            mode="single"
+            selected={selectedDate}
+            onSelect={handleDateSelect}
+            locale={getDateLocale()}
+            modifiers={modifiers}
+            modifiersClassNames={modifiersClassNames}
+            className="w-full mx-auto [&_.rdp-table]:w-full [&_.rdp-months]:justify-center [&_.rdp-month]:w-full [&_.rdp-head_row]:grid [&_.rdp-head_row]:grid-cols-7 [&_.rdp-row]:grid [&_.rdp-row]:grid-cols-7 [&_.rdp-cell]:aspect-square [&_.rdp-day]:w-full [&_.rdp-day]:h-full"
           />
-        </StandardCard>
-      ) : (
-        <>
-          <StandardCard 
-            title={t('shiftsCalendar')}
-            description={t('clickDateToViewShifts')}
-            className="w-full"
-          >
-            <div className="w-full max-w-none">
-              <Calendar
-                mode="single"
-                selected={selectedDate}
-                onSelect={handleDateSelect}
-                locale={getDateLocale()}
-                modifiers={modifiers}
-                modifiersClassNames={modifiersClassNames}
-                className="w-full mx-auto [&_.rdp-table]:w-full [&_.rdp-months]:justify-center [&_.rdp-month]:w-full [&_.rdp-head_row]:grid [&_.rdp-head_row]:grid-cols-7 [&_.rdp-row]:grid [&_.rdp-row]:grid-cols-7 [&_.rdp-cell]:aspect-square [&_.rdp-day]:w-full [&_.rdp-day]:h-full"
-              />
-            </div>
-          </StandardCard>
+        </div>
+      </StandardCard>
 
-          {selectedDate && (
-            <StandardCard 
-              title={format(selectedDate, 'dd. MMMM yyyy', { locale: getDateLocale() })}
-              description={selectedDateShifts.length === 0 
-                ? t('noShiftsForThisDay')
-                : `${selectedDateShifts.length} ${t('shifts').toLowerCase()}${selectedDateShifts.length > 1 ? 'y' : 'a'}`
-              }
-            >
-              {selectedDateShifts.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  <CalendarDays className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p className="text-sm">{t('noShiftsPlannedForThisDay')}</p>
-                  {onAddShiftForDate && (
-                    <Button 
-                      onClick={handleAddShiftForSelectedDate}
-                      className="mt-4"
-                      size="sm"
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      {t('addShift')}
-                    </Button>
-                  )}
-                </div>
-              ) : (
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {selectedDateShifts.map((shift) => (
-                    <div key={shift.id} className="flex items-center justify-between p-3 border rounded-lg bg-muted/30">
-                      <div className="flex items-center gap-2 min-w-0 flex-1">
-                        <Badge className={cn("text-xs flex-shrink-0", getShiftTypeColor(shift.type))}>
-                          {getShiftTypeLabel(shift.type)}
-                        </Badge>
-                        {shift.notes && (
-                          <span className="text-xs text-muted-foreground truncate">
-                            {shift.notes}
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-1 flex-shrink-0">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => onEditShift(shift)}
-                          className="h-7 w-7 p-0"
-                        >
-                          <Edit className="h-3 w-3" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => shift.id && onDeleteShift(shift.id)}
-                          className="h-7 w-7 p-0 hover:bg-destructive/10"
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+      {selectedDate && (
+        <StandardCard 
+          title={format(selectedDate, 'dd. MMMM yyyy', { locale: getDateLocale() })}
+          description={selectedDateShifts.length === 0 
+            ? t('noShiftsForThisDay')
+            : `${selectedDateShifts.length} ${t('shifts').toLowerCase()}${selectedDateShifts.length > 1 ? 'y' : 'a'}`
+          }
+        >
+          {selectedDateShifts.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <CalendarDays className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p className="text-sm">{t('noShiftsPlannedForThisDay')}</p>
+              {onAddShiftForDate && (
+                <Button 
+                  onClick={handleAddShiftForSelectedDate}
+                  className="mt-4"
+                  size="sm"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  {t('addShift')}
+                </Button>
               )}
-            </StandardCard>
+            </div>
+          ) : (
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {selectedDateShifts.map((shift) => (
+                <div key={shift.id} className="flex items-center justify-between p-3 border rounded-lg bg-muted/30">
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                    <Badge className={cn("text-xs flex-shrink-0", getShiftTypeColor(shift.type))}>
+                      {getShiftTypeLabel(shift.type)}
+                    </Badge>
+                    {shift.notes && (
+                      <span className="text-xs text-muted-foreground truncate">
+                        {shift.notes}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onEditShift(shift)}
+                      className="h-7 w-7 p-0"
+                    >
+                      <Edit className="h-3 w-3" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => shift.id && onDeleteShift(shift.id)}
+                      className="h-7 w-7 p-0 hover:bg-destructive/10"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
-        </>
+        </StandardCard>
       )}
 
       {/* Floating Add Button for Desktop */}

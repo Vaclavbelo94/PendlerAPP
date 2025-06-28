@@ -19,7 +19,8 @@ export const useUnifiedShiftsContainer = () => {
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
   const [editingShift, setEditingShift] = useState<Shift | null>(null);
   const [selectedDateForNewShift, setSelectedDateForNewShift] = useState<Date | null>(null);
-  // Initialize calendar with undefined - no date selected initially
+  
+  // Critical fix: Initialize with undefined to ensure no date is initially selected
   const [calendarSelectedDate, setCalendarSelectedDate] = useState<Date | undefined>(undefined);
 
   const {
@@ -78,7 +79,6 @@ export const useUnifiedShiftsContainer = () => {
   }, [refreshShifts]);
 
   const handleOpenAddSheet = useCallback(() => {
-    // Use the currently selected date from calendar if available
     console.log('Opening add sheet - calendarSelectedDate:', calendarSelectedDate);
     setSelectedDateForNewShift(calendarSelectedDate || new Date());
     setIsAddSheetOpen(true);
@@ -91,15 +91,20 @@ export const useUnifiedShiftsContainer = () => {
     setIsAddSheetOpen(true);
   }, []);
 
-  // This callback will be called when user clicks on a date in calendar
+  // Critical fix: This callback ensures clean date selection
   const handleCalendarDateChange = useCallback((date: Date | undefined) => {
-    console.log('Calendar date changed to:', date);
+    console.log('Calendar date changing from:', calendarSelectedDate, 'to:', date);
+    
+    // Always update the calendar state
     setCalendarSelectedDate(date);
+    
     // Update selectedDateForNewShift when date is selected
     if (date) {
       setSelectedDateForNewShift(date);
+    } else {
+      setSelectedDateForNewShift(null);
     }
-  }, []);
+  }, [calendarSelectedDate]);
 
   return {
     user,
