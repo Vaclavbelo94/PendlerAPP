@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo, useCallback } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { Badge } from '@/components/ui/badge';
@@ -19,6 +20,8 @@ interface OptimizedShiftCalendarProps {
   onDeleteShift: (shiftId: string) => void;
   onAddShift?: () => void;
   onAddShiftForDate?: (date: Date) => void;
+  selectedDate?: Date;
+  onDateChange?: (date: Date | undefined) => void;
 }
 
 const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
@@ -26,13 +29,18 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
   onEditShift,
   onDeleteShift,
   onAddShift,
-  onAddShiftForDate
+  onAddShiftForDate,
+  selectedDate: externalSelectedDate,
+  onDateChange
 }) => {
   // ALL HOOKS MUST BE CALLED AT THE TOP LEVEL - NO CONDITIONAL HOOKS
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const [internalSelectedDate, setInternalSelectedDate] = useState<Date | undefined>(externalSelectedDate || new Date());
   const [viewMode, setViewMode] = useState<'calendar' | 'carousel'>('carousel');
   const isMobile = useIsMobile();
   const { t, i18n } = useTranslation('shifts');
+
+  // Use external selected date if provided, otherwise use internal state
+  const selectedDate = externalSelectedDate || internalSelectedDate;
 
   // Get appropriate date-fns locale
   const getDateLocale = useCallback(() => {
@@ -91,7 +99,16 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
     hasShift: 'bg-primary/20 font-bold'
   }), []);
 
-  // Oprava: Při kliknutí na tlačítko + použít skutečně vybrané datum
+  // Handle date selection and sync with external state
+  const handleDateSelect = useCallback((date: Date | undefined) => {
+    console.log('Calendar date selected:', date);
+    setInternalSelectedDate(date);
+    if (onDateChange) {
+      onDateChange(date);
+    }
+  }, [onDateChange]);
+
+  // Handle add shift click - use currently selected date
   const handleAddShiftClick = useCallback(() => {
     console.log('Add shift clicked with selected date:', selectedDate);
     if (onAddShiftForDate && selectedDate) {
@@ -101,19 +118,13 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
     }
   }, [onAddShiftForDate, onAddShift, selectedDate]);
 
-  // Oprava: Při kliknutí na "Přidat směnu" v prázdném datu použít vybrané datum
+  // Handle add shift for selected date
   const handleAddShiftForSelectedDate = useCallback(() => {
     console.log('Adding shift for selected date:', selectedDate);
     if (onAddShiftForDate && selectedDate) {
       onAddShiftForDate(selectedDate);
     }
   }, [onAddShiftForDate, selectedDate]);
-
-  // Oprava: Při změně vybraného data v kalendáři resetovat selectedDateForNewShift
-  const handleDateSelect = useCallback((date: Date | undefined) => {
-    console.log('Calendar date selected:', date);
-    setSelectedDate(date);
-  }, []);
 
   // Handle mobile case first to avoid conditional hook issues
   if (isMobile) {

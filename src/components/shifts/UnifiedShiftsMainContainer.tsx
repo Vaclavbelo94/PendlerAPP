@@ -20,6 +20,8 @@ const UnifiedShiftsMainContainer: React.FC = () => {
     editingShift,
     setEditingShift,
     selectedDateForNewShift,
+    calendarSelectedDate,
+    handleCalendarDateChange,
     handleAddShift,
     handleEditShift,
     openEditDialog,
@@ -54,6 +56,8 @@ const UnifiedShiftsMainContainer: React.FC = () => {
         onDeleteShift={deleteShift}
         onAddShift={handleOpenAddSheet}
         onAddShiftForDate={handleOpenAddSheetWithDate}
+        calendarSelectedDate={calendarSelectedDate}
+        handleCalendarDateChange={handleCalendarDateChange}
       />
       
       <ShiftsFormSheets

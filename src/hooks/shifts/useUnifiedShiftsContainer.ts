@@ -1,4 +1,3 @@
-
 import { useState, useCallback, useMemo } from 'react';
 import { useAuth } from '@/hooks/auth';
 import { useOptimizedNetworkStatus } from '@/hooks/useOptimizedNetworkStatus';
@@ -19,6 +18,7 @@ export const useUnifiedShiftsContainer = () => {
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
   const [editingShift, setEditingShift] = useState<Shift | null>(null);
   const [selectedDateForNewShift, setSelectedDateForNewShift] = useState<Date | null>(null);
+  const [calendarSelectedDate, setCalendarSelectedDate] = useState<Date | undefined>(new Date());
 
   const {
     shifts,
@@ -76,14 +76,24 @@ export const useUnifiedShiftsContainer = () => {
   }, [refreshShifts]);
 
   const handleOpenAddSheet = useCallback(() => {
-    setSelectedDateForNewShift(null);
+    // Use the currently selected date from calendar if available
+    const dateToUse = calendarSelectedDate || null;
+    console.log('Opening add sheet with calendar selected date:', dateToUse);
+    setSelectedDateForNewShift(dateToUse);
+    setIsAddSheetOpen(true);
+  }, [calendarSelectedDate]);
+
+  const handleOpenAddSheetWithDate = useCallback((date: Date) => {
+    console.log('Opening add sheet with specific date:', date);
+    setSelectedDateForNewShift(date);
+    setCalendarSelectedDate(date);
     setIsAddSheetOpen(true);
   }, []);
 
-  const handleOpenAddSheetWithDate = useCallback((date: Date) => {
-    console.log('Setting selected date for new shift:', date);
-    setSelectedDateForNewShift(date);
-    setIsAddSheetOpen(true);
+  // Callback to update the selected date from calendar
+  const handleCalendarDateChange = useCallback((date: Date | undefined) => {
+    console.log('Calendar date changed to:', date);
+    setCalendarSelectedDate(date);
   }, []);
 
   return {
@@ -99,6 +109,7 @@ export const useUnifiedShiftsContainer = () => {
     editingShift,
     setEditingShift,
     selectedDateForNewShift,
+    calendarSelectedDate,
     shifts,
     isLoading: isLoading || isDHLDataLoading,
     error,
@@ -112,6 +123,7 @@ export const useUnifiedShiftsContainer = () => {
     handleRetry,
     handleOpenAddSheet,
     handleOpenAddSheetWithDate,
+    handleCalendarDateChange,
     deleteShift,
     // DHL specific data
     isDHLUser,
