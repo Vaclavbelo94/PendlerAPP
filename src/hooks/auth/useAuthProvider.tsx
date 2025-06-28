@@ -21,7 +21,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return user ? isDHLEmployee(user) : false;
   }, [user]);
 
-  // Unified premium status check with memoization
+  // Unified premium status check with memoization and debouncing
   const checkPremiumStatus = React.useCallback(async (userId: string, email: string) => {
     try {
       console.log('Premium status check:', { email, isDHL: isDHLUser, userId });
@@ -134,7 +134,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       try {
         // Set up auth state listener first
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
-          async (event, session) => {
+          (event, session) => {
             console.log('Auth state change:', event, session?.user?.email);
             
             if (isMounted) {
@@ -149,7 +149,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                   clearTimeout(statusCheckTimeout);
                 }
                 
-                // Defer heavy operations with debouncing
+                // Defer heavy operations with aggressive debouncing
                 statusCheckTimeout = setTimeout(() => {
                   if (isMounted) {
                     Promise.all([
@@ -157,7 +157,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                       checkPremiumStatus(session.user.id, session.user.email || '')
                     ]).catch(console.error);
                   }
-                }, 500);
+                }, 1000); // Increased debounce time
               }
 
               if (event === 'SIGNED_OUT') {
@@ -185,7 +185,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           setUser(session?.user ?? null);
           setIsLoading(false);
           
-          // Check status for existing session with debouncing
+          // Check status for existing session with aggressive debouncing
           if (session?.user) {
             statusCheckTimeout = setTimeout(() => {
               if (isMounted) {
@@ -194,7 +194,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                   checkPremiumStatus(session.user.id, session.user.email || '')
                 ]).catch(console.error);
               }
-            }, 500);
+            }, 1000); // Increased debounce time
           }
         }
 

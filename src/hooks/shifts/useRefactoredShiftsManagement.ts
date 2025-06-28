@@ -28,7 +28,14 @@ export const useRefactoredShiftsManagement = (userId: string | null) => {
         .order('date', { ascending: false });
 
       if (error) throw error;
-      setShifts(data || []);
+      
+      // Type conversion from database to proper Shift interface
+      const typedShifts: Shift[] = (data || []).map(shift => ({
+        ...shift,
+        type: shift.type as 'morning' | 'afternoon' | 'night' // Ensure proper type casting
+      }));
+      
+      setShifts(typedShifts);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load shifts';
       setError(errorMessage);
@@ -57,9 +64,15 @@ export const useRefactoredShiftsManagement = (userId: string | null) => {
 
       if (error) throw error;
       
-      setShifts(prev => [data, ...prev]);
+      // Ensure proper type casting for the returned data
+      const typedShift: Shift = {
+        ...data,
+        type: data.type as 'morning' | 'afternoon' | 'night'
+      };
+      
+      setShifts(prev => [typedShift, ...prev]);
       toast.success('Směna byla přidána');
-      return data;
+      return typedShift;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to add shift';
       toast.error(`Chyba při přidávání směny: ${errorMessage}`);
@@ -88,11 +101,17 @@ export const useRefactoredShiftsManagement = (userId: string | null) => {
 
       if (error) throw error;
       
+      // Ensure proper type casting for the returned data
+      const typedShift: Shift = {
+        ...data,
+        type: data.type as 'morning' | 'afternoon' | 'night'
+      };
+      
       setShifts(prev => prev.map(shift => 
-        shift.id === data.id ? data : shift
+        shift.id === typedShift.id ? typedShift : shift
       ));
       toast.success('Směna byla upravena');
-      return data;
+      return typedShift;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to update shift';
       toast.error(`Chyba při úpravě směny: ${errorMessage}`);

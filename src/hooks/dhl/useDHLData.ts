@@ -119,6 +119,7 @@ export const useDHLData = (userId: string | null) => {
     userAssignment,
     isLoading,
     error,
-    refreshData: loadDHLData
+    refreshData: loadDHLData,
+    refetch: loadDHLData // Adding refetch alias for compatibility
   };
 };
