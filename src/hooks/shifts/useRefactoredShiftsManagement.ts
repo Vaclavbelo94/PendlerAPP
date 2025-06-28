@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Shift } from './useShiftsCRUD';
 import { toast } from 'sonner';
@@ -53,30 +53,74 @@ export const useRefactoredShiftsManagement = (userId: string | null) => {
 
     setIsSaving(true);
     try {
-      const { data, error } = await supabase
+      console.log('Adding new shift:', shiftData);
+      
+      // Check if shift already exists for this date
+      const { data: existingShifts, error: checkError } = await supabase
         .from('shifts')
-        .insert({
-          ...shiftData,
-          user_id: userId
-        })
-        .select()
-        .single();
+        .select('*')
+        .eq('user_id', userId)
+        .eq('date', shiftData.date);
 
-      if (error) throw error;
+      if (checkError) throw checkError;
+
+      let result;
       
-      // Ensure proper type casting for the returned data
-      const typedShift: Shift = {
-        ...data,
-        type: data.type as 'morning' | 'afternoon' | 'night'
-      };
+      if (existingShifts && existingShifts.length > 0) {
+        // Update existing shift
+        const existingShift = existingShifts[0];
+        console.log('Updating existing shift:', existingShift.id);
+        
+        const { data, error } = await supabase
+          .from('shifts')
+          .update({
+            type: shiftData.type,
+            notes: shiftData.notes || ''
+          })
+          .eq('id', existingShift.id)
+          .eq('user_id', userId)
+          .select()
+          .single();
+
+        if (error) throw error;
+        result = data;
+        
+        // Update local state
+        setShifts(prev => prev.map(shift => 
+          shift.id === result.id ? { ...result, type: result.type as 'morning' | 'afternoon' | 'night' } : shift
+        ));
+      } else {
+        // Create new shift
+        console.log('Creating new shift for user:', userId);
+        
+        const { data, error } = await supabase
+          .from('shifts')
+          .insert({
+            ...shiftData,
+            user_id: userId,
+            notes: shiftData.notes || ''
+          })
+          .select()
+          .single();
+
+        if (error) throw error;
+        result = data;
+        
+        // Ensure proper type casting for the returned data
+        const typedShift: Shift = {
+          ...result,
+          type: result.type as 'morning' | 'afternoon' | 'night'
+        };
+        
+        setShifts(prev => [typedShift, ...prev]);
+      }
       
-      setShifts(prev => [typedShift, ...prev]);
-      toast.success('Směna byla přidána');
-      return typedShift;
+      toast.success('Směna byla uložena');
+      return result;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to add shift';
-      toast.error(`Chyba při přidávání směny: ${errorMessage}`);
-      console.error('Error adding shift:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Failed to add/update shift';
+      toast.error(`Chyba při ukládání směny: ${errorMessage}`);
+      console.error('Error adding/updating shift:', err);
       return null;
     } finally {
       setIsSaving(false);
@@ -89,11 +133,23 @@ export const useRefactoredShiftsManagement = (userId: string | null) => {
       return null;
     }
 
+    if (!shiftData.id) {
+      console.error('Cannot update shift without ID:', shiftData);
+      toast.error('Chyba: směna nemá platné ID');
+      return null;
+    }
+
     setIsSaving(true);
     try {
+      console.log('Updating shift with ID:', shiftData.id);
+      
       const { data, error } = await supabase
         .from('shifts')
-        .update(shiftData)
+        .update({
+          type: shiftData.type,
+          notes: shiftData.notes || '',
+          date: shiftData.date
+        })
         .eq('id', shiftData.id)
         .eq('user_id', userId)
         .select()
@@ -128,8 +184,16 @@ export const useRefactoredShiftsManagement = (userId: string | null) => {
       return false;
     }
 
+    if (!shiftId) {
+      console.error('Cannot delete shift without ID');
+      toast.error('Chyba: směna nemá platné ID');
+      return false;
+    }
+
     setIsSaving(true);
     try {
+      console.log('Deleting shift with ID:', shiftId);
+      
       const { error } = await supabase
         .from('shifts')
         .delete()

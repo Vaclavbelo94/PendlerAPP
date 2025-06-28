@@ -18,6 +18,7 @@
   "deleteShift": "Schicht löschen",
   "saveShift": "Schicht speichern",
   "updateShift": "Schicht aktualisieren",
+  "saving": "Speichere...",
   "add": "Hinzufügen",
   "shiftType": "Schichttyp",
   "selectShiftType": "Schichttyp auswählen",

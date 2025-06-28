@@ -18,11 +18,12 @@
   "deleteShift": "Smazat směnu",
   "saveShift": "Uložit směnu",
   "updateShift": "Aktualizovat směnu",
+  "saving": "Ukládám...",
   "add": "Přidat",
   "shiftType": "Typ směny",
   "selectShiftType": "Vyberte typ směny",
   "morningShift": "Ranní směna",
-  "afternoonShift": "Odpolední směna",
+  "afternoonShift": "Odpolední směna",  
   "nightShift": "Noční směna",
   "types": {
     "morning": "Ranní",
