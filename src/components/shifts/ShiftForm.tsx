@@ -9,7 +9,7 @@ import DateSelector from './DateSelector';
 import { useTranslation } from 'react-i18next';
 
 interface ShiftFormProps {
-  onSubmit: (data: any) => void;
+  onSubmit: (data: any, isEdit: boolean) => void;
   onCancel: () => void;
   isLoading?: boolean;
   shift?: Shift | null;
@@ -28,6 +28,8 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
   const [type, setType] = useState<'morning' | 'afternoon' | 'night'>(shift?.type || 'morning');
   const [notes, setNotes] = useState(shift?.notes || '');
 
+  const isEditMode = Boolean(shift && shift.id);
+
   useEffect(() => {
     if (shift) {
       setDate(new Date(shift.date));
@@ -41,8 +43,7 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
     
     if (!date) return;
     
-    // Oprava: Zajišťujeme správné formátování data pro databázi
-    // Používáme lokální datum bez konverze na UTC, která by mohla posunout datum
+    // Ensure proper date formatting for database
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
@@ -50,11 +51,24 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
     
     console.log('Submitting shift for date:', formattedDate, 'from selected date:', date);
     
-    onSubmit({
+    const shiftData = {
       date: formattedDate,
       type,
       notes: notes.trim()
-    });
+    };
+
+    // If editing, include the ID
+    if (isEditMode && shift) {
+      onSubmit({
+        id: shift.id,
+        user_id: shift.user_id,
+        created_at: shift.created_at,
+        updated_at: shift.updated_at,
+        ...shiftData
+      }, true);
+    } else {
+      onSubmit(shiftData, false);
+    }
   };
 
   const handleTypeChange = (value: string) => {
@@ -108,7 +122,7 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
           type="submit"
           disabled={isLoading || !date}
         >
-          {isLoading ? t('saving', 'Ukládám...') : shift ? t('updateShift') : t('addShift')}
+          {isLoading ? t('saving') : isEditMode ? t('updateShift') : t('addShift')}
         </Button>
       </div>
     </form>

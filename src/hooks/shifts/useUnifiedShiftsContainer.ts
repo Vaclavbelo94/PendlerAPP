@@ -55,6 +55,15 @@ export const useUnifiedShiftsContainer = () => {
     }
   }, [updateShiftOriginal]);
 
+  // Universal handler that routes to add or edit based on the isEdit flag
+  const handleShiftSubmit = useCallback(async (shiftData: any, isEdit: boolean): Promise<void> => {
+    if (isEdit) {
+      await handleEditShift(shiftData);
+    } else {
+      await handleAddShift(shiftData);
+    }
+  }, [handleAddShift, handleEditShift]);
+
   const openEditDialog = useCallback((shift: Shift) => {
     setEditingShift(shift);
     setIsEditSheetOpen(true);
@@ -88,6 +97,7 @@ export const useUnifiedShiftsContainer = () => {
     handleSectionChange,
     handleAddShift,
     handleEditShift,
+    handleShiftSubmit, // New universal handler
     openEditDialog,
     handleRetry,
     handleOpenAddSheet,
