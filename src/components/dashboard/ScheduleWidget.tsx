@@ -1,33 +1,16 @@
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/auth";
 import { ShiftDashboardWidget } from "@/components/shifts/dashboard/ShiftDashboardWidget";
+import { useShiftsData } from "@/hooks/shifts/useShiftsData";
 
 const ScheduleWidget = () => {
   const { user } = useAuth();
-  
-  // Načtení směn z localStorage pro ukázku
-  const getShiftsFromStorage = () => {
-    try {
-      const shiftsStr = localStorage.getItem("shifts");
-      if (!shiftsStr) return [];
-      
-      const shifts = JSON.parse(shiftsStr);
-      return shifts
-        .filter((shift: any) => shift.userId === user?.id)
-        .map((shift: any) => ({
-          date: new Date(shift.date),
-          type: shift.type,
-          notes: shift.notes
-        }));
-    } catch {
-      return [];
-    }
-  };
-
-  const shifts = user ? getShiftsFromStorage() : [];
+  const { shifts, isLoading } = useShiftsData({ userId: user?.id });
   
   if (!user) {
+    // Mock schedule for demo purposes when not logged in
     const schedule = [
       { day: 'Pondělí', time: '6:00 - 14:00', type: 'Ranní' },
       { day: 'Středa', time: '14:00 - 22:00', type: 'Odpolední' },
@@ -61,6 +44,18 @@ const ScheduleWidget = () => {
             Zobrazit celý rozpis
           </Button>
         </div>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="space-y-3">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="animate-pulse">
+            <div className="h-12 bg-muted/50 rounded-lg"></div>
+          </div>
+        ))}
       </div>
     );
   }

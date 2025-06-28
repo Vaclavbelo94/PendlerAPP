@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Progress } from "@/components/ui/progress";
@@ -10,20 +11,90 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { CircleInfoIcon } from "@/components/ui/icons";
+import { useAuth } from "@/hooks/auth";
+import { useShiftsData } from "@/hooks/shifts/useShiftsData";
+import { useWorkData } from "@/hooks/useWorkData";
+import { startOfMonth, endOfMonth } from "date-fns";
 
 const ShiftsProgress = () => {
+  const { user } = useAuth();
+  const { shifts, isLoading: shiftsLoading } = useShiftsData({ userId: user?.id });
+  const { workData, loading: workDataLoading } = useWorkData();
+  
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedShift, setSelectedShift] = useState<string | null>(null);
 
-  const data = [
-    { label: 'Ranní', value: 24, maxValue: 30, color: 'bg-blue-500', details: { completed: 24, remaining: 6, days: 'Pondělí, Středa, Pátek' } },
-    { label: 'Odpolední', value: 18, maxValue: 30, color: 'bg-amber-500', details: { completed: 18, remaining: 12, days: 'Úterý, Čtvrtek' } },
-    { label: 'Noční', value: 12, maxValue: 20, color: 'bg-indigo-500', details: { completed: 12, remaining: 8, days: 'Sobota, Neděle' } },
-  ];
-  
+  // Calculate real progress data from shifts
+  const calculateProgressData = () => {
+    if (!shifts.length) {
+      return [];
+    }
+
+    const now = new Date();
+    const monthStart = startOfMonth(now);
+    const monthEnd = endOfMonth(now);
+    
+    const monthlyShifts = shifts.filter(shift => {
+      const shiftDate = new Date(shift.date);
+      return shiftDate >= monthStart && shiftDate <= monthEnd;
+    });
+
+    // Group shifts by type
+    const shiftsByType = monthlyShifts.reduce((acc, shift) => {
+      const type = shift.type;
+      if (!acc[type]) {
+        acc[type] = [];
+      }
+      acc[type].push(shift);
+      return acc;
+    }, {} as Record<string, typeof shifts>);
+
+    // Calculate progress for each shift type
+    const progressData = Object.entries(shiftsByType).map(([type, typeShifts]) => {
+      const hours = typeShifts.length * 8; // Assuming 8 hours per shift
+      const maxHours = 40; // Target hours per month per type
+      const typeLabel = type === 'morning' ? 'Ranní' : 
+                       type === 'afternoon' ? 'Odpolední' : 
+                       type === 'night' ? 'Noční' : type;
+      
+      const color = type === 'morning' ? 'bg-blue-500' : 
+                   type === 'afternoon' ? 'bg-amber-500' : 
+                   'bg-indigo-500';
+
+      const days = typeShifts.map(shift => {
+        const date = new Date(shift.date);
+        return date.toLocaleDateString('cs-CZ', { weekday: 'short' });
+      }).join(', ');
+
+      return {
+        label: typeLabel,
+        value: hours,
+        maxValue: maxHours,
+        color,
+        details: {
+          completed: hours,
+          remaining: Math.max(0, maxHours - hours),
+          days: days || 'Žádné směny'
+        }
+      };
+    });
+
+    // If no shifts, show default structure
+    if (progressData.length === 0) {
+      return [
+        { label: 'Ranní', value: 0, maxValue: 40, color: 'bg-blue-500', details: { completed: 0, remaining: 40, days: 'Žádné směny' } },
+        { label: 'Odpolední', value: 0, maxValue: 40, color: 'bg-amber-500', details: { completed: 0, remaining: 40, days: 'Žádné směny' } },
+        { label: 'Noční', value: 0, maxValue: 30, color: 'bg-indigo-500', details: { completed: 0, remaining: 30, days: 'Žádné směny' } },
+      ];
+    }
+
+    return progressData;
+  };
+
+  const data = calculateProgressData();
   const totalHours = data.reduce((acc, curr) => acc + curr.value, 0);
   const totalExpectedHours = data.reduce((acc, curr) => acc + curr.maxValue, 0);
-  const totalProgress = (totalHours / totalExpectedHours) * 100;
+  const totalProgress = totalExpectedHours > 0 ? (totalHours / totalExpectedHours) * 100 : 0;
   
   const handleOpenDetails = (label: string) => {
     setSelectedShift(label);
@@ -31,6 +102,23 @@ const ShiftsProgress = () => {
   };
   
   const selectedShiftData = data.find(item => item.label === selectedShift);
+  const isLoading = shiftsLoading || workDataLoading;
+  
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        {Array.from({ length: 3 }).map((_, index) => (
+          <div key={index} className="space-y-1">
+            <div className="flex justify-between text-sm items-center">
+              <div className="h-4 w-16 bg-muted rounded animate-pulse"></div>
+              <div className="h-4 w-12 bg-muted rounded animate-pulse"></div>
+            </div>
+            <div className="h-2 bg-muted rounded animate-pulse"></div>
+          </div>
+        ))}
+      </div>
+    );
+  }
   
   return (
     <div className="space-y-4">
@@ -67,7 +155,7 @@ const ShiftsProgress = () => {
         </div>
         <Progress value={totalProgress} className="h-3 mt-1" />
         <div className="text-right text-xs mt-1 text-muted-foreground">
-          {totalProgress.toFixed(0)}% splněno
+          {Math.round(totalProgress)}% splněno
         </div>
       </div>
       
@@ -111,7 +199,7 @@ const ShiftsProgress = () => {
                 </div>
                 
                 <div className="p-4 border rounded-lg">
-                  <h3 className="text-lg font-medium mb-2">Pravidelné dny</h3>
+                  <h3 className="text-lg font-medium mb-2">Pracovní dny</h3>
                   <p className="text-muted-foreground">{selectedShiftData.details.days}</p>
                 </div>
               </div>

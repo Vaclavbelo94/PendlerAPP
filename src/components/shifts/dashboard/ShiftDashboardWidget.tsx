@@ -47,6 +47,16 @@ export const ShiftDashboardWidget: React.FC<ShiftDashboardWidgetProps> = ({ shif
     }
   };
 
+  const getShiftHours = (type: string) => {
+    // Return realistic hours based on shift type
+    switch (type) {
+      case 'morning': return '8h'; // 6:00-14:00
+      case 'afternoon': return '8h'; // 14:00-22:00  
+      case 'night': return '8h'; // 22:00-06:00
+      default: return '8h';
+    }
+  };
+
   const getDateLabel = (dateStr: string) => {
     const date = new Date(dateStr);
     if (isToday(date)) return 'Dnes';
@@ -97,7 +107,7 @@ export const ShiftDashboardWidget: React.FC<ShiftDashboardWidgetProps> = ({ shif
             </div>
             <div className="flex items-center gap-1 text-sm text-muted-foreground">
               <Clock className="h-3 w-3" />
-              8h
+              {getShiftHours(shift.type)}
             </div>
           </div>
         ))}
