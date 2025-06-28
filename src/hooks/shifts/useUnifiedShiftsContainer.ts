@@ -1,3 +1,4 @@
+
 import { useState, useCallback, useMemo } from 'react';
 import { useAuth } from '@/hooks/auth';
 import { useOptimizedNetworkStatus } from '@/hooks/useOptimizedNetworkStatus';
@@ -76,10 +77,9 @@ export const useUnifiedShiftsContainer = () => {
   }, [refreshShifts]);
 
   const handleOpenAddSheet = useCallback(() => {
-    // Use the currently selected date from calendar if available
-    const dateToUse = calendarSelectedDate || null;
-    console.log('Opening add sheet with calendar selected date:', dateToUse);
-    setSelectedDateForNewShift(dateToUse);
+    // Use the currently selected date from calendar
+    console.log('Opening add sheet - calendarSelectedDate:', calendarSelectedDate);
+    setSelectedDateForNewShift(calendarSelectedDate || new Date());
     setIsAddSheetOpen(true);
   }, [calendarSelectedDate]);
 
@@ -90,10 +90,14 @@ export const useUnifiedShiftsContainer = () => {
     setIsAddSheetOpen(true);
   }, []);
 
-  // Callback to update the selected date from calendar
+  // This callback will be called when user clicks on a date in calendar
   const handleCalendarDateChange = useCallback((date: Date | undefined) => {
     console.log('Calendar date changed to:', date);
     setCalendarSelectedDate(date);
+    // Immediately update selectedDateForNewShift so it's ready when add button is clicked
+    if (date) {
+      setSelectedDateForNewShift(date);
+    }
   }, []);
 
   return {
