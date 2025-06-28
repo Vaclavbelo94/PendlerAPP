@@ -3,14 +3,11 @@ const CACHE_NAME = 'pendleruv-pomocnik-v2.1';
 const STATIC_CACHE = 'static-v2.1';
 const DYNAMIC_CACHE = 'dynamic-v2.1';
 
-// Resources to cache immediately
+// Resources to cache immediately - remove problematic URLs
 const STATIC_ASSETS = [
   '/',
-  '/static/js/bundle.js',
-  '/static/css/main.css',
   '/manifest.json',
-  '/lovable-uploads/88ef4e0f-4d33-458c-98f4-7b644e5b8588.png',
-  '/offline.html'
+  '/lovable-uploads/88ef4e0f-4d33-458c-98f4-7b644e5b8588.png'
 ];
 
 // Routes to cache dynamically
@@ -32,7 +29,18 @@ self.addEventListener('install', (event) => {
     Promise.all([
       caches.open(STATIC_CACHE).then(cache => {
         console.log('[SW] Caching static assets');
-        return cache.addAll(STATIC_ASSETS);
+        // Cache assets one by one to avoid failures
+        return Promise.allSettled(
+          STATIC_ASSETS.map(url => 
+            fetch(url).then(response => {
+              if (response.ok) {
+                return cache.put(url, response);
+              }
+            }).catch(err => {
+              console.log(`[SW] Failed to cache ${url}:`, err);
+            })
+          )
+        );
       }),
       self.skipWaiting()
     ])

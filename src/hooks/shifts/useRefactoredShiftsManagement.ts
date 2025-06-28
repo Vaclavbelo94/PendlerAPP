@@ -108,10 +108,8 @@ export const useRefactoredShiftsManagement = (userId: string | null) => {
         }
         result = data;
         
-        // Update local state
-        setShifts(prev => prev.map(shift => 
-          shift.id === result.id ? { ...result, type: result.type as 'morning' | 'afternoon' | 'night' } : shift
-        ));
+        // Update local state - ensure we refresh the list
+        await loadShifts();
         toast.success('Směna byla upravena');
       } else {
         // Create new shift
@@ -138,13 +136,8 @@ export const useRefactoredShiftsManagement = (userId: string | null) => {
         }
         result = data;
         
-        // Ensure proper type casting for the returned data
-        const typedShift: Shift = {
-          ...result,
-          type: result.type as 'morning' | 'afternoon' | 'night'
-        };
-        
-        setShifts(prev => [typedShift, ...prev]);
+        // Refresh the shifts list to show the new shift
+        await loadShifts();
         toast.success('Směna byla přidána');
       }
       
@@ -157,7 +150,7 @@ export const useRefactoredShiftsManagement = (userId: string | null) => {
     } finally {
       setIsSaving(false);
     }
-  }, [userId]);
+  }, [userId, loadShifts]);
 
   const updateShift = useCallback(async (shiftData: Shift) => {
     if (!userId) {
