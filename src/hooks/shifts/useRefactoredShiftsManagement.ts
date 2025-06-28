@@ -1,4 +1,3 @@
-
 import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Shift } from './useShiftsCRUD';
@@ -21,18 +20,25 @@ export const useRefactoredShiftsManagement = (userId: string | null) => {
     setError(null);
     
     try {
+      console.log('Loading shifts for user:', userId);
+      
       const { data, error } = await supabase
         .from('shifts')
         .select('*')
         .eq('user_id', userId)
         .order('date', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error loading shifts:', error);
+        throw error;
+      }
+      
+      console.log('Loaded shifts from database:', data?.length || 0);
       
       // Type conversion from database to proper Shift interface
       const typedShifts: Shift[] = (data || []).map(shift => ({
         ...shift,
-        type: shift.type as 'morning' | 'afternoon' | 'night' // Ensure proper type casting
+        type: shift.type as 'morning' | 'afternoon' | 'night'
       }));
       
       setShifts(typedShifts);
@@ -40,6 +46,7 @@ export const useRefactoredShiftsManagement = (userId: string | null) => {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load shifts';
       setError(errorMessage);
       console.error('Error loading shifts:', err);
+      toast.error(`Chyba při načítání směn: ${errorMessage}`);
     } finally {
       setIsLoading(false);
     }
@@ -53,7 +60,17 @@ export const useRefactoredShiftsManagement = (userId: string | null) => {
 
     setIsSaving(true);
     try {
-      console.log('Adding new shift:', shiftData);
+      console.log('Adding new shift for user:', userId, 'Data:', shiftData);
+      
+      // Check authentication
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) {
+        throw new Error('Uživatel není přihlášen');
+      }
+      
+      if (session.user.id !== userId) {
+        throw new Error('Nesprávné ID uživatele');
+      }
       
       // Check if shift already exists for this date
       const { data: existingShifts, error: checkError } = await supabase
@@ -62,7 +79,10 @@ export const useRefactoredShiftsManagement = (userId: string | null) => {
         .eq('user_id', userId)
         .eq('date', shiftData.date);
 
-      if (checkError) throw checkError;
+      if (checkError) {
+        console.error('Error checking existing shifts:', checkError);
+        throw checkError;
+      }
 
       let result;
       
@@ -82,28 +102,40 @@ export const useRefactoredShiftsManagement = (userId: string | null) => {
           .select()
           .single();
 
-        if (error) throw error;
+        if (error) {
+          console.error('Error updating shift:', error);
+          throw error;
+        }
         result = data;
         
         // Update local state
         setShifts(prev => prev.map(shift => 
           shift.id === result.id ? { ...result, type: result.type as 'morning' | 'afternoon' | 'night' } : shift
         ));
+        toast.success('Směna byla upravena');
       } else {
         // Create new shift
         console.log('Creating new shift for user:', userId);
         
+        const insertData = {
+          user_id: userId,
+          date: shiftData.date,
+          type: shiftData.type,
+          notes: shiftData.notes || ''
+        };
+        
+        console.log('Insert data:', insertData);
+        
         const { data, error } = await supabase
           .from('shifts')
-          .insert({
-            ...shiftData,
-            user_id: userId,
-            notes: shiftData.notes || ''
-          })
+          .insert(insertData)
           .select()
           .single();
 
-        if (error) throw error;
+        if (error) {
+          console.error('Error creating shift:', error);
+          throw error;
+        }
         result = data;
         
         // Ensure proper type casting for the returned data
@@ -113,9 +145,9 @@ export const useRefactoredShiftsManagement = (userId: string | null) => {
         };
         
         setShifts(prev => [typedShift, ...prev]);
+        toast.success('Směna byla přidána');
       }
       
-      toast.success('Směna byla uložena');
       return result;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to add/update shift';
