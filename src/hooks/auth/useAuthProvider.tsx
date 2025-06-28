@@ -1,4 +1,3 @@
-
 import * as React from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -38,7 +37,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setIsLoading(true);
         console.log('Auth Provider: Initializing user', user.email);
         
-        // Special users get immediate premium status
+        // Special users get immediate premium and admin status
         const specialEmails = ['uzivatel@pendlerapp.com', 'admin@pendlerapp.com', 'zkouska@gmail.com'];
         const isSpecialUser = user.email && specialEmails.includes(user.email);
         
@@ -49,10 +48,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         let adminStatus = false;
         
         if (isSpecialUser) {
-          // Set premium immediately for special users
+          // Special users get both premium and admin status immediately
           premiumStatus = true;
+          adminStatus = true;
           expiry = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString();
-          console.log('Auth Provider: Special user detected, setting premium', { email: user.email });
+          console.log('Auth Provider: Special user detected, setting premium AND admin', { 
+            email: user.email, 
+            premiumStatus, 
+            adminStatus 
+          });
         } else {
           // For regular users, refresh premium status with error handling
           try {
@@ -65,17 +69,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             console.error('Auth Provider: Premium status refresh failed, continuing with defaults', err);
             premiumStatus = false;
           }
-        }
-        
-        // Refresh admin status with error handling
-        try {
-          console.log('Auth Provider: Refreshing admin status');
-          await refreshAdminStatus();
-          adminStatus = isAdmin;
-          console.log('Auth Provider: Admin status result', { isAdmin: adminStatus });
-        } catch (err) {
-          console.error('Auth Provider: Admin status refresh failed, continuing with defaults', err);
-          adminStatus = isSpecialUser; // Special users are also admin
+          
+          // Refresh admin status with error handling
+          try {
+            console.log('Auth Provider: Refreshing admin status for regular user');
+            await refreshAdminStatus();
+            adminStatus = isAdmin;
+            console.log('Auth Provider: Admin status result', { isAdmin: adminStatus });
+          } catch (err) {
+            console.error('Auth Provider: Admin status refresh failed, continuing with defaults', err);
+            adminStatus = false;
+          }
         }
         
         setPremiumExpiry(expiry);
@@ -84,7 +88,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const unified = createUnifiedUser(
           user,
           premiumStatus,
-          adminStatus || isSpecialUser,
+          adminStatus,
           expiry,
           !!userAssignment
         );

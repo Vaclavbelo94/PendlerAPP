@@ -5,6 +5,7 @@ import { ShieldIcon, LockIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { usePremiumAccess } from "@/hooks/usePremiumAccess";
+import { useAuth } from "@/hooks/auth";
 import LoadingSpinner from "@/components/LoadingSpinner";
 
 interface PremiumCheckProps {
@@ -14,7 +15,23 @@ interface PremiumCheckProps {
 
 const PremiumCheck: React.FC<PremiumCheckProps> = ({ featureKey, children }) => {
   const navigate = useNavigate();
+  const { user, isPremium, isAdmin } = useAuth();
   const { isLoading, canAccess, isPremiumFeature, isSpecialUser, errorMessage } = usePremiumAccess(featureKey);
+
+  // Failsafe: Direct check for special users
+  const specialEmails = ['uzivatel@pendlerapp.com', 'admin@pendlerapp.com', 'zkouska@gmail.com'];
+  const isSpecialUserFailsafe = user?.email && specialEmails.includes(user.email);
+  
+  console.log('PremiumCheck: Status check', {
+    featureKey,
+    email: user?.email,
+    isSpecialUserFailsafe,
+    canAccess,
+    isPremium,
+    isAdmin,
+    isSpecialUser,
+    isLoading
+  });
 
   // Show loading state
   if (isLoading) {
@@ -47,13 +64,17 @@ const PremiumCheck: React.FC<PremiumCheckProps> = ({ featureKey, children }) => 
     );
   }
 
-  // If user can access or is special user, show content
-  if (canAccess || isSpecialUser) {
+  // Failsafe: If user can access OR is special user OR failsafe check passes, show content
+  if (canAccess || isSpecialUser || isSpecialUserFailsafe || isPremium || isAdmin) {
+    console.log('PremiumCheck: Granting access', {
+      reason: canAccess ? 'canAccess' : isSpecialUser ? 'isSpecialUser' : isSpecialUserFailsafe ? 'failsafe' : isPremium ? 'isPremium' : 'isAdmin'
+    });
     return <>{children}</>;
   }
 
   // Show premium prompt for premium features
   if (isPremiumFeature) {
+    console.log('PremiumCheck: Showing premium prompt for feature:', featureKey);
     return (
       <div className="container py-8">
         <Card className="text-center">
@@ -87,7 +108,8 @@ const PremiumCheck: React.FC<PremiumCheckProps> = ({ featureKey, children }) => 
     );
   }
 
-  // Fallback - shouldn't happen, but show content
+  // Fallback - show content (shouldn't happen with proper logic above)
+  console.log('PremiumCheck: Fallback - showing content');
   return <>{children}</>;
 };
 

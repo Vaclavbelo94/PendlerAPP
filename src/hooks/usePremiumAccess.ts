@@ -24,10 +24,23 @@ export const usePremiumAccess = (featureKey?: string) => {
     isSpecialUser: false
   });
 
-  // Memoized special user check
+  // Early check for special users by email
+  const isSpecialUserByEmail = useMemo(() => {
+    const specialEmails = ['uzivatel@pendlerapp.com', 'admin@pendlerapp.com', 'zkouska@gmail.com'];
+    return user?.email && specialEmails.includes(user.email);
+  }, [user?.email]);
+
+  // Memoized special user check with explicit email check
   const isSpecialUser = useMemo(() => {
-    return unifiedUser?.isAdmin || unifiedUser?.isPremium || false;
-  }, [unifiedUser]);
+    console.log('usePremiumAccess: Checking special user status', {
+      email: user?.email,
+      isSpecialUserByEmail,
+      unifiedUserAdmin: unifiedUser?.isAdmin,
+      unifiedUserPremium: unifiedUser?.isPremium
+    });
+    
+    return isSpecialUserByEmail || unifiedUser?.isAdmin || unifiedUser?.isPremium || false;
+  }, [unifiedUser, isSpecialUserByEmail]);
 
   // Check if feature is premium
   const checkFeaturePremiumStatus = useCallback(async (key: string) => {
@@ -60,8 +73,32 @@ export const usePremiumAccess = (featureKey?: string) => {
       setState(prev => ({ ...prev, isLoading: true, errorMessage: undefined }));
 
       try {
-        // Quick exit for special users
+        console.log('usePremiumAccess: Starting access check', {
+          email: user?.email,
+          isSpecialUserByEmail,
+          isSpecialUser,
+          isPremium,
+          isAdmin,
+          featureKey
+        });
+
+        // Quick exit for special users - explicit email check first
+        if (isSpecialUserByEmail) {
+          console.log('usePremiumAccess: Special user detected by email, granting access:', user?.email);
+          if (isMounted) {
+            setState({
+              isLoading: false,
+              canAccess: true,
+              isPremiumFeature: false,
+              isSpecialUser: true
+            });
+          }
+          return;
+        }
+
+        // Quick exit for other special users
         if (isSpecialUser || isAdmin) {
+          console.log('usePremiumAccess: Special user detected by unified auth, granting access');
           if (isMounted) {
             setState({
               isLoading: false,
@@ -77,6 +114,8 @@ export const usePremiumAccess = (featureKey?: string) => {
         if (!featureKey) {
           const hasPremium = isPremium;
           
+          console.log('usePremiumAccess: No feature key, checking general premium', { hasPremium });
+          
           if (isMounted) {
             setState({
               isLoading: false,
@@ -90,6 +129,8 @@ export const usePremiumAccess = (featureKey?: string) => {
 
         // Check if feature is premium
         const isFeaturePremium = await checkFeaturePremiumStatus(featureKey);
+        
+        console.log('usePremiumAccess: Feature premium check result', { featureKey, isFeaturePremium });
         
         if (!isMounted) return;
 
@@ -106,6 +147,13 @@ export const usePremiumAccess = (featureKey?: string) => {
 
         // Feature is premium, check user's access
         const hasPremium = isPremium;
+
+        console.log('usePremiumAccess: Final access decision', { 
+          featureKey, 
+          isFeaturePremium, 
+          hasPremium,
+          finalAccess: hasPremium
+        });
 
         setState({
           isLoading: false,
@@ -135,7 +183,7 @@ export const usePremiumAccess = (featureKey?: string) => {
     return () => {
       isMounted = false;
     };
-  }, [user, isPremium, isAdmin, featureKey, isSpecialUser, checkFeaturePremiumStatus, authLoading]);
+  }, [user, isPremium, isAdmin, featureKey, isSpecialUser, isSpecialUserByEmail, checkFeaturePremiumStatus, authLoading]);
 
   return {
     ...state,
