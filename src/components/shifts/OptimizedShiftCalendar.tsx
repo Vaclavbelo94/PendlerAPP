@@ -82,26 +82,27 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
     }
   }, []);
 
-  // Updated modifiers - removed hasShift to avoid conflicts
+  // Updated modifiers for better visual distinction
   const modifiers = useMemo(() => ({
     today: (date: Date) => isToday(date),
     hasShift: (date: Date) => {
       if (!isValid(date)) return false;
       const dateKey = format(date, 'yyyy-MM-dd');
       return shiftsMap.has(dateKey);
-    }
-  }), [shiftsMap]);
+    },
+    selected: (date: Date) => selectedDate && isSameDay(date, selectedDate)
+  }), [shiftsMap, selectedDate]);
 
-  // Updated modifier classNames - removed background colors that conflict with selected state
+  // Enhanced modifier classNames with better visual feedback
   const modifiersClassNames = useMemo(() => ({
-    today: 'font-bold border-2 border-primary/50',
-    hasShift: 'relative'
+    today: 'relative font-bold ring-2 ring-primary/50 ring-offset-1 bg-primary/10',
+    hasShift: 'relative after:absolute after:bottom-1 after:left-1/2 after:transform after:-translate-x-1/2 after:w-2 after:h-2 after:bg-primary after:rounded-full',
+    selected: 'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground ring-2 ring-primary ring-offset-2'
   }), []);
 
-  // Custom components for the calendar
+  // Custom components for the calendar with enhanced styling
   const components = useMemo(() => ({
     Day: ({ date, displayMonth, ...props }: any) => {
-      // Validate date before using it
       if (!date || !isValid(date)) {
         console.warn('Invalid date received in Day component:', date);
         return (
@@ -115,6 +116,7 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
       const hasShift = shiftsMap.has(dateKey);
       const isSelected = selectedDate && isSameDay(date, selectedDate);
       const isTodayDate = isToday(date);
+      const isCurrentMonth = date.getMonth() === displayMonth.getMonth();
       
       return (
         <div className="relative w-full h-full">
@@ -122,21 +124,27 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
             {...props}
             className={cn(
               "w-full h-full p-0 font-normal relative flex items-center justify-center",
-              "hover:bg-accent hover:text-accent-foreground transition-colors duration-200",
+              "hover:bg-accent hover:text-accent-foreground transition-all duration-200",
               "focus:bg-accent focus:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-              isSelected && "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
-              isTodayDate && !isSelected && "font-bold border-2 border-primary/30",
-              date.getMonth() !== displayMonth.getMonth() && "text-muted-foreground opacity-50"
+              // Today styling - distinctive border and background
+              isTodayDate && !isSelected && "font-bold ring-2 ring-orange-400 ring-offset-1 bg-orange-50 dark:bg-orange-950/30 text-orange-900 dark:text-orange-100",
+              // Selected styling - primary color with strong contrast
+              isSelected && "bg-blue-600 text-white hover:bg-blue-700 focus:bg-blue-700 ring-2 ring-blue-500 ring-offset-2 font-semibold shadow-md",
+              // Current month vs other months
+              !isCurrentMonth && "text-muted-foreground opacity-50",
+              // Ensure selected overrides today
+              isSelected && isTodayDate && "bg-blue-600 text-white ring-blue-500"
             )}
           >
             <span className="relative z-10">
               {date.getDate()}
             </span>
+            {/* Shift indicator dot */}
             {hasShift && !isSelected && (
-              <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 bg-primary rounded-full" />
+              <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-green-500 rounded-full shadow-sm" />
             )}
             {hasShift && isSelected && (
-              <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 bg-primary-foreground rounded-full" />
+              <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-white rounded-full shadow-sm" />
             )}
           </button>
         </div>
@@ -144,12 +152,11 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
     }
   }), [shiftsMap, selectedDate]);
 
-  // Handle date selection - clear logging and ensure clean selection
+  // Handle date selection
   const handleDateSelect = useCallback((date: Date | undefined) => {
     console.log('Calendar date selected:', date);
     console.log('Previous selected date was:', selectedDate);
     
-    // Always call the external handler to update parent state
     if (onDateChange) {
       onDateChange(date);
     }
@@ -215,6 +222,24 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
         className="w-full"
       >
         <div className="w-full max-w-none">
+          {/* Legend for calendar */}
+          <div className="mb-4 flex flex-wrap gap-4 items-center justify-center text-sm">
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded ring-2 ring-orange-400 bg-orange-50 dark:bg-orange-950/30"></div>
+              <span className="text-muted-foreground">Dnes</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded bg-blue-600"></div>
+              <span className="text-muted-foreground">Vybraný den</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded bg-gray-200 dark:bg-gray-700 relative">
+                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-green-500 rounded-full"></div>
+              </div>
+              <span className="text-muted-foreground">Den se směnou</span>
+            </div>
+          </div>
+          
           <Calendar
             mode="single"
             selected={selectedDate}
