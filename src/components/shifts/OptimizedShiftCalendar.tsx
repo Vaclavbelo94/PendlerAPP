@@ -18,13 +18,15 @@ interface OptimizedShiftCalendarProps {
   onEditShift: (shift: Shift) => void;
   onDeleteShift: (shiftId: string) => void;
   onAddShift?: () => void;
+  onAddShiftForDate?: (date: Date) => void;
 }
 
 const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
   shifts,
   onEditShift,
   onDeleteShift,
-  onAddShift
+  onAddShift,
+  onAddShiftForDate
 }) => {
   // ALL HOOKS MUST BE CALLED AT THE TOP LEVEL - NO CONDITIONAL HOOKS
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
@@ -89,6 +91,14 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
     hasShift: 'bg-primary/20 font-bold'
   }), []);
 
+  const handleAddShiftClick = useCallback(() => {
+    if (onAddShiftForDate && selectedDate) {
+      onAddShiftForDate(selectedDate);
+    } else if (onAddShift) {
+      onAddShift();
+    }
+  }, [onAddShiftForDate, onAddShift, selectedDate]);
+
   // Handle mobile case first to avoid conditional hook issues
   if (isMobile) {
     return (
@@ -98,9 +108,9 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
           onEditShift={onEditShift}
           onDeleteShift={onDeleteShift}
         />
-        {onAddShift && (
+        {(onAddShift || onAddShiftForDate) && (
           <Button
-            onClick={onAddShift}
+            onClick={handleAddShiftClick}
             className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg z-50"
             size="icon"
           >
@@ -175,6 +185,16 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
                 <div className="text-center py-8 text-muted-foreground">
                   <CalendarDays className="h-12 w-12 mx-auto mb-4 opacity-50" />
                   <p className="text-sm">{t('noShiftsPlannedForThisDay')}</p>
+                  {onAddShiftForDate && (
+                    <Button 
+                      onClick={() => onAddShiftForDate(selectedDate)}
+                      className="mt-4"
+                      size="sm"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      {t('addShift')}
+                    </Button>
+                  )}
                 </div>
               ) : (
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -218,9 +238,9 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
       )}
 
       {/* Floating Add Button for Desktop */}
-      {onAddShift && (
+      {(onAddShift || onAddShiftForDate) && (
         <Button
-          onClick={onAddShift}
+          onClick={handleAddShiftClick}
           className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg z-50"
           size="icon"
         >

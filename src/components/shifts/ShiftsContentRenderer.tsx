@@ -14,6 +14,7 @@ interface ShiftsContentRendererProps {
   onEditShift: (shift: Shift) => void;
   onDeleteShift: (shiftId: string) => void;
   onAddShift?: () => void;
+  onAddShiftForDate?: (date: Date) => void;
 }
 
 const ShiftsContentRenderer: React.FC<ShiftsContentRendererProps> = ({
@@ -22,7 +23,8 @@ const ShiftsContentRenderer: React.FC<ShiftsContentRendererProps> = ({
   shifts,
   onEditShift,
   onDeleteShift,
-  onAddShift
+  onAddShift,
+  onAddShiftForDate
 }) => {
   const { t } = useTranslation('shifts');
 
@@ -48,6 +50,7 @@ const ShiftsContentRenderer: React.FC<ShiftsContentRendererProps> = ({
             onEditShift={onEditShift}
             onDeleteShift={onDeleteShift}
             onAddShift={onAddShift}
+            onAddShiftForDate={onAddShiftForDate}
           />
         </div>
       );
@@ -61,6 +64,7 @@ const ShiftsContentRenderer: React.FC<ShiftsContentRendererProps> = ({
             onEditShift={onEditShift}
             onDeleteShift={onDeleteShift}
             onAddShift={onAddShift}
+            onAddShiftForDate={onAddShiftForDate}
           />
         </div>
       );

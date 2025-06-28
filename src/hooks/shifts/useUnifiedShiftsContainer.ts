@@ -18,6 +18,7 @@ export const useUnifiedShiftsContainer = () => {
   const [isAddSheetOpen, setIsAddSheetOpen] = useState(false);
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
   const [editingShift, setEditingShift] = useState<Shift | null>(null);
+  const [selectedDateForNewShift, setSelectedDateForNewShift] = useState<Date | null>(null);
 
   const {
     shifts,
@@ -44,6 +45,7 @@ export const useUnifiedShiftsContainer = () => {
     const result = await addShiftOriginal(shiftData);
     if (result) {
       setIsAddSheetOpen(false);
+      setSelectedDateForNewShift(null);
     }
   }, [addShiftOriginal]);
 
@@ -74,6 +76,12 @@ export const useUnifiedShiftsContainer = () => {
   }, [refreshShifts]);
 
   const handleOpenAddSheet = useCallback(() => {
+    setSelectedDateForNewShift(null);
+    setIsAddSheetOpen(true);
+  }, []);
+
+  const handleOpenAddSheetWithDate = useCallback((date: Date) => {
+    setSelectedDateForNewShift(date);
     setIsAddSheetOpen(true);
   }, []);
 
@@ -89,6 +97,7 @@ export const useUnifiedShiftsContainer = () => {
     setIsEditSheetOpen,
     editingShift,
     setEditingShift,
+    selectedDateForNewShift,
     shifts,
     isLoading: isLoading || isDHLDataLoading,
     error,
@@ -101,6 +110,7 @@ export const useUnifiedShiftsContainer = () => {
     openEditDialog,
     handleRetry,
     handleOpenAddSheet,
+    handleOpenAddSheetWithDate,
     deleteShift,
     // DHL specific data
     isDHLUser,

@@ -18,6 +18,7 @@ interface ShiftsFormSheetsProps {
   onAddShift: (formData: any) => Promise<void>;
   onEditShift: (formData: any) => Promise<void>;
   isSaving: boolean;
+  selectedDateForNewShift?: Date | null;
 }
 
 const ShiftsFormSheets: React.FC<ShiftsFormSheetsProps> = ({
@@ -29,7 +30,8 @@ const ShiftsFormSheets: React.FC<ShiftsFormSheetsProps> = ({
   setEditingShift,
   onAddShift,
   onEditShift,
-  isSaving
+  isSaving,
+  selectedDateForNewShift
 }) => {
   const isMobile = useIsMobile();
   const { t } = useTranslation('shifts');
@@ -53,6 +55,7 @@ const ShiftsFormSheets: React.FC<ShiftsFormSheetsProps> = ({
               onSubmit={onAddShift}
               onCancel={() => setIsAddSheetOpen(false)}
               isLoading={isSaving}
+              initialDate={selectedDateForNewShift}
             />
           </div>
         </SheetContent>

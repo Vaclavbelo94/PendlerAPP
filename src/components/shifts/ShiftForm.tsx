@@ -13,17 +13,19 @@ interface ShiftFormProps {
   onCancel: () => void;
   isLoading?: boolean;
   shift?: Shift | null;
+  initialDate?: Date | null;
 }
 
 const ShiftForm: React.FC<ShiftFormProps> = ({
   onSubmit,
   onCancel,
   isLoading = false,
-  shift
+  shift,
+  initialDate
 }) => {
   const { t } = useTranslation('shifts');
   const [date, setDate] = useState<Date | undefined>(
-    shift ? new Date(shift.date) : new Date()
+    shift ? new Date(shift.date) : initialDate || new Date()
   );
   const [type, setType] = useState<'morning' | 'afternoon' | 'night'>(shift?.type || 'morning');
   const [notes, setNotes] = useState(shift?.notes || '');
@@ -35,8 +37,10 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
       setDate(new Date(shift.date));
       setType(shift.type);
       setNotes(shift.notes || '');
+    } else if (initialDate) {
+      setDate(initialDate);
     }
-  }, [shift]);
+  }, [shift, initialDate]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

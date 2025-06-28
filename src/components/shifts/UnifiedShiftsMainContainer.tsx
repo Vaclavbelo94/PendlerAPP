@@ -19,11 +19,13 @@ const UnifiedShiftsMainContainer: React.FC = () => {
     setIsEditSheetOpen,
     editingShift,
     setEditingShift,
+    selectedDateForNewShift,
     handleAddShift,
     handleEditShift,
     openEditDialog,
     deleteShift,
     handleOpenAddSheet,
+    handleOpenAddSheetWithDate,
     isSaving,
     isOnline,
     isSlowConnection
@@ -51,6 +53,7 @@ const UnifiedShiftsMainContainer: React.FC = () => {
         onEditShift={openEditDialog}
         onDeleteShift={deleteShift}
         onAddShift={handleOpenAddSheet}
+        onAddShiftForDate={handleOpenAddSheetWithDate}
       />
       
       <ShiftsFormSheets
@@ -63,6 +66,7 @@ const UnifiedShiftsMainContainer: React.FC = () => {
         onAddShift={handleAddShift}
         onEditShift={handleEditShift}
         isSaving={isSaving}
+        selectedDateForNewShift={selectedDateForNewShift}
       />
     </div>
   );
