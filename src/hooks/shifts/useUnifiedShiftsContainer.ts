@@ -1,4 +1,3 @@
-
 import { useState, useCallback, useMemo } from 'react';
 import { useAuth } from '@/hooks/auth';
 import { useOptimizedNetworkStatus } from '@/hooks/useOptimizedNetworkStatus';
@@ -81,6 +80,7 @@ export const useUnifiedShiftsContainer = () => {
   }, []);
 
   const handleOpenAddSheetWithDate = useCallback((date: Date) => {
+    console.log('Setting selected date for new shift:', date);
     setSelectedDateForNewShift(date);
     setIsAddSheetOpen(true);
   }, []);
@@ -106,7 +106,7 @@ export const useUnifiedShiftsContainer = () => {
     handleSectionChange,
     handleAddShift,
     handleEditShift,
-    handleShiftSubmit, // New universal handler
+    handleShiftSubmit,
     openEditDialog,
     handleRetry,
     handleOpenAddSheet,

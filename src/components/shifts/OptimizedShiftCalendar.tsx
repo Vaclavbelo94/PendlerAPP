@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo, useCallback } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { Badge } from '@/components/ui/badge';
@@ -110,6 +109,12 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
     }
   }, [onAddShiftForDate, selectedDate]);
 
+  // Oprava: Při změně vybraného data v kalendáři resetovat selectedDateForNewShift
+  const handleDateSelect = useCallback((date: Date | undefined) => {
+    console.log('Calendar date selected:', date);
+    setSelectedDate(date);
+  }, []);
+
   // Handle mobile case first to avoid conditional hook issues
   if (isMobile) {
     return (
@@ -175,7 +180,7 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
               <Calendar
                 mode="single"
                 selected={selectedDate}
-                onSelect={setSelectedDate}
+                onSelect={handleDateSelect}
                 locale={getDateLocale()}
                 modifiers={modifiers}
                 modifiersClassNames={modifiersClassNames}
