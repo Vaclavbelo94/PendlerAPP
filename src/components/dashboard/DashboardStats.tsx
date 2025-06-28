@@ -17,7 +17,7 @@ interface Shift {
 
 const DashboardStats: React.FC = () => {
   const { t } = useTranslation('dashboard');
-  const { user } = useAuth();
+  const { user, isPremium, isLoading: authLoading } = useAuth();
   const { workData, loading: workDataLoading } = useWorkData();
   const [shifts, setShifts] = useState<Shift[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -102,7 +102,7 @@ const DashboardStats: React.FC = () => {
     };
   }, [shifts, workData]);
 
-  const isDataLoading = isLoading || workDataLoading;
+  const isDataLoading = isLoading || workDataLoading || authLoading;
 
   const statsData = [
     {

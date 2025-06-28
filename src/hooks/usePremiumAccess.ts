@@ -13,10 +13,10 @@ interface PremiumAccessState {
 
 /**
  * Sjednocený hook pro kontrolu premium přístupu
- * Nahrazuje všechny ostatní premium hooks
+ * Uses unified auth system
  */
 export const usePremiumAccess = (featureKey?: string) => {
-  const { user, isPremium, isAdmin } = useAuth();
+  const { user, isPremium, isAdmin, unifiedUser, isLoading: authLoading } = useAuth();
   const [state, setState] = useState<PremiumAccessState>({
     isLoading: true,
     canAccess: false,
@@ -26,10 +26,8 @@ export const usePremiumAccess = (featureKey?: string) => {
 
   // Memoized special user check
   const isSpecialUser = useMemo(() => {
-    if (!user?.email) return false;
-    const specialEmails = ['uzivatel@pendlerapp.com', 'admin@pendlerapp.com'];
-    return specialEmails.includes(user.email);
-  }, [user?.email]);
+    return unifiedUser?.isAdmin || unifiedUser?.isPremium || false;
+  }, [unifiedUser]);
 
   // Check if feature is premium
   const checkFeaturePremiumStatus = useCallback(async (key: string) => {
@@ -48,25 +46,6 @@ export const usePremiumAccess = (featureKey?: string) => {
       return data?.is_enabled || false;
     } catch (error) {
       console.warn('Error in feature check:', error);
-      return false;
-    }
-  }, []);
-
-  // Get premium status from localStorage as fallback
-  const getLocalStoragePremium = useCallback(() => {
-    try {
-      const userStr = localStorage.getItem('currentUser');
-      if (!userStr) return false;
-      
-      const userData = JSON.parse(userStr);
-      if (userData.isPremium && userData.premiumUntil) {
-        const premiumExpiry = new Date(userData.premiumUntil);
-        return premiumExpiry > new Date();
-      }
-      
-      return userData.isPremium === true;
-    } catch (error) {
-      console.warn('Error checking localStorage premium:', error);
       return false;
     }
   }, []);
@@ -96,8 +75,7 @@ export const usePremiumAccess = (featureKey?: string) => {
 
         // If no feature key, just check user's premium status
         if (!featureKey) {
-          const localPremium = getLocalStoragePremium();
-          const hasPremium = isPremium || localPremium;
+          const hasPremium = isPremium;
           
           if (isMounted) {
             setState({
@@ -127,8 +105,7 @@ export const usePremiumAccess = (featureKey?: string) => {
         }
 
         // Feature is premium, check user's access
-        const localPremium = getLocalStoragePremium();
-        const hasPremium = isPremium || localPremium;
+        const hasPremium = isPremium;
 
         setState({
           isLoading: false,
@@ -151,12 +128,17 @@ export const usePremiumAccess = (featureKey?: string) => {
       }
     };
 
-    checkAccess();
+    if (!authLoading) {
+      checkAccess();
+    }
 
     return () => {
       isMounted = false;
     };
-  }, [user, isPremium, isAdmin, featureKey, isSpecialUser, checkFeaturePremiumStatus, getLocalStoragePremium]);
+  }, [user, isPremium, isAdmin, featureKey, isSpecialUser, checkFeaturePremiumStatus, authLoading]);
 
-  return state;
+  return {
+    ...state,
+    isLoading: state.isLoading || authLoading
+  };
 };

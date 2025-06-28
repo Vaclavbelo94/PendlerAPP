@@ -17,7 +17,7 @@ import { useWorkData } from "@/hooks/useWorkData";
 import { startOfMonth, endOfMonth } from "date-fns";
 
 const ShiftsProgress = () => {
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const { shifts, isLoading: shiftsLoading } = useShiftsData({ userId: user?.id });
   const { workData, loading: workDataLoading } = useWorkData();
   
@@ -102,7 +102,7 @@ const ShiftsProgress = () => {
   };
   
   const selectedShiftData = data.find(item => item.label === selectedShift);
-  const isLoading = shiftsLoading || workDataLoading;
+  const isLoading = shiftsLoading || workDataLoading || authLoading;
   
   if (isLoading) {
     return (

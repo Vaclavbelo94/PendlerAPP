@@ -4,10 +4,8 @@ import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { AuthContext } from './useAuthContext';
 import { AuthError, UserRole, UnifiedUser, AuthProviderProps } from '@/types/auth';
-import { useAuthStatus } from './useAuthStatus';
-import { usePremiumStatus } from '@/hooks/usePremiumStatus';
 import { createUnifiedUser, getRedirectPath, hasRole, canAccess } from '@/utils/authRoleUtils';
-import { isDHLPromoCode } from '@/utils/dhlAuthUtils';
+import { isDHLPromoCode, isDHLEmployee } from '@/utils/dhlAuthUtils';
 import { activatePromoCode } from '@/services/promoCodeService';
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
@@ -15,23 +13,105 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [session, setSession] = React.useState<Session | null>(null);
   const [unifiedUser, setUnifiedUser] = React.useState<UnifiedUser | null>(null);
   const [isLoading, setIsLoading] = React.useState(true);
+  const [isPremium, setIsPremium] = React.useState(false);
+  const [isAdmin, setIsAdmin] = React.useState(false);
   const [error, setError] = React.useState<AuthError | null>(null);
 
-  const { 
-    isAdmin, 
-    isPremium: premiumStatus, 
-    setIsAdmin, 
-    setIsPremium, 
-    refreshAdminStatus, 
-    refreshPremiumStatus 
-  } = useAuthStatus(user?.id);
+  // Unified premium status check
+  const checkPremiumStatus = React.useCallback(async (userId: string, email: string) => {
+    try {
+      // Check if user is DHL employee
+      const userObj = { email } as any;
+      const isDHL = isDHLEmployee(userObj);
+      
+      // Special users get premium automatically
+      const specialEmails = ['uzivatel@pendlerapp.com', 'admin@pendlerapp.com'];
+      const isSpecialUser = specialEmails.includes(email);
+      
+      if (isSpecialUser) {
+        const threeMonthsLater = new Date();
+        threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
+        
+        setIsPremium(true);
+        
+        await supabase
+          .from('profiles')
+          .update({ 
+            is_premium: true,
+            premium_expiry: threeMonthsLater.toISOString()
+          })
+          .eq('id', userId);
+          
+        return { isPremium: true, premiumExpiry: threeMonthsLater.toISOString() };
+      }
+      
+      // DHL employees get premium automatically
+      if (isDHL) {
+        console.log('Activating premium for DHL employee:', email);
+        
+        const oneYearLater = new Date();
+        oneYearLater.setFullYear(oneYearLater.getFullYear() + 1);
+        
+        setIsPremium(true);
+        
+        await supabase
+          .from('profiles')
+          .update({ 
+            is_premium: true,
+            premium_expiry: oneYearLater.toISOString()
+          })
+          .eq('id', userId);
+          
+        return { isPremium: true, premiumExpiry: oneYearLater.toISOString() };
+      }
+      
+      // For all other users, check their premium status
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('is_premium, premium_expiry')
+        .eq('id', userId)
+        .single();
+        
+      if (error) throw error;
+      
+      const isPremiumActive = data.is_premium && 
+        (!data.premium_expiry || new Date(data.premium_expiry) > new Date());
+        
+      setIsPremium(isPremiumActive);
+      
+      return {
+        isPremium: isPremiumActive,
+        premiumExpiry: data.premium_expiry
+      };
+    } catch (error) {
+      console.error('Error checking premium status:', error);
+      setIsPremium(false);
+      return { isPremium: false };
+    }
+  }, []);
 
-  const { 
-    isPremium: premiumFromHook,
-    setIsPremium: setPremiumFromHook 
-  } = usePremiumStatus(user, refreshPremiumStatus, isAdmin);
-
-  const isPremium = premiumFromHook || premiumStatus;
+  // Admin status check
+  const checkAdminStatus = React.useCallback(async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('is_admin')
+        .eq('id', userId)
+        .single();
+        
+      if (error) throw error;
+      
+      const adminStatus = data.is_admin || false;
+      setIsAdmin(adminStatus);
+      localStorage.setItem('adminLoggedIn', adminStatus ? 'true' : 'false');
+      
+      return adminStatus;
+    } catch (error) {
+      console.error('Error checking admin status:', error);
+      setIsAdmin(false);
+      return false;
+    }
+  }, []);
 
   // Create unified user when user data changes
   React.useEffect(() => {
@@ -63,16 +143,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               if (event === 'SIGNED_IN' && session?.user) {
                 // Defer heavy operations to prevent deadlocks
                 setTimeout(() => {
-                  refreshAdminStatus();
-                  refreshPremiumStatus();
+                  if (isMounted) {
+                    checkAdminStatus(session.user.id);
+                    checkPremiumStatus(session.user.id, session.user.email || '');
+                  }
                 }, 0);
               }
 
               if (event === 'SIGNED_OUT') {
                 setIsAdmin(false);
                 setIsPremium(false);
-                setPremiumFromHook(false);
                 setUnifiedUser(null);
+                localStorage.removeItem('adminLoggedIn');
               }
             }
           }
@@ -92,6 +174,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           setSession(session);
           setUser(session?.user ?? null);
           setIsLoading(false);
+          
+          // Check status for existing session
+          if (session?.user) {
+            setTimeout(() => {
+              if (isMounted) {
+                checkAdminStatus(session.user.id);
+                checkPremiumStatus(session.user.id, session.user.email || '');
+              }
+            }, 0);
+          }
         }
 
         return () => {
@@ -111,7 +203,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return () => {
       isMounted = false;
     };
-  }, [refreshAdminStatus, refreshPremiumStatus, setIsAdmin, setIsPremium, setPremiumFromHook]);
+  }, [checkAdminStatus, checkPremiumStatus]);
 
   const signIn = async (email: string, password: string) => {
     try {
@@ -221,7 +313,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUnifiedUser(null);
       setIsAdmin(false);
       setIsPremium(false);
-      setPremiumFromHook(false);
+      localStorage.removeItem('adminLoggedIn');
     } catch (error) {
       console.error('Unexpected error during sign out:', error);
       setError({ message: 'Chyba při odhlášení' });
@@ -229,10 +321,25 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const refreshUserStatus = async () => {
-    await Promise.all([
-      refreshAdminStatus(),
-      refreshPremiumStatus()
-    ]);
+    if (user) {
+      await Promise.all([
+        checkAdminStatus(user.id),
+        checkPremiumStatus(user.id, user.email || '')
+      ]);
+    }
+  };
+
+  const refreshAdminStatus = async () => {
+    if (user) {
+      await checkAdminStatus(user.id);
+    }
+  };
+
+  const refreshPremiumStatus = async () => {
+    if (user) {
+      return await checkPremiumStatus(user.id, user.email || '');
+    }
+    return { isPremium: false };
   };
 
   // Role checking methods that use the unified user

@@ -10,7 +10,7 @@ import { useWorkData } from '@/hooks/useWorkData';
 import { startOfMonth, endOfMonth, isYesterday, isToday } from 'date-fns';
 
 const DashboardOverview = () => {
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const { shifts, isLoading: shiftsLoading } = useShiftsData({ userId: user?.id });
   const { workData, loading: workDataLoading } = useWorkData();
 
@@ -73,7 +73,7 @@ const DashboardOverview = () => {
   };
 
   const stats = calculateStats();
-  const isLoading = shiftsLoading || workDataLoading;
+  const isLoading = shiftsLoading || workDataLoading || authLoading;
 
   return (
     <div className="space-y-6">
