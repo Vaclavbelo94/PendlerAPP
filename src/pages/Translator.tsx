@@ -4,7 +4,7 @@ import { Helmet } from "react-helmet";
 import { motion } from 'framer-motion';
 import PremiumCheck from "@/components/premium/PremiumCheck";
 import { DashboardBackground } from "@/components/common/DashboardBackground";
-import { Bot, Languages } from "lucide-react";
+import { MessageSquare, Languages } from "lucide-react";
 import { useScreenOrientation } from "@/hooks/useScreenOrientation";
 import { usePerformanceOptimization } from "@/hooks/usePerformanceOptimization";
 import SimpleLoadingSpinner from "@/components/loading/SimpleLoadingSpinner";
@@ -55,7 +55,7 @@ const Translator = () => {
             >
               <div className="flex items-center justify-center gap-4 mb-6">
                 <div className="p-3 rounded-full bg-gradient-to-r from-primary/20 to-blue-500/20 backdrop-blur-sm">
-                  <Bot className="h-8 w-8 text-primary" />
+                  <MessageSquare className="h-8 w-8 text-primary" />
                 </div>
                 <div className="p-3 rounded-full bg-gradient-to-r from-green-500/20 to-emerald-500/20 backdrop-blur-sm">
                   <Languages className="h-8 w-8 text-green-600" />

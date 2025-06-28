@@ -1,9 +1,10 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeftRight, Volume2, Copy, Trash2, History, Languages, Sparkles, Mail } from 'lucide-react';
+import { ArrowLeftRight, Volume2, Copy, Trash2, History, Languages, MessageSquare, Mail } from 'lucide-react';
 import { useAITranslator } from '@/hooks/useAITranslator';
 import { useTranslation } from 'react-i18next';
 import { toast } from '@/components/ui/use-toast';
@@ -108,7 +109,7 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
   const getServiceBadge = () => {
     switch (currentService) {
       case 'gemini':
-        return <Badge variant="default" className="bg-green-500"><Sparkles className="w-3 h-3 mr-1" />{t('translator:aiActive')}</Badge>;
+        return <Badge variant="default" className="bg-green-500"><MessageSquare className="w-3 h-3 mr-1" />{t('translator:aiActive')}</Badge>;
       case 'google-translate':
         return <Badge variant="secondary"><Languages className="w-3 h-3 mr-1" />{t('translator:googleTranslate')}</Badge>;
       default:
@@ -117,7 +118,7 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
   };
 
   const latestResponse = messages.length > 0 ? messages[messages.length - 1] : null;
-  const isAIResponse = latestResponse?.role === 'assistant';
+  const isAssistantResponse = latestResponse?.role === 'assistant';
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -195,7 +196,7 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
                     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
                     <span className="ml-2 text-sm text-muted-foreground">{t('translator:translating')}</span>
                   </motion.div>
-                ) : isAIResponse ? (
+                ) : isAssistantResponse ? (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -211,7 +212,7 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
               </AnimatePresence>
             </div>
             
-            {isAIResponse && (
+            {isAssistantResponse && (
               <div className="flex gap-2 flex-wrap">
                 <Button 
                   variant="outline" 
