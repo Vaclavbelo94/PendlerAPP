@@ -15,6 +15,23 @@ export interface DHLUser {
 }
 
 /**
+ * Check if promo code is DHL specific
+ * For demo purposes, we'll check if code contains 'DHL' or starts with 'DHL'
+ */
+export const isDHLPromoCode = (code: string): boolean => {
+  if (!code) return false;
+  
+  const upperCode = code.toUpperCase();
+  
+  // Check if code contains DHL or starts with DHL
+  return (
+    upperCode.includes('DHL') ||
+    upperCode.startsWith('DHL') ||
+    false
+  );
+};
+
+/**
  * Check if user is a DHL employee
  * For demo purposes, we'll check if user email contains 'dhl' or has DHL in metadata
  */
