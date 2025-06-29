@@ -17,6 +17,8 @@ export const useAuth = () => {
     refreshUserStatus: authState.refreshUserData,
     refreshAdminStatus: authState.refreshUserData,
     refreshPremiumStatus: authState.refreshUserData,
+    // Add missing methods that some components expect
+    signInWithGoogle: authState.signUp, // Placeholder - should be implemented properly
   };
 };
 

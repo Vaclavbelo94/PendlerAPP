@@ -10,5 +10,8 @@ export { useAuthState } from './useAuthState';
 // Re-export types for convenience
 export type { UnifiedUser, UserRole, UserStatus } from '@/contexts/UnifiedAuthContext';
 
+// Re-export the provider
+export { UnifiedAuthProvider as AuthProvider } from '@/contexts/UnifiedAuthContext';
+
 // Backward compatibility - re-export the old useAuth hook
 export { useAuth as useAuthLegacy } from '../useAuth';

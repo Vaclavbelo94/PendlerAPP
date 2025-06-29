@@ -16,6 +16,9 @@ export interface UnifiedUser {
   hasAdminAccess: boolean;
   hasPremiumAccess: boolean;
   metadata?: Record<string, any>;
+  // Backward compatibility properties
+  isPremium: boolean;
+  isAdmin: boolean;
 }
 
 interface UnifiedAuthState {
@@ -29,7 +32,8 @@ interface UnifiedAuthState {
 
 interface UnifiedAuthContextType extends UnifiedAuthState {
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
-  signUp: (email: string, password: string, metadata?: Record<string, any>) => Promise<{ error: string | null }>;
+  signUp: (email: string, password: string, username?: string, promoCode?: string) => Promise<{ error: string | null; user?: User | null }>;
+  signInWithGoogle: () => Promise<{ error: string | null; url?: string }>;
   signOut: () => Promise<void>;
   refreshUserData: () => Promise<void>;
   hasRole: (role: UserRole) => boolean;
@@ -84,6 +88,8 @@ export const UnifiedAuthProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const createUnifiedUser = useCallback((user: User, profileData?: any): UnifiedUser => {
     const role = determineUserRole(user, profileData);
     const isDHLUser = role === 'dhl_employee' || role === 'dhl_admin';
+    const hasAdminAccess = role === 'admin' || role === 'dhl_admin';
+    const hasPremiumAccess = role !== 'standard';
     
     return {
       id: user.id,
@@ -92,9 +98,12 @@ export const UnifiedAuthProvider: React.FC<{ children: React.ReactNode }> = ({ c
       status: 'active', // Can be enhanced based on setup requirements
       displayName: profileData?.username || user.email?.split('@')[0],
       isDHLUser,
-      hasAdminAccess: role === 'admin' || role === 'dhl_admin',
-      hasPremiumAccess: role !== 'standard',
-      metadata: user.user_metadata
+      hasAdminAccess,
+      hasPremiumAccess,
+      metadata: user.user_metadata,
+      // Backward compatibility
+      isPremium: hasPremiumAccess,
+      isAdmin: hasAdminAccess,
     };
   }, [determineUserRole]);
 
@@ -244,28 +253,54 @@ export const UnifiedAuthProvider: React.FC<{ children: React.ReactNode }> = ({ c
     }
   }, []);
 
-  const signUp = useCallback(async (email: string, password: string, metadata?: Record<string, any>) => {
+  const signUp = useCallback(async (email: string, password: string, username?: string, promoCode?: string) => {
     try {
       setState(prev => ({ ...prev, isLoading: true, error: null }));
       
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          data: metadata,
+          data: {
+            username: username || email.split('@')[0],
+            promo_code: promoCode
+          },
           emailRedirectTo: `${window.location.origin}/`
         }
       });
       
       if (error) {
         setState(prev => ({ ...prev, error: error.message, isLoading: false }));
-        return { error: error.message };
+        return { error: error.message, user: null };
       }
       
-      return { error: null };
+      return { error: null, user: data.user };
     } catch (err: any) {
       const errorMsg = err.message || 'Sign up failed';
       setState(prev => ({ ...prev, error: errorMsg, isLoading: false }));
+      return { error: errorMsg, user: null };
+    }
+  }, []);
+
+  const signInWithGoogle = useCallback(async () => {
+    try {
+      setState(prev => ({ ...prev, error: null }));
+      
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/`
+        }
+      });
+      
+      if (error) {
+        return { error: error.message };
+      }
+      
+      return { error: null, url: data.url };
+    } catch (err: any) {
+      const errorMsg = err.message || 'Google sign in failed';
+      setState(prev => ({ ...prev, error: errorMsg }));
       return { error: errorMsg };
     }
   }, []);
@@ -328,6 +363,7 @@ export const UnifiedAuthProvider: React.FC<{ children: React.ReactNode }> = ({ c
     ...state,
     signIn,
     signUp,
+    signInWithGoogle,
     signOut,
     refreshUserData,
     hasRole,
