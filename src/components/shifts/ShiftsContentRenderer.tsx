@@ -4,8 +4,11 @@ import { RefreshCw } from 'lucide-react';
 import OptimizedShiftCalendar from './OptimizedShiftCalendar';
 import OptimizedShiftsAnalytics from './OptimizedShiftsAnalytics';
 import EmptyShiftsState from './EmptyShiftsState';
+import DHLTimeCalendarDemo from './calendar/DHLTimeCalendarDemo';
 import { Shift } from '@/hooks/shifts/useShiftsCRUD';
 import { useTranslation } from 'react-i18next';
+import { isDHLEmployee } from '@/utils/dhlAuthUtils';
+import { useAuth } from '@/hooks/auth';
 
 interface ShiftsContentRendererProps {
   activeSection: string;
@@ -31,6 +34,10 @@ const ShiftsContentRenderer: React.FC<ShiftsContentRendererProps> = ({
   handleCalendarDateChange
 }) => {
   const { t } = useTranslation('shifts');
+  const { user } = useAuth();
+  
+  // Check if user is DHL employee
+  const isDHLUser = user ? isDHLEmployee(user) : false;
 
   if (isChanging) {
     return (
@@ -47,6 +54,26 @@ const ShiftsContentRenderer: React.FC<ShiftsContentRendererProps> = ({
 
   switch (activeSection) {
     case 'calendar':
+      // Show DHL time calendar demo for DHL users
+      if (isDHLUser) {
+        return (
+          <div className="space-y-6">
+            <DHLTimeCalendarDemo />
+            <div className="w-full">
+              <OptimizedShiftCalendar
+                shifts={shifts}
+                onEditShift={onEditShift}
+                onDeleteShift={onDeleteShift}
+                onAddShift={onAddShift}
+                onAddShiftForDate={onAddShiftForDate}
+                selectedDate={calendarSelectedDate}
+                onDateChange={handleCalendarDateChange}
+              />
+            </div>
+          </div>
+        );
+      }
+      
       return (
         <div className="w-full">
           <OptimizedShiftCalendar
@@ -63,6 +90,26 @@ const ShiftsContentRenderer: React.FC<ShiftsContentRendererProps> = ({
     case 'analytics':
       return <OptimizedShiftsAnalytics shifts={shifts} />;
     default:
+      // Show DHL time calendar demo for DHL users in default view too
+      if (isDHLUser) {
+        return (
+          <div className="space-y-6">
+            <DHLTimeCalendarDemo />
+            <div className="w-full">
+              <OptimizedShiftCalendar
+                shifts={shifts}
+                onEditShift={onEditShift}
+                onDeleteShift={onDeleteShift}
+                onAddShift={onAddShift}
+                onAddShiftForDate={onAddShiftForDate}
+                selectedDate={calendarSelectedDate}
+                onDateChange={handleCalendarDateChange}
+              />
+            </div>
+          </div>
+        );
+      }
+      
       return (
         <div className="w-full">
           <OptimizedShiftCalendar
