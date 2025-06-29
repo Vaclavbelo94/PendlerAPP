@@ -1,4 +1,3 @@
-
 import { Helmet } from "react-helmet";
 import { BrowserRouter as Router } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -10,7 +9,7 @@ import { ThemeProvider } from "next-themes";
 import { ErrorBoundary } from "@/components/error/ErrorBoundary";
 import { Routes, Route, Navigate } from "react-router-dom";
 import AuthDebugPanel from "@/components/debug/AuthDebugPanel";
-import "./i18n";
+import "./i18n/config";
 import "./App.css";
 
 const queryClient = new QueryClient({
