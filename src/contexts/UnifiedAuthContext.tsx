@@ -19,6 +19,8 @@ export interface UnifiedUser {
   // Backward compatibility properties
   isPremium: boolean;
   isAdmin: boolean;
+  // Unified naming
+  isDHLUser: boolean;
 }
 
 interface UnifiedAuthContextType {
@@ -26,6 +28,7 @@ interface UnifiedAuthContextType {
   session: Session | null;
   unifiedUser: UnifiedUser | null;
   isLoading: boolean;
+  isInitialized: boolean;
   error: string | null;
   
   // Auth methods
@@ -40,6 +43,7 @@ interface UnifiedAuthContextType {
   
   // Access methods
   canAccess: (feature: string) => boolean;
+  hasRole: (role: UserRole) => boolean;
 }
 
 const UnifiedAuthContext = createContext<UnifiedAuthContextType | undefined>(undefined);
@@ -57,11 +61,13 @@ export const UnifiedAuthProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const [session, setSession] = useState<Session | null>(null);
   const [unifiedUser, setUnifiedUser] = useState<UnifiedUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isInitialized, setIsInitialized] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Create unified user from auth user
   const createUnifiedUser = useCallback((authUser: User, isPremium = false, isAdmin = false, premiumExpiry?: string): UnifiedUser => {
     const role: UserRole = isAdmin ? 'admin' : isPremium ? 'premium' : 'standard';
+    const isDHLEmployee = authUser.email?.endsWith('@dhl.com') || false;
     
     return {
       id: authUser.id,
@@ -71,13 +77,30 @@ export const UnifiedAuthProvider: React.FC<{ children: React.ReactNode }> = ({ c
       status: 'active',
       hasPremiumAccess: isPremium,
       hasAdminAccess: isAdmin,
-      isDHLEmployee: false,
+      isDHLEmployee,
       premiumExpiry,
       // Backward compatibility
       isPremium,
       isAdmin,
+      // Unified naming
+      isDHLUser: isDHLEmployee,
     };
   }, []);
+
+  // Role checking method
+  const hasRole = useCallback((requiredRole: UserRole): boolean => {
+    if (!unifiedUser) return false;
+    
+    const roleHierarchy: Record<UserRole, number> = {
+      'standard': 1,
+      'premium': 2,
+      'dhl_employee': 2,
+      'dhl_admin': 3,
+      'admin': 4
+    };
+    
+    return roleHierarchy[unifiedUser.role] >= roleHierarchy[requiredRole];
+  }, [unifiedUser]);
 
   // Auth methods
   const signIn = useCallback(async (email: string, password: string) => {
@@ -210,6 +233,12 @@ export const UnifiedAuthProvider: React.FC<{ children: React.ReactNode }> = ({ c
         return unifiedUser.hasPremiumAccess;
       case 'admin_features':
         return unifiedUser.hasAdminAccess;
+      case 'dhl_features':
+        return unifiedUser.isDHLEmployee;
+      case 'dhl_admin':
+        return unifiedUser.role === 'dhl_admin';
+      case 'admin_panel':
+        return unifiedUser.role === 'admin';
       default:
         return true;
     }
@@ -227,12 +256,14 @@ export const UnifiedAuthProvider: React.FC<{ children: React.ReactNode }> = ({ c
           setSession(initialSession);
           setUser(initialSession?.user || null);
           setIsLoading(false);
+          setIsInitialized(true);
         }
       } catch (error) {
         console.error('Error initializing auth:', error);
         if (mounted) {
           setError('Failed to initialize authentication');
           setIsLoading(false);
+          setIsInitialized(true);
         }
       }
     };
@@ -270,6 +301,7 @@ export const UnifiedAuthProvider: React.FC<{ children: React.ReactNode }> = ({ c
     session,
     unifiedUser,
     isLoading,
+    isInitialized,
     error,
     signIn,
     signInWithGoogle,
@@ -278,6 +310,7 @@ export const UnifiedAuthProvider: React.FC<{ children: React.ReactNode }> = ({ c
     refreshUserData,
     refreshPremiumStatus,
     canAccess,
+    hasRole,
   };
 
   return (
