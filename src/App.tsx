@@ -7,8 +7,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "next-themes";
-import ErrorBoundary from "@/components/error/ErrorBoundary";
-import AppRoutes from "@/components/routing/AppRoutes";
+import { ErrorBoundary } from "@/components/error/ErrorBoundary";
+import { Routes, Route, Navigate } from "react-router-dom";
+import AuthDebugPanel from "@/components/debug/AuthDebugPanel";
 import "./i18n";
 import "./App.css";
 
@@ -21,6 +22,15 @@ const queryClient = new QueryClient({
     },
   },
 });
+
+// Simple routing placeholder - replace with your actual routes
+const AppRoutes = () => (
+  <Routes>
+    <Route path="/" element={<div>Home Page - Please configure your routes</div>} />
+    <Route path="/auth" element={<div>Auth Page - Please configure your routes</div>} />
+    <Route path="*" element={<Navigate to="/" replace />} />
+  </Routes>
+);
 
 function App() {
   return (
@@ -36,6 +46,7 @@ function App() {
             <TooltipProvider>
               <UnifiedAuthProvider>
                 <AppRoutes />
+                <AuthDebugPanel />
                 
                 <Toaster />
                 <Sonner 

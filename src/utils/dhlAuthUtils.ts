@@ -14,6 +14,13 @@ export interface DHLUser {
   };
 }
 
+export interface DHLAuthState {
+  isDHLEmployee: boolean;
+  isDHLAdmin: boolean;
+  canAccessDHLFeatures: boolean;
+  canAccessDHLAdmin: boolean;
+}
+
 /**
  * Check if promo code is DHL specific
  * For demo purposes, we'll check if code contains 'DHL' or starts with 'DHL'
@@ -100,6 +107,14 @@ export const canAccessDHLAdmin = (user: DHLUser): boolean => {
 };
 
 /**
+ * Check if user can access DHL features
+ */
+export const canAccessDHLFeatures = (user: DHLUser | null): boolean => {
+  if (!user) return false;
+  return isDHLEmployee(user);
+};
+
+/**
  * Get DHL user permissions
  */
 export const getDHLPermissions = (user: DHLUser) => {
@@ -131,7 +146,7 @@ export const getDHLSetupPath = (user: DHLUser | null, hasAssignment: boolean): s
 /**
  * Get DHL auth state
  */
-export const getDHLAuthState = (user: DHLUser | null) => {
+export const getDHLAuthState = (user: DHLUser | null): DHLAuthState => {
   const isDHLUser = isDHLEmployee(user);
   const isDHLAdminUser = isDHLAdmin(user);
   
