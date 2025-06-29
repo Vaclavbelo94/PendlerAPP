@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { Toaster } from '@/components/ui/sonner';
-import { useAuth } from '@/hooks/auth';
+import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import UnifiedNavbar from './UnifiedNavbar';
 import Footer from './Footer';
 import ModernSidebar from './sidebar/ModernSidebar';
@@ -18,7 +18,7 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ children, navbarRightContent }) => {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading } = useUnifiedAuth();
   const location = useLocation();
   const isMobile = useIsMobile();
   const { t } = useTranslation('common');

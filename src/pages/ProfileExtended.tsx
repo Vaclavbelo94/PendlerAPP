@@ -1,7 +1,8 @@
+
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useAuth } from "@/hooks/auth";
+import { useUnifiedAuth } from "@/contexts/UnifiedAuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -19,7 +20,7 @@ const ProfileExtended = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, unifiedUser } = useAuth();
+  const { user, unifiedUser } = useUnifiedAuth();
   const [isEditing, setIsEditing] = useState(false);
   
   // Get tab from URL query parameters
@@ -36,7 +37,7 @@ const ProfileExtended = () => {
   }, [tabParam]);
   
   const isOwnProfile = !userId || userId === user?.id;
-  const showAdminControls = unifiedUser?.isAdmin && !isOwnProfile;
+  const showAdminControls = unifiedUser?.hasAdminAccess && !isOwnProfile;
   
   if (!user && !userId) {
     navigate("/login");
@@ -101,7 +102,7 @@ const ProfileExtended = () => {
                     
                     <div className="space-y-2">
                       <h2 className="text-2xl font-bold">
-                        {user?.user_metadata?.username || user?.email?.split('@')[0] || 'Uživatel'}
+                        {unifiedUser?.displayName || user?.email?.split('@')[0] || 'Uživatel'}
                       </h2>
                       <p className="text-muted-foreground">
                         {user?.email}

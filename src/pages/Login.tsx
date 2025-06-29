@@ -2,31 +2,37 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { useAuth } from "@/hooks/auth";
+import { useUnifiedAuth } from "@/contexts/UnifiedAuthContext";
 import { Separator } from "@/components/ui/separator";
 import { useTranslation } from 'react-i18next';
 import LoginForm from "@/components/auth/LoginForm";
 import GoogleAuthButton from "@/components/auth/GoogleAuthButton";
-import { getRedirectPath } from '@/utils/authRoleUtils';
-import RoleIndicator from '@/components/auth/RoleIndicator';
+import UnifiedRoleIndicator from '@/components/auth/UnifiedRoleIndicator';
 
 const Login = () => {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const navigate = useNavigate();
-  const { user, unifiedUser, isLoading } = useAuth();
+  const { user, unifiedUser, isLoading } = useUnifiedAuth();
   const { t } = useTranslation('auth');
   
   useEffect(() => {
     if (isLoading) return;
     
     if (user && unifiedUser) {
-      console.log('=== ENHANCED LOGIN REDIRECT LOGIC ===');
+      console.log('=== UNIFIED LOGIN REDIRECT LOGIC ===');
       console.log('User:', user.email);
       console.log('Unified User:', unifiedUser);
       
-      const redirectPath = getRedirectPath(unifiedUser);
-      console.log('Redirecting to:', redirectPath);
+      // Determine redirect path based on user status and role
+      let redirectPath = '/dashboard';
       
+      if (unifiedUser.status === 'pending_setup') {
+        redirectPath = unifiedUser.isDHLUser ? '/dhl-setup' : '/setup';
+      } else if (unifiedUser.hasAdminAccess) {
+        redirectPath = unifiedUser.role === 'dhl_admin' ? '/dhl-admin' : '/admin';
+      }
+      
+      console.log('Redirecting to:', redirectPath);
       navigate(redirectPath);
     }
   }, [user, unifiedUser, isLoading, navigate]);
@@ -53,7 +59,7 @@ const Login = () => {
               <div className="mt-4 p-3 bg-muted rounded-lg">
                 <p className="text-sm text-muted-foreground mb-2">Aktuálně přihlášen:</p>
                 <p className="font-medium">{unifiedUser.email}</p>
-                <RoleIndicator 
+                <UnifiedRoleIndicator 
                   role={unifiedUser.role} 
                   status={unifiedUser.status}
                   className="mt-2"

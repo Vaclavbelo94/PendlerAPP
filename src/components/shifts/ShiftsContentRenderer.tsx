@@ -7,8 +7,7 @@ import EmptyShiftsState from './EmptyShiftsState';
 import DHLTimeCalendarDemo from './calendar/DHLTimeCalendarDemo';
 import { Shift } from '@/hooks/shifts/useShiftsCRUD';
 import { useTranslation } from 'react-i18next';
-import { isDHLEmployee } from '@/utils/dhlAuthUtils';
-import { useAuth } from '@/hooks/auth';
+import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 
 interface ShiftsContentRendererProps {
   activeSection: string;
@@ -34,10 +33,10 @@ const ShiftsContentRenderer: React.FC<ShiftsContentRendererProps> = ({
   handleCalendarDateChange
 }) => {
   const { t } = useTranslation('shifts');
-  const { user } = useAuth();
+  const { unifiedUser } = useUnifiedAuth();
   
-  // Check if user is DHL employee
-  const isDHLUser = user ? isDHLEmployee(user) : false;
+  // Check if user is DHL employee using unified auth
+  const isDHLUser = unifiedUser?.isDHLUser || false;
 
   if (isChanging) {
     return (
