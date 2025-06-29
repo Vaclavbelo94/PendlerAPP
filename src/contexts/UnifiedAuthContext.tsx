@@ -36,6 +36,7 @@ interface UnifiedAuthContextType extends UnifiedAuthState {
   signInWithGoogle: () => Promise<{ error: string | null; url?: string }>;
   signOut: () => Promise<void>;
   refreshUserData: () => Promise<void>;
+  refreshPremiumStatus: () => Promise<{ isPremium: boolean; premiumExpiry?: string }>;
   hasRole: (role: UserRole) => boolean;
   canAccess: (feature: string) => boolean;
 }
@@ -331,6 +332,31 @@ export const UnifiedAuthProvider: React.FC<{ children: React.ReactNode }> = ({ c
     }
   }, [state.user, fetchUserProfile, createUnifiedUser]);
 
+  const refreshPremiumStatus = useCallback(async (): Promise<{ isPremium: boolean; premiumExpiry?: string }> => {
+    if (!state.user) {
+      return { isPremium: false };
+    }
+    
+    try {
+      const profileData = await fetchUserProfile(state.user.id);
+      const isPremium = profileData?.is_premium || false;
+      const premiumExpiry = profileData?.premium_expiry || undefined;
+      
+      // Update unified user
+      const unifiedUser = createUnifiedUser(state.user, profileData);
+      setState(prev => ({
+        ...prev,
+        unifiedUser,
+        error: null
+      }));
+      
+      return { isPremium, premiumExpiry };
+    } catch (err: any) {
+      console.error('Refresh premium status error:', err);
+      return { isPremium: false };
+    }
+  }, [state.user, fetchUserProfile, createUnifiedUser]);
+
   // Role checking methods
   const hasRole = useCallback((role: UserRole): boolean => {
     if (!state.unifiedUser) return false;
@@ -366,6 +392,7 @@ export const UnifiedAuthProvider: React.FC<{ children: React.ReactNode }> = ({ c
     signInWithGoogle,
     signOut,
     refreshUserData,
+    refreshPremiumStatus,
     hasRole,
     canAccess
   };

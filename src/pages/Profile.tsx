@@ -96,7 +96,12 @@ const Profile = () => {
       case 'workData':
         return <ProfileWorkData />;
       case 'subscription':
-        return <ProfileSubscription />;
+        return (
+          <ProfileSubscription 
+            isPremium={unifiedUser?.hasPremiumAccess}
+            premiumExpiry={null}
+          />
+        );
       default:
         return (
           <ProfileOverview 
@@ -164,10 +169,6 @@ const Profile = () => {
                     <ProfileMobileCarousel
                       activeTab={activeTab}
                       onTabChange={setActiveTab}
-                      onEdit={handleEdit}
-                      onSave={handleSave}
-                      onCancel={handleCancel}
-                      isEditing={isEditing}
                     />
                   </motion.div>
                 ) : (

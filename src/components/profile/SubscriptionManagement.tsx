@@ -36,8 +36,12 @@ const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({ /* prop
       setSubscriptionStatus(prev => ({ ...prev, isLoading: true }));
 
       try {
-        const { isPremium, premiumExpiry } = await refreshPremiumStatus();
-        setSubscriptionStatus({ isPremium: isPremium, premiumExpiry: premiumExpiry || null, isLoading: false });
+        const result = await refreshPremiumStatus();
+        setSubscriptionStatus({ 
+          isPremium: result.isPremium, 
+          premiumExpiry: result.premiumExpiry || null, 
+          isLoading: false 
+        });
       } catch (error) {
         console.error("Error fetching subscription status:", error);
         setSubscriptionStatus({ isPremium: false, premiumExpiry: null, isLoading: false });
@@ -63,7 +67,12 @@ const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({ /* prop
       }
 
       toast.success("Subscription cancelled successfully.");
-      await refreshPremiumStatus();
+      const result = await refreshPremiumStatus();
+      setSubscriptionStatus({ 
+        isPremium: result.isPremium, 
+        premiumExpiry: result.premiumExpiry || null, 
+        isLoading: false 
+      });
     } catch (error) {
       console.error("Unexpected error cancelling subscription:", error);
       toast.error("An unexpected error occurred. Please try again later.");
