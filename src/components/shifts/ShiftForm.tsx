@@ -79,7 +79,7 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
     }
   }, [shift, initialDate]);
 
-  // Custom day component with unified styling matching the main calendar
+  // Custom day component matching calendar styling
   const CustomDay = ({ date: dayDate, displayMonth, ...props }: any) => {
     if (!dayDate || !isValid(dayDate)) {
       return (
@@ -103,7 +103,7 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
             "focus:bg-accent focus:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
             // Today styling - matching main calendar
             isTodayDate && !isSelected && "font-bold ring-2 ring-orange-400 ring-offset-1 bg-orange-50 dark:bg-orange-950/30 text-orange-900 dark:text-orange-100",
-            // Selected styling - matching main calendar (unified blue)
+            // Selected styling - matching main calendar
             isSelected && "bg-blue-600 text-white hover:bg-blue-700 focus:bg-blue-700 ring-2 ring-blue-500 ring-offset-2 font-semibold shadow-md",
             // Current month vs other months
             !isCurrentMonth && "text-muted-foreground opacity-50",
@@ -180,7 +180,7 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
-            {/* Legend matching main calendar */}
+            {/* Legend for form calendar */}
             <div className="p-3 border-b bg-muted/30">
               <div className="flex flex-wrap gap-3 items-center justify-center text-xs">
                 <div className="flex items-center gap-1">
@@ -216,19 +216,19 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
           <SelectContent>
             <SelectItem value="morning">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                <div className="w-3 h-3 rounded bg-blue-500"></div>
                 {t('morningShift')}
               </div>
             </SelectItem>
             <SelectItem value="afternoon">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-amber-500"></div>
+                <div className="w-3 h-3 rounded bg-amber-500"></div>
                 {t('afternoonShift')}
               </div>
             </SelectItem>
             <SelectItem value="night">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-indigo-500"></div>
+                <div className="w-3 h-3 rounded bg-indigo-500"></div>
                 {t('nightShift')}
               </div>
             </SelectItem>
