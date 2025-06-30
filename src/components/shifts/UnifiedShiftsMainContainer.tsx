@@ -30,13 +30,16 @@ const UnifiedShiftsMainContainer: React.FC = () => {
     handleOpenAddSheetWithDate,
     isSaving,
     isOnline,
-    isSlowConnection
+    isSlowConnection,
+    user
   } = containerProps;
 
+  // Show loading skeleton while loading
   if (isLoading) {
     return <ShiftsLoadingSkeleton />;
   }
 
+  // Show error handler if there's an error
   if (error) {
     return (
       <ShiftsErrorHandler 
@@ -45,6 +48,18 @@ const UnifiedShiftsMainContainer: React.FC = () => {
         isOnline={isOnline}
         isSlowConnection={isSlowConnection}
       />
+    );
+  }
+
+  // Show message if user is not authenticated
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px] p-4">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold mb-2">Přihlášení vyžadováno</h2>
+          <p className="text-muted-foreground">Pro zobrazení směn se musíte nejprve přihlásit.</p>
+        </div>
+      </div>
     );
   }
 

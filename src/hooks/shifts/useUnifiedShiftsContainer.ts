@@ -2,7 +2,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import { useAuth } from '@/hooks/auth';
 import { useOptimizedNetworkStatus } from '@/hooks/useOptimizedNetworkStatus';
-import { useRefactoredShiftsManagement } from './useRefactoredShiftsManagement';
+import { useSimplifiedShiftsManagement } from './useSimplifiedShiftsManagement';
 import { useDHLData } from '@/hooks/dhl/useDHLData';
 import { isDHLEmployee } from '@/utils/dhlAuthUtils';
 import { Shift } from './useShiftsCRUD';
@@ -12,8 +12,11 @@ export const useUnifiedShiftsContainer = () => {
   const { user } = useAuth();
   const { isOnline, isSlowConnection } = useOptimizedNetworkStatus();
   
+  // Safely get user ID
+  const userId = user?.id || null;
+  
   // Always call hooks in the same order - pass null for user ID if no user
-  const { userAssignment, isLoading: isDHLDataLoading } = useDHLData(user?.id || null);
+  const { userAssignment, isLoading: isDHLDataLoading } = useDHLData(userId);
   
   const [activeSection, setActiveSection] = useState('calendar');
   const [isChanging, setIsChanging] = useState(false);
@@ -23,17 +26,17 @@ export const useUnifiedShiftsContainer = () => {
   const [selectedDateForNewShift, setSelectedDateForNewShift] = useState<Date | undefined>(undefined);
   const [calendarSelectedDate, setCalendarSelectedDate] = useState<Date | undefined>(undefined);
 
-  // Always call this hook - pass null if no user
+  // Use simplified shifts management
   const {
     shifts,
-    isLoading,
+    isLoading: shiftsLoading,
     isSaving,
     error,
     addShift: addShiftOriginal,
     updateShift: updateShiftOriginal,
     deleteShift,
     refreshShifts
-  } = useRefactoredShiftsManagement(user?.id || null);
+  } = useSimplifiedShiftsManagement(userId);
 
   // Memoize expensive calculations to prevent re-renders
   const isDHLUser = useMemo(() => {
@@ -44,6 +47,9 @@ export const useUnifiedShiftsContainer = () => {
     return isDHLUser && !!userAssignment;
   }, [isDHLUser, userAssignment]);
 
+  // Combine loading states
+  const isLoading = shiftsLoading || isDHLDataLoading;
+
   const handleSectionChange = useCallback((section: string) => {
     setIsChanging(true);
     setActiveSection(section);
@@ -51,7 +57,7 @@ export const useUnifiedShiftsContainer = () => {
   }, []);
 
   const handleAddShift = useCallback(async (formData: ShiftFormData): Promise<void> => {
-    if (!user?.id || !selectedDateForNewShift) return;
+    if (!userId || !selectedDateForNewShift) return;
     
     const shiftData: Omit<Shift, 'id' | 'user_id' | 'created_at' | 'updated_at'> = {
       date: selectedDateForNewShift.toISOString().split('T')[0],
@@ -64,10 +70,10 @@ export const useUnifiedShiftsContainer = () => {
       setIsAddSheetOpen(false);
       setSelectedDateForNewShift(undefined);
     }
-  }, [addShiftOriginal, user?.id, selectedDateForNewShift]);
+  }, [addShiftOriginal, userId, selectedDateForNewShift]);
 
   const handleEditShift = useCallback(async (formData: ShiftFormData): Promise<void> => {
-    if (!user?.id || !editingShift) return;
+    if (!userId || !editingShift) return;
     
     const shiftData: Shift = {
       ...editingShift,
@@ -80,7 +86,7 @@ export const useUnifiedShiftsContainer = () => {
       setIsEditSheetOpen(false);
       setEditingShift(null);
     }
-  }, [updateShiftOriginal, user?.id, editingShift]);
+  }, [updateShiftOriginal, userId, editingShift]);
 
   const openEditDialog = useCallback((shift: Shift) => {
     setEditingShift(shift);
@@ -120,7 +126,7 @@ export const useUnifiedShiftsContainer = () => {
     calendarSelectedDate,
     handleCalendarDateChange,
     shifts,
-    isLoading: isLoading || isDHLDataLoading,
+    isLoading,
     error,
     isSaving,
     isChanging,

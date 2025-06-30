@@ -1,240 +1,128 @@
 
-import React, { useState, useMemo } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { TrendingUp, Clock, Calendar, Award } from 'lucide-react';
+import { BarChart3, Clock, Calendar, TrendingUp } from 'lucide-react';
 import { Shift } from '@/hooks/shifts/useShiftsCRUD';
-import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
-import { cs, de, pl } from 'date-fns/locale';
-import { useTranslation } from 'react-i18next';
 
 interface OptimizedShiftsAnalyticsProps {
   shifts: Shift[];
 }
 
 const OptimizedShiftsAnalytics: React.FC<OptimizedShiftsAnalyticsProps> = ({ shifts }) => {
-  const [period, setPeriod] = useState<'week' | 'month'>('month');
-  const { t, i18n } = useTranslation('shifts');
-
-  // Get appropriate date-fns locale
-  const getDateLocale = () => {
-    switch (i18n.language) {
-      case 'de': return de;
-      case 'pl': return pl;
-      case 'cs':
-      default: return cs;
-    }
-  };
-
-  const filteredShifts = useMemo(() => {
-    const now = new Date();
-    const start = period === 'week' ? startOfWeek(now, { weekStartsOn: 1 }) : startOfMonth(now);
-    const end = period === 'week' ? endOfWeek(now, { weekStartsOn: 1 }) : endOfMonth(now);
-    
-    return shifts.filter(shift => 
-      isWithinInterval(new Date(shift.date), { start, end })
-    );
-  }, [shifts, period]);
-
-  const analytics = useMemo(() => {
-    const totalShifts = filteredShifts.length;
-    const totalHours = totalShifts * 8; // Assuming 8 hours per shift
-    const totalEarnings = totalHours * 40; // Assuming 40€ per hour
-    
-    const shiftTypes = filteredShifts.reduce((acc, shift) => {
-      acc[shift.type] = (acc[shift.type] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
-
-    return {
-      totalShifts,
-      totalHours,
-      totalEarnings,
-      morningShifts: shiftTypes.morning || 0,
-      afternoonShifts: shiftTypes.afternoon || 0,
-      nightShifts: shiftTypes.night || 0,
-      averagePerShift: totalShifts > 0 ? Math.round(totalEarnings / totalShifts) : 0
-    };
-  }, [filteredShifts]);
-
-  const chartData = useMemo(() => {
-    return [
-      { name: t('morningShifts'), value: analytics.morningShifts, color: '#3b82f6' },
-      { name: t('afternoonShifts'), value: analytics.afternoonShifts, color: '#f59e0b' },
-      { name: t('nightShifts'), value: analytics.nightShifts, color: '#6366f1' }
-    ].filter(item => item.value > 0);
-  }, [analytics, t]);
-
-  const trendData = useMemo(() => {
-    return [
-      { name: t('morning'), hours: analytics.morningShifts * 8 },
-      { name: t('afternoon'), hours: analytics.afternoonShifts * 8 },
-      { name: t('night'), hours: analytics.nightShifts * 8 }
-    ];
-  }, [analytics, t]);
+  const totalShifts = shifts.length;
+  const morningShifts = shifts.filter(s => s.type === 'morning').length;
+  const afternoonShifts = shifts.filter(s => s.type === 'afternoon').length;
+  const nightShifts = shifts.filter(s => s.type === 'night').length;
 
   return (
     <div className="space-y-6">
-      {/* Header with Period Selection */}
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">{t('shiftsAnalytics')}</h2>
-        <Select value={period} onValueChange={(value: 'week' | 'month') => setPeriod(value)}>
-          <SelectTrigger className="w-48">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="week">{t('thisWeek')}</SelectItem>
-            <SelectItem value="month">{t('thisMonth')}</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">{t('totalShifts')}</p>
-                <p className="text-2xl font-bold">{analytics.totalShifts}</p>
-              </div>
-              <Calendar className="h-8 w-8 text-primary" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">{t('totalHours')}</p>
-                <p className="text-2xl font-bold">{analytics.totalHours}h</p>
-              </div>
-              <Clock className="h-8 w-8 text-blue-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">{t('totalEarnings')}</p>
-                <p className="text-2xl font-bold text-green-600">€{analytics.totalEarnings.toLocaleString()}</p>
-              </div>
-              <TrendingUp className="h-8 w-8 text-green-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">{t('averagePerShift')}</p>
-                <p className="text-2xl font-bold text-purple-600">€{analytics.averagePerShift}</p>
-              </div>
-              <Award className="h-8 w-8 text-purple-600" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Charts */}
-      {filteredShifts.length > 0 ? (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Distribution Chart */}
-          <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
-            <CardHeader>
-              <CardTitle>{t('distribution')}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
-                  <Pie
-                    data={chartData}
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                    labelLine={false}
-                  >
-                    {chartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-
-          {/* Trend Chart */}
-          <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
-            <CardHeader>
-              <CardTitle>{t('trend')}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={trendData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="hours" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-        </div>
-      ) : (
-        <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
-          <CardContent className="text-center py-12">
-            <Calendar className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
-            <h3 className="text-lg font-medium mb-2">{t('noShiftsForPeriod')}</h3>
-            <p className="text-muted-foreground">
-              {period === 'week' ? t('thisWeek') : t('thisMonth')}
-            </p>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Detailed Breakdown */}
-      {filteredShifts.length > 0 && (
-        <Card className="bg-card/50 backdrop-blur-sm border-0 shadow-lg">
-          <CardHeader>
-            <CardTitle>{t('shiftTypeDistribution')}</CardTitle>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Celkem směn</CardTitle>
+            <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
-                <div className="text-2xl font-bold text-blue-600">{analytics.morningShifts}</div>
-                <div className="text-sm text-blue-600">{t('morningShifts')}</div>
-                <div className="text-xs text-muted-foreground mt-1">
-                  {analytics.morningShifts * 8}h {t('totalHours').toLowerCase()}
+            <div className="text-2xl font-bold">{totalShifts}</div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Ranní směny</CardTitle>
+            <Clock className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{morningShifts}</div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Odpolední směny</CardTitle>
+            <Clock className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{afternoonShifts}</div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Noční směny</CardTitle>
+            <Clock className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{nightShifts}</div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <BarChart3 className="h-5 w-5" />
+            Přehled směn podle typu
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {totalShifts === 0 ? (
+            <div className="text-center py-8">
+              <TrendingUp className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+              <p className="text-muted-foreground">
+                Zatím nemáte dostatek dat pro analýzu
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span>Ranní směny</span>
+                <div className="flex items-center gap-2">
+                  <div className="bg-blue-200 h-2 rounded-full flex-1 min-w-[100px]">
+                    <div 
+                      className="bg-blue-500 h-2 rounded-full" 
+                      style={{ width: `${(morningShifts / totalShifts) * 100}%` }}
+                    />
+                  </div>
+                  <span className="text-sm text-muted-foreground">
+                    {Math.round((morningShifts / totalShifts) * 100)}%
+                  </span>
                 </div>
               </div>
-              <div className="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-lg">
-                <div className="text-2xl font-bold text-amber-600">{analytics.afternoonShifts}</div>
-                <div className="text-sm text-amber-600">{t('afternoonShifts')}</div>
-                <div className="text-xs text-muted-foreground mt-1">
-                  {analytics.afternoonShifts * 8}h {t('totalHours').toLowerCase()}
+              
+              <div className="flex items-center justify-between">
+                <span>Odpolední směny</span>
+                <div className="flex items-center gap-2">
+                  <div className="bg-amber-200 h-2 rounded-full flex-1 min-w-[100px]">
+                    <div 
+                      className="bg-amber-500 h-2 rounded-full" 
+                      style={{ width: `${(afternoonShifts / totalShifts) * 100}%` }}
+                    />
+                  </div>
+                  <span className="text-sm text-muted-foreground">
+                    {Math.round((afternoonShifts / totalShifts) * 100)}%
+                  </span>
                 </div>
               </div>
-              <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg">
-                <div className="text-2xl font-bold text-purple-600">{analytics.nightShifts}</div>
-                <div className="text-sm text-purple-600">{t('nightShifts')}</div>
-                <div className="text-xs text-muted-foreground mt-1">
-                  {analytics.nightShifts * 8}h {t('totalHours').toLowerCase()}
+              
+              <div className="flex items-center justify-between">
+                <span>Noční směny</span>
+                <div className="flex items-center gap-2">
+                  <div className="bg-indigo-200 h-2 rounded-full flex-1 min-w-[100px]">
+                    <div 
+                      className="bg-indigo-500 h-2 rounded-full" 
+                      style={{ width: `${(nightShifts / totalShifts) * 100}%` }}
+                    />
+                  </div>
+                  <span className="text-sm text-muted-foreground">
+                    {Math.round((nightShifts / totalShifts) * 100)}%
+                  </span>
                 </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
-      )}
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };
