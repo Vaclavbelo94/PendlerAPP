@@ -5,7 +5,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { Toaster } from '@/components/ui/toaster';
 import { Toaster as Sonner } from 'sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import { AuthProvider } from '@/hooks/auth';
+import { UnifiedAuthProvider } from '@/contexts/UnifiedAuthContext';
 import { ThemeProvider } from 'next-themes';
 import SimpleLoadingSpinner from '@/components/loading/SimpleLoadingSpinner';
 
@@ -37,7 +37,7 @@ export const OptimizedProviderStack: React.FC<OptimizedProviderStackProps> = ({
       <Router>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           <TooltipProvider>
-            <AuthProvider>
+            <UnifiedAuthProvider>
               <Suspense fallback={<SimpleLoadingSpinner />}>
                 <StateManagerProvider>
                   <GDPRConsentProvider>
@@ -62,7 +62,7 @@ export const OptimizedProviderStack: React.FC<OptimizedProviderStackProps> = ({
                   },
                 }}
               />
-            </AuthProvider>
+            </UnifiedAuthProvider>
           </TooltipProvider>
         </ThemeProvider>
       </Router>

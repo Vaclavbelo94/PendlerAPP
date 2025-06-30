@@ -1,17 +1,16 @@
 
-// Central auth hooks export
-// This file provides a single entry point for all auth-related hooks
-
-export { useUnifiedAuth } from './useUnifiedAuth';
-export { useAuth } from './useUnifiedAuth';
-export { useRouteProtection } from './useRouteProtection';
-export { useAuthState } from './useAuthState';
-
-// Re-export types for convenience
+// Simplified auth exports - direct from UnifiedAuthContext
+export { useUnifiedAuth, UnifiedAuthProvider } from '@/contexts/UnifiedAuthContext';
 export type { UnifiedUser, UserRole, UserStatus } from '@/contexts/UnifiedAuthContext';
 
-// Re-export the provider - this is the main AuthProvider that should be used
-export { UnifiedAuthProvider as AuthProvider } from '@/contexts/UnifiedAuthContext';
+// Main auth hook for backward compatibility
+export { useAuth } from './useAuth';
 
-// Backward compatibility - re-export the old useAuth hook
-export { useAuth as useAuthLegacy } from '../useAuth';
+// Route protection hook
+export { useRouteProtection } from './useRouteProtection';
+
+// Auth state hook
+export { useAuthState } from './useAuthState';
+
+// Export the provider with clear name
+export { UnifiedAuthProvider as AuthProvider } from '@/contexts/UnifiedAuthContext';

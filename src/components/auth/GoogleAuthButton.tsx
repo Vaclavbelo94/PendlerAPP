@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/hooks/auth";
+import { useUnifiedAuth } from "@/contexts/UnifiedAuthContext";
 import { toast } from "sonner";
 import { useTranslation } from 'react-i18next';
 import { checkLocalStorageSpace } from '@/utils/authUtils';
@@ -17,7 +17,7 @@ const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
   setIsLoading, 
   isRegister = false 
 }) => {
-  const { signInWithGoogle } = useAuth();
+  const { signInWithGoogle } = useUnifiedAuth();
   const { t } = useTranslation('auth');
 
   const handleGoogleAuth = async () => {

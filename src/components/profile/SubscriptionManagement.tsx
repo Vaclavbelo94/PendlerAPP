@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Calendar, Crown, CreditCard, AlertTriangle, CheckCircle, XCircle } from "lucide-react";
-import { useAuth } from '@/hooks/auth';
+import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -15,7 +15,7 @@ interface SubscriptionManagementProps {
 }
 
 const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({ /* props */ }) => {
-  const { user, unifiedUser, refreshPremiumStatus } = useAuth();
+  const { user, unifiedUser, refreshPremiumStatus } = useUnifiedAuth();
   const [subscriptionStatus, setSubscriptionStatus] = useState<{
     isPremium: boolean | null;
     premiumExpiry: string | null;
