@@ -1,159 +1,38 @@
 
-/**
- * DHL Authentication utilities
- * Functions to check DHL employee status and permissions
- */
+// Utility functions for DHL authentication checks
 
-export interface DHLUser {
-  id: string;
-  email?: string;
-  user_metadata?: {
-    company?: string;
-    department?: string;
-    role?: string;
-  };
-}
-
-export interface DHLAuthState {
-  isDHLEmployee: boolean;
-  isDHLAdmin: boolean;
-  canAccessDHLFeatures: boolean;
-  canAccessDHLAdmin: boolean;
-}
-
-/**
- * Check if promo code is DHL specific
- * For demo purposes, we'll check if code contains 'DHL' or starts with 'DHL'
- */
-export const isDHLPromoCode = (code: string): boolean => {
-  if (!code) return false;
-  
-  const upperCode = code.toUpperCase();
-  
-  // Check if code contains DHL or starts with DHL
-  return (
-    upperCode.includes('DHL') ||
-    upperCode.startsWith('DHL') ||
-    false
-  );
-};
-
-/**
- * Check if user is a DHL employee
- * For demo purposes, we'll check if user email contains 'dhl' or has DHL in metadata
- */
-export const isDHLEmployee = (user: DHLUser): boolean => {
+export const isDHLEmployee = (user: any): boolean => {
   if (!user) return false;
   
-  const email = user.email?.toLowerCase();
-  const company = user.user_metadata?.company?.toLowerCase();
+  // Check if user has DHL-specific properties
+  if (user.isDHLEmployee || user.isDHLUser) {
+    return true;
+  }
   
-  // Check if email contains DHL domain or company metadata indicates DHL
-  return (
-    (email && email.includes('dhl')) ||
-    (company && company.includes('dhl')) ||
-    false
-  );
+  // Check email domain for DHL employees
+  if (user.email && typeof user.email === 'string') {
+    const dhlDomains = ['dhl.com', 'dhl.de', 'dhl.cz'];
+    const emailDomain = user.email.split('@')[1]?.toLowerCase();
+    return dhlDomains.includes(emailDomain);
+  }
+  
+  return false;
 };
 
-/**
- * Check if user is a DHL admin
- */
-export const isDHLAdmin = (user: DHLUser): boolean => {
-  if (!isDHLEmployee(user)) return false;
-  
-  const email = user.email?.toLowerCase();
-  const role = user.user_metadata?.role?.toLowerCase();
-  
-  // Check for DHL admin email or admin role
-  return (
-    (email && email.includes('admin_dhl')) ||
-    (role === 'admin') ||
-    false
-  );
-};
-
-/**
- * Check if user is a regular (non-DHL) admin
- */
-export const isRegularAdmin = (user: DHLUser): boolean => {
-  if (!user) return false;
-  
-  const email = user.email?.toLowerCase();
-  
-  // Check for regular admin emails (not DHL)
-  return (
-    (email && email.includes('admin') && !email.includes('dhl')) ||
-    false
-  );
-};
-
-/**
- * Check if user can access DHL admin features
- */
-export const canAccessDHLAdmin = (user: DHLUser): boolean => {
-  if (!isDHLEmployee(user)) return false;
-  
-  const role = user.user_metadata?.role?.toLowerCase();
-  
-  // Only specific roles can access admin features
-  return (
-    role === 'admin' ||
-    role === 'supervisor' ||
-    role === 'manager' ||
-    isDHLAdmin(user) ||
-    false
-  );
-};
-
-/**
- * Check if user can access DHL features
- */
-export const canAccessDHLFeatures = (user: DHLUser | null): boolean => {
-  if (!user) return false;
+export const checkDHLAccess = (user: any): boolean => {
   return isDHLEmployee(user);
 };
 
-/**
- * Get DHL user permissions
- */
-export const getDHLPermissions = (user: DHLUser) => {
-  const isEmployee = isDHLEmployee(user);
-  const canAdmin = canAccessDHLAdmin(user);
+export const getDHLUserType = (user: any): 'employee' | 'admin' | 'standard' => {
+  if (!user) return 'standard';
   
-  return {
-    isEmployee,
-    canAdmin,
-    canViewTimes: isEmployee,
-    canEditTimes: canAdmin,
-    canImportSchedules: canAdmin,
-    canBulkOperations: canAdmin
-  };
-};
-
-/**
- * Get DHL setup path based on user status
- */
-export const getDHLSetupPath = (user: DHLUser | null, hasAssignment: boolean): string | null => {
-  if (!user || !isDHLEmployee(user)) return null;
+  if (isDHLEmployee(user)) {
+    // Check if user has admin privileges
+    if (user.isAdmin || user.is_admin) {
+      return 'admin';
+    }
+    return 'employee';
+  }
   
-  // If user doesn't have assignment, they need setup
-  if (!hasAssignment) return '/dhl-setup';
-  
-  return null;
-};
-
-/**
- * Get DHL auth state
- */
-export const getDHLAuthState = (user: DHLUser | null): DHLAuthState => {
-  const isDHLUser = isDHLEmployee(user);
-  const isDHLAdminUser = isDHLAdmin(user);
-  
-  return {
-    isDHLEmployee: isDHLUser,
-    isDHLAdmin: isDHLAdminUser,
-    canAccessDHLFeatures: isDHLUser,
-    canAccessDHLAdmin: canAccessDHLAdmin(user)
-  };
+  return 'standard';
 };

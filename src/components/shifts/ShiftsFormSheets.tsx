@@ -1,11 +1,9 @@
 
 import React from 'react';
-import { Sheet, SheetContent, SheetTitle, SheetDescription, SheetHeader } from '@/components/ui/sheet';
-import { Calendar } from 'lucide-react';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { cn } from '@/lib/utils';
-import ShiftForm from '@/components/shifts/ShiftForm';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { ShiftFormData, ShiftType } from '@/types/shifts';
 import { Shift } from '@/hooks/shifts/useShiftsCRUD';
+import ShiftForm from './forms/ShiftForm';
 import { useTranslation } from 'react-i18next';
 
 interface ShiftsFormSheetsProps {
@@ -15,10 +13,10 @@ interface ShiftsFormSheetsProps {
   setIsEditSheetOpen: (open: boolean) => void;
   editingShift: Shift | null;
   setEditingShift: (shift: Shift | null) => void;
-  onAddShift: (formData: any) => Promise<void>;
-  onEditShift: (formData: any) => Promise<void>;
+  onAddShift: (data: ShiftFormData) => Promise<void>;
+  onEditShift: (data: ShiftFormData) => Promise<void>;
   isSaving: boolean;
-  selectedDateForNewShift?: Date | null;
+  selectedDateForNewShift?: Date;
 }
 
 const ShiftsFormSheets: React.FC<ShiftsFormSheetsProps> = ({
@@ -33,55 +31,68 @@ const ShiftsFormSheets: React.FC<ShiftsFormSheetsProps> = ({
   isSaving,
   selectedDateForNewShift
 }) => {
-  const isMobile = useIsMobile();
   const { t } = useTranslation('shifts');
+
+  const handleAddShiftSubmit = async (data: ShiftFormData) => {
+    await onAddShift(data);
+  };
+
+  const handleEditShiftSubmit = async (data: ShiftFormData) => {
+    await onEditShift(data);
+  };
+
+  const handleAddSheetClose = () => {
+    setIsAddSheetOpen(false);
+  };
+
+  const handleEditSheetClose = () => {
+    setIsEditSheetOpen(false);
+    setEditingShift(null);
+  };
 
   return (
     <>
+      {/* Add Shift Sheet */}
       <Sheet open={isAddSheetOpen} onOpenChange={setIsAddSheetOpen}>
-        <SheetContent className={cn("overflow-y-auto", isMobile ? "w-full" : "sm:max-w-2xl")}>
+        <SheetContent>
           <SheetHeader>
-            <SheetTitle className="flex items-center gap-2">
-              <Calendar className="h-5 w-5" />
-              {t('addNewShift')}
-            </SheetTitle>
+            <SheetTitle>{t('addNewShift')}</SheetTitle>
             <SheetDescription>
               {t('fillShiftDetails')}
             </SheetDescription>
           </SheetHeader>
-          
           <div className="mt-6">
             <ShiftForm
-              onSubmit={onAddShift}
-              onCancel={() => setIsAddSheetOpen(false)}
+              onSubmit={handleAddShiftSubmit}
+              onCancel={handleAddSheetClose}
               isLoading={isSaving}
-              initialDate={selectedDateForNewShift}
+              selectedDate={selectedDateForNewShift}
+              submitLabel={t('add')}
             />
           </div>
         </SheetContent>
       </Sheet>
 
+      {/* Edit Shift Sheet */}
       <Sheet open={isEditSheetOpen} onOpenChange={setIsEditSheetOpen}>
-        <SheetContent className={cn("overflow-y-auto", isMobile ? "w-full" : "sm:max-w-2xl")}>
+        <SheetContent>
           <SheetHeader>
-            <SheetTitle className="flex items-center gap-2">
-              <Calendar className="h-5 w-5" />
-              {t('editShift')}
-            </SheetTitle>
+            <SheetTitle>{t('editShift')}</SheetTitle>
             <SheetDescription>
               {t('editShiftDetails')}
             </SheetDescription>
           </SheetHeader>
-          
           <div className="mt-6">
             <ShiftForm
-              onSubmit={onEditShift}
-              onCancel={() => {
-                setIsEditSheetOpen(false);
-                setEditingShift(null);
-              }}
+              onSubmit={handleEditShiftSubmit}
+              onCancel={handleEditSheetClose}
               isLoading={isSaving}
-              shift={editingShift}
+              initialData={editingShift ? {
+                type: editingShift.type as ShiftType,
+                notes: editingShift.notes || ''
+              } : undefined}
+              selectedDate={editingShift ? new Date(editingShift.date) : undefined}
+              submitLabel={t('updateShift')}
             />
           </div>
         </SheetContent>

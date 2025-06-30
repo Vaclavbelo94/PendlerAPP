@@ -6,6 +6,7 @@ import { useRefactoredShiftsManagement } from './useRefactoredShiftsManagement';
 import { useDHLData } from '@/hooks/dhl/useDHLData';
 import { isDHLEmployee } from '@/utils/dhlAuthUtils';
 import { Shift } from './useShiftsCRUD';
+import { ShiftFormData } from '@/types/shifts';
 
 export const useUnifiedShiftsContainer = () => {
   const { user } = useAuth();
@@ -14,15 +15,12 @@ export const useUnifiedShiftsContainer = () => {
   // Always call hooks in the same order - pass null for user ID if no user
   const { userAssignment, isLoading: isDHLDataLoading } = useDHLData(user?.id || null);
   
-  const [isInitialized, setIsInitialized] = useState(true);
   const [activeSection, setActiveSection] = useState('calendar');
   const [isChanging, setIsChanging] = useState(false);
   const [isAddSheetOpen, setIsAddSheetOpen] = useState(false);
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
   const [editingShift, setEditingShift] = useState<Shift | null>(null);
-  const [selectedDateForNewShift, setSelectedDateForNewShift] = useState<Date | null>(null);
-  
-  // Critical fix: Initialize with undefined to ensure no date is initially selected
+  const [selectedDateForNewShift, setSelectedDateForNewShift] = useState<Date | undefined>(undefined);
   const [calendarSelectedDate, setCalendarSelectedDate] = useState<Date | undefined>(undefined);
 
   // Always call this hook - pass null if no user
@@ -37,10 +35,9 @@ export const useUnifiedShiftsContainer = () => {
     refreshShifts
   } = useRefactoredShiftsManagement(user?.id || null);
 
-  // Check if user is DHL employee with assignment
+  // Memoize expensive calculations to prevent re-renders
   const isDHLUser = useMemo(() => {
-    if (!user) return false;
-    return isDHLEmployee(user);
+    return user ? isDHLEmployee(user) : false;
   }, [user]);
   
   const hasDHLAssignment = useMemo(() => {
@@ -53,40 +50,37 @@ export const useUnifiedShiftsContainer = () => {
     setTimeout(() => setIsChanging(false), 150);
   }, []);
 
-  const handleAddShift = useCallback(async (shiftData: Omit<Shift, 'id' | 'user_id' | 'created_at' | 'updated_at'>): Promise<void> => {
-    if (!user?.id) {
-      console.warn('Cannot add shift: no user ID');
-      return;
-    }
+  const handleAddShift = useCallback(async (formData: ShiftFormData): Promise<void> => {
+    if (!user?.id || !selectedDateForNewShift) return;
+    
+    const shiftData: Omit<Shift, 'id' | 'user_id' | 'created_at' | 'updated_at'> = {
+      date: selectedDateForNewShift.toISOString().split('T')[0],
+      type: formData.type,
+      notes: formData.notes || undefined
+    };
     
     const result = await addShiftOriginal(shiftData);
     if (result) {
       setIsAddSheetOpen(false);
-      setSelectedDateForNewShift(null);
+      setSelectedDateForNewShift(undefined);
     }
-  }, [addShiftOriginal, user?.id]);
+  }, [addShiftOriginal, user?.id, selectedDateForNewShift]);
 
-  const handleEditShift = useCallback(async (shiftData: Shift): Promise<void> => {
-    if (!user?.id) {
-      console.warn('Cannot edit shift: no user ID');
-      return;
-    }
+  const handleEditShift = useCallback(async (formData: ShiftFormData): Promise<void> => {
+    if (!user?.id || !editingShift) return;
+    
+    const shiftData: Shift = {
+      ...editingShift,
+      type: formData.type,
+      notes: formData.notes || undefined
+    };
     
     const result = await updateShiftOriginal(shiftData);
     if (result) {
       setIsEditSheetOpen(false);
       setEditingShift(null);
     }
-  }, [updateShiftOriginal, user?.id]);
-
-  // Universal handler that routes to add or edit based on the isEdit flag
-  const handleShiftSubmit = useCallback(async (shiftData: any, isEdit: boolean): Promise<void> => {
-    if (isEdit) {
-      await handleEditShift(shiftData);
-    } else {
-      await handleAddShift(shiftData);
-    }
-  }, [handleAddShift, handleEditShift]);
+  }, [updateShiftOriginal, user?.id, editingShift]);
 
   const openEditDialog = useCallback((shift: Shift) => {
     setEditingShift(shift);
@@ -98,36 +92,21 @@ export const useUnifiedShiftsContainer = () => {
   }, [refreshShifts]);
 
   const handleOpenAddSheet = useCallback(() => {
-    console.log('Opening add sheet - calendarSelectedDate:', calendarSelectedDate);
-    setSelectedDateForNewShift(calendarSelectedDate || new Date());
-    setIsAddSheetOpen(true);
-  }, [calendarSelectedDate]);
-
-  const handleOpenAddSheetWithDate = useCallback((date: Date) => {
-    console.log('Opening add sheet with specific date:', date);
-    setSelectedDateForNewShift(date);
-    setCalendarSelectedDate(date);
+    setSelectedDateForNewShift(new Date());
     setIsAddSheetOpen(true);
   }, []);
 
-  // Critical fix: This callback ensures clean date selection
+  const handleOpenAddSheetWithDate = useCallback((date: Date) => {
+    setSelectedDateForNewShift(date);
+    setIsAddSheetOpen(true);
+  }, []);
+
   const handleCalendarDateChange = useCallback((date: Date | undefined) => {
-    console.log('Calendar date changing from:', calendarSelectedDate, 'to:', date);
-    
-    // Always update the calendar state
     setCalendarSelectedDate(date);
-    
-    // Update selectedDateForNewShift when date is selected
-    if (date) {
-      setSelectedDateForNewShift(date);
-    } else {
-      setSelectedDateForNewShift(null);
-    }
-  }, [calendarSelectedDate]);
+  }, []);
 
   return {
     user,
-    isInitialized,
     isOnline,
     isSlowConnection,
     activeSection,
@@ -139,6 +118,7 @@ export const useUnifiedShiftsContainer = () => {
     setEditingShift,
     selectedDateForNewShift,
     calendarSelectedDate,
+    handleCalendarDateChange,
     shifts,
     isLoading: isLoading || isDHLDataLoading,
     error,
@@ -147,12 +127,10 @@ export const useUnifiedShiftsContainer = () => {
     handleSectionChange,
     handleAddShift,
     handleEditShift,
-    handleShiftSubmit,
     openEditDialog,
     handleRetry,
     handleOpenAddSheet,
     handleOpenAddSheetWithDate,
-    handleCalendarDateChange,
     deleteShift,
     // DHL specific data
     isDHLUser,
