@@ -24,7 +24,7 @@ export const createUnifiedUser = (
     // Backward compatibility
     isPremium,
     isAdmin,
-    // Unified naming
+    // Unified naming - both properties pointing to the same value
     isDHLUser: isDHLEmployee,
   };
 };

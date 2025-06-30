@@ -1,4 +1,3 @@
-
 // Main auth hook - provides backward compatibility
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 
@@ -16,9 +15,8 @@ export const useAuth = () => {
     isAdmin: authState.unifiedUser?.hasAdminAccess || false,
     refreshUserStatus: authState.refreshUserData,
     refreshAdminStatus: authState.refreshUserData,
-    refreshPremiumStatus: authState.refreshUserData,
-    // Add missing methods that some components expect
-    signInWithGoogle: authState.signUp, // Placeholder - should be implemented properly
+    // Keep the original refreshPremiumStatus method
+    refreshPremiumStatus: authState.refreshPremiumStatus,
   };
 };
 
