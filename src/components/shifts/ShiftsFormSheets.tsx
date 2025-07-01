@@ -1,9 +1,9 @@
 
 import React from 'react';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { ShiftFormData, ShiftType } from '@/types/shifts';
+import { ShiftFormData } from '@/types/shifts';
 import { Shift } from '@/hooks/shifts/useShiftsCRUD';
-import ShiftForm from './forms/ShiftForm';
+import UnifiedShiftForm from './forms/UnifiedShiftForm';
 import { useTranslation } from 'react-i18next';
 
 interface ShiftsFormSheetsProps {
@@ -56,18 +56,18 @@ const ShiftsFormSheets: React.FC<ShiftsFormSheetsProps> = ({
       <Sheet open={isAddSheetOpen} onOpenChange={setIsAddSheetOpen}>
         <SheetContent>
           <SheetHeader>
-            <SheetTitle>{t('addNewShift')}</SheetTitle>
+            <SheetTitle>Přidat novou směnu</SheetTitle>
             <SheetDescription>
-              {t('fillShiftDetails')}
+              Vyplňte údaje o nové směně
             </SheetDescription>
           </SheetHeader>
           <div className="mt-6">
-            <ShiftForm
+            <UnifiedShiftForm
               onSubmit={handleAddShiftSubmit}
               onCancel={handleAddSheetClose}
               isLoading={isSaving}
               selectedDate={selectedDateForNewShift}
-              submitLabel={t('add')}
+              submitLabel="Přidat"
             />
           </div>
         </SheetContent>
@@ -77,22 +77,22 @@ const ShiftsFormSheets: React.FC<ShiftsFormSheetsProps> = ({
       <Sheet open={isEditSheetOpen} onOpenChange={setIsEditSheetOpen}>
         <SheetContent>
           <SheetHeader>
-            <SheetTitle>{t('editShift')}</SheetTitle>
+            <SheetTitle>Upravit směnu</SheetTitle>
             <SheetDescription>
-              {t('editShiftDetails')}
+              Upravte údaje směny
             </SheetDescription>
           </SheetHeader>
           <div className="mt-6">
-            <ShiftForm
+            <UnifiedShiftForm
               onSubmit={handleEditShiftSubmit}
               onCancel={handleEditSheetClose}
               isLoading={isSaving}
               initialData={editingShift ? {
-                type: editingShift.type as ShiftType,
+                type: editingShift.type,
                 notes: editingShift.notes || ''
               } : undefined}
               selectedDate={editingShift ? new Date(editingShift.date) : undefined}
-              submitLabel={t('updateShift')}
+              submitLabel="Upravit směnu"
             />
           </div>
         </SheetContent>

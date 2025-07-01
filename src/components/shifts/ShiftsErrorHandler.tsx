@@ -1,13 +1,12 @@
 
 import React from 'react';
-import { AlertCircle, Wifi, WifiOff } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { useTranslation } from 'react-i18next';
+import { AlertTriangle, RefreshCw, Wifi, WifiOff } from 'lucide-react';
 
 interface ShiftsErrorHandlerProps {
-  error: Error | string;
-  onRetry?: () => void;
+  error: string;
+  onRetry: () => void;
   isOnline?: boolean;
   isSlowConnection?: boolean;
 }
@@ -18,52 +17,39 @@ const ShiftsErrorHandler: React.FC<ShiftsErrorHandlerProps> = ({
   isOnline = true,
   isSlowConnection = false
 }) => {
-  const { t } = useTranslation('shifts');
-
-  const errorMessage = typeof error === 'string' ? error : error.message;
-  
-  const getErrorTitle = () => {
-    if (!isOnline) return 'Offline Mode';
-    if (isSlowConnection) return 'Slow Connection';
-    return 'Error Loading Shifts';
-  };
-
-  const getErrorDescription = () => {
-    if (!isOnline) {
-      return 'You are currently offline. Your changes will be saved locally and synced when you reconnect.';
-    }
-    if (isSlowConnection) {
-      return 'Connection is slow. Some features may take longer to load.';
-    }
-    return errorMessage;
-  };
-
-  const getIcon = () => {
-    if (!isOnline) return <WifiOff className="h-4 w-4" />;
-    if (isSlowConnection) return <Wifi className="h-4 w-4 text-orange-500" />;
-    return <AlertCircle className="h-4 w-4" />;
-  };
-
   return (
-    <div className="flex items-center justify-center min-h-[400px] p-4">
-      <div className="max-w-md w-full">
-        <Alert variant={!isOnline ? "default" : "destructive"}>
-          {getIcon()}
-          <AlertTitle>{getErrorTitle()}</AlertTitle>
-          <AlertDescription className="mt-2">
-            {getErrorDescription()}
-          </AlertDescription>
-        </Alert>
+    <Card className="max-w-md mx-auto">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-destructive">
+          <AlertTriangle className="h-5 w-5" />
+          Chyba při načítání směn
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="text-sm text-muted-foreground">
+          <p>{error}</p>
+        </div>
         
-        {onRetry && (
-          <div className="mt-4 text-center">
-            <Button onClick={onRetry} variant="outline">
-              Try Again
-            </Button>
+        {!isOnline && (
+          <div className="flex items-center gap-2 text-amber-600 bg-amber-50 p-3 rounded-lg">
+            <WifiOff className="h-4 w-4" />
+            <span className="text-sm">Nejste připojeni k internetu</span>
           </div>
         )}
-      </div>
-    </div>
+        
+        {isSlowConnection && (
+          <div className="flex items-center gap-2 text-blue-600 bg-blue-50 p-3 rounded-lg">
+            <Wifi className="h-4 w-4" />
+            <span className="text-sm">Pomalé připojení detekováno</span>
+          </div>
+        )}
+        
+        <Button onClick={onRetry} className="w-full flex items-center gap-2">
+          <RefreshCw className="h-4 w-4" />
+          Zkusit znovu
+        </Button>
+      </CardContent>
+    </Card>
   );
 };
 

@@ -5,6 +5,7 @@ import ShiftsContentRenderer from './ShiftsContentRenderer';
 import ShiftsFormSheets from './ShiftsFormSheets';
 import ShiftsErrorHandler from './ShiftsErrorHandler';
 import ShiftsLoadingSkeleton from './ShiftsLoadingSkeleton';
+import ShiftsNavigation from './ShiftsNavigation';
 
 const UnifiedShiftsMainContainer: React.FC = () => {
   const containerProps = useUnifiedShiftsContainer();
@@ -31,7 +32,9 @@ const UnifiedShiftsMainContainer: React.FC = () => {
     isSaving,
     isOnline,
     isSlowConnection,
-    user
+    user,
+    activeSection,
+    handleSectionChange
   } = containerProps;
 
   // Show loading skeleton while loading
@@ -65,6 +68,12 @@ const UnifiedShiftsMainContainer: React.FC = () => {
 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-6">
+      {/* Navigation Tabs */}
+      <ShiftsNavigation 
+        activeSection={activeSection}
+        onSectionChange={handleSectionChange}
+      />
+      
       <ShiftsContentRenderer 
         {...containerProps} 
         onEditShift={openEditDialog}
