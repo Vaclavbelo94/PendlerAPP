@@ -15,6 +15,6 @@ export const useAuth = () => {
     isAdmin: authState.unifiedUser?.hasAdminAccess || false,
     refreshUserStatus: authState.refreshUserData,
     refreshAdminStatus: authState.refreshUserData,
-    refreshPremiumStatus: authState.refreshPremiumStatus,
+    // refreshPremiumStatus is already available from authState
   };
 };
