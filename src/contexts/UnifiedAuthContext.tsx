@@ -255,12 +255,11 @@ export const UnifiedAuthProvider: React.FC<{ children: React.ReactNode }> = ({ c
     }
   }, [unifiedUser]);
 
-  // Initialize auth state
+  // SIMPLIFIED initialization - set initialized immediately on auth event
   useEffect(() => {
     let mounted = true;
-    let initTimeout: NodeJS.Timeout;
 
-    console.log('UnifiedAuthContext: Starting initialization');
+    console.log('UnifiedAuthContext: Starting FAST initialization');
 
     const initializeAuth = async () => {
       try {
@@ -272,15 +271,21 @@ export const UnifiedAuthProvider: React.FC<{ children: React.ReactNode }> = ({ c
               setSession(session);
               setUser(session?.user || null);
               
-              // Set initialized to true immediately when we get any auth event
-              if (!isInitialized) {
-                console.log('Setting isInitialized to true after auth event');
-                setIsInitialized(true);
-                setIsLoading(false);
-              }
+              // Set initialized and stop loading IMMEDIATELY on any auth event
+              console.log('Setting isInitialized to true and isLoading to false IMMEDIATELY');
+              setIsInitialized(true);
+              setIsLoading(false);
               
               if (session?.user) {
-                // Refresh user data immediately for better UX
+                // Create basic unified user immediately, don't wait for data fetching
+                const basicUnified = createUnifiedUser(
+                  session.user, 
+                  false, 
+                  session.user.email === 'admin@pendlerapp.com'
+                );
+                setUnifiedUser(basicUnified);
+                
+                // Refresh user data in background (non-blocking)
                 setTimeout(async () => {
                   if (mounted) {
                     await refreshUserData();
@@ -303,8 +308,16 @@ export const UnifiedAuthProvider: React.FC<{ children: React.ReactNode }> = ({ c
           setIsLoading(false);
           setIsInitialized(true);
           
-          // If there's an initial session, refresh user data
+          // If there's an initial session, create basic unified user immediately
           if (initialSession?.user) {
+            const basicUnified = createUnifiedUser(
+              initialSession.user, 
+              false, 
+              initialSession.user.email === 'admin@pendlerapp.com'
+            );
+            setUnifiedUser(basicUnified);
+            
+            // Refresh user data in background
             setTimeout(async () => {
               if (mounted) {
                 await refreshUserData();
@@ -326,14 +339,14 @@ export const UnifiedAuthProvider: React.FC<{ children: React.ReactNode }> = ({ c
       }
     };
 
-    // Reduced timeout - force initialization after 2 seconds instead of 5
-    initTimeout = setTimeout(() => {
+    // MUCH faster timeout - force initialization after 500ms instead of 2 seconds
+    const initTimeout = setTimeout(() => {
       if (mounted && !isInitialized) {
-        console.warn('Auth initialization timeout - forcing initialization (2s)');
+        console.warn('Auth initialization timeout - forcing initialization (500ms)');
         setIsLoading(false);
         setIsInitialized(true);
       }
-    }, 2000);
+    }, 500);
 
     initializeAuth();
 
@@ -341,7 +354,7 @@ export const UnifiedAuthProvider: React.FC<{ children: React.ReactNode }> = ({ c
       mounted = false;
       if (initTimeout) clearTimeout(initTimeout);
     };
-  }, []);
+  }, [createUnifiedUser, refreshUserData]);
 
   const contextValue: UnifiedAuthContextType = {
     user,

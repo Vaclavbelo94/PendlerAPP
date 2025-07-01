@@ -30,14 +30,14 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({ children }) => {
     forceRender 
   });
 
-  // Reduced timeout - if auth doesn't initialize in 3 seconds, force render
+  // MUCH shorter timeout - if auth doesn't initialize in 1 second, force render
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (!isInitialized && !forceRender) {
-        console.warn('LayoutWrapper: Forcing render due to timeout (3s)');
+        console.warn('LayoutWrapper: Forcing render due to timeout (1s)');
         setForceRender(true);
       }
-    }, 3000); // Reduced from 10 seconds to 3 seconds
+    }, 1000); // Reduced from 3 seconds to 1 second
 
     return () => clearTimeout(timeout);
   }, [isInitialized, forceRender]);
@@ -56,10 +56,10 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({ children }) => {
   
   const isPublicRoute = publicRoutes.includes(location.pathname);
   
-  // Show loading while auth is initializing (unless forced or public route)
-  // But don't show loading for too long - max 3 seconds
+  // Show loading ONLY for very short time and only if not public route
+  // Don't show loading for too long - max 1 second
   if (!forceRender && !isInitialized && !isPublicRoute && isLoading) {
-    console.log('LayoutWrapper: Showing loading spinner');
+    console.log('LayoutWrapper: Showing loading spinner for max 1 second');
     return <SimpleLoadingSpinner />;
   }
   

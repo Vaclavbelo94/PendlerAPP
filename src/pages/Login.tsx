@@ -11,74 +11,71 @@ import UnifiedRoleIndicator from '@/components/auth/UnifiedRoleIndicator';
 
 const Login = () => {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-  const [redirectTimer, setRedirectTimer] = useState<NodeJS.Timeout | null>(null);
   const navigate = useNavigate();
-  const { user, unifiedUser, isLoading } = useUnifiedAuth();
+  const { user, isLoading } = useUnifiedAuth();
   const { t } = useTranslation('auth');
   
   useEffect(() => {
-    console.log('=== LOGIN PAGE REDIRECT CHECK ===');
-    console.log('user:', !!user);
-    console.log('isLoading:', isLoading);
+    console.log('=== LOGIN PAGE IMMEDIATE REDIRECT CHECK ===');
+    console.log('user exists:', !!user);
     console.log('user email:', user?.email);
+    console.log('isLoading:', isLoading);
     
-    // Clear any existing timer
-    if (redirectTimer) {
-      clearTimeout(redirectTimer);
-      setRedirectTimer(null);
-    }
-    
-    // If we have a user and auth is not loading, redirect immediately
-    if (user && !isLoading) {
-      console.log('User found, redirecting immediately...');
+    // IMMEDIATE redirect if user exists - don't wait for anything else
+    if (user) {
+      console.log('User found, redirecting IMMEDIATELY without waiting...');
       
       let redirectPath = '/dashboard'; // Default redirect
       
-      // Check for admin first (simple email check)
+      // Simple admin check - only check email
       if (user.email === 'admin@pendlerapp.com') {
         redirectPath = '/admin';
         console.log('Admin user detected, redirecting to:', redirectPath);
-      } else if (unifiedUser) {
-        // Use unifiedUser data if available
-        if (unifiedUser.status === 'pending_setup') {
-          redirectPath = unifiedUser.isDHLUser ? '/dhl-setup' : '/setup';
-        } else if (unifiedUser.hasAdminAccess) {
-          redirectPath = unifiedUser.role === 'dhl_admin' ? '/dhl-admin' : '/admin';
-        }
-        console.log('UnifiedUser-based redirect to:', redirectPath);
       }
       
-      console.log('Final redirect path:', redirectPath);
+      console.log('Immediate redirect to:', redirectPath);
+      
+      // Use window.location for guaranteed redirect (fallback if navigate fails)
+      setTimeout(() => {
+        console.log('Executing window.location redirect as fallback');
+        window.location.href = redirectPath;
+      }, 100);
+      
+      // Also try React Router navigate
       navigate(redirectPath, { replace: true });
-    } 
-    // Emergency timeout - if user exists but we're still loading after 2 seconds, force redirect
-    else if (user && isLoading) {
-      console.log('User exists but still loading, setting emergency timer...');
-      const timer = setTimeout(() => {
-        console.log('Emergency redirect triggered');
-        navigate('/dashboard', { replace: true });
-      }, 2000);
-      setRedirectTimer(timer);
     }
     
-    return () => {
-      if (redirectTimer) {
-        clearTimeout(redirectTimer);
-      }
-    };
-  }, [user, isLoading, unifiedUser, navigate]);
+    // Emergency timeout - if auth is still loading after 1 second, something is wrong
+    if (isLoading) {
+      console.log('Auth still loading, setting 1-second emergency timer...');
+      const timer = setTimeout(() => {
+        if (user) {
+          console.log('Emergency redirect - user exists but still loading');
+          window.location.href = '/dashboard';
+        }
+      }, 1000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [user, navigate, isLoading]);
 
-  // Show loading while redirecting
+  // Show loading while redirecting (only if user exists)
   if (user) {
+    console.log('Showing redirect loading screen for user:', user.email);
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-muted-foreground">Přesměrovávám...</p>
+          <p className="text-xs text-muted-foreground mt-2">
+            Pokud se nestane nic do 2 sekund, <a href="/dashboard" className="underline">klikněte zde</a>
+          </p>
         </div>
       </div>
     );
   }
+
+  console.log('Rendering login form - no user found');
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
