@@ -6,50 +6,38 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/auth";
 import { toast } from "sonner";
 import { useTranslation } from 'react-i18next';
-import { useNavigate, Link } from 'react-router-dom';
-import { isDHLEmployee } from '@/utils/dhlAuthUtils';
+import { Link } from 'react-router-dom';
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
-  const { signIn, unifiedUser } = useAuth();
+  const { signIn } = useAuth();
   const { t } = useTranslation('auth');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
+    console.log('=== LOGIN FORM SUBMIT ===');
+    console.log('Email:', email);
+    
     try {
       const { error } = await signIn(email, password);
       
       if (error) {
+        console.log('Login error:', error);
         toast.error(t('loginFailed'), {
           description: String(error) || t('loginCheckDataRetry'),
         });
       } else {
+        console.log('Login successful, letting Login.tsx handle redirect');
         toast.success(t('loginSuccess'));
-        
-        // Wait a moment for auth state to update
-        setTimeout(() => {
-          // Check admin status first
-          if (email === 'admin@pendlerapp.com') {
-            navigate("/admin");
-          } else {
-            // Create a temporary user object for DHL check
-            const tempUser = { email } as any;
-            const isDHL = isDHLEmployee(tempUser);
-            
-            if (isDHL) {
-              navigate("/dashboard");
-            } else {
-              navigate("/dashboard");
-            }
-          }
-        }, 500);
+        // LOGIN FORM NO LONGER HANDLES REDIRECT
+        // Login.tsx will handle the redirect based on unifiedUser
       }
     } catch (error: any) {
+      console.error('Login exception:', error);
       toast.error(t('loginError'), {
         description: error?.message || t('unknownErrorOccurred'),
       });
@@ -69,6 +57,7 @@ const LoginForm = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
+          autoComplete="email"
           className="bg-card/50 backdrop-blur-sm border-border"
         />
       </div>
@@ -89,6 +78,7 @@ const LoginForm = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+          autoComplete="current-password"
           className="bg-card/50 backdrop-blur-sm border-border"
         />
       </div>

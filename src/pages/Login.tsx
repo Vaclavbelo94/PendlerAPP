@@ -12,30 +12,71 @@ import UnifiedRoleIndicator from '@/components/auth/UnifiedRoleIndicator';
 const Login = () => {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const navigate = useNavigate();
-  const { user, unifiedUser, isLoading } = useUnifiedAuth();
+  const { user, unifiedUser, isLoading, isInitialized } = useUnifiedAuth();
   const { t } = useTranslation('auth');
   
   useEffect(() => {
-    if (isLoading) return;
+    console.log('=== LOGIN PAGE REDIRECT CHECK ===');
+    console.log('isLoading:', isLoading);
+    console.log('isInitialized:', isInitialized);
+    console.log('user:', !!user);
+    console.log('unifiedUser:', !!unifiedUser);
+    console.log('user email:', user?.email);
+    console.log('unifiedUser details:', unifiedUser ? {
+      email: unifiedUser.email,
+      role: unifiedUser.role,
+      status: unifiedUser.status,
+      hasAdminAccess: unifiedUser.hasAdminAccess,
+      isDHLUser: unifiedUser.isDHLUser
+    } : null);
     
-    if (user && unifiedUser) {
-      console.log('=== UNIFIED LOGIN REDIRECT LOGIC ===');
-      console.log('User:', user.email);
-      console.log('Unified User:', unifiedUser);
+    // Wait for auth to be initialized but don't wait too long
+    if (!isInitialized && isLoading) {
+      console.log('Auth not initialized yet, waiting...');
+      return;
+    }
+    
+    // If we have a user (regardless of unifiedUser state), redirect quickly
+    if (user) {
+      console.log('User found, determining redirect...');
       
-      // Determine redirect path based on user status and role
-      let redirectPath = '/dashboard';
+      let redirectPath = '/dashboard'; // Default redirect
       
-      if (unifiedUser.status === 'pending_setup') {
-        redirectPath = unifiedUser.isDHLUser ? '/dhl-setup' : '/setup';
-      } else if (unifiedUser.hasAdminAccess) {
-        redirectPath = unifiedUser.role === 'dhl_admin' ? '/dhl-admin' : '/admin';
+      // Check for admin first
+      if (user.email === 'admin@pendlerapp.com') {
+        redirectPath = '/admin';
+        console.log('Admin user detected, redirecting to:', redirectPath);
+      } else if (unifiedUser) {
+        // Use unifiedUser data if available
+        if (unifiedUser.status === 'pending_setup') {
+          redirectPath = unifiedUser.isDHLUser ? '/dhl-setup' : '/setup';
+        } else if (unifiedUser.hasAdminAccess) {
+          redirectPath = unifiedUser.role === 'dhl_admin' ? '/dhl-admin' : '/admin';
+        }
+        console.log('UnifiedUser-based redirect to:', redirectPath);
+      } else {
+        // Fallback redirect even without unifiedUser
+        console.log('Fallback redirect to dashboard (no unifiedUser yet)');
       }
       
-      console.log('Redirecting to:', redirectPath);
-      navigate(redirectPath);
+      console.log('Final redirect path:', redirectPath);
+      navigate(redirectPath, { replace: true });
+    } else {
+      console.log('No user found, staying on login page');
     }
-  }, [user, unifiedUser, isLoading, navigate]);
+  }, [user, unifiedUser, isLoading, isInitialized, navigate]);
+
+  // Don't show anything while redirecting
+  if (user) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Přesměrovávám...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
@@ -53,19 +94,6 @@ const Login = () => {
             <CardDescription>
               {t('registerDescription')}
             </CardDescription>
-            
-            {/* Show current user info if logged in (for debugging) */}
-            {unifiedUser && (
-              <div className="mt-4 p-3 bg-muted rounded-lg">
-                <p className="text-sm text-muted-foreground mb-2">Aktuálně přihlášen:</p>
-                <p className="font-medium">{unifiedUser.email}</p>
-                <UnifiedRoleIndicator 
-                  role={unifiedUser.role} 
-                  status={unifiedUser.status}
-                  className="mt-2"
-                />
-              </div>
-            )}
           </CardHeader>
           <CardContent className="grid gap-4">
             <div className="space-y-4">
