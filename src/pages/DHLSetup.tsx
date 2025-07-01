@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Shield, Info } from 'lucide-react';
 import DHLSetupForm from '@/components/dhl/DHLSetupForm';
 import { useDHLRouteGuard } from '@/hooks/dhl/useDHLRouteGuard';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
 const DHLSetup: React.FC = () => {
   const { canAccess, isDHLEmployee, isLoading } = useDHLRouteGuard(true);
