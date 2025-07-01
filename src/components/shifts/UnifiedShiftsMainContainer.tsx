@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { useUnifiedShiftsContainer } from '@/hooks/shifts/useUnifiedShiftsContainer';
+import { useDHLRedirect } from '@/hooks/dhl/useDHLRedirect';
 import ShiftsContentRenderer from './ShiftsContentRenderer';
 import ShiftsFormSheets from './ShiftsFormSheets';
 import ShiftsErrorHandler from './ShiftsErrorHandler';
@@ -8,6 +9,9 @@ import ShiftsLoadingSkeleton from './ShiftsLoadingSkeleton';
 import ShiftsNavigation from './ShiftsNavigation';
 
 const UnifiedShiftsMainContainer: React.FC = () => {
+  // Handle DHL user redirects
+  const { isLoading: redirectLoading } = useDHLRedirect();
+  
   const containerProps = useUnifiedShiftsContainer();
   
   const {
@@ -37,8 +41,8 @@ const UnifiedShiftsMainContainer: React.FC = () => {
     handleSectionChange
   } = containerProps;
 
-  // Show loading skeleton while loading
-  if (isLoading) {
+  // Show loading skeleton while loading or handling redirects
+  if (isLoading || redirectLoading) {
     return <ShiftsLoadingSkeleton />;
   }
 

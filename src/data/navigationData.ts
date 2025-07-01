@@ -1,51 +1,34 @@
 
 import { 
-  Home, 
-  User, 
-  Car, 
-  BookOpen, 
+  LayoutDashboard, 
   Calendar, 
-  Languages, 
+  Calculator, 
+  FileText, 
+  Car, 
+  Users, 
+  BarChart3, 
   Settings, 
-  Crown, 
-  Shield,
-  Map,
-  Scale,
-  FileText,
-  Truck
+  Crown,
+  Building2,
+  Shield
 } from 'lucide-react';
 
 export interface NavigationItem {
   path: string;
-  titleKey: string; // Changed from title to titleKey for translation
-  icon: any;
-  badge?: number;
-  adminOnly?: boolean;
+  titleKey: string;
+  icon: React.ComponentType<{ className?: string }>;
+  badge?: string;
   premium?: boolean;
-  dhlOnly?: boolean; // New DHL-specific flag
-  dhlAdminOnly?: boolean; // New DHL admin-specific flag
+  adminOnly?: boolean;
+  dhlOnly?: boolean;
+  dhlAdminOnly?: boolean;
 }
 
 export const navigationItems: NavigationItem[] = [
   {
-    path: '/',
-    titleKey: 'home',
-    icon: Home
-  },
-  {
     path: '/dashboard',
     titleKey: 'dashboard',
-    icon: User
-  },
-  {
-    path: '/vehicle',
-    titleKey: 'vehicle',
-    icon: Car
-  },
-  {
-    path: '/translator',
-    titleKey: 'translator',
-    icon: Languages
+    icon: LayoutDashboard
   },
   {
     path: '/shifts',
@@ -53,19 +36,45 @@ export const navigationItems: NavigationItem[] = [
     icon: Calendar
   },
   {
-    path: '/travel',
-    titleKey: 'travel',
-    icon: Map
+    path: '/dhl-setup',
+    titleKey: 'dhl_setup',
+    icon: Building2,
+    dhlOnly: true
   },
   {
-    path: '/laws',
-    titleKey: 'laws',
-    icon: Scale
+    path: '/calculator',
+    titleKey: 'calculator',
+    icon: Calculator
   },
   {
     path: '/tax-advisor',
-    titleKey: 'taxAdvisor',
-    icon: FileText
+    titleKey: 'tax_advisor',
+    icon: FileText,
+    premium: true
+  },
+  {
+    path: '/vehicles',
+    titleKey: 'vehicles',
+    icon: Car,
+    premium: true
+  },
+  {
+    path: '/rideshare',
+    titleKey: 'rideshare',
+    icon: Users,
+    premium: true
+  },
+  {
+    path: '/analytics',
+    titleKey: 'analytics',
+    icon: BarChart3,
+    premium: true
+  },
+  {
+    path: '/admin',
+    titleKey: 'admin',
+    icon: Shield,
+    adminOnly: true
   },
   {
     path: '/premium',
@@ -76,24 +85,5 @@ export const navigationItems: NavigationItem[] = [
     path: '/settings',
     titleKey: 'settings',
     icon: Settings
-  },
-  {
-    path: '/admin',
-    titleKey: 'admin',
-    icon: Shield,
-    adminOnly: true
-  },
-  // DHL specific navigation items - redirect DHL dashboard to main dashboard
-  {
-    path: '/dhl-admin',
-    titleKey: 'dhlAdmin',
-    icon: Truck,
-    dhlAdminOnly: true
-  },
-  {
-    path: '/dashboard', // Redirect DHL dashboard to main dashboard
-    titleKey: 'dhlDashboard',
-    icon: Truck,
-    dhlOnly: true
   }
 ];
