@@ -36,6 +36,7 @@ export const useAuthStatus = (userId?: string) => {
       const specialEmails = ['uzivatel@pendlerapp.com', 'admin@pendlerapp.com', 'zkouska@gmail.com'];
       
       if (user?.email && specialEmails.includes(user.email)) {
+        console.log('Special user detected, setting premium to true:', user.email);
         setIsPremium(true);
         const expiry = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString();
         return { isPremium: true, premiumExpiry: expiry };

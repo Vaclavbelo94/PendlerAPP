@@ -11,15 +11,24 @@ export const createUnifiedUser = (
 ): UnifiedUser => {
   // Check if this is a special email that should have premium
   const specialEmails = ['uzivatel@pendlerapp.com', 'admin@pendlerapp.com', 'zkouska@gmail.com'];
-  const hasAutoPremiun = authUser.email && specialEmails.includes(authUser.email);
+  const hasAutoPremium = authUser.email && specialEmails.includes(authUser.email);
   
   // Override premium status for special emails
-  if (hasAutoPremiun) {
+  if (hasAutoPremium) {
+    console.log('Creating unified user with auto-premium for:', authUser.email);
     isPremium = true;
     premiumExpiry = premiumExpiry || new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString();
   }
   
   const role: UserRole = isAdmin ? 'admin' : isPremium ? 'premium' : 'standard';
+  
+  console.log('Creating unified user:', {
+    email: authUser.email,
+    role,
+    isPremium,
+    hasAutoPremium,
+    hasPremiumAccess: isPremium
+  });
   
   return {
     id: authUser.id,
