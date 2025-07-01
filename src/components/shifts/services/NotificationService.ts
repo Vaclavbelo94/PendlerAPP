@@ -1,5 +1,5 @@
 
-import { toast } from "@/hooks/use-toast";
+import { unifiedToastService } from '@/services/UnifiedToastService';
 
 export type NotificationType = 'success' | 'error' | 'warning' | 'info';
 
@@ -20,91 +20,43 @@ class NotificationService {
     return NotificationService.instance;
   }
 
-  // Optimized durations for better UX
-  private getOptimizedDuration(type: 'success' | 'error' | 'warning' | 'info' | 'default'): number {
-    switch (type) {
-      case 'success':
-        return 2000; // Quick confirmation
-      case 'error':
-        return 4000; // Longer for errors
-      case 'warning':
-        return 3000; // Medium for warnings
-      default:
-        return 2500; // Shorter default
-    }
-  }
-
   showShiftSaved(isUpdate: boolean = false) {
-    toast({
-      title: isUpdate ? "Směna aktualizována" : "Směna přidána",
-      description: `Směna byla úspěšně ${isUpdate ? "upravena" : "přidána"}.`,
-    });
+    unifiedToastService.showShiftSaved(isUpdate);
   }
 
   showShiftDeleted() {
-    toast({
-      title: "Směna odstraněna",
-      description: "Směna byla úspěšně odstraněna.",
-      variant: "destructive"
-    });
+    unifiedToastService.showShiftDeleted();
   }
 
   showShiftError(operation: 'save' | 'delete' | 'load') {
-    const messages = {
-      save: "Nepodařilo se uložit směnu. Zkuste to prosím znovu.",
-      delete: "Nepodařilo se odstranit směnu. Zkuste to prosím znovu.", 
-      load: "Nepodařilo se načíst směny. Zkusíme obnovit data z místní zálohy."
-    };
-
-    toast({
-      title: "Chyba při " + (operation === 'save' ? 'ukládání' : operation === 'delete' ? 'mazání' : 'načítání'),
-      description: messages[operation],
-      variant: "destructive"
-    });
+    unifiedToastService.showShiftError(operation);
   }
 
   showOfflineSaved() {
-    toast({
-      title: "Uloženo offline",
-      description: "Směna byla uložena offline a bude synchronizována při obnovení připojení.",
-    });
+    unifiedToastService.showOfflineMode();
   }
 
   showSyncComplete(count: number) {
-    toast({
-      title: "Synchronizace dokončena",
-      description: `Synchronizováno ${count} směn`,
-    });
+    unifiedToastService.showSyncComplete(count);
   }
 
   showRemoteUpdate(message: string) {
-    toast({
-      title: "Synchronizace",
-      description: message,
-    });
+    unifiedToastService.showInfo("Synchronizace", message);
   }
 
   showAuthRequired() {
-    toast({
-      title: "Chyba",
-      description: "Pro uložení směny musíte být přihlášeni a vybrat datum.",
-      variant: "destructive"
-    });
+    unifiedToastService.showAuthRequired();
   }
 
   showDataRestored() {
-    toast({
-      title: "Data obnovena",
-      description: "Směny byly načteny z místní zálohy.",
-    });
+    unifiedToastService.showInfo(
+      "Data obnovena",
+      "Směny byly načteny z místní zálohy."
+    );
   }
 
   showGenericError(message?: string) {
-    toast({
-      title: "Chyba",
-      description: message || "Došlo k neočekávané chybě.",
-      variant: "destructive"
-    });
+    unifiedToastService.showGenericError(message);
   }
 }
 

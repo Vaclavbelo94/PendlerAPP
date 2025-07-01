@@ -8,8 +8,9 @@ import { Loader2, Building2, Users } from 'lucide-react';
 import { useDHLData } from '@/hooks/dhl/useDHLData';
 import { useAuth } from '@/hooks/auth';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import { unifiedToastService } from '@/services/UnifiedToastService';
+import { enhancedErrorHandler } from '@/services/EnhancedErrorHandler';
 
 interface DHLSetupFormData {
   positionId: string;
@@ -30,7 +31,7 @@ const DHLSetupForm: React.FC = () => {
     e.preventDefault();
     
     if (!user?.id || !formData.positionId || !formData.workGroupId) {
-      toast.error('Prosím vyplňte všechna povinná pole');
+      unifiedToastService.showGenericError('Prosím vyplňte všechna povinná pole');
       return;
     }
 
@@ -49,7 +50,7 @@ const DHLSetupForm: React.FC = () => {
 
       if (error) throw error;
 
-      toast.success('DHL nastavení bylo úspěšně uloženo!');
+      unifiedToastService.showDHLSetupSuccess();
       
       // Redirect to dashboard after successful setup
       setTimeout(() => {
@@ -58,7 +59,7 @@ const DHLSetupForm: React.FC = () => {
 
     } catch (error: any) {
       console.error('Error saving DHL setup:', error);
-      toast.error('Chyba při ukládání nastavení: ' + (error.message || 'Neznámá chyba'));
+      enhancedErrorHandler.handleDHLError(error, { userId: user.id, formData });
     } finally {
       setIsSubmitting(false);
     }
