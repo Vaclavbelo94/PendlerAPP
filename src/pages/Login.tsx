@@ -11,38 +11,30 @@ import UnifiedRoleIndicator from '@/components/auth/UnifiedRoleIndicator';
 
 const Login = () => {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [redirectTimer, setRedirectTimer] = useState<NodeJS.Timeout | null>(null);
   const navigate = useNavigate();
-  const { user, unifiedUser, isLoading, isInitialized } = useUnifiedAuth();
+  const { user, unifiedUser, isLoading } = useUnifiedAuth();
   const { t } = useTranslation('auth');
   
   useEffect(() => {
     console.log('=== LOGIN PAGE REDIRECT CHECK ===');
-    console.log('isLoading:', isLoading);
-    console.log('isInitialized:', isInitialized);
     console.log('user:', !!user);
-    console.log('unifiedUser:', !!unifiedUser);
+    console.log('isLoading:', isLoading);
     console.log('user email:', user?.email);
-    console.log('unifiedUser details:', unifiedUser ? {
-      email: unifiedUser.email,
-      role: unifiedUser.role,
-      status: unifiedUser.status,
-      hasAdminAccess: unifiedUser.hasAdminAccess,
-      isDHLUser: unifiedUser.isDHLUser
-    } : null);
     
-    // Wait for auth to be initialized but don't wait too long
-    if (!isInitialized && isLoading) {
-      console.log('Auth not initialized yet, waiting...');
-      return;
+    // Clear any existing timer
+    if (redirectTimer) {
+      clearTimeout(redirectTimer);
+      setRedirectTimer(null);
     }
     
-    // If we have a user (regardless of unifiedUser state), redirect quickly
-    if (user) {
-      console.log('User found, determining redirect...');
+    // If we have a user and auth is not loading, redirect immediately
+    if (user && !isLoading) {
+      console.log('User found, redirecting immediately...');
       
       let redirectPath = '/dashboard'; // Default redirect
       
-      // Check for admin first
+      // Check for admin first (simple email check)
       if (user.email === 'admin@pendlerapp.com') {
         redirectPath = '/admin';
         console.log('Admin user detected, redirecting to:', redirectPath);
@@ -54,19 +46,29 @@ const Login = () => {
           redirectPath = unifiedUser.role === 'dhl_admin' ? '/dhl-admin' : '/admin';
         }
         console.log('UnifiedUser-based redirect to:', redirectPath);
-      } else {
-        // Fallback redirect even without unifiedUser
-        console.log('Fallback redirect to dashboard (no unifiedUser yet)');
       }
       
       console.log('Final redirect path:', redirectPath);
       navigate(redirectPath, { replace: true });
-    } else {
-      console.log('No user found, staying on login page');
+    } 
+    // Emergency timeout - if user exists but we're still loading after 2 seconds, force redirect
+    else if (user && isLoading) {
+      console.log('User exists but still loading, setting emergency timer...');
+      const timer = setTimeout(() => {
+        console.log('Emergency redirect triggered');
+        navigate('/dashboard', { replace: true });
+      }, 2000);
+      setRedirectTimer(timer);
     }
-  }, [user, unifiedUser, isLoading, isInitialized, navigate]);
+    
+    return () => {
+      if (redirectTimer) {
+        clearTimeout(redirectTimer);
+      }
+    };
+  }, [user, isLoading, unifiedUser, navigate]);
 
-  // Don't show anything while redirecting
+  // Show loading while redirecting
   if (user) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">

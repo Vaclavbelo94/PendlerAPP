@@ -272,6 +272,13 @@ export const UnifiedAuthProvider: React.FC<{ children: React.ReactNode }> = ({ c
               setSession(session);
               setUser(session?.user || null);
               
+              // Set initialized to true immediately when we get any auth event
+              if (!isInitialized) {
+                console.log('Setting isInitialized to true after auth event');
+                setIsInitialized(true);
+                setIsLoading(false);
+              }
+              
               if (session?.user) {
                 // Refresh user data immediately for better UX
                 setTimeout(async () => {
@@ -319,14 +326,14 @@ export const UnifiedAuthProvider: React.FC<{ children: React.ReactNode }> = ({ c
       }
     };
 
-    // Emergency timeout - force initialization after 5 seconds
+    // Reduced timeout - force initialization after 2 seconds instead of 5
     initTimeout = setTimeout(() => {
       if (mounted && !isInitialized) {
-        console.warn('Auth initialization timeout - forcing initialization');
+        console.warn('Auth initialization timeout - forcing initialization (2s)');
         setIsLoading(false);
         setIsInitialized(true);
       }
-    }, 5000);
+    }, 2000);
 
     initializeAuth();
 

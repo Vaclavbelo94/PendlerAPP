@@ -13,7 +13,7 @@ interface LayoutWrapperProps {
 
 const LayoutWrapper: React.FC<LayoutWrapperProps> = ({ children }) => {
   const location = useLocation();
-  const { isLoading, isInitialized } = useUnifiedAuth();
+  const { isLoading, isInitialized, user } = useUnifiedAuth();
   const [forceRender, setForceRender] = useState(false);
   
   // Handle OAuth callback processing
@@ -26,17 +26,18 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({ children }) => {
     pathname: location.pathname, 
     isLoading, 
     isInitialized, 
+    hasUser: !!user,
     forceRender 
   });
 
-  // Emergency timeout - if auth doesn't initialize in 10 seconds, force render
+  // Reduced timeout - if auth doesn't initialize in 3 seconds, force render
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (!isInitialized && !forceRender) {
-        console.warn('LayoutWrapper: Forcing render due to timeout');
+        console.warn('LayoutWrapper: Forcing render due to timeout (3s)');
         setForceRender(true);
       }
-    }, 10000);
+    }, 3000); // Reduced from 10 seconds to 3 seconds
 
     return () => clearTimeout(timeout);
   }, [isInitialized, forceRender]);
@@ -56,16 +57,20 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({ children }) => {
   const isPublicRoute = publicRoutes.includes(location.pathname);
   
   // Show loading while auth is initializing (unless forced or public route)
+  // But don't show loading for too long - max 3 seconds
   if (!forceRender && !isInitialized && !isPublicRoute && isLoading) {
+    console.log('LayoutWrapper: Showing loading spinner');
     return <SimpleLoadingSpinner />;
   }
   
   // Public routes render without OptimizedLayout
   if (isPublicRoute) {
+    console.log('LayoutWrapper: Rendering public route without layout');
     return <>{children}</>;
   }
   
   // Protected routes use OptimizedLayout
+  console.log('LayoutWrapper: Rendering with OptimizedLayout');
   return (
     <OptimizedLayout>
       {children}
