@@ -4,16 +4,14 @@
 export const isDHLEmployee = (user: any): boolean => {
   if (!user) return false;
   
-  // Check if user has DHL-specific properties
+  // Check if user has DHL-specific properties (set during registration with DHL promo code)
   if (user.isDHLEmployee || user.isDHLUser) {
     return true;
   }
   
-  // Check email domain for DHL employees
-  if (user.email && typeof user.email === 'string') {
-    const dhlDomains = ['dhl.com', 'dhl.de', 'dhl.cz'];
-    const emailDomain = user.email.split('@')[1]?.toLowerCase();
-    return dhlDomains.includes(emailDomain);
+  // Check user metadata for DHL flag
+  if (user.user_metadata?.isDHLUser || user.user_metadata?.isDHLEmployee) {
+    return true;
   }
   
   return false;
@@ -62,7 +60,7 @@ export const isDHLAdmin = (user: any): boolean => {
     return true;
   }
   
-  // Check for DHL admin email patterns
+  // Check for specific DHL admin email
   if (user.email && typeof user.email === 'string') {
     const dhlAdminEmails = ['admindhl@pendlerapp.com'];
     return dhlAdminEmails.includes(user.email.toLowerCase());

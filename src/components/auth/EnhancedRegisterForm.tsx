@@ -10,7 +10,6 @@ import { useNavigate } from 'react-router-dom';
 import PromoCodeField from './PromoCodeField';
 import { checkLocalStorageSpace } from '@/utils/authUtils';
 import { isDHLPromoCode } from '@/utils/dhlAuthUtils';
-import { UserRole } from '@/types/auth';
 
 const EnhancedRegisterForm = () => {
   const [email, setEmail] = useState("");
@@ -73,6 +72,7 @@ const EnhancedRegisterForm = () => {
     try {
       console.log('Starting enhanced registration for:', email);
       
+      // Pass promo code to signUp method - it will handle DHL flag setting
       const signUpResult = await signUp(email, password, username, promoCode);
       
       if (signUpResult.error) {
@@ -92,6 +92,7 @@ const EnhancedRegisterForm = () => {
         });
       } else if (signUpResult.user) {
         console.log('Enhanced registration successful, user:', signUpResult.user.id);
+        console.log('User metadata:', signUpResult.user.user_metadata);
         
         // Enhanced success handling based on promo code type
         if (isDHLCode) {
