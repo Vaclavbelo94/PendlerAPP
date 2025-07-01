@@ -25,11 +25,11 @@ const LoginForm = () => {
       const { error } = await signIn(email, password);
       
       if (error) {
-        toast.error(t('registrationFailed'), {
-          description: String(error) || t('registerCheckDataRetry'),
+        toast.error(t('loginFailed'), {
+          description: String(error) || t('loginCheckDataRetry'),
         });
       } else {
-        toast.success(t('accountCreatedSuccessfully'));
+        toast.success(t('loginSuccess'));
         
         // Create a temporary user object for DHL check
         const tempUser = { email } as any;
@@ -45,7 +45,7 @@ const LoginForm = () => {
         }
       }
     } catch (error: any) {
-      toast.error(t('registrationError'), {
+      toast.error(t('loginError'), {
         description: error?.message || t('unknownErrorOccurred'),
       });
     } finally {
