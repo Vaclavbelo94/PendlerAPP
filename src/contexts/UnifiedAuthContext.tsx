@@ -1,9 +1,9 @@
-
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { createUnifiedUser } from '@/utils/authRoleUtils';
 import { useAuthStatus } from '@/hooks/useAuthStatus';
+import { useAuthMethods } from '@/hooks/auth/useAuthMethods';
 
 export type UserRole = 'standard' | 'premium' | 'dhl_employee' | 'dhl_admin' | 'admin';
 export type UserStatus = 'active' | 'pending_setup' | 'suspended';
@@ -33,8 +33,15 @@ interface UnifiedAuthContextType {
   isInitialized: boolean;
   error?: string | null;
   
+  // Authentication methods
+  signIn: (email: string, password: string) => Promise<{error: string | null}>;
+  signInWithGoogle: () => Promise<{error: string | null, url?: string}>;
+  signUp: (email: string, password: string, username?: string, promoCode?: string) => Promise<{error: string | null, user: User | null}>;
+  signOut: () => Promise<void>;
+  
   // Methods
   refreshUserData: () => Promise<void>;
+  refreshPremiumStatus: () => Promise<{ isPremium: boolean; premiumExpiry?: string }>;
   hasRole: (role: UserRole) => boolean;
   canAccess: (feature: string) => boolean;
 }
@@ -50,6 +57,9 @@ export const UnifiedAuthProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const [error, setError] = useState<string | null>(null);
 
   const { isPremium, isAdmin, refreshPremiumStatus, refreshAdminStatus } = useAuthStatus(user?.id);
+  
+  // Get authentication methods
+  const { signIn, signInWithGoogle, signUp, signOut } = useAuthMethods();
 
   const refreshUserData = useCallback(async () => {
     if (!user) {
@@ -168,7 +178,14 @@ export const UnifiedAuthProvider: React.FC<{ children: React.ReactNode }> = ({ c
     isLoading,
     isInitialized,
     error,
+    // Authentication methods
+    signIn,
+    signInWithGoogle,
+    signUp,
+    signOut,
+    // Other methods
     refreshUserData,
+    refreshPremiumStatus,
     hasRole,
     canAccess,
   };
