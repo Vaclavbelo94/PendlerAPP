@@ -219,6 +219,10 @@ export const UnifiedAuthProvider: React.FC<{ children: React.ReactNode }> = ({ c
         isAdmin = adminResult || false;
       } catch (err) {
         console.error('Error checking admin status:', err);
+        // For special admin emails, set admin to true
+        if (user.email === 'admin@pendlerapp.com') {
+          isAdmin = true;
+        }
       }
 
       const unified = createUnifiedUser(user, premiumResult.isPremium, isAdmin, premiumResult.premiumExpiry);
@@ -226,6 +230,9 @@ export const UnifiedAuthProvider: React.FC<{ children: React.ReactNode }> = ({ c
       setUnifiedUser(unified);
     } catch (error) {
       console.error('Error refreshing user data:', error);
+      // Create a basic unified user even if there's an error
+      const unified = createUnifiedUser(user, false, user.email === 'admin@pendlerapp.com');
+      setUnifiedUser(unified);
     }
   }, [user, refreshPremiumStatus, createUnifiedUser]);
 
@@ -266,10 +273,10 @@ export const UnifiedAuthProvider: React.FC<{ children: React.ReactNode }> = ({ c
               setUser(session?.user || null);
               
               if (session?.user) {
-                // Defer user data refresh to avoid deadlocks
-                setTimeout(() => {
+                // Refresh user data immediately for better UX
+                setTimeout(async () => {
                   if (mounted) {
-                    refreshUserData();
+                    await refreshUserData();
                   }
                 }, 100);
               } else {
@@ -288,6 +295,15 @@ export const UnifiedAuthProvider: React.FC<{ children: React.ReactNode }> = ({ c
           setUser(initialSession?.user || null);
           setIsLoading(false);
           setIsInitialized(true);
+          
+          // If there's an initial session, refresh user data
+          if (initialSession?.user) {
+            setTimeout(async () => {
+              if (mounted) {
+                await refreshUserData();
+              }
+            }, 100);
+          }
         }
 
         return () => {
@@ -318,7 +334,7 @@ export const UnifiedAuthProvider: React.FC<{ children: React.ReactNode }> = ({ c
       mounted = false;
       if (initTimeout) clearTimeout(initTimeout);
     };
-  }, []); // Removed refreshUserData from dependencies to prevent infinite loops
+  }, []);
 
   const contextValue: UnifiedAuthContextType = {
     user,

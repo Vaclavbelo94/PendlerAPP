@@ -31,18 +31,23 @@ const LoginForm = () => {
       } else {
         toast.success(t('loginSuccess'));
         
-        // Create a temporary user object for DHL check
-        const tempUser = { email } as any;
-        const isDHL = isDHLEmployee(tempUser);
-        
-        if (isDHL) {
-          // DHL users will be redirected by auth provider if they need setup
-          navigate("/dashboard");
-        } else if (email === 'admin@pendlerapp.com' || unifiedUser?.isAdmin) {
-          navigate("/admin");
-        } else {
-          navigate("/dashboard");
-        }
+        // Wait a moment for auth state to update
+        setTimeout(() => {
+          // Check admin status first
+          if (email === 'admin@pendlerapp.com') {
+            navigate("/admin");
+          } else {
+            // Create a temporary user object for DHL check
+            const tempUser = { email } as any;
+            const isDHL = isDHLEmployee(tempUser);
+            
+            if (isDHL) {
+              navigate("/dashboard");
+            } else {
+              navigate("/dashboard");
+            }
+          }
+        }, 500);
       }
     } catch (error: any) {
       toast.error(t('loginError'), {
