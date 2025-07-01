@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
@@ -12,8 +11,8 @@ import VehicleSelectorOptimized from './VehicleSelectorOptimized';
 import VehicleCarousel from './VehicleCarousel';
 import FuelConsumptionCard from './FuelConsumptionCard';
 import ServiceRecordCard from './ServiceRecordCard';
-import InsuranceCard from './InsuranceCard';
-import OthersCard from './OthersCard';
+import InsuranceCard from './cards/InsuranceCard';
+import OthersCard from './cards/OthersCard';
 import EmptyVehicleState from './EmptyVehicleState';
 
 interface VehiclePageContentProps {
@@ -56,6 +55,7 @@ const VehiclePageContent: React.FC<VehiclePageContentProps> = ({
             <FuelConsumptionCard vehicleId={selectedVehicleId} />
             <ServiceRecordCard vehicleId={selectedVehicleId} />
             <InsuranceCard vehicleId={selectedVehicleId} />
+            <OthersCard vehicleId={selectedVehicleId} />
           </UnifiedGrid>
         );
       case "fuel":
