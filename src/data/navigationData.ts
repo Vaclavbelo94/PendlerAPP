@@ -10,7 +10,10 @@ import {
   Settings, 
   Crown,
   Building2,
-  Shield
+  Shield,
+  Languages,
+  Scale,
+  Plane
 } from 'lucide-react';
 
 export interface NavigationItem {
@@ -33,13 +36,20 @@ export const navigationItems: NavigationItem[] = [
   {
     path: '/shifts',
     titleKey: 'shifts',
-    icon: Calendar
+    icon: Calendar,
+    premium: true
   },
   {
-    path: '/dhl-setup',
-    titleKey: 'dhl_setup',
-    icon: Building2,
-    dhlOnly: true
+    path: '/vehicle',
+    titleKey: 'vehicles',
+    icon: Car,
+    premium: true
+  },
+  {
+    path: '/travel',
+    titleKey: 'travel',
+    icon: Plane,
+    premium: true
   },
   {
     path: '/calculator',
@@ -53,22 +63,26 @@ export const navigationItems: NavigationItem[] = [
     premium: true
   },
   {
-    path: '/vehicles',
-    titleKey: 'vehicles',
-    icon: Car,
-    premium: true
-  },
-  {
-    path: '/rideshare',
-    titleKey: 'rideshare',
-    icon: Users,
-    premium: true
-  },
-  {
     path: '/analytics',
     titleKey: 'analytics',
     icon: BarChart3,
     premium: true
+  },
+  {
+    path: '/translator',
+    titleKey: 'hr_communication',
+    icon: Languages
+  },
+  {
+    path: '/laws',
+    titleKey: 'laws',
+    icon: Scale
+  },
+  {
+    path: '/dhl-setup',
+    titleKey: 'dhl_setup',
+    icon: Building2,
+    dhlOnly: true
   },
   {
     path: '/admin',

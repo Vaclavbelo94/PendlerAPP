@@ -20,6 +20,17 @@ export const routeConfigs: Record<string, RouteConfig> = {
   '/login': { path: '/login', publicRoute: true },
   '/register': { path: '/register', publicRoute: true },
   
+  // Public tools
+  '/calculator': { path: '/calculator', publicRoute: true },
+  '/translator': { 
+    path: '/translator',
+    allowedRoles: ['standard', 'premium', 'dhl_employee', 'dhl_admin', 'admin'] 
+  },
+  '/laws': { 
+    path: '/laws',
+    allowedRoles: ['standard', 'premium', 'dhl_employee', 'dhl_admin', 'admin'] 
+  },
+  
   // Protected routes
   '/dashboard': { 
     path: '/dashboard',
@@ -79,16 +90,6 @@ export const routeConfigs: Record<string, RouteConfig> = {
   '/admin': { 
     path: '/admin',
     requiredRole: 'admin' 
-  },
-  
-  // Public tools
-  '/translator': { 
-    path: '/translator',
-    allowedRoles: ['standard', 'premium', 'dhl_employee', 'dhl_admin', 'admin'] 
-  },
-  '/laws': { 
-    path: '/laws',
-    allowedRoles: ['standard', 'premium', 'dhl_employee', 'dhl_admin', 'admin'] 
   },
   
   // Premium access page

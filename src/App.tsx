@@ -1,4 +1,3 @@
-
 import { Helmet } from "react-helmet";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { UnifiedAuthProvider } from "@/contexts/UnifiedAuthContext";
@@ -38,6 +37,7 @@ const About = lazy(() => import("@/pages/About"));
 const Contact = lazy(() => import("@/pages/Contact"));
 const Features = lazy(() => import("@/pages/Features"));
 const Pricing = lazy(() => import("@/pages/Pricing"));
+const Calculator = lazy(() => import("@/pages/Calculator"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -80,6 +80,11 @@ const AppRoutes = () => (
       <Route path="/profile-extended" element={<Navigate to="/profile" replace />} />
       <Route path="/settings" element={<Settings />} />
       
+      {/* Public Tools */}
+      <Route path="/calculator" element={<Calculator />} />
+      <Route path="/translator" element={<Translator />} />
+      <Route path="/laws" element={<Laws />} />
+      
       {/* Premium Features */}
       <Route path="/premium" element={<Premium />} />
       <Route path="/shifts" element={<Shifts />} />
@@ -87,10 +92,6 @@ const AppRoutes = () => (
       <Route path="/travel" element={<Travel />} />
       <Route path="/analytics" element={<Analytics />} />
       <Route path="/tax-advisor" element={<TaxAdvisor />} />
-      
-      {/* Public Tools */}
-      <Route path="/translator" element={<Translator />} />
-      <Route path="/laws" element={<Laws />} />
       
       {/* DHL Routes */}
       <Route path="/dhl-setup" element={<DHLSetup />} />

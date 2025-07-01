@@ -2,12 +2,14 @@
 {
   "dashboard": "Přehled",
   "shifts": "Směny",
-  "dhl_setup": "DHL Nastavení",
+  "vehicles": "Vozidla",
+  "travel": "Cestování",
   "calculator": "Kalkulačka",
   "tax_advisor": "Daňový poradce",
-  "vehicles": "Vozidla",
-  "rideshare": "Spolujízda",
   "analytics": "Analytika",
+  "hr_communication": "Komunikace s HR",
+  "laws": "Právo",
+  "dhl_setup": "DHL Nastavení",
   "admin": "Administrace",
   "premium": "Premium",
   "settings": "Nastavení"
