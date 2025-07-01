@@ -9,6 +9,16 @@ export const createUnifiedUser = (
   premiumExpiry?: string,
   isDHLEmployee = false
 ): UnifiedUser => {
+  // Check if this is a special email that should have premium
+  const specialEmails = ['uzivatel@pendlerapp.com', 'admin@pendlerapp.com', 'zkouska@gmail.com'];
+  const hasAutoPremiun = authUser.email && specialEmails.includes(authUser.email);
+  
+  // Override premium status for special emails
+  if (hasAutoPremiun) {
+    isPremium = true;
+    premiumExpiry = premiumExpiry || new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString();
+  }
+  
   const role: UserRole = isAdmin ? 'admin' : isPremium ? 'premium' : 'standard';
   
   return {
