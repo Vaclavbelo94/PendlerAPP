@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Shift } from './useShiftsCRUD';
@@ -28,7 +27,13 @@ export const useSimplifiedShiftsManagement = (userId: string | null) => {
 
       if (fetchError) throw fetchError;
 
-      setShifts(data || []);
+      // Cast the data to match our Shift interface
+      const typedShifts: Shift[] = (data || []).map(shift => ({
+        ...shift,
+        type: shift.type as 'morning' | 'afternoon' | 'night'
+      }));
+
+      setShifts(typedShifts);
     } catch (error: any) {
       console.error('Error loading shifts:', error);
       const appError = enhancedErrorHandler.handleShiftError(error, 'load');
@@ -57,7 +62,13 @@ export const useSimplifiedShiftsManagement = (userId: string | null) => {
 
       if (error) throw error;
 
-      setShifts(prev => [data, ...prev]);
+      // Cast the returned data to match our Shift interface
+      const typedShift: Shift = {
+        ...data,
+        type: data.type as 'morning' | 'afternoon' | 'night'
+      };
+
+      setShifts(prev => [typedShift, ...prev]);
       unifiedToastService.showShiftSaved(false);
       return true;
     } catch (error: any) {
