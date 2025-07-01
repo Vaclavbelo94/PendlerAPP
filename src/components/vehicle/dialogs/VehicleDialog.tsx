@@ -46,6 +46,7 @@ const VehicleDialog: React.FC<VehicleDialogProps> = ({
     model: '',
     year: '',
     license_plate: '',
+    vin: '',
     fuel_type: 'petrol',
     mileage: '',
     average_consumption: ''
@@ -60,6 +61,7 @@ const VehicleDialog: React.FC<VehicleDialogProps> = ({
         model: vehicle.model || '',
         year: vehicle.year?.toString() || '',
         license_plate: vehicle.license_plate || '',
+        vin: vehicle.vin || '',
         fuel_type: vehicle.fuel_type || 'petrol',
         mileage: vehicle.mileage?.toString() || '',
         average_consumption: vehicle.average_consumption?.toString() || ''
@@ -70,6 +72,7 @@ const VehicleDialog: React.FC<VehicleDialogProps> = ({
         model: '',
         year: '',
         license_plate: '',
+        vin: '',
         fuel_type: 'petrol',
         mileage: '',
         average_consumption: ''
@@ -86,11 +89,12 @@ const VehicleDialog: React.FC<VehicleDialogProps> = ({
       const vehicleData = {
         brand: formData.brand,
         model: formData.model,
-        year: parseInt(formData.year),
+        year: formData.year,
         license_plate: formData.license_plate,
+        vin: formData.vin || '',
         fuel_type: formData.fuel_type,
-        mileage: parseInt(formData.mileage) || 0,
-        average_consumption: parseFloat(formData.average_consumption) || 0,
+        mileage: formData.mileage || '',
+        average_consumption: formData.average_consumption || '',
         user_id: userId
       };
 
@@ -107,7 +111,7 @@ const VehicleDialog: React.FC<VehicleDialogProps> = ({
         // Create new vehicle
         const { error } = await supabase
           .from('vehicles')
-          .insert([vehicleData]);
+          .insert(vehicleData);
 
         if (error) throw error;
         toast.success(t('vehicle:vehicleAdded'));
@@ -210,6 +214,16 @@ const VehicleDialog: React.FC<VehicleDialogProps> = ({
             </div>
           </div>
 
+          <div>
+            <Label htmlFor="vin">VIN</Label>
+            <Input
+              id="vin"
+              value={formData.vin}
+              onChange={(e) => setFormData(prev => ({ ...prev, vin: e.target.value }))}
+              placeholder="1HGBH41JXMN109186"
+            />
+          </div>
+
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="fuel_type">{t('vehicle:fuelType')}</Label>
@@ -233,7 +247,7 @@ const VehicleDialog: React.FC<VehicleDialogProps> = ({
               <Label htmlFor="mileage">{t('vehicle:mileage')} (km)</Label>
               <Input
                 id="mileage"
-                type="number"
+                type="text"
                 value={formData.mileage}
                 onChange={(e) => setFormData(prev => ({ ...prev, mileage: e.target.value }))}
                 placeholder="150000"
@@ -245,8 +259,7 @@ const VehicleDialog: React.FC<VehicleDialogProps> = ({
             <Label htmlFor="average_consumption">{t('vehicle:averageConsumption')} ({t('vehicle:per100km')})</Label>
             <Input
               id="average_consumption"
-              type="number"
-              step="0.1"
+              type="text"
               value={formData.average_consumption}
               onChange={(e) => setFormData(prev => ({ ...prev, average_consumption: e.target.value }))}
               placeholder="7.5"
