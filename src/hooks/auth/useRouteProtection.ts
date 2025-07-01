@@ -17,7 +17,9 @@ export const useRouteProtection = () => {
       path: location.pathname, 
       user: !!user, 
       unifiedUser: !!unifiedUser,
-      isLoading 
+      isLoading,
+      role: unifiedUser?.role,
+      hasPremiumAccess: unifiedUser?.hasPremiumAccess
     });
 
     const currentPath = location.pathname;
@@ -36,11 +38,20 @@ export const useRouteProtection = () => {
       return;
     }
 
-    // Only redirect to login if we're sure the user is not authenticated
-    // and we're not already on an auth page
+    // Handle unauthenticated users
     if (!user || !unifiedUser) {
       const authPages = ['/login', '/register', '/auth'];
       if (!authPages.includes(currentPath)) {
+        console.log('User not authenticated, checking route requirements');
+        
+        // For premium routes, redirect to premium page instead of login
+        if (routeConfig?.requiredFeature === 'premium_features') {
+          console.log('Redirecting to premium page for premium feature');
+          navigate('/premium', { replace: true });
+          return;
+        }
+        
+        // For other protected routes, redirect to login
         console.log('Redirecting to login from:', currentPath);
         navigate('/login', { state: { from: location }, replace: true });
       }
@@ -49,13 +60,16 @@ export const useRouteProtection = () => {
 
     // Check if route is allowed for current user (only for authenticated users)
     if (!isRouteAllowed(currentPath, unifiedUser.role, canAccess)) {
-      console.log('Route not allowed, redirecting');
+      console.log('Route not allowed, redirecting. Route config:', routeConfig);
       // Determine appropriate redirect
       if (routeConfig?.requiredFeature === 'premium_features') {
+        console.log('Redirecting to premium page');
         navigate('/premium', { replace: true });
       } else if (routeConfig?.requiredRole === 'admin') {
+        console.log('Redirecting to unauthorized');
         navigate('/unauthorized', { replace: true });
       } else {
+        console.log('Redirecting to dashboard');
         navigate('/dashboard', { replace: true });
       }
     }

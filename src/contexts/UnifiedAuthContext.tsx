@@ -64,6 +64,8 @@ export const UnifiedAuthProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const [isInitialized, setIsInitialized] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  console.log('UnifiedAuthContext state:', { isLoading, isInitialized, user: !!user, unifiedUser: !!unifiedUser });
+
   // Create unified user from auth user
   const createUnifiedUser = useCallback((authUser: User, isPremium = false, isAdmin = false, premiumExpiry?: string): UnifiedUser => {
     const role: UserRole = isAdmin ? 'admin' : isPremium ? 'premium' : 'standard';
@@ -207,6 +209,7 @@ export const UnifiedAuthProvider: React.FC<{ children: React.ReactNode }> = ({ c
     if (!user) return;
 
     try {
+      console.log('Refreshing user data for:', user.email);
       const premiumResult = await refreshPremiumStatus();
       
       // Check admin status
@@ -219,6 +222,7 @@ export const UnifiedAuthProvider: React.FC<{ children: React.ReactNode }> = ({ c
       }
 
       const unified = createUnifiedUser(user, premiumResult.isPremium, isAdmin, premiumResult.premiumExpiry);
+      console.log('Created unified user:', unified);
       setUnifiedUser(unified);
     } catch (error) {
       console.error('Error refreshing user data:', error);
@@ -247,17 +251,48 @@ export const UnifiedAuthProvider: React.FC<{ children: React.ReactNode }> = ({ c
   // Initialize auth state
   useEffect(() => {
     let mounted = true;
+    let initTimeout: NodeJS.Timeout;
+
+    console.log('UnifiedAuthContext: Starting initialization');
 
     const initializeAuth = async () => {
       try {
+        // Set up the auth state listener first
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(
+          async (event, session) => {
+            console.log('Auth state change:', event, !!session);
+            if (mounted) {
+              setSession(session);
+              setUser(session?.user || null);
+              
+              if (session?.user) {
+                // Defer user data refresh to avoid deadlocks
+                setTimeout(() => {
+                  if (mounted) {
+                    refreshUserData();
+                  }
+                }, 100);
+              } else {
+                setUnifiedUser(null);
+              }
+            }
+          }
+        );
+
+        // Then check for existing session
         const { data: { session: initialSession } } = await supabase.auth.getSession();
         
         if (mounted) {
+          console.log('Initial session:', !!initialSession);
           setSession(initialSession);
           setUser(initialSession?.user || null);
           setIsLoading(false);
           setIsInitialized(true);
         }
+
+        return () => {
+          subscription.unsubscribe();
+        };
       } catch (error) {
         console.error('Error initializing auth:', error);
         if (mounted) {
@@ -268,33 +303,22 @@ export const UnifiedAuthProvider: React.FC<{ children: React.ReactNode }> = ({ c
       }
     };
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (mounted) {
-          setSession(session);
-          setUser(session?.user || null);
-          
-          if (session?.user) {
-            // Defer user data refresh to avoid deadlocks
-            setTimeout(() => {
-              if (mounted) {
-                refreshUserData();
-              }
-            }, 100);
-          } else {
-            setUnifiedUser(null);
-          }
-        }
+    // Emergency timeout - force initialization after 5 seconds
+    initTimeout = setTimeout(() => {
+      if (mounted && !isInitialized) {
+        console.warn('Auth initialization timeout - forcing initialization');
+        setIsLoading(false);
+        setIsInitialized(true);
       }
-    );
+    }, 5000);
 
     initializeAuth();
 
     return () => {
       mounted = false;
-      subscription.unsubscribe();
+      if (initTimeout) clearTimeout(initTimeout);
     };
-  }, [refreshUserData]);
+  }, []); // Removed refreshUserData from dependencies to prevent infinite loops
 
   const contextValue: UnifiedAuthContextType = {
     user,
