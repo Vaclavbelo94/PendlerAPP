@@ -1,7 +1,11 @@
+
 import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { Shift, ShiftType } from '@/types/shifts';
 import { toast } from 'sonner';
+
+// Re-export Shift type for components that import it from this file
+export type { Shift } from '@/types/shifts';
 
 export const useOptimizedShiftsManagement = (userId: string | null) => {
   const [shifts, setShifts] = useState<Shift[]>([]);
@@ -55,8 +59,15 @@ export const useOptimizedShiftsManagement = (userId: string | null) => {
 
       // Type conversion from database to proper Shift interface
       const typedShifts: Shift[] = (data || []).map(shift => ({
-        ...shift,
-        type: shift.type as ShiftType
+        id: shift.id,
+        user_id: shift.user_id,
+        date: shift.date,
+        type: shift.type as ShiftType,
+        start_time: shift.start_time,
+        end_time: shift.end_time,
+        notes: shift.notes || '',
+        created_at: shift.created_at,
+        updated_at: shift.updated_at,
       }));
 
       setShifts(typedShifts);
@@ -125,7 +136,20 @@ export const useOptimizedShiftsManagement = (userId: string | null) => {
           console.error('Error updating shift:', error);
           throw error;
         }
-        result = data;
+        
+        // Convert to proper Shift type
+        const typedResult: Shift = {
+          id: data.id,
+          user_id: data.user_id,
+          date: data.date,
+          type: data.type as ShiftType,
+          start_time: data.start_time,
+          end_time: data.end_time,
+          notes: data.notes || '',
+          created_at: data.created_at,
+          updated_at: data.updated_at,
+        };
+        result = typedResult;
 
         // Update local state - ensure we refresh the list
         await loadShifts();
@@ -155,7 +179,20 @@ export const useOptimizedShiftsManagement = (userId: string | null) => {
           console.error('Error creating shift:', error);
           throw error;
         }
-        result = data;
+        
+        // Convert to proper Shift type
+        const typedResult: Shift = {
+          id: data.id,
+          user_id: data.user_id,
+          date: data.date,
+          type: data.type as ShiftType,
+          start_time: data.start_time,
+          end_time: data.end_time,
+          notes: data.notes || '',
+          created_at: data.created_at,
+          updated_at: data.updated_at,
+        };
+        result = typedResult;
 
         // Refresh the shifts list to show the new shift
         await loadShifts();
@@ -207,8 +244,15 @@ export const useOptimizedShiftsManagement = (userId: string | null) => {
 
       // Ensure proper type casting for the returned data
       const typedShift: Shift = {
-        ...data,
-        type: data.type as ShiftType
+        id: data.id,
+        user_id: data.user_id,
+        date: data.date,
+        type: data.type as ShiftType,
+        start_time: data.start_time,
+        end_time: data.end_time,
+        notes: data.notes || '',
+        created_at: data.created_at,
+        updated_at: data.updated_at,
       };
 
       setShifts(prev => prev.map(shift =>

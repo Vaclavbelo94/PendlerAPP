@@ -121,8 +121,15 @@ export class AdvancedOfflineService {
 
         // Replace temp shift with real one
         const realShift: Shift = {
-          ...data,
+          id: data.id,
+          user_id: data.user_id,
+          date: data.date,
           type: data.type as ShiftType,
+          start_time: data.start_time,
+          end_time: data.end_time,
+          notes: data.notes || '',
+          created_at: data.created_at,
+          updated_at: data.updated_at,
         };
         
         this.shifts = this.shifts.map(s => s.id === tempId ? realShift : s);
@@ -190,7 +197,7 @@ export class AdvancedOfflineService {
     console.log('Processing sync item:', item);
   }
 
-  // Add the missing methods with proper signatures
+  // Fix the method signature to return the expected type
   async syncWithConflictResolution(): Promise<{ synced: number; conflicts: number; errors: number }> {
     try {
       await this.syncOfflineChanges();

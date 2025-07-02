@@ -3,10 +3,10 @@ import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/auth';
 import { useStandardizedToast } from '@/hooks/useStandardizedToast';
-import { Shift, ShiftFormData } from '@/types/shifts';
+import { Shift, ShiftFormData, ShiftType } from '@/types/shifts';
 import { format } from 'date-fns';
 
-export { Shift, ShiftFormData } from '@/types/shifts';
+export type { Shift, ShiftFormData } from '@/types/shifts';
 
 export const useShiftsCRUD = () => {
   const { user } = useAuth();
@@ -32,7 +32,20 @@ export const useShiftsCRUD = () => {
 
       if (error) throw error;
 
-      setShifts(data || []);
+      // Convert database data to proper Shift interface
+      const typedShifts: Shift[] = (data || []).map(shift => ({
+        id: shift.id,
+        user_id: shift.user_id,
+        date: shift.date,
+        type: shift.type as ShiftType,
+        start_time: shift.start_time,
+        end_time: shift.end_time,
+        notes: shift.notes || '',
+        created_at: shift.created_at,
+        updated_at: shift.updated_at,
+      }));
+
+      setShifts(typedShifts);
     } catch (err) {
       console.error('Error loading shifts:', err);
       showError('Chyba při načítání', 'Nepodařilo se načíst směny');
@@ -67,7 +80,20 @@ export const useShiftsCRUD = () => {
 
       if (error) throw error;
 
-      setShifts(prev => [data, ...prev]);
+      // Convert to proper Shift type and add to state
+      const typedShift: Shift = {
+        id: data.id,
+        user_id: data.user_id,
+        date: data.date,
+        type: data.type as ShiftType,
+        start_time: data.start_time,
+        end_time: data.end_time,
+        notes: data.notes || '',
+        created_at: data.created_at,
+        updated_at: data.updated_at,
+      };
+
+      setShifts(prev => [typedShift, ...prev]);
       success('Směna přidána', 'Nová směna byla úspěšně vytvořena');
       return true;
     } catch (err) {
@@ -105,8 +131,21 @@ export const useShiftsCRUD = () => {
 
       if (error) throw error;
 
+      // Convert to proper Shift type and update state
+      const typedShift: Shift = {
+        id: data.id,
+        user_id: data.user_id,
+        date: data.date,
+        type: data.type as ShiftType,
+        start_time: data.start_time,
+        end_time: data.end_time,
+        notes: data.notes || '',
+        created_at: data.created_at,
+        updated_at: data.updated_at,
+      };
+
       setShifts(prev => prev.map(shift => 
-        shift.id === shiftId ? data : shift
+        shift.id === shiftId ? typedShift : shift
       ));
       
       success('Směna upravena', 'Změny byly úspěšně uloženy');
