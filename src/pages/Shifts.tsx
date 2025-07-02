@@ -1,12 +1,70 @@
 
-import React from 'react';
+import React, { useState } from 'react';
+import { format } from 'date-fns';
 import Layout from '@/components/layouts/Layout';
-import UnifiedShiftsMainContainer from '@/components/shifts/UnifiedShiftsMainContainer';
+import UnifiedShiftCalendar from '@/components/shifts/calendar/UnifiedShiftCalendar';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
+import ShiftForm from '@/components/shifts/forms/ShiftForm';
 import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 import { useTranslation } from 'react-i18next';
+import { useShiftsCRUD, Shift, ShiftFormData } from '@/hooks/shifts/useShiftsCRUD';
+import { Calendar } from 'lucide-react';
 
 const Shifts = () => {
   const { t } = useTranslation('shifts');
+  const {
+    shifts,
+    isLoading,
+    isSaving,
+    createShift,
+    updateShift,
+    deleteShift,
+  } = useShiftsCRUD();
+
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const [isAddSheetOpen, setIsAddSheetOpen] = useState(false);
+  const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
+  const [editingShift, setEditingShift] = useState<Shift | null>(null);
+  const [selectedDateForNewShift, setSelectedDateForNewShift] = useState<Date | null>(null);
+
+  const handleAddShift = () => {
+    setSelectedDateForNewShift(selectedDate || new Date());
+    setIsAddSheetOpen(true);
+  };
+
+  const handleAddShiftForDate = (date: Date) => {
+    setSelectedDateForNewShift(date);
+    setIsAddSheetOpen(true);
+  };
+
+  const handleEditShift = (shift: Shift) => {
+    setEditingShift(shift);
+    setIsEditSheetOpen(true);
+  };
+
+  const handleCreateShift = async (formData: ShiftFormData) => {
+    if (!selectedDateForNewShift) return;
+    
+    const success = await createShift(selectedDateForNewShift, formData);
+    if (success) {
+      setIsAddSheetOpen(false);
+      setSelectedDateForNewShift(null);
+    }
+  };
+
+  const handleUpdateShift = async (formData: ShiftFormData) => {
+    if (!editingShift?.id) return;
+    
+    const success = await updateShift(editingShift.id, formData);
+    if (success) {
+      setIsEditSheetOpen(false);
+      setEditingShift(null);
+    }
+  };
+
+  const handleDeleteShift = async (shiftId: string) => {
+    await deleteShift(shiftId);
+  };
 
   return (
     <Layout navbarRightContent={<NavbarRightContent />}>
@@ -18,10 +76,78 @@ const Shifts = () => {
           </div>
           
           <div className="animate-fade-in">
-            <UnifiedShiftsMainContainer />
+            <UnifiedShiftCalendar
+              shifts={shifts}
+              selectedDate={selectedDate}
+              onSelectDate={setSelectedDate}
+              onEditShift={handleEditShift}
+              onDeleteShift={handleDeleteShift}
+              onAddShift={handleAddShift}
+              onAddShiftForDate={handleAddShiftForDate}
+              isLoading={isLoading}
+              className="w-full"
+            />
           </div>
         </div>
       </div>
+
+      {/* Add Shift Sheet */}
+      <Sheet open={isAddSheetOpen} onOpenChange={setIsAddSheetOpen}>
+        <SheetContent className="w-full sm:max-w-md overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle className="flex items-center gap-2">
+              <Calendar className="h-5 w-5" />
+              {t('addNewShift')}
+            </SheetTitle>
+            <SheetDescription>
+              {selectedDateForNewShift && (
+                <>
+                  {t('addingShiftFor')} {format(selectedDateForNewShift, 'dd.MM.yyyy')}
+                </>
+              )}
+            </SheetDescription>
+          </SheetHeader>
+          
+          <div className="mt-6">
+            <ShiftForm
+              onSubmit={handleCreateShift}
+              onCancel={() => {
+                setIsAddSheetOpen(false);
+                setSelectedDateForNewShift(null);
+              }}
+              isLoading={isSaving}
+              initialDate={selectedDateForNewShift}
+            />
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* Edit Shift Sheet */}
+      <Sheet open={isEditSheetOpen} onOpenChange={setIsEditSheetOpen}>
+        <SheetContent className="w-full sm:max-w-md overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle className="flex items-center gap-2">
+              <Calendar className="h-5 w-5" />
+              {t('editShift')}
+            </SheetTitle>
+            <SheetDescription>
+              {t('editShiftDetails')}
+            </SheetDescription>
+          </SheetHeader>
+          
+          <div className="mt-6">
+            <ShiftForm
+              shift={editingShift}
+              onSubmit={handleUpdateShift}
+              onCancel={() => {
+                setIsEditSheetOpen(false);
+                setEditingShift(null);
+              }}
+              isLoading={isSaving}
+            />
+          </div>
+        </SheetContent>
+      </Sheet>
     </Layout>
   );
 };

@@ -1115,10 +1115,12 @@ export type Database = {
           dhl_override: boolean | null
           dhl_position_id: string | null
           dhl_work_group_id: string | null
+          end_time: string
           id: string
           is_dhl_managed: boolean | null
           notes: string | null
           original_dhl_data: Json | null
+          start_time: string
           type: string
           updated_at: string | null
           user_id: string
@@ -1129,10 +1131,12 @@ export type Database = {
           dhl_override?: boolean | null
           dhl_position_id?: string | null
           dhl_work_group_id?: string | null
+          end_time: string
           id?: string
           is_dhl_managed?: boolean | null
           notes?: string | null
           original_dhl_data?: Json | null
+          start_time: string
           type: string
           updated_at?: string | null
           user_id: string
@@ -1143,10 +1147,12 @@ export type Database = {
           dhl_override?: boolean | null
           dhl_position_id?: string | null
           dhl_work_group_id?: string | null
+          end_time?: string
           id?: string
           is_dhl_managed?: boolean | null
           notes?: string | null
           original_dhl_data?: Json | null
+          start_time?: string
           type?: string
           updated_at?: string | null
           user_id?: string
