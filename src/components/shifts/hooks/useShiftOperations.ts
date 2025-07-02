@@ -13,6 +13,27 @@ export const useShiftOperations = (
   setShiftType: (type: ShiftType) => void,
   setShiftNotes: (notes: string) => void
 ) => {
+  // Helper functions for default times
+  const getDefaultStartTime = (type: string): string => {
+    switch (type) {
+      case 'morning': return '06:00';
+      case 'afternoon': return '14:00';
+      case 'night': return '22:00';
+      case 'custom': return '08:00';
+      default: return '08:00';
+    }
+  };
+
+  const getDefaultEndTime = (type: string): string => {
+    switch (type) {
+      case 'morning': return '14:00';
+      case 'afternoon': return '22:00';  
+      case 'night': return '06:00';
+      case 'custom': return '16:00';
+      default: return '16:00';
+    }
+  };
+
   // Handle saving shift
   const handleSaveShift = async () => {
     if (!selectedDate || !user) {
@@ -33,19 +54,19 @@ export const useShiftOperations = (
       });
       
       // Reload all shifts to ensure consistency
-      const updatedShifts = await loadUserShifts(user.id);
+      const rawShifts = await loadUserShifts(user.id);
       
-      // Ensure all shifts have the required properties
-      const typedShifts: Shift[] = updatedShifts.map(shift => ({
+      // Transform raw shift data to proper Shift interface
+      const typedShifts: Shift[] = rawShifts.map(shift => ({
         id: shift.id,
-        user_id: shift.user_id || shift.userId || user.id,
+        user_id: shift.userId || shift.user_id || user.id,
         date: shift.date,
         type: shift.type,
-        start_time: shift.start_time || '08:00',
-        end_time: shift.end_time || '16:00',
-        notes: shift.notes,
-        created_at: shift.created_at,
-        updated_at: shift.updated_at,
+        start_time: shift.start_time || getDefaultStartTime(shift.type),
+        end_time: shift.end_time || getDefaultEndTime(shift.type),
+        notes: shift.notes || '',
+        created_at: shift.created_at || new Date().toISOString(),
+        updated_at: shift.updated_at || new Date().toISOString(),
       }));
       
       setShifts(typedShifts);
@@ -71,19 +92,19 @@ export const useShiftOperations = (
       await deleteShift(currentShift.id!, user.id);
       
       // Update local state
-      const updatedShifts = await loadUserShifts(user.id);
+      const rawShifts = await loadUserShifts(user.id);
       
-      // Ensure all shifts have the required properties
-      const typedShifts: Shift[] = updatedShifts.map(shift => ({
+      // Transform raw shift data to proper Shift interface
+      const typedShifts: Shift[] = rawShifts.map(shift => ({
         id: shift.id,
-        user_id: shift.user_id || shift.userId || user.id,
+        user_id: shift.userId || shift.user_id || user.id,
         date: shift.date,
         type: shift.type,
-        start_time: shift.start_time || '08:00',
-        end_time: shift.end_time || '16:00',
-        notes: shift.notes,
-        created_at: shift.created_at,
-        updated_at: shift.updated_at,
+        start_time: shift.start_time || getDefaultStartTime(shift.type),
+        end_time: shift.end_time || getDefaultEndTime(shift.type),
+        notes: shift.notes || '',
+        created_at: shift.created_at || new Date().toISOString(),
+        updated_at: shift.updated_at || new Date().toISOString(),
       }));
       
       setShifts(typedShifts);

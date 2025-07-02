@@ -66,8 +66,8 @@ export class AdvancedOfflineService {
           user_id: shift.user_id,
           date: shift.date,
           type: shift.type as ShiftType,
-          start_time: shift.start_time || '08:00',
-          end_time: shift.end_time || '16:00',
+          start_time: shift.start_time || this.getDefaultStartTime(shift.type),
+          end_time: shift.end_time || this.getDefaultEndTime(shift.type),
           notes: shift.notes || '',
           created_at: shift.created_at,
           updated_at: shift.updated_at,
@@ -190,9 +190,15 @@ export class AdvancedOfflineService {
     console.log('Processing sync item:', item);
   }
 
-  // Add the missing methods
-  async syncWithConflictResolution(): Promise<void> {
-    await this.syncOfflineChanges();
+  // Add the missing methods with proper signatures
+  async syncWithConflictResolution(): Promise<{ synced: number; conflicts: number; errors: number }> {
+    try {
+      await this.syncOfflineChanges();
+      return { synced: 0, conflicts: 0, errors: 0 };
+    } catch (error) {
+      console.error('Sync error:', error);
+      return { synced: 0, conflicts: 0, errors: 1 };
+    }
   }
 
   cleanup(): void {

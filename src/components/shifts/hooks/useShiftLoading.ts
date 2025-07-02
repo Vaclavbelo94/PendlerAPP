@@ -18,20 +18,20 @@ export const useShiftLoading = (user: any) => {
     setIsLoading(true);
     try {
       console.log("Loading shifts for user:", user.id);
-      const formattedShifts = await loadUserShifts(user.id);
-      console.log("Loaded shifts:", formattedShifts.length);
+      const rawShifts = await loadUserShifts(user.id);
+      console.log("Loaded shifts:", rawShifts.length);
       
-      // Ensure all shifts have the required properties
-      const typedShifts: Shift[] = formattedShifts.map(shift => ({
+      // Transform raw shift data to proper Shift interface
+      const typedShifts: Shift[] = rawShifts.map(shift => ({
         id: shift.id,
-        user_id: shift.user_id || shift.userId || user.id,
+        user_id: shift.userId || shift.user_id || user.id,
         date: shift.date,
         type: shift.type,
-        start_time: shift.start_time || '08:00', // Default time if missing
-        end_time: shift.end_time || '16:00', // Default time if missing
-        notes: shift.notes,
-        created_at: shift.created_at,
-        updated_at: shift.updated_at,
+        start_time: shift.start_time || getDefaultStartTime(shift.type),
+        end_time: shift.end_time || getDefaultEndTime(shift.type),
+        notes: shift.notes || '',
+        created_at: shift.created_at || new Date().toISOString(),
+        updated_at: shift.updated_at || new Date().toISOString(),
       }));
       
       setShifts(typedShifts);
@@ -69,6 +69,27 @@ export const useShiftLoading = (user: any) => {
       setIsLoading(false);
     }
   }, [user?.id]);
+
+  // Helper functions for default times
+  const getDefaultStartTime = (type: string): string => {
+    switch (type) {
+      case 'morning': return '06:00';
+      case 'afternoon': return '14:00';
+      case 'night': return '22:00';
+      case 'custom': return '08:00';
+      default: return '08:00';
+    }
+  };
+
+  const getDefaultEndTime = (type: string): string => {
+    switch (type) {
+      case 'morning': return '14:00';
+      case 'afternoon': return '22:00';
+      case 'night': return '06:00';
+      case 'custom': return '16:00';
+      default: return '16:00';
+    }
+  };
 
   // Load shifts from Supabase when user is available
   useEffect(() => {
