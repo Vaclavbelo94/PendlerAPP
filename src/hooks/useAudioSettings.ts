@@ -1,86 +1,88 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-export interface AudioSettings {
+interface AudioSettings {
   enabled: boolean;
-  speed: number; // 0.5 - 1.5
-  volume: number; // 0 - 1
-  pitch: number; // 0.5 - 2
   selectedVoiceIndex: number;
+  speed: number;
+  volume: number;
+  pitch: number;
   autoPlay: boolean;
   showVisualFeedback: boolean;
 }
 
-const defaultAudioSettings: AudioSettings = {
+const defaultSettings: AudioSettings = {
   enabled: true,
-  speed: 0.8,
-  volume: 0.8,
-  pitch: 1,
   selectedVoiceIndex: 0,
+  speed: 1.0,
+  volume: 0.8,
+  pitch: 1.0,
   autoPlay: false,
-  showVisualFeedback: true
+  showVisualFeedback: true,
 };
 
 export const useAudioSettings = () => {
-  const [settings, setSettings] = useState<AudioSettings>(defaultAudioSettings);
+  const [settings, setSettings] = useState<AudioSettings>(defaultSettings);
   const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSupported, setIsSupported] = useState(false);
 
-  // Load available voices
   useEffect(() => {
-    const loadVoices = () => {
-      const voices = speechSynthesis.getVoices();
-      // Filter for German voices first, then fallback to any available
-      const germanVoices = voices.filter(voice => 
-        voice.lang.startsWith('de') || 
-        voice.name.toLowerCase().includes('german') ||
-        voice.name.toLowerCase().includes('deutsch')
-      );
+    // Check if speech synthesis is supported
+    if ('speechSynthesis' in window) {
+      setIsSupported(true);
       
-      const allVoices = germanVoices.length > 0 ? germanVoices : voices;
-      setAvailableVoices(allVoices);
-      setIsLoading(false);
-    };
+      // Load voices
+      const loadVoices = () => {
+        const voices = speechSynthesis.getVoices();
+        const germanVoices = voices.filter(voice => voice.lang.startsWith('de'));
+        setAvailableVoices(germanVoices.length > 0 ? germanVoices : voices);
+        setIsLoading(false);
+      };
 
-    // Load voices immediately if available
-    loadVoices();
-    
-    // Also listen for voices changed event (some browsers load voices asynchronously)
-    speechSynthesis.onvoiceschanged = loadVoices;
-    
-    return () => {
-      speechSynthesis.onvoiceschanged = null;
-    };
+      // Load voices immediately if available
+      loadVoices();
+      
+      // Also listen for voices changed event (some browsers load voices asynchronously)
+      speechSynthesis.addEventListener('voiceschanged', loadVoices);
+      
+      return () => {
+        speechSynthesis.removeEventListener('voiceschanged', loadVoices);
+      };
+    } else {
+      setIsSupported(false);
+      setIsLoading(false);
+    }
   }, []);
 
   // Load settings from localStorage
   useEffect(() => {
-    const savedSettings = localStorage.getItem('audio_settings');
+    const savedSettings = localStorage.getItem('audioSettings');
     if (savedSettings) {
       try {
         const parsed = JSON.parse(savedSettings);
-        setSettings({ ...defaultAudioSettings, ...parsed });
+        setSettings({ ...defaultSettings, ...parsed });
       } catch (error) {
-        console.error('Error loading audio settings:', error);
+        console.warn('Failed to parse saved audio settings:', error);
       }
     }
   }, []);
 
-  // Save settings to localStorage
   const updateSettings = useCallback((newSettings: Partial<AudioSettings>) => {
-    const updatedSettings = { ...settings, ...newSettings };
-    setSettings(updatedSettings);
-    localStorage.setItem('audio_settings', JSON.stringify(updatedSettings));
-  }, [settings]);
+    setSettings(prev => {
+      const updated = { ...prev, ...newSettings };
+      localStorage.setItem('audioSettings', JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
 
   const getSelectedVoice = useCallback(() => {
-    if (availableVoices.length === 0) return null;
-    return availableVoices[settings.selectedVoiceIndex] || availableVoices[0];
+    return availableVoices[settings.selectedVoiceIndex] || null;
   }, [availableVoices, settings.selectedVoiceIndex]);
 
   const resetToDefaults = useCallback(() => {
-    setSettings(defaultAudioSettings);
-    localStorage.removeItem('audio_settings');
+    setSettings(defaultSettings);
+    localStorage.removeItem('audioSettings');
   }, []);
 
   return {
@@ -90,6 +92,6 @@ export const useAudioSettings = () => {
     getSelectedVoice,
     resetToDefaults,
     isLoading,
-    isSupported: 'speechSynthesis' in window
+    isSupported,
   };
 };

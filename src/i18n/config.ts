@@ -10,7 +10,6 @@ import csDashboard from './translations/cs/dashboard.json';
 import csLaws from './translations/cs/laws.json';
 import csShifts from './translations/cs/shifts.json';
 import csTravel from './translations/cs/travel.json';
-import csTranslator from './translations/cs/translator.json';
 import csTaxAdvisor from './translations/cs/taxAdvisor.json';
 import csVehicle from './translations/cs/vehicle.json';
 import csForms from './translations/cs/forms.json';
@@ -26,7 +25,6 @@ import deDashboard from './translations/de/dashboard.json';
 import deLaws from './translations/de/laws.json';
 import deShifts from './translations/de/shifts.json';
 import deTravel from './translations/de/travel.json';
-import deTranslator from './translations/de/translator.json';
 import deTaxAdvisor from './translations/de/taxAdvisor.json';
 import deVehicle from './translations/de/vehicle.json';
 import deForms from './translations/de/forms.json';
@@ -42,7 +40,6 @@ import plDashboard from './translations/pl/dashboard.json';
 import plLaws from './translations/pl/laws.json';
 import plShifts from './translations/pl/shifts.json';
 import plTravel from './translations/pl/travel.json';
-import plTranslator from './translations/pl/translator.json';
 import plTaxAdvisor from './translations/pl/taxAdvisor.json';
 import plVehicle from './translations/pl/vehicle.json';
 import plForms from './translations/pl/forms.json';
@@ -60,7 +57,6 @@ export const resources = {
     laws: csLaws,
     shifts: csShifts,
     travel: csTravel,
-    translator: csTranslator,
     taxAdvisor: csTaxAdvisor,
     vehicle: csVehicle,
     forms: csForms,
@@ -77,7 +73,6 @@ export const resources = {
     laws: deLaws,
     shifts: deShifts,
     travel: deTravel,
-    translator: deTranslator,
     taxAdvisor: deTaxAdvisor,
     vehicle: deVehicle,
     forms: deForms,
@@ -94,7 +89,6 @@ export const resources = {
     laws: plLaws,
     shifts: plShifts,
     travel: plTravel,
-    translator: plTranslator,
     taxAdvisor: plTaxAdvisor,
     vehicle: plVehicle,
     forms: plForms,
@@ -124,7 +118,7 @@ i18n
     },
 
     defaultNS: 'common',
-    ns: ['common', 'navigation', 'dashboard', 'laws', 'shifts', 'travel', 'translator', 'taxAdvisor', 'vehicle', 'forms', 'ui', 'profile', 'settings', 'auth', 'premium'],
+    ns: ['common', 'navigation', 'dashboard', 'laws', 'shifts', 'travel', 'taxAdvisor', 'vehicle', 'forms', 'ui', 'profile', 'settings', 'auth', 'premium'],
   });
 
 export default i18n;

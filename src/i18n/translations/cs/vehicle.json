@@ -1,0 +1,17 @@
+
+{
+  "title": "Vozidla",
+  "addVehicle": "Přidat vozidlo",
+  "editVehicle": "Upravit vozidlo",
+  "deleteVehicle": "Smazat vozidlo",
+  "vehicleName": "Název vozidla",
+  "licensePlate": "SPZ",
+  "fuelType": "Typ paliva",
+  "fuelConsumption": "Spotřeba paliva",
+  "insuranceCost": "Pojištění",
+  "maintenanceCost": "Údržba",
+  "save": "Uložit",
+  "cancel": "Zrušit",
+  "noVehicles": "Žádná vozidla",
+  "addFirstVehicle": "Přidejte své první vozidlo"
+}
