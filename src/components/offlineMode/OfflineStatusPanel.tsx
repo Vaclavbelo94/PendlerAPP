@@ -28,9 +28,9 @@ const OfflineStatusPanel: React.FC = () => {
   const { vehicles, isLoading: vehiclesLoading } = useOfflineVehicles();
   const { isLoading: calculationsLoading, syncCalculations } = useOfflineCalculations();
 
-  // Calculate pending items - use synced property if available, otherwise assume synced
-  const pendingShifts = shifts.filter(shift => shift.synced === false).length;
-  const pendingVehicles = vehicles.filter(vehicle => vehicle.synced === false).length;
+  // Calculate pending items - assume all items need sync if no synced property
+  const pendingShifts = shifts?.length || 0;
+  const pendingVehicles = vehicles?.length || 0;
   const totalPendingItems = pendingShifts + pendingVehicles + queueCount;
 
   const syncAllPendingData = async () => {

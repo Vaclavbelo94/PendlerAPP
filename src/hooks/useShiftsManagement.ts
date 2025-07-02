@@ -1,3 +1,4 @@
+
 import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/auth';
@@ -30,7 +31,20 @@ export const useShiftsManagement = () => {
 
       if (error) throw error;
 
-      setShifts(data || []);
+      // Convert database data to proper Shift interface
+      const typedShifts: Shift[] = (data || []).map(shift => ({
+        id: shift.id,
+        user_id: shift.user_id,
+        date: shift.date,
+        type: shift.type as ShiftType,
+        start_time: shift.start_time,
+        end_time: shift.end_time,
+        notes: shift.notes || '',
+        created_at: shift.created_at,
+        updated_at: shift.updated_at,
+      }));
+
+      setShifts(typedShifts);
     } catch (err) {
       console.error('Error loading shifts:', err);
       toast({
@@ -72,7 +86,20 @@ export const useShiftsManagement = () => {
 
       if (error) throw error;
 
-      setShifts(prev => [data, ...prev]);
+      // Convert to proper Shift type and add to state
+      const typedShift: Shift = {
+        id: data.id,
+        user_id: data.user_id,
+        date: data.date,
+        type: data.type as ShiftType,
+        start_time: data.start_time,
+        end_time: data.end_time,
+        notes: data.notes || '',
+        created_at: data.created_at,
+        updated_at: data.updated_at,
+      };
+
+      setShifts(prev => [typedShift, ...prev]);
       toast({
         title: "Směna přidána",
         description: "Nová směna byla úspěšně vytvořena",
@@ -118,7 +145,20 @@ export const useShiftsManagement = () => {
 
       if (error) throw error;
 
-      setShifts(prev => prev.map(shift => shift.id === shiftId ? data : shift));
+      // Convert to proper Shift type and update state
+      const typedShift: Shift = {
+        id: data.id,
+        user_id: data.user_id,
+        date: data.date,
+        type: data.type as ShiftType,
+        start_time: data.start_time,
+        end_time: data.end_time,
+        notes: data.notes || '',
+        created_at: data.created_at,
+        updated_at: data.updated_at,
+      };
+
+      setShifts(prev => prev.map(shift => shift.id === shiftId ? typedShift : shift));
       toast({
         title: "Směna upravena",
         description: "Změny byly úspěšně uloženy",

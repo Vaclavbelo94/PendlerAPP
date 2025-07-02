@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { calculateCurrentWoche, findShiftForDate } from '@/utils/dhl/wocheCalculator';
 import { toast } from 'sonner';
@@ -153,10 +152,12 @@ export const generateShiftsFromSchedule = async (params: GenerateShiftsParams): 
             // Create new shift
             const { error: insertError } = await supabase
               .from('shifts')
-              .insert({
+              .insert([{
                 user_id: userAssignment.user_id,
                 date: dateStr,
-                type: shiftType,
+                type: shiftType as 'morning' | 'afternoon' | 'night',
+                start_time: getDefaultStartTime(shiftType as 'morning' | 'afternoon' | 'night'),
+                end_time: getDefaultEndTime(shiftType as 'morning' | 'afternoon' | 'night'),
                 dhl_position_id: schedule.position_id,
                 dhl_work_group_id: schedule.work_group_id,
                 is_dhl_managed: true,
@@ -167,7 +168,7 @@ export const generateShiftsFromSchedule = async (params: GenerateShiftsParams): 
                   schedule_id: schedule.id,
                   generated_at: new Date().toISOString()
                 }
-              });
+              }]);
 
             if (insertError) {
               console.error('Error creating shift:', insertError);
@@ -261,5 +262,23 @@ export const generateUserShifts = async (userId: string, startDate: string, endD
       success: false,
       message: error instanceof Error ? error.message : 'Neočekávaná chyba při generování směn'
     };
+  }
+};
+
+const getDefaultStartTime = (type: 'morning' | 'afternoon' | 'night'): string => {
+  switch (type) {
+    case 'morning': return '06:00';
+    case 'afternoon': return '14:00';
+    case 'night': return '22:00';
+    default: return '08:00';
+  }
+};
+
+const getDefaultEndTime = (type: 'morning' | 'afternoon' | 'night'): string => {
+  switch (type) {
+    case 'morning': return '14:00';
+    case 'afternoon': return '22:00';
+    case 'night': return '06:00';
+    default: return '16:00';
   }
 };

@@ -76,7 +76,7 @@ export const useUnifiedShiftManagement = (user: any) => {
     if (!user || !isOnline()) return;
 
     try {
-      const result = await offlineService.syncWithConflictResolution(user.id);
+      const result = await offlineService.syncWithConflictResolution();
       
       if (result.synced > 0) {
         notificationService.showSyncComplete(result.synced);

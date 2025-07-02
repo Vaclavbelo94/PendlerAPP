@@ -25,6 +25,8 @@ export const useRefactoredShiftsManagement = (userId?: string) => {
           user_id: userId,
           date: new Date().toISOString().split('T')[0], // YYYY-MM-DD format
           type: 'morning',
+          start_time: '06:00',
+          end_time: '14:00',
           notes: 'Ukázková ranní směna',
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
