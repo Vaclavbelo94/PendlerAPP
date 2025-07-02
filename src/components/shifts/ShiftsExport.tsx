@@ -10,7 +10,7 @@ import {
   Database,
   Calendar as CalendarIcon
 } from 'lucide-react';
-import { Shift } from '@/hooks/shifts/useOptimizedShiftsManagement';
+import { Shift } from '@/types/shifts';
 import { Separator } from '@/components/ui/separator';
 
 interface ShiftsExportProps {

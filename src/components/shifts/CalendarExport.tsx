@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Shift } from '@/hooks/shifts/useOptimizedShiftsManagement';
+import { Shift } from '@/types/shifts';
 import { format } from 'date-fns';
 import { cs } from 'date-fns/locale';
 import { toast } from '@/hooks/use-toast';
@@ -109,14 +109,13 @@ export const CalendarExport: React.FC<CalendarExportProps> = ({ shifts }) => {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-
+      
       toast({
-        title: "Kalendář exportován",
-        description: `Exportováno ${shifts.length} směn do kalendáře`
+        title: "Export dokončen",
+        description: "Kalendář směn byl úspěšně exportován"
       });
     } catch (error) {
-      console.error('Chyba při exportu kalendáře:', error);
+      console.error('Error exporting calendar:', error);
       toast({
         title: "Chyba při exportu",
         description: "Nepodařilo se exportovat kalendář",
@@ -125,91 +124,15 @@ export const CalendarExport: React.FC<CalendarExportProps> = ({ shifts }) => {
     }
   };
 
-  const exportToGoogleCalendar = () => {
-    if (shifts.length === 0) {
-      toast({
-        title: "Žádné směny",
-        description: "Nejsou k dispozici žádné směny pro export",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    // For Google Calendar, we'll create a URL for the first shift as an example
-    const firstShift = shifts[0];
-    const shiftDate = new Date(firstShift.date);
-    
-    const getShiftTime = (type: string) => {
-      switch (type) {
-        case 'morning': return { start: '06:00', end: '14:00' };
-        case 'afternoon': return { start: '14:00', end: '22:00' };
-        case 'night': return { start: '22:00', end: '06:00' };
-        default: return { start: '08:00', end: '16:00' };
-      }
-    };
-
-    const shiftTime = getShiftTime(firstShift.type);
-    const startDateTime = new Date(shiftDate);
-    const endDateTime = new Date(shiftDate);
-    
-    const [startHour, startMinute] = shiftTime.start.split(':');
-    startDateTime.setHours(parseInt(startHour), parseInt(startMinute), 0, 0);
-    
-    const [endHour, endMinute] = shiftTime.end.split(':');
-    endDateTime.setHours(parseInt(endHour), parseInt(endMinute), 0, 0);
-    
-    if (firstShift.type === 'night') {
-      endDateTime.setDate(endDateTime.getDate() + 1);
-    }
-
-    const formatGoogleDate = (date: Date) => {
-      return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
-    };
-
-    const title = firstShift.type === 'morning' ? 'Ranní směna' : 
-                  firstShift.type === 'afternoon' ? 'Odpolední směna' : 'Noční směna';
-    
-    const googleUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${formatGoogleDate(startDateTime)}/${formatGoogleDate(endDateTime)}&details=${encodeURIComponent(firstShift.notes || '')}`;
-    
-    window.open(googleUrl, '_blank');
-    
-    toast({
-      title: "Google Kalendář otevřen",
-      description: "První směna byla připravena pro přidání do Google Kalendáře"
-    });
-  };
-
-  if (shifts.length === 0) {
-    return (
-      <div className="text-center text-muted-foreground py-4">
-        <p>Nejsou k dispozici žádné směny pro export do kalendáře</p>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row gap-2">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="flex items-center gap-2">
-              <CalendarIcon className="h-4 w-4" />
-              Exportovat do kalendáře
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem onClick={exportToGoogleCalendar}>
-              Google Kalendář
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={exportToICS}>
-              Apple Kalendář / Outlook (.ics)
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+      <Button onClick={exportToICS} className="w-full gap-2">
+        <CalendarIcon className="h-4 w-4" />
+        Exportovat do kalendáře (.ics)
+      </Button>
       
-      <p className="text-sm text-muted-foreground">
-        Exportuje {shifts.length} směn s automaticky nastavenými časy podle typu směny.
+      <p className="text-sm text-muted-foreground text-center">
+        Exportuje všechny směny jako kalendářový soubor, který můžete importovat do Google Calendar, Outlook nebo jiné kalendářové aplikace.
       </p>
     </div>
   );

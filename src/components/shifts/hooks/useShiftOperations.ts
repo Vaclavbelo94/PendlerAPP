@@ -1,6 +1,6 @@
 
 import { toast } from "@/components/ui/use-toast";
-import { Shift, ShiftType } from "../types";
+import { Shift, ShiftType } from "@/types/shifts";
 import { loadUserShifts, saveShift, deleteShift } from "../services/shiftService";
 
 export const useShiftOperations = (
@@ -34,10 +34,24 @@ export const useShiftOperations = (
       
       // Reload all shifts to ensure consistency
       const updatedShifts = await loadUserShifts(user.id);
-      setShifts(updatedShifts); // Now types match - both use string dates
+      
+      // Ensure all shifts have the required properties
+      const typedShifts: Shift[] = updatedShifts.map(shift => ({
+        id: shift.id,
+        user_id: shift.userId || shift.user_id || user.id,
+        date: shift.date,
+        type: shift.type,
+        start_time: shift.start_time || '08:00',
+        end_time: shift.end_time || '16:00',
+        notes: shift.notes,
+        created_at: shift.created_at,
+        updated_at: shift.updated_at,
+      }));
+      
+      setShifts(typedShifts);
       
       // Update localStorage backup
-      localStorage.setItem("shifts", JSON.stringify(updatedShifts));
+      localStorage.setItem("shifts", JSON.stringify(typedShifts));
       
     } catch (error) {
       console.error("Error saving shift:", error);
@@ -54,14 +68,28 @@ export const useShiftOperations = (
     if (!currentShift || !user) return;
     
     try {
-      await deleteShift(currentShift.id, user.id);
+      await deleteShift(currentShift.id!, user.id);
       
       // Update local state
       const updatedShifts = await loadUserShifts(user.id);
-      setShifts(updatedShifts); // Now types match
+      
+      // Ensure all shifts have the required properties
+      const typedShifts: Shift[] = updatedShifts.map(shift => ({
+        id: shift.id,
+        user_id: shift.userId || shift.user_id || user.id,
+        date: shift.date,
+        type: shift.type,
+        start_time: shift.start_time || '08:00',
+        end_time: shift.end_time || '16:00',
+        notes: shift.notes,
+        created_at: shift.created_at,
+        updated_at: shift.updated_at,
+      }));
+      
+      setShifts(typedShifts);
       
       // Update localStorage backup
-      localStorage.setItem("shifts", JSON.stringify(updatedShifts));
+      localStorage.setItem("shifts", JSON.stringify(typedShifts));
       
       // Reset form
       setShiftType("morning");

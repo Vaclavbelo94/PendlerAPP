@@ -1,9 +1,11 @@
-
 import { useState, useCallback, useEffect } from 'react';
 import { useStandardizedToast } from '@/hooks/useStandardizedToast';
 import { supabase } from '@/integrations/supabase/client';
 import { errorHandler } from '@/utils/errorHandler';
 import { Shift, ShiftFormData } from '@/types/shifts';
+
+// Re-export types for components that import from this file
+export { Shift, ShiftFormData } from '@/types/shifts';
 
 export interface UseShiftsManagementReturn {
   shifts: Shift[];
