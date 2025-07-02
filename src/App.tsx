@@ -25,6 +25,13 @@ import Features from "./pages/Features";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import Profile from "./pages/Profile";
+import Translator from "./pages/Translator";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Setup from "./pages/Setup";
+import Pricing from "./pages/Pricing";
+import Unauthorized from "./pages/Unauthorized";
+import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
@@ -38,25 +45,47 @@ function App() {
             <Sonner />
             <BrowserRouter>
               <Routes>
+                {/* Public routes */}
                 <Route path="/" element={<Index />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/shifts" element={<Shifts />} />
-                <Route path="/vehicle" element={<Vehicle />} />
-                <Route path="/travel" element={<Travel />} />
-                <Route path="/calculator" element={<Calculator />} />
-                <Route path="/tax-advisor" element={<TaxAdvisor />} />
-                <Route path="/analytics" element={<Analytics />} />
-                <Route path="/laws" element={<Laws />} />
-                <Route path="/dhl-setup" element={<DHLSetup />} />
-                <Route path="/admin" element={<Admin />} />
-                <Route path="/premium" element={<Premium />} />
-                <Route path="/settings" element={<Settings />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/features" element={<Features />} />
+                <Route path="/pricing" element={<Pricing />} />
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/terms" element={<Terms />} />
+                
+                {/* Authentication routes */}
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/setup" element={<Setup />} />
+                <Route path="/unauthorized" element={<Unauthorized />} />
+                
+                {/* Public tools */}
+                <Route path="/calculator" element={<Calculator />} />
+                
+                {/* Protected routes */}
+                <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/laws" element={<Laws />} />
+                <Route path="/translator" element={<Translator />} />
+                
+                {/* Premium features */}
+                <Route path="/shifts" element={<Shifts />} />
+                <Route path="/vehicle" element={<Vehicle />} />
+                <Route path="/travel" element={<Travel />} />
+                <Route path="/analytics" element={<Analytics />} />
+                <Route path="/tax-advisor" element={<TaxAdvisor />} />
+                <Route path="/premium" element={<Premium />} />
+                
+                {/* DHL specific routes */}
+                <Route path="/dhl-setup" element={<DHLSetup />} />
+                
+                {/* Admin routes */}
+                <Route path="/admin" element={<Admin />} />
+                
+                {/* 404 catch-all route */}
+                <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
           </TooltipProvider>
