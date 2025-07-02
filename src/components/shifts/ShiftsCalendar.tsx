@@ -2,10 +2,10 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/auth';
-import { useOptimizedShiftsManagement } from '@/hooks/shifts/useOptimizedShiftsManagement';
+import { useShiftsCRUD } from '@/hooks/shifts/useShiftsCRUD';
 import UnifiedShiftCalendar from './calendar/UnifiedShiftCalendar';
 import ShiftsFormSheets from './ShiftsFormSheets';
-import { Shift } from '@/types/shifts'; // Using the updated consistent type
+import { Shift } from '@/types/shifts';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 
@@ -29,16 +29,23 @@ const ShiftsCalendar: React.FC<ShiftsCalendarProps> = ({
   const { t } = useTranslation('shifts');
   
   // Use internal shift management if no external shifts provided
-  const shiftsManagement = useOptimizedShiftsManagement(user?.id);
+  const {
+    shifts: internalShifts,
+    isLoading: internalIsLoading,
+    isSaving,
+    createShift,
+    updateShift,
+    deleteShift
+  } = useShiftsCRUD();
   
   // Use external data if provided, otherwise use internal management
-  const shifts = externalShifts || shiftsManagement.shifts;
+  const shifts = externalShifts || internalShifts;
   const onEditShift = externalOnEditShift || ((shift: Shift) => {
     setEditingShift(shift);
     setIsEditSheetOpen(true);
   });
-  const onDeleteShift = externalOnDeleteShift || ((shiftId: string) => shiftsManagement.deleteShift(shiftId));
-  const isLoading = !externalShifts ? shiftsManagement.isLoading : false;
+  const onDeleteShift = externalOnDeleteShift || ((shiftId: string) => deleteShift(shiftId));
+  const isLoading = !externalShifts ? internalIsLoading : false;
 
   const handleAddShiftClick = (date?: Date) => {
     if (date) {
@@ -49,27 +56,20 @@ const ShiftsCalendar: React.FC<ShiftsCalendarProps> = ({
 
   const handleAddShift = async (formData: any) => {
     try {
-      // Ensure user_id is provided since it's required
-      const shiftData = {
-        ...formData,
-        user_id: user?.id || '', // Provide user_id as required
-        date: selectedDate ? format(selectedDate, 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd')
-      };
-      await shiftsManagement.addShift(shiftData);
-      setIsAddSheetOpen(false);
+      if (selectedDate) {
+        await createShift(selectedDate, formData);
+        setIsAddSheetOpen(false);
+      }
     } catch (error) {
       console.error('Error adding shift:', error);
     }
   };
 
   const handleEditShift = async (formData: any) => {
-    if (!editingShift) return;
+    if (!editingShift?.id) return;
     
     try {
-      await shiftsManagement.updateShift({
-        ...editingShift,
-        ...formData
-      });
+      await updateShift(editingShift.id, formData);
       setIsEditSheetOpen(false);
       setEditingShift(null);
     } catch (error) {
@@ -92,6 +92,7 @@ const ShiftsCalendar: React.FC<ShiftsCalendarProps> = ({
           onEditShift={onEditShift}
           onDeleteShift={onDeleteShift}
           onAddShift={handleAddShiftClick}
+          onAddShiftForDate={handleAddShiftClick}
           isLoading={isLoading}
           className="w-full"
         />
@@ -106,7 +107,8 @@ const ShiftsCalendar: React.FC<ShiftsCalendarProps> = ({
         setEditingShift={setEditingShift}
         onAddShift={handleAddShift}
         onEditShift={handleEditShift}
-        isSaving={shiftsManagement.isSaving}
+        isSaving={isSaving}
+        selectedDateForNewShift={selectedDate}
       />
     </>
   );

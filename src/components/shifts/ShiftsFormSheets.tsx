@@ -4,8 +4,8 @@ import { Sheet, SheetContent, SheetTitle, SheetDescription, SheetHeader } from '
 import { Calendar } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
-import ShiftForm from '@/components/shifts/ShiftForm';
-import { Shift } from '@/hooks/shifts/useShiftsCRUD';
+import ShiftForm from '@/components/shifts/forms/ShiftForm';
+import { Shift } from '@/types/shifts';
 import { useTranslation } from 'react-i18next';
 
 interface ShiftsFormSheetsProps {

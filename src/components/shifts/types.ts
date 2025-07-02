@@ -1,17 +1,7 @@
+// Re-export the unified types from the main types file
+export { ShiftType, Shift, ShiftCalendarProps, ShiftFormData } from '@/types/shifts';
 
-export type ShiftType = "morning" | "afternoon" | "night";
-
-export interface Shift {
-  id: string;
-  userId: string;
-  user_id?: string; // For database compatibility
-  date: string; // Changed from Date to string for consistency
-  type: ShiftType;
-  notes: string;
-  created_at?: string;
-  updated_at?: string;
-}
-
+// Keep legacy compatibility
 export type AnalyticsPeriod = "week" | "month" | "quarter" | "year";
 
 export interface ShiftStats {
@@ -19,6 +9,7 @@ export interface ShiftStats {
   morningShifts: number;
   afternoonShifts: number;
   nightShifts: number;
+  customShifts: number;
   totalHours: number;
   averagePerWeek: number;
 }
