@@ -17,7 +17,7 @@ export const useOfflineMaster = () => {
   const totalPendingItems = [
     shifts.shifts?.length || 0,
     vehicles.vehicles?.length || 0,
-    calculations.calculations?.length || 0,
+    calculations.offlineCalculations?.length || 0,
     queueCount
   ].reduce((sum, count) => sum + count, 0);
 
@@ -26,8 +26,8 @@ export const useOfflineMaster = () => {
   const syncAllPendingData = async () => {
     await Promise.allSettled([
       shifts.syncOfflineShifts(),
-      vehicles.syncOfflineVehicles?.() || Promise.resolve(),
-      calculations.syncOfflineCalculations?.() || Promise.resolve(),
+      vehicles.syncPendingVehicles?.() || Promise.resolve(),
+      calculations.syncCalculations?.() || Promise.resolve(),
       processQueue()
     ]);
   };
