@@ -35,7 +35,6 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
   const { t } = useTranslation('shifts');
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
-  // Get shifts for a specific date
   const getShiftsForDate = useCallback((date: Date) => {
     return shifts.filter(shift => {
       const shiftDate = new Date(shift.date);
@@ -43,14 +42,12 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
     });
   }, [shifts]);
 
-  // Get shift for selected date
   const selectedDateShift = useMemo(() => {
     if (!selectedDate) return null;
     const shiftsForDate = getShiftsForDate(selectedDate);
     return shiftsForDate.length > 0 ? shiftsForDate[0] : null;
   }, [selectedDate, getShiftsForDate]);
 
-  // Custom day component to show shifts
   const CustomDay = ({ date: dayDate, displayMonth, ...props }: any) => {
     if (!dayDate || !isValid(dayDate)) {
       return (
@@ -113,6 +110,7 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
   };
 
   const handleAddShift = () => {
+    console.log('OptimizedShiftCalendar - handleAddShift called, selectedDate:', selectedDate);
     if (selectedDate && onAddShiftForDate) {
       onAddShiftForDate(selectedDate);
     } else if (onAddShift) {
@@ -142,10 +140,20 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <CalendarDays className="h-5 w-5" />
-          {t('shiftsCalendar')}
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            <CalendarDays className="h-5 w-5" />
+            {t('shiftsCalendar')}
+          </CardTitle>
+          <Button
+            onClick={handleAddShift}
+            size="sm"
+            className="flex items-center gap-2"
+          >
+            <Plus className="h-4 w-4" />
+            {t('addShift')}
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
         <Calendar
@@ -162,23 +170,43 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
         />
         
         {selectedDate && (
-          <div className="mt-4 p-4 bg-muted/30 rounded-lg">
-            <h3 className="font-medium mb-2">
-              {format(selectedDate, "EEEE, d. MMMM yyyy", { locale: cs })}
-            </h3>
+          <div className="mt-4 p-4 bg-muted/30 rounded-lg border">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-medium">
+                {format(selectedDate, "EEEE, d. MMMM yyyy", { locale: cs })}
+              </h3>
+              {!selectedDateShift && (
+                <Button
+                  size="sm"
+                  onClick={handleAddShift}
+                  className="flex items-center gap-1"
+                >
+                  <Plus className="h-3 w-3" />
+                  {t('addShift')}
+                </Button>
+              )}
+            </div>
+            
             {selectedDateShift ? (
-              <div className="space-y-2">
-                <Badge variant="secondary" className="flex items-center gap-1 w-fit">
-                  <div className={cn("w-3 h-3 rounded", getShiftTypeColor(selectedDateShift.type))}></div>
-                  <Clock className="h-3 w-3" />
-                  {getShiftTypeLabel(selectedDateShift.type)}
-                </Badge>
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary" className="flex items-center gap-1">
+                    <div className={cn("w-3 h-3 rounded", getShiftTypeColor(selectedDateShift.type))}></div>
+                    <Clock className="h-3 w-3" />
+                    {getShiftTypeLabel(selectedDateShift.type)}
+                  </Badge>
+                  <span className="text-sm text-muted-foreground">
+                    {selectedDateShift.start_time} - {selectedDateShift.end_time}
+                  </span>
+                </div>
+                
                 {selectedDateShift.notes && (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-muted-foreground bg-muted/50 p-2 rounded">
                     {selectedDateShift.notes}
                   </p>
                 )}
-                <div className="flex gap-2 mt-3">
+                
+                <div className="flex gap-2">
                   {onEditShift && (
                     <Button
                       size="sm"
@@ -204,14 +232,13 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
                 </div>
               </div>
             ) : (
-              <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">{t('noShift')}</p>
+              <div className="text-center py-4">
+                <p className="text-sm text-muted-foreground mb-3">{t('noShift')}</p>
                 <Button
-                  size="sm"
                   onClick={handleAddShift}
-                  className="flex items-center gap-1"
+                  className="flex items-center gap-2 mx-auto"
                 >
-                  <Plus className="h-3 w-3" />
+                  <Plus className="h-4 w-4" />
                   {t('addShift')}
                 </Button>
               </div>
