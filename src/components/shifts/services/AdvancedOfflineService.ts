@@ -1,3 +1,4 @@
+
 import { Shift, ShiftType } from '@/types/shifts';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -187,5 +188,17 @@ export class AdvancedOfflineService {
   private async processSyncItem(item: any) {
     // Implementation for processing sync items
     console.log('Processing sync item:', item);
+  }
+
+  // Add the missing methods
+  async syncWithConflictResolution(): Promise<void> {
+    await this.syncOfflineChanges();
+  }
+
+  cleanup(): void {
+    // Cleanup resources
+    this.shifts = [];
+    localStorage.removeItem('cached_shifts');
+    localStorage.removeItem('sync_queue');
   }
 }

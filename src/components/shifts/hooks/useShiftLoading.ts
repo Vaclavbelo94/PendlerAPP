@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useCallback } from "react";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/use-toast";
 import { loadUserShifts } from "../services/shiftService";
 import { Shift } from "@/types/shifts";
 
@@ -24,7 +24,7 @@ export const useShiftLoading = (user: any) => {
       // Ensure all shifts have the required properties
       const typedShifts: Shift[] = formattedShifts.map(shift => ({
         id: shift.id,
-        user_id: shift.userId || shift.user_id || user.id,
+        user_id: shift.user_id || shift.userId || user.id,
         date: shift.date,
         type: shift.type,
         start_time: shift.start_time || '08:00', // Default time if missing

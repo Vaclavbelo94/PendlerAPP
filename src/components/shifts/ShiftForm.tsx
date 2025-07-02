@@ -9,7 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { CalendarIcon } from 'lucide-react';
 import { format, isToday, isSameDay, isValid } from 'date-fns';
 import { cs, de, pl } from 'date-fns/locale';
-import { Shift } from '@/hooks/shifts/useOptimizedShiftsManagement';
+import { Shift } from '@/types/shifts';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
 
@@ -56,7 +56,11 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
 
   // Initialize state with the correct date
   const [date, setDate] = useState<Date | undefined>(getInitialDate);
-  const [type, setType] = useState<'morning' | 'afternoon' | 'night'>(shift?.type || 'morning');
+  const [type, setType] = useState<'morning' | 'afternoon' | 'night' | 'custom'>(
+    shift?.type && ['morning', 'afternoon', 'night', 'custom'].includes(shift.type) 
+      ? shift.type as 'morning' | 'afternoon' | 'night' | 'custom'
+      : 'morning'
+  );
   const [notes, setNotes] = useState(shift?.notes || '');
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
@@ -69,7 +73,9 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
     if (shift) {
       console.log('ShiftForm: Updating with shift data:', shift.date);
       setDate(new Date(shift.date));
-      setType(shift.type);
+      setType(shift.type && ['morning', 'afternoon', 'night', 'custom'].includes(shift.type) 
+        ? shift.type as 'morning' | 'afternoon' | 'night' | 'custom'
+        : 'morning');
       setNotes(shift.notes || '');
     } else if (initialDate) {
       console.log('ShiftForm: Updating with initialDate:', initialDate);
@@ -154,7 +160,7 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
   };
 
   const handleTypeChange = (value: string) => {
-    setType(value as 'morning' | 'afternoon' | 'night');
+    setType(value as 'morning' | 'afternoon' | 'night' | 'custom');
   };
 
   const handleDateSelect = (selectedDate: Date | undefined) => {
@@ -230,6 +236,12 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded bg-indigo-500"></div>
                 {t('nightShift')}
+              </div>
+            </SelectItem>
+            <SelectItem value="custom">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded bg-gray-500"></div>
+                {t('customShift')}
               </div>
             </SelectItem>
           </SelectContent>
