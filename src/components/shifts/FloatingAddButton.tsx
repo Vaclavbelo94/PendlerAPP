@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/hooks/auth';
 
 interface FloatingAddButtonProps {
   onClick: () => void;
@@ -12,8 +13,10 @@ interface FloatingAddButtonProps {
 const FloatingAddButton: React.FC<FloatingAddButtonProps> = ({ onClick }) => {
   const isMobile = useIsMobile();
   const { t } = useTranslation('shifts');
+  const { user } = useAuth();
 
-  if (!isMobile) {
+  // Only show on mobile and when user is authenticated
+  if (!isMobile || !user) {
     return null;
   }
 
