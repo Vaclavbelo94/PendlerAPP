@@ -1,7 +1,8 @@
 
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useUnifiedAuth, UserRole } from '@/contexts/UnifiedAuthContext';
+import { useAuth } from '@/hooks/auth';
+import { UserRole, UserStatus } from '@/types/auth';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
 interface AuthGuardProps {
@@ -17,7 +18,7 @@ const AuthGuard: React.FC<AuthGuardProps> = ({
   requireSetup = false,
   redirectTo 
 }) => {
-  const { user, unifiedUser, isLoading, hasRole } = useUnifiedAuth();
+  const { user, unifiedUser, isLoading, canAccess } = useAuth();
   const location = useLocation();
 
   if (isLoading) {
@@ -30,20 +31,20 @@ const AuthGuard: React.FC<AuthGuardProps> = ({
   }
 
   // Suspended users
-  if (unifiedUser.status === 'suspended') {
+  if (unifiedUser.status === UserStatus.SUSPENDED) {
     return <Navigate to="/suspended" replace />;
   }
 
   // Setup required but not completed
-  if (unifiedUser.status === 'pending_setup' && !requireSetup) {
-    if (unifiedUser.isDHLUser) {
+  if (unifiedUser.status === UserStatus.PENDING_SETUP && !requireSetup) {
+    if (unifiedUser.isDHLEmployee) {
       return <Navigate to="/dhl-setup" replace />;
     }
     return <Navigate to="/setup" replace />;
   }
 
   // Role-based access control
-  if (requiredRole && !hasRole(requiredRole)) {
+  if (requiredRole && !canAccess(requiredRole)) {
     return <Navigate to="/unauthorized" replace />;
   }
 

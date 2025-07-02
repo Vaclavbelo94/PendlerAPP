@@ -8,6 +8,7 @@ import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Volume2, VolumeX, RotateCcw, Play, Pause } from 'lucide-react';
 import { useAudioSettings } from '@/hooks/useAudioSettings';
+import { pronounceGerman, audioManager } from '@/components/language/utils/enhancedPronunciationHelper';
 
 const AudioSettings: React.FC = () => {
   const { 
@@ -25,23 +26,18 @@ const AudioSettings: React.FC = () => {
 
   const handleTestAudio = async () => {
     if (testPlaying) {
-      // Stop audio if playing
+      audioManager.stop();
       setTestPlaying(false);
     } else {
-      // Simple test audio using Web Speech API
-      if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(testPhrase);
-        utterance.lang = 'de-DE';
-        utterance.rate = settings.speed;
-        utterance.volume = settings.volume;
-        utterance.pitch = settings.pitch;
-        
-        utterance.onstart = () => setTestPlaying(true);
-        utterance.onend = () => setTestPlaying(false);
-        utterance.onerror = () => setTestPlaying(false);
-        
-        speechSynthesis.speak(utterance);
-      }
+      await pronounceGerman(
+        testPhrase,
+        settings,
+        {
+          onStart: () => setTestPlaying(true),
+          onEnd: () => setTestPlaying(false),
+          onError: () => setTestPlaying(false)
+        }
+      );
     }
   };
 

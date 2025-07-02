@@ -1,176 +1,210 @@
 
-import React from 'react';
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Check, Crown, Zap, Shield, Star } from 'lucide-react';
+import React, { useState } from 'react';
+import { Helmet } from 'react-helmet';
+import { motion } from 'framer-motion';
+import { useAuth } from '@/hooks/auth';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Crown, Star, Check, Zap, Shield, Rocket, Loader2 } from "lucide-react";
+import { useTranslation } from 'react-i18next';
+import { useStripePayments, PaymentPeriod } from '@/hooks/useStripePayments';
+import PeriodSelector from '@/components/premium/PeriodSelector';
+import UnifiedNavbar from '@/components/layouts/UnifiedNavbar';
+import Footer from '@/components/layouts/Footer';
+import { toast } from 'sonner';
 
 const Premium = () => {
-  const { unifiedUser } = useUnifiedAuth();
+  const { isPremium } = useAuth();
+  const { t, i18n } = useTranslation('premium');
+  const { handleCheckout, isLoading } = useStripePayments();
+  const [selectedPeriod, setSelectedPeriod] = useState<PaymentPeriod>('monthly');
 
-  const features = [
-    'Neomezené směny a analýzy',
-    'Pokročilé daňové kalkulačky',
-    'Prémiový překladač s offline režimem',
-    'Prioritní zákaznická podpora',
-    'Export dat do PDF/Excel',
-    'Personalizované statistiky',
-    'Pokročilé filtry a vyhledávání',
-    'Týmové funkce pro DHL zaměstnance'
+  const currentLanguage = i18n.language;
+
+  // Currency and pricing based on language
+  const getPricingInfo = () => {
+    switch (currentLanguage) {
+      case 'pl':
+        return {
+          currency: 'PLN',
+          monthlyPrice: 45,
+          yearlyPrice: 450,
+          savings: '17%'
+        };
+      case 'de':
+        return {
+          currency: 'EUR',
+          monthlyPrice: 9.99,
+          yearlyPrice: 99,
+          savings: '17%'
+        };
+      default: // cs
+        return {
+          currency: 'CZK',
+          monthlyPrice: 249,
+          yearlyPrice: 2490,
+          savings: '17%'
+        };
+    }
+  };
+
+  const pricing = getPricingInfo();
+
+  const premiumFeatures = [
+    {
+      icon: Star,
+      title: t('features.noAds.title'),
+      description: t('features.noAds.description')
+    },
+    {
+      icon: Zap,
+      title: t('features.unlimitedAccess.title'),
+      description: t('features.unlimitedAccess.description')
+    },
+    {
+      icon: Shield,
+      title: t('features.prioritySupport.title'),
+      description: t('features.prioritySupport.description')
+    },
+    {
+      icon: Rocket,
+      title: t('features.advancedFeatures.title'),
+      description: t('features.advancedFeatures.description')
+    }
   ];
 
-  if (unifiedUser?.hasPremiumAccess) {
-    return (
-      <div className="space-y-6">
-        <div className="text-center">
-          <Crown className="h-16 w-16 text-yellow-500 mx-auto mb-4" />
-          <h1 className="text-3xl font-bold mb-2">Premium aktivní!</h1>
-          <p className="text-muted-foreground">
-            Děkujeme, že jste naším prémiového uživatelem
-          </p>
-        </div>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Shield className="h-5 w-5" />
-              Váš Premium stav
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span>Status:</span>
-                <Badge className="bg-green-500">Aktivní</Badge>
-              </div>
-              {unifiedUser.premiumExpiry && (
-                <div className="flex justify-between items-center">
-                  <span>Vyprší:</span>
-                  <span>{new Date(unifiedUser.premiumExpiry).toLocaleDateString()}</span>
-                </div>
-              )}
-              <div className="flex justify-between items-center">
-                <span>Typ účtu:</span>
-                <span className="font-medium">{unifiedUser.role}</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Premium funkce</CardTitle>
-            <CardDescription>Funkce, které máte k dispozici</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              {features.map((feature, index) => (
-                <div key={index} className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-green-500" />
-                  <span className="text-sm">{feature}</span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  const handlePremiumActivation = async () => {
+    try {
+      await handleCheckout(selectedPeriod);
+    } catch (error) {
+      toast.error(t('errors.paymentFailed', 'Platba se nezdařila. Zkuste to prosím znovu.'));
+    }
+  };
 
   return (
-    <div className="space-y-6">
-      <div className="text-center">
-        <Crown className="h-16 w-16 text-yellow-500 mx-auto mb-4" />
-        <h1 className="text-3xl font-bold mb-2">Upgrade na Premium</h1>
-        <p className="text-muted-foreground">
-          Odemkněte všechny funkce a využijte plný potenciál PendlerApp
-        </p>
-      </div>
-
-      <div className="grid md:grid-cols-2 gap-6">
-        {/* Free Plan */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Standard</CardTitle>
-            <CardDescription>Základní funkce zdarma</CardDescription>
-            <div className="text-3xl font-bold">0 €</div>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-2">
-              <li className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-green-500" />
-                <span className="text-sm">Základní správa směn</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-green-500" />
-                <span className="text-sm">Jednoduchý překladač</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-green-500" />
-                <span className="text-sm">Základní statistiky</span>
-              </li>
-            </ul>
-          </CardContent>
-        </Card>
-
-        {/* Premium Plan */}
-        <Card className="border-yellow-500 relative">
-          <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-            <Badge className="bg-yellow-500">Doporučeno</Badge>
+    <div className="min-h-screen flex flex-col bg-background">
+      <UnifiedNavbar />
+      
+      <main className="flex-1">
+        <div className="container mx-auto px-4 py-8 max-w-4xl">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold mb-4 flex items-center justify-center gap-2">
+              <Crown className="h-8 w-8 text-amber-500" />
+              {t('title')}
+            </h1>
+            <p className="text-muted-foreground text-lg">
+              {t('subtitle')}
+            </p>
           </div>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Crown className="h-5 w-5" />
-              Premium
-            </CardTitle>
-            <CardDescription>Všechny funkce bez omezení</CardDescription>
-            <div className="text-3xl font-bold">9.99 €<span className="text-sm font-normal">/měsíc</span></div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <ul className="space-y-2">
-              {features.map((feature, index) => (
-                <li key={index} className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-green-500" />
-                  <span className="text-sm">{feature}</span>
-                </li>
-              ))}
-            </ul>
-            <Button className="w-full" size="lg">
-              <Zap className="h-4 w-4 mr-2" />
-              Upgrade na Premium
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
 
-      {/* Special Offers */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Star className="h-5 w-5 text-yellow-500" />
-            Speciální nabídky
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="p-4 bg-muted rounded-lg">
-              <h3 className="font-semibold mb-2">DHL zaměstnanci</h3>
-              <p className="text-sm text-muted-foreground mb-2">
-                Speciální sleva 50% pro všechny DHL zaměstnance
-              </p>
-              <Badge variant="outline">Sleva 50%</Badge>
+          {isPremium ? (
+            <Card className="bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20 border-amber-200 dark:border-amber-800">
+              <CardHeader className="text-center">
+                <CardTitle className="flex items-center justify-center gap-2 text-amber-700 dark:text-amber-300">
+                  <Crown className="h-6 w-6" />
+                  {t('premiumUser.title')}
+                </CardTitle>
+                <CardDescription>
+                  {t('premiumUser.description')}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {premiumFeatures.map((feature, index) => (
+                    <div key={index} className="flex items-center gap-3 p-3 bg-white/50 dark:bg-black/20 rounded-lg">
+                      <Check className="h-5 w-5 text-green-600" />
+                      <div>
+                        <h3 className="font-medium">{feature.title}</h3>
+                        <p className="text-sm text-muted-foreground">{feature.description}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-6">
+              <Card className="text-center">
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-center gap-2">
+                    <Crown className="h-6 w-6 text-amber-500" />
+                    {t('upgrade.title')}
+                  </CardTitle>
+                  <CardDescription>
+                    {t('upgrade.description')}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <PeriodSelector 
+                    selectedPeriod={selectedPeriod}
+                    onPeriodChange={setSelectedPeriod}
+                    pricing={pricing}
+                  />
+                  
+                  <div className="text-center">
+                    <div className="text-4xl font-bold mb-4">
+                      <span className="text-3xl text-muted-foreground">{t('upgrade.priceFrom')}</span>{' '}
+                      {selectedPeriod === 'monthly' ? pricing.monthlyPrice : pricing.yearlyPrice} {pricing.currency}
+                      <span className="text-lg text-muted-foreground">
+                        {selectedPeriod === 'monthly' ? t('upgrade.priceMonth') : t('upgrade.priceYear', '/rok')}
+                      </span>
+                    </div>
+                    
+                    {selectedPeriod === 'yearly' && (
+                      <p className="text-sm text-green-600 mb-4">
+                        {t('upgrade.yearlySavings', `Ušetříte ${pricing.savings}`)}
+                      </p>
+                    )}
+                    
+                    <Button 
+                      size="lg" 
+                      className="w-full max-w-sm"
+                      onClick={handlePremiumActivation}
+                      disabled={isLoading}
+                    >
+                      {isLoading ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          {t('upgrade.processing', 'Zpracovává se...')}
+                        </>
+                      ) : (
+                        <>
+                          <Crown className="h-4 w-4 mr-2" />
+                          {t('upgrade.activateButton')}
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t('benefits.title')}</CardTitle>
+                  <CardDescription>
+                    {t('benefits.description')}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {premiumFeatures.map((feature, index) => (
+                      <div key={index} className="flex items-start gap-3 p-4 border rounded-lg">
+                        <feature.icon className="h-5 w-5 text-primary mt-0.5" />
+                        <div>
+                          <h3 className="font-medium mb-1">{feature.title}</h3>
+                          <p className="text-sm text-muted-foreground">{feature.description}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-            <div className="p-4 bg-muted rounded-lg">
-              <h3 className="font-semibold mb-2">Roční předplatné</h3>
-              <p className="text-sm text-muted-foreground mb-2">
-                Ušetřete 20% při ročním předplatném
-              </p>
-              <Badge variant="outline">Sleva 20%</Badge>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          )}
+        </div>
+      </main>
+      
+      <Footer />
     </div>
   );
 };

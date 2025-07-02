@@ -3,7 +3,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { cleanupAuthState, aggressiveCleanup } from '@/utils/authUtils';
 import { User } from '@supabase/supabase-js';
-import { isDHLPromoCode } from '@/utils/dhlAuthUtils';
 
 /**
  * Hook for authentication methods (login, register, logout)
@@ -97,10 +96,9 @@ export const useAuthMethods = () => {
     }
   };
 
-  const signUp = async (email: string, password: string, username?: string, promoCode?: string): Promise<{ error: string | null; user: User | null }> => {
+  const signUp = async (email: string, password: string, username?: string): Promise<{ error: string | null; user: User | null }> => {
     try {
       console.log('Starting sign up process for:', email);
-      console.log('Promo code provided:', promoCode);
       
       // AGGRESSIVE cleanup to prevent cross-user contamination
       aggressiveCleanup();
@@ -117,27 +115,13 @@ export const useAuthMethods = () => {
       
       const redirectUrl = `${window.location.origin}/dashboard`;
       
-      // Check if promo code is DHL-related
-      const isDHLUser = promoCode ? isDHLPromoCode(promoCode) : false;
-      console.log('Is DHL promo code:', isDHLUser);
-      
-      // Prepare user metadata
-      const userMetadata: any = {
-        username: username || email.split('@')[0]
-      };
-      
-      // Set DHL flag if DHL promo code is used
-      if (isDHLUser) {
-        userMetadata.isDHLUser = true;
-        userMetadata.isDHLEmployee = true;
-        console.log('Setting DHL user flags in metadata');
-      }
-      
       const { data, error } = await supabase.auth.signUp({ 
         email, 
         password,
         options: {
-          data: userMetadata,
+          data: {
+            username: username || email.split('@')[0]
+          },
           emailRedirectTo: redirectUrl
         }
       });
@@ -148,7 +132,6 @@ export const useAuthMethods = () => {
       }
       
       console.log('Sign up successful for:', data.user?.email);
-      console.log('User metadata set:', data.user?.user_metadata);
       
       // Verify the user data matches what we expect
       if (data.user && data.user.email !== email) {

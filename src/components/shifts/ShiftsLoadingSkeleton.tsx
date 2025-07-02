@@ -5,39 +5,61 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 const ShiftsLoadingSkeleton: React.FC = () => {
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-6">
-      {/* Navigation skeleton */}
-      <div className="flex gap-1 p-1 bg-muted/30 rounded-lg border">
-        <Skeleton className="h-10 flex-1" />
-        <Skeleton className="h-10 flex-1" />
+    <div className="space-y-6">
+      {/* Header skeleton */}
+      <div className="flex justify-between items-center">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-10 w-32" />
       </div>
-      
-      {/* Main content skeleton */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Skeleton className="h-5 w-5" />
-              <Skeleton className="h-6 w-32" />
+
+      {/* Navigation skeleton */}
+      <div className="flex space-x-4">
+        {[1, 2, 3, 4].map((i) => (
+          <Skeleton key={i} className="h-10 w-24" />
+        ))}
+      </div>
+
+      {/* Content skeleton */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Calendar skeleton */}
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-6 w-40" />
+            <Skeleton className="h-4 w-60" />
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-7 gap-2">
+              {Array.from({ length: 35 }).map((_, i) => (
+                <Skeleton key={i} className="h-8 w-8" />
+              ))}
             </div>
-            <Skeleton className="h-9 w-28" />
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="flex items-center justify-between p-3 border rounded-lg">
-              <div className="space-y-2">
-                <Skeleton className="h-4 w-24" />
-                <Skeleton className="h-3 w-32" />
-              </div>
-              <div className="flex gap-2">
-                <Skeleton className="h-8 w-16" />
-                <Skeleton className="h-8 w-16" />
-              </div>
+          </CardContent>
+        </Card>
+
+        {/* Details skeleton */}
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-6 w-48" />
+            <Skeleton className="h-4 w-32" />
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="flex justify-between items-center p-4 border rounded-lg">
+                  <div className="space-y-2">
+                    <Skeleton className="h-5 w-24" />
+                    <Skeleton className="h-4 w-40" />
+                  </div>
+                  <div className="flex space-x-2">
+                    <Skeleton className="h-8 w-8" />
+                    <Skeleton className="h-8 w-8" />
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };

@@ -4,7 +4,7 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useLocation } from "react-router-dom";
-import { useUnifiedAuth } from "@/contexts/UnifiedAuthContext";
+import { useAuth } from "@/hooks/auth";
 import { UnifiedMobileSidebar } from "./sidebar/UnifiedMobileSidebar";
 import { useTranslation } from "react-i18next";
 
@@ -17,7 +17,7 @@ const OptimizedLayout = ({ children, navbarRightContent }: OptimizedLayoutProps)
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const location = useLocation();
-  const { user } = useUnifiedAuth();
+  const { user } = useAuth();
   const { i18n } = useTranslation();
   
   // Simplified responsive detection

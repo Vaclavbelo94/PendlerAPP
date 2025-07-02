@@ -1,5 +1,5 @@
 
-import type { AudioSettings } from '@/hooks/useAudioSettings';
+import { AudioSettings } from '@/hooks/useAudioSettings';
 
 export interface AudioPlaybackOptions {
   text: string;

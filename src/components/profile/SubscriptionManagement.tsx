@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Calendar, Crown, CreditCard, AlertTriangle, CheckCircle, XCircle } from "lucide-react";
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
+import { useAuth } from '@/hooks/auth';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -15,7 +15,7 @@ interface SubscriptionManagementProps {
 }
 
 const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({ /* props */ }) => {
-  const { user, unifiedUser, refreshPremiumStatus } = useUnifiedAuth();
+  const { user, unifiedUser, refreshPremiumStatus } = useAuth();
   const [subscriptionStatus, setSubscriptionStatus] = useState<{
     isPremium: boolean | null;
     premiumExpiry: string | null;
@@ -36,12 +36,8 @@ const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({ /* prop
       setSubscriptionStatus(prev => ({ ...prev, isLoading: true }));
 
       try {
-        const result = await refreshPremiumStatus();
-        setSubscriptionStatus({ 
-          isPremium: result.isPremium, 
-          premiumExpiry: result.premiumExpiry || null, 
-          isLoading: false 
-        });
+        const { isPremium, premiumExpiry } = await refreshPremiumStatus();
+        setSubscriptionStatus({ isPremium: isPremium, premiumExpiry: premiumExpiry || null, isLoading: false });
       } catch (error) {
         console.error("Error fetching subscription status:", error);
         setSubscriptionStatus({ isPremium: false, premiumExpiry: null, isLoading: false });
@@ -67,12 +63,7 @@ const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({ /* prop
       }
 
       toast.success("Subscription cancelled successfully.");
-      const result = await refreshPremiumStatus();
-      setSubscriptionStatus({ 
-        isPremium: result.isPremium, 
-        premiumExpiry: result.premiumExpiry || null, 
-        isLoading: false 
-      });
+      await refreshPremiumStatus();
     } catch (error) {
       console.error("Unexpected error cancelling subscription:", error);
       toast.error("An unexpected error occurred. Please try again later.");

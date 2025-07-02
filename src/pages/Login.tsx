@@ -2,80 +2,34 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { useUnifiedAuth } from "@/contexts/UnifiedAuthContext";
+import { useAuth } from "@/hooks/auth";
 import { Separator } from "@/components/ui/separator";
 import { useTranslation } from 'react-i18next';
 import LoginForm from "@/components/auth/LoginForm";
 import GoogleAuthButton from "@/components/auth/GoogleAuthButton";
-import UnifiedRoleIndicator from '@/components/auth/UnifiedRoleIndicator';
+import { getRedirectPath } from '@/utils/authRoleUtils';
+import RoleIndicator from '@/components/auth/RoleIndicator';
 
 const Login = () => {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const navigate = useNavigate();
-  const { user, isLoading } = useUnifiedAuth();
+  const { user, unifiedUser, isLoading } = useAuth();
   const { t } = useTranslation('auth');
   
   useEffect(() => {
-    console.log('=== LOGIN PAGE IMMEDIATE REDIRECT CHECK ===');
-    console.log('user exists:', !!user);
-    console.log('user email:', user?.email);
-    console.log('isLoading:', isLoading);
+    if (isLoading) return;
     
-    // IMMEDIATE redirect if user exists - don't wait for anything else
-    if (user) {
-      console.log('User found, redirecting IMMEDIATELY without waiting...');
+    if (user && unifiedUser) {
+      console.log('=== ENHANCED LOGIN REDIRECT LOGIC ===');
+      console.log('User:', user.email);
+      console.log('Unified User:', unifiedUser);
       
-      let redirectPath = '/dashboard'; // Default redirect
+      const redirectPath = getRedirectPath(unifiedUser);
+      console.log('Redirecting to:', redirectPath);
       
-      // Simple admin check - only check email
-      if (user.email === 'admin@pendlerapp.com') {
-        redirectPath = '/admin';
-        console.log('Admin user detected, redirecting to:', redirectPath);
-      }
-      
-      console.log('Immediate redirect to:', redirectPath);
-      
-      // Use window.location for guaranteed redirect (fallback if navigate fails)
-      setTimeout(() => {
-        console.log('Executing window.location redirect as fallback');
-        window.location.href = redirectPath;
-      }, 100);
-      
-      // Also try React Router navigate
-      navigate(redirectPath, { replace: true });
+      navigate(redirectPath);
     }
-    
-    // Emergency timeout - if auth is still loading after 1 second, something is wrong
-    if (isLoading) {
-      console.log('Auth still loading, setting 1-second emergency timer...');
-      const timer = setTimeout(() => {
-        if (user) {
-          console.log('Emergency redirect - user exists but still loading');
-          window.location.href = '/dashboard';
-        }
-      }, 1000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [user, navigate, isLoading]);
-
-  // Show loading while redirecting (only if user exists)
-  if (user) {
-    console.log('Showing redirect loading screen for user:', user.email);
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Přesměrovávám...</p>
-          <p className="text-xs text-muted-foreground mt-2">
-            Pokud se nestane nic do 2 sekund, <a href="/dashboard" className="underline">klikněte zde</a>
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  console.log('Rendering login form - no user found');
+  }, [user, unifiedUser, isLoading, navigate]);
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
@@ -93,6 +47,19 @@ const Login = () => {
             <CardDescription>
               {t('registerDescription')}
             </CardDescription>
+            
+            {/* Show current user info if logged in (for debugging) */}
+            {unifiedUser && (
+              <div className="mt-4 p-3 bg-muted rounded-lg">
+                <p className="text-sm text-muted-foreground mb-2">Aktuálně přihlášen:</p>
+                <p className="font-medium">{unifiedUser.email}</p>
+                <RoleIndicator 
+                  role={unifiedUser.role} 
+                  status={unifiedUser.status}
+                  className="mt-2"
+                />
+              </div>
+            )}
           </CardHeader>
           <CardContent className="grid gap-4">
             <div className="space-y-4">

@@ -6,39 +6,46 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/auth";
 import { toast } from "sonner";
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { isDHLEmployee } from '@/utils/dhlAuthUtils';
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { signIn } = useAuth();
+  const navigate = useNavigate();
+  const { signIn, unifiedUser } = useAuth();
   const { t } = useTranslation('auth');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
-    console.log('=== LOGIN FORM SUBMIT ===');
-    console.log('Email:', email);
-    
     try {
       const { error } = await signIn(email, password);
       
       if (error) {
-        console.log('Login error:', error);
-        toast.error(t('loginFailed'), {
-          description: String(error) || t('loginCheckDataRetry'),
+        toast.error(t('registrationFailed'), {
+          description: String(error) || t('registerCheckDataRetry'),
         });
       } else {
-        console.log('Login successful, letting Login.tsx handle redirect');
-        toast.success(t('loginSuccess'));
-        // LOGIN FORM NO LONGER HANDLES REDIRECT
-        // Login.tsx will handle the redirect based on unifiedUser
+        toast.success(t('accountCreatedSuccessfully'));
+        
+        // Create a temporary user object for DHL check
+        const tempUser = { email } as any;
+        const isDHL = isDHLEmployee(tempUser);
+        
+        if (isDHL) {
+          // DHL users will be redirected by auth provider if they need setup
+          navigate("/dashboard");
+        } else if (email === 'admin@pendlerapp.com' || unifiedUser?.isAdmin) {
+          navigate("/admin");
+        } else {
+          navigate("/dashboard");
+        }
       }
     } catch (error: any) {
-      console.error('Login exception:', error);
-      toast.error(t('loginError'), {
+      toast.error(t('registrationError'), {
         description: error?.message || t('unknownErrorOccurred'),
       });
     } finally {
@@ -57,7 +64,6 @@ const LoginForm = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          autoComplete="email"
           className="bg-card/50 backdrop-blur-sm border-border"
         />
       </div>
@@ -78,7 +84,6 @@ const LoginForm = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          autoComplete="current-password"
           className="bg-card/50 backdrop-blur-sm border-border"
         />
       </div>

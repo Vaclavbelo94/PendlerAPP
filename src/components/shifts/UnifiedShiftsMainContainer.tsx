@@ -1,17 +1,12 @@
 
 import React from 'react';
 import { useUnifiedShiftsContainer } from '@/hooks/shifts/useUnifiedShiftsContainer';
-import { useDHLRedirect } from '@/hooks/dhl/useDHLRedirect';
 import ShiftsContentRenderer from './ShiftsContentRenderer';
 import ShiftsFormSheets from './ShiftsFormSheets';
 import ShiftsErrorHandler from './ShiftsErrorHandler';
 import ShiftsLoadingSkeleton from './ShiftsLoadingSkeleton';
-import ShiftsNavigation from './ShiftsNavigation';
 
 const UnifiedShiftsMainContainer: React.FC = () => {
-  // Handle DHL user redirects
-  const { isLoading: redirectLoading } = useDHLRedirect();
-  
   const containerProps = useUnifiedShiftsContainer();
   
   const {
@@ -35,18 +30,13 @@ const UnifiedShiftsMainContainer: React.FC = () => {
     handleOpenAddSheetWithDate,
     isSaving,
     isOnline,
-    isSlowConnection,
-    user,
-    activeSection,
-    handleSectionChange
+    isSlowConnection
   } = containerProps;
 
-  // Show loading skeleton while loading or handling redirects
-  if (isLoading || redirectLoading) {
+  if (isLoading) {
     return <ShiftsLoadingSkeleton />;
   }
 
-  // Show error handler if there's an error
   if (error) {
     return (
       <ShiftsErrorHandler 
@@ -58,26 +48,8 @@ const UnifiedShiftsMainContainer: React.FC = () => {
     );
   }
 
-  // Show message if user is not authenticated
-  if (!user) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px] p-4">
-        <div className="text-center">
-          <h2 className="text-xl font-semibold mb-2">Přihlášení vyžadováno</h2>
-          <p className="text-muted-foreground">Pro zobrazení směn se musíte nejprve přihlásit.</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="w-full max-w-7xl mx-auto space-y-6">
-      {/* Navigation Tabs */}
-      <ShiftsNavigation 
-        activeSection={activeSection}
-        onSectionChange={handleSectionChange}
-      />
-      
       <ShiftsContentRenderer 
         {...containerProps} 
         onEditShift={openEditDialog}

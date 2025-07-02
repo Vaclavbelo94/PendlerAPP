@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { useUnifiedAuth } from "@/contexts/UnifiedAuthContext";
+import { useAuth } from "@/hooks/auth";
 import { Separator } from "@/components/ui/separator";
 import { checkLocalStorageSpace } from "@/utils/authUtils";
 import { useTranslation } from 'react-i18next';
@@ -15,7 +15,7 @@ const Register = () => {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [storageWarning, setStorageWarning] = useState(false);
   const navigate = useNavigate();
-  const { user, unifiedUser } = useUnifiedAuth();
+  const { user, unifiedUser } = useAuth();
   const { t } = useTranslation('auth');
   
   useOAuthCallback();
@@ -32,16 +32,9 @@ const Register = () => {
     
     if (user && unifiedUser) {
       console.log('User already logged in, redirecting based on role');
-      
-      // Determine redirect path based on user status and role
-      let redirectPath = '/dashboard';
-      
-      if (unifiedUser.status === 'pending_setup') {
-        redirectPath = unifiedUser.isDHLUser ? '/dhl-setup' : '/setup';
-      } else if (unifiedUser.hasAdminAccess) {
-        redirectPath = unifiedUser.role === 'dhl_admin' ? '/dhl-admin' : '/admin';
-      }
-      
+      const redirectPath = unifiedUser.setupRequired ? 
+        (unifiedUser.isDHLEmployee ? '/dhl-setup' : '/setup') : 
+        '/dashboard';
       navigate(redirectPath);
       return;
     }

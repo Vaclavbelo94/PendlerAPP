@@ -1,86 +1,117 @@
 
-import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { MessageSquareIcon, HeadphonesIcon, LanguagesIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import React, { Suspense } from 'react';
+import { Helmet } from "react-helmet";
+import { motion } from 'framer-motion';
+import PremiumCheck from "@/components/premium/PremiumCheck";
+import { DashboardBackground } from "@/components/common/DashboardBackground";
+import { MessageSquare, Languages } from "lucide-react";
+import { useScreenOrientation } from "@/hooks/useScreenOrientation";
+import { usePerformanceOptimization } from "@/hooks/usePerformanceOptimization";
+import SimpleLoadingSpinner from "@/components/loading/SimpleLoadingSpinner";
+import Layout from '@/components/layouts/Layout';
+import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '@/hooks/auth';
-import OptimizedPremiumCheck from '@/components/premium/OptimizedPremiumCheck';
+
+// Lazy load the simple auto translator
+const SimpleAutoTranslator = React.lazy(() => import("@/components/translator/SimpleAutoTranslator"));
 
 const Translator = () => {
-  const { t } = useTranslation();
-  const { user } = useAuth();
+  const { isMobile, isSmallLandscape } = useScreenOrientation();
+  const { t } = useTranslation(['translator', 'common']);
+  
+  usePerformanceOptimization();
+
+  const handleTextToSpeech = (text: string, language: string) => {
+    if (!text.trim()) return;
+    
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = language === 'cs' ? 'cs-CZ' : language === 'pl' ? 'pl-PL' : 'de-DE';
+      window.speechSynthesis.speak(utterance);
+    } else {
+      console.warn('Speech synthesis not supported');
+    }
+  };
+
+  const useMobileLayout = isMobile || isSmallLandscape;
 
   return (
-    <OptimizedPremiumCheck featureKey="translator">
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold mb-4 flex items-center justify-center gap-2">
-            <LanguagesIcon className="h-8 w-8 text-primary" />
-            Komunikace s HR
-          </h1>
-          <p className="text-muted-foreground text-lg">
-            AI asistent pro překládání a komunikaci s německými HR odděleními
-          </p>
-        </div>
-
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <MessageSquareIcon className="h-5 w-5" />
-                Překlad textů
-              </CardTitle>
-              <CardDescription>
-                Překládání emailů, smluv a dokumentů mezi češtinou a němčinou
-              </CardDescription>
-            </CardHeader>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <HeadphonesIcon className="h-5 w-5" />
-                HR komunikace
-              </CardTitle>
-              <CardDescription>
-                Specializovaný asistent pro komunikaci s personálními odděleními
-              </CardDescription>
-            </CardHeader>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <LanguagesIcon className="h-5 w-5" />
-                Kontextuální překlad
-              </CardTitle>
-              <CardDescription>
-                Překlad s ohledem na pracovní prostředí a německé právo
-              </CardDescription>
-            </CardHeader>
-          </Card>
-        </div>
-
-        <Card className="w-full">
-          <CardHeader>
-            <CardTitle>AI Překladač pro HR komunikaci</CardTitle>
-            <CardDescription>
-              Zadejte text pro překlad nebo komunikaci s HR oddělením
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="text-center py-8 text-muted-foreground">
-                <LanguagesIcon className="h-16 w-16 mx-auto mb-4 opacity-50" />
-                <p className="text-lg">Funkce bude brzy dostupná</p>
-                <p className="text-sm">AI překladač pro HR komunikaci se připravuje</p>
+    <Layout navbarRightContent={<NavbarRightContent />}>
+      <PremiumCheck featureKey="translator">
+        <DashboardBackground variant="default">
+          <div className={`container py-6 ${useMobileLayout ? 'pb-32' : ''} ${isSmallLandscape ? 'px-2' : ''}`}>
+            <Helmet>
+              <title>{t('translator:aiTranslator')} | {t('common:dashboard')}</title>
+              <meta name="description" content={t('translator:translatorDescription')} />
+              <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            </Helmet>
+            
+            {/* Header with consistent styling */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="text-center mb-8"
+            >
+              <div className="flex items-center justify-center gap-4 mb-6">
+                <div className="p-3 rounded-full bg-gradient-to-r from-primary/20 to-blue-500/20 backdrop-blur-sm">
+                  <MessageSquare className="h-8 w-8 text-primary" />
+                </div>
+                <div className="p-3 rounded-full bg-gradient-to-r from-green-500/20 to-emerald-500/20 backdrop-blur-sm">
+                  <Languages className="h-8 w-8 text-green-600" />
+                </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </OptimizedPremiumCheck>
+              
+              <h1 className={`${useMobileLayout ? 'text-3xl' : 'text-4xl lg:text-5xl'} font-bold mb-4`}>
+                <span className="bg-gradient-to-r from-primary via-blue-600 to-green-600 bg-clip-text text-transparent">
+                  {t('translator:aiTranslator')}
+                </span>
+              </h1>
+              
+              <p className={`text-muted-foreground ${useMobileLayout ? 'text-base' : 'text-lg lg:text-xl'} max-w-3xl mx-auto leading-relaxed ${isSmallLandscape ? 'text-sm' : ''}`}>
+                {useMobileLayout 
+                  ? t('translator:translatorDescriptionMobile')
+                  : t('translator:translatorDescription')
+                }
+              </p>
+            </motion.div>
+
+            {/* Translator component with animation */}
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="space-y-6"
+            >
+              <Suspense fallback={
+                <div className="flex items-center justify-center py-16">
+                  <SimpleLoadingSpinner message={t('translator:translating')} />
+                </div>
+              }>
+                <SimpleAutoTranslator onTextToSpeech={handleTextToSpeech} />
+              </Suspense>
+            </motion.div>
+
+            {/* Additional info section */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="mt-12 text-center"
+            >
+              <div className="max-w-2xl mx-auto p-6 rounded-xl bg-card/50 backdrop-blur-sm border border-border/50">
+                <h3 className="text-lg font-semibold mb-3 text-foreground">
+                  {t('translator:howTranslatorWorks')}
+                </h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {t('translator:translatorInstructions')}
+                </p>
+              </div>
+            </motion.div>
+          </div>
+        </DashboardBackground>
+      </PremiumCheck>
+    </Layout>
   );
 };
 

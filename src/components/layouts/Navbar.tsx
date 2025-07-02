@@ -23,8 +23,7 @@ import {
   Car,
   BarChart3
 } from 'lucide-react';
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
-import UnifiedRoleIndicator from '@/components/auth/UnifiedRoleIndicator';
+import { useAuth } from '@/hooks/auth';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { useTranslation } from 'react-i18next';
 
@@ -35,7 +34,7 @@ interface NavbarProps {
 }
 
 const Navbar: React.FC<NavbarProps> = ({ toggleSidebar, rightContent, sidebarOpen }) => {
-  const { user, unifiedUser, signOut } = useUnifiedAuth();
+  const { user, unifiedUser, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation(['navigation', 'auth']);
@@ -76,7 +75,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar, rightContent, sidebarOpe
           <div className="hidden md:flex items-center space-x-6">
             {navItems.map((item) => {
               const Icon = item.icon;
-              const isLocked = item.premium && !unifiedUser?.hasPremiumAccess;
+              const isLocked = item.premium && !unifiedUser?.isPremium;
               
               return (
                 <Link 
@@ -90,7 +89,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar, rightContent, sidebarOpe
                 >
                   <Icon className="h-4 w-4" />
                   <span>{item.label}</span>
-                  {item.premium && !unifiedUser?.hasPremiumAccess && (
+                  {item.premium && !unifiedUser?.isPremium && (
                     <Crown className="h-3 w-3 text-amber-500" />
                   )}
                 </Link>
@@ -119,18 +118,22 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar, rightContent, sidebarOpe
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
                     <p className="text-sm font-medium leading-none">
-                      {unifiedUser?.displayName || user.email?.split('@')[0] || t('auth:user')}
+                      {user.email?.split('@')[0] || t('auth:user')}
                     </p>
                     <p className="text-xs leading-none text-muted-foreground">
                       {user.email}
                     </p>
                     <div className="flex items-center gap-2 mt-2">
-                      {unifiedUser && (
-                        <UnifiedRoleIndicator 
-                          role={unifiedUser.role} 
-                          status={unifiedUser.status}
-                          compact
-                        />
+                      {unifiedUser?.isPremium && (
+                        <Badge variant="secondary" className="text-xs bg-amber-100 text-amber-800">
+                          <Crown className="h-3 w-3 mr-1" />
+                          Premium
+                        </Badge>
+                      )}
+                      {unifiedUser?.isAdmin && (
+                        <Badge variant="secondary" className="text-xs bg-red-100 text-red-800">
+                          Admin
+                        </Badge>
                       )}
                     </div>
                   </div>
@@ -144,7 +147,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar, rightContent, sidebarOpe
                   <Settings className="mr-2 h-4 w-4" />
                   <span>{t('settings')}</span>
                 </DropdownMenuItem>
-                {unifiedUser?.hasAdminAccess && (
+                {unifiedUser?.isAdmin && (
                   <DropdownMenuItem onClick={() => navigate('/admin')}>
                     <Crown className="mr-2 h-4 w-4" />
                     <span>{t('admin')}</span>

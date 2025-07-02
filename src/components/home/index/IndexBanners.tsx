@@ -6,10 +6,11 @@ import { Badge } from "@/components/ui/badge";
 import { DiamondIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from '@/hooks/auth';
+import { useUnifiedPremiumStatus } from "@/hooks/useUnifiedPremiumStatus";
 
 export const IndexBanners = () => {
-  const { user, unifiedUser } = useAuth();
-  const isPremium = unifiedUser?.hasPremiumAccess || false;
+  const { user } = useAuth();
+  const { isPremium } = useUnifiedPremiumStatus();
 
   return (
     <AnimatePresence>

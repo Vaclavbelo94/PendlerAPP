@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,20 +6,13 @@ import { useAuth } from '@/hooks/auth';
 import { Crown, Calendar, CreditCard, Zap } from "lucide-react";
 
 interface ProfileSubscriptionProps {
-  isPremium?: boolean;
+  isPremium: boolean;
   premiumExpiry?: string | null;
 }
 
-const ProfileSubscription: React.FC<ProfileSubscriptionProps> = ({ 
-  isPremium: propIsPremium, 
-  premiumExpiry: propPremiumExpiry 
-}) => {
+const ProfileSubscription: React.FC<ProfileSubscriptionProps> = ({ isPremium, premiumExpiry }) => {
   const { unifiedUser } = useAuth();
   const [expiryDate, setExpiryDate] = useState<Date | null>(null);
-
-  // Use props if provided, otherwise fall back to auth context
-  const isPremium = propIsPremium ?? unifiedUser?.hasPremiumAccess ?? false;
-  const premiumExpiry = propPremiumExpiry ?? null;
 
   useEffect(() => {
     if (premiumExpiry) {

@@ -6,7 +6,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { InsuranceRecord } from '@/types/vehicle';
+import { saveInsuranceRecord } from '@/services/vehicleService';
+import { useStandardizedToast } from '@/hooks/useStandardizedToast';
 import { useTranslation } from 'react-i18next';
+import { useCurrencyFormatter } from '@/utils/currencyUtils';
 
 interface InsuranceRecordDialogProps {
   isOpen: boolean;
@@ -24,7 +27,9 @@ const InsuranceRecordDialog: React.FC<InsuranceRecordDialogProps> = ({
   record = null
 }) => {
   const { t } = useTranslation(['vehicle']);
+  const { getCurrencySymbol } = useCurrencyFormatter();
   const [isLoading, setIsLoading] = useState(false);
+  const { success, error } = useStandardizedToast();
   const [formData, setFormData] = useState({
     provider: '',
     coverage_type: '',
@@ -65,11 +70,26 @@ const InsuranceRecordDialog: React.FC<InsuranceRecordDialogProps> = ({
     setIsLoading(true);
 
     try {
-      console.log('Insurance record saved successfully');
+      const recordData: Partial<InsuranceRecord> = {
+        vehicle_id: vehicleId,
+        provider: formData.provider,
+        coverage_type: formData.coverage_type,
+        policy_number: formData.policy_number,
+        valid_from: formData.valid_from,
+        valid_until: formData.valid_until,
+        monthly_cost: formData.monthly_cost
+      };
+
+      if (record) {
+        recordData.id = record.id;
+      }
+
+      await saveInsuranceRecord(recordData);
+      success(record ? t('vehicle:insuranceRecordUpdated') : t('vehicle:insuranceRecordSaved'));
       onSuccess();
       onClose();
     } catch (err: any) {
-      console.error('Error saving insurance record:', err);
+      error(err.message || t('vehicle:errorSavingInsuranceRecord'));
     } finally {
       setIsLoading(false);
     }
@@ -107,9 +127,9 @@ const InsuranceRecordDialog: React.FC<InsuranceRecordDialogProps> = ({
                 <SelectValue placeholder={t('vehicle:selectCoverageType')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="liability">Povinné ručení</SelectItem>
-                <SelectItem value="comprehensive">Havarijní pojištění</SelectItem>
-                <SelectItem value="collision">Kasko</SelectItem>
+                <SelectItem value="liability">{t('vehicle:liability')}</SelectItem>
+                <SelectItem value="comprehensive">{t('vehicle:comprehensive')}</SelectItem>
+                <SelectItem value="collision">{t('vehicle:collision')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -150,7 +170,7 @@ const InsuranceRecordDialog: React.FC<InsuranceRecordDialogProps> = ({
           </div>
 
           <div>
-            <Label htmlFor="monthly_cost">{t('vehicle:monthlyCost')} (Kč) *</Label>
+            <Label htmlFor="monthly_cost">{t('vehicle:monthlyCost')} ({getCurrencySymbol()}) *</Label>
             <Input
               id="monthly_cost"
               type="number"

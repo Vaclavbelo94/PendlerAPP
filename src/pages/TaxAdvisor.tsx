@@ -1,68 +1,52 @@
 
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calculator, FileText, BookOpen } from 'lucide-react';
+import React from "react";
+import { motion } from "framer-motion";
+import PremiumCheck from '@/components/premium/PremiumCheck';
+import TaxWizardCarousel from "@/components/tax-advisor/wizard/TaxWizardCarousel";
+import Layout from '@/components/layouts/Layout';
+import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 import { useTranslation } from 'react-i18next';
-import TaxOptimizer from '@/components/tax-advisor/TaxOptimizer';
-import DocumentGenerator from '@/components/tax-advisor/DocumentGenerator';
 
 const TaxAdvisor = () => {
-  const { t } = useTranslation(['common', 'navigation']);
-  const [activeTab, setActiveTab] = useState('optimizer');
+  const { t } = useTranslation('common');
 
   return (
-    <div className="container mx-auto px-4 py-6 space-y-6">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-          <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              {t('navigation:taxAdvisor')}
-            </h1>
-            <p className="text-muted-foreground mt-2">
-              {t('common:taxAdvisorDescription')}
-            </p>
+    <Layout navbarRightContent={<NavbarRightContent />}>
+      <PremiumCheck featureKey="tax-advisor">
+        <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-secondary/5">
+          <div className="fixed inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-20 right-10 w-32 h-32 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-full blur-xl animate-pulse" />
+            <div className="absolute bottom-20 left-20 w-24 h-24 bg-gradient-to-r from-green-500/20 to-purple-500/20 rounded-full blur-xl animate-pulse delay-1000" />
+          </div>
+
+          <div className="relative z-10">
+            <div className="container max-w-6xl py-8 px-4">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="mb-8"
+              >
+                <h1 className="text-3xl md:text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-4">
+                  {t('taxAdvisor')}
+                </h1>
+                <p className="text-lg text-muted-foreground">
+                  {t('taxAdvisorDescription')}
+                </p>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+              >
+                <TaxWizardCarousel />
+              </motion.div>
+            </div>
           </div>
         </div>
-
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="optimizer" className="flex items-center gap-2">
-              <Calculator className="h-4 w-4" />
-              {t('common:taxOptimization')}
-            </TabsTrigger>
-            <TabsTrigger value="documents" className="flex items-center gap-2">
-              <FileText className="h-4 w-4" />
-              {t('common:documents')}
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="optimizer">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
-            >
-              <TaxOptimizer />
-            </motion.div>
-          </TabsContent>
-
-          <TabsContent value="documents">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
-            >
-              <DocumentGenerator />
-            </motion.div>
-          </TabsContent>
-        </Tabs>
-      </motion.div>
-    </div>
+      </PremiumCheck>
+    </Layout>
   );
 };
 

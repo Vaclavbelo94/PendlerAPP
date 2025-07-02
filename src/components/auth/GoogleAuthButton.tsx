@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { useUnifiedAuth } from "@/contexts/UnifiedAuthContext";
+import { useAuth } from "@/hooks/auth";
 import { toast } from "sonner";
 import { useTranslation } from 'react-i18next';
 import { checkLocalStorageSpace } from '@/utils/authUtils';
@@ -17,13 +17,13 @@ const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
   setIsLoading, 
   isRegister = false 
 }) => {
-  const { signInWithGoogle } = useUnifiedAuth();
+  const { signInWithGoogle } = useAuth();
   const { t } = useTranslation('auth');
 
   const handleGoogleAuth = async () => {
     if (!checkLocalStorageSpace()) {
-      toast.error(t('insufficientStorage') || 'Insufficient storage', {
-        description: t('insufficientStorageDescription') || 'Please clear your browser storage'
+      toast.error(t('insufficientStorage'), {
+        description: t('insufficientStorageDescription')
       });
       return;
     }
@@ -37,7 +37,7 @@ const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
       
       if (error) {
         console.error('Google auth error:', error);
-        toast.error(isRegister ? (t('googleRegistrationFailed') || 'Google registration failed') : 'Přihlášení přes Google se nezdařilo', {
+        toast.error(isRegister ? t('googleRegistrationFailed') : 'Přihlášení přes Google se nezdařilo', {
           description: String(error),
         });
         setIsLoading(false);
@@ -54,8 +54,8 @@ const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
       }
     } catch (error: any) {
       console.error('Google auth exception:', error);
-      toast.error(t('registrationError') || 'Registration error', {
-        description: error?.message || (t('unknownErrorOccurred') || 'Unknown error occurred'),
+      toast.error(t('registrationError'), {
+        description: error?.message || t('unknownErrorOccurred'),
       });
       setIsLoading(false);
     }
@@ -72,7 +72,7 @@ const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
       {isLoading ? (
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
-          {t('loading') || 'Loading...'}
+          {t('loading')}
         </div>
       ) : (
         <>
