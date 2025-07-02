@@ -10,7 +10,7 @@ import { isDHLEmployee } from '@/utils/dhlAuthUtils';
 import { useDHLData } from '@/hooks/dhl/useDHLData';
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, session, isLoading: authStateLoading, error: authStateError } = useAuthState();
+  const { user, session, isLoading: authStateLoading, isInitialized, error: authStateError } = useAuthState();
   const { isAdmin, isPremium, refreshAdminStatus, refreshPremiumStatus } = useAuthStatus(user?.id);
   const { userAssignment } = useDHLData(user?.id);
   
@@ -19,11 +19,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [error, setError] = React.useState<AuthError | null>(null);
   const [premiumExpiry, setPremiumExpiry] = React.useState<string | undefined>();
 
-  // Initialize user data when auth state changes
+  console.log('Auth Provider: Render state', { 
+    hasUser: !!user, 
+    email: user?.email, 
+    authStateLoading, 
+    isInitialized,
+    isLoading 
+  });
+
+  // Initialize user data when auth state changes and is stable
   React.useEffect(() => {
-    if (authStateLoading) return;
+    // Don't initialize if auth state is still loading or not initialized
+    if (authStateLoading || !isInitialized) {
+      console.log('Auth Provider: Waiting for auth state to stabilize', { authStateLoading, isInitialized });
+      return;
+    }
     
-    console.log('Auth Provider: Auth state changed', { user: user?.email, authStateLoading });
+    console.log('Auth Provider: Auth state stabilized, user:', user?.email || 'none');
     
     if (!user) {
       console.log('Auth Provider: No user, clearing state');
@@ -109,7 +121,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     initializeUser();
-  }, [user, authStateLoading, refreshAdminStatus, refreshPremiumStatus, isAdmin, userAssignment]);
+  }, [user, isInitialized, authStateLoading, refreshAdminStatus, refreshPremiumStatus, isAdmin, userAssignment]);
 
   // Auth methods
   const signIn = React.useCallback(async (email: string, password: string) => {
@@ -250,7 +262,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     canAccess: (requiredRole) => canAccess(unifiedUser, requiredRole),
   };
 
-  console.log('Auth Provider: Rendering with context', {
+  console.log('Auth Provider: Final context state', {
     hasUser: !!user,
     email: user?.email,
     isPremium: contextValue.isPremium,

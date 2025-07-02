@@ -23,7 +23,7 @@ const Shifts = () => {
   
   const {
     shifts,
-    isLoading,
+    isLoading: shiftsLoading,
     isSaving,
     createShift,
     updateShift,
@@ -37,8 +37,16 @@ const Shifts = () => {
   const [editingShift, setEditingShift] = useState<Shift | null>(null);
   const [selectedDateForNewShift, setSelectedDateForNewShift] = useState<Date | null>(null);
 
-  console.log('Shifts page - Auth state:', { user: user?.email, isLoading: authLoading, isAuthenticated: !!user });
-  console.log('Shifts page - Data state:', { shiftsCount: shifts.length, isLoading, isSaving });
+  // Determine loading state - show loading if auth is loading OR shifts are loading while user exists
+  const isLoading = authLoading || (user && shiftsLoading);
+
+  console.log('Shifts page - States:', { 
+    user: user?.email, 
+    authLoading, 
+    shiftsLoading,
+    isLoading,
+    shiftsCount: shifts.length 
+  });
 
   const handleAddShift = () => {
     if (!user) {
@@ -112,16 +120,23 @@ const Shifts = () => {
     refreshShifts();
   };
 
-  // Show loading while auth is being determined
-  if (authLoading) {
+  // Show loading while auth is being determined or data is loading
+  if (isLoading) {
     return (
       <Layout navbarRightContent={<NavbarRightContent />}>
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 animate-fade-in">
           <div className="container mx-auto px-4 py-6 max-w-7xl">
+            <div className="mb-6">
+              <h1 className="text-3xl font-bold text-foreground">{t('title')}</h1>
+              <p className="text-muted-foreground mt-1">{t('shiftsDescription')}</p>
+            </div>
+            
             <div className="flex items-center justify-center min-h-[400px]">
               <div className="text-center">
                 <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4 text-muted-foreground" />
-                <p className="text-muted-foreground">{t('loadingAuth') || 'Ověřování přihlášení...'}</p>
+                <p className="text-muted-foreground">
+                  {authLoading ? (t('loadingAuth') || 'Ověřování přihlášení...') : 'Načítání směn...'}
+                </p>
               </div>
             </div>
           </div>
@@ -187,8 +202,8 @@ const Shifts = () => {
             )}
           </div>
           
-          {/* Error state with retry option */}
-          {!isLoading && shifts.length === 0 && (
+          {/* Show empty state only if user is authenticated and no shifts found */}
+          {!shiftsLoading && shifts.length === 0 && (
             <Alert className="mb-4">
               <RefreshCw className="h-4 w-4" />
               <AlertTitle>{t('noShiftsFound') || 'Žádné směny nenalezeny'}</AlertTitle>
@@ -211,7 +226,7 @@ const Shifts = () => {
               onDeleteShift={handleDeleteShift}
               onAddShift={handleAddShift}
               onAddShiftForDate={handleAddShiftForDate}
-              isLoading={isLoading}
+              isLoading={shiftsLoading}
               className="w-full"
             />
           </div>

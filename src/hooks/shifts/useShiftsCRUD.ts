@@ -9,21 +9,39 @@ import { format } from 'date-fns';
 export type { Shift, ShiftFormData } from '@/types/shifts';
 
 export const useShiftsCRUD = () => {
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const { success, error: showError } = useStandardizedToast();
   const [shifts, setShifts] = useState<Shift[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Load shifts
+  console.log('useShiftsCRUD - Auth state:', { 
+    hasUser: !!user, 
+    email: user?.email, 
+    authLoading,
+    shiftsCount: shifts.length 
+  });
+
+  // Load shifts - now waits for stable auth state
   const loadShifts = useCallback(async () => {
+    // Don't load if auth is still loading
+    if (authLoading) {
+      console.log('useShiftsCRUD - Skipping load, auth still loading');
+      return;
+    }
+
+    // If no user after auth is loaded, clear shifts and stop loading
     if (!user?.id) {
+      console.log('useShiftsCRUD - No user, clearing shifts');
+      setShifts([]);
       setIsLoading(false);
       return;
     }
 
     try {
+      console.log('useShiftsCRUD - Loading shifts for user:', user.id);
       setIsLoading(true);
+      
       const { data, error } = await supabase
         .from('shifts')
         .select('*')
@@ -45,14 +63,16 @@ export const useShiftsCRUD = () => {
         updated_at: shift.updated_at,
       }));
 
+      console.log('useShiftsCRUD - Loaded shifts:', typedShifts.length);
       setShifts(typedShifts);
     } catch (err) {
       console.error('Error loading shifts:', err);
       showError('Chyba při načítání', 'Nepodařilo se načíst směny');
+      setShifts([]); // Clear shifts on error
     } finally {
       setIsLoading(false);
     }
-  }, [user?.id, showError]);
+  }, [user?.id, authLoading, showError]);
 
   // Create shift
   const createShift = useCallback(async (date: Date, formData: ShiftFormData): Promise<boolean> => {
@@ -63,6 +83,8 @@ export const useShiftsCRUD = () => {
 
     try {
       setIsSaving(true);
+      console.log('useShiftsCRUD - Creating shift for user:', user.id);
+      
       const shiftData = {
         user_id: user.id,
         date: format(date, 'yyyy-MM-dd'),
@@ -95,6 +117,7 @@ export const useShiftsCRUD = () => {
 
       setShifts(prev => [typedShift, ...prev]);
       success('Směna přidána', 'Nová směna byla úspěšně vytvořena');
+      console.log('useShiftsCRUD - Shift created successfully');
       return true;
     } catch (err) {
       console.error('Error creating shift:', err);
@@ -114,6 +137,8 @@ export const useShiftsCRUD = () => {
 
     try {
       setIsSaving(true);
+      console.log('useShiftsCRUD - Updating shift:', shiftId);
+      
       const updateData = {
         type: formData.type,
         start_time: formData.start_time,
@@ -149,6 +174,7 @@ export const useShiftsCRUD = () => {
       ));
       
       success('Směna upravena', 'Změny byly úspěšně uloženy');
+      console.log('useShiftsCRUD - Shift updated successfully');
       return true;
     } catch (err) {
       console.error('Error updating shift:', err);
@@ -162,12 +188,14 @@ export const useShiftsCRUD = () => {
   // Delete shift
   const deleteShift = useCallback(async (shiftId: string): Promise<boolean> => {
     if (!user?.id) {
-      showError('Chyba', 'Nejste přihlášeni');
+      showError('Chyba', 'Nejste přihlášení');
       return false;
     }
 
     try {
       setIsSaving(true);
+      console.log('useShiftsCRUD - Deleting shift:', shiftId);
+      
       const { error } = await supabase
         .from('shifts')
         .delete()
@@ -178,6 +206,7 @@ export const useShiftsCRUD = () => {
 
       setShifts(prev => prev.filter(shift => shift.id !== shiftId));
       success('Směna smazána', 'Směna byla úspěšně odstraněna');
+      console.log('useShiftsCRUD - Shift deleted successfully');
       return true;
     } catch (err) {
       console.error('Error deleting shift:', err);
@@ -188,8 +217,9 @@ export const useShiftsCRUD = () => {
     }
   }, [user?.id, success, showError]);
 
-  // Load shifts on mount
+  // Load shifts when auth state is stable
   useEffect(() => {
+    console.log('useShiftsCRUD - Effect triggered, authLoading:', authLoading, 'hasUser:', !!user);
     loadShifts();
   }, [loadShifts]);
 
