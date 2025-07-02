@@ -1,7 +1,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-interface AudioSettings {
+export interface AudioSettings {
   enabled: boolean;
   selectedVoiceIndex: number;
   speed: number;
