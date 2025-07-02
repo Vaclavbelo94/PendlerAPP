@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Shift } from '@/types/shifts';
+import { Shift, ShiftFormData } from '@/types/shifts';
 import { useTranslation } from 'react-i18next';
 import { LoaderCircle } from 'lucide-react';
 
@@ -21,7 +21,7 @@ const shiftFormSchema = z.object({
   notes: z.string().optional(),
 });
 
-type ShiftFormData = z.infer<typeof shiftFormSchema>;
+type ShiftFormDataInternal = z.infer<typeof shiftFormSchema>;
 
 interface ShiftFormProps {
   shift?: Shift | null;
@@ -49,7 +49,7 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
     }
   };
 
-  const form = useForm<ShiftFormData>({
+  const form = useForm<ShiftFormDataInternal>({
     resolver: zodResolver(shiftFormSchema),
     defaultValues: {
       type: shift?.type || 'morning',
@@ -70,7 +70,7 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
     }
   }, [watchedType, form, shift]);
 
-  const handleSubmit = async (data: ShiftFormData) => {
+  const handleSubmit = async (data: ShiftFormDataInternal) => {
     await onSubmit(data);
   };
 

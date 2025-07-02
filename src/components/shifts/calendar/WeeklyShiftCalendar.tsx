@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { format, startOfWeek, addDays, addWeeks, subWeeks, isSameDay, parseISO } from 'date-fns';
 import { cs } from 'date-fns/locale';
@@ -90,7 +89,7 @@ const WeeklyShiftCalendar: React.FC<WeeklyShiftCalendarProps> = ({
             {format(weekStart, 'd. MMMM', { locale: cs })} - {format(addDays(weekStart, 6), 'd. MMMM yyyy', { locale: cs })}
           </h3>
           <p className="text-sm text-muted-foreground">
-            {format(currentWeek, 'YYYY', { locale: cs })} • Týden {format(currentWeek, 'w', { locale: cs })}
+            {format(currentWeek, 'yyyy', { locale: cs })} • Týden {format(currentWeek, 'w', { locale: cs })}
           </p>
         </div>
         

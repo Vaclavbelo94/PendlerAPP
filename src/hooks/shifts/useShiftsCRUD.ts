@@ -3,26 +3,10 @@ import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/auth';
 import { useStandardizedToast } from '@/hooks/useStandardizedToast';
+import { Shift, ShiftFormData } from '@/types/shifts';
 import { format } from 'date-fns';
 
-export interface Shift {
-  id?: string;
-  user_id: string;
-  date: string;
-  type: 'morning' | 'afternoon' | 'night' | 'custom';
-  start_time: string;
-  end_time: string;
-  notes?: string;
-  created_at?: string;
-  updated_at?: string;
-}
-
-export interface ShiftFormData {
-  type: 'morning' | 'afternoon' | 'night' | 'custom';
-  start_time: string;
-  end_time: string;
-  notes?: string;
-}
+export { Shift, ShiftFormData } from '@/types/shifts';
 
 export const useShiftsCRUD = () => {
   const { user } = useAuth();
