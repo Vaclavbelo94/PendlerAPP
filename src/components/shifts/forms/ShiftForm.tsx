@@ -71,7 +71,15 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
   }, [watchedType, form, shift]);
 
   const handleSubmit = async (data: ShiftFormDataInternal) => {
-    await onSubmit(data);
+    // Ensure all required fields are present
+    const formData: ShiftFormData = {
+      type: data.type,
+      start_time: data.start_time,
+      end_time: data.end_time,
+      notes: data.notes || undefined,
+    };
+    
+    await onSubmit(formData);
   };
 
   return (

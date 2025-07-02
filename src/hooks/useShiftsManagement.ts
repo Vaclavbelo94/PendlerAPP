@@ -3,16 +3,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { useStandardizedToast } from '@/hooks/useStandardizedToast';
 import { supabase } from '@/integrations/supabase/client';
 import { errorHandler } from '@/utils/errorHandler';
-
-export interface Shift {
-  id?: string;
-  user_id: string;
-  date: string;
-  type: 'morning' | 'afternoon' | 'night';
-  notes?: string;
-  created_at?: string;
-  updated_at?: string;
-}
+import { Shift, ShiftFormData } from '@/types/shifts';
 
 export interface UseShiftsManagementReturn {
   shifts: Shift[];
@@ -69,7 +60,7 @@ export const useShiftsManagement = (userId: string | undefined): UseShiftsManage
       // Type conversion from database strings to proper types
       const typedShifts = (data || []).map(shift => ({
         ...shift,
-        type: shift.type as 'morning' | 'afternoon' | 'night'
+        type: shift.type as 'morning' | 'afternoon' | 'night' | 'custom'
       }));
 
       setShifts(typedShifts);
@@ -119,7 +110,7 @@ export const useShiftsManagement = (userId: string | undefined): UseShiftsManage
 
         const newShift: Shift = {
           ...data,
-          type: data.type as 'morning' | 'afternoon' | 'night'
+          type: data.type as 'morning' | 'afternoon' | 'night' | 'custom'
         };
         
         setShifts(prev => [newShift, ...prev]);
@@ -167,6 +158,8 @@ export const useShiftsManagement = (userId: string | undefined): UseShiftsManage
           .update({
             date: shiftData.date,
             type: shiftData.type,
+            start_time: shiftData.start_time,
+            end_time: shiftData.end_time,
             notes: shiftData.notes
           })
           .eq('id', shiftData.id)
@@ -181,7 +174,7 @@ export const useShiftsManagement = (userId: string | undefined): UseShiftsManage
 
         const updatedShift: Shift = {
           ...data,
-          type: data.type as 'morning' | 'afternoon' | 'night'
+          type: data.type as 'morning' | 'afternoon' | 'night' | 'custom'
         };
         
         setShifts(prev => prev.map(shift => shift.id === updatedShift.id ? updatedShift : shift));

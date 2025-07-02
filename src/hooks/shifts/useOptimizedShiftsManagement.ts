@@ -1,3 +1,4 @@
+
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { useStandardizedToast } from '@/hooks/useStandardizedToast';
 import { useOptimizedNetworkStatus } from '@/hooks/useOptimizedNetworkStatus';
@@ -5,16 +6,7 @@ import { optimizedErrorHandler } from '@/utils/optimizedErrorHandler';
 import { supabase } from '@/integrations/supabase/client';
 import { errorHandler } from '@/utils/errorHandler';
 import { formatDateForDB } from '@/components/shifts/utils/dateUtils';
-
-export interface Shift {
-  id?: string;
-  user_id: string;
-  date: string;
-  type: 'morning' | 'afternoon' | 'night';
-  notes?: string;
-  created_at?: string;
-  updated_at?: string;
-}
+import { Shift, ShiftFormData } from '@/types/shifts';
 
 export interface UseOptimizedShiftsManagementReturn {
   shifts: Shift[];
@@ -65,7 +57,7 @@ export const useOptimizedShiftsManagement = (userId: string | undefined): UseOpt
           const parsed = JSON.parse(cachedData);
           setShifts(parsed.map((shift: any) => ({
             ...shift,
-            type: shift.type as 'morning' | 'afternoon' | 'night'
+            type: shift.type as 'morning' | 'afternoon' | 'night' | 'custom'
           })));
           hasLoadedRef.current = true;
           return;
@@ -89,7 +81,7 @@ export const useOptimizedShiftsManagement = (userId: string | undefined): UseOpt
 
       const typedShifts = (data || []).map(shift => ({
         ...shift,
-        type: shift.type as 'morning' | 'afternoon' | 'night'
+        type: shift.type as 'morning' | 'afternoon' | 'night' | 'custom'
       }));
 
       setShifts(typedShifts);
@@ -148,7 +140,7 @@ export const useOptimizedShiftsManagement = (userId: string | undefined): UseOpt
 
     setIsSaving(true);
     try {
-      // Oprava: Zajistíme správné formátování data
+      // Oprava: Zajistíme správné formátování dat
       const formattedShiftData = {
         ...shiftData,
         user_id: userId
@@ -173,7 +165,7 @@ export const useOptimizedShiftsManagement = (userId: string | undefined): UseOpt
 
       const newShift: Shift = {
         ...data,
-        type: data.type as 'morning' | 'afternoon' | 'night'
+        type: data.type as 'morning' | 'afternoon' | 'night' | 'custom'
       };
       
       setShifts(prev => [newShift, ...prev.filter(s => s.id !== newShift.id)]);
@@ -205,6 +197,8 @@ export const useOptimizedShiftsManagement = (userId: string | undefined): UseOpt
             .update({
               date: shiftData.date,
               type: shiftData.type,
+              start_time: shiftData.start_time,
+              end_time: shiftData.end_time,
               notes: shiftData.notes
             })
             .eq('id', shiftData.id)
@@ -221,7 +215,7 @@ export const useOptimizedShiftsManagement = (userId: string | undefined): UseOpt
 
       const updatedShift: Shift = {
         ...data,
-        type: data.type as 'morning' | 'afternoon' | 'night'
+        type: data.type as 'morning' | 'afternoon' | 'night' | 'custom'
       };
       
       setShifts(prev => prev.map(shift => shift.id === updatedShift.id ? updatedShift : shift));

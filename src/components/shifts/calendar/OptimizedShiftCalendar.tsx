@@ -118,6 +118,16 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
     onDateChange?.(today);
   }, [onDateChange]);
 
+  if (isLoading) {
+    return (
+      <Card className="w-full">
+        <CardContent className="flex items-center justify-center p-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="w-full">
       <CardHeader className="pb-4">
