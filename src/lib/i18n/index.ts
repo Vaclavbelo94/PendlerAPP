@@ -1,5 +1,5 @@
 
-// Re-export legacy compatibility - simplified without deleted modules
+// Re-export legacy compatibility - simplified without language modules
 import type { Language, LanguageInfo, Translations } from './types';
 import { languages, defaultLanguage } from './languages';
 import { commonTranslations } from './translations/common';

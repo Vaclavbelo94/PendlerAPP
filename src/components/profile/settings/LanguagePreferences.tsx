@@ -20,7 +20,7 @@ const LanguagePreferences = ({
       <h3 className="text-lg font-medium">{t('preferences') || 'Předvolby'}</h3>
       
       <div className="space-y-2">
-        <Label htmlFor="preferredLanguage">{t('preferredLanguage') || 'Preferovaný jazyk'}</Label>
+        <Label htmlFor="preferredLanguage">{t('preferredLanguage') || 'Preferovaný jazyk aplikace'}</Label>
         <Select 
           value={preferredLanguage} 
           onValueChange={(value) => handleInputChange('preferredLanguage', value)}

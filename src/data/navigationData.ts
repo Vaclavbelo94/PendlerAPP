@@ -11,7 +11,6 @@ import {
   Crown,
   Building2,
   Shield,
-  Languages,
   Scale,
   Plane
 } from 'lucide-react';
@@ -67,11 +66,6 @@ export const navigationItems: NavigationItem[] = [
     titleKey: 'analytics',
     icon: BarChart3,
     premium: true
-  },
-  {
-    path: '/translator',
-    titleKey: 'hr_communication',
-    icon: Languages
   },
   {
     path: '/laws',
