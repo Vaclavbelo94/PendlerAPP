@@ -4,8 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { ShieldIcon, LockIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { usePremiumManager } from "@/hooks/usePremiumManager";
-import { useSimplifiedAuth } from "@/hooks/auth/useSimplifiedAuth";
+import { useAuth } from "@/hooks/auth";
 
 interface OptimizedPremiumCheckProps {
   featureKey: string;
@@ -13,17 +12,18 @@ interface OptimizedPremiumCheckProps {
 }
 
 const OptimizedPremiumCheck: React.FC<OptimizedPremiumCheckProps> = ({ featureKey, children }) => {
-  const { user, isInitialized } = useSimplifiedAuth();
-  const { isPremium, isVerified, isLoading } = usePremiumManager(user);
+  const { user, unifiedUser, isLoading, isInitialized } = useAuth();
   const navigate = useNavigate();
+  
+  const isPremium = unifiedUser?.hasPremiumAccess || false;
 
   // Show children immediately if user is premium (no flickering)
-  if (isPremium && isVerified) {
+  if (isPremium && isInitialized) {
     return <>{children}</>;
   }
 
-  // Show loading only if we're still initializing and haven't verified yet
-  if (!isInitialized || (!isVerified && isLoading)) {
+  // Show loading only if we're still initializing
+  if (!isInitialized || isLoading) {
     return (
       <div className="flex justify-center items-center w-full p-8">
         <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
@@ -32,7 +32,7 @@ const OptimizedPremiumCheck: React.FC<OptimizedPremiumCheckProps> = ({ featureKe
   }
 
   // Show premium gate for non-premium users
-  if (isVerified && !isPremium) {
+  if (isInitialized && !isPremium) {
     return (
       <div className="container py-8 max-w-2xl mx-auto">
         <Card className="text-center border-amber-200 bg-amber-50/50">
