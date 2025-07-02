@@ -1,7 +1,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Shift } from './useShiftsCRUD';
+import { Shift, ShiftType } from '@/types/shifts';
 import { toast } from 'sonner';
 
 export const useRefactoredShiftsManagement = (userId: string | null) => {
@@ -9,6 +9,26 @@ export const useRefactoredShiftsManagement = (userId: string | null) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const getDefaultStartTime = (type: ShiftType): string => {
+    switch (type) {
+      case 'morning': return '06:00';
+      case 'afternoon': return '14:00';
+      case 'night': return '22:00';
+      case 'custom': return '08:00';
+      default: return '08:00';
+    }
+  };
+
+  const getDefaultEndTime = (type: ShiftType): string => {
+    switch (type) {
+      case 'morning': return '14:00';
+      case 'afternoon': return '22:00';
+      case 'night': return '06:00';
+      case 'custom': return '16:00';
+      default: return '16:00';
+    }
+  };
 
   const loadShifts = useCallback(async () => {
     if (!userId) {
@@ -39,7 +59,7 @@ export const useRefactoredShiftsManagement = (userId: string | null) => {
       // Type conversion from database to proper Shift interface
       const typedShifts: Shift[] = (data || []).map(shift => ({
         ...shift,
-        type: shift.type as 'morning' | 'afternoon' | 'night'
+        type: shift.type as ShiftType
       }));
       
       setShifts(typedShifts);
@@ -96,7 +116,9 @@ export const useRefactoredShiftsManagement = (userId: string | null) => {
           .from('shifts')
           .update({
             type: shiftData.type,
-            notes: shiftData.notes || ''
+            notes: shiftData.notes || '',
+            start_time: shiftData.start_time,
+            end_time: shiftData.end_time
           })
           .eq('id', existingShift.id)
           .eq('user_id', userId)
@@ -120,6 +142,8 @@ export const useRefactoredShiftsManagement = (userId: string | null) => {
           user_id: userId,
           date: shiftData.date,
           type: shiftData.type,
+          start_time: shiftData.start_time || getDefaultStartTime(shiftData.type),
+          end_time: shiftData.end_time || getDefaultEndTime(shiftData.type),
           notes: shiftData.notes || ''
         };
         
@@ -151,7 +175,7 @@ export const useRefactoredShiftsManagement = (userId: string | null) => {
     } finally {
       setIsSaving(false);
     }
-  }, [userId, loadShifts]);
+  }, [userId, loadShifts, getDefaultStartTime, getDefaultEndTime]);
 
   const updateShift = useCallback(async (shiftData: Shift) => {
     if (!userId) {
@@ -174,7 +198,9 @@ export const useRefactoredShiftsManagement = (userId: string | null) => {
         .update({
           type: shiftData.type,
           notes: shiftData.notes || '',
-          date: shiftData.date
+          date: shiftData.date,
+          start_time: shiftData.start_time,
+          end_time: shiftData.end_time
         })
         .eq('id', shiftData.id)
         .eq('user_id', userId)
@@ -186,7 +212,7 @@ export const useRefactoredShiftsManagement = (userId: string | null) => {
       // Ensure proper type casting for the returned data
       const typedShift: Shift = {
         ...data,
-        type: data.type as 'morning' | 'afternoon' | 'night'
+        type: data.type as ShiftType
       };
       
       setShifts(prev => prev.map(shift => 

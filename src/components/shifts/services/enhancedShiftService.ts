@@ -1,6 +1,6 @@
+
 import { supabase } from "@/integrations/supabase/client";
-import { ShiftType } from "../types";
-import { formatDateForDB } from "../utils/dateUtils";
+import { ShiftType } from "@/types/shifts";
 import { errorHandler } from "@/utils/errorHandler";
 
 export interface EnhancedShiftData {
@@ -8,6 +8,8 @@ export interface EnhancedShiftData {
   type: ShiftType;
   notes: string;
   user_id: string;
+  start_time: string;
+  end_time: string;
   synced_at?: string;
   device_id?: string;
 }
@@ -77,19 +79,41 @@ export class EnhancedShiftService {
     }
   }
 
+  private getDefaultStartTime(type: ShiftType): string {
+    switch (type) {
+      case 'morning': return '06:00';
+      case 'afternoon': return '14:00';
+      case 'night': return '22:00';
+      case 'custom': return '08:00';
+      default: return '08:00';
+    }
+  }
+
+  private getDefaultEndTime(type: ShiftType): string {
+    switch (type) {
+      case 'morning': return '14:00';
+      case 'afternoon': return '22:00';
+      case 'night': return '06:00';
+      case 'custom': return '16:00';
+      default: return '16:00';
+    }
+  }
+
   async saveShiftEnhanced(
     selectedDate: Date,
     shiftType: ShiftType,
     shiftNotes: string,
     userId: string
   ) {
-    const formattedDate = formatDateForDB(selectedDate);
+    const formattedDate = selectedDate.toISOString().split('T')[0];
     
     const shiftData: EnhancedShiftData = {
       date: formattedDate,
       type: shiftType,
       notes: shiftNotes.trim(),
       user_id: userId,
+      start_time: this.getDefaultStartTime(shiftType),
+      end_time: this.getDefaultEndTime(shiftType),
       device_id: this.deviceId,
       synced_at: new Date().toISOString()
     };
@@ -115,8 +139,8 @@ export class EnhancedShiftService {
             .update({
               type: shiftType,
               notes: shiftNotes.trim(),
-              device_id: this.deviceId,
-              synced_at: new Date().toISOString(),
+              start_time: shiftData.start_time,
+              end_time: shiftData.end_time,
               updated_at: new Date().toISOString()
             })
             .eq('id', existingShifts[0].id)
@@ -131,7 +155,14 @@ export class EnhancedShiftService {
           // Create new shift
           const { data, error } = await supabase
             .from('shifts')
-            .insert(shiftData)
+            .insert({
+              user_id: userId,
+              date: formattedDate,
+              type: shiftType,
+              start_time: shiftData.start_time,
+              end_time: shiftData.end_time,
+              notes: shiftNotes.trim()
+            })
             .select()
             .single();
             
@@ -184,7 +215,14 @@ export class EnhancedShiftService {
       try {
         if (item.action === 'UPSERT') {
           await errorHandler.retryOperation(async () => {
-            const { error } = await supabase.from('shifts').upsert(item.data);
+            const { error } = await supabase.from('shifts').upsert({
+              user_id: item.data.user_id,
+              date: item.data.date,
+              type: item.data.type,
+              start_time: item.data.start_time,
+              end_time: item.data.end_time,
+              notes: item.data.notes
+            });
             if (error) throw error;
           }, 2, 500);
           processedItems.push(item.id);

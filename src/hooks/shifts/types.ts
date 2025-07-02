@@ -1,4 +1,7 @@
-export { ShiftType, Shift, ShiftFormData } from '@/types/shifts';
+
+export type { ShiftType, Shift, ShiftFormData } from '@/types/shifts';
+
+import type { Shift } from '@/types/shifts';
 
 export interface UseShiftsManagementReturn {
   shifts: Shift[];

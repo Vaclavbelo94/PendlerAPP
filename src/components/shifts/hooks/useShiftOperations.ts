@@ -14,7 +14,7 @@ export const useShiftOperations = (
   setShiftNotes: (notes: string) => void
 ) => {
   // Helper functions for default times
-  const getDefaultStartTime = (type: string): string => {
+  const getDefaultStartTime = (type: ShiftType): string => {
     switch (type) {
       case 'morning': return '06:00';
       case 'afternoon': return '14:00';
@@ -24,7 +24,7 @@ export const useShiftOperations = (
     }
   };
 
-  const getDefaultEndTime = (type: string): string => {
+  const getDefaultEndTime = (type: ShiftType): string => {
     switch (type) {
       case 'morning': return '14:00';
       case 'afternoon': return '22:00';  
@@ -59,11 +59,11 @@ export const useShiftOperations = (
       // Transform raw shift data to proper Shift interface
       const typedShifts: Shift[] = rawShifts.map(shift => ({
         id: shift.id,
-        user_id: shift.userId || shift.user_id || user.id,
+        user_id: shift.user_id || user.id,
         date: shift.date,
-        type: shift.type,
-        start_time: shift.start_time || getDefaultStartTime(shift.type),
-        end_time: shift.end_time || getDefaultEndTime(shift.type),
+        type: shift.type as ShiftType,
+        start_time: shift.start_time || getDefaultStartTime(shift.type as ShiftType),
+        end_time: shift.end_time || getDefaultEndTime(shift.type as ShiftType),
         notes: shift.notes || '',
         created_at: shift.created_at || new Date().toISOString(),
         updated_at: shift.updated_at || new Date().toISOString(),
@@ -97,11 +97,11 @@ export const useShiftOperations = (
       // Transform raw shift data to proper Shift interface
       const typedShifts: Shift[] = rawShifts.map(shift => ({
         id: shift.id,
-        user_id: shift.userId || shift.user_id || user.id,
+        user_id: shift.user_id || user.id,
         date: shift.date,
-        type: shift.type,
-        start_time: shift.start_time || getDefaultStartTime(shift.type),
-        end_time: shift.end_time || getDefaultEndTime(shift.type),
+        type: shift.type as ShiftType,
+        start_time: shift.start_time || getDefaultStartTime(shift.type as ShiftType),
+        end_time: shift.end_time || getDefaultEndTime(shift.type as ShiftType),
         notes: shift.notes || '',
         created_at: shift.created_at || new Date().toISOString(),
         updated_at: shift.updated_at || new Date().toISOString(),

@@ -1,298 +1,280 @@
-import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
-import { useStandardizedToast } from '@/hooks/useStandardizedToast';
-import { useOptimizedNetworkStatus } from '@/hooks/useOptimizedNetworkStatus';
-import { optimizedErrorHandler } from '@/utils/optimizedErrorHandler';
+import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { errorHandler } from '@/utils/errorHandler';
-import { formatDateForDB } from '@/components/shifts/utils/dateUtils';
-import { Shift, ShiftFormData } from '@/types/shifts';
+import type { Shift, ShiftType } from '@/types/shifts';
+import { toast } from 'sonner';
 
-// Re-export types for components that import from this file
-export { Shift, ShiftFormData } from '@/types/shifts';
-
-export interface UseOptimizedShiftsManagementReturn {
-  shifts: Shift[];
-  isLoading: boolean;
-  isSaving: boolean;
-  error: string | null;
-  addShift: (shiftData: Omit<Shift, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => Promise<Shift | null>;
-  updateShift: (shiftData: Shift) => Promise<Shift | null>;
-  deleteShift: (shiftId: string) => Promise<void>;
-  refreshShifts: () => Promise<void>;
-}
-
-export const useOptimizedShiftsManagement = (userId: string | undefined): UseOptimizedShiftsManagementReturn => {
+export const useOptimizedShiftsManagement = (userId: string | null) => {
   const [shifts, setShifts] = useState<Shift[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const { isOnline } = useOptimizedNetworkStatus();
-  const loadingTimeoutRef = useRef<NodeJS.Timeout>();
-  const hasLoadedRef = useRef(false);
 
-  const { success, error: showError } = useStandardizedToast();
+  const getDefaultStartTime = (type: ShiftType): string => {
+    switch (type) {
+      case 'morning': return '06:00';
+      case 'afternoon': return '14:00';
+      case 'night': return '22:00';
+      case 'custom': return '08:00';
+      default: return '08:00';
+    }
+  };
 
-  // Memoize cache key to prevent recalculation
-  const cacheKey = useMemo(() => userId ? `shifts_${userId}` : null, [userId]);
+  const getDefaultEndTime = (type: ShiftType): string => {
+    switch (type) {
+      case 'morning': return '14:00';
+      case 'afternoon': return '22:00';
+      case 'night': return '06:00';
+      case 'custom': return '16:00';
+      default: return '16:00';
+    }
+  };
 
-  // Load shifts with optimization and proper dependency management
   const loadShifts = useCallback(async () => {
-    if (!userId || !cacheKey || hasLoadedRef.current) {
+    if (!userId) {
+      setShifts([]);
       setIsLoading(false);
       return;
     }
 
+    setIsLoading(true);
+
     try {
-      setIsLoading(true);
-      setError(null);
+      console.log('Loading shifts for user:', userId);
 
-      // Set loading timeout
-      loadingTimeoutRef.current = setTimeout(() => {
-        setError('Načítání trvá příliš dlouho. Zkontrolujte připojení.');
-        setIsLoading(false);
-      }, 10000);
+      const { data, error } = await supabase
+        .from('shifts')
+        .select('*')
+        .eq('user_id', userId)
+        .order('date', { ascending: false });
 
-      // Try to load from cache first if offline
-      if (!isOnline) {
-        const cachedData = localStorage.getItem(cacheKey);
-        if (cachedData) {
-          const parsed = JSON.parse(cachedData);
-          setShifts(parsed.map((shift: any) => ({
-            ...shift,
-            type: shift.type as 'morning' | 'afternoon' | 'night' | 'custom'
-          })));
-          hasLoadedRef.current = true;
-          return;
-        }
+      if (error) {
+        console.error('Supabase error loading shifts:', error);
+        throw error;
       }
 
-      const data = await optimizedErrorHandler.executeWithRetry(
-        async () => {
-          const { data, error: fetchError } = await supabase
-            .from('shifts')
-            .select('*')
-            .eq('user_id', userId)
-            .order('date', { ascending: false });
+      console.log('Loaded shifts from database:', data?.length || 0);
 
-          if (fetchError) throw fetchError;
-          return data;
-        },
-        `loadShifts_${userId}`,
-        { maxRetries: isOnline ? 2 : 0 }
-      );
-
-      const typedShifts = (data || []).map(shift => ({
+      // Type conversion from database to proper Shift interface
+      const typedShifts: Shift[] = (data || []).map(shift => ({
         ...shift,
-        type: shift.type as 'morning' | 'afternoon' | 'night' | 'custom'
+        type: shift.type as ShiftType
       }));
 
       setShifts(typedShifts);
-      hasLoadedRef.current = true;
-      
-      // Cache data
-      if (cacheKey) {
-        localStorage.setItem(cacheKey, JSON.stringify(typedShifts));
-      }
-
     } catch (err) {
-      const errorMessage = !isOnline 
-        ? 'Nejste připojeni. Zobrazuji uložená data.'
-        : 'Nepodařilo se načíst směny';
-      
-      setError(errorMessage);
-      errorHandler.handleError(err, { operation: 'loadShifts', userId });
-      
-      if (!isOnline && cacheKey) {
-        // Try to load cached data
-        const cachedData = localStorage.getItem(cacheKey);
-        if (cachedData) {
-          const parsed = JSON.parse(cachedData);
-          setShifts(parsed);
-        }
-      }
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load shifts';
+      console.error('Error loading shifts:', err);
+      toast.error(`Chyba při načítání směn: ${errorMessage}`);
     } finally {
       setIsLoading(false);
-      if (loadingTimeoutRef.current) {
-        clearTimeout(loadingTimeoutRef.current);
+    }
+  }, [userId]);
+
+  const addShift = useCallback(async (shiftData: Omit<Shift, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
+    if (!userId) {
+      toast.error('Musíte být přihlášeni pro přidání směny');
+      return null;
+    }
+
+    setIsSaving(true);
+    try {
+      console.log('Adding new shift for user:', userId, 'Data:', shiftData);
+
+      // Check authentication
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) {
+        throw new Error('Uživatel není přihlášen');
       }
-    }
-  }, [userId, cacheKey, isOnline]);
 
-  // Stabilized add shift function
-  const addShift = useCallback(async (shiftData: Omit<Shift, 'id' | 'user_id' | 'created_at' | 'updated_at'>): Promise<Shift | null> => {
-    if (!userId) {
-      showError('Chyba', 'Uživatel není přihlášen');
-      return null;
-    }
+      if (session.user.id !== userId) {
+        throw new Error('Nesprávné ID uživatele');
+      }
 
-    if (!isOnline) {
-      // Offline mode - add to queue
-      const tempShift: Shift = {
-        id: `temp_${Date.now()}`,
-        user_id: userId,
-        ...shiftData,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      };
+      // Check if shift already exists for this date
+      const { data: existingShifts, error: checkError } = await supabase
+        .from('shifts')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('date', shiftData.date);
 
-      setShifts(prev => [tempShift, ...prev]);
-      showError('Offline režim', 'Směna bude synchronizována při obnovení připojení');
-      return tempShift;
-    }
+      if (checkError) {
+        console.error('Error checking existing shifts:', checkError);
+        throw checkError;
+      }
 
-    setIsSaving(true);
-    try {
-      // Oprava: Zajistíme správné formátování dat
-      const formattedShiftData = {
-        ...shiftData,
-        user_id: userId
-      };
+      let result;
 
-      console.log('Adding shift with data:', formattedShiftData);
+      if (existingShifts && existingShifts.length > 0) {
+        // Update existing shift
+        const existingShift = existingShifts[0];
+        console.log('Updating existing shift:', existingShift.id);
 
-      const data = await optimizedErrorHandler.executeWithRetry(
-        async () => {
-          const { data, error: insertError } = await supabase
-            .from('shifts')
-            .insert([formattedShiftData])
-            .select()
-            .single();
+        const { data, error } = await supabase
+          .from('shifts')
+          .update({
+            type: shiftData.type,
+            notes: shiftData.notes || '',
+            start_time: shiftData.start_time,
+            end_time: shiftData.end_time
+          })
+          .eq('id', existingShift.id)
+          .eq('user_id', userId)
+          .select()
+          .single();
 
-          if (insertError) throw insertError;
-          return data;
-        },
-        `addShift_${userId}_${shiftData.date}`,
-        { maxRetries: 2 }
-      );
+        if (error) {
+          console.error('Error updating shift:', error);
+          throw error;
+        }
+        result = data;
 
-      const newShift: Shift = {
-        ...data,
-        type: data.type as 'morning' | 'afternoon' | 'night' | 'custom'
-      };
-      
-      setShifts(prev => [newShift, ...prev.filter(s => s.id !== newShift.id)]);
-      success('Směna přidána', 'Nová směna byla úspěšně vytvořena');
-      
-      return newShift;
+        // Update local state - ensure we refresh the list
+        await loadShifts();
+        toast.success('Směna byla upravena');
+      } else {
+        // Create new shift
+        console.log('Creating new shift for user:', userId);
+
+        const insertData = {
+          user_id: userId,
+          date: shiftData.date,
+          type: shiftData.type,
+          start_time: shiftData.start_time || getDefaultStartTime(shiftData.type),
+          end_time: shiftData.end_time || getDefaultEndTime(shiftData.type),
+          notes: shiftData.notes || ''
+        };
+
+        console.log('Insert data:', insertData);
+
+        const { data, error } = await supabase
+          .from('shifts')
+          .insert(insertData)
+          .select()
+          .single();
+
+        if (error) {
+          console.error('Error creating shift:', error);
+          throw error;
+        }
+        result = data;
+
+        // Refresh the shifts list to show the new shift
+        await loadShifts();
+        toast.success('Směna byla přidána');
+      }
+
+      return result;
     } catch (err) {
-      errorHandler.handleError(err, { operation: 'addShift', shiftData });
-      showError('Chyba při přidání', 'Nepodařilo se přidat směnu');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to add/update shift';
+      console.error('Error adding/updating shift:', err);
+      toast.error(`Chyba při ukládání směny: ${errorMessage}`);
       return null;
     } finally {
       setIsSaving(false);
     }
-  }, [userId, isOnline, success, showError]);
+  }, [userId, loadShifts, getDefaultStartTime, getDefaultEndTime]);
 
-  // Stabilized update shift function
-  const updateShift = useCallback(async (shiftData: Shift): Promise<Shift | null> => {
-    if (!userId || !shiftData.id) {
-      showError('Chyba', 'Neplatná data směny');
+  const updateShift = useCallback(async (shiftData: Shift) => {
+    if (!userId) {
+      toast.error('Musíte být přihlášeni pro úpravu směny');
+      return null;
+    }
+
+    if (!shiftData.id) {
+      console.error('Cannot update shift without ID:', shiftData);
+      toast.error('Chyba: směna nemá platné ID');
       return null;
     }
 
     setIsSaving(true);
     try {
-      const data = await optimizedErrorHandler.executeWithRetry(
-        async () => {
-          const { data, error: updateError } = await supabase
-            .from('shifts')
-            .update({
-              date: shiftData.date,
-              type: shiftData.type,
-              start_time: shiftData.start_time,
-              end_time: shiftData.end_time,
-              notes: shiftData.notes
-            })
-            .eq('id', shiftData.id)
-            .eq('user_id', userId)
-            .select()
-            .single();
+      console.log('Updating shift with ID:', shiftData.id);
 
-          if (updateError) throw updateError;
-          return data;
-        },
-        `updateShift_${shiftData.id}`,
-        { maxRetries: 2 }
-      );
+      const { data, error } = await supabase
+        .from('shifts')
+        .update({
+          type: shiftData.type,
+          notes: shiftData.notes || '',
+          date: shiftData.date,
+          start_time: shiftData.start_time,
+          end_time: shiftData.end_time
+        })
+        .eq('id', shiftData.id)
+        .eq('user_id', userId)
+        .select()
+        .single();
 
-      const updatedShift: Shift = {
+      if (error) throw error;
+
+      // Ensure proper type casting for the returned data
+      const typedShift: Shift = {
         ...data,
-        type: data.type as 'morning' | 'afternoon' | 'night' | 'custom'
+        type: data.type as ShiftType
       };
-      
-      setShifts(prev => prev.map(shift => shift.id === updatedShift.id ? updatedShift : shift));
-      success('Směna upravena', 'Změny byly úspěšně uloženy');
-      
-      return updatedShift;
+
+      setShifts(prev => prev.map(shift =>
+        shift.id === typedShift.id ? typedShift : shift
+      ));
+      toast.success('Směna byla upravena');
+      return typedShift;
     } catch (err) {
-      errorHandler.handleError(err, { operation: 'updateShift', shiftData });
-      showError('Chyba při úpravě', 'Nepodařilo se upravit směnu');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to update shift';
+      console.error('Error updating shift:', err);
+      toast.error(`Chyba při úpravě směny: ${errorMessage}`);
       return null;
     } finally {
       setIsSaving(false);
     }
-  }, [userId, success, showError]);
+  }, [userId]);
 
-  // Stabilized delete shift function
-  const deleteShift = useCallback(async (shiftId: string): Promise<void> => {
+  const deleteShift = useCallback(async (shiftId: string) => {
     if (!userId) {
-      showError('Chyba', 'Uživatel není přihlášen');
-      return;
+      toast.error('Musíte být přihlášeni pro smazání směny');
+      return false;
+    }
+
+    if (!shiftId) {
+      console.error('Cannot delete shift without ID');
+      toast.error('Chyba: směna nemá platné ID');
+      return false;
     }
 
     setIsSaving(true);
     try {
-      await optimizedErrorHandler.executeWithRetry(
-        async () => {
-          const { error: deleteError } = await supabase
-            .from('shifts')
-            .delete()
-            .eq('id', shiftId)
-            .eq('user_id', userId);
+      console.log('Deleting shift with ID:', shiftId);
 
-          if (deleteError) throw deleteError;
-        },
-        `deleteShift_${shiftId}`,
-        { maxRetries: 2 }
-      );
+      const { error } = await supabase
+        .from('shifts')
+        .delete()
+        .eq('id', shiftId)
+        .eq('user_id', userId);
+
+      if (error) throw error;
 
       setShifts(prev => prev.filter(shift => shift.id !== shiftId));
-      success('Směna smazána', 'Směna byla úspěšně odstraněna');
+      toast.success('Směna byla smazána');
+      return true;
     } catch (err) {
-      errorHandler.handleError(err, { operation: 'deleteShift', shiftId });
-      showError('Chyba při mazání', 'Nepodařilo se smazat směnu');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to delete shift';
+      console.error('Error deleting shift:', err);
+      toast.error(`Chyba při mazání směny: ${errorMessage}`);
+      return false;
     } finally {
       setIsSaving(false);
     }
-  }, [userId, success, showError]);
+  }, [userId]);
 
-  const refreshShifts = useCallback(async () => {
-    hasLoadedRef.current = false;
-    optimizedErrorHandler.clearCache();
-    await loadShifts();
+  const refreshShifts = useCallback(() => {
+    loadShifts();
   }, [loadShifts]);
 
-  // Load shifts only once when userId is available
   useEffect(() => {
-    if (userId && !hasLoadedRef.current) {
-      loadShifts();
-    }
-  }, [userId, loadShifts]);
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (loadingTimeoutRef.current) {
-        clearTimeout(loadingTimeoutRef.current);
-      }
-    };
-  }, []);
+    loadShifts();
+  }, [loadShifts]);
 
   return {
     shifts,
     isLoading,
     isSaving,
-    error,
     addShift,
     updateShift,
     deleteShift,
