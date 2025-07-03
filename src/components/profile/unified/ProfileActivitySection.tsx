@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,37 +9,39 @@ import {
   ActivityIcon, PieChartIcon, CalendarIcon, BookOpenIcon,
   TrendingUpIcon, ClockIcon
 } from "lucide-react";
+import { useTranslation } from 'react-i18next';
 import UserActivityChart from "../UserActivityChart";
 
 const ProfileActivitySection = () => {
   const [showStatistics, setShowStatistics] = useState(false);
+  const { t } = useTranslation('profile');
 
   const activityStats = [
     {
-      title: "Celkové směny",
+      title: t('totalShifts'),
       value: "24",
-      change: "+3 tento měsíc",
+      change: `+3 ${t('thisMonth')}`,
       icon: CalendarIcon,
       color: "text-blue-600"
     },
     {
-      title: "Studium němčiny",
+      title: t('germanStudy'),
       value: "18h",
-      change: "+2h tento týden",
+      change: `+2h ${t('thisWeek')}`,
       icon: BookOpenIcon,
       color: "text-green-600"
     },
     {
-      title: "Aktivní dny",
+      title: t('activeDays'),
       value: "15",
-      change: "Posledních 30 dní",
+      change: t('last30Days'),
       icon: ActivityIcon,
       color: "text-purple-600"
     },
     {
-      title: "Průměrná doba",
+      title: t('averageTime'),
       value: "1.2h",
-      change: "Na směnu",
+      change: t('perShift'),
       icon: ClockIcon,
       color: "text-orange-600"
     }
@@ -51,20 +54,20 @@ const ProfileActivitySection = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <ActivityIcon className="h-5 w-5" />
-            Aktivita a statistiky
+            {t('activityAndStatistics')}
           </CardTitle>
           <CardDescription>
-            Sledujte svůj pokrok a aktivitu v aplikaci
+            {t('trackProgressDescription')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-between">
             <div>
               <Label htmlFor="show-stats" className="text-base font-medium">
-                Zobrazit detailní statistiky
+                {t('showDetailedStatistics')}
               </Label>
               <p className="text-sm text-muted-foreground mt-1">
-                Ukáže grafy a podrobné analýzy vaší aktivity
+                {t('showStatisticsDescription')}
               </p>
             </div>
             <Switch 
@@ -106,7 +109,7 @@ const ProfileActivitySection = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <TrendingUpIcon className="h-5 w-5" />
-                  Aktivita v čase
+                  {t('activityOverTime')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -118,12 +121,12 @@ const ProfileActivitySection = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <PieChartIcon className="h-5 w-5" />
-                  Jazykové dovednosti {/* Placeholder */}
+                  {t('languageSkills')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-muted-foreground text-center py-8">
-                  Statistiky jazykových dovedností nejsou dostupné.
+                  {t('languageStatsNotAvailable')}
                 </div>
               </CardContent>
             </Card>
@@ -132,27 +135,27 @@ const ProfileActivitySection = () => {
           {/* Nedávná aktivita */}
           <Card>
             <CardHeader>
-              <CardTitle>Nedávná aktivita</CardTitle>
+              <CardTitle>{t('recentActivity')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {[
                   {
-                    action: "Dokončena směna",
-                    detail: "München - Ranní směna",
-                    time: "Před 2 hodinami",
+                    action: t('shiftCompleted'),
+                    detail: `München - ${t('morningShift')}`,
+                    time: t('hoursAgo'),
                     type: "shift"
                   },
                   {
-                    action: "Studium němčiny",
-                    detail: "15 nových slov naučeno",
-                    time: "Včera",
+                    action: t('germanStudy'),
+                    detail: `15 ${t('newWordsLearned')}`,
+                    time: t('yesterday'),
                     type: "language"
                   },
                   {
-                    action: "Aktualizace profilu",
-                    detail: "Změněny pracovní preference",
-                    time: "Před 3 dny",
+                    action: t('profileUpdated'),
+                    detail: t('workPreferencesChanged'),
+                    time: t('daysAgo'),
                     type: "profile"
                   }
                 ].map((activity, index) => (
