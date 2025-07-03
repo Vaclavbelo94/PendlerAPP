@@ -1,5 +1,5 @@
 
-import React, { Suspense } from 'react';
+import React from 'react';
 import { Helmet } from "react-helmet";
 import { motion } from 'framer-motion';
 import PremiumCheck from "@/components/premium/PremiumCheck";
@@ -7,13 +7,10 @@ import { DashboardBackground } from "@/components/common/DashboardBackground";
 import { MessageSquare, Languages } from "lucide-react";
 import { useScreenOrientation } from "@/hooks/useScreenOrientation";
 import { usePerformanceOptimization } from "@/hooks/usePerformanceOptimization";
-import SimpleLoadingSpinner from "@/components/loading/SimpleLoadingSpinner";
 import Layout from '@/components/layouts/Layout';
 import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 import { useTranslation } from 'react-i18next';
-
-// Lazy load the simple auto translator
-const SimpleAutoTranslator = React.lazy(() => import("@/components/translator/SimpleAutoTranslator"));
+import SimpleAutoTranslator from "@/components/translator/SimpleAutoTranslator";
 
 const Translator = () => {
   const { isMobile, isSmallLandscape } = useScreenOrientation();
@@ -83,13 +80,7 @@ const Translator = () => {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="space-y-6"
             >
-              <Suspense fallback={
-                <div className="flex items-center justify-center py-16">
-                  <SimpleLoadingSpinner message={t('translator:translating')} />
-                </div>
-              }>
-                <SimpleAutoTranslator onTextToSpeech={handleTextToSpeech} />
-              </Suspense>
+              <SimpleAutoTranslator onTextToSpeech={handleTextToSpeech} />
             </motion.div>
 
             {/* Additional info section */}

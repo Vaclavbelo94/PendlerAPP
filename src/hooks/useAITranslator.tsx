@@ -20,6 +20,13 @@ export const useAITranslator = () => {
   const sendMessage = async (userMessage: string) => {
     if (!userMessage.trim()) return;
 
+    console.log('🚀 useAITranslator - sendMessage called:', {
+      message: userMessage.trim(),
+      messageLength: userMessage.trim().length,
+      currentService,
+      timestamp: new Date().toISOString()
+    });
+
     const userMsg: ChatMessage = {
       id: Date.now().toString(),
       role: 'user',
@@ -31,6 +38,8 @@ export const useAITranslator = () => {
     setIsLoading(true);
 
     try {
+      console.log('📡 Calling supabase.functions.invoke...');
+      
       const conversationHistory = messages.map(msg => ({
         role: msg.role,
         content: msg.content
@@ -43,7 +52,22 @@ export const useAITranslator = () => {
         }
       });
 
-      if (error) throw error;
+      console.log('📨 Supabase function response:', {
+        data,
+        error,
+        hasData: !!data,
+        hasError: !!error
+      });
+
+      if (error) {
+        console.error('❌ Supabase function error:', error);
+        throw error;
+      }
+
+      if (!data) {
+        console.error('❌ No data received from function');
+        throw new Error('Žádná odpověď od překladové služby');
+      }
 
       const aiMsg: ChatMessage = {
         id: (Date.now() + 1).toString(),
@@ -53,6 +77,13 @@ export const useAITranslator = () => {
         service: data.service,
         fallback: data.fallback
       };
+
+      console.log('✅ AI response processed:', {
+        response: data.response,
+        service: data.service,
+        fallback: data.fallback,
+        responseLength: data.response?.length
+      });
 
       setMessages(prev => [...prev, aiMsg]);
       setCurrentService(data.service);
@@ -87,11 +118,17 @@ export const useAITranslator = () => {
       localStorage.setItem('aiTranslatorHistory', JSON.stringify(history));
 
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error('💥 Complete error in sendMessage:', error);
+      console.error('Error details:', {
+        name: error.name,
+        message: error.message,
+        stack: error.stack
+      });
+      
       toast({
         variant: "destructive",
-        title: "Chyba",
-        description: "Nepodařilo se odeslat zprávu. Zkuste to prosím znovu."
+        title: "Chyba překladače",
+        description: `Nepodařilo se přeložit text: ${error.message || 'Neznámá chyba'}`
       });
     } finally {
       setIsLoading(false);
@@ -99,6 +136,7 @@ export const useAITranslator = () => {
   };
 
   const clearConversation = () => {
+    console.log('🗑️ Clearing conversation history');
     setMessages([]);
   };
 
@@ -107,13 +145,19 @@ export const useAITranslator = () => {
       const savedHistory = localStorage.getItem('aiTranslatorHistory');
       if (savedHistory) {
         const history = JSON.parse(savedHistory);
+        console.log('📚 Loading conversation history:', {
+          historyLength: history.length,
+          hasHistory: history.length > 0
+        });
         setMessages(history.map((msg: any) => ({
           ...msg,
           timestamp: new Date(msg.timestamp)
         })));
+      } else {
+        console.log('📚 No conversation history found');
       }
     } catch (error) {
-      console.error('Error loading history:', error);
+      console.error('❌ Error loading history:', error);
     }
   };
 
