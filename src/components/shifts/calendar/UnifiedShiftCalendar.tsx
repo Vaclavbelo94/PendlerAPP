@@ -21,7 +21,7 @@ const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = React.memo(({
   className
 }) => {
   const { t } = useTranslation('shifts');
-  const [viewMode, setViewMode] = useState<'week' | 'month'>('week');
+  const [viewMode, setViewMode] = useState<'week' | 'month'>('month');
 
   const handleAddShift = useCallback((date?: Date) => {
     if (date && onAddShiftForDate) {
@@ -64,11 +64,11 @@ const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = React.memo(({
                 <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
                   <TabsTrigger value="week" className="gap-2">
                     <CalendarDays className="h-4 w-4" />
-                    {t('weeklyView')}
+                    {t('weeklyView') || 'Týdenní pohled'}
                   </TabsTrigger>
                   <TabsTrigger value="month" className="gap-2">
                     <Calendar className="h-4 w-4" />
-                    {t('monthlyView')}
+                    {t('monthlyView') || 'Měsíční pohled'}
                   </TabsTrigger>
                 </TabsList>
 

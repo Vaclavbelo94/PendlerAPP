@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -59,7 +58,7 @@ const WeeklyShiftCalendar: React.FC<WeeklyShiftCalendarProps> = ({
     }
   };
 
-  const handlePreviousWeek = () => {
+  const handlePrevWeek = () => {
     setCurrentWeek(prev => subWeeks(prev, 1));
   };
 
@@ -84,9 +83,9 @@ const WeeklyShiftCalendar: React.FC<WeeklyShiftCalendarProps> = ({
         <CardContent>
           <div className="animate-pulse space-y-4">
             <div className="h-12 bg-muted rounded"></div>
-            <div className="grid grid-cols-1 sm:grid-cols-7 gap-2">
+            <div className="space-y-2">
               {Array.from({ length: 7 }).map((_, i) => (
-                <div key={i} className="h-32 bg-muted rounded"></div>
+                <div key={i} className="h-20 bg-muted rounded"></div>
               ))}
             </div>
           </div>
@@ -98,34 +97,32 @@ const WeeklyShiftCalendar: React.FC<WeeklyShiftCalendarProps> = ({
   return (
     <Card>
       <CardHeader className="pb-4">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-lg">
             <CalendarDays className="h-5 w-5" />
             {t('weeklyView')}
           </CardTitle>
           
-          {/* Week Navigation - Mobile Optimized */}
-          <div className="flex items-center justify-between sm:justify-center gap-2">
+          {/* Week Navigation */}
+          <div className="flex items-center gap-2">
             <Button
               variant="outline"
               size="sm"
-              onClick={handlePreviousWeek}
-              className="px-2"
+              onClick={handlePrevWeek}
+              className="h-8 w-8 p-0"
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
             
-            <div className="text-sm font-medium text-center min-w-0 flex-1 sm:min-w-[180px] sm:flex-none px-2">
-              <div className="truncate">
-                {format(weekStart, 'd. MMM', { locale: cs })} - {format(weekEnd, 'd. MMM yyyy', { locale: cs })}
-              </div>
+            <div className="text-sm font-medium text-center min-w-[140px] px-2">
+              {format(weekStart, 'd. MMM', { locale: cs })} - {format(weekEnd, 'd. MMM yyyy', { locale: cs })}
             </div>
             
             <Button
               variant="outline"
               size="sm"
               onClick={handleNextWeek}
-              className="px-2"
+              className="h-8 w-8 p-0"
             >
               <ChevronRight className="h-4 w-4" />
             </Button>
@@ -134,8 +131,8 @@ const WeeklyShiftCalendar: React.FC<WeeklyShiftCalendarProps> = ({
       </CardHeader>
       
       <CardContent className="p-4">
-        {/* Mobile: Single column, Desktop: 7 columns */}
-        <div className="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-7 sm:gap-3">
+        {/* Mobile: Stacked layout, Desktop: Keep grid */}
+        <div className="space-y-3 md:space-y-0 md:grid md:grid-cols-7 md:gap-3">
           {weekDays.map((day) => {
             const dayShifts = getShiftsForDate(day);
             const isCurrentDay = isToday(day);
@@ -144,19 +141,20 @@ const WeeklyShiftCalendar: React.FC<WeeklyShiftCalendarProps> = ({
               <div
                 key={day.toISOString()}
                 className={cn(
-                  "border rounded-lg p-3 min-h-[120px] sm:min-h-[150px] bg-card transition-colors",
+                  "border rounded-lg p-3 bg-card transition-colors",
+                  "md:min-h-[120px]",
                   isCurrentDay && "ring-2 ring-orange-400 bg-orange-50 dark:bg-orange-950/30",
                   "hover:bg-accent/30"
                 )}
               >
-                {/* Day header - Mobile optimized */}
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-3 sm:flex-col sm:items-center sm:gap-1">
-                    <div className="text-sm font-medium sm:text-xs sm:text-muted-foreground sm:uppercase">
+                {/* Day header */}
+                <div className="flex items-center justify-between mb-3 md:flex-col md:items-center md:gap-1">
+                  <div className="flex items-center gap-3 md:flex-col md:gap-1">
+                    <div className="text-sm font-medium md:text-xs md:text-muted-foreground md:uppercase">
                       {format(day, 'EEEE', { locale: cs })}
                     </div>
                     <div className={cn(
-                      "text-xl font-bold sm:text-lg",
+                      "text-lg font-bold md:text-xl",
                       isCurrentDay && "text-orange-600 dark:text-orange-400"
                     )}>
                       {format(day, 'd')}
@@ -174,16 +172,16 @@ const WeeklyShiftCalendar: React.FC<WeeklyShiftCalendarProps> = ({
                   </Button>
                 </div>
 
-                {/* Shifts for this day */}
+                {/* Shifts */}
                 <div className="space-y-2">
                   {dayShifts.length === 0 ? (
-                    <div className="text-center py-3 sm:py-4">
-                      <p className="text-sm text-muted-foreground mb-2">{t('noShift')}</p>
+                    <div className="text-center py-2 md:py-4">
+                      <p className="text-xs text-muted-foreground mb-2">{t('noShift')}</p>
                       <Button
                         variant="outline"
                         size="sm" 
                         onClick={() => handleAddShiftForDate(day)}
-                        className="text-xs h-8"
+                        className="text-xs h-7 px-2"
                       >
                         <Plus className="h-3 w-3 mr-1" />
                         {t('addShift')}
