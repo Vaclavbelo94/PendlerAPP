@@ -64,11 +64,11 @@ const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = React.memo(({
                 <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
                   <TabsTrigger value="week" className="gap-2">
                     <CalendarDays className="h-4 w-4" />
-                    {t('weekView')}
+                    {t('weeklyView')}
                   </TabsTrigger>
                   <TabsTrigger value="month" className="gap-2">
                     <Calendar className="h-4 w-4" />
-                    {t('monthView')}
+                    {t('monthlyView')}
                   </TabsTrigger>
                 </TabsList>
 
