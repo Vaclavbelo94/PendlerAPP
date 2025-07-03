@@ -47,5 +47,13 @@
   "germany": "Německo",
   "poland": "Polsko",
   "loadingCities": "Načítám města...",
-  "noCitiesFound": "Žádná města nenalezena."
+  "noCitiesFound": "Žádná města nenalezena.",
+  "notSet": "Nenastaveno",
+  "profileOverview": "Přehled profilu",
+  "basicInfoDescription": "Zde jsou vaše základní informace.",
+  "username": "Uživatelské jméno",
+  "bio": "Bio",
+  "registrationDate": "Datum registrace",
+  "editProfile": "Upravit profil",
+  "cancel": "Zrušit"
 }

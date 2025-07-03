@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -5,8 +6,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from '@/hooks/auth';
 import { User, Mail, Calendar, MapPin, Briefcase, Edit2, Save, X } from "lucide-react";
+import { useTranslation } from 'react-i18next';
+import { useProfileSettings } from './settings/useProfileSettings';
+import CityAutocomplete from '@/components/common/CityAutocomplete';
+import { useToast } from '@/hooks/use-toast';
 
 interface ProfileOverviewProps {
   onEdit: () => void;
@@ -17,27 +23,73 @@ interface ProfileOverviewProps {
 
 const ProfileOverview: React.FC<ProfileOverviewProps> = ({ onEdit, onSave, onCancel, isEditing }) => {
   const { user } = useAuth();
-  const [username, setUsername] = useState('');
-  const [location, setLocation] = useState('');
-  const [bio, setBio] = useState('');
+  const { t } = useTranslation('profile');
+  const { toast } = useToast();
+  const { settings, isLoading, isSaving, saveSettings } = useProfileSettings();
+  
+  const [formData, setFormData] = useState({
+    username: '',
+    bio: '',
+    location: '',
+    website: ''
+  });
 
   useEffect(() => {
-    if (user) {
-      setUsername(user.user_metadata?.username || '');
-      setLocation(user.user_metadata?.location || '');
-      setBio(user.user_metadata?.bio || '');
+    if (settings) {
+      setFormData({
+        username: settings.username || '',
+        bio: settings.bio || '',
+        location: settings.location || '',
+        website: settings.website || ''
+      });
     }
-  }, [user]);
+  }, [settings]);
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSave = async () => {
+    const success = await saveSettings({
+      username: formData.username,
+      fullName: formData.username,
+      bio: formData.bio,
+      location: formData.location,
+      website: formData.website
+    });
+
+    if (success) {
+      toast({
+        title: t('saveChanges'),
+        description: "Profil byl úspěšně uložen",
+        variant: "default",
+      });
+      onSave();
+    } else {
+      toast({
+        title: "Chyba",
+        description: "Nepodařilo se uložit profil",
+        variant: "destructive",
+      });
+    }
+  };
 
   if (!user) {
+    return <p>{isLoading ? 'Načítání profilu...' : 'Chyba načítání'}</p>;
+  }
+
+  if (isLoading) {
     return <p>Načítání profilu...</p>;
   }
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Přehled profilu</CardTitle>
-        <CardDescription>Zde jsou vaše základní informace.</CardDescription>
+        <CardTitle>{t('profileOverview')}</CardTitle>
+        <CardDescription>{t('basicInfoDescription')}</CardDescription>
       </CardHeader>
       <CardContent className="grid gap-6">
         <div className="flex items-center space-x-4">
@@ -48,7 +100,7 @@ const ProfileOverview: React.FC<ProfileOverviewProps> = ({ onEdit, onSave, onCan
             </AvatarFallback>
           </Avatar>
           <div>
-            <h2 className="text-lg font-semibold">{username}</h2>
+            <h2 className="text-lg font-semibold">{formData.username || user.email?.split('@')[0]}</h2>
             <Badge variant="secondary">
               <Mail className="h-3 w-3 mr-1" />
               {user.email}
@@ -57,65 +109,85 @@ const ProfileOverview: React.FC<ProfileOverviewProps> = ({ onEdit, onSave, onCan
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="username">Uživatelské jméno</Label>
+          <Label htmlFor="username">{t('username')}</Label>
           {isEditing ? (
             <Input
               id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              value={formData.username}
+              onChange={(e) => handleInputChange('username', e.target.value)}
+              placeholder={t('enterYourName')}
             />
           ) : (
             <p className="text-sm text-muted-foreground">
               <User className="h-4 w-4 mr-2 inline-block" />
-              {username || 'Nezadáno'}
+              {formData.username || t('notSet')}
             </p>
           )}
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="location">Lokace</Label>
+          <Label htmlFor="bio">{t('bio')}</Label>
           {isEditing ? (
-            <Input
-              id="location"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-            />
-          ) : (
-            <p className="text-sm text-muted-foreground">
-              <MapPin className="h-4 w-4 mr-2 inline-block" />
-              {location || 'Nezadáno'}
-            </p>
-          )}
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="bio">Bio</Label>
-          {isEditing ? (
-            <Input
+            <Textarea
               id="bio"
-              value={bio}
-              onChange={(e) => setBio(e.target.value)}
+              value={formData.bio}
+              onChange={(e) => handleInputChange('bio', e.target.value)}
+              placeholder={t('writeSomethingAboutYourself')}
             />
           ) : (
             <p className="text-sm text-muted-foreground">
               <Briefcase className="h-4 w-4 mr-2 inline-block" />
-              {bio || 'Nezadáno'}
+              {formData.bio || t('notSet')}
             </p>
           )}
         </div>
 
         <div className="space-y-2">
-          <Label>Datum registrace</Label>
+          <Label htmlFor="location">{t('location')}</Label>
+          {isEditing ? (
+            <CityAutocomplete
+              id="location"
+              value={formData.location}
+              onChange={(value) => handleInputChange('location', value)}
+              placeholder={t('locationPlaceholder')}
+            />
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              <MapPin className="h-4 w-4 mr-2 inline-block" />
+              {formData.location || t('notSet')}
+            </p>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="website">{t('website')}</Label>
+          {isEditing ? (
+            <Input
+              id="website"
+              value={formData.website}
+              onChange={(e) => handleInputChange('website', e.target.value)}
+              placeholder="https://example.com"
+            />
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              <Briefcase className="h-4 w-4 mr-2 inline-block" />
+              {formData.website || t('notSet')}
+            </p>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <Label>{t('registrationDate')}</Label>
           <p className="text-sm text-muted-foreground">
             <Calendar className="h-4 w-4 mr-2 inline-block" />
-            {user.created_at}
+            {user.created_at ? new Date(user.created_at).toLocaleDateString('cs-CZ') : t('notSet')}
           </p>
         </div>
 
         {!isEditing && (
           <Button onClick={onEdit} className="w-full">
             <Edit2 className="h-4 w-4 mr-2" />
-            Upravit profil
+            {t('editProfile')}
           </Button>
         )}
 
@@ -123,11 +195,11 @@ const ProfileOverview: React.FC<ProfileOverviewProps> = ({ onEdit, onSave, onCan
           <div className="flex justify-end space-x-2">
             <Button variant="ghost" onClick={onCancel}>
               <X className="h-4 w-4 mr-2" />
-              Zrušit
+              {t('cancel')}
             </Button>
-            <Button onClick={onSave}>
+            <Button onClick={handleSave} disabled={isSaving}>
               <Save className="h-4 w-4 mr-2" />
-              Uložit
+              {isSaving ? t('saving') : t('save')}
             </Button>
           </div>
         )}

@@ -47,5 +47,13 @@
   "germany": "Niemcy",
   "poland": "Polska",
   "loadingCities": "Ładuję miasta...",
-  "noCitiesFound": "Nie znaleziono miast."
+  "noCitiesFound": "Nie znaleziono miast.",
+  "notSet": "Nie ustawiono",
+  "profileOverview": "Przegląd profilu",
+  "basicInfoDescription": "Tutaj znajdują się Twoje podstawowe informacje.",
+  "username": "Nazwa użytkownika",
+  "bio": "Bio",
+  "registrationDate": "Data rejestracji",
+  "editProfile": "Edytuj profil",
+  "cancel": "Anuluj"
 }
