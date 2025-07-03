@@ -1,8 +1,8 @@
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { format } from 'date-fns';
 import Layout from '@/components/layouts/Layout';
-import UnifiedShiftCalendar from '@/components/shifts/calendar/UnifiedShiftCalendar';
+import ShiftCalendarContainer from '@/components/shifts/calendar/ShiftCalendarContainer';
 import FloatingAddButton from '@/components/shifts/FloatingAddButton';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import ShiftForm from '@/components/shifts/forms/ShiftForm';
@@ -16,7 +16,7 @@ import { useAuth } from '@/hooks/auth';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-const Shifts = () => {
+const Shifts = React.memo(() => {
   const { t } = useTranslation('shifts');
   const isMobile = useIsMobile();
   const { user, isLoading: authLoading } = useAuth();
@@ -31,7 +31,6 @@ const Shifts = () => {
     refreshShifts,
   } = useShiftsCRUD();
 
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [isAddSheetOpen, setIsAddSheetOpen] = useState(false);
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
   const [editingShift, setEditingShift] = useState<Shift | null>(null);
@@ -40,25 +39,17 @@ const Shifts = () => {
   // Determine loading state - show loading if auth is loading OR shifts are loading while user exists
   const isLoading = authLoading || (user && shiftsLoading);
 
-  console.log('Shifts page - States:', { 
-    user: user?.email, 
-    authLoading, 
-    shiftsLoading,
-    isLoading,
-    shiftsCount: shifts.length 
-  });
-
-  const handleAddShift = () => {
+  const handleAddShift = useCallback(() => {
     if (!user) {
       console.log('Cannot add shift - user not authenticated');
       return;
     }
-    console.log('handleAddShift called - selectedDate:', selectedDate);
-    setSelectedDateForNewShift(selectedDate || new Date());
+    console.log('handleAddShift called');
+    setSelectedDateForNewShift(new Date());
     setIsAddSheetOpen(true);
-  };
+  }, [user]);
 
-  const handleAddShiftForDate = (date: Date) => {
+  const handleAddShiftForDate = useCallback((date: Date) => {
     if (!user) {
       console.log('Cannot add shift for date - user not authenticated');
       return;
@@ -66,9 +57,9 @@ const Shifts = () => {
     console.log('handleAddShiftForDate called - date:', date);
     setSelectedDateForNewShift(date);
     setIsAddSheetOpen(true);
-  };
+  }, [user]);
 
-  const handleEditShift = (shift: Shift) => {
+  const handleEditShift = useCallback((shift: Shift) => {
     if (!user) {
       console.log('Cannot edit shift - user not authenticated');
       return;
@@ -76,9 +67,9 @@ const Shifts = () => {
     console.log('handleEditShift called - shift:', shift);
     setEditingShift(shift);
     setIsEditSheetOpen(true);
-  };
+  }, [user]);
 
-  const handleCreateShift = async (formData: ShiftFormData) => {
+  const handleCreateShift = useCallback(async (formData: ShiftFormData) => {
     if (!selectedDateForNewShift || !user) {
       console.error('Cannot create shift - missing data or user');
       return;
@@ -90,9 +81,9 @@ const Shifts = () => {
       setIsAddSheetOpen(false);
       setSelectedDateForNewShift(null);
     }
-  };
+  }, [selectedDateForNewShift, user, createShift]);
 
-  const handleUpdateShift = async (formData: ShiftFormData) => {
+  const handleUpdateShift = useCallback(async (formData: ShiftFormData) => {
     if (!editingShift?.id || !user) {
       console.error('Cannot update shift - missing data or user');
       return;
@@ -104,21 +95,31 @@ const Shifts = () => {
       setIsEditSheetOpen(false);
       setEditingShift(null);
     }
-  };
+  }, [editingShift, user, updateShift]);
 
-  const handleDeleteShift = async (shiftId: string) => {
+  const handleDeleteShift = useCallback(async (shiftId: string) => {
     if (!user) {
       console.log('Cannot delete shift - user not authenticated');
       return;
     }
     console.log('Deleting shift:', shiftId);
     await deleteShift(shiftId);
-  };
+  }, [user, deleteShift]);
 
-  const handleRetry = () => {
+  const handleRetry = useCallback(() => {
     console.log('Retrying to load shifts...');
     refreshShifts();
-  };
+  }, [refreshShifts]);
+
+  const handleCloseAddSheet = useCallback(() => {
+    setIsAddSheetOpen(false);
+    setSelectedDateForNewShift(null);
+  }, []);
+
+  const handleCloseEditSheet = useCallback(() => {
+    setIsEditSheetOpen(false);
+    setEditingShift(null);
+  }, []);
 
   // Show loading while auth is being determined or data is loading
   if (isLoading) {
@@ -218,16 +219,13 @@ const Shifts = () => {
           )}
           
           <div className="animate-fade-in">
-            <UnifiedShiftCalendar
+            <ShiftCalendarContainer
               shifts={shifts}
-              selectedDate={selectedDate}
-              onSelectDate={setSelectedDate}
               onEditShift={handleEditShift}
               onDeleteShift={handleDeleteShift}
               onAddShift={handleAddShift}
               onAddShiftForDate={handleAddShiftForDate}
               isLoading={shiftsLoading}
-              className="w-full"
             />
           </div>
         </div>
@@ -256,10 +254,7 @@ const Shifts = () => {
           <div className="mt-6">
             <ShiftForm
               onSubmit={handleCreateShift}
-              onCancel={() => {
-                setIsAddSheetOpen(false);
-                setSelectedDateForNewShift(null);
-              }}
+              onCancel={handleCloseAddSheet}
               isLoading={isSaving}
               initialDate={selectedDateForNewShift}
             />
@@ -284,10 +279,7 @@ const Shifts = () => {
             <ShiftForm
               shift={editingShift}
               onSubmit={handleUpdateShift}
-              onCancel={() => {
-                setIsEditSheetOpen(false);
-                setEditingShift(null);
-              }}
+              onCancel={handleCloseEditSheet}
               isLoading={isSaving}
             />
           </div>
@@ -295,6 +287,8 @@ const Shifts = () => {
       </Sheet>
     </Layout>
   );
-};
+});
+
+Shifts.displayName = 'Shifts';
 
 export default Shifts;

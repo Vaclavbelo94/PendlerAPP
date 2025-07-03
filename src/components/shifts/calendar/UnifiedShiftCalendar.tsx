@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
+
+import React, { useState, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, CalendarDays } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import WeeklyShiftCalendar from './WeeklyShiftCalendar';
-import OptimizedShiftCalendar from '../OptimizedShiftCalendar';
+import OptimizedShiftCalendar from './OptimizedShiftCalendar';
 import { ShiftCalendarProps } from '@/types/shifts';
 import { useTranslation } from 'react-i18next';
 
-const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = ({
+const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = React.memo(({
   shifts,
   selectedDate,
   onSelectDate,
@@ -23,13 +23,32 @@ const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = ({
   const { t } = useTranslation('shifts');
   const [viewMode, setViewMode] = useState<'week' | 'month'>('week');
 
-  const handleAddShift = (date?: Date) => {
+  const handleAddShift = useCallback((date?: Date) => {
     if (date && onAddShiftForDate) {
       onAddShiftForDate(date);
     } else if (onAddShift) {
       onAddShift();
     }
-  };
+  }, [onAddShift, onAddShiftForDate]);
+
+  const memoizedWeeklyProps = useMemo(() => ({
+    shifts,
+    onEditShift: onEditShift || (() => {}),
+    onDeleteShift: onDeleteShift || (() => {}),
+    onAddShift: handleAddShift,
+    isLoading
+  }), [shifts, onEditShift, onDeleteShift, handleAddShift, isLoading]);
+
+  const memoizedMonthlyProps = useMemo(() => ({
+    shifts,
+    selectedDate,
+    onDateChange: onSelectDate,
+    onEditShift,
+    onDeleteShift,
+    onAddShift,
+    onAddShiftForDate,
+    isLoading
+  }), [shifts, selectedDate, onSelectDate, onEditShift, onDeleteShift, onAddShift, onAddShiftForDate, isLoading]);
 
   return (
     <div className={className}>
@@ -40,7 +59,6 @@ const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = ({
       >
         <Card>
           <CardContent className="p-4">
-            {/* View Mode Selector */}
             <div className="mb-6">
               <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'week' | 'month')}>
                 <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
@@ -55,26 +73,11 @@ const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = ({
                 </TabsList>
 
                 <TabsContent value="week" className="mt-6">
-                  <WeeklyShiftCalendar
-                    shifts={shifts}
-                    onEditShift={onEditShift || (() => {})}
-                    onDeleteShift={onDeleteShift || (() => {})}
-                    onAddShift={handleAddShift}
-                    isLoading={isLoading}
-                  />
+                  <WeeklyShiftCalendar {...memoizedWeeklyProps} />
                 </TabsContent>
 
                 <TabsContent value="month" className="mt-6">
-                  <OptimizedShiftCalendar
-                    shifts={shifts}
-                    selectedDate={selectedDate}
-                    onDateChange={onSelectDate}
-                    onEditShift={onEditShift}
-                    onDeleteShift={onDeleteShift}
-                    onAddShift={onAddShift}
-                    onAddShiftForDate={onAddShiftForDate}
-                    isLoading={isLoading}
-                  />
+                  <OptimizedShiftCalendar {...memoizedMonthlyProps} />
                 </TabsContent>
               </Tabs>
             </div>
@@ -83,6 +86,8 @@ const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = ({
       </motion.div>
     </div>
   );
-};
+});
+
+UnifiedShiftCalendar.displayName = 'UnifiedShiftCalendar';
 
 export default UnifiedShiftCalendar;
