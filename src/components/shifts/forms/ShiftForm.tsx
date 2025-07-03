@@ -40,6 +40,20 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
 }) => {
   const { t } = useTranslation('shifts');
 
+  console.log('ShiftForm render:', {
+    shift: !!shift,
+    initialDate,
+    isLoading,
+    translations: {
+      addingShiftFor: t('addingShiftFor'),
+      optional: t('optional'),
+      addNotesPlaceholder: t('addNotesPlaceholder'),
+      startTime: t('startTime'),
+      endTime: t('endTime'),
+      customShift: t('customShift')
+    }
+  });
+
   const getDefaultTimes = (type: string) => {
     switch (type) {
       case 'morning': return { start: '06:00', end: '14:00' };
@@ -71,6 +85,8 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
   }, [watchedType, form, shift]);
 
   const handleSubmit = async (data: ShiftFormDataInternal) => {
+    console.log('ShiftForm handleSubmit called with:', data);
+    
     // Ensure all required fields are present
     const formData: ShiftFormData = {
       type: data.type,
@@ -79,7 +95,11 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
       notes: data.notes || undefined,
     };
     
-    await onSubmit(formData);
+    try {
+      await onSubmit(formData);
+    } catch (error) {
+      console.error('ShiftForm submission error:', error);
+    }
   };
 
   return (

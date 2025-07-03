@@ -5,6 +5,7 @@ import { Calendar } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 import ShiftForm from '@/components/shifts/forms/ShiftForm';
+import ShiftFormErrorBoundary from '@/components/shifts/forms/ShiftFormErrorBoundary';
 import { Shift } from '@/types/shifts';
 import { useTranslation } from 'react-i18next';
 
@@ -36,6 +37,12 @@ const ShiftsFormSheets: React.FC<ShiftsFormSheetsProps> = ({
   const isMobile = useIsMobile();
   const { t } = useTranslation('shifts');
 
+  console.log('ShiftsFormSheets render:', {
+    isAddSheetOpen,
+    selectedDateForNewShift,
+    isSaving
+  });
+
   return (
     <>
       <Sheet open={isAddSheetOpen} onOpenChange={setIsAddSheetOpen}>
@@ -51,12 +58,14 @@ const ShiftsFormSheets: React.FC<ShiftsFormSheetsProps> = ({
           </SheetHeader>
           
           <div className="mt-6">
-            <ShiftForm
-              onSubmit={onAddShift}
-              onCancel={() => setIsAddSheetOpen(false)}
-              isLoading={isSaving}
-              initialDate={selectedDateForNewShift}
-            />
+            <ShiftFormErrorBoundary onRetry={() => console.log('ShiftForm retry triggered')}>
+              <ShiftForm
+                onSubmit={onAddShift}
+                onCancel={() => setIsAddSheetOpen(false)}
+                isLoading={isSaving}
+                initialDate={selectedDateForNewShift}
+              />
+            </ShiftFormErrorBoundary>
           </div>
         </SheetContent>
       </Sheet>
@@ -74,15 +83,17 @@ const ShiftsFormSheets: React.FC<ShiftsFormSheetsProps> = ({
           </SheetHeader>
           
           <div className="mt-6">
-            <ShiftForm
-              onSubmit={onEditShift}
-              onCancel={() => {
-                setIsEditSheetOpen(false);
-                setEditingShift(null);
-              }}
-              isLoading={isSaving}
-              shift={editingShift}
-            />
+            <ShiftFormErrorBoundary onRetry={() => console.log('ShiftForm edit retry triggered')}>
+              <ShiftForm
+                onSubmit={onEditShift}
+                onCancel={() => {
+                  setIsEditSheetOpen(false);
+                  setEditingShift(null);
+                }}
+                isLoading={isSaving}
+                shift={editingShift}
+              />
+            </ShiftFormErrorBoundary>
           </div>
         </SheetContent>
       </Sheet>
