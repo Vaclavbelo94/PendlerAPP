@@ -19,6 +19,7 @@ import csProfile from './translations/cs/profile.json';
 import csSettings from './translations/cs/settings.json';
 import csAuth from './translations/cs/auth.json';
 import csPremium from './translations/cs/premium.json';
+import csErrors from './translations/cs/errors.json';
 
 import deCommon from './translations/de/common.json';
 import deNavigation from './translations/de/navigation.json';
@@ -35,6 +36,7 @@ import deProfile from './translations/de/profile.json';
 import deSettings from './translations/de/settings.json';
 import deAuth from './translations/de/auth.json';
 import dePremium from './translations/de/premium.json';
+import deErrors from './translations/de/errors.json';
 
 import plCommon from './translations/pl/common.json';
 import plNavigation from './translations/pl/navigation.json';
@@ -51,6 +53,7 @@ import plProfile from './translations/pl/profile.json';
 import plSettings from './translations/pl/settings.json';
 import plAuth from './translations/pl/auth.json';
 import plPremium from './translations/pl/premium.json';
+import plErrors from './translations/pl/errors.json';
 
 export const resources = {
   cs: {
@@ -69,6 +72,7 @@ export const resources = {
     settings: csSettings,
     auth: csAuth,
     premium: csPremium,
+    errors: csErrors,
   },
   de: {
     common: deCommon,
@@ -86,6 +90,7 @@ export const resources = {
     settings: deSettings,
     auth: deAuth,
     premium: dePremium,
+    errors: deErrors,
   },
   pl: {
     common: plCommon,
@@ -103,6 +108,7 @@ export const resources = {
     settings: plSettings,
     auth: plAuth,
     premium: plPremium,
+    errors: plErrors,
   },
 };
 
@@ -124,7 +130,7 @@ i18n
     },
 
     defaultNS: 'common',
-    ns: ['common', 'navigation', 'dashboard', 'laws', 'shifts', 'travel', 'translator', 'taxAdvisor', 'vehicle', 'forms', 'ui', 'profile', 'settings', 'auth', 'premium'],
+    ns: ['common', 'navigation', 'dashboard', 'laws', 'shifts', 'travel', 'translator', 'taxAdvisor', 'vehicle', 'forms', 'ui', 'profile', 'settings', 'auth', 'premium', 'errors'],
   });
 
 export default i18n;

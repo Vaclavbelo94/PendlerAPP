@@ -7,8 +7,12 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Lock, Eye, EyeOff, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from 'react-i18next';
 
 const PasswordChangeForm = () => {
+  const { t } = useTranslation('profile');
+  const { t: tError } = useTranslation('errors');
+  
   const [passwords, setPasswords] = useState({
     current: "",
     new: "",
@@ -24,10 +28,10 @@ const PasswordChangeForm = () => {
 
   const validatePassword = (password: string): string[] => {
     const errors: string[] = [];
-    if (password.length < 8) errors.push("Heslo musí mít alespoň 8 znaků");
-    if (!/[A-Z]/.test(password)) errors.push("Heslo musí obsahovat velké písmeno");
-    if (!/[a-z]/.test(password)) errors.push("Heslo musí obsahovat malé písmeno");
-    if (!/[0-9]/.test(password)) errors.push("Heslo musí obsahovat číslici");
+    if (password.length < 8) errors.push(t('passwordMustBe8Chars'));
+    if (!/[A-Z]/.test(password)) errors.push(t('passwordMustHaveUppercase'));
+    if (!/[a-z]/.test(password)) errors.push(t('passwordMustHaveLowercase'));
+    if (!/[0-9]/.test(password)) errors.push(t('passwordMustHaveNumber'));
     return errors;
   };
 
@@ -45,7 +49,7 @@ const PasswordChangeForm = () => {
     }
 
     if (passwords.new !== passwords.confirm) {
-      setErrors(["Hesla se neshodují"]);
+      setErrors([t('passwordsDoNotMatch')]);
       setIsLoading(false);
       return;
     }
@@ -54,10 +58,10 @@ const PasswordChangeForm = () => {
       // Simulate password change
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      toast.success("Heslo bylo úspěšně změněno");
+      toast.success(t('passwordChanged'));
       setPasswords({ current: "", new: "", confirm: "" });
     } catch (error) {
-      toast.error("Při změně hesla došlo k chybě");
+      toast.error(t('passwordChangeError'));
     } finally {
       setIsLoading(false);
     }
@@ -75,10 +79,10 @@ const PasswordChangeForm = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Lock className="h-5 w-5" />
-          Změna hesla
+          {t('changePassword')}
         </CardTitle>
         <CardDescription>
-          Aktualizujte své heslo pro zabezpečení účtu
+          {t('updatePasswordSecurity')}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -96,7 +100,7 @@ const PasswordChangeForm = () => {
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="current-password">Současné heslo</Label>
+            <Label htmlFor="current-password">{t('currentPassword')}</Label>
             <div className="relative">
               <Input
                 id="current-password"
@@ -118,7 +122,7 @@ const PasswordChangeForm = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="new-password">Nové heslo</Label>
+            <Label htmlFor="new-password">{t('newPassword')}</Label>
             <div className="relative">
               <Input
                 id="new-password"
@@ -140,7 +144,7 @@ const PasswordChangeForm = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="confirm-password">Potvrdit nové heslo</Label>
+            <Label htmlFor="confirm-password">{t('confirmPassword')}</Label>
             <div className="relative">
               <Input
                 id="confirm-password"
@@ -162,7 +166,7 @@ const PasswordChangeForm = () => {
           </div>
 
           <Button type="submit" disabled={isLoading} className="w-full">
-            {isLoading ? "Ukládání..." : "Změnit heslo"}
+            {isLoading ? t('saving') : t('changePassword')}
           </Button>
         </form>
       </CardContent>
