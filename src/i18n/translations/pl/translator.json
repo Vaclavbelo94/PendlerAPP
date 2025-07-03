@@ -55,6 +55,43 @@
   "emailSendError": "Błąd",
   "createTranslationFirst": "Najpierw utwórz tłumaczenie",
   "emailSendFailed": "Nie udało się wysłać e-maila",
+  "hrCommunication": {
+    "writeOrSayMessage": "Napisz lub powiedz wiadomość",
+    "writeMessagePlaceholder": "Napisz wiadomość po czesku lub polsku...",
+    "voiceButton": "Głosem",
+    "stopButton": "Zatrzymaj",
+    "translateButton": "Przetłumacz",
+    "translatingButton": "Tłumaczę...",
+    "yourText": "Twój tekst",
+    "germanTranslation": "Niemieckie tłumaczenie",
+    "playButton": "Odtwórz",
+    "sendToHR": "Wyślij do HR",
+    "sendingToHR": "Wysyłam...",
+    "startCommunicating": "Rozpocznij komunikację z HR",
+    "communicationDescription": "Napisz lub powiedz wiadomość po czesku lub polsku, a my automatycznie przetłumaczymy ją na niemiecki"
+  },
+  "pageContent": {
+    "hrCommunicationTitle": "Komunikacja z HR",
+    "quickWritingMobile": "Szybkie pisanie lub mówienie dla działu HR",
+    "autoTranslateDescription": "Pisz lub mów po czesku/polsku, automatycznie przetłumaczy się na niemiecki i wyśle do HR",
+    "carTipTitle": "💡 Wskazówka do użycia z samochodu",
+    "carTipDescription": "Użyj przycisku \"Głosem\" do bezpiecznego pisania podczas jazdy. Wystarczy powiedzieć wiadomość po czesku lub polsku, a automatycznie zostanie przetłumaczona i wysłana do HR."
+  },
+  "toastMessages": {
+    "error": "Błąd",
+    "speechNotSupported": "Twoja przeglądarka nie obsługuje rozpoznawania mowy",
+    "recording": "Nagrywanie",
+    "speakNow": "Mów teraz...",
+    "recognized": "Rozpoznano",
+    "recognitionError": "Błąd rozpoznawania",
+    "tryAgain": "Spróbuj ponownie",
+    "translateFirst": "Najpierw przetłumacz tekst",
+    "originalTextNotFound": "Nie znaleziono oryginalnego tekstu",
+    "emailSent": "E-mail wysłany",
+    "messageSentToHR": "Wiadomość została pomyślnie wysłana do działu HR",
+    "sendingError": "Błąd wysyłania",
+    "emailSendFailed": "Nie udało się wysłać e-maila"
+  },
   "languages": {
     "czech": "Czeski",
     "german": "Niemiecki",

@@ -55,6 +55,43 @@
   "emailSendError": "Fehler",
   "createTranslationFirst": "Erstellen Sie zuerst eine Übersetzung",
   "emailSendFailed": "E-Mail konnte nicht gesendet werden",
+  "hrCommunication": {
+    "writeOrSayMessage": "Nachricht schreiben oder sprechen",
+    "writeMessagePlaceholder": "Schreiben Sie eine Nachricht auf Tschechisch oder Polnisch...",
+    "voiceButton": "Sprache",
+    "stopButton": "Stoppen",
+    "translateButton": "Übersetzen",
+    "translatingButton": "Übersetze...",
+    "yourText": "Ihr Text",
+    "germanTranslation": "Deutsche Übersetzung",
+    "playButton": "Abspielen",
+    "sendToHR": "An HR senden",
+    "sendingToHR": "Sende...",
+    "startCommunicating": "Beginnen Sie die Kommunikation mit HR",
+    "communicationDescription": "Schreiben oder sprechen Sie eine Nachricht auf Tschechisch oder Polnisch und wir übersetzen sie automatisch ins Deutsche"
+  },
+  "pageContent": {
+    "hrCommunicationTitle": "HR-Kommunikation",
+    "quickWritingMobile": "Schnelles Schreiben oder Sprechen für die HR-Abteilung",
+    "autoTranslateDescription": "Schreiben oder sprechen Sie auf Tschechisch/Polnisch, es wird automatisch ins Deutsche übersetzt und an HR gesendet",
+    "carTipTitle": "💡 Tipp für die Nutzung im Auto",
+    "carTipDescription": "Verwenden Sie die \"Sprache\"-Taste für sicheres Schreiben während der Fahrt. Sprechen Sie einfach eine Nachricht auf Tschechisch oder Polnisch und sie wird automatisch übersetzt und an HR gesendet."
+  },
+  "toastMessages": {
+    "error": "Fehler",
+    "speechNotSupported": "Ihr Browser unterstützt keine Spracherkennung",
+    "recording": "Aufnahme",
+    "speakNow": "Sprechen Sie jetzt...",
+    "recognized": "Erkannt",
+    "recognitionError": "Erkennungsfehler",
+    "tryAgain": "Versuchen Sie es erneut",
+    "translateFirst": "Lassen Sie zuerst den Text übersetzen",
+    "originalTextNotFound": "Ursprünglicher Text nicht gefunden",
+    "emailSent": "E-Mail gesendet",
+    "messageSentToHR": "Nachricht wurde erfolgreich an die HR-Abteilung gesendet",
+    "sendingError": "Fehler beim Senden",
+    "emailSendFailed": "E-Mail konnte nicht gesendet werden"
+  },
   "languages": {
     "czech": "Tschechisch",
     "german": "Deutsch",

@@ -38,8 +38,8 @@ const Translator = () => {
         <DashboardBackground variant="default">
           <div className={`container py-6 ${useMobileLayout ? 'pb-32' : ''} ${isSmallLandscape ? 'px-2' : ''}`}>
             <Helmet>
-              <title>{t('translator:aiTranslator')} | {t('common:dashboard')}</title>
-              <meta name="description" content="Rychlá komunikace s HR oddělením pomocí automatického překladu" />
+              <title>{t('translator:pageContent.hrCommunicationTitle')} | {t('common:dashboard')}</title>
+              <meta name="description" content={t('translator:pageContent.autoTranslateDescription')} />
               <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
             </Helmet>
             
@@ -61,14 +61,14 @@ const Translator = () => {
               
               <h1 className={`${useMobileLayout ? 'text-3xl' : 'text-4xl lg:text-5xl'} font-bold mb-4`}>
                 <span className="bg-gradient-to-r from-primary via-blue-600 to-green-600 bg-clip-text text-transparent">
-                  Komunikace s HR
+                  {t('translator:pageContent.hrCommunicationTitle')}
                 </span>
               </h1>
               
               <p className={`text-muted-foreground ${useMobileLayout ? 'text-base' : 'text-lg lg:text-xl'} max-w-3xl mx-auto leading-relaxed ${isSmallLandscape ? 'text-sm' : ''}`}>
                 {useMobileLayout 
-                  ? "Rychlé psaní nebo řečí pro HR oddělení"
-                  : "Napište nebo řekněte česky/polsky, automaticky se přeloží do němčiny a odešle na HR"
+                  ? t('translator:pageContent.quickWritingMobile')
+                  : t('translator:pageContent.autoTranslateDescription')
                 }
               </p>
             </motion.div>
@@ -91,11 +91,10 @@ const Translator = () => {
             >
               <div className="max-w-2xl mx-auto p-6 rounded-xl bg-card/50 backdrop-blur-sm border border-border/50">
                 <h3 className="text-lg font-semibold mb-3 text-foreground">
-                  💡 Tip pro použití z auta
+                  {t('translator:pageContent.carTipTitle')}
                 </h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Použijte tlačítko "Hlasem" pro bezpečné psaní během jízdy. 
-                  Stačí říct zprávu česky nebo polsky a automaticky se přeloží a odešle na HR.
+                  {t('translator:pageContent.carTipDescription')}
                 </p>
               </div>
             </motion.div>

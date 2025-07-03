@@ -51,6 +51,43 @@
   "emailSendError": "Chyba",
   "createTranslationFirst": "Nejprve vytvořte překlad",
   "emailSendFailed": "Nepodařilo se odeslat email",
+  "hrCommunication": {
+    "writeOrSayMessage": "Napište nebo řekněte zprávu",
+    "writeMessagePlaceholder": "Napište zprávu česky nebo polsky...",
+    "voiceButton": "Hlasem",
+    "stopButton": "Zastavit",
+    "translateButton": "Přeložit",
+    "translatingButton": "Překládám...",
+    "yourText": "Váš text",
+    "germanTranslation": "Německý překlad",
+    "playButton": "Přehrát",
+    "sendToHR": "Odeslat na HR",
+    "sendingToHR": "Odesílám...",
+    "startCommunicating": "Začněte komunikovat s HR",
+    "communicationDescription": "Napište nebo řekněte zprávu v češtině nebo polštině a my ji automaticky přeložíme do němčiny"
+  },
+  "pageContent": {
+    "hrCommunicationTitle": "Komunikace s HR",
+    "quickWritingMobile": "Rychlé psaní nebo řečí pro HR oddělení",
+    "autoTranslateDescription": "Napište nebo řekněte česky/polsky, automaticky se přeloží do němčiny a odešle na HR",
+    "carTipTitle": "💡 Tip pro použití z auta",
+    "carTipDescription": "Použijte tlačítko \"Hlasem\" pro bezpečné psaní během jízdy. Stačí říct zprávu česky nebo polsky a automaticky se přeloží a odešle na HR."
+  },
+  "toastMessages": {
+    "error": "Chyba",
+    "speechNotSupported": "Váš prohlížeč nepodporuje rozpoznávání řeči",
+    "recording": "Nahrávání",
+    "speakNow": "Mluvte nyní...",
+    "recognized": "Rozpoznáno",
+    "recognitionError": "Chyba rozpoznávání",
+    "tryAgain": "Zkuste to znovu",
+    "translateFirst": "Nejdříve si nechte text přeložit",
+    "originalTextNotFound": "Nenalezen původní text",
+    "emailSent": "Email odeslán",
+    "messageSentToHR": "Zpráva byla úspěšně odeslána na HR oddělení",
+    "sendingError": "Chyba při odesílání",
+    "emailSendFailed": "Nepodařilo se odeslat email"
+  },
   "languages": {
     "czech": "Čeština",
     "german": "Němčina",

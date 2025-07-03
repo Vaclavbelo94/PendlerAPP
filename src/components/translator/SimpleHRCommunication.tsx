@@ -9,6 +9,7 @@ import { Mic, MicOff, Send, Volume2, MessageSquare, Mail } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 import { useAITranslator } from '@/hooks/useAITranslator';
 import { supabase } from '@/integrations/supabase/client';
+import { useTranslation } from 'react-i18next';
 
 interface SimpleHRCommunicationProps {
   onTextToSpeech?: (text: string, language: string) => void;
@@ -16,17 +17,26 @@ interface SimpleHRCommunicationProps {
 
 const SimpleHRCommunication: React.FC<SimpleHRCommunicationProps> = ({ onTextToSpeech }) => {
   const { messages, isLoading, sendMessage, clearConversation } = useAITranslator();
+  const { t, i18n } = useTranslation('translator');
   const [inputText, setInputText] = useState('');
   const [isListening, setIsListening] = useState(false);
   const [recognition, setRecognition] = useState<SpeechRecognition | null>(null);
   const [isSendingEmail, setIsSendingEmail] = useState(false);
 
+  const getSpeechLang = () => {
+    switch (i18n.language) {
+      case 'pl': return 'pl-PL';
+      case 'de': return 'de-DE';
+      default: return 'cs-CZ';
+    }
+  };
+
   const startListening = () => {
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
       toast({
         variant: "destructive",
-        title: "Chyba",
-        description: "Váš prohlížeč nepodporuje rozpoznávání řeči"
+        title: t('toastMessages.error'),
+        description: t('toastMessages.speechNotSupported')
       });
       return;
     }
@@ -36,13 +46,13 @@ const SimpleHRCommunication: React.FC<SimpleHRCommunicationProps> = ({ onTextToS
     
     newRecognition.continuous = false;
     newRecognition.interimResults = false;
-    newRecognition.lang = 'cs-CZ';
+    newRecognition.lang = getSpeechLang();
 
     newRecognition.onstart = () => {
       setIsListening(true);
       toast({
-        title: "Nahrávání",
-        description: "Mluvte nyní..."
+        title: t('toastMessages.recording'),
+        description: t('toastMessages.speakNow')
       });
     };
 
@@ -50,7 +60,7 @@ const SimpleHRCommunication: React.FC<SimpleHRCommunicationProps> = ({ onTextToS
       const transcript = event.results[0][0].transcript;
       setInputText(transcript);
       toast({
-        title: "Rozpoznáno",
+        title: t('toastMessages.recognized'),
         description: `"${transcript}"`
       });
     };
@@ -58,8 +68,8 @@ const SimpleHRCommunication: React.FC<SimpleHRCommunicationProps> = ({ onTextToS
     newRecognition.onerror = (event) => {
       toast({
         variant: "destructive",
-        title: "Chyba rozpoznávání",
-        description: "Zkuste to znovu"
+        title: t('toastMessages.recognitionError'),
+        description: t('toastMessages.tryAgain')
       });
       setIsListening(false);
     };
@@ -91,8 +101,8 @@ const SimpleHRCommunication: React.FC<SimpleHRCommunicationProps> = ({ onTextToS
     if (!lastMessage || lastMessage.role !== 'assistant') {
       toast({
         variant: "destructive",
-        title: "Chyba",
-        description: "Nejdříve si nechte text přeložit"
+        title: t('toastMessages.error'),
+        description: t('toastMessages.translateFirst')
       });
       return;
     }
@@ -101,8 +111,8 @@ const SimpleHRCommunication: React.FC<SimpleHRCommunicationProps> = ({ onTextToS
     if (!userMessage || userMessage.role !== 'user') {
       toast({
         variant: "destructive",
-        title: "Chyba", 
-        description: "Nenalezen původní text"
+        title: t('toastMessages.error'), 
+        description: t('toastMessages.originalTextNotFound')
       });
       return;
     }
@@ -125,8 +135,8 @@ const SimpleHRCommunication: React.FC<SimpleHRCommunicationProps> = ({ onTextToS
       }
 
       toast({
-        title: "Email odeslán",
-        description: "Zpráva byla úspěšně odeslána na HR oddělení"
+        title: t('toastMessages.emailSent'),
+        description: t('toastMessages.messageSentToHR')
       });
 
       // Clear conversation history after successful email send
@@ -135,8 +145,8 @@ const SimpleHRCommunication: React.FC<SimpleHRCommunicationProps> = ({ onTextToS
     } catch (error: any) {
       toast({
         variant: "destructive",
-        title: "Chyba při odesílání",
-        description: error.message || 'Nepodařilo se odeslat email'
+        title: t('toastMessages.sendingError'),
+        description: error.message || t('toastMessages.emailSendFailed')
       });
     } finally {
       setIsSendingEmail(false);
@@ -161,14 +171,14 @@ const SimpleHRCommunication: React.FC<SimpleHRCommunicationProps> = ({ onTextToS
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <MessageSquare className="h-5 w-5" />
-            Napište nebo řekněte zprávu
+            {t('hrCommunication.writeOrSayMessage')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <Textarea
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
-            placeholder="Napište zprávu česky nebo polsky..."
+            placeholder={t('hrCommunication.writeMessagePlaceholder')}
             className="min-h-[100px] resize-none"
             disabled={isLoading}
           />
@@ -181,7 +191,7 @@ const SimpleHRCommunication: React.FC<SimpleHRCommunicationProps> = ({ onTextToS
               className="flex items-center gap-2"
             >
               {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
-              {isListening ? 'Zastavit' : 'Hlasem'}
+              {isListening ? t('hrCommunication.stopButton') : t('hrCommunication.voiceButton')}
             </Button>
             
             <Button
@@ -190,7 +200,7 @@ const SimpleHRCommunication: React.FC<SimpleHRCommunicationProps> = ({ onTextToS
               className="flex items-center gap-2"
             >
               <Send className="h-4 w-4" />
-              {isLoading ? 'Překládám...' : 'Přeložit'}
+              {isLoading ? t('hrCommunication.translatingButton') : t('hrCommunication.translateButton')}
             </Button>
           </div>
         </CardContent>
@@ -210,7 +220,7 @@ const SimpleHRCommunication: React.FC<SimpleHRCommunicationProps> = ({ onTextToS
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 mb-2">
                     <Badge variant={message.role === 'user' ? 'default' : 'secondary'}>
-                      {message.role === 'user' ? 'Váš text' : 'Německý překlad'}
+                      {message.role === 'user' ? t('hrCommunication.yourText') : t('hrCommunication.germanTranslation')}
                     </Badge>
                     {message.service && (
                       <Badge variant="outline" className="text-xs">
@@ -230,7 +240,7 @@ const SimpleHRCommunication: React.FC<SimpleHRCommunicationProps> = ({ onTextToS
                         className="flex items-center gap-2 w-full sm:w-auto"
                       >
                         <Volume2 className="h-4 w-4" />
-                        Přehrát
+                        {t('hrCommunication.playButton')}
                       </Button>
                       <Button
                         size="sm"
@@ -240,7 +250,7 @@ const SimpleHRCommunication: React.FC<SimpleHRCommunicationProps> = ({ onTextToS
                         className="flex items-center gap-2 w-full sm:w-auto bg-primary hover:bg-primary/90"
                       >
                         <Mail className="h-4 w-4" />
-                        {isSendingEmail ? 'Odesílám...' : 'Odeslat na HR'}
+                        {isSendingEmail ? t('hrCommunication.sendingToHR') : t('hrCommunication.sendToHR')}
                       </Button>
                     </div>
                   )}
@@ -256,9 +266,9 @@ const SimpleHRCommunication: React.FC<SimpleHRCommunicationProps> = ({ onTextToS
         <Card className="text-center py-8">
           <CardContent>
             <MessageSquare className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-            <h3 className="text-lg font-semibold mb-2">Začněte komunikovat s HR</h3>
+            <h3 className="text-lg font-semibold mb-2">{t('hrCommunication.startCommunicating')}</h3>
             <p className="text-muted-foreground">
-              Napište nebo řekněte zprávu v češtině nebo polštině a my ji automaticky přeložíme do němčiny
+              {t('hrCommunication.communicationDescription')}
             </p>
           </CardContent>
         </Card>
