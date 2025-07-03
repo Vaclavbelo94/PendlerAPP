@@ -64,25 +64,25 @@ const ProfileOverview: React.FC<ProfileOverviewProps> = ({ onEdit, onSave, onCan
     if (success) {
       toast({
         title: t('saveChanges'),
-        description: "Profil byl úspěšně uložen",
+        description: t('saveChanges'),
         variant: "default",
       });
       onSave();
     } else {
       toast({
-        title: "Chyba",
-        description: "Nepodařilo se uložit profil",
+        title: t('errors:generic', { ns: 'errors' }),
+        description: t('errors:saveFailed', { ns: 'errors' }),
         variant: "destructive",
       });
     }
   };
 
   if (!user) {
-    return <p>{isLoading ? 'Načítání profilu...' : 'Chyba načítání'}</p>;
+    return <p>{isLoading ? t('loading', { ns: 'common' }) : t('errors:loadFailed', { ns: 'errors' })}</p>;
   }
 
   if (isLoading) {
-    return <p>Načítání profilu...</p>;
+    return <p>{t('loading', { ns: 'common' })}</p>;
   }
 
   return (

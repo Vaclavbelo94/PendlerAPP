@@ -20,9 +20,9 @@ const ProfileWorkData = () => {
   const { suggestions, loading: addressLoading } = useAddressAutocomplete(addressQuery);
 
   const countryOptions = [
-    { code: 'CZ', label: t('czechRepublic', 'Česká republika') + ' (+420)', flag: '🇨🇿' },
-    { code: 'DE', label: t('germany', 'Deutschland') + ' (+49)', flag: '🇩🇪' },
-    { code: 'PL', label: t('poland', 'Polska') + ' (+48)', flag: '🇵🇱' }
+    { code: 'CZ', label: t('czechRepublic') + ' (+420)', flag: '🇨🇿' },
+    { code: 'DE', label: t('germany') + ' (+49)', flag: '🇩🇪' },
+    { code: 'PL', label: t('poland') + ' (+48)', flag: '🇵🇱' }
   ];
 
   // Hodinové mzdy v eurech pro německý trh
