@@ -68,5 +68,15 @@
   "irreversibleActions": "Nevratné akce",
   "deleteAccount": "Smazat účet",
   "deleteAccountWarning": "Tato akce je nevratná a trvale smaže všechna vaše data.",
-  "deleteAccountFeatureComingSoon": "Funkce mazání účtu bude brzy k dispozici"
+  "deleteAccountFeatureComingSoon": "Funkce mazání účtu bude brzy k dispozici",
+  "darkMode": "Tmavý režim",
+  "darkModeDescription": "Tmavý režim je šetrnější k očím při používání v noci",
+  "colorScheme": "Barevné schéma",
+  "selectMainAppColor": "Vyberte hlavní barvu aplikace",
+  "colorPurple": "Fialová",
+  "colorBlue": "Modrá",
+  "colorGreen": "Zelená",
+  "colorOrange": "Oranžová",
+  "colorRed": "Červená",
+  "colorYellow": "Žlutá"
 }

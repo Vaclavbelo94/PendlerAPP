@@ -17,21 +17,21 @@ const LanguagePreferences = ({
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-medium">{t('preferences') || 'Předvolby'}</h3>
+      <h3 className="text-lg font-medium">{t('languagePreferences')}</h3>
       
       <div className="space-y-2">
-        <Label htmlFor="preferredLanguage">{t('preferredLanguage') || 'Preferovaný jazyk'}</Label>
+        <Label htmlFor="preferredLanguage">{t('preferredLanguage')}</Label>
         <Select 
           value={preferredLanguage} 
           onValueChange={(value) => handleInputChange('preferredLanguage', value)}
         >
           <SelectTrigger id="preferredLanguage" className="w-full">
-            <SelectValue placeholder={t('selectLanguage') || 'Vyberte jazyk'} />
+            <SelectValue placeholder={t('selectLanguage')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="cs">🇨🇿 {t('czech') || 'Čeština'}</SelectItem>
-            <SelectItem value="pl">🇵🇱 {t('polish') || 'Polski'}</SelectItem>
-            <SelectItem value="de">🇩🇪 {t('german') || 'Deutsch'}</SelectItem>
+            <SelectItem value="cs">🇨🇿 {t('czech')}</SelectItem>
+            <SelectItem value="pl">🇵🇱 {t('polish')}</SelectItem>
+            <SelectItem value="de">🇩🇪 {t('german')}</SelectItem>
           </SelectContent>
         </Select>
       </div>

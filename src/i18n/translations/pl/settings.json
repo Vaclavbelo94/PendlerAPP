@@ -68,5 +68,15 @@
   "irreversibleActions": "Nieodwracalne działania",
   "deleteAccount": "Usuń konto",
   "deleteAccountWarning": "Ta akcja jest nieodwracalna i trwale usunie wszystkie Twoje dane.",
-  "deleteAccountFeatureComingSoon": "Funkcja usuwania konta będzie wkrótce dostępna"
+  "deleteAccountFeatureComingSoon": "Funkcja usuwania konta będzie wkrótce dostępna",
+  "darkMode": "Tryb ciemny",
+  "darkModeDescription": "Tryb ciemny jest łagodniejszy dla oczu podczas użytkowania w nocy",
+  "colorScheme": "Schemat kolorów",
+  "selectMainAppColor": "Wybierz główny kolor aplikacji",
+  "colorPurple": "Fioletowy",
+  "colorBlue": "Niebieski",
+  "colorGreen": "Zielony",
+  "colorOrange": "Pomarańczowy",
+  "colorRed": "Czerwony",
+  "colorYellow": "Żółty"
 }

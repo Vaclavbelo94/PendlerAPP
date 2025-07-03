@@ -68,5 +68,15 @@
   "irreversibleActions": "Irreversible Aktionen",
   "deleteAccount": "Konto löschen",
   "deleteAccountWarning": "Diese Aktion ist irreversibel und löscht alle Ihre Daten dauerhaft.",
-  "deleteAccountFeatureComingSoon": "Konto-Löschfunktion kommt bald"
+  "deleteAccountFeatureComingSoon": "Konto-Löschfunktion kommt bald",
+  "darkMode": "Dunkler Modus",
+  "darkModeDescription": "Der dunkle Modus ist augenschonender bei der Nutzung in der Nacht",
+  "colorScheme": "Farbschema",
+  "selectMainAppColor": "Wählen Sie die Hauptfarbe der App",
+  "colorPurple": "Lila",
+  "colorBlue": "Blau",
+  "colorGreen": "Grün",
+  "colorOrange": "Orange",
+  "colorRed": "Rot",
+  "colorYellow": "Gelb"
 }

@@ -52,6 +52,7 @@
   "selectLanguage": "Sprache auswählen",
   "czech": "Tschechisch",
   "german": "Deutsch",
+  "polish": "Polnisch",
   "workPreferences": "Arbeitsvorlieben",
   "workPreferencesDescription": "Stellen Sie Ihre Arbeitsvorlieben für bessere Angebote ein",
   "preferredLocation": "Bevorzugter Standort",
@@ -66,5 +67,6 @@
   "evening": "Abend",
   "night": "Nacht",
   "flexible": "Flexibel",
-  "savePreferences": "Vorlieben speichern"
+  "savePreferences": "Vorlieben speichern",
+  "basicAccount": "Basiskonto"
 }

@@ -5,9 +5,11 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Crown, User, Mail } from "lucide-react";
 import { useAuth } from "@/hooks/auth";
+import { useTranslation } from 'react-i18next';
 
 const ProfileBio = () => {
   const { user, unifiedUser } = useAuth();
+  const { t } = useTranslation(['common', 'profile']);
 
   const getInitials = (email: string) => {
     return email.split('@')[0].slice(0, 2).toUpperCase();
@@ -31,7 +33,7 @@ const ProfileBio = () => {
           <div className="space-y-3 w-full">
             <div className="space-y-2">
               <h2 className="text-lg font-semibold text-center">
-                {user?.email ? getUserDisplayName(user.email) : 'Uživatel'}
+                {user?.email ? getUserDisplayName(user.email) : t('common:user')}
               </h2>
               
               <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
@@ -44,11 +46,11 @@ const ProfileBio = () => {
               {unifiedUser?.isPremium ? (
                 <Badge variant="default" className="bg-amber-500 hover:bg-amber-600">
                   <Crown className="h-3 w-3 mr-1" />
-                  Premium
+                  {t('common:premium')}
                 </Badge>
               ) : (
                 <Badge variant="secondary">
-                  Základní účet
+                  {t('profile:basicAccount')}
                 </Badge>
               )}
             </div>

@@ -4,6 +4,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Moon, Sun } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useTranslation } from 'react-i18next';
 
 interface DarkModeToggleProps {
   darkMode: boolean;
@@ -13,6 +14,7 @@ interface DarkModeToggleProps {
 
 const DarkModeToggle = ({ darkMode, setDarkMode, isChangingTheme }: DarkModeToggleProps) => {
   const isMobile = useIsMobile();
+  const { t } = useTranslation('settings');
 
   return (
     <div className={`flex items-center justify-between ${isMobile ? 'flex-col gap-3' : ''}`}>
@@ -23,10 +25,10 @@ const DarkModeToggle = ({ darkMode, setDarkMode, isChangingTheme }: DarkModeTogg
           ) : (
             <Sun className={`${isMobile ? 'h-3 w-3' : 'h-4 w-4'}`} />
           )}
-          <span>Tmavý režim</span>
+          <span>{t('darkMode')}</span>
         </Label>
         <p className={`${isMobile ? 'text-xs' : 'text-sm'} text-muted-foreground ${isMobile ? 'text-center mt-1' : ''}`}>
-          Tmavý režim je šetrnější k očím při používání v noci
+          {t('darkModeDescription')}
         </p>
       </div>
       <Switch 

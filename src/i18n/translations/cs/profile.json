@@ -52,6 +52,7 @@
   "selectLanguage": "Vyberte jazyk",
   "czech": "Čeština",
   "german": "Němčina",
+  "polish": "Polština",
   "workPreferences": "Pracovní preference",
   "workPreferencesDescription": "Nastavte si vaše pracovní preference pro lepší nabídky",
   "preferredLocation": "Preferovaná lokalita",
@@ -66,5 +67,6 @@
   "evening": "Večerní",
   "night": "Noční",
   "flexible": "Flexibilní",
-  "savePreferences": "Uložit preference"
+  "savePreferences": "Uložit preference",
+  "basicAccount": "Základní účet"
 }
