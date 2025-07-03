@@ -56,7 +56,6 @@ const SimpleHRCommunication: React.FC<SimpleHRCommunicationProps> = ({ onTextToS
     };
 
     newRecognition.onerror = (event) => {
-      console.error('Speech recognition error:', event.error);
       toast({
         variant: "destructive",
         title: "Chyba rozpoznávání",
@@ -131,7 +130,6 @@ const SimpleHRCommunication: React.FC<SimpleHRCommunicationProps> = ({ onTextToS
       });
 
     } catch (error: any) {
-      console.error('Email send error:', error);
       toast({
         variant: "destructive",
         title: "Chyba při odesílání",
@@ -206,40 +204,40 @@ const SimpleHRCommunication: React.FC<SimpleHRCommunicationProps> = ({ onTextToS
           >
             <Card className={message.role === 'user' ? 'bg-blue-50 dark:bg-blue-950/20' : 'bg-green-50 dark:bg-green-950/20'}>
               <CardContent className="pt-4">
-                <div className="flex justify-between items-start gap-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Badge variant={message.role === 'user' ? 'default' : 'secondary'}>
-                        {message.role === 'user' ? 'Váš text' : 'Německý překlad'}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Badge variant={message.role === 'user' ? 'default' : 'secondary'}>
+                      {message.role === 'user' ? 'Váš text' : 'Německý překlad'}
+                    </Badge>
+                    {message.service && (
+                      <Badge variant="outline" className="text-xs">
+                        {message.service}
                       </Badge>
-                      {message.service && (
-                        <Badge variant="outline" className="text-xs">
-                          {message.service}
-                        </Badge>
-                      )}
-                    </div>
-                    <p className="text-sm leading-relaxed">{message.content}</p>
+                    )}
                   </div>
                   
+                  <p className="text-sm leading-relaxed">{message.content}</p>
+                  
                   {message.role === 'assistant' && (
-                    <div className="flex gap-2">
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-3 border-t border-border/50">
                       <Button
                         size="sm"
-                        variant="ghost"
+                        variant="outline"
                         onClick={() => handlePlayText(message.content, getLanguageFromService(message.service))}
-                        className="flex items-center gap-1"
+                        className="flex items-center gap-2 w-full sm:w-auto"
                       >
-                        <Volume2 className="h-3 w-3" />
+                        <Volume2 className="h-4 w-4" />
+                        Přehrát
                       </Button>
                       <Button
                         size="sm"
                         variant="default"
                         onClick={handleSendToHR}
                         disabled={isSendingEmail}
-                        className="flex items-center gap-1"
+                        className="flex items-center gap-2 w-full sm:w-auto bg-primary hover:bg-primary/90"
                       >
-                        <Mail className="h-3 w-3" />
-                        {isSendingEmail ? 'Odesílám...' : 'Odeslat HR'}
+                        <Mail className="h-4 w-4" />
+                        {isSendingEmail ? 'Odesílám...' : 'Odeslat na HR'}
                       </Button>
                     </div>
                   )}
