@@ -16,7 +16,7 @@ export const useCityAutocomplete = (query: string) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const debouncedQuery = useDebounce(query, 300);
-  const { t } = useTranslation('profile');
+  const { t } = useTranslation('common');
 
   const searchCities = useCallback(async (searchQuery: string) => {
     if (!searchQuery || searchQuery.length < 2) {

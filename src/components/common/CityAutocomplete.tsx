@@ -28,7 +28,7 @@ const CityAutocomplete = memo<CityAutocompleteProps>(({
   id,
   showCheckIcon = false
 }) => {
-  const { t } = useTranslation('profile');
+  const { t } = useTranslation('common');
   const [open, setOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   
