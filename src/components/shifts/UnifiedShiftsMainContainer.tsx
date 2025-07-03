@@ -1,15 +1,16 @@
 
 import React from 'react';
 import { useUnifiedShiftsContainer } from '@/hooks/shifts/useUnifiedShiftsContainer';
-import ShiftsContentRenderer from './ShiftsContentRenderer';
 import ShiftsFormSheets from './ShiftsFormSheets';
 import ShiftsErrorHandler from './ShiftsErrorHandler';
 import ShiftsLoadingSkeleton from './ShiftsLoadingSkeleton';
+import ShiftCalendarContainer from './calendar/ShiftCalendarContainer';
 
 const UnifiedShiftsMainContainer: React.FC = () => {
   const containerProps = useUnifiedShiftsContainer();
   
   const {
+    shifts,
     isLoading,
     error,
     handleRetry,
@@ -20,8 +21,6 @@ const UnifiedShiftsMainContainer: React.FC = () => {
     editingShift,
     setEditingShift,
     selectedDateForNewShift,
-    calendarSelectedDate,
-    handleCalendarDateChange,
     handleAddShift,
     handleEditShift,
     openEditDialog,
@@ -50,14 +49,13 @@ const UnifiedShiftsMainContainer: React.FC = () => {
 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-6">
-      <ShiftsContentRenderer 
-        {...containerProps} 
+      <ShiftCalendarContainer
+        shifts={shifts}
         onEditShift={openEditDialog}
         onDeleteShift={deleteShift}
         onAddShift={handleOpenAddSheet}
         onAddShiftForDate={handleOpenAddSheetWithDate}
-        calendarSelectedDate={calendarSelectedDate}
-        handleCalendarDateChange={handleCalendarDateChange}
+        isLoading={isLoading}
       />
       
       <ShiftsFormSheets

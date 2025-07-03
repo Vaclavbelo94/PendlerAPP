@@ -55,17 +55,14 @@ const ShiftsErrorFallback: React.FC<{ error: Error; resetError: () => void; onRe
 const ShiftsErrorBoundary: React.FC<ShiftsErrorBoundaryProps> = ({ children, onRetry }) => {
   return (
     <ErrorBoundary
+      fallback={(error: Error, resetError: () => void) => (
+        <ShiftsErrorFallback error={error} resetError={resetError} onRetry={onRetry} />
+      )}
       onError={(error, errorInfo) => {
         console.error('Shifts component error:', error, errorInfo);
       }}
     >
-      {({ error, resetError }) => 
-        error ? (
-          <ShiftsErrorFallback error={error} resetError={resetError} onRetry={onRetry} />
-        ) : (
-          children
-        )
-      }
+      {children}
     </ErrorBoundary>
   );
 };
