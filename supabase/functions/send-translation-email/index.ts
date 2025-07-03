@@ -17,23 +17,12 @@ interface TranslationEmailRequest {
 }
 
 serve(async (req) => {
-  console.log('[EMAIL DEBUG] Function called at:', new Date().toISOString());
-  console.log('[EMAIL DEBUG] Request method:', req.method);
-
   if (req.method === 'OPTIONS') {
-    console.log('[EMAIL DEBUG] Handling OPTIONS request');
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    console.log('[EMAIL DEBUG] Processing request body...');
     const requestBody = await req.json();
-    console.log('[EMAIL DEBUG] Request body received:', {
-      ...requestBody,
-      originalText: requestBody.originalText?.substring(0, 50) + '...',
-      translatedText: requestBody.translatedText?.substring(0, 50) + '...'
-    });
-
     const { 
       email, 
       originalText, 
@@ -44,15 +33,9 @@ serve(async (req) => {
     
     // Validace vstupních dat
     if (!email || !originalText || !translatedText) {
-      console.error('[EMAIL ERROR] Missing required fields:', {
-        hasEmail: !!email,
-        hasOriginalText: !!originalText,
-        hasTranslatedText: !!translatedText
-      });
       throw new Error('Chybí povinná pole pro odeslání emailu');
     }
 
-    console.log('[EMAIL DEBUG] Getting user info from auth...');
     // Získat informace o uživateli z auth tokenu
     const authHeader = req.headers.get('authorization');
     let userInfo = {
@@ -78,26 +61,21 @@ serve(async (req) => {
             email: user.email || 'Neznámý email',
             id: user.id
           };
-          console.log('[EMAIL DEBUG] User info retrieved:', userInfo.email);
         }
       } catch (error) {
-        console.log('[EMAIL DEBUG] Error getting user info:', error);
+        console.log('Error getting user info:', error);
       }
     }
     
-    // Zkontrolovat RESEND_API_KEY
     const resendApiKey = Deno.env.get('RESEND_API_KEY');
     if (!resendApiKey) {
-      console.error('[EMAIL ERROR] RESEND_API_KEY not found in environment variables');
       throw new Error('RESEND_API_KEY není nakonfigurován');
     }
-    console.log('[EMAIL DEBUG] RESEND_API_KEY found:', resendApiKey.substring(0, 10) + '...' + resendApiKey.slice(-4));
 
     const currentDate = new Date();
     const formattedDate = currentDate.toLocaleDateString('cs-CZ');
     const formattedTime = currentDate.toLocaleTimeString('cs-CZ');
 
-    // Zjednodušený HTML obsah pro testování
     const htmlContent = `
       <!DOCTYPE html>
       <html>
@@ -136,13 +114,10 @@ serve(async (req) => {
 
     const emailData = {
       from: 'Pendler Assistant <onboarding@resend.dev>',
-      to: [email],
+      to: ['vaclavbelo94@gmail.com'], // Používáme ověřený email
       subject: `HR Zpráva od ${userInfo.email} - ${formattedDate}`,
       html: htmlContent,
     };
-
-    console.log('[EMAIL DEBUG] Preparing to send email to:', email);
-    console.log('[EMAIL DEBUG] Email subject:', emailData.subject);
 
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -153,45 +128,25 @@ serve(async (req) => {
       body: JSON.stringify(emailData),
     });
 
-    console.log('[EMAIL DEBUG] Resend API response status:', response.status);
-    console.log('[EMAIL DEBUG] Resend API response headers:', Object.fromEntries(response.headers));
-
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('[EMAIL ERROR] Resend API error:', response.status, errorText);
       throw new Error(`Chyba Resend API: ${response.status} - ${errorText}`);
     }
 
     const result = await response.json();
-    console.log('[EMAIL SUCCESS] Email sent successfully:', result);
 
     return new Response(JSON.stringify({ 
       success: true, 
-      messageId: result.id,
-      userInfo: userInfo,
-      debug: {
-        timestamp: new Date().toISOString(),
-        emailTo: email,
-        resendId: result.id
-      }
+      messageId: result.id
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
   } catch (error) {
-    console.error('[EMAIL ERROR] Complete error details:', {
-      name: error.name,
-      message: error.message,
-      stack: error.stack,
-      timestamp: new Date().toISOString()
-    });
+    console.error('Email error:', error.message);
     
     return new Response(JSON.stringify({ 
-      error: error.message,
-      debug: {
-        timestamp: new Date().toISOString(),
-        errorType: error.name
-      }
+      error: error.message
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
