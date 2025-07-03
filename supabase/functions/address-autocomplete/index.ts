@@ -12,7 +12,7 @@ serve(async (req) => {
   }
 
   try {
-    const { query } = await req.json()
+    const { query, type = 'address' } = await req.json()
     
     // Google Maps API integration
     const googleApiKey = Deno.env.get('GOOGLE_MAPS_API_KEY')
@@ -20,13 +20,38 @@ serve(async (req) => {
       throw new Error('Google Maps API key not configured')
     }
 
-    // Get address suggestions using Google Places Autocomplete API
-    const autocompleteUrl = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(query)}&types=address&components=country:cz|country:de&key=${googleApiKey}`
+    // Determine the search type and components
+    const searchType = type === 'cities' ? '(cities)' : 'address'
+    const components = 'country:cz|country:de|country:pl'
+
+    // Get address/city suggestions using Google Places Autocomplete API
+    const autocompleteUrl = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(query)}&types=${searchType}&components=${components}&key=${googleApiKey}`
     
     const response = await fetch(autocompleteUrl)
     const data = await response.json()
 
     if (data.status === 'OK') {
+      // For cities, simplify the response format
+      if (type === 'cities') {
+        const simplifiedPredictions = data.predictions.map((prediction: any) => ({
+          place_id: prediction.place_id,
+          display_name: prediction.description,
+          main_text: prediction.structured_formatting?.main_text || prediction.description,
+          secondary_text: prediction.structured_formatting?.secondary_text || ''
+        }))
+        
+        return new Response(
+          JSON.stringify({
+            status: 'OK',
+            predictions: simplifiedPredictions
+          }),
+          {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: 200,
+          },
+        )
+      }
+      
       return new Response(
         JSON.stringify(data),
         {

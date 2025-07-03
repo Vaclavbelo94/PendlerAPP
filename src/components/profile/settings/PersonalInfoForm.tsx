@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { CheckCircle } from "lucide-react";
 import { useTranslation } from 'react-i18next';
+import CityAutocomplete from "@/components/common/CityAutocomplete";
 
 interface PersonalInfoFormProps {
   displayName: string;
@@ -67,18 +68,13 @@ const PersonalInfoForm = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="location">{t('residence') || 'Bydliště'}</Label>
-          <div className="relative">
-            <Input
-              id="location"
-              value={location}
-              onChange={(e) => handleInputChange('location', e.target.value)}
-              placeholder={t('locationPlaceholder') || 'Město, země'}
-              className={filledFields.location ? "pr-10" : ""}
-            />
-            {filledFields.location && (
-              <CheckCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-green-500" />
-            )}
-          </div>
+          <CityAutocomplete
+            id="location"
+            value={location}
+            onChange={(value) => handleInputChange('location', value)}
+            placeholder={t('locationPlaceholder') || 'Město, země'}
+            showCheckIcon={filledFields.location}
+          />
         </div>
         
         <div className="space-y-2">
