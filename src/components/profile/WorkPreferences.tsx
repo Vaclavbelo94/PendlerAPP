@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Clock, MapPin, Briefcase, DollarSign, Calendar } from "lucide-react";
+import { useTranslation } from 'react-i18next';
 
 interface WorkPreferencesProps {
   // Define props if needed
@@ -16,6 +17,7 @@ interface WorkPreferencesProps {
 
 const WorkPreferences: React.FC<WorkPreferencesProps> = ({ /* props */ }) => {
   const { user } = useAuth();
+  const { t } = useTranslation('profile');
   const [formData, setFormData] = useState({
     preferredLocation: '',
     availableShifts: '',
@@ -50,10 +52,10 @@ const WorkPreferences: React.FC<WorkPreferencesProps> = ({ /* props */ }) => {
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
           <Briefcase className="h-5 w-5" />
-          Pracovní preference
+          {t('workPreferences')}
         </CardTitle>
         <CardDescription>
-          Nastavte si vaše pracovní preference pro lepší nabídky
+          {t('workPreferencesDescription')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -61,7 +63,7 @@ const WorkPreferences: React.FC<WorkPreferencesProps> = ({ /* props */ }) => {
           <div>
             <Label htmlFor="preferredLocation" className="flex items-center space-x-2">
               <MapPin className="h-4 w-4 mr-2" />
-              Preferovaná lokalita
+              {t('preferredLocation')}
             </Label>
             <Input
               type="text"
@@ -69,31 +71,31 @@ const WorkPreferences: React.FC<WorkPreferencesProps> = ({ /* props */ }) => {
               name="preferredLocation"
               value={formData.preferredLocation}
               onChange={handleChange}
-              placeholder="Zadejte preferovanou lokalitu"
+              placeholder={t('enterPreferredLocation')}
             />
           </div>
           <div>
             <Label htmlFor="availableShifts" className="flex items-center space-x-2">
               <Clock className="h-4 w-4 mr-2" />
-              Dostupné směny
+              {t('availableShifts')}
             </Label>
             <Select onValueChange={(value) => handleChange({ target: { name: 'availableShifts', value } } as any)}>
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Vyberte dostupné směny" />
+                <SelectValue placeholder={t('selectAvailableShifts')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="morning">Ranní</SelectItem>
-                <SelectItem value="afternoon">Odpolední</SelectItem>
-                <SelectItem value="evening">Večerní</SelectItem>
-                <SelectItem value="night">Noční</SelectItem>
-                <SelectItem value="flexible">Flexibilní</SelectItem>
+                <SelectItem value="morning">{t('morning')}</SelectItem>
+                <SelectItem value="afternoon">{t('afternoon')}</SelectItem>
+                <SelectItem value="evening">{t('evening')}</SelectItem>
+                <SelectItem value="night">{t('night')}</SelectItem>
+                <SelectItem value="flexible">{t('flexible')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div>
             <Label htmlFor="expectedSalary" className="flex items-center space-x-2">
               <DollarSign className="h-4 w-4 mr-2" />
-              Očekávaný plat
+              {t('expectedSalary')}
             </Label>
             <Input
               type="number"
@@ -101,13 +103,13 @@ const WorkPreferences: React.FC<WorkPreferencesProps> = ({ /* props */ }) => {
               name="expectedSalary"
               value={formData.expectedSalary}
               onChange={handleChange}
-              placeholder="Zadejte očekávaný plat"
+              placeholder={t('enterExpectedSalary')}
             />
           </div>
           <div className="flex items-center justify-between">
             <Label htmlFor="remoteWork" className="flex items-center space-x-2">
               <Calendar className="h-4 w-4 mr-2" />
-              Práce na dálku
+              {t('remoteWork')}
             </Label>
             <Switch
               id="remoteWork"
@@ -117,7 +119,7 @@ const WorkPreferences: React.FC<WorkPreferencesProps> = ({ /* props */ }) => {
             />
           </div>
           <Button type="submit" className="w-full">
-            Uložit preference
+            {t('savePreferences')}
           </Button>
         </form>
       </CardContent>

@@ -51,5 +51,20 @@
   "preferredLanguage": "Preferovaný jazyk",
   "selectLanguage": "Vyberte jazyk",
   "czech": "Čeština",
-  "german": "Němčina"
+  "german": "Němčina",
+  "workPreferences": "Pracovní preference",
+  "workPreferencesDescription": "Nastavte si vaše pracovní preference pro lepší nabídky",
+  "preferredLocation": "Preferovaná lokalita",
+  "availableShifts": "Dostupné směny",
+  "expectedSalary": "Očekávaný plat",
+  "remoteWork": "Práce na dálku",
+  "enterPreferredLocation": "Zadejte preferovanou lokalitu",
+  "selectAvailableShifts": "Vyberte dostupné směny",
+  "enterExpectedSalary": "Zadejte očekávaný plat",
+  "morning": "Ranní",
+  "afternoon": "Odpolední",
+  "evening": "Večerní",
+  "night": "Noční",
+  "flexible": "Flexibilní",
+  "savePreferences": "Uložit preference"
 }

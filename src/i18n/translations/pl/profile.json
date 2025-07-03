@@ -51,5 +51,20 @@
   "preferredLanguage": "Preferowany język",
   "selectLanguage": "Wybierz język",
   "czech": "Czeski",
-  "german": "Niemiecki"
+  "german": "Niemiecki",
+  "workPreferences": "Preferencje zawodowe",
+  "workPreferencesDescription": "Ustaw swoje preferencje zawodowe dla lepszych ofert",
+  "preferredLocation": "Preferowana lokalizacja",
+  "availableShifts": "Dostępne zmiany",
+  "expectedSalary": "Oczekiwane wynagrodzenie",
+  "remoteWork": "Praca zdalna",
+  "enterPreferredLocation": "Podaj preferowaną lokalizację",
+  "selectAvailableShifts": "Wybierz dostępne zmiany",
+  "enterExpectedSalary": "Podaj oczekiwane wynagrodzenie",
+  "morning": "Poranne",
+  "afternoon": "Popołudniowe",
+  "evening": "Wieczorne",
+  "night": "Nocne",
+  "flexible": "Elastyczne",
+  "savePreferences": "Zapisz preferencje"
 }
