@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { format } from 'date-fns';
 import Layout from '@/components/layouts/Layout';
 import ShiftCalendarContainer from '@/components/shifts/calendar/ShiftCalendarContainer';
@@ -36,8 +36,21 @@ const Shifts = React.memo(() => {
   const [editingShift, setEditingShift] = useState<Shift | null>(null);
   const [selectedDateForNewShift, setSelectedDateForNewShift] = useState<Date | null>(null);
 
-  // Determine loading state - show loading if auth is loading OR shifts are loading while user exists
-  const isLoading = authLoading || (user && shiftsLoading);
+  // Memoize loading state calculation
+  const isLoading = useMemo(() => {
+    return authLoading || (user && shiftsLoading);
+  }, [authLoading, user, shiftsLoading]);
+
+  // Debug logging for loading states
+  React.useEffect(() => {
+    console.log('Shifts Page - Loading states:', {
+      authLoading,
+      shiftsLoading,
+      hasUser: !!user,
+      shiftsCount: shifts.length,
+      isLoading
+    });
+  }, [authLoading, shiftsLoading, user, shifts.length, isLoading]);
 
   const handleAddShift = useCallback(() => {
     if (!user) {
@@ -190,7 +203,6 @@ const Shifts = React.memo(() => {
               <p className="text-muted-foreground mt-1">{t('shiftsDescription')}</p>
             </div>
             
-            {/* Hlavní tlačítko pro přidání směny - skryté na mobilu kvůli FAB */}
             {!isMobile && (
               <Button
                 onClick={handleAddShift}
@@ -203,7 +215,6 @@ const Shifts = React.memo(() => {
             )}
           </div>
           
-          {/* Show empty state only if user is authenticated and no shifts found */}
           {!shiftsLoading && shifts.length === 0 && (
             <Alert className="mb-4">
               <RefreshCw className="h-4 w-4" />
@@ -231,7 +242,6 @@ const Shifts = React.memo(() => {
         </div>
       </div>
 
-      {/* Floating Action Button pro mobilní zařízení */}
       {user && <FloatingAddButton onClick={handleAddShift} />}
 
       {/* Add Shift Sheet */}

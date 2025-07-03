@@ -1,5 +1,5 @@
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/auth';
 import { useStandardizedToast } from '@/hooks/useStandardizedToast';
@@ -14,38 +14,49 @@ export const useShiftsCRUD = () => {
   const [shifts, setShifts] = useState<Shift[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  
+  // Use refs to prevent infinite loops
+  const userIdRef = useRef<string | null>(null);
+  const isLoadingShiftsRef = useRef(false);
 
-  console.log('useShiftsCRUD - Auth state:', { 
-    hasUser: !!user, 
-    email: user?.email, 
-    authLoading,
-    shiftsCount: shifts.length 
-  });
-
-  // Load shifts - now waits for stable auth state
+  // Memoized and stable loadShifts function
   const loadShifts = useCallback(async () => {
+    // Prevent multiple simultaneous loads
+    if (isLoadingShiftsRef.current) {
+      return;
+    }
+
     // Don't load if auth is still loading
     if (authLoading) {
       console.log('useShiftsCRUD - Skipping load, auth still loading');
       return;
     }
 
+    const currentUserId = user?.id;
+    
     // If no user after auth is loaded, clear shifts and stop loading
-    if (!user?.id) {
+    if (!currentUserId) {
       console.log('useShiftsCRUD - No user, clearing shifts');
       setShifts([]);
       setIsLoading(false);
+      userIdRef.current = null;
+      return;
+    }
+
+    // Skip if we're already loading for the same user
+    if (userIdRef.current === currentUserId && isLoadingShiftsRef.current) {
       return;
     }
 
     try {
-      console.log('useShiftsCRUD - Loading shifts for user:', user.id);
+      isLoadingShiftsRef.current = true;
+      console.log('useShiftsCRUD - Loading shifts for user:', currentUserId);
       setIsLoading(true);
       
       const { data, error } = await supabase
         .from('shifts')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', currentUserId)
         .order('date', { ascending: false });
 
       if (error) throw error;
@@ -65,14 +76,16 @@ export const useShiftsCRUD = () => {
 
       console.log('useShiftsCRUD - Loaded shifts:', typedShifts.length);
       setShifts(typedShifts);
+      userIdRef.current = currentUserId;
     } catch (err) {
       console.error('Error loading shifts:', err);
       showError('Chyba při načítání', 'Nepodařilo se načíst směny');
-      setShifts([]); // Clear shifts on error
+      setShifts([]);
     } finally {
       setIsLoading(false);
+      isLoadingShiftsRef.current = false;
     }
-  }, [user?.id, authLoading, showError]);
+  }, [user?.id, authLoading]); // Simplified dependencies
 
   // Create shift
   const createShift = useCallback(async (date: Date, formData: ShiftFormData): Promise<boolean> => {
@@ -102,7 +115,6 @@ export const useShiftsCRUD = () => {
 
       if (error) throw error;
 
-      // Convert to proper Shift type and add to state
       const typedShift: Shift = {
         id: data.id,
         user_id: data.user_id,
@@ -156,7 +168,6 @@ export const useShiftsCRUD = () => {
 
       if (error) throw error;
 
-      // Convert to proper Shift type and update state
       const typedShift: Shift = {
         id: data.id,
         user_id: data.user_id,
@@ -217,11 +228,14 @@ export const useShiftsCRUD = () => {
     }
   }, [user?.id, success, showError]);
 
-  // Load shifts when auth state is stable
+  // Load shifts when auth state is stable - with proper dependency management
   useEffect(() => {
-    console.log('useShiftsCRUD - Effect triggered, authLoading:', authLoading, 'hasUser:', !!user);
-    loadShifts();
-  }, [loadShifts]);
+    // Only trigger if auth is no longer loading and user state has changed
+    if (!authLoading) {
+      console.log('useShiftsCRUD - Auth stable, loading shifts for user:', user?.id || 'none');
+      loadShifts();
+    }
+  }, [user?.id, authLoading, loadShifts]);
 
   return {
     shifts,
