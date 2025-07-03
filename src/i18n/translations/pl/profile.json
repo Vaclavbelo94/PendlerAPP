@@ -45,5 +45,7 @@
   "save": "Zapisz",
   "czechRepublic": "Czechy",
   "germany": "Niemcy",
-  "poland": "Polska"
+  "poland": "Polska",
+  "loadingCities": "Ładuję miasta...",
+  "noCitiesFound": "Nie znaleziono miast."
 }

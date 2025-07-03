@@ -45,5 +45,7 @@
   "save": "Speichern",
   "czechRepublic": "Tschechische Republik",
   "germany": "Deutschland",
-  "poland": "Polen"
+  "poland": "Polen",
+  "loadingCities": "Lade Städte...",
+  "noCitiesFound": "Keine Städte gefunden."
 }

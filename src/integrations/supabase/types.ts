@@ -640,37 +640,46 @@ export type Database = {
       }
       profiles: {
         Row: {
+          bio: string | null
           created_at: string
           email: string | null
           id: string
           is_admin: boolean | null
           is_premium: boolean | null
+          location: string | null
           phone_number: string | null
           premium_expiry: string | null
           updated_at: string
           username: string | null
+          website: string | null
         }
         Insert: {
+          bio?: string | null
           created_at?: string
           email?: string | null
           id: string
           is_admin?: boolean | null
           is_premium?: boolean | null
+          location?: string | null
           phone_number?: string | null
           premium_expiry?: string | null
           updated_at?: string
           username?: string | null
+          website?: string | null
         }
         Update: {
+          bio?: string | null
           created_at?: string
           email?: string | null
           id?: string
           is_admin?: boolean | null
           is_premium?: boolean | null
+          location?: string | null
           phone_number?: string | null
           premium_expiry?: string | null
           updated_at?: string
           username?: string | null
+          website?: string | null
         }
         Relationships: []
       }

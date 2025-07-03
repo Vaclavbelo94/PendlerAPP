@@ -73,7 +73,7 @@ const CityAutocomplete = memo<CityAutocompleteProps>(({
               value={value}
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
-              placeholder={placeholder || t('cityPlaceholder', 'Město')}
+              placeholder={placeholder || t('cityPlaceholder')}
               disabled={disabled}
               className={cn(
                 "pl-10 pr-10",
@@ -112,7 +112,7 @@ const CityAutocomplete = memo<CityAutocompleteProps>(({
               {loading && (
                 <div className="flex items-center justify-center p-4">
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  <span className="text-sm text-muted-foreground">Načítám města...</span>
+                  <span className="text-sm text-muted-foreground">{t('loadingCities')}</span>
                 </div>
               )}
               
@@ -124,7 +124,7 @@ const CityAutocomplete = memo<CityAutocompleteProps>(({
               
               {!loading && !error && suggestions.length === 0 && value.length >= 2 && (
                 <CommandEmpty>
-                  Žádná města nenalezena.
+                  {t('noCitiesFound')}
                 </CommandEmpty>
               )}
               

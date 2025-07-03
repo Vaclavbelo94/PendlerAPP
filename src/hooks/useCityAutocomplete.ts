@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useDebounce } from './useDebounce';
 import { supabase } from '@/integrations/supabase/client';
+import { useTranslation } from 'react-i18next';
 
 interface CitySuggestion {
   place_id: string;
@@ -15,6 +16,7 @@ export const useCityAutocomplete = (query: string) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const debouncedQuery = useDebounce(query, 300);
+  const { t } = useTranslation('profile');
 
   const searchCities = useCallback(async (searchQuery: string) => {
     if (!searchQuery || searchQuery.length < 2) {
@@ -42,12 +44,12 @@ export const useCityAutocomplete = (query: string) => {
       }
     } catch (error) {
       console.error('Error fetching city suggestions:', error);
-      setError('Nepodařilo se načíst návrhy měst');
+      setError(t('noCitiesFound'));
       setSuggestions([]);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     if (debouncedQuery) {

@@ -36,7 +36,7 @@ export const useProfileSettings = () => {
       try {
         const { data, error } = await supabase
           .from('profiles')
-          .select('username, email, phone_number')
+          .select('username, email, phone_number, bio, location, website')
           .eq('id', user.id)
           .single();
 
@@ -48,10 +48,10 @@ export const useProfileSettings = () => {
           ...prevState,
           settings: {
             username: data?.username || '',
-            fullName: data?.username || '', // Using username as fullName since full_name doesn't exist
-            bio: '', // bio doesn't exist in profiles table
-            location: '', // location doesn't exist in profiles table
-            website: '', // website doesn't exist in profiles table
+            fullName: data?.username || '',
+            bio: data?.bio || '',
+            location: data?.location || '',
+            website: data?.website || '',
           },
           isLoading: false,
         }));
@@ -78,6 +78,9 @@ export const useProfileSettings = () => {
         .from('profiles')
         .update({
           username: newSettings.username,
+          bio: newSettings.bio,
+          location: newSettings.location,
+          website: newSettings.website,
           updated_at: new Date().toISOString(),
         })
         .eq('id', user.id);

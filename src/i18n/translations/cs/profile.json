@@ -45,5 +45,7 @@
   "save": "Uložit",
   "czechRepublic": "Česká republika",
   "germany": "Německo",
-  "poland": "Polsko"
+  "poland": "Polsko",
+  "loadingCities": "Načítám města...",
+  "noCitiesFound": "Žádná města nenalezena."
 }
