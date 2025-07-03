@@ -55,5 +55,22 @@
   "bio": "Bio",
   "registrationDate": "Datum registrace",
   "editProfile": "Upravit profil",
-  "cancel": "Zrušit"
+  "cancel": "Zrušit",
+  "accessDenied": "Přístup odepřen",
+  "loginToViewProfile": "Pro zobrazení profilu se musíte přihlásit.",
+  "overview": "Přehled",
+  "settings": "Nastavení",
+  "subscription": "Předplatné",
+  "activity": "Aktivita",
+  "basicInfo": "Základní informace",
+  "basicInfoManage": "Vaše základní profilové údaje",
+  "email": "Email",
+  "registration": "Registrace",
+  "unknown": "Neznámé",
+  "edit": "Upravit",
+  "statistics": "Statistiky",
+  "activityOverview": "Přehled vaší aktivity",
+  "shiftsCount": "Počet směn",
+  "vehicles": "Vozidla",
+  "activeSince": "Aktivní od"
 }

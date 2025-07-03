@@ -55,5 +55,22 @@
   "bio": "Bio",
   "registrationDate": "Registrierungsdatum",
   "editProfile": "Profil bearbeiten",
-  "cancel": "Abbrechen"
+  "cancel": "Abbrechen",
+  "accessDenied": "Zugriff verweigert",
+  "loginToViewProfile": "Für die Anzeige des Profils müssen Sie sich anmelden.",
+  "overview": "Übersicht",
+  "settings": "Einstellungen",
+  "subscription": "Abonnement",
+  "activity": "Aktivität",
+  "basicInfo": "Grundlegende Informationen",
+  "basicInfoManage": "Ihre grundlegenden Profildaten",
+  "email": "E-Mail",
+  "registration": "Registrierung",
+  "unknown": "Unbekannt",
+  "edit": "Bearbeiten",
+  "statistics": "Statistiken",
+  "activityOverview": "Übersicht Ihrer Aktivität",
+  "shiftsCount": "Anzahl Schichten",
+  "vehicles": "Fahrzeuge",
+  "activeSince": "Aktiv seit"
 }

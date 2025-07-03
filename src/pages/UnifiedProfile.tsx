@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User, Settings, Activity, Crown } from "lucide-react";
 import { useAuth } from "@/hooks/auth";
 import { motion } from "framer-motion";
+import { useTranslation } from 'react-i18next';
 
 // Import profile components
 import ProfileHeader from "@/components/profile/unified/ProfileHeader";
@@ -14,6 +15,7 @@ import SubscriptionManagement from "@/components/profile/SubscriptionManagement"
 
 const UnifiedProfile = () => {
   const { user, unifiedUser } = useAuth();
+  const { t } = useTranslation('profile');
   const [activeTab, setActiveTab] = useState("overview");
 
   if (!user) {
@@ -26,9 +28,9 @@ const UnifiedProfile = () => {
           transition={{ duration: 0.6 }}
         >
           <h1 className="text-2xl font-bold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            Přístup odepřen
+            {t('accessDenied')}
           </h1>
-          <p className="text-muted-foreground">Pro zobrazení profilu se musíte přihlásit.</p>
+          <p className="text-muted-foreground">{t('loginToViewProfile')}</p>
         </motion.div>
       </div>
     );
@@ -55,19 +57,19 @@ const UnifiedProfile = () => {
               <TabsList className="grid w-full grid-cols-4 bg-card/80 backdrop-blur-sm border border-border/50 shadow-lg">
                 <TabsTrigger value="overview" className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary/10 data-[state=active]:to-accent/10">
                   <User className="h-4 w-4" />
-                  Přehled
+                  {t('overview')}
                 </TabsTrigger>
                 <TabsTrigger value="settings" className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary/10 data-[state=active]:to-accent/10">
                   <Settings className="h-4 w-4" />
-                  Nastavení
+                  {t('settings')}
                 </TabsTrigger>
                 <TabsTrigger value="subscription" className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary/10 data-[state=active]:to-accent/10">
                   <Crown className="h-4 w-4" />
-                  Předplatné
+                  {t('subscription')}
                 </TabsTrigger>
                 <TabsTrigger value="activity" className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary/10 data-[state=active]:to-accent/10">
                   <Activity className="h-4 w-4" />
-                  Aktivita
+                  {t('activity')}
                 </TabsTrigger>
               </TabsList>
 
