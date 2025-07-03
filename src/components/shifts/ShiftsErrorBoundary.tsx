@@ -1,10 +1,10 @@
 
 import React from 'react';
-import ErrorBoundary from '@/components/common/ErrorBoundary';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { RefreshCw, AlertTriangle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { ErrorBoundaryWithFallback } from '@/components/common/ErrorBoundaryWithFallback';
 
 interface ShiftsErrorBoundaryProps {
   children: React.ReactNode;
@@ -54,16 +54,14 @@ const ShiftsErrorFallback: React.FC<{ error: Error; resetError: () => void; onRe
 
 const ShiftsErrorBoundary: React.FC<ShiftsErrorBoundaryProps> = ({ children, onRetry }) => {
   return (
-    <ErrorBoundary
-      fallback={(error: Error, resetError: () => void) => (
-        <ShiftsErrorFallback error={error} resetError={resetError} onRetry={onRetry} />
-      )}
+    <ErrorBoundaryWithFallback
+      fallbackComponent={null}
       onError={(error, errorInfo) => {
         console.error('Shifts component error:', error, errorInfo);
       }}
     >
       {children}
-    </ErrorBoundary>
+    </ErrorBoundaryWithFallback>
   );
 };
 
