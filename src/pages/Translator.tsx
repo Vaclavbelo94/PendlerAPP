@@ -4,13 +4,13 @@ import { Helmet } from "react-helmet";
 import { motion } from 'framer-motion';
 import PremiumCheck from "@/components/premium/PremiumCheck";
 import { DashboardBackground } from "@/components/common/DashboardBackground";
-import { MessageSquare, Languages } from "lucide-react";
+import { MessageSquare, Users } from "lucide-react";
 import { useScreenOrientation } from "@/hooks/useScreenOrientation";
 import { usePerformanceOptimization } from "@/hooks/usePerformanceOptimization";
 import Layout from '@/components/layouts/Layout';
 import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 import { useTranslation } from 'react-i18next';
-import SimpleAutoTranslator from "@/components/translator/SimpleAutoTranslator";
+import SimpleHRCommunication from "@/components/translator/SimpleHRCommunication";
 
 const Translator = () => {
   const { isMobile, isSmallLandscape } = useScreenOrientation();
@@ -39,11 +39,11 @@ const Translator = () => {
           <div className={`container py-6 ${useMobileLayout ? 'pb-32' : ''} ${isSmallLandscape ? 'px-2' : ''}`}>
             <Helmet>
               <title>{t('translator:aiTranslator')} | {t('common:dashboard')}</title>
-              <meta name="description" content={t('translator:translatorDescription')} />
+              <meta name="description" content="Rychlá komunikace s HR oddělením pomocí automatického překladu" />
               <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
             </Helmet>
             
-            {/* Header with consistent styling */}
+            {/* Header */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -55,35 +55,34 @@ const Translator = () => {
                   <MessageSquare className="h-8 w-8 text-primary" />
                 </div>
                 <div className="p-3 rounded-full bg-gradient-to-r from-green-500/20 to-emerald-500/20 backdrop-blur-sm">
-                  <Languages className="h-8 w-8 text-green-600" />
+                  <Users className="h-8 w-8 text-green-600" />
                 </div>
               </div>
               
               <h1 className={`${useMobileLayout ? 'text-3xl' : 'text-4xl lg:text-5xl'} font-bold mb-4`}>
                 <span className="bg-gradient-to-r from-primary via-blue-600 to-green-600 bg-clip-text text-transparent">
-                  {t('translator:aiTranslator')}
+                  Komunikace s HR
                 </span>
               </h1>
               
               <p className={`text-muted-foreground ${useMobileLayout ? 'text-base' : 'text-lg lg:text-xl'} max-w-3xl mx-auto leading-relaxed ${isSmallLandscape ? 'text-sm' : ''}`}>
                 {useMobileLayout 
-                  ? t('translator:translatorDescriptionMobile')
-                  : t('translator:translatorDescription')
+                  ? "Rychlé psaní nebo řečí pro HR oddělení"
+                  : "Napište nebo řekněte česky/polsky, automaticky se přeloží do němčiny a odešle na HR"
                 }
               </p>
             </motion.div>
 
-            {/* Translator component with animation */}
+            {/* Main Communication Component */}
             <motion.div
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="space-y-6"
             >
-              <SimpleAutoTranslator onTextToSpeech={handleTextToSpeech} />
+              <SimpleHRCommunication onTextToSpeech={handleTextToSpeech} />
             </motion.div>
 
-            {/* Additional info section */}
+            {/* Tips for mobile usage */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -92,10 +91,11 @@ const Translator = () => {
             >
               <div className="max-w-2xl mx-auto p-6 rounded-xl bg-card/50 backdrop-blur-sm border border-border/50">
                 <h3 className="text-lg font-semibold mb-3 text-foreground">
-                  {t('translator:howTranslatorWorks')}
+                  💡 Tip pro použití z auta
                 </h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  {t('translator:translatorInstructions')}
+                  Použijte tlačítko "Hlasem" pro bezpečné psaní během jízdy. 
+                  Stačí říct zprávu česky nebo polsky a automaticky se přeloží a odešle na HR.
                 </p>
               </div>
             </motion.div>
