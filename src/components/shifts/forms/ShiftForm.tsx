@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { format } from 'date-fns';
+import { cs } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -110,7 +111,7 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
             {t('addingShiftFor')}
           </p>
           <p className="font-medium">
-            {format(initialDate, 'EEEE d. MMMM yyyy', { locale: require('date-fns/locale/cs') })}
+            {format(initialDate, 'EEEE d. MMMM yyyy', { locale: cs })}
           </p>
         </div>
       )}

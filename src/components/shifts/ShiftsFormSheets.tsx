@@ -39,14 +39,33 @@ const ShiftsFormSheets: React.FC<ShiftsFormSheetsProps> = ({
 
   console.log('ShiftsFormSheets render:', {
     isAddSheetOpen,
+    isEditSheetOpen,
     selectedDateForNewShift,
-    isSaving
+    editingShift: !!editingShift,
+    isSaving,
+    isMobile
   });
+
+  const handleAddSheetOpenChange = (open: boolean) => {
+    console.log('Add sheet open change:', open);
+    setIsAddSheetOpen(open);
+  };
+
+  const handleEditSheetOpenChange = (open: boolean) => {
+    console.log('Edit sheet open change:', open);
+    setIsEditSheetOpen(open);
+    if (!open) {
+      setEditingShift(null);
+    }
+  };
 
   return (
     <>
-      <Sheet open={isAddSheetOpen} onOpenChange={setIsAddSheetOpen}>
-        <SheetContent className={cn("overflow-y-auto", isMobile ? "w-full" : "sm:max-w-2xl")}>
+      <Sheet open={isAddSheetOpen} onOpenChange={handleAddSheetOpenChange}>
+        <SheetContent className={cn(
+          "overflow-y-auto z-50", 
+          isMobile ? "w-full" : "sm:max-w-2xl"
+        )}>
           <SheetHeader>
             <SheetTitle className="flex items-center gap-2">
               <Calendar className="h-5 w-5" />
@@ -70,8 +89,11 @@ const ShiftsFormSheets: React.FC<ShiftsFormSheetsProps> = ({
         </SheetContent>
       </Sheet>
 
-      <Sheet open={isEditSheetOpen} onOpenChange={setIsEditSheetOpen}>
-        <SheetContent className={cn("overflow-y-auto", isMobile ? "w-full" : "sm:max-w-2xl")}>
+      <Sheet open={isEditSheetOpen} onOpenChange={handleEditSheetOpenChange}>
+        <SheetContent className={cn(
+          "overflow-y-auto z-50", 
+          isMobile ? "w-full" : "sm:max-w-2xl"
+        )}>
           <SheetHeader>
             <SheetTitle className="flex items-center gap-2">
               <Calendar className="h-5 w-5" />

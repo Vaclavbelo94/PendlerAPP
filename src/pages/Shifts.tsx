@@ -1,15 +1,13 @@
 
 import React, { useState, useCallback, useMemo } from 'react';
-import { format } from 'date-fns';
 import Layout from '@/components/layouts/Layout';
 import ShiftCalendarContainer from '@/components/shifts/calendar/ShiftCalendarContainer';
 import FloatingAddButton from '@/components/shifts/FloatingAddButton';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
-import ShiftForm from '@/components/shifts/forms/ShiftForm';
+import ShiftsFormSheets from '@/components/shifts/ShiftsFormSheets';
 import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 import { useTranslation } from 'react-i18next';
 import { useShiftsCRUD, Shift, ShiftFormData } from '@/hooks/shifts/useShiftsCRUD';
-import { Calendar, Plus, LogIn, RefreshCw } from 'lucide-react';
+import { Plus, LogIn, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useAuth } from '@/hooks/auth';
@@ -57,7 +55,7 @@ const Shifts = React.memo(() => {
       console.log('Cannot add shift - user not authenticated');
       return;
     }
-    console.log('handleAddShift called');
+    console.log('handleAddShift called - opening add sheet');
     setSelectedDateForNewShift(new Date());
     setIsAddSheetOpen(true);
   }, [user]);
@@ -67,7 +65,7 @@ const Shifts = React.memo(() => {
       console.log('Cannot add shift for date - user not authenticated');
       return;
     }
-    console.log('handleAddShiftForDate called - date:', date);
+    console.log('handleAddShiftForDate called - date:', date, 'opening add sheet');
     setSelectedDateForNewShift(date);
     setIsAddSheetOpen(true);
   }, [user]);
@@ -77,7 +75,7 @@ const Shifts = React.memo(() => {
       console.log('Cannot edit shift - user not authenticated');
       return;
     }
-    console.log('handleEditShift called - shift:', shift);
+    console.log('handleEditShift called - shift:', shift, 'opening edit sheet');
     setEditingShift(shift);
     setIsEditSheetOpen(true);
   }, [user]);
@@ -123,16 +121,6 @@ const Shifts = React.memo(() => {
     console.log('Retrying to load shifts...');
     refreshShifts();
   }, [refreshShifts]);
-
-  const handleCloseAddSheet = useCallback(() => {
-    setIsAddSheetOpen(false);
-    setSelectedDateForNewShift(null);
-  }, []);
-
-  const handleCloseEditSheet = useCallback(() => {
-    setIsEditSheetOpen(false);
-    setEditingShift(null);
-  }, []);
 
   // Show loading while auth is being determined or data is loading
   if (isLoading) {
@@ -244,57 +232,19 @@ const Shifts = React.memo(() => {
 
       {user && <FloatingAddButton onClick={handleAddShift} />}
 
-      {/* Add Shift Sheet */}
-      <Sheet open={isAddSheetOpen} onOpenChange={setIsAddSheetOpen}>
-        <SheetContent className="w-full sm:max-w-md overflow-y-auto">
-          <SheetHeader>
-            <SheetTitle className="flex items-center gap-2">
-              <Calendar className="h-5 w-5" />
-              {t('addNewShift')}
-            </SheetTitle>
-            <SheetDescription>
-              {selectedDateForNewShift && (
-                <>
-                  {t('addingShiftFor')} {format(selectedDateForNewShift, 'dd.MM.yyyy')}
-                </>
-              )}
-            </SheetDescription>
-          </SheetHeader>
-          
-          <div className="mt-6">
-            <ShiftForm
-              onSubmit={handleCreateShift}
-              onCancel={handleCloseAddSheet}
-              isLoading={isSaving}
-              initialDate={selectedDateForNewShift}
-            />
-          </div>
-        </SheetContent>
-      </Sheet>
-
-      {/* Edit Shift Sheet */}
-      <Sheet open={isEditSheetOpen} onOpenChange={setIsEditSheetOpen}>
-        <SheetContent className="w-full sm:max-w-md overflow-y-auto">
-          <SheetHeader>
-            <SheetTitle className="flex items-center gap-2">
-              <Calendar className="h-5 w-5" />
-              {t('editShift')}
-            </SheetTitle>
-            <SheetDescription>
-              {t('editShiftDetails')}
-            </SheetDescription>
-          </SheetHeader>
-          
-          <div className="mt-6">
-            <ShiftForm
-              shift={editingShift}
-              onSubmit={handleUpdateShift}
-              onCancel={handleCloseEditSheet}
-              isLoading={isSaving}
-            />
-          </div>
-        </SheetContent>
-      </Sheet>
+      {/* Use ShiftsFormSheets component with error boundary protection */}
+      <ShiftsFormSheets
+        isAddSheetOpen={isAddSheetOpen}
+        setIsAddSheetOpen={setIsAddSheetOpen}
+        isEditSheetOpen={isEditSheetOpen}
+        setIsEditSheetOpen={setIsEditSheetOpen}
+        editingShift={editingShift}
+        setEditingShift={setEditingShift}
+        onAddShift={handleCreateShift}
+        onEditShift={handleUpdateShift}
+        isSaving={isSaving}
+        selectedDateForNewShift={selectedDateForNewShift}
+      />
     </Layout>
   );
 });
