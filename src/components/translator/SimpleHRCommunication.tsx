@@ -15,7 +15,7 @@ interface SimpleHRCommunicationProps {
 }
 
 const SimpleHRCommunication: React.FC<SimpleHRCommunicationProps> = ({ onTextToSpeech }) => {
-  const { messages, isLoading, sendMessage } = useAITranslator();
+  const { messages, isLoading, sendMessage, clearConversation } = useAITranslator();
   const [inputText, setInputText] = useState('');
   const [isListening, setIsListening] = useState(false);
   const [recognition, setRecognition] = useState<SpeechRecognition | null>(null);
@@ -128,6 +128,9 @@ const SimpleHRCommunication: React.FC<SimpleHRCommunicationProps> = ({ onTextToS
         title: "Email odeslán",
         description: "Zpráva byla úspěšně odeslána na HR oddělení"
       });
+
+      // Clear conversation history after successful email send
+      clearConversation();
 
     } catch (error: any) {
       toast({
