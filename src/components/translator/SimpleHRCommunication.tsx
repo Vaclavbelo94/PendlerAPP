@@ -1,9 +1,8 @@
-
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Send, Mic, MicOff, Volume2, Loader2, CheckCircle } from 'lucide-react';
+import { Send, Mic, MicOff, Volume2, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { motion } from 'framer-motion';
@@ -21,6 +20,7 @@ const SimpleHRCommunication: React.FC<SimpleHRCommunicationProps> = ({
   const [isSendingEmail, setIsSendingEmail] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
+  const [debugInfo, setDebugInfo] = useState('');
   
   const recognitionRef = useRef<SpeechRecognition | null>(null);
 
@@ -132,8 +132,16 @@ const SimpleHRCommunication: React.FC<SimpleHRCommunicationProps> = ({
     setIsListening(false);
   };
 
-  // Odeslání emailu na HR
+  // Vylepšené odeslání emailu s debug informacemi
   const handleSendToHR = async () => {
+    console.log('[HR DEBUG] Starting email send process...');
+    console.log('[HR DEBUG] Input validation:', {
+      hasInputText: !!inputText.trim(),
+      hasTranslatedText: !!translatedText.trim(),
+      inputLength: inputText.trim().length,
+      translatedLength: translatedText.trim().length
+    });
+
     if (!inputText.trim() || !translatedText.trim()) {
       toast({
         variant: "destructive",
@@ -144,40 +152,82 @@ const SimpleHRCommunication: React.FC<SimpleHRCommunicationProps> = ({
     }
 
     setIsSendingEmail(true);
+    setDebugInfo('Připravuji email...');
+    
     try {
       const sourceLanguage = detectLanguage(inputText);
       
-      const { data, error } = await supabase.functions.invoke('send-translation-email', {
-        body: {
-          email: 'vaclavbelo9@gmail.com',
-          originalText: inputText,
-          translatedText: translatedText,
-          sourceLanguage: sourceLanguage === 'cs' ? 'Čeština' : 'Polština',
-          targetLanguage: 'Němčina'
-        }
+      const emailPayload = {
+        email: 'vaclavbelo9@gmail.com',
+        originalText: inputText,
+        translatedText: translatedText,
+        sourceLanguage: sourceLanguage === 'cs' ? 'Čeština' : 'Polština',
+        targetLanguage: 'Němčina'
+      };
+
+      console.log('[HR DEBUG] Calling supabase function with payload:', {
+        ...emailPayload,
+        originalText: emailPayload.originalText.substring(0, 50) + '...',
+        translatedText: emailPayload.translatedText.substring(0, 50) + '...'
       });
 
-      if (error) throw error;
+      setDebugInfo('Volám email funkci...');
+
+      const { data, error } = await supabase.functions.invoke('send-translation-email', {
+        body: emailPayload
+      });
+
+      console.log('[HR DEBUG] Supabase function response:', {
+        data,
+        error,
+        hasData: !!data,
+        hasError: !!error
+      });
+
+      if (error) {
+        console.error('[HR ERROR] Supabase function error:', error);
+        setDebugInfo(`Chyba: ${error.message}`);
+        throw new Error(`Chyba při volání funkce: ${error.message}`);
+      }
+
+      if (!data) {
+        console.error('[HR ERROR] No data received from function');
+        setDebugInfo('Chyba: Žádná odpověď od funkce');
+        throw new Error('Žádná odpověď od email funkce');
+      }
+
+      if (!data.success) {
+        console.error('[HR ERROR] Function returned failure:', data);
+        setDebugInfo(`Chyba: ${data.error || 'Neznámá chyba'}`);
+        throw new Error(data.error || 'Email se nepodařilo odeslat');
+      }
+
+      console.log('[HR SUCCESS] Email sent successfully:', data);
+      setDebugInfo(`Úspěch: Email odeslán (ID: ${data.messageId})`);
 
       setEmailSent(true);
       toast({
         title: "Email odeslán",
-        description: "Zpráva byla úspešně odeslána na HR oddělení",
+        description: `Zpráva byla úspešně odeslána na HR oddělení (ID: ${data.messageId})`,
       });
 
-      // Reset po 3 sekundách
+      // Reset po 5 sekundách (delší čas pro debug)
       setTimeout(() => {
         setInputText('');
         setTranslatedText('');
         setEmailSent(false);
-      }, 3000);
+        setDebugInfo('');
+      }, 5000);
 
     } catch (error) {
-      console.error('Email sending error:', error);
+      console.error('[HR ERROR] Complete error:', error);
+      const errorMessage = error.message || 'Nepodařilo se odeslat email';
+      setDebugInfo(`Chyba: ${errorMessage}`);
+      
       toast({
         variant: "destructive",
         title: "Chyba odeslání",
-        description: "Nepodařilo se odeslat email. Zkuste to znovu.",
+        description: errorMessage,
       });
     } finally {
       setIsSendingEmail(false);
@@ -199,15 +249,35 @@ const SimpleHRCommunication: React.FC<SimpleHRCommunicationProps> = ({
       >
         <CheckCircle className="h-16 w-16 text-green-500 mb-4" />
         <h3 className="text-xl font-semibold mb-2">Email odeslán!</h3>
-        <p className="text-muted-foreground">
+        <p className="text-muted-foreground mb-4">
           Zpráva byla úspešně odeslána na HR oddělení
         </p>
+        {debugInfo && (
+          <div className="text-xs text-muted-foreground bg-muted p-2 rounded">
+            {debugInfo}
+          </div>
+        )}
       </motion.div>
     );
   }
 
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
+      {/* Debug info panel */}
+      {debugInfo && (
+        <Card className="bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="h-4 w-4 text-blue-600" />
+              <span className="text-sm font-medium">Debug Info:</span>
+            </div>
+            <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
+              {debugInfo}
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Hlavní vstupní pole */}
       <Card>
         <CardContent className="p-6">
@@ -315,6 +385,19 @@ const SimpleHRCommunication: React.FC<SimpleHRCommunicationProps> = ({
                 Odeslat na HR oddělení
               </>
             )}
+          </Button>
+          
+          {/* Debug tlačítko pro test */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              console.log('[HR DEBUG] Manual debug trigger');
+              setDebugInfo(`Test debug: ${new Date().toISOString()}`);
+            }}
+            className="w-full mt-2 text-xs"
+          >
+            Debug Test
           </Button>
         </motion.div>
       )}
