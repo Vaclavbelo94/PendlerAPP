@@ -1,4 +1,3 @@
-
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/auth';
@@ -90,6 +89,7 @@ export const useShiftsCRUD = () => {
   // Create shift
   const createShift = useCallback(async (date: Date, formData: ShiftFormData): Promise<boolean> => {
     if (!user?.id) {
+      console.error('createShift: User not authenticated', { user });
       showError('Chyba', 'Nejste přihlášeni');
       return false;
     }
@@ -97,6 +97,8 @@ export const useShiftsCRUD = () => {
     try {
       setIsSaving(true);
       console.log('useShiftsCRUD - Creating shift for user:', user.id);
+      console.log('useShiftsCRUD - Form data received:', formData);
+      console.log('useShiftsCRUD - Date:', date);
       
       const shiftData = {
         user_id: user.id,
@@ -107,13 +109,26 @@ export const useShiftsCRUD = () => {
         notes: formData.notes || null,
       };
 
+      console.log('useShiftsCRUD - Inserting shift data:', shiftData);
+
       const { data, error } = await supabase
         .from('shifts')
         .insert([shiftData])
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('useShiftsCRUD - Supabase error:', error);
+        console.error('useShiftsCRUD - Error details:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        });
+        throw error;
+      }
+
+      console.log('useShiftsCRUD - Successfully created shift:', data);
 
       const typedShift: Shift = {
         id: data.id,
@@ -133,7 +148,13 @@ export const useShiftsCRUD = () => {
       return true;
     } catch (err) {
       console.error('Error creating shift:', err);
-      showError('Chyba při vytváření', 'Nepodařilo se vytvořit směnu');
+      console.error('Error details:', {
+        name: err?.name,
+        message: err?.message,
+        stack: err?.stack,
+        cause: err?.cause
+      });
+      showError('Chyba při vytváření', `Nepodařilo se vytvořit směnu: ${err?.message || 'Neznámá chyba'}`);
       return false;
     } finally {
       setIsSaving(false);

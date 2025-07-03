@@ -87,6 +87,23 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
 
   const handleSubmit = async (data: ShiftFormDataInternal) => {
     console.log('ShiftForm handleSubmit called with:', data);
+    console.log('ShiftForm current form state:', {
+      type: data.type,
+      start_time: data.start_time,
+      end_time: data.end_time,
+      notes: data.notes,
+      initialDate
+    });
+    
+    // Validate required fields
+    if (!data.type || !data.start_time || !data.end_time) {
+      console.error('ShiftForm: Missing required fields', {
+        type: data.type,
+        start_time: data.start_time,
+        end_time: data.end_time
+      });
+      return;
+    }
     
     // Ensure all required fields are present
     const formData: ShiftFormData = {
@@ -96,8 +113,11 @@ const ShiftForm: React.FC<ShiftFormProps> = ({
       notes: data.notes || undefined,
     };
     
+    console.log('ShiftForm: Submitting form data:', formData);
+    
     try {
       await onSubmit(formData);
+      console.log('ShiftForm: Successfully submitted');
     } catch (error) {
       console.error('ShiftForm submission error:', error);
     }
