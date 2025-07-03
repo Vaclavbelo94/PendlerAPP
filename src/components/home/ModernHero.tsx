@@ -6,9 +6,11 @@ import { ArrowRight, PlayCircle, Star, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/auth';
+import { useTranslation } from 'react-i18next';
 
 const ModernHero = () => {
   const { user } = useAuth();
+  const { t } = useTranslation('common');
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
@@ -29,7 +31,7 @@ const ModernHero = () => {
           >
             <span className="inline-flex items-center px-4 py-2 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-sm font-medium mb-4">
               <span className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
-              Nová verze aplikace je zde!
+              {t('newVersionAvailable')}
             </span>
           </motion.div>
 
@@ -39,9 +41,7 @@ const ModernHero = () => {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="text-5xl lg:text-7xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent mb-6 leading-tight"
           >
-            Pendlerův
-            <br />
-            Pomocník
+            {t('heroMainTitle')}
           </motion.h1>
 
           <motion.p
@@ -50,8 +50,7 @@ const ModernHero = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-xl lg:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed"
           >
-            Komplexní řešení pro české pracovníky v Německu. Správa směn, výuka němčiny, 
-            kalkulačky mezd a vše potřebné pro úspěšnou práci v zahraničí.
+            {t('heroLongDescription')}
           </motion.p>
 
           <motion.div
@@ -63,7 +62,7 @@ const ModernHero = () => {
             {user ? (
               <Button size="lg" className="text-lg px-8 py-4 h-auto group" asChild>
                 <Link to="/dashboard">
-                  Přejít na Dashboard
+                  {t('goToDashboard')}
                   <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </Button>
@@ -71,13 +70,13 @@ const ModernHero = () => {
               <>
                 <Button size="lg" className="text-lg px-8 py-4 h-auto group" asChild>
                   <Link to="/register">
-                    Začít zdarma
+                    {t('startFree')}
                     <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </Button>
                 <Button size="lg" variant="outline" className="text-lg px-8 py-4 h-auto group" asChild>
                   <Link to="/login">
-                    Přihlásit se
+                    {t('signInAction')}
                   </Link>
                 </Button>
               </>
