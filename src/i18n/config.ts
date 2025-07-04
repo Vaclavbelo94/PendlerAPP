@@ -24,6 +24,10 @@ import errorsCs from './translations/cs/errors.json';
 import errorsDe from './translations/de/errors.json';
 import errorsPl from './translations/pl/errors.json';
 
+import shiftsCs from './translations/cs/shifts.json';
+import shiftsDe from './translations/de/shifts.json';
+import shiftsPl from './translations/pl/shifts.json';
+
 const resources = {
   cs: {
     common: commonCs,
@@ -31,6 +35,7 @@ const resources = {
     profile: profileCs,
     settings: settingsCs,
     errors: errorsCs,
+    shifts: shiftsCs,
   },
   de: {
     common: commonDe,
@@ -38,6 +43,7 @@ const resources = {
     profile: profileDe,
     settings: settingsDe,
     errors: errorsDe,
+    shifts: shiftsDe,
   },
   pl: {
     common: commonPl,
@@ -45,6 +51,7 @@ const resources = {
     profile: profilePl,
     settings: settingsPl,
     errors: errorsPl,
+    shifts: shiftsPl,
   },
 };
 

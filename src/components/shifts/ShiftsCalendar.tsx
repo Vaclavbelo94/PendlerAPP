@@ -7,7 +7,6 @@ import UnifiedShiftCalendar from './calendar/UnifiedShiftCalendar';
 import ShiftsFormSheets from './ShiftsFormSheets';
 import { Shift } from '@/types/shifts';
 import { useTranslation } from 'react-i18next';
-import { format } from 'date-fns';
 
 interface ShiftsCalendarProps {
   shifts?: Shift[];
