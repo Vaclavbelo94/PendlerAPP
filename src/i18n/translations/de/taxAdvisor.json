@@ -25,8 +25,95 @@
   "taxReturnGuide": "Steuererklärungsführer",
   "taxAdvisorDescription": "Umfassende Steuerberatung",
   "wizard": {
+    "steps": {
+      "personal": "Persönliche Daten",
+      "employment": "Beschäftigung",
+      "reisepauschale": "Reisepauschale",
+      "deductions": "Abzüge",
+      "results": "Ergebnisse"
+    },
     "personalInfo": {
-      "title": "Persönliche Daten"
+      "title": "Persönliche Daten",
+      "firstName": "Vorname",
+      "lastName": "Nachname",
+      "address": "Adresse",
+      "taxId": "Steuerliche Identifikationsnummer",
+      "email": "E-Mail",
+      "dateOfBirth": "Geburtsdatum"
+    },
+    "employment": {
+      "title": "Beschäftigungsinformationen",
+      "employerName": "Arbeitgebername",
+      "annualIncome": "Jahreseinkommen",
+      "taxClass": "Steuerklasse",
+      "importFromShifts": "Aus Schichten importieren",
+      "commuteDistance": "Entfernung zur Arbeit",
+      "workDaysPerYear": "Arbeitstage pro Jahr",
+      "averageDistance": "Durchschnittliche Entfernung",
+      "workDaysCount": "Anzahl Arbeitstage"
+    },
+    "reisepauschale": {
+      "title": "Reisepauschale",
+      "commuteDistance": "Entfernung zur Arbeit",
+      "workDaysPerYear": "Arbeitstage pro Jahr",
+      "transportType": "Verkehrsmittel",
+      "car": "Auto",
+      "publicTransport": "Öffentliche Verkehrsmittel",
+      "perKm": "/km",
+      "hasSecondHome": "Zweitwohnung in Deutschland",
+      "secondHomeCost": "Kosten für Zweitwohnung",
+      "calculation": "Berechnung"
+    },
+    "deductions": {
+      "title": "Weitere Abzüge",
+      "workClothes": "Arbeitskleidung",
+      "workClothesCost": "Kosten für Arbeitskleidung",
+      "education": "Bildung",
+      "educationCost": "Bildungskosten",
+      "insurance": "Versicherung",
+      "insuranceCost": "Versicherungskosten",
+      "churchTax": "Kirchensteuer"
+    },
+    "results": {
+      "title": "Steuerberechnungsergebnisse",
+      "totalDeductions": "Gesamtabzüge",
+      "estimatedSaving": "Geschätzte Ersparnis",
+      "annualBenefit": "Jährlicher Vorteil",
+      "breakdown": "Detaillierte Aufschlüsselung",
+      "reisepauschaleAmount": "Reisepauschale",
+      "exportPdf": "PDF exportieren",
+      "exportDescription": "Laden Sie das vollständige Steuerdokument mit allen berechneten Abzügen herunter",
+      "error": "Fehler",
+      "completeCalculationFirst": "Berechnung zuerst abschließen",
+      "exportSuccess": "Export erfolgreich",
+      "documentDownloaded": "Dokument wurde heruntergeladen",
+      "exportError": "Fehler beim Export",
+      "failedToGenerate": "Dokument konnte nicht generiert werden"
     }
-  }
+  },
+  "taxClasses": {
+    "class1": "Klasse 1 - Ledig",
+    "class2": "Klasse 2 - Ledig mit Kindern",
+    "class3": "Klasse 3 - Verheiratet (höheres Einkommen)",
+    "class4": "Klasse 4 - Verheiratet (gleiches Einkommen)",
+    "class5": "Klasse 5 - Verheiratet (niedrigeres Einkommen)",
+    "class6": "Klasse 6 - Zweitjob"
+  },
+  "navigation": {
+    "previous": "Zurück",
+    "next": "Weiter",
+    "complete": "Abschließen",
+    "skip": "Überspringen"
+  },
+  "loading": "Wird geladen...",
+  "saving": "Wird gespeichert...",
+  "saved": "Gespeichert",
+  "error": "Fehler",
+  "success": "Erfolg",
+  "cancel": "Abbrechen",
+  "confirm": "Bestätigen",
+  "close": "Schließen",
+  "back": "Zurück",
+  "continue": "Fortfahren",
+  "finish": "Beenden"
 }

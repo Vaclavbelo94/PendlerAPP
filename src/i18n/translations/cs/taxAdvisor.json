@@ -25,8 +25,95 @@
   "taxReturnGuide": "Průvodce daňovým přiznáním",
   "taxAdvisorDescription": "Komplexní daňové poradenství",
   "wizard": {
+    "steps": {
+      "personal": "Osobní údaje",
+      "employment": "Zaměstnání",
+      "reisepauschale": "Cestovné",
+      "deductions": "Odpočty",
+      "results": "Výsledky"
+    },
     "personalInfo": {
-      "title": "Osobní údaje"
+      "title": "Osobní údaje",
+      "firstName": "Jméno",
+      "lastName": "Příjmení",
+      "address": "Adresa",
+      "taxId": "Daňové identifikační číslo",
+      "email": "E-mail",
+      "dateOfBirth": "Datum narození"
+    },
+    "employment": {
+      "title": "Informace o zaměstnání",
+      "employerName": "Název zaměstnavatele",
+      "annualIncome": "Roční příjem",
+      "taxClass": "Daňová třída",
+      "importFromShifts": "Importovat ze směn",
+      "commuteDistance": "Vzdálenost do práce",
+      "workDaysPerYear": "Pracovních dní za rok",
+      "averageDistance": "Průměrná vzdálenost",
+      "workDaysCount": "Počet pracovních dní"
+    },
+    "reisepauschale": {
+      "title": "Cestovné",
+      "commuteDistance": "Vzdálenost do práce",
+      "workDaysPerYear": "Pracovních dní za rok",
+      "transportType": "Typ dopravy",
+      "car": "Auto",
+      "publicTransport": "Veřejná doprava",
+      "perKm": "/km",
+      "hasSecondHome": "Druhý domov v Německu",
+      "secondHomeCost": "Náklady na druhý domov",
+      "calculation": "Výpočet"
+    },
+    "deductions": {
+      "title": "Další odpočty",
+      "workClothes": "Pracovní oblečení",
+      "workClothesCost": "Náklady na pracovní oblečení",
+      "education": "Vzdělávání",
+      "educationCost": "Náklady na vzdělávání",
+      "insurance": "Pojištění",
+      "insuranceCost": "Náklady na pojištění",
+      "churchTax": "Církevní daň"
+    },
+    "results": {
+      "title": "Výsledky daňového výpočtu",
+      "totalDeductions": "Celkové odpočty",
+      "estimatedSaving": "Odhad úspory",
+      "annualBenefit": "Roční výhoda",
+      "breakdown": "Detailní rozpis",
+      "reisepauschaleAmount": "Cestovné",
+      "exportPdf": "Exportovat PDF",
+      "exportDescription": "Stáhněte si kompletní daňový dokument s všemi vypočítanými odpočty",
+      "error": "Chyba",
+      "completeCalculationFirst": "Nejprve dokončete výpočet",
+      "exportSuccess": "Export úspěšný",
+      "documentDownloaded": "Dokument byl stažen",
+      "exportError": "Chyba při exportu",
+      "failedToGenerate": "Nepodařilo se vygenerovat dokument"
     }
-  }
+  },
+  "taxClasses": {
+    "class1": "Třída 1 - Svobodní",
+    "class2": "Třída 2 - Svobodní s dětmi",
+    "class3": "Třída 3 - Manželé (vyšší příjem)",
+    "class4": "Třída 4 - Manželé (stejný příjem)",
+    "class5": "Třída 5 - Manželé (nižší příjem)",
+    "class6": "Třída 6 - Druhé zaměstnání"
+  },
+  "navigation": {
+    "previous": "Předchozí",
+    "next": "Další",
+    "complete": "Dokončit",
+    "skip": "Přeskočit"
+  },
+  "loading": "Načítám...",
+  "saving": "Ukládám...",
+  "saved": "Uloženo",
+  "error": "Chyba",
+  "success": "Úspěch",
+  "cancel": "Zrušit",
+  "confirm": "Potvrdit",
+  "close": "Zavřít",
+  "back": "Zpět",
+  "continue": "Pokračovat",
+  "finish": "Dokončit"
 }

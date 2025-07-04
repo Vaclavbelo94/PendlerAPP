@@ -25,8 +25,95 @@
   "taxReturnGuide": "Przewodnik po zeznaniu podatkowym",
   "taxAdvisorDescription": "Kompleksowe doradztwo podatkowe",
   "wizard": {
+    "steps": {
+      "personal": "Dane osobowe",
+      "employment": "Zatrudnienie",
+      "reisepauschale": "Ryczałt za dojazdy",
+      "deductions": "Odliczenia",
+      "results": "Wyniki"
+    },
     "personalInfo": {
-      "title": "Dane osobowe"
+      "title": "Dane osobowe",
+      "firstName": "Imię",
+      "lastName": "Nazwisko",
+      "address": "Adres",
+      "taxId": "Numer identyfikacji podatkowej",
+      "email": "E-mail",
+      "dateOfBirth": "Data urodzenia"
+    },
+    "employment": {
+      "title": "Informacje o zatrudnieniu",
+      "employerName": "Nazwa pracodawcy",
+      "annualIncome": "Roczny dochód",
+      "taxClass": "Klasa podatkowa",
+      "importFromShifts": "Importuj ze zmian",
+      "commuteDistance": "Odległość do pracy",
+      "workDaysPerYear": "Dni pracy w roku",
+      "averageDistance": "Średnia odległość",
+      "workDaysCount": "Liczba dni pracy"
+    },
+    "reisepauschale": {
+      "title": "Ryczałt za dojazdy",
+      "commuteDistance": "Odległość do pracy",
+      "workDaysPerYear": "Dni pracy w roku",
+      "transportType": "Typ transportu",
+      "car": "Samochód",
+      "publicTransport": "Transport publiczny",
+      "perKm": "/km",
+      "hasSecondHome": "Drugie mieszkanie w Niemczech",
+      "secondHomeCost": "Koszt drugiego mieszkania",
+      "calculation": "Obliczenie"
+    },
+    "deductions": {
+      "title": "Dodatkowe odliczenia",
+      "workClothes": "Odzież robocza",
+      "workClothesCost": "Koszt odzieży roboczej",
+      "education": "Edukacja",
+      "educationCost": "Koszt edukacji",
+      "insurance": "Ubezpieczenie",
+      "insuranceCost": "Koszt ubezpieczenia",
+      "churchTax": "Podatek kościelny"
+    },
+    "results": {
+      "title": "Wyniki obliczenia podatkowego",
+      "totalDeductions": "Całkowite odliczenia",
+      "estimatedSaving": "Szacowane oszczędności",
+      "annualBenefit": "Roczna korzyść",
+      "breakdown": "Szczegółowy podział",
+      "reisepauschaleAmount": "Ryczałt za dojazdy",
+      "exportPdf": "Eksportuj PDF",
+      "exportDescription": "Pobierz kompletny dokument podatkowy ze wszystkimi obliczonymi odliczeniami",
+      "error": "Błąd",
+      "completeCalculationFirst": "Najpierw ukończ obliczenie",
+      "exportSuccess": "Eksport udany",
+      "documentDownloaded": "Dokument został pobrany",
+      "exportError": "Błąd eksportu",
+      "failedToGenerate": "Nie udało się wygenerować dokumentu"
     }
-  }
+  },
+  "taxClasses": {
+    "class1": "Klasa 1 - Samotni",
+    "class2": "Klasa 2 - Samotni z dziećmi",
+    "class3": "Klasa 3 - Małżonkowie (wyższy dochód)",
+    "class4": "Klasa 4 - Małżonkowie (równy dochód)",
+    "class5": "Klasa 5 - Małżonkowie (niższy dochód)",
+    "class6": "Klasa 6 - Druga praca"
+  },
+  "navigation": {
+    "previous": "Poprzedni",
+    "next": "Następny",
+    "complete": "Ukończ",
+    "skip": "Pomiń"
+  },
+  "loading": "Ładowanie...",
+  "saving": "Zapisywanie...",
+  "saved": "Zapisano",
+  "error": "Błąd",
+  "success": "Sukces",
+  "cancel": "Anuluj",
+  "confirm": "Potwierdź",
+  "close": "Zamknij",
+  "back": "Wstecz",
+  "continue": "Kontynuuj",
+  "finish": "Zakończ"
 }
