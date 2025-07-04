@@ -1,9 +1,11 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from '@/hooks/auth';
 import { Crown, Calendar, CreditCard, Zap } from "lucide-react";
+import { useTranslation } from 'react-i18next';
 
 interface ProfileSubscriptionProps {
   isPremium: boolean;
@@ -12,6 +14,7 @@ interface ProfileSubscriptionProps {
 
 const ProfileSubscription: React.FC<ProfileSubscriptionProps> = ({ isPremium, premiumExpiry }) => {
   const { unifiedUser } = useAuth();
+  const { t } = useTranslation('premium');
   const [expiryDate, setExpiryDate] = useState<Date | null>(null);
 
   useEffect(() => {
@@ -29,32 +32,32 @@ const ProfileSubscription: React.FC<ProfileSubscriptionProps> = ({ isPremium, pr
           {isPremium ? (
             <>
               <Crown className="h-5 w-5 text-amber-500" />
-              <span>Premium</span>
+              <span>{t('premium')}</span>
             </>
           ) : (
             <>
               <CreditCard className="h-5 w-5 text-gray-500" />
-              <span>Základní</span>
+              <span>{t('basic')}</span>
             </>
           )}
         </CardTitle>
         <CardDescription>
           {isPremium ? (
             <>
-              Aktivní předplatné{' '}
+              {t('activeSubscription')}{' '}
               {expiryDate ? (
                 <>
-                  do {expiryDate.toLocaleDateString()}
+                  {t('until')} {expiryDate.toLocaleDateString()}
                 </>
               ) : (
                 <>
-                  bez data vypršení platnosti <Zap className="h-3 w-3 inline-block" />
+                  {t('withoutExpiryDate')} <Zap className="h-3 w-3 inline-block" />
                 </>
               )}
             </>
           ) : (
             <>
-              Získejte přístup k pokročilým funkcím
+              {t('getAccessToAdvanced')}
             </>
           )}
         </CardDescription>
@@ -65,24 +68,24 @@ const ProfileSubscription: React.FC<ProfileSubscriptionProps> = ({ isPremium, pr
             <div className="flex items-center space-x-2">
               <Badge variant="secondary">
                 <Crown className="h-4 w-4 mr-2" />
-                Premium
+                {t('premium')}
               </Badge>
             </div>
             <p className="text-sm text-muted-foreground">
-              Máte aktivní Premium členství.
+              {t('youHaveActivePremium')}.
             </p>
             <Button variant="destructive" disabled>
-              Zrušit předplatné
+              {t('cancelSubscription')}
             </Button>
           </>
         ) : (
           <>
             <p className="text-sm text-muted-foreground">
-              Odemkněte pokročilé funkce a vylepšete svůj zážitek.
+              {t('getAccessToAdvanced')}.
             </p>
             <Button asChild>
               <a href="/premium">
-                Získat Premium
+                {t('getPremium')}
               </a>
             </Button>
           </>

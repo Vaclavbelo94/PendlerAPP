@@ -9,6 +9,7 @@ import { Calendar, Crown, CreditCard, AlertTriangle, CheckCircle, XCircle } from
 import { useAuth } from '@/hooks/auth';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 interface SubscriptionManagementProps {
   // You can add props here if needed
@@ -16,6 +17,7 @@ interface SubscriptionManagementProps {
 
 const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({ /* props */ }) => {
   const { user, unifiedUser, refreshPremiumStatus } = useAuth();
+  const { t } = useTranslation('premium');
   const [subscriptionStatus, setSubscriptionStatus] = useState<{
     isPremium: boolean | null;
     premiumExpiry: string | null;
@@ -78,15 +80,15 @@ const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({ /* prop
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
           <CreditCard className="h-5 w-5" />
-          <span>Správa předplatného</span>
+          <span>{t('subscriptionManagement')}</span>
         </CardTitle>
         <CardDescription>
-          Zde můžete spravovat své prémiové předplatné.
+          {t('manageSubscriptionHere')}.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {subscriptionStatus.isLoading ? (
-          <p>Načítám stav předplatného...</p>
+          <p>{t('loadingSubscriptionStatus')}...</p>
         ) : (
           <>
             {isSubscriptionActive ? (
@@ -94,21 +96,21 @@ const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({ /* prop
                 <Alert>
                   <CheckCircle className="h-4 w-4" />
                   <AlertDescription>
-                    Vaše Premium je aktivní.
+                    {t('yourPremiumIsActive')}.
                     {subscriptionStatus.premiumExpiry && (
-                      <> Vyprší {new Date(subscriptionStatus.premiumExpiry).toLocaleDateString()}.</>
+                      <> {t('expires')} {new Date(subscriptionStatus.premiumExpiry).toLocaleDateString()}.</>
                     )}
                   </AlertDescription>
                 </Alert>
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <span>Využití funkcí:</span>
+                    <span>{t('featuresUsage')}:</span>
                     <span>80%</span>
                   </div>
                   <Progress value={80} />
                 </div>
                 <Button variant="destructive" onClick={cancelSubscription}>
-                  Zrušit předplatné
+                  {t('cancelSubscription')}
                 </Button>
               </>
             ) : (
@@ -116,11 +118,11 @@ const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({ /* prop
                 <Alert variant="destructive">
                   <XCircle className="h-4 w-4" />
                   <AlertDescription>
-                    Nemáte aktivní Premium.
+                    {t('noActivePremium')}.
                   </AlertDescription>
                 </Alert>
                 <Button>
-                  Aktivovat Premium
+                  {t('activatePremium')}
                 </Button>
               </>
             )}
