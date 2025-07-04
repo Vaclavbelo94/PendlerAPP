@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/auth";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { activatePromoCode } from "@/services/promoCodeService";
+import { isDHLPromoCode } from "@/utils/dhlAuthUtils";
 
 const PromoCodeRedemption = () => {
   const { user, refreshPremiumStatus } = useAuth();
@@ -26,6 +27,9 @@ const PromoCodeRedemption = () => {
     console.log('=== COMPONENT: Starting promo code redemption ===');
     console.log('User:', { id: user.id, email: user.email });
     console.log('Promo code:', promoCode.trim());
+    
+    const isDHL = isDHLPromoCode(promoCode.trim());
+    console.log('Is DHL promo code:', isDHL);
     
     setIsSubmitting(true);
     try {
@@ -54,7 +58,25 @@ const PromoCodeRedemption = () => {
       const premiumStatusResult = await refreshPremiumStatus();
       console.log('Premium status refreshen:', premiumStatusResult);
       
-      if (redemptionCode.discount === 100) {
+      if (isDHL) {
+        toast.success(`DHL Premium aktivován na rok!`, {
+          description: `Promo kód ${redemptionCode.code} byl úspěšně aktivován. Nyní můžete přejít na DHL setup.`,
+          duration: 8000
+        });
+        
+        // For DHL codes, provide manual navigation option
+        setTimeout(() => {
+          toast.info("Přejít na DHL Setup?", {
+            description: "Klikněte zde pro nastavení vašeho DHL profilu",
+            action: {
+              label: "Přejít",
+              onClick: () => navigate('/dhl-setup')
+            },
+            duration: 10000
+          });
+        }, 2000);
+        
+      } else if (redemptionCode.discount === 100) {
         const premiumExpiry = new Date();
         premiumExpiry.setMonth(premiumExpiry.getMonth() + redemptionCode.duration);
         toast.success(`Premium status byl aktivován do ${premiumExpiry.toLocaleDateString('cs-CZ')}`, {
@@ -67,13 +89,6 @@ const PromoCodeRedemption = () => {
         });
         console.log('Zobrazuji success toast pro slevu:', redemptionCode.discount + '%');
       }
-
-      console.log('Přesměrovávám na dashboard za 2 sekundy...');
-      // Přesměruj na dashboard po úspěšné aktivaci
-      setTimeout(() => {
-        console.log('Navigating to dashboard...');
-        navigate('/dashboard');
-      }, 2000);
       
     } catch (error) {
       console.error("=== COMPONENT: Error redeeming promo code ===", error);
@@ -92,7 +107,7 @@ const PromoCodeRedemption = () => {
           Máte promo kód?
         </CardTitle>
         <CardDescription>
-          Aktivujte si premium funkce zdarma pomocí promo kódu
+          Aktivujte si premium funkce pomocí promo kódu. DHL2026 kód aktivuje roční premium a přístup k DHL funkcím.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -103,7 +118,7 @@ const PromoCodeRedemption = () => {
               id="promo-code"
               value={promoCode}
               onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-              placeholder="Zadejte váš promo kód"
+              placeholder="Zadejte váš promo kód (např. DHL2026)"
               disabled={isSubmitting}
               className="bg-white dark:bg-gray-800"
             />
@@ -120,8 +135,7 @@ const PromoCodeRedemption = () => {
         
         <div className="mt-4 p-3 bg-amber-100 dark:bg-amber-900 rounded-lg">
           <p className="text-sm text-amber-800 dark:text-amber-200">
-            <strong>Tip:</strong> Po úspěšné aktivaci budete přesměrováni na dashboard.
-            Promo kódy získáte za účast v komunitních aktivitách.
+            <strong>Tip:</strong> Kód DHL2026 aktivuje roční premium a přístup k DHL funkcím bez nutnosti mít @dhl.com email.
           </p>
         </div>
       </CardContent>

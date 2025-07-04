@@ -1,5 +1,6 @@
 
 import { User } from '@supabase/supabase-js';
+import { hasDHLPromoCode } from './dhlPromoUtils';
 
 export interface DHLAuthState {
   isDHLEmployee: boolean;
@@ -8,34 +9,54 @@ export interface DHLAuthState {
 }
 
 /**
- * Check if user is DHL employee (has used DHL2026 promo code or has DHL assignment)
+ * Check if user is DHL employee (has used DHL2026 promo code or other DHL codes)
  */
-export const isDHLEmployee = (user: User | null): boolean => {
+export const isDHLEmployee = async (user: User | null): Promise<boolean> => {
+  if (!user?.id) {
+    console.log('DHL Employee check: No user ID provided');
+    return false;
+  }
+  
+  // Check if user has redeemed DHL promo code
+  const hasDHLPromo = await hasDHLPromoCode(user.id);
+  
+  console.log('DHL Employee check:', { 
+    userId: user.id,
+    email: user.email, 
+    hasDHLPromo
+  });
+  
+  return hasDHLPromo;
+};
+
+/**
+ * Synchronous version for compatibility (checks email patterns only)
+ */
+export const isDHLEmployeeSync = (user: User | null): boolean => {
   if (!user?.email) {
-    console.log('DHL Employee check: No email provided');
+    console.log('DHL Employee sync check: No email provided');
     return false;
   }
   
   // Support various DHL email formats and admin
   const dhlEmailPatterns = [
-    '@dhl.com',        // Standard DHL email (this will match moment@dhl.com)
-    '@dhl.de',         // German DHL
-    'test@dhl.com',    // Test account
-    'admindhl@pendlerapp.com' // DHL admin - UPDATED
+    '@dhl.com',
+    '@dhl.de',
+    'test@dhl.com',
+    'admindhl@pendlerapp.com'
   ];
   
   const isDHLEmp = dhlEmailPatterns.some(pattern => {
     if (pattern.startsWith('@')) {
-      return user.email!.endsWith(pattern); // Changed from includes to endsWith for proper domain matching
+      return user.email!.endsWith(pattern);
     } else {
       return user.email === pattern;
     }
   });
   
-  console.log('DHL Employee check:', { 
+  console.log('DHL Employee sync check:', { 
     email: user.email, 
-    isDHLEmployee: isDHLEmp,
-    checkedPatterns: dhlEmailPatterns 
+    isDHLEmployee: isDHLEmp
   });
   
   return isDHLEmp;
@@ -45,7 +66,7 @@ export const isDHLEmployee = (user: User | null): boolean => {
  * Check if user is DHL admin
  */
 export const isDHLAdmin = (user: User | null): boolean => {
-  const isAdmin = user?.email === 'admindhl@pendlerapp.com'; // UPDATED
+  const isAdmin = user?.email === 'admindhl@pendlerapp.com';
   console.log('DHL Admin check:', { email: user?.email, isAdmin });
   return isAdmin;
 };
@@ -60,10 +81,10 @@ export const isRegularAdmin = (user: User | null): boolean => {
 };
 
 /**
- * Get unified DHL auth state
+ * Get unified DHL auth state (async version)
  */
-export const getDHLAuthState = (user: User | null): DHLAuthState => {
-  const isEmployee = isDHLEmployee(user);
+export const getDHLAuthState = async (user: User | null): Promise<DHLAuthState> => {
+  const isEmployee = await isDHLEmployee(user);
 
   const authState = {
     isDHLEmployee: isEmployee,
@@ -76,6 +97,22 @@ export const getDHLAuthState = (user: User | null): DHLAuthState => {
 };
 
 /**
+ * Synchronous version for compatibility
+ */
+export const getDHLAuthStateSync = (user: User | null): DHLAuthState => {
+  const isEmployee = isDHLEmployeeSync(user);
+
+  const authState = {
+    isDHLEmployee: isEmployee,
+    hasAssignment: false,
+    canAccessDHLFeatures: isEmployee
+  };
+
+  console.log('DHL Auth State (sync):', authState);
+  return authState;
+};
+
+/**
  * Check if user can access DHL admin panel
  */
 export const canAccessDHLAdmin = (user: User | null): boolean => {
@@ -83,17 +120,25 @@ export const canAccessDHLAdmin = (user: User | null): boolean => {
 };
 
 /**
- * Check if user can access DHL features (unified approach)
+ * Check if user can access DHL features (sync version for compatibility)
  */
 export const canAccessDHLFeatures = (user: User | null): boolean => {
-  return isDHLEmployee(user);
+  return isDHLEmployeeSync(user);
+};
+
+/**
+ * Check if user can access DHL features (async version)
+ */
+export const canAccessDHLFeaturesAsync = async (user: User | null): Promise<boolean> => {
+  return await isDHLEmployee(user);
 };
 
 /**
  * Get DHL setup redirect path if needed
  */
-export const getDHLSetupPath = (user: User | null, hasAssignment: boolean): string | null => {
-  if (isDHLEmployee(user) && !hasAssignment) {
+export const getDHLSetupPath = async (user: User | null, hasAssignment: boolean): Promise<string | null> => {
+  const isDHL = await isDHLEmployee(user);
+  if (isDHL && !hasAssignment) {
     return '/dhl-setup';
   }
   return null;
@@ -102,9 +147,9 @@ export const getDHLSetupPath = (user: User | null, hasAssignment: boolean): stri
 /**
  * Get DHL redirect path for login/register
  */
-export const getDHLRedirectPath = (user: User | null): string | null => {
-  if (isDHLEmployee(user)) {
-    // Check if user needs setup (this will be determined by checking assignment in component)
+export const getDHLRedirectPath = async (user: User | null): Promise<string | null> => {
+  const isDHL = await isDHLEmployee(user);
+  if (isDHL) {
     return null; // Let the component handle the redirect logic
   }
   return null;

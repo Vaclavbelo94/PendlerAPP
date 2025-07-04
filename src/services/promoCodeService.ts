@@ -1,5 +1,6 @@
-
 import { supabase } from '@/integrations/supabase/client';
+import { updateDHLStatus } from '@/utils/dhlPromoUtils';
+import { isDHLPromoCode } from '@/utils/dhlAuthUtils';
 
 export const activatePromoCode = async (userId: string, promoCodeValue: string) => {
   try {
@@ -15,6 +16,10 @@ export const activatePromoCode = async (userId: string, promoCodeValue: string) 
       .single();
     
     console.log('Současný profil uživatele:', currentProfile, 'error:', profileCheckError);
+    
+    // Check if this is a DHL promo code
+    const isDHLCode = isDHLPromoCode(promoCodeValue);
+    console.log('Is DHL promo code:', isDHLCode);
     
     // Zkontrolujeme, zda uživatel už tento kód nepoužil a má aktivní premium
     console.log('Kontroluji existující redemption záznamy...');
@@ -36,7 +41,6 @@ export const activatePromoCode = async (userId: string, promoCodeValue: string) 
 
     // Pokud má uživatel redemption záznamy, ale není premium, aktivujeme mu premium
     if (existingRedemptions && existingRedemptions.length > 0) {
-      // Najdeme redemption pro zadaný kód
       const codeRedemption = existingRedemptions.find(r => 
         r.promo_codes && r.promo_codes.code.toLowerCase() === promoCodeValue.toLowerCase()
       );
@@ -54,7 +58,7 @@ export const activatePromoCode = async (userId: string, promoCodeValue: string) 
                 code: codeRedemption.promo_codes.code,
                 discount: codeRedemption.promo_codes.discount,
                 duration: codeRedemption.promo_codes.duration,
-                usedCount: 0 // Nepotřebujeme skutečný počet
+                usedCount: 0
               }
             };
           }
@@ -154,12 +158,19 @@ export const activatePromoCode = async (userId: string, promoCodeValue: string) 
       const premiumExpiry = new Date();
       premiumExpiry.setMonth(premiumExpiry.getMonth() + promoCodeData.duration);
       
+      const updateFields: any = { 
+        is_premium: true,
+        premium_expiry: premiumExpiry.toISOString()
+      };
+      
+      // If this is a DHL code, also set DHL employee status
+      if (isDHLCode) {
+        updateFields.is_dhl_employee = true;
+      }
+      
       const { error: updateError } = await supabase
         .from('profiles')
-        .update({ 
-          is_premium: true,
-          premium_expiry: premiumExpiry.toISOString()
-        })
+        .update(updateFields)
         .eq('id', userId);
 
       if (updateError) {
@@ -188,12 +199,20 @@ export const activatePromoCode = async (userId: string, promoCodeValue: string) 
     
     console.log('Nastavuji premium do:', premiumExpiry.toISOString());
 
+    const updateFields: any = { 
+      is_premium: true,
+      premium_expiry: premiumExpiry.toISOString()
+    };
+    
+    // If this is a DHL code, also set DHL employee status
+    if (isDHLCode) {
+      updateFields.is_dhl_employee = true;
+      console.log('Setting DHL employee status for user:', userId);
+    }
+
     const { data: profileUpdate, error: profileError } = await supabase
       .from('profiles')
-      .update({ 
-        is_premium: true,
-        premium_expiry: premiumExpiry.toISOString()
-      })
+      .update(updateFields)
       .eq('id', userId)
       .select();
 
@@ -223,7 +242,8 @@ export const activatePromoCode = async (userId: string, promoCodeValue: string) 
         .from('profiles')
         .update({ 
           is_premium: false,
-          premium_expiry: null
+          premium_expiry: null,
+          is_dhl_employee: false
         })
         .eq('id', userId);
       return { success: false, message: "Chyba při zaznamenání aktivace promo kódu" };
@@ -243,6 +263,9 @@ export const activatePromoCode = async (userId: string, promoCodeValue: string) 
 
     console.log('=== PROMO CODE ACTIVATION SUCCESS ===');
     console.log('Premium aktivován do:', premiumExpiry.toISOString());
+    if (isDHLCode) {
+      console.log('DHL employee status activated for user:', userId);
+    }
     
     return { 
       success: true, 

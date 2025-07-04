@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -95,16 +94,19 @@ const EnhancedRegisterForm = () => {
         
         // Enhanced success handling based on promo code type
         if (isDHLCode) {
-          toast.success('DHL účet vytvořen!', { 
-            description: `Premium aktivován s kódem ${promoCode}. Nyní dokončete nastavení svého DHL profilu.`,
+          toast.success('Registrace s DHL kódem úspěšná!', { 
+            description: `Premium na rok aktivován. Po přihlášení můžete dokončit nastavení DHL profilu.`,
             duration: 8000
           });
           
-          // Navigate to DHL setup after short delay
+          // Provide information about next steps
           setTimeout(() => {
-            navigate('/dhl-setup');
+            toast.info("Další kroky:", {
+              description: "Po přihlášení budete přesměrováni na DHL setup stránku pro dokončení nastavení.",
+              duration: 10000
+            });
           }, 2000);
-          return;
+          
         } else if (promoCode && isPromoValid) {
           toast.success(t('accountCreatedWithPremium'), { 
             description: `Premium aktivován s kódem ${promoCode}. Nyní se můžete přihlásit.`,
@@ -193,9 +195,9 @@ const EnhancedRegisterForm = () => {
       </Button>
       
       {isDHLCode && (
-        <div className="text-sm text-yellow-600 bg-yellow-50 p-3 rounded-lg border border-yellow-200">
-          <p className="font-medium">DHL registrace</p>
-          <p>Po dokončení registrace budete přesměrováni na nastavení vašeho DHL profilu.</p>
+        <div className="text-sm text-blue-600 bg-blue-50 p-3 rounded-lg border border-blue-200">
+          <p className="font-medium">🚛 DHL Premium registrace</p>
+          <p>Váš účet bude aktivován s premium přístupem na rok a DHL funkcemi - bez nutnosti @dhl.com emailu!</p>
         </div>
       )}
     </form>
