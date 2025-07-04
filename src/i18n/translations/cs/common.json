@@ -110,5 +110,8 @@
   "login": "Přihlásit se",
   "register": "Registrovat se",
   "step": "Krok",
-  "of": "z"
+  "of": "z",
+  "premiumAccount": "Premium účet",
+  "freeAccount": "Bezplatný účet",
+  "upgradeToPremium": "Přejít na Premium"
 }

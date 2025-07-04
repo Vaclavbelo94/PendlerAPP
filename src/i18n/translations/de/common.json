@@ -110,5 +110,8 @@
   "login": "Anmelden",
   "register": "Registrieren",
   "step": "Schritt",
-  "of": "von"
+  "of": "von",
+  "premiumAccount": "Premium-Konto",
+  "freeAccount": "Kostenloses Konto",
+  "upgradeToPremium": "Auf Premium upgraden"
 }

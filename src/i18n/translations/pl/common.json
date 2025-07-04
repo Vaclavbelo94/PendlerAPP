@@ -110,5 +110,8 @@
   "login": "Zaloguj",
   "register": "Zarejestruj",
   "step": "Krok",
-  "of": "z"
+  "of": "z",
+  "premiumAccount": "Konto Premium",
+  "freeAccount": "Darmowe konto",
+  "upgradeToPremium": "Przejdź na Premium"
 }
