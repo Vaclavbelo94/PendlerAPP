@@ -122,7 +122,7 @@ export const getLawItems = (t: any): LawItem[] => [
   // Health Category
   {
     id: "health-insurance-system",
-    title: t('healthInsuranceSystem'),
+    title: t('healthInsurance'),
     description: t('healthInsuranceSystemDescription'),
     category: "health",
     updated: "2024-01-01",
