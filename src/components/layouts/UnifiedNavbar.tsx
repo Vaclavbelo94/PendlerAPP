@@ -2,7 +2,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/auth';
-import { LanguageSwitcher } from '@/components/i18n/LanguageSwitcher';
 
 interface UnifiedNavbarProps {
   rightContent?: React.ReactNode;
@@ -26,7 +25,6 @@ const UnifiedNavbar: React.FC<UnifiedNavbarProps> = ({ rightContent }) => {
 
         {/* Right Side */}
         <div className="flex items-center space-x-2">
-          <LanguageSwitcher />
           {rightContent}
         </div>
       </div>
