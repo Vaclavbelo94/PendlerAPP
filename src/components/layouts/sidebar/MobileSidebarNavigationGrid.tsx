@@ -13,12 +13,12 @@ interface MobileSidebarNavigationGridProps {
 export const MobileSidebarNavigationGrid: React.FC<MobileSidebarNavigationGridProps> = ({ compact = false }) => {
   const { unifiedUser } = useAuth();
   const navigate = useNavigate();
-  const { t } = useTranslation('common');
+  const { t } = useTranslation('navigation');
 
   const navigationItems = [
     { icon: Home, label: t('dashboard'), path: '/dashboard' },
     { icon: Calendar, label: t('shifts'), path: '/shifts' },
-    { icon: Car, label: t('vehicles'), path: '/vehicles' },
+    { icon: Car, label: t('vehicle'), path: '/vehicle' },
     { icon: BarChart3, label: t('analytics'), path: '/analytics', premium: true },
     { icon: Settings, label: t('settings'), path: '/settings' },
   ];

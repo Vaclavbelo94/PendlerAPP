@@ -5,11 +5,13 @@ import { Button } from '@/components/ui/button';
 import { Menu, X, Home, Car, Settings, Users } from 'lucide-react';
 import { useAuth } from '@/hooks/auth';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { useTranslation } from 'react-i18next';
 
 const ModernNavbar = () => {
   const { user, unifiedUser, signOut } = useAuth();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+  const { t } = useTranslation('navigation');
 
   const handleSignOut = async () => {
     await signOut();
@@ -17,10 +19,10 @@ const ModernNavbar = () => {
   };
 
   const navigationItems = [
-    { icon: Home, label: 'Dashboard', path: '/dashboard' },
-    { icon: Car, label: 'Vozidla', path: '/vehicles' },
+    { icon: Home, label: t('dashboard'), path: '/dashboard' },
+    { icon: Car, label: t('vehicle'), path: '/vehicle' },
     { icon: Users, label: 'Komunita', path: '/community' },
-    { icon: Settings, label: 'Nastavení', path: '/settings' },
+    { icon: Settings, label: t('settings'), path: '/settings' },
   ];
 
   return (
@@ -59,15 +61,15 @@ const ModernNavbar = () => {
         <div className="flex items-center space-x-2">
           {user ? (
             <Button variant="outline" onClick={handleSignOut}>
-              Odhlásit se
+              {t('logout')}
             </Button>
           ) : (
             <>
               <Button variant="ghost" asChild>
-                <Link to="/login">Přihlásit se</Link>
+                <Link to="/login">{t('login')}</Link>
               </Button>
               <Button asChild>
-                <Link to="/register">Registrace</Link>
+                <Link to="/register">{t('register')}</Link>
               </Button>
             </>
           )}
