@@ -2,7 +2,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/auth';
-import { isDHLEmployee, getDHLSetupPath } from '@/utils/dhlAuthUtils';
+import { isDHLEmployeeSync, getDHLSetupPathSync } from '@/utils/dhlAuthUtils';
 import { useDHLData } from './useDHLData';
 
 export const useDHLRouteGuard = (requiresSetup = false) => {
@@ -13,14 +13,14 @@ export const useDHLRouteGuard = (requiresSetup = false) => {
   useEffect(() => {
     if (isLoading || isDHLDataLoading) return;
 
-    // Check if user is DHL employee
-    if (!isDHLEmployee(user)) {
+    // Check if user is DHL employee (sync version)
+    if (!isDHLEmployeeSync(user)) {
       console.log('User is not DHL employee');
       return;
     }
 
-    // Check if DHL user needs setup
-    const setupPath = getDHLSetupPath(user, !!userAssignment);
+    // Check if DHL user needs setup (sync version)
+    const setupPath = getDHLSetupPathSync(user, !!userAssignment);
     
     if (setupPath && requiresSetup) {
       console.log('DHL user needs setup, redirecting to setup page');
@@ -38,7 +38,7 @@ export const useDHLRouteGuard = (requiresSetup = false) => {
 
   return {
     canAccess: !isLoading && !isDHLDataLoading,
-    isDHLEmployee: isDHLEmployee(user),
+    isDHLEmployee: isDHLEmployeeSync(user),
     hasAssignment: !!userAssignment,
     isLoading: isLoading || isDHLDataLoading
   };

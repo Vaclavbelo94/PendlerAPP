@@ -134,10 +134,21 @@ export const canAccessDHLFeaturesAsync = async (user: User | null): Promise<bool
 };
 
 /**
- * Get DHL setup redirect path if needed
+ * Get DHL setup redirect path if needed (async version)
  */
 export const getDHLSetupPath = async (user: User | null, hasAssignment: boolean): Promise<string | null> => {
   const isDHL = await isDHLEmployee(user);
+  if (isDHL && !hasAssignment) {
+    return '/dhl-setup';
+  }
+  return null;
+};
+
+/**
+ * Get DHL setup redirect path if needed (sync version)
+ */
+export const getDHLSetupPathSync = (user: User | null, hasAssignment: boolean): string | null => {
+  const isDHL = isDHLEmployeeSync(user);
   if (isDHL && !hasAssignment) {
     return '/dhl-setup';
   }

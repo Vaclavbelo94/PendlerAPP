@@ -1,6 +1,6 @@
 
 import { User } from '@supabase/supabase-js';
-import { getDHLAuthState, isDHLAdmin, canAccessDHLAdmin, DHLAuthState } from './dhlAuthUtils';
+import { getDHLAuthStateSync, isDHLAdmin, canAccessDHLAdmin, DHLAuthState } from './dhlAuthUtils';
 
 export interface UnifiedAuthState {
   user: User | null;
@@ -27,8 +27,8 @@ export const getUnifiedAuthState = (
   const specialEmails = ['uzivatel@pendlerapp.com', 'admin@pendlerapp.com', 'admin_dhl@pendlerapp.com'];
   const isSpecialUser = user?.email ? specialEmails.includes(user.email) : false;
   
-  // Get DHL auth state
-  const dhlAuthState = getDHLAuthState(user);
+  // Get DHL auth state (sync version)
+  const dhlAuthState = getDHLAuthStateSync(user);
   const isDHLAdminUser = isDHLAdmin(user);
 
   return {
