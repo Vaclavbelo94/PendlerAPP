@@ -1,3 +1,4 @@
+
 {
   "loading": "Ładowanie...",
   "error": "Błąd",
@@ -102,7 +103,10 @@
   "mostUsedFeatures": "Najczęściej używane funkcje",
   "profile": "Profil",
   "subscription": "Subskrypcja",
-  "admin": "Administrator",
-  "analytics": "Analityka",
-  "vehicles": "Pojazdy"
+  "heroTitle": "Asystent Dojazdów",
+  "heroSubtitle": "Twój niezawodny partner",
+  "heroDescription": "Kompletne rozwiązanie dla czeskich pracowników w Niemczech",
+  "getStarted": "Rozpocznij",
+  "login": "Zaloguj",
+  "register": "Zarejestruj"
 }

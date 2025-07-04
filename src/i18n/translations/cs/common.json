@@ -103,7 +103,10 @@
   "mostUsedFeatures": "Nejčastěji používané funkce",
   "profile": "Profil",
   "subscription": "Předplatné",
-  "admin": "Admin",
-  "analytics": "Analytika",
-  "vehicles": "Vozidla"
+  "heroTitle": "Pendler Pomocník",
+  "heroSubtitle": "Váš spolehlivý partner",
+  "heroDescription": "Kompletní řešení pro české pracovníky v Německu",
+  "getStarted": "Začít",
+  "login": "Přihlásit se",
+  "register": "Registrovat se"
 }
