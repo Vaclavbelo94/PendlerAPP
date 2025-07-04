@@ -108,5 +108,7 @@
   "heroDescription": "Kompletne rozwiązanie dla czeskich pracowników w Niemczech",
   "getStarted": "Rozpocznij",
   "login": "Zaloguj",
-  "register": "Zarejestruj"
+  "register": "Zarejestruj",
+  "step": "Krok",
+  "of": "z"
 }

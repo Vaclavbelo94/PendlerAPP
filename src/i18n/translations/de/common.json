@@ -108,5 +108,7 @@
   "heroDescription": "Komplettlösung für tschechische Arbeiter in Deutschland",
   "getStarted": "Loslegen",
   "login": "Anmelden",
-  "register": "Registrieren"
+  "register": "Registrieren",
+  "step": "Schritt",
+  "of": "von"
 }

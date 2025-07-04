@@ -8,7 +8,7 @@ import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 import { useTranslation } from 'react-i18next';
 
 const TaxAdvisor = () => {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation('taxAdvisor');
 
   return (
     <Layout navbarRightContent={<NavbarRightContent />}>
