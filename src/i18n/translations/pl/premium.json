@@ -1,57 +1,35 @@
 
 {
-  "title": "Abonament Premium",
-  "subtitle": "Odblokuj pełny potencjał PendlerApp",
+  "premium": "Premium",
+  "premiumFeatures": "Funkcje Premium",
+  "upgradeToPremium": "Przejdź na Premium",
+  "premiumBenefits": "Korzyści Premium",
+  "unlockFeatures": "Odblokuj funkcje",
+  "premiumOnly": "Tylko dla Premium",
+  "freeTrial": "Darmowy okres próbny",
+  "monthlyPlan": "Plan miesięczny",
+  "yearlyPlan": "Plan roczny",
+  "currentPlan": "Obecny plan",
+  "changePlan": "Zmień plan",
+  "cancelSubscription": "Anuluj subskrypcję",
+  "renewSubscription": "Odnów subskrypcję",
+  "billingHistory": "Historia płatności",
+  "paymentMethod": "Metoda płatności",
+  "nextBilling": "Następna płatność",
+  "subscriptionActive": "Subskrypcja aktywna",
+  "subscriptionExpired": "Subskrypcja wygasła",
   "features": {
-    "noAds": {
-      "title": "Bez reklam",
-      "description": "Korzystaj z aplikacji bez jakichkolwiek reklam"
-    },
-    "unlimitedAccess": {
-      "title": "Nieograniczony dostęp",
-      "description": "Dostęp do wszystkich funkcji i narzędzi"
-    },
-    "prioritySupport": {
-      "title": "Wsparcie priorytetowe",
-      "description": "Szybsze rozwiązywanie problemów i zapytań"
-    },
-    "advancedFeatures": {
-      "title": "Zaawansowane funkcje",
-      "description": "Ekskluzywne narzędzia dla użytkowników premium"
-    }
+    "unlimitedShifts": "Nieograniczone zmiany",
+    "advancedStatistics": "Zaawansowane statystyki",
+    "dataExport": "Eksport danych",
+    "prioritySupport": "Wsparcie priorytetowe",
+    "customReports": "Niestandardowe raporty"
   },
-  "premiumUser": {
-    "title": "Jesteś użytkownikiem Premium!",
-    "description": "Dziękujemy za wsparcie. Korzystasz ze wszystkich korzyści Premium."
-  },
-  "upgrade": {
-    "title": "Przejdź na Premium",
-    "description": "Uzyskaj dostęp do wszystkich funkcji bez ograniczeń",
-    "priceFrom": "od",
-    "priceMonth": "/miesiąc",
-    "priceYear": "/rok",
-    "activateButton": "Aktywuj Premium",
-    "processing": "Przetwarzanie...",
-    "yearlySavings": "Oszczędzasz {{savings}}"
-  },
-  "benefits": {
-    "title": "Korzyści Premium",
-    "description": "Co otrzymasz z abonamentem Premium"
-  },
-  "periods": {
-    "selectTitle": "Wybierz okres płatności",
-    "selectSubtitle": "Oszczędzaj z rocznym abonamentem",
-    "monthly": "Miesięczny",
-    "yearly": "Roczny",
-    "monthlyDesc": "Płacone co miesiąc",
-    "yearlyDesc": "Płacone raz w roku",
-    "yearlySavings": "17% oszczędności",
-    "perMonth": "/miesiąc",
-    "perYear": "/rok",
-    "yearlyEquivalent": "Odpowiada {{amount}}/miesiąc"
-  },
-  "errors": {
-    "paymentFailed": "Płatność nie powiodła się. Spróbuj ponownie.",
-    "networkError": "Błąd połączenia. Sprawdź połączenie internetowe."
+  "pricing": {
+    "free": "Darmowy",
+    "monthly": "Miesięcznie",
+    "yearly": "Rocznie",
+    "perMonth": "za miesiąc",
+    "perYear": "za rok"
   }
 }

@@ -1,57 +1,35 @@
 
 {
-  "title": "Premium Předplatné",
-  "subtitle": "Odemkněte plný potenciál PendlerApp",
+  "premium": "Premium",
+  "premiumFeatures": "Premium funkce",
+  "upgradeToPremium": "Přejít na Premium",
+  "premiumBenefits": "Premium výhody",
+  "unlockFeatures": "Odemknout funkce",
+  "premiumOnly": "Pouze pro Premium",
+  "freeTrial": "Zkušební období zdarma",
+  "monthlyPlan": "Měsíční plán",
+  "yearlyPlan": "Roční plán",
+  "currentPlan": "Současný plán",
+  "changePlan": "Změnit plán",
+  "cancelSubscription": "Zrušit předplatné",
+  "renewSubscription": "Obnovit předplatné",
+  "billingHistory": "Historie fakturace",
+  "paymentMethod": "Způsob platby",
+  "nextBilling": "Další fakturace",
+  "subscriptionActive": "Předplatné aktivní",
+  "subscriptionExpired": "Předplatné vypršelo",
   "features": {
-    "noAds": {
-      "title": "Bez reklam",
-      "description": "Používejte aplikaci bez jakýchkoliv reklam"
-    },
-    "unlimitedAccess": {
-      "title": "Neomezený přístup",
-      "description": "Přístup ke všem funkcím a nástrojům"
-    },
-    "prioritySupport": {
-      "title": "Prioritní podpora",
-      "description": "Rychlejší řešení problémů a dotazů"
-    },
-    "advancedFeatures": {
-      "title": "Pokročilé funkce",
-      "description": "Exkluzivní nástroje pro premium uživatele"
-    }
+    "unlimitedShifts": "Neomezené směny",
+    "advancedStatistics": "Pokročilé statistiky",
+    "dataExport": "Export dat",
+    "prioritySupport": "Prioritní podpora",
+    "customReports": "Vlastní reporty"
   },
-  "premiumUser": {
-    "title": "Jste Premium uživatel!",
-    "description": "Děkujeme za vaši podporu. Využíváte všechny Premium výhody."
-  },
-  "upgrade": {
-    "title": "Přejděte na Premium",
-    "description": "Získejte přístup ke všem funkcím bez omezení",
-    "priceFrom": "od",
-    "priceMonth": "/měsíc",
-    "priceYear": "/rok",
-    "activateButton": "Aktivovat Premium",
-    "processing": "Zpracovává se...",
-    "yearlySavings": "Ušetříte {{savings}}"
-  },
-  "benefits": {
-    "title": "Premium výhody",
-    "description": "Co získáte s Premium předplatným"
-  },
-  "periods": {
-    "selectTitle": "Vyberte období platby",
-    "selectSubtitle": "Ušetřete s ročním předplatným",
-    "monthly": "Měsíční",
-    "yearly": "Roční",
-    "monthlyDesc": "Placeno každý měsíc",
-    "yearlyDesc": "Placeno jednou ročně",
-    "yearlySavings": "17% úspora",
-    "perMonth": "/měsíc",
-    "perYear": "/rok",
-    "yearlyEquivalent": "Odpovídá {{amount}}/měsíc"
-  },
-  "errors": {
-    "paymentFailed": "Platba se nezdařila. Zkuste to prosím znovu.",
-    "networkError": "Chyba připojení. Zkontrolujte internetové připojení."
+  "pricing": {
+    "free": "Zdarma",
+    "monthly": "Měsíčně",
+    "yearly": "Ročně",
+    "perMonth": "za měsíc",
+    "perYear": "za rok"
   }
 }
