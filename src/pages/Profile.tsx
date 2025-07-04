@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
@@ -20,7 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { useEnhancedAuth } from '@/hooks/useEnhancedAuth';
 
 const Profile = () => {
-  const { user, unifiedUser } = useEnhancedAuth();
+  const { user, isDHLEmployee } = useEnhancedAuth();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [activeTab, setActiveTab] = useState("overview");
@@ -87,7 +86,7 @@ const Profile = () => {
       case 'workData':
         return <ProfileWorkData />;
       case 'subscription':
-        return <ProfileSubscription isPremium={unifiedUser?.isPremium || false} />;
+        return <ProfileSubscription isPremium={isDHLEmployee || false} />;
       default:
         return (
           <ProfileOverview 
