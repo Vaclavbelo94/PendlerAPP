@@ -37,7 +37,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar, rightContent, sidebarOpe
   const { user, unifiedUser, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const { t } = useTranslation(['navigation', 'auth']);
+  const { t } = useTranslation(['navigation', 'auth', 'common']);
 
   const handleLogout = async () => {
     await signOut();
@@ -141,11 +141,11 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar, rightContent, sidebarOpe
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => navigate('/profile')}>
                   <User className="mr-2 h-4 w-4" />
-                  <span>{t('profile')}</span>
+                  <span>{t('common:profile')}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate('/settings')}>
                   <Settings className="mr-2 h-4 w-4" />
-                  <span>{t('settings')}</span>
+                  <span>{t('common:settings')}</span>
                 </DropdownMenuItem>
                 {unifiedUser?.isAdmin && (
                   <DropdownMenuItem onClick={() => navigate('/admin')}>

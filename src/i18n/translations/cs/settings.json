@@ -1,6 +1,7 @@
 
 {
   "settings": "Nastavení",
+  "title": "Nastavení",
   "general": "Obecné",
   "account": "Účet",
   "privacy": "Soukromí",
@@ -30,5 +31,21 @@
   "settingsUpdated": "Nastavení byla aktualizována",
   "errorUpdatingSettings": "Chyba při aktualizaci nastavení",
   "confirmDeleteAccount": "Opravdu chcete smazat svůj účet?",
-  "deleteAccountWarning": "Tato akce je nevratná a všechna vaše data budou smazána."
+  "deleteAccountWarning": "Tato akce je nevratná a všechna vaše data budou smazána.",
+  "basicSettings": "Základní nastavení aplikace",
+  "applicationBehavior": "Spravujte chování aplikace a své preference",
+  "swipeNavigationTip": "Tip: Přejeďte prstem doleva/doprava pro navigaci mezi záložkami",
+  "accountInfo": "Informace o účtu",
+  "display": "Zobrazení a témata",
+  "shiftNotifications": "Oznámení o směnách",
+  "languageSettings": "Jazykové nastavení",
+  "security": "Bezpečnost",
+  "system": "Systémová nastavení",
+  "dataManagement": "Správa dat",
+  "device": "Zařízení",
+  "settingsSaved": "Nastavení byla uložena",
+  "settingsError": "Chyba při ukládání nastavení",
+  "settingsReset": "Nastavení byla obnovena",
+  "never": "Nikdy",
+  "unknown": "Neznámé"
 }

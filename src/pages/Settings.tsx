@@ -6,7 +6,7 @@ import { Settings as SettingsIcon } from 'lucide-react';
 import Layout from '@/components/layouts/Layout';
 import ProfileErrorBoundary from '@/components/profile/ProfileErrorBoundary';
 import GeneralSettings from '@/components/settings/GeneralSettings';
-import NotificationSettings from '@/components/settings/NotificationSettings';
+import NotificationSettings from '@/components/notifications/NotificationSettings';
 import LanguageSettings from '@/components/settings/LanguageSettings';
 import AccountSettings from '@/components/settings/AccountSettings';
 import DataSettings from '@/components/settings/DataSettings';

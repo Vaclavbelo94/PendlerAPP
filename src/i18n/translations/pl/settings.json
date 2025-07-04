@@ -1,6 +1,7 @@
 
 {
   "settings": "Ustawienia",
+  "title": "Ustawienia",
   "general": "Ogólne",
   "account": "Konto",
   "privacy": "Prywatność",
@@ -30,5 +31,21 @@
   "settingsUpdated": "Ustawienia zostały zaktualizowane",
   "errorUpdatingSettings": "Błąd podczas aktualizacji ustawień",
   "confirmDeleteAccount": "Czy na pewno chcesz usunąć swoje konto?",
-  "deleteAccountWarning": "Ta akcja jest nieodwracalna i wszystkie Twoje dane zostaną usunięte."
+  "deleteAccountWarning": "Ta akcja jest nieodwracalna i wszystkie Twoje dane zostaną usunięte.",
+  "basicSettings": "Podstawowe ustawienia aplikacji",
+  "applicationBehavior": "Zarządzaj zachowaniem aplikacji i swoimi preferencjami",
+  "swipeNavigationTip": "Wskazówka: Przesuń palcem w lewo/prawo, aby nawigować między zakładkami",
+  "accountInfo": "Informacje o koncie",
+  "display": "Wyświetlanie i motywy",
+  "shiftNotifications": "Powiadomienia o zmianach",
+  "languageSettings": "Ustawienia językowe",
+  "security": "Bezpieczeństwo",
+  "system": "Ustawienia systemowe",
+  "dataManagement": "Zarządzanie danymi",
+  "device": "Urządzenie",
+  "settingsSaved": "Ustawienia zostały zapisane",
+  "settingsError": "Błąd podczas zapisywania ustawień",
+  "settingsReset": "Ustawienia zostały zresetowane",
+  "never": "Nigdy",
+  "unknown": "Nieznane"
 }
