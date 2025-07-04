@@ -19,5 +19,9 @@
   "translationError": "Übersetzungsfehler",
   "noTextEntered": "Kein Text eingegeben",
   "clear": "Löschen",
-  "swap": "Sprachen tauschen"
+  "swap": "Sprachen tauschen",
+  "pageContent": {
+    "hrCommunication": "HR-Kommunikation",
+    "quickWritingMobile": "Schnelles Schreiben für Mobilgeräte"
+  }
 }

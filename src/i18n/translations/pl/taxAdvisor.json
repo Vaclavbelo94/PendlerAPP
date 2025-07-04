@@ -22,5 +22,11 @@
   "taxTips": "Wskazówki podatkowe",
   "saveOnTaxes": "Jak oszczędzać na podatkach",
   "taxReturn": "Zeznanie podatkowe",
-  "taxReturnGuide": "Przewodnik po zeznaniu podatkowym"
+  "taxReturnGuide": "Przewodnik po zeznaniu podatkowym",
+  "taxAdvisorDescription": "Kompleksowe doradztwo podatkowe",
+  "wizard": {
+    "personalInfo": {
+      "title": "Dane osobowe"
+    }
+  }
 }

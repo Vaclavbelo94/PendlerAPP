@@ -21,5 +21,7 @@
   "lawsDescription": "Vollständiger Leitfaden für deutsche Gesetze für ausländische Arbeitnehmer",
   "allLaws": "Alle Gesetze",
   "importantNotice": "Wichtiger Hinweis",
-  "orientationGuide": "Dieser Leitfaden dient nur zur Orientierung. Für spezifische Rechtsberatung wenden Sie sich an einen Experten."
+  "orientationGuide": "Dieser Leitfaden dient nur zur Orientierung. Für spezifische Rechtsberatung wenden Sie sich an einen Experten.",
+  "lawsDescriptionMobile": "Leitfaden für deutsche Gesetze",
+  "minimumWageDescription": "Aktuelle Mindestlohnsätze und Regeln für Arbeitnehmer"
 }

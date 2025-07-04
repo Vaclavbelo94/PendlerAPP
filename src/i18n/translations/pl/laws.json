@@ -21,5 +21,7 @@
   "lawsDescription": "Kompletny przewodnik po niemieckim prawie dla zagranicznych pracowników",
   "allLaws": "Wszystkie prawa",
   "importantNotice": "Ważna uwaga",
-  "orientationGuide": "Ten przewodnik służy tylko do orientacji. W przypadku konkretnych porad prawnych skontaktuj się z ekspertem."
+  "orientationGuide": "Ten przewodnik służy tylko do orientacji. W przypadku konkretnych porad prawnych skontaktuj się z ekspertem.",
+  "lawsDescriptionMobile": "Przewodnik po niemieckim prawie",
+  "minimumWageDescription": "Aktualne stawki płacy minimalnej i zasady dla pracowników"
 }

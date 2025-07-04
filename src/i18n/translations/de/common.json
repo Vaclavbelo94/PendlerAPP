@@ -101,5 +101,8 @@
   "quickActions": "Schnelle Aktionen",
   "mostUsedFeatures": "Am häufigsten verwendete Funktionen",
   "profile": "Profil",
-  "subscription": "Abonnement"
+  "subscription": "Abonnement",
+  "admin": "Administrator",
+  "analytics": "Analytik",
+  "vehicles": "Fahrzeuge"
 }

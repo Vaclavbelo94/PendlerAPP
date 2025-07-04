@@ -39,5 +39,14 @@
   "taxAdvisorDescription": "Steuerberatung",
   "activeUsers": "aktive Benutzer",
   "shiftsManaged": "verwaltete Schichten",
-  "countries": "Länder"
+  "countries": "Länder",
+  "title": "Titel",
+  "shortDescription": "Kurze Beschreibung",
+  "swipeTip": "Tipp: Wischen Sie, um zwischen den Abschnitten zu wechseln",
+  "travelDescriptionMobile": "Reiseplanung und Pendeln",
+  "searchByCity": "Nach Stadt suchen",
+  "vehicleInfo": "Fahrzeuginformationen",
+  "vehicleManagement": "Fahrzeugverwaltung",
+  "shiftsDescription": "Schichtverwaltung",
+  "shiftsCalendar": "Schichtkalender"
 }

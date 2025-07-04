@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { MobileSidebarNavigationGrid } from './MobileSidebarNavigationGrid';
 import { MobileSidebarUserSection } from './MobileSidebarUserSection';
 import { MobileSidebarFooter } from './MobileSidebarFooter';
+import { useTranslation } from 'react-i18next';
 
 interface UnifiedMobileSidebarProps {
   isOpen: boolean;
@@ -19,6 +20,7 @@ export const UnifiedMobileSidebar: React.FC<UnifiedMobileSidebarProps> = ({
   variant = 'overlay'
 }) => {
   const { user } = useAuth();
+  const { t } = useTranslation('common');
 
   if (!user && variant === 'compact') return null;
 
@@ -50,7 +52,7 @@ export const UnifiedMobileSidebar: React.FC<UnifiedMobileSidebarProps> = ({
         <div className="flex items-center justify-between p-4 border-b">
           {!isCompact && (
             <>
-              <h2 className="text-lg font-semibold">Menu</h2>
+              <h2 className="text-lg font-semibold">{t('menu')}</h2>
               <button
                 onClick={closeSidebar}
                 className="p-2 hover:bg-muted rounded-md transition-colors"

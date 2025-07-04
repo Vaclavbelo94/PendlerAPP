@@ -19,5 +19,9 @@
   "translationError": "Chyba při překladu",
   "noTextEntered": "Nezadali jste žádný text",
   "clear": "Vymazat",
-  "swap": "Prohodit jazyky"
+  "swap": "Prohodit jazyky",
+  "pageContent": {
+    "hrCommunication": "HR komunikace",
+    "quickWritingMobile": "Rychlé psaní pro mobil"
+  }
 }

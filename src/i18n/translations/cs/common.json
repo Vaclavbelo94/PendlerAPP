@@ -102,5 +102,8 @@
   "quickActions": "Rychlé akce",
   "mostUsedFeatures": "Nejčastěji používané funkce",
   "profile": "Profil",
-  "subscription": "Předplatné"
+  "subscription": "Předplatné",
+  "admin": "Admin",
+  "analytics": "Analytika",
+  "vehicles": "Vozidla"
 }

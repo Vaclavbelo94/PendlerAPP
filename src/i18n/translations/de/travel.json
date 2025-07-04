@@ -25,5 +25,7 @@
   "confirmed": "Bestätigt",
   "pending": "Ausstehend",
   "cancelled": "Storniert",
-  "completed": "Abgeschlossen"
+  "completed": "Abgeschlossen",
+  "travelDescriptionMobile": "Reiseplanung und Pendeln",
+  "searchByCity": "Nach Stadt suchen"
 }

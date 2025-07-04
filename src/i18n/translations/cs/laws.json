@@ -21,5 +21,7 @@
   "lawsDescription": "Kompletní průvodce německými zákony pro zahraniční pracovníky",
   "allLaws": "Všechny zákony",
   "importantNotice": "Důležité upozornění",
-  "orientationGuide": "Tento průvodce slouží pouze k orientaci. Pro konkrétní právní rady se obraťte na odborníka."
+  "orientationGuide": "Tento průvodce slouží pouze k orientaci. Pro konkrétní právní rady se obraťte na odborníka.",
+  "lawsDescriptionMobile": "Průvodce německými zákony",
+  "minimumWageDescription": "Aktuální sazby minimální mzdy a pravidla pro zaměstnance"
 }

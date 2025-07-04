@@ -22,5 +22,11 @@
   "taxTips": "Daňové tipy",
   "saveOnTaxes": "Jak ušetřit na daních",
   "taxReturn": "Daňové přiznání",
-  "taxReturnGuide": "Průvodce daňovým přiznáním"
+  "taxReturnGuide": "Průvodce daňovým přiznáním",
+  "taxAdvisorDescription": "Komplexní daňové poradenství",
+  "wizard": {
+    "personalInfo": {
+      "title": "Osobní údaje"
+    }
+  }
 }

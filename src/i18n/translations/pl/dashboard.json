@@ -39,5 +39,14 @@
   "taxAdvisorDescription": "Doradztwo podatkowe",
   "activeUsers": "aktywnych użytkowników",
   "shiftsManaged": "zarządzanych zmian",
-  "countries": "krajów"
+  "countries": "krajów",
+  "title": "Tytuł",
+  "shortDescription": "Krótki opis",
+  "swipeTip": "Wskazówka: Przesuń palcem, aby przełączać między sekcjami",
+  "travelDescriptionMobile": "Planowanie podróży i dojazdów",
+  "searchByCity": "Szukaj według miasta",
+  "vehicleInfo": "Informacje o pojeździe",
+  "vehicleManagement": "Zarządzanie pojazdami",
+  "shiftsDescription": "Zarządzanie zmianami roboczymi",
+  "shiftsCalendar": "Kalendarz zmian"
 }

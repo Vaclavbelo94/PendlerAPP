@@ -27,5 +27,7 @@
   "date": "Datum",
   "description": "Beschreibung",
   "noVehicles": "Sie haben keine Fahrzeuge",
-  "addFirstVehicle": "Fügen Sie Ihr erstes Fahrzeug hinzu"
+  "addFirstVehicle": "Fügen Sie Ihr erstes Fahrzeug hinzu",
+  "vehicleInfo": "Fahrzeuginformationen",
+  "vehicleManagement": "Fahrzeugverwaltung"
 }

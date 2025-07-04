@@ -25,5 +25,7 @@
   "confirmed": "Potvrzeno",
   "pending": "Čekající",
   "cancelled": "Zrušeno",
-  "completed": "Dokončeno"
+  "completed": "Dokončeno",
+  "travelDescriptionMobile": "Plánování cest a dojiždění",
+  "searchByCity": "Hledat podle města"
 }

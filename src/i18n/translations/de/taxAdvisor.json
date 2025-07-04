@@ -22,5 +22,11 @@
   "taxTips": "Steuertipps",
   "saveOnTaxes": "Wie Sie Steuern sparen",
   "taxReturn": "Steuererklärung",
-  "taxReturnGuide": "Steuererklärungsführer"
+  "taxReturnGuide": "Steuererklärungsführer",
+  "taxAdvisorDescription": "Umfassende Steuerberatung",
+  "wizard": {
+    "personalInfo": {
+      "title": "Persönliche Daten"
+    }
+  }
 }

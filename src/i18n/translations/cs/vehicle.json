@@ -27,5 +27,7 @@
   "date": "Datum",
   "description": "Popis",
   "noVehicles": "Nemáte žádná vozidla",
-  "addFirstVehicle": "Přidejte své první vozidlo"
+  "addFirstVehicle": "Přidejte své první vozidlo",
+  "vehicleInfo": "Informace o vozidle",
+  "vehicleManagement": "Správa vozidel"
 }

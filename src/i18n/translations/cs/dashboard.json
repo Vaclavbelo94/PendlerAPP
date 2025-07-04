@@ -39,5 +39,14 @@
   "taxAdvisorDescription": "Daňové poradenství",
   "activeUsers": "aktivních uživatelů",
   "shiftsManaged": "spravovaných směn",
-  "countries": "zemí"
+  "countries": "zemí",
+  "title": "Název",
+  "shortDescription": "Krátký popis",
+  "swipeTip": "Tip: Přejetím prstem můžete přepínat mezi sekcemi",
+  "travelDescriptionMobile": "Plánování cest a dojiždění",
+  "searchByCity": "Hledat podle města",
+  "vehicleInfo": "Informace o vozidle",
+  "vehicleManagement": "Správa vozidel",
+  "shiftsDescription": "Správa pracovních směn",
+  "shiftsCalendar": "Kalendář směn"
 }
