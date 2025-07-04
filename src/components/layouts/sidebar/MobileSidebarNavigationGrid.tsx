@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Home, Calendar, Car, Settings, BarChart3, Crown } from 'lucide-react';
 import { useAuth } from '@/hooks/auth';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 interface MobileSidebarNavigationGridProps {
   compact?: boolean;
@@ -12,13 +13,14 @@ interface MobileSidebarNavigationGridProps {
 export const MobileSidebarNavigationGrid: React.FC<MobileSidebarNavigationGridProps> = ({ compact = false }) => {
   const { unifiedUser } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation('common');
 
   const navigationItems = [
-    { icon: Home, label: 'Dashboard', path: '/dashboard' },
-    { icon: Calendar, label: 'Směny', path: '/shifts' },
-    { icon: Car, label: 'Vozidla', path: '/vehicles' },
-    { icon: BarChart3, label: 'Analytika', path: '/analytics', premium: true },
-    { icon: Settings, label: 'Nastavení', path: '/settings' },
+    { icon: Home, label: t('dashboard'), path: '/dashboard' },
+    { icon: Calendar, label: t('shifts'), path: '/shifts' },
+    { icon: Car, label: t('vehicles'), path: '/vehicles' },
+    { icon: BarChart3, label: t('analytics'), path: '/analytics', premium: true },
+    { icon: Settings, label: t('settings'), path: '/settings' },
   ];
 
   return (

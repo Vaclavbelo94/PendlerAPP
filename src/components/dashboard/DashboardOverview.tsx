@@ -8,11 +8,13 @@ import { useAuth } from '@/hooks/auth';
 import { useShiftsData } from '@/hooks/shifts/useShiftsData';
 import { useWorkData } from '@/hooks/useWorkData';
 import { startOfMonth, endOfMonth, isYesterday, isToday } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 
 const DashboardOverview = () => {
   const { user, isLoading: authLoading } = useAuth();
   const { shifts, isLoading: shiftsLoading } = useShiftsData({ userId: user?.id });
   const { workData, loading: workDataLoading } = useWorkData();
+  const { t } = useTranslation('common');
 
   // Calculate real statistics
   const calculateStats = () => {
@@ -80,45 +82,45 @@ const DashboardOverview = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Směny celkem</CardTitle>
-            <CardDescription>Počet všech vašich směn</CardDescription>
+            <CardTitle>{t('totalShifts')}</CardTitle>
+            <CardDescription>{t('shiftsCount')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               {isLoading ? '...' : stats.totalShifts}
             </div>
             <p className="text-sm text-muted-foreground">
-              Za celou dobu používání
+              {t('allTimeUsage')}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Hodiny tento měsíc</CardTitle>
-            <CardDescription>Odpracované hodiny v aktuálním měsíci</CardDescription>
+            <CardTitle>{t('monthlyHours')}</CardTitle>
+            <CardDescription>{t('workedHoursThisMonth')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               {isLoading ? '...' : `${stats.monthlyHours}h`}
             </div>
             <p className="text-sm text-muted-foreground">
-              Celkem odpracováno
+              {t('totalWorked')}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Aktuální série</CardTitle>
-            <CardDescription>Po sobě jdoucí dny se směnami</CardDescription>
+            <CardTitle>{t('currentStreak')}</CardTitle>
+            <CardDescription>{t('consecutiveDaysWithShifts')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               {isLoading ? '...' : stats.currentStreak}
             </div>
             <p className="text-sm text-muted-foreground">
-              {stats.currentStreak > 0 ? 'Pokračující série' : 'Žádná aktivní série'}
+              {stats.currentStreak > 0 ? t('continuingStreak') : t('noActiveStreak')}
             </p>
           </CardContent>
         </Card>
@@ -127,26 +129,26 @@ const DashboardOverview = () => {
       {/* Quick actions */}
       <Card>
         <CardHeader>
-          <CardTitle>Rychlé akce</CardTitle>
-          <CardDescription>Nejčastěji používané funkce</CardDescription>
+          <CardTitle>{t('quickActions')}</CardTitle>
+          <CardDescription>{t('mostUsedFeatures')}</CardDescription>
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Button asChild variant="outline" className="h-20 flex-col">
             <Link to="/shifts">
               <CalendarDays className="h-6 w-6 mb-2" />
-              Správa směn
+              {t('shiftManagement')}
             </Link>
           </Button>
           <Button asChild variant="outline" className="h-20 flex-col">
             <Link to="/tax-advisor">
               <TrendingUp className="h-6 w-6 mb-2" />
-              Daňový poradce
+              {t('taxAdvisor')}
             </Link>
           </Button>
           <Button asChild variant="outline" className="h-20 flex-col">
             <Link to="/translator">
               <Activity className="h-6 w-6 mb-2" />
-              Překladač
+              {t('translator')}
             </Link>
           </Button>
         </CardContent>
