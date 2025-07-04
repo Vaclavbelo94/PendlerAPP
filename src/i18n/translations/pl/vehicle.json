@@ -123,5 +123,16 @@
   "getStartedByAdding": "Zacznij od dodania swojego pierwszego pojazdu",
   "selectVehicle": "Wybierz pojazd",
   "edit": "Edytuj",
-  "delete": "Usuń"
+  "delete": "Usuń",
+  "add": "Dodaj",
+  "save": "Zapisz",
+  "fuel": "Paliwo",
+  "service": "Serwis",
+  "overview": "Przegląd",
+  "step": "Krok",
+  "of": "z",
+  "previous": "Poprzedni",
+  "next": "Następny",
+  "basicInfo": "Podstawowe informacje",
+  "per100km": "l/100km"
 }

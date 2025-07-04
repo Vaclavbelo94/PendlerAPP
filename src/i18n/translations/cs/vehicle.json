@@ -123,5 +123,16 @@
   "getStartedByAdding": "Začněte přidáním svého prvního vozidla",
   "selectVehicle": "Vyberte vozidlo",
   "edit": "Upravit",
-  "delete": "Smazat"
+  "delete": "Smazat",
+  "add": "Přidat",
+  "save": "Uložit",
+  "fuel": "Palivo",
+  "service": "Servis",
+  "overview": "Přehled",
+  "step": "Krok",
+  "of": "z",
+  "previous": "Předchozí",
+  "next": "Další",
+  "basicInfo": "Základní informace",
+  "per100km": "l/100km"
 }
