@@ -22,6 +22,40 @@
   "swap": "Sprachen tauschen",
   "pageContent": {
     "hrCommunication": "HR-Kommunikation",
-    "quickWritingMobile": "Schnelles Schreiben für Mobilgeräte"
+    "quickWritingMobile": "Schnelles Schreiben für Mobilgeräte",
+    "hrCommunicationTitle": "HR-Kommunikation",
+    "autoTranslateDescription": "Automatischer KI-Übersetzer für einfache Kommunikation mit der Personalabteilung und Kollegen auf Deutsch",
+    "carTipTitle": "Tipp für die Nutzung im Auto",
+    "carTipDescription": "Sie können die App auch beim Fahren sicher nutzen dank Spracheingabe und automatischem Vorlesen der Übersetzung"
+  },
+  "hrCommunication": {
+    "writeOrSayMessage": "Nachricht schreiben oder diktieren",
+    "writeMessagePlaceholder": "Schreiben Sie Ihre Nachricht auf Tschechisch und wir übersetzen sie ins Deutsche...",
+    "voiceButton": "Spracheingabe",
+    "stopButton": "Aufnahme stoppen",
+    "translateButton": "Ins Deutsche übersetzen",
+    "translatingButton": "Übersetze...",
+    "yourText": "Ihr Text (Tschechisch)",
+    "germanTranslation": "Deutsche Übersetzung",
+    "playButton": "Auf Deutsch abspielen",
+    "sendToHR": "Per E-Mail an HR senden",
+    "sendingToHR": "Sende an HR...",
+    "startCommunicating": "Kommunikation mit HR beginnen",
+    "communicationDescription": "Schreiben oder diktieren Sie eine Nachricht auf Tschechisch und wir übersetzen sie automatisch ins Deutsche für die Kommunikation mit der Personalabteilung"
+  },
+  "toastMessages": {
+    "error": "Fehler",
+    "recording": "Aufnahme läuft",
+    "speakNow": "Sprechen Sie jetzt ins Mikrofon",
+    "recognized": "Text erkannt",
+    "recognitionError": "Spracherkennungsfehler",
+    "tryAgain": "Versuchen Sie es erneut",
+    "speechNotSupported": "Ihr Browser unterstützt keine Spracherkennung",
+    "translateFirst": "Übersetzen Sie zuerst einen Text",
+    "originalTextNotFound": "Originaltext nicht gefunden",
+    "emailSent": "E-Mail gesendet",
+    "messageSentToHR": "Nachricht wurde erfolgreich an die Personalabteilung gesendet",
+    "sendingError": "Fehler beim Senden",
+    "emailSendFailed": "E-Mail konnte nicht an die Personalabteilung gesendet werden"
   }
 }

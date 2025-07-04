@@ -22,6 +22,40 @@
   "swap": "Zamień języki",
   "pageContent": {
     "hrCommunication": "Komunikacja HR",
-    "quickWritingMobile": "Szybkie pisanie na urządzeniach mobilnych"
+    "quickWritingMobile": "Szybkie pisanie na urządzeniach mobilnych",
+    "hrCommunicationTitle": "Komunikacja HR",
+    "autoTranslateDescription": "Automatyczny tłumacz AI do łatwej komunikacji z działem HR i kolegami w języku niemieckim",
+    "carTipTitle": "Wskazówka do użycia w samochodzie",
+    "carTipDescription": "Możesz bezpiecznie korzystać z aplikacji również podczas jazdy dzięki wprowadzaniu głosowemu i automatycznemu odczytywaniu tłumaczenia"
+  },
+  "hrCommunication": {
+    "writeOrSayMessage": "Napisz lub nadyktuj wiadomość",
+    "writeMessagePlaceholder": "Napisz swoją wiadomość po czesku, a my przetłumaczymy ją na niemiecki...",
+    "voiceButton": "Wprowadzanie głosowe",
+    "stopButton": "Zatrzymaj nagrywanie",
+    "translateButton": "Przetłumacz na niemiecki",
+    "translatingButton": "Tłumaczę...",
+    "yourText": "Twój tekst (czeski)",
+    "germanTranslation": "Niemieckie tłumaczenie",
+    "playButton": "Odtwórz po niemiecku",
+    "sendToHR": "Wyślij e-mailem do HR",
+    "sendingToHR": "Wysyłam do HR...",
+    "startCommunicating": "Rozpocznij komunikację z HR",
+    "communicationDescription": "Napisz lub nadyktuj wiadomość po czesku, a my automatycznie przetłumaczymy ją na niemiecki do komunikacji z działem HR"
+  },
+  "toastMessages": {
+    "error": "Błąd",
+    "recording": "Nagrywam",
+    "speakNow": "Mów teraz do mikrofonu",
+    "recognized": "Tekst rozpoznany",
+    "recognitionError": "Błąd rozpoznawania mowy",
+    "tryAgain": "Spróbuj ponownie",
+    "speechNotSupported": "Twoja przeglądarka nie obsługuje rozpoznawania mowy",
+    "translateFirst": "Najpierw przetłumacz jakiś tekst",
+    "originalTextNotFound": "Nie znaleziono oryginalnego tekstu",
+    "emailSent": "E-mail wysłany",
+    "messageSentToHR": "Wiadomość została pomyślnie wysłana do działu HR",
+    "sendingError": "Błąd podczas wysyłania",
+    "emailSendFailed": "Nie udało się wysłać e-maila do działu HR"
   }
 }

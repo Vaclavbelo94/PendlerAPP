@@ -22,6 +22,40 @@
   "swap": "Prohodit jazyky",
   "pageContent": {
     "hrCommunication": "HR komunikace",
-    "quickWritingMobile": "Rychlé psaní pro mobil"
+    "quickWritingMobile": "Rychlé psaní pro mobil",
+    "hrCommunicationTitle": "HR Komunikace",
+    "autoTranslateDescription": "Automatický překladač s umělou inteligencí pro snadnou komunikaci s HR oddělením a kolegy v němčině",
+    "carTipTitle": "Tip pro použití v autě",
+    "carTipDescription": "Aplikaci můžete bezpečně používat i při řízení díky hlasovému vstupu a automatickému přečtení překladu"
+  },
+  "hrCommunication": {
+    "writeOrSayMessage": "Napište nebo nadiktujte zprávu",
+    "writeMessagePlaceholder": "Napište svou zprávu v češtině a my ji přeložíme do němčiny...",
+    "voiceButton": "Hlasový vstup",
+    "stopButton": "Zastavit nahrávání",
+    "translateButton": "Přeložit do němčiny",
+    "translatingButton": "Překládám...",
+    "yourText": "Váš text (čeština)",
+    "germanTranslation": "Německý překlad",
+    "playButton": "Přehrát německy",
+    "sendToHR": "Odeslat HR emailem",
+    "sendingToHR": "Odesílám HR...",
+    "startCommunicating": "Začněte komunikovat s HR",
+    "communicationDescription": "Napište nebo nadiktujte zprávu v češtině a my ji automaticky přeložíme do němčiny pro komunikaci s HR oddělením"
+  },
+  "toastMessages": {
+    "error": "Chyba",
+    "recording": "Nahrávám",
+    "speakNow": "Mluvte nyní do mikrofonu",
+    "recognized": "Text rozpoznán",
+    "recognitionError": "Chyba rozpoznávání řeči",
+    "tryAgain": "Zkuste to znovu",
+    "speechNotSupported": "Váš prohlížeč nepodporuje rozpoznávání řeči",
+    "translateFirst": "Nejdříve přeložte nějaký text",
+    "originalTextNotFound": "Původní text nebyl nalezen",
+    "emailSent": "Email odeslán",
+    "messageSentToHR": "Zpráva byla úspěšně odeslána HR oddělení",
+    "sendingError": "Chyba při odesílání",
+    "emailSendFailed": "Nepodařilo se odeslat email HR oddělení"
   }
 }
