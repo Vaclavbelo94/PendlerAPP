@@ -1,0 +1,24 @@
+
+{
+  "dhlSetup": "DHL Einrichtung",
+  "dhlSetupTitle": "Vervollständigen Sie Ihr DHL-Profil",
+  "dhlSetupDescription": "Geben Sie die für die Schichtverwaltung erforderlichen Informationen ein",
+  "personalNumber": "Personalnummer",
+  "personalNumberPlaceholder": "Geben Sie Ihre Personalnummer ein (optional)",
+  "position": "Position",
+  "positionPlaceholder": "Wählen Sie Ihre Position",
+  "positionRequired": "Position ist erforderlich",
+  "workWeek": "Arbeitswoche",
+  "workWeekPlaceholder": "Wählen Sie Ihre aktuelle Woche",
+  "workWeekRequired": "Arbeitswoche ist erforderlich",
+  "submitSetup": "Einrichtung abschließen",
+  "submitting": "Speichere...",
+  "setupSuccess": "DHL-Profil wurde erfolgreich eingerichtet",
+  "setupError": "Fehler bei der DHL-Profilkonfiguration",
+  "loadingPositions": "Lade Positionen...",
+  "loadingWorkGroups": "Lade Arbeitswochen...",
+  "noPositionsAvailable": "Keine Positionen verfügbar",
+  "noWorkGroupsAvailable": "Keine Arbeitswochen verfügbar",
+  "setupComplete": "Einrichtung abgeschlossen! Weiterleitung zum Dashboard...",
+  "unauthorizedAccess": "Unbefugter Zugriff auf DHL-Funktionen"
+}

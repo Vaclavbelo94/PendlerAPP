@@ -1,0 +1,24 @@
+
+{
+  "dhlSetup": "DHL Nastavení",
+  "dhlSetupTitle": "Dokončete nastavení DHL profilu",
+  "dhlSetupDescription": "Vyplňte informace potřebné pro správu vašich směn",
+  "personalNumber": "Osobní číslo",
+  "personalNumberPlaceholder": "Zadejte vaše osobní číslo (volitelné)",
+  "position": "Pozice",
+  "positionPlaceholder": "Vyberte vaši pozici",
+  "positionRequired": "Pozice je povinná",
+  "workWeek": "Pracovní týden",
+  "workWeekPlaceholder": "Vyberte váš aktuální týden",
+  "workWeekRequired": "Pracovní týden je povinný",
+  "submitSetup": "Dokončit nastavení",
+  "submitting": "Ukládám...",
+  "setupSuccess": "DHL profil byl úspěšně nastaven",
+  "setupError": "Chyba při nastavování DHL profilu",
+  "loadingPositions": "Načítám pozice...",
+  "loadingWorkGroups": "Načítám pracovní týdny...",
+  "noPositionsAvailable": "Nejsou dostupné žádné pozice",
+  "noWorkGroupsAvailable": "Nejsou dostupné žádné pracovní týdny",
+  "setupComplete": "Nastavení dokončeno! Přesměrovávám na dashboard...",
+  "unauthorizedAccess": "Neautorizovaný přístup k DHL funkcím"
+}

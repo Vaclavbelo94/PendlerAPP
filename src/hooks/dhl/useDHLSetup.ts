@@ -2,13 +2,12 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/auth';
-import { isDHLEmployee } from '@/utils/dhlAuthUtils';
+import { isDHLEmployeeSync } from '@/utils/dhlAuthUtils';
 
 interface DHLSetupData {
   personalNumber: string;
-  depot: string;
-  route: string;
-  shift: string;
+  positionId: string;
+  workGroupId: string;
 }
 
 interface DHLSetupState {
@@ -30,22 +29,30 @@ export const useDHLSetup = () => {
   // Check if user already has DHL setup
   useEffect(() => {
     const checkSetupStatus = async () => {
-      if (!user || !isDHLEmployee(user)) {
-        setState(prev => ({ ...prev, isLoading: false }));
+      if (!user || !isDHLEmployeeSync(user)) {
+        setState(prev => ({ 
+          ...prev, 
+          isLoading: false,
+          error: 'Unauthorized access'
+        }));
         return;
       }
 
       try {
-        // Use existing user_dhl_assignments table instead
+        console.log('Checking DHL setup status for user:', user.id);
+        
         const { data, error } = await supabase
           .from('user_dhl_assignments')
           .select('*')
           .eq('user_id', user.id)
-          .single();
+          .eq('is_active', true)
+          .maybeSingle();
 
         if (error && error.code !== 'PGRST116') {
           throw error;
         }
+
+        console.log('DHL assignment check result:', data);
 
         setState(prev => ({
           ...prev,
@@ -57,7 +64,7 @@ export const useDHLSetup = () => {
         setState(prev => ({
           ...prev,
           isLoading: false,
-          error: 'Chyba při načítání nastavení DHL',
+          error: 'Error checking setup status',
         }));
       }
     };
@@ -65,28 +72,72 @@ export const useDHLSetup = () => {
     checkSetupStatus();
   }, [user]);
 
-  const submitSetup = async (setupData: DHLSetupData) => {
-    if (!user || !isDHLEmployee(user)) {
-      setState(prev => ({ ...prev, error: 'Neautorizovaný přístup' }));
+  const submitSetup = async (setupData: DHLSetupData): Promise<boolean> => {
+    if (!user || !isDHLEmployeeSync(user)) {
+      setState(prev => ({ ...prev, error: 'Unauthorized access' }));
       return false;
     }
 
     setState(prev => ({ ...prev, isSubmitting: true, error: null }));
 
     try {
-      // Since the actual table structure doesn't match, we'll just show a message
+      console.log('=== SUBMITTING DHL SETUP ===');
+      console.log('User ID:', user.id);
+      console.log('Setup Data:', setupData);
+
+      // Create DHL assignment
+      const assignmentData = {
+        user_id: user.id,
+        dhl_position_id: setupData.positionId,
+        dhl_work_group_id: setupData.workGroupId,
+        assigned_at: new Date().toISOString(),
+        is_active: true
+      };
+
+      const { data: assignment, error: assignmentError } = await supabase
+        .from('user_dhl_assignments')
+        .insert(assignmentData)
+        .select()
+        .single();
+
+      if (assignmentError) {
+        console.error('Assignment creation error:', assignmentError);
+        throw new Error('Failed to create DHL assignment');
+      }
+
+      console.log('DHL assignment created:', assignment);
+
+      // Update personal number in profile if provided
+      if (setupData.personalNumber.trim()) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .update({ 
+            personal_number: setupData.personalNumber.trim(),
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', user.id);
+
+        if (profileError) {
+          console.warn('Could not update personal number:', profileError);
+          // Non-critical, continue
+        }
+      }
+
       setState(prev => ({
         ...prev,
         isSubmitting: false,
-        error: 'DHL setup functionality needs to be configured with proper database schema',
+        isSetupComplete: true,
       }));
-      return false;
+
+      console.log('DHL setup completed successfully');
+      return true;
+
     } catch (error: any) {
       console.error('Error submitting DHL setup:', error);
       setState(prev => ({
         ...prev,
         isSubmitting: false,
-        error: error.message || 'Chyba při ukládání nastavení',
+        error: error.message || 'Setup submission failed',
       }));
       return false;
     }
@@ -95,6 +146,6 @@ export const useDHLSetup = () => {
   return {
     ...state,
     submitSetup,
-    canAccess: isDHLEmployee(user),
+    canAccess: isDHLEmployeeSync(user),
   };
 };

@@ -1,0 +1,24 @@
+
+{
+  "dhlSetup": "Ustawienia DHL",
+  "dhlSetupTitle": "Ukończ konfigurację profilu DHL",
+  "dhlSetupDescription": "Wypełnij informacje potrzebne do zarządzania zmianami",
+  "personalNumber": "Numer osobisty",
+  "personalNumberPlaceholder": "Wprowadź swój numer osobisty (opcjonalne)",
+  "position": "Stanowisko",
+  "positionPlaceholder": "Wybierz swoje stanowisko",
+  "positionRequired": "Stanowisko jest wymagane",
+  "workWeek": "Tydzień pracy",
+  "workWeekPlaceholder": "Wybierz swój aktualny tydzień",
+  "workWeekRequired": "Tydzień pracy jest wymagany",
+  "submitSetup": "Zakończ konfigurację",
+  "submitting": "Zapisywanie...",
+  "setupSuccess": "Profil DHL został pomyślnie skonfigurowany",
+  "setupError": "Błąd podczas konfiguracji profilu DHL",
+  "loadingPositions": "Ładowanie stanowisk...",
+  "loadingWorkGroups": "Ładowanie tygodni pracy...",
+  "noPositionsAvailable": "Brak dostępnych stanowisk",
+  "noWorkGroupsAvailable": "Brak dostępnych tygodni pracy",
+  "setupComplete": "Konfiguracja zakończona! Przekierowanie do panelu...",
+  "unauthorizedAccess": "Nieautoryzowany dostęp do funkcji DHL"
+}

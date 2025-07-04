@@ -65,6 +65,11 @@ import premiumCs from './translations/cs/premium.json';
 import premiumDe from './translations/de/premium.json';
 import premiumPl from './translations/pl/premium.json';
 
+// Import DHL translations
+import dhlCs from './translations/cs/dhl.json';
+import dhlDe from './translations/de/dhl.json';
+import dhlPl from './translations/pl/dhl.json';
+
 const resources = {
   cs: {
     common: commonCs,
@@ -82,6 +87,7 @@ const resources = {
     taxAdvisor: taxAdvisorCs,
     vehicle: vehicleCs,
     premium: premiumCs,
+    dhl: dhlCs,
   },
   de: {
     common: commonDe,
@@ -99,6 +105,7 @@ const resources = {
     taxAdvisor: taxAdvisorDe,
     vehicle: vehicleDe,
     premium: premiumDe,
+    dhl: dhlDe,
   },
   pl: {
     common: commonPl,
@@ -116,6 +123,7 @@ const resources = {
     taxAdvisor: taxAdvisorPl,
     vehicle: vehiclePl,
     premium: premiumPl,
+    dhl: dhlPl,
   },
 };
 
