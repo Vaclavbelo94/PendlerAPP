@@ -1,3 +1,4 @@
+
 import { User } from '@supabase/supabase-js';
 import { hasDHLPromoCode } from './dhlPromoUtils';
 
@@ -29,7 +30,7 @@ export const isDHLEmployee = async (user: User | null): Promise<boolean> => {
 };
 
 /**
- * Synchronous version - now only checks for admin override, promo code check must be async
+ * Synchronous version - checks profile flag and admin override
  */
 export const isDHLEmployeeSync = (user: User | null): boolean => {
   if (!user?.email) {
@@ -43,11 +44,18 @@ export const isDHLEmployeeSync = (user: User | null): boolean => {
     return true;
   }
   
-  // For other users, we should use the async version or check promo redemption
-  // This sync version is mainly for initial auth checks
-  // The real check should be done via isDHLEmployee() which checks promo codes
-  console.log('DHL Employee sync check: Use async version for promo code validation');
-  return false; // Return false by default, proper check should be async
+  // Check if user profile has is_dhl_employee flag set
+  // This will be set by the profile data when loaded
+  const profileData = user.user_metadata || {};
+  const isDHLFromProfile = profileData.is_dhl_employee === true;
+  
+  console.log('DHL Employee sync check:', {
+    email: user.email,
+    isDHLFromProfile,
+    userMetadata: profileData
+  });
+  
+  return isDHLFromProfile;
 };
 
 /**

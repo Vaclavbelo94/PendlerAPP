@@ -645,6 +645,7 @@ export type Database = {
           email: string | null
           id: string
           is_admin: boolean | null
+          is_dhl_employee: boolean | null
           is_premium: boolean | null
           location: string | null
           phone_number: string | null
@@ -659,6 +660,7 @@ export type Database = {
           email?: string | null
           id: string
           is_admin?: boolean | null
+          is_dhl_employee?: boolean | null
           is_premium?: boolean | null
           location?: string | null
           phone_number?: string | null
@@ -673,6 +675,7 @@ export type Database = {
           email?: string | null
           id?: string
           is_admin?: boolean | null
+          is_dhl_employee?: boolean | null
           is_premium?: boolean | null
           location?: string | null
           phone_number?: string | null

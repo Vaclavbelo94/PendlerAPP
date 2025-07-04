@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { activatePromoCode } from "@/services/promoCodeService";
 import { isDHLPromoCode } from "@/utils/dhlAuthUtils";
+import { DHLSetupService } from "@/services/dhlSetupService";
 
 const PromoCodeRedemption = () => {
   const { user, refreshPremiumStatus } = useAuth();
@@ -59,21 +60,17 @@ const PromoCodeRedemption = () => {
       console.log('Premium status refreshen:', premiumStatusResult);
       
       if (isDHL) {
+        // Ensure DHL employee setup
+        await DHLSetupService.ensureDHLPromoRedemption(user.id);
+        
         toast.success(`DHL Premium aktivován na rok!`, {
-          description: `Promo kód ${redemptionCode.code} byl úspěšně aktivován. Nyní můžete přejít na DHL setup.`,
-          duration: 8000
+          description: `Promo kód ${redemptionCode.code} byl úspěšně aktivován. Přesměrovávám na DHL setup.`,
+          duration: 5000
         });
         
-        // For DHL codes, provide manual navigation option
+        // Redirect to DHL setup
         setTimeout(() => {
-          toast.info("Přejít na DHL Setup?", {
-            description: "Klikněte zde pro nastavení vašeho DHL profilu",
-            action: {
-              label: "Přejít",
-              onClick: () => navigate('/dhl-setup')
-            },
-            duration: 10000
-          });
+          navigate('/dhl-setup');
         }, 2000);
         
       } else if (redemptionCode.discount === 100) {
@@ -135,7 +132,7 @@ const PromoCodeRedemption = () => {
         
         <div className="mt-4 p-3 bg-amber-100 dark:bg-amber-900 rounded-lg">
           <p className="text-sm text-amber-800 dark:text-amber-200">
-            <strong>Tip:</strong> Kód DHL2026 aktivuje roční premium a přístup k DHL funkcím bez nutnosti mít @dhl.com email.
+            <strong>Tip:</strong> Kód DHL2026 aktivuje roční premium a přístup k DHL funkcím. Po aktivaci budete přesměrováni na DHL setup.
           </p>
         </div>
       </CardContent>

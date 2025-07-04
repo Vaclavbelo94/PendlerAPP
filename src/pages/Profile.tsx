@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import { User } from 'lucide-react';
-import { useAuth } from "@/hooks/auth";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Layout from '@/components/layouts/Layout';
@@ -18,9 +17,10 @@ import ProfileErrorBoundary from '@/components/profile/ProfileErrorBoundary';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 import { useTranslation } from 'react-i18next';
+import { useEnhancedAuth } from '@/hooks/useEnhancedAuth';
 
 const Profile = () => {
-  const { user, unifiedUser } = useAuth();
+  const { user, unifiedUser } = useEnhancedAuth();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [activeTab, setActiveTab] = useState("overview");
