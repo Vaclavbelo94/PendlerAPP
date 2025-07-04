@@ -1,21 +1,14 @@
 
 {
   "generic": "Nastala chyba",
+  "networkError": "Chyba sítě",
   "loadFailed": "Načítání se nezdařilo",
   "saveFailed": "Ukládání se nezdařilo",
-  "deleteFailed": "Mazání se nezdařilo",
-  "networkError": "Chyba sítě",
+  "notFound": "Nenalezeno",
   "unauthorized": "Neautorizováno",
   "forbidden": "Zakázáno",
-  "notFound": "Nenalezeno",
   "serverError": "Chyba serveru",
   "validationError": "Chyba validace",
-  "requiredField": "Toto pole je povinné",
-  "invalidEmail": "Neplatný e-mail",
-  "invalidPassword": "Neplatné heslo",
-  "passwordTooShort": "Heslo je příliš krátké",
-  "passwordMismatch": "Hesla se neshodují",
-  "sessionExpired": "Relace vypršela",
-  "tryAgain": "Zkuste to znovu",
-  "contactSupport": "Kontaktujte podporu"
+  "tryAgain": "Zkusit znovu",
+  "contactSupport": "Kontaktovat podporu"
 }

@@ -1,21 +1,14 @@
 
 {
   "generic": "Ein Fehler ist aufgetreten",
+  "networkError": "Netzwerkfehler",
   "loadFailed": "Laden fehlgeschlagen",
   "saveFailed": "Speichern fehlgeschlagen",
-  "deleteFailed": "Löschen fehlgeschlagen",
-  "networkError": "Netzwerkfehler",
+  "notFound": "Nicht gefunden",
   "unauthorized": "Nicht autorisiert",
   "forbidden": "Verboten",
-  "notFound": "Nicht gefunden",
   "serverError": "Serverfehler",
   "validationError": "Validierungsfehler",
-  "requiredField": "Dieses Feld ist erforderlich",
-  "invalidEmail": "Ungültige E-Mail",
-  "invalidPassword": "Ungültiges Passwort",
-  "passwordTooShort": "Passwort zu kurz",
-  "passwordMismatch": "Passwörter stimmen nicht überein",
-  "sessionExpired": "Sitzung abgelaufen",
-  "tryAgain": "Versuchen Sie es erneut",
+  "tryAgain": "Erneut versuchen",
   "contactSupport": "Support kontaktieren"
 }

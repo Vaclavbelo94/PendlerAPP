@@ -3,7 +3,6 @@
   "home": "Strona główna",
   "dashboard": "Panel",
   "shifts": "Zmiany",
-  "language": "Język", 
   "travel": "Podróże",
   "translator": "Tłumacz",
   "taxAdvisor": "Doradca podatkowy",
@@ -13,9 +12,8 @@
   "logout": "Wyloguj",
   "login": "Zaloguj",
   "register": "Zarejestruj",
-  "vehicle": "Pojazd",
-  "premium": "Premium",
-  "admin": "Admin",
-  "dhlAdmin": "DHL Admin",
-  "dhlDashboard": "DHL Panel"
+  "language": "Język",
+  "menu": "Menu",
+  "close": "Zamknij",
+  "back": "Wstecz"
 }

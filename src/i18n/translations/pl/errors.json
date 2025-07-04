@@ -1,21 +1,14 @@
 
 {
   "generic": "Wystąpił błąd",
+  "networkError": "Błąd sieci",
   "loadFailed": "Ładowanie nie powiodło się",
   "saveFailed": "Zapisywanie nie powiodło się",
-  "deleteFailed": "Usuwanie nie powiodło się",
-  "networkError": "Błąd sieci",
+  "notFound": "Nie znaleziono",
   "unauthorized": "Brak autoryzacji",
   "forbidden": "Zabronione",
-  "notFound": "Nie znaleziono",
   "serverError": "Błąd serwera",
   "validationError": "Błąd walidacji",
-  "requiredField": "To pole jest wymagane",
-  "invalidEmail": "Nieprawidłowy e-mail",
-  "invalidPassword": "Nieprawidłowe hasło",
-  "passwordTooShort": "Hasło za krótkie",
-  "passwordMismatch": "Hasła nie pasują",
-  "sessionExpired": "Sesja wygasła",
   "tryAgain": "Spróbuj ponownie",
   "contactSupport": "Skontaktuj się z pomocą"
 }

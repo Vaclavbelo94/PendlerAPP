@@ -1,9 +1,8 @@
 
 {
   "home": "Domů",
-  "dashboard": "Dashboard", 
+  "dashboard": "Dashboard",
   "shifts": "Směny",
-  "language": "Jazyk",
   "travel": "Cestování",
   "translator": "Překladač",
   "taxAdvisor": "Daňový poradce",
@@ -13,9 +12,8 @@
   "logout": "Odhlásit se",
   "login": "Přihlásit se",
   "register": "Registrovat se",
-  "vehicle": "Vozidlo",
-  "premium": "Premium",
-  "admin": "Admin",
-  "dhlAdmin": "DHL Admin",
-  "dhlDashboard": "DHL Dashboard"
+  "language": "Jazyk",
+  "menu": "Menu",
+  "close": "Zavřít",
+  "back": "Zpět"
 }

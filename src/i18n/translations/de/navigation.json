@@ -2,8 +2,7 @@
 {
   "home": "Startseite",
   "dashboard": "Dashboard",
-  "shifts": "Schichten", 
-  "language": "Sprache",
+  "shifts": "Schichten",
   "travel": "Reisen",
   "translator": "Übersetzer",
   "taxAdvisor": "Steuerberater",
@@ -13,9 +12,8 @@
   "logout": "Abmelden",
   "login": "Anmelden",
   "register": "Registrieren",
-  "vehicle": "Fahrzeug",
-  "premium": "Premium",
-  "admin": "Admin",
-  "dhlAdmin": "DHL Admin",
-  "dhlDashboard": "DHL Dashboard"
+  "language": "Sprache",
+  "menu": "Menü",
+  "close": "Schließen",
+  "back": "Zurück"
 }
