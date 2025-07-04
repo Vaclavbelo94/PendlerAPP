@@ -1,4 +1,3 @@
-
 import { User } from '@supabase/supabase-js';
 import { hasDHLPromoCode } from './dhlPromoUtils';
 
@@ -30,7 +29,7 @@ export const isDHLEmployee = async (user: User | null): Promise<boolean> => {
 };
 
 /**
- * Synchronous version for compatibility (checks email patterns only)
+ * Synchronous version - now only checks for admin override, promo code check must be async
  */
 export const isDHLEmployeeSync = (user: User | null): boolean => {
   if (!user?.email) {
@@ -38,28 +37,17 @@ export const isDHLEmployeeSync = (user: User | null): boolean => {
     return false;
   }
   
-  // Support various DHL email formats and admin
-  const dhlEmailPatterns = [
-    '@dhl.com',
-    '@dhl.de',
-    'test@dhl.com',
-    'admindhl@pendlerapp.com'
-  ];
+  // Admin override for testing - admindhl@pendlerapp.com can always access
+  if (user.email === 'admindhl@pendlerapp.com') {
+    console.log('DHL Employee sync check: Admin override granted');
+    return true;
+  }
   
-  const isDHLEmp = dhlEmailPatterns.some(pattern => {
-    if (pattern.startsWith('@')) {
-      return user.email!.endsWith(pattern);
-    } else {
-      return user.email === pattern;
-    }
-  });
-  
-  console.log('DHL Employee sync check:', { 
-    email: user.email, 
-    isDHLEmployee: isDHLEmp
-  });
-  
-  return isDHLEmp;
+  // For other users, we should use the async version or check promo redemption
+  // This sync version is mainly for initial auth checks
+  // The real check should be done via isDHLEmployee() which checks promo codes
+  console.log('DHL Employee sync check: Use async version for promo code validation');
+  return false; // Return false by default, proper check should be async
 };
 
 /**

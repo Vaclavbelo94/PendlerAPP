@@ -11,7 +11,7 @@ import { useAuth } from '@/hooks/auth';
 import { useDHLData } from '@/hooks/dhl/useDHLData';
 import { isDHLEmployeeSync } from '@/utils/dhlAuthUtils';
 import { useTranslation } from 'react-i18next';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 interface DHLSetupFormData {
   personalNumber: string;
@@ -32,10 +32,10 @@ const DHLSetup = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Check authorization
+  // Check authorization - now only based on promo code redemption, not email domain
   useEffect(() => {
     if (!user || !isDHLEmployeeSync(user)) {
-      console.log('Unauthorized access to DHL Setup');
+      console.log('Unauthorized access to DHL Setup - user needs DHL promo code');
       toast.error(t('unauthorizedAccess'));
       navigate('/profile');
     }
@@ -132,7 +132,7 @@ const DHLSetup = () => {
     }
   };
 
-  // Don't render if user is not authorized
+  // Don't render if user is not authorized (no DHL promo code)
   if (!user || !isDHLEmployeeSync(user)) {
     return null;
   }

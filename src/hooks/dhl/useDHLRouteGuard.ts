@@ -1,30 +1,54 @@
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/auth';
-import { isDHLEmployeeSync, getDHLSetupPathSync } from '@/utils/dhlAuthUtils';
+import { isDHLEmployee, isDHLAdmin } from '@/utils/dhlAuthUtils';
 import { useDHLData } from './useDHLData';
 
 export const useDHLRouteGuard = (requiresSetup = false) => {
   const { user, isLoading } = useAuth();
   const navigate = useNavigate();
   const { userAssignment, isLoading: isDHLDataLoading } = useDHLData(user?.id);
+  const [isDHLUser, setIsDHLUser] = useState<boolean | null>(null);
+  const [isCheckingDHL, setIsCheckingDHL] = useState(true);
+
+  // Check if user is DHL employee (async check for promo codes)
+  useEffect(() => {
+    const checkDHLStatus = async () => {
+      if (!user) {
+        setIsDHLUser(false);
+        setIsCheckingDHL(false);
+        return;
+      }
+
+      // Admin override
+      if (isDHLAdmin(user)) {
+        setIsDHLUser(true);
+        setIsCheckingDHL(false);
+        return;
+      }
+
+      // Check promo code redemption
+      const isDHL = await isDHLEmployee(user);
+      setIsDHLUser(isDHL);
+      setIsCheckingDHL(false);
+    };
+
+    checkDHLStatus();
+  }, [user]);
 
   useEffect(() => {
-    if (isLoading || isDHLDataLoading) return;
+    if (isLoading || isDHLDataLoading || isCheckingDHL) return;
 
-    // Check if user is DHL employee (sync version)
-    if (!isDHLEmployeeSync(user)) {
+    // If user is not DHL employee, don't redirect (just return)
+    if (!isDHLUser) {
       console.log('User is not DHL employee');
       return;
     }
 
-    // Check if DHL user needs setup (sync version)
-    const setupPath = getDHLSetupPathSync(user, !!userAssignment);
-    
-    if (setupPath && requiresSetup) {
-      console.log('DHL user needs setup, redirecting to setup page');
-      navigate(setupPath);
+    // If DHL user needs setup and we're requiring setup
+    if (requiresSetup && !userAssignment) {
+      console.log('DHL user needs setup, staying on setup page');
       return;
     }
 
@@ -34,12 +58,19 @@ export const useDHLRouteGuard = (requiresSetup = false) => {
       navigate('/dashboard');
       return;
     }
-  }, [user, userAssignment, isLoading, isDHLDataLoading, requiresSetup, navigate]);
+
+    // If DHL user doesn't have setup and is not on setup page, redirect to setup
+    if (!userAssignment && window.location.pathname !== '/dhl-setup') {
+      console.log('DHL user needs setup, redirecting to setup page');
+      navigate('/dhl-setup');
+      return;
+    }
+  }, [user, userAssignment, isLoading, isDHLDataLoading, isCheckingDHL, requiresSetup, navigate, isDHLUser]);
 
   return {
-    canAccess: !isLoading && !isDHLDataLoading,
-    isDHLEmployee: isDHLEmployeeSync(user),
+    canAccess: !isLoading && !isDHLDataLoading && !isCheckingDHL,
+    isDHLEmployee: isDHLUser,
     hasAssignment: !!userAssignment,
-    isLoading: isLoading || isDHLDataLoading
+    isLoading: isLoading || isDHLDataLoading || isCheckingDHL
   };
 };
