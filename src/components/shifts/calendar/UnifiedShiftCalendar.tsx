@@ -1,10 +1,7 @@
 
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, CalendarDays } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import WeeklyShiftCalendar from './WeeklyShiftCalendar';
 import OptimizedShiftCalendar from './OptimizedShiftCalendar';
 import { ShiftCalendarProps } from '@/types/shifts';
 import { useTranslation } from 'react-i18next';
@@ -21,7 +18,6 @@ const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = React.memo(({
   className
 }) => {
   const { t } = useTranslation('shifts');
-  const [viewMode, setViewMode] = useState<'week' | 'month'>('month');
 
   const handleAddShift = useCallback((date?: Date) => {
     if (date && onAddShiftForDate) {
@@ -30,14 +26,6 @@ const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = React.memo(({
       onAddShift();
     }
   }, [onAddShift, onAddShiftForDate]);
-
-  const memoizedWeeklyProps = useMemo(() => ({
-    shifts,
-    onEditShift: onEditShift || (() => {}),
-    onDeleteShift: onDeleteShift || (() => {}),
-    onAddShift: handleAddShift,
-    isLoading
-  }), [shifts, onEditShift, onDeleteShift, handleAddShift, isLoading]);
 
   const memoizedMonthlyProps = useMemo(() => ({
     shifts,
@@ -59,28 +47,7 @@ const UnifiedShiftCalendar: React.FC<ShiftCalendarProps> = React.memo(({
       >
         <Card>
           <CardContent className="p-4">
-            <div className="mb-6">
-              <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'week' | 'month')}>
-                <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
-                  <TabsTrigger value="week" className="gap-2">
-                    <CalendarDays className="h-4 w-4" />
-                    {t('weeklyView') || 'Týdenní pohled'}
-                  </TabsTrigger>
-                  <TabsTrigger value="month" className="gap-2">
-                    <Calendar className="h-4 w-4" />
-                    {t('monthlyView') || 'Měsíční pohled'}
-                  </TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="week" className="mt-6">
-                  <WeeklyShiftCalendar {...memoizedWeeklyProps} />
-                </TabsContent>
-
-                <TabsContent value="month" className="mt-6">
-                  <OptimizedShiftCalendar {...memoizedMonthlyProps} />
-                </TabsContent>
-              </Tabs>
-            </div>
+            <OptimizedShiftCalendar {...memoizedMonthlyProps} />
           </CardContent>
         </Card>
       </motion.div>
