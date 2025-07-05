@@ -15,11 +15,17 @@
     "selectPeriod": "Vyberte období platby",
     "saveWithYearly": "Ušetřete s ročním předplatným"
   },
-  "period": {
+  "periods": {
     "monthly": "Měsíční",
     "yearly": "Roční",
-    "paidMonthly": "Placeno každý měsíc",
-    "paidYearly": "Placeno jednou ročně"
+    "monthlyDesc": "Placeno každý měsíc",
+    "yearlyDesc": "Placeno jednou ročně",
+    "yearlySavings": "17% úspora",
+    "selectTitle": "Vyberte období platby",
+    "selectSubtitle": "Ušetřete s ročním předplatným",
+    "perYear": "/rok",
+    "perMonth": "/měsíc",
+    "yearlyEquivalent": "Odpovídá {{amount}} {{currency}}/měsíc"
   },
   "premiumUser": {
     "title": "Jste Premium uživatel",

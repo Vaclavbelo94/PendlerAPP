@@ -15,11 +15,17 @@
     "selectPeriod": "Zahlungszeitraum wählen",
     "saveWithYearly": "Sparen Sie mit dem Jahresabonnement"
   },
-  "period": {
+  "periods": {
     "monthly": "Monatlich",
     "yearly": "Jährlich",
-    "paidMonthly": "Monatlich bezahlt",
-    "paidYearly": "Einmal jährlich bezahlt"
+    "monthlyDesc": "Monatlich bezahlt",
+    "yearlyDesc": "Einmal jährlich bezahlt",
+    "yearlySavings": "17% Ersparnis",
+    "selectTitle": "Zahlungszeitraum wählen",
+    "selectSubtitle": "Sparen Sie mit dem Jahresabonnement",
+    "perYear": "/Jahr",
+    "perMonth": "/Monat",
+    "yearlyEquivalent": "Entspricht {{amount}} {{currency}}/Monat"
   },
   "premiumUser": {
     "title": "Sie sind Premium-Benutzer",

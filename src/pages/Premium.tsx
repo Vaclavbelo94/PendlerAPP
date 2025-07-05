@@ -77,7 +77,7 @@ const Premium = () => {
     try {
       await handleCheckout(selectedPeriod);
     } catch (error) {
-      toast.error(t('errors.paymentFailed', 'Platba se nezdařila. Zkuste to prosím znovu.'));
+      toast.error(t('errors.paymentFailed'));
     }
   };
 

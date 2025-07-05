@@ -25,17 +25,17 @@ const PeriodSelector = ({ selectedPeriod, onPeriodChange, pricing }: PeriodSelec
   const periods = [
     {
       id: 'monthly' as PaymentPeriod,
-      label: t('periods.monthly', 'Měsíční'),
+      label: t('periods.monthly'),
       price: pricing.monthlyPrice,
-      description: t('periods.monthlyDesc', 'Placeno každý měsíc'),
+      description: t('periods.monthlyDesc'),
       savings: null
     },
     {
       id: 'yearly' as PaymentPeriod,
-      label: t('periods.yearly', 'Roční'),
+      label: t('periods.yearly'),
       price: pricing.yearlyPrice,
-      description: t('periods.yearlyDesc', 'Placeno jednou ročně'),
-      savings: t('periods.yearlySavings', `${pricing.savings} úspora`)
+      description: t('periods.yearlyDesc'),
+      savings: t('periods.yearlySavings')
     }
   ];
 
@@ -43,10 +43,10 @@ const PeriodSelector = ({ selectedPeriod, onPeriodChange, pricing }: PeriodSelec
     <div className="space-y-4">
       <div className="text-center">
         <h3 className="text-lg font-semibold mb-2">
-          {t('periods.selectTitle', 'Vyberte období platby')}
+          {t('periods.selectTitle')}
         </h3>
         <p className="text-sm text-muted-foreground">
-          {t('periods.selectSubtitle', 'Ušetřete s ročním předplatným')}
+          {t('periods.selectSubtitle')}
         </p>
       </div>
       
@@ -74,14 +74,17 @@ const PeriodSelector = ({ selectedPeriod, onPeriodChange, pricing }: PeriodSelec
                 <div className="mb-2">
                   <span className="text-2xl font-bold">{period.price} {pricing.currency}</span>
                   <span className="text-sm text-muted-foreground ml-1">
-                    {period.id === 'yearly' ? t('periods.perYear', '/rok') : t('periods.perMonth', '/měsíc')}
+                    {period.id === 'yearly' ? t('periods.perYear') : t('periods.perMonth')}
                   </span>
                 </div>
                 <p className="text-sm text-muted-foreground">{period.description}</p>
                 {period.id === 'yearly' && (
-                  <p className="text-xs text-green-600 mt-1">
-                    {t('periods.yearlyEquivalent', `Odpovídá ${(pricing.yearlyPrice / 12).toFixed(2)} ${pricing.currency}/měsíc`)}
-                  </p>
+                <p className="text-xs text-green-600 mt-1">
+                  {t('periods.yearlyEquivalent', {
+                    amount: (pricing.yearlyPrice / 12).toFixed(2),
+                    currency: pricing.currency
+                  })}
+                </p>
                 )}
               </div>
             </CardContent>

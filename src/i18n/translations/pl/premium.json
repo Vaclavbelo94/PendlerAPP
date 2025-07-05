@@ -15,11 +15,17 @@
     "selectPeriod": "Wybierz okres płatności",
     "saveWithYearly": "Zaoszczędź z roczną subskrypcją"
   },
-  "period": {
+  "periods": {
     "monthly": "Miesięczny",
     "yearly": "Roczny",
-    "paidMonthly": "Płacone co miesiąc",
-    "paidYearly": "Płacone raz w roku"
+    "monthlyDesc": "Płacone co miesiąc",
+    "yearlyDesc": "Płacone raz w roku",
+    "yearlySavings": "17% oszczędności",
+    "selectTitle": "Wybierz okres płatności",
+    "selectSubtitle": "Zaoszczędź z roczną subskrypcją",
+    "perYear": "/rok",
+    "perMonth": "/miesiąc",
+    "yearlyEquivalent": "Odpowiada {{amount}} {{currency}}/miesiąc"
   },
   "premiumUser": {
     "title": "Jesteś użytkownikiem Premium",
