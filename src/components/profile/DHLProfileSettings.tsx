@@ -1,217 +1,236 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Truck, MapPin, Clock, User, AlertTriangle } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { Truck, Settings, CheckCircle, Edit, Save, X } from 'lucide-react';
 import { useAuth } from '@/hooks/auth';
-import { supabase } from '@/integrations/supabase/client';
+import { useDHLData } from '@/hooks/dhl/useDHLData';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
-interface DHLProfileSettingsProps {
-  // Add any props here
-}
-
-interface DHLAssignment {
-  personal_number: string;
-  depot: string;
-  route: string;
-  shift: string;
-}
-
-const DHLProfileSettings: React.FC<DHLProfileSettingsProps> = ({ /* props */ }) => {
-  const { user } = useAuth();
-  const [assignment, setAssignment] = useState<DHLAssignment | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+const DHLProfileSettings = () => {
+  const { user, unifiedUser } = useAuth();
+  const { userAssignment, positions, workGroups, isLoading } = useDHLData(user?.id);
+  const { t } = useTranslation(['profile', 'dhl']);
   const [isEditing, setIsEditing] = useState(false);
-  const [tempAssignment, setTempAssignment] = useState<DHLAssignment>({
-    personal_number: '',
-    depot: '',
-    route: '',
-    shift: '',
+  const [editData, setEditData] = useState({
+    personalNumber: '',
+    positionId: userAssignment?.dhl_position_id || '',
+    workGroupId: userAssignment?.dhl_work_group_id || ''
   });
 
-  useEffect(() => {
-    const fetchAssignment = async () => {
-      if (!user?.id) return;
+  const currentPosition = positions.find(p => p.id === userAssignment?.dhl_position_id);
+  const currentWorkGroup = workGroups.find(w => w.id === userAssignment?.dhl_work_group_id);
 
-      setIsLoading(true);
-      try {
-        const { data, error } = await supabase
-          .from('user_dhl_assignments')
-          .select('*')
-          .eq('user_id', user.id)
-          .single();
-
-        if (error) {
-          console.error('Error fetching DHL assignment:', error);
-          if (error.code !== 'PGRST116') { // Not found error is OK
-            toast.error('Failed to load DHL assignment');
-          }
-        }
-
-        if (data) {
-          // Note: The user_dhl_assignments table has different structure
-          // This is a placeholder - you may need to adjust based on actual data structure
-          setAssignment({
-            personal_number: 'N/A', // These fields don't exist in user_dhl_assignments
-            depot: 'N/A',
-            route: 'N/A', 
-            shift: 'N/A',
-          });
-          setTempAssignment({
-            personal_number: 'N/A',
-            depot: 'N/A',
-            route: 'N/A',
-            shift: 'N/A',
-          });
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchAssignment();
-  }, [user?.id]);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setTempAssignment(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleStartEditing = () => {
+  const handleEdit = () => {
+    setEditData({
+      personalNumber: user?.user_metadata?.personal_number || '',
+      positionId: userAssignment?.dhl_position_id || '',
+      workGroupId: userAssignment?.dhl_work_group_id || ''
+    });
     setIsEditing(true);
   };
 
-  const handleCancelEditing = () => {
-    setIsEditing(false);
-    if (assignment) {
-      setTempAssignment({ ...assignment });
+  const handleSave = async () => {
+    if (!user?.id || !userAssignment?.id) {
+      toast.error(t('dhl:setupError'));
+      return;
     }
-  };
-
-  const handleSaveAssignment = async () => {
-    if (!user?.id) return;
 
     try {
-      // Note: This update won't work with current schema
-      // The user_dhl_assignments table doesn't have these fields
-      // You may need to create a separate table or modify the schema
-      toast.info('DHL assignment functionality needs schema updates');
+      // Update user assignment
+      const { error: assignmentError } = await supabase
+        .from('user_dhl_assignments')
+        .update({
+          dhl_position_id: editData.positionId,
+          dhl_work_group_id: editData.workGroupId,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', userAssignment.id);
+
+      if (assignmentError) {
+        console.error('Error updating DHL assignment:', assignmentError);
+        toast.error(t('dhl:setupError'));
+        return;
+      }
+
+      toast.success(t('profile:settingsSaved'));
+      setIsEditing(false);
     } catch (error) {
-      console.error('Error updating DHL assignment:', error);
-      toast.error('Failed to update DHL assignment');
+      console.error('Error saving DHL settings:', error);
+      toast.error(t('dhl:setupError'));
     }
   };
 
+  const handleCancel = () => {
+    setIsEditing(false);
+  };
+
+  if (!unifiedUser?.isDHLEmployee) {
+    return null;
+  }
+
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <div className="flex items-center justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Truck className="h-5 w-5" />
-          DHL Profil
-        </CardTitle>
-        <CardDescription>Nastavení pro DHL uživatele</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {!assignment ? (
-          <Alert variant="destructive">
-            <AlertTriangle className="h-4 w-4" />
-            <AlertDescription>
-              Nemáte přiřazené žádné DHL údaje. Kontaktujte administrátora.
-            </AlertDescription>
-          </Alert>
-        ) : (
-          <>
-            <div className="flex items-center space-x-2">
-              <User className="h-4 w-4 text-muted-foreground" />
-              <Label>Osobní číslo</Label>
-              <Badge>{assignment.personal_number}</Badge>
+    <div className="space-y-6">
+      {/* Header */}
+      <Card className="bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-950/20 dark:to-yellow-950/20 border-amber-200 dark:border-amber-800">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-full bg-amber-100 dark:bg-amber-900/50">
+                <Truck className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+              </div>
+              <div>
+                <CardTitle className="text-amber-800 dark:text-amber-200 flex items-center gap-2">
+                  <CheckCircle className="h-5 w-5" />
+                  {t('profile:dhlSettings')}
+                </CardTitle>
+                <CardDescription className="text-amber-700 dark:text-amber-300">
+                  {t('profile:dhlSettingsDescription')}
+                </CardDescription>
+              </div>
             </div>
-            <div className="flex items-center space-x-2">
-              <MapPin className="h-4 w-4 text-muted-foreground" />
-              <Label>Depo</Label>
-              <Badge>{assignment.depot}</Badge>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Truck className="h-4 w-4 text-muted-foreground" />
-              <Label>Trasa</Label>
-              <Badge>{assignment.route}</Badge>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Clock className="h-4 w-4 text-muted-foreground" />
-              <Label>Směna</Label>
-              <Badge>{assignment.shift}</Badge>
-            </div>
-          </>
-        )}
-        {isEditing ? (
-          <div className="grid gap-4">
-            <div>
-              <Label htmlFor="personal_number">Osobní číslo</Label>
-              <Input
-                type="text"
-                id="personal_number"
-                name="personal_number"
-                value={tempAssignment.personal_number}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div>
-              <Label htmlFor="depot">Depo</Label>
-              <Input
-                type="text"
-                id="depot"
-                name="depot"
-                value={tempAssignment.depot}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div>
-              <Label htmlFor="route">Trasa</Label>
-              <Input
-                type="text"
-                id="route"
-                name="route"
-                value={tempAssignment.route}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div>
-              <Label htmlFor="shift">Směna</Label>
-              <Select onValueChange={(value) => handleInputChange({ target: { name: 'shift', value } } as any)}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Vyberte směnu" defaultValue={tempAssignment.shift} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Ranní">Ranní</SelectItem>
-                  <SelectItem value="Odpolední">Odpolední</SelectItem>
-                  <SelectItem value="Noční">Noční</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex justify-end space-x-2">
-              <Button variant="ghost" onClick={handleCancelEditing}>
-                Zrušit
-              </Button>
-              <Button onClick={handleSaveAssignment}>Uložit</Button>
-            </div>
+            <Badge variant="secondary" className="bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200">
+              DHL Premium
+            </Badge>
           </div>
-        ) : (
-          <Button onClick={handleStartEditing} disabled={!assignment}>
-            Upravit
-          </Button>
-        )}
-      </CardContent>
-    </Card>
+        </CardHeader>
+      </Card>
+
+      {/* Current Settings */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <Settings className="h-5 w-5" />
+              {t('profile:currentSettings')}
+            </CardTitle>
+            {!isEditing && userAssignment && (
+              <Button onClick={handleEdit} variant="outline" size="sm">
+                <Edit className="h-4 w-4 mr-2" />
+                {t('profile:edit')}
+              </Button>
+            )}
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {!userAssignment ? (
+            <div className="text-center p-6 text-muted-foreground">
+              <p>{t('profile:noDHLSetup')}</p>
+              <Button 
+                onClick={() => window.location.href = '/dhl-setup'} 
+                className="mt-4"
+              >
+                {t('dhl:dhlSetup')}
+              </Button>
+            </div>
+          ) : (
+            <>
+              {/* Position */}
+              <div className="space-y-2">
+                <Label>{t('dhl:position')}</Label>
+                {isEditing ? (
+                  <Select
+                    value={editData.positionId}
+                    onValueChange={(value) => setEditData(prev => ({ ...prev, positionId: value }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={t('dhl:positionPlaceholder')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {positions.map((position) => (
+                        <SelectItem key={position.id} value={position.id}>
+                          {position.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <div className="p-2 bg-muted rounded-md">
+                    {currentPosition?.name || t('profile:notSet')}
+                  </div>
+                )}
+              </div>
+
+              <Separator />
+
+              {/* Work Group */}
+              <div className="space-y-2">
+                <Label>{t('dhl:workWeek')}</Label>
+                {isEditing ? (
+                  <Select
+                    value={editData.workGroupId}
+                    onValueChange={(value) => setEditData(prev => ({ ...prev, workGroupId: value }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={t('dhl:workWeekPlaceholder')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {workGroups.map((workGroup) => (
+                        <SelectItem key={workGroup.id} value={workGroup.id}>
+                          {workGroup.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <div className="p-2 bg-muted rounded-md">
+                    {currentWorkGroup?.name || t('profile:notSet')}
+                  </div>
+                )}
+              </div>
+
+              {/* Assignment Info */}
+              <Separator />
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-muted-foreground">
+                <div>
+                  <span className="font-medium">{t('profile:assignedAt')}:</span>
+                  <br />
+                  {new Date(userAssignment.assigned_at).toLocaleDateString()}
+                </div>
+                <div>
+                  <span className="font-medium">{t('profile:lastUpdated')}:</span>
+                  <br />
+                  {new Date(userAssignment.updated_at).toLocaleDateString()}
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              {isEditing && (
+                <div className="flex gap-2 pt-4">
+                  <Button onClick={handleSave} size="sm">
+                    <Save className="h-4 w-4 mr-2" />
+                    {t('profile:save')}
+                  </Button>
+                  <Button onClick={handleCancel} variant="outline" size="sm">
+                    <X className="h-4 w-4 mr-2" />
+                    {t('profile:cancel')}
+                  </Button>
+                </div>
+              )}
+            </>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 

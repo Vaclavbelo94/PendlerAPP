@@ -11,6 +11,7 @@ import ProfileNavigation from '@/components/profile/ProfileNavigation';
 import ProfileOverview from '@/components/profile/ProfileOverview';
 import ProfileWorkData from '@/components/profile/ProfileWorkData';
 import ProfileSubscription from '@/components/profile/subscription/ProfileSubscription';
+import DHLProfileSettings from '@/components/profile/DHLProfileSettings';
 import DashboardBackground from '@/components/common/DashboardBackground';
 import ProfileErrorBoundary from '@/components/profile/ProfileErrorBoundary';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -26,9 +27,19 @@ const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const { t } = useTranslation('profile');
 
+  // Dynamické položky pro swipe navigaci
+  const getNavigationItems = () => {
+    const baseItems = ["overview", "workData"];
+    if (unifiedUser?.isDHLEmployee) {
+      baseItems.push("dhlSettings");
+    }
+    baseItems.push("subscription");
+    return baseItems;
+  };
+
   // Hooks musí být vždy na stejném místě - ne v podmínce
   const { containerRef } = useSwipeNavigation({
-    items: ["overview", "workData", "subscription"],
+    items: getNavigationItems(),
     currentItem: activeTab,
     onItemChange: setActiveTab,
     enabled: isMobile && !!user // Jen pokud je uživatel přihlášen
@@ -86,6 +97,8 @@ const Profile = () => {
         );
       case 'workData':
         return <ProfileWorkData />;
+      case 'dhlSettings':
+        return <DHLProfileSettings />;
       case 'subscription':
         return <ProfileSubscription isPremium={unifiedUser?.isPremium || false} />;
       default:

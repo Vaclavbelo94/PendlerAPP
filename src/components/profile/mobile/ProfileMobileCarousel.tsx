@@ -1,12 +1,13 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, User, Briefcase, Crown } from 'lucide-react';
+import { ChevronLeft, ChevronRight, User, Briefcase, Crown, Truck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 import ProfileOverview from '../ProfileOverview';
 import ProfileWorkData from '../ProfileWorkData';
 import ProfileSubscription from '../subscription/ProfileSubscription';
+import DHLProfileSettings from '../DHLProfileSettings';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/auth';
 
@@ -26,6 +27,7 @@ export const ProfileMobileCarousel: React.FC<ProfileMobileCarouselProps> = ({
   const tabs = [
     { id: 'overview', label: t('overview'), icon: User },
     { id: 'workData', label: t('workData'), icon: Briefcase },
+    ...(unifiedUser?.isDHLEmployee ? [{ id: 'dhlSettings', label: t('dhlSettings'), icon: Truck }] : []),
     { id: 'subscription', label: t('subscription'), icon: Crown }
   ];
 
@@ -66,6 +68,8 @@ export const ProfileMobileCarousel: React.FC<ProfileMobileCarouselProps> = ({
         );
       case 'workData':
         return <ProfileWorkData />;
+      case 'dhlSettings':
+        return <DHLProfileSettings />;
       case 'subscription':
         return <ProfileSubscription isPremium={unifiedUser?.isPremium || false} />;
       default:

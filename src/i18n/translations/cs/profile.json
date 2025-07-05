@@ -111,5 +111,12 @@
   "expectedSalary": "Očekávaná mzda",
   "enterExpectedSalary": "Zadejte očekávanou mzdu",
   "remoteWork": "Práce na dálku",
-  "savePreferences": "Uložit preference"
+  "savePreferences": "Uložit preference",
+  "settingsSaved": "Nastavení uloženo",
+  "dhlSettings": "DHL Nastavení",
+  "currentSettings": "Aktuální nastavení",
+  "assignedAt": "Přiřazeno",
+  "lastUpdated": "Naposledy aktualizováno",
+  "noDHLSetup": "DHL nastavení nebylo dokončeno",
+  "dhlSettingsDescription": "Správa vašich DHL nastavení a pracovních údajů"
 }

@@ -111,5 +111,12 @@
   "expectedSalary": "Oczekiwana pensja",
   "enterExpectedSalary": "Wprowadź oczekiwaną pensję",
   "remoteWork": "Praca zdalna",
-  "savePreferences": "Zapisz preferencje"
+  "savePreferences": "Zapisz preferencje",
+  "settingsSaved": "Ustawienia zapisane",
+  "dhlSettings": "Ustawienia DHL",
+  "currentSettings": "Bieżące ustawienia",
+  "assignedAt": "Przypisano",
+  "lastUpdated": "Ostatnio zaktualizowano",
+  "noDHLSetup": "Konfiguracja DHL nie została ukończona",
+  "dhlSettingsDescription": "Zarządzanie ustawieniami DHL i danymi pracy"
 }
