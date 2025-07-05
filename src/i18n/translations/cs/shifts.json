@@ -128,5 +128,10 @@
   "september": "Září",
   "october": "Říjen",
   "november": "Listopad",
-  "december": "Prosinec"
+  "december": "Prosinec",
+  "weeklyView": "Týdenní pohled",
+  "monthlyView": "Měsíční pohled",
+  "calendarView": "Kalendářové zobrazení",
+  "listView": "Seznam",
+  "shiftsCalendar": "Kalendář směn"
 }

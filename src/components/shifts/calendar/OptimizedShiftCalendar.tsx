@@ -90,7 +90,7 @@ const OptimizedShiftCalendar: React.FC<OptimizedShiftCalendarProps> = ({
             {t('shiftsCalendar') || 'Kalendář směn'}
           </CardTitle>
           <Button
-            onClick={() => handleAddShift()}
+            onClick={() => handleAddShift(selectedDate)}
             size="sm"
             className="flex items-center gap-2"
           >

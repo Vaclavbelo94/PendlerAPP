@@ -127,5 +127,10 @@
   "september": "September",
   "october": "Oktober",
   "november": "November",
-  "december": "Dezember"
+  "december": "Dezember",
+  "weeklyView": "Wochenansicht",
+  "monthlyView": "Monatsansicht",
+  "calendarView": "Kalenderansicht",
+  "listView": "Liste",
+  "shiftsCalendar": "Schichtkalender"
 }
