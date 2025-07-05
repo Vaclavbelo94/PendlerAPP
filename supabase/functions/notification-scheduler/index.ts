@@ -50,8 +50,6 @@ serve(async (req) => {
 
     let processedCount = 0;
     let emailsSent = 0;
-    let smsSent = 0;
-    let pushSent = 0;
 
     for (const user of users || []) {
       try {
@@ -109,60 +107,6 @@ serve(async (req) => {
           await sendMultiChannelNotification(supabase, user, fullMessage, 'Připomínka směny', shift, supabaseUrl, supabaseKey);
         }
 
-          // Send email if enabled
-          if (user.email_notifications && user.profiles?.email) {
-            try {
-              const emailResponse = await fetch(`${supabaseUrl}/functions/v1/send-email`, {
-                method: 'POST',
-                headers: {
-                  'Authorization': `Bearer ${supabaseKey}`,
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  to: user.profiles.email,
-                  subject: 'Připomínka směny - zítra',
-                  template: 'shift-reminder',
-                  templateData: {
-                    shiftType: shiftTypeText,
-                    date: tomorrow,
-                    time: timeText,
-                    notes: shift.notes
-                  }
-                }),
-              });
-
-              if (emailResponse.ok) {
-                emailsSent++;
-                
-                // Log email
-                await supabase
-                  .from('email_logs')
-                  .insert({
-                    user_id: user.user_id,
-                    email_type: 'shift-reminder',
-                    recipient_email: user.profiles.email,
-                    subject: 'Připomínka směny - zítra',
-                    status: 'sent'
-                  });
-              }
-            } catch (emailError) {
-              console.error('Email sending failed:', emailError);
-              
-              // Log failed email
-              await supabase
-                .from('email_logs')
-                .insert({
-                  user_id: user.user_id,
-                  email_type: 'shift-reminder',
-                  recipient_email: user.profiles.email,
-                  subject: 'Připomínka směny - zítra',
-                  status: 'failed',
-                  error_message: emailError.message
-                });
-            }
-          }
-        }
-
         // Weekly summary logic (run on Sundays)
         if (now.getDay() === 0 && user.weekly_summaries) {
           await sendWeeklySummary(supabase, user, supabaseUrl, supabaseKey);
@@ -178,8 +122,6 @@ serve(async (req) => {
       success: true,
       processedUsers: processedCount,
       emailsSent,
-      smsSent,
-      pushSent,
       timestamp: now.toISOString()
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
