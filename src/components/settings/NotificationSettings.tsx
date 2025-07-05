@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { SyncSettings } from '@/hooks/useSyncSettings';
 import { EmailNotificationSettings } from '@/components/notifications/EmailNotificationSettings';
 import { PushNotificationSettings } from '@/components/notifications/PushNotificationSettings';
+import { SMSNotificationSettings } from '@/components/notifications/SMSNotificationSettings';
 import { useNotifications } from '@/hooks/useNotifications';
 import { useTranslation } from 'react-i18next';
 
@@ -58,6 +59,8 @@ const NotificationSettings = ({ syncSettings, updateSyncSettings }: Notification
       
       <PushNotificationSettings />
 
+      <SMSNotificationSettings />
+
       {/* Enhanced Shift Notifications Section */}
       <Card>
         <CardHeader>
@@ -95,6 +98,51 @@ const NotificationSettings = ({ syncSettings, updateSyncSettings }: Notification
               checked={localPreferences?.weekly_summaries || false}
               onCheckedChange={(checked) => handlePreferenceChange('weekly_summaries', checked)}
             />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <Label htmlFor="sms-notifications">{t('smsNotifications')}</Label>
+            <Switch
+              id="sms-notifications"
+              checked={localPreferences?.sms_notifications || false}
+              onCheckedChange={(checked) => handlePreferenceChange('sms_notifications', checked)}
+            />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <Label htmlFor="push-notifications">{t('pushNotifications')}</Label>
+            <Switch
+              id="push-notifications"
+              checked={localPreferences?.push_notifications || false}
+              onCheckedChange={(checked) => handlePreferenceChange('push_notifications', checked)}
+            />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <Label htmlFor="immediate-notifications">{t('immediateNotifications')}</Label>
+            <Switch
+              id="immediate-notifications"
+              checked={localPreferences?.immediate_notifications || false}
+              onCheckedChange={(checked) => handlePreferenceChange('immediate_notifications', checked)}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>{t('smsReminderAdvance')}</Label>
+            <Select
+              value={localPreferences?.sms_reminder_advance?.toString() || '30'}
+              onValueChange={(value) => handlePreferenceChange('sms_reminder_advance', parseInt(value))}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="15">15 {t('minutes')}</SelectItem>
+                <SelectItem value="30">30 {t('minutes')}</SelectItem>
+                <SelectItem value="60">60 {t('minutes')}</SelectItem>
+                <SelectItem value="120">2 {t('hours')}</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           
           <div className="flex items-center justify-between">

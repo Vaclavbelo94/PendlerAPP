@@ -162,5 +162,7 @@
   "exportCompleted": "Export abgeschlossen",
   "calendarExportedSuccessfully": "Schichtkalender wurde erfolgreich exportiert",
   "exportError": "Exportfehler",
-  "couldNotExportCalendar": "Kalender konnte nicht exportiert werden"
+  "couldNotExportCalendar": "Kalender konnte nicht exportiert werden",
+  "shiftChanged": "Schichtänderung",
+  "shiftChangeNotification": "Ihre Schicht wurde geändert"
 }

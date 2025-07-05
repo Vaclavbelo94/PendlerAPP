@@ -536,6 +536,36 @@ export type Database = {
           },
         ]
       }
+      notification_queue: {
+        Row: {
+          created_at: string | null
+          id: string
+          message_data: Json
+          notification_type: string
+          processed_at: string | null
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          message_data: Json
+          notification_type: string
+          processed_at?: string | null
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          message_data?: Json
+          notification_type?: string
+          processed_at?: string | null
+          status?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           created_at: string
@@ -1186,6 +1216,45 @@ export type Database = {
           },
         ]
       }
+      sms_logs: {
+        Row: {
+          created_at: string | null
+          error_message: string | null
+          id: string
+          message: string
+          phone_number: string
+          related_to: Json | null
+          sent_at: string | null
+          sms_type: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          message: string
+          phone_number: string
+          related_to?: Json | null
+          sent_at?: string | null
+          sms_type?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          message?: string
+          phone_number?: string
+          related_to?: Json | null
+          sent_at?: string | null
+          sms_type?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       subscribers: {
         Row: {
           created_at: string
@@ -1546,11 +1615,15 @@ export type Database = {
       user_notification_preferences: {
         Row: {
           created_at: string
+          device_token: string | null
           email_notifications: boolean
           id: string
+          immediate_notifications: boolean | null
           push_notifications: boolean
           reminder_time: string
           shift_reminders: boolean
+          sms_notifications: boolean | null
+          sms_reminder_advance: number | null
           system_updates: boolean
           updated_at: string
           user_id: string
@@ -1558,11 +1631,15 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          device_token?: string | null
           email_notifications?: boolean
           id?: string
+          immediate_notifications?: boolean | null
           push_notifications?: boolean
           reminder_time?: string
           shift_reminders?: boolean
+          sms_notifications?: boolean | null
+          sms_reminder_advance?: number | null
           system_updates?: boolean
           updated_at?: string
           user_id: string
@@ -1570,11 +1647,15 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          device_token?: string | null
           email_notifications?: boolean
           id?: string
+          immediate_notifications?: boolean | null
           push_notifications?: boolean
           reminder_time?: string
           shift_reminders?: boolean
+          sms_notifications?: boolean | null
+          sms_reminder_advance?: number | null
           system_updates?: boolean
           updated_at?: string
           user_id?: string

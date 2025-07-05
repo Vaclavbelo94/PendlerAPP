@@ -4,9 +4,14 @@ import { useState, useEffect } from 'react';
 interface NotificationPreferences {
   shift_reminders: boolean;
   email_notifications: boolean;
+  sms_notifications?: boolean;
+  push_notifications?: boolean;
+  immediate_notifications?: boolean;
+  sms_reminder_advance?: number;
   weekly_summaries: boolean;
   system_updates: boolean;
   reminder_time: string;
+  device_token?: string;
 }
 
 export interface Notification {
@@ -37,6 +42,10 @@ export const useNotifications = () => {
         setPreferences({
           shift_reminders: true,
           email_notifications: true,
+          sms_notifications: false,
+          push_notifications: true,
+          immediate_notifications: true,
+          sms_reminder_advance: 30,
           weekly_summaries: false,
           system_updates: true,
           reminder_time: '08:00:00'

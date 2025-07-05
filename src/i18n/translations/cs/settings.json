@@ -47,5 +47,16 @@
   "settingsError": "Chyba při ukládání nastavení",
   "settingsReset": "Nastavení byla obnovena",
   "never": "Nikdy",
-  "unknown": "Neznámé"
+  "unknown": "Neznámé",
+  "immediateNotifications": "Okamžité notifikace",
+  "smsReminderAdvance": "Předstih SMS připomínky",
+  "minutes": "minut",
+  "hours": "hodin",
+  "setShiftNotificationPreferences": "Nastavte své preference pro upozornění na směny",
+  "enableShiftReminders": "Povolit připomínky směn",
+  "systemNotifications": "Systémová upozornění",
+  "savePreferences": "Uložit předvolby",
+  "synchronization": "Synchronizace",
+  "syncStatus": "Stav synchronizace",
+  "reminderTime": "Čas připomínky"
 }
