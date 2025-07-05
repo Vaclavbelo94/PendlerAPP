@@ -118,7 +118,7 @@ const DHLSetup = () => {
 
       toast.success(t('setupSuccess'));
       
-      // Show completion message and redirect
+      // Show completion message and redirect back to dashboard
       setTimeout(() => {
         toast.info(t('setupComplete'));
         navigate('/dashboard');
