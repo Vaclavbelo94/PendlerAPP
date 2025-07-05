@@ -6,6 +6,22 @@
   "calendar": "Kalendář",
   "list": "Seznam",
   "statistics": "Statistiky",
+  "tabs": {
+    "calendar": "Kalendář",
+    "overview": "Přehled",
+    "analytics": "Statistiky", 
+    "import": "Import dat",
+    "settings": "Nastavení"
+  },
+  "import": {
+    "title": "Import dat z DHL systému",
+    "description": "Importujte své směny z databáze DHL",
+    "importButton": "Importovat směny",
+    "importing": "Importuji...",
+    "importSuccess": "Směny byly úspěšně importovány",
+    "importError": "Chyba při importu dat",
+    "noDataFound": "Nebyla nalezena žádná data k importu"
+  },
   "filter": "Filtrovat",
   "add": "Přidat",
   "addShift": "Přidat směnu",

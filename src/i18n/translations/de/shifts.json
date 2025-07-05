@@ -6,6 +6,22 @@
   "calendar": "Kalender",
   "list": "Liste",
   "statistics": "Statistiken",
+  "tabs": {
+    "calendar": "Kalender",
+    "overview": "Übersicht",
+    "analytics": "Statistiken",
+    "import": "Datenimport",
+    "settings": "Einstellungen"
+  },
+  "import": {
+    "title": "Datenimport aus DHL-System",
+    "description": "Importieren Sie Ihre Schichten aus der DHL-Datenbank",
+    "importButton": "Schichten importieren",
+    "importing": "Importiere...",
+    "importSuccess": "Schichten wurden erfolgreich importiert",
+    "importError": "Fehler beim Importieren der Daten",
+    "noDataFound": "Keine Daten zum Importieren gefunden"
+  },
   "filter": "Filtern",
   "add": "Hinzufügen",
   "addShift": "Schicht hinzufügen",

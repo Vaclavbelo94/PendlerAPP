@@ -1,7 +1,7 @@
 
 import React, { useState, useCallback, useMemo } from 'react';
 import Layout from '@/components/layouts/Layout';
-import ShiftCalendarContainer from '@/components/shifts/calendar/ShiftCalendarContainer';
+import SwipeableShiftTabs from '@/components/shifts/SwipeableShiftTabs';
 import FloatingAddButton from '@/components/shifts/FloatingAddButton';
 import ShiftsFormSheets from '@/components/shifts/ShiftsFormSheets';
 import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
@@ -218,7 +218,7 @@ const Shifts = React.memo(() => {
           )}
           
           <div className="animate-fade-in">
-            <ShiftCalendarContainer
+            <SwipeableShiftTabs
               shifts={shifts}
               onEditShift={handleEditShift}
               onDeleteShift={handleDeleteShift}

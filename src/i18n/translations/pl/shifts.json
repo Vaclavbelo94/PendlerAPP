@@ -6,6 +6,22 @@
   "calendar": "Kalendarz",
   "list": "Lista",
   "statistics": "Statystyki",
+  "tabs": {
+    "calendar": "Kalendarz",
+    "overview": "Przegląd",
+    "analytics": "Statystyki",
+    "import": "Import danych",
+    "settings": "Ustawienia"
+  },
+  "import": {
+    "title": "Import danych z systemu DHL",
+    "description": "Importuj swoje zmiany z bazy danych DHL",
+    "importButton": "Importuj zmiany",
+    "importing": "Importuję...",
+    "importSuccess": "Zmiany zostały pomyślnie zaimportowane",
+    "importError": "Błąd podczas importu danych",
+    "noDataFound": "Nie znaleziono danych do importu"
+  },
   "filter": "Filtruj",
   "add": "Dodaj",
   "addShift": "Dodaj zmianę",
