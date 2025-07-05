@@ -37,6 +37,7 @@ export const useUnifiedAuth = () => {
   // Initialize auth state
   useEffect(() => {
     let isMounted = true;
+    let authListenerUnsubscribe: (() => void) | null = null;
     
     const initialize = async () => {
       try {
@@ -56,6 +57,9 @@ export const useUnifiedAuth = () => {
           }
         );
         
+        // Store the unsubscribe function
+        authListenerUnsubscribe = () => authListener.subscription.unsubscribe();
+        
         // Check for existing session
         const { data: { session }, error } = await supabase.auth.getSession();
         
@@ -69,10 +73,6 @@ export const useUnifiedAuth = () => {
           setIsLoading(false);
           setIsInitialized(true);
         }
-        
-        return () => {
-          authListener.subscription.unsubscribe();
-        };
       } catch (error) {
         console.error('Unified Auth: Initialization error:', error);
         if (isMounted) {
@@ -86,6 +86,9 @@ export const useUnifiedAuth = () => {
     
     return () => {
       isMounted = false;
+      if (authListenerUnsubscribe) {
+        authListenerUnsubscribe();
+      }
     };
   }, []);
   
