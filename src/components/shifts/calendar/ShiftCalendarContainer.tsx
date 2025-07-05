@@ -20,7 +20,7 @@ const ShiftCalendarContainer: React.FC<ShiftCalendarContainerProps> = React.memo
   onAddShiftForDate,
   isLoading = false
 }) => {
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
 
   const handleSelectDate = useCallback((date: Date | undefined) => {
     setSelectedDate(date);
