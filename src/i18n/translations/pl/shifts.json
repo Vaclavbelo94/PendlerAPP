@@ -140,5 +140,6 @@
   "endTime": "Czas zakończenia",
   "selectShiftType": "Wybierz typ zmiany",
   "customShift": "Zmiana niestandardowa",
-  "updateShift": "Aktualizuj zmianę"
+  "updateShift": "Aktualizuj zmianę",
+  "noShift": "Brak zmiany"
 }

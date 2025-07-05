@@ -7,10 +7,11 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/auth';
 
 interface FloatingAddButtonProps {
-  onClick: () => void;
+  onClick: (date?: Date) => void;
+  selectedDate?: Date;
 }
 
-const FloatingAddButton: React.FC<FloatingAddButtonProps> = ({ onClick }) => {
+const FloatingAddButton: React.FC<FloatingAddButtonProps> = ({ onClick, selectedDate }) => {
   const isMobile = useIsMobile();
   const { t } = useTranslation('shifts');
   const { user } = useAuth();
@@ -22,7 +23,7 @@ const FloatingAddButton: React.FC<FloatingAddButtonProps> = ({ onClick }) => {
 
   return (
     <Button
-      onClick={onClick}
+      onClick={() => onClick(selectedDate)}
       size="lg"
       className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 z-50"
       aria-label={t('addShift')}

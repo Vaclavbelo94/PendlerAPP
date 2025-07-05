@@ -33,6 +33,7 @@ const Shifts = React.memo(() => {
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
   const [editingShift, setEditingShift] = useState<Shift | null>(null);
   const [selectedDateForNewShift, setSelectedDateForNewShift] = useState<Date | null>(null);
+  const [selectedCalendarDate, setSelectedCalendarDate] = useState<Date | undefined>(undefined);
 
   // Memoize loading state calculation
   const isLoading = useMemo(() => {
@@ -50,15 +51,16 @@ const Shifts = React.memo(() => {
     });
   }, [authLoading, shiftsLoading, user, shifts.length, isLoading]);
 
-  const handleAddShift = useCallback(() => {
+  const handleAddShift = useCallback((date?: Date) => {
     if (!user) {
       console.log('Cannot add shift - user not authenticated');
       return;
     }
-    console.log('handleAddShift called - opening add sheet');
-    setSelectedDateForNewShift(new Date());
+    console.log('handleAddShift called - opening add sheet, date:', date);
+    const targetDate = date || selectedCalendarDate || new Date();
+    setSelectedDateForNewShift(targetDate);
     setIsAddSheetOpen(true);
-  }, [user]);
+  }, [user, selectedCalendarDate]);
 
   const handleAddShiftForDate = useCallback((date: Date) => {
     if (!user) {
@@ -116,6 +118,11 @@ const Shifts = React.memo(() => {
     console.log('Deleting shift:', shiftId);
     await deleteShift(shiftId);
   }, [user, deleteShift]);
+
+  const handleSelectedDateChange = useCallback((date: Date | undefined) => {
+    console.log('Selected date changed:', date);
+    setSelectedCalendarDate(date);
+  }, []);
 
   const handleRetry = useCallback(() => {
     console.log('Retrying to load shifts...');
@@ -193,7 +200,7 @@ const Shifts = React.memo(() => {
             
             {!isMobile && (
               <Button
-                onClick={handleAddShift}
+                onClick={() => handleAddShift()}
                 className="flex items-center gap-2"
                 size="lg"
               >
@@ -222,15 +229,16 @@ const Shifts = React.memo(() => {
               shifts={shifts}
               onEditShift={handleEditShift}
               onDeleteShift={handleDeleteShift}
-              onAddShift={handleAddShift}
+              onAddShift={() => handleAddShift()}
               onAddShiftForDate={handleAddShiftForDate}
+              onSelectedDateChange={handleSelectedDateChange}
               isLoading={shiftsLoading}
             />
           </div>
         </div>
       </div>
 
-      {user && <FloatingAddButton onClick={handleAddShift} />}
+      {user && <FloatingAddButton onClick={handleAddShift} selectedDate={selectedCalendarDate} />}
 
       {/* Use ShiftsFormSheets component with error boundary protection */}
       <ShiftsFormSheets

@@ -141,5 +141,6 @@
   "endTime": "Čas konce",
   "selectShiftType": "Vyberte typ směny",
   "customShift": "Vlastní směna",
-  "updateShift": "Aktualizovat směnu"
+  "updateShift": "Aktualizovat směnu",
+  "noShift": "Žádná směna"
 }

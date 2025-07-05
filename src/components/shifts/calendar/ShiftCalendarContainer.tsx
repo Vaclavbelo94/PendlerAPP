@@ -9,6 +9,7 @@ interface ShiftCalendarContainerProps {
   onDeleteShift: (shiftId: string) => void;
   onAddShift: () => void;
   onAddShiftForDate: (date: Date) => void;
+  onSelectedDateChange?: (date: Date | undefined) => void;
   isLoading?: boolean;
 }
 
@@ -18,13 +19,15 @@ const ShiftCalendarContainer: React.FC<ShiftCalendarContainerProps> = React.memo
   onDeleteShift,
   onAddShift,
   onAddShiftForDate,
+  onSelectedDateChange,
   isLoading = false
 }) => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
 
   const handleSelectDate = useCallback((date: Date | undefined) => {
     setSelectedDate(date);
-  }, []);
+    onSelectedDateChange?.(date);
+  }, [onSelectedDateChange]);
 
   const memoizedProps = useMemo(() => ({
     shifts,

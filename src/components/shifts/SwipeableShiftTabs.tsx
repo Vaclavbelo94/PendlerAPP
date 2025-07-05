@@ -18,6 +18,7 @@ interface SwipeableShiftTabsProps {
   onDeleteShift: (shiftId: string) => Promise<void>;
   onAddShift: () => void;
   onAddShiftForDate: (date: Date) => void;
+  onSelectedDateChange?: (date: Date | undefined) => void;
   isLoading: boolean;
 }
 
@@ -27,6 +28,7 @@ const SwipeableShiftTabs: React.FC<SwipeableShiftTabsProps> = ({
   onDeleteShift,
   onAddShift,
   onAddShiftForDate,
+  onSelectedDateChange,
   isLoading,
 }) => {
   const { t } = useTranslation('shifts');
@@ -137,6 +139,7 @@ const SwipeableShiftTabs: React.FC<SwipeableShiftTabsProps> = ({
                         console.log('SwipeableShiftTabs - onAddShiftForDate called with date:', date);
                         onAddShiftForDate(date);
                       }}
+                      onSelectedDateChange={onSelectedDateChange}
                       isLoading={isLoading}
                     />
                   </div>
