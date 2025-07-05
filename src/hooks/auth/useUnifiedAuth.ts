@@ -143,12 +143,8 @@ export const useUnifiedAuth = () => {
 
   // Handle DHL user redirection
   useEffect(() => {
-    if (isLoading || isDHLDataLoading || isProfileLoading || !isDHLCheckComplete) {
-      console.log('Unified Auth: Waiting for data to load...');
-      return;
-    }
-    
-    if (!user) return;
+    // Čekáme jen na základní auth inicializaci
+    if (!isInitialized || !user) return;
 
     // Skip redirection if already on DHL setup page
     if (location.pathname === '/dhl-setup') return;
@@ -158,22 +154,22 @@ export const useUnifiedAuth = () => {
       hasAssignment: !!userAssignment,
       userAssignment: userAssignment,
       currentPath: location.pathname,
-      profileData
+      profileData,
+      isDHLCheckComplete,
+      isProfileLoading
     });
 
-    // If DHL user without assignment, redirect to setup
-    if (isDHLEmployee && !userAssignment) {
+    // If DHL user without assignment, redirect to setup (only if DHL check is complete)
+    if (isDHLEmployee && !userAssignment && isDHLCheckComplete) {
       console.log('Unified Auth: Redirecting DHL user to setup page');
       navigate('/dhl-setup');
     }
   }, [
     user, 
     userAssignment, 
-    isLoading, 
-    isDHLDataLoading, 
-    isProfileLoading,
-    isDHLCheckComplete,
+    isInitialized,
     isDHLEmployee,
+    isDHLCheckComplete,
     location.pathname, 
     navigate,
     profileData
@@ -283,8 +279,8 @@ export const useUnifiedAuth = () => {
     isDHLEmployee // Pass DHL status directly
   ) : null;
 
-  // Computed loading state
-  const totalIsLoading = isLoading || isDHLDataLoading || isProfileLoading || !isDHLCheckComplete;
+  // Computed loading state - pouze základní auth loading, ostatní jsou optional
+  const totalIsLoading = isLoading || !isInitialized;
 
   return {
     // Core auth state

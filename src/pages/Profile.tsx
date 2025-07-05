@@ -16,15 +16,23 @@ import ProfileErrorBoundary from '@/components/profile/ProfileErrorBoundary';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 import { useTranslation } from 'react-i18next';
-import { useEnhancedAuth } from '@/hooks/useEnhancedAuth';
+import { useAuth } from '@/hooks/auth';
 
 const Profile = () => {
-  const { user, isDHLEmployee } = useEnhancedAuth();
+  const { user, unifiedUser } = useAuth();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [activeTab, setActiveTab] = useState("overview");
   const [isEditing, setIsEditing] = useState(false);
   const { t } = useTranslation('profile');
+
+  // Hooks musí být vždy na stejném místě - ne v podmínce
+  const { containerRef } = useSwipeNavigation({
+    items: ["overview", "workData", "subscription"],
+    currentItem: activeTab,
+    onItemChange: setActiveTab,
+    enabled: isMobile && !!user // Jen pokud je uživatel přihlášen
+  });
 
   if (!user) {
     return (
@@ -61,13 +69,6 @@ const Profile = () => {
     );
   }
 
-  const { containerRef } = useSwipeNavigation({
-    items: ["overview", "workData", "subscription"],
-    currentItem: activeTab,
-    onItemChange: setActiveTab,
-    enabled: isMobile
-  });
-
   const handleEdit = () => setIsEditing(true);
   const handleSave = () => setIsEditing(false);
   const handleCancel = () => setIsEditing(false);
@@ -86,7 +87,7 @@ const Profile = () => {
       case 'workData':
         return <ProfileWorkData />;
       case 'subscription':
-        return <ProfileSubscription isPremium={isDHLEmployee || false} />;
+        return <ProfileSubscription isPremium={unifiedUser?.isPremium || false} />;
       default:
         return (
           <ProfileOverview 
