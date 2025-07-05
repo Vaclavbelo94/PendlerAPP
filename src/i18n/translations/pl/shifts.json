@@ -132,5 +132,13 @@
   "monthlyView": "Widok miesięczny",
   "calendarView": "Widok kalendarza",
   "listView": "Lista",
-  "shiftsCalendar": "Kalendarz zmian"
+  "shiftsCalendar": "Kalendarz zmian",
+  "addingShiftFor": "Dodawanie zmiany na",
+  "optional": "opcjonalne",
+  "addNotesPlaceholder": "Dodaj notatki do zmiany...",
+  "startTime": "Czas rozpoczęcia",
+  "endTime": "Czas zakończenia",
+  "selectShiftType": "Wybierz typ zmiany",
+  "customShift": "Zmiana niestandardowa",
+  "updateShift": "Aktualizuj zmianę"
 }

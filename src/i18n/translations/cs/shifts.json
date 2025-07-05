@@ -133,5 +133,13 @@
   "monthlyView": "Měsíční pohled",
   "calendarView": "Kalendářové zobrazení",
   "listView": "Seznam",
-  "shiftsCalendar": "Kalendář směn"
+  "shiftsCalendar": "Kalendář směn",
+  "addingShiftFor": "Přidávání směny pro",
+  "optional": "volitelné",
+  "addNotesPlaceholder": "Přidejte poznámky ke směně...",
+  "startTime": "Čas začátku",
+  "endTime": "Čas konce",
+  "selectShiftType": "Vyberte typ směny",
+  "customShift": "Vlastní směna",
+  "updateShift": "Aktualizovat směnu"
 }

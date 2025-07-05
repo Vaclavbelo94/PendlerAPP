@@ -132,5 +132,13 @@
   "monthlyView": "Monatsansicht",
   "calendarView": "Kalenderansicht",
   "listView": "Liste",
-  "shiftsCalendar": "Schichtkalender"
+  "shiftsCalendar": "Schichtkalender",
+  "addingShiftFor": "Schicht hinzufügen für",
+  "optional": "optional",
+  "addNotesPlaceholder": "Notizen zur Schicht hinzufügen...",
+  "startTime": "Startzeit",
+  "endTime": "Endzeit",
+  "selectShiftType": "Schichttyp auswählen",
+  "customShift": "Benutzerdefinierte Schicht",
+  "updateShift": "Schicht aktualisieren"
 }
