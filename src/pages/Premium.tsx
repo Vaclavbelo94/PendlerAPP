@@ -9,8 +9,8 @@ import { Crown, Star, Check, Zap, Shield, Rocket, Loader2 } from "lucide-react";
 import { useTranslation } from 'react-i18next';
 import { useStripePayments, PaymentPeriod } from '@/hooks/useStripePayments';
 import PeriodSelector from '@/components/premium/PeriodSelector';
-import UnifiedNavbar from '@/components/layouts/UnifiedNavbar';
-import Footer from '@/components/layouts/Footer';
+import Layout from '@/components/layouts/Layout';
+import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 import { toast } from 'sonner';
 
 const Premium = () => {
@@ -82,12 +82,20 @@ const Premium = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      <UnifiedNavbar />
+    <>
+      <Helmet>
+        <title>{t('title')} | PendlerApp</title>
+        <meta name="description" content={t('subtitle')} />
+      </Helmet>
       
-      <main className="flex-1">
+      <Layout navbarRightContent={<NavbarRightContent />}>
         <div className="container mx-auto px-4 py-8 max-w-4xl">
-          <div className="text-center mb-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-8"
+          >
             <h1 className="text-3xl font-bold mb-4 flex items-center justify-center gap-2">
               <Crown className="h-8 w-8 text-amber-500" />
               {t('title')}
@@ -95,35 +103,40 @@ const Premium = () => {
             <p className="text-muted-foreground text-lg">
               {t('subtitle')}
             </p>
-          </div>
+          </motion.div>
 
-          {isPremium ? (
-            <Card className="bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20 border-amber-200 dark:border-amber-800">
-              <CardHeader className="text-center">
-                <CardTitle className="flex items-center justify-center gap-2 text-amber-700 dark:text-amber-300">
-                  <Crown className="h-6 w-6" />
-                  {t('premiumUser.title')}
-                </CardTitle>
-                <CardDescription>
-                  {t('premiumUser.description')}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {premiumFeatures.map((feature, index) => (
-                    <div key={index} className="flex items-center gap-3 p-3 bg-white/50 dark:bg-black/20 rounded-lg">
-                      <Check className="h-5 w-5 text-green-600" />
-                      <div>
-                        <h3 className="font-medium">{feature.title}</h3>
-                        <p className="text-sm text-muted-foreground">{feature.description}</p>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            {isPremium ? (
+              <Card className="bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20 border-amber-200 dark:border-amber-800">
+                <CardHeader className="text-center">
+                  <CardTitle className="flex items-center justify-center gap-2 text-amber-700 dark:text-amber-300">
+                    <Crown className="h-6 w-6" />
+                    {t('premiumUser.title')}
+                  </CardTitle>
+                  <CardDescription>
+                    {t('premiumUser.description')}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {premiumFeatures.map((feature, index) => (
+                      <div key={index} className="flex items-center gap-3 p-3 bg-white/50 dark:bg-black/20 rounded-lg">
+                        <Check className="h-5 w-5 text-green-600" />
+                        <div>
+                          <h3 className="font-medium">{feature.title}</h3>
+                          <p className="text-sm text-muted-foreground">{feature.description}</p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="space-y-6">
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-6">
                 <Card className="text-center">
                   <CardHeader>
                     <CardTitle className="flex items-center justify-center gap-2">
@@ -171,34 +184,33 @@ const Premium = () => {
                   </CardContent>
                 </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t('benefits.title')}</CardTitle>
-                  <CardDescription>
-                    {t('benefits.description')}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {premiumFeatures.map((feature, index) => (
-                      <div key={index} className="flex items-start gap-3 p-4 border rounded-lg">
-                        <feature.icon className="h-5 w-5 text-primary mt-0.5" />
-                        <div>
-                          <h3 className="font-medium mb-1">{feature.title}</h3>
-                          <p className="text-sm text-muted-foreground">{feature.description}</p>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>{t('benefits.title')}</CardTitle>
+                    <CardDescription>
+                      {t('benefits.description')}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {premiumFeatures.map((feature, index) => (
+                        <div key={index} className="flex items-start gap-3 p-4 border rounded-lg">
+                          <feature.icon className="h-5 w-5 text-primary mt-0.5" />
+                          <div>
+                            <h3 className="font-medium mb-1">{feature.title}</h3>
+                            <p className="text-sm text-muted-foreground">{feature.description}</p>
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          )}
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+          </motion.div>
         </div>
-      </main>
-      
-      <Footer />
-    </div>
+      </Layout>
+    </>
   );
 };
 
