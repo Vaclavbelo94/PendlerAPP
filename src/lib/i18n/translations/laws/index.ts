@@ -11,7 +11,7 @@ export const lawsTranslations = {
     laws: {
       // Common translations
       backToLaws: 'Zpět na zákony',
-      backToLawsList: 'Zpět na seznam zákonů',
+      backToLawsList: 'Zpět na seznam zákonů', 
       updated: 'Aktualizováno',
       readMore: 'Číst více',
       importantNotice: 'Důležité upozornění',
