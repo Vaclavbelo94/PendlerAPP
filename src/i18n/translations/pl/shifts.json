@@ -141,5 +141,6 @@
   "selectShiftType": "Wybierz typ zmiany",
   "customShift": "Zmiana niestandardowa",
   "updateShift": "Aktualizuj zmianę",
-  "noShift": "Brak zmiany"
+  "noShift": "Brak zmiany",
+  "noShiftsInMonth": "Brak zmian w tym miesiącu"
 }

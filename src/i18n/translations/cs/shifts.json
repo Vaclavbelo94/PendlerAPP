@@ -142,5 +142,6 @@
   "selectShiftType": "Vyberte typ směny",
   "customShift": "Vlastní směna",
   "updateShift": "Aktualizovat směnu",
-  "noShift": "Žádná směna"
+  "noShift": "Žádná směna",
+  "noShiftsInMonth": "Žádné směny v tomto měsíci"
 }

@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { format, startOfMonth, endOfMonth, isSameMonth, parseISO } from 'date-fns';
-import { cs } from 'date-fns/locale';
+import { cs, de, pl } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -25,8 +25,17 @@ const ShiftListView: React.FC<ShiftListViewProps> = ({
   onAddShift,
   isLoading = false
 }) => {
-  const { t } = useTranslation('shifts');
+  const { t, i18n } = useTranslation('shifts');
   const [currentMonth, setCurrentMonth] = useState(new Date());
+
+  // Get locale for date-fns based on current language
+  const getLocale = () => {
+    switch (i18n.language) {
+      case 'de': return de;
+      case 'pl': return pl;
+      default: return cs;
+    }
+  };
 
   const getShiftTypeLabel = (type: string) => {
     switch (type) {
@@ -89,7 +98,7 @@ const ShiftListView: React.FC<ShiftListViewProps> = ({
         </Button>
         
         <h3 className="text-lg font-semibold">
-          {format(currentMonth, 'LLLL yyyy', { locale: cs })}
+          {format(currentMonth, 'LLLL yyyy', { locale: getLocale() })}
         </h3>
         
         <Button
@@ -130,7 +139,7 @@ const ShiftListView: React.FC<ShiftListViewProps> = ({
                   <div className="flex-1 min-w-0">
                     {/* Date */}
                     <div className="text-sm font-medium text-muted-foreground mb-2">
-                      {format(parseISO(shift.date), "EEEE, d. MMMM yyyy", { locale: cs })}
+                      {format(parseISO(shift.date), "EEEE, d. MMMM yyyy", { locale: getLocale() })}
                     </div>
                     
                     {/* Shift info */}

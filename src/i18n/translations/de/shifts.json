@@ -141,5 +141,6 @@
   "selectShiftType": "Schichttyp auswählen",
   "customShift": "Benutzerdefinierte Schicht",
   "updateShift": "Schicht aktualisieren",
-  "noShift": "Keine Schicht"
+  "noShift": "Keine Schicht",
+  "noShiftsInMonth": "Keine Schichten in diesem Monat"
 }
