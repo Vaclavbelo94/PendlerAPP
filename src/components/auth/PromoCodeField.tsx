@@ -116,7 +116,7 @@ const PromoCodeField: React.FC<PromoCodeFieldProps> = ({ onPromoCodeChange }) =>
         <Input
           id="promoCode"
           type="text"
-          placeholder="Zadejte promo kód (např. DHL2026)"
+          placeholder="Zadejte promo kód"
           value={promoCode}
           onChange={(e) => handleChange(e.target.value)}
           onBlur={handleBlur}
@@ -143,7 +143,7 @@ const PromoCodeField: React.FC<PromoCodeFieldProps> = ({ onPromoCodeChange }) =>
       {validationResult === 'valid' && isDHL && (
         <p className="text-sm text-yellow-600 flex items-center gap-1">
           <Truck className="h-3 w-3" />
-          ✓ DHL promo kód aktivován! Budete přesměrováni na DHL setup po registraci.
+          ✓ Speciální promo kód aktivován!
         </p>
       )}
       {validationResult === 'valid' && !isDHL && (
@@ -155,7 +155,7 @@ const PromoCodeField: React.FC<PromoCodeFieldProps> = ({ onPromoCodeChange }) =>
       {isDHL && validationResult === null && promoCode.trim() && (
         <p className="text-sm text-yellow-600 flex items-center gap-1">
           <Truck className="h-3 w-3" />
-          DHL promo kód detekován - pokračujte v registraci
+          Speciální promo kód detekován
         </p>
       )}
     </div>

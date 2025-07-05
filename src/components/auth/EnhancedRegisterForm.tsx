@@ -24,6 +24,9 @@ const EnhancedRegisterForm = () => {
   const { signUp } = useAuth();
   const { t, i18n } = useTranslation('auth');
 
+  // Computed final promo code for UI display
+  const finalPromoCode = (promoCode && isPromoValid) ? promoCode : '';
+
   const handlePromoCodeChange = (code: string, isValid: boolean, isDHL: boolean = false) => {
     console.log('=== ENHANCED PROMO CODE CHANGE ===');
     console.log('Code:', code, 'Is Valid:', isValid, 'Is DHL:', isDHL);
@@ -72,7 +75,10 @@ const EnhancedRegisterForm = () => {
     try {
       console.log('Starting enhanced registration for:', email);
       
-      const signUpResult = await signUp(email, password, username, promoCode);
+      // Promo code je volitelný - pokud není vyplněn nebo není validní, pošleme prázdný string
+      const finalPromoCode = (promoCode && isPromoValid) ? promoCode : '';
+      
+      const signUpResult = await signUp(email, password, username, finalPromoCode);
       
       if (signUpResult.error) {
         let errorMessage = t('registerCheckDataRetry');
@@ -93,23 +99,23 @@ const EnhancedRegisterForm = () => {
         console.log('Enhanced registration successful, user:', signUpResult.user.id);
         
         // Enhanced success handling based on promo code type
-        if (isDHLCode) {
-          toast.success('Registrace s DHL kódem úspěšná!', { 
-            description: `Premium na rok aktivován. Po přihlášení můžete dokončit nastavení DHL profilu.`,
+        if (isDHLCode && finalPromoCode) {
+          toast.success('Registrace s promo kódem úspěšná!', { 
+            description: `Premium na rok aktivován. Po přihlášení můžete dokončit nastavení profilu.`,
             duration: 8000
           });
           
           // Provide information about next steps
           setTimeout(() => {
             toast.info("Další kroky:", {
-              description: "Po přihlášení budete přesměrováni na DHL setup stránku pro dokončení nastavení.",
+              description: "Po přihlášení budete přesměrováni na setup stránku pro dokončení nastavení.",
               duration: 10000
             });
           }, 2000);
           
-        } else if (promoCode && isPromoValid) {
+        } else if (finalPromoCode && isPromoValid) {
           toast.success(t('accountCreatedWithPremium'), { 
-            description: `Premium aktivován s kódem ${promoCode}. Nyní se můžete přihlásit.`,
+            description: `Premium aktivován s kódem ${finalPromoCode}. Nyní se můžete přihlásit.`,
             duration: 8000
           });
         } else {
@@ -194,10 +200,10 @@ const EnhancedRegisterForm = () => {
         {isLoading ? t('registerCreating') : t('registerCreateAccount')}
       </Button>
       
-      {isDHLCode && (
+      {isDHLCode && finalPromoCode && (
         <div className="text-sm text-blue-600 bg-blue-50 p-3 rounded-lg border border-blue-200">
-          <p className="font-medium">🚛 DHL Premium registrace</p>
-          <p>Váš účet bude aktivován s premium přístupem na rok a DHL funkcemi - bez nutnosti @dhl.com emailu!</p>
+          <p className="font-medium">✨ Speciální Premium registrace</p>
+          <p>Váš účet bude aktivován s premium přístupem na rok!</p>
         </div>
       )}
     </form>
