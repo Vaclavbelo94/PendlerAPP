@@ -123,7 +123,7 @@ export const getRedirectPath = (unifiedUser: UnifiedUser | null): string => {
     return '/setup';
   }
   
-  if (unifiedUser.isDHLAdmin) return '/DHLAdmin';
+  if (unifiedUser.isDHLAdmin) return '/dhl-admin';
   if (unifiedUser.isAdmin) return '/admin';
   
   return '/dashboard';

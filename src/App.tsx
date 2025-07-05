@@ -60,7 +60,7 @@ function App() {
                   <Route path="/premium" element={<Premium />} />
                   <Route path="/premium-gate" element={<PremiumGate />} />
                   <Route path="/admin" element={<Admin />} />
-                  <Route path="/DHLAdmin" element={<DHLAdmin />} />
+                  <Route path="/dhl-admin" element={<DHLAdmin />} />
                   {/* DHL Routes - unified approach, only setup remains separate */}
                   <Route path="/dhl-setup" element={<DHLSetup />} />
                 </Routes>

@@ -212,7 +212,7 @@ export const getDHLSetupPathSync = (user: User | null, hasAssignment: boolean): 
  */
 export const getAdminRedirectPath = (user: User | null): string | null => {
   if (isDHLAdmin(user)) {
-    return '/DHLAdmin';
+    return '/dhl-admin';
   }
   if (isRegularAdmin(user)) {
     return '/admin';

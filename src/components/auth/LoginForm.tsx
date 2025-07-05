@@ -6,15 +6,13 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/auth";
 import { toast } from "sonner";
 import { useTranslation } from 'react-i18next';
-import { useNavigate, Link } from 'react-router-dom';
-import { isDHLEmployee } from '@/utils/dhlAuthUtils';
+import { Link } from 'react-router-dom';
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
-  const { signIn, unifiedUser } = useAuth();
+  const { signIn } = useAuth();
   const { t } = useTranslation('auth');
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -30,19 +28,7 @@ const LoginForm = () => {
         });
       } else {
         toast.success(t('loginSuccess'));
-        
-        // Create a temporary user object for DHL check
-        const tempUser = { email } as any;
-        const isDHL = isDHLEmployee(tempUser);
-        
-        if (isDHL) {
-          // DHL users will be redirected by auth provider if they need setup
-          navigate("/dashboard");
-        } else if (email === 'admin@pendlerapp.com' || unifiedUser?.isAdmin) {
-          navigate("/admin");
-        } else {
-          navigate("/dashboard");
-        }
+        // Auth provider will handle redirect based on user role
       }
     } catch (error: any) {
       toast.error(t('loginError'), {
