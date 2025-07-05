@@ -117,11 +117,6 @@ export const useUnifiedAuth = () => {
           console.error('Unified Auth: Error loading profile data:', error);
         } else if (data) {
           setProfileData(data);
-          
-          // Update user metadata with profile data for sync functions
-          if (data.is_dhl_employee && user.user_metadata) {
-            user.user_metadata.is_dhl_employee = data.is_dhl_employee;
-          }
         }
 
         // Perform comprehensive DHL check (async)
@@ -161,6 +156,7 @@ export const useUnifiedAuth = () => {
     console.log('Unified Auth Check:', {
       isDHLEmployee,
       hasAssignment: !!userAssignment,
+      userAssignment: userAssignment,
       currentPath: location.pathname,
       profileData
     });
@@ -283,7 +279,8 @@ export const useUnifiedAuth = () => {
     isPremium || isDHLEmployee, // DHL employees get premium
     isAdmin,
     undefined, // premiumExpiry - could be enhanced later
-    !!userAssignment
+    !!userAssignment,
+    isDHLEmployee // Pass DHL status directly
   ) : null;
 
   // Computed loading state

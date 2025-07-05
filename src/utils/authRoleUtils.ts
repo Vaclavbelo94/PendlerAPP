@@ -1,7 +1,7 @@
 
 import { User } from '@supabase/supabase-js';
 import { UserRole, UserStatus, UnifiedUser } from '@/types/auth';
-import { isDHLEmployee, isDHLAdmin, isRegularAdmin } from './dhlAuthUtils';
+import { isDHLEmployeeSync, isDHLAdmin, isRegularAdmin } from './dhlAuthUtils';
 
 /**
  * Determine user role based on email and other factors
@@ -11,7 +11,7 @@ export const determineUserRole = (user: User | null): UserRole => {
   
   if (isDHLAdmin(user)) return UserRole.DHL_ADMIN;
   if (isRegularAdmin(user)) return UserRole.ADMIN;
-  if (isDHLEmployee(user)) return UserRole.DHL_EMPLOYEE;
+  if (isDHLEmployeeSync(user)) return UserRole.DHL_EMPLOYEE;
   
   return UserRole.STANDARD;
 };
@@ -42,11 +42,28 @@ export const createUnifiedUser = (
   isPremium: boolean = false,
   isAdmin: boolean = false,
   premiumExpiry?: string,
-  hasAssignment?: boolean
+  hasAssignment?: boolean,
+  isDHLEmployeeOverride?: boolean
 ): UnifiedUser | null => {
   if (!user) return null;
   
-  const role = determineUserRole(user);
+  // Use the override if provided, otherwise fall back to sync check
+  const isDHL = isDHLEmployeeOverride !== undefined ? isDHLEmployeeOverride : isDHLEmployeeSync(user);
+  
+  // Determine role with proper priority
+  let role: UserRole;
+  if (isDHLAdmin(user)) {
+    role = UserRole.DHL_ADMIN;
+  } else if (isRegularAdmin(user)) {
+    role = UserRole.ADMIN;
+  } else if (isDHL) {
+    role = UserRole.DHL_EMPLOYEE;
+  } else if (isPremium) {
+    role = UserRole.PREMIUM;
+  } else {
+    role = UserRole.STANDARD;
+  }
+  
   const status = determineUserStatus(user, role, hasAssignment);
   
   return {
@@ -56,7 +73,7 @@ export const createUnifiedUser = (
     status,
     isPremium: isPremium || role === UserRole.PREMIUM || role === UserRole.DHL_EMPLOYEE,
     isAdmin: isAdmin || role === UserRole.ADMIN || role === UserRole.DHL_ADMIN,
-    isDHLEmployee: role === UserRole.DHL_EMPLOYEE || role === UserRole.DHL_ADMIN,
+    isDHLEmployee: isDHL || role === UserRole.DHL_ADMIN,
     isDHLAdmin: role === UserRole.DHL_ADMIN,
     premiumExpiry,
     setupRequired: status === UserStatus.PENDING_SETUP
