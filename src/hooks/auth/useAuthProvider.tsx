@@ -38,7 +38,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     },
     refreshAdminStatus: unifiedAuth.refreshAdminStatus,
     refreshPremiumStatus: async () => {
-      await unifiedAuth.refreshPremiumStatus();
+      const result = await unifiedAuth.refreshPremiumStatus();
+      return {
+        isPremium: result.isPremium,
+        premiumExpiry: result.premiumExpiry
+      };
     },
     
     // Role methods - delegate to unified auth
