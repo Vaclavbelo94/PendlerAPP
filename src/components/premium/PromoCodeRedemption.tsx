@@ -63,8 +63,8 @@ const PromoCodeRedemption = () => {
         // Ensure DHL employee setup
         await DHLSetupService.ensureDHLPromoRedemption(user.id);
         
-        toast.success(`DHL Premium aktivován na rok!`, {
-          description: `Promo kód ${redemptionCode.code} byl úspěšně aktivován. Přesměrovávám na DHL setup.`,
+        toast.success(`Premium aktivován na rok!`, {
+          description: `Promo kód ${redemptionCode.code} byl úspěšně aktivován. Přesměrovávám na setup.`,
           duration: 5000
         });
         
@@ -104,7 +104,7 @@ const PromoCodeRedemption = () => {
           Máte promo kód?
         </CardTitle>
         <CardDescription>
-          Aktivujte si premium funkce pomocí promo kódu. DHL2026 kód aktivuje roční premium a přístup k DHL funkcím.
+          Aktivujte si premium funkce pomocí promo kódu.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -115,7 +115,7 @@ const PromoCodeRedemption = () => {
               id="promo-code"
               value={promoCode}
               onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-              placeholder="Zadejte váš promo kód (např. DHL2026)"
+              placeholder="Zadejte váš promo kód"
               disabled={isSubmitting}
               className="bg-white dark:bg-gray-800"
             />
@@ -132,7 +132,7 @@ const PromoCodeRedemption = () => {
         
         <div className="mt-4 p-3 bg-amber-100 dark:bg-amber-900 rounded-lg">
           <p className="text-sm text-amber-800 dark:text-amber-200">
-            <strong>Tip:</strong> Kód DHL2026 aktivuje roční premium a přístup k DHL funkcím. Po aktivaci budete přesměrováni na DHL setup.
+            <strong>Tip:</strong> Zadejte platný promo kód pro aktivaci premium funkcí.
           </p>
         </div>
       </CardContent>
