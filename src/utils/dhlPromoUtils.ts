@@ -55,3 +55,21 @@ export const updateDHLStatus = async (userId: string, isDHL: boolean): Promise<v
     console.error('Error in updateDHLStatus:', error);
   }
 };
+
+/**
+ * Ensure user profile has correct DHL status based on promo codes
+ */
+export const ensureDHLProfileSync = async (userId: string): Promise<boolean> => {
+  try {
+    const hasDHLPromo = await hasDHLPromoCode(userId);
+    
+    if (hasDHLPromo) {
+      await updateDHLStatus(userId, true);
+    }
+    
+    return hasDHLPromo;
+  } catch (error) {
+    console.error('Error in ensureDHLProfileSync:', error);
+    return false;
+  }
+};

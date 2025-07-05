@@ -1,6 +1,6 @@
 
 import { User } from '@supabase/supabase-js';
-import { hasDHLPromoCode } from './dhlPromoUtils';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface DHLAuthState {
   isDHLEmployee: boolean;
@@ -9,7 +9,7 @@ export interface DHLAuthState {
 }
 
 /**
- * Check if user is DHL employee (has used DHL2026 promo code or other DHL codes)
+ * Unified DHL employee check - checks both promo codes and profile flag
  */
 export const isDHLEmployee = async (user: User | null): Promise<boolean> => {
   if (!user?.id) {
@@ -17,20 +17,76 @@ export const isDHLEmployee = async (user: User | null): Promise<boolean> => {
     return false;
   }
   
-  // Check if user has redeemed DHL promo code
-  const hasDHLPromo = await hasDHLPromoCode(user.id);
+  // Admin override for testing - admindhl@pendlerapp.com can always access
+  if (user.email === 'admindhl@pendlerapp.com') {
+    console.log('DHL Employee check: Admin override granted');
+    return true;
+  }
   
-  console.log('DHL Employee check:', { 
-    userId: user.id,
-    email: user.email, 
-    hasDHLPromo
-  });
-  
-  return hasDHLPromo;
+  try {
+    // Check profile flag first (fastest check)
+    const { data: profileData, error: profileError } = await supabase
+      .from('profiles')
+      .select('is_dhl_employee')
+      .eq('id', user.id)
+      .single();
+
+    if (!profileError && profileData?.is_dhl_employee) {
+      console.log('DHL Employee check: Found via profile flag');
+      return true;
+    }
+
+    // If profile flag is not set, check promo code redemption
+    const { data: promoData, error: promoError } = await supabase
+      .from('promo_code_redemptions')
+      .select(`
+        promo_codes (
+          code
+        )
+      `)
+      .eq('user_id', user.id);
+
+    if (promoError) {
+      console.error('Error checking DHL promo codes:', promoError);
+      return false;
+    }
+
+    const dhlPromoCodes = ['DHL2026', 'DHL2025', 'DHLSPECIAL'];
+    const hasDHLPromo = promoData?.some(redemption => 
+      redemption.promo_codes && 
+      dhlPromoCodes.includes(redemption.promo_codes.code.toUpperCase())
+    ) || false;
+
+    // If user has DHL promo but profile flag is not set, update it
+    if (hasDHLPromo && !profileData?.is_dhl_employee) {
+      console.log('DHL Employee check: Updating profile flag based on promo code');
+      await supabase
+        .from('profiles')
+        .upsert({ 
+          id: user.id,
+          is_dhl_employee: true,
+          updated_at: new Date().toISOString()
+        });
+    }
+
+    console.log('DHL Employee check:', { 
+      userId: user.id,
+      email: user.email, 
+      profileFlag: profileData?.is_dhl_employee,
+      hasDHLPromo,
+      result: hasDHLPromo
+    });
+    
+    return hasDHLPromo;
+  } catch (error) {
+    console.error('Error in isDHLEmployee:', error);
+    return false;
+  }
 };
 
 /**
- * Synchronous version - checks profile flag and admin override
+ * Synchronous version - only checks profile flag and admin override
+ * Use this when you need immediate result without async calls
  */
 export const isDHLEmployeeSync = (user: User | null): boolean => {
   if (!user?.email) {
@@ -45,7 +101,7 @@ export const isDHLEmployeeSync = (user: User | null): boolean => {
   }
   
   // Check if user profile has is_dhl_employee flag set
-  // This will be set by the profile data when loaded
+  // This will be set by the profile data when loaded by useEnhancedAuth
   const profileData = user.user_metadata || {};
   const isDHLFromProfile = profileData.is_dhl_employee === true;
   
@@ -147,17 +203,6 @@ export const getDHLSetupPathSync = (user: User | null, hasAssignment: boolean): 
   const isDHL = isDHLEmployeeSync(user);
   if (isDHL && !hasAssignment) {
     return '/dhl-setup';
-  }
-  return null;
-};
-
-/**
- * Get DHL redirect path for login/register
- */
-export const getDHLRedirectPath = async (user: User | null): Promise<string | null> => {
-  const isDHL = await isDHLEmployee(user);
-  if (isDHL) {
-    return null; // Let the component handle the redirect logic
   }
   return null;
 };
