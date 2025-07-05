@@ -9,6 +9,7 @@ import { Crown, Star, Check, Zap, Shield, Rocket, Loader2 } from "lucide-react";
 import { useTranslation } from 'react-i18next';
 import { useStripePayments, PaymentPeriod } from '@/hooks/useStripePayments';
 import PeriodSelector from '@/components/premium/PeriodSelector';
+import PromoCodeRedemption from '@/components/premium/PromoCodeRedemption';
 import Layout from '@/components/layouts/Layout';
 import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 import { toast } from 'sonner';
@@ -183,6 +184,8 @@ const Premium = () => {
                     </Button>
                   </CardContent>
                 </Card>
+
+                <PromoCodeRedemption />
 
                 <Card>
                   <CardHeader>
