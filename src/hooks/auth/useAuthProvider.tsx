@@ -32,10 +32,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     signUp: unifiedAuth.signUp,
     signOut: unifiedAuth.signOut,
     
-    // Status methods - delegate to unified auth
-    refreshUserStatus: unifiedAuth.refreshUserStatus,
+    // Status methods - wrap to match interface expectations
+    refreshUserStatus: async () => {
+      await unifiedAuth.refreshUserStatus();
+    },
     refreshAdminStatus: unifiedAuth.refreshAdminStatus,
-    refreshPremiumStatus: unifiedAuth.refreshPremiumStatus,
+    refreshPremiumStatus: async () => {
+      await unifiedAuth.refreshPremiumStatus();
+    },
     
     // Role methods - delegate to unified auth
     hasRole: unifiedAuth.hasRole,
