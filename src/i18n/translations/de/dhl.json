@@ -20,5 +20,18 @@
   "noPositionsAvailable": "Keine Positionen verfügbar",
   "noWorkGroupsAvailable": "Keine Arbeitswochen verfügbar",
   "setupComplete": "Einrichtung abgeschlossen! Weiterleitung zum Dashboard...",
-  "unauthorizedAccess": "Unbefugter Zugriff auf DHL-Funktionen"
+  "unauthorizedAccess": "Unbefugter Zugriff auf DHL-Funktionen",
+  "setupNotification": {
+    "title": "DHL Premium aktiviert!",
+    "description": "Ihr Promo-Code wurde erfolgreich eingelöst. Sie können nun DHL-Funktionen nutzen.",
+    "benefitsTitle": "Was Sie erhalten:",
+    "benefit1": "Jährlicher Premium-Zugang kostenlos",
+    "benefit2": "Automatische Schichtgenerierung nach Position",
+    "benefit3": "Synchronisation mit DHL-Dienstplänen",
+    "benefit4": "Erweiterte Statistiken und Berichte",
+    "setupButton": "DHL-Funktionen einrichten",
+    "laterButton": "Vielleicht später",
+    "tip": "DHL-Funktionen können Sie jederzeit später im Profil-Bereich einrichten.",
+    "dismissToast": "Sie können DHL-Funktionen jederzeit im Profil-Bereich einrichten"
+  }
 }

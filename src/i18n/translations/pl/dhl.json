@@ -20,5 +20,18 @@
   "noPositionsAvailable": "Brak dostępnych stanowisk",
   "noWorkGroupsAvailable": "Brak dostępnych tygodni pracy",
   "setupComplete": "Konfiguracja zakończona! Przekierowanie do panelu...",
-  "unauthorizedAccess": "Nieautoryzowany dostęp do funkcji DHL"
+  "unauthorizedAccess": "Nieautoryzowany dostęp do funkcji DHL",
+  "setupNotification": {
+    "title": "DHL Premium aktywowany!",
+    "description": "Twój kod promocyjny został pomyślnie wykorzystany. Możesz teraz korzystać z funkcji DHL.",
+    "benefitsTitle": "Co otrzymujesz:",
+    "benefit1": "Roczny dostęp Premium za darmo",
+    "benefit2": "Automatyczne generowanie zmian według stanowiska",
+    "benefit3": "Synchronizacja z harmonogramami DHL",
+    "benefit4": "Zaawansowane statystyki i raporty",
+    "setupButton": "Skonfiguruj funkcje DHL",
+    "laterButton": "Może później",
+    "tip": "Funkcje DHL można skonfigurować w każdej chwili w sekcji Profil.",
+    "dismissToast": "Możesz skonfigurować funkcje DHL w każdej chwili w sekcji Profil"
+  }
 }

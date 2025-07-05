@@ -20,5 +20,18 @@
   "noPositionsAvailable": "Nejsou dostupné žádné pozice",
   "noWorkGroupsAvailable": "Nejsou dostupné žádné pracovní týdny",
   "setupComplete": "Nastavení dokončeno! Přesměrovávám na dashboard...",
-  "unauthorizedAccess": "Neautorizovaný přístup k DHL funkcím"
+  "unauthorizedAccess": "Neautorizovaný přístup k DHL funkcím",
+  "setupNotification": {
+    "title": "DHL Premium aktivován!",
+    "description": "Váš promo kód byl úspěšně uplatněn. Nyní můžete využít DHL funkce.",
+    "benefitsTitle": "Co získáváte:",
+    "benefit1": "Roční Premium přístup zdarma",
+    "benefit2": "Automatické generování směn podle pozice",
+    "benefit3": "Synchronizace s DHL rozvrhy",
+    "benefit4": "Pokročilé statistiky a výkazy",
+    "setupButton": "Nastavit DHL funkce",
+    "laterButton": "Možná později",
+    "tip": "DHL funkce můžete nastavit kdykoli později v sekci Profil.",
+    "dismissToast": "Můžete DHL funkce nastavit kdykoli v sekci Profil"
+  }
 }

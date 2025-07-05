@@ -6,11 +6,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Truck, Settings, X, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 const DHLSetupNotification = () => {
   const { user, unifiedUser } = useAuth();
   const { userAssignment } = useDHLData(user?.id);
+  const { t } = useTranslation(['dhl', 'common']);
   const navigate = useNavigate();
   const [isDismissed, setIsDismissed] = useState(false);
 
@@ -39,7 +41,7 @@ const DHLSetupNotification = () => {
   const handleDismiss = () => {
     setIsDismissed(true);
     localStorage.setItem('dhl-setup-dismissed', 'true');
-    toast.success('Můžete DHL funkce nastavit kdykoli v sekci Profil');
+    toast.success(t('dhl:setupNotification.dismissToast'));
   };
 
   return (
@@ -60,10 +62,10 @@ const DHLSetupNotification = () => {
               <div>
                 <CardTitle className="text-amber-800 dark:text-amber-200 text-lg flex items-center gap-2">
                   <CheckCircle className="h-5 w-5" />
-                  DHL Premium aktivován!
+                  {t('dhl:setupNotification.title')}
                 </CardTitle>
                 <CardDescription className="text-amber-700 dark:text-amber-300">
-                  Váš promo kód byl úspěšně uplatněn. Nyní můžete využít DHL funkce.
+                  {t('dhl:setupNotification.description')}
                 </CardDescription>
               </div>
             </div>
@@ -81,13 +83,13 @@ const DHLSetupNotification = () => {
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="flex-1 text-sm text-amber-700 dark:text-amber-300">
               <p className="mb-2">
-                <strong>Co získáváte:</strong>
+                <strong>{t('dhl:setupNotification.benefitsTitle')}</strong>
               </p>
               <ul className="list-disc list-inside space-y-1 text-xs">
-                <li>Roční Premium přístup zdarma</li>
-                <li>Automatické generování směn podle pozice</li>
-                <li>Synchronizace s DHL rozvrhy</li>
-                <li>Pokročilé statistiky a výkazy</li>
+                <li>{t('dhl:setupNotification.benefit1')}</li>
+                <li>{t('dhl:setupNotification.benefit2')}</li>
+                <li>{t('dhl:setupNotification.benefit3')}</li>
+                <li>{t('dhl:setupNotification.benefit4')}</li>
               </ul>
             </div>
             <div className="flex flex-col sm:flex-row gap-2">
@@ -97,7 +99,7 @@ const DHLSetupNotification = () => {
                 size="sm"
               >
                 <Settings className="h-4 w-4 mr-2" />
-                Nastavit DHL funkce
+                {t('dhl:setupNotification.setupButton')}
               </Button>
               <Button
                 variant="outline"
@@ -105,14 +107,14 @@ const DHLSetupNotification = () => {
                 size="sm"
                 className="border-amber-300 text-amber-700 hover:bg-amber-100 dark:border-amber-700 dark:text-amber-300 dark:hover:bg-amber-900/50"
               >
-                Možná později
+                {t('dhl:setupNotification.laterButton')}
               </Button>
             </div>
           </div>
           
           <div className="mt-3 p-2 bg-amber-100 dark:bg-amber-900/50 rounded-lg">
             <p className="text-xs text-amber-800 dark:text-amber-200">
-              💡 <strong>Tip:</strong> DHL funkce můžete nastavit kdykoli později v sekci Profil.
+              💡 <strong>{t('common:tip')}:</strong> {t('dhl:setupNotification.tip')}
             </p>
           </div>
         </CardContent>
