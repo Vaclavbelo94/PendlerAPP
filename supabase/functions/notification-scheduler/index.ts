@@ -7,6 +7,62 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Překlady pro různé jazyky  
+const translations = {
+  cs: {
+    tomorrowShift: 'Zítra začíná směna',
+    morningShift: 'Ranní',
+    afternoonShift: 'Odpolední',
+    nightShift: 'Noční', 
+    shiftTomorrow: 'směna zítra v {time}',
+    traffic: 'Doprava',
+    shiftReminder: 'Připomínka směny',
+    weeklySummary: 'Týdenní souhrn - Pendler Assistant',
+    shiftsWorked: 'Odpracované směny',
+    totalHours: 'Celkem hodin',
+    upcomingShifts: 'Nadcházející směny'
+  },
+  de: {
+    tomorrowShift: 'Schicht beginnt morgen',
+    morningShift: 'Früh',
+    afternoonShift: 'Spät', 
+    nightShift: 'Nacht',
+    shiftTomorrow: 'Schicht morgen um {time}',
+    traffic: 'Verkehr',
+    shiftReminder: 'Schichterinnerung',
+    weeklySummary: 'Wöchentliche Zusammenfassung - Pendler Assistant',
+    shiftsWorked: 'Gearbeitete Schichten',
+    totalHours: 'Gesamtstunden',
+    upcomingShifts: 'Kommende Schichten'
+  },
+  pl: {
+    tomorrowShift: 'Jutro zaczyna się zmiana',
+    morningShift: 'Ranna',
+    afternoonShift: 'Popołudniowa',
+    nightShift: 'Nocna',
+    shiftTomorrow: 'zmiana jutro o {time}',
+    traffic: 'Ruch',
+    shiftReminder: 'Przypomnienie o zmianie',
+    weeklySummary: 'Tygodniowe podsumowanie - Pendler Assistant',
+    shiftsWorked: 'Przepracowane zmiany',
+    totalHours: 'Łącznie godzin',
+    upcomingShifts: 'Nadchodzące zmiany'
+  }
+};
+
+function getTranslation(lang: string, key: string, replacements?: Record<string, string>): string {
+  const langTranslations = translations[lang as keyof typeof translations] || translations.cs;
+  let text = langTranslations[key as keyof typeof langTranslations] || key;
+  
+  if (replacements) {
+    for (const [placeholder, value] of Object.entries(replacements)) {
+      text = text.replace(`{${placeholder}}`, value);
+    }
+  }
+  
+  return text;
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -37,7 +93,7 @@ serve(async (req) => {
         push_notifications,
         sms_reminder_advance,
         reminder_time,
-        profiles!inner(email),
+        profiles!inner(email, language),
         user_work_data(phone_number, phone_country_code),
         user_travel_preferences(home_address, work_address)
       `)
@@ -78,33 +134,33 @@ serve(async (req) => {
 
           if (existingNotif) continue;
 
-          const shiftTypeText = shift.type === 'morning' ? 'Ranní' : 
-                              shift.type === 'afternoon' ? 'Odpolední' : 'Noční';
+          const userLang = user.profiles?.language || 'cs';
+          const shiftTypeText = getTranslation(userLang, `${shift.type}Shift`);
           const timeText = shift.start_time || (shift.type === 'morning' ? '06:00' : 
                          shift.type === 'afternoon' ? '14:00' : '22:00');
 
           // Získání dopravních informací
           let trafficInfo = '';
           if (user.user_travel_preferences?.home_address && user.user_travel_preferences?.work_address) {
-            trafficInfo = await getTrafficInfo(user.user_travel_preferences.home_address, user.user_travel_preferences.work_address);
+            trafficInfo = await getTrafficInfo(user.user_travel_preferences.home_address, user.user_travel_preferences.work_address, userLang);
           }
 
-          const baseMessage = `${shiftTypeText} směna zítra v ${timeText}${shift.notes ? ` - ${shift.notes}` : ''}`;
-          const fullMessage = trafficInfo ? `🚚 ${baseMessage}\n🛣️ Doprava: ${trafficInfo}` : `🚚 ${baseMessage}`;
+          const baseMessage = `${getTranslation(userLang, 'shiftTomorrow', { time: timeText })}${shift.notes ? ` - ${shift.notes}` : ''}`;
+          const fullMessage = trafficInfo ? `🚚 ${baseMessage}\n🛣️ ${getTranslation(userLang, 'traffic')}: ${trafficInfo}` : `🚚 ${baseMessage}`;
 
           // Create notification
           await supabase
             .from('notifications')
             .insert({
               user_id: user.user_id,
-              title: 'Zítra začíná směna',
+              title: getTranslation(userLang, 'tomorrowShift'),
               message: fullMessage,
               type: 'warning',
               related_to: { type: 'shift', id: shift.id }
             });
 
           // Multi-channel notifications
-          await sendMultiChannelNotification(supabase, user, fullMessage, 'Připomínka směny', shift, supabaseUrl, supabaseKey);
+          await sendMultiChannelNotification(supabase, user, fullMessage, getTranslation(userLang, 'shiftReminder'), shift, supabaseUrl, supabaseKey, userLang);
         }
 
         // Weekly summary logic (run on Sundays)
@@ -159,19 +215,25 @@ async function processImmediateNotifications(supabase: any, supabaseUrl: string,
   }
 }
 
-async function getTrafficInfo(homeAddress: string, workAddress: string): Promise<string> {
+async function getTrafficInfo(homeAddress: string, workAddress: string, lang: string = 'cs'): Promise<string> {
   try {
-    // Simulace dopravních informací - v reálném prostředí by se volalo Google Maps API
-    const conditions = ['normální', 'zpomalení', 'zácpa', 'nehoda'];
-    const randomCondition = conditions[Math.floor(Math.random() * conditions.length)];
+    // Simulace dopravních informací s lokalizací
+    const conditions = {
+      cs: ['normální', 'zpomalení', 'zácpa', 'nehoda'],
+      de: ['normal', 'Verzögerung', 'Stau', 'Unfall'],
+      pl: ['normalny', 'opóźnienie', 'korek', 'wypadek']
+    };
+    const langConditions = conditions[lang as keyof typeof conditions] || conditions.cs;
+    const randomCondition = langConditions[Math.floor(Math.random() * langConditions.length)];
     return randomCondition;
   } catch (error) {
     console.error('Error getting traffic info:', error);
-    return 'nedostupné';
+    const unavailable = { cs: 'nedostupné', de: 'nicht verfügbar', pl: 'niedostępne' };
+    return unavailable[lang as keyof typeof unavailable] || unavailable.cs;
   }
 }
 
-async function sendMultiChannelNotification(supabase: any, user: any, message: string, subject: string, shift: any, supabaseUrl: string, supabaseKey: string) {
+async function sendMultiChannelNotification(supabase: any, user: any, message: string, subject: string, shift: any, supabaseUrl: string, supabaseKey: string, lang: string = 'cs') {
   let notificationSent = false;
 
   // 1. Push notifikace (prioritní)
@@ -230,7 +292,7 @@ async function sendMultiChannelNotification(supabase: any, user: any, message: s
           subject: subject,
           template: 'shift-reminder',
           templateData: {
-            shiftType: shift.type === 'morning' ? 'Ranní' : shift.type === 'afternoon' ? 'Odpolední' : 'Noční',
+            shiftType: getTranslation(lang, `${shift.type}Shift`),
             date: shift.date,
             time: shift.start_time,
             notes: shift.notes,
@@ -270,6 +332,7 @@ async function sendWeeklySummary(supabase: any, user: any, supabaseUrl: string, 
     .limit(5);
 
   if (user.email_notifications && user.profiles?.email) {
+    const userLang = user.profiles?.language || 'cs';
     await fetch(`${supabaseUrl}/functions/v1/send-email`, {
       method: 'POST',
       headers: {
@@ -278,14 +341,14 @@ async function sendWeeklySummary(supabase: any, user: any, supabaseUrl: string, 
       },
       body: JSON.stringify({
         to: user.profiles.email,
-        subject: 'Týdenní souhrn - Pendler Assistant',
+        subject: getTranslation(userLang, 'weeklySummary'),
         template: 'weekly-summary',
         templateData: {
           shiftsWorked: weekShifts?.length || 0,
           totalHours: (weekShifts?.length || 0) * 8, // Assuming 8h shifts
           upcomingShifts: upcomingShifts?.map(s => ({
             date: s.date,
-            type: s.type === 'morning' ? 'Ranní' : s.type === 'afternoon' ? 'Odpolední' : 'Noční'
+            type: getTranslation(userLang, `${s.type}Shift`)
           }))
         }
       }),

@@ -677,6 +677,7 @@ export type Database = {
           is_admin: boolean | null
           is_dhl_employee: boolean | null
           is_premium: boolean | null
+          language: string | null
           location: string | null
           phone_number: string | null
           premium_expiry: string | null
@@ -692,6 +693,7 @@ export type Database = {
           is_admin?: boolean | null
           is_dhl_employee?: boolean | null
           is_premium?: boolean | null
+          language?: string | null
           location?: string | null
           phone_number?: string | null
           premium_expiry?: string | null
@@ -707,6 +709,7 @@ export type Database = {
           is_admin?: boolean | null
           is_dhl_employee?: boolean | null
           is_premium?: boolean | null
+          language?: string | null
           location?: string | null
           phone_number?: string | null
           premium_expiry?: string | null

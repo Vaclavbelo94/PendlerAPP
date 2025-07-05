@@ -6,6 +6,53 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Překlady pro různé jazyky
+const translations = {
+  cs: {
+    shiftChange: '🔄 ZMĚNA SMĚNY',
+    morningShift: 'Ranní',
+    afternoonShift: 'Odpolední', 
+    nightShift: 'Noční',
+    shiftChangedFrom: 'směna {date} změněna z {oldTime} na {newTime}',
+    immediateNotification: 'Změna směny - okamžité upozornění',
+    shiftNotification: 'Upozornění o změně směny',
+    notification: 'Upozornění'
+  },
+  de: {
+    shiftChange: '🔄 SCHICHTÄNDERUNG',
+    morningShift: 'Früh',
+    afternoonShift: 'Spät',
+    nightShift: 'Nacht',
+    shiftChangedFrom: 'Schicht {date} von {oldTime} auf {newTime} geändert',
+    immediateNotification: 'Schichtänderung - sofortige Benachrichtigung',
+    shiftNotification: 'Benachrichtigung über Schichtänderung',
+    notification: 'Benachrichtigung'
+  },
+  pl: {
+    shiftChange: '🔄 ZMIANA ZMIANY',
+    morningShift: 'Ranna',
+    afternoonShift: 'Popołudniowa',
+    nightShift: 'Nocna',
+    shiftChangedFrom: 'zmiana {date} zmieniona z {oldTime} na {newTime}',
+    immediateNotification: 'Zmiana zmiany - natychmiastowe powiadomienie',
+    shiftNotification: 'Powiadomienie o zmianie zmiany',
+    notification: 'Powiadomienie'
+  }
+};
+
+function getTranslation(lang: string, key: string, replacements?: Record<string, string>): string {
+  const langTranslations = translations[lang as keyof typeof translations] || translations.cs;
+  let text = langTranslations[key as keyof typeof langTranslations] || key;
+  
+  if (replacements) {
+    for (const [placeholder, value] of Object.entries(replacements)) {
+      text = text.replace(`{${placeholder}}`, value);
+    }
+  }
+  
+  return text;
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -39,7 +86,7 @@ serve(async (req) => {
           .from('user_notification_preferences')
           .select(`
             *,
-            profiles!inner(email),
+            profiles!inner(email, language),
             user_work_data(phone_number, phone_country_code)
           `)
           .eq('user_id', item.user_id)
@@ -52,20 +99,24 @@ serve(async (req) => {
         }
 
         const messageData = item.message_data;
+        const userLang = preferences.profiles?.language || 'cs';
         let message = '';
         let subject = '';
 
-        // Sestavení zprávy podle typu
+        // Sestavení zprávy podle typu s lokalizací
         switch (item.notification_type) {
           case 'shift_change':
-            const shiftTypeText = messageData.shift_type === 'morning' ? 'Ranní' : 
-                                messageData.shift_type === 'afternoon' ? 'Odpolední' : 'Noční';
-            message = `🔄 ZMĚNA SMĚNY: ${shiftTypeText} směna ${messageData.date} změněna z ${messageData.old_time} na ${messageData.new_time}`;
-            subject = 'Změna směny - okamžité upozornění';
+            const shiftTypeText = getTranslation(userLang, `${messageData.shift_type}Shift`);
+            message = `${getTranslation(userLang, 'shiftChange')}: ${getTranslation(userLang, 'shiftChangedFrom', {
+              date: messageData.date,
+              oldTime: messageData.old_time,
+              newTime: messageData.new_time
+            })}`;
+            subject = getTranslation(userLang, 'immediateNotification');
             break;
           default:
-            message = 'Upozornění o změně směny';
-            subject = 'Upozornění';
+            message = getTranslation(userLang, 'shiftNotification');
+            subject = getTranslation(userLang, 'notification');
         }
 
         let notificationSent = false;
