@@ -141,39 +141,12 @@ export const useUnifiedAuth = () => {
     loadProfileAndCheckDHL();
   }, [user?.id]);
 
-  // Handle DHL user redirection
+  // Handle DHL user redirection - DISABLED - používáme dashboard notification místo
   useEffect(() => {
-    // Čekáme jen na základní auth inicializaci
-    if (!isInitialized || !user) return;
-
-    // Skip redirection if already on DHL setup page
-    if (location.pathname === '/dhl-setup') return;
-
-    console.log('Unified Auth Check:', {
-      isDHLEmployee,
-      hasAssignment: !!userAssignment,
-      userAssignment: userAssignment,
-      currentPath: location.pathname,
-      profileData,
-      isDHLCheckComplete,
-      isProfileLoading
-    });
-
-    // If DHL user without assignment, redirect to setup (only if DHL check is complete)
-    if (isDHLEmployee && !userAssignment && isDHLCheckComplete) {
-      console.log('Unified Auth: Redirecting DHL user to setup page');
-      navigate('/dhl-setup');
-    }
-  }, [
-    user, 
-    userAssignment, 
-    isInitialized,
-    isDHLEmployee,
-    isDHLCheckComplete,
-    location.pathname, 
-    navigate,
-    profileData
-  ]);
+    // DHL setup je nyní řešen přes dashboard notification
+    // Žádné automatické přesměrování
+    console.log('Unified Auth: DHL redirection disabled, using dashboard notification');
+  }, []);
 
   // Auth methods
   const signIn = useCallback(async (email: string, password: string) => {

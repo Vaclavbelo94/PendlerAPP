@@ -10,6 +10,7 @@ import DashboardOverview from '@/components/dashboard/DashboardOverview';
 import DashboardStats from '@/components/dashboard/DashboardStats';
 import DashboardActions from '@/components/dashboard/DashboardActions';
 import DashboardWidgets from '@/components/dashboard/DashboardWidgets';
+import DHLSetupNotification from '@/components/dashboard/DHLSetupNotification';
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
@@ -50,6 +51,9 @@ const Dashboard: React.FC = () => {
                 </div>
               </div>
             </motion.div>
+
+            {/* DHL Setup Notification */}
+            <DHLSetupNotification />
 
             {/* Dashboard Overview */}
             <motion.div
