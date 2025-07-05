@@ -20,6 +20,7 @@ import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import Vehicle from "./pages/Vehicle";
 import Premium from "./pages/Premium";
+import PremiumGate from "./pages/PremiumGate";
 import Admin from "./pages/Admin";
 // DHL Routes - only setup and admin remain
 import DHLSetup from "./pages/DHLSetup";
@@ -57,6 +58,7 @@ function App() {
                   <Route path="/settings" element={<Settings />} />
                   <Route path="/vehicle" element={<Vehicle />} />
                   <Route path="/premium" element={<Premium />} />
+                  <Route path="/premium-gate" element={<PremiumGate />} />
                   <Route path="/admin" element={<Admin />} />
                   <Route path="/DHLAdmin" element={<DHLAdmin />} />
                   {/* DHL Routes - unified approach, only setup remains separate */}
