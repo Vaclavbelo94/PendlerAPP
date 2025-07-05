@@ -1,6 +1,59 @@
 
 {
   "premium": "Premium",
+  "title": "Premium",
+  "subtitle": "Schalten Sie alle App-Funktionen frei",
+  "upgrade": {
+    "title": "Auf Premium upgraden",
+    "description": "Erhalten Sie Zugang zu allen Funktionen",
+    "priceFrom": "Ab",
+    "priceMonth": "/Monat",
+    "priceYear": "/Jahr",
+    "yearlySavings": "17% sparen",
+    "activateButton": "Premium aktivieren",
+    "processing": "Wird verarbeitet...",
+    "selectPeriod": "Zahlungszeitraum wählen",
+    "saveWithYearly": "Sparen Sie mit dem Jahresabonnement"
+  },
+  "period": {
+    "monthly": "Monatlich",
+    "yearly": "Jährlich",
+    "paidMonthly": "Monatlich bezahlt",
+    "paidYearly": "Einmal jährlich bezahlt"
+  },
+  "premiumUser": {
+    "title": "Sie sind Premium-Benutzer",
+    "description": "Vielen Dank für Ihre Unterstützung! Genießen Sie alle Premium-Funktionen."
+  },
+  "features": {
+    "noAds": {
+      "title": "Keine Werbung",
+      "description": "Nutzen Sie die App ohne störende Werbung"
+    },
+    "unlimitedAccess": {
+      "title": "Unbegrenzter Zugang",
+      "description": "Zugang zu allen Funktionen ohne Einschränkungen"
+    },
+    "prioritySupport": {
+      "title": "Priority-Support",
+      "description": "Schnellere Problemlösung und Support"
+    },
+    "advancedFeatures": {
+      "title": "Erweiterte Funktionen",
+      "description": "Exklusive Funktionen für Premium-Benutzer"
+    },
+    "unlimitedShifts": "Unbegrenzte Schichten",
+    "advancedStatistics": "Erweiterte Statistiken",
+    "dataExport": "Datenexport",
+    "customReports": "Benutzerdefinierte Berichte"
+  },
+  "benefits": {
+    "title": "Premium-Vorteile",
+    "description": "Warum ein Premium-Abonnement wählen"
+  },
+  "errors": {
+    "paymentFailed": "Zahlung fehlgeschlagen. Bitte versuchen Sie es erneut."
+  },
   "premiumFeatures": "Premium-Funktionen",
   "upgradeToPremium": "Auf Premium upgraden",
   "premiumBenefits": "Premium-Vorteile",
@@ -33,13 +86,6 @@
   "featuresUsage": "Funktionsnutzung",
   "noActivePremium": "Kein aktives Premium",
   "activatePremium": "Premium aktivieren",
-  "features": {
-    "unlimitedShifts": "Unbegrenzte Schichten",
-    "advancedStatistics": "Erweiterte Statistiken",
-    "dataExport": "Datenexport",
-    "prioritySupport": "Priority-Support",
-    "customReports": "Benutzerdefinierte Berichte"
-  },
   "pricing": {
     "free": "Kostenlos",
     "monthly": "Monatlich",

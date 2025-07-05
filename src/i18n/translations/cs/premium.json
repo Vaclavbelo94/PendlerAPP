@@ -1,6 +1,59 @@
 
 {
   "premium": "Premium",
+  "title": "Premium",
+  "subtitle": "Odemkněte všechny funkce aplikace",
+  "upgrade": {
+    "title": "Přejít na Premium",
+    "description": "Získejte přístup ke všem funkcím",
+    "priceFrom": "Od",
+    "priceMonth": "/měsíc",
+    "priceYear": "/rok",
+    "yearlySavings": "Ušetříte 17%",
+    "activateButton": "Aktivovat Premium",
+    "processing": "Zpracovává se...",
+    "selectPeriod": "Vyberte období platby",
+    "saveWithYearly": "Ušetřete s ročním předplatným"
+  },
+  "period": {
+    "monthly": "Měsíční",
+    "yearly": "Roční",
+    "paidMonthly": "Placeno každý měsíc",
+    "paidYearly": "Placeno jednou ročně"
+  },
+  "premiumUser": {
+    "title": "Jste Premium uživatel",
+    "description": "Děkujeme za vaši podporu! Užívejte si všechny Premium funkce."
+  },
+  "features": {
+    "noAds": {
+      "title": "Bez reklam",
+      "description": "Užívejte si aplikaci bez obtěžujících reklam"
+    },
+    "unlimitedAccess": {
+      "title": "Neomezený přístup",
+      "description": "Přístup ke všem funkcím bez omezení"
+    },
+    "prioritySupport": {
+      "title": "Prioritní podpora",
+      "description": "Rychlejší řešení problémů a podpora"
+    },
+    "advancedFeatures": {
+      "title": "Pokročilé funkce",
+      "description": "Exkluzivní funkce pro Premium uživatele"
+    },
+    "unlimitedShifts": "Neomezené směny",
+    "advancedStatistics": "Pokročilé statistiky",
+    "dataExport": "Export dat",
+    "customReports": "Vlastní reporty"
+  },
+  "benefits": {
+    "title": "Premium výhody",
+    "description": "Proč si vybrat Premium předplatné"
+  },
+  "errors": {
+    "paymentFailed": "Platba se nezdařila. Zkuste to prosím znovu."
+  },
   "premiumFeatures": "Premium funkce",
   "upgradeToPremium": "Přejít na Premium",
   "premiumBenefits": "Premium výhody",
@@ -33,13 +86,6 @@
   "featuresUsage": "Využití funkcí",
   "noActivePremium": "Nemáte aktivní Premium",
   "activatePremium": "Aktivovat Premium",
-  "features": {
-    "unlimitedShifts": "Neomezené směny",
-    "advancedStatistics": "Pokročilé statistiky",
-    "dataExport": "Export dat",
-    "prioritySupport": "Prioritní podpora",
-    "customReports": "Vlastní reporty"
-  },
   "pricing": {
     "free": "Zdarma",
     "monthly": "Měsíčně",

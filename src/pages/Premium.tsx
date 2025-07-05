@@ -27,22 +27,22 @@ const Premium = () => {
       case 'pl':
         return {
           currency: 'PLN',
-          monthlyPrice: 45,
-          yearlyPrice: 450,
+          monthlyPrice: 17,
+          yearlyPrice: 170,
           savings: '17%'
         };
       case 'de':
         return {
           currency: 'EUR',
-          monthlyPrice: 9.99,
-          yearlyPrice: 99,
+          monthlyPrice: 4,
+          yearlyPrice: 40,
           savings: '17%'
         };
       default: // cs
         return {
           currency: 'CZK',
-          monthlyPrice: 249,
-          yearlyPrice: 2490,
+          monthlyPrice: 100,
+          yearlyPrice: 1000,
           savings: '17%'
         };
     }
@@ -124,37 +124,31 @@ const Premium = () => {
             </Card>
           ) : (
             <div className="space-y-6">
-              <Card className="text-center">
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-center gap-2">
-                    <Crown className="h-6 w-6 text-amber-500" />
-                    {t('upgrade.title')}
-                  </CardTitle>
-                  <CardDescription>
-                    {t('upgrade.description')}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <PeriodSelector 
-                    selectedPeriod={selectedPeriod}
-                    onPeriodChange={setSelectedPeriod}
-                    pricing={pricing}
-                  />
-                  
-                  <div className="text-center">
-                    <div className="text-4xl font-bold mb-4">
-                      <span className="text-3xl text-muted-foreground">{t('upgrade.priceFrom')}</span>{' '}
-                      {selectedPeriod === 'monthly' ? pricing.monthlyPrice : pricing.yearlyPrice} {pricing.currency}
-                      <span className="text-lg text-muted-foreground">
-                        {selectedPeriod === 'monthly' ? t('upgrade.priceMonth') : t('upgrade.priceYear', '/rok')}
-                      </span>
+                <Card className="text-center">
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-center gap-2">
+                      <Crown className="h-6 w-6 text-amber-500" />
+                      {t('upgrade.title')}
+                    </CardTitle>
+                    <CardDescription>
+                      {t('upgrade.description')}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className="text-center">
+                      <h3 className="text-lg font-semibold mb-4">
+                        {t('upgrade.selectPeriod')}
+                      </h3>
+                      <p className="text-sm text-muted-foreground mb-6">
+                        {t('upgrade.saveWithYearly')}
+                      </p>
                     </div>
                     
-                    {selectedPeriod === 'yearly' && (
-                      <p className="text-sm text-green-600 mb-4">
-                        {t('upgrade.yearlySavings', `Ušetříte ${pricing.savings}`)}
-                      </p>
-                    )}
+                    <PeriodSelector 
+                      selectedPeriod={selectedPeriod}
+                      onPeriodChange={setSelectedPeriod}
+                      pricing={pricing}
+                    />
                     
                     <Button 
                       size="lg" 
@@ -165,7 +159,7 @@ const Premium = () => {
                       {isLoading ? (
                         <>
                           <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                          {t('upgrade.processing', 'Zpracovává se...')}
+                          {t('upgrade.processing')}
                         </>
                       ) : (
                         <>
@@ -174,9 +168,8 @@ const Premium = () => {
                         </>
                       )}
                     </Button>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
 
               <Card>
                 <CardHeader>
