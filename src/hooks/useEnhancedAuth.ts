@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/auth';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useDHLData } from '@/hooks/dhl/useDHLData';
-import { isDHLEmployee, isDHLEmployeeSync, getDHLSetupPathSync } from '@/utils/dhlAuthUtils';
+import { isDHLEmployee as checkIsDHLEmployee, isDHLEmployeeSync, getDHLSetupPathSync } from '@/utils/dhlAuthUtils';
 import { supabase } from '@/integrations/supabase/client';
 
 /**
@@ -50,7 +50,7 @@ export const useEnhancedAuth = () => {
         }
 
         // Perform comprehensive DHL check (async)
-        const dhlStatus = await isDHLEmployee(user);
+        const dhlStatus = await checkIsDHLEmployee(user);
         setIsDHLEmployee(dhlStatus);
         
         console.log('Enhanced Auth: DHL check complete', {
