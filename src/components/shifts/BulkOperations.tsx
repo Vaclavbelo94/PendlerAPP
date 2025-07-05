@@ -6,8 +6,9 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Trash2, Edit, CheckSquare, Square } from 'lucide-react';
 import { format } from 'date-fns';
-import { cs } from 'date-fns/locale';
+import { cs, de, pl } from 'date-fns/locale';
 import { Shift } from '@/hooks/shifts/useShiftsCRUD';
+import { useTranslation } from 'react-i18next';
 
 interface BulkOperationsProps {
   shifts: Shift[];
@@ -28,11 +29,22 @@ const BulkOperations: React.FC<BulkOperationsProps> = ({
   onBulkDelete,
   onBulkEdit
 }) => {
+  const { t, i18n } = useTranslation('shifts');
+
+  // Get locale for date-fns based on current language
+  const getLocale = () => {
+    switch (i18n.language) {
+      case 'de': return de;
+      case 'pl': return pl;
+      default: return cs;
+    }
+  };
+
   const getShiftTypeLabel = (type: string) => {
     switch (type) {
-      case 'morning': return 'Ranní';
-      case 'afternoon': return 'Odpolední';
-      case 'night': return 'Noční';
+      case 'morning': return t('morningShift');
+      case 'afternoon': return t('afternoonShift');
+      case 'night': return t('nightShift');
       default: return type;
     }
   };
@@ -55,13 +67,13 @@ const BulkOperations: React.FC<BulkOperationsProps> = ({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
-            <span>Hromadné operace</span>
+            <span>{t('bulkOperations')}</span>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              Vybráno: {selectedShifts.length} z {shifts.length}
+              {t('selected')}: {selectedShifts.length} {t('of')} {shifts.length}
             </div>
           </CardTitle>
           <CardDescription>
-            Vyberte směny pro hromadné úpravy nebo mazání
+            {t('selectShiftsForBulk')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -73,7 +85,7 @@ const BulkOperations: React.FC<BulkOperationsProps> = ({
               className="flex items-center gap-2"
             >
               {isAllSelected ? <Square className="h-4 w-4" /> : <CheckSquare className="h-4 w-4" />}
-              {isAllSelected ? 'Zrušit výběr' : 'Vybrat vše'}
+              {isAllSelected ? t('clearSelection') : t('selectAll')}
             </Button>
 
             {selectedShifts.length > 0 && (
@@ -85,7 +97,7 @@ const BulkOperations: React.FC<BulkOperationsProps> = ({
                   className="flex items-center gap-2"
                 >
                   <Edit className="h-4 w-4" />
-                  Upravit vybrané
+                  {t('editSelected')}
                 </Button>
                 <Button
                   variant="destructive"
@@ -94,7 +106,7 @@ const BulkOperations: React.FC<BulkOperationsProps> = ({
                   className="flex items-center gap-2"
                 >
                   <Trash2 className="h-4 w-4" />
-                  Smazat vybrané
+                  {t('deleteSelected')}
                 </Button>
               </>
             )}
@@ -105,16 +117,16 @@ const BulkOperations: React.FC<BulkOperationsProps> = ({
       {/* Seznam směn */}
       <Card>
         <CardHeader>
-          <CardTitle>Seznam směn</CardTitle>
+          <CardTitle>{t('shiftsList')}</CardTitle>
           <CardDescription>
-            Klikněte na checkbox pro výběr směn
+            {t('clickCheckboxToSelect')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           {shifts.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               <CheckSquare className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>Žádné směny k zobrazení</p>
+              <p>{t('noShiftsToDisplay')}</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -137,7 +149,7 @@ const BulkOperations: React.FC<BulkOperationsProps> = ({
                     <div className="flex-1 flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <span className="font-medium">
-                          {format(new Date(shift.date), 'dd.MM.yyyy', { locale: cs })}
+                          {format(new Date(shift.date), 'dd.MM.yyyy', { locale: getLocale() })}
                         </span>
                         <Badge className={getShiftTypeColor(shift.type)}>
                           {getShiftTypeLabel(shift.type)}
@@ -150,7 +162,7 @@ const BulkOperations: React.FC<BulkOperationsProps> = ({
                       </div>
                       
                       <div className="text-sm text-muted-foreground">
-                        8 hodin
+                        8 {t('hours')}
                       </div>
                     </div>
                   </div>

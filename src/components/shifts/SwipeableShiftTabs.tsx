@@ -149,7 +149,7 @@ const SwipeableShiftTabs: React.FC<SwipeableShiftTabsProps> = ({
                   <div className="space-y-4">
                     <div>
                       <h2 className="text-xl font-semibold mb-2">{t('tabs.overview')}</h2>
-                      <p className="text-sm text-muted-foreground">Přehled vašich směn a výdělků</p>
+                      <p className="text-sm text-muted-foreground">{t('overviewDescription')}</p>
                     </div>
                     <ShiftsExport shifts={shifts} />
                   </div>
@@ -159,7 +159,7 @@ const SwipeableShiftTabs: React.FC<SwipeableShiftTabsProps> = ({
                   <div className="space-y-4">
                     <div>
                       <h2 className="text-xl font-semibold mb-2">{t('tabs.analytics')}</h2>
-                      <p className="text-sm text-muted-foreground">Detailní analýza vašich směn</p>
+                      <p className="text-sm text-muted-foreground">{t('analyticsDescription')}</p>
                     </div>
                     <ShiftsAnalytics shifts={shifts} />
                   </div>
@@ -181,7 +181,7 @@ const SwipeableShiftTabs: React.FC<SwipeableShiftTabsProps> = ({
                   <div className="space-y-4">
                     <div>
                       <h2 className="text-xl font-semibold mb-2">{t('tabs.settings')}</h2>
-                      <p className="text-sm text-muted-foreground">Nastavení směn a preferencí</p>
+                      <p className="text-sm text-muted-foreground">{t('settingsDescription')}</p>
                     </div>
                     <ShiftsSettings />
                   </div>

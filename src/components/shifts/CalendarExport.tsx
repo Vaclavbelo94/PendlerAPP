@@ -10,14 +10,25 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Shift } from '@/types/shifts';
 import { format } from 'date-fns';
-import { cs } from 'date-fns/locale';
+import { cs, de, pl } from 'date-fns/locale';
 import { toast } from '@/hooks/use-toast';
+import { useTranslation } from 'react-i18next';
 
 interface CalendarExportProps {
   shifts: Shift[];
 }
 
 export const CalendarExport: React.FC<CalendarExportProps> = ({ shifts }) => {
+  const { t, i18n } = useTranslation('shifts');
+
+  // Get locale for date-fns based on current language
+  const getLocale = () => {
+    switch (i18n.language) {
+      case 'de': return de;
+      case 'pl': return pl;
+      default: return cs;
+    }
+  };
   
   const generateICSContent = (shifts: Shift[]) => {
     const getShiftTime = (type: string) => {
@@ -31,10 +42,10 @@ export const CalendarExport: React.FC<CalendarExportProps> = ({ shifts }) => {
 
     const getShiftTitle = (type: string) => {
       switch (type) {
-        case 'morning': return 'Ranní směna';
-        case 'afternoon': return 'Odpolední směna';
-        case 'night': return 'Noční směna';
-        default: return 'Směna';
+        case 'morning': return t('morningShift');
+        case 'afternoon': return t('afternoonShift');
+        case 'night': return t('nightShift');
+        default: return t('shifts');
       }
     };
 
@@ -91,8 +102,8 @@ export const CalendarExport: React.FC<CalendarExportProps> = ({ shifts }) => {
   const exportToICS = () => {
     if (shifts.length === 0) {
       toast({
-        title: "Žádné směny",
-        description: "Nejsou k dispozici žádné směny pro export",
+        title: t('noShifts'),
+        description: t('noShiftsToExport'),
         variant: "destructive"
       });
       return;
@@ -111,14 +122,14 @@ export const CalendarExport: React.FC<CalendarExportProps> = ({ shifts }) => {
       document.body.removeChild(link);
       
       toast({
-        title: "Export dokončen",
-        description: "Kalendář směn byl úspěšně exportován"
+        title: t('exportCompleted'),
+        description: t('calendarExportedSuccessfully')
       });
     } catch (error) {
       console.error('Error exporting calendar:', error);
       toast({
-        title: "Chyba při exportu",
-        description: "Nepodařilo se exportovat kalendář",
+        title: t('exportError'),
+        description: t('couldNotExportCalendar'),
         variant: "destructive"
       });
     }
@@ -128,11 +139,11 @@ export const CalendarExport: React.FC<CalendarExportProps> = ({ shifts }) => {
     <div className="space-y-4">
       <Button onClick={exportToICS} className="w-full gap-2">
         <CalendarIcon className="h-4 w-4" />
-        Exportovat do kalendáře (.ics)
+        {t('exportToCalendar')}
       </Button>
       
       <p className="text-sm text-muted-foreground text-center">
-        Exportuje všechny směny jako kalendářový soubor, který můžete importovat do Google Calendar, Outlook nebo jiné kalendářové aplikace.
+        {t('exportDescription')}
       </p>
     </div>
   );
