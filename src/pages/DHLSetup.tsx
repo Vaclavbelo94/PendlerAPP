@@ -21,7 +21,7 @@ interface DHLSetupFormData {
 
 const DHLSetup = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, unifiedUser } = useAuth();
   const { t } = useTranslation('dhl');
   const { positions, workGroups, isLoading: isDHLDataLoading, error: dhlDataError } = useDHLData(user?.id || null);
   
@@ -34,12 +34,12 @@ const DHLSetup = () => {
 
   // Check authorization - now only based on promo code redemption, not email domain
   useEffect(() => {
-    if (!user || !isDHLEmployeeSync(user)) {
+    if (!user || !unifiedUser?.isDHLEmployee) {
       console.log('Unauthorized access to DHL Setup - user needs DHL promo code');
       toast.error(t('unauthorizedAccess'));
       navigate('/profile');
     }
-  }, [user, navigate, t]);
+  }, [user, unifiedUser, navigate, t]);
 
   const handleInputChange = (field: keyof DHLSetupFormData, value: string) => {
     setFormData(prev => ({
@@ -133,7 +133,7 @@ const DHLSetup = () => {
   };
 
   // Don't render if user is not authorized (no DHL promo code)
-  if (!user || !isDHLEmployeeSync(user)) {
+  if (!user || !unifiedUser?.isDHLEmployee) {
     return null;
   }
 
