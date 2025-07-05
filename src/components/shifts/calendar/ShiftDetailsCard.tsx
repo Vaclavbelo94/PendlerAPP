@@ -96,10 +96,10 @@ const ShiftDetailsCard: React.FC<ShiftDetailsCardProps> = ({
                 size="sm"
                 variant="outline"
                 onClick={() => onEditShift(shift)}
-                className="flex items-center gap-1 flex-1 sm:flex-none"
+                className="flex items-center justify-center h-9 w-9 p-0"
+                aria-label={t('editShift') || 'Upravit'}
               >
-                <Edit className="h-3 w-3" />
-                {t('editShift') || 'Upravit'}
+                <Edit className="h-4 w-4" />
               </Button>
             )}
             {onDeleteShift && shift.id && (
@@ -107,10 +107,10 @@ const ShiftDetailsCard: React.FC<ShiftDetailsCardProps> = ({
                 size="sm"
                 variant="destructive"
                 onClick={() => onDeleteShift(shift.id!)}
-                className="flex items-center gap-1 flex-1 sm:flex-none"
+                className="flex items-center justify-center h-9 w-9 p-0"
+                aria-label={t('deleteShift') || 'Smazat'}
               >
-                <Trash2 className="h-3 w-3" />
-                {t('deleteShift') || 'Smazat'}
+                <Trash2 className="h-4 w-4" />
               </Button>
             )}
           </div>
