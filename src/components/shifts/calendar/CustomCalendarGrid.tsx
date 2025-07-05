@@ -1,11 +1,12 @@
 
 import React from 'react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, endOfWeek, isSameMonth, isSameDay, isToday } from 'date-fns';
-import { cs } from 'date-fns/locale';
+import { cs, de, pl } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Shift } from '@/types/shifts';
+import { useTranslation } from 'react-i18next';
 
 interface CustomCalendarGridProps {
   selectedDate?: Date;
@@ -24,13 +25,33 @@ const CustomCalendarGrid: React.FC<CustomCalendarGridProps> = ({
   shifts,
   onAddShift
 }) => {
+  const { i18n } = useTranslation();
+  
+  // Get locale for date-fns based on current language
+  const getLocale = () => {
+    switch (i18n.language) {
+      case 'de': return de;
+      case 'pl': return pl;
+      default: return cs;
+    }
+  };
+
+  // Get weekday labels based on current language
+  const getWeekDays = () => {
+    switch (i18n.language) {
+      case 'de': return ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
+      case 'pl': return ['Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'So', 'Nd'];
+      default: return ['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'];
+    }
+  };
+
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
   const calendarStart = startOfWeek(monthStart, { weekStartsOn: 1 });
   const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 1 });
   
   const days = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
-  const weekDays = ['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'];
+  const weekDays = getWeekDays();
 
   const getShiftsForDate = (date: Date) => {
     return shifts.filter(shift => {
@@ -65,7 +86,7 @@ const CustomCalendarGrid: React.FC<CustomCalendarGridProps> = ({
         </Button>
         
         <h3 className="text-lg font-semibold">
-          {format(currentMonth, 'LLLL yyyy', { locale: cs })}
+          {format(currentMonth, 'LLLL yyyy', { locale: getLocale() })}
         </h3>
         
         <Button

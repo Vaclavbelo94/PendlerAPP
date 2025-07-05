@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { format } from 'date-fns';
-import { cs } from 'date-fns/locale';
+import { cs, de, pl } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Edit, Trash2, Clock } from 'lucide-react';
@@ -24,7 +24,16 @@ const ShiftDetailsCard: React.FC<ShiftDetailsCardProps> = ({
   onEditShift,
   onDeleteShift
 }) => {
-  const { t } = useTranslation('shifts');
+  const { t, i18n } = useTranslation('shifts');
+
+  // Get locale for date-fns based on current language
+  const getLocale = () => {
+    switch (i18n.language) {
+      case 'de': return de;
+      case 'pl': return pl;
+      default: return cs;
+    }
+  };
 
   const getShiftTypeLabel = (type: string) => {
     switch (type) {
@@ -54,7 +63,7 @@ const ShiftDetailsCard: React.FC<ShiftDetailsCardProps> = ({
     <div className="bg-muted/30 rounded-lg border p-4 mt-4">
       <div className="flex items-center justify-between mb-3">
         <h3 className="font-medium text-base">
-          {format(selectedDate, "EEEE, d. MMMM yyyy", { locale: cs })}
+          {format(selectedDate, "EEEE, d. MMMM yyyy", { locale: getLocale() })}
         </h3>
         {!shift && (
           <Button
