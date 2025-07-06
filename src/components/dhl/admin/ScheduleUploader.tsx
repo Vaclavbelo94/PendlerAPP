@@ -233,12 +233,29 @@ export const ScheduleUploader: React.FC = () => {
 
   if (step === 'success') {
     return (
-      <div className="flex items-center justify-center p-8">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
-          <p className="text-muted-foreground">Import úspěšně dokončen</p>
-        </div>
-      </div>
+      <Card className="text-center p-8">
+        <CheckCircle className="h-12 w-12 text-green-600 mx-auto mb-4" />
+        <h3 className="text-lg font-semibold mb-2">Import úspěšný!</h3>
+        <p className="text-muted-foreground mb-4">
+          Rozvrh směn byl úspěšně importován do systému.
+        </p>
+        <Button
+          onClick={() => {
+            setSelectedFile(null);
+            setJsonData(null);
+            setValidation(null);
+            setFormData({
+              positionId: '',
+              workGroupId: '',
+              scheduleName: ''
+            });
+            setStep('select');
+          }}
+          variant="outline"
+        >
+          Importovat další rozvrh
+        </Button>
+      </Card>
     );
   }
 

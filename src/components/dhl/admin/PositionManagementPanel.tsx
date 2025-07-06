@@ -1,94 +1,63 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Edit, Trash2, Users } from 'lucide-react';
 import { useDHLData } from '@/hooks/dhl/useDHLData';
 import { useAuth } from '@/hooks/auth';
 import { toast } from 'sonner';
-
-interface PositionForm {
-  name: string;
-  position_type: string;
-  description: string;
-  hourly_rate: string;
-  cycle_weeks: number[];
-}
+import { supabase } from '@/integrations/supabase/client';
+import { PositionFormDialog } from './PositionFormDialog';
 
 export const PositionManagementPanel: React.FC = () => {
   const { user } = useAuth();
   const { positions, isLoading, refreshData } = useDHLData(user?.id || null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingPosition, setEditingPosition] = useState<any>(null);
-  const [formData, setFormData] = useState<PositionForm>({
-    name: '',
-    position_type: 'sortierer',
-    description: '',
-    hourly_rate: '',
-    cycle_weeks: []
-  });
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handlePositionTypeChange = (value: string) => {
-    setFormData(prev => ({ ...prev, position_type: value }));
-  };
-
-  const handleCycleWeekChange = (week: number) => {
-    setFormData(prev => {
-      if (prev.cycle_weeks.includes(week)) {
-        return {
-          ...prev,
-          cycle_weeks: prev.cycle_weeks.filter(w => w !== week)
-        };
-      } else {
-        return {
-          ...prev,
-          cycle_weeks: [...prev.cycle_weeks, week]
-        };
-      }
-    });
-  };
-
-  const handleSubmit = async () => {
-    // Implement submit logic here
-    console.log('Form submitted:', formData);
-    setIsFormOpen(false);
-    toast.success('Pozice byla úspěšně uložena');
-  };
 
   const handleEditPosition = (position: any) => {
     setEditingPosition(position);
-    setFormData({
-      name: position.name,
-      position_type: position.position_type,
-      description: position.description || '',
-      hourly_rate: position.hourly_rate ? position.hourly_rate.toString() : '',
-      cycle_weeks: position.cycle_weeks || []
-    });
     setIsFormOpen(true);
   };
 
-  const handleDeletePosition = (positionId: string) => {
-    // Implement delete logic here
-    console.log('Delete position:', positionId);
-    toast.success('Pozice byla úspěšně smazána');
+  const handleDeletePosition = async (positionId: string) => {
+    if (!confirm('Opravdu chcete smazat tuto pozici?')) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('dhl_positions')
+        .update({ is_active: false })
+        .eq('id', positionId);
+
+      if (error) throw error;
+      
+      toast.success('Pozice byla úspěšně smazána');
+      refreshData();
+    } catch (error) {
+      console.error('Error deleting position:', error);
+      toast.error('Chyba při mazání pozice');
+    }
+  };
+
+  const handleFormSuccess = () => {
+    refreshData();
+    setEditingPosition(null);
+  };
+
+  const handleAddPosition = () => {
+    setEditingPosition(null);
+    setIsFormOpen(true);
   };
 
   const positionTypes = [
-    { value: 'technik', label: 'Technik' },
-    { value: 'rangierer', label: 'Rangierer' },
-    { value: 'verlader', label: 'Verlader' },
-    { value: 'sortierer', label: 'Sortierer' },
     { value: 'fahrer', label: 'Fahrer' },
-    { value: 'other', label: 'Other' }
+    { value: 'rangierer', label: 'Rangierer' },
+    { value: 'sortierer', label: 'Sortierer' },
+    { value: 'technik', label: 'Technik' },
+    { value: 'verlader', label: 'Verlader' },
+    { value: 'other', label: 'Ostatní' }
   ];
 
   if (isLoading) {
@@ -106,7 +75,7 @@ export const PositionManagementPanel: React.FC = () => {
           <h2 className="text-2xl font-bold">Správa pozic</h2>
           <p className="text-muted-foreground">Spravujte DHL pozice a jejich nastavení</p>
         </div>
-        <Button onClick={() => setIsFormOpen(true)}>
+        <Button onClick={handleAddPosition}>
           <Plus className="h-4 w-4 mr-2" />
           Přidat pozici
         </Button>
@@ -177,22 +146,18 @@ export const PositionManagementPanel: React.FC = () => {
           <p className="text-muted-foreground mb-4">
             Zatím nebyly vytvořeny žádné DHL pozice.
           </p>
-          <Button onClick={() => setIsFormOpen(true)}>
+          <Button onClick={handleAddPosition}>
             <Plus className="h-4 w-4 mr-2" />
             Přidat první pozici
           </Button>
         </Card>
       )}
+      <PositionFormDialog
+        isOpen={isFormOpen}
+        onClose={() => setIsFormOpen(false)}
+        onSuccess={handleFormSuccess}
+        editingPosition={editingPosition}
+      />
     </div>
   );
-};
-
-const handleEditPosition = (position: any) => {
-  // Implementation for editing position
-  console.log('Edit position:', position);
-};
-
-const handleDeletePosition = (positionId: string) => {
-  // Implementation for deleting position
-  console.log('Delete position:', positionId);
 };
