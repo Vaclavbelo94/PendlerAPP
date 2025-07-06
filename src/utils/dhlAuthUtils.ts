@@ -17,8 +17,8 @@ export const isDHLEmployee = async (user: User | null): Promise<boolean> => {
     return false;
   }
   
-  // Admin override for testing - admindhl@pendlerapp.com can always access
-  if (user.email === 'admindhl@pendlerapp.com') {
+  // Admin override for testing - admin_dhl@pendlerapp.com can always access
+  if (user.email === 'admin_dhl@pendlerapp.com') {
     console.log('DHL Employee check: Admin override granted');
     return true;
   }
@@ -94,8 +94,8 @@ export const isDHLEmployeeSync = (user: User | null): boolean => {
     return false;
   }
   
-  // Admin override for testing - admindhl@pendlerapp.com can always access
-  if (user.email === 'admindhl@pendlerapp.com') {
+  // Admin override for testing - admin_dhl@pendlerapp.com can always access
+  if (user.email === 'admin_dhl@pendlerapp.com') {
     console.log('DHL Employee sync check: Admin override granted');
     return true;
   }
@@ -118,7 +118,7 @@ export const isDHLEmployeeSync = (user: User | null): boolean => {
  * Check if user is DHL admin
  */
 export const isDHLAdmin = (user: User | null): boolean => {
-  const isAdmin = user?.email === 'admindhl@pendlerapp.com';
+  const isAdmin = user?.email === 'admin_dhl@pendlerapp.com';
   console.log('DHL Admin check:', { email: user?.email, isAdmin });
   return isAdmin;
 };
