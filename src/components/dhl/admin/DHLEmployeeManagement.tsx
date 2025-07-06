@@ -55,10 +55,7 @@ const DHLEmployeeManagement: React.FC = () => {
           email,
           is_dhl_employee,
           is_premium,
-          created_at,
-          user_work_data(
-            phone_number
-          )
+          created_at
         `)
         .eq('is_dhl_employee', true)
         .order('created_at', { ascending: false });
