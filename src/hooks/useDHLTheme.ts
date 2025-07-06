@@ -34,11 +34,6 @@ export const useDHLTheme = () => {
         return;
       }
 
-      // Počkej na načtení profile dat
-      if (isProfileLoading) {
-        return;
-      }
-
       // Admin override
       if (user.email === 'admin_dhl@pendlerapp.com') {
         setState({
@@ -51,13 +46,27 @@ export const useDHLTheme = () => {
         return;
       }
 
-      // Použij profile data nebo fallback na async check
+      // Použij profile data z databáze jako primární zdroj
       let isDHL = profileDHLStatus;
       
-      if (!isDHL) {
-        // Fallback na kompletní async check
+      // Pokud profil ještě není načten, počkej
+      if (isProfileLoading && !isDHL) {
+        console.log('DHL Theme: Profile still loading, waiting...');
+        return;
+      }
+      
+      // Fallback na async check pouze pokud profile data nejsou dostupná
+      if (!isDHL && !isProfileLoading) {
+        console.log('DHL Theme: Profile loaded but no DHL flag, checking async...');
         isDHL = await isDHLEmployee(user);
       }
+
+      console.log('DHL Theme: Final check result', {
+        user: user.email,
+        profileDHLStatus,
+        isProfileLoading,
+        finalResult: isDHL
+      });
 
       setState({
         isDHLEmployee: isDHL,
@@ -67,10 +76,10 @@ export const useDHLTheme = () => {
 
       if (isDHL) {
         document.documentElement.setAttribute('data-dhl-theme', 'active');
-        console.log('DHL Theme: Activated for user', user.email);
+        console.log('DHL Theme: ✅ ACTIVATED for user', user.email);
       } else {
         document.documentElement.removeAttribute('data-dhl-theme');
-        console.log('DHL Theme: Deactivated for user', user.email);
+        console.log('DHL Theme: ❌ DEACTIVATED for user', user.email);
       }
     };
 
