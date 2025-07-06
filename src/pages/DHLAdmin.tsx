@@ -50,7 +50,6 @@ const DHLAdmin = () => {
   const handleLogout = () => {
     signOut();
     toast.info("Odhlášení z DHL administrace proběhlo úspěšně");
-    navigate("/");
   };
 
   if (isLoading) {

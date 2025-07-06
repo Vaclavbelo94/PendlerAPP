@@ -219,10 +219,13 @@ export const useUnifiedAuth = () => {
       setSession(null);
       setProfileData(null);
       setIsDHLEmployee(false);
+      
+      // Přesměrovat na úvodní stránku
+      navigate('/');
     } catch (err) {
       console.error('Unified Auth: Sign out error:', err);
     }
-  }, []);
+  }, [navigate]);
 
   const refreshUserStatus = useCallback(async () => {
     if (!user?.id) return;

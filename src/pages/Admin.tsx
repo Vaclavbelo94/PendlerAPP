@@ -148,7 +148,6 @@ const Admin = () => {
   const handleLogout = () => {
     signOut();
     toast.info("Odhlášení z administrace proběhlo úspěšně");
-    navigate("/");
   };
 
   if (isLoading) {

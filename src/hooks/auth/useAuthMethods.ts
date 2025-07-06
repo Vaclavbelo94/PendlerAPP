@@ -39,7 +39,7 @@ export const useAuthMethods = () => {
       
       // Force page reload to ensure clean state
       setTimeout(() => {
-        window.location.href = '/dashboard';
+        window.location.href = '/';
       }, 500);
       
       return { error: null };
