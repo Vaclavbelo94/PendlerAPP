@@ -11,7 +11,7 @@ import SimpleLoadingSpinner from '@/components/loading/SimpleLoadingSpinner';
 
 // Lazy load non-critical providers
 const AnalyticsProvider = lazy(() => import('@/components/analytics/AnalyticsProvider').then(m => ({ default: m.AnalyticsProvider })));
-const AdSenseProvider = lazy(() => import('@/components/ads/AdSenseProvider').then(m => ({ default: m.AdSenseProvider })));
+const MediaNetProvider = lazy(() => import('@/components/ads/MediaNetProvider').then(m => ({ default: m.MediaNetProvider })));
 const GDPRConsentProvider = lazy(() => import('@/contexts/GDPRConsentContext').then(m => ({ default: m.GDPRConsentProvider })));
 const StateManagerProvider = lazy(() => import('@/contexts/StateManagerContext').then(m => ({ default: m.StateManagerProvider })));
 
@@ -42,9 +42,9 @@ export const OptimizedProviderStack: React.FC<OptimizedProviderStackProps> = ({
                 <StateManagerProvider>
                   <GDPRConsentProvider>
                     <AnalyticsProvider>
-                      <AdSenseProvider clientId="ca-pub-5766122497657850">
+                      <MediaNetProvider siteId="YOUR_MEDIA_NET_SITE_ID">
                         {children}
-                      </AdSenseProvider>
+                      </MediaNetProvider>
                     </AnalyticsProvider>
                   </GDPRConsentProvider>
                 </StateManagerProvider>
