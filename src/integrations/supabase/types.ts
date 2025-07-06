@@ -638,6 +638,48 @@ export type Database = {
         }
         Relationships: []
       }
+      personal_routes: {
+        Row: {
+          alert_preferences: Json | null
+          created_at: string | null
+          destination_address: string
+          id: string
+          is_frequent: boolean | null
+          name: string
+          origin_address: string
+          preferred_departure_times: Json | null
+          transport_modes: string[] | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          alert_preferences?: Json | null
+          created_at?: string | null
+          destination_address: string
+          id?: string
+          is_frequent?: boolean | null
+          name: string
+          origin_address: string
+          preferred_departure_times?: Json | null
+          transport_modes?: string[] | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          alert_preferences?: Json | null
+          created_at?: string | null
+          destination_address?: string
+          id?: string
+          is_frequent?: boolean | null
+          name?: string
+          origin_address?: string
+          preferred_departure_times?: Json | null
+          transport_modes?: string[] | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       premium_features: {
         Row: {
           created_at: string | null
@@ -998,6 +1040,54 @@ export type Database = {
           origin_address?: string
           updated_at?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      route_analytics: {
+        Row: {
+          carbon_footprint: number | null
+          cost_estimate: number | null
+          created_at: string
+          destination_address: string
+          distance: number
+          id: string
+          origin_address: string
+          route_hash: string
+          traffic_level: string | null
+          transport_mode: string
+          travel_time: number
+          user_id: string
+          weather_conditions: string | null
+        }
+        Insert: {
+          carbon_footprint?: number | null
+          cost_estimate?: number | null
+          created_at?: string
+          destination_address: string
+          distance: number
+          id?: string
+          origin_address: string
+          route_hash: string
+          traffic_level?: string | null
+          transport_mode?: string
+          travel_time: number
+          user_id: string
+          weather_conditions?: string | null
+        }
+        Update: {
+          carbon_footprint?: number | null
+          cost_estimate?: number | null
+          created_at?: string
+          destination_address?: string
+          distance?: number
+          id?: string
+          origin_address?: string
+          route_hash?: string
+          traffic_level?: string | null
+          transport_mode?: string
+          travel_time?: number
+          user_id?: string
+          weather_conditions?: string | null
         }
         Relationships: []
       }
@@ -1447,6 +1537,42 @@ export type Database = {
           severity?: string
           updated_at?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      transport_modes: {
+        Row: {
+          carbon_factor: number | null
+          created_at: string | null
+          display_name_cs: string
+          display_name_de: string
+          display_name_pl: string
+          icon_name: string | null
+          id: string
+          is_active: boolean | null
+          mode_name: string
+        }
+        Insert: {
+          carbon_factor?: number | null
+          created_at?: string | null
+          display_name_cs: string
+          display_name_de: string
+          display_name_pl: string
+          icon_name?: string | null
+          id?: string
+          is_active?: boolean | null
+          mode_name: string
+        }
+        Update: {
+          carbon_factor?: number | null
+          created_at?: string | null
+          display_name_cs?: string
+          display_name_de?: string
+          display_name_pl?: string
+          icon_name?: string | null
+          id?: string
+          is_active?: boolean | null
+          mode_name?: string
         }
         Relationships: []
       }
