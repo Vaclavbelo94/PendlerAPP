@@ -295,40 +295,40 @@ const DHLEmployeeManagement: React.FC = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="rounded-md border">
+          <div className="rounded-md border overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Premium</TableHead>
-                  <TableHead>Registrován</TableHead>
-                  <TableHead className="text-right">Akce</TableHead>
+                  <TableHead className="whitespace-nowrap">Email</TableHead>
+                  <TableHead className="whitespace-nowrap">Status</TableHead>
+                  <TableHead className="whitespace-nowrap">Premium</TableHead>
+                  <TableHead className="whitespace-nowrap">Registrován</TableHead>
+                  <TableHead className="text-right whitespace-nowrap">Akce</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredEmployees.map((employee) => (
                   <TableRow key={employee.id}>
-                    <TableCell className="font-medium">
+                    <TableCell className="font-medium whitespace-nowrap">
                       <div className="flex items-center gap-2">
                         <Mail className="h-4 w-4 text-muted-foreground" />
                         {employee.email}
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="whitespace-nowrap">
                       <Badge variant={employee.is_dhl_employee ? "default" : "secondary"}>
                         {employee.is_dhl_employee ? "Aktivní" : "Neaktivní"}
                       </Badge>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="whitespace-nowrap">
                       <Badge variant={employee.is_premium ? "default" : "outline"}>
                         {employee.is_premium ? "Premium" : "Základní"}
                       </Badge>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="whitespace-nowrap">
                       {new Date(employee.created_at).toLocaleDateString('cs-CZ')}
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-right whitespace-nowrap">
                       <div className="flex justify-end gap-2">
                         <Button
                           variant="outline"
