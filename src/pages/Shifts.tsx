@@ -13,6 +13,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { useAuth } from '@/hooks/auth';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import DashboardBackground from '@/components/common/DashboardBackground';
 
 const Shifts = React.memo(() => {
   const { t } = useTranslation('shifts');
@@ -133,7 +134,7 @@ const Shifts = React.memo(() => {
   if (isLoading) {
     return (
       <Layout navbarRightContent={<NavbarRightContent />}>
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 animate-fade-in">
+        <DashboardBackground variant="shifts">
           <div className="container mx-auto px-4 py-6 max-w-7xl">
             <div className="mb-6">
               <h1 className="text-3xl font-bold text-foreground">{t('title')}</h1>
@@ -149,7 +150,7 @@ const Shifts = React.memo(() => {
               </div>
             </div>
           </div>
-        </div>
+        </DashboardBackground>
       </Layout>
     );
   }
@@ -158,7 +159,7 @@ const Shifts = React.memo(() => {
   if (!user) {
     return (
       <Layout navbarRightContent={<NavbarRightContent />}>
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 animate-fade-in">
+        <DashboardBackground variant="shifts">
           <div className="container mx-auto px-4 py-6 max-w-7xl">
             <div className="mb-6">
               <h1 className="text-3xl font-bold text-foreground">{t('title')}</h1>
@@ -183,14 +184,14 @@ const Shifts = React.memo(() => {
               </CardContent>
             </Card>
           </div>
-        </div>
+        </DashboardBackground>
       </Layout>
     );
   }
 
   return (
     <Layout navbarRightContent={<NavbarRightContent />}>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 animate-fade-in">
+      <DashboardBackground variant="shifts">
         <div className="container mx-auto px-4 py-6 max-w-7xl">
           <div className="mb-6 flex items-center justify-between">
             <div>
@@ -236,7 +237,7 @@ const Shifts = React.memo(() => {
             />
           </div>
         </div>
-      </div>
+      </DashboardBackground>
 
       {user && <FloatingAddButton onClick={handleAddShift} selectedDate={selectedCalendarDate} />}
 
