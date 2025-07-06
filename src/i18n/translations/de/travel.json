@@ -83,5 +83,15 @@
   "estimatedArrival": "Geschätzte Ankunft",
   "travelWarnings": "Reisewarnungen",
   "roadConditions": "Straßenverhältnisse",
-  "trafficAlerts": "Verkehrsmeldungen"
+  "trafficAlerts": "Verkehrsmeldungen",
+  "multiModalTransport": "Multimodale Verkehrsmittel",
+  "optimizationCriteria": "Optimierungskriterien",
+  "routeOptimization": "Routenoptimierung",
+  "personalizedAlerts": "Personalisierte Benachrichtigungen",
+  "smartRecommendations": "Intelligente Empfehlungen",
+  "carbonFootprint": "CO₂-Fußabdruck",
+  "timeOptimized": "Zeitoptimiert",
+  "costOptimized": "Kostenoptimiert",
+  "ecoOptimized": "Umweltoptimiert",
+  "balancedOptimization": "Ausgewogene Optimierung"
 }

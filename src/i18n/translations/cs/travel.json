@@ -83,5 +83,15 @@
   "estimatedArrival": "Odhadovaný příjezd",
   "travelWarnings": "Varování pro cestování",
   "roadConditions": "Stav cesty",
-  "trafficAlerts": "Dopravní upozornění"
+  "trafficAlerts": "Dopravní upozornění",
+  "multiModalTransport": "Multi-modální doprava",
+  "optimizationCriteria": "Kritéria optimalizace",
+  "routeOptimization": "Optimalizace trasy",
+  "personalizedAlerts": "Personalizovaná upozornění",
+  "smartRecommendations": "Chytrá doporučení",
+  "carbonFootprint": "Uhlíková stopa",
+  "timeOptimized": "Optimalizováno na čas",
+  "costOptimized": "Optimalizováno na cenu",
+  "ecoOptimized": "Ekologicky optimalizováno",
+  "balancedOptimization": "Vyvážená optimalizace"
 }

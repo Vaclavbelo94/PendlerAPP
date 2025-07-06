@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Clock, MapPin, AlertTriangle, TrendingUp, RefreshCw, Navigation, Cloud, Thermometer } from 'lucide-react';
+import { Clock, MapPin, AlertTriangle, TrendingUp, RefreshCw, Navigation, Cloud, Thermometer, Bell } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useUserAddresses } from '@/hooks/useUserAddresses';
 import QuickRouteSelector from './QuickRouteSelector';
+import { TrafficAlertsManagerLazy, MultiModalTransportSelectorLazy } from './LazyTravelComponents';
 import { motion } from 'framer-motion';
 
 interface TrafficPrediction {
@@ -38,6 +39,8 @@ const EnhancedTrafficPredictions: React.FC = () => {
   const [predictions, setPredictions] = useState<TrafficPrediction | null>(null);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
   const [isLoading, setIsLoading] = useState(false);
+  const [activeView, setActiveView] = useState<'predictions' | 'alerts' | 'multimodal'>('predictions');
+  const [optimizationCriteria, setOptimizationCriteria] = useState<'time' | 'cost' | 'eco' | 'balanced'>('balanced');
 
   // Enhanced mock data s weather informacemi
   const mockPredictions: Record<string, TrafficPrediction> = {
@@ -103,6 +106,15 @@ const EnhancedTrafficPredictions: React.FC = () => {
     setSelectedRoute('custom');
   };
 
+  const handleViewChange = (view: 'predictions' | 'alerts' | 'multimodal') => {
+    setActiveView(view);
+  };
+
+  const handleMultiModalRouteSelect = (route: any) => {
+    console.log('Selected multi-modal route:', route);
+    // Handle route selection logic here
+  };
+
   const loadPredictions = async () => {
     setIsLoading(true);
     // Simulace načítání z API
@@ -140,15 +152,56 @@ const EnhancedTrafficPredictions: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Quick Routes */}
-      {hasAddresses && (
-        <QuickRouteSelector 
-          onRouteSelect={handleRouteSelect}
-          className="lg:max-w-md"
-        />
-      )}
-
+      {/* Navigation Tabs */}
       <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5" />
+            {t('smartNavigation')}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap gap-2 mb-4">
+            <Button
+              variant={activeView === 'predictions' ? 'default' : 'outline'}
+              onClick={() => handleViewChange('predictions')}
+              className="flex items-center gap-2"
+            >
+              <Clock className="h-4 w-4" />
+              {t('trafficAnalysis')}
+            </Button>
+            <Button
+              variant={activeView === 'multimodal' ? 'default' : 'outline'}
+              onClick={() => handleViewChange('multimodal')}
+              className="flex items-center gap-2"
+            >
+              <Navigation className="h-4 w-4" />
+              {t('multiModalTransport')}
+            </Button>
+            <Button
+              variant={activeView === 'alerts' ? 'default' : 'outline'}  
+              onClick={() => handleViewChange('alerts')}
+              className="flex items-center gap-2"
+            >
+              <Bell className="h-4 w-4" />
+              {t('trafficAlerts')}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Content based on active view */}
+      {activeView === 'predictions' && (
+        <>
+          {/* Quick Routes */}
+          {hasAddresses && (
+            <QuickRouteSelector 
+              onRouteSelect={handleRouteSelect}
+              className="lg:max-w-md"
+            />
+          )}
+
+          <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <TrendingUp className="h-5 w-5" />
@@ -364,6 +417,26 @@ const EnhancedTrafficPredictions: React.FC = () => {
           )}
         </CardContent>
       </Card>
+        </>
+      )}
+
+      {activeView === 'multimodal' && (
+        <Suspense fallback={<div className="animate-pulse h-96 bg-muted rounded"></div>}>
+          <MultiModalTransportSelectorLazy
+            origin={customOrigin}
+            destination={customDestination}
+            onRouteSelect={handleMultiModalRouteSelect}
+            selectedCriteria={optimizationCriteria}
+            onCriteriaChange={setOptimizationCriteria}
+          />
+        </Suspense>
+      )}
+
+      {activeView === 'alerts' && (
+        <Suspense fallback={<div className="animate-pulse h-96 bg-muted rounded"></div>}>
+          <TrafficAlertsManagerLazy />
+        </Suspense>
+      )}
     </div>
   );
 };

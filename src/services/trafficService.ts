@@ -33,10 +33,66 @@ export interface TrafficAlert {
 }
 
 export const trafficService = {
-  async getTrafficData(origin: string, destination: string, mode: string = 'driving'): Promise<TrafficData> {
+  async getTrafficData(origin: string, destination: string, mode: string = 'driving', transportModes: string[] = ['driving'], userId?: string): Promise<TrafficData> {
     const { data, error } = await supabase.functions.invoke('traffic-data', {
-      body: { origin, destination, mode }
+      body: { origin, destination, mode, transportModes, userId }
     });
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async optimizeRoute(origin: string, destination: string, criteria: string = 'balanced', userId?: string) {
+    const { data, error } = await supabase.functions.invoke('route-optimization', {
+      body: { 
+        origin, 
+        destination, 
+        optimizationCriteria: criteria,
+        userId,
+        departureTime: new Date().toISOString()
+      }
+    });
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async getPersonalRoutes(userId: string) {
+    const { data, error } = await supabase
+      .from('personal_routes')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async createPersonalRoute(userId: string, routeData: any) {
+    const { data, error } = await supabase
+      .from('personal_routes')
+      .insert({
+        user_id: userId,
+        name: routeData.name,
+        origin_address: routeData.origin,
+        destination_address: routeData.destination,
+        transport_modes: routeData.transportModes || ['driving'],
+        is_frequent: routeData.isFrequent || false
+      })
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async getRouteAnalytics(userId: string, limit: number = 50) {
+    const { data, error } = await supabase
+      .from('route_analytics')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(limit);
     
     if (error) throw error;
     return data;
