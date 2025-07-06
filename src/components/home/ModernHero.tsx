@@ -7,18 +7,90 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/auth';
 import { useTranslation } from 'react-i18next';
+import { useDHLThemeContext } from '@/contexts/DHLThemeContext';
+import { DHLLogoWatermark } from '@/components/common/DHLLogoWatermark';
 
 const ModernHero = () => {
   const { user } = useAuth();
   const { t } = useTranslation('common');
+  const { isDHLThemeActive } = useDHLThemeContext();
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section className={`relative min-h-screen flex items-center justify-center overflow-hidden ${
+      isDHLThemeActive ? 'bg-gradient-to-br from-background via-background/95 to-primary/10' : ''
+    }`}>
+      {/* DHL Logo Watermark - only for DHL theme */}
+      {isDHLThemeActive && <DHLLogoWatermark />}
+      
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-400/20 rounded-full blur-3xl animate-pulse delay-1000" />
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-blue-200/10 to-purple-200/10 rounded-full blur-3xl" />
+        {isDHLThemeActive ? (
+          // DHL themed background elements
+          <>
+            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/25 rounded-full blur-3xl animate-pulse" />
+            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/25 rounded-full blur-3xl animate-pulse delay-1000" />
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-primary/15 to-secondary/15 rounded-full blur-3xl" />
+            {/* DHL floating elements */}
+            <motion.div
+              className="absolute top-20 right-10 text-4xl opacity-10"
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ 
+                opacity: [0, 0.1, 0.05], 
+                scale: [0, 1.2, 1],
+                rotate: [0, 10, -10, 0]
+              }}
+              transition={{ 
+                duration: 4, 
+                delay: 0,
+                repeat: Infinity,
+                repeatType: "reverse"
+              }}
+            >
+              🚚
+            </motion.div>
+            <motion.div
+              className="absolute bottom-20 left-20 text-3xl opacity-10"
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ 
+                opacity: [0, 0.1, 0.05], 
+                scale: [0, 1.2, 1],
+                rotate: [0, -10, 10, 0]
+              }}
+              transition={{ 
+                duration: 4, 
+                delay: 0.5,
+                repeat: Infinity,
+                repeatType: "reverse"
+              }}
+            >
+              📦
+            </motion.div>
+            <motion.div
+              className="absolute top-1/2 right-1/4 text-3xl opacity-10"
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ 
+                opacity: [0, 0.1, 0.05], 
+                scale: [0, 1.2, 1],
+                rotate: [0, 15, -15, 0]
+              }}
+              transition={{ 
+                duration: 4, 
+                delay: 1,
+                repeat: Infinity,
+                repeatType: "reverse"
+              }}
+            >
+              ✈️
+            </motion.div>
+          </>
+        ) : (
+          // Standard background elements
+          <>
+            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl animate-pulse" />
+            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-400/20 rounded-full blur-3xl animate-pulse delay-1000" />
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-blue-200/10 to-purple-200/10 rounded-full blur-3xl" />
+          </>
+        )}
       </div>
 
       <div className="container mx-auto px-4 py-16 relative z-10">
@@ -39,7 +111,11 @@ const ModernHero = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-5xl lg:text-7xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent mb-6 leading-tight"
+            className={`text-5xl lg:text-7xl font-bold mb-6 leading-tight ${
+              isDHLThemeActive 
+                ? 'bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent'
+                : 'bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent'
+            }`}
           >
             {t('heroMainTitle')}
           </motion.h1>
