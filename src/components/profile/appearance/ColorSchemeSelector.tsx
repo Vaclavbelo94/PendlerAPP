@@ -31,32 +31,18 @@ const ColorSchemeSelector = ({ colorScheme, onColorSchemeChange }: ColorSchemeSe
 
   return (
     <div className="space-y-6">
-      {/* DHL Theme Toggle */}
-      {isDHLEmployee && (
+      {/* DHL Theme Status - pouze informativní */}
+      {isDHLEmployee && isDHLThemeActive && (
         <div className="p-4 border rounded-lg bg-gradient-to-r from-yellow-50 to-red-50 dark:from-yellow-950/10 dark:to-red-950/10">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-yellow-500 rounded-lg">
-                <Truck className="h-4 w-4 text-black" />
-              </div>
-              <div>
-                <Label className="text-base font-semibold">DHL Branding</Label>
-                <p className="text-sm text-muted-foreground">
-                  Aktivovat DHL firemní barvy pro celou aplikaci
-                </p>
-              </div>
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-yellow-500 rounded-lg">
+              <Truck className="h-4 w-4 text-black" />
             </div>
-            <div className="flex items-center gap-2">
-              {isDHLThemeActive && (
-                <Badge variant="secondary" className="bg-yellow-500 text-black">
-                  Aktivní
-                </Badge>
-              )}
-              <Switch
-                checked={isDHLThemeActive}
-                onCheckedChange={toggleDHLTheme}
-                disabled={!canToggleDHLTheme}
-              />
+            <div>
+              <Label className="text-base font-semibold">DHL Branding aktivní</Label>
+              <p className="text-sm text-muted-foreground">
+                Aplikace používá DHL firemní barvy
+              </p>
             </div>
           </div>
         </div>

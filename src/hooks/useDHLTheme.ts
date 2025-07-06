@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/auth';
-import { isDHLEmployeeSync } from '@/utils/dhlAuthUtils';
+import { isDHLEmployee } from '@/utils/dhlAuthUtils';
 
 export interface DHLThemeState {
   isDHLEmployee: boolean;
@@ -21,31 +21,38 @@ export const useDHLTheme = () => {
   });
 
   useEffect(() => {
-    if (!user) {
+    const checkDHLStatus = async () => {
+      if (!user) {
+        setState({
+          isDHLEmployee: false,
+          isDHLThemeActive: false,
+          canToggleDHLTheme: false
+        });
+        document.documentElement.removeAttribute('data-dhl-theme');
+        return;
+      }
+
+      // Použij async verzi pro správnou detekci
+      const isDHL = await isDHLEmployee(user);
+      
+      // Pro DHL zaměstnance automaticky aktivujeme DHL theme
       setState({
-        isDHLEmployee: false,
-        isDHLThemeActive: false,
-        canToggleDHLTheme: false
+        isDHLEmployee: isDHL,
+        isDHLThemeActive: isDHL, // Auto-activate for DHL employees
+        canToggleDHLTheme: false // Automatické, bez toggle možnosti
       });
-      return;
-    }
 
-    const isDHL = isDHLEmployeeSync(user);
-    
-    // Pro DHL zaměstnance automaticky aktivujeme DHL theme
-    setState({
-      isDHLEmployee: isDHL,
-      isDHLThemeActive: isDHL, // Auto-activate for DHL employees
-      canToggleDHLTheme: isDHL // Only DHL employees can toggle
-    });
+      // Apply DHL theme to document root
+      if (isDHL) {
+        document.documentElement.setAttribute('data-dhl-theme', 'active');
+        console.log('DHL Theme: Activated for user', user.email);
+      } else {
+        document.documentElement.removeAttribute('data-dhl-theme');
+        console.log('DHL Theme: Deactivated for user', user.email);
+      }
+    };
 
-    // Apply DHL theme to document root
-    if (isDHL) {
-      document.documentElement.setAttribute('data-dhl-theme', 'active');
-    } else {
-      document.documentElement.removeAttribute('data-dhl-theme');
-    }
-
+    checkDHLStatus();
   }, [user]);
 
   const toggleDHLTheme = () => {
