@@ -49,6 +49,13 @@
     --ring: 51 100% 50%; /* DHL Yellow for focus rings */
     --chart-1: 51 100% 50%; /* DHL Yellow */
     --chart-2: 354 100% 42%; /* DHL Red */
+    /* DHL Background - Light Yellow */
+    --background: 51 30% 96%; /* Very light yellow background #FFFCF0 */
+    --card: 51 25% 98%; /* Even lighter yellow for cards #FFFEF9 */
+    --popover: 51 25% 98%; /* Light yellow for popovers */
+    --muted: 51 20% 92%; /* Muted yellow background */
+    --border: 51 15% 85%; /* Subtle yellow border */
+    --input: 51 15% 90%; /* Light yellow input background */
   }
 
   .dark {
@@ -93,6 +100,13 @@
     --ring: 45 100% 45%; /* Darker DHL Yellow for focus */
     --chart-1: 45 100% 45%;
     --chart-2: 354 85% 35%;
+    /* DHL Dark Background */
+    --background: 45 15% 8%; /* Dark yellow tinted background */
+    --card: 45 12% 10%; /* Slightly lighter for cards */
+    --popover: 45 12% 10%; /* Dark yellow for popovers */
+    --muted: 45 10% 12%; /* Muted dark yellow */
+    --border: 45 8% 18%; /* Subtle yellow border */
+    --input: 45 8% 15%; /* Dark yellow input background */
   }
 }
 
