@@ -1,234 +1,156 @@
-
-import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Upload, FileText, Users, CheckCircle, Download } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
-import { ScheduleUploader } from './ScheduleUploader';
-import { SchedulesList } from './SchedulesList';
-import { PositionManagementPanel } from './PositionManagementPanel';
-import { ImportHistory } from './ImportHistory';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import './MobileDHLStyles.css';
+import { Badge } from '@/components/ui/badge';
+import { Users, Calendar, Settings, ChevronDown, Upload, FileText, CheckCircle } from 'lucide-react';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import { cn } from '@/lib/utils';
+import DHLEmployeeManagement from './DHLEmployeeManagement';
+import DHLImportPanel from './DHLImportPanel';
+import DHLSystemSettings from './DHLSystemSettings';
+import { useTranslation } from 'react-i18next';
 
 interface DHLAdminMobileCarouselProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
 }
 
-export const DHLAdminMobileCarousel: React.FC<DHLAdminMobileCarouselProps> = ({
-  activeTab,
-  onTabChange
+const DHLAdminMobileCarousel: React.FC<DHLAdminMobileCarouselProps> = ({ 
+  activeTab, 
+  onTabChange 
 }) => {
+  const { t } = useTranslation(['dhl', 'common']);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
   const tabs = [
-    { id: 'upload', label: 'Import', icon: Upload, description: 'Nahrát plán směn' },
-    { id: 'schedules', label: 'Plány', icon: FileText, description: 'Přehled plánů směn' },
-    { id: 'positions', label: 'Pozice', icon: Users, description: 'Správa pozic' },
-    { id: 'history', label: 'Historie', icon: CheckCircle, description: 'Historie importů' },
-    { id: 'generate', label: 'Gen.', icon: Download, description: 'Generování směn' }
+    {
+      id: 'employees',
+      title: 'Zaměstnanci',
+      fullTitle: 'Správa zaměstnanců',
+      icon: Users,
+      component: <DHLEmployeeManagement />
+    },
+    {
+      id: 'schedules', 
+      title: 'Rozvrhy',
+      fullTitle: 'Správa rozvrhů',
+      icon: Calendar,
+      component: <DHLImportPanel />
+    },
+    {
+      id: 'settings',
+      title: 'Nastavení', 
+      fullTitle: 'Systémové nastavení',
+      icon: Settings,
+      component: <DHLSystemSettings />
+    }
   ];
 
-  const tabIds = tabs.map(tab => tab.id);
-  const currentIndex = tabs.findIndex(tab => tab.id === activeTab);
-
-  const { containerRef } = useSwipeNavigation({
-    items: tabIds,
-    currentItem: activeTab,
-    onItemChange: onTabChange,
-    enabled: true
-  });
-
-  const goToPrevious = () => {
-    const prevIndex = currentIndex === 0 ? tabs.length - 1 : currentIndex - 1;
-    onTabChange(tabs[prevIndex].id);
-  };
-
-  const goToNext = () => {
-    const nextIndex = (currentIndex + 1) % tabs.length;
-    onTabChange(tabs[nextIndex].id);
-  };
-
-  const renderUploadContent = () => {
-    return (
-      <>
-        <Card className="dhl-mobile-card">
-          <CardHeader className="dhl-mobile-card-header">
-            <CardTitle className="dhl-mobile-card-title flex items-center gap-2">
-              <Upload className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
-              <span>Nahrát plán směn</span>
-            </CardTitle>
-            <CardDescription className="dhl-mobile-card-description">
-              Nahrajte JSON soubor s plánem směn pro konkrétní pozici a pracovní skupinu
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="dhl-mobile-card-content dhl-mobile-upload-section">
-            <ScheduleUploader />
-          </CardContent>
-        </Card>
-
-        <Card className="dhl-mobile-card">
-          <CardHeader className="dhl-mobile-card-header">
-            <CardTitle className="dhl-mobile-card-title">Formát JSON souboru</CardTitle>
-            <CardDescription className="dhl-mobile-card-description">
-              Požadovaná struktura pro import plánů směn
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="dhl-mobile-card-content">
-            <div className="space-y-4">
-              <div className="dhl-mobile-format-info">
-                <h4 className="dhl-mobile-format-title">Povinné pole:</h4>
-                <ul className="dhl-mobile-format-list space-y-1">
-                  <li><code>base_date</code> - Referenční datum (YYYY-MM-DD)</li>
-                  <li><code>woche</code> - Číslo týdne v cyklu (1-15)</li>
-                  <li><code>YYYY-MM-DD</code> - Konkrétní data se směnami</li>
-                </ul>
-              </div>
-              
-              <div className="dhl-mobile-format-info">
-                <h4 className="dhl-mobile-format-title">Struktura směny:</h4>
-                <ul className="dhl-mobile-format-list space-y-1">
-                  <li><code>start_time</code> - Začátek směny (HH:MM)</li>
-                  <li><code>end_time</code> - Konec směny (HH:MM)</li>
-                  <li><code>day</code> - Den v týdnu (volitelné)</li>
-                </ul>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </>
-    );
-  };
-
-  const renderGenerateContent = () => {
-    return (
-      <Card className="dhl-mobile-card">
-        <CardHeader className="dhl-mobile-card-header">
-          <CardTitle className="dhl-mobile-card-title">Generování směn</CardTitle>
-          <CardDescription className="dhl-mobile-card-description">
-            Automatické generování směn pro zaměstnance na základě importovaných plánů
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="dhl-mobile-card-content">
-          <div className="space-y-4">
-            <div className="dhl-mobile-schedule-item border rounded-lg">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4">
-                <div className="min-w-0 flex-1">
-                  <h4 className="font-medium text-sm sm:text-base dhl-text-wrap">Bulk generování směn</h4>
-                  <p className="text-xs sm:text-sm text-muted-foreground mt-1 dhl-text-wrap">
-                    Vygeneruje směny pro všechny zaměstnance na základě jejich pozice a pracovní skupiny
-                  </p>
-                </div>
-                <Button className="w-full sm:w-auto dhl-mobile-button sm:dhl-mobile-button-secondary">
-                  Generovat všechny směny
-                </Button>
-              </div>
-            </div>
-
-            <div className="dhl-mobile-schedule-item border rounded-lg">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4">
-                <div className="min-w-0 flex-1">
-                  <h4 className="font-medium text-sm sm:text-base dhl-text-wrap">Nastavení Woche referenčních bodů</h4>
-                  <p className="text-xs sm:text-sm text-muted-foreground mt-1 dhl-text-wrap">
-                    Správa individuálních referenčních bodů zaměstnanců pro výpočet Woche
-                  </p>
-                </div>
-                <Button variant="outline" className="w-full sm:w-auto dhl-mobile-button sm:dhl-mobile-button-secondary">
-                  Spravovat reference
-                </Button>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  };
-
-  const renderTabContent = () => {
-    switch (activeTab) {
-      case 'upload':
-        return renderUploadContent();
-      case 'schedules':
-        return <SchedulesList />;
-      case 'positions':
-        return <PositionManagementPanel />;
-      case 'history':
-        return <ImportHistory />;
-      case 'generate':
-        return renderGenerateContent();
-      default:
-        return renderUploadContent();
+  useEffect(() => {
+    const index = tabs.findIndex(tab => tab.id === activeTab);
+    if (index !== -1) {
+      setCurrentIndex(index);
     }
-  };
+  }, [activeTab]);
 
-  const currentTab = tabs[currentIndex];
-  const Icon = currentTab?.icon || Upload;
+  const handleTabSelect = (tabId: string, index: number) => {
+    setCurrentIndex(index);
+    onTabChange(tabId);
+  };
 
   return (
-    <div className="space-y-4">
-      {/* Tab Navigation Header */}
-      <div className="flex items-center justify-between px-2">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={goToPrevious}
-          disabled={tabs.length <= 1}
-          className="h-8 w-8"
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
-        
-        <div className="flex-1 text-center">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <div className="p-1.5 rounded-lg bg-primary/10 border border-primary/20">
-              <Icon className="h-4 w-4 text-primary" />
-            </div>
-            <h2 className="text-lg font-semibold text-center">
-              {currentTab?.label}
-            </h2>
-          </div>
-          <div className="flex justify-center space-x-1">
+    <div className="space-y-6">
+      {/* Mobile Tab Navigation */}
+      <div className="block">
+        {/* Tab Indicators */}
+        <div className="flex justify-center items-center gap-2 mb-4">
+          {tabs.map((tab, index) => {
+            const Icon = tab.icon;
+            const isActive = index === currentIndex;
+            
+            return (
+              <Button
+                key={tab.id}
+                variant={isActive ? "default" : "outline"}
+                size="sm"
+                onClick={() => handleTabSelect(tab.id, index)}
+                className={cn(
+                  "flex items-center gap-2 transition-all duration-200",
+                  isActive ? "bg-yellow-600 hover:bg-yellow-700 text-white" : "hover:bg-yellow-50"
+                )}
+              >
+                <Icon className="h-4 w-4" />
+                <span className="hidden sm:inline">{tab.fullTitle}</span>
+                <span className="sm:hidden">{tab.title}</span>
+              </Button>
+            );
+          })}
+        </div>
+
+        {/* Progress Indicator */}
+        <div className="flex justify-center mb-6">
+          <div className="flex gap-2">
             {tabs.map((_, index) => (
-              <button
+              <div
                 key={index}
-                onClick={() => onTabChange(tabs[index].id)}
-                className={`w-2 h-2 rounded-full transition-colors ${
-                  index === currentIndex ? 'bg-primary' : 'bg-muted'
-                }`}
+                className={cn(
+                  "h-2 w-8 rounded-full transition-all duration-300",
+                  index === currentIndex ? "bg-yellow-600" : "bg-gray-200 dark:bg-gray-700"
+                )}
               />
             ))}
           </div>
         </div>
+      </div>
+
+      {/* Swipeable Content */}
+      <Carousel 
+        className="w-full" 
+        orientation="horizontal"
+        opts={{
+          align: "start",
+          loop: false,
+          skipSnaps: false,
+          dragFree: false
+        }}
+        setApi={(api) => {
+          if (api) {
+            api.on('select', () => {
+              const selected = api.selectedScrollSnap();
+              setCurrentIndex(selected);
+              onTabChange(tabs[selected].id);
+            });
+            
+            // Set initial position
+            api.scrollTo(currentIndex, false);
+          }
+        }}
+      >
+        <CarouselContent className="-ml-2 md:-ml-4">
+          {tabs.map((tab, index) => (
+            <CarouselItem key={tab.id} className="pl-2 md:pl-4 basis-full">
+              <div className="min-h-[600px]">
+                {tab.component}
+              </div>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
         
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={goToNext}
-          disabled={tabs.length <= 1}
-          className="h-8 w-8"
-        >
-          <ChevronRight className="h-4 w-4" />
-        </Button>
-      </div>
+        {/* Navigation Arrows - Hidden on mobile, shown on desktop */}
+        <div className="hidden lg:block">
+          <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2" />
+          <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2" />
+        </div>
+      </Carousel>
 
-      {/* Tab Content with Animation */}
-      <div ref={containerRef} className="overflow-hidden">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeTab}
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -50 }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
-          >
-            {renderTabContent()}
-          </motion.div>
-        </AnimatePresence>
-      </div>
-
-      {/* Tab info */}
-      <div className="text-center text-sm text-muted-foreground px-4">
-        {currentIndex + 1} z {tabs.length} • {currentTab?.description}
+      {/* Tab Content Title */}
+      <div className="text-center">
+        <h3 className="text-lg font-medium text-muted-foreground">
+          {tabs[currentIndex]?.fullTitle}
+        </h3>
       </div>
     </div>
   );
 };
+
+export default DHLAdminMobileCarousel;

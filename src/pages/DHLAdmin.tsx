@@ -13,14 +13,13 @@ import DHLImportPanel from "@/components/dhl/admin/DHLImportPanel";
 import DHLEmployeeManagement from "@/components/dhl/admin/DHLEmployeeManagement";
 import DHLSystemSettings from "@/components/dhl/admin/DHLSystemSettings";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useTranslation } from 'react-i18next';
+import DHLAdminMobileCarousel from "@/components/dhl/admin/DHLAdminMobileCarousel";
 
 const DHLAdmin = () => {
   const [showLoginDialog, setShowLoginDialog] = useState(false);
   const [activeTab, setActiveTab] = useState('employees');
   const navigate = useNavigate();
   const { user, signOut, isLoading } = useAuth();
-  const { t } = useTranslation(['dhl', 'common']);
 
   const hasAccess = canAccessDHLAdmin(user);
 
@@ -134,50 +133,8 @@ const DHLAdmin = () => {
           className="mb-8 border-yellow-200 bg-yellow-50 dark:bg-yellow-950/20"
         />
 
-        {/* Main Admin Panel with Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 gap-2 bg-white dark:bg-gray-800 rounded-lg p-1">
-            <TabsTrigger 
-              value="employees" 
-              className="flex items-center gap-2 data-[state=active]:bg-yellow-600 data-[state=active]:text-white"
-            >
-              <Users className="h-4 w-4" />
-              <span className="hidden sm:inline">Správa zaměstnanců</span>
-              <span className="sm:hidden">Zaměstnanci</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="schedules" 
-              className="flex items-center gap-2 data-[state=active]:bg-yellow-600 data-[state=active]:text-white"
-            >
-              <Calendar className="h-4 w-4" />
-              <span className="hidden sm:inline">Správa rozvrhů</span>
-              <span className="sm:hidden">Rozvrhy</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="settings" 
-              className="flex items-center gap-2 data-[state=active]:bg-yellow-600 data-[state=active]:text-white"
-            >
-              <Settings className="h-4 w-4" />
-              <span className="hidden sm:inline">Systémové nastavení</span>
-              <span className="sm:hidden">Nastavení</span>
-            </TabsTrigger>
-          </TabsList>
-
-          {/* Employee Management Tab */}
-          <TabsContent value="employees" className="space-y-6">
-            <DHLEmployeeManagement />
-          </TabsContent>
-
-          {/* Schedule Management Tab */}
-          <TabsContent value="schedules" className="space-y-6">
-            <DHLImportPanel />
-          </TabsContent>
-
-          {/* System Settings Tab */}
-          <TabsContent value="settings" className="space-y-6">
-            <DHLSystemSettings />
-          </TabsContent>
-        </Tabs>
+        {/* Main Admin Panel with Swipe Menu */}
+        <DHLAdminMobileCarousel activeTab={activeTab} onTabChange={setActiveTab} />
 
         {/* Admin Info */}
         <div className="mt-8 p-4 bg-yellow-100 dark:bg-yellow-900/20 rounded-lg border border-yellow-200">

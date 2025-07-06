@@ -39,6 +39,18 @@ export const SchedulesList: React.FC = () => {
 
   useEffect(() => {
     loadSchedules();
+    
+    // Listen for custom event to switch to upload tab
+    const handleSwitchToUpload = () => {
+      // This will be handled by parent component
+      window.parent?.postMessage({ action: 'switchToUploadTab' }, '*');
+    };
+    
+    window.addEventListener('switchToUploadTab', handleSwitchToUpload);
+    
+    return () => {
+      window.removeEventListener('switchToUploadTab', handleSwitchToUpload);
+    };
   }, []);
 
   const handleDelete = async (scheduleId: string) => {
@@ -240,7 +252,14 @@ export const SchedulesList: React.FC = () => {
           <p className="text-muted-foreground mb-4 text-sm">
             Zatím nebyly importovány žádné plány směn.
           </p>
-          <Button variant="outline" size="sm">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => {
+              // Přepnout na záložku upload v DHLImportPanel
+              window.dispatchEvent(new CustomEvent('switchToUploadTab'));
+            }}
+          >
             Importovat první plán
           </Button>
         </CardContent>

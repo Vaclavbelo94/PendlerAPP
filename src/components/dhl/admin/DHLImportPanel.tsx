@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -14,6 +14,21 @@ import './MobileDHLStyles.css';
 
 const DHLImportPanel: React.FC = () => {
   const [activeTab, setActiveTab] = useState('upload');
+
+  useEffect(() => {
+    // Listen for messages to switch tabs
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data?.action === 'switchToUploadTab') {
+        setActiveTab('upload');
+      }
+    };
+    
+    window.addEventListener('message', handleMessage);
+    
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
+  }, []);
 
   return (
     <div className="dhl-admin-container space-y-6">

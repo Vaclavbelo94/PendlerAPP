@@ -478,15 +478,41 @@ const DHLSystemSettings: React.FC = () => {
         <TabsContent value="integrations" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Nastavení integrací</CardTitle>
+              <CardTitle>DHL Systémové integrace</CardTitle>
               <CardDescription>
-                Konfigurace API klíčů a webhooků pro externí systémy
+                Konfigurace pro propojení s externími DHL systémy a automatickou synchronizaci dat ze směnových plánů
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
+              {/* Integration Explanation */}
+              <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                <div className="flex items-start gap-3">
+                  <Info className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">
+                      Co jsou systémové integrace?
+                    </h4>
+                    <div className="text-sm text-blue-800 dark:text-blue-200 space-y-2">
+                      <p>
+                        <strong>API klíč:</strong> Přístupový kód pro automatické stahování směnových plánů z centrálního DHL systému
+                      </p>
+                      <p>
+                        <strong>Webhook URL:</strong> Adresa pro zasílání notifikací o změnách v rozvrzích do externích systémů (např. personální software)
+                      </p>
+                      <p>
+                        <strong>Interval synchronizace:</strong> Jak často kontrolovat nové směny v centrálním systému
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="api_key">API klíč pro externí systémy</Label>
+                  <Label htmlFor="api_key" className="flex items-center gap-2">
+                    <Key className="h-4 w-4" />
+                    API klíč pro DHL centrální systém
+                  </Label>
                   <Input
                     id="api_key"
                     type="password"
@@ -497,12 +523,18 @@ const DHLSystemSettings: React.FC = () => {
                         integration_settings: { ...prev.integration_settings, api_key: e.target.value }
                       }))
                     }
-                    placeholder="Zadejte API klíč..."
+                    placeholder="DHL-API-KEY-12345..."
                   />
+                  <p className="text-xs text-muted-foreground">
+                    Kontaktujte IT oddělení DHL pro získání tohoto klíče
+                  </p>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="webhook_url">Webhook URL</Label>
+                  <Label htmlFor="webhook_url" className="flex items-center gap-2">
+                    <MessageSquare className="h-4 w-4" />
+                    Webhook pro notifikace o změnách
+                  </Label>
                   <Input
                     id="webhook_url"
                     type="url"
@@ -513,12 +545,18 @@ const DHLSystemSettings: React.FC = () => {
                         integration_settings: { ...prev.integration_settings, webhook_url: e.target.value }
                       }))
                     }
-                    placeholder="https://example.com/webhook"
+                    placeholder="https://vas-system.com/dhl-webhook"
                   />
+                  <p className="text-xs text-muted-foreground">
+                    Nepovinné - URL kam posílat notifikace o změnách rozvrhů
+                  </p>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="sync_interval">Interval synchronizace (minuty)</Label>
+                  <Label htmlFor="sync_interval" className="flex items-center gap-2">
+                    <Clock className="h-4 w-4" />
+                    Frekvence kontroly nových dat
+                  </Label>
                   <Select
                     value={config.integration_settings.sync_interval.toString()}
                     onValueChange={(value) => 
@@ -532,13 +570,56 @@ const DHLSystemSettings: React.FC = () => {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="5">5 minut</SelectItem>
-                      <SelectItem value="15">15 minut</SelectItem>
-                      <SelectItem value="30">30 minut</SelectItem>
-                      <SelectItem value="60">1 hodina</SelectItem>
+                      <SelectItem value="5">Každých 5 minut (nejčastěji)</SelectItem>
+                      <SelectItem value="15">Každých 15 minut (doporučeno)</SelectItem>
+                      <SelectItem value="30">Každých 30 minut</SelectItem>
+                      <SelectItem value="60">Každou hodinu (nejméně často)</SelectItem>
                     </SelectContent>
                   </Select>
+                  <p className="text-xs text-muted-foreground">
+                    Častější kontrola = aktuálnější data, ale vyšší zatížení systému
+                  </p>
                 </div>
+
+                {/* Integration Status */}
+                <div className="border rounded-lg p-4 bg-muted/50">
+                  <h4 className="font-medium mb-3 flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    Stav integrace
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div className="flex justify-between">
+                      <span>API připojení:</span>
+                      <Badge variant={config.integration_settings.api_key ? "default" : "secondary"}>
+                        {config.integration_settings.api_key ? "Nakonfigurováno" : "Nenastaveno"}
+                      </Badge>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Webhook:</span>
+                      <Badge variant={config.integration_settings.webhook_url ? "default" : "secondary"}>
+                        {config.integration_settings.webhook_url ? "Aktivní" : "Vypnutý"}
+                      </Badge>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Poslední synchronizace:</span>
+                      <span className="text-muted-foreground">Ještě nebyla provedena</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Interval:</span>
+                      <span className="text-muted-foreground">{config.integration_settings.sync_interval} min</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Test Button */}
+                <Button 
+                  variant="outline" 
+                  onClick={() => toast.info("Test integrace bude brzy dostupný")}
+                  className="w-full"
+                >
+                  <Server className="h-4 w-4 mr-2" />
+                  Otestovat propojení
+                </Button>
               </div>
             </CardContent>
           </Card>
