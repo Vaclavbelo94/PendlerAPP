@@ -46,7 +46,7 @@ export const useWorkData = () => {
           phone_number: data.phone_number || '',
           phone_country_code: data.phone_country_code || 'CZ',
           workplace_location: data.workplace_location || '',
-          home_address: data.home_address || ''
+          home_address: (data as any).home_address || ''
         });
       }
     } catch (error) {
