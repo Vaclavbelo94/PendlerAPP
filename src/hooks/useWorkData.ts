@@ -9,6 +9,7 @@ interface WorkData {
   phone_number: string;
   phone_country_code: string;
   workplace_location: string;
+  home_address: string;
 }
 
 export const useWorkData = () => {
@@ -19,7 +20,8 @@ export const useWorkData = () => {
     hourly_wage: null,
     phone_number: '',
     phone_country_code: 'CZ',
-    workplace_location: ''
+    workplace_location: '',
+    home_address: ''
   });
 
   const fetchWorkData = async () => {
@@ -43,7 +45,8 @@ export const useWorkData = () => {
           hourly_wage: data.hourly_wage,
           phone_number: data.phone_number || '',
           phone_country_code: data.phone_country_code || 'CZ',
-          workplace_location: data.workplace_location || ''
+          workplace_location: data.workplace_location || '',
+          home_address: data.home_address || ''
         });
       }
     } catch (error) {
@@ -65,7 +68,8 @@ export const useWorkData = () => {
           hourly_wage: data.hourly_wage,
           phone_number: data.phone_number,
           phone_country_code: data.phone_country_code,
-          workplace_location: data.workplace_location
+          workplace_location: data.workplace_location,
+          home_address: data.home_address
         });
 
       if (error) {
@@ -75,6 +79,10 @@ export const useWorkData = () => {
       }
 
       setWorkData(data);
+      
+      // Synchronize with user_travel_preferences
+      await syncWithTravelPreferences(data);
+      
       toast.success(t('workDataSaved'));
       return true;
     } catch (error) {
@@ -83,6 +91,20 @@ export const useWorkData = () => {
       return false;
     } finally {
       setLoading(false);
+    }
+  };
+
+  const syncWithTravelPreferences = async (workData: WorkData) => {
+    try {
+      await supabase
+        .from('user_travel_preferences')
+        .upsert({
+          user_id: user.id,
+          home_address: workData.home_address,
+          work_address: workData.workplace_location,
+        });
+    } catch (error) {
+      console.error('Error syncing with travel preferences:', error);
     }
   };
 

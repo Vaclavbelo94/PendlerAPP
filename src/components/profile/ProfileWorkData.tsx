@@ -9,15 +9,17 @@ import { useWorkData } from "@/hooks/useWorkData";
 import { useAddressAutocomplete } from "@/hooks/useAddressAutocomplete";
 import { useTranslation } from 'react-i18next';
 import { useLanguage } from '@/hooks/useLanguage';
-import { DollarSign, Phone, MapPin } from 'lucide-react';
+import { DollarSign, Phone, MapPin, Home } from 'lucide-react';
 
 const ProfileWorkData = () => {
   const { t } = useTranslation('profile');
   const { language } = useLanguage();
   const { workData, loading, saveWorkData, setWorkData } = useWorkData();
   const [tempData, setTempData] = useState(workData);
-  const [addressQuery, setAddressQuery] = useState('');
-  const { suggestions, loading: addressLoading } = useAddressAutocomplete(addressQuery);
+  const [workAddressQuery, setWorkAddressQuery] = useState('');
+  const [homeAddressQuery, setHomeAddressQuery] = useState('');
+  const { suggestions: workSuggestions, loading: workAddressLoading } = useAddressAutocomplete(workAddressQuery);
+  const { suggestions: homeSuggestions, loading: homeAddressLoading } = useAddressAutocomplete(homeAddressQuery);
 
   const countryOptions = [
     { code: 'CZ', label: t('czechRepublic') + ' (+420)', flag: '🇨🇿' },
@@ -79,12 +81,20 @@ const ProfileWorkData = () => {
     }
   };
 
-  const handleAddressSelect = (suggestion: any) => {
+  const handleWorkAddressSelect = (suggestion: any) => {
     setTempData({
       ...tempData,
       workplace_location: suggestion.display_name
     });
-    setAddressQuery('');
+    setWorkAddressQuery('');
+  };
+
+  const handleHomeAddressSelect = (suggestion: any) => {
+    setTempData({
+      ...tempData,
+      home_address: suggestion.display_name
+    });
+    setHomeAddressQuery('');
   };
 
   // Update tempData when workData changes (after fetch)
@@ -184,14 +194,58 @@ const ProfileWorkData = () => {
           </div>
 
           <div className="space-y-2">
+            <Label htmlFor="homeAddress">{t('homeAddress')}</Label>
+            <div className="relative">
+              <Home className="absolute left-3 top-3 h-4 w-4 text-muted-foreground z-10" />
+              <Input
+                id="homeAddress"
+                value={homeAddressQuery || tempData.home_address}
+                onChange={(e) => {
+                  setHomeAddressQuery(e.target.value);
+                  setTempData({
+                    ...tempData,
+                    home_address: e.target.value
+                  });
+                }}
+                placeholder={t('enterHomeAddress')}
+                className="pl-10"
+              />
+              {homeAddressQuery && homeSuggestions.length > 0 && (
+                <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg max-h-60 overflow-auto">
+                  {homeSuggestions.map((suggestion) => (
+                    <button
+                      key={suggestion.place_id}
+                      type="button"
+                      className="w-full px-4 py-3 text-left hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 text-sm border-b border-gray-100 dark:border-gray-700 last:border-b-0 transition-colors"
+                      onClick={() => handleHomeAddressSelect(suggestion)}
+                    >
+                      <div className="flex items-start gap-2">
+                        <Home className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                        <span className="text-gray-900 dark:text-gray-100 break-words">
+                          {suggestion.display_name}
+                        </span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+              {homeAddressLoading && (
+                <div className="absolute right-3 top-3 z-10">
+                  <div className="animate-spin h-4 w-4 border-2 border-gray-300 border-t-blue-600 rounded-full"></div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="workplaceLocation">{t('workplaceLocation')}</Label>
             <div className="relative">
               <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground z-10" />
               <Input
                 id="workplaceLocation"
-                value={addressQuery || tempData.workplace_location}
+                value={workAddressQuery || tempData.workplace_location}
                 onChange={(e) => {
-                  setAddressQuery(e.target.value);
+                  setWorkAddressQuery(e.target.value);
                   setTempData({
                     ...tempData,
                     workplace_location: e.target.value
@@ -200,14 +254,14 @@ const ProfileWorkData = () => {
                 placeholder={t('enterWorkplaceLocation')}
                 className="pl-10"
               />
-              {addressQuery && suggestions.length > 0 && (
+              {workAddressQuery && workSuggestions.length > 0 && (
                 <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg max-h-60 overflow-auto">
-                  {suggestions.map((suggestion) => (
+                  {workSuggestions.map((suggestion) => (
                     <button
                       key={suggestion.place_id}
                       type="button"
                       className="w-full px-4 py-3 text-left hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 text-sm border-b border-gray-100 dark:border-gray-700 last:border-b-0 transition-colors"
-                      onClick={() => handleAddressSelect(suggestion)}
+                      onClick={() => handleWorkAddressSelect(suggestion)}
                     >
                       <div className="flex items-start gap-2">
                         <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
@@ -219,7 +273,7 @@ const ProfileWorkData = () => {
                   ))}
                 </div>
               )}
-              {addressLoading && (
+              {workAddressLoading && (
                 <div className="absolute right-3 top-3 z-10">
                   <div className="animate-spin h-4 w-4 border-2 border-gray-300 border-t-blue-600 rounded-full"></div>
                 </div>

@@ -69,6 +69,8 @@
   "phoneNumber": "Telefonnummer",
   "countryCode": "Ländercode",
   "enterPhoneNumber": "Telefonnummer eingeben",
+  "homeAddress": "Wohnort",
+  "enterHomeAddress": "Wohnort eingeben",
   "workplaceLocation": "Arbeitsplatz",
   "enterWorkplaceLocation": "Arbeitsplatz eingeben",
   "czechRepublic": "Tschechische Republik",
