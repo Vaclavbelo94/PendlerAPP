@@ -85,7 +85,7 @@ export const isDHLEmployee = async (user: User | null): Promise<boolean> => {
 };
 
 /**
- * Synchronous version - only checks profile flag and admin override
+ * Synchronous version - only checks admin override and app metadata
  * Use this when you need immediate result without async calls
  */
 export const isDHLEmployeeSync = (user: User | null): boolean => {
@@ -100,18 +100,24 @@ export const isDHLEmployeeSync = (user: User | null): boolean => {
     return true;
   }
   
-  // Check if user profile has is_dhl_employee flag set
-  // This will be set by the profile data when loaded by useEnhancedAuth
-  const profileData = user.user_metadata || {};
-  const isDHLFromProfile = profileData.is_dhl_employee === true;
+  // Check app_metadata first (set by auth triggers)
+  const appMetadata = user.app_metadata || {};
+  const isDHLFromAppMeta = appMetadata.is_dhl_employee === true;
+  
+  // Fallback to user_metadata if available
+  const userMetadata = user.user_metadata || {};
+  const isDHLFromUserMeta = userMetadata.is_dhl_employee === true;
+  
+  const result = isDHLFromAppMeta || isDHLFromUserMeta;
   
   console.log('DHL Employee sync check:', {
     email: user.email,
-    isDHLFromProfile,
-    userMetadata: profileData
+    isDHLFromAppMeta,
+    isDHLFromUserMeta,
+    result
   });
   
-  return isDHLFromProfile;
+  return result;
 };
 
 /**

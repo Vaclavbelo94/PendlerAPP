@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/auth';
-import { isDHLEmployee } from '@/utils/dhlAuthUtils';
+import { isDHLEmployee, isDHLEmployeeSync } from '@/utils/dhlAuthUtils';
 
 export interface DHLThemeState {
   isDHLEmployee: boolean;
@@ -32,20 +32,33 @@ export const useDHLTheme = () => {
         return;
       }
 
-      // Použij async verzi pro správnou detekci
+      // Rychlá sync kontrola nejdříve
+      const isDHLSync = isDHLEmployeeSync(user);
+      
+      // Pokud sync detekce najde DHL, aktivuj okamžitě
+      if (isDHLSync) {
+        setState({
+          isDHLEmployee: true,
+          isDHLThemeActive: true,
+          canToggleDHLTheme: false
+        });
+        document.documentElement.setAttribute('data-dhl-theme', 'active');
+        console.log('DHL Theme: Immediately activated (sync) for user', user.email);
+        return;
+      }
+
+      // Jinak použij async verzi pro kompletní kontrolu
       const isDHL = await isDHLEmployee(user);
       
-      // Pro DHL zaměstnance automaticky aktivujeme DHL theme
       setState({
         isDHLEmployee: isDHL,
-        isDHLThemeActive: isDHL, // Auto-activate for DHL employees
-        canToggleDHLTheme: false // Automatické, bez toggle možnosti
+        isDHLThemeActive: isDHL,
+        canToggleDHLTheme: false
       });
 
-      // Apply DHL theme to document root
       if (isDHL) {
         document.documentElement.setAttribute('data-dhl-theme', 'active');
-        console.log('DHL Theme: Activated for user', user.email);
+        console.log('DHL Theme: Activated (async) for user', user.email);
       } else {
         document.documentElement.removeAttribute('data-dhl-theme');
         console.log('DHL Theme: Deactivated for user', user.email);
