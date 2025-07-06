@@ -12,7 +12,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 interface PositionFormData {
   name: string;
-  position_type: string;
+  position_type: 'technik' | 'rangierer' | 'verlader' | 'sortierer' | 'fahrer' | 'other' | 'pakettiere' | 'cutter' | 'shipper' | 'buehne' | 'teamleiter' | 'standortleiter' | 'schichtleiter' | 'qualitaetskontrolle' | 'administrativ' | 'sicherheit' | 'reinigung' | 'wartung';
   description: string;
   hourly_rate: string;
   cycle_weeks: number[];
@@ -26,12 +26,24 @@ interface PositionFormDialogProps {
 }
 
 const positionTypes = [
-  { value: 'fahrer', label: 'Fahrer' },
-  { value: 'rangierer', label: 'Rangierer' },
-  { value: 'sortierer', label: 'Sortierer' },
-  { value: 'technik', label: 'Technik' },
-  { value: 'verlader', label: 'Verlader' },
-  { value: 'other', label: 'Ostatní' }
+  { value: 'fahrer' as const, label: 'Fahrer' },
+  { value: 'rangierer' as const, label: 'Rangierer' },
+  { value: 'sortierer' as const, label: 'Sortierer' },
+  { value: 'technik' as const, label: 'Technik' },
+  { value: 'verlader' as const, label: 'Verlader' },
+  { value: 'pakettiere' as const, label: 'Pakettiere' },
+  { value: 'cutter' as const, label: 'Cutter' },
+  { value: 'shipper' as const, label: 'Shipper' },
+  { value: 'buehne' as const, label: 'Bühne' },
+  { value: 'teamleiter' as const, label: 'Teamleiter' },
+  { value: 'standortleiter' as const, label: 'Standortleiter' },
+  { value: 'schichtleiter' as const, label: 'Schichtleiter' },
+  { value: 'qualitaetskontrolle' as const, label: 'Qualitätskontrolle' },
+  { value: 'administrativ' as const, label: 'Administrativ' },
+  { value: 'sicherheit' as const, label: 'Sicherheit' },
+  { value: 'reinigung' as const, label: 'Reinigung' },
+  { value: 'wartung' as const, label: 'Wartung' },
+  { value: 'other' as const, label: 'Ostatní' }
 ];
 
 export const PositionFormDialog: React.FC<PositionFormDialogProps> = ({
@@ -77,7 +89,7 @@ export const PositionFormDialog: React.FC<PositionFormDialogProps> = ({
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handlePositionTypeChange = (value: string) => {
+  const handlePositionTypeChange = (value: PositionFormData['position_type']) => {
     setFormData(prev => ({ ...prev, position_type: value }));
   };
 

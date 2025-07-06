@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "@/hooks/auth";
+import { DHLThemeProvider } from "@/contexts/DHLThemeContext";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -42,30 +43,32 @@ function App() {
         <TooltipProvider>
           <BrowserRouter>
             <AuthProvider>
-              <Suspense fallback={<LoadingSpinner />}>
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/shifts" element={<Shifts />} />
-                  <Route path="/travel" element={<TravelPlanning />} />
-                  <Route path="/translator" element={<Translator />} />
-                  <Route path="/tax-advisor" element={<TaxAdvisor />} />
-                  <Route path="/laws" element={<Laws />} />
-                  <Route path="/laws/:lawId" element={<LawDetail />} />
-                  <Route path="/profile" element={<Profile />} />
-                  <Route path="/settings" element={<Settings />} />
-                  <Route path="/vehicle" element={<Vehicle />} />
-                  <Route path="/premium" element={<Premium />} />
-                  <Route path="/premium-gate" element={<PremiumGate />} />
-                  <Route path="/admin" element={<Admin />} />
-                  <Route path="/dhl-admin" element={<DHLAdmin />} />
-                  {/* DHL Routes - unified approach, only setup remains separate */}
-                  <Route path="/dhl-setup" element={<DHLSetup />} />
-                </Routes>
-              </Suspense>
-              <Toaster />
+              <DHLThemeProvider>
+                <Suspense fallback={<LoadingSpinner />}>
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/shifts" element={<Shifts />} />
+                    <Route path="/travel" element={<TravelPlanning />} />
+                    <Route path="/translator" element={<Translator />} />
+                    <Route path="/tax-advisor" element={<TaxAdvisor />} />
+                    <Route path="/laws" element={<Laws />} />
+                    <Route path="/laws/:lawId" element={<LawDetail />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/settings" element={<Settings />} />
+                    <Route path="/vehicle" element={<Vehicle />} />
+                    <Route path="/premium" element={<Premium />} />
+                    <Route path="/premium-gate" element={<PremiumGate />} />
+                    <Route path="/admin" element={<Admin />} />
+                    <Route path="/dhl-admin" element={<DHLAdmin />} />
+                    {/* DHL Routes - unified approach, only setup remains separate */}
+                    <Route path="/dhl-setup" element={<DHLSetup />} />
+                  </Routes>
+                </Suspense>
+                <Toaster />
+              </DHLThemeProvider>
             </AuthProvider>
           </BrowserRouter>
         </TooltipProvider>
