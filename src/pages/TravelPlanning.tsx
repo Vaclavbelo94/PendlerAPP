@@ -9,6 +9,7 @@ import { NavbarRightContent } from "@/components/layouts/NavbarPatch";
 import TravelNavigation from "@/components/travel/TravelNavigation";
 import DashboardBackground from "@/components/common/DashboardBackground";
 import { EnhancedRideSharingLazy, TrafficMapLazy } from "@/components/travel/LazyTravelComponents";
+import EnhancedTrafficPredictions from "@/components/travel/EnhancedTrafficPredictions";
 import { Skeleton } from "@/components/ui/skeleton";
 import TravelMobileCarousel from "@/components/travel/mobile/TravelMobileCarousel";
 import { useTranslation } from 'react-i18next';
@@ -37,14 +38,7 @@ const TravelPlanning = () => {
       case "ridesharing":
         return <EnhancedRideSharingLazy />;
       case "traffic":
-        return (
-          <TrafficMapLazy 
-            origin={origin} 
-            destination={destination}
-            onOriginChange={setOrigin}
-            onDestinationChange={setDestination}
-          />
-        );
+        return <EnhancedTrafficPredictions />;
       default:
         return <EnhancedRideSharingLazy />;
     }

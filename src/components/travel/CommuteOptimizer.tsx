@@ -4,6 +4,7 @@ import { toast } from "@/components/ui/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import OptimizerForm from './optimizer/OptimizerForm';
 import ResultsDisplay from './optimizer/ResultsDisplay';
+import QuickRouteSelector from './QuickRouteSelector';
 import { useAuth } from '@/hooks/auth';
 import { routeService } from '@/services/routeService';
 import { useTranslation } from 'react-i18next';
@@ -27,6 +28,11 @@ const CommuteOptimizer = () => {
     );
   };
   
+  const handleRouteSelect = (selectedOrigin: string, selectedDestination: string) => {
+    setOrigin(selectedOrigin);
+    setDestination(selectedDestination);
+  };
+
   const handleOptimize = async () => {
     if (!origin || !destination) {
       return;
@@ -54,28 +60,37 @@ const CommuteOptimizer = () => {
   };
 
   return (
-    <div className={`grid ${isMobile ? 'grid-cols-1' : 'md:grid-cols-2'} gap-4`}>
-      <OptimizerForm
-        origin={origin}
-        destination={destination}
-        departureTime={departureTime}
-        transportModes={transportModes}
-        optimizationPreference={optimizationPreference}
-        onOriginChange={setOrigin}
-        onDestinationChange={setDestination}
-        onDepartureTimeChange={setDepartureTime}
-        onTransportModeToggle={handleTransportToggle}
-        onPreferenceChange={setOptimizationPreference}
-        onOptimize={handleOptimize}
+    <div className="space-y-4">
+      {/* Quick Route Selector */}
+      <QuickRouteSelector 
+        onRouteSelect={handleRouteSelect}
+        className="lg:max-w-md"
       />
       
-      <ResultsDisplay 
-        hasInput={Boolean(origin && destination && optimized)}
-        origin={origin}
-        destination={destination}
-        transportModes={transportModes}
-        optimizationPreference={optimizationPreference}
-      />
+      {/* Main optimizer */}
+      <div className={`grid ${isMobile ? 'grid-cols-1' : 'md:grid-cols-2'} gap-4`}>
+        <OptimizerForm
+          origin={origin}
+          destination={destination}
+          departureTime={departureTime}
+          transportModes={transportModes}
+          optimizationPreference={optimizationPreference}
+          onOriginChange={setOrigin}
+          onDestinationChange={setDestination}
+          onDepartureTimeChange={setDepartureTime}
+          onTransportModeToggle={handleTransportToggle}
+          onPreferenceChange={setOptimizationPreference}
+          onOptimize={handleOptimize}
+        />
+        
+        <ResultsDisplay 
+          hasInput={Boolean(origin && destination && optimized)}
+          origin={origin}
+          destination={destination}
+          transportModes={transportModes}
+          optimizationPreference={optimizationPreference}
+        />
+      </div>
     </div>
   );
 };

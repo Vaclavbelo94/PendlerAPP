@@ -66,5 +66,22 @@
   "createOfferError": "Fehler beim Erstellen des Angebots",
   "loginRequired": "Anmeldung erforderlich",
   "contactRequestSent": "Kontaktanfrage wurde gesendet",
-  "contactError": "Fehler beim Kontaktieren des Fahrers"
+  "contactError": "Fehler beim Kontaktieren des Fahrers",
+  "useMyAddresses": "Meine Adressen verwenden",
+  "homeToWork": "Zuhause → Arbeit",
+  "workToHome": "Arbeit → Zuhause",
+  "quickRoutes": "Schnelle Routen",
+  "trafficAnalysis": "Verkehrsanalyse",
+  "routeOptimization": "Routenoptimierung",
+  "smartNavigation": "Intelligente Navigation",
+  "predictiveTraffic": "Verkehrsprognose",
+  "alternativeRoutes": "Alternative Routen",
+  "trafficIncidents": "Verkehrsstörungen",
+  "weatherImpact": "Wettereinfluss",
+  "currentTraffic": "Aktueller Verkehr",
+  "bestDepartureTime": "Beste Abfahrtszeit",
+  "estimatedArrival": "Geschätzte Ankunft",
+  "travelWarnings": "Reisewarnungen",
+  "roadConditions": "Straßenverhältnisse",
+  "trafficAlerts": "Verkehrsmeldungen"
 }

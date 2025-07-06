@@ -66,5 +66,22 @@
   "createOfferError": "Chyba při vytváření nabídky",
   "loginRequired": "Je vyžadováno přihlášení",
   "contactRequestSent": "Žádost o kontakt byla odeslána",
-  "contactError": "Chyba při kontaktování řidiče"
+  "contactError": "Chyba při kontaktování řidiče",
+  "useMyAddresses": "Použít moje adresy",
+  "homeToWork": "Domov → Práce",
+  "workToHome": "Práce → Domov",
+  "quickRoutes": "Rychlé trasy",
+  "trafficAnalysis": "Analýza dopravy",
+  "routeOptimization": "Optimalizace trasy",
+  "smartNavigation": "Chytrá navigace",
+  "predictiveTraffic": "Predikce dopravy",
+  "alternativeRoutes": "Alternativní trasy",
+  "trafficIncidents": "Dopravní nehody",
+  "weatherImpact": "Vliv počasí",
+  "currentTraffic": "Současná doprava",
+  "bestDepartureTime": "Nejlepší čas odjezdu",
+  "estimatedArrival": "Odhadovaný příjezd",
+  "travelWarnings": "Varování pro cestování",
+  "roadConditions": "Stav cesty",
+  "trafficAlerts": "Dopravní upozornění"
 }
