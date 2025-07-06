@@ -286,7 +286,7 @@ const DHLEmployeeManagement: React.FC = () => {
         </Card>
       </div>
 
-      {/* Employee Table */}
+      {/* Employee List */}
       <Card>
         <CardHeader>
           <CardTitle>Seznam zaměstnanců</CardTitle>
@@ -295,41 +295,42 @@ const DHLEmployeeManagement: React.FC = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="rounded-md border overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="whitespace-nowrap">Email</TableHead>
-                  <TableHead className="whitespace-nowrap">Status</TableHead>
-                  <TableHead className="whitespace-nowrap">Premium</TableHead>
-                  <TableHead className="whitespace-nowrap">Registrován</TableHead>
-                  <TableHead className="text-right whitespace-nowrap">Akce</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredEmployees.map((employee) => (
-                  <TableRow key={employee.id}>
-                    <TableCell className="font-medium whitespace-nowrap">
-                      <div className="flex items-center gap-2">
-                        <Mail className="h-4 w-4 text-muted-foreground" />
-                        {employee.email}
-                      </div>
-                    </TableCell>
-                    <TableCell className="whitespace-nowrap">
-                      <Badge variant={employee.is_dhl_employee ? "default" : "secondary"}>
-                        {employee.is_dhl_employee ? "Aktivní" : "Neaktivní"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="whitespace-nowrap">
-                      <Badge variant={employee.is_premium ? "default" : "outline"}>
-                        {employee.is_premium ? "Premium" : "Základní"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="whitespace-nowrap">
-                      {new Date(employee.created_at).toLocaleDateString('cs-CZ')}
-                    </TableCell>
-                    <TableCell className="text-right whitespace-nowrap">
-                      <div className="flex justify-end gap-2">
+          {/* Desktop Table View */}
+          <div className="hidden md:block">
+            <div className="rounded-md border overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Premium</TableHead>
+                    <TableHead>Registrován</TableHead>
+                    <TableHead className="text-right">Akce</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredEmployees.map((employee) => (
+                    <TableRow key={employee.id}>
+                      <TableCell className="font-medium">
+                        <div className="flex items-center gap-2">
+                          <Mail className="h-4 w-4 text-muted-foreground" />
+                          {employee.email}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={employee.is_dhl_employee ? "default" : "secondary"}>
+                          {employee.is_dhl_employee ? "Aktivní" : "Neaktivní"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={employee.is_premium ? "default" : "outline"}>
+                          {employee.is_premium ? "Premium" : "Základní"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {new Date(employee.created_at).toLocaleDateString('cs-CZ')}
+                      </TableCell>
+                      <TableCell className="text-right">
                         <Button
                           variant="outline"
                           size="sm"
@@ -347,12 +348,65 @@ const DHLEmployeeManagement: React.FC = () => {
                             </>
                           )}
                         </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="md:hidden space-y-4">
+            {filteredEmployees.map((employee) => (
+              <Card key={employee.id} className="p-4">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Mail className="h-4 w-4 text-muted-foreground" />
+                    <span className="font-medium text-sm">{employee.email}</span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-muted-foreground">Status:</span>
+                        <Badge variant={employee.is_dhl_employee ? "default" : "secondary"} className="text-xs">
+                          {employee.is_dhl_employee ? "Aktivní" : "Neaktivní"}
+                        </Badge>
                       </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-muted-foreground">Premium:</span>
+                        <Badge variant={employee.is_premium ? "default" : "outline"} className="text-xs">
+                          {employee.is_premium ? "Premium" : "Základní"}
+                        </Badge>
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        Registrován: {new Date(employee.created_at).toLocaleDateString('cs-CZ')}
+                      </div>
+                    </div>
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleToggleEmployee(employee.id, employee.is_dhl_employee)}
+                      className="ml-2"
+                    >
+                      {employee.is_dhl_employee ? (
+                        <>
+                          <UserX className="h-4 w-4 mr-1" />
+                          Deaktivovat
+                        </>
+                      ) : (
+                        <>
+                          <UserCheck className="h-4 w-4 mr-1" />
+                          Aktivovat
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            ))}
           </div>
           
           {filteredEmployees.length === 0 && (
