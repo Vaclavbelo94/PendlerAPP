@@ -67,8 +67,8 @@ const DHLEmployeeManagement: React.FC = () => {
       
       let employeeData = data || [];
       
-      // Add demo data if no real employees exist
-      if (employeeData.length === 0) {
+      // Always add demo data for testing (remove or filter real users if needed)
+      if (employeeData.length === 0 || employeeData.every(emp => emp.email === 'admindhl@pendlerapp.com')) {
         employeeData = [
           {
             id: 'demo-1',
