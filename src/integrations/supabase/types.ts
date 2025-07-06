@@ -2072,6 +2072,18 @@ export type Database = {
         | "sortierer"
         | "fahrer"
         | "other"
+        | "pakettiere"
+        | "cutter"
+        | "shipper"
+        | "buehne"
+        | "teamleiter"
+        | "standortleiter"
+        | "schichtleiter"
+        | "qualitaetskontrolle"
+        | "administrativ"
+        | "sicherheit"
+        | "reinigung"
+        | "wartung"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2194,6 +2206,18 @@ export const Constants = {
         "sortierer",
         "fahrer",
         "other",
+        "pakettiere",
+        "cutter",
+        "shipper",
+        "buehne",
+        "teamleiter",
+        "standortleiter",
+        "schichtleiter",
+        "qualitaetskontrolle",
+        "administrativ",
+        "sicherheit",
+        "reinigung",
+        "wartung",
       ],
     },
   },

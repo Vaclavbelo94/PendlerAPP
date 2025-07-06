@@ -1,0 +1,13 @@
+-- Rozšíření enum pro DHL pozice
+ALTER TYPE public.dhl_position_type ADD VALUE 'pakettiere';
+ALTER TYPE public.dhl_position_type ADD VALUE 'cutter';
+ALTER TYPE public.dhl_position_type ADD VALUE 'shipper';
+ALTER TYPE public.dhl_position_type ADD VALUE 'buehne';
+ALTER TYPE public.dhl_position_type ADD VALUE 'teamleiter';
+ALTER TYPE public.dhl_position_type ADD VALUE 'standortleiter';
+ALTER TYPE public.dhl_position_type ADD VALUE 'schichtleiter';
+ALTER TYPE public.dhl_position_type ADD VALUE 'qualitaetskontrolle';
+ALTER TYPE public.dhl_position_type ADD VALUE 'administrativ';
+ALTER TYPE public.dhl_position_type ADD VALUE 'sicherheit';
+ALTER TYPE public.dhl_position_type ADD VALUE 'reinigung';
+ALTER TYPE public.dhl_position_type ADD VALUE 'wartung';
