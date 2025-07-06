@@ -3,7 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 import EnhancedRideSharing from '../EnhancedRideSharing';
-import TrafficMap from '../TrafficMap';
+import EnhancedTrafficPredictions from '../EnhancedTrafficPredictions';
 import { UniversalMobileNavigation } from '@/components/navigation/UniversalMobileNavigation';
 import { Users, AlertTriangle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -92,12 +92,7 @@ const TravelMobileCarousel: React.FC<TravelMobileCarouselProps> = ({
           }}
           style={{ display: activeTab === 'traffic' ? 'block' : 'none' }}
         >
-          <TrafficMap 
-            origin={origin} 
-            destination={destination}
-            onOriginChange={onOriginChange}
-            onDestinationChange={onDestinationChange}
-          />
+          <EnhancedTrafficPredictions />
         </motion.div>
       </motion.div>
     </div>

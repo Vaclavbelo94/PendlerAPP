@@ -26,9 +26,9 @@ export const TravelNavigation: React.FC<TravelNavigationProps> = ({
     },
     {
       id: 'traffic',
-      label: t('liveTraffic'),
+      label: t('smartNavigation'),
       icon: AlertTriangle,
-      description: t('realTimeTraffic')
+      description: t('trafficAnalysis')
     }
   ];
 
@@ -49,13 +49,13 @@ export const TravelNavigation: React.FC<TravelNavigationProps> = ({
               variant={isActive ? "default" : "outline"}
               onClick={() => onTabChange(section.id)}
               className={cn(
-                "transition-all duration-300 hover:scale-105",
-                "bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:text-primary",
-                isActive && "bg-primary/20 border-primary/30 shadow-lg scale-105"
+                "transition-all duration-300 hover:scale-105 flex items-center gap-2 px-4 py-2",
+                !isActive && "hover:bg-white/10 hover:border-white/30",
+                isActive && "bg-primary shadow-lg scale-105"
               )}
             >
-              <Icon className="h-4 w-4 mr-2" />
-              {section.label}
+              <Icon className="h-4 w-4" />
+              <span className="font-medium">{section.label}</span>
             </Button>
           </motion.div>
         );

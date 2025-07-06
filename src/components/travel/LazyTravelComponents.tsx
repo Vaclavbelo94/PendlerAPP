@@ -1,9 +1,11 @@
 
 import { lazy } from 'react';
 
-// Enhanced components with new features
+// Enhanced components with new features - Phase 1 Complete
 export const EnhancedCommuteOptimizerLazy = lazy(() => import('./EnhancedCommuteOptimizer'));
 export const EnhancedRideSharingLazy = lazy(() => import('./EnhancedRideSharing'));
+export const EnhancedTrafficPredictionsLazy = lazy(() => import('./EnhancedTrafficPredictions'));
+export const QuickRouteSelectorLazy = lazy(() => import('./QuickRouteSelector'));
 export const TrafficMapLazy = lazy(() => import('./TrafficMap'));
 export const TravelAnalyticsLazy = lazy(() => import('./TravelAnalyticsDashboard'));
 
