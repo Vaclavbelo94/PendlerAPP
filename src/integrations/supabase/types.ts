@@ -1807,6 +1807,7 @@ export type Database = {
       user_work_data: {
         Row: {
           created_at: string
+          home_address: string | null
           hourly_wage: number | null
           id: string
           phone_country_code: string | null
@@ -1817,6 +1818,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          home_address?: string | null
           hourly_wage?: number | null
           id?: string
           phone_country_code?: string | null
@@ -1827,6 +1829,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          home_address?: string | null
           hourly_wage?: number | null
           id?: string
           phone_country_code?: string | null
