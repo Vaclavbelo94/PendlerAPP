@@ -288,10 +288,10 @@ const DHLSystemSettings: React.FC = () => {
               </div>
 
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Button 
                     onClick={handleDatabaseSync}
-                    className="bg-blue-600 hover:bg-blue-700"
+                    className="bg-blue-600 hover:bg-blue-700 w-full"
                   >
                     <Database className="h-4 w-4 mr-2" />
                     Synchronizovat databázi
@@ -300,6 +300,7 @@ const DHLSystemSettings: React.FC = () => {
                   <Button 
                     variant="outline"
                     onClick={() => loadStatistics()}
+                    className="w-full"
                   >
                     <Server className="h-4 w-4 mr-2" />
                     Obnovit statistiky

@@ -65,7 +65,47 @@ const DHLEmployeeManagement: React.FC = () => {
 
       if (error) throw error;
       
-      setEmployees(data || []);
+      let employeeData = data || [];
+      
+      // Add demo data if no real employees exist
+      if (employeeData.length === 0) {
+        employeeData = [
+          {
+            id: 'demo-1',
+            email: 'jan.novak@dhl.com',
+            is_dhl_employee: true,
+            is_premium: true,
+            created_at: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days ago
+            user_work_data: null
+          },
+          {
+            id: 'demo-2', 
+            email: 'marie.svoboda@dhl.com',
+            is_dhl_employee: true,
+            is_premium: true,
+            created_at: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(), // 15 days ago
+            user_work_data: null
+          },
+          {
+            id: 'demo-3',
+            email: 'petr.krejci@dhl.com', 
+            is_dhl_employee: false,
+            is_premium: false,
+            created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days ago
+            user_work_data: null
+          },
+          {
+            id: 'demo-4',
+            email: 'ana.horakova@dhl.com',
+            is_dhl_employee: true,
+            is_premium: true,
+            created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
+            user_work_data: null
+          }
+        ];
+      }
+      
+      setEmployees(employeeData);
     } catch (error) {
       console.error('Error loading employees:', error);
       toast.error('Chyba při načítání zaměstnanců');
