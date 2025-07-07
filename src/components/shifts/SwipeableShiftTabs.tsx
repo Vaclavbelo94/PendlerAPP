@@ -6,7 +6,7 @@ import { Calendar, BarChart3, Eye, Download, Settings } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { motion, AnimatePresence } from 'framer-motion';
 import ShiftCalendarContainer from './calendar/ShiftCalendarContainer';
-import ShiftsAnalytics from './ShiftsAnalytics';
+import ShiftStats from './ShiftStats';
 import ShiftsExport from './ShiftsExport';
 import DHLImportTab from './DHLImportTab';
 import ShiftsSettings from './ShiftsSettings';
@@ -161,7 +161,7 @@ const SwipeableShiftTabs: React.FC<SwipeableShiftTabsProps> = ({
                       <h2 className="text-xl font-semibold mb-2">{t('tabs.analytics')}</h2>
                       <p className="text-sm text-muted-foreground">{t('analyticsDescription')}</p>
                     </div>
-                    <ShiftsAnalytics shifts={shifts} />
+                    <ShiftStats shifts={shifts} />
                   </div>
                 </TabsContent>
 
