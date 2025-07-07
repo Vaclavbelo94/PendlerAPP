@@ -190,6 +190,10 @@ const TaxWizardCarousel: React.FC = () => {
               onExportPDF={handleExportPDF}
               onExportXML={handleExportXML}
               onDownloadGuide={handleDownloadGuide}
+              onLoadData={(newData) => {
+                // Implementace načtení dat z kódu
+                console.log('Loading data:', newData);
+              }}
             />
           </motion.div>
         </AnimatePresence>
