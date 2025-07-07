@@ -8,17 +8,8 @@ import Layout from "@/components/layouts/Layout";
 import { NavbarRightContent } from "@/components/layouts/NavbarPatch";
 import TravelNavigation from "@/components/travel/TravelNavigation";
 import DashboardBackground from "@/components/common/DashboardBackground";
-import { 
-  EnhancedRideSharingLazy, 
-  TrafficMapLazy,
-  TrafficAlertsManagerLazy,
-  AITravelInsightsLazy,
-  TravelAnalyticsDashboardLazy,
-  TravelCommunityHubLazy,
-  SmartTravelRecommendationsLazy
-} from "@/components/travel/LazyTravelComponents";
+import { EnhancedRideSharingLazy } from "@/components/travel/LazyTravelComponents";
 import HomeWorkTrafficMonitor from "@/components/travel/HomeWorkTrafficMonitor";
-import EnhancedTrafficPredictions from "@/components/travel/EnhancedTrafficPredictions";
 import { Skeleton } from "@/components/ui/skeleton";
 import TravelMobileCarousel from "@/components/travel/mobile/TravelMobileCarousel";
 import { useTranslation } from 'react-i18next';
@@ -48,24 +39,6 @@ const TravelPlanning = () => {
         return <EnhancedRideSharingLazy />;
       case "commute-traffic":
         return <HomeWorkTrafficMonitor />;
-      case "traffic":
-        return <EnhancedTrafficPredictions />;
-      case "alerts":
-        return <TrafficAlertsManagerLazy />;
-      case "insights":
-        return (
-          <div className="grid gap-6 lg:grid-cols-2">
-            <AITravelInsightsLazy />
-            <SmartTravelRecommendationsLazy />
-          </div>
-        );
-      case "analytics":
-        return (
-          <div className="space-y-6">
-            <TravelAnalyticsDashboardLazy />
-            <TravelCommunityHubLazy />
-          </div>
-        );
       default:
         return <EnhancedRideSharingLazy />;
     }

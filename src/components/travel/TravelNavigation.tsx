@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Users, AlertTriangle, Brain, BarChart3, Bell, Navigation } from 'lucide-react';
+import { Users, Navigation } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
@@ -29,30 +29,6 @@ export const TravelNavigation: React.FC<TravelNavigationProps> = ({
       label: t('commuteTraffic'),
       icon: Navigation,
       description: t('commuteTrafficDesc')
-    },
-    {
-      id: 'traffic',
-      label: t('smartNavigation'),
-      icon: AlertTriangle,
-      description: t('trafficAnalysis')
-    },
-    {
-      id: 'alerts',
-      label: t('trafficAlerts'),
-      icon: Bell,
-      description: t('personalizedAlerts')
-    },
-    {
-      id: 'insights',
-      label: t('smartRecommendations'),
-      icon: Brain,
-      description: 'AI Doporučení'
-    },
-    {
-      id: 'analytics',
-      label: 'Analytiky',
-      icon: BarChart3,
-      description: 'Přehledy cest'
     }
   ];
 

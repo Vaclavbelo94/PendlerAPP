@@ -3,14 +3,10 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 import EnhancedRideSharing from '../EnhancedRideSharing';
-import EnhancedTrafficPredictions from '../EnhancedTrafficPredictions';
 import HomeWorkTrafficMonitor from '../HomeWorkTrafficMonitor';
-import { TrafficAlertsManagerLazy, AITravelInsightsLazy, TravelAnalyticsDashboardLazy } from '../LazyTravelComponents';
 import { UniversalMobileNavigation } from '@/components/navigation/UniversalMobileNavigation';
-import { Users, AlertTriangle, Bell, Brain, BarChart3, Navigation } from 'lucide-react';
+import { Users, Navigation } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Suspense } from 'react';
-import { Skeleton } from '@/components/ui/skeleton';
 
 interface TravelMobileCarouselProps {
   activeTab: string;
@@ -30,7 +26,7 @@ const TravelMobileCarousel: React.FC<TravelMobileCarouselProps> = ({
   onDestinationChange
 }) => {
   const { t } = useTranslation('travel');
-  const tabs = ['ridesharing', 'commute-traffic', 'traffic', 'alerts', 'insights', 'analytics'];
+  const tabs = ['ridesharing', 'commute-traffic'];
   
   // Setup swipe navigation between tabs
   const { containerRef } = useSwipeNavigation({
@@ -53,30 +49,6 @@ const TravelMobileCarousel: React.FC<TravelMobileCarouselProps> = ({
       label: t('commuteTraffic'),
       icon: Navigation,
       description: t('commuteTrafficDesc')
-    },
-    {
-      id: 'traffic',
-      label: t('liveTrafficShort'),
-      icon: AlertTriangle,
-      description: t('realTimeTraffic')
-    },
-    {
-      id: 'alerts',
-      label: t('trafficAlerts'),
-      icon: Bell,
-      description: t('personalizedAlerts')
-    },
-    {
-      id: 'insights',
-      label: t('smartRecommendations'),
-      icon: Brain,
-      description: 'AI Doporučení'
-    },
-    {
-      id: 'analytics',
-      label: 'Analytiky',
-      icon: BarChart3,
-      description: 'Přehledy cest'
     }
   ];
   
@@ -114,60 +86,6 @@ const TravelMobileCarousel: React.FC<TravelMobileCarouselProps> = ({
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
           >
             <HomeWorkTrafficMonitor />
-          </motion.div>
-        )}
-
-        {activeTab === 'traffic' && (
-          <motion.div
-            className="w-full flex flex-col space-y-4"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 20 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-          >
-            <EnhancedTrafficPredictions />
-          </motion.div>
-        )}
-
-        {activeTab === 'alerts' && (
-          <motion.div
-            className="w-full flex flex-col space-y-4"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 20 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-          >
-            <Suspense fallback={<Skeleton className="h-96 w-full" />}>
-              <TrafficAlertsManagerLazy />
-            </Suspense>
-          </motion.div>
-        )}
-
-        {activeTab === 'insights' && (
-          <motion.div
-            className="w-full flex flex-col space-y-4"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 20 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-          >
-            <Suspense fallback={<Skeleton className="h-96 w-full" />}>
-              <AITravelInsightsLazy />
-            </Suspense>
-          </motion.div>
-        )}
-
-        {activeTab === 'analytics' && (
-          <motion.div
-            className="w-full flex flex-col space-y-4"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 20 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-          >
-            <Suspense fallback={<Skeleton className="h-96 w-full" />}>
-              <TravelAnalyticsDashboardLazy />
-            </Suspense>
           </motion.div>
         )}
       </motion.div>
