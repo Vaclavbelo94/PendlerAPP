@@ -6,9 +6,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MapPin } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/auth';
 import { rideshareService } from "@/services/rideshareService";
+import { getDefaultCurrencyByLanguage, getCurrencyList } from '@/utils/currencyUtils';
+import { useTranslation } from 'react-i18next';
 
 interface RideOfferFormProps {
   onOfferCreated: () => void;
@@ -17,6 +19,8 @@ interface RideOfferFormProps {
 
 const RideOfferForm = ({ onOfferCreated, onCancel }: RideOfferFormProps) => {
   const { user } = useAuth();
+  const { t, i18n } = useTranslation('travel');
+  
   const [newRideOffer, setNewRideOffer] = useState({
     origin_address: '',
     destination_address: '',
@@ -24,23 +28,36 @@ const RideOfferForm = ({ onOfferCreated, onCancel }: RideOfferFormProps) => {
     departure_date: '',
     seats_available: 2,
     price_per_person: '',
+    currency: getDefaultCurrencyByLanguage(i18n.language),
     notes: '',
     phone_number: ''
   });
 
   const handleSubmitOffer = async () => {
     if (!user?.id) {
-      toast.error('Pro nabídnutí spolujízdy se musíte přihlásit');
+      toast({
+        title: 'Chyba',
+        description: 'Pro nabídnutí spolujízdy se musíte přihlásit',
+        variant: 'destructive'
+      });
       return;
     }
 
     if (!newRideOffer.origin_address || !newRideOffer.destination_address || !newRideOffer.departure_date) {
-      toast.error("Vyplňte prosím všechny povinné údaje.");
+      toast({
+        title: 'Chyba',
+        description: 'Vyplňte prosím všechny povinné údaje.',
+        variant: 'destructive'
+      });
       return;
     }
 
     if (!newRideOffer.phone_number) {
-      toast.error("Zadejte prosím telefonní číslo.");
+      toast({
+        title: 'Chyba', 
+        description: 'Zadejte prosím telefonní číslo.',
+        variant: 'destructive'
+      });
       return;
     }
 
@@ -49,11 +66,15 @@ const RideOfferForm = ({ onOfferCreated, onCancel }: RideOfferFormProps) => {
         ...newRideOffer,
         user_id: user.id,
         price_per_person: newRideOffer.price_per_person ? parseFloat(newRideOffer.price_per_person) : 0,
+        currency: newRideOffer.currency,
         is_recurring: false,
         recurring_days: []
       });
       
-      toast.success("Vaše nabídka spolujízdy byla úspěšně přidána.");
+      toast({
+        title: 'Úspěch',
+        description: 'Vaše nabídka spolujízdy byla úspěšně přidána.'
+      });
       
       // Reset form
       setNewRideOffer({
@@ -63,6 +84,7 @@ const RideOfferForm = ({ onOfferCreated, onCancel }: RideOfferFormProps) => {
         departure_date: '',
         seats_available: 2,
         price_per_person: '',
+        currency: getDefaultCurrencyByLanguage(i18n.language),
         notes: '',
         phone_number: ''
       });
@@ -70,7 +92,11 @@ const RideOfferForm = ({ onOfferCreated, onCancel }: RideOfferFormProps) => {
       onOfferCreated();
     } catch (error) {
       console.error('Error creating offer:', error);
-      toast.error('Nepodařilo se vytvořit nabídku spolujízdy');
+      toast({
+        title: 'Chyba',
+        description: 'Nepodařilo se vytvořit nabídku spolujízdy',
+        variant: 'destructive'
+      });
     }
   };
 
@@ -150,13 +176,35 @@ const RideOfferForm = ({ onOfferCreated, onCancel }: RideOfferFormProps) => {
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="offer-price">Cena za osobu (CZK)</Label>
-            <Input 
-              id="offer-price"
-              placeholder="Např. 150" 
-              value={newRideOffer.price_per_person}
-              onChange={(e) => setNewRideOffer({...newRideOffer, price_per_person: e.target.value})}
-            />
+            <Label htmlFor="offer-price">{t('pricePerPerson')}</Label>
+            <div className="flex gap-2">
+              <Input 
+                id="offer-price"
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="0" 
+                value={newRideOffer.price_per_person}
+                onChange={(e) => setNewRideOffer({...newRideOffer, price_per_person: e.target.value})}
+                className="flex-1"
+              />
+              <Select 
+                value={newRideOffer.currency} 
+                onValueChange={(value) => setNewRideOffer({...newRideOffer, currency: value})}
+              >
+                <SelectTrigger className="w-20">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {getCurrencyList().map((currency) => (
+                    <SelectItem key={currency.code} value={currency.code}>
+                      {currency.symbol}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <p className="text-xs text-muted-foreground">{t('freeRideInfo') || 'Zadejte 0 pro jízdu zdarma'}</p>
           </div>
           
           <div className="space-y-2">
