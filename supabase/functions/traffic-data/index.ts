@@ -414,30 +414,36 @@ function determineTrafficCondition(summary: any, issues: any[] = [], sections: a
     return 'heavy'
   }
   
-  // Check traffic delay based on HERE's traffic data
+  // ENHANCED: More sensitive route extension detection
   if (summary?.baseDuration && summary?.duration) {
     const ratio = summary.duration / summary.baseDuration
     const delayMinutes = Math.round((summary.duration - summary.baseDuration) / 60)
+    const extensionPercent = Math.round((ratio - 1) * 100)
     
-    console.log(`⏱️ Traffic delay: ${delayMinutes} min (ratio: ${ratio.toFixed(2)})`)
+    console.log(`⏱️ Route analysis: ${delayMinutes} min delay, ${extensionPercent}% extension (ratio: ${ratio.toFixed(2)})`)
     
-    if (ratio > 1.8 || delayMinutes > 30) {
-      console.log(`🔴 Significant delay detected - marking as HEAVY traffic`)
+    // Much more sensitive thresholds - if route is significantly longer, there's a problem
+    if (ratio >= 1.30 || delayMinutes >= 15) {
+      console.log(`🔴 Major route extension (${extensionPercent}%) - marking as HEAVY traffic`)
       return 'heavy'
     }
-    if (ratio > 1.3 || delayMinutes > 10) {
-      console.log(`🟡 Moderate delay detected - marking as NORMAL traffic`)
+    if (ratio >= 1.15 || delayMinutes >= 8) {
+      console.log(`🟡 Moderate route extension (${extensionPercent}%) - marking as NORMAL traffic`)
       return 'normal'
     }
-    if (ratio <= 1.1 && delayMinutes <= 5) {
-      console.log(`🟢 Minimal delay - marking as LIGHT traffic`) 
+    if (ratio >= 1.05 || delayMinutes >= 3) {
+      console.log(`🟠 Minor route extension (${extensionPercent}%) - marking as NORMAL traffic`)
+      return 'normal'
+    }
+    if (ratio <= 1.02 && delayMinutes <= 2) {
+      console.log(`🟢 Optimal route time - marking as LIGHT traffic`) 
       return 'light'
     }
   }
   
   // Check for multiple medium-severity issues
   const mediumIssues = issues.filter(i => i.severity === 'medium')
-  if (mediumIssues.length >= 3) {
+  if (mediumIssues.length >= 2) {
     console.log(`⚠️ Multiple medium issues (${mediumIssues.length}) - marking as HEAVY traffic`)
     return 'heavy'
   }

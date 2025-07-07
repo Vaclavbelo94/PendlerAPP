@@ -88,6 +88,40 @@ const HomeWorkTrafficMonitor: React.FC = () => {
     const problems: TrafficProblem[] = [];
     const routeLabel = route.summary ? `${routeName} (${route.summary})` : `${routeName} - trasa ${routeIndex + 1}`;
     
+    // ENHANCED: Check for route extension (longer than usual)
+    if (route.base_duration && route.duration) {
+      const currentMinutes = parseInt(route.duration.match(/\d+/)?.[0] || '0');
+      const baseMinutes = parseInt(route.base_duration.match(/\d+/)?.[0] || '0');
+      const delayMinutes = currentMinutes - baseMinutes;
+      const extensionPercent = baseMinutes > 0 ? Math.round((delayMinutes / baseMinutes) * 100) : 0;
+      
+      if (extensionPercent >= 30 || delayMinutes >= 15) {
+        problems.push({
+          route: routeLabel,
+          severity: 'high',
+          description: `Trasa je o ${extensionPercent}% delší než obvykle (+${delayMinutes} min)`,
+          delay: route.duration,
+          recommendations: [t('leaveEarlier'), t('tryAlternativeRoute'), 'Zkontrolujte dopravní situaci']
+        });
+      } else if (extensionPercent >= 15 || delayMinutes >= 8) {
+        problems.push({
+          route: routeLabel,
+          severity: 'medium',
+          description: `Trasa je o ${extensionPercent}% delší než obvykle (+${delayMinutes} min)`,
+          delay: route.duration,
+          recommendations: [t('leaveSlightlyEarlier'), t('monitorTraffic')]
+        });
+      } else if (extensionPercent >= 5 || delayMinutes >= 3) {
+        problems.push({
+          route: routeLabel,
+          severity: 'low',
+          description: `Mírné zpoždění na trase (+${delayMinutes} min)`,
+          delay: route.duration,
+          recommendations: [t('monitorTraffic')]
+        });
+      }
+    }
+    
     // Check for high-priority incidents
     if (route.incidents && route.incidents.length > 0) {
       const highPriorityIncidents = route.incidents.filter((incident: any) => incident.severity === 'high');
@@ -107,7 +141,9 @@ const HomeWorkTrafficMonitor: React.FC = () => {
       const hasClosures = route.warnings.some((warning: string) => 
         warning.toLowerCase().includes('uzavřen') || 
         warning.toLowerCase().includes('closure') ||
-        warning.toLowerCase().includes('nehoda')
+        warning.toLowerCase().includes('nehoda') ||
+        warning.toLowerCase().includes('blocked') ||
+        warning.toLowerCase().includes('gesperrt')
       );
       
       if (hasClosures) {
@@ -129,7 +165,7 @@ const HomeWorkTrafficMonitor: React.FC = () => {
       }
     }
     
-    // Check traffic conditions
+    // Check traffic conditions with enhanced sensitivity
     if (route.traffic_conditions === 'heavy') {
       problems.push({
         route: routeLabel,
@@ -138,22 +174,15 @@ const HomeWorkTrafficMonitor: React.FC = () => {
         delay: route.duration_in_traffic || route.duration,
         recommendations: [t('leaveEarlier'), t('tryAlternativeRoute')]
       });
-    } else if (route.traffic_conditions === 'normal' && route.duration_in_traffic !== route.duration) {
-      // Only add if there's actual delay
-      const delayMatch = route.duration_in_traffic?.match(/\d+/) && route.duration?.match(/\d+/);
-      if (delayMatch) {
-        const trafficTime = parseInt(route.duration_in_traffic.match(/\d+/)[0]);
-        const normalTime = parseInt(route.duration.match(/\d+/)[0]);
-        if (trafficTime > normalTime + 5) { // At least 5 minutes delay
-          problems.push({
-            route: routeLabel,
-            severity: 'medium',
-            description: t('minorDelayOnRoute', { delay: trafficTime - normalTime }),
-            delay: route.duration_in_traffic || route.duration,
-            recommendations: [t('monitorTraffic'), t('leaveSlightlyEarlier')]
-          });
-        }
-      }
+    } else if (route.traffic_conditions === 'normal') {
+      // Enhanced detection - 'normal' now often means there are issues
+      problems.push({
+        route: routeLabel,
+        severity: 'medium',
+        description: 'Zpomalený provoz na trase',
+        delay: route.duration_in_traffic || route.duration,
+        recommendations: [t('leaveSlightlyEarlier'), t('monitorTraffic')]
+      });
     }
     
     return problems;
