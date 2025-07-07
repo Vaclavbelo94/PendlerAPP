@@ -132,6 +132,12 @@
   "high": "Vysoká",
   "medium": "Střední",
   "low": "Nízká",
+  "newDriver": "Nový řidič",
+  "rides": "jízd",
+  "completedRides": "dokončených jízd",
+  "yourOffer": "Vaše nabídka",
+  "free": "Zdarma",
+  "seats": "míst",
   "trafficControlTitle": "Kontrola dopravy",
   "addressesRequired": "Pro kontrolu dopravních problémů je potřeba nastavit adresu domova a pracoviště",
   "setupAddresses": "Nastavte adresy v profilu nebo cestovních preferencích",
@@ -149,5 +155,14 @@
   "leaveEarlier": "Vyjděte o 30-45 minut dříve",
   "tryAlternativeRoute": "Zkuste alternativní trasu",
   "minorDelayOnRoute": "Mírné zpoždění na trase ({delay} min)",
-  "leaveSlightlyEarlier": "Vyjděte o 10-15 minut dříve"
+  "leaveSlightlyEarlier": "Vyjděte o 10-15 minut dříve",
+  "perPerson": "na osobu",
+  "yourEmail": "Váš email",
+  "enterEmail": "Zadejte váš email",
+  "message": "Zpráva",
+  "messageToDriver": "Napište zprávu řidiči...",
+  "call": "Zavolat",
+  "sendMessage": "Odeslat",
+  "sending": "Odesílám...",
+  "contactDriverDescription": "Napište zprávu řidiči nebo ho kontaktujte telefonicky"
 }

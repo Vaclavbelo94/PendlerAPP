@@ -12,6 +12,7 @@ import OptimizedAddressAutocomplete from './OptimizedAddressAutocomplete';
 import EnhancedRideOfferCard from './rideshare/EnhancedRideOfferCard';
 import { rideshareService, RideshareOfferWithDriver } from '@/services/rideshareService';
 import { useTranslation } from 'react-i18next';
+import ContactDriverDialog from './rideshare/ContactDriverDialog';
 
 interface RideshareOffer {
   id: string;
@@ -33,6 +34,8 @@ const RideSharing: React.FC = () => {
   const [offers, setOffers] = useState<RideshareOfferWithDriver[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [contactDialogOpen, setContactDialogOpen] = useState(false);
+  const [selectedOffer, setSelectedOffer] = useState<RideshareOfferWithDriver | null>(null);
   const [formData, setFormData] = useState({
     origin_address: '',
     destination_address: '',
@@ -120,7 +123,7 @@ const RideSharing: React.FC = () => {
     }
   };
 
-  const handleContactDriver = async (ride: RideshareOfferWithDriver) => {
+  const handleContactDriver = (ride: RideshareOfferWithDriver) => {
     if (!user) {
       toast({
         title: t('error'),
@@ -130,21 +133,8 @@ const RideSharing: React.FC = () => {
       return;
     }
 
-    try {
-      await rideshareService.contactDriver(ride.id, t('ridesharingDesc'));
-      
-      toast({
-        title: t('success'),
-        description: t('contactRequestSent')
-      });
-    } catch (error) {
-      console.error('Error contacting driver:', error);
-      toast({
-        title: t('error'),
-        description: t('contactError'),
-        variant: "destructive"
-      });
-    }
+    setSelectedOffer(ride);
+    setContactDialogOpen(true);
   };
 
   const filteredOffers = offers.filter(offer => {
@@ -215,14 +205,7 @@ const RideSharing: React.FC = () => {
                   </p>
                 </div>
               ) : (
-                <div
-                  className="
-                    grid gap-3
-                    grid-cols-1
-                    sm:grid-cols-2
-                    xl:grid-cols-3
-                  "
-                >
+                <div className="grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
                   {filteredOffers.map((offer) => (
                     <EnhancedRideOfferCard
                       key={offer.id}
@@ -347,6 +330,12 @@ const RideSharing: React.FC = () => {
           </Card>
         </TabsContent>
       </Tabs>
+
+      <ContactDriverDialog
+        open={contactDialogOpen}
+        onOpenChange={setContactDialogOpen}
+        selectedOffer={selectedOffer}
+      />
     </div>
   );
 };

@@ -10,12 +10,13 @@ import { enhancedRideshareService, RideshareMatch } from '@/services/enhancedRid
 import { useAuth } from '@/hooks/auth';
 import { toast } from '@/hooks/use-toast';
 import ContactDriverDialog from './rideshare/ContactDriverDialog';
+import { RideshareOfferWithDriver } from '@/services/rideshareService';
 
 const SmartRideshareMatching: React.FC = () => {
   const { user } = useAuth();
   const [matches, setMatches] = useState<RideshareMatch[]>([]);
   const [loading, setLoading] = useState(false);
-  const [selectedOffer, setSelectedOffer] = useState<RideshareMatch | null>(null);
+  const [selectedOffer, setSelectedOffer] = useState<RideshareOfferWithDriver | null>(null);
   const [contactDialogOpen, setContactDialogOpen] = useState(false);
   const [searchParams, setSearchParams] = useState({
     origin: '',
@@ -63,7 +64,17 @@ const SmartRideshareMatching: React.FC = () => {
   };
 
   const handleContactDriver = (offer: RideshareMatch) => {
-    setSelectedOffer(offer);
+    // Convert RideshareMatch to RideshareOfferWithDriver
+    const convertedOffer: RideshareOfferWithDriver = {
+      ...offer,
+      driver: {
+        username: offer.profiles?.username || 'Anonymní řidič',
+        phone_number: offer.phone_number,
+        rating: offer.rating,
+        completed_rides: offer.completed_rides
+      }
+    };
+    setSelectedOffer(convertedOffer);
     setContactDialogOpen(true);
   };
 
