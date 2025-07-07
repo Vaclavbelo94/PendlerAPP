@@ -120,10 +120,10 @@ const ResultsStep: React.FC<ResultsStepProps> = ({
       <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
         <div className="flex items-center gap-2 mb-2">
           <CheckCircle className="h-5 w-5 text-green-600" />
-          <h3 className="font-semibold text-green-800">Výpočet dokončen</h3>
+          <h3 className="font-semibold text-green-800">{t('completed', { ns: 'common' })}</h3>
         </div>
         <p className="text-sm text-green-700">
-          Všechna data byla úspěšně zpracována a výsledky jsou připraveny k exportu.
+          {t('wizard.results.calculationCompleteDescription')}
         </p>
       </div>
 
@@ -144,7 +144,7 @@ const ResultsStep: React.FC<ResultsStepProps> = ({
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <FileText className="h-5 w-5" />
-                Quick Actions
+                {t('quickActions', { ns: 'common' })}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -315,7 +315,7 @@ const ResultsStep: React.FC<ResultsStepProps> = ({
               
               <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                 <p className="text-sm text-blue-800">
-                  💡 <strong>Tip:</strong> PDF dokument obsahuje všechny výpočty a je vhodný pro archivaci. XML soubor můžete importovat přímo do ELSTER portálu.
+                  💡 <strong>{t('wizard.results.exportTip')}</strong> {t('wizard.results.exportTipDescription')}
                 </p>
               </div>
             </CardContent>

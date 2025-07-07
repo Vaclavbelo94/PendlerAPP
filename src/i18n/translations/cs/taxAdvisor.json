@@ -58,6 +58,7 @@
       "transportType": "Typ dopravy",
       "car": "Auto",
       "publicTransport": "Veřejná doprava",
+      "public": "Veřejná doprava",
       "perKm": "/km",
       "hasSecondHome": "Druhý domov v Německu",
       "secondHomeCost": "Náklady na druhý domov",
@@ -109,7 +110,10 @@
       "exportOptions": "Možnosti exportu",
       "validation": "Validace",
       "dashboard": "Dashboard",
-      "mobileOptimized": "Optimalizováno pro mobily"
+      "mobileOptimized": "Optimalizováno pro mobily",
+      "calculationCompleteDescription": "Všechna data byla úspěšně zpracována a výsledky jsou připraveny k exportu.",
+      "exportTip": "Tip:",
+      "exportTipDescription": "PDF dokument obsahuje všechny výpočty a je vhodný pro archivaci. XML soubor můžete importovat přímo do ELSTER portálu."
     },
     "elster": {
       "title": "ELSTER - Online podání daňového přiznání",

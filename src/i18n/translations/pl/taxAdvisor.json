@@ -59,6 +59,7 @@
       "transportType": "Typ transportu",
       "car": "Samochód",
       "publicTransport": "Transport publiczny",
+      "public": "Transport publiczny",
       "perKm": "/km",
       "hasSecondHome": "Drugie mieszkanie w Niemczech",
       "secondHomeCost": "Koszt drugiego mieszkania",
@@ -110,7 +111,10 @@
       "exportOptions": "Opcje eksportu",
       "validation": "Walidacja",
       "dashboard": "Dashboard",
-      "mobileOptimized": "Zoptymalizowane dla urządzeń mobilnych"
+      "mobileOptimized": "Zoptymalizowane dla urządzeń mobilnych",
+      "calculationCompleteDescription": "Wszystkie dane zostały pomyślnie przetworzone i wyniki są gotowe do eksportu.",
+      "exportTip": "Wskazówka:",
+      "exportTipDescription": "Dokument PDF zawiera wszystkie obliczenia i nadaje się do archiwizacji. Plik XML można importować bezpośrednio do portalu ELSTER."
     },
     "elster": {
       "title": "ELSTER - Internetowe zeznanie podatkowe",

@@ -11,13 +11,21 @@ interface DataSummaryTableProps {
 }
 
 const DataSummaryTable: React.FC<DataSummaryTableProps> = ({ data, result }) => {
-  const { t } = useTranslation(['taxAdvisor']);
+  const { t } = useTranslation(['taxAdvisor', 'common']);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('de-DE', {
       style: 'currency',
       currency: 'EUR'
     }).format(amount);
+  };
+
+  const getTransportTypeText = (transportType: string) => {
+    switch (transportType) {
+      case 'car': return t('wizard.reisepauschale.car');
+      case 'publicTransport': return t('wizard.reisepauschale.publicTransport');
+      default: return transportType;
+    }
   };
 
   const getSectionIcon = (section: string) => {
@@ -58,20 +66,20 @@ const DataSummaryTable: React.FC<DataSummaryTableProps> = ({ data, result }) => 
       data: [
         { label: t('wizard.reisepauschale.commuteDistance'), value: `${data.reisepauschale.commuteDistance} km` },
         { label: t('wizard.reisepauschale.workDaysPerYear'), value: data.reisepauschale.workDaysPerYear?.toString() },
-        { label: t('wizard.reisepauschale.transportType'), value: data.reisepauschale.transportType },
-        { label: t('wizard.reisepauschale.hasSecondHome'), value: data.reisepauschale.hasSecondHome ? t('common.yes') : t('common.no') }
+        { label: t('wizard.reisepauschale.transportType'), value: getTransportTypeText(data.reisepauschale.transportType) },
+        { label: t('wizard.reisepauschale.hasSecondHome'), value: data.reisepauschale.hasSecondHome ? t('yes', { ns: 'common' }) : t('no', { ns: 'common' }) }
       ].filter(item => item.value)
     },
     {
       key: 'deductions',
       titleKey: 'wizard.steps.deductions',
       data: [
-        { label: t('wizard.deductions.workClothes'), value: data.deductions.workClothes ? formatCurrency(data.deductions.workClothesCost) : t('common.no') },
-        { label: t('wizard.deductions.education'), value: data.deductions.education ? formatCurrency(data.deductions.educationCost) : t('common.no') },
-        { label: t('wizard.deductions.insurance'), value: data.deductions.insurance ? formatCurrency(data.deductions.insuranceCost) : t('common.no') },
-        { label: t('wizard.deductions.professionalLiterature'), value: data.deductions.professionalLiterature ? formatCurrency(data.deductions.professionalLiteratureCost) : t('common.no') },
-        { label: t('wizard.deductions.tools'), value: data.deductions.tools ? formatCurrency(data.deductions.toolsCost) : t('common.no') },
-        { label: t('wizard.deductions.homeOffice'), value: data.deductions.homeOffice ? formatCurrency(data.deductions.homeOfficeCost) : t('common.no') }
+        { label: t('wizard.deductions.workClothes'), value: data.deductions.workClothes ? formatCurrency(data.deductions.workClothesCost) : t('no', { ns: 'common' }) },
+        { label: t('wizard.deductions.education'), value: data.deductions.education ? formatCurrency(data.deductions.educationCost) : t('no', { ns: 'common' }) },
+        { label: t('wizard.deductions.insurance'), value: data.deductions.insurance ? formatCurrency(data.deductions.insuranceCost) : t('no', { ns: 'common' }) },
+        { label: t('wizard.deductions.professionalLiterature'), value: data.deductions.professionalLiterature ? formatCurrency(data.deductions.professionalLiteratureCost) : t('no', { ns: 'common' }) },
+        { label: t('wizard.deductions.tools'), value: data.deductions.tools ? formatCurrency(data.deductions.toolsCost) : t('no', { ns: 'common' }) },
+        { label: t('wizard.deductions.homeOffice'), value: data.deductions.homeOffice ? formatCurrency(data.deductions.homeOfficeCost) : t('no', { ns: 'common' }) }
       ]
     },
     {

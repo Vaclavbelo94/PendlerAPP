@@ -59,6 +59,7 @@
       "transportType": "Verkehrsmittel",
       "car": "Auto",
       "publicTransport": "Öffentliche Verkehrsmittel",
+      "public": "Öffentliche Verkehrsmittel",
       "perKm": "/km",
       "hasSecondHome": "Zweitwohnung in Deutschland",
       "secondHomeCost": "Kosten für Zweitwohnung",
@@ -110,7 +111,10 @@
       "exportOptions": "Export-Optionen",
       "validation": "Validierung",
       "dashboard": "Dashboard",
-      "mobileOptimized": "Für Mobilgeräte optimiert"
+      "mobileOptimized": "Für Mobilgeräte optimiert",
+      "calculationCompleteDescription": "Alle Daten wurden erfolgreich verarbeitet und die Ergebnisse sind zum Export bereit.",
+      "exportTip": "Tipp:",
+      "exportTipDescription": "Das PDF-Dokument enthält alle Berechnungen und ist für die Archivierung geeignet. Die XML-Datei können Sie direkt in das ELSTER-Portal importieren."
     },
     "elster": {
       "title": "ELSTER - Online-Steuererklärung",
