@@ -68,12 +68,12 @@ const DataSummaryTable: React.FC<DataSummaryTableProps> = ({ data, result }) => 
       key: 'deductions',
       titleKey: 'wizard.steps.deductions',
       data: [
-        { label: t('wizard.deductions.workClothes'), value: data.deductions.workClothes ? formatCurrency(data.deductions.workClothes) : t('common.no') },
-        { label: t('wizard.deductions.education'), value: data.deductions.education ? formatCurrency(data.deductions.education) : t('common.no') },
-        { label: t('wizard.deductions.insurance'), value: data.deductions.insurance ? formatCurrency(data.deductions.insurance) : t('common.no') },
-        { label: t('wizard.deductions.professionalLiterature'), value: data.deductions.professionalLiterature ? formatCurrency(data.deductions.professionalLiterature) : t('common.no') },
-        { label: t('wizard.deductions.tools'), value: data.deductions.tools ? formatCurrency(data.deductions.tools) : t('common.no') },
-        { label: t('wizard.deductions.homeOffice'), value: data.deductions.homeOffice ? formatCurrency(data.deductions.homeOffice) : t('common.no') }
+        { label: t('wizard.deductions.workClothes'), value: data.deductions.workClothes ? formatCurrency(data.deductions.workClothesCost) : t('common.no') },
+        { label: t('wizard.deductions.education'), value: data.deductions.education ? formatCurrency(data.deductions.educationCost) : t('common.no') },
+        { label: t('wizard.deductions.insurance'), value: data.deductions.insurance ? formatCurrency(data.deductions.insuranceCost) : t('common.no') },
+        { label: t('wizard.deductions.professionalLiterature'), value: data.deductions.professionalLiterature ? formatCurrency(data.deductions.professionalLiteratureCost) : t('common.no') },
+        { label: t('wizard.deductions.tools'), value: data.deductions.tools ? formatCurrency(data.deductions.toolsCost) : t('common.no') },
+        { label: t('wizard.deductions.homeOffice'), value: data.deductions.homeOffice ? formatCurrency(data.deductions.homeOfficeCost) : t('common.no') }
       ]
     },
     {

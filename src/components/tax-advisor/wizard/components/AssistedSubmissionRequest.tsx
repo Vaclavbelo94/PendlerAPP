@@ -157,10 +157,10 @@ const AssistedSubmissionRequest: React.FC<AssistedSubmissionRequestProps> = ({
           <div className="p-4 bg-muted/30 rounded-lg">
             <h4 className="font-medium mb-3">{t('wizard.assistedSubmission.dataSummary')}:</h4>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-              <div>
-                <span className="text-muted-foreground">{t('wizard.results.totalReisepauschale')}:</span>
-                <div className="font-semibold">{formatCurrency(result.pendlerPauschale)}</div>
-              </div>
+                <div>
+                  <span className="text-muted-foreground">{t('wizard.results.totalReisepauschale')}:</span>
+                  <div className="font-semibold">{formatCurrency(result.reisepausaleBenefit)}</div>
+                </div>
               <div>
                 <span className="text-muted-foreground">{t('wizard.results.totalDeductions')}:</span>
                 <div className="font-semibold">{formatCurrency(result.totalDeductions)}</div>

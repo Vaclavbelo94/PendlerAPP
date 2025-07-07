@@ -19,7 +19,7 @@ interface TaxWizardStepRendererProps {
   onExportPDF: () => void;
   onExportXML?: () => void;
   onDownloadGuide?: () => void;
-  
+  onLoadData?: (data: TaxWizardData) => void;
 }
 
 const TaxWizardStepRenderer: React.FC<TaxWizardStepRendererProps> = ({

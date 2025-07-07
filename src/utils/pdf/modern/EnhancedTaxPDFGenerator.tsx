@@ -65,12 +65,12 @@ export const generateEnhancedTaxPDF = async (
     {
       category: t('wizard.pdfExport.deductions'),
       items: [
-        { field: t('wizard.reisepauschale.title'), value: formatCurrency(result.pendlerPauschale), elsterField: 'Anlage N - Zeile 31-35' },
-        ...(data.deductions.workClothes ? [{ field: t('wizard.deductions.workClothes'), value: formatCurrency(data.deductions.workClothes), elsterField: 'Anlage N - Zeile 41' }] : []),
-        ...(data.deductions.education ? [{ field: t('wizard.deductions.education'), value: formatCurrency(data.deductions.education), elsterField: 'Anlage N - Zeile 44' }] : []),
-        ...(data.deductions.professionalLiterature ? [{ field: t('wizard.deductions.professionalLiterature'), value: formatCurrency(data.deductions.professionalLiterature), elsterField: 'Anlage N - Zeile 46' }] : []),
-        ...(data.deductions.tools ? [{ field: t('wizard.deductions.tools'), value: formatCurrency(data.deductions.tools), elsterField: 'Anlage N - Zeile 47' }] : []),
-        ...(data.deductions.homeOffice ? [{ field: t('wizard.deductions.homeOffice'), value: formatCurrency(data.deductions.homeOffice), elsterField: 'Anlage N - Zeile 50' }] : [])
+        { field: t('wizard.reisepauschale.title'), value: formatCurrency(result.reisepausaleBenefit), elsterField: 'Anlage N - Zeile 31-35' },
+        ...(data.deductions.workClothes ? [{ field: t('wizard.deductions.workClothes'), value: formatCurrency(data.deductions.workClothesCost), elsterField: 'Anlage N - Zeile 41' }] : []),
+        ...(data.deductions.education ? [{ field: t('wizard.deductions.education'), value: formatCurrency(data.deductions.educationCost), elsterField: 'Anlage N - Zeile 44' }] : []),
+        ...(data.deductions.professionalLiterature ? [{ field: t('wizard.deductions.professionalLiterature'), value: formatCurrency(data.deductions.professionalLiteratureCost), elsterField: 'Anlage N - Zeile 46' }] : []),
+        ...(data.deductions.tools ? [{ field: t('wizard.deductions.tools'), value: formatCurrency(data.deductions.toolsCost), elsterField: 'Anlage N - Zeile 47' }] : []),
+        ...(data.deductions.homeOffice ? [{ field: t('wizard.deductions.homeOffice'), value: formatCurrency(data.deductions.homeOfficeCost), elsterField: 'Anlage N - Zeile 50' }] : [])
       ]
     }
   ];
@@ -197,23 +197,23 @@ export const generateEnhancedTaxPDF = async (
   }
 
   // Ostatní odpočty
-  if (result.totalDeductions - result.pendlerPauschale > 0) {
+  if (result.totalDeductions - result.reisepausaleBenefit > 0) {
     doc.setFont('helvetica', 'bold');
     doc.text(t('wizard.pdfExport.otherDeductions'), margin, yPosition);
     yPosition += 8;
 
     doc.setFont('helvetica', 'normal');
     const deductionsList = [
-      { key: 'workClothes', amount: data.deductions.workClothes },
-      { key: 'education', amount: data.deductions.education },
-      { key: 'insurance', amount: data.deductions.insurance },
-      { key: 'professionalLiterature', amount: data.deductions.professionalLiterature },
-      { key: 'tools', amount: data.deductions.tools },
-      { key: 'homeOffice', amount: data.deductions.homeOffice }
+      { key: 'workClothes', enabled: data.deductions.workClothes, amount: data.deductions.workClothesCost },
+      { key: 'education', enabled: data.deductions.education, amount: data.deductions.educationCost },
+      { key: 'insurance', enabled: data.deductions.insurance, amount: data.deductions.insuranceCost },
+      { key: 'professionalLiterature', enabled: data.deductions.professionalLiterature, amount: data.deductions.professionalLiteratureCost },
+      { key: 'tools', enabled: data.deductions.tools, amount: data.deductions.toolsCost },
+      { key: 'homeOffice', enabled: data.deductions.homeOffice, amount: data.deductions.homeOfficeCost }
     ];
 
     deductionsList.forEach((deduction) => {
-      if (deduction.amount && deduction.amount > 0) {
+      if (deduction.enabled && deduction.amount > 0) {
         doc.text(`• ${t(`wizard.deductions.${deduction.key}`)}: ${formatCurrency(deduction.amount)}`, margin + 5, yPosition);
         yPosition += 5;
       }
@@ -228,9 +228,9 @@ export const generateEnhancedTaxPDF = async (
   yPosition += 10;
 
   doc.setFontSize(12);
-  doc.text(`${t('wizard.results.totalReisepauschale')}: ${formatCurrency(result.pendlerPauschale)}`, margin + 5, yPosition);
+  doc.text(`${t('wizard.results.totalReisepauschale')}: ${formatCurrency(result.reisepausaleBenefit)}`, margin + 5, yPosition);
   yPosition += 6;
-  doc.text(`${t('wizard.results.otherDeductions')}: ${formatCurrency(result.totalDeductions - result.pendlerPauschale)}`, margin + 5, yPosition);
+  doc.text(`${t('wizard.results.otherDeductions')}: ${formatCurrency(result.totalDeductions - result.reisepausaleBenefit)}`, margin + 5, yPosition);
   yPosition += 6;
   doc.text(`${t('wizard.results.totalDeductions')}: ${formatCurrency(result.totalDeductions)}`, margin + 5, yPosition);
   yPosition += 8;
