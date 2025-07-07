@@ -4,24 +4,24 @@ import { ArrowLeft, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 const HealthInsurance = () => {
-  const { t, language } = useLanguage();
+  const { t, i18n } = useTranslation('laws');
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    const locale = language === 'cs' ? 'cs-CZ' : language === 'pl' ? 'pl-PL' : 'de-DE';
+    const locale = i18n.language === 'cs' ? 'cs-CZ' : i18n.language === 'pl' ? 'pl-PL' : 'de-DE';
     return date.toLocaleDateString(locale);
   };
 
   const getStatutoryInsurance = () => {
-    if (language === 'de') {
+    if (i18n.language === 'de') {
       return {
         title: 'Gesetzliche Versicherung (GKV)',
         desc: 'Pflicht für Arbeitnehmer mit Einkommen bis 69.300 € jährlich (2024)'
       };
-    } else if (language === 'pl') {
+    } else if (i18n.language === 'pl') {
       return {
         title: 'Ubezpieczenie ustawowe (GKV)',
         desc: 'Obowiązkowe dla pracowników z dochodem do 69.300 € rocznie (2024)'
@@ -35,12 +35,12 @@ const HealthInsurance = () => {
   };
 
   const getPrivateInsurance = () => {
-    if (language === 'de') {
+    if (i18n.language === 'de') {
       return {
         title: 'Private Versicherung (PKV)',
         desc: 'Wahlweise für Gutverdiener und Selbständige'
       };
-    } else if (language === 'pl') {
+    } else if (i18n.language === 'pl') {
       return {
         title: 'Ubezpieczenie prywatne (PKV)',
         desc: 'Opcjonalne dla osób o wysokich dochodach i samozatrudnionych'
@@ -54,14 +54,14 @@ const HealthInsurance = () => {
   };
 
   const getContributionRates = () => {
-    if (language === 'de') {
+    if (i18n.language === 'de') {
       return [
         { label: 'Grundsatz', value: '14,6%' },
         { label: 'Arbeitnehmer zahlt', value: '7,3%' },
         { label: 'Arbeitgeber zahlt', value: '7,3%' },
         { label: 'Zusatzbeitrag (Durchschnitt)', value: '1,7%' }
       ];
-    } else if (language === 'pl') {
+    } else if (i18n.language === 'pl') {
       return [
         { label: 'Stawka podstawowa', value: '14,6%' },
         { label: 'Pracownik płaci', value: '7,3%' },
@@ -79,7 +79,7 @@ const HealthInsurance = () => {
   };
 
   const getCoverageItems = () => {
-    if (language === 'de') {
+    if (i18n.language === 'de') {
       return [
         'Grundlegende ärztliche Versorgung',
         'Krankenhausbehandlung',
@@ -88,7 +88,7 @@ const HealthInsurance = () => {
         'Zahnbehandlung (Grundversorgung)',
         'Krankengeld (ab 7. Tag)'
       ];
-    } else if (language === 'pl') {
+    } else if (i18n.language === 'pl') {
       return [
         'Podstawowa opieka lekarska',
         'Leczenie szpitalne',

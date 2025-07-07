@@ -4,14 +4,14 @@ import { ArrowLeft, Baby } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 const ChildBenefits = () => {
-  const { t, language } = useLanguage();
+  const { t, i18n } = useTranslation('laws');
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    const locale = language === 'cs' ? 'cs-CZ' : language === 'pl' ? 'pl-PL' : 'de-DE';
+    const locale = i18n.language === 'cs' ? 'cs-CZ' : i18n.language === 'pl' ? 'pl-PL' : 'de-DE';
     return date.toLocaleDateString(locale);
   };
 
