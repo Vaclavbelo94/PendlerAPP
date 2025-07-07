@@ -61,16 +61,18 @@ export const useWorkData = () => {
 
     setLoading(true);
     try {
-      const { error } = await supabase
-        .from('user_work_data')
-        .upsert({
-          user_id: user.id,
-          hourly_wage: data.hourly_wage,
-          phone_number: data.phone_number,
-          phone_country_code: data.phone_country_code,
-          workplace_location: data.workplace_location,
-          home_address: data.home_address
-        });
+    const { error } = await supabase
+      .from('user_work_data')
+      .upsert({
+        user_id: user.id,
+        hourly_wage: data.hourly_wage,
+        phone_number: data.phone_number,
+        phone_country_code: data.phone_country_code,
+        workplace_location: data.workplace_location,
+        home_address: data.home_address
+      }, {
+        onConflict: 'user_id'
+      });
 
       if (error) {
         console.error('Error saving work data:', error);
@@ -102,6 +104,8 @@ export const useWorkData = () => {
           user_id: user.id,
           home_address: workData.home_address,
           work_address: workData.workplace_location,
+        }, {
+          onConflict: 'user_id'
         });
     } catch (error) {
       console.error('Error syncing with travel preferences:', error);
