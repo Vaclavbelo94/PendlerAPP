@@ -5,11 +5,11 @@ import {
   generateElsterXML, 
   downloadElsterXML, 
   validateElsterData 
-} from '../elster/services/elsterXmlService';
+} from '../../elster/services/elsterXmlService';
 import { 
   generateElsterPDFGuide, 
   generateDocumentChecklistPDF 
-} from '../elster/services/elsterPdfGuideService';
+} from '../../elster/services/elsterPdfGuideService';
 
 export const useElsterIntegration = () => {
   const { t, i18n } = useTranslation(['taxAdvisor']);

@@ -8,8 +8,8 @@ import { Download, Calculator, TrendingUp, ExternalLink, FileText, CheckSquare }
 import { TaxWizardData, TaxCalculationResult } from '../types';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '@/hooks/use-toast';
-import ElsterGuide from '../elster/ElsterGuide';
-import DocumentChecklist from '../elster/DocumentChecklist';
+import ElsterGuide from '../../elster/ElsterGuide';
+import DocumentChecklist from '../../elster/DocumentChecklist';
 
 interface ResultsStepProps {
   data: TaxWizardData;
