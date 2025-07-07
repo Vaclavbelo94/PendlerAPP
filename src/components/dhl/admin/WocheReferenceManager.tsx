@@ -15,7 +15,7 @@ interface UserAssignment {
   user_id: string;
   reference_date?: string;
   reference_woche?: number;
-  profiles: {
+  user_profile: {
     username: string;
     email: string;
   };
@@ -55,7 +55,6 @@ const WocheReferenceManager: React.FC = () => {
           user_id,
           reference_date,
           reference_woche,
-          profiles(username, email),
           dhl_positions(name),
           dhl_work_groups(name, week_number)
         `)
@@ -63,11 +62,29 @@ const WocheReferenceManager: React.FC = () => {
 
       if (error) throw error;
 
-      setAssignments(data as UserAssignment[]);
+      // Get user profiles separately
+      const userIds = data?.map(assignment => assignment.user_id) || [];
+      const { data: profiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, username, email')
+        .in('id', userIds);
+
+      if (profilesError) throw profilesError;
+
+      // Combine the data
+      const combinedData = data?.map(assignment => ({
+        ...assignment,
+        user_profile: profiles?.find(profile => profile.id === assignment.user_id) || {
+          username: 'Unknown',
+          email: 'Unknown'
+        }
+      })) as UserAssignment[];
+
+      setAssignments(combinedData || []);
       
-      // Inicializovat reference data
+      // Initialize reference data
       const initialData: typeof referenceData = {};
-      data?.forEach(assignment => {
+      combinedData?.forEach(assignment => {
         initialData[assignment.id] = {
           date: assignment.reference_date || new Date().toISOString().split('T')[0],
           woche: assignment.reference_woche || assignment.dhl_work_groups.week_number
@@ -163,10 +180,10 @@ const WocheReferenceManager: React.FC = () => {
                         <div className="space-y-1">
                           <div className="flex items-center gap-2">
                             <User className="h-4 w-4 text-muted-foreground" />
-                            <span className="font-medium">{assignment.profiles.username}</span>
+                            <span className="font-medium">{assignment.user_profile.username}</span>
                           </div>
                           <div className="text-sm text-muted-foreground">
-                            {assignment.profiles.email}
+                            {assignment.user_profile.email}
                           </div>
                           <div className="flex gap-1">
                             <Badge variant="outline" className="text-xs">
