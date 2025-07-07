@@ -17,6 +17,7 @@ import {
   TravelCommunityHubLazy,
   SmartTravelRecommendationsLazy
 } from "@/components/travel/LazyTravelComponents";
+import HomeWorkTrafficMonitor from "@/components/travel/HomeWorkTrafficMonitor";
 import EnhancedTrafficPredictions from "@/components/travel/EnhancedTrafficPredictions";
 import { Skeleton } from "@/components/ui/skeleton";
 import TravelMobileCarousel from "@/components/travel/mobile/TravelMobileCarousel";
@@ -45,6 +46,8 @@ const TravelPlanning = () => {
     switch (activeTab) {
       case "ridesharing":
         return <EnhancedRideSharingLazy />;
+      case "commute-traffic":
+        return <HomeWorkTrafficMonitor />;
       case "traffic":
         return <EnhancedTrafficPredictions />;
       case "alerts":

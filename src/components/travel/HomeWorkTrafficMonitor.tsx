@@ -1,0 +1,294 @@
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { AlertTriangle, CheckCircle, Clock, MapPin, RefreshCw, Navigation } from 'lucide-react';
+import { useUserAddresses } from '@/hooks/useUserAddresses';
+import { useAuthState } from '@/hooks/useAuthState';
+import { trafficService } from '@/services/trafficService';
+import { useTranslation } from 'react-i18next';
+import { motion } from 'framer-motion';
+import { toast } from 'sonner';
+
+interface TrafficProblem {
+  route: string;
+  severity: 'low' | 'medium' | 'high';
+  description: string;
+  delay: string;
+  recommendations: string[];
+}
+
+const HomeWorkTrafficMonitor: React.FC = () => {
+  const { homeAddress, workAddress, loading: addressesLoading } = useUserAddresses();
+  const { user } = useAuthState();
+  const { t } = useTranslation('travel');
+  const [trafficProblems, setTrafficProblems] = useState<TrafficProblem[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+
+  const checkTrafficProblems = async () => {
+    if (!homeAddress || !workAddress || !user?.id) {
+      toast.error('Chybí adresa domova nebo pracoviště');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      // Kontrola dopravy domov → práce
+      const homeToWorkData = await trafficService.getTrafficData(
+        homeAddress,
+        workAddress,
+        'driving',
+        ['driving'],
+        user.id
+      );
+
+      // Kontrola dopravy práce → domov
+      const workToHomeData = await trafficService.getTrafficData(
+        workAddress,
+        homeAddress,
+        'driving',
+        ['driving'],
+        user.id
+      );
+
+      const problems: TrafficProblem[] = [];
+
+      // Analyzuj trasu domov → práce
+      if (homeToWorkData.routes?.[0]) {
+        const route = homeToWorkData.routes[0];
+        if (route.traffic_conditions === 'heavy') {
+          problems.push({
+            route: 'Domov → Práce',
+            severity: 'high',
+            description: `Silný provoz na trase domov - práce`,
+            delay: route.duration_in_traffic || route.duration,
+            recommendations: ['Zkuste alternativní trasu', 'Vyjděte o 30 minut dříve']
+          });
+        } else if (route.traffic_conditions === 'normal' && route.duration_in_traffic !== route.duration) {
+          problems.push({
+            route: 'Domov → Práce',
+            severity: 'medium',
+            description: `Mírné zpoždění na trase domov - práce`,
+            delay: route.duration_in_traffic || route.duration,
+            recommendations: ['Sledujte dopravní situaci']
+          });
+        }
+      }
+
+      // Analyzuj trasu práce → domov  
+      if (workToHomeData.routes?.[0]) {
+        const route = workToHomeData.routes[0];
+        if (route.traffic_conditions === 'heavy') {
+          problems.push({
+            route: 'Práce → Domov',
+            severity: 'high',
+            description: `Silný provoz na trase práce - domov`,
+            delay: route.duration_in_traffic || route.duration,
+            recommendations: ['Zvažte práci z domova', 'Odjezd o hodinu později']
+          });
+        } else if (route.traffic_conditions === 'normal' && route.duration_in_traffic !== route.duration) {
+          problems.push({
+            route: 'Práce → Domov',
+            severity: 'medium',
+            description: `Mírné zpoždění na trase práce - domov`,
+            delay: route.duration_in_traffic || route.duration,
+            recommendations: ['Sledujte dopravní situaci']
+          });
+        }
+      }
+
+      setTrafficProblems(problems);
+      setLastUpdated(new Date());
+      
+      if (problems.length === 0) {
+        toast.success('Žádné dopravní problémy na vašich trasách!');
+      } else {
+        toast.warning(`Nalezeno ${problems.length} dopravních problémů`);
+      }
+    } catch (error) {
+      console.error('Chyba při kontrole dopravy:', error);
+      toast.error('Nepodařilo se zkontrolovat dopravní situaci');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (homeAddress && workAddress && user?.id) {
+      checkTrafficProblems();
+    }
+  }, [homeAddress, workAddress, user?.id]);
+
+  const getSeverityColor = (severity: string) => {
+    switch (severity) {
+      case 'high': return 'bg-red-500/10 text-red-700 border-red-200';
+      case 'medium': return 'bg-yellow-500/10 text-yellow-700 border-yellow-200';
+      case 'low': return 'bg-blue-500/10 text-blue-700 border-blue-200';
+      default: return 'bg-gray-500/10 text-gray-700 border-gray-200';
+    }
+  };
+
+  const getSeverityIcon = (severity: string) => {
+    switch (severity) {
+      case 'high': return AlertTriangle;
+      case 'medium': return Clock;
+      default: return Navigation;
+    }
+  };
+
+  if (addressesLoading) {
+    return (
+      <Card className="animate-pulse">
+        <CardHeader>
+          <div className="h-6 bg-gray-200 rounded w-1/3"></div>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="h-16 bg-gray-100 rounded"></div>
+            <div className="h-16 bg-gray-100 rounded"></div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!homeAddress || !workAddress) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <MapPin className="h-5 w-5 text-primary" />
+            Kontrola dopravy
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-8">
+            <MapPin className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <p className="text-muted-foreground mb-4">
+              Pro kontrolu dopravních problémů je potřeba nastavit adresu domova a pracoviště
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Nastavte adresy v profilu nebo cestovních preferencích
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Navigation className="h-5 w-5 text-primary" />
+            Kontrola dopravy na vašich trasách
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={checkTrafficProblems}
+            disabled={isLoading}
+            className="flex items-center gap-2"
+          >
+            <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+            Aktualizovat
+          </Button>
+        </CardTitle>
+        {lastUpdated && (
+          <p className="text-sm text-muted-foreground">
+            Poslední aktualizace: {lastUpdated.toLocaleTimeString('cs-CZ')}
+          </p>
+        )}
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          {/* Zobrazení adres */}
+          <div className="grid gap-2 p-4 bg-muted/50 rounded-lg">
+            <div className="flex items-center gap-2 text-sm">
+              <MapPin className="h-4 w-4 text-green-600" />
+              <span className="font-medium">Domov:</span> {homeAddress}
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <MapPin className="h-4 w-4 text-blue-600" />
+              <span className="font-medium">Práce:</span> {workAddress}
+            </div>
+          </div>
+
+          {/* Dopravní problémy */}
+          {trafficProblems.length === 0 ? (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-lg"
+            >
+              <CheckCircle className="h-6 w-6 text-green-600" />
+              <div>
+                <h4 className="font-medium text-green-800">Vše v pořádku!</h4>
+                <p className="text-sm text-green-700">
+                  Na vašich trasách nejsou žádné významné dopravní problémy
+                </p>
+              </div>
+            </motion.div>
+          ) : (
+            <div className="space-y-3">
+              <h4 className="font-medium text-foreground flex items-center gap-2">
+                <AlertTriangle className="h-4 w-4 text-orange-500" />
+                Nalezené dopravní problémy ({trafficProblems.length})
+              </h4>
+              
+              {trafficProblems.map((problem, index) => {
+                const SeverityIcon = getSeverityIcon(problem.severity);
+                
+                return (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className={`p-4 rounded-lg border ${getSeverityColor(problem.severity)}`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <SeverityIcon className="h-5 w-5 mt-0.5 flex-shrink-0" />
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h5 className="font-medium">{problem.route}</h5>
+                          <Badge variant="outline" className="text-xs">
+                            {problem.severity === 'high' ? 'Vysoká' : 
+                             problem.severity === 'medium' ? 'Střední' : 'Nízká'}
+                          </Badge>
+                        </div>
+                        <p className="text-sm mb-2">{problem.description}</p>
+                        
+                        <div className="flex items-center gap-4 text-xs">
+                          <span className="flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            {problem.delay}
+                          </span>
+                        </div>
+                        
+                        {problem.recommendations.length > 0 && (
+                          <div className="mt-2">
+                            <p className="text-xs font-medium mb-1">Doporučení:</p>
+                            <ul className="text-xs list-disc list-inside space-y-0.5 opacity-80">
+                              {problem.recommendations.map((rec, idx) => (
+                                <li key={idx}>{rec}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+export default HomeWorkTrafficMonitor;

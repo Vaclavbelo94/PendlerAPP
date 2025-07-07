@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Users, AlertTriangle, Brain, BarChart3, Bell } from 'lucide-react';
+import { Users, AlertTriangle, Brain, BarChart3, Bell, Navigation } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
@@ -23,6 +23,12 @@ export const TravelNavigation: React.FC<TravelNavigationProps> = ({
       label: t('ridesharing'),
       icon: Users,
       description: t('ridesharingDesc')
+    },
+    {
+      id: 'commute-traffic',
+      label: t('commuteTraffic'),
+      icon: Navigation,
+      description: t('commuteTrafficDesc')
     },
     {
       id: 'traffic',

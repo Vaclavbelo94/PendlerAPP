@@ -4,9 +4,10 @@ import { motion } from 'framer-motion';
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 import EnhancedRideSharing from '../EnhancedRideSharing';
 import EnhancedTrafficPredictions from '../EnhancedTrafficPredictions';
+import HomeWorkTrafficMonitor from '../HomeWorkTrafficMonitor';
 import { TrafficAlertsManagerLazy, AITravelInsightsLazy, TravelAnalyticsDashboardLazy } from '../LazyTravelComponents';
 import { UniversalMobileNavigation } from '@/components/navigation/UniversalMobileNavigation';
-import { Users, AlertTriangle, Bell, Brain, BarChart3 } from 'lucide-react';
+import { Users, AlertTriangle, Bell, Brain, BarChart3, Navigation } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -29,7 +30,7 @@ const TravelMobileCarousel: React.FC<TravelMobileCarouselProps> = ({
   onDestinationChange
 }) => {
   const { t } = useTranslation('travel');
-  const tabs = ['ridesharing', 'traffic', 'alerts', 'insights', 'analytics'];
+  const tabs = ['ridesharing', 'commute-traffic', 'traffic', 'alerts', 'insights', 'analytics'];
   
   // Setup swipe navigation between tabs
   const { containerRef } = useSwipeNavigation({
@@ -46,6 +47,12 @@ const TravelMobileCarousel: React.FC<TravelMobileCarouselProps> = ({
       label: t('ridesharing'),
       icon: Users,
       description: t('findRidemates')
+    },
+    {
+      id: 'commute-traffic',
+      label: t('commuteTraffic'),
+      icon: Navigation,
+      description: t('commuteTrafficDesc')
     },
     {
       id: 'traffic',
@@ -98,6 +105,18 @@ const TravelMobileCarousel: React.FC<TravelMobileCarouselProps> = ({
           </motion.div>
         )}
         
+        {activeTab === 'commute-traffic' && (
+          <motion.div
+            className="w-full flex flex-col space-y-4"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          >
+            <HomeWorkTrafficMonitor />
+          </motion.div>
+        )}
+
         {activeTab === 'traffic' && (
           <motion.div
             className="w-full flex flex-col space-y-4"
