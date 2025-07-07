@@ -7,7 +7,6 @@ export const EnhancedRideSharingLazy = lazy(() => import('./EnhancedRideSharing'
 export const EnhancedTrafficPredictionsLazy = lazy(() => import('./EnhancedTrafficPredictions'));
 export const QuickRouteSelectorLazy = lazy(() => import('./QuickRouteSelector'));
 export const TrafficMapLazy = lazy(() => import('./TrafficMap'));
-export const TravelAnalyticsLazy = lazy(() => import('./TravelAnalyticsDashboard'));
 
 // Phase 2 Components - Smart Traffic & Multi-modal
 export const TrafficAlertsManagerLazy = lazy(() => import('./alerts/TrafficAlertsManager'));

@@ -157,94 +157,110 @@ class MobileOptimizer {
     }, { passive: true });
 
     document.addEventListener('touchend', () => {
-      const deltaX = currentX - startX;
-      const deltaY = currentY - startY;
-      const minSwipeDistance = 50;
-
-      if (Math.abs(deltaX) > minSwipeDistance && Math.abs(deltaX) > Math.abs(deltaY)) {
-        if (deltaX > 0) {
-          this.handleSwipeRight();
-        } else {
-          this.handleSwipeLeft();
+      const diffX = startX - currentX;
+      const diffY = startY - currentY;
+      
+      // Determine swipe direction
+      if (Math.abs(diffX) > Math.abs(diffY)) {
+        if (Math.abs(diffX) > 50) {
+          if (diffX > 0) {
+            this.handleSwipe('left');
+          } else {
+            this.handleSwipe('right');
+          }
+        }
+      } else {
+        if (Math.abs(diffY) > 50) {
+          if (diffY > 0) {
+            this.handleSwipe('up');
+          } else {
+            this.handleSwipe('down');
+          }
         }
       }
     }, { passive: true });
   }
 
   private handleOrientationChange() {
-    // Force layout recalculation
-    document.body.style.height = '100vh';
-    setTimeout(() => {
-      document.body.style.height = '';
-    }, 100);
-
-    // Emit custom event for components to react
-    window.dispatchEvent(new CustomEvent('mobile-orientation-change', {
-      detail: {
-        orientation: window.screen?.orientation?.angle || 0,
-        isLandscape: window.innerWidth > window.innerHeight
-      }
-    }));
+    // Force reflow to handle orientation changes
+    document.body.style.display = 'none';
+    document.body.offsetHeight; // Trigger reflow
+    document.body.style.display = '';
   }
 
   private handleResize() {
-    // Update CSS custom properties for viewport height
-    document.documentElement.style.setProperty(
-      '--vh',
-      `${window.innerHeight * 0.01}px`
-    );
+    // Handle resize events
+    const event = new CustomEvent('mobileResize', {
+      detail: {
+        width: window.innerWidth,
+        height: window.innerHeight
+      }
+    });
+    window.dispatchEvent(event);
   }
 
   private adjustForKeyboard(isOpen: boolean) {
-    const translateElements = document.querySelectorAll('[data-keyboard-adjust]');
-    
-    translateElements.forEach(element => {
-      const htmlElement = element as HTMLElement;
-      if (isOpen) {
-        const adjustment = htmlElement.dataset.keyboardAdjust || '-50px';
-        htmlElement.style.transform = `translateY(${adjustment})`;
-      } else {
-        htmlElement.style.transform = '';
-      }
+    const viewport = document.querySelector('meta[name="viewport"]');
+    if (viewport && isOpen) {
+      // Adjust viewport when keyboard is open
+      viewport.setAttribute(
+        'content',
+        'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover'
+      );
+    }
+  }
+
+  private handleSwipe(direction: 'left' | 'right' | 'up' | 'down') {
+    const event = new CustomEvent('mobileSwipe', {
+      detail: { direction }
     });
-  }
-
-  private handleSwipeLeft() {
-    window.dispatchEvent(new CustomEvent('mobile-swipe-left'));
-  }
-
-  private handleSwipeRight() {
-    window.dispatchEvent(new CustomEvent('mobile-swipe-right'));
+    window.dispatchEvent(event);
   }
 
   public destroy() {
     if (this.resizeObserver) {
       this.resizeObserver.disconnect();
     }
-
+    
     if (this.orientationTimeout) {
       clearTimeout(this.orientationTimeout);
     }
-
-    // Remove event listeners
-    window.removeEventListener('orientationchange', this.handleOrientationChange);
-    window.removeEventListener('resize', this.handleResize);
   }
 }
-
-// Initialize mobile optimization
-export const mobileOptimizer = new MobileOptimizer();
 
 // Hook for React components
 export const useMobileOptimization = (config?: MobileOptimizationConfig) => {
   React.useEffect(() => {
     const optimizer = new MobileOptimizer(config);
-    return () => optimizer.destroy();
-  }, [config]);
+    
+    return () => {
+      optimizer.destroy();
+    };
+  }, []);
+};
 
+// Utility functions
+export const isMobileDevice = () => {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent
+  );
+};
+
+export const isIOSDevice = () => {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent);
+};
+
+export const isAndroidDevice = () => {
+  return /Android/.test(navigator.userAgent);
+};
+
+export const getTouchCapabilities = () => {
   return {
-    isMobile: window.innerWidth <= 768,
-    isLandscape: window.innerWidth > window.innerHeight,
-    isKeyboardOpen: document.body.classList.contains('keyboard-open')
+    hasTouch: 'ontouchstart' in window || navigator.maxTouchPoints > 0,
+    maxTouchPoints: navigator.maxTouchPoints || 0,
+    hasMouse: window.matchMedia('(hover: hover)').matches,
+    hasCoarsePointer: window.matchMedia('(pointer: coarse)').matches
   };
 };
+
+export default MobileOptimizer;
