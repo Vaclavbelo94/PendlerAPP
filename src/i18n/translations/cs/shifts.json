@@ -163,5 +163,12 @@
   "exportCompleted": "Export dokončen",
   "calendarExportedSuccessfully": "Kalendář směn byl úspěšně exportován",
   "exportError": "Chyba při exportu",
-  "couldNotExportCalendar": "Nepodařilo se exportovat kalendář"
+  "couldNotExportCalendar": "Nepodařilo se exportovat kalendář",
+  "overtime": "Přesčasy",
+  "overtimeHours": "Přesčasové hodiny",
+  "totalOvertime": "Celkové přesčasy",
+  "standardHours": "Standardní hodiny",
+  "actualHours": "Skutečné hodiny",
+  "overtimeByType": "Přesčasy podle typu",
+  "noOvertime": "Žádné přesčasy"
 }

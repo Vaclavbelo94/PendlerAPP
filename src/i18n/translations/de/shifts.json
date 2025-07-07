@@ -164,5 +164,12 @@
   "exportError": "Exportfehler",
   "couldNotExportCalendar": "Kalender konnte nicht exportiert werden",
   "shiftChanged": "Schichtänderung",
-  "shiftChangeNotification": "Ihre Schicht wurde geändert"
+  "shiftChangeNotification": "Ihre Schicht wurde geändert",
+  "overtime": "Überstunden",
+  "overtimeHours": "Überstunden",
+  "totalOvertime": "Überstunden gesamt",
+  "standardHours": "Standardstunden",
+  "actualHours": "Tatsächliche Stunden",
+  "overtimeByType": "Überstunden nach Typ",
+  "noOvertime": "Keine Überstunden"
 }

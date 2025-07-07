@@ -162,5 +162,12 @@
   "exportCompleted": "Eksport zakończony",
   "calendarExportedSuccessfully": "Kalendarz zmian został pomyślnie wyeksportowany",
   "exportError": "Błąd eksportu",
-  "couldNotExportCalendar": "Nie udało się wyeksportować kalendarza"
+  "couldNotExportCalendar": "Nie udało się wyeksportować kalendarza",
+  "overtime": "Nadgodziny",
+  "overtimeHours": "Godziny nadliczbowe",
+  "totalOvertime": "Nadgodziny łącznie",
+  "standardHours": "Standardowe godziny",
+  "actualHours": "Rzeczywiste godziny",
+  "overtimeByType": "Nadgodziny według typu",
+  "noOvertime": "Brak nadgodzin"
 }
