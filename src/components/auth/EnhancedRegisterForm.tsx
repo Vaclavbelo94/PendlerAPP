@@ -53,6 +53,35 @@ const EnhancedRegisterForm = () => {
     console.log('Is Promo Valid:', isPromoValid);
     console.log('Is DHL Code:', isDHLCode);
     
+    // Validation checks
+    if (!email.trim()) {
+      toast.error(t('missingFields'), {
+        description: t('pleaseEnterEmail'),
+      });
+      return;
+    }
+    
+    if (!password.trim()) {
+      toast.error(t('missingFields'), {
+        description: t('pleaseEnterPassword'),
+      });
+      return;
+    }
+    
+    if (!username.trim()) {
+      toast.error(t('missingFields'), {
+        description: t('pleaseEnterUsername'),
+      });
+      return;
+    }
+    
+    if (!confirmPassword.trim()) {
+      toast.error(t('missingFields'), {
+        description: t('pleaseConfirmPassword'),
+      });
+      return;
+    }
+    
     if (password !== confirmPassword) {
       toast.error(t('passwordsDoNotMatch'));
       return;
@@ -125,9 +154,9 @@ const EnhancedRegisterForm = () => {
           });
         }
         
-        // Navigate to login after delay
+        // Automatický reload po úspěšné registraci pro zjištění DHL setup
         setTimeout(() => {
-          navigate("/login");
+          window.location.reload();
         }, 3000);
       }
     } catch (error: any) {

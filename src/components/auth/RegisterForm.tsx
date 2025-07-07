@@ -21,8 +21,42 @@ const RegisterForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Validation checks
+    if (!email.trim()) {
+      toast.error(t('missingFields'), {
+        description: t('pleaseEnterEmail'),
+      });
+      return;
+    }
+    
+    if (!password.trim()) {
+      toast.error(t('missingFields'), {
+        description: t('pleaseEnterPassword'),
+      });
+      return;
+    }
+    
+    if (!username.trim()) {
+      toast.error(t('missingFields'), {
+        description: t('pleaseEnterUsername'),
+      });
+      return;
+    }
+    
+    if (!confirmPassword.trim()) {
+      toast.error(t('missingFields'), {
+        description: t('pleaseConfirmPassword'),
+      });
+      return;
+    }
+    
     if (password !== confirmPassword) {
       toast.error(t('passwordsDoNotMatch'));
+      return;
+    }
+    
+    if (password.length < 6) {
+      toast.error(t('passwordTooShort'));
       return;
     }
     
@@ -32,12 +66,26 @@ const RegisterForm = () => {
       const { error } = await signUp(email, password, username);
       
       if (error) {
+        let errorMessage = t('registerCheckDataRetry');
+        const errorStr = String(error);
+        
+        if (errorStr.includes("User already registered") || errorStr.includes("user_already_exists")) {
+          errorMessage = t('userAlreadyExists');
+        } else if (errorStr.includes("Invalid email")) {
+          errorMessage = t('invalidEmailFormat');
+        } else if (errorStr.includes("Password")) {
+          errorMessage = t('passwordRequirementsNotMet');
+        }
+        
         toast.error(t('registrationFailed'), {
-          description: String(error) || t('registerCheckDataRetry'),
+          description: errorMessage,
         });
       } else {
         toast.success(t('accountCreatedSuccessfully'));
-        navigate("/dashboard");
+        // Automatický reload po úspěšné registraci
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
       }
     } catch (error: any) {
       toast.error(t('registrationError'), {

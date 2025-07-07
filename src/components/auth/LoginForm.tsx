@@ -17,18 +17,48 @@ const LoginForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validation checks
+    if (!email.trim()) {
+      toast.error(t('missingFields'), {
+        description: t('pleaseEnterEmail'),
+      });
+      return;
+    }
+    
+    if (!password.trim()) {
+      toast.error(t('missingFields'), {
+        description: t('pleaseEnterPassword'),
+      });
+      return;
+    }
+    
     setIsLoading(true);
     
     try {
       const { error } = await signIn(email, password);
       
       if (error) {
+        let errorMessage = t('invalidCredentials');
+        const errorStr = String(error);
+        
+        if (errorStr.includes("Invalid login credentials") || errorStr.includes("wrong password")) {
+          errorMessage = t('wrongPassword');
+        } else if (errorStr.includes("Email not confirmed")) {
+          errorMessage = "E-mail nebyl potvrzen";
+        } else if (errorStr.includes("User not found")) {
+          errorMessage = "Uživatel s tímto e-mailem nebyl nalezen";
+        }
+        
         toast.error(t('loginError'), {
-          description: String(error) || t('invalidCredentials'),
+          description: errorMessage,
         });
       } else {
         toast.success(t('loginSuccess'));
-        // Auth provider will handle redirect based on user role
+        // Automatický reload pro zjištění DHL setup stavu
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
       }
     } catch (error: any) {
       toast.error(t('loginError'), {
