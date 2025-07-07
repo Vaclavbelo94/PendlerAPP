@@ -4,11 +4,12 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Shield, Users, Settings, BarChart3, Database } from 'lucide-react';
+import { Shield, Users, Settings, BarChart3, Database, FileText } from 'lucide-react';
 import { useAuth } from "@/hooks/auth";
 import { UserAdminPanel } from "./UserAdminPanel";
 import { PremiumFeaturesPanel } from "./PremiumFeaturesPanel";
 import { PromoCodesPanel } from "./PromoCodesPanel";
+import { AssistedSubmissionsPanel } from "./AssistedSubmissionsPanel";
 
 const AdminPanelDialog = () => {
   const [open, setOpen] = useState(false);
@@ -38,7 +39,7 @@ const AdminPanelDialog = () => {
         </DialogHeader>
         
         <Tabs defaultValue="users" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="users" className="flex items-center gap-2">
               <Users className="h-4 w-4" />
               Uživatelé
@@ -50,6 +51,10 @@ const AdminPanelDialog = () => {
             <TabsTrigger value="promo" className="flex items-center gap-2">
               <BarChart3 className="h-4 w-4" />
               Promo kódy
+            </TabsTrigger>
+            <TabsTrigger value="submissions" className="flex items-center gap-2">
+              <FileText className="h-4 w-4" />
+              Žádosti
             </TabsTrigger>
             <TabsTrigger value="database" className="flex items-center gap-2">
               <Database className="h-4 w-4" />
@@ -67,6 +72,10 @@ const AdminPanelDialog = () => {
           
           <TabsContent value="promo" className="space-y-4">
             <PromoCodesPanel />
+          </TabsContent>
+          
+          <TabsContent value="submissions" className="space-y-4">
+            <AssistedSubmissionsPanel />
           </TabsContent>
           
           <TabsContent value="database" className="space-y-4">

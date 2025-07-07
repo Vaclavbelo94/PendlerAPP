@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Send, Clock, Shield, CheckCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import { TaxWizardData, TaxCalculationResult } from '../types';
 
 interface AssistedSubmissionRequestProps {
@@ -48,20 +49,32 @@ const AssistedSubmissionRequest: React.FC<AssistedSubmissionRequestProps> = ({
     }
 
     try {
-      // Simulace odeslání - v reálné aplikaci by se poslalo na backend
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast({
+          title: t('error', { ns: 'common' }),
+          description: 'Musíte být přihlášeni',
+          variant: "destructive",
+        });
+        return;
+      }
+
       const submissionData = {
-        formCode,
-        userData: data,
-        calculationResult: result,
-        contactInfo: requestData,
-        submittedAt: new Date().toISOString()
+        user_id: user.id,
+        form_code: formCode || null,
+        user_data: data as any,
+        calculation_result: result as any,
+        contact_info: requestData as any,
+        status: 'pending',
+        priority: requestData.urgency || 'standard'
       };
 
-      // Zde by bylo volání API
-      console.log('Submission data:', submissionData);
-      
-      // Simulace úspěšného odeslání
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const { error } = await supabase
+        .from('assisted_submissions')
+        .insert(submissionData);
+
+      if (error) throw error;
       
       setSubmitted(true);
       
@@ -70,6 +83,7 @@ const AssistedSubmissionRequest: React.FC<AssistedSubmissionRequestProps> = ({
         description: t('wizard.assistedSubmission.successDescription'),
       });
     } catch (error) {
+      console.error('Submission error:', error);
       toast({
         title: t('error', { ns: 'common' }),
         description: t('wizard.assistedSubmission.error'),

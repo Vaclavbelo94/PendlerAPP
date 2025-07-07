@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      assisted_submissions: {
+        Row: {
+          admin_notes: string | null
+          calculation_result: Json
+          contact_info: Json
+          created_at: string
+          form_code: string | null
+          id: string
+          priority: string
+          status: string
+          updated_at: string
+          user_data: Json
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          calculation_result: Json
+          contact_info: Json
+          created_at?: string
+          form_code?: string | null
+          id?: string
+          priority?: string
+          status?: string
+          updated_at?: string
+          user_data: Json
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          calculation_result?: Json
+          contact_info?: Json
+          created_at?: string
+          form_code?: string | null
+          id?: string
+          priority?: string
+          status?: string
+          updated_at?: string
+          user_data?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
       calculation_history: {
         Row: {
           created_at: string
