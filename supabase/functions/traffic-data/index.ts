@@ -50,50 +50,68 @@ serve(async (req) => {
     // Get directions for multiple transport modes using HERE Maps
     const routePromises = transportModes.map(async (transportMode: string) => {
       const hereMode = convertToHereMode(transportMode)
-      const routingUrl = `https://router.hereapi.com/v8/routes?transportMode=${hereMode}&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&return=summary,polyline,incidents,actions,instructions&departure=now&alternatives=3&apikey=${hereApiKey}`
       
-      console.log(`Fetching HERE Maps data for mode ${transportMode} (${hereMode})`)
+      // Use HERE Routing API v8 with proper parameters for traffic data
+      const routingUrl = `https://router.hereapi.com/v8/routes?transportMode=${hereMode}&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&return=summary,polyline,notices,spans,actions,instructions,typedIntersections&departure=now&spans=names,length,duration,baseDuration,flags,functionalClass,routeNumbers&alternatives=2&apikey=${hereApiKey}`
+      
+      console.log(`🚗 Fetching HERE Maps data for ${transportMode} (${hereMode})`)
+      console.log(`📍 Route: ${origin} → ${destination}`)
       
       try {
         const response = await fetch(routingUrl)
         const data = await response.json()
         
-        console.log(`HERE Maps API Response for ${transportMode}:`, JSON.stringify(data, null, 2))
-        
         if (data.error) {
-          console.error(`HERE Maps API Error for ${transportMode}:`, data.error)
+          console.error(`❌ HERE Maps API Error for ${transportMode}:`, data.error)
           return { transport_mode: transportMode, routes: [] }
         }
         
-        // Get traffic incidents for the route
-        const trafficData = await getHereTrafficIncidents(origin, destination, hereApiKey)
+        console.log(`📊 HERE Maps found ${data.routes?.length || 0} routes for ${transportMode}`)
+        
+        // Get real-time traffic data using HERE Flow API
+        const trafficFlowData = await getHereTrafficFlow(origin, destination, hereApiKey)
         
         return {
           transport_mode: transportMode,
-          routes: data.routes?.map((route: any) => {
+          routes: data.routes?.map((route: any, index: number) => {
             const section = route.sections?.[0]
             const summary = section?.summary || route.summary
-            const incidents = extractHereTrafficIncidents(route, trafficData)
-            const trafficCondition = getHereTrafficCondition(summary, incidents)
             
-            console.log(`HERE Route: ${trafficCondition} traffic, incidents: ${incidents.length}`)
+            // Extract all traffic incidents and notices
+            const incidents = extractComprehensiveTrafficIssues(route, trafficFlowData)
+            const trafficCondition = determineTrafficCondition(summary, incidents, route.sections)
+            
+            console.log(`🔍 Route ${index + 1}: ${trafficCondition} traffic, ${incidents.length} issues found`)
+            if (incidents.length > 0) {
+              console.log(`⚠️ Issues:`, incidents.map(i => `${i.severity}: ${i.description}`))
+            }
+            
+            // Calculate real travel time vs optimal time
+            const baseTime = summary?.baseDuration || summary?.duration
+            const trafficTime = summary?.duration
+            const delayMinutes = baseTime && trafficTime ? Math.round((trafficTime - baseTime) / 60) : 0
             
             return {
-              duration: formatDuration(summary?.duration),
-              duration_in_traffic: formatDuration(summary?.duration), // HERE doesn't separate this
+              duration: formatDuration(trafficTime),
+              duration_in_traffic: formatDuration(trafficTime),
               distance: formatDistance(summary?.length),
               traffic_conditions: trafficCondition,
               cost_estimate: calculateCostEstimate(summary?.length, transportMode),
               carbon_footprint: calculateCarbonFootprint((summary?.length || 0) / 1000, transportMode),
               polyline: route.sections?.[0]?.polyline,
-              warnings: incidents.filter((i: any) => i.severity === 'medium').map((i: any) => i.description),
+              warnings: incidents.filter((i: any) => i.severity !== 'low').map((i: any) => i.description),
               incidents: incidents,
-              summary: `Trasa přes ${getRouteSummary(route)}`
+              summary: `Trasa přes ${getRouteSummary(route)}`,
+              delay_minutes: delayMinutes,
+              base_duration: formatDuration(baseTime),
+              has_closures: incidents.some(i => i.type === 'closure'),
+              has_accidents: incidents.some(i => i.type === 'accident'),
+              route_quality: assessRouteQuality(incidents, delayMinutes)
             }
           }) || []
         }
       } catch (error) {
-        console.error(`Error fetching HERE Maps data for ${transportMode}:`, error)
+        console.error(`💥 Error fetching HERE Maps data for ${transportMode}:`, error)
         return { transport_mode: transportMode, routes: [] }
       }
     })
@@ -145,71 +163,225 @@ function convertToHereMode(transportMode: string): string {
   return modeMapping[transportMode] || 'car'
 }
 
-async function getHereTrafficIncidents(origin: string, destination: string, apiKey: string) {
+async function getHereTrafficFlow(origin: string, destination: string, apiKey: string) {
   try {
-    // Get traffic incidents along the route
-    const trafficUrl = `https://traffic.hereapi.com/v6.1/incidents?routeId=route&apikey=${apiKey}`
-    const response = await fetch(trafficUrl)
+    // Get coordinates for origin and destination
+    const originCoords = await geocodeAddress(origin, apiKey)
+    const destCoords = await geocodeAddress(destination, apiKey)
+    
+    if (!originCoords || !destCoords) {
+      return { flow: [] }
+    }
+    
+    // Get traffic flow data for the area
+    const bbox = calculateBoundingBox(originCoords, destCoords)
+    const flowUrl = `https://data.traffic.hereapi.com/v7/flow?locationReferencing=shape&in=bbox:${bbox}&apikey=${apiKey}`
+    
+    console.log(`🌊 Fetching traffic flow data for bbox: ${bbox}`)
+    
+    const response = await fetch(flowUrl)
     if (response.ok) {
-      return await response.json()
+      const flowData = await response.json()
+      console.log(`📊 Flow data: ${flowData.results?.length || 0} segments`)
+      return flowData
     }
   } catch (error) {
-    console.error('Error fetching HERE traffic incidents:', error)
+    console.error('❌ Error fetching HERE traffic flow:', error)
   }
-  return { incidents: [] }
+  return { results: [] }
 }
 
-function extractHereTrafficIncidents(route: any, trafficData: any): any[] {
-  const incidents: any[] = []
-  const allIncidents = trafficData?.incidents || []
+async function geocodeAddress(address: string, apiKey: string) {
+  try {
+    const geocodeUrl = `https://geocode.search.hereapi.com/v1/geocode?q=${encodeURIComponent(address)}&apikey=${apiKey}`
+    const response = await fetch(geocodeUrl)
+    const data = await response.json()
+    
+    if (data.items?.[0]?.position) {
+      return data.items[0].position
+    }
+  } catch (error) {
+    console.error('❌ Error geocoding address:', address, error)
+  }
+  return null
+}
+
+function calculateBoundingBox(origin: any, destination: any) {
+  const margin = 0.05 // ~5km margin
+  const minLat = Math.min(origin.lat, destination.lat) - margin
+  const maxLat = Math.max(origin.lat, destination.lat) + margin
+  const minLng = Math.min(origin.lng, destination.lng) - margin
+  const maxLng = Math.max(origin.lng, destination.lng) + margin
+  
+  return `${minLng},${minLat},${maxLng},${maxLat}`
+}
+
+function extractComprehensiveTrafficIssues(route: any, flowData: any): any[] {
+  const issues: any[] = []
+  
+  console.log(`🔍 Analyzing route for traffic issues...`)
   
   // Check route sections for notices and incidents
   if (route.sections) {
-    route.sections.forEach((section: any) => {
+    route.sections.forEach((section: any, sectionIndex: number) => {
+      console.log(`📋 Checking section ${sectionIndex + 1}`)
+      
       // Check for notices (construction, closures, etc.)
       if (section.notices) {
+        console.log(`⚠️ Found ${section.notices.length} notices in section ${sectionIndex + 1}`)
         section.notices.forEach((notice: any) => {
-          let severity = 'low'
-          const code = notice.code?.toLowerCase() || ''
-          const text = notice.text?.toLowerCase() || ''
-          
-          // Check for critical issues
-          if (code.includes('closure') || code.includes('blocked') || 
-              text.includes('uzavřen') || text.includes('geschlossen') || 
-              text.includes('closed') || text.includes('tunnel') ||
-              text.includes('bridge') || text.includes('most') ||
-              text.includes('brücke')) {
-            severity = 'high'
-          } else if (code.includes('construction') || code.includes('roadwork') ||
-                     text.includes('stavba') || text.includes('baustelle') ||
-                     text.includes('construction')) {
-            severity = 'medium'
+          const issue = analyzeTrafficNotice(notice)
+          if (issue) {
+            console.log(`🚨 Notice: ${issue.severity} - ${issue.description}`)
+            issues.push(issue)
           }
-          
-          incidents.push({
-            type: 'route_notice',
-            description: notice.text || `Dopravní upozornění: ${notice.code}`,
-            severity: severity,
-            code: notice.code
-          })
         })
       }
       
       // Check for transport incidents
       if (section.incidents) {
+        console.log(`🚗 Found ${section.incidents.length} incidents in section ${sectionIndex + 1}`)
         section.incidents.forEach((incident: any) => {
-          incidents.push({
-            type: 'traffic_incident',
-            description: incident.description || 'Dopravní nehoda',
+          issues.push({
+            type: 'accident',
+            description: incident.description || 'Dopravní nehoda na trase',
             severity: mapHereIncidentSeverity(incident.criticality),
             criticality: incident.criticality
           })
         })
       }
+      
+      // Analyze spans for traffic conditions
+      if (section.spans) {
+        section.spans.forEach((span: any) => {
+          if (span.flags && span.flags.length > 0) {
+            span.flags.forEach((flag: string) => {
+              const issue = analyzeSpanFlag(flag, span)
+              if (issue) {
+                console.log(`🚩 Span flag: ${issue.severity} - ${issue.description}`)
+                issues.push(issue)
+              }
+            })
+          }
+        })
+      }
     })
   }
   
-  return incidents
+  // Analyze flow data for congestion
+  if (flowData?.results) {
+    flowData.results.forEach((segment: any) => {
+      const congestionIssue = analyzeTrafficFlow(segment)
+      if (congestionIssue) {
+        issues.push(congestionIssue)
+      }
+    })
+  }
+  
+  console.log(`📊 Total issues found: ${issues.length}`)
+  return issues
+}
+
+function analyzeTrafficNotice(notice: any): any | null {
+  const code = notice.code?.toLowerCase() || ''
+  const text = notice.text?.toLowerCase() || ''
+  
+  // Critical closures and blockages
+  const closureKeywords = [
+    'closure', 'closed', 'blocked', 'gesperrt', 'geschlossen', 'uzavřen', 'uzavření',
+    'tunnel', 'bridge', 'most', 'brücke', 'autobahn', 'dálnice'
+  ]
+  
+  const constructionKeywords = [
+    'construction', 'roadwork', 'repair', 'stavba', 'oprava', 'baustelle', 'bauarbeiten'
+  ]
+  
+  const restrictionKeywords = [
+    'restriction', 'lane', 'pruh', 'spur', 'omezení', 'einschränkung'
+  ]
+  
+  // Check for critical closures
+  if (closureKeywords.some(keyword => code.includes(keyword) || text.includes(keyword))) {
+    return {
+      type: 'closure',
+      description: notice.text || `Uzavírka na trase: ${notice.code}`,
+      severity: 'high',
+      code: notice.code
+    }
+  }
+  
+  // Check for construction
+  if (constructionKeywords.some(keyword => code.includes(keyword) || text.includes(keyword))) {
+    return {
+      type: 'construction',
+      description: notice.text || `Stavební práce: ${notice.code}`,
+      severity: 'medium',
+      code: notice.code
+    }
+  }
+  
+  // Check for restrictions
+  if (restrictionKeywords.some(keyword => code.includes(keyword) || text.includes(keyword))) {
+    return {
+      type: 'restriction',
+      description: notice.text || `Dopravní omezení: ${notice.code}`,
+      severity: 'medium',
+      code: notice.code
+    }
+  }
+  
+  return null
+}
+
+function analyzeSpanFlag(flag: string, span: any): any | null {
+  const flagLower = flag.toLowerCase()
+  
+  if (flagLower.includes('closure') || flagLower.includes('blocked')) {
+    return {
+      type: 'closure',
+      description: `Uzavírka na ${span.names?.[0]?.value || 'neznámé silnici'}`,
+      severity: 'high'
+    }
+  }
+  
+  if (flagLower.includes('construction') || flagLower.includes('roadwork')) {
+    return {
+      type: 'construction', 
+      description: `Stavební práce na ${span.names?.[0]?.value || 'trase'}`,
+      severity: 'medium'
+    }
+  }
+  
+  return null
+}
+
+function analyzeTrafficFlow(segment: any): any | null {
+  const currentFlow = segment.currentFlow
+  if (!currentFlow) return null
+  
+  const speed = currentFlow.speed
+  const freeFlowSpeed = currentFlow.freeFlowSpeed
+  const jamFactor = currentFlow.jamFactor
+  
+  if (jamFactor >= 8 || (speed && freeFlowSpeed && speed / freeFlowSpeed < 0.3)) {
+    return {
+      type: 'congestion',
+      description: `Těžký provoz - rychlost ${speed || 'neznámá'} km/h`,
+      severity: 'high',
+      jamFactor: jamFactor
+    }
+  }
+  
+  if (jamFactor >= 5 || (speed && freeFlowSpeed && speed / freeFlowSpeed < 0.6)) {
+    return {
+      type: 'congestion',
+      description: `Zpomalený provoz - rychlost ${speed || 'neznámá'} km/h`,
+      severity: 'medium',
+      jamFactor: jamFactor
+    }
+  }
+  
+  return null
 }
 
 function mapHereIncidentSeverity(criticality: number): 'low' | 'medium' | 'high' {
@@ -218,37 +390,90 @@ function mapHereIncidentSeverity(criticality: number): 'low' | 'medium' | 'high'
   return 'low'
 }
 
-function getHereTrafficCondition(summary: any, incidents: any[] = []): 'light' | 'normal' | 'heavy' {
-  // Check for high-priority incidents first
-  const highSeverityIncidents = incidents.filter(i => i.severity === 'high')
-  if (highSeverityIncidents.length > 0) {
-    console.log('High severity incidents found:', highSeverityIncidents.map(i => i.description))
+function determineTrafficCondition(summary: any, issues: any[] = [], sections: any[] = []): 'light' | 'normal' | 'heavy' {
+  console.log(`🚦 Determining traffic condition...`)
+  
+  // Check for closures first - these are critical
+  const closures = issues.filter(i => i.type === 'closure')
+  if (closures.length > 0) {
+    console.log(`🚫 ${closures.length} closures found - marking as HEAVY traffic`)
     return 'heavy'
   }
   
-  // Check for multiple medium severity incidents
-  const mediumSeverityIncidents = incidents.filter(i => i.severity === 'medium')
-  if (mediumSeverityIncidents.length >= 2) {
-    console.log('Multiple medium severity incidents found:', mediumSeverityIncidents.map(i => i.description))
+  // Check for accidents
+  const accidents = issues.filter(i => i.type === 'accident')
+  if (accidents.length > 0) {
+    console.log(`💥 ${accidents.length} accidents found - marking as HEAVY traffic`)
+    return 'heavy'
+  }
+  
+  // Check for high-severity congestion
+  const heavyCongestion = issues.filter(i => i.type === 'congestion' && i.severity === 'high')
+  if (heavyCongestion.length > 0) {
+    console.log(`🐌 Heavy congestion detected - marking as HEAVY traffic`)
     return 'heavy'
   }
   
   // Check traffic delay based on HERE's traffic data
-  if (summary?.trafficTime && summary?.baseTime) {
-    const ratio = summary.trafficTime / summary.baseTime
-    console.log(`HERE Traffic ratio: ${ratio.toFixed(2)} (${summary.trafficTime}s vs ${summary.baseTime}s)`)
+  if (summary?.baseDuration && summary?.duration) {
+    const ratio = summary.duration / summary.baseDuration
+    const delayMinutes = Math.round((summary.duration - summary.baseDuration) / 60)
     
-    if (ratio > 1.5) return 'heavy'
-    if (ratio > 1.2) return 'normal'
-    return 'light'
+    console.log(`⏱️ Traffic delay: ${delayMinutes} min (ratio: ${ratio.toFixed(2)})`)
+    
+    if (ratio > 1.8 || delayMinutes > 30) {
+      console.log(`🔴 Significant delay detected - marking as HEAVY traffic`)
+      return 'heavy'
+    }
+    if (ratio > 1.3 || delayMinutes > 10) {
+      console.log(`🟡 Moderate delay detected - marking as NORMAL traffic`)
+      return 'normal'
+    }
+    if (ratio <= 1.1 && delayMinutes <= 5) {
+      console.log(`🟢 Minimal delay - marking as LIGHT traffic`) 
+      return 'light'
+    }
   }
   
-  // If we have any incidents, default to normal
-  if (incidents.length > 0) {
+  // Check for multiple medium-severity issues
+  const mediumIssues = issues.filter(i => i.severity === 'medium')
+  if (mediumIssues.length >= 3) {
+    console.log(`⚠️ Multiple medium issues (${mediumIssues.length}) - marking as HEAVY traffic`)
+    return 'heavy'
+  }
+  if (mediumIssues.length >= 1) {
+    console.log(`⚠️ Some medium issues (${mediumIssues.length}) - marking as NORMAL traffic`)
     return 'normal'
   }
   
+  // If we have any issues at all, default to normal
+  if (issues.length > 0) {
+    console.log(`ℹ️ ${issues.length} minor issues - marking as NORMAL traffic`)
+    return 'normal'
+  }
+  
+  console.log(`✅ No issues detected - marking as LIGHT traffic`)
   return 'light'
+}
+
+function assessRouteQuality(issues: any[], delayMinutes: number): 'excellent' | 'good' | 'fair' | 'poor' {
+  if (issues.some(i => i.type === 'closure' || i.type === 'accident')) {
+    return 'poor'
+  }
+  
+  if (delayMinutes > 20 || issues.filter(i => i.severity === 'high').length > 0) {
+    return 'poor'
+  }
+  
+  if (delayMinutes > 10 || issues.filter(i => i.severity === 'medium').length >= 2) {
+    return 'fair'
+  }
+  
+  if (delayMinutes > 5 || issues.length > 0) {
+    return 'good'
+  }
+  
+  return 'excellent'
 }
 
 function formatDuration(seconds: number): string {
