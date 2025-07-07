@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,6 +9,8 @@ import { SchedulePreview } from './SchedulePreview';
 import { ImportHistory } from './ImportHistory';
 import { SchedulesList } from './SchedulesList';
 import { PositionManagementPanel } from './PositionManagementPanel';
+import BulkShiftGeneration from './BulkShiftGeneration';
+import WocheReferenceManager from './WocheReferenceManager';
 import './MobileDHLStyles.css';
 
 const DHLImportPanel: React.FC = () => {
@@ -45,7 +46,7 @@ const DHLImportPanel: React.FC = () => {
       {/* Main Content */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <div className="dhl-mobile-tabs">
-          <TabsList className="tabs-list grid w-full grid-cols-2 sm:grid-cols-5 gap-1">
+          <TabsList className="tabs-list grid w-full grid-cols-2 sm:grid-cols-6 gap-1">
             <TabsTrigger value="upload" className="dhl-mobile-tab-trigger flex items-center gap-1 sm:gap-2">
               <Upload className="h-3 w-3 sm:h-4 sm:w-4" />
               <span className="hidden sm:inline">Import</span>
@@ -70,6 +71,11 @@ const DHLImportPanel: React.FC = () => {
               <Download className="h-3 w-3 sm:h-4 sm:w-4" />
               <span className="hidden sm:inline">Generování</span>
               <span className="sm:hidden">Gen.</span>
+            </TabsTrigger>
+            <TabsTrigger value="references" className="dhl-mobile-tab-trigger flex items-center gap-1 sm:gap-2">
+              <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Reference</span>
+              <span className="sm:hidden">Ref.</span>
             </TabsTrigger>
           </TabsList>
         </div>
@@ -127,7 +133,7 @@ const DHLImportPanel: React.FC = () => {
           <SchedulesList />
         </TabsContent>
 
-        {/* Positions Tab - NEW */}
+        {/* Positions Tab */}
         <TabsContent value="positions" className="space-y-6">
           <PositionManagementPanel />
         </TabsContent>
@@ -139,45 +145,12 @@ const DHLImportPanel: React.FC = () => {
 
         {/* Generate Tab */}
         <TabsContent value="generate" className="space-y-6">
-          <Card className="dhl-mobile-card">
-            <CardHeader className="dhl-mobile-card-header">
-              <CardTitle className="dhl-mobile-card-title">Generování směn</CardTitle>
-              <CardDescription className="dhl-mobile-card-description">
-                Automatické generování směn pro zaměstnance na základě importovaných plánů
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="dhl-mobile-card-content">
-              <div className="space-y-4">
-                <div className="dhl-mobile-schedule-item border rounded-lg">
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4">
-                    <div className="min-w-0 flex-1">
-                      <h4 className="font-medium text-sm sm:text-base dhl-text-wrap">Bulk generování směn</h4>
-                      <p className="text-xs sm:text-sm text-muted-foreground mt-1 dhl-text-wrap">
-                        Vygeneruje směny pro všechny zaměstnance na základě jejich pozice a pracovní skupiny
-                      </p>
-                    </div>
-                    <Button className="w-full sm:w-auto dhl-mobile-button sm:dhl-mobile-button-secondary">
-                      Generovat všechny směny
-                    </Button>
-                  </div>
-                </div>
+          <BulkShiftGeneration />
+        </TabsContent>
 
-                <div className="dhl-mobile-schedule-item border rounded-lg">
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4">
-                    <div className="min-w-0 flex-1">
-                      <h4 className="font-medium text-sm sm:text-base dhl-text-wrap">Nastavení Woche referenčních bodů</h4>
-                      <p className="text-xs sm:text-sm text-muted-foreground mt-1 dhl-text-wrap">
-                        Správa individuálních referenčních bodů zaměstnanců pro výpočet Woche
-                      </p>
-                    </div>
-                    <Button variant="outline" className="w-full sm:w-auto dhl-mobile-button sm:dhl-mobile-button-secondary">
-                      Spravovat reference
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        {/* References Tab */}
+        <TabsContent value="references" className="space-y-6">
+          <WocheReferenceManager />
         </TabsContent>
       </Tabs>
     </div>
