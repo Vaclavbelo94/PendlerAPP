@@ -55,8 +55,8 @@ const handler = async (req: Request): Promise<Response> => {
     if (type === 'new_submission') {
       // Send notification to admin
       await resend.emails.send({
-        from: 'PendlerApp <noreply@pendlerapp.com>',
-        to: ['admin@pendlerapp.com'],
+        from: 'PendlerApp <noreply@resend.dev>',
+        to: ['vaclavbelo94@gmail.com'], // Admin email
         subject: 'Nová žádost o asistované podání daňového přiznání',
         html: `
           <h2>Nová žádost o asistované podání</h2>
@@ -84,7 +84,7 @@ const handler = async (req: Request): Promise<Response> => {
       // Send confirmation to user
       if (userEmail) {
         await resend.emails.send({
-          from: 'PendlerApp <noreply@pendlerapp.com>',
+          from: 'PendlerApp <noreply@resend.dev>',
           to: [userEmail],
           subject: 'Potvrzení žádosti o asistované podání',
           html: `
@@ -120,7 +120,7 @@ const handler = async (req: Request): Promise<Response> => {
       const statusMessage = getStatusMessage(new_status!);
       
       await resend.emails.send({
-        from: 'PendlerApp <noreply@pendlerapp.com>',
+        from: 'PendlerApp <noreply@resend.dev>',
         to: [userEmail],
         subject: `Aktualizace stavu žádosti - ${statusLabels[new_status as keyof typeof statusLabels]}`,
         html: `
