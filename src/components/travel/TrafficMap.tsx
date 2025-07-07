@@ -179,55 +179,66 @@ const TrafficMap: React.FC<TrafficMapProps> = ({
                     </div>
                   </div>
 
-                  {/* Display warnings and incidents */}
+                  {/* Display warnings and incidents with improved readability */}
                   {(route.warnings && route.warnings.length > 0) && (
-                    <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                      <h4 className="font-medium text-yellow-800 mb-2 flex items-center gap-2">
-                        <AlertTriangle className="h-4 w-4" />
-                        Upozornění
+                    <div className="mt-4 p-4 bg-yellow-50/80 border-l-4 border-yellow-400 rounded-r-lg shadow-sm">
+                      <h4 className="font-semibold text-yellow-900 mb-3 flex items-center gap-2 text-base">
+                        <AlertTriangle className="h-5 w-5" />
+                        Dopravní upozornění
                       </h4>
-                      <ul className="text-sm text-yellow-700 space-y-1">
+                      <div className="space-y-2">
                         {route.warnings.map((warning, idx) => (
-                          <li key={idx} className="flex items-start gap-2">
-                            <span className="text-yellow-600 mt-1">•</span>
-                            <span>{warning}</span>
-                          </li>
+                          <div key={idx} className="flex items-start gap-3 p-2 bg-white/50 rounded">
+                            <div className="w-2 h-2 bg-yellow-500 rounded-full mt-2 flex-shrink-0"></div>
+                            <p className="text-yellow-800 leading-relaxed">{warning}</p>
+                          </div>
                         ))}
-                      </ul>
+                      </div>
                     </div>
                   )}
 
                   {(route.incidents && route.incidents.length > 0) && (
-                    <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
-                      <h4 className="font-medium text-red-800 mb-2 flex items-center gap-2">
-                        <AlertTriangle className="h-4 w-4" />
+                    <div className="mt-4 p-4 bg-red-50/80 border-l-4 border-red-400 rounded-r-lg shadow-sm">
+                      <h4 className="font-semibold text-red-900 mb-3 flex items-center gap-2 text-base">
+                        <AlertTriangle className="h-5 w-5" />
                         Dopravní události
                       </h4>
-                      <ul className="text-sm text-red-700 space-y-1">
+                      <div className="space-y-2">
                         {route.incidents.map((incident, idx) => (
-                          <li key={idx} className="flex items-start gap-2">
-                            <span className="text-red-600 mt-1">•</span>
-                            <span>{incident.description}</span>
-                          </li>
+                          <div key={idx} className="flex items-start gap-3 p-2 bg-white/50 rounded">
+                            <div className="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
+                            <div className="flex-1">
+                              <p className="text-red-800 leading-relaxed">{incident.description}</p>
+                              {incident.severity && (
+                                <Badge className="mt-1 text-xs" variant={incident.severity === 'high' ? 'destructive' : 'secondary'}>
+                                  {incident.severity === 'high' ? 'Vysoká priorita' : 
+                                   incident.severity === 'medium' ? 'Střední priorita' : 'Nízká priorita'}
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
                         ))}
-                      </ul>
+                      </div>
                     </div>
                   )}
                 </div>
               ))}
 
-              {/* Display recommendations */}
+              {/* Display recommendations with improved layout */}
               {trafficData.recommendations && trafficData.recommendations.length > 0 && (
-                <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <h4 className="font-medium text-blue-800 mb-2">Doporučení:</h4>
-                  <ul className="text-sm text-blue-700 space-y-1">
+                <div className="mt-4 p-4 bg-blue-50/80 border-l-4 border-blue-400 rounded-r-lg shadow-sm">
+                  <h4 className="font-semibold text-blue-900 mb-3 flex items-center gap-2 text-base">
+                    <TrendingUp className="h-5 w-5" />
+                    Doporučení pro cestu
+                  </h4>
+                  <div className="space-y-2">
                     {trafficData.recommendations.map((rec, idx) => (
-                      <li key={idx} className="flex items-start gap-2">
-                        <span className="text-blue-600 mt-1">•</span>
-                        <span>{rec}</span>
-                      </li>
+                      <div key={idx} className="flex items-start gap-3 p-2 bg-white/50 rounded">
+                        <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                        <p className="text-blue-800 leading-relaxed">{rec}</p>
+                      </div>
                     ))}
-                  </ul>
+                  </div>
                 </div>
               )}
             </div>
