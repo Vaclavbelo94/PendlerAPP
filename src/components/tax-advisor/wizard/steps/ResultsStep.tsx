@@ -116,13 +116,24 @@ const ResultsStep: React.FC<ResultsStepProps> = ({
       </Card>
 
       {/* Main Content Tabs */}
+      {/* Progress indicator pro dokončené kroky */}
+      <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+        <div className="flex items-center gap-2 mb-2">
+          <CheckCircle className="h-5 w-5 text-green-600" />
+          <h3 className="font-semibold text-green-800">Výpočet dokončen</h3>
+        </div>
+        <p className="text-sm text-green-700">
+          Všechna data byla úspěšně zpracována a výsledky jsou připraveny k exportu.
+        </p>
+      </div>
+
       <Tabs defaultValue="summary" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 gap-1">
-          <TabsTrigger value="summary" className="text-xs md:text-sm">{t('common.summary')}</TabsTrigger>
-          <TabsTrigger value="elster" className="text-xs md:text-sm">ELSTER</TabsTrigger>
-          <TabsTrigger value="formcode" className="text-xs md:text-sm">{t('wizard.formCode.title')}</TabsTrigger>
-          <TabsTrigger value="export" className="text-xs md:text-sm">{t('wizard.results.exportOptions')}</TabsTrigger>
-          <TabsTrigger value="submit" className="text-xs md:text-sm">{t('wizard.assistedSubmission.title')}</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 gap-1 h-auto p-1">
+          <TabsTrigger value="summary" className="text-xs sm:text-sm py-2 px-2 sm:px-4">{t('common.summary')}</TabsTrigger>
+          <TabsTrigger value="elster" className="text-xs sm:text-sm py-2 px-2 sm:px-4">ELSTER</TabsTrigger>
+          <TabsTrigger value="formcode" className="text-xs sm:text-sm py-2 px-2 sm:px-4">{t('wizard.formCode.title')}</TabsTrigger>
+          <TabsTrigger value="export" className="text-xs sm:text-sm py-2 px-2 sm:px-4">{t('wizard.results.exportOptions')}</TabsTrigger>
+          <TabsTrigger value="submit" className="text-xs sm:text-sm py-2 px-2 sm:px-4">{t('wizard.assistedSubmission.title')}</TabsTrigger>
         </TabsList>
 
         {/* Summary Tab */}
@@ -279,22 +290,33 @@ const ResultsStep: React.FC<ResultsStepProps> = ({
           />
         </TabsContent>
 
-        {/* Export Tab */}
+        {/* Export Tab - Vylepšené možnosti */}
         <TabsContent value="export">
           <Card>
             <CardHeader>
-              <CardTitle>Pokročilé možnosti exportu</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <Download className="h-5 w-5" />
+                {t('wizard.results.exportOptions')}
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Button onClick={onExportPDF} className="w-full">
-                  <Download className="h-4 w-4 mr-2" />
-                  {t('wizard.results.exportPdf')}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Button onClick={onExportPDF} className="w-full h-16 flex flex-col gap-1">
+                  <Download className="h-5 w-5" />
+                  <span className="text-sm font-semibold">{t('wizard.results.exportPdf')}</span>
+                  <span className="text-xs opacity-80">Kompletní dokument</span>
                 </Button>
-                <Button onClick={onExportXML} variant="outline" className="w-full">
-                  <FileText className="h-4 w-4 mr-2" />
-                  {t('wizard.elster.xmlExport')}
+                <Button onClick={onExportXML} variant="outline" className="w-full h-16 flex flex-col gap-1">
+                  <FileText className="h-5 w-5" />
+                  <span className="text-sm font-semibold">{t('wizard.elster.xmlExport')}</span>
+                  <span className="text-xs opacity-80">Pro ELSTER</span>
                 </Button>
+              </div>
+              
+              <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-blue-800">
+                  💡 <strong>Tip:</strong> PDF dokument obsahuje všechny výpočty a je vhodný pro archivaci. XML soubor můžete importovat přímo do ELSTER portálu.
+                </p>
               </div>
             </CardContent>
           </Card>

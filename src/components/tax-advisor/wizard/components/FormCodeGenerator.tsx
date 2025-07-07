@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Copy, RefreshCw, Download, Upload, Save } from 'lucide-react';
+import { Copy, RefreshCw, Download, Upload, Save, RefreshCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -26,6 +26,38 @@ const FormCodeGenerator: React.FC<FormCodeGeneratorProps> = ({
   const [formCode, setFormCode] = useState<string>('');
   const [loadCode, setLoadCode] = useState<string>('');
   const [isSaving, setIsSaving] = useState(false);
+
+  // Migrace existujících localStorage dat do databáze
+  const migrateLocalStorageData = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    // Najít všechny lokální kódy formulářů
+    const localCodes = Object.keys(localStorage).filter(key => key.startsWith('tax_form_'));
+    
+    for (const key of localCodes) {
+      try {
+        const data = localStorage.getItem(key);
+        if (data) {
+          const parsedData = JSON.parse(decodeURIComponent(atob(data.replace(/[^A-Za-z0-9+/]/g, ''))));
+          
+          // Uložit do databáze
+          await supabase
+            .from('tax_form_drafts')
+            .upsert({
+              user_id: user.id,
+              form_type: 'tax_wizard_legacy',
+              form_data: parsedData as any
+            });
+          
+          // Odstranit z localStorage po úspěšné migraci
+          localStorage.removeItem(key);
+        }
+      } catch (error) {
+        console.error('Migration error for key:', key, error);
+      }
+    }
+  };
 
   // Generování kódu formuláře a uložení do databáze
   const generateAndSaveFormCode = async () => {
@@ -72,7 +104,6 @@ const FormCodeGenerator: React.FC<FormCodeGeneratorProps> = ({
         // Fallback na localStorage pokud není uživatel přihlášen
         localStorage.setItem(`tax_form_${hash}`, jsonString);
       }
-
       
       setFormCode(hash);
       return hash;
@@ -87,6 +118,22 @@ const FormCodeGenerator: React.FC<FormCodeGeneratorProps> = ({
       setIsSaving(false);
     }
   };
+
+  // Spustit migraci při načtení komponenty
+  useEffect(() => {
+    migrateLocalStorageData();
+  }, []);
+
+  // Auto-save funkcionalita 
+  useEffect(() => {
+    const autoSaveInterval = setInterval(() => {
+      if (data.personalInfo.firstName && data.employmentInfo.employerName) {
+        generateAndSaveFormCode();
+      }
+    }, 30000); // Auto-save každých 30 sekund
+
+    return () => clearInterval(autoSaveInterval);
+  }, [data, result]);
 
   useEffect(() => {
     if (data.personalInfo.firstName && data.employmentInfo.employerName) {
@@ -155,10 +202,14 @@ const FormCodeGenerator: React.FC<FormCodeGeneratorProps> = ({
       if (!error && formDrafts?.form_data) {
         parsedData = formDrafts.form_data;
       } else {
-        // Fallback na localStorage
+        // Fallback na localStorage s konkrétním kódem
         const savedData = localStorage.getItem(`tax_form_${loadCode.trim().toUpperCase()}`);
         if (savedData) {
-          parsedData = JSON.parse(decodeURIComponent(atob(savedData.replace(/[^A-Za-z0-9+/]/g, ''))));
+          try {
+            parsedData = JSON.parse(decodeURIComponent(atob(savedData.replace(/[^A-Za-z0-9+/]/g, ''))));
+          } catch (parseError) {
+            console.error('Parse error:', parseError);
+          }
         }
       }
 
@@ -218,6 +269,33 @@ const FormCodeGenerator: React.FC<FormCodeGeneratorProps> = ({
     });
   };
 
+  // Synchronizace dat mezi zařízeními
+  const syncCrossDevice = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    try {
+      const { data: drafts, error } = await supabase
+        .from('tax_form_drafts')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('form_type', 'tax_wizard');
+
+      if (!error && drafts && drafts.length > 0) {
+        const latestDraft = drafts[0];
+        if (onLoadData && latestDraft.form_data) {
+          onLoadData(latestDraft.form_data as any);
+          toast({
+            title: 'Synchronizováno',
+            description: 'Data byla synchronizována z cloudu',
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Sync error:', error);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Generování kódu */}
@@ -245,6 +323,11 @@ const FormCodeGenerator: React.FC<FormCodeGeneratorProps> = ({
                     Ukládám...
                   </Badge>
                 )}
+                {!navigator.onLine && (
+                  <Badge variant="outline" className="text-orange-600">
+                    Offline režim
+                  </Badge>
+                )}
               </div>
               
               <div className="flex flex-wrap gap-2">
@@ -255,6 +338,10 @@ const FormCodeGenerator: React.FC<FormCodeGeneratorProps> = ({
                 <Button variant="outline" size="sm" onClick={regenerateCode} disabled={isSaving}>
                   <RefreshCw className="h-4 w-4 mr-2" />
                   {t('wizard.formCode.regenerate')}
+                </Button>
+                <Button variant="outline" size="sm" onClick={syncCrossDevice}>
+                  <RefreshCcw className="h-4 w-4 mr-2" />
+                  Synchronizovat
                 </Button>
                 <Button variant="outline" size="sm" onClick={downloadBackup}>
                   <Download className="h-4 w-4 mr-2" />
@@ -278,6 +365,15 @@ const FormCodeGenerator: React.FC<FormCodeGeneratorProps> = ({
           <p className="text-sm text-muted-foreground">
             {t('wizard.formCode.loadDescription')}
           </p>
+
+          {/* Offline support indikátor */}
+          {!navigator.onLine && (
+            <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg">
+              <p className="text-sm text-orange-800">
+                🔄 <strong>Offline režim:</strong> Data se automaticky synchronizují po obnovení připojení.
+              </p>
+            </div>
+          )}
           
           <div className="flex gap-2">
             <div className="flex-1">
