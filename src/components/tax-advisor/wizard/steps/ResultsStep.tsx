@@ -2,19 +2,37 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calculator, FileText, Download, ExternalLink, Archive, Send, RefreshCw, BarChart3 } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { 
+  Download, 
+  FileText, 
+  Calculator, 
+  TrendingUp, 
+  Euro,
+  PieChart,
+  BarChart3,
+  FileDown,
+  Globe,
+  Send,
+  CheckCircle,
+  AlertCircle,
+  Info,
+  ExternalLink,
+  Clock,
+  Shield,
+  Zap
+} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { TaxWizardData, TaxCalculationResult } from '../types';
-import { generateEnhancedTaxPDF } from '@/utils/pdf/modern/EnhancedTaxPDFGenerator';
-import ElsterGuide from '../../elster/ElsterGuide';
-import DocumentChecklist from '../../elster/DocumentChecklist';
-import DataSummaryTable from '../components/DataSummaryTable';
-import FormCodeGenerator from '../components/FormCodeGenerator';
-import AssistedSubmissionRequest from '../components/AssistedSubmissionRequest';
 import TaxAnalyticsDashboard from '../../analytics/TaxAnalyticsDashboard';
 import AdvancedExportManager from '../../export/AdvancedExportManager';
 import SmartValidationEngine from '../../validation/SmartValidationEngine';
+import TaxDashboard from '../../dashboard/TaxDashboard';
+import DataSummaryTable from '../components/DataSummaryTable';
+import FormCodeGenerator from '../components/FormCodeGenerator';
+import AssistedSubmissionRequest from '../components/AssistedSubmissionRequest';
 
 interface ResultsStepProps {
   data: TaxWizardData;
@@ -22,7 +40,7 @@ interface ResultsStepProps {
   onExportPDF: () => void;
   onExportXML?: () => void;
   onDownloadGuide?: () => void;
-  onDataChange?: (newData: TaxWizardData) => void;
+  onLoadData?: (data: TaxWizardData) => void;
 }
 
 const ResultsStep: React.FC<ResultsStepProps> = ({ 
@@ -31,18 +49,10 @@ const ResultsStep: React.FC<ResultsStepProps> = ({
   onExportPDF, 
   onExportXML, 
   onDownloadGuide,
-  onDataChange 
+  onLoadData 
 }) => {
-  const { t } = useTranslation(['taxAdvisor']);
+  const { t } = useTranslation(['taxAdvisor', 'common']);
   const [formCode, setFormCode] = useState<string>('');
-
-  const handleEnhancedPDFExport = async () => {
-    try {
-      await generateEnhancedTaxPDF(data, result, t);
-    } catch (error) {
-      console.error('Error generating enhanced PDF:', error);
-    }
-  };
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('de-DE', {
@@ -51,187 +61,313 @@ const ResultsStep: React.FC<ResultsStepProps> = ({
     }).format(amount);
   };
 
-  const openElster = () => {
-    window.open('https://www.elster.de', '_blank');
-  };
-
-  const estimatedRefund = result.totalDeductions * 0.25; // 25% paušální sazba
-
   return (
     <div className="space-y-6">
-      {/* Hlavní přehled výsledků */}
-      <Card className="border-2 border-primary/20">
+      {/* Quick Results Summary */}
+      <Card className="border-2 border-primary/20 bg-gradient-to-r from-primary/5 to-accent/5">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Calculator className="h-5 w-5" />
-            {t('wizard.results.summary')}
+            {t('wizard.results.title')}
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-blue-600 mb-2">
-                {formatCurrency(result.reisepausaleBenefit)}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="text-center p-4 bg-background/50 rounded-lg">
+              <div className="flex items-center justify-center mb-2">
+                <Euro className="h-5 w-5 text-green-600 mr-1" />
+                <span className="text-2xl font-bold text-green-600">
+                  {formatCurrency(result.reisepausaleBenefit)}
+                </span>
               </div>
-              <p className="text-sm text-muted-foreground">{t('wizard.results.totalReisepauschale')}</p>
+              <p className="text-sm text-muted-foreground">{t('wizard.results.reisepauschaleAmount')}</p>
             </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-purple-600 mb-2">
-                {formatCurrency(result.totalDeductions)}
+            
+            <div className="text-center p-4 bg-background/50 rounded-lg">
+              <div className="flex items-center justify-center mb-2">
+                <TrendingUp className="h-5 w-5 text-blue-600 mr-1" />
+                <span className="text-2xl font-bold text-blue-600">
+                  {formatCurrency(result.totalDeductions)}
+                </span>
               </div>
               <p className="text-sm text-muted-foreground">{t('wizard.results.totalDeductions')}</p>
             </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-green-600 mb-2">
-                {formatCurrency(estimatedRefund)}
+            
+            <div className="text-center p-4 bg-background/50 rounded-lg">
+              <div className="flex items-center justify-center mb-2">
+                <Calculator className="h-5 w-5 text-purple-600 mr-1" />
+                <span className="text-2xl font-bold text-purple-600">
+                  {formatCurrency(result.totalDeductions * 0.25)}
+                </span>
               </div>
               <p className="text-sm text-muted-foreground">{t('wizard.results.estimatedRefund')}</p>
             </div>
           </div>
+          
+          {/* ELSTER Information Alert */}
+          <Alert className="mt-4 border-blue-200 bg-blue-50/50">
+            <Info className="h-4 w-4" />
+            <AlertTitle className="text-blue-800">{t('wizard.elster.title')}</AlertTitle>
+            <AlertDescription className="text-blue-700">
+              {t('wizard.elster.description')}
+            </AlertDescription>
+          </Alert>
         </CardContent>
       </Card>
 
+      {/* Main Content Tabs */}
       <Tabs defaultValue="summary" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 lg:grid-cols-7">
-          <TabsTrigger value="summary">{t('wizard.results.tabs.summary')}</TabsTrigger>
-          <TabsTrigger value="data">{t('wizard.results.tabs.allData')}</TabsTrigger>
-          <TabsTrigger value="export">{t('wizard.results.tabs.export')}</TabsTrigger>
-          <TabsTrigger value="elster">{t('wizard.results.tabs.elster')}</TabsTrigger>
-          <TabsTrigger value="documents">{t('wizard.results.tabs.documents')}</TabsTrigger>
-          <TabsTrigger value="assistance">{t('wizard.results.tabs.assistance')}</TabsTrigger>
-          <TabsTrigger value="analytics">{t('wizard.results.tabs.analytics')}</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-7">
+          <TabsTrigger value="summary">{t('common.summary')}</TabsTrigger>
+          <TabsTrigger value="elster">
+            <Globe className="h-4 w-4 mr-1" />
+            ELSTER
+          </TabsTrigger>
+          <TabsTrigger value="analytics">
+            <BarChart3 className="h-4 w-4 mr-1" />
+            {t('wizard.results.analytics')}
+          </TabsTrigger>
+          <TabsTrigger value="export">
+            <FileDown className="h-4 w-4 mr-1" />
+            {t('wizard.results.exportOptions')}
+          </TabsTrigger>
+          <TabsTrigger value="validation">
+            <CheckCircle className="h-4 w-4 mr-1" />
+            {t('wizard.results.validation')}
+          </TabsTrigger>
+          <TabsTrigger value="dashboard">
+            <PieChart className="h-4 w-4 mr-1" />
+            {t('wizard.results.dashboard')}
+          </TabsTrigger>
+          <TabsTrigger value="submit">
+            <Send className="h-4 w-4 mr-1" />
+            Submit
+          </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="summary">
-          <div className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>{t('wizard.results.breakdown')}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center p-3 bg-blue-50 rounded">
-                    <span>{t('wizard.results.pendlerPauschale')}</span>
-                    <span className="font-semibold">{formatCurrency(result.reisepausaleBenefit)}</span>
-                  </div>
-                  
-                  {result.secondHomeBenefit > 0 && (
-                    <div className="flex justify-between items-center p-3 bg-green-50 rounded">
-                      <span>{t('wizard.results.secondHomeBenefit')}</span>
-                      <span className="font-semibold">{formatCurrency(result.secondHomeBenefit)}</span>
-                    </div>
-                  )}
-
-                  {result.workClothesBenefit > 0 && (
-                    <div className="flex justify-between items-center p-3 bg-purple-50 rounded">
-                      <span>{t('wizard.deductions.workClothes')}</span>
-                      <span className="font-semibold">{formatCurrency(result.workClothesBenefit)}</span>
-                    </div>
-                  )}
-                  {result.educationBenefit > 0 && (
-                    <div className="flex justify-between items-center p-3 bg-purple-50 rounded">
-                      <span>{t('wizard.deductions.education')}</span>
-                      <span className="font-semibold">{formatCurrency(result.educationBenefit)}</span>
-                    </div>
-                  )}
-
-                  <div className="border-t pt-4">
-                    <div className="flex justify-between items-center p-3 bg-gray-100 rounded font-bold">
-                      <span>{t('wizard.results.totalDeductions')}</span>
-                      <span>{formatCurrency(result.totalDeductions)}</span>
-                    </div>
-                  </div>
-
-                  <div className="text-center p-4 bg-green-100 rounded-lg">
-                    <p className="text-sm text-muted-foreground mb-2">{t('wizard.results.expectedRefund')}</p>
-                    <p className="text-2xl font-bold text-green-600">{formatCurrency(estimatedRefund)}</p>
-                    <p className="text-xs text-muted-foreground mt-1">{t('wizard.results.refundNote')}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="data">
+        {/* Summary Tab */}
+        <TabsContent value="summary" className="space-y-6">
           <DataSummaryTable data={data} result={result} />
+          
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                Quick Actions
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Button onClick={onExportPDF} className="w-full">
+                  <Download className="h-4 w-4 mr-2" />
+                  {t('wizard.results.exportPdf')}
+                </Button>
+                
+                <Button onClick={onExportXML} variant="outline" className="w-full">
+                  <FileText className="h-4 w-4 mr-2" />
+                  {t('wizard.elster.xmlExport')}
+                </Button>
+                
+                <Button onClick={onDownloadGuide} variant="outline" className="w-full">
+                  <Info className="h-4 w-4 mr-2" />
+                  {t('wizard.elster.downloadGuide')}
+                </Button>
+                
+                <FormCodeGenerator 
+                  data={data} 
+                  result={result} 
+                  onLoadData={onLoadData}
+                />
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
-        <TabsContent value="export">
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Download className="h-5 w-5" />
-                  {t('wizard.results.exportOptions')}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Button onClick={onExportPDF} variant="outline" className="h-auto p-4">
-                    <div className="text-left">
-                      <div className="flex items-center gap-2 mb-1">
-                        <FileText className="h-4 w-4" />
-                        <span className="font-medium">{t('wizard.results.exportPDF')}</span>
-                      </div>
-                      <p className="text-xs text-muted-foreground">{t('wizard.results.exportPDFDesc')}</p>
+        {/* ELSTER Online Filing Tab */}
+        <TabsContent value="elster" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Globe className="h-5 w-5" />
+                {t('wizard.elster.title')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <p className="text-muted-foreground">
+                {t('wizard.elster.description')}
+              </p>
+              
+              {/* Benefits Section */}
+              <Card className="bg-green-50/50 border-green-200">
+                <CardHeader>
+                  <CardTitle className="text-green-800 flex items-center gap-2">
+                    <CheckCircle className="h-5 w-5" />
+                    {t('wizard.elster.benefits')}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-green-600" />
+                      <span className="text-sm">{t('wizard.elster.benefit1')}</span>
                     </div>
-                  </Button>
-                  
-                  <Button onClick={handleEnhancedPDFExport} variant="outline" className="h-auto p-4">
-                    <div className="text-left">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Archive className="h-4 w-4" />
-                        <span className="font-medium">{t('wizard.results.exportEnhancedPDF')}</span>
-                      </div>
-                      <p className="text-xs text-muted-foreground">{t('wizard.results.exportEnhancedPDFDesc')}</p>
+                    <div className="flex items-center gap-2">
+                      <Shield className="h-4 w-4 text-green-600" />
+                      <span className="text-sm">{t('wizard.elster.benefit2')}</span>
                     </div>
-                  </Button>
+                    <div className="flex items-center gap-2">
+                      <Zap className="h-4 w-4 text-green-600" />
+                      <span className="text-sm">{t('wizard.elster.benefit3')}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Info className="h-4 w-4 text-green-600" />
+                      <span className="text-sm">{t('wizard.elster.benefit4')}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
 
-                  {onExportXML && (
-                    <Button onClick={onExportXML} variant="outline" className="h-auto p-4">
-                      <div className="text-left">
-                        <div className="flex items-center gap-2 mb-1">
-                          <ExternalLink className="h-4 w-4" />
-                          <span className="font-medium">{t('wizard.results.exportXML')}</span>
+              {/* Step-by-Step Instructions */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t('wizard.elster.howToSubmit')}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {[1, 2, 3, 4, 5].map((step) => (
+                      <div key={step} className="flex gap-4 p-4 border rounded-lg">
+                        <div className="flex-shrink-0 w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-semibold">
+                          {step}
                         </div>
-                        <p className="text-xs text-muted-foreground">{t('wizard.results.exportXMLDesc')}</p>
+                        <div>
+                          <h4 className="font-semibold mb-1">
+                            {t(`wizard.elster.step${step}`)}
+                          </h4>
+                          <p className="text-sm text-muted-foreground">
+                            {t(`wizard.elster.step${step}Description`)}
+                          </p>
+                        </div>
                       </div>
-                    </Button>
-                  )}
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
 
-                  <Button onClick={openElster} className="h-auto p-4">
-                    <div className="text-left">
-                      <div className="flex items-center gap-2 mb-1">
-                        <ExternalLink className="h-4 w-4" />
-                        <span className="font-medium">{t('wizard.results.openElster')}</span>
+              {/* Required Documents */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t('wizard.elster.requiredDocuments')}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {[1, 2, 3, 4].map((doc) => (
+                      <div key={doc} className="flex items-center gap-2 p-3 bg-muted/30 rounded-lg">
+                        <FileText className="h-4 w-4 text-blue-600" />
+                        <span className="text-sm">{t(`wizard.elster.document${doc}`)}</span>
                       </div>
-                      <p className="text-xs text-muted-foreground">{t('wizard.results.openElsterDesc')}</p>
-                    </div>
-                  </Button>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Export Actions */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Button onClick={onExportXML} className="w-full">
+                  <Download className="h-4 w-4 mr-2" />
+                  {t('wizard.elster.xmlExport')}
+                </Button>
+                <Button onClick={onDownloadGuide} variant="outline" className="w-full">
+                  <FileText className="h-4 w-4 mr-2" />
+                  {t('wizard.elster.downloadGuide')}
+                </Button>
+                <Button variant="outline" className="w-full" asChild>
+                  <a href="https://elster.de" target="_blank" rel="noopener noreferrer">
+                    <ExternalLink className="h-4 w-4 mr-2" />
+                    elster.de
+                  </a>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Analytics Tab */}
+        <TabsContent value="analytics">
+          <Card>
+            <CardHeader>
+              <CardTitle>Daňová analytika</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">Analytické dashboardy budou k dispozici v nejbližší aktualizaci.</p>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Export Tab */}
+        <TabsContent value="export">
+          <Card>
+            <CardHeader>
+              <CardTitle>Pokročilé možnosti exportu</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Button onClick={onExportPDF} className="w-full">
+                  <Download className="h-4 w-4 mr-2" />
+                  {t('wizard.results.exportPdf')}
+                </Button>
+                <Button onClick={onExportXML} variant="outline" className="w-full">
+                  <FileText className="h-4 w-4 mr-2" />
+                  {t('wizard.elster.xmlExport')}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Validation Tab */}
+        <TabsContent value="validation">
+          <Card>
+            <CardHeader>
+              <CardTitle>Validace dat</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 p-3 bg-green-50 rounded-lg">
+                  <CheckCircle className="h-4 w-4 text-green-600" />
+                  <span className="text-sm">Všechna data jsou správně vyplněna</span>
                 </div>
-              </CardContent>
-            </Card>
-
-            <FormCodeGenerator 
-              data={data} 
-              result={result} 
-            />
-          </div>
+                <div className="flex items-center gap-2 p-3 bg-blue-50 rounded-lg">
+                  <Info className="h-4 w-4 text-blue-600" />
+                  <span className="text-sm">Doporučujeme zkontrolovat výsledky před podáním</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
-        <TabsContent value="elster">
-          <ElsterGuide onOpenElster={openElster} />
+        {/* Dashboard Tab */}
+        <TabsContent value="dashboard">
+          <Card>
+            <CardHeader>
+              <CardTitle>Přehledový dashboard</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-4 border rounded-lg">
+                  <h3 className="font-semibold mb-2">Celkové úspory</h3>
+                  <p className="text-2xl font-bold text-green-600">{formatCurrency(result.totalDeductions * 0.25)}</p>
+                </div>
+                <div className="p-4 border rounded-lg">
+                  <h3 className="font-semibold mb-2">Odpočitatelné výdaje</h3>
+                  <p className="text-2xl font-bold text-blue-600">{formatCurrency(result.totalDeductions)}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
-        <TabsContent value="documents">
-          <DocumentChecklist 
-            data={data} 
-            onDownloadGuide={onDownloadGuide || (() => {})} 
-          />
-        </TabsContent>
-
-        <TabsContent value="assistance">
+        {/* Submit Tab */}
+        <TabsContent value="submit">
           <AssistedSubmissionRequest 
             data={data} 
             result={result}

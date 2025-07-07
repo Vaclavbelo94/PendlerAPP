@@ -191,7 +191,7 @@ const TaxWizardCarousel: React.FC = () => {
               onExportXML={handleExportXML}
               onDownloadGuide={handleDownloadGuide}
               onLoadData={(newData) => {
-                // Implementace načtení dat z kódu
+                // Implementace načtení dat bude doplněna později
                 console.log('Loading data:', newData);
               }}
             />
