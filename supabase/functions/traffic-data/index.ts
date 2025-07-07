@@ -292,92 +292,6 @@ function getRouteSummary(route: any): string {
   return 'hlavní silnice'
 }
 
-function getTrafficCondition(leg: any, warnings: any[] = [], incidents: any[] = []): 'light' | 'normal' | 'heavy' {
-  // Check for high-priority incidents first
-  if (incidents.some(incident => incident.severity === 'high')) {
-    return 'heavy'
-  }
-  
-  // Check for warnings that indicate major problems
-  const hasClosures = warnings.some(warning => 
-    warning.toLowerCase().includes('uzavřen') || 
-    warning.toLowerCase().includes('closure') ||
-    warning.toLowerCase().includes('closed') ||
-    warning.toLowerCase().includes('blocked')
-  )
-  
-  if (hasClosures) {
-    return 'heavy'
-  }
-  
-  // Check traffic delay ratio
-  if (leg?.duration_in_traffic && leg?.duration) {
-    const ratio = leg.duration_in_traffic.value / leg.duration.value
-    console.log(`Traffic ratio: ${ratio.toFixed(2)} (${leg.duration_in_traffic.text} vs ${leg.duration.text})`)
-    
-    if (ratio > 1.4) return 'heavy'
-    if (ratio > 1.15) return 'normal'
-    return 'light'
-  }
-  
-  // If we have any warnings or incidents, default to normal
-  if (warnings.length > 0 || incidents.length > 0) {
-    return 'normal'
-  }
-  
-  return 'light'
-}
-
-function extractTrafficIncidents(route: any): any[] {
-  const incidents: any[] = []
-  
-  // Check route warnings for incidents
-  if (route.warnings) {
-    route.warnings.forEach((warning: string) => {
-      let severity = 'low'
-      
-      if (warning.toLowerCase().includes('uzavřen') || 
-          warning.toLowerCase().includes('closure') ||
-          warning.toLowerCase().includes('nehoda') ||
-          warning.toLowerCase().includes('accident')) {
-        severity = 'high'
-      } else if (warning.toLowerCase().includes('zpoždění') ||
-                 warning.toLowerCase().includes('delay') ||
-                 warning.toLowerCase().includes('congestion')) {
-        severity = 'medium'
-      }
-      
-      incidents.push({
-        type: 'warning',
-        description: warning,
-        severity: severity
-      })
-    })
-  }
-  
-  // Check for step-level incidents
-  if (route.legs) {
-    route.legs.forEach((leg: any) => {
-      if (leg.steps) {
-        leg.steps.forEach((step: any) => {
-          if (step.html_instructions) {
-            const instruction = step.html_instructions.toLowerCase()
-            if (instruction.includes('uzavřen') || instruction.includes('nehoda')) {
-              incidents.push({
-                type: 'step_warning',
-                description: step.html_instructions,
-                severity: 'medium'
-              })
-            }
-          }
-        })
-      }
-    })
-  }
-  
-  return incidents
-}
-
 function calculateCostEstimate(distanceMeters: number, mode: string): number {
   if (!distanceMeters) return 0
   
@@ -448,6 +362,15 @@ async function storeRouteAnalytics(userId: string, origin: string, destination: 
   try {
     const routeHash = btoa(`${origin}->${destination}`)
     
+    // Parse HERE Maps format duration and distance
+    const travelTime = typeof routeData.duration === 'string' 
+      ? parseInt(routeData.duration.replace(/[^\d]/g, '')) || 0
+      : routeData.duration || 0
+    
+    const distance = typeof routeData.distance === 'string'
+      ? parseFloat(routeData.distance.replace(/[^\d.]/g, '')) || 0
+      : (routeData.distance || 0) / 1000 // Convert meters to km if needed
+    
     await supabase
       .from('route_analytics')
       .insert({
@@ -455,8 +378,8 @@ async function storeRouteAnalytics(userId: string, origin: string, destination: 
         route_hash: routeHash,
         origin_address: origin,
         destination_address: destination,
-        travel_time: parseInt(routeData.duration) || 0,
-        distance: parseInt(routeData.distance) || 0,
+        travel_time: travelTime,
+        distance: distance,
         traffic_level: routeData.traffic_conditions,
         transport_mode: mode,
         cost_estimate: routeData.cost_estimate,
