@@ -17,6 +17,8 @@ interface TaxWizardStepRendererProps {
   onReisepauschaleChange: (data: any) => void;
   onDeductionsChange: (data: any) => void;
   onExportPDF: () => void;
+  onExportXML?: () => void;
+  onDownloadGuide?: () => void;
 }
 
 const TaxWizardStepRenderer: React.FC<TaxWizardStepRendererProps> = ({
@@ -27,7 +29,9 @@ const TaxWizardStepRenderer: React.FC<TaxWizardStepRendererProps> = ({
   onEmploymentChange,
   onReisepauschaleChange,
   onDeductionsChange,
-  onExportPDF
+  onExportPDF,
+  onExportXML,
+  onDownloadGuide
 }) => {
   const { t } = useTranslation('common');
 
@@ -67,6 +71,8 @@ const TaxWizardStepRenderer: React.FC<TaxWizardStepRendererProps> = ({
           data={wizardData}
           result={result}
           onExportPDF={onExportPDF}
+          onExportXML={onExportXML}
+          onDownloadGuide={onDownloadGuide}
         />
       ) : (
         <div className="flex justify-center items-center p-8">

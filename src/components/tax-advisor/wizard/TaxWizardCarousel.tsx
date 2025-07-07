@@ -20,12 +20,18 @@ import TaxWizardMobileProgress from './TaxWizardMobileProgress';
 
 // Import services
 import { exportTaxWizardPDF } from './services/taxWizardPDFService';
+import { useElsterIntegration } from './hooks/useElsterIntegration';
 
 const TaxWizardCarousel: React.FC = () => {
   const { toast } = useToast();
   const { t } = useTranslation(['taxAdvisor', 'common']);
   const { result, calculateTax } = useTaxCalculator();
   const isMobile = useIsMobile();
+  const { 
+    exportToElsterXML, 
+    downloadElsterGuide, 
+    downloadDocumentChecklist 
+  } = useElsterIntegration();
   
   // Custom hooks
   const {
@@ -74,8 +80,8 @@ const TaxWizardCarousel: React.FC = () => {
   const handleExportPDF = async () => {
     if (!result) {
       toast({
-        title: t('results.error'),
-        description: t('results.completeCalculationFirst'),
+        title: t('wizard.results.error'),
+        description: t('wizard.results.completeCalculationFirst'),
         variant: "destructive",
       });
       return;
@@ -85,14 +91,59 @@ const TaxWizardCarousel: React.FC = () => {
       await exportTaxWizardPDF(wizardData, result, t);
       
       toast({
-        title: t('results.exportSuccess'),
-        description: t('results.documentDownloaded'),
+        title: t('wizard.results.exportSuccess'),
+        description: t('wizard.results.documentDownloaded'),
       });
     } catch (error) {
       console.error('Chyba při exportu PDF:', error);
       toast({
-        title: t('results.exportError'),
-        description: t('results.failedToGenerate'),
+        title: t('wizard.results.exportError'),
+        description: t('wizard.results.failedToGenerate'),
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleExportXML = async () => {
+    if (!result) {
+      toast({
+        title: t('wizard.results.error'),
+        description: t('wizard.results.completeCalculationFirst'),
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      await exportToElsterXML(wizardData, result);
+      
+      toast({
+        title: t('wizard.results.exportSuccess'),
+        description: t('wizard.results.xmlExportSuccess'),
+      });
+    } catch (error) {
+      console.error('Chyba při exportu XML:', error);
+      toast({
+        title: t('wizard.results.exportError'),
+        description: error instanceof Error ? error.message : t('wizard.results.xmlExportError'),
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDownloadGuide = async () => {
+    try {
+      await downloadElsterGuide();
+      
+      toast({
+        title: t('wizard.results.exportSuccess'),
+        description: t('wizard.results.guideDownloaded'),
+      });
+    } catch (error) {
+      console.error('Chyba při stahování průvodce:', error);
+      toast({
+        title: t('wizard.results.exportError'),
+        description: t('wizard.results.guideDownloadError'),
         variant: "destructive",
       });
     }
@@ -137,6 +188,8 @@ const TaxWizardCarousel: React.FC = () => {
               onReisepauschaleChange={updateReisepauschale}
               onDeductionsChange={updateDeductions}
               onExportPDF={handleExportPDF}
+              onExportXML={handleExportXML}
+              onDownloadGuide={handleDownloadGuide}
             />
           </motion.div>
         </AnimatePresence>
