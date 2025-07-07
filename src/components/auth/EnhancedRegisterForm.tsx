@@ -8,6 +8,7 @@ import { toast } from '@/hooks/use-toast';
 import { Eye, EyeOff } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import PromoCodeField from './PromoCodeField';
+import { refreshPremiumAfterRegistration } from '@/utils/registrationPremiumFix';
 
 const EnhancedRegisterForm = () => {
   const [email, setEmail] = useState('');
@@ -15,12 +16,19 @@ const EnhancedRegisterForm = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [username, setUsername] = useState('');
   const [promoCode, setPromoCode] = useState('');
+  const [isPromoCodeValid, setIsPromoCodeValid] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   
   const { signUp } = useAuth();
   const { t } = useTranslation('auth');
+
+  const handlePromoCodeChange = (code: string, isValid: boolean, isDHL?: boolean) => {
+    console.log('EnhancedRegisterForm: Promo code change', { code, isValid, isDHL });
+    setPromoCode(code);
+    setIsPromoCodeValid(isValid);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,7 +59,8 @@ const EnhancedRegisterForm = () => {
         email, 
         username, 
         hasPromoCode: !!promoCode,
-        promoCode: promoCode || 'none'
+        promoCode: promoCode || 'none',
+        isPromoCodeValid
       });
 
       const { error, user } = await signUp(email, password, username, promoCode);
@@ -60,7 +69,7 @@ const EnhancedRegisterForm = () => {
         console.error('EnhancedRegisterForm: Registration error:', error);
         toast({
           title: t('registrationFailed'),
-          description: error,
+          description: typeof error === 'string' ? error : error.message || 'Registration failed',
           variant: 'destructive'
         });
       } else if (user) {
@@ -80,18 +89,31 @@ const EnhancedRegisterForm = () => {
           description: successMessage
         });
 
+        // Force refresh premium status after registration with promo code
+        if (promoCode && isPromoCodeValid) {
+          console.log('EnhancedRegisterForm: Triggering premium refresh after registration');
+          setTimeout(async () => {
+            try {
+              await refreshPremiumAfterRegistration(user.id, user.email || '');
+            } catch (error) {
+              console.error('EnhancedRegisterForm: Error refreshing premium after registration:', error);
+            }
+          }, 2000);
+        }
+
         // Clear form
         setEmail('');
         setPassword('');
         setConfirmPassword('');
         setUsername('');
         setPromoCode('');
+        setIsPromoCodeValid(false);
       }
     } catch (err: any) {
       console.error('EnhancedRegisterForm: Unexpected error:', err);
       toast({
         title: t('error'),
-        description: err.message || t('registrationFailed'),
+        description: err?.message || t('registrationFailed'),
         variant: 'destructive'
       });
     } finally {
@@ -185,9 +207,7 @@ const EnhancedRegisterForm = () => {
       </div>
 
       <PromoCodeField
-        value={promoCode}
-        onChange={setPromoCode}
-        disabled={isLoading}
+        onPromoCodeChange={handlePromoCodeChange}
       />
 
       <Button 
