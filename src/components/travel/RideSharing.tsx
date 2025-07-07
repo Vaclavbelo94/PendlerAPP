@@ -13,6 +13,8 @@ import EnhancedRideOfferCard from './rideshare/EnhancedRideOfferCard';
 import { rideshareService, RideshareOfferWithDriver } from '@/services/rideshareService';
 import { useTranslation } from 'react-i18next';
 import ContactDriverDialog from './rideshare/ContactDriverDialog';
+import { getDefaultCurrencyByLanguage, getCurrencyList, CURRENCIES } from '@/utils/currencyUtils';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface RideshareOffer {
   id: string;
@@ -30,7 +32,7 @@ interface RideshareOffer {
 
 const RideSharing: React.FC = () => {
   const { user } = useAuth();
-  const { t } = useTranslation('travel');
+  const { t, i18n } = useTranslation('travel');
   const [offers, setOffers] = useState<RideshareOfferWithDriver[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -43,6 +45,7 @@ const RideSharing: React.FC = () => {
     departure_time: '07:00',
     seats_available: 3,
     price_per_person: 0,
+    currency: getDefaultCurrencyByLanguage(i18n.language),
     notes: '',
     is_recurring: false,
     recurring_days: [] as number[],
@@ -106,6 +109,7 @@ const RideSharing: React.FC = () => {
         departure_time: '07:00',
         seats_available: 3,
         price_per_person: 0,
+        currency: getDefaultCurrencyByLanguage(i18n.language),
         notes: '',
         is_recurring: false,
         recurring_days: [],
@@ -285,16 +289,38 @@ const RideSharing: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="price">{t('pricePerPerson')}</Label>
-                  <Input
-                    id="price"
-                    type="number"
-                    min="0"
-                    placeholder={t('freeRide')}
-                    value={formData.price_per_person}
-                    onChange={(e) => setFormData(prev => ({ ...prev, price_per_person: parseFloat(e.target.value) || 0 }))}
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="price">{t('pricePerPerson')}</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="price"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        placeholder="0"
+                        value={formData.price_per_person}
+                        onChange={(e) => setFormData(prev => ({ ...prev, price_per_person: parseFloat(e.target.value) || 0 }))}
+                        className="flex-1"
+                      />
+                      <Select 
+                        value={formData.currency} 
+                        onValueChange={(value) => setFormData(prev => ({ ...prev, currency: value }))}
+                      >
+                        <SelectTrigger className="w-20">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {getCurrencyList().map((currency) => (
+                            <SelectItem key={currency.code} value={currency.code}>
+                              {currency.symbol}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{t('freeRideInfo') || 'Zadejte 0 pro jízdu zdarma'}</p>
+                  </div>
                 </div>
 
                 <div className="space-y-2">

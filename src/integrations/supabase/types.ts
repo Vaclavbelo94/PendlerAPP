@@ -989,6 +989,7 @@ export type Database = {
         Row: {
           completed_rides: number | null
           created_at: string | null
+          currency: string
           departure_date: string
           departure_time: string
           destination_address: string
@@ -1008,6 +1009,7 @@ export type Database = {
         Insert: {
           completed_rides?: number | null
           created_at?: string | null
+          currency?: string
           departure_date: string
           departure_time: string
           destination_address: string
@@ -1027,6 +1029,7 @@ export type Database = {
         Update: {
           completed_rides?: number | null
           created_at?: string | null
+          currency?: string
           departure_date?: string
           departure_time?: string
           destination_address?: string

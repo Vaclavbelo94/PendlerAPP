@@ -7,6 +7,7 @@ import { Clock, MapPin, Calendar, Users, MessageCircle, Phone, Star, Car } from 
 import { RideshareOffer } from "@/services/rideshareService";
 import { useTranslation } from 'react-i18next';
 import { formatPhoneNumber, getDriverDisplayName, getCountryConfig } from '@/utils/countryUtils';
+import { convertPrice, formatCurrencyWithSymbol, getDefaultCurrencyByLanguage } from '@/utils/currencyUtils';
 
 interface EnhancedRideOfferCardProps {
   ride: RideshareOffer & {
@@ -41,9 +42,16 @@ const EnhancedRideOfferCard = ({ ride, onContact, isAuthenticated, currentUserId
     return rating.toFixed(1);
   };
 
-  const formatPrice = (price: number) => {
+  const formatPrice = (price: number, originalCurrency: string) => {
     if (price === 0) return t('freeRide') || 'Zdarma';
-    return `${price} ${countryConfig.currencySymbol}`;
+    
+    // Get user's preferred currency based on language
+    const preferredCurrency = getDefaultCurrencyByLanguage(i18n.language);
+    
+    // Convert price if needed
+    const convertedPrice = convertPrice(price, originalCurrency, preferredCurrency);
+    
+    return formatCurrencyWithSymbol(convertedPrice, preferredCurrency);
   };
 
   const formatDate = (dateString: string) => {
@@ -109,7 +117,7 @@ const EnhancedRideOfferCard = ({ ride, onContact, isAuthenticated, currentUserId
               variant={ride.price_per_person === 0 ? "secondary" : "outline"} 
               className={ride.price_per_person === 0 ? "text-green-700 bg-green-50" : "text-green-600 border-green-200"}
             >
-              {formatPrice(ride.price_per_person)}
+              {formatPrice(ride.price_per_person, ride.currency || 'EUR')}
             </Badge>
           </div>
         </div>

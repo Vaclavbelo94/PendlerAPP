@@ -10,6 +10,7 @@ export interface RideshareOffer {
   departure_time: string;
   seats_available: number;
   price_per_person: number;
+  currency: string; // Added currency field
   notes: string;
   is_recurring: boolean;
   recurring_days: number[];
@@ -104,7 +105,9 @@ export const rideshareService = {
         .from('rideshare_offers')
         .insert({
           ...offerData,
-          is_active: true
+          is_active: true,
+          // Ensure currency is set
+          currency: offerData.currency || 'EUR'
         })
         .select()
         .single();
