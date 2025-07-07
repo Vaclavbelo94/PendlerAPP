@@ -2,12 +2,28 @@
 import { supabase } from "@/integrations/supabase/client";
 
 export interface TrafficData {
-  routes: {
+  multi_modal_results?: {
+    transport_mode: string;
+    routes: {
+      duration: string;
+      duration_in_traffic: string;
+      distance: string;
+      traffic_conditions: 'light' | 'normal' | 'heavy';
+      warnings?: string[];
+      incidents?: any[];
+      summary?: string;
+    }[];
+  }[];
+  routes?: {
     duration: string;
     duration_in_traffic: string;
     distance: string;
     traffic_conditions: 'light' | 'normal' | 'heavy';
+    warnings?: string[];
+    incidents?: any[];
+    summary?: string;
   }[];
+  recommendations?: string[];
   status: string;
 }
 

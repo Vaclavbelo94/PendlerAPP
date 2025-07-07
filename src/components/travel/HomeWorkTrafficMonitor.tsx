@@ -55,48 +55,18 @@ const HomeWorkTrafficMonitor: React.FC = () => {
       const problems: TrafficProblem[] = [];
 
       // Analyzuj trasu domov → práce
-      if (homeToWorkData.routes?.[0]) {
-        const route = homeToWorkData.routes[0];
-        if (route.traffic_conditions === 'heavy') {
-          problems.push({
-            route: 'Domov → Práce',
-            severity: 'high',
-            description: `Silný provoz na trase domov - práce`,
-            delay: route.duration_in_traffic || route.duration,
-            recommendations: ['Zkuste alternativní trasu', 'Vyjděte o 30 minut dříve']
-          });
-        } else if (route.traffic_conditions === 'normal' && route.duration_in_traffic !== route.duration) {
-          problems.push({
-            route: 'Domov → Práce',
-            severity: 'medium',
-            description: `Mírné zpoždění na trase domov - práce`,
-            delay: route.duration_in_traffic || route.duration,
-            recommendations: ['Sledujte dopravní situaci']
-          });
-        }
-      }
+      const homeToWorkRoutes = homeToWorkData.routes || homeToWorkData.multi_modal_results?.[0]?.routes || [];
+      homeToWorkRoutes.forEach((route, index) => {
+        const routeProblems = analyzeRouteProblems(route, 'Domov → Práce', index);
+        problems.push(...routeProblems);
+      });
 
       // Analyzuj trasu práce → domov  
-      if (workToHomeData.routes?.[0]) {
-        const route = workToHomeData.routes[0];
-        if (route.traffic_conditions === 'heavy') {
-          problems.push({
-            route: 'Práce → Domov',
-            severity: 'high',
-            description: `Silný provoz na trase práce - domov`,
-            delay: route.duration_in_traffic || route.duration,
-            recommendations: ['Zvažte práci z domova', 'Odjezd o hodinu později']
-          });
-        } else if (route.traffic_conditions === 'normal' && route.duration_in_traffic !== route.duration) {
-          problems.push({
-            route: 'Práce → Domov',
-            severity: 'medium',
-            description: `Mírné zpoždění na trase práce - domov`,
-            delay: route.duration_in_traffic || route.duration,
-            recommendations: ['Sledujte dopravní situaci']
-          });
-        }
-      }
+      const workToHomeRoutes = workToHomeData.routes || workToHomeData.multi_modal_results?.[0]?.routes || [];
+      workToHomeRoutes.forEach((route, index) => {
+        const routeProblems = analyzeRouteProblems(route, 'Práce → Domov', index);
+        problems.push(...routeProblems);
+      });
 
       setTrafficProblems(problems);
       setLastUpdated(new Date());
@@ -112,6 +82,81 @@ const HomeWorkTrafficMonitor: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const analyzeRouteProblems = (route: any, routeName: string, routeIndex: number): TrafficProblem[] => {
+    const problems: TrafficProblem[] = [];
+    const routeLabel = route.summary ? `${routeName} (${route.summary})` : `${routeName} - trasa ${routeIndex + 1}`;
+    
+    // Check for high-priority incidents
+    if (route.incidents && route.incidents.length > 0) {
+      const highPriorityIncidents = route.incidents.filter((incident: any) => incident.severity === 'high');
+      if (highPriorityIncidents.length > 0) {
+        problems.push({
+          route: routeLabel,
+          severity: 'high',
+          description: `Vážné dopravní události na trase`,
+          delay: route.duration_in_traffic || route.duration,
+          recommendations: ['Vyhněte se této trase', 'Zkuste alternativní cestu', 'Počkejte na vyřešení situace']
+        });
+      }
+    }
+    
+    // Check for warnings (closures, etc.)
+    if (route.warnings && route.warnings.length > 0) {
+      const hasClosures = route.warnings.some((warning: string) => 
+        warning.toLowerCase().includes('uzavřen') || 
+        warning.toLowerCase().includes('closure') ||
+        warning.toLowerCase().includes('nehoda')
+      );
+      
+      if (hasClosures) {
+        problems.push({
+          route: routeLabel,
+          severity: 'high',
+          description: `Uzavírky nebo nehody na trase`,
+          delay: route.duration_in_traffic || route.duration,
+          recommendations: ['Použijte alternativní trasu', 'Zkontrolujte aktuální situaci']
+        });
+      } else {
+        problems.push({
+          route: routeLabel,
+          severity: 'medium',
+          description: `Dopravní upozornění na trase`,
+          delay: route.duration_in_traffic || route.duration,
+          recommendations: ['Sledujte dopravní situaci', 'Buďte opatrní']
+        });
+      }
+    }
+    
+    // Check traffic conditions
+    if (route.traffic_conditions === 'heavy') {
+      problems.push({
+        route: routeLabel,
+        severity: 'high',
+        description: `Silný provoz na trase`,
+        delay: route.duration_in_traffic || route.duration,
+        recommendations: ['Vyjděte o 30-45 minut dříve', 'Zkuste alternativní trasu']
+      });
+    } else if (route.traffic_conditions === 'normal' && route.duration_in_traffic !== route.duration) {
+      // Only add if there's actual delay
+      const delayMatch = route.duration_in_traffic?.match(/\d+/) && route.duration?.match(/\d+/);
+      if (delayMatch) {
+        const trafficTime = parseInt(route.duration_in_traffic.match(/\d+/)[0]);
+        const normalTime = parseInt(route.duration.match(/\d+/)[0]);
+        if (trafficTime > normalTime + 5) { // At least 5 minutes delay
+          problems.push({
+            route: routeLabel,
+            severity: 'medium',
+            description: `Mírné zpoždění na trase (${trafficTime - normalTime} min)`,
+            delay: route.duration_in_traffic || route.duration,
+            recommendations: ['Sledujte dopravní situaci', 'Vyjděte o 10-15 minut dříve']
+          });
+        }
+      }
+    }
+    
+    return problems;
   };
 
   useEffect(() => {
