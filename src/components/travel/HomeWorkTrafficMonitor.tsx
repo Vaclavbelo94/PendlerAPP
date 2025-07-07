@@ -28,7 +28,7 @@ const HomeWorkTrafficMonitor: React.FC = () => {
 
   const checkTrafficProblems = async () => {
     if (!homeAddress || !workAddress || !user?.id) {
-      toast.error('Chybí adresa domova nebo pracoviště');
+      toast.error(t('missingAddresses'));
       return;
     }
 
@@ -57,14 +57,14 @@ const HomeWorkTrafficMonitor: React.FC = () => {
       // Analyzuj trasu domov → práce
       const homeToWorkRoutes = homeToWorkData.routes || homeToWorkData.multi_modal_results?.[0]?.routes || [];
       homeToWorkRoutes.forEach((route, index) => {
-        const routeProblems = analyzeRouteProblems(route, 'Domov → Práce', index);
+        const routeProblems = analyzeRouteProblems(route, t('homeToWork'), index);
         problems.push(...routeProblems);
       });
 
       // Analyzuj trasu práce → domov  
       const workToHomeRoutes = workToHomeData.routes || workToHomeData.multi_modal_results?.[0]?.routes || [];
       workToHomeRoutes.forEach((route, index) => {
-        const routeProblems = analyzeRouteProblems(route, 'Práce → Domov', index);
+        const routeProblems = analyzeRouteProblems(route, t('workToHome'), index);
         problems.push(...routeProblems);
       });
 
@@ -72,13 +72,13 @@ const HomeWorkTrafficMonitor: React.FC = () => {
       setLastUpdated(new Date());
       
       if (problems.length === 0) {
-        toast.success('Žádné dopravní problémy na vašich trasách!');
+        toast.success(t('noTrafficProblemsFound'));
       } else {
-        toast.warning(`Nalezeno ${problems.length} dopravních problémů`);
+        toast.warning(t('trafficProblemsFound', { count: problems.length }));
       }
     } catch (error) {
-      console.error('Chyba při kontrole dopravy:', error);
-      toast.error('Nepodařilo se zkontrolovat dopravní situaci');
+      console.error(t('trafficCheckError'), error);
+      toast.error(t('trafficCheckFailed'));
     } finally {
       setIsLoading(false);
     }
@@ -95,9 +95,9 @@ const HomeWorkTrafficMonitor: React.FC = () => {
         problems.push({
           route: routeLabel,
           severity: 'high',
-          description: `Vážné dopravní události na trase`,
+          description: t('seriousTrafficEvents'),
           delay: route.duration_in_traffic || route.duration,
-          recommendations: ['Vyhněte se této trase', 'Zkuste alternativní cestu', 'Počkejte na vyřešení situace']
+          recommendations: [t('avoidRoute'), t('tryAlternative'), t('waitForResolution')]
         });
       }
     }
@@ -114,17 +114,17 @@ const HomeWorkTrafficMonitor: React.FC = () => {
         problems.push({
           route: routeLabel,
           severity: 'high',
-          description: `Uzavírky nebo nehody na trase`,
+          description: t('closuresOrAccidents'),
           delay: route.duration_in_traffic || route.duration,
-          recommendations: ['Použijte alternativní trasu', 'Zkontrolujte aktuální situaci']
+          recommendations: [t('useAlternativeRoute'), t('checkCurrentSituation')]
         });
       } else {
         problems.push({
           route: routeLabel,
           severity: 'medium',
-          description: `Dopravní upozornění na trase`,
+          description: t('trafficWarningsOnRoute'),
           delay: route.duration_in_traffic || route.duration,
-          recommendations: ['Sledujte dopravní situaci', 'Buďte opatrní']
+          recommendations: [t('monitorTraffic'), t('beCautious')]
         });
       }
     }
@@ -134,9 +134,9 @@ const HomeWorkTrafficMonitor: React.FC = () => {
       problems.push({
         route: routeLabel,
         severity: 'high',
-        description: `Silný provoz na trase`,
+        description: t('heavyTrafficOnRoute'),
         delay: route.duration_in_traffic || route.duration,
-        recommendations: ['Vyjděte o 30-45 minut dříve', 'Zkuste alternativní trasu']
+        recommendations: [t('leaveEarlier'), t('tryAlternativeRoute')]
       });
     } else if (route.traffic_conditions === 'normal' && route.duration_in_traffic !== route.duration) {
       // Only add if there's actual delay
@@ -148,9 +148,9 @@ const HomeWorkTrafficMonitor: React.FC = () => {
           problems.push({
             route: routeLabel,
             severity: 'medium',
-            description: `Mírné zpoždění na trase (${trafficTime - normalTime} min)`,
+            description: t('minorDelayOnRoute', { delay: trafficTime - normalTime }),
             delay: route.duration_in_traffic || route.duration,
-            recommendations: ['Sledujte dopravní situaci', 'Vyjděte o 10-15 minut dříve']
+            recommendations: [t('monitorTraffic'), t('leaveSlightlyEarlier')]
           });
         }
       }
@@ -204,17 +204,17 @@ const HomeWorkTrafficMonitor: React.FC = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <MapPin className="h-5 w-5 text-primary" />
-            Kontrola dopravy
+            {t('trafficControlTitle')}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8">
             <MapPin className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <p className="text-muted-foreground mb-4">
-              Pro kontrolu dopravních problémů je potřeba nastavit adresu domova a pracoviště
+              {t('addressesRequired')}
             </p>
             <p className="text-sm text-muted-foreground">
-              Nastavte adresy v profilu nebo cestovních preferencích
+              {t('setupAddresses')}
             </p>
           </div>
         </CardContent>
@@ -228,7 +228,7 @@ const HomeWorkTrafficMonitor: React.FC = () => {
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Navigation className="h-5 w-5 text-primary" />
-            Kontrola dopravy na vašich trasách
+            {t('trafficMonitor')}
           </div>
           <Button
             variant="outline"
@@ -238,12 +238,12 @@ const HomeWorkTrafficMonitor: React.FC = () => {
             className="flex items-center gap-2"
           >
             <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
-            Aktualizovat
+            {t('update')}
           </Button>
         </CardTitle>
         {lastUpdated && (
           <p className="text-sm text-muted-foreground">
-            Poslední aktualizace: {lastUpdated.toLocaleTimeString('cs-CZ')}
+            {t('lastUpdated')}: {lastUpdated.toLocaleTimeString('cs-CZ')}
           </p>
         )}
       </CardHeader>
@@ -253,11 +253,11 @@ const HomeWorkTrafficMonitor: React.FC = () => {
           <div className="grid gap-2 p-4 bg-muted/50 rounded-lg">
             <div className="flex items-center gap-2 text-sm">
               <MapPin className="h-4 w-4 text-green-600" />
-              <span className="font-medium">Domov:</span> {homeAddress}
+              <span className="font-medium">{t('homeAddress')}:</span> {homeAddress}
             </div>
             <div className="flex items-center gap-2 text-sm">
               <MapPin className="h-4 w-4 text-blue-600" />
-              <span className="font-medium">Práce:</span> {workAddress}
+              <span className="font-medium">{t('workAddress')}:</span> {workAddress}
             </div>
           </div>
 
@@ -270,9 +270,9 @@ const HomeWorkTrafficMonitor: React.FC = () => {
             >
               <CheckCircle className="h-6 w-6 text-green-600" />
               <div>
-                <h4 className="font-medium text-green-800">Vše v pořádku!</h4>
+                <h4 className="font-medium text-green-800">{t('allGood')}</h4>
                 <p className="text-sm text-green-700">
-                  Na vašich trasách nejsou žádné významné dopravní problémy
+                  {t('noSignificantProblems')}
                 </p>
               </div>
             </motion.div>
@@ -280,7 +280,7 @@ const HomeWorkTrafficMonitor: React.FC = () => {
             <div className="space-y-3">
               <h4 className="font-medium text-foreground flex items-center gap-2">
                 <AlertTriangle className="h-4 w-4 text-orange-500" />
-                Nalezené dopravní problémy ({trafficProblems.length})
+                {t('foundTrafficProblems')} ({trafficProblems.length})
               </h4>
               
               {trafficProblems.map((problem, index) => {
@@ -300,8 +300,8 @@ const HomeWorkTrafficMonitor: React.FC = () => {
                         <div className="flex items-center gap-2 mb-1">
                           <h5 className="font-medium">{problem.route}</h5>
                           <Badge variant="outline" className="text-xs">
-                            {problem.severity === 'high' ? 'Vysoká' : 
-                             problem.severity === 'medium' ? 'Střední' : 'Nízká'}
+                            {problem.severity === 'high' ? t('high') : 
+                             problem.severity === 'medium' ? t('medium') : t('low')}
                           </Badge>
                         </div>
                         <p className="text-sm mb-2">{problem.description}</p>
@@ -315,7 +315,7 @@ const HomeWorkTrafficMonitor: React.FC = () => {
                         
                         {problem.recommendations.length > 0 && (
                           <div className="mt-2">
-                            <p className="text-xs font-medium mb-1">Doporučení:</p>
+                            <p className="text-xs font-medium mb-1">{t('recommendations')}:</p>
                             <ul className="text-xs list-disc list-inside space-y-0.5 opacity-80">
                               {problem.recommendations.map((rec, idx) => (
                                 <li key={idx}>{rec}</li>

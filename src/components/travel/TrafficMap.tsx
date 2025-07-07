@@ -184,7 +184,7 @@ const TrafficMap: React.FC<TrafficMapProps> = ({
                     <div className="mt-4 p-4 bg-yellow-50/80 border-l-4 border-yellow-400 rounded-r-lg shadow-sm">
                       <h4 className="font-semibold text-yellow-900 mb-3 flex items-center gap-2 text-base">
                         <AlertTriangle className="h-5 w-5" />
-                        Dopravní upozornění
+                        {t('trafficWarnings')}
                       </h4>
                       <div className="space-y-2">
                         {route.warnings.map((warning, idx) => (
@@ -201,7 +201,7 @@ const TrafficMap: React.FC<TrafficMapProps> = ({
                     <div className="mt-4 p-4 bg-red-50/80 border-l-4 border-red-400 rounded-r-lg shadow-sm">
                       <h4 className="font-semibold text-red-900 mb-3 flex items-center gap-2 text-base">
                         <AlertTriangle className="h-5 w-5" />
-                        Dopravní události
+                        {t('trafficIncidents')}
                       </h4>
                       <div className="space-y-2">
                         {route.incidents.map((incident, idx) => (
@@ -211,8 +211,8 @@ const TrafficMap: React.FC<TrafficMapProps> = ({
                               <p className="text-red-800 leading-relaxed">{incident.description}</p>
                               {incident.severity && (
                                 <Badge className="mt-1 text-xs" variant={incident.severity === 'high' ? 'destructive' : 'secondary'}>
-                                  {incident.severity === 'high' ? 'Vysoká priorita' : 
-                                   incident.severity === 'medium' ? 'Střední priorita' : 'Nízká priorita'}
+                                  {incident.severity === 'high' ? t('highPriority') : 
+                                   incident.severity === 'medium' ? t('mediumPriority') : t('lowPriority')}
                                 </Badge>
                               )}
                             </div>
@@ -229,7 +229,7 @@ const TrafficMap: React.FC<TrafficMapProps> = ({
                 <div className="mt-4 p-4 bg-blue-50/80 border-l-4 border-blue-400 rounded-r-lg shadow-sm">
                   <h4 className="font-semibold text-blue-900 mb-3 flex items-center gap-2 text-base">
                     <TrendingUp className="h-5 w-5" />
-                    Doporučení pro cestu
+                    {t('travelRecommendations')}
                   </h4>
                   <div className="space-y-2">
                     {trafficData.recommendations.map((rec, idx) => (
