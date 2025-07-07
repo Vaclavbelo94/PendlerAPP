@@ -13,6 +13,12 @@ export const TravelAnalyticsLazy = lazy(() => import('./TravelAnalyticsDashboard
 export const TrafficAlertsManagerLazy = lazy(() => import('./alerts/TrafficAlertsManager'));
 export const MultiModalTransportSelectorLazy = lazy(() => import('./multimodal/MultiModalTransportSelector'));
 
+// Phase 3 Components - AI Insights & Community
+export const AITravelInsightsLazy = lazy(() => import('./insights/AITravelInsights'));
+export const TravelCommunityHubLazy = lazy(() => import('./community/TravelCommunityHub'));
+export const SmartTravelRecommendationsLazy = lazy(() => import('./smart/SmartTravelRecommendations'));
+export const TravelAnalyticsDashboardLazy = lazy(() => import('./analytics/TravelAnalyticsDashboard'));
+
 // Keep existing components for backward compatibility
 export const CommuteOptimizerLazy = lazy(() => import('./CommuteOptimizer'));
 export const RideSharingLazy = lazy(() => import('./RideSharing'));
