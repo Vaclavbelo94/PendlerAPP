@@ -43,6 +43,8 @@
   "yes": "Ano",
   "no": "Ne",
   "summary": "Souhrn",
+  "generating": "Generuji...",
+  "warning": "Varování",
   "ok": "OK",
   "apply": "Použít",
   "reset": "Obnovit",

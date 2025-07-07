@@ -22,7 +22,7 @@ const AssistedSubmissionRequest: React.FC<AssistedSubmissionRequestProps> = ({
   result, 
   formCode 
 }) => {
-  const { t } = useTranslation(['taxAdvisor']);
+  const { t } = useTranslation(['taxAdvisor', 'common']);
   const { toast } = useToast();
   const [submitted, setSubmitted] = useState(false);
   const [requestData, setRequestData] = useState({
@@ -40,7 +40,7 @@ const AssistedSubmissionRequest: React.FC<AssistedSubmissionRequestProps> = ({
     
     if (!requestData.contactEmail || !requestData.consentProcessing) {
       toast({
-        title: t('common.error'),
+        title: t('error', { ns: 'common' }),
         description: t('wizard.assistedSubmission.requiredFields'),
         variant: "destructive",
       });
@@ -71,7 +71,7 @@ const AssistedSubmissionRequest: React.FC<AssistedSubmissionRequestProps> = ({
       });
     } catch (error) {
       toast({
-        title: t('common.error'),
+        title: t('error', { ns: 'common' }),
         description: t('wizard.assistedSubmission.error'),
         variant: "destructive",
       });

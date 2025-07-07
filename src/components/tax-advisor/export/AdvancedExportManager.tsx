@@ -33,7 +33,7 @@ const AdvancedExportManager: React.FC<AdvancedExportManagerProps> = ({
   data, 
   result 
 }) => {
-  const { t } = useTranslation(['taxAdvisor']);
+  const { t } = useTranslation(['taxAdvisor', 'common']);
   const { toast } = useToast();
   const [exportSettings, setExportSettings] = useState({
     includePersonalData: true,
@@ -108,7 +108,7 @@ const AdvancedExportManager: React.FC<AdvancedExportManagerProps> = ({
       });
     } catch (error) {
       toast({
-        title: t('common.error'),
+        title: t('error', { ns: 'common' }),
         description: t('export.excelError'),
         variant: "destructive",
       });
@@ -156,7 +156,7 @@ const AdvancedExportManager: React.FC<AdvancedExportManagerProps> = ({
       });
     } catch (error) {
       toast({
-        title: t('common.error'),
+        title: t('error', { ns: 'common' }),
         description: t('export.emailError'),
         variant: "destructive",
       });
@@ -174,7 +174,7 @@ const AdvancedExportManager: React.FC<AdvancedExportManagerProps> = ({
       });
     } catch (error) {
       toast({
-        title: t('common.error'),
+        title: t('error', { ns: 'common' }),
         description: t('export.scheduleError'),
         variant: "destructive",
       });

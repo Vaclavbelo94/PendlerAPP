@@ -96,9 +96,9 @@ const TaxNotifications = () => {
                   </div>
                   <Badge variant={getNotificationVariant(notification.type) as any} className="ml-2">
                     {notification.type === 'deadline' && (t('deadline') || 'Termín')}
-                    {notification.type === 'warning' && (t('warning') || 'Varování')}
+                    {notification.type === 'warning' && (t('warning', { ns: 'common' }) || 'Varování')}
                     {notification.type === 'info' && (t('info') || 'Info')}
-                    {notification.type === 'success' && (t('success') || 'Úspěch')}
+                    {notification.type === 'success' && (t('success', { ns: 'common' }) || 'Úspěch')}
                   </Badge>
                 </div>
                 {notification.actionLabel && (

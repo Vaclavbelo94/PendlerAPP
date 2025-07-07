@@ -21,7 +21,7 @@ const FormCodeGenerator: React.FC<FormCodeGeneratorProps> = ({
   result, 
   onLoadData 
 }) => {
-  const { t } = useTranslation(['taxAdvisor']);
+  const { t } = useTranslation(['taxAdvisor', 'common']);
   const { toast } = useToast();
   const [formCode, setFormCode] = useState<string>('');
   const [loadCode, setLoadCode] = useState<string>('');
@@ -110,8 +110,8 @@ const FormCodeGenerator: React.FC<FormCodeGeneratorProps> = ({
     } catch (error) {
       console.error('Error generating form code:', error);
       toast({
-        title: t('common.error'),
-        description: 'Chyba při generování kódu',
+        title: t('error', { ns: 'common' }),
+        description: t('wizard.formCode.generateError'),
         variant: "destructive",
       });
     } finally {
@@ -152,7 +152,7 @@ const FormCodeGenerator: React.FC<FormCodeGeneratorProps> = ({
       });
     } catch (error) {
       toast({
-        title: t('common.error'),
+        title: t('error', { ns: 'common' }),
         description: t('wizard.formCode.copyError'),
         variant: "destructive",
       });
@@ -172,7 +172,7 @@ const FormCodeGenerator: React.FC<FormCodeGeneratorProps> = ({
   const loadFormData = async () => {
     if (!loadCode.trim()) {
       toast({
-        title: t('common.error'),
+        title: t('error', { ns: 'common' }),
         description: t('wizard.formCode.enterCode'),
         variant: "destructive",
       });
@@ -215,7 +215,7 @@ const FormCodeGenerator: React.FC<FormCodeGeneratorProps> = ({
 
       if (!parsedData) {
         toast({
-          title: t('common.error'),
+        title: t('error', { ns: 'common' }),
           description: t('wizard.formCode.codeNotFound'),
           variant: "destructive",
         });
@@ -233,7 +233,7 @@ const FormCodeGenerator: React.FC<FormCodeGeneratorProps> = ({
     } catch (error) {
       console.error('Error loading form data:', error);
       toast({
-        title: t('common.error'),
+        title: t('error', { ns: 'common' }),
         description: t('wizard.formCode.loadError'),
         variant: "destructive",
       });
@@ -286,8 +286,8 @@ const FormCodeGenerator: React.FC<FormCodeGeneratorProps> = ({
         if (onLoadData && latestDraft.form_data) {
           onLoadData(latestDraft.form_data as any);
           toast({
-            title: 'Synchronizováno',
-            description: 'Data byla synchronizována z cloudu',
+            title: t('wizard.formCode.synced'),
+            description: t('wizard.formCode.syncedDescription'),
           });
         }
       }
@@ -320,12 +320,12 @@ const FormCodeGenerator: React.FC<FormCodeGeneratorProps> = ({
                 </Badge>
                 {isSaving && (
                   <Badge variant="secondary" className="animate-pulse">
-                    Ukládám...
+                    {t('saving', { ns: 'common' })}
                   </Badge>
                 )}
                 {!navigator.onLine && (
                   <Badge variant="outline" className="text-orange-600">
-                    Offline režim
+                    {t('offline', { ns: 'common' })}
                   </Badge>
                 )}
               </div>
@@ -341,7 +341,7 @@ const FormCodeGenerator: React.FC<FormCodeGeneratorProps> = ({
                 </Button>
                 <Button variant="outline" size="sm" onClick={syncCrossDevice}>
                   <RefreshCcw className="h-4 w-4 mr-2" />
-                  Synchronizovat
+                  {t('wizard.formCode.sync')}
                 </Button>
                 <Button variant="outline" size="sm" onClick={downloadBackup}>
                   <Download className="h-4 w-4 mr-2" />
@@ -370,7 +370,7 @@ const FormCodeGenerator: React.FC<FormCodeGeneratorProps> = ({
           {!navigator.onLine && (
             <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg">
               <p className="text-sm text-orange-800">
-                🔄 <strong>Offline režim:</strong> Data se automaticky synchronizují po obnovení připojení.
+                🔄 <strong>{t('wizard.formCode.offlineMode')}:</strong> {t('wizard.formCode.offlineModeDescription')}
               </p>
             </div>
           )}

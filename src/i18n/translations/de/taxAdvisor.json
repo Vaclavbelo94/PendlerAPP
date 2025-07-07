@@ -166,7 +166,13 @@
       "loadedDescription": "Daten wurden erfolgreich geladen",
       "codeNotFound": "Code nicht gefunden",
       "loadError": "Fehler beim Laden der Daten",
-      "copyError": "Fehler beim Kopieren"
+      "copyError": "Fehler beim Kopieren",
+      "generateError": "Fehler beim Generieren des Codes",
+      "sync": "Synchronisieren",
+      "synced": "Synchronisiert",
+      "syncedDescription": "Daten wurden aus der Cloud synchronisiert",
+      "offlineMode": "Offline-Modus",
+      "offlineModeDescription": "Daten werden nach der Wiederherstellung der Verbindung automatisch synchronisiert."
     },
     "assistedSubmission": {
       "title": "Betreute Übermittlung",

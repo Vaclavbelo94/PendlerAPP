@@ -166,7 +166,13 @@
       "loadedDescription": "Dane zostały pomyślnie wczytane",
       "codeNotFound": "Kod nie został znaleziony",
       "loadError": "Błąd wczytywania danych",
-      "copyError": "Błąd kopiowania"
+      "copyError": "Błąd kopiowania",
+      "generateError": "Błąd generowania kodu",
+      "sync": "Synchronizuj",
+      "synced": "Zsynchronizowano",
+      "syncedDescription": "Dane zostały zsynchronizowane z chmury",
+      "offlineMode": "Tryb offline",
+      "offlineModeDescription": "Dane będą automatycznie synchronizowane po przywróceniu połączenia."
     },
     "assistedSubmission": {
       "title": "Wspomagane składanie",

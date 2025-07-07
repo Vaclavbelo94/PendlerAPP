@@ -23,6 +23,7 @@
   "taxReturn": "Daňové přiznání",
   "taxReturnGuide": "Průvodce daňovým přiznáním",
   "taxAdvisorDescription": "Komplexní daňové poradenství",
+  "generateDocument": "Vygenerovat dokument",
   "wizard": {
     "steps": {
       "personal": "Osobní údaje",
@@ -165,7 +166,13 @@
       "loadedDescription": "Data byla úspěšně načtena",
       "codeNotFound": "Kód nebyl nalezen",
       "loadError": "Chyba při načítání dat",
-      "copyError": "Chyba při kopírování"
+      "copyError": "Chyba při kopírování",
+      "generateError": "Chyba při generování kódu",
+      "sync": "Synchronizovat",
+      "synced": "Synchronizováno",
+      "syncedDescription": "Data byla synchronizována z cloudu",
+      "offlineMode": "Offline režim",
+      "offlineModeDescription": "Data se automaticky synchronizují po obnovení připojení."
     },
     "assistedSubmission": {
       "title": "Asistované podání",

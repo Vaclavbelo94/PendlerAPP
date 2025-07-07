@@ -3,6 +3,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { FileText, Loader2 } from "lucide-react";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { useTranslation } from "react-i18next";
 import BasicInfoFields from "./document-generator/BasicInfoFields";
 import WorkInfoFields from "./document-generator/WorkInfoFields";
 import InfoDisclaimer from "./document-generator/InfoDisclaimer";
@@ -45,6 +46,7 @@ const DocumentGeneratorForm: React.FC<DocumentGeneratorFormProps> = ({
   onDownloadDocument,
   documentTypes
 }) => {
+  const { t } = useTranslation(['taxAdvisor', 'common']);
   const isMobile = useMediaQuery("xs");
   
   const updateFormState = (field: keyof FormState, value: string | boolean) => {
@@ -100,12 +102,12 @@ const DocumentGeneratorForm: React.FC<DocumentGeneratorFormProps> = ({
             {isLoading ? (
               <>
                 <Loader2 className="h-5 w-5 animate-spin" />
-                Generuji dokument...
+                {t('generating', { ns: 'common' }) || 'Generuji dokument...'}
               </>
             ) : (
               <>
                 <FileText className="h-5 w-5" />
-                Vygenerovat dokument
+                {t('generateDocument') || 'Vygenerovat dokument'}
               </>
             )}
           </Button>
