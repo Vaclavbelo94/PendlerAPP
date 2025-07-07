@@ -40,7 +40,6 @@ const DataSummaryTable: React.FC<DataSummaryTableProps> = ({ data, result }) => 
         { label: t('wizard.personalInfo.lastName'), value: data.personalInfo.lastName },
         { label: t('wizard.personalInfo.address'), value: data.personalInfo.address },
         { label: t('wizard.personalInfo.taxId'), value: data.personalInfo.taxId },
-        { label: t('wizard.personalInfo.email'), value: data.personalInfo.email },
         { label: t('wizard.personalInfo.email'), value: data.personalInfo.email }
       ].filter(item => item.value)
     },
@@ -50,7 +49,6 @@ const DataSummaryTable: React.FC<DataSummaryTableProps> = ({ data, result }) => 
       data: [
         { label: t('wizard.employment.employerName'), value: data.employmentInfo.employerName },
         { label: t('wizard.employment.annualIncome'), value: data.employmentInfo.annualIncome ? formatCurrency(data.employmentInfo.annualIncome) : '' },
-        { label: t('wizard.employment.taxClass'), value: data.employmentInfo.taxClass },
         { label: t('wizard.employment.taxClass'), value: data.employmentInfo.taxClass }
       ].filter(item => item.value)
     },

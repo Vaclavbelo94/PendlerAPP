@@ -117,32 +117,12 @@ const ResultsStep: React.FC<ResultsStepProps> = ({
 
       {/* Main Content Tabs */}
       <Tabs defaultValue="summary" className="w-full">
-        <TabsList className="grid w-full grid-cols-7">
-          <TabsTrigger value="summary">{t('common.summary')}</TabsTrigger>
-          <TabsTrigger value="elster">
-            <Globe className="h-4 w-4 mr-1" />
-            ELSTER
-          </TabsTrigger>
-          <TabsTrigger value="analytics">
-            <BarChart3 className="h-4 w-4 mr-1" />
-            {t('wizard.results.analytics')}
-          </TabsTrigger>
-          <TabsTrigger value="export">
-            <FileDown className="h-4 w-4 mr-1" />
-            {t('wizard.results.exportOptions')}
-          </TabsTrigger>
-          <TabsTrigger value="validation">
-            <CheckCircle className="h-4 w-4 mr-1" />
-            {t('wizard.results.validation')}
-          </TabsTrigger>
-          <TabsTrigger value="dashboard">
-            <PieChart className="h-4 w-4 mr-1" />
-            {t('wizard.results.dashboard')}
-          </TabsTrigger>
-          <TabsTrigger value="submit">
-            <Send className="h-4 w-4 mr-1" />
-            Submit
-          </TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 gap-1">
+          <TabsTrigger value="summary" className="text-xs md:text-sm">{t('common.summary')}</TabsTrigger>
+          <TabsTrigger value="elster" className="text-xs md:text-sm">ELSTER</TabsTrigger>
+          <TabsTrigger value="formcode" className="text-xs md:text-sm">{t('wizard.formCode.title')}</TabsTrigger>
+          <TabsTrigger value="export" className="text-xs md:text-sm">{t('wizard.results.exportOptions')}</TabsTrigger>
+          <TabsTrigger value="submit" className="text-xs md:text-sm">{t('wizard.assistedSubmission.title')}</TabsTrigger>
         </TabsList>
 
         {/* Summary Tab */}
@@ -173,11 +153,10 @@ const ResultsStep: React.FC<ResultsStepProps> = ({
                   {t('wizard.elster.downloadGuide')}
                 </Button>
                 
-                <FormCodeGenerator 
-                  data={data} 
-                  result={result} 
-                  onLoadData={onLoadData}
-                />
+                <Button variant="outline" className="w-full">
+                  <FileText className="h-4 w-4 mr-2" />
+                  {t('wizard.formCode.title')}
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -291,16 +270,13 @@ const ResultsStep: React.FC<ResultsStepProps> = ({
           </Card>
         </TabsContent>
 
-        {/* Analytics Tab */}
-        <TabsContent value="analytics">
-          <Card>
-            <CardHeader>
-              <CardTitle>Daňová analytika</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">Analytické dashboardy budou k dispozici v nejbližší aktualizaci.</p>
-            </CardContent>
-          </Card>
+        {/* Form Code Tab */}
+        <TabsContent value="formcode">
+          <FormCodeGenerator 
+            data={data} 
+            result={result} 
+            onLoadData={onLoadData}
+          />
         </TabsContent>
 
         {/* Export Tab */}
@@ -319,48 +295,6 @@ const ResultsStep: React.FC<ResultsStepProps> = ({
                   <FileText className="h-4 w-4 mr-2" />
                   {t('wizard.elster.xmlExport')}
                 </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Validation Tab */}
-        <TabsContent value="validation">
-          <Card>
-            <CardHeader>
-              <CardTitle>Validace dat</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center gap-2 p-3 bg-green-50 rounded-lg">
-                  <CheckCircle className="h-4 w-4 text-green-600" />
-                  <span className="text-sm">Všechna data jsou správně vyplněna</span>
-                </div>
-                <div className="flex items-center gap-2 p-3 bg-blue-50 rounded-lg">
-                  <Info className="h-4 w-4 text-blue-600" />
-                  <span className="text-sm">Doporučujeme zkontrolovat výsledky před podáním</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Dashboard Tab */}
-        <TabsContent value="dashboard">
-          <Card>
-            <CardHeader>
-              <CardTitle>Přehledový dashboard</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-4 border rounded-lg">
-                  <h3 className="font-semibold mb-2">Celkové úspory</h3>
-                  <p className="text-2xl font-bold text-green-600">{formatCurrency(result.totalDeductions * 0.25)}</p>
-                </div>
-                <div className="p-4 border rounded-lg">
-                  <h3 className="font-semibold mb-2">Odpočitatelné výdaje</h3>
-                  <p className="text-2xl font-bold text-blue-600">{formatCurrency(result.totalDeductions)}</p>
-                </div>
               </div>
             </CardContent>
           </Card>

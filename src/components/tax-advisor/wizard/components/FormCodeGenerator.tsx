@@ -4,9 +4,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Copy, RefreshCw, Download, Upload } from 'lucide-react';
+import { Copy, RefreshCw, Download, Upload, Save } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import { TaxWizardData, TaxCalculationResult } from '../types';
 
 interface FormCodeGeneratorProps {
@@ -24,33 +25,72 @@ const FormCodeGenerator: React.FC<FormCodeGeneratorProps> = ({
   const { toast } = useToast();
   const [formCode, setFormCode] = useState<string>('');
   const [loadCode, setLoadCode] = useState<string>('');
+  const [isSaving, setIsSaving] = useState(false);
 
-  // Generování kódu formuláře
-  const generateFormCode = () => {
-    const formData = {
-      personalInfo: data.personalInfo,
-      employmentInfo: data.employmentInfo,
-      reisepauschale: data.reisepauschale,
-      deductions: data.deductions,
-      result: result,
-      timestamp: new Date().toISOString(),
-      version: '1.0'
-    };
+  // Generování kódu formuláře a uložení do databáze
+  const generateAndSaveFormCode = async () => {
+    if (!data.personalInfo.firstName || !data.employmentInfo.employerName) {
+      return;
+    }
 
-    // Jednoduchý hash pro kód
-    const jsonString = JSON.stringify(formData);
-    const hash = btoa(encodeURIComponent(jsonString)).substring(0, 12).toUpperCase();
-    
-    // Uložení do localStorage s kódem jako klíčem
-    localStorage.setItem(`tax_form_${hash}`, jsonString);
-    
-    setFormCode(hash);
-    return hash;
+    setIsSaving(true);
+    try {
+      const formData = {
+        personalInfo: data.personalInfo,
+        employmentInfo: data.employmentInfo,
+        reisepauschale: data.reisepauschale,
+        deductions: data.deductions,
+        result: result,
+        timestamp: new Date().toISOString(),
+        version: '1.0'
+      };
+
+      // Jednoduchý hash pro kód
+      const jsonString = JSON.stringify(formData);
+      const hash = btoa(encodeURIComponent(jsonString)).substring(0, 12).toUpperCase();
+      
+      // Uložení do databáze s použitím aktuálně přihlášeného uživatele
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (user) {
+        const { error } = await supabase
+          .from('tax_form_drafts')
+          .upsert({
+            user_id: user.id,
+            form_type: 'tax_wizard',
+            form_data: formData as any
+          }, {
+            onConflict: 'user_id,form_type'
+          });
+
+        if (error) {
+          console.error('Error saving form draft:', error);
+          // Fallback na localStorage
+          localStorage.setItem(`tax_form_${hash}`, jsonString);
+        }
+      } else {
+        // Fallback na localStorage pokud není uživatel přihlášen
+        localStorage.setItem(`tax_form_${hash}`, jsonString);
+      }
+
+      
+      setFormCode(hash);
+      return hash;
+    } catch (error) {
+      console.error('Error generating form code:', error);
+      toast({
+        title: t('common.error'),
+        description: 'Chyba při generování kódu',
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   useEffect(() => {
     if (data.personalInfo.firstName && data.employmentInfo.employerName) {
-      generateFormCode();
+      generateAndSaveFormCode();
     }
   }, [data, result]);
 
@@ -72,15 +112,17 @@ const FormCodeGenerator: React.FC<FormCodeGeneratorProps> = ({
     }
   };
 
-  const regenerateCode = () => {
-    const newCode = generateFormCode();
-    toast({
-      title: t('wizard.formCode.regenerated'),
-      description: `${t('wizard.formCode.newCode')}: ${newCode}`,
-    });
+  const regenerateCode = async () => {
+    const newCode = await generateAndSaveFormCode();
+    if (newCode) {
+      toast({
+        title: t('wizard.formCode.regenerated'),
+        description: `${t('wizard.formCode.newCode')}: ${newCode}`,
+      });
+    }
   };
 
-  const loadFormData = () => {
+  const loadFormData = async () => {
     if (!loadCode.trim()) {
       toast({
         title: t('common.error'),
@@ -91,8 +133,36 @@ const FormCodeGenerator: React.FC<FormCodeGeneratorProps> = ({
     }
 
     try {
-      const savedData = localStorage.getItem(`tax_form_${loadCode.trim().toUpperCase()}`);
-      if (!savedData) {
+      // Nejprve zkusíme databázi pro aktuálního uživatele
+      const { data: { user } } = await supabase.auth.getUser();
+      let formDrafts = null;
+      let error = null;
+      
+      if (user) {
+        const response = await supabase
+          .from('tax_form_drafts')
+          .select('form_data')
+          .eq('form_type', 'tax_wizard')
+          .eq('user_id', user.id)
+          .maybeSingle();
+        
+        formDrafts = response.data;
+        error = response.error;
+      }
+
+      let parsedData = null;
+
+      if (!error && formDrafts?.form_data) {
+        parsedData = formDrafts.form_data;
+      } else {
+        // Fallback na localStorage
+        const savedData = localStorage.getItem(`tax_form_${loadCode.trim().toUpperCase()}`);
+        if (savedData) {
+          parsedData = JSON.parse(decodeURIComponent(atob(savedData.replace(/[^A-Za-z0-9+/]/g, ''))));
+        }
+      }
+
+      if (!parsedData) {
         toast({
           title: t('common.error'),
           description: t('wizard.formCode.codeNotFound'),
@@ -100,8 +170,6 @@ const FormCodeGenerator: React.FC<FormCodeGeneratorProps> = ({
         });
         return;
       }
-
-      const parsedData = JSON.parse(decodeURIComponent(atob(savedData.replace(/[^A-Za-z0-9+/]/g, ''))));
       
       if (onLoadData && parsedData.personalInfo) {
         onLoadData(parsedData);
@@ -112,6 +180,7 @@ const FormCodeGenerator: React.FC<FormCodeGeneratorProps> = ({
         setLoadCode('');
       }
     } catch (error) {
+      console.error('Error loading form data:', error);
       toast({
         title: t('common.error'),
         description: t('wizard.formCode.loadError'),
@@ -155,7 +224,7 @@ const FormCodeGenerator: React.FC<FormCodeGeneratorProps> = ({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <RefreshCw className="h-5 w-5" />
+            <Save className="h-5 w-5" />
             {t('wizard.formCode.title')}
           </CardTitle>
         </CardHeader>
@@ -171,14 +240,19 @@ const FormCodeGenerator: React.FC<FormCodeGeneratorProps> = ({
                 <Badge variant="outline" className="font-mono text-lg px-3 py-1">
                   {formCode}
                 </Badge>
+                {isSaving && (
+                  <Badge variant="secondary" className="animate-pulse">
+                    Ukládám...
+                  </Badge>
+                )}
               </div>
               
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <Button variant="outline" size="sm" onClick={copyToClipboard}>
                   <Copy className="h-4 w-4 mr-2" />
                   {t('wizard.formCode.copy')}
                 </Button>
-                <Button variant="outline" size="sm" onClick={regenerateCode}>
+                <Button variant="outline" size="sm" onClick={regenerateCode} disabled={isSaving}>
                   <RefreshCw className="h-4 w-4 mr-2" />
                   {t('wizard.formCode.regenerate')}
                 </Button>
