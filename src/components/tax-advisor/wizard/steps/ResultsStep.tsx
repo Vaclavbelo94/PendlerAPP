@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calculator, FileText, Download, ExternalLink, Archive, Send, RefreshCw } from 'lucide-react';
+import { Calculator, FileText, Download, ExternalLink, Archive, Send, RefreshCw, BarChart3 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { TaxWizardData, TaxCalculationResult } from '../types';
 import { generateEnhancedTaxPDF } from '@/utils/pdf/modern/EnhancedTaxPDFGenerator';
@@ -12,6 +12,9 @@ import DocumentChecklist from '../../elster/DocumentChecklist';
 import DataSummaryTable from '../components/DataSummaryTable';
 import FormCodeGenerator from '../components/FormCodeGenerator';
 import AssistedSubmissionRequest from '../components/AssistedSubmissionRequest';
+import TaxAnalyticsDashboard from '../../analytics/TaxAnalyticsDashboard';
+import AdvancedExportManager from '../../export/AdvancedExportManager';
+import SmartValidationEngine from '../../validation/SmartValidationEngine';
 
 interface ResultsStepProps {
   data: TaxWizardData;
@@ -19,6 +22,7 @@ interface ResultsStepProps {
   onExportPDF: () => void;
   onExportXML?: () => void;
   onDownloadGuide?: () => void;
+  onDataChange?: (newData: TaxWizardData) => void;
 }
 
 const ResultsStep: React.FC<ResultsStepProps> = ({ 
@@ -26,7 +30,8 @@ const ResultsStep: React.FC<ResultsStepProps> = ({
   result, 
   onExportPDF, 
   onExportXML, 
-  onDownloadGuide 
+  onDownloadGuide,
+  onDataChange 
 }) => {
   const { t } = useTranslation(['taxAdvisor']);
   const [formCode, setFormCode] = useState<string>('');
@@ -87,13 +92,14 @@ const ResultsStep: React.FC<ResultsStepProps> = ({
       </Card>
 
       <Tabs defaultValue="summary" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6">
+        <TabsList className="grid w-full grid-cols-3 lg:grid-cols-7">
           <TabsTrigger value="summary">{t('wizard.results.tabs.summary')}</TabsTrigger>
           <TabsTrigger value="data">{t('wizard.results.tabs.allData')}</TabsTrigger>
           <TabsTrigger value="export">{t('wizard.results.tabs.export')}</TabsTrigger>
           <TabsTrigger value="elster">{t('wizard.results.tabs.elster')}</TabsTrigger>
           <TabsTrigger value="documents">{t('wizard.results.tabs.documents')}</TabsTrigger>
           <TabsTrigger value="assistance">{t('wizard.results.tabs.assistance')}</TabsTrigger>
+          <TabsTrigger value="analytics">{t('wizard.results.tabs.analytics')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="summary">
