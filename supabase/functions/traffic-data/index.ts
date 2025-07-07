@@ -22,9 +22,10 @@ serve(async (req) => {
     
     console.log(`Traffic data request: ${origin} -> ${destination}, modes: ${transportModes.join(', ')}`)
     
-    // Google Maps API integration (requires GOOGLE_MAPS_API_KEY secret)
-    const googleApiKey = Deno.env.get('GOOGLE_MAPS_API_KEY')
-    if (!googleApiKey) {
+    // HERE Maps API integration
+    const hereApiKey = Deno.env.get('HERE_MAPS_API_KEY')
+    if (!hereApiKey) {
+      console.error('HERE Maps API key not found')
       // Return mock data if API key is not available
       const mockTrafficData = {
         routes: [{
@@ -46,45 +47,54 @@ serve(async (req) => {
       })
     }
 
-    // Get directions for multiple transport modes
+    // Get directions for multiple transport modes using HERE Maps
     const routePromises = transportModes.map(async (transportMode: string) => {
-      const directionsUrl = `https://maps.googleapis.com/maps/api/directions/json?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&mode=${transportMode}&departure_time=now&traffic_model=best_guess&alternatives=true&key=${googleApiKey}`
+      const hereMode = convertToHereMode(transportMode)
+      const routingUrl = `https://router.hereapi.com/v8/routes?transportMode=${hereMode}&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&return=summary,polyline,incidents,actions,instructions&departure=now&alternatives=3&apikey=${hereApiKey}`
       
-      console.log(`Fetching traffic data from: ${directionsUrl}`)
+      console.log(`Fetching HERE Maps data for mode ${transportMode} (${hereMode})`)
       
-      const response = await fetch(directionsUrl)
-      const data = await response.json()
-      
-      console.log(`Google Maps API Response Status: ${data.status}`)
-      console.log(`Routes found: ${data.routes?.length || 0}`)
-      
-      if (data.error_message) {
-        console.error(`Google Maps API Error: ${data.error_message}`)
-      }
-      
-      return {
-        transport_mode: transportMode,
-        routes: data.routes?.map((route: any) => {
-          const leg = route.legs[0]
-          const warnings = route.warnings || []
-          const incidents = extractTrafficIncidents(route)
-          const trafficCondition = getTrafficCondition(leg, warnings, incidents)
-          
-          console.log(`Route ${route.summary}: ${trafficCondition} traffic, warnings: ${warnings.length}, incidents: ${incidents.length}`)
-          
-          return {
-            duration: leg?.duration?.text,
-            duration_in_traffic: leg?.duration_in_traffic?.text || leg?.duration?.text,
-            distance: leg?.distance?.text,
-            traffic_conditions: trafficCondition,
-            cost_estimate: calculateCostEstimate(leg?.distance?.value, transportMode),
-            carbon_footprint: calculateCarbonFootprint(leg?.distance?.value / 1000, transportMode),
-            polyline: route.overview_polyline?.points,
-            warnings: warnings,
-            incidents: incidents,
-            summary: route.summary || 'Hlavní trasa'
-          }
-        }) || []
+      try {
+        const response = await fetch(routingUrl)
+        const data = await response.json()
+        
+        console.log(`HERE Maps API Response for ${transportMode}:`, JSON.stringify(data, null, 2))
+        
+        if (data.error) {
+          console.error(`HERE Maps API Error for ${transportMode}:`, data.error)
+          return { transport_mode: transportMode, routes: [] }
+        }
+        
+        // Get traffic incidents for the route
+        const trafficData = await getHereTrafficIncidents(origin, destination, hereApiKey)
+        
+        return {
+          transport_mode: transportMode,
+          routes: data.routes?.map((route: any) => {
+            const section = route.sections?.[0]
+            const summary = section?.summary || route.summary
+            const incidents = extractHereTrafficIncidents(route, trafficData)
+            const trafficCondition = getHereTrafficCondition(summary, incidents)
+            
+            console.log(`HERE Route: ${trafficCondition} traffic, incidents: ${incidents.length}`)
+            
+            return {
+              duration: formatDuration(summary?.duration),
+              duration_in_traffic: formatDuration(summary?.duration), // HERE doesn't separate this
+              distance: formatDistance(summary?.length),
+              traffic_conditions: trafficCondition,
+              cost_estimate: calculateCostEstimate(summary?.length, transportMode),
+              carbon_footprint: calculateCarbonFootprint((summary?.length || 0) / 1000, transportMode),
+              polyline: route.sections?.[0]?.polyline,
+              warnings: incidents.filter((i: any) => i.severity === 'medium').map((i: any) => i.description),
+              incidents: incidents,
+              summary: `Trasa přes ${getRouteSummary(route)}`
+            }
+          }) || []
+        }
+      } catch (error) {
+        console.error(`Error fetching HERE Maps data for ${transportMode}:`, error)
+        return { transport_mode: transportMode, routes: [] }
       }
     })
 
@@ -122,6 +132,165 @@ serve(async (req) => {
     )
   }
 })
+
+// HERE Maps helper functions
+function convertToHereMode(transportMode: string): string {
+  const modeMapping: Record<string, string> = {
+    'driving': 'car',
+    'walking': 'pedestrian',
+    'cycling': 'bicycle',
+    'public_transport': 'publicTransport',
+    'transit': 'publicTransport'
+  }
+  return modeMapping[transportMode] || 'car'
+}
+
+async function getHereTrafficIncidents(origin: string, destination: string, apiKey: string) {
+  try {
+    // Get traffic incidents along the route
+    const trafficUrl = `https://traffic.hereapi.com/v6.1/incidents?routeId=route&apikey=${apiKey}`
+    const response = await fetch(trafficUrl)
+    if (response.ok) {
+      return await response.json()
+    }
+  } catch (error) {
+    console.error('Error fetching HERE traffic incidents:', error)
+  }
+  return { incidents: [] }
+}
+
+function extractHereTrafficIncidents(route: any, trafficData: any): any[] {
+  const incidents: any[] = []
+  const allIncidents = trafficData?.incidents || []
+  
+  // Check route sections for notices and incidents
+  if (route.sections) {
+    route.sections.forEach((section: any) => {
+      // Check for notices (construction, closures, etc.)
+      if (section.notices) {
+        section.notices.forEach((notice: any) => {
+          let severity = 'low'
+          const code = notice.code?.toLowerCase() || ''
+          const text = notice.text?.toLowerCase() || ''
+          
+          // Check for critical issues
+          if (code.includes('closure') || code.includes('blocked') || 
+              text.includes('uzavřen') || text.includes('geschlossen') || 
+              text.includes('closed') || text.includes('tunnel') ||
+              text.includes('bridge') || text.includes('most') ||
+              text.includes('brücke')) {
+            severity = 'high'
+          } else if (code.includes('construction') || code.includes('roadwork') ||
+                     text.includes('stavba') || text.includes('baustelle') ||
+                     text.includes('construction')) {
+            severity = 'medium'
+          }
+          
+          incidents.push({
+            type: 'route_notice',
+            description: notice.text || `Dopravní upozornění: ${notice.code}`,
+            severity: severity,
+            code: notice.code
+          })
+        })
+      }
+      
+      // Check for transport incidents
+      if (section.incidents) {
+        section.incidents.forEach((incident: any) => {
+          incidents.push({
+            type: 'traffic_incident',
+            description: incident.description || 'Dopravní nehoda',
+            severity: mapHereIncidentSeverity(incident.criticality),
+            criticality: incident.criticality
+          })
+        })
+      }
+    })
+  }
+  
+  return incidents
+}
+
+function mapHereIncidentSeverity(criticality: number): 'low' | 'medium' | 'high' {
+  if (criticality >= 3) return 'high'
+  if (criticality >= 2) return 'medium'
+  return 'low'
+}
+
+function getHereTrafficCondition(summary: any, incidents: any[] = []): 'light' | 'normal' | 'heavy' {
+  // Check for high-priority incidents first
+  const highSeverityIncidents = incidents.filter(i => i.severity === 'high')
+  if (highSeverityIncidents.length > 0) {
+    console.log('High severity incidents found:', highSeverityIncidents.map(i => i.description))
+    return 'heavy'
+  }
+  
+  // Check for multiple medium severity incidents
+  const mediumSeverityIncidents = incidents.filter(i => i.severity === 'medium')
+  if (mediumSeverityIncidents.length >= 2) {
+    console.log('Multiple medium severity incidents found:', mediumSeverityIncidents.map(i => i.description))
+    return 'heavy'
+  }
+  
+  // Check traffic delay based on HERE's traffic data
+  if (summary?.trafficTime && summary?.baseTime) {
+    const ratio = summary.trafficTime / summary.baseTime
+    console.log(`HERE Traffic ratio: ${ratio.toFixed(2)} (${summary.trafficTime}s vs ${summary.baseTime}s)`)
+    
+    if (ratio > 1.5) return 'heavy'
+    if (ratio > 1.2) return 'normal'
+    return 'light'
+  }
+  
+  // If we have any incidents, default to normal
+  if (incidents.length > 0) {
+    return 'normal'
+  }
+  
+  return 'light'
+}
+
+function formatDuration(seconds: number): string {
+  if (!seconds) return '0 min'
+  const minutes = Math.round(seconds / 60)
+  const hours = Math.floor(minutes / 60)
+  const remainingMinutes = minutes % 60
+  
+  if (hours > 0) {
+    return `${hours}h ${remainingMinutes}min`
+  }
+  return `${minutes} min`
+}
+
+function formatDistance(meters: number): string {
+  if (!meters) return '0 km'
+  const km = (meters / 1000).toFixed(1)
+  return `${km} km`
+}
+
+function getRouteSummary(route: any): string {
+  const sections = route.sections || []
+  if (sections.length === 0) return 'neznámou trasu'
+  
+  // Try to extract street names or landmarks
+  const instructions = []
+  sections.forEach((section: any) => {
+    if (section.actions) {
+      section.actions.forEach((action: any) => {
+        if (action.instruction && action.instruction.includes('na')) {
+          instructions.push(action.instruction.split(' ')[action.instruction.split(' ').length - 1])
+        }
+      })
+    }
+  })
+  
+  if (instructions.length > 0) {
+    return instructions.slice(0, 2).join(', ')
+  }
+  
+  return 'hlavní silnice'
+}
 
 function getTrafficCondition(leg: any, warnings: any[] = [], incidents: any[] = []): 'light' | 'normal' | 'heavy' {
   // Check for high-priority incidents first
