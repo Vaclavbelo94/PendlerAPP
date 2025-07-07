@@ -12,6 +12,7 @@ import ProfileOverview from '@/components/profile/ProfileOverview';
 import ProfileWorkData from '@/components/profile/ProfileWorkData';
 import ProfileSubscription from '@/components/profile/subscription/ProfileSubscription';
 import DHLProfileSettings from '@/components/profile/DHLProfileSettings';
+import UserSubmissions from '@/components/profile/UserSubmissions';
 import DashboardBackground from '@/components/common/DashboardBackground';
 import ProfileErrorBoundary from '@/components/profile/ProfileErrorBoundary';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -33,7 +34,7 @@ const Profile = () => {
     if (unifiedUser?.isDHLEmployee) {
       baseItems.push("dhlSettings");
     }
-    baseItems.push("subscription");
+    baseItems.push("submissions", "subscription");
     return baseItems;
   };
 
@@ -99,6 +100,8 @@ const Profile = () => {
         return <ProfileWorkData />;
       case 'dhlSettings':
         return <DHLProfileSettings />;
+      case 'submissions':
+        return <UserSubmissions />;
       case 'subscription':
         return <ProfileSubscription isPremium={unifiedUser?.isPremium || false} />;
       default:

@@ -87,6 +87,8 @@ export const AssistedSubmissionsPanel = () => {
 
   const updateSubmission = async (id: string, updates: Partial<AssistedSubmission>) => {
     try {
+      const oldSubmission = submissions.find(s => s.id === id);
+      
       const { error } = await supabase
         .from('assisted_submissions')
         .update(updates)
@@ -99,6 +101,23 @@ export const AssistedSubmissionsPanel = () => {
           sub.id === id ? { ...sub, ...updates } : sub
         )
       );
+
+      // Send email notification if status changed
+      if (updates.status && oldSubmission && updates.status !== oldSubmission.status) {
+        try {
+          await supabase.functions.invoke('send-submission-notification', {
+            body: {
+              type: 'status_update',
+              submission_id: id,
+              old_status: oldSubmission.status,
+              new_status: updates.status
+            }
+          });
+        } catch (emailError) {
+          console.error('Email notification failed:', emailError);
+          // Don't throw - update was successful even if email failed
+        }
+      }
 
       toast({
         title: 'Úspěch',

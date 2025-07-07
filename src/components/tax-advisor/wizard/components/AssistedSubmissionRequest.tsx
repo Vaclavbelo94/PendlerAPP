@@ -70,11 +70,26 @@ const AssistedSubmissionRequest: React.FC<AssistedSubmissionRequestProps> = ({
         priority: requestData.urgency || 'standard'
       };
 
-      const { error } = await supabase
+      const { data: insertedData, error } = await supabase
         .from('assisted_submissions')
-        .insert(submissionData);
+        .insert(submissionData)
+        .select()
+        .single();
 
       if (error) throw error;
+      
+      // Send email notification
+      try {
+        await supabase.functions.invoke('send-submission-notification', {
+          body: {
+            type: 'new_submission',
+            submission_id: insertedData.id
+          }
+        });
+      } catch (emailError) {
+        console.error('Email notification failed:', emailError);
+        // Don't throw - submission was successful even if email failed
+      }
       
       setSubmitted(true);
       

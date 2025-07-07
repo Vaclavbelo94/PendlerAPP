@@ -1,13 +1,14 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, User, Briefcase, Crown, Truck } from 'lucide-react';
+import { ChevronLeft, ChevronRight, User, Briefcase, Crown, Truck, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 import ProfileOverview from '../ProfileOverview';
 import ProfileWorkData from '../ProfileWorkData';
 import ProfileSubscription from '../subscription/ProfileSubscription';
 import DHLProfileSettings from '../DHLProfileSettings';
+import UserSubmissions from '../UserSubmissions';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/auth';
 
@@ -24,12 +25,25 @@ export const ProfileMobileCarousel: React.FC<ProfileMobileCarouselProps> = ({
   const { unifiedUser } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
 
-  const tabs = [
-    { id: 'overview', label: t('overview'), icon: User },
-    { id: 'workData', label: t('workData'), icon: Briefcase },
-    ...(unifiedUser?.isDHLEmployee ? [{ id: 'dhlSettings', label: t('dhlSettings'), icon: Truck }] : []),
-    { id: 'subscription', label: t('subscription'), icon: Crown }
-  ];
+  const getTabs = () => {
+    const baseTabs = [
+      { id: 'overview', label: t('overview'), icon: User },
+      { id: 'workData', label: t('workData'), icon: Briefcase }
+    ];
+    
+    if (unifiedUser?.isDHLEmployee) {
+      baseTabs.push({ id: 'dhlSettings', label: t('dhlSettings'), icon: Truck });
+    }
+    
+    baseTabs.push(
+      { id: 'submissions', label: 'Moje žádosti', icon: FileText },
+      { id: 'subscription', label: t('subscription'), icon: Crown }
+    );
+    
+    return baseTabs;
+  };
+
+  const tabs = getTabs();
 
   const tabIds = tabs.map(tab => tab.id);
   const currentIndex = tabs.findIndex(tab => tab.id === activeTab);
@@ -70,6 +84,8 @@ export const ProfileMobileCarousel: React.FC<ProfileMobileCarouselProps> = ({
         return <ProfileWorkData />;
       case 'dhlSettings':
         return <DHLProfileSettings />;
+      case 'submissions':
+        return <UserSubmissions />;
       case 'subscription':
         return <ProfileSubscription isPremium={unifiedUser?.isPremium || false} />;
       default:

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Briefcase, Crown, Truck } from "lucide-react";
+import { User, Briefcase, Crown, Truck, FileText } from "lucide-react";
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/auth';
 
@@ -15,7 +15,7 @@ const ProfileNavigation: React.FC<ProfileNavigationProps> = ({ activeTab, onTabC
   const { unifiedUser } = useAuth();
   
   const isDHLEmployee = unifiedUser?.isDHLEmployee;
-  const gridCols = isDHLEmployee ? "grid-cols-4" : "grid-cols-3";
+  const gridCols = isDHLEmployee ? "grid-cols-5" : "grid-cols-4";
   
   return (
     <Tabs value={activeTab} onValueChange={onTabChange}>
@@ -34,6 +34,10 @@ const ProfileNavigation: React.FC<ProfileNavigationProps> = ({ activeTab, onTabC
             {t('dhlSettings')}
           </TabsTrigger>
         )}
+        <TabsTrigger value="submissions" className="flex items-center gap-2">
+          <FileText className="h-4 w-4" />
+          Moje žádosti
+        </TabsTrigger>
         <TabsTrigger value="subscription" className="flex items-center gap-2">
           <Crown className="h-4 w-4" />
           {t('subscription')}
