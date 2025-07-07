@@ -59,7 +59,7 @@ export const useAuthStatus = (userId: string | undefined) => {
       const isDHL = isDHLEmployee(userObj);
       
       // Special users get premium automatically - explicitly include zkouska@gmail.com
-      const specialEmails = ['uzivatel@pendlerapp.com', 'admin@pendlerapp.com', 'zkouska@gmail.com', 'verka@gmail.com'];
+      const specialEmails = ['uzivatel@pendlerapp.com', 'admin@pendlerapp.com', 'zkouska@gmail.com'];
       const isSpecialUser = userData?.email && specialEmails.includes(userData.email);
       
       console.log('useAuthStatus: Premium check details:', {
@@ -78,21 +78,19 @@ export const useAuthStatus = (userId: string | undefined) => {
         
         setIsPremium(true);
         
-        // Update their premium status in the database if not already set
-        if (!userData?.is_premium) {
-          const { error: updateError } = await supabase
-            .from('profiles')
-            .update({ 
-              is_premium: true,
-              premium_expiry: expiryDate.toISOString()
-            })
-            .eq('id', userId);
-            
-          if (updateError) {
-            console.error('useAuthStatus: Failed to update premium in database:', updateError);
-          } else {
-            console.log('useAuthStatus: Premium status updated in database for special user');
-          }
+        // Update their premium status in the database
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update({ 
+            is_premium: true,
+            premium_expiry: expiryDate.toISOString()
+          })
+          .eq('id', userId);
+          
+        if (updateError) {
+          console.error('useAuthStatus: Failed to update premium in database:', updateError);
+        } else {
+          console.log('useAuthStatus: Premium status updated in database for special user');
         }
           
         return {
@@ -152,26 +150,12 @@ export const useAuthStatus = (userId: string | undefined) => {
     }
   };
 
-  const forceRefreshPremiumStatus = async () => {
-    console.log('useAuthStatus: Force refreshing premium status');
-    const result = await refreshPremiumStatus();
-    
-    // Clear any cached values
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('premiumStatus');
-      sessionStorage.removeItem('premiumStatus');
-    }
-    
-    return result;
-  };
-
   return {
     isAdmin,
     isPremium,
     setIsAdmin,
     setIsPremium,
     refreshAdminStatus,
-    refreshPremiumStatus,
-    forceRefreshPremiumStatus
+    refreshPremiumStatus
   };
 };

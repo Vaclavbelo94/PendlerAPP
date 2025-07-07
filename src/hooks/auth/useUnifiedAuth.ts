@@ -32,7 +32,7 @@ export const useUnifiedAuth = () => {
   
   // External hooks
   const { userAssignment, isLoading: isDHLDataLoading } = useDHLData(user?.id);
-  const { isAdmin, isPremium, refreshAdminStatus, refreshPremiumStatus, forceRefreshPremiumStatus } = useAuthStatus(user?.id);
+  const { isAdmin, isPremium, refreshAdminStatus, refreshPremiumStatus } = useAuthStatus(user?.id);
   
   // Initialize auth state
   useEffect(() => {
@@ -53,14 +53,6 @@ export const useUnifiedAuth = () => {
               setUser(session?.user ?? null);
               setIsLoading(false);
               setIsInitialized(true);
-              
-              // Force refresh premium status on sign in
-              if (event === 'SIGNED_IN' && session?.user) {
-                console.log('Unified Auth: User signed in, force refreshing premium status');
-                setTimeout(async () => {
-                  await forceRefreshPremiumStatus();
-                }, 500);
-              }
             }
           }
         );
@@ -98,7 +90,7 @@ export const useUnifiedAuth = () => {
         authListenerUnsubscribe();
       }
     };
-  }, [forceRefreshPremiumStatus]);
+  }, []);
   
   // Load profile data and check DHL status
   useEffect(() => {
@@ -212,22 +204,13 @@ export const useUnifiedAuth = () => {
       if (error) {
         return { error: error.message, user: null };
       }
-
-      // Force refresh premium status after successful signup with promo code
-      if (data.user && promoCode) {
-        console.log('Unified Auth: User signed up with promo code, scheduling premium refresh');
-        setTimeout(async () => {
-          console.log('Unified Auth: Executing delayed premium refresh after signup');
-          await forceRefreshPremiumStatus();
-        }, 2000);
-      }
       
       return { error: null, user: data.user };
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Sign up failed';
       return { error: errorMessage, user: null };
     }
-  }, [forceRefreshPremiumStatus]);
+  }, []);
 
   const signOut = useCallback(async () => {
     try {
@@ -236,12 +219,6 @@ export const useUnifiedAuth = () => {
       setSession(null);
       setProfileData(null);
       setIsDHLEmployee(false);
-      
-      // Clear premium status cache
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('premiumStatus');
-        sessionStorage.removeItem('premiumStatus');
-      }
       
       // Přesměrovat na úvodní stránku
       navigate('/');
@@ -257,7 +234,7 @@ export const useUnifiedAuth = () => {
     
     try {
       const [premiumResult] = await Promise.all([
-        forceRefreshPremiumStatus(),
+        refreshPremiumStatus(),
         refreshAdminStatus()
       ]);
       
@@ -266,7 +243,7 @@ export const useUnifiedAuth = () => {
     } catch (err) {
       console.error('Unified Auth: Error refreshing user status:', err);
     }
-  }, [user, forceRefreshPremiumStatus, refreshAdminStatus]);
+  }, [user, refreshPremiumStatus, refreshAdminStatus]);
 
   // Create unified user object
   const unifiedUser: UnifiedUser | null = user ? createUnifiedUser(
@@ -306,7 +283,7 @@ export const useUnifiedAuth = () => {
     signOut,
     refreshUserStatus,
     refreshAdminStatus,
-    refreshPremiumStatus: forceRefreshPremiumStatus,
+    refreshPremiumStatus,
     
     // Role checking methods (for compatibility)
     hasRole: (role: any) => {

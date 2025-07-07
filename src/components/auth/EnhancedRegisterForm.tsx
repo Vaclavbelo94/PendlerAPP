@@ -1,120 +1,139 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/auth";
-import { toast } from '@/hooks/use-toast';
-import { Eye, EyeOff } from 'lucide-react';
+import { toast } from "sonner";
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import PromoCodeField from './PromoCodeField';
-import { refreshPremiumAfterRegistration } from '@/utils/registrationPremiumFix';
+import { checkLocalStorageSpace } from '@/utils/authUtils';
+import { isDHLPromoCode } from '@/utils/dhlAuthUtils';
+import { UserRole } from '@/types/auth';
 
 const EnhancedRegisterForm = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [username, setUsername] = useState('');
-  const [promoCode, setPromoCode] = useState('');
-  const [isPromoCodeValid, setIsPromoCodeValid] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [username, setUsername] = useState("");
+  const [promoCode, setPromoCode] = useState("");
+  const [isPromoValid, setIsPromoValid] = useState(false);
+  const [isDHLCode, setIsDHLCode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  
+  const navigate = useNavigate();
   const { signUp } = useAuth();
-  const { t } = useTranslation('auth');
+  const { t, i18n } = useTranslation('auth');
 
-  const handlePromoCodeChange = (code: string, isValid: boolean, isDHL?: boolean) => {
-    console.log('EnhancedRegisterForm: Promo code change', { code, isValid, isDHL });
+  // Computed final promo code for UI display
+  const finalPromoCode = (promoCode && isPromoValid) ? promoCode : '';
+
+  const handlePromoCodeChange = (code: string, isValid: boolean, isDHL: boolean = false) => {
+    console.log('=== ENHANCED PROMO CODE CHANGE ===');
+    console.log('Code:', code, 'Is Valid:', isValid, 'Is DHL:', isDHL);
+    
     setPromoCode(code);
-    setIsPromoCodeValid(isValid);
+    setIsPromoValid(isValid);
+    setIsDHLCode(isDHL);
+  };
+
+  const getEmailPlaceholder = () => {
+    switch (i18n.language) {
+      case 'de': return 'ihre@email.de';
+      case 'pl': return 'twoj@email.pl';
+      default: return 'vas@email.cz';
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-
+    
+    console.log('=== ENHANCED REGISTRATION START ===');
+    console.log('Email:', email);
+    console.log('Promo Code:', promoCode);
+    console.log('Is Promo Valid:', isPromoValid);
+    console.log('Is DHL Code:', isDHLCode);
+    
     if (password !== confirmPassword) {
-      toast({
-        title: t('error'),
-        description: t('passwordsDoNotMatch'),
-        variant: 'destructive'
-      });
-      setIsLoading(false);
+      toast.error(t('passwordsDoNotMatch'));
       return;
     }
-
+    
     if (password.length < 6) {
-      toast({
-        title: t('error'),
-        description: t('passwordTooShort'),
-        variant: 'destructive'
-      });
-      setIsLoading(false);
+      toast.error(t('passwordTooShort'));
       return;
     }
-
-    try {
-      console.log('EnhancedRegisterForm: Starting registration', { 
-        email, 
-        username, 
-        hasPromoCode: !!promoCode,
-        promoCode: promoCode || 'none',
-        isPromoCodeValid
+    
+    if (!checkLocalStorageSpace()) {
+      toast.error(t('insufficientStorage'), {
+        description: t('insufficientStorageDescription')
       });
-
-      const { error, user } = await signUp(email, password, username, promoCode);
+      return;
+    }
+    
+    setIsLoading(true);
+    
+    try {
+      console.log('Starting enhanced registration for:', email);
       
-      if (error) {
-        console.error('EnhancedRegisterForm: Registration error:', error);
-        toast({
-          title: t('registrationFailed'),
-          description: typeof error === 'string' ? error : error.message || 'Registration failed',
-          variant: 'destructive'
-        });
-      } else if (user) {
-        console.log('EnhancedRegisterForm: Registration successful', { 
-          userId: user.id, 
-          email: user.email,
-          promoCodeUsed: promoCode 
-        });
+      // Promo code je volitelný - pokud není vyplněn nebo není validní, pošleme prázdný string
+      const finalPromoCode = (promoCode && isPromoValid) ? promoCode : '';
+      
+      const signUpResult = await signUp(email, password, username, finalPromoCode);
+      
+      if (signUpResult.error) {
+        let errorMessage = t('registerCheckDataRetry');
+        const errorStr = String(signUpResult.error);
         
-        let successMessage = t('registrationSuccessful');
-        if (promoCode) {
-          successMessage += ` Promo kód ${promoCode} byl aplikován.`;
+        if (errorStr.includes("User already registered") || errorStr.includes("user_already_exists")) {
+          errorMessage = t('userAlreadyExists');
+        } else if (errorStr.includes("Invalid email")) {
+          errorMessage = t('invalidEmailFormat');
+        } else if (errorStr.includes("Password")) {
+          errorMessage = t('passwordRequirementsNotMet');
         }
         
-        toast({
-          title: t('success'),
-          description: successMessage
+        toast.error(t('registrationFailed'), {
+          description: errorMessage,
         });
-
-        // Force refresh premium status after registration with promo code
-        if (promoCode && isPromoCodeValid) {
-          console.log('EnhancedRegisterForm: Triggering premium refresh after registration');
-          setTimeout(async () => {
-            try {
-              await refreshPremiumAfterRegistration(user.id, user.email || '');
-            } catch (error) {
-              console.error('EnhancedRegisterForm: Error refreshing premium after registration:', error);
-            }
+      } else if (signUpResult.user) {
+        console.log('Enhanced registration successful, user:', signUpResult.user.id);
+        
+        // Enhanced success handling based on promo code type
+        if (isDHLCode && finalPromoCode) {
+          toast.success('Registrace s promo kódem úspěšná!', { 
+            description: `Premium na rok aktivován. Po přihlášení můžete dokončit nastavení profilu.`,
+            duration: 8000
+          });
+          
+          // Provide information about next steps
+          setTimeout(() => {
+            toast.info("Další kroky:", {
+              description: "Po přihlášení budete přesměrováni na setup stránku pro dokončení nastavení.",
+              duration: 10000
+            });
           }, 2000);
+          
+        } else if (finalPromoCode && isPromoValid) {
+          toast.success(t('accountCreatedWithPremium'), { 
+            description: `Premium aktivován s kódem ${finalPromoCode}. Nyní se můžete přihlásit.`,
+            duration: 8000
+          });
+        } else {
+          toast.success(t('accountCreatedSuccessfully'), { 
+            description: t('nowYouCanLogin'),
+            duration: 5000
+          });
         }
-
-        // Clear form
-        setEmail('');
-        setPassword('');
-        setConfirmPassword('');
-        setUsername('');
-        setPromoCode('');
-        setIsPromoCodeValid(false);
+        
+        // Navigate to login after delay
+        setTimeout(() => {
+          navigate("/login");
+        }, 3000);
       }
-    } catch (err: any) {
-      console.error('EnhancedRegisterForm: Unexpected error:', err);
-      toast({
-        title: t('error'),
-        description: err?.message || t('registrationFailed'),
-        variant: 'destructive'
+    } catch (error: any) {
+      console.error('Enhanced registration error:', error);
+      toast.error(t('registrationError'), {
+        description: error?.message || t('unknownErrorOccurred'),
       });
     } finally {
       setIsLoading(false);
@@ -123,100 +142,70 @@ const EnhancedRegisterForm = () => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="register-email">{t('email')}</Label>
+      <div className="grid gap-2">
+        <Label htmlFor="username">{t('registerUsername')}</Label>
         <Input
-          id="register-email"
+          id="username"
+          type="text"
+          placeholder={t('registerUsernamePlaceholder')}
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          className="bg-card/50 backdrop-blur-sm border-border"
+        />
+      </div>
+      <div className="grid gap-2">
+        <Label htmlFor="email">{t('email')}</Label>
+        <Input
+          id="email"
           type="email"
+          placeholder={getEmailPlaceholder()}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          disabled={isLoading}
-          placeholder={t('enterEmail')}
+          className="bg-card/50 backdrop-blur-sm border-border"
         />
       </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="register-username">{t('username')}</Label>
+      <div className="grid gap-2">
+        <Label htmlFor="password">{t('password')}</Label>
         <Input
-          id="register-username"
-          type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          disabled={isLoading}
-          placeholder={t('enterUsername')}
+          id="password"
+          type="password"
+          placeholder={t('registerPasswordMinLength')}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          className="bg-card/50 backdrop-blur-sm border-border"
         />
       </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="register-password">{t('password')}</Label>
-        <div className="relative">
-          <Input
-            id="register-password"
-            type={showPassword ? 'text' : 'password'}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            disabled={isLoading}
-            placeholder={t('enterPassword')}
-          />
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-            onClick={() => setShowPassword(!showPassword)}
-            disabled={isLoading}
-          >
-            {showPassword ? (
-              <EyeOff className="h-4 w-4" />
-            ) : (
-              <Eye className="h-4 w-4" />
-            )}
-          </Button>
-        </div>
+      <div className="grid gap-2">
+        <Label htmlFor="confirmPassword">{t('registerConfirmPassword')}</Label>
+        <Input
+          id="confirmPassword"
+          type="password"
+          placeholder={t('registerConfirmPasswordPlaceholder')}
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          required
+          className="bg-card/50 backdrop-blur-sm border-border"
+        />
       </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="register-confirm-password">{t('confirmPassword')}</Label>
-        <div className="relative">
-          <Input
-            id="register-confirm-password"
-            type={showConfirmPassword ? 'text' : 'password'}
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-            disabled={isLoading}
-            placeholder={t('confirmPassword')}
-          />
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            disabled={isLoading}
-          >
-            {showConfirmPassword ? (
-              <EyeOff className="h-4 w-4" />
-            ) : (
-              <Eye className="h-4 w-4" />
-            )}
-          </Button>
-        </div>
-      </div>
-
-      <PromoCodeField
-        onPromoCodeChange={handlePromoCodeChange}
-      />
-
-      <Button 
-        type="submit" 
-        className="w-full" 
+      
+      <PromoCodeField onPromoCodeChange={handlePromoCodeChange} />
+      
+      <Button
+        type="submit"
+        className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
         disabled={isLoading}
       >
-        {isLoading ? t('registering') : t('register')}
+        {isLoading ? t('registerCreating') : t('registerCreateAccount')}
       </Button>
+      
+      {isDHLCode && finalPromoCode && (
+        <div className="text-sm text-blue-600 bg-blue-50 p-3 rounded-lg border border-blue-200">
+          <p className="font-medium">✨ Speciální Premium registrace</p>
+          <p>Váš účet bude aktivován s premium přístupem na rok!</p>
+        </div>
+      )}
     </form>
   );
 };
