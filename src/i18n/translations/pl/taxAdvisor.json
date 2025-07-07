@@ -72,7 +72,17 @@
       "educationCost": "Koszt edukacji",
       "insurance": "Ubezpieczenie",
       "insuranceCost": "Koszt ubezpieczenia",
-      "churchTax": "Podatek kościelny"
+      "churchTax": "Podatek kościelny",
+      "professionalLiterature": "Literatura fachowa",
+      "professionalLiteratureCost": "Koszt literatury fachowej",
+      "tools": "Narzędzia pracy",
+      "toolsCost": "Koszt narzędzi pracy",
+      "workingMaterials": "Materiały robocze",
+      "workingMaterialsCost": "Koszt materiałów roboczych",
+      "professionalAssociation": "Stowarzyszenie zawodowe",
+      "professionalAssociationCost": "Koszt członkostwa",
+      "homeOffice": "Ryczałt za home office",
+      "homeOfficeCost": "Koszty home office"
     },
     "results": {
       "title": "Wyniki obliczenia podatkowego",

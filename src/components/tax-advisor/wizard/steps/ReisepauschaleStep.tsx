@@ -43,23 +43,36 @@ const ReisepauschaleStep: React.FC<ReisepauschaleStepProps> = ({
     handleChange('hasSecondHome', checked === true);
   };
 
-  // Výpočet cestovních náhrad
+  // Progresivní výpočet cestovních náhrad
   const calculateReisepauschale = () => {
     if (!data.commuteDistance || !data.workDaysPerYear) return 0;
     
-    if (data.transportType === 'car') {
-      if (data.commuteDistance <= 20) {
-        return data.commuteDistance * 0.30 * data.workDaysPerYear;
-      } else {
-        return (20 * 0.30 + (data.commuteDistance - 20) * 0.38) * data.workDaysPerYear;
-      }
-    } else {
+    // Progresivní sazba pro všechny typy dopravy
+    if (data.commuteDistance <= 20) {
       return data.commuteDistance * 0.30 * data.workDaysPerYear;
+    } else {
+      return (20 * 0.30 + (data.commuteDistance - 20) * 0.38) * data.workDaysPerYear;
     }
   };
 
+  // Druhý domov - přidává 46 cest ročně + skutečné náklady
+  const calculateSecondHomeBenefit = () => {
+    if (!data.hasSecondHome) return 0;
+    
+    let additionalTravelBenefit = 0;
+    const additionalTrips = 46; // 1 cesta týdně
+    
+    if (data.commuteDistance <= 20) {
+      additionalTravelBenefit = data.commuteDistance * 0.30 * additionalTrips;
+    } else {
+      additionalTravelBenefit = (20 * 0.30 + (data.commuteDistance - 20) * 0.38) * additionalTrips;
+    }
+    
+    return additionalTravelBenefit + data.secondHomeCost;
+  };
+
   const reisepausaleBenefit = calculateReisepauschale();
-  const secondHomeBenefit = data.hasSecondHome ? data.secondHomeCost : 0;
+  const secondHomeBenefit = calculateSecondHomeBenefit();
   const totalBenefit = reisepausaleBenefit + secondHomeBenefit;
 
   return (
@@ -92,10 +105,16 @@ const ReisepauschaleStep: React.FC<ReisepauschaleStepProps> = ({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="car">
-                {t('wizard.reisepauschale.car')} (0.30€ {t('wizard.reisepauschale.perKm')} ≤20km, 0.38€ {t('wizard.reisepauschale.perKm')} {'>'}20km)
+                {t('wizard.reisepauschale.car')} 
+                <span className="text-xs text-muted-foreground ml-1">
+                  (0.30€/km ≤20km, 0.38€/km {'>'} 20km)
+                </span>
               </SelectItem>
               <SelectItem value="public">
-                {t('wizard.reisepauschale.publicTransport')} (0.30€{t('wizard.reisepauschale.perKm')})
+                {t('wizard.reisepauschale.publicTransport')}
+                <span className="text-xs text-muted-foreground ml-1">
+                  (0.30€/km - ale max. skutečné náklady)
+                </span>
               </SelectItem>
             </SelectContent>
           </Select>
@@ -115,15 +134,25 @@ const ReisepauschaleStep: React.FC<ReisepauschaleStepProps> = ({
           </div>
 
           {data.hasSecondHome && (
-            <div className="ml-6 space-y-2">
-              <Label htmlFor="secondHomeCost">{t('wizard.reisepauschale.secondHomeCost')}</Label>
-              <Input
-                id="secondHomeCost"
-                type="number"
-                value={data.secondHomeCost || ''}
-                onChange={(e) => handleChange('secondHomeCost', parseFloat(e.target.value) || 0)}
-                placeholder="1200"
-              />
+            <div className="ml-6 space-y-3">
+              <div>
+                <Label htmlFor="secondHomeCost">{t('wizard.reisepauschale.secondHomeCost')}</Label>
+                <Input
+                  id="secondHomeCost"
+                  type="number"
+                  value={data.secondHomeCost || ''}
+                  onChange={(e) => handleChange('secondHomeCost', parseFloat(e.target.value) || 0)}
+                  placeholder="1200"
+                />
+              </div>
+              <div className="text-sm text-muted-foreground bg-blue-50 p-3 rounded-lg">
+                <p className="font-medium mb-1">Výhody druhého domova:</p>
+                <ul className="space-y-1 text-xs">
+                  <li>• Dodatečných 46 cest ročně (1× týdně)</li>
+                  <li>• Skutečné náklady na ubytování/nájem</li>
+                  <li>• Celková úspora až {((calculateSecondHomeBenefit() * 0.25).toFixed(0))} € ročně</li>
+                </ul>
+              </div>
             </div>
           )}
         </div>
@@ -142,10 +171,20 @@ const ReisepauschaleStep: React.FC<ReisepauschaleStepProps> = ({
             </div>
             
             {data.hasSecondHome && (
-              <div className="flex justify-between">
-                <span>{t('wizard.reisepauschale.hasSecondHome')}:</span>
-                <span className="font-medium">{secondHomeBenefit.toFixed(2)} €</span>
-              </div>
+              <>
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>• Dodatečné cesty (46×):</span>
+                  <span>{(calculateSecondHomeBenefit() - data.secondHomeCost).toFixed(2)} €</span>
+                </div>
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>• Náklady na bydlení:</span>
+                  <span>{data.secondHomeCost.toFixed(2)} €</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>{t('wizard.reisepauschale.hasSecondHome')} celkem:</span>
+                  <span className="font-medium">{secondHomeBenefit.toFixed(2)} €</span>
+                </div>
+              </>
             )}
             
             <div className="border-t pt-2 flex justify-between font-bold">

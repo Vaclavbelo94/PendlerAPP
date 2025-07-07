@@ -72,7 +72,17 @@
       "educationCost": "Náklady na vzdělávání",
       "insurance": "Pojištění",
       "insuranceCost": "Náklady na pojištění",
-      "churchTax": "Církevní daň"
+      "churchTax": "Církevní daň",
+      "professionalLiterature": "Odborná literatura",
+      "professionalLiteratureCost": "Náklady na odbornou literaturu",
+      "tools": "Pracovní nástroje",
+      "toolsCost": "Náklady na pracovní nástroje",
+      "workingMaterials": "Pracovní materiál",
+      "workingMaterialsCost": "Náklady na pracovní materiál",
+      "professionalAssociation": "Profesní sdružení",
+      "professionalAssociationCost": "Náklady na členství",
+      "homeOffice": "Home Office paušál",
+      "homeOfficeCost": "Home Office náklady"
     },
     "results": {
       "title": "Výsledky daňového výpočtu",

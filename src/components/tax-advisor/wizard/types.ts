@@ -33,6 +33,17 @@ export interface AdditionalDeductions {
   insurance: boolean;
   insuranceCost: number;
   churchTax: boolean;
+  // Nové odpočty podle německých standardů
+  professionalLiterature: boolean;
+  professionalLiteratureCost: number;
+  tools: boolean;
+  toolsCost: number;
+  workingMaterials: boolean;
+  workingMaterialsCost: number;
+  professionalAssociation: boolean;
+  professionalAssociationCost: number;
+  homeOffice: boolean;
+  homeOfficeCost: number;
 }
 
 export interface TaxWizardData {
@@ -48,6 +59,11 @@ export interface TaxCalculationResult {
   workClothesBenefit: number;
   educationBenefit: number;
   insuranceBenefit: number;
+  professionalLiteratureBenefit: number;
+  toolsBenefit: number;
+  workingMaterialsBenefit: number;
+  professionalAssociationBenefit: number;
+  homeOfficeBenefit: number;
   totalDeductions: number;
   estimatedTaxSaving: number;
   monthlyBenefit: number;

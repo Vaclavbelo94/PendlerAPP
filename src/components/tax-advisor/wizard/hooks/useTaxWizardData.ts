@@ -34,7 +34,17 @@ export const useTaxWizardData = () => {
       educationCost: 800,
       insurance: false,
       insuranceCost: 300,
-      churchTax: false
+      churchTax: false,
+      professionalLiterature: false,
+      professionalLiteratureCost: 200,
+      tools: false,
+      toolsCost: 500,
+      workingMaterials: false,
+      workingMaterialsCost: 300,
+      professionalAssociation: false,
+      professionalAssociationCost: 150,
+      homeOffice: false,
+      homeOfficeCost: 1260 // 5€/měsíc × 12 měsíců × 21 pracovních dnů
     }
   });
 
@@ -62,7 +72,12 @@ export const useTaxWizardData = () => {
       workClothes: Boolean(data.workClothes) === true,
       education: Boolean(data.education) === true,
       insurance: Boolean(data.insurance) === true,
-      churchTax: Boolean(data.churchTax) === true
+      churchTax: Boolean(data.churchTax) === true,
+      professionalLiterature: Boolean(data.professionalLiterature) === true,
+      tools: Boolean(data.tools) === true,
+      workingMaterials: Boolean(data.workingMaterials) === true,
+      professionalAssociation: Boolean(data.professionalAssociation) === true,
+      homeOffice: Boolean(data.homeOffice) === true
     };
     setWizardData(prev => ({ ...prev, deductions: sanitizedData }));
   };

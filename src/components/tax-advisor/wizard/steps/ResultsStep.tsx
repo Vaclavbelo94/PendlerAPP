@@ -101,6 +101,41 @@ const ResultsStep: React.FC<ResultsStepProps> = ({ data, result, onExportPDF }) 
                 <Badge variant="outline">{result.insuranceBenefit.toFixed(2)} €</Badge>
               </div>
             )}
+            
+            {result.professionalLiteratureBenefit > 0 && (
+              <div className="flex justify-between items-center">
+                <span>Odborná literatura:</span>
+                <Badge variant="outline">{result.professionalLiteratureBenefit.toFixed(2)} €</Badge>
+              </div>
+            )}
+            
+            {result.toolsBenefit > 0 && (
+              <div className="flex justify-between items-center">
+                <span>Pracovní nástroje:</span>
+                <Badge variant="outline">{result.toolsBenefit.toFixed(2)} €</Badge>
+              </div>
+            )}
+            
+            {result.workingMaterialsBenefit > 0 && (
+              <div className="flex justify-between items-center">
+                <span>Pracovní materiál:</span>
+                <Badge variant="outline">{result.workingMaterialsBenefit.toFixed(2)} €</Badge>
+              </div>
+            )}
+            
+            {result.professionalAssociationBenefit > 0 && (
+              <div className="flex justify-between items-center">
+                <span>Profesní sdružení:</span>
+                <Badge variant="outline">{result.professionalAssociationBenefit.toFixed(2)} €</Badge>
+              </div>
+            )}
+            
+            {result.homeOfficeBenefit > 0 && (
+              <div className="flex justify-between items-center">
+                <span>Home Office:</span>
+                <Badge variant="outline">{result.homeOfficeBenefit.toFixed(2)} €</Badge>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

@@ -72,7 +72,17 @@
       "educationCost": "Bildungskosten",
       "insurance": "Versicherung",
       "insuranceCost": "Versicherungskosten",
-      "churchTax": "Kirchensteuer"
+      "churchTax": "Kirchensteuer",
+      "professionalLiterature": "Fachliteratur",
+      "professionalLiteratureCost": "Kosten für Fachliteratur",
+      "tools": "Arbeitswerkzeuge",
+      "toolsCost": "Kosten für Arbeitswerkzeuge",
+      "workingMaterials": "Arbeitsmaterial",
+      "workingMaterialsCost": "Kosten für Arbeitsmaterial",
+      "professionalAssociation": "Berufsverband",
+      "professionalAssociationCost": "Kosten für Mitgliedschaft",
+      "homeOffice": "Homeoffice-Pauschale",
+      "homeOfficeCost": "Homeoffice-Kosten"
     },
     "results": {
       "title": "Steuerberechnungsergebnisse",
