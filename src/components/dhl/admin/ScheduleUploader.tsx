@@ -119,7 +119,10 @@ export const ScheduleUploader: React.FC = () => {
       return;
     }
 
-    if (!formData.positionId || !formData.workGroupId || !formData.scheduleName) {
+    // For yearly plans, work group is not required
+    const isYearlyPlan = formatAnalysis?.formatType === 'wechselschicht_yearly' && formatAnalysis?.detectedGroups?.length === 15;
+    
+    if (!formData.positionId || (!isYearlyPlan && !formData.workGroupId) || !formData.scheduleName) {
       toast.error('Prosím vyplňte všechna povinná pole');
       return;
     }
@@ -203,25 +206,37 @@ export const ScheduleUploader: React.FC = () => {
             </Select>
           </div>
 
-          <div>
-            <Label htmlFor="workGroup">Pracovní skupina *</Label>
-            <Select 
-              value={formData.workGroupId} 
-              onValueChange={(value) => setFormData(prev => ({ ...prev, workGroupId: value }))}
-              disabled={isLoading}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Vyberte skupinu" />
-              </SelectTrigger>
-              <SelectContent>
-                {workGroups.map((group) => (
-                  <SelectItem key={group.id} value={group.id}>
-                    {group.name} (Týden {group.week_number})
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          {/* Hide work group selection for yearly plans */}
+          {!(formatAnalysis?.formatType === 'wechselschicht_yearly' && formatAnalysis?.detectedGroups?.length === 15) && (
+            <div>
+              <Label htmlFor="workGroup">Pracovní skupina *</Label>
+              <Select 
+                value={formData.workGroupId} 
+                onValueChange={(value) => setFormData(prev => ({ ...prev, workGroupId: value }))}
+                disabled={isLoading}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Vyberte skupinu" />
+                </SelectTrigger>
+                <SelectContent>
+                  {workGroups.map((group) => (
+                    <SelectItem key={group.id} value={group.id}>
+                      {group.name} (Týden {group.week_number})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+          
+          {/* Show info for yearly plans */}
+          {formatAnalysis?.formatType === 'wechselschicht_yearly' && formatAnalysis?.detectedGroups?.length === 15 && (
+            <div className="p-3 bg-yellow-50 dark:bg-yellow-950/20 rounded border border-yellow-200">
+              <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                📅 <strong>Roční plán:</strong> Automaticky se vytvoří všech 15 pracovních skupin
+              </p>
+            </div>
+          )}
         </div>
 
         <div>

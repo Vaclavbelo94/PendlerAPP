@@ -76,6 +76,9 @@ export const validateScheduleData = async (
       totalShifts = totalWorkDays;
       detectedWoche = wochenGroups.size === 1 ? Array.from(wochenGroups)[0] as number : null;
       
+      // For yearly plans with all 15 groups, this is expected behavior
+      const isYearlyPlan = wochenGroups.size === 15 && kalenderWochen.size > 10;
+      
       // Extract date range from calendar weeks
       if (kalenderWochen.size > 0) {
         const sortedWeeks = Array.from(kalenderWochen).sort();
@@ -195,13 +198,16 @@ export const validateScheduleData = async (
 
     totalDays = totalShifts; // Each shift is typically one day
 
-    // Validate woche is present
-    if (!detectedWoche) {
+    // Validate woche is present (skip for yearly plans with all groups)
+    const isYearlyPlan = Array.isArray(data) && data.length > 0 && data[0].kalenderwoche && 
+                        new Set(data.map((entry: any) => entry.woche)).size === 15;
+    
+    if (!detectedWoche && !isYearlyPlan) {
       errors.push({
         field: 'woche',
         message: 'Chybí informace o týdnu (woche) v datech'
       });
-    } else if (detectedWoche < 1 || detectedWoche > 15) {
+    } else if (detectedWoche && (detectedWoche < 1 || detectedWoche > 15)) {
       errors.push({
         field: 'woche',
         message: `Neplatný týden ${detectedWoche} - musí být mezi 1 a 15`
