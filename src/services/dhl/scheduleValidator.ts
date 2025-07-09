@@ -52,8 +52,72 @@ export const validateScheduleData = async (
       return { isValid: false, errors, warnings, summary: { totalDays, totalShifts, dateRange, detectedWoche } };
     }
 
-    // Detect format and extract woche
-    if (data.shifts && Array.isArray(data.shifts)) {
+    // Detect Wechselschicht format (calendar weeks)
+    if (Array.isArray(data) && data.length > 0 && data[0].kalenderwoche) {
+      console.log('Detected Wechselschicht 30h format');
+      
+      // Group by woche to find which groups are present
+      const wochenGroups = new Set();
+      let totalWorkDays = 0;
+      
+      data.forEach((entry: any) => {
+        if (entry.woche) {
+          wochenGroups.add(entry.woche);
+        }
+        if (entry.start && entry.start !== null) {
+          totalWorkDays++;
+        }
+      });
+      
+      totalShifts = totalWorkDays;
+      detectedWoche = wochenGroups.size === 1 ? Array.from(wochenGroups)[0] as number : null;
+      
+      // Extract date range from calendar weeks
+      const kalenderWochen = data.map((entry: any) => entry.kalenderwoche).filter(Boolean);
+      if (kalenderWochen.length > 0) {
+        const uniqueWeeks = [...new Set(kalenderWochen)].sort();
+        warnings.push({
+          field: 'dateRange',
+          message: `Detekován roční plán: ${uniqueWeeks[0]} - ${uniqueWeeks[uniqueWeeks.length - 1]} (${uniqueWeeks.length} týdnů)`
+        });
+      }
+      
+      // Validate Wechselschicht structure
+      for (const entry of data) {
+        if (!entry.kalenderwoche || !entry.woche || !entry.den) {
+          errors.push({
+            field: 'structure',
+            message: 'Chybí povinná pole: kalenderwoche, woche, nebo den'
+          });
+          break;
+        }
+        
+        // Validate German day names
+        const validDays = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
+        if (!validDays.includes(entry.den)) {
+          errors.push({
+            field: 'den',
+            message: `Neplatný den "${entry.den}". Očekávané hodnoty: ${validDays.join(', ')}`
+          });
+        }
+        
+        // Validate woche range
+        if (entry.woche < 1 || entry.woche > 15) {
+          errors.push({
+            field: 'woche',
+            message: `Neplatný týden ${entry.woche} - musí být mezi 1 a 15`
+          });
+        }
+      }
+      
+      if (wochenGroups.size > 1) {
+        warnings.push({
+          field: 'multiple_groups',
+          message: `Detekováno více pracovních skupin: ${Array.from(wochenGroups).sort().join(', ')}`
+        });
+      }
+      
+    } else if (data.shifts && Array.isArray(data.shifts)) {
       // New shifts format
       detectedWoche = data.woche;
       totalShifts = data.shifts.filter((shift: any) => shift.date && (shift.start || shift.start_time)).length;

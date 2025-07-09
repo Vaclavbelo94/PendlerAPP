@@ -19,10 +19,85 @@ export interface ImportResult {
 }
 
 /**
+ * Convert calendar week (KW) to actual dates for given year
+ */
+const getDateFromCalendarWeek = (year: number, week: string, dayName: string): string => {
+  const weekNumber = parseInt(week.replace('KW', ''));
+  const dayMap: { [key: string]: number } = {
+    'Mo': 1, 'Di': 2, 'Mi': 3, 'Do': 4, 'Fr': 5, 'Sa': 6, 'So': 0
+  };
+  
+  // ISO week calculation
+  const jan4 = new Date(year, 0, 4);
+  const jan4Day = jan4.getDay() || 7; // Convert Sunday from 0 to 7
+  const firstMonday = new Date(jan4.getTime() - (jan4Day - 1) * 24 * 60 * 60 * 1000);
+  
+  const targetWeekStart = new Date(firstMonday.getTime() + (weekNumber - 1) * 7 * 24 * 60 * 60 * 1000);
+  const targetDay = new Date(targetWeekStart.getTime() + (dayMap[dayName] - 1) * 24 * 60 * 60 * 1000);
+  
+  return targetDay.toISOString().split('T')[0];
+};
+
+/**
  * Convert different JSON formats to internal storage format
  */
 const convertToStorageFormat = (data: any): any => {
   console.log('Converting data for storage...');
+  
+  // Handle Wechselschicht 30h format (calendar weeks)
+  if (Array.isArray(data) && data.length > 0 && data[0].kalenderwoche) {
+    console.log('Converting Wechselschicht 30h format for storage');
+    
+    const currentYear = new Date().getFullYear();
+    const converted: any = {
+      base_date: `${currentYear}-01-01`,
+      format_type: 'wechselschicht_30h',
+      year: currentYear,
+      description: 'Wechselschicht 30h - Roční plán směn',
+      calendar_weeks: {}
+    };
+
+    // Group by woche to identify work groups
+    const wochenGroups: { [key: number]: any[] } = {};
+    data.forEach((entry: any) => {
+      if (!wochenGroups[entry.woche]) {
+        wochenGroups[entry.woche] = [];
+      }
+      wochenGroups[entry.woche].push(entry);
+    });
+
+    // Convert each work group
+    Object.keys(wochenGroups).forEach(wocheKey => {
+      const woche = parseInt(wocheKey);
+      const group = wochenGroups[woche];
+      converted.woche = woche; // Set the work group
+      
+      // Process each entry in the group
+      group.forEach((entry: any) => {
+        const actualDate = getDateFromCalendarWeek(currentYear, entry.kalenderwoche, entry.den);
+        
+        // Only add entries with actual start times (not null)
+        if (entry.start && entry.start !== null) {
+          converted[actualDate] = {
+            start_time: entry.start,
+            end_time: entry.ende || entry.start, // Use ende or fallback to start
+            day: entry.den,
+            woche: entry.woche,
+            kalenderwoche: entry.kalenderwoche,
+            pause: entry.pause || ''
+          };
+        }
+      });
+      
+      // Store original calendar week data for reference
+      if (!converted.calendar_weeks[woche]) {
+        converted.calendar_weeks[woche] = group;
+      }
+    });
+
+    console.log('Converted Wechselschicht to storage format:', converted);
+    return converted;
+  }
   
   // Handle new shifts format (with shifts array)
   if (data.shifts && Array.isArray(data.shifts)) {

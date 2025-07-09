@@ -202,6 +202,35 @@ export const ScheduleUploader: React.FC = () => {
           />
         </div>
 
+        {/* Format information */}
+        <div className="space-y-4 mt-6 p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200">
+          <h4 className="font-medium text-blue-800 dark:text-blue-200">📋 Podporované formáty JSON</h4>
+          
+          <div className="space-y-3">
+            <div>
+              <h5 className="text-sm font-medium text-blue-700 dark:text-blue-300">🔄 Wechselschicht 30h (Roční plán)</h5>
+              <ul className="text-xs text-blue-600 dark:text-blue-400 space-y-1 ml-4">
+                <li>• <code>kalenderwoche</code> - KW01, KW02, ...</li>
+                <li>• <code>woche</code> - Pracovní skupina (1-15)</li>
+                <li>• <code>den</code> - Mo, Di, Mi, Do, Fr, Sa, So</li>
+                <li>• <code>start</code> - HH:MM nebo null pro volno</li>
+                <li>• <code>ende</code> - HH:MM</li>
+              </ul>
+              <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                💡 Automaticky generuje směny pro celý rok z kalendářních týdnů
+              </p>
+            </div>
+            
+            <div>
+              <h5 className="text-sm font-medium text-blue-700 dark:text-blue-300">📅 Standardní formát</h5>
+              <ul className="text-xs text-blue-600 dark:text-blue-400 space-y-1 ml-4">
+                <li>• <code>base_date, woche, YYYY-MM-DD</code></li>
+                <li>• <code>start_time, end_time</code></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
         {validation && !validation.isValid && (
           <div className="p-3 bg-red-50 dark:bg-red-950/20 rounded border border-red-200">
             <div className="flex items-center gap-2 mb-2">
