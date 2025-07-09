@@ -130,7 +130,16 @@ export const ScheduleUploader: React.FC = () => {
     try {
       setIsProcessing(true);
       
-      const result = await importDHLSchedule({
+      // For yearly plans, automatically set importAllGroups and don't pass workGroupId
+      const importParams = isYearlyPlan ? {
+        positionId: formData.positionId,
+        workGroupId: undefined, // Don't pass work group for yearly plans
+        scheduleName: formData.scheduleName,
+        jsonData: jsonData,
+        fileName: selectedFile.name,
+        importAllGroups: true, // Force to true for yearly plans
+        selectedWoche: undefined
+      } : {
         positionId: formData.positionId,
         workGroupId: formData.workGroupId,
         scheduleName: formData.scheduleName,
@@ -138,7 +147,9 @@ export const ScheduleUploader: React.FC = () => {
         fileName: selectedFile.name,
         importAllGroups: formData.importAllGroups,
         selectedWoche: formData.selectedWoche
-      });
+      };
+      
+      const result = await importDHLSchedule(importParams);
 
       if (result.success) {
         if (result.groupsProcessed) {
