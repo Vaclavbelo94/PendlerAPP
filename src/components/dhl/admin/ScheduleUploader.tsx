@@ -22,7 +22,9 @@ export const ScheduleUploader: React.FC = () => {
   const [formData, setFormData] = useState({
     positionId: '',
     workGroupId: '',
-    scheduleName: ''
+    scheduleName: '',
+    importAllGroups: false,
+    selectedWoche: 1
   });
   const [isProcessing, setIsProcessing] = useState(false);
   const [step, setStep] = useState<'select' | 'preview' | 'success'>('select');
@@ -97,11 +99,17 @@ export const ScheduleUploader: React.FC = () => {
         workGroupId: formData.workGroupId,
         scheduleName: formData.scheduleName,
         jsonData: jsonData,
-        fileName: selectedFile.name
+        fileName: selectedFile.name,
+        importAllGroups: formData.importAllGroups,
+        selectedWoche: formData.selectedWoche
       });
 
       if (result.success) {
-        toast.success(result.message);
+        if (result.groupsProcessed) {
+          toast.success(`${result.message} (${result.groupsProcessed} skupin)`);
+        } else {
+          toast.success(result.message);
+        }
         setStep('success');
         
         // Reset form after successful import
@@ -113,7 +121,9 @@ export const ScheduleUploader: React.FC = () => {
           setFormData({
             positionId: '',
             workGroupId: '',
-            scheduleName: ''
+            scheduleName: '',
+            importAllGroups: false,
+            selectedWoche: 1
           });
         }, 3000);
       } else {
@@ -186,9 +196,62 @@ export const ScheduleUploader: React.FC = () => {
             id="scheduleName"
             value={formData.scheduleName}
             onChange={(e) => setFormData(prev => ({ ...prev, scheduleName: e.target.value }))}
-            placeholder="např. Sortierer Woche 1 - Leden 2024"
+            placeholder="např. Wechselschicht 30h - 2024"
           />
         </div>
+
+        {/* Wechselschicht import options */}
+        {validation && Array.isArray(jsonData) && jsonData.length > 0 && jsonData[0].kalenderwoche && (
+          <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200">
+            <h4 className="font-medium text-blue-800 dark:text-blue-200">🔄 Wechselschicht 30h Import</h4>
+            
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="importAllGroups"
+                checked={formData.importAllGroups}
+                onChange={(e) => setFormData(prev => ({ 
+                  ...prev, 
+                  importAllGroups: e.target.checked 
+                }))}
+                className="rounded border-blue-300"
+              />
+              <Label htmlFor="importAllGroups" className="text-sm text-blue-700 dark:text-blue-300">
+                Importovat všech 15 pracovních skupin najednou
+              </Label>
+            </div>
+
+            {!formData.importAllGroups && (
+              <div>
+                <Label htmlFor="selectedWoche" className="text-sm text-blue-700 dark:text-blue-300">
+                  Vyberte konkrétní pracovní skupinu:
+                </Label>
+                <Select 
+                  value={formData.selectedWoche.toString()} 
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, selectedWoche: parseInt(value) }))}
+                >
+                  <SelectTrigger className="w-full mt-1">
+                    <SelectValue placeholder="Vyberte skupinu" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Array.from({ length: 15 }, (_, i) => i + 1).map((woche) => (
+                      <SelectItem key={woche} value={woche.toString()}>
+                        Pracovní skupina {woche}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            <p className="text-xs text-blue-600 dark:text-blue-400">
+              {formData.importAllGroups 
+                ? '💡 Bude vytvořeno 15 samostatných plánů směn (jeden pro každou skupinu)'
+                : `💡 Bude vytvořen plán pouze pro skupinu ${formData.selectedWoche}`
+              }
+            </p>
+          </div>
+        )}
 
         {/* File upload */}
         <div>
@@ -273,11 +336,13 @@ export const ScheduleUploader: React.FC = () => {
             setSelectedFile(null);
             setJsonData(null);
             setValidation(null);
-            setFormData({
-              positionId: '',
-              workGroupId: '',
-              scheduleName: ''
-            });
+          setFormData({
+            positionId: '',
+            workGroupId: '',
+            scheduleName: '',
+            importAllGroups: false,
+            selectedWoche: 1
+          });
             setStep('select');
           }}
           variant="outline"

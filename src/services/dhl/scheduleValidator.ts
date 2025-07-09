@@ -59,10 +59,14 @@ export const validateScheduleData = async (
       // Group by woche to find which groups are present
       const wochenGroups = new Set();
       let totalWorkDays = 0;
+      const kalenderWochen = new Set();
       
       data.forEach((entry: any) => {
         if (entry.woche) {
           wochenGroups.add(entry.woche);
+        }
+        if (entry.kalenderwoche) {
+          kalenderWochen.add(entry.kalenderwoche);
         }
         if (entry.start && entry.start !== null) {
           totalWorkDays++;
@@ -73,13 +77,21 @@ export const validateScheduleData = async (
       detectedWoche = wochenGroups.size === 1 ? Array.from(wochenGroups)[0] as number : null;
       
       // Extract date range from calendar weeks
-      const kalenderWochen = data.map((entry: any) => entry.kalenderwoche).filter(Boolean);
-      if (kalenderWochen.length > 0) {
-        const uniqueWeeks = [...new Set(kalenderWochen)].sort();
+      if (kalenderWochen.size > 0) {
+        const sortedWeeks = Array.from(kalenderWochen).sort();
         warnings.push({
           field: 'dateRange',
-          message: `Detekován roční plán: ${uniqueWeeks[0]} - ${uniqueWeeks[uniqueWeeks.length - 1]} (${uniqueWeeks.length} týdnů)`
+          message: `Detekován roční plán: ${sortedWeeks[0]} - ${sortedWeeks[sortedWeeks.length - 1]} (${sortedWeeks.length} týdnů)`
         });
+        
+        // Calculate actual date range
+        const currentYear = new Date().getFullYear();
+        const firstWeek = sortedWeeks[0] as string;
+        const lastWeek = sortedWeeks[sortedWeeks.length - 1] as string;
+        dateRange = {
+          start: `${currentYear}-01-01`,
+          end: `${currentYear}-12-31`
+        };
       }
       
       // Validate Wechselschicht structure
@@ -108,14 +120,38 @@ export const validateScheduleData = async (
             message: `Neplatný týden ${entry.woche} - musí být mezi 1 a 15`
           });
         }
+        
+        // Validate time format and ende field
+        if (entry.start && entry.start !== null) {
+          const timePattern = /^([01]?[0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?$/;
+          if (!timePattern.test(entry.start)) {
+            errors.push({
+              field: 'start',
+              message: `Neplatný formát času "${entry.start}". Očekávané formáty: HH:MM nebo HH:MM:SS`
+            });
+          }
+          
+          if (entry.ende && !timePattern.test(entry.ende)) {
+            errors.push({
+              field: 'ende',
+              message: `Neplatný formát času "${entry.ende}". Očekávané formáty: HH:MM nebo HH:MM:SS`
+            });
+          }
+        }
       }
       
       if (wochenGroups.size > 1) {
         warnings.push({
           field: 'multiple_groups',
-          message: `Detekováno více pracovních skupin: ${Array.from(wochenGroups).sort().join(', ')}`
+          message: `Detekováno ${wochenGroups.size} pracovních skupin: ${Array.from(wochenGroups).sort().join(', ')}`
         });
       }
+      
+      // Add summary for yearly data
+      warnings.push({
+        field: 'yearly_summary',
+        message: `Roční plán obsahuje ${totalWorkDays} pracovních směn z ${data.length} celkových záznamů`
+      });
       
     } else if (data.shifts && Array.isArray(data.shifts)) {
       // New shifts format
