@@ -9,6 +9,8 @@ import { useDHLData } from '@/hooks/dhl/useDHLData';
 import { useAuth } from '@/hooks/auth';
 import { validateScheduleData } from '@/services/dhl/scheduleValidator';
 import { importDHLSchedule } from '@/services/dhl/dhlScheduleImporter';
+import { analyzeJsonFormat, suggestWorkGroupFromFilename } from '@/services/dhl/jsonFormatDetector';
+import { JsonFormatDetector } from './JsonFormatDetector';
 import { SchedulePreview } from './SchedulePreview';
 import { toast } from 'sonner';
 import './MobileDHLStyles.css';
@@ -19,6 +21,7 @@ export const ScheduleUploader: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [jsonData, setJsonData] = useState<any>(null);
   const [validation, setValidation] = useState<any>(null);
+  const [formatAnalysis, setFormatAnalysis] = useState<any>(null);
   const [formData, setFormData] = useState({
     positionId: '',
     workGroupId: '',
@@ -44,6 +47,32 @@ export const ScheduleUploader: React.FC = () => {
       const data = JSON.parse(text);
       setJsonData(data);
       
+      // Analyze JSON format first
+      const analysis = analyzeJsonFormat(data, file.name);
+      setFormatAnalysis(analysis);
+      
+      // Auto-fill form based on analysis
+      if (analysis.suggestedName) {
+        setFormData(prev => ({ ...prev, scheduleName: analysis.suggestedName }));
+      }
+      
+      // Auto-suggest work group if detected
+      if (analysis.suggestedGroup) {
+        const suggestedWorkGroup = workGroups.find(wg => wg.week_number === analysis.suggestedGroup);
+        if (suggestedWorkGroup) {
+          setFormData(prev => ({ 
+            ...prev, 
+            workGroupId: suggestedWorkGroup.id,
+            selectedWoche: analysis.suggestedGroup
+          }));
+        }
+      }
+      
+      // Set import all groups for yearly data
+      if (analysis.formatType === 'wechselschicht_yearly' && analysis.detectedGroups.length === 15) {
+        setFormData(prev => ({ ...prev, importAllGroups: true }));
+      }
+      
       // Validate with position context if available
       const validationResult = await validateScheduleData(
         data, 
@@ -53,6 +82,9 @@ export const ScheduleUploader: React.FC = () => {
       setValidation(validationResult);
       
       if (validationResult.isValid) {
+        if (analysis.confidence >= 70) {
+          toast.success(`✅ ${analysis.formatType === 'wechselschicht_yearly' ? 'Roční Wechselschicht' : 'Standardní'} formát rozpoznán (${analysis.confidence}% jistota)`);
+        }
         setStep('preview');
       } else {
         toast.error('Soubor obsahuje chyby, prosím zkontrolujte a opravte je');
@@ -63,6 +95,7 @@ export const ScheduleUploader: React.FC = () => {
       setSelectedFile(null);
       setJsonData(null);
       setValidation(null);
+      setFormatAnalysis(null);
     }
   };
 
@@ -142,6 +175,7 @@ export const ScheduleUploader: React.FC = () => {
     setSelectedFile(null);
     setJsonData(null);
     setValidation(null);
+    setFormatAnalysis(null);
   };
 
   if (step === 'select') {
@@ -265,6 +299,14 @@ export const ScheduleUploader: React.FC = () => {
           />
         </div>
 
+        {/* Smart Format Detection */}
+        {formatAnalysis && (
+          <JsonFormatDetector 
+            analysis={formatAnalysis} 
+            fileName={selectedFile?.name || ''} 
+          />
+        )}
+
         {/* Format information */}
         <div className="space-y-4 mt-6 p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200">
           <h4 className="font-medium text-blue-800 dark:text-blue-200">📋 Podporované formáty JSON</h4>
@@ -333,19 +375,20 @@ export const ScheduleUploader: React.FC = () => {
         </p>
         <Button
           onClick={() => {
-            setSelectedFile(null);
-            setJsonData(null);
-            setValidation(null);
-          setFormData({
-            positionId: '',
-            workGroupId: '',
-            scheduleName: '',
-            importAllGroups: false,
-            selectedWoche: 1
-          });
-            setStep('select');
-          }}
-          variant="outline"
+          setSelectedFile(null);
+          setJsonData(null);
+          setValidation(null);
+          setFormatAnalysis(null);
+        setFormData({
+          positionId: '',
+          workGroupId: '',
+          scheduleName: '',
+          importAllGroups: false,
+          selectedWoche: 1
+        });
+          setStep('select');
+        }}
+        variant="outline"
         >
           Importovat další rozvrh
         </Button>
