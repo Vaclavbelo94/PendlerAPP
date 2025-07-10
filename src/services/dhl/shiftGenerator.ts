@@ -266,12 +266,45 @@ export const generateUserShifts = async (userId: string, startDate: string, endD
       .is('work_group_id', null) // Annual plans have work_group_id = null
       .order('calendar_week', { ascending: true });
 
+    console.log('=== SCHEDULES LOOKUP ===');
+    console.log('Looking for schedules with:');
+    console.log('- position_id:', assignment.dhl_position_id);
+    console.log('- base_woche:', userWocheNumber);
+    console.log('- annual_plan: true');
+    console.log('- work_group_id: null');
     console.log('Schedules query result:', { schedules, schedulesError });
 
-    if (schedulesError || !schedules || schedules.length === 0) {
+    if (schedulesError) {
+      console.error('Database error fetching schedules:', schedulesError);
       return {
         success: false,
-        message: 'Nebyl nalezen aktivní roční plán směn pro tuto pozici a pracovní skupinu'
+        message: `Chyba databáze při načítání plánů: ${schedulesError.message}`
+      };
+    }
+
+    if (!schedules || schedules.length === 0) {
+      console.log('=== NO SCHEDULES FOUND - DEBUGGING ===');
+      
+      // Let's check what schedules exist for this position
+      const { data: allSchedules } = await supabase
+        .from('dhl_shift_schedules')
+        .select('id, position_id, base_woche, annual_plan, work_group_id, calendar_week, schedule_name')
+        .eq('position_id', assignment.dhl_position_id)
+        .eq('is_active', true);
+        
+      console.log('All schedules for this position:', allSchedules);
+      
+      // Check if there are any schedules with different criteria
+      const { data: anySchedules } = await supabase
+        .from('dhl_shift_schedules')
+        .select('id, position_id, base_woche, annual_plan, work_group_id, calendar_week, schedule_name')
+        .eq('position_id', assignment.dhl_position_id);
+        
+      console.log('All schedules for this position (including inactive):', anySchedules);
+      
+      return {
+        success: false,
+        message: `Nebyl nalezen aktivní roční plán směn pro tuto pozici (${assignment.dhl_positions?.name}) a Woche ${userWocheNumber}. Nalezeno celkem ${allSchedules?.length || 0} plánů pro tuto pozici.`
       };
     }
 
@@ -307,10 +340,22 @@ export const generateUserShifts = async (userId: string, startDate: string, endD
         if (schedule.calendar_week && schedule.schedule_data) {
           const calendarWeekKey = `KW${schedule.calendar_week.toString().padStart(2, '0')}`;
           combinedSchedule[calendarWeekKey] = schedule.schedule_data;
+          console.log(`Added schedule for ${calendarWeekKey}:`, Object.keys(schedule.schedule_data));
         }
       });
 
-      console.log('Combined schedule structure:', Object.keys(combinedSchedule));
+      console.log('=== COMBINED SCHEDULE STRUCTURE ===');
+      console.log('Available calendar weeks:', Object.keys(combinedSchedule));
+      
+      // Log sample structure for first available week
+      const firstWeekKey = Object.keys(combinedSchedule)[0];
+      if (firstWeekKey && combinedSchedule[firstWeekKey]) {
+        console.log(`Sample structure for ${firstWeekKey}:`, Object.keys(combinedSchedule[firstWeekKey]));
+        const firstWocheKey = Object.keys(combinedSchedule[firstWeekKey])[0];
+        if (firstWocheKey) {
+          console.log(`Sample days for ${firstWeekKey}.${firstWocheKey}:`, Object.keys(combinedSchedule[firstWeekKey][firstWocheKey]));
+        }
+      }
 
       // Find shift data for this date using annual rotation logic
       const shiftData = findAnnualShiftForDate(combinedSchedule, userWocheNumber, currentDate);
