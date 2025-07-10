@@ -78,8 +78,16 @@ const ShiftsSettings: React.FC = () => {
     if (!userAssignment) return null;
     
     const currentCalendarWeek = getCalendarWeek(new Date());
-    const baseWoche = userAssignment.reference_woche || userAssignment.dhl_work_groups?.week_number || 1;
     
+    // Use reference_woche and reference_date if available
+    if (userAssignment.reference_woche !== undefined && userAssignment.reference_date) {
+      const referenceDate = new Date(userAssignment.reference_date);
+      const referenceCalendarWeek = getCalendarWeek(referenceDate);
+      return calculateRotatedWoche(userAssignment.reference_woche, currentCalendarWeek, referenceCalendarWeek);
+    }
+    
+    // Fallback to old behavior
+    const baseWoche = userAssignment.dhl_work_groups?.week_number || 1;
     return calculateRotatedWoche(baseWoche, currentCalendarWeek);
   };
 
