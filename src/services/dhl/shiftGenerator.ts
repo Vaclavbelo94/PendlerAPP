@@ -231,36 +231,39 @@ export const generateUserShifts = async (userId: string, startDate: string, endD
       .single();
 
     if (assignmentError || !assignment) {
+      console.log('No DHL assignment found for user:', userId, assignmentError);
       return {
         success: false,
         message: 'Uživatel nemá přiřazení DHL pozice a pracovní skupiny'
       };
     }
 
-    // Get active schedule for this position and work group
-    // For yearly plans, work_group_id is null, so we need to find by base_woche
-    let scheduleQuery = supabase
+    console.log('Found user assignment:', assignment);
+    
+    // Get user's work group week number for matching with base_woche
+    const userWocheNumber = assignment.dhl_work_groups?.week_number;
+    console.log('User Woche number:', userWocheNumber);
+
+    if (!userWocheNumber) {
+      return {
+        success: false,
+        message: 'Uživatel nemá platné číslo týdne (Woche) v pracovní skupině'
+      };
+    }
+
+    // Find active schedule for this position
+    // For annual plans, search by position_id and base_woche (work_group_id should be null)
+    const { data: schedule, error: scheduleError } = await supabase
       .from('dhl_shift_schedules')
       .select('*')
       .eq('position_id', assignment.dhl_position_id)
+      .eq('base_woche', userWocheNumber)
       .eq('is_active', true)
+      .is('work_group_id', null) // Annual plans have work_group_id = null
       .order('created_at', { ascending: false })
-      .limit(1);
+      .maybeSingle();
 
-    // If assignment has work_group_id, filter by it, otherwise look for yearly plan by base_woche
-    if (assignment.dhl_work_group_id) {
-      scheduleQuery = scheduleQuery.eq('work_group_id', assignment.dhl_work_group_id);
-    } else {
-      // For yearly plans, find by base_woche matching the user's work group week_number
-      const userWocheNumber = assignment.dhl_work_groups?.week_number;
-      if (userWocheNumber) {
-        scheduleQuery = scheduleQuery
-          .is('work_group_id', null)
-          .eq('base_woche', userWocheNumber);
-      }
-    }
-
-    const { data: schedule, error: scheduleError } = await scheduleQuery.maybeSingle();
+    console.log('Schedule query result:', { schedule, scheduleError });
 
     if (scheduleError || !schedule) {
       return {
