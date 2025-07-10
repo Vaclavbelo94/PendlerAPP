@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Upload, FileText, CheckCircle, AlertTriangle, Trash2, Download, Users } from 'lucide-react';
+import { Upload, FileText, CheckCircle, AlertTriangle, Trash2, Download, Users, Calendar } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScheduleUploader } from './ScheduleUploader';
 import { SchedulePreview } from './SchedulePreview';
@@ -11,6 +11,7 @@ import { SchedulesList } from './SchedulesList';
 import { PositionManagementPanel } from './PositionManagementPanel';
 import BulkShiftGeneration from './BulkShiftGeneration';
 import WocheReferenceManager from './WocheReferenceManager';
+import AnnualPlanImport from '@/components/admin/dhl/AnnualPlanImport';
 import './MobileDHLStyles.css';
 
 const DHLImportPanel: React.FC = () => {
@@ -46,10 +47,14 @@ const DHLImportPanel: React.FC = () => {
       {/* Main Content */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <div className="dhl-mobile-tabs px-2">
-          <TabsList className="tabs-list grid w-full grid-cols-3 sm:grid-cols-6 gap-1 h-auto p-1">
+          <TabsList className="tabs-list grid w-full grid-cols-3 sm:grid-cols-7 gap-1 h-auto p-1">
             <TabsTrigger value="upload" className="dhl-mobile-tab-trigger flex flex-col sm:flex-row items-center gap-1 py-2 px-1 text-xs min-h-[60px] sm:min-h-[40px] touch-manipulation">
               <Upload className="h-4 w-4 sm:h-4 sm:w-4 flex-shrink-0" />
               <span className="block text-center leading-tight">Import</span>
+            </TabsTrigger>
+            <TabsTrigger value="annual" className="dhl-mobile-tab-trigger flex flex-col sm:flex-row items-center gap-1 py-2 px-1 text-xs min-h-[60px] sm:min-h-[40px] touch-manipulation">
+              <Calendar className="h-4 w-4 sm:h-4 sm:w-4 flex-shrink-0" />
+              <span className="block text-center leading-tight">Roční</span>
             </TabsTrigger>
             <TabsTrigger value="schedules" className="dhl-mobile-tab-trigger flex flex-col sm:flex-row items-center gap-1 py-2 px-1 text-xs min-h-[60px] sm:min-h-[40px] touch-manipulation">
               <FileText className="h-4 w-4 sm:h-4 sm:w-4 flex-shrink-0" />
@@ -118,6 +123,24 @@ const DHLImportPanel: React.FC = () => {
                   </ul>
                 </div>
               </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Annual Plans Tab */}
+        <TabsContent value="annual" className="space-y-6">
+          <Card className="dhl-mobile-card">
+            <CardHeader className="dhl-mobile-card-header">
+              <CardTitle className="dhl-mobile-card-title flex items-center gap-2">
+                <Calendar className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
+                <span>Import ročních plánů</span>
+              </CardTitle>
+              <CardDescription className="dhl-mobile-card-description">
+                Nahrajte Excel soubor s ročními plány směn obsahující kalendářní týdny KW01-KW53
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="dhl-mobile-card-content">
+              <AnnualPlanImport />
             </CardContent>
           </Card>
         </TabsContent>
