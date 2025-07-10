@@ -56,15 +56,26 @@ const AnnualPlanImport: React.FC<AnnualPlanImportProps> = ({ onImportComplete })
       }
 
       const arrayBuffer = await selectedFile.arrayBuffer();
-      let data: any[][];
+      let parsedData: AnnualPlanImportData;
 
       if (fileExtension === 'csv') {
+        // For CSV, we still need the old parsing method
         const text = new TextDecoder().decode(arrayBuffer);
-        data = text.split('\n').map(row => row.split(';'));
+        const data = text.split('\n').map(row => row.split(';'));
+        // Create a mock workbook structure for CSV
+        const mockWorkbook = {
+          SheetNames: ['Sheet1'],
+          Sheets: {
+            'Sheet1': data
+          },
+          utils: XLSX.utils
+        };
+        parsedData = parseAnnualPlanData(mockWorkbook, selectedPosition);
       } else {
+        // For Excel files, read the entire workbook
         const workbook = XLSX.read(arrayBuffer);
-        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-        data = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+        console.log('Workbook loaded with sheets:', workbook.SheetNames);
+        parsedData = parseAnnualPlanData(workbook, selectedPosition);
       }
 
       if (!selectedPosition) {
@@ -76,7 +87,6 @@ const AnnualPlanImport: React.FC<AnnualPlanImportProps> = ({ onImportComplete })
         return;
       }
 
-      const parsedData = parseAnnualPlanData(data, selectedPosition);
       const validationResult = validateAnnualPlan(parsedData);
 
       setImportData(parsedData);
@@ -306,16 +316,24 @@ const AnnualPlanImport: React.FC<AnnualPlanImportProps> = ({ onImportComplete })
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="text-sm text-muted-foreground space-y-2">
-            <p><strong>Struktura souboru:</strong></p>
+            <p><strong>Struktura Excel souboru (multi-sheet):</strong></p>
+            <ul className="list-disc list-inside space-y-1">
+              <li>Každý kalendářní týden má vlastní list/záložku (KW01, KW02, ..., KW53)</li>
+              <li>V každém listu jsou woche skupiny (1-15) s odpovídajícími časy</li>
+              <li>Časy můžou být formátu "15:15 21:15" nebo "06:00-14:00"</li>
+              <li>Prázdné buňky nebo "OFF" znamenají volno</li>
+            </ul>
+            
+            <p><strong>Alternativní struktura (single-sheet CSV/Excel):</strong></p>
             <ul className="list-disc list-inside space-y-1">
               <li>První řádek: hlavičky sloupců (woche1, woche2, ..., woche15)</li>
               <li>První sloupec: kalendářní týdny (KW01, KW02, ..., KW53)</li>
               <li>Buňky: časové rozmezí směny (např. "06:00-14:00") nebo "OFF" pro volno</li>
             </ul>
             
-            <p><strong>Příklad:</strong></p>
+            <p><strong>Příklad single-sheet:</strong></p>
             <div className="bg-muted p-3 rounded text-xs font-mono">
-              <div>     | woche1  | woche2  | woche3  |</div>
+              <div>     | woche1      | woche2  | woche3      |</div>
               <div>KW01 | 06:00-14:00 | OFF     | 14:00-22:00 |</div>
               <div>KW02 | 14:00-22:00 | 06:00-14:00 | OFF     |</div>
             </div>
