@@ -1,8 +1,8 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Plus, Calendar, ListFilter, FileSpreadsheet } from 'lucide-react';
+import { Plus, Calendar, ListFilter, FileSpreadsheet, Zap } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { useStandardizedToast } from '@/hooks/useStandardizedToast';
 import { useAuth } from '@/hooks/auth';
@@ -15,16 +15,33 @@ import ShiftFilters from './ShiftFilters';
 import EmptyShiftsState from './EmptyShiftsState';
 import { ShiftType, AnalyticsPeriod } from './types';
 import SimpleLoadingSpinner from '@/components/loading/SimpleLoadingSpinner';
+import { useShiftsCRUD, Shift, ShiftFormData } from '@/hooks/shifts/useShiftsCRUD';
+import { useDHLData } from '@/hooks/dhl/useDHLData';
+import { generateUserShifts } from '@/services/dhl/shiftGenerator';
+import { toast } from 'sonner';
 
 const ShiftsContent = () => {
   const { user, isLoading: authLoading } = useAuth();
   const { success, error } = useStandardizedToast();
   const { t } = useTranslation('shifts');
+  
+  // Use database hooks instead of localStorage
+  const {
+    shifts,
+    isLoading,
+    createShift,
+    updateShift,
+    deleteShift,
+    refreshShifts,
+  } = useShiftsCRUD();
+
+  // DHL functionality
+  const { userAssignment } = useDHLData(user?.id || null);
+  const [isDHLGenerating, setIsDHLGenerating] = useState(false);
+  
   const [activeTab, setActiveTab] = useState('calendar');
   const [isAddSheetOpen, setIsAddSheetOpen] = useState(false);
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
-  const [shifts, setShifts] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [filters, setFilters] = useState({
     startDate: null,
@@ -34,83 +51,79 @@ const ShiftsContent = () => {
     minHours: 0,
     maxHours: 24
   });
-  
-  useEffect(() => {
-    const fetchShifts = async () => {
-      if (!user || authLoading) {
-        return;
-      }
 
-      try {
-        setIsLoading(true);
-        
-        // For new users, start with empty array - no demo data
-        const storedShifts = localStorage.getItem(`userShifts_${user.id}`);
-        if (storedShifts) {
-          const parsedShifts = JSON.parse(storedShifts);
-          setShifts(parsedShifts.filter(shift => shift.userId === user.id));
-        } else {
-          // New user - start with empty shifts array
-          setShifts([]);
-        }
-      } catch (error) {
-        console.error('Error fetching shifts:', error);
-        setShifts([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    // Only fetch when we have a user and auth is not loading
-    if (user && !authLoading) {
-      fetchShifts();
+  // Handle DHL shift generation
+  const handleGenerateDHLShifts = useCallback(async () => {
+    if (!user?.id) {
+      toast.error('Uživatel není přihlášen');
+      return;
     }
-  }, [user, authLoading]);
 
-  const handleAddShift = async (shiftData) => {
+    setIsDHLGenerating(true);
     try {
-      const newShift = {
-        id: Date.now().toString(),
-        ...shiftData,
-        userId: user?.id
+      const startDate = new Date().toISOString().split('T')[0];
+      const endDate = new Date();
+      endDate.setDate(endDate.getDate() + 30);
+      
+      const result = await generateUserShifts(
+        user.id,
+        startDate,
+        endDate.toISOString().split('T')[0]
+      );
+
+      if (result.success) {
+        toast.success(`✅ ${result.message}`);
+        refreshShifts(); // Refresh to show new shifts
+      } else {
+        toast.error(`❌ ${result.message}`);
+      }
+    } catch (error) {
+      console.error('DHL shift generation error:', error);
+      toast.error('Chyba při generování DHL směn');
+    } finally {
+      setIsDHLGenerating(false);
+    }
+  }, [user?.id, refreshShifts]);
+
+  const handleAddShift = async (shiftData: any) => {
+    try {
+      const formData: ShiftFormData = {
+        type: shiftData.type,
+        start_time: shiftData.start_time,
+        end_time: shiftData.end_time,
+        notes: shiftData.notes
       };
       
-      const updatedShifts = [newShift, ...shifts];
-      setShifts(updatedShifts);
-      localStorage.setItem(`userShifts_${user.id}`, JSON.stringify(updatedShifts));
+      const success = await createShift(new Date(shiftData.date), formData);
       
-      setIsAddSheetOpen(false);
-      success(t('shiftAddedSuccessfully'));
+      if (success) {
+        setIsAddSheetOpen(false);
+      }
     } catch (err) {
       console.error('Error adding shift:', err);
-      error(t('errorAddingShift'));
     }
   };
 
-  const handleUpdateShift = async (id, updatedData) => {
+  const handleUpdateShift = async (shiftId: string, updatedData: any) => {
     try {
-      const updatedShifts = shifts.map(shift => 
-        shift.id === id ? { ...shift, ...updatedData } : shift
-      );
+      const formData: ShiftFormData = {
+        type: updatedData.type,
+        start_time: updatedData.start_time,
+        end_time: updatedData.end_time,
+        notes: updatedData.notes
+      };
       
-      setShifts(updatedShifts);
-      localStorage.setItem(`userShifts_${user.id}`, JSON.stringify(updatedShifts));
-      success(t('shiftUpdated'));
+      await updateShift(shiftId, formData);
     } catch (err) {
       console.error('Error updating shift:', err);
-      error(t('errorUpdatingShift'));
     }
   };
 
-  const handleDeleteShift = async (id) => {
+  const handleDeleteShift = async (shiftId: string) => {
     try {
-      const updatedShifts = shifts.filter(shift => shift.id !== id);
-      setShifts(updatedShifts);
-      localStorage.setItem(`userShifts_${user.id}`, JSON.stringify(updatedShifts));
-      success(t('shiftDeleted'));
+      await deleteShift(shiftId);
     } catch (err) {
       console.error('Error deleting shift:', err);
-      error(t('errorDeletingShift'));
     }
   };
 
@@ -130,17 +143,6 @@ const ShiftsContent = () => {
     
     // Apply shift type filter
     if (filters.shiftType !== 'all' && shift.type !== filters.shiftType) {
-      return false;
-    }
-    
-    // Apply location filter
-    if (filters.location !== 'all' && shift.location !== filters.location) {
-      return false;
-    }
-    
-    // Apply hours filters
-    const shiftHours = shift.hours || 0;
-    if (shiftHours < filters.minHours || shiftHours > filters.maxHours) {
       return false;
     }
     
@@ -188,6 +190,19 @@ const ShiftsContent = () => {
                 {t('filter')}
               </Button>
               
+              {userAssignment && (
+                <Button
+                  onClick={handleGenerateDHLShifts}
+                  disabled={isDHLGenerating}
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-2"
+                >
+                  <Zap className="h-4 w-4" />
+                  {isDHLGenerating ? 'Generuji...' : 'Generovat DHL směny'}
+                </Button>
+              )}
+              
               <Button 
                 size="sm" 
                 onClick={() => setIsAddSheetOpen(true)}
@@ -203,7 +218,7 @@ const ShiftsContent = () => {
             <ShiftCalendar 
               selectedDate={selectedDate}
               onSelectDate={setSelectedDate}
-              shifts={filteredShifts} 
+              shifts={filteredShifts as any} 
               onUpdateShift={handleUpdateShift}
               onDeleteShift={handleDeleteShift}
             />
@@ -211,14 +226,14 @@ const ShiftsContent = () => {
           
           <TabsContent value="list" className="mt-0">
             <ShiftsList 
-              shifts={filteredShifts} 
+              shifts={filteredShifts as any} 
               onUpdateShift={handleUpdateShift}
               onDeleteShift={handleDeleteShift}
             />
           </TabsContent>
           
           <TabsContent value="stats" className="mt-0">
-            <ShiftStats shifts={filteredShifts} />
+            <ShiftStats shifts={filteredShifts as any} />
           </TabsContent>
         </Tabs>
       </div>
