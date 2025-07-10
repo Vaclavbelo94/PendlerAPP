@@ -112,12 +112,14 @@ export const useDHLSetup = () => {
       console.log('Setup Data:', setupData);
 
       // Create DHL assignment with current Woche
+      // For annual rotation system, we use individual assignments (dhl_work_group_id = null)
+      // and rely on current_woche for rotation calculations
       const assignmentData = {
         user_id: user.id,
         dhl_position_id: setupData.positionId,
-        dhl_work_group_id: null, // Individual assignment
+        dhl_work_group_id: null, // Always null for individual assignments with annual plans
         assigned_at: new Date().toISOString(),
-        current_woche: setupData.currentWoche, // User's current Woche (1-15)
+        current_woche: setupData.currentWoche, // User's current Woche (1-15) for this calendar week
         is_active: true
       };
 

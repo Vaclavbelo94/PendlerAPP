@@ -259,15 +259,15 @@ export const generateUserShifts = async (userId: string, startDate: string, endD
     }
 
     // Get all active schedules for this position (annual plans)
-    // For annual plans, we need to fetch all schedules because each calendar week has its own schedule
-    // Now we search for schedules regardless of work_group_id since we support individual assignments
+    // For annual plans with individual assignments, we search by position only
+    // since work_group_id is null for individual assignments
     const { data: schedules, error: schedulesError } = await supabase
       .from('dhl_shift_schedules')
       .select('*')
       .eq('position_id', assignment.dhl_position_id)
-      .eq('base_woche', userWocheNumber)
       .eq('is_active', true)
       .eq('annual_plan', true)
+      .is('work_group_id', null) // Only get schedules for individual assignments
       .order('calendar_week', { ascending: true });
 
     console.log('=== SCHEDULES LOOKUP ===');
@@ -360,13 +360,21 @@ export const generateUserShifts = async (userId: string, startDate: string, endD
         }
       }
 
-      // Find shift data for this date using annual rotation logic with user's reference point
+      // Calculate user's rotated Woche for this specific date
+      // using simplified calendar-based rotation
+      const targetCalendarWeek = getCalendarWeek(currentDate);
+      const currentCalendarWeek = getCalendarWeek(new Date());
+      const wocheOffset = targetCalendarWeek - currentCalendarWeek;
+      const { calculateSimpleWoche } = await import('@/utils/dhl/simpleWocheCalculator');
+      const rotatedWoche = calculateSimpleWoche(userWocheNumber, wocheOffset);
+
+      console.log(`Date ${dateStr}: CW${targetCalendarWeek}, user base Woche ${userWocheNumber}, offset ${wocheOffset}, rotated Woche ${rotatedWoche}`);
+
+      // Find shift data for this date using rotated Woche
       const shiftData = findAnnualShiftForDate(
         combinedSchedule, 
-        userWocheNumber, 
-        currentDate,
-        referenceDate,
-        referenceWoche
+        rotatedWoche, 
+        currentDate
       );
 
       console.log(`Processing date ${dateStr} (CW${getCalendarWeek(currentDate)}):`, shiftData);
