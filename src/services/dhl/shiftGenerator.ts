@@ -356,8 +356,14 @@ export const generateUserShifts = async (userId: string, startDate: string, endD
         }
       }
 
-      // Find shift data for this date using annual rotation logic
-      const shiftData = findAnnualShiftForDate(combinedSchedule, userWocheNumber, currentDate);
+      // Find shift data for this date using annual rotation logic with user's reference point
+      const shiftData = findAnnualShiftForDate(
+        combinedSchedule, 
+        userWocheNumber, 
+        currentDate,
+        referenceDate,
+        referenceWoche
+      );
 
       console.log(`Processing date ${dateStr} (CW${getCalendarWeek(currentDate)}):`, shiftData);
 

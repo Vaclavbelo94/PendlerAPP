@@ -214,22 +214,36 @@ export const getCalendarWeek = (date: Date = new Date()): number => {
 };
 
 /**
- * Calculate rotated woche position for annual system
- * User with woche=1 in KW01 has woche1, in KW02 has woche2, etc.
+ * Calculate rotated woche position for annual system using user's reference point
+ * User with reference_woche=8 on reference_date should have that woche on that date
  */
-export const calculateRotatedWoche = (userWoche: number, calendarWeek: number): number => {
-  // Rotation: user starts at their assigned woche in week 1, then rotates
-  const rotated = ((userWoche - 1 + calendarWeek - 1) % 15) + 1;
+export const calculateRotatedWoche = (userWoche: number, calendarWeek: number, referenceCalendarWeek: number = 1): number => {
+  // Calculate offset from reference calendar week
+  const weekOffset = calendarWeek - referenceCalendarWeek;
+  
+  // Apply offset to user's woche with 15-week cycle
+  let rotated = userWoche + weekOffset;
+  
+  // Handle cycle boundaries (1-15)
+  while (rotated < 1) {
+    rotated += 15;
+  }
+  while (rotated > 15) {
+    rotated -= 15;
+  }
+  
   return rotated;
 };
 
 /**
- * Find shift data for annual rotational system
+ * Find shift data for annual rotational system using user's reference point
  */
 export const findAnnualShiftForDate = (
   annualSchedule: any, 
   userWoche: number, 
-  date: Date
+  date: Date,
+  referenceDate?: Date,
+  referenceWoche?: number
 ): any => {
   // Add null check for annualSchedule
   if (!annualSchedule || typeof annualSchedule !== 'object') {
@@ -238,7 +252,18 @@ export const findAnnualShiftForDate = (
   }
 
   const calendarWeek = getCalendarWeek(date);
-  const rotatedWoche = calculateRotatedWoche(userWoche, calendarWeek);
+  
+  // If we have reference data, use it for proper rotation calculation
+  let rotatedWoche: number;
+  if (referenceDate && referenceWoche !== undefined) {
+    const referenceCalendarWeek = getCalendarWeek(referenceDate);
+    rotatedWoche = calculateRotatedWoche(referenceWoche, calendarWeek, referenceCalendarWeek);
+    console.log(`Using reference point: referenceDate=${referenceDate.toISOString().split('T')[0]}, referenceWoche=${referenceWoche}, referenceCW=${referenceCalendarWeek}`);
+  } else {
+    // Fallback to old behavior for backward compatibility
+    rotatedWoche = calculateRotatedWoche(userWoche, calendarWeek);
+    console.log('Using fallback rotation (no reference point provided)');
+  }
   
   console.log(`findAnnualShiftForDate: Date ${date.toISOString().split('T')[0]}, CW${calendarWeek}, userWoche ${userWoche}, rotatedWoche ${rotatedWoche}`);
   
