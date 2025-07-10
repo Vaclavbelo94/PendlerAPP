@@ -1705,6 +1705,7 @@ export type Database = {
         Row: {
           assigned_at: string
           created_at: string
+          current_woche: number | null
           dhl_position_id: string
           dhl_work_group_id: string
           id: string
@@ -1717,6 +1718,7 @@ export type Database = {
         Insert: {
           assigned_at?: string
           created_at?: string
+          current_woche?: number | null
           dhl_position_id: string
           dhl_work_group_id: string
           id?: string
@@ -1729,6 +1731,7 @@ export type Database = {
         Update: {
           assigned_at?: string
           created_at?: string
+          current_woche?: number | null
           dhl_position_id?: string
           dhl_work_group_id?: string
           id?: string

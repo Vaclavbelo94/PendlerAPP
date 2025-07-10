@@ -13,15 +13,17 @@ import { useAuth } from '@/hooks/auth';
 import { useStandardizedToast } from '@/hooks/useStandardizedToast';
 import { supabase } from '@/integrations/supabase/client';
 import { generateUserShifts } from '@/services/dhl/shiftGenerator';
-import { calculateCurrentWoche, getCalendarWeek, calculateRotatedWoche } from '@/utils/dhl/wocheCalculator';
+import { calculateSimpleWoche } from '@/utils/dhl/simpleWocheCalculator';
+import { getCalendarWeek } from '@/utils/dhl/wocheCalculator';
 
 interface UserAssignment {
   id: string;
   dhl_position_id: string;
   dhl_work_group_id: string | null;
   is_active: boolean;
-  reference_date?: string;
-  reference_woche?: number;
+  current_woche?: number; // Simplified current Woche
+  reference_date?: string; // Legacy
+  reference_woche?: number; // Legacy
   dhl_positions: {
     name: string;
     position_type: string;
@@ -73,22 +75,12 @@ const ShiftsSettings: React.FC = () => {
     }
   };
 
-  // Calculate current rotated Woche
-  const getCurrentRotatedWoche = () => {
+  // Get current Woche - simplified
+  const getCurrentWoche = () => {
     if (!userAssignment) return null;
     
-    const currentCalendarWeek = getCalendarWeek(new Date());
-    
-    // Use reference_woche and reference_date if available
-    if (userAssignment.reference_woche !== undefined && userAssignment.reference_date) {
-      const referenceDate = new Date(userAssignment.reference_date);
-      const referenceCalendarWeek = getCalendarWeek(referenceDate);
-      return calculateRotatedWoche(userAssignment.reference_woche, currentCalendarWeek, referenceCalendarWeek);
-    }
-    
-    // Fallback to old behavior
-    const baseWoche = userAssignment.dhl_work_groups?.week_number || 1;
-    return calculateRotatedWoche(baseWoche, currentCalendarWeek);
+    // Use simplified current_woche system
+    return userAssignment.current_woche || userAssignment.reference_woche || 1;
   };
 
   const handleGenerateDHLShifts = useCallback(async () => {
@@ -175,7 +167,7 @@ const ShiftsSettings: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">Aktuální Woche:</span>
                     <Badge variant="default">
-                      Woche {getCurrentRotatedWoche() || 1}
+                      Woche {getCurrentWoche() || 1}
                     </Badge>
                   </div>
                   <div className="flex items-center justify-between">

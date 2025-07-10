@@ -65,8 +65,9 @@ export interface UserDHLAssignment {
   is_active: boolean;
   created_at: string;
   updated_at: string;
-  reference_date?: string;
-  reference_woche?: number;
+  current_woche?: number; // Simplified: user's current Woche (1-15)
+  reference_date?: string; // Legacy field
+  reference_woche?: number; // Legacy field
   // Relations
   dhl_position?: DHLPosition;
   dhl_work_group?: DHLWorkGroup;
@@ -184,10 +185,9 @@ export interface DHLImportValidation {
   };
 }
 
-// Extended UserDHLAssignment with reference tracking
+// Extended UserDHLAssignment with current woche tracking
 export interface ExtendedUserDHLAssignment extends UserDHLAssignment {
-  reference_date?: string;
-  reference_woche?: number;
+  current_woche?: number;
 }
 
 // Annual plan import data structure

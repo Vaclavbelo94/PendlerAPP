@@ -125,8 +125,8 @@ export default function DHLSetup() {
           <Alert className="mb-6">
             <Info className="h-4 w-4" />
             <AlertDescription>
-              <strong>Individuální rotace:</strong> Zadejte vaše aktuální Woche číslo pro tento kalendářní týden. 
-              Systém bude automaticky rotovat vaše směny podle vašeho osobního cyklu.
+              <strong>Aktuální Woche:</strong> Zadejte jakou máte Woche tento týden (KW{getCalendarWeek(new Date())}). 
+              Systém automaticky vypočítá směny pro následující týdny.
             </AlertDescription>
           </Alert>
 

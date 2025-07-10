@@ -1,5 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
-import { calculateCurrentWoche, findShiftForDate } from '@/utils/dhl/wocheCalculator';
+import { getWocheForDate } from '@/utils/dhl/simpleWocheCalculator';
+import { findShiftForDate } from '@/utils/dhl/wocheCalculator';
 import { toast } from 'sonner';
 
 interface GenerateShiftsParams {
@@ -109,23 +110,20 @@ export const generateShiftsFromSchedule = async (params: GenerateShiftsParams): 
       while (currentDate <= endDate) {
         const dateStr = currentDate.toISOString().split('T')[0];
         
-        // Calculate Woche for this date
-        const wocheCalc = calculateCurrentWoche(
-          { referenceDate, referenceWoche },
-          new Date(currentDate)
-        );
+        // Calculate Woche for this date using simplified method
+        const currentWoche = getWocheForDate(referenceWoche, new Date(currentDate));
 
-        console.log('Processing date:', dateStr, 'Woche:', wocheCalc.currentWoche);
+        console.log('Processing date:', dateStr, 'Woche:', currentWoche);
 
         // Get position's cycle weeks for rotation checking
         const positionCycleWeeks = schedule.dhl_positions?.cycle_weeks || [];
         
         // Find shift data for this date and Woche (with rotation logic)
-        const shiftData = findShiftForDate(schedule.schedule_data, wocheCalc.currentWoche, currentDate, positionCycleWeeks);
+        const shiftData = findShiftForDate(schedule.schedule_data, currentWoche, currentDate, positionCycleWeeks);
 
         // If shiftData is explicitly null, user has day off - skip
         if (shiftData === null) {
-          console.log('Day off for', dateStr, 'Woche:', wocheCalc.currentWoche);
+          console.log('Day off for', dateStr, 'Woche:', currentWoche);
           // Move to next day without creating shift
         } else if (shiftData && shiftData.start_time && shiftData.end_time) {
           console.log('Found shift data for', dateStr, ':', shiftData);
@@ -174,7 +172,7 @@ export const generateShiftsFromSchedule = async (params: GenerateShiftsParams): 
                 original_dhl_data: {
                   start_time: shiftData.start_time,
                   end_time: shiftData.end_time,
-                  woche: wocheCalc.currentWoche,
+                  woche: currentWoche,
                   schedule_id: schedule.id,
                   generated_at: new Date().toISOString()
                 }
@@ -243,8 +241,8 @@ export const generateUserShifts = async (userId: string, startDate: string, endD
 
     console.log('Found user assignment:', assignment);
     
-    // Get user's Woche number - use individual reference or fallback to work group
-    const userWocheNumber = assignment.reference_woche || assignment.dhl_work_groups?.week_number;
+    // Get user's Woche number - use simplified current_woche or fallback
+    const userWocheNumber = assignment.current_woche || assignment.reference_woche || assignment.dhl_work_groups?.week_number;
     console.log('User Woche number:', userWocheNumber, '(from reference_woche:', assignment.reference_woche, ', work_group:', assignment.dhl_work_groups?.week_number, ')');
 
     if (!userWocheNumber) {

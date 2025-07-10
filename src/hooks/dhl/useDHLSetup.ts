@@ -7,7 +7,7 @@ import { isDHLEmployeeSync } from '@/utils/dhlAuthUtils';
 interface DHLSetupData {
   personalNumber: string;
   positionId: string;
-  currentWoche: number;
+  currentWoche: number; // User's current Woche (1-15)
 }
 
 interface DHLSetupState {
@@ -85,15 +85,13 @@ export const useDHLSetup = () => {
       console.log('User ID:', user.id);
       console.log('Setup Data:', setupData);
 
-      // Create DHL assignment with individual reference
-      const today = new Date();
+      // Create DHL assignment with current Woche
       const assignmentData = {
         user_id: user.id,
         dhl_position_id: setupData.positionId,
         dhl_work_group_id: null, // Individual assignment
-        assigned_at: today.toISOString(),
-        reference_date: today.toISOString().split('T')[0], // Current date as reference
-        reference_woche: setupData.currentWoche, // User's current Woche
+        assigned_at: new Date().toISOString(),
+        current_woche: setupData.currentWoche, // User's current Woche (1-15)
         is_active: true
       };
 
