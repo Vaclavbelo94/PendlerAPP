@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Settings as SettingsIcon, User, Bell, Palette, Globe, Database, Shield, Smartphone } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Settings as SettingsIcon, User, Bell, Palette, Globe, Database, Shield, Smartphone, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 import { useTranslation } from 'react-i18next';
@@ -13,6 +13,7 @@ import LanguageSettings from '../LanguageSettings';
 import SecuritySettings from '../SecuritySettings';
 import DeviceSettings from '../DeviceSettings';
 import DataSettings from '../DataSettings';
+import ShiftsSettings from '../ShiftsSettings';
 
 interface SettingsMobileCarouselProps {
   activeTab: string;
@@ -37,7 +38,8 @@ export const SettingsMobileCarousel: React.FC<SettingsMobileCarouselProps> = ({
     { id: 'language', label: t('language'), icon: Globe },
     { id: 'security', label: t('security'), icon: Shield },
     { id: 'device', label: t('device'), icon: Smartphone },
-    { id: 'data', label: t('data'), icon: Database }
+    { id: 'data', label: t('data'), icon: Database },
+    { id: 'shifts', label: 'Směny', icon: Clock }
   ];
 
   const tabIds = tabs.map(tab => tab.id);
@@ -78,6 +80,8 @@ export const SettingsMobileCarousel: React.FC<SettingsMobileCarouselProps> = ({
         return <DeviceSettings />;
       case 'data':
         return <DataSettings />;
+      case 'shifts':
+        return <ShiftsSettings />;
       default:
         return <GeneralSettings />;
     }
