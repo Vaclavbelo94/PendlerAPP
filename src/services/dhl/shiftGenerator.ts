@@ -227,8 +227,7 @@ export const generateUserShifts = async (userId: string, startDate: string, endD
       .select(`
         *,
         dhl_positions(id, name, position_type, cycle_weeks),
-        dhl_work_groups(id, name, week_number),
-        profiles!user_dhl_assignments_user_id_fkey(id, username, email)
+        dhl_work_groups(id, name, week_number)
       `)
       .eq('user_id', userId)
       .eq('is_active', true)
