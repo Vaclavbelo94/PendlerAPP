@@ -1707,7 +1707,7 @@ export type Database = {
           created_at: string
           current_woche: number | null
           dhl_position_id: string
-          dhl_work_group_id: string
+          dhl_work_group_id: string | null
           id: string
           is_active: boolean
           reference_date: string | null
@@ -1720,7 +1720,7 @@ export type Database = {
           created_at?: string
           current_woche?: number | null
           dhl_position_id: string
-          dhl_work_group_id: string
+          dhl_work_group_id?: string | null
           id?: string
           is_active?: boolean
           reference_date?: string | null
@@ -1733,7 +1733,7 @@ export type Database = {
           created_at?: string
           current_woche?: number | null
           dhl_position_id?: string
-          dhl_work_group_id?: string
+          dhl_work_group_id?: string | null
           id?: string
           is_active?: boolean
           reference_date?: string | null
