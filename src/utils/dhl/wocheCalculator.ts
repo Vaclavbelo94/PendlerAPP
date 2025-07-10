@@ -231,6 +231,12 @@ export const findAnnualShiftForDate = (
   userWoche: number, 
   date: Date
 ): any => {
+  // Add null check for annualSchedule
+  if (!annualSchedule || typeof annualSchedule !== 'object') {
+    console.log('Invalid annualSchedule provided:', annualSchedule);
+    return null;
+  }
+
   const calendarWeek = getCalendarWeek(date);
   const rotatedWoche = calculateRotatedWoche(userWoche, calendarWeek);
   
@@ -244,11 +250,11 @@ export const findAnnualShiftForDate = (
   console.log('Available calendar weeks:', Object.keys(annualSchedule));
   
   // Check if we have data for this calendar week
-  if (annualSchedule[calendarWeekKey]) {
+  if (annualSchedule[calendarWeekKey] && typeof annualSchedule[calendarWeekKey] === 'object') {
     console.log(`Found data for ${calendarWeekKey}:`, Object.keys(annualSchedule[calendarWeekKey]));
     
     // Check if we have data for this woche group
-    if (annualSchedule[calendarWeekKey][wocheKey]) {
+    if (annualSchedule[calendarWeekKey][wocheKey] && typeof annualSchedule[calendarWeekKey][wocheKey] === 'object') {
       const dayOfWeek = date.getDay();
       const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
       const dayName = dayNames[dayOfWeek];

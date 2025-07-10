@@ -13,12 +13,15 @@ import { useAuth } from '@/hooks/auth';
 import { useStandardizedToast } from '@/hooks/useStandardizedToast';
 import { supabase } from '@/integrations/supabase/client';
 import { generateUserShifts } from '@/services/dhl/shiftGenerator';
+import { calculateCurrentWoche, getCalendarWeek, calculateRotatedWoche } from '@/utils/dhl/wocheCalculator';
 
 interface UserAssignment {
   id: string;
   dhl_position_id: string;
   dhl_work_group_id: string;
   is_active: boolean;
+  reference_date?: string;
+  reference_woche?: number;
   dhl_positions: {
     name: string;
     position_type: string;
@@ -68,6 +71,16 @@ const ShiftsSettings: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Calculate current rotated Woche
+  const getCurrentRotatedWoche = () => {
+    if (!userAssignment) return null;
+    
+    const currentCalendarWeek = getCalendarWeek(new Date());
+    const baseWoche = userAssignment.reference_woche || userAssignment.dhl_work_groups.week_number;
+    
+    return calculateRotatedWoche(baseWoche, currentCalendarWeek);
   };
 
   const handleGenerateDHLShifts = useCallback(async () => {
@@ -150,9 +163,21 @@ const ShiftsSettings: React.FC = () => {
                     </Badge>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">Číslo týdne:</span>
+                    <span className="text-sm font-medium">Základní Woche:</span>
                     <Badge variant="outline">
                       Woche {userAssignment.dhl_work_groups.week_number}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">Aktuální Woche:</span>
+                    <Badge variant="default">
+                      Woche {getCurrentRotatedWoche() || userAssignment.dhl_work_groups.week_number}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">Kalendářní týden:</span>
+                    <Badge variant="secondary">
+                      KW{getCalendarWeek(new Date()).toString().padStart(2, '0')}
                     </Badge>
                   </div>
                 </div>
