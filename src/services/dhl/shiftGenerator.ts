@@ -331,45 +331,47 @@ export const generateUserShifts = async (userId: string, startDate: string, endD
 
     console.log('Reference point for rotation:', referenceDate, 'Woche', referenceWoche);
 
+    // Import helper functions at the top for better performance
+    const { findAnnualShiftForDate, getCalendarWeek } = await import('@/utils/dhl/wocheCalculator');
+
+    // Create a combined schedule object from all calendar weeks
+    const combinedSchedule: Record<string, any> = {};
+    
+    if (!schedules || schedules.length === 0) {
+      console.error('No schedules available for processing');
+      return {
+        success: false,
+        message: 'Žádné aktivní plány pro generování směn'
+      };
+    }
+    
+    // Build combined schedule once before the loop
+    schedules.forEach(schedule => {
+      if (schedule?.calendar_week && schedule?.schedule_data && typeof schedule.schedule_data === 'object') {
+        const calendarWeekKey = `KW${schedule.calendar_week.toString().padStart(2, '0')}`;
+        combinedSchedule[calendarWeekKey] = schedule.schedule_data;
+        console.log(`Added schedule for ${calendarWeekKey}:`, schedule.schedule_data ? Object.keys(schedule.schedule_data) : 'null');
+      }
+    });
+
+    console.log('=== COMBINED SCHEDULE STRUCTURE ===');
+    console.log('Available calendar weeks:', Object.keys(combinedSchedule));
+    
+    // Validate that we have valid schedule data
+    if (Object.keys(combinedSchedule).length === 0) {
+      console.error('No valid schedule data found in any calendar week');
+      return {
+        success: false,
+        message: 'Nenalezena platná data pro roční plán směn'
+      };
+    }
+
     while (currentDate <= end) {
       const dateStr = currentDate.toISOString().split('T')[0];
       
-      // Import findAnnualShiftForDate from wocheCalculator
-      const { findAnnualShiftForDate, getCalendarWeek } = await import('@/utils/dhl/wocheCalculator');
-      
-      // Create a combined schedule object from all calendar weeks
-      const combinedSchedule: any = {};
-      if (!schedules || schedules.length === 0) {
-        console.error('No schedules available for combined schedule creation');
-        currentDate.setDate(currentDate.getDate() + 1);
-        continue;
-      }
-      
-      schedules.forEach(schedule => {
-        if (schedule?.calendar_week && schedule?.schedule_data) {
-          const calendarWeekKey = `KW${schedule.calendar_week.toString().padStart(2, '0')}`;
-          combinedSchedule[calendarWeekKey] = schedule.schedule_data;
-          console.log(`Added schedule for ${calendarWeekKey}:`, Object.keys(schedule.schedule_data));
-        }
-      });
-
-      console.log('=== COMBINED SCHEDULE STRUCTURE ===');
-      console.log('Available calendar weeks:', Object.keys(combinedSchedule));
-      
-      // Log sample structure for first available week
-      const firstWeekKey = Object.keys(combinedSchedule)[0];
-      if (firstWeekKey && combinedSchedule[firstWeekKey]) {
-        console.log(`Sample structure for ${firstWeekKey}:`, Object.keys(combinedSchedule[firstWeekKey]));
-        const firstWocheKey = Object.keys(combinedSchedule[firstWeekKey])[0];
-        if (firstWocheKey) {
-          console.log(`Sample days for ${firstWeekKey}.${firstWocheKey}:`, Object.keys(combinedSchedule[firstWeekKey][firstWocheKey]));
-        }
-      }
-
-      // Calculate user's rotated Woche for this specific date
-      // using simplified calendar-based rotation
-      if (!userWocheNumber) {
-        console.error('userWocheNumber is null/undefined, skipping date:', dateStr);
+      // Validate userWocheNumber before processing
+      if (!userWocheNumber || userWocheNumber < 1 || userWocheNumber > 15) {
+        console.error('Invalid userWocheNumber:', userWocheNumber, 'skipping date:', dateStr);
         currentDate.setDate(currentDate.getDate() + 1);
         continue;
       }
@@ -381,18 +383,13 @@ export const generateUserShifts = async (userId: string, startDate: string, endD
 
       console.log(`Date ${dateStr}: CW${targetCalendarWeek}, user base Woche ${userWocheNumber}, offset ${wocheOffset}, rotated Woche ${rotatedWoche}`);
 
-      // Validate combinedSchedule before use
-      if (!combinedSchedule || Object.keys(combinedSchedule).length === 0) {
-        console.error('combinedSchedule is empty or null, skipping date:', dateStr);
-        currentDate.setDate(currentDate.getDate() + 1);
-        continue;
-      }
-
-      // Find shift data for this date using rotated Woche
+      // Find shift data for this date using rotated Woche with reference point
       const shiftData = findAnnualShiftForDate(
         combinedSchedule, 
         rotatedWoche, 
-        currentDate
+        currentDate,
+        referenceDate,
+        referenceWoche
       );
 
       console.log(`Processing date ${dateStr} (CW${getCalendarWeek(currentDate)}):`, shiftData);
