@@ -234,24 +234,44 @@ export const findAnnualShiftForDate = (
   const calendarWeek = getCalendarWeek(date);
   const rotatedWoche = calculateRotatedWoche(userWoche, calendarWeek);
   
+  console.log(`findAnnualShiftForDate: Date ${date.toISOString().split('T')[0]}, CW${calendarWeek}, userWoche ${userWoche}, rotatedWoche ${rotatedWoche}`);
+  
   // Format calendar week as KW01, KW02, etc.
   const calendarWeekKey = `KW${calendarWeek.toString().padStart(2, '0')}`;
   const wocheKey = `woche${rotatedWoche}`;
   
-  // Check if we have data for this calendar week and woche group
-  if (annualSchedule[calendarWeekKey] && annualSchedule[calendarWeekKey][wocheKey]) {
-    const dayOfWeek = date.getDay();
-    const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-    const dayName = dayNames[dayOfWeek];
+  console.log(`Looking for: ${calendarWeekKey}.${wocheKey}`);
+  console.log('Available calendar weeks:', Object.keys(annualSchedule));
+  
+  // Check if we have data for this calendar week
+  if (annualSchedule[calendarWeekKey]) {
+    console.log(`Found data for ${calendarWeekKey}:`, Object.keys(annualSchedule[calendarWeekKey]));
     
-    const shiftData = annualSchedule[calendarWeekKey][wocheKey][dayName];
-    
-    // Return null if explicitly marked as day off or no data
-    if (shiftData === null || shiftData === undefined || shiftData.is_off) {
-      return null;
+    // Check if we have data for this woche group
+    if (annualSchedule[calendarWeekKey][wocheKey]) {
+      const dayOfWeek = date.getDay();
+      const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+      const dayName = dayNames[dayOfWeek];
+      
+      console.log(`Found woche data for ${wocheKey}, looking for day: ${dayName}`);
+      console.log('Available days:', Object.keys(annualSchedule[calendarWeekKey][wocheKey]));
+      
+      const shiftData = annualSchedule[calendarWeekKey][wocheKey][dayName];
+      
+      console.log(`Shift data for ${dayName}:`, shiftData);
+      
+      // Return null if explicitly marked as day off or no data
+      if (shiftData === null || shiftData === undefined || shiftData?.is_off === true) {
+        console.log('Day off detected');
+        return null;
+      }
+      
+      return shiftData;
+    } else {
+      console.log(`No data found for woche group ${wocheKey}`);
     }
-    
-    return shiftData;
+  } else {
+    console.log(`No data found for calendar week ${calendarWeekKey}`);
   }
   
   return null; // No shift data found

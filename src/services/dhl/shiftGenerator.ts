@@ -255,34 +255,148 @@ export const generateUserShifts = async (userId: string, startDate: string, endD
       };
     }
 
-    // Find active schedule for this position
-    // For annual plans, search by position_id and base_woche (work_group_id should be null)
-    const { data: schedule, error: scheduleError } = await supabase
+    // Get all active schedules for this position (annual plans)
+    // For annual plans, we need to fetch all schedules because each calendar week has its own schedule
+    const { data: schedules, error: schedulesError } = await supabase
       .from('dhl_shift_schedules')
       .select('*')
       .eq('position_id', assignment.dhl_position_id)
       .eq('base_woche', userWocheNumber)
       .eq('is_active', true)
+      .eq('annual_plan', true)
       .is('work_group_id', null) // Annual plans have work_group_id = null
-      .order('created_at', { ascending: false })
-      .maybeSingle();
+      .order('calendar_week', { ascending: true });
 
-    console.log('Schedule query result:', { schedule, scheduleError });
+    console.log('Schedules query result:', { schedules, schedulesError });
 
-    if (scheduleError || !schedule) {
+    if (schedulesError || !schedules || schedules.length === 0) {
       return {
         success: false,
-        message: 'Nebyl nalezen aktivní plán směn pro tuto pozici a pracovní skupinu'
+        message: 'Nebyl nalezen aktivní roční plán směn pro tuto pozici a pracovní skupinu'
       };
     }
 
-    // Use the schedule-based generation
-    return await generateShiftsFromSchedule({
-      scheduleId: schedule.id,
-      startDate,
-      endDate,
-      targetUserId: userId
-    });
+    console.log(`Found ${schedules.length} annual schedules for user Woche ${userWocheNumber}`);
+
+    // Now generate shifts for the date range using annual rotation logic
+    let generatedCount = 0;
+    let skippedCount = 0;
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const currentDate = new Date(start);
+
+    // Get reference point for rotation calculation
+    const referenceDate = assignment.reference_date ? 
+      new Date(assignment.reference_date) : 
+      new Date(); // Use current date as fallback
+    const referenceWoche = assignment.reference_woche !== null ? 
+      assignment.reference_woche : 
+      userWocheNumber;
+
+    console.log('Reference point for rotation:', referenceDate, 'Woche', referenceWoche);
+
+    while (currentDate <= end) {
+      const dateStr = currentDate.toISOString().split('T')[0];
+      
+      // Import findAnnualShiftForDate from wocheCalculator
+      const { findAnnualShiftForDate, getCalendarWeek } = await import('@/utils/dhl/wocheCalculator');
+      
+      // Create a combined schedule object from all calendar weeks
+      const combinedSchedule: any = {};
+      schedules.forEach(schedule => {
+        if (schedule.calendar_week && schedule.schedule_data) {
+          const calendarWeekKey = `KW${schedule.calendar_week.toString().padStart(2, '0')}`;
+          combinedSchedule[calendarWeekKey] = schedule.schedule_data;
+        }
+      });
+
+      console.log('Combined schedule structure:', Object.keys(combinedSchedule));
+
+      // Find shift data for this date using annual rotation logic
+      const shiftData = findAnnualShiftForDate(combinedSchedule, userWocheNumber, currentDate);
+
+      console.log(`Processing date ${dateStr} (CW${getCalendarWeek(currentDate)}):`, shiftData);
+
+      // If shiftData is explicitly null, user has day off - skip
+      if (shiftData === null) {
+        console.log('Day off for', dateStr);
+      } else if (shiftData && shiftData.start_time && shiftData.end_time) {
+        console.log('Found shift data for', dateStr, ':', shiftData);
+
+        // Check if shift already exists
+        const { data: existingShift, error: checkError } = await supabase
+          .from('shifts')
+          .select('id')
+          .eq('user_id', userId)
+          .eq('date', dateStr)
+          .maybeSingle();
+
+        if (checkError) {
+          console.error('Error checking existing shift:', checkError);
+          currentDate.setDate(currentDate.getDate() + 1);
+          continue;
+        }
+
+        if (existingShift) {
+          console.log('Shift already exists for', dateStr, '- skipping');
+          skippedCount++;
+        } else {
+          // Determine shift type based on start time
+          const startHour = parseInt(shiftData.start_time.split(':')[0]);
+          let shiftType: 'morning' | 'afternoon' | 'night' = 'morning';
+          
+          if (startHour >= 6 && startHour < 14) {
+            shiftType = 'morning';
+          } else if (startHour >= 14 && startHour < 22) {
+            shiftType = 'afternoon';
+          } else {
+            shiftType = 'night';
+          }
+
+          // Create new shift
+          const { error: insertError } = await supabase
+            .from('shifts')
+            .insert([{
+              user_id: userId,
+              date: dateStr,
+              type: shiftType,
+              start_time: shiftData.start_time,
+              end_time: shiftData.end_time,
+              dhl_position_id: assignment.dhl_position_id,
+              dhl_work_group_id: assignment.dhl_work_group_id,
+              is_dhl_managed: true,
+              original_dhl_data: {
+                start_time: shiftData.start_time,
+                end_time: shiftData.end_time,
+                user_woche: userWocheNumber,
+                calendar_week: getCalendarWeek(currentDate),
+                generated_at: new Date().toISOString()
+              }
+            }]);
+
+          if (insertError) {
+            console.error('Error creating shift:', insertError);
+          } else {
+            console.log('Created shift for', dateStr);
+            generatedCount++;
+          }
+        }
+      }
+
+      // Move to next day
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    console.log('=== GENERATION COMPLETE ===');
+    console.log('Generated:', generatedCount, 'Skipped:', skippedCount);
+
+    return {
+      success: true,
+      message: `Úspěšně vygenerováno ${generatedCount} směn${skippedCount > 0 ? `, přeskočeno ${skippedCount} existujících` : ''}`,
+      generatedCount,
+      skippedCount
+    };
 
   } catch (error) {
     console.error('Error generating user shifts:', error);
