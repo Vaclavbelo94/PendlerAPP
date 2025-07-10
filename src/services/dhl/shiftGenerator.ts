@@ -1,5 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
-import { getWocheForDate } from '@/utils/dhl/simpleWocheCalculator';
+import { getWocheForDate, calculateSimpleWoche } from '@/utils/dhl/simpleWocheCalculator';
 import { findShiftForDate } from '@/utils/dhl/wocheCalculator';
 import { toast } from 'sonner';
 
@@ -249,7 +249,7 @@ export const generateUserShifts = async (userId: string, startDate: string, endD
     
     // Get user's Woche number - use simplified current_woche or fallback
     const userWocheNumber = assignment.current_woche || assignment.reference_woche || assignment.dhl_work_groups?.week_number;
-    console.log('User Woche number:', userWocheNumber, '(from reference_woche:', assignment.reference_woche, ', work_group:', assignment.dhl_work_groups?.week_number, ')');
+    console.log('User Woche number:', userWocheNumber, '(from current_woche:', assignment.current_woche, ', reference_woche:', assignment.reference_woche, ', work_group:', assignment.dhl_work_groups?.week_number, ')');
 
     if (!userWocheNumber) {
       return {
@@ -339,8 +339,14 @@ export const generateUserShifts = async (userId: string, startDate: string, endD
       
       // Create a combined schedule object from all calendar weeks
       const combinedSchedule: any = {};
+      if (!schedules || schedules.length === 0) {
+        console.error('No schedules available for combined schedule creation');
+        currentDate.setDate(currentDate.getDate() + 1);
+        continue;
+      }
+      
       schedules.forEach(schedule => {
-        if (schedule.calendar_week && schedule.schedule_data) {
+        if (schedule?.calendar_week && schedule?.schedule_data) {
           const calendarWeekKey = `KW${schedule.calendar_week.toString().padStart(2, '0')}`;
           combinedSchedule[calendarWeekKey] = schedule.schedule_data;
           console.log(`Added schedule for ${calendarWeekKey}:`, Object.keys(schedule.schedule_data));
@@ -362,13 +368,25 @@ export const generateUserShifts = async (userId: string, startDate: string, endD
 
       // Calculate user's rotated Woche for this specific date
       // using simplified calendar-based rotation
+      if (!userWocheNumber) {
+        console.error('userWocheNumber is null/undefined, skipping date:', dateStr);
+        currentDate.setDate(currentDate.getDate() + 1);
+        continue;
+      }
+      
       const targetCalendarWeek = getCalendarWeek(currentDate);
       const currentCalendarWeek = getCalendarWeek(new Date());
       const wocheOffset = targetCalendarWeek - currentCalendarWeek;
-      const { calculateSimpleWoche } = await import('@/utils/dhl/simpleWocheCalculator');
       const rotatedWoche = calculateSimpleWoche(userWocheNumber, wocheOffset);
 
       console.log(`Date ${dateStr}: CW${targetCalendarWeek}, user base Woche ${userWocheNumber}, offset ${wocheOffset}, rotated Woche ${rotatedWoche}`);
+
+      // Validate combinedSchedule before use
+      if (!combinedSchedule || Object.keys(combinedSchedule).length === 0) {
+        console.error('combinedSchedule is empty or null, skipping date:', dateStr);
+        currentDate.setDate(currentDate.getDate() + 1);
+        continue;
+      }
 
       // Find shift data for this date using rotated Woche
       const shiftData = findAnnualShiftForDate(

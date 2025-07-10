@@ -21,7 +21,8 @@ const DHLProfileSettings = () => {
   const [editData, setEditData] = useState({
     personalNumber: '',
     positionId: userAssignment?.dhl_position_id || '',
-    workGroupId: userAssignment?.dhl_work_group_id || ''
+    workGroupId: userAssignment?.dhl_work_group_id || '',
+    currentWoche: userAssignment?.current_woche || null
   });
 
   const currentPosition = positions.find(p => p.id === userAssignment?.dhl_position_id);
@@ -31,7 +32,8 @@ const DHLProfileSettings = () => {
     setEditData({
       personalNumber: user?.user_metadata?.personal_number || '',
       positionId: userAssignment?.dhl_position_id || '',
-      workGroupId: userAssignment?.dhl_work_group_id || ''
+      workGroupId: userAssignment?.dhl_work_group_id || '',
+      currentWoche: userAssignment?.current_woche || null
     });
     setIsEditing(true);
   };
@@ -44,13 +46,21 @@ const DHLProfileSettings = () => {
 
     try {
       // Update user assignment
+      const updateData: any = {
+        dhl_position_id: editData.positionId,
+        updated_at: new Date().toISOString()
+      };
+      
+      // For individual assignments, update current_woche; for group assignments, update work_group_id
+      if (!userAssignment?.dhl_work_group_id) {
+        updateData.current_woche = editData.currentWoche;
+      } else {
+        updateData.dhl_work_group_id = editData.workGroupId;
+      }
+
       const { error: assignmentError } = await supabase
         .from('user_dhl_assignments')
-        .update({
-          dhl_position_id: editData.positionId,
-          dhl_work_group_id: editData.workGroupId,
-          updated_at: new Date().toISOString()
-        })
+        .update(updateData)
         .eq('id', userAssignment.id);
 
       if (assignmentError) {
@@ -171,31 +181,59 @@ const DHLProfileSettings = () => {
 
               <Separator />
 
-              {/* Work Group */}
-              <div className="space-y-2">
-                <Label>{t('dhl:workWeek')}</Label>
-                {isEditing ? (
-                  <Select
-                    value={editData.workGroupId}
-                    onValueChange={(value) => setEditData(prev => ({ ...prev, workGroupId: value }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder={t('dhl:workWeekPlaceholder')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {workGroups.map((workGroup) => (
-                        <SelectItem key={workGroup.id} value={workGroup.id}>
-                          {workGroup.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                ) : (
-                  <div className="p-2 bg-muted rounded-md">
-                    {currentWorkGroup?.name || t('profile:notSet')}
-                  </div>
-                )}
-              </div>
+              {/* Current Woche - for individual assignments */}
+              {!userAssignment?.dhl_work_group_id ? (
+                <div className="space-y-2">
+                  <Label>{t('dhl:currentWoche')}</Label>
+                  {isEditing ? (
+                    <Select
+                      value={editData.currentWoche?.toString() || ''}
+                      onValueChange={(value) => setEditData(prev => ({ ...prev, currentWoche: parseInt(value) }))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Vyberte aktuální Woche" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Array.from({ length: 15 }, (_, i) => i + 1).map((woche) => (
+                          <SelectItem key={woche} value={woche.toString()}>
+                            Woche {woche}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <div className="p-2 bg-muted rounded-md">
+                      {userAssignment?.current_woche ? `Woche ${userAssignment.current_woche}` : t('profile:notSet')}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                /* Work Group - for group assignments */
+                <div className="space-y-2">
+                  <Label>{t('dhl:workWeek')}</Label>
+                  {isEditing ? (
+                    <Select
+                      value={editData.workGroupId}
+                      onValueChange={(value) => setEditData(prev => ({ ...prev, workGroupId: value }))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder={t('dhl:workWeekPlaceholder')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {workGroups.map((workGroup) => (
+                          <SelectItem key={workGroup.id} value={workGroup.id}>
+                            {workGroup.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <div className="p-2 bg-muted rounded-md">
+                      {currentWorkGroup?.name || t('profile:notSet')}
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Assignment Info */}
               <Separator />

@@ -26,12 +26,13 @@ interface DHLUserAssignment {
   id: string;
   user_id: string;
   dhl_position_id: string;
-  dhl_work_group_id: string;
+  dhl_work_group_id: string | null;
   assigned_at: string;
   created_at: string;
   updated_at: string;
   reference_date?: string;
   reference_woche?: number;
+  current_woche?: number | null;
   is_active: boolean;
   dhl_position?: DHLPosition;
   dhl_work_group?: DHLWorkGroup;
