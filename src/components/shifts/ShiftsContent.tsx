@@ -163,7 +163,14 @@ const ShiftsContent = () => {
 
   // Show empty state for new users
   if (shifts.length === 0) {
-    return <EmptyShiftsState onAddShift={() => setIsAddSheetOpen(true)} />;
+    return (
+      <EmptyShiftsState 
+        onAddShift={() => setIsAddSheetOpen(true)}
+        userAssignment={userAssignment}
+        onGenerateDHLShifts={handleGenerateDHLShifts}
+        isDHLGenerating={isDHLGenerating}
+      />
+    );
   }
 
   return (
