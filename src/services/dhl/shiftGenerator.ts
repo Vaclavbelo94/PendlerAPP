@@ -29,7 +29,7 @@ export const generateShiftsFromSchedule = async (params: GenerateShiftsParams): 
       .from('dhl_shift_schedules')
       .select(`
         *,
-        dhl_positions(id, name, position_type),
+        dhl_positions(id, name, position_type, cycle_weeks),
         dhl_work_groups(id, name, week_number)
       `)
       .eq('id', params.scheduleId)
@@ -117,8 +117,11 @@ export const generateShiftsFromSchedule = async (params: GenerateShiftsParams): 
 
         console.log('Processing date:', dateStr, 'Woche:', wocheCalc.currentWoche);
 
-        // Find shift data for this date and Woche
-        const shiftData = findShiftForDate(schedule.schedule_data, wocheCalc.currentWoche, currentDate);
+        // Get position's cycle weeks for rotation checking
+        const positionCycleWeeks = schedule.dhl_positions?.cycle_weeks || [];
+        
+        // Find shift data for this date and Woche (with rotation logic)
+        const shiftData = findShiftForDate(schedule.schedule_data, wocheCalc.currentWoche, currentDate, positionCycleWeeks);
 
         // If shiftData is explicitly null, user has day off - skip
         if (shiftData === null) {
@@ -223,7 +226,7 @@ export const generateUserShifts = async (userId: string, startDate: string, endD
       .from('user_dhl_assignments')
       .select(`
         *,
-        dhl_positions(id, name, position_type),
+        dhl_positions(id, name, position_type, cycle_weeks),
         dhl_work_groups(id, name, week_number),
         profiles!user_dhl_assignments_user_id_fkey(id, username, email)
       `)

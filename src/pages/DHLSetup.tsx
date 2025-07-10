@@ -237,11 +237,43 @@ const DHLSetup = () => {
                 </SelectTrigger>
                 <SelectContent>
                   {positions.length > 0 ? (
-                    positions.map((position) => (
-                      <SelectItem key={position.id} value={position.id}>
-                        {position.name}
-                      </SelectItem>
-                    ))
+                    (() => {
+                      // Group positions by category
+                      const grouped = positions.reduce((acc: Record<string, typeof positions>, position) => {
+                        let category = 'Ostatní';
+                        if (position.name.includes('Verlader') || position.name.includes('Dpl')) category = 'Verlader';
+                        else if (position.name.includes('Wechselschicht')) category = 'Wechselschicht';
+                        else if (position.name.includes('SoEst')) category = 'SoEst';
+                        else if (position.name.includes('TeamL')) category = 'Vedoucí';
+                        else if (position.name.includes('Rangierer')) category = 'Rangierer';
+                        else if (position.name.includes('Technik') || position.name.includes('Pausenvertreter') || position.name.includes('Abrufkräfte') || position.name.includes('Nachverpackung')) category = 'Specializované';
+                        
+                        if (!acc[category]) acc[category] = [];
+                        acc[category].push(position);
+                        return acc;
+                      }, {});
+
+                      return Object.entries(grouped).map(([category, categoryPositions]) => (
+                        <div key={category}>
+                          <div className="px-2 py-1 text-xs font-semibold text-muted-foreground bg-muted/50">
+                            {category}
+                          </div>
+                          {categoryPositions.map((position) => (
+                            <SelectItem key={position.id} value={position.id} className="pl-4">
+                              <div className="flex justify-between items-center w-full">
+                                <span>{position.name}</span>
+                                <span className="text-xs text-muted-foreground ml-2">
+                                  {position.cycle_weeks?.length > 0 && position.cycle_weeks.length < 15 
+                                    ? `Rotace: ${position.cycle_weeks.join(',')}`
+                                    : 'Každý týden'
+                                  }
+                                </span>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </div>
+                      ));
+                    })()
                   ) : (
                     <div className="p-2 text-sm text-muted-foreground">
                       {t('noPositionsAvailable')}

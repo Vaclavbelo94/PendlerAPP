@@ -69,9 +69,38 @@ export const generateWocheRange = (
 };
 
 /**
+ * Check if a position is active in a given Woche (rotation logic)
+ */
+export const isPositionActiveInWoche = (positionCycleWeeks: number[], currentWoche: number): boolean => {
+  return positionCycleWeeks.includes(currentWoche);
+};
+
+/**
+ * Get active Woche Dienst groups for a given calendar week (Jahrwoche)
+ */
+export const getActiveWocheDienstGroups = (jahrwoche: number, positionCycleWeeks: number[]): number[] => {
+  // For positions with rotation patterns, determine which groups are active
+  // This is a simplified logic - in reality, DHL has complex rotation schedules
+  const cycleLength = 15; // DHL uses 15-week cycles
+  const weekInCycle = ((jahrwoche - 1) % cycleLength) + 1;
+  
+  // Return groups that are active in this week based on position's cycle
+  return positionCycleWeeks.filter(woche => {
+    // Check if this woche group is active based on the rotation pattern
+    return isPositionActiveInWoche(positionCycleWeeks, weekInCycle);
+  });
+};
+
+/**
  * Find the matching shift data for a specific date and Woche
  */
-export const findShiftForDate = (scheduleData: any, woche: number, date: Date): any => {
+export const findShiftForDate = (scheduleData: any, woche: number, date: Date, positionCycleWeeks?: number[]): any => {
+  // If position cycle weeks are provided, check if this position is active in this woche
+  if (positionCycleWeeks && !isPositionActiveInWoche(positionCycleWeeks, woche)) {
+    console.log(`Position not active in Woche ${woche}, cycle: [${positionCycleWeeks.join(',')}]`);
+    return null; // Position not active this week
+  }
+  
   // Format date as YYYY-MM-DD
   const dateStr = date.toISOString().split('T')[0];
   
