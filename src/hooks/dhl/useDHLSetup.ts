@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/auth';
-import { isDHLEmployeeSync } from '@/utils/dhlAuthUtils';
+import { isDHLEmployee } from '@/utils/dhlAuthUtils';
 
 interface DHLSetupData {
   personalNumber: string;
@@ -15,6 +15,7 @@ interface DHLSetupState {
   isSubmitting: boolean;
   error: string | null;
   isSetupComplete: boolean;
+  canAccess: boolean;
 }
 
 export const useDHLSetup = () => {
@@ -24,15 +25,30 @@ export const useDHLSetup = () => {
     isSubmitting: false,
     error: null,
     isSetupComplete: false,
+    canAccess: false,
   });
 
   // Check if user already has DHL setup
   useEffect(() => {
     const checkSetupStatus = async () => {
-      if (!user || !isDHLEmployeeSync(user)) {
+      if (!user) {
         setState(prev => ({ 
           ...prev, 
           isLoading: false,
+          canAccess: false,
+          error: 'No user'
+        }));
+        return;
+      }
+
+      // Check DHL employee status (async)
+      const isDHL = await isDHLEmployee(user);
+      
+      if (!isDHL) {
+        setState(prev => ({ 
+          ...prev, 
+          isLoading: false,
+          canAccess: false,
           error: 'Unauthorized access'
         }));
         return;
@@ -57,13 +73,16 @@ export const useDHLSetup = () => {
         setState(prev => ({
           ...prev,
           isLoading: false,
+          canAccess: true,
           isSetupComplete: !!data,
+          error: null
         }));
       } catch (error) {
         console.error('Error checking DHL setup status:', error);
         setState(prev => ({
           ...prev,
           isLoading: false,
+          canAccess: true,
           error: 'Error checking setup status',
         }));
       }
@@ -73,7 +92,14 @@ export const useDHLSetup = () => {
   }, [user]);
 
   const submitSetup = async (setupData: DHLSetupData): Promise<boolean> => {
-    if (!user || !isDHLEmployeeSync(user)) {
+    if (!user) {
+      setState(prev => ({ ...prev, error: 'No user' }));
+      return false;
+    }
+
+    // Check DHL employee status (async)
+    const isDHL = await isDHLEmployee(user);
+    if (!isDHL) {
       setState(prev => ({ ...prev, error: 'Unauthorized access' }));
       return false;
     }
@@ -147,6 +173,5 @@ export const useDHLSetup = () => {
   return {
     ...state,
     submitSetup,
-    canAccess: isDHLEmployeeSync(user),
   };
 };
