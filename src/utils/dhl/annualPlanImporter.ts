@@ -186,67 +186,182 @@ export const importAnnualPlan = async (
 };
 
 /**
- * Parse Excel/CSV data to annual plan format
+ * Parse Excel workbook with multiple sheets to annual plan format
+ * Each sheet represents one calendar week (KW01-KW53)
  */
 export const parseAnnualPlanData = (
-  rawData: any[][],
+  workbook: any,
   positionName: string
 ): AnnualPlanImportData => {
   const calendarWeeks: AnnualPlanImportData['calendar_weeks'] = {};
   
-  // Assume first row contains woche headers (woche1, woche2, etc.)
-  // Subsequent rows contain calendar weeks (KW01, KW02, etc.)
+  console.log('Parsing workbook with sheets:', workbook.SheetNames);
   
-  if (rawData.length < 2) {
-    return { position_name: positionName, calendar_weeks: {} };
-  }
-  
-  const headers = rawData[0];
-  const wocheHeaders = headers.slice(1); // Skip first column (calendar week)
-  
-  for (let rowIndex = 1; rowIndex < rawData.length; rowIndex++) {
-    const row = rawData[rowIndex];
-    const calendarWeekKey = row[0]; // First column should be KWxx
+  // Process each sheet (each sheet should be a calendar week)
+  workbook.SheetNames.forEach((sheetName: string) => {
+    console.log(`Processing sheet: ${sheetName}`);
     
-    if (!calendarWeekKey || !calendarWeekKey.match(/^KW\d{2}$/)) {
-      continue; // Skip invalid rows
+    // Extract calendar week from sheet name
+    const kwMatch = sheetName.match(/KW(\d{1,2})/i) || sheetName.match(/(\d{1,2})/);
+    if (!kwMatch) {
+      console.warn(`Skipping sheet ${sheetName} - no KW number found`);
+      return;
     }
+    
+    const weekNumber = parseInt(kwMatch[1]);
+    const calendarWeekKey = `KW${weekNumber.toString().padStart(2, '0')}`;
+    
+    // Get sheet data
+    const sheet = workbook.Sheets[sheetName];
+    const sheetData = workbook.utils.sheet_to_json(sheet, { header: 1, raw: false });
+    
+    console.log(`Sheet ${sheetName} data:`, sheetData.slice(0, 10)); // Log first 10 rows
     
     const weekData: { [wocheGroup: string]: any } = {};
     
-    for (let colIndex = 1; colIndex < row.length && colIndex - 1 < wocheHeaders.length; colIndex++) {
-      const wocheHeader = wocheHeaders[colIndex - 1];
-      const cellValue = row[colIndex];
+    // Find rows/columns with Woche data
+    // Look for patterns like "Woche 1", "1", or similar in the data
+    for (let rowIndex = 0; rowIndex < sheetData.length; rowIndex++) {
+      const row = sheetData[rowIndex];
+      if (!row || !Array.isArray(row)) continue;
       
-      if (!wocheHeader || !wocheHeader.match(/^woche\d{1,2}$/)) {
-        continue;
-      }
-      
-      // Parse cell value - could be time range or empty for day off
-      if (!cellValue || cellValue === '' || cellValue === 'OFF') {
-        weekData[wocheHeader] = { is_off: true };
-      } else {
-        // Try to parse time range (e.g., "06:00-14:00")
-        const timeMatch = cellValue.match(/(\d{2}:\d{2})-(\d{2}:\d{2})/);
-        if (timeMatch) {
-          weekData[wocheHeader] = {
-            start_time: timeMatch[1],
-            end_time: timeMatch[2],
-            shift_type: determineShiftType(timeMatch[1])
-          };
+      for (let colIndex = 0; colIndex < row.length; colIndex++) {
+        const cell = row[colIndex];
+        if (!cell) continue;
+        
+        // Check if this cell contains a Woche identifier
+        const wocheMatch = cell.toString().match(/(?:woche\s*)?(\d{1,2})/i);
+        if (!wocheMatch) continue;
+        
+        const wocheNumber = parseInt(wocheMatch[1]);
+        if (wocheNumber < 1 || wocheNumber > 15) continue;
+        
+        const wocheKey = `woche${wocheNumber}`;
+        
+        // Look for time data in adjacent cells or same row/column
+        const timeData = findTimeDataNearCell(sheetData, rowIndex, colIndex);
+        
+        if (timeData) {
+          weekData[wocheKey] = timeData;
+          console.log(`Found time data for ${calendarWeekKey} ${wocheKey}:`, timeData);
         } else {
-          weekData[wocheHeader] = { is_off: true };
+          weekData[wocheKey] = { is_off: true };
+          console.log(`No time data found for ${calendarWeekKey} ${wocheKey}, marked as off`);
         }
       }
     }
     
-    calendarWeeks[calendarWeekKey] = weekData;
-  }
+    // If we found any Woche data, add it to calendar weeks
+    if (Object.keys(weekData).length > 0) {
+      calendarWeeks[calendarWeekKey] = weekData;
+      console.log(`Added ${calendarWeekKey} with ${Object.keys(weekData).length} woche groups`);
+    } else {
+      console.warn(`No valid Woche data found in sheet ${sheetName}`);
+    }
+  });
+  
+  console.log('Final parsed calendar weeks:', Object.keys(calendarWeeks));
   
   return {
     position_name: positionName,
     calendar_weeks: calendarWeeks
   };
+};
+
+/**
+ * Find time data near a cell containing Woche identifier
+ */
+const findTimeDataNearCell = (sheetData: any[][], rowIndex: number, colIndex: number): any => {
+  // Search in adjacent cells for time patterns
+  const searchOffsets = [
+    [0, 1], [0, -1], [1, 0], [-1, 0], // Adjacent cells
+    [1, 1], [1, -1], [-1, 1], [-1, -1] // Diagonal cells
+  ];
+  
+  for (const [rowOffset, colOffset] of searchOffsets) {
+    const checkRow = rowIndex + rowOffset;
+    const checkCol = colIndex + colOffset;
+    
+    if (checkRow < 0 || checkRow >= sheetData.length) continue;
+    if (checkCol < 0 || !sheetData[checkRow] || checkCol >= sheetData[checkRow].length) continue;
+    
+    const cell = sheetData[checkRow][checkCol];
+    if (!cell) continue;
+    
+    const timeData = parseTimeCell(cell.toString());
+    if (timeData) {
+      return timeData;
+    }
+  }
+  
+  return null;
+};
+
+/**
+ * Parse time data from a cell value
+ */
+const parseTimeCell = (cellValue: string): any => {
+  if (!cellValue || cellValue.trim() === '' || cellValue.toUpperCase() === 'OFF') {
+    return { is_off: true };
+  }
+  
+  // Handle multiple time entries in one cell (e.g., "15:15 21:15 06:00")
+  const timePattern = /(\d{1,2}):(\d{2})/g;
+  const times = [];
+  let match;
+  
+  while ((match = timePattern.exec(cellValue)) !== null) {
+    const hours = parseInt(match[1]);
+    const minutes = parseInt(match[2]);
+    
+    if (hours >= 0 && hours <= 23 && minutes >= 0 && minutes <= 59) {
+      times.push(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`);
+    }
+  }
+  
+  if (times.length >= 2) {
+    // Take first time as start, second as end
+    return {
+      start_time: times[0],
+      end_time: times[1],
+      shift_type: determineShiftType(times[0])
+    };
+  } else if (times.length === 1) {
+    // Single time - assume 8-hour shift
+    const startTime = times[0];
+    const [hours, minutes] = startTime.split(':').map(Number);
+    const endHours = (hours + 8) % 24;
+    const endTime = `${endHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+    
+    return {
+      start_time: startTime,
+      end_time: endTime,
+      shift_type: determineShiftType(startTime)
+    };
+  }
+  
+  // Try to parse as time range (e.g., "06:00-14:00")
+  const rangeMatch = cellValue.match(/(\d{1,2}):(\d{2})\s*[-–]\s*(\d{1,2}):(\d{2})/);
+  if (rangeMatch) {
+    const startHours = parseInt(rangeMatch[1]);
+    const startMinutes = parseInt(rangeMatch[2]);
+    const endHours = parseInt(rangeMatch[3]);
+    const endMinutes = parseInt(rangeMatch[4]);
+    
+    if (startHours >= 0 && startHours <= 23 && startMinutes >= 0 && startMinutes <= 59 &&
+        endHours >= 0 && endHours <= 23 && endMinutes >= 0 && endMinutes <= 59) {
+      const startTime = `${startHours.toString().padStart(2, '0')}:${startMinutes.toString().padStart(2, '0')}`;
+      const endTime = `${endHours.toString().padStart(2, '0')}:${endMinutes.toString().padStart(2, '0')}`;
+      
+      return {
+        start_time: startTime,
+        end_time: endTime,
+        shift_type: determineShiftType(startTime)
+      };
+    }
+  }
+  
+  return null;
 };
 
 const determineShiftType = (startTime: string): 'morning' | 'afternoon' | 'night' => {
