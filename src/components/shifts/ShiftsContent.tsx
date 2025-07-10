@@ -42,6 +42,10 @@ const ShiftsContent = () => {
   const { userAssignment } = useDHLData(user?.id || null);
   const [isDHLGenerating, setIsDHLGenerating] = useState(false);
   
+  // Debug output
+  console.log('ShiftsContent - userAssignment:', userAssignment);
+  console.log('ShiftsContent - should show DHL button:', !!userAssignment);
+  
   const [activeTab, setActiveTab] = useState('calendar');
   const [isAddSheetOpen, setIsAddSheetOpen] = useState(false);
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
