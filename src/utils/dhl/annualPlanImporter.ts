@@ -1,5 +1,6 @@
 // Annual plan import utilities for DHL rotational system
 
+import * as XLSX from 'xlsx';
 import { supabase } from '@/integrations/supabase/client';
 import { AnnualPlanImportData, DHLPosition } from '@/types/dhl';
 import { getCalendarWeek } from './wocheCalculator';
@@ -213,7 +214,11 @@ export const parseAnnualPlanData = (
     
     // Get sheet data
     const sheet = workbook.Sheets[sheetName];
-    const sheetData = workbook.utils.sheet_to_json(sheet, { header: 1, raw: false });
+    if (!sheet) {
+      console.warn(`Sheet ${sheetName} not found in workbook`);
+      return;
+    }
+    const sheetData = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: false }) as any[][];
     
     console.log(`Sheet ${sheetName} data:`, sheetData.slice(0, 10)); // Log first 10 rows
     

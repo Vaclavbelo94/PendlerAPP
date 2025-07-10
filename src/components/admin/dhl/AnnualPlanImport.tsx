@@ -62,13 +62,13 @@ const AnnualPlanImport: React.FC<AnnualPlanImportProps> = ({ onImportComplete })
         // For CSV, we still need the old parsing method
         const text = new TextDecoder().decode(arrayBuffer);
         const data = text.split('\n').map(row => row.split(';'));
-        // Create a mock workbook structure for CSV
+        // Create a proper workbook structure for CSV
+        const worksheet = XLSX.utils.aoa_to_sheet(data);
         const mockWorkbook = {
           SheetNames: ['Sheet1'],
           Sheets: {
-            'Sheet1': data
-          },
-          utils: XLSX.utils
+            'Sheet1': worksheet
+          }
         };
         parsedData = parseAnnualPlanData(mockWorkbook, selectedPosition);
       } else {
