@@ -33,11 +33,11 @@ const DHLImportPanel: React.FC = () => {
 
   return (
     <div className="dhl-admin-container space-y-6">
-      {/* Header */}
-      <div className="dhl-admin-header">
+      {/* Header - Mobile Optimized */}
+      <div className="dhl-admin-header px-2 sm:px-4">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">DHL Import dat</h2>
-          <p className="text-muted-foreground mt-2">
+          <h2 className="text-xl sm:text-2xl font-bold tracking-tight">DHL Import dat</h2>
+          <p className="text-sm sm:text-base text-muted-foreground mt-1 sm:mt-2">
             Import plánů směn z JSON souborů a automatické generování směn pro zaměstnance
           </p>
         </div>
@@ -45,37 +45,31 @@ const DHLImportPanel: React.FC = () => {
 
       {/* Main Content */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <div className="dhl-mobile-tabs">
-          <TabsList className="tabs-list grid w-full grid-cols-2 sm:grid-cols-6 gap-1">
-            <TabsTrigger value="upload" className="dhl-mobile-tab-trigger flex items-center gap-1 sm:gap-2">
-              <Upload className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">Import</span>
-              <span className="sm:hidden">Import</span>
+        <div className="dhl-mobile-tabs px-2">
+          <TabsList className="tabs-list grid w-full grid-cols-3 sm:grid-cols-6 gap-1 h-auto p-1">
+            <TabsTrigger value="upload" className="dhl-mobile-tab-trigger flex flex-col sm:flex-row items-center gap-1 py-2 px-1 text-xs min-h-[60px] sm:min-h-[40px] touch-manipulation">
+              <Upload className="h-4 w-4 sm:h-4 sm:w-4 flex-shrink-0" />
+              <span className="block text-center leading-tight">Import</span>
             </TabsTrigger>
-            <TabsTrigger value="schedules" className="dhl-mobile-tab-trigger flex items-center gap-1 sm:gap-2">
-              <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">Plány směn</span>
-              <span className="sm:hidden">Plány</span>
+            <TabsTrigger value="schedules" className="dhl-mobile-tab-trigger flex flex-col sm:flex-row items-center gap-1 py-2 px-1 text-xs min-h-[60px] sm:min-h-[40px] touch-manipulation">
+              <FileText className="h-4 w-4 sm:h-4 sm:w-4 flex-shrink-0" />
+              <span className="block text-center leading-tight">Plány</span>
             </TabsTrigger>
-            <TabsTrigger value="positions" className="dhl-mobile-tab-trigger flex items-center gap-1 sm:gap-2">
-              <Users className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">Pozice</span>
-              <span className="sm:hidden">Pozice</span>
+            <TabsTrigger value="positions" className="dhl-mobile-tab-trigger flex flex-col sm:flex-row items-center gap-1 py-2 px-1 text-xs min-h-[60px] sm:min-h-[40px] touch-manipulation">
+              <Users className="h-4 w-4 sm:h-4 sm:w-4 flex-shrink-0" />
+              <span className="block text-center leading-tight">Pozice</span>
             </TabsTrigger>
-            <TabsTrigger value="history" className="dhl-mobile-tab-trigger flex items-center gap-1 sm:gap-2">
-              <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">Historie</span>
-              <span className="sm:hidden">Historie</span>
+            <TabsTrigger value="history" className="dhl-mobile-tab-trigger flex flex-col sm:flex-row items-center gap-1 py-2 px-1 text-xs min-h-[60px] sm:min-h-[40px] touch-manipulation">
+              <CheckCircle className="h-4 w-4 sm:h-4 sm:w-4 flex-shrink-0" />
+              <span className="block text-center leading-tight">Historie</span>
             </TabsTrigger>
-            <TabsTrigger value="generate" className="dhl-mobile-tab-trigger flex items-center gap-1 sm:gap-2">
-              <Download className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">Generování</span>
-              <span className="sm:hidden">Gen.</span>
+            <TabsTrigger value="generate" className="dhl-mobile-tab-trigger flex flex-col sm:flex-row items-center gap-1 py-2 px-1 text-xs min-h-[60px] sm:min-h-[40px] touch-manipulation">
+              <Download className="h-4 w-4 sm:h-4 sm:w-4 flex-shrink-0" />
+              <span className="block text-center leading-tight">Gener.</span>
             </TabsTrigger>
-            <TabsTrigger value="references" className="dhl-mobile-tab-trigger flex items-center gap-1 sm:gap-2">
-              <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">Reference</span>
-              <span className="sm:hidden">Ref.</span>
+            <TabsTrigger value="references" className="dhl-mobile-tab-trigger flex flex-col sm:flex-row items-center gap-1 py-2 px-1 text-xs min-h-[60px] sm:min-h-[40px] touch-manipulation">
+              <CheckCircle className="h-4 w-4 sm:h-4 sm:w-4 flex-shrink-0" />
+              <span className="block text-center leading-tight">Ref.</span>
             </TabsTrigger>
           </TabsList>
         </div>

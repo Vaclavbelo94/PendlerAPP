@@ -59,11 +59,11 @@ const DHLAdminMobileCarousel: React.FC<DHLAdminMobileCarouselProps> = ({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       {/* Mobile Tab Navigation */}
       <div className="block">
-        {/* Tab Indicators */}
-        <div className="flex justify-center items-center gap-2 mb-4">
+        {/* Tab Indicators - Mobile Optimized */}
+        <div className="flex justify-center items-center gap-1 sm:gap-2 mb-4 px-2">
           {tabs.map((tab, index) => {
             const Icon = tab.icon;
             const isActive = index === currentIndex;
@@ -75,27 +75,29 @@ const DHLAdminMobileCarousel: React.FC<DHLAdminMobileCarouselProps> = ({
                 size="sm"
                 onClick={() => handleTabSelect(tab.id, index)}
                 className={cn(
-                  "flex items-center gap-2 transition-all duration-200",
-                  isActive ? "bg-yellow-600 hover:bg-yellow-700 text-white" : "hover:bg-yellow-50"
+                  "flex items-center gap-1 sm:gap-2 transition-all duration-200 min-h-[44px] px-2 sm:px-3 text-xs sm:text-sm touch-manipulation",
+                  isActive ? "bg-yellow-600 hover:bg-yellow-700 text-white" : "hover:bg-yellow-50",
+                  "flex-1 max-w-[100px] sm:max-w-none"
                 )}
               >
-                <Icon className="h-4 w-4" />
-                <span className="hidden sm:inline">{tab.fullTitle}</span>
-                <span className="sm:hidden">{tab.title}</span>
+                <Icon className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                <span className="hidden sm:inline truncate">{tab.fullTitle}</span>
+                <span className="sm:hidden truncate text-[10px]">{tab.title}</span>
               </Button>
             );
           })}
         </div>
 
-        {/* Progress Indicator */}
-        <div className="flex justify-center mb-6">
-          <div className="flex gap-2">
+        {/* Progress Indicator - Mobile Optimized */}
+        <div className="flex justify-center mb-4 sm:mb-6">
+          <div className="flex gap-1 sm:gap-2">
             {tabs.map((_, index) => (
-              <div
+              <button
                 key={index}
+                onClick={() => handleTabSelect(tabs[index].id, index)}
                 className={cn(
-                  "h-2 w-8 rounded-full transition-all duration-300",
-                  index === currentIndex ? "bg-yellow-600" : "bg-gray-200 dark:bg-gray-700"
+                  "h-2 w-6 sm:w-8 rounded-full transition-all duration-300 touch-manipulation",
+                  index === currentIndex ? "bg-yellow-600" : "bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600"
                 )}
               />
             ))}
@@ -103,15 +105,16 @@ const DHLAdminMobileCarousel: React.FC<DHLAdminMobileCarouselProps> = ({
         </div>
       </div>
 
-      {/* Swipeable Content */}
+      {/* Swipeable Content - Mobile Optimized */}
       <Carousel 
-        className="w-full" 
+        className="w-full touch-pan-x" 
         orientation="horizontal"
         opts={{
           align: "start",
           loop: false,
           skipSnaps: false,
-          dragFree: false
+          dragFree: false,
+          containScroll: "trimSnaps"
         }}
         setApi={(api) => {
           if (api) {
@@ -126,10 +129,10 @@ const DHLAdminMobileCarousel: React.FC<DHLAdminMobileCarouselProps> = ({
           }
         }}
       >
-        <CarouselContent className="-ml-2 md:-ml-4">
+        <CarouselContent className="-ml-1 sm:-ml-2 md:-ml-4">
           {tabs.map((tab, index) => (
-            <CarouselItem key={tab.id} className="pl-2 md:pl-4 basis-full">
-              <div className="min-h-[600px]">
+            <CarouselItem key={tab.id} className="pl-1 sm:pl-2 md:pl-4 basis-full">
+              <div className="min-h-[500px] sm:min-h-[600px] overflow-hidden">
                 {tab.component}
               </div>
             </CarouselItem>
@@ -143,11 +146,14 @@ const DHLAdminMobileCarousel: React.FC<DHLAdminMobileCarouselProps> = ({
         </div>
       </Carousel>
 
-      {/* Tab Content Title */}
-      <div className="text-center">
-        <h3 className="text-lg font-medium text-muted-foreground">
+      {/* Tab Content Title - Mobile Optimized */}
+      <div className="text-center px-2">
+        <h3 className="text-base sm:text-lg font-medium text-muted-foreground">
           {tabs[currentIndex]?.fullTitle}
         </h3>
+        <p className="text-xs sm:text-sm text-muted-foreground/70 mt-1">
+          {currentIndex + 1} z {tabs.length}
+        </p>
       </div>
     </div>
   );
