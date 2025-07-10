@@ -218,17 +218,18 @@ export const generateUserShifts = async (userId: string, startDate: string, endD
   console.log('User:', userId, 'Range:', startDate, 'to', endDate);
 
   try {
-    // Get user's DHL assignment
+    // Get user's DHL assignment with proper JOIN to profiles
     const { data: assignment, error: assignmentError } = await supabase
       .from('user_dhl_assignments')
       .select(`
         *,
         dhl_positions(id, name, position_type),
-        dhl_work_groups(id, name, week_number)
+        dhl_work_groups(id, name, week_number),
+        profiles!user_dhl_assignments_user_id_fkey(id, username, email)
       `)
       .eq('user_id', userId)
       .eq('is_active', true)
-      .single();
+      .maybeSingle();
 
     if (assignmentError || !assignment) {
       console.log('No DHL assignment found for user:', userId, assignmentError);
