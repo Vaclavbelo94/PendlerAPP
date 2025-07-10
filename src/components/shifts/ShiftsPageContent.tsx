@@ -6,6 +6,7 @@ import ShiftsCalendar from '@/components/shifts/ShiftsCalendar';
 import ShiftsAnalytics from '@/components/shifts/ShiftsAnalytics';
 import ShiftsReports from '@/components/shifts/ShiftsReports';
 import ShiftsSettings from '@/components/shifts/ShiftsSettings';
+import AnnualPlanImport from '@/components/admin/dhl/AnnualPlanImport';
 import EmptyShiftsState from '@/components/shifts/EmptyShiftsState';
 import { ErrorBoundaryWithFallback } from '@/components/common/ErrorBoundaryWithFallback';
 import { Shift } from '@/hooks/useShiftsManagement';
@@ -50,6 +51,8 @@ const ShiftsPageContent: React.FC<ShiftsPageContentProps> = ({
         return <ShiftsReports shifts={shifts} />;
       case 'settings':
         return <ShiftsSettings />;
+      case 'annual-import':
+        return <AnnualPlanImport onImportComplete={() => setActiveSection('overview')} />;
       default:
         return (
           <ShiftsOverview 

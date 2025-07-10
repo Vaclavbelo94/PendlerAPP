@@ -130,6 +130,9 @@ export interface DHLShiftSchedule {
   schedule_data: any; // JSONB
   base_date: string;
   base_woche: number;
+  calendar_week?: number; // 1-53 for annual plans
+  annual_plan?: boolean; // true for annual rotational plans
+  woche_group?: number; // 1-15 for which woche group this schedule is for
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -157,6 +160,8 @@ export interface WocheCalculationResult {
   weekStartDate: Date;
   weekEndDate: Date;
   cyclePosition: number;
+  calendarWeek: number; // Current calendar week (1-53)
+  rotatedWoche: number; // User's rotated woche position for this calendar week
 }
 
 export interface DHLImportValidation {
@@ -183,4 +188,27 @@ export interface DHLImportValidation {
 export interface ExtendedUserDHLAssignment extends UserDHLAssignment {
   reference_date?: string;
   reference_woche?: number;
+}
+
+// Annual plan import data structure
+export interface AnnualPlanImportData {
+  position_name: string;
+  calendar_weeks: {
+    [calendarWeek: string]: { // KW01, KW02, etc.
+      [wocheGroup: string]: { // woche1, woche2, etc.
+        start_time?: string;
+        end_time?: string;
+        shift_type?: 'morning' | 'afternoon' | 'night';
+        is_off?: boolean; // day off
+      };
+    };
+  };
+}
+
+// Calendar week calculation
+export interface CalendarWeekInfo {
+  calendarWeek: number; // 1-53
+  year: number;
+  weekStartDate: Date;
+  weekEndDate: Date;
 }

@@ -11,6 +11,8 @@ export interface WocheCalculation {
   weekStartDate: Date;
   weekEndDate: Date;
   cyclePosition: number; // Position in 15-week cycle
+  calendarWeek: number; // Current calendar week (1-53)
+  rotatedWoche: number; // User's rotated woche position for this calendar week
 }
 
 /**
@@ -41,11 +43,19 @@ export const calculateCurrentWoche = (reference: WocheReference, targetDate: Dat
   weekEndDate.setDate(weekEndDate.getDate() + 6);
   weekEndDate.setHours(23, 59, 59, 999);
   
+  // Calculate current calendar week
+  const calendarWeek = getCalendarWeek(targetDate);
+  
+  // Calculate rotated woche position for annual system
+  const rotatedWoche = calculateRotatedWoche(referenceWoche, calendarWeek);
+
   return {
     currentWoche,
     weekStartDate,
     weekEndDate,
-    cyclePosition: weeksDiff % 15
+    cyclePosition: weeksDiff % 15,
+    calendarWeek,
+    rotatedWoche
   };
 };
 
@@ -185,4 +195,64 @@ export const determineShiftType = (startTime: string): 'morning' | 'afternoon' |
   } else {
     return 'night';
   }
+};
+
+/**
+ * Get current calendar week (1-53)
+ */
+export const getCalendarWeek = (date: Date = new Date()): number => {
+  const target = new Date(date);
+  const january4 = new Date(target.getFullYear(), 0, 4);
+  const dayOfWeek = january4.getDay() || 7; // Sunday = 7
+  const jan4Monday = new Date(january4.getTime() - (dayOfWeek - 1) * 24 * 60 * 60 * 1000);
+  
+  const diff = target.getTime() - jan4Monday.getTime();
+  const daysDiff = Math.floor(diff / (24 * 60 * 60 * 1000));
+  const week = Math.floor(daysDiff / 7) + 1;
+  
+  return Math.max(1, Math.min(53, week));
+};
+
+/**
+ * Calculate rotated woche position for annual system
+ * User with woche=1 in KW01 has woche1, in KW02 has woche2, etc.
+ */
+export const calculateRotatedWoche = (userWoche: number, calendarWeek: number): number => {
+  // Rotation: user starts at their assigned woche in week 1, then rotates
+  const rotated = ((userWoche - 1 + calendarWeek - 1) % 15) + 1;
+  return rotated;
+};
+
+/**
+ * Find shift data for annual rotational system
+ */
+export const findAnnualShiftForDate = (
+  annualSchedule: any, 
+  userWoche: number, 
+  date: Date
+): any => {
+  const calendarWeek = getCalendarWeek(date);
+  const rotatedWoche = calculateRotatedWoche(userWoche, calendarWeek);
+  
+  // Format calendar week as KW01, KW02, etc.
+  const calendarWeekKey = `KW${calendarWeek.toString().padStart(2, '0')}`;
+  const wocheKey = `woche${rotatedWoche}`;
+  
+  // Check if we have data for this calendar week and woche group
+  if (annualSchedule[calendarWeekKey] && annualSchedule[calendarWeekKey][wocheKey]) {
+    const dayOfWeek = date.getDay();
+    const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const dayName = dayNames[dayOfWeek];
+    
+    const shiftData = annualSchedule[calendarWeekKey][wocheKey][dayName];
+    
+    // Return null if explicitly marked as day off or no data
+    if (shiftData === null || shiftData === undefined || shiftData.is_off) {
+      return null;
+    }
+    
+    return shiftData;
+  }
+  
+  return null; // No shift data found
 };

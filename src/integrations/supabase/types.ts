@@ -266,8 +266,10 @@ export type Database = {
       }
       dhl_shift_schedules: {
         Row: {
+          annual_plan: boolean | null
           base_date: string
           base_woche: number
+          calendar_week: number | null
           created_at: string
           id: string
           is_active: boolean
@@ -275,11 +277,14 @@ export type Database = {
           schedule_data: Json
           schedule_name: string
           updated_at: string
+          woche_group: number | null
           work_group_id: string | null
         }
         Insert: {
+          annual_plan?: boolean | null
           base_date: string
           base_woche: number
+          calendar_week?: number | null
           created_at?: string
           id?: string
           is_active?: boolean
@@ -287,11 +292,14 @@ export type Database = {
           schedule_data: Json
           schedule_name: string
           updated_at?: string
+          woche_group?: number | null
           work_group_id?: string | null
         }
         Update: {
+          annual_plan?: boolean | null
           base_date?: string
           base_woche?: number
+          calendar_week?: number | null
           created_at?: string
           id?: string
           is_active?: boolean
@@ -299,6 +307,7 @@ export type Database = {
           schedule_data?: Json
           schedule_name?: string
           updated_at?: string
+          woche_group?: number | null
           work_group_id?: string | null
         }
         Relationships: [
