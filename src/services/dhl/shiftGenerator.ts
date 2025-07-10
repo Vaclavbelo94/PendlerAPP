@@ -243,19 +243,20 @@ export const generateUserShifts = async (userId: string, startDate: string, endD
 
     console.log('Found user assignment:', assignment);
     
-    // Get user's work group week number for matching with base_woche
-    const userWocheNumber = assignment.dhl_work_groups?.week_number;
-    console.log('User Woche number:', userWocheNumber);
+    // Get user's Woche number - use individual reference or fallback to work group
+    const userWocheNumber = assignment.reference_woche || assignment.dhl_work_groups?.week_number;
+    console.log('User Woche number:', userWocheNumber, '(from reference_woche:', assignment.reference_woche, ', work_group:', assignment.dhl_work_groups?.week_number, ')');
 
     if (!userWocheNumber) {
       return {
         success: false,
-        message: 'Uživatel nemá platné číslo týdne (Woche) v pracovní skupině'
+        message: 'Uživatel nemá platné číslo týdne (Woche) - ani individuální ani skupinové'
       };
     }
 
     // Get all active schedules for this position (annual plans)
     // For annual plans, we need to fetch all schedules because each calendar week has its own schedule
+    // Now we search for schedules regardless of work_group_id since we support individual assignments
     const { data: schedules, error: schedulesError } = await supabase
       .from('dhl_shift_schedules')
       .select('*')
@@ -263,7 +264,6 @@ export const generateUserShifts = async (userId: string, startDate: string, endD
       .eq('base_woche', userWocheNumber)
       .eq('is_active', true)
       .eq('annual_plan', true)
-      .is('work_group_id', null) // Annual plans have work_group_id = null
       .order('calendar_week', { ascending: true });
 
     console.log('=== SCHEDULES LOOKUP ===');
@@ -271,7 +271,6 @@ export const generateUserShifts = async (userId: string, startDate: string, endD
     console.log('- position_id:', assignment.dhl_position_id);
     console.log('- base_woche:', userWocheNumber);
     console.log('- annual_plan: true');
-    console.log('- work_group_id: null');
     console.log('Schedules query result:', { schedules, schedulesError });
 
     if (schedulesError) {

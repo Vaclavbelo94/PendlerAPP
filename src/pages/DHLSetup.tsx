@@ -1,192 +1,107 @@
-
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { toast } from "sonner";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Loader2, Briefcase, User, Calendar, Info } from 'lucide-react';
 import { useAuth } from '@/hooks/auth';
-import { useDHLData } from '@/hooks/dhl/useDHLData';
+import { useDHLSetup } from '@/hooks/dhl/useDHLSetup';
+import { supabase } from '@/integrations/supabase/client';
+import { useStandardizedToast } from '@/hooks/useStandardizedToast';
 import { isDHLEmployeeSync } from '@/utils/dhlAuthUtils';
-import { useTranslation } from 'react-i18next';
-import LoadingSpinner from '@/components/LoadingSpinner';
-import { getCurrentWeekMonday } from '@/utils/dhl/wocheCalculator';
-import { generateUserShifts } from '@/services/dhl/shiftGenerator';
+import { DHLPosition } from '@/types/dhl';
+import { getCalendarWeek } from '@/utils/dhl/wocheCalculator';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
-interface DHLSetupFormData {
-  personalNumber: string;
-  positionId: string;
-  workGroupId: string;
-}
-
-const DHLSetup = () => {
+export default function DHLSetup() {
+  const { user } = useAuth();
+  const { isLoading, isSubmitting, error, submitSetup, canAccess } = useDHLSetup();
+  const { success, error: showError } = useStandardizedToast();
   const navigate = useNavigate();
-  const { user, unifiedUser } = useAuth();
-  const { t } = useTranslation('dhl');
-  const { positions, workGroups, isLoading: isDHLDataLoading, error: dhlDataError } = useDHLData(user?.id || null);
-  
-  const [formData, setFormData] = useState<DHLSetupFormData>({
-    personalNumber: '',
-    positionId: '',
-    workGroupId: ''
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Check authorization - now only based on promo code redemption, not email domain
+  const [positions, setPositions] = useState<DHLPosition[]>([]);
+  const [selectedPosition, setSelectedPosition] = useState('');
+  const [currentWoche, setCurrentWoche] = useState('');
+  const [personalNumber, setPersonalNumber] = useState('');
+  const [isLoadingData, setIsLoadingData] = useState(true);
+
   useEffect(() => {
-    if (!user || !unifiedUser?.isDHLEmployee) {
-      console.log('Unauthorized access to DHL Setup - user needs DHL promo code');
-      toast.error(t('unauthorizedAccess'));
-      navigate('/profile');
-    }
-  }, [user, unifiedUser, navigate, t]);
+    const fetchData = async () => {
+      try {
+        console.log('Fetching DHL setup data...');
+        
+        const positionsResult = await supabase
+          .from('dhl_positions')
+          .select('*')
+          .eq('is_active', true)
+          .order('name');
 
-  const handleInputChange = (field: keyof DHLSetupFormData, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
+        if (positionsResult.error) throw positionsResult.error;
+
+        console.log('Fetched positions:', positionsResult.data);
+        setPositions((positionsResult.data || []) as DHLPosition[]);
+      } catch (error) {
+        console.error('Error fetching DHL data:', error);
+        showError('Chyba při načítání dat', 'Nepodařilo se načíst DHL pozice');
+      } finally {
+        setIsLoadingData(false);
+      }
+    };
+
+    fetchData();
+  }, [showError]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.positionId) {
-      toast.error(t('positionRequired'));
-      return;
-    }
-    
-    if (!formData.workGroupId) {
-      toast.error(t('workWeekRequired'));
+    if (!selectedPosition || !currentWoche) {
+      showError('Neúplné údaje', 'Vyberte prosím pozici a zadejte aktuální Woche');
       return;
     }
 
-    if (!user?.id) {
-      toast.error(t('unauthorizedAccess'));
+    const wocheNumber = parseInt(currentWoche);
+    if (wocheNumber < 1 || wocheNumber > 15) {
+      showError('Neplatné Woche', 'Woche musí být číslo mezi 1 a 15');
       return;
     }
 
-    setIsSubmitting(true);
-    
-    try {
-      console.log('=== DHL SETUP SUBMISSION ===');
-      console.log('User ID:', user.id);
-      console.log('Form Data:', formData);
-      
-      const { supabase } = await import('@/integrations/supabase/client');
-      
-      // Get selected work group for woche number
-      const selectedWorkGroup = workGroups.find(wg => wg.id === formData.workGroupId);
-      const currentMonday = getCurrentWeekMonday();
-      
-      // Create user DHL assignment with reference data
-      const assignmentData = {
-        user_id: user.id,
-        dhl_position_id: formData.positionId,
-        dhl_work_group_id: formData.workGroupId,
-        assigned_at: new Date().toISOString(),
-        is_active: true,
-        reference_date: currentMonday.toISOString().split('T')[0], // Monday of current week
-        reference_woche: selectedWorkGroup?.week_number || 1 // Selected woche number
-      };
+    const setupSuccess = await submitSetup({
+      personalNumber,
+      positionId: selectedPosition,
+      currentWoche: wocheNumber
+    });
 
-      console.log('Creating DHL assignment:', assignmentData);
-
-      const { data: assignment, error: assignmentError } = await supabase
-        .from('user_dhl_assignments')
-        .insert(assignmentData)
-        .select()
-        .single();
-
-      if (assignmentError) {
-        console.error('Error creating DHL assignment:', assignmentError);
-        toast.error(t('setupError'));
-        return;
-      }
-
-      console.log('DHL assignment created successfully:', assignment);
-
-      // Optionally store personal number in profile if provided
-      if (formData.personalNumber.trim()) {
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .update({ 
-            personal_number: formData.personalNumber.trim(),
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', user.id);
-
-        if (profileError) {
-          console.warn('Could not update personal number:', profileError);
-          // Non-critical error, continue with success
-        }
-      }
-
-      toast.success(t('setupSuccess'));
-      
-      // Generate shifts automatically for next 30 days
-      try {
-        const endDate = new Date();
-        endDate.setDate(endDate.getDate() + 30);
-        
-        const shiftResult = await generateUserShifts(
-          user.id,
-          new Date().toISOString().split('T')[0],
-          endDate.toISOString().split('T')[0]
-        );
-        
-        if (shiftResult.success) {
-          toast.success(`${t('setupComplete')} - ${shiftResult.message}`);
-        } else {
-          toast.warning(`Setup dokončen, ale generování směn selhalo: ${shiftResult.message}`);
-        }
-      } catch (error) {
-        console.warn('Could not generate shifts automatically:', error);
-        toast.warning('Setup dokončen, ale automatické generování směn selhalo');
-      }
-      
-      // Redirect back to dashboard
-      setTimeout(() => {
-        navigate('/dashboard');
-      }, 2000);
-
-    } catch (error) {
-      console.error('DHL Setup error:', error);
-      toast.error(t('setupError'));
-    } finally {
-      setIsSubmitting(false);
+    if (setupSuccess) {
+      success('Nastavení uloženo', 'DHL nastavení bylo úspěšně uloženo');
+      navigate('/shifts');
     }
   };
 
-  // Don't render if user is not authorized (no DHL promo code)
-  if (!user || !unifiedUser?.isDHLEmployee) {
-    return null;
-  }
-
-  // Loading state
-  if (isDHLDataLoading) {
+  if (!user || !canAccess) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <LoadingSpinner />
-          <p className="mt-4 text-muted-foreground">{t('loadingPositions')}</p>
-        </div>
+      <div className="container mx-auto p-4">
+        <Card className="max-w-md mx-auto">
+          <CardContent className="pt-6">
+            <p className="text-center text-muted-foreground">
+              Přístup zamítnut. Pouze DHL zaměstnanci mají přístup k této stránce.
+            </p>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
-  // Error state
-  if (dhlDataError) {
+  if (isLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardContent className="p-6 text-center">
-            <p className="text-destructive mb-4">{t('setupError')}</p>
-            <Button onClick={() => navigate('/profile')}>
-              {t('common:back')}
-            </Button>
+      <div className="container mx-auto p-4">
+        <Card className="max-w-md mx-auto">
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-center">
+              <Loader2 className="h-6 w-6 animate-spin mr-2" />
+              <span>Načítání...</span>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -194,136 +109,115 @@ const DHLSetup = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center py-12 px-4">
-      <Card className="w-full max-w-md bg-card shadow-lg rounded-lg">
-        <CardHeader className="text-center space-y-2">
-          <CardTitle className="text-2xl font-semibold text-foreground">
-            {t('dhlSetup')}
-          </CardTitle>
-          <CardDescription className="text-muted-foreground">
-            {t('dhlSetupDescription')}
+    <div className="container mx-auto p-4">
+      <Card className="max-w-2xl mx-auto">
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <Briefcase className="h-5 w-5" />
+            <CardTitle>DHL Nastavení</CardTitle>
+          </div>
+          <CardDescription>
+            Nastavte si svou DHL pozici a aktuální Woche pro automatické generování směn
           </CardDescription>
         </CardHeader>
-        <CardContent className="p-6">
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Personal Number - Optional */}
-            <div className="space-y-2">
-              <Label htmlFor="personalNumber" className="text-sm font-medium">
-                {t('personalNumber')}
+        
+        <CardContent>
+          <Alert className="mb-6">
+            <Info className="h-4 w-4" />
+            <AlertDescription>
+              <strong>Individuální rotace:</strong> Zadejte vaše aktuální Woche číslo pro tento kalendářní týden. 
+              Systém bude automaticky rotovat vaše směny podle vašeho osobního cyklu.
+            </AlertDescription>
+          </Alert>
+
+          {error && (
+            <Alert variant="destructive" className="mb-4">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid w-full items-center gap-2">
+              <Label htmlFor="personal-number">
+                <div className="flex items-center gap-2">
+                  <User className="h-4 w-4" />
+                  Osobní číslo (volitelné)
+                </div>
               </Label>
               <Input
-                type="text"
-                id="personalNumber"
-                value={formData.personalNumber}
-                onChange={(e) => handleInputChange('personalNumber', e.target.value)}
-                placeholder={t('personalNumberPlaceholder')}
-                className="w-full"
+                id="personal-number"
+                placeholder="Zadejte vaše osobní číslo"
+                value={personalNumber}
+                onChange={(e) => setPersonalNumber(e.target.value)}
                 disabled={isSubmitting}
               />
             </div>
 
-            {/* Position - Required */}
-            <div className="space-y-2">
-              <Label htmlFor="position" className="text-sm font-medium">
-                {t('position')} *
+            <div className="grid w-full items-center gap-2">
+              <Label htmlFor="position">
+                <div className="flex items-center gap-2">
+                  <Briefcase className="h-4 w-4" />
+                  DHL Pozice
+                </div>
               </Label>
-              <Select
-                value={formData.positionId}
-                onValueChange={(value) => handleInputChange('positionId', value)}
-                disabled={isSubmitting}
+              <Select 
+                value={selectedPosition} 
+                onValueChange={setSelectedPosition}
+                disabled={isLoadingData || isSubmitting}
               >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder={t('positionPlaceholder')} />
+                <SelectTrigger>
+                  <SelectValue placeholder="Vyberte svou pozici" />
                 </SelectTrigger>
                 <SelectContent>
-                  {positions.length > 0 ? (
-                    (() => {
-                      // Group positions by category
-                      const grouped = positions.reduce((acc: Record<string, typeof positions>, position) => {
-                        let category = 'Ostatní';
-                        if (position.name.includes('Verlader') || position.name.includes('Dpl')) category = 'Verlader';
-                        else if (position.name.includes('Wechselschicht')) category = 'Wechselschicht';
-                        else if (position.name.includes('SoEst')) category = 'SoEst';
-                        else if (position.name.includes('TeamL')) category = 'Vedoucí';
-                        else if (position.name.includes('Rangierer')) category = 'Rangierer';
-                        else if (position.name.includes('Technik') || position.name.includes('Pausenvertreter') || position.name.includes('Abrufkräfte') || position.name.includes('Nachverpackung')) category = 'Specializované';
-                        
-                        if (!acc[category]) acc[category] = [];
-                        acc[category].push(position);
-                        return acc;
-                      }, {});
-
-                      return Object.entries(grouped).map(([category, categoryPositions]) => (
-                        <div key={category}>
-                          <div className="px-2 py-1 text-xs font-semibold text-muted-foreground bg-muted/50">
-                            {category}
-                          </div>
-                          {categoryPositions.map((position) => (
-                            <SelectItem key={position.id} value={position.id} className="pl-4">
-                              <div className="flex justify-between items-center w-full">
-                                <span>{position.name}</span>
-                                <span className="text-xs text-muted-foreground ml-2">
-                                  {position.cycle_weeks?.length > 0 && position.cycle_weeks.length < 15 
-                                    ? `Rotace: ${position.cycle_weeks.join(',')}`
-                                    : 'Každý týden'
-                                  }
-                                </span>
-                              </div>
-                            </SelectItem>
-                          ))}
-                        </div>
-                      ));
-                    })()
-                  ) : (
-                    <div className="p-2 text-sm text-muted-foreground">
-                      {t('noPositionsAvailable')}
-                    </div>
-                  )}
+                  {positions.map((position) => (
+                    <SelectItem key={position.id} value={position.id}>
+                      {position.name} - {position.position_type}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
 
-            {/* Work Group - Required */}
-            <div className="space-y-2">
-              <Label htmlFor="workGroup" className="text-sm font-medium">
-                {t('workWeek')} *
+            <div className="grid w-full items-center gap-2">
+              <Label htmlFor="currentwoche">
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4" />
+                  Aktuální Woche (KW{getCalendarWeek(new Date()).toString().padStart(2, '0')})
+                </div>
               </Label>
-              <Select
-                value={formData.workGroupId}
-                onValueChange={(value) => handleInputChange('workGroupId', value)}
-                disabled={isSubmitting}
+              <Select 
+                value={currentWoche} 
+                onValueChange={setCurrentWoche}
+                disabled={isLoadingData || isSubmitting}
               >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder={t('workWeekPlaceholder')} />
+                <SelectTrigger>
+                  <SelectValue placeholder="Vyberte aktuální Woche" />
                 </SelectTrigger>
                 <SelectContent>
-                  {workGroups.length > 0 ? (
-                    workGroups.map((workGroup) => (
-                      <SelectItem key={workGroup.id} value={workGroup.id}>
-                        {workGroup.name}
-                      </SelectItem>
-                    ))
-                  ) : (
-                    <div className="p-2 text-sm text-muted-foreground">
-                      {t('noWorkGroupsAvailable')}
-                    </div>
-                  )}
+                  {Array.from({ length: 15 }, (_, i) => i + 1).map((woche) => (
+                    <SelectItem key={woche} value={woche.toString()}>
+                      Woche {woche}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
+              <p className="text-sm text-muted-foreground">
+                Jaké Woche číslo máte aktuálně v kalendářním týdnu {getCalendarWeek(new Date())}? 
+                Toto nastavení určí váš individuální rotační cyklus.
+              </p>
             </div>
 
             <Button 
               type="submit" 
-              className="w-full mt-6"
-              disabled={isSubmitting || !formData.positionId || !formData.workGroupId}
+              className="w-full" 
+              disabled={!selectedPosition || !currentWoche || isSubmitting}
             >
-              {isSubmitting ? t('submitting') : t('submitSetup')}
+              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Uložit nastavení
             </Button>
           </form>
         </CardContent>
       </Card>
     </div>
   );
-};
-
-export default DHLSetup;
+}

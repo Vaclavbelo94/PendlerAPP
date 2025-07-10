@@ -18,7 +18,7 @@ import { calculateCurrentWoche, getCalendarWeek, calculateRotatedWoche } from '@
 interface UserAssignment {
   id: string;
   dhl_position_id: string;
-  dhl_work_group_id: string;
+  dhl_work_group_id: string | null;
   is_active: boolean;
   reference_date?: string;
   reference_woche?: number;
@@ -26,10 +26,10 @@ interface UserAssignment {
     name: string;
     position_type: string;
   };
-  dhl_work_groups: {
+  dhl_work_groups?: {
     name: string;
     week_number: number;
-  };
+  } | null;
 }
 
 const ShiftsSettings: React.FC = () => {
@@ -78,7 +78,7 @@ const ShiftsSettings: React.FC = () => {
     if (!userAssignment) return null;
     
     const currentCalendarWeek = getCalendarWeek(new Date());
-    const baseWoche = userAssignment.reference_woche || userAssignment.dhl_work_groups.week_number;
+    const baseWoche = userAssignment.reference_woche || userAssignment.dhl_work_groups?.week_number || 1;
     
     return calculateRotatedWoche(baseWoche, currentCalendarWeek);
   };
@@ -156,22 +156,18 @@ const ShiftsSettings: React.FC = () => {
                       {userAssignment.dhl_positions.position_type}
                     </Badge>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">Pracovní skupina:</span>
-                    <Badge variant="secondary">
-                      {userAssignment.dhl_work_groups.name}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">Základní Woche:</span>
-                    <Badge variant="outline">
-                      Woche {userAssignment.dhl_work_groups.week_number}
-                    </Badge>
-                  </div>
+                  {userAssignment.dhl_work_groups && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">Pracovní skupina:</span>
+                      <Badge variant="secondary">
+                        {userAssignment.dhl_work_groups.name}
+                      </Badge>
+                    </div>
+                  )}
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">Aktuální Woche:</span>
                     <Badge variant="default">
-                      Woche {getCurrentRotatedWoche() || userAssignment.dhl_work_groups.week_number}
+                      Woche {getCurrentRotatedWoche() || 1}
                     </Badge>
                   </div>
                   <div className="flex items-center justify-between">
@@ -180,6 +176,14 @@ const ShiftsSettings: React.FC = () => {
                       KW{getCalendarWeek(new Date()).toString().padStart(2, '0')}
                     </Badge>
                   </div>
+                  {userAssignment.reference_date && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">Referenční datum:</span>
+                      <Badge variant="outline">
+                        {new Date(userAssignment.reference_date).toLocaleDateString('cs-CZ')}
+                      </Badge>
+                    </div>
+                  )}
                 </div>
                 
                 <Alert>
