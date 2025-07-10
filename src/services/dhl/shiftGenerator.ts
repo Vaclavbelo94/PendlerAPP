@@ -47,7 +47,8 @@ export const generateShiftsFromSchedule = async (params: GenerateShiftsParams): 
 
     console.log('Found schedule:', schedule);
 
-    // Get users with matching position and work group
+    // Get users with matching position
+    // For annual plans, work_group_id might be null, so we handle both cases
     let userQuery = supabase
       .from('user_dhl_assignments')
       .select(`
@@ -55,8 +56,13 @@ export const generateShiftsFromSchedule = async (params: GenerateShiftsParams): 
         profiles(id, email, username)
       `)
       .eq('dhl_position_id', schedule.position_id)
-      .eq('dhl_work_group_id', schedule.work_group_id)
       .eq('is_active', true);
+
+    // If schedule has work_group_id, filter by it
+    // If schedule is annual plan (work_group_id is null), we still include users without work_group_id
+    if (schedule.work_group_id) {
+      userQuery = userQuery.eq('dhl_work_group_id', schedule.work_group_id);
+    }
 
     if (params.targetUserId) {
       userQuery = userQuery.eq('user_id', params.targetUserId);
@@ -75,7 +81,7 @@ export const generateShiftsFromSchedule = async (params: GenerateShiftsParams): 
     if (!users || users.length === 0) {
       return {
         success: false,
-        message: 'Nebyli nalezeni žádní uživatelé s odpovídající pozicí a pracovní skupinou'
+        message: `Nebyli nalezeni žádní uživatelé s odpovídající pozicí ${schedule.dhl_positions?.name || schedule.position_id}${schedule.work_group_id ? ` a pracovní skupinou ${schedule.dhl_work_groups?.name || schedule.work_group_id}` : ' (individuální přiřazení)'}`
       };
     }
 

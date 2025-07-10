@@ -25,63 +25,105 @@ const BulkShiftGeneration: React.FC = () => {
     setIsGenerating(true);
     
     try {
-      // Získat všechny aktivní plány směn
-      const { data: schedules, error: schedulesError } = await supabase
-        .from('dhl_shift_schedules')
+      console.log('=== BULK SHIFT GENERATION ===');
+      console.log('Date range:', dateRange);
+
+      // Místo generování podle plánů, generujeme podle uživatelů
+      // Najdeme všechny aktivní DHL přiřazení uživatelů
+      const { data: userAssignments, error: assignmentsError } = await supabase
+        .from('user_dhl_assignments')
         .select(`
-          id,
-          schedule_name,
-          position_id,
-          work_group_id,
+          user_id,
+          dhl_position_id,
+          dhl_work_group_id,
+          current_woche,
+          reference_woche,
           dhl_positions(name),
-          dhl_work_groups(name)
+          dhl_work_groups(name),
+          profiles(email, username)
         `)
         .eq('is_active', true);
 
-      if (schedulesError) {
-        throw new Error('Chyba při načítání plánů směn');
+      if (assignmentsError) {
+        console.error('Error fetching user assignments:', assignmentsError);
+        throw new Error('Chyba při načítání přiřazení uživatelů');
       }
 
-      if (!schedules || schedules.length === 0) {
-        toast.warning('Nebyly nalezeny žádné aktivní plány směn');
+      if (!userAssignments || userAssignments.length === 0) {
+        toast.warning('Nebyli nalezeni žádní uživatelé s aktivním DHL přiřazením');
         return;
       }
+
+      console.log(`Found ${userAssignments.length} active user assignments`);
 
       let totalGenerated = 0;
       let totalSkipped = 0;
       const results = [];
 
-      // Generovat směny pro každý plán
-      for (const schedule of schedules) {
+      // Import generateUserShifts function
+      const { generateUserShifts } = await import('@/services/dhl/shiftGenerator');
+
+      // Generovat směny pro každého uživatele
+      for (const assignment of userAssignments) {
         try {
-          const result = await generateShiftsFromSchedule({
-            scheduleId: schedule.id,
-            startDate: dateRange.startDate,
-            endDate: dateRange.endDate
-          });
+          console.log(`Generating shifts for user: ${assignment.profiles?.email || assignment.user_id}`);
+          
+          const result = await generateUserShifts(
+            assignment.user_id,
+            dateRange.startDate,
+            dateRange.endDate
+          );
 
           if (result.success) {
             totalGenerated += result.generatedCount || 0;
             totalSkipped += result.skippedCount || 0;
             results.push({
-              schedule: schedule.schedule_name,
+              user: assignment.profiles?.email || assignment.profiles?.username || assignment.user_id,
+              position: assignment.dhl_positions?.name || 'Unknown',
+              workGroup: assignment.dhl_work_groups?.name || 'Individual',
               generated: result.generatedCount || 0,
               skipped: result.skippedCount || 0
             });
+          } else {
+            console.log(`Failed to generate shifts for user ${assignment.user_id}: ${result.message}`);
+            results.push({
+              user: assignment.profiles?.email || assignment.profiles?.username || assignment.user_id,
+              position: assignment.dhl_positions?.name || 'Unknown',
+              workGroup: assignment.dhl_work_groups?.name || 'Individual',
+              generated: 0,
+              skipped: 0,
+              error: result.message
+            });
           }
         } catch (error) {
-          console.error(`Chyba při generování pro plán ${schedule.schedule_name}:`, error);
+          console.error(`Chyba při generování pro uživatele ${assignment.user_id}:`, error);
+          results.push({
+            user: assignment.profiles?.email || assignment.profiles?.username || assignment.user_id,
+            position: assignment.dhl_positions?.name || 'Unknown',
+            workGroup: assignment.dhl_work_groups?.name || 'Individual',
+            generated: 0,
+            skipped: 0,
+            error: error instanceof Error ? error.message : 'Neznámá chyba'
+          });
         }
       }
 
       setStats({
         totalUsers: results.length,
-        totalSchedules: schedules.length,
+        totalSchedules: userAssignments.length,
         generatedShifts: totalGenerated
       });
 
+      console.log('=== BULK GENERATION RESULTS ===');
+      console.log('Results:', results);
+      console.log('Total generated:', totalGenerated);
+      console.log('Total skipped:', totalSkipped);
+
+      const successfulUsers = results.filter(r => r.generated > 0).length;
+      const failedUsers = results.filter(r => r.error).length;
+
       toast.success('Bulk generování dokončeno', {
-        description: `Vygenerováno ${totalGenerated} směn, přeskočeno ${totalSkipped} existujících`
+        description: `Úspěšně: ${successfulUsers} uživatelů, Chyby: ${failedUsers}, Vygenerováno: ${totalGenerated} směn, Přeskočeno: ${totalSkipped}`
       });
 
     } catch (error) {
@@ -153,7 +195,7 @@ const BulkShiftGeneration: React.FC = () => {
               <div className="grid grid-cols-3 gap-4 text-sm">
                 <div>
                   <div className="font-medium">{stats.totalSchedules}</div>
-                  <div className="text-muted-foreground">Plánů směn</div>
+                  <div className="text-muted-foreground">Uživatelů</div>
                 </div>
                 <div>
                   <div className="font-medium">{stats.generatedShifts}</div>
