@@ -19,11 +19,14 @@ import { useShiftsCRUD, Shift, ShiftFormData } from '@/hooks/shifts/useShiftsCRU
 import { useDHLData } from '@/hooks/dhl/useDHLData';
 import { generateUserShifts } from '@/services/dhl/shiftGenerator';
 import { toast } from 'sonner';
+import MobileShiftActions from './mobile/MobileShiftActions';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const ShiftsContent = () => {
   const { user, isLoading: authLoading } = useAuth();
   const { success, error } = useStandardizedToast();
   const { t } = useTranslation('shifts');
+  const isMobile = useIsMobile();
   
   // Use database hooks instead of localStorage
   const {
@@ -161,6 +164,18 @@ const ShiftsContent = () => {
 
   return (
     <div className="space-y-6">
+      {/* Mobile Actions */}
+      {isMobile && (
+        <MobileShiftActions
+          onQuickAdd={() => setIsAddSheetOpen(true)}
+          onNotificationSettings={() => setIsFilterSheetOpen(true)}
+          onShareSchedule={() => {}}
+          userAssignment={userAssignment}
+          handleGenerateDHLShifts={handleGenerateDHLShifts}
+          isDHLGenerating={isDHLGenerating}
+        />
+      )}
+
       <div className="flex justify-between items-center">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="flex justify-between items-center mb-4">
@@ -179,39 +194,42 @@ const ShiftsContent = () => {
               </TabsTrigger>
             </TabsList>
             
-            <div className="flex gap-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => setIsFilterSheetOpen(true)}
-                className="flex items-center gap-2"
-              >
-                <ListFilter className="h-4 w-4" />
-                {t('filter')}
-              </Button>
-              
-              {userAssignment && (
-                <Button
-                  onClick={handleGenerateDHLShifts}
-                  disabled={isDHLGenerating}
-                  variant="outline"
-                  size="sm"
+            {/* Desktop Actions */}
+            {!isMobile && (
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setIsFilterSheetOpen(true)}
                   className="flex items-center gap-2"
                 >
-                  <Zap className="h-4 w-4" />
-                  {isDHLGenerating ? 'Generuji...' : 'Generovat DHL směny'}
+                  <ListFilter className="h-4 w-4" />
+                  {t('filter')}
                 </Button>
-              )}
-              
-              <Button 
-                size="sm" 
-                onClick={() => setIsAddSheetOpen(true)}
-                className="flex items-center gap-2"
-              >
-                <Plus className="h-4 w-4" />
-                {t('add')}
-              </Button>
-            </div>
+                
+                {userAssignment && (
+                  <Button
+                    onClick={handleGenerateDHLShifts}
+                    disabled={isDHLGenerating}
+                    variant="outline"
+                    size="sm"
+                    className="flex items-center gap-2"
+                  >
+                    <Zap className="h-4 w-4" />
+                    {isDHLGenerating ? 'Generuji...' : 'Generovat DHL směny'}
+                  </Button>
+                )}
+                
+                <Button 
+                  size="sm" 
+                  onClick={() => setIsAddSheetOpen(true)}
+                  className="flex items-center gap-2"
+                >
+                  <Plus className="h-4 w-4" />
+                  {t('add')}
+                </Button>
+              </div>
+            )}
           </div>
           
           <TabsContent value="calendar" className="mt-0">
