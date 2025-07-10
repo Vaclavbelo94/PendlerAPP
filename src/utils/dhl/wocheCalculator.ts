@@ -75,9 +75,29 @@ export const findShiftForDate = (scheduleData: any, woche: number, date: Date): 
   // Format date as YYYY-MM-DD
   const dateStr = date.toISOString().split('T')[0];
   
-  // Look for exact date match first
+  // First try to find data by exact date
   if (scheduleData[dateStr]) {
     return scheduleData[dateStr];
+  }
+  
+  // For yearly plans, look for data by woche key
+  const wocheKey = `woche_${woche}`;
+  if (scheduleData[wocheKey]) {
+    const wocheData = scheduleData[wocheKey];
+    
+    // Get day of week (0=Sunday, 1=Monday, etc.)
+    const dayOfWeek = date.getDay();
+    const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const dayName = dayNames[dayOfWeek];
+    
+    // Check if data exists for this day in this woche
+    if (wocheData[dayName] !== undefined) {
+      // If null, user has day off
+      if (wocheData[dayName] === null) {
+        return null; // Explicitly null = day off
+      }
+      return wocheData[dayName];
+    }
   }
   
   // Fallback to day pattern matching if available
@@ -108,6 +128,19 @@ export const formatMinutesToTime = (minutes: number): string => {
   const hours = Math.floor(minutes / 60);
   const mins = minutes % 60;
   return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+};
+
+/**
+ * Get Monday of the current week
+ */
+export const getCurrentWeekMonday = (): Date => {
+  const now = new Date();
+  const dayOfWeek = now.getDay();
+  const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+  const monday = new Date(now);
+  monday.setDate(now.getDate() + mondayOffset);
+  monday.setHours(0, 0, 0, 0);
+  return monday;
 };
 
 /**

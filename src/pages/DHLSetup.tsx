@@ -12,6 +12,8 @@ import { useDHLData } from '@/hooks/dhl/useDHLData';
 import { isDHLEmployeeSync } from '@/utils/dhlAuthUtils';
 import { useTranslation } from 'react-i18next';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import { getCurrentWeekMonday } from '@/utils/dhl/wocheCalculator';
+import { generateUserShifts } from '@/services/dhl/shiftGenerator';
 
 interface DHLSetupFormData {
   personalNumber: string;
@@ -75,13 +77,19 @@ const DHLSetup = () => {
       
       const { supabase } = await import('@/integrations/supabase/client');
       
-      // Create user DHL assignment
+      // Get selected work group for woche number
+      const selectedWorkGroup = workGroups.find(wg => wg.id === formData.workGroupId);
+      const currentMonday = getCurrentWeekMonday();
+      
+      // Create user DHL assignment with reference data
       const assignmentData = {
         user_id: user.id,
         dhl_position_id: formData.positionId,
         dhl_work_group_id: formData.workGroupId,
         assigned_at: new Date().toISOString(),
-        is_active: true
+        is_active: true,
+        reference_date: currentMonday.toISOString().split('T')[0], // Monday of current week
+        reference_woche: selectedWorkGroup?.week_number || 1 // Selected woche number
       };
 
       console.log('Creating DHL assignment:', assignmentData);
@@ -118,11 +126,31 @@ const DHLSetup = () => {
 
       toast.success(t('setupSuccess'));
       
-      // Show completion message and redirect back to dashboard
+      // Generate shifts automatically for next 30 days
+      try {
+        const endDate = new Date();
+        endDate.setDate(endDate.getDate() + 30);
+        
+        const shiftResult = await generateUserShifts(
+          user.id,
+          new Date().toISOString().split('T')[0],
+          endDate.toISOString().split('T')[0]
+        );
+        
+        if (shiftResult.success) {
+          toast.success(`${t('setupComplete')} - ${shiftResult.message}`);
+        } else {
+          toast.warning(`Setup dokončen, ale generování směn selhalo: ${shiftResult.message}`);
+        }
+      } catch (error) {
+        console.warn('Could not generate shifts automatically:', error);
+        toast.warning('Setup dokončen, ale automatické generování směn selhalo');
+      }
+      
+      // Redirect back to dashboard
       setTimeout(() => {
-        toast.info(t('setupComplete'));
         navigate('/dashboard');
-      }, 1500);
+      }, 2000);
 
     } catch (error) {
       console.error('DHL Setup error:', error);

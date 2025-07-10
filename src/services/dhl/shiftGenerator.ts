@@ -94,10 +94,13 @@ export const generateShiftsFromSchedule = async (params: GenerateShiftsParams): 
       console.log('Date range:', startDate.toISOString(), 'to', endDate.toISOString());
 
       // Get user's reference point for Woche calculation
+      // Use user's assignment reference data if available, otherwise fallback to schedule
       const referenceDate = userAssignment.reference_date ? 
         new Date(userAssignment.reference_date) : 
         new Date(schedule.base_date);
-      const referenceWoche = userAssignment.reference_woche || schedule.base_woche;
+      const referenceWoche = userAssignment.reference_woche !== null ? 
+        userAssignment.reference_woche : 
+        schedule.base_woche;
 
       console.log('Reference point:', referenceDate, 'Woche', referenceWoche);
 
@@ -117,7 +120,11 @@ export const generateShiftsFromSchedule = async (params: GenerateShiftsParams): 
         // Find shift data for this date and Woche
         const shiftData = findShiftForDate(schedule.schedule_data, wocheCalc.currentWoche, currentDate);
 
-        if (shiftData && shiftData.start_time && shiftData.end_time) {
+        // If shiftData is explicitly null, user has day off - skip
+        if (shiftData === null) {
+          console.log('Day off for', dateStr, 'Woche:', wocheCalc.currentWoche);
+          // Move to next day without creating shift
+        } else if (shiftData && shiftData.start_time && shiftData.end_time) {
           console.log('Found shift data for', dateStr, ':', shiftData);
 
           // Check if shift already exists
@@ -231,15 +238,29 @@ export const generateUserShifts = async (userId: string, startDate: string, endD
     }
 
     // Get active schedule for this position and work group
-    const { data: schedule, error: scheduleError } = await supabase
+    // For yearly plans, work_group_id is null, so we need to find by base_woche
+    let scheduleQuery = supabase
       .from('dhl_shift_schedules')
       .select('*')
       .eq('position_id', assignment.dhl_position_id)
-      .eq('work_group_id', assignment.dhl_work_group_id)
       .eq('is_active', true)
       .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle();
+      .limit(1);
+
+    // If assignment has work_group_id, filter by it, otherwise look for yearly plan by base_woche
+    if (assignment.dhl_work_group_id) {
+      scheduleQuery = scheduleQuery.eq('work_group_id', assignment.dhl_work_group_id);
+    } else {
+      // For yearly plans, find by base_woche matching the user's work group week_number
+      const userWocheNumber = assignment.dhl_work_groups?.week_number;
+      if (userWocheNumber) {
+        scheduleQuery = scheduleQuery
+          .is('work_group_id', null)
+          .eq('base_woche', userWocheNumber);
+      }
+    }
+
+    const { data: schedule, error: scheduleError } = await scheduleQuery.maybeSingle();
 
     if (scheduleError || !schedule) {
       return {
