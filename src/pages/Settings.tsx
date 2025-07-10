@@ -14,7 +14,6 @@ import PrivacySettings from '@/components/settings/PrivacySettings';
 import DeviceSettings from '@/components/settings/DeviceSettings';
 import SecuritySettings from '@/components/settings/SecuritySettings';
 import AppearanceSettings from '@/components/settings/AppearanceSettings';
-import ShiftsSettings from '@/components/settings/ShiftsSettings';
 import SettingsMobileCarousel from '@/components/settings/mobile/SettingsMobileCarousel';
 import ModernSettingsNavigation from '@/components/settings/ModernSettingsNavigation';
 import DashboardBackground from '@/components/common/DashboardBackground';
@@ -32,7 +31,7 @@ const Settings = () => {
   // All available settings tabs for swipe navigation
   const allSettingsTabs = [
     "general", "account", "appearance", "notifications", 
-    "language", "security", "device", "data", "shifts"
+    "language", "security", "device", "data"
   ];
 
   // Swipe navigation setup
@@ -61,8 +60,6 @@ const Settings = () => {
         return <DeviceSettings />;
       case 'data':
         return <DataSettings />;
-      case 'shifts':
-        return <ShiftsSettings />;
       default:
         return <GeneralSettings />;
     }

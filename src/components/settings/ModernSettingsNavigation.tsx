@@ -8,8 +8,7 @@ import {
   Globe, 
   Database,
   Shield,
-  Smartphone,
-  Clock
+  Smartphone
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -76,12 +75,6 @@ export const ModernSettingsNavigation: React.FC<ModernSettingsNavigationProps> =
       icon: Database,
       label: t('data'),
       description: t('dataManagement')
-    },
-    {
-      id: 'shifts',
-      icon: Clock,
-      label: 'Směny',
-      description: 'Generování a správa směn'
     }
   ];
 

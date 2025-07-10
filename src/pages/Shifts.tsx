@@ -7,16 +7,13 @@ import ShiftsFormSheets from '@/components/shifts/ShiftsFormSheets';
 import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 import { useTranslation } from 'react-i18next';
 import { useShiftsCRUD, Shift, ShiftFormData } from '@/hooks/shifts/useShiftsCRUD';
-import { Plus, LogIn, RefreshCw, Zap } from 'lucide-react';
+import { Plus, LogIn, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useAuth } from '@/hooks/auth';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import DashboardBackground from '@/components/common/DashboardBackground';
-import { useDHLData } from '@/hooks/dhl/useDHLData';
-import { generateUserShifts } from '@/services/dhl/shiftGenerator';
-import { toast } from 'sonner';
 
 const Shifts = React.memo(() => {
   const { t } = useTranslation('shifts');
@@ -32,9 +29,6 @@ const Shifts = React.memo(() => {
     deleteShift,
     refreshShifts,
   } = useShiftsCRUD();
-
-  const { userAssignment } = useDHLData(user?.id || null);
-  const [isDHLGenerating, setIsDHLGenerating] = useState(false);
 
   const [isAddSheetOpen, setIsAddSheetOpen] = useState(false);
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
@@ -136,39 +130,6 @@ const Shifts = React.memo(() => {
     refreshShifts();
   }, [refreshShifts]);
 
-  // Handle DHL shift generation
-  const handleGenerateDHLShifts = useCallback(async () => {
-    if (!user?.id) {
-      toast.error('Uživatel není přihlášen');
-      return;
-    }
-
-    setIsDHLGenerating(true);
-    try {
-      const startDate = new Date().toISOString().split('T')[0];
-      const endDate = new Date();
-      endDate.setDate(endDate.getDate() + 30);
-      
-      const result = await generateUserShifts(
-        user.id,
-        startDate,
-        endDate.toISOString().split('T')[0]
-      );
-
-      if (result.success) {
-        toast.success(`✅ ${result.message}`);
-        refreshShifts(); // Refresh to show new shifts
-      } else {
-        toast.error(`❌ ${result.message}`);
-      }
-    } catch (error) {
-      console.error('DHL shift generation error:', error);
-      toast.error('Chyba při generování DHL směn');
-    } finally {
-      setIsDHLGenerating(false);
-    }
-  }, [user?.id, refreshShifts]);
-
   // Show loading while auth is being determined or data is loading
   if (isLoading) {
     return (
@@ -239,27 +200,14 @@ const Shifts = React.memo(() => {
             </div>
             
             {!isMobile && (
-              <div className="flex items-center gap-2">
-                {userAssignment && (
-                  <Button
-                    onClick={handleGenerateDHLShifts}
-                    disabled={isDHLGenerating}
-                    variant="outline"
-                    size="lg"
-                  >
-                    <Zap className="h-5 w-5 mr-2" />
-                    {isDHLGenerating ? 'Generuji...' : 'Generovat DHL směny'}
-                  </Button>
-                )}
-                <Button
-                  onClick={() => handleAddShift()}
-                  className="flex items-center gap-2"
-                  size="lg"
-                >
-                  <Plus className="h-5 w-5" />
-                  {t('addShift')}
-                </Button>
-              </div>
+              <Button
+                onClick={() => handleAddShift()}
+                className="flex items-center gap-2"
+                size="lg"
+              >
+                <Plus className="h-5 w-5" />
+                {t('addShift')}
+              </Button>
             )}
           </div>
           
