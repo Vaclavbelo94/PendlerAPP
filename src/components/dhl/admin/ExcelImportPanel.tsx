@@ -163,42 +163,104 @@ export default function ExcelImportPanel() {
           const kwNumber = parseInt(kw.replace('KW', ''));
           const startDate = getDateOfKW(currentYear, kwNumber);
 
-          // Process shift data rows (start from row 11, 0-indexed = 10)
-          // Based on your image: Mo, Di, Mi, Do, Fr, Sa, So start at row 11
-          const startDataRow = 10; // Row 11 (0-indexed)
-          
-          for (let dayIndex = 0; dayIndex < 7; dayIndex++) {
-            const dataRowIndex = startDataRow + dayIndex;
-            if (dataRowIndex >= rawData.length) continue;
-            
-            const row = rawData[dataRowIndex] || [];
-            const dayName = daysOfWeek[dayIndex];
-            const date = new Date(startDate);
-            date.setDate(startDate.getDate() + dayIndex);
-            const dateStr = date.toISOString().split('T')[0];
+           // Helper function to convert Excel decimal time to HH:MM format
+           const excelTimeToString = (decimalTime: number): string => {
+             const totalMinutes = Math.round(decimalTime * 24 * 60);
+             const hours = Math.floor(totalMinutes / 60) % 24;
+             const minutes = totalMinutes % 60;
+             return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+           };
 
-            console.log(`Processing day ${dayName} from row ${dataRowIndex}:`, row.slice(0, 10));
+           // Helper function to determine shift type based on time value
+           const determineShiftType = (timeValue: any): 'R' | 'O' | 'N' | 'OFF' => {
+             if (!timeValue || timeValue === 0 || timeValue === '') return 'OFF';
+             
+             let timeStr: string;
+             
+             if (typeof timeValue === 'number') {
+               // Convert Excel decimal time to string
+               timeStr = excelTimeToString(timeValue);
+             } else if (typeof timeValue === 'string') {
+               timeStr = timeValue.trim();
+             } else {
+               return 'OFF';
+             }
+             
+             if (!timeStr || timeStr === '00:00') return 'OFF';
+             
+             console.log(`Converting time ${timeValue} -> ${timeStr}`);
+             
+             // Parse time string
+             const timeMatch = timeStr.match(/(\d{1,2}):(\d{2})/);
+             if (!timeMatch) return 'OFF';
+             
+             const hours = parseInt(timeMatch[1]);
+             const minutes = parseInt(timeMatch[2]);
+             const totalMinutes = hours * 60 + minutes;
+             
+             // Noční směna: 22:00-6:30 (včetně přes půlnoc)
+             if (totalMinutes >= 22 * 60 || totalMinutes <= 6 * 60 + 30) {
+               return 'N'; // Noční
+             }
+             // Ranní směna: 5:00-14:00
+             else if (totalMinutes >= 5 * 60 && totalMinutes <= 14 * 60) {
+               return 'R'; // Ranní
+             }
+             // Odpolední směna: 14:00-21:15
+             else if (totalMinutes >= 14 * 60 && totalMinutes <= 21 * 60 + 15) {
+               return 'O'; // Odpolední
+             }
+             
+             return 'OFF';
+           };
 
-            // Process each Woche column
-            Object.entries(wocheNumbers).forEach(([colIndex, wocheNumber]) => {
-              const cellValue = row[parseInt(colIndex)];
-              const timeStr = cellValue ? cellValue.toString().trim() : '';
-              
-              console.log(`Day ${dayName}, Woche ${wocheNumber} (col ${colIndex}), Cell value:`, cellValue);
-              
-              const shiftType = detectShiftType(timeStr);
-              const startTime = shiftType !== 'OFF' ? timeStr : undefined;
-              const endTime = shiftType !== 'OFF' ? calculateEndTime(timeStr, shiftType) : undefined;
+           // Process shift data rows (start from row 11, 0-indexed = 10)
+           // Based on your image: Mo, Di, Mi, Do, Fr, Sa, So start at row 11
+           const startDataRow = 10; // Row 11 (0-indexed)
+           
+           for (let dayIndex = 0; dayIndex < 7; dayIndex++) {
+             const dataRowIndex = startDataRow + dayIndex;
+             if (dataRowIndex >= rawData.length) continue;
+             
+             const row = rawData[dataRowIndex] || [];
+             const dayName = daysOfWeek[dayIndex];
+             const date = new Date(startDate);
+             date.setDate(startDate.getDate() + dayIndex);
+             const dateStr = date.toISOString().split('T')[0];
 
-              shifts.push({
-                day: dayName,
-                date: dateStr,
-                woche: wocheNumber,
-                startTime,
-                endTime,
-                shiftType
-              });
-            });
+             console.log(`Processing day ${dayName} from row ${dataRowIndex}:`, row.slice(0, 10));
+
+             // Process each Woche column
+             Object.entries(wocheNumbers).forEach(([colIndex, wocheNumber]) => {
+               const cellValue = row[parseInt(colIndex)];
+               
+               console.log(`Day ${dayName}, Woche ${wocheNumber} (col ${colIndex}), Cell value:`, cellValue);
+               
+               const shiftType = determineShiftType(cellValue);
+               let timeStr = '';
+               
+               if (cellValue && cellValue !== 0 && shiftType !== 'OFF') {
+                 if (typeof cellValue === 'number') {
+                   timeStr = excelTimeToString(cellValue);
+                 } else {
+                   timeStr = cellValue.toString().trim();
+                 }
+               }
+               
+               console.log(`Time conversion: ${cellValue} -> ${timeStr}, Shift type: ${shiftType}`);
+               
+               const startTime = shiftType !== 'OFF' ? timeStr : undefined;
+               const endTime = shiftType !== 'OFF' ? calculateEndTime(timeStr, shiftType) : undefined;
+
+               shifts.push({
+                 day: dayName,
+                 date: dateStr,
+                 woche: wocheNumber,
+                 startTime,
+                 endTime,
+                 shiftType
+               });
+             });
           }
 
           const dateRange = {
