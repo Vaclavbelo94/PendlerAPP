@@ -115,9 +115,9 @@ export default function ExcelImportPanel() {
             defval: '' // Default value for empty cells
           }) as any[][];
 
-          console.log('Raw Excel data:', rawData.slice(0, 10)); // Debug first 10 rows
+          console.log('Raw Excel data:', rawData.slice(0, 15)); // Debug first 15 rows
 
-          if (rawData.length < 5) {
+          if (rawData.length < 15) {
             throw new Error('Excel soubor neobsahuje dostatek řádků');
           }
 
@@ -125,42 +125,35 @@ export default function ExcelImportPanel() {
           const kwMatch = file.name.match(/KW(\d{2})/i);
           const kw = kwMatch ? `KW${kwMatch[1]}` : 'KW01';
 
-          // Find Woche row (typically around row 7-8, look for "Woche" pattern)
-          let wocheRowIndex = -1;
-          let wocheNumbers: { [key: number]: number } = {};
+          // Find Woche numbers row (should be row 8, 0-indexed = 7)
+          // Based on your image: row 8 contains numbers 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
+          const wocheRowIndex = 7; // Row 8 (0-indexed)
+          const wocheRow = rawData[wocheRowIndex] || [];
+          const wocheNumbers: { [key: number]: number } = {};
           
-          for (let i = 6; i < Math.min(rawData.length, 12); i++) {
-            const row = rawData[i] || [];
-            console.log(`Checking row ${i}:`, row);
-            
-            // Look for Woche numbers in this row
-            let foundWoche = false;
-            row.forEach((cell: any, colIndex: number) => {
-              if (cell && typeof cell === 'number' && cell >= 1 && cell <= 15) {
-                wocheNumbers[colIndex] = cell;
-                foundWoche = true;
-              } else if (cell && typeof cell === 'string') {
-                const wocheMatch = cell.toString().match(/(\d{1,2})/);
-                if (wocheMatch) {
-                  const wocheNum = parseInt(wocheMatch[1]);
-                  if (wocheNum >= 1 && wocheNum <= 15) {
-                    wocheNumbers[colIndex] = wocheNum;
-                    foundWoche = true;
-                  }
+          console.log(`Woche row (index ${wocheRowIndex}):`, wocheRow);
+          
+          wocheRow.forEach((cell: any, colIndex: number) => {
+            if (cell && typeof cell === 'number' && cell >= 1 && cell <= 15) {
+              wocheNumbers[colIndex] = cell;
+              console.log(`Found Woche ${cell} at column ${colIndex}`);
+            } else if (cell && typeof cell === 'string') {
+              const wocheMatch = cell.toString().match(/^(\d{1,2})$/);
+              if (wocheMatch) {
+                const wocheNum = parseInt(wocheMatch[1]);
+                if (wocheNum >= 1 && wocheNum <= 15) {
+                  wocheNumbers[colIndex] = wocheNum;
+                  console.log(`Found Woche ${wocheNum} at column ${colIndex} (string)`);
                 }
               }
-            });
-            
-            if (foundWoche) {
-              wocheRowIndex = i;
-              console.log('Found Woche row at index:', i, 'with numbers:', wocheNumbers);
-              break;
             }
-          }
+          });
 
           if (Object.keys(wocheNumbers).length === 0) {
-            throw new Error('Nepodařilo se najít Woche čísla v Excel souboru. Očekávána čísla 1-15.');
+            throw new Error('Nepodařilo se najít Woche čísla v řádku 8. Očekávána čísla 1-15.');
           }
+
+          console.log('Final Woche mapping:', wocheNumbers);
 
           const shifts: ShiftData[] = [];
           const daysOfWeek = ['Pondělí', 'Úterý', 'Středa', 'Čtvrtek', 'Pátek', 'Sobota', 'Neděle'];
@@ -170,9 +163,12 @@ export default function ExcelImportPanel() {
           const kwNumber = parseInt(kw.replace('KW', ''));
           const startDate = getDateOfKW(currentYear, kwNumber);
 
-          // Process shift data rows (start from after Woche row)
+          // Process shift data rows (start from row 11, 0-indexed = 10)
+          // Based on your image: Mo, Di, Mi, Do, Fr, Sa, So start at row 11
+          const startDataRow = 10; // Row 11 (0-indexed)
+          
           for (let dayIndex = 0; dayIndex < 7; dayIndex++) {
-            const dataRowIndex = wocheRowIndex + 1 + dayIndex;
+            const dataRowIndex = startDataRow + dayIndex;
             if (dataRowIndex >= rawData.length) continue;
             
             const row = rawData[dataRowIndex] || [];
@@ -181,14 +177,14 @@ export default function ExcelImportPanel() {
             date.setDate(startDate.getDate() + dayIndex);
             const dateStr = date.toISOString().split('T')[0];
 
-            console.log(`Processing day ${dayName} from row ${dataRowIndex}:`, row);
+            console.log(`Processing day ${dayName} from row ${dataRowIndex}:`, row.slice(0, 10));
 
             // Process each Woche column
             Object.entries(wocheNumbers).forEach(([colIndex, wocheNumber]) => {
               const cellValue = row[parseInt(colIndex)];
               const timeStr = cellValue ? cellValue.toString().trim() : '';
               
-              console.log(`Day ${dayName}, Woche ${wocheNumber}, Cell value:`, cellValue);
+              console.log(`Day ${dayName}, Woche ${wocheNumber} (col ${colIndex}), Cell value:`, cellValue);
               
               const shiftType = detectShiftType(timeStr);
               const startTime = shiftType !== 'OFF' ? timeStr : undefined;
