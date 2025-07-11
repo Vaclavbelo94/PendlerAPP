@@ -73,16 +73,28 @@ export default function ExcelImportPanel() {
   const detectShiftType = (timeStr: string): 'R' | 'O' | 'N' | 'OFF' => {
     if (!timeStr || timeStr.trim() === '') return 'OFF';
     
-    // Parse time string (could be "06:00:00", "6:00", etc.)
-    const timeMatch = timeStr.match(/(\d{1,2}):(\d{2})/);
-    if (!timeMatch) return 'OFF';
+    // Extract all time patterns from string (look for HH:MM format)
+    const timePattern = /(\d{1,2}):(\d{2})/g;
+    const times = [...timeStr.matchAll(timePattern)];
     
-    const hour = parseInt(timeMatch[1]);
+    if (times.length === 0) return 'OFF';
     
-    // Shift type detection based on start time
-    if (hour >= 5 && hour <= 8) return 'R';  // Morning: 05:00-08:00
-    if (hour >= 13 && hour <= 16) return 'O'; // Afternoon: 13:00-16:00
-    if (hour >= 21 || hour <= 2) return 'N';  // Night: 21:00-02:00
+    // Get the first time as start time
+    const startHour = parseInt(times[0][1]);
+    const startMinute = parseInt(times[0][2]);
+    
+    // Noční směna (22:00-6:30)
+    // Speciální případ: 23:30-00:00 znamená začátek půl hodiny před půlnocí a pokračuje až do 6:30
+    if (startHour >= 22 || startHour <= 6 || 
+        (startHour === 23 && startMinute >= 30)) {
+      return 'N';
+    }
+    
+    // Ranní směna (končí do 14:00-15:00)
+    if (startHour >= 5 && startHour < 14) return 'R';
+    
+    // Odpolední směna (14:00-21:15, začíná koncem ranní)
+    if (startHour >= 14 && startHour < 22) return 'O';
     
     return 'OFF';
   };
