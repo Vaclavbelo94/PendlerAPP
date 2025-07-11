@@ -230,37 +230,71 @@ export default function ExcelImportPanel() {
 
              console.log(`Processing day ${dayName} from row ${dataRowIndex}:`, row.slice(0, 10));
 
-             // Process each Woche column
-             Object.entries(wocheNumbers).forEach(([colIndex, wocheNumber]) => {
-               const cellValue = row[parseInt(colIndex)];
-               
-               console.log(`Day ${dayName}, Woche ${wocheNumber} (col ${colIndex}), Cell value:`, cellValue);
-               
-               const shiftType = determineShiftType(cellValue);
-               let timeStr = '';
-               
-               if (cellValue && cellValue !== 0 && shiftType !== 'OFF') {
-                 if (typeof cellValue === 'number') {
-                   timeStr = excelTimeToString(cellValue);
-                 } else {
-                   timeStr = cellValue.toString().trim();
+           // Process each Woche column
+            Object.entries(wocheNumbers).forEach(([colIndex, wocheNumber]) => {
+              const cellValue = row[parseInt(colIndex)];
+              
+              console.log(`Day ${dayName}, Woche ${wocheNumber} (col ${colIndex}), Cell value:`, cellValue);
+              
+              // Skip if cell is empty or 0
+              if (!cellValue || cellValue === 0 || cellValue === '') {
+                return; // Don't add OFF shifts
+              }
+              
+              let startTime = '';
+              let endTime = '';
+              
+               if (typeof cellValue === 'number') {
+                 // Single decimal time value
+                 startTime = excelTimeToString(cellValue);
+                 const shiftType = determineShiftType(cellValue);
+                 if (shiftType !== 'OFF') {
+                   endTime = calculateEndTime(startTime, shiftType);
                  }
+               } else if (typeof cellValue === 'string') {
+                 const cellStr = cellValue.toString().trim();
+                 
+                 // Check if there are two times in the cell (e.g., "15:15 21:15")
+                 const timePattern = /(\d{1,2}:\d{2})\s+(\d{1,2}:\d{2})/;
+                 const match = cellStr.match(timePattern);
+                 
+                 if (match) {
+                   // Two times found
+                   startTime = match[1];
+                   endTime = match[2];
+                 } else {
+                   // Single time, calculate end time
+                   const singleTimePattern = /(\d{1,2}:\d{2})/;
+                   const singleMatch = cellStr.match(singleTimePattern);
+                   if (singleMatch) {
+                     startTime = singleMatch[1];
+                     const shiftType = determineShiftType(startTime);
+                     if (shiftType !== 'OFF') {
+                       endTime = calculateEndTime(startTime, shiftType);
+                     }
+                   } else {
+                     return; // Invalid format
+                   }
+                 }
+               } else {
+                 return; // Unsupported type
                }
-               
-               console.log(`Time conversion: ${cellValue} -> ${timeStr}, Shift type: ${shiftType}`);
-               
-               const startTime = shiftType !== 'OFF' ? timeStr : undefined;
-               const endTime = shiftType !== 'OFF' ? calculateEndTime(timeStr, shiftType) : undefined;
-
-               shifts.push({
-                 day: dayName,
-                 date: dateStr,
-                 woche: wocheNumber,
-                 startTime,
-                 endTime,
-                 shiftType
-               });
-             });
+              
+              const shiftType = determineShiftType(startTime);
+              
+              console.log(`Time parsed: Start=${startTime}, End=${endTime}, Shift type=${shiftType}`);
+              
+              if (shiftType !== 'OFF' && startTime) {
+                shifts.push({
+                  day: dayName,
+                  date: dateStr,
+                  woche: wocheNumber,
+                  startTime,
+                  endTime,
+                  shiftType
+                });
+              }
+            });
           }
 
           const dateRange = {
