@@ -159,7 +159,7 @@ export class WocheCalculatorService {
     const { data: shifts, error } = await supabase
       .from('dhl_shift_schedules')
       .select('*')
-      .eq('kw', kw)
+      .eq('calendar_week', parseInt(kw.replace('KW', '')))
       .eq('woche_group', wocheResult.rotatedWoche)
       .eq('position_id', userAssignment.dhl_position_id)
       .eq('is_active', true);
