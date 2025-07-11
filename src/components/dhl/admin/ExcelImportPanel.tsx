@@ -109,34 +109,58 @@ export default function ExcelImportPanel() {
           const workbook = XLSX.read(data, { type: 'array' });
           const worksheet = workbook.Sheets[workbook.SheetNames[0]];
           
-          // Convert to JSON, skipping first 5 rows (skiprows=5)
-          const jsonData = XLSX.utils.sheet_to_json(worksheet, { 
+          // Read sheet as 2D array without skipping rows initially
+          const rawData = XLSX.utils.sheet_to_json(worksheet, { 
             header: 1,
-            range: 5 // Start from row 6 (0-indexed)
+            defval: '' // Default value for empty cells
           }) as any[][];
 
-          if (jsonData.length < 2) {
-            throw new Error('Excel soubor neobsahuje dostatek dat');
+          console.log('Raw Excel data:', rawData.slice(0, 10)); // Debug first 10 rows
+
+          if (rawData.length < 5) {
+            throw new Error('Excel soubor neobsahuje dostatek řádků');
           }
 
           // Extract KW from filename (e.g., "KW01.xlsx" -> "KW01")
           const kwMatch = file.name.match(/KW(\d{2})/i);
           const kw = kwMatch ? `KW${kwMatch[1]}` : 'KW01';
 
-          // Parse header row to identify Woche columns
-          const headerRow = jsonData[0] || [];
-          const wocheColumns: { [key: number]: number } = {};
+          // Find Woche row (typically around row 7-8, look for "Woche" pattern)
+          let wocheRowIndex = -1;
+          let wocheNumbers: { [key: number]: number } = {};
           
-          headerRow.forEach((cell: any, index: number) => {
-            if (typeof cell === 'string') {
-              // Look for patterns like "REVAS N", "Dpl", etc. and map to Woche numbers
-              // For now, we'll assign sequential Woche numbers (1-15)
-              if (cell.trim() && index > 0) { // Skip first column (days)
-                const wocheNumber = (index - 1) % 15 + 1;
-                wocheColumns[index] = wocheNumber;
+          for (let i = 6; i < Math.min(rawData.length, 12); i++) {
+            const row = rawData[i] || [];
+            console.log(`Checking row ${i}:`, row);
+            
+            // Look for Woche numbers in this row
+            let foundWoche = false;
+            row.forEach((cell: any, colIndex: number) => {
+              if (cell && typeof cell === 'number' && cell >= 1 && cell <= 15) {
+                wocheNumbers[colIndex] = cell;
+                foundWoche = true;
+              } else if (cell && typeof cell === 'string') {
+                const wocheMatch = cell.toString().match(/(\d{1,2})/);
+                if (wocheMatch) {
+                  const wocheNum = parseInt(wocheMatch[1]);
+                  if (wocheNum >= 1 && wocheNum <= 15) {
+                    wocheNumbers[colIndex] = wocheNum;
+                    foundWoche = true;
+                  }
+                }
               }
+            });
+            
+            if (foundWoche) {
+              wocheRowIndex = i;
+              console.log('Found Woche row at index:', i, 'with numbers:', wocheNumbers);
+              break;
             }
-          });
+          }
+
+          if (Object.keys(wocheNumbers).length === 0) {
+            throw new Error('Nepodařilo se najít Woche čísla v Excel souboru. Očekávána čísla 1-15.');
+          }
 
           const shifts: ShiftData[] = [];
           const daysOfWeek = ['Pondělí', 'Úterý', 'Středa', 'Čtvrtek', 'Pátek', 'Sobota', 'Neděle'];
@@ -146,19 +170,25 @@ export default function ExcelImportPanel() {
           const kwNumber = parseInt(kw.replace('KW', ''));
           const startDate = getDateOfKW(currentYear, kwNumber);
 
-          // Process data rows (skip header)
-          jsonData.slice(1).forEach((row: any[], dayIndex: number) => {
-            if (dayIndex >= 7) return; // Only process 7 days
+          // Process shift data rows (start from after Woche row)
+          for (let dayIndex = 0; dayIndex < 7; dayIndex++) {
+            const dataRowIndex = wocheRowIndex + 1 + dayIndex;
+            if (dataRowIndex >= rawData.length) continue;
             
+            const row = rawData[dataRowIndex] || [];
             const dayName = daysOfWeek[dayIndex];
             const date = new Date(startDate);
             date.setDate(startDate.getDate() + dayIndex);
             const dateStr = date.toISOString().split('T')[0];
 
+            console.log(`Processing day ${dayName} from row ${dataRowIndex}:`, row);
+
             // Process each Woche column
-            Object.entries(wocheColumns).forEach(([colIndex, wocheNumber]) => {
+            Object.entries(wocheNumbers).forEach(([colIndex, wocheNumber]) => {
               const cellValue = row[parseInt(colIndex)];
               const timeStr = cellValue ? cellValue.toString().trim() : '';
+              
+              console.log(`Day ${dayName}, Woche ${wocheNumber}, Cell value:`, cellValue);
               
               const shiftType = detectShiftType(timeStr);
               const startTime = shiftType !== 'OFF' ? timeStr : undefined;
@@ -173,7 +203,7 @@ export default function ExcelImportPanel() {
                 shiftType
               });
             });
-          });
+          }
 
           const dateRange = {
             start: shifts[0]?.date || '',
