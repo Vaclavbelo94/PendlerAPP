@@ -10,6 +10,7 @@ import { InfoCard } from "@/components/ui/design-system/InfoCard";
 import { canAccessDHLAdmin } from "@/utils/dhlAuthUtils";
 import AdminLoginDialog from "@/components/admin/AdminLoginDialog";
 import DHLImportPanel from "@/components/dhl/admin/DHLImportPanel";
+import ExcelImportPanel from "@/components/dhl/admin/ExcelImportPanel";
 import DHLEmployeeManagement from "@/components/dhl/admin/DHLEmployeeManagement";
 import DHLSystemSettings from "@/components/dhl/admin/DHLSystemSettings";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";

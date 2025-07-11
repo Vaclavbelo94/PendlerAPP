@@ -188,6 +188,8 @@ export interface DHLImportValidation {
 // Extended UserDHLAssignment with current woche tracking
 export interface ExtendedUserDHLAssignment extends UserDHLAssignment {
   current_woche?: number;
+  reference_kw?: string;
+  reference_date?: string;
 }
 
 // Annual plan import data structure

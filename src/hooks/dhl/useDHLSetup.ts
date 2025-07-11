@@ -5,7 +5,7 @@ import { useAuth } from '@/hooks/auth';
 import { isDHLEmployee } from '@/utils/dhlAuthUtils';
 
 interface DHLSetupData {
-  personalNumber: string;
+  personalNumber?: string;
   positionId: string;
   currentWoche: number; // User's current Woche (1-15)
 }
@@ -137,7 +137,7 @@ export const useDHLSetup = () => {
       console.log('DHL assignment created:', assignment);
 
       // Update personal number in profile if provided
-      if (setupData.personalNumber.trim()) {
+      if (setupData.personalNumber && setupData.personalNumber.trim()) {
         const { error: profileError } = await supabase
           .from('profiles')
           .update({ 

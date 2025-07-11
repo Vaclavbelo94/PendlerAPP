@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import DHLEmployeeManagement from './DHLEmployeeManagement';
 import DHLImportPanel from './DHLImportPanel';
 import DHLSystemSettings from './DHLSystemSettings';
+import ExcelImportPanel from './ExcelImportPanel';
 import { useTranslation } from 'react-i18next';
 
 interface DHLAdminMobileCarouselProps {
@@ -36,6 +37,13 @@ const DHLAdminMobileCarousel: React.FC<DHLAdminMobileCarouselProps> = ({
       fullTitle: 'Správa rozvrhů',
       icon: Calendar,
       component: <DHLImportPanel />
+    },
+    {
+      id: 'excel-import',
+      title: 'Excel Import',
+      fullTitle: 'Import směn z Excel',
+      icon: Upload,
+      component: <ExcelImportPanel />
     },
     {
       id: 'settings',
