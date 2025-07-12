@@ -427,15 +427,42 @@ export default function ExcelImportPanel() {
     }
   };
 
-  const updateShiftType = (index: number, newType: 'R' | 'O' | 'N' | 'OFF') => {
+  const updateShiftType = (wocheNumber: number, dayName: string, newType: 'R' | 'O' | 'N' | 'OFF') => {
     const updated = [...editedShifts];
-    updated[index] = {
-      ...updated[index],
-      shiftType: newType,
-      isEdited: true,
-      startTime: newType === 'OFF' ? undefined : updated[index].startTime,
-      endTime: newType === 'OFF' ? undefined : updated[index].endTime
-    };
+    const existingIndex = updated.findIndex(shift => shift.woche === wocheNumber && shift.day === dayName);
+    
+    if (existingIndex >= 0) {
+      // Update existing shift
+      updated[existingIndex] = {
+        ...updated[existingIndex],
+        shiftType: newType,
+        isEdited: true,
+        startTime: newType === 'OFF' ? undefined : updated[existingIndex].startTime,
+        endTime: newType === 'OFF' ? undefined : updated[existingIndex].endTime
+      };
+    } else if (newType !== 'OFF') {
+      // Create new shift for this day
+      const dayIndex = ['Pondělí', 'Úterý', 'Středa', 'Čtvrtek', 'Pátek', 'Sobota', 'Neděle'].indexOf(dayName);
+      if (dayIndex >= 0 && parsedData) {
+        const currentYear = new Date().getFullYear();
+        const kwNumber = parseInt(parsedData.kw.replace('KW', ''));
+        const startDate = getDateOfKW(currentYear, kwNumber);
+        const date = new Date(startDate);
+        date.setDate(startDate.getDate() + dayIndex);
+        const dateStr = date.toISOString().split('T')[0];
+        
+        updated.push({
+          day: dayName,
+          date: dateStr,
+          woche: wocheNumber,
+          shiftType: newType,
+          isEdited: true,
+          startTime: undefined,
+          endTime: undefined
+        });
+      }
+    }
+    
     setEditedShifts(updated);
   };
 
@@ -607,86 +634,73 @@ export default function ExcelImportPanel() {
            <CardContent>
              {/* Group shifts by Woche */}
              {(() => {
-               // Group shifts by Woche number
-               const shiftsByWoche = editedShifts.reduce((acc, shift, index) => {
-                 if (!acc[shift.woche]) {
-                   acc[shift.woche] = [];
-                 }
-                 acc[shift.woche].push({ shift, index });
-                 return acc;
-               }, {} as Record<number, Array<{ shift: ShiftData; index: number }>>);
+               // Get all detected Woche numbers from shifts
+               const detectedWocheNumbers = [...new Set(editedShifts.map(shift => shift.woche))].sort((a, b) => a - b);
                
-               const sortedWocheNumbers = Object.keys(shiftsByWoche)
-                 .map(Number)
-                 .sort((a, b) => a - b);
+               // If no shifts detected, default to showing Woche 1-4
+               const allWocheNumbers = detectedWocheNumbers.length > 0 ? detectedWocheNumbers : [1, 2, 3, 4];
 
                return (
                  <div className="space-y-6">
-                   {sortedWocheNumbers.map((wocheNumber) => {
-                     const wocheShifts = shiftsByWoche[wocheNumber];
+                   {allWocheNumbers.map((wocheNumber) => {
                      const daysOfWeek = ['Pondělí', 'Úterý', 'Středa', 'Čtvrtek', 'Pátek', 'Sobota', 'Neděle'];
+                     const wocheShifts = editedShifts.filter(shift => shift.woche === wocheNumber);
                      
                      return (
-                       <div key={wocheNumber} className="border rounded-lg p-4 bg-muted/30">
+                       <div key={wocheNumber} className="border rounded-lg p-4 bg-muted/30 animate-fade-in">
                          <h3 className="text-lg font-semibold mb-4 text-primary flex items-center gap-2">
                            <Badge variant="outline" className="text-base px-3 py-1">
                              Woche {wocheNumber}
                            </Badge>
                            <span className="text-sm text-muted-foreground font-normal">
-                             ({wocheShifts.filter(({ shift }) => shift.shiftType !== 'OFF').length} směn)
+                             ({wocheShifts.filter(shift => shift.shiftType !== 'OFF').length} směn)
                            </span>
                          </h3>
                          
                          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-3">
                            {daysOfWeek.map((dayName) => {
-                             const dayShift = wocheShifts.find(({ shift }) => shift.day === dayName);
+                             const dayShift = wocheShifts.find(shift => shift.day === dayName);
+                             const currentShiftType = dayShift?.shiftType || 'OFF';
                              
                              return (
-                               <div key={`${wocheNumber}-${dayName}`} className="border rounded-lg p-3 bg-background shadow-sm">
+                               <div key={`${wocheNumber}-${dayName}`} className="border rounded-lg p-3 bg-background shadow-sm hover-scale">
                                  <div className="text-sm font-medium text-muted-foreground mb-2">
                                    {dayName}
                                  </div>
                                  
-                                 {dayShift ? (
-                                   <div className="space-y-2">
+                                 <div className="space-y-2">
+                                   {dayShift && (
                                      <div className="text-xs text-muted-foreground">
-                                       {dayShift.shift.date}
+                                       {dayShift.date}
                                      </div>
-                                     
-                                     <Badge className={SHIFT_TYPE_COLORS[dayShift.shift.shiftType]}>
-                                       {SHIFT_TYPE_LABELS[dayShift.shift.shiftType]}
-                                     </Badge>
-                                     
-                                     {dayShift.shift.startTime && (
-                                       <div className="text-xs">
-                                         {dayShift.shift.startTime}
-                                         {dayShift.shift.endTime && ` - ${dayShift.shift.endTime}`}
-                                       </div>
-                                     )}
-                                     
-                                     <Select 
-                                       value={dayShift.shift.shiftType} 
-                                       onValueChange={(value: 'R' | 'O' | 'N' | 'OFF') => updateShiftType(dayShift.index, value)}
-                                     >
-                                       <SelectTrigger className="w-full h-8 text-xs">
-                                         <SelectValue />
-                                       </SelectTrigger>
-                                       <SelectContent>
-                                         <SelectItem value="R">R - Ranní</SelectItem>
-                                         <SelectItem value="O">O - Odpolední</SelectItem>
-                                         <SelectItem value="N">N - Noční</SelectItem>
-                                         <SelectItem value="OFF">OFF - Volno</SelectItem>
-                                       </SelectContent>
-                                     </Select>
-                                   </div>
-                                 ) : (
-                                   <div className="text-center text-muted-foreground text-sm py-4">
-                                     <Badge className={SHIFT_TYPE_COLORS['OFF']}>
-                                       {SHIFT_TYPE_LABELS['OFF']}
-                                     </Badge>
-                                     <div className="text-xs mt-1">Žádná směna</div>
-                                   </div>
-                                 )}
+                                   )}
+                                   
+                                   <Badge className={SHIFT_TYPE_COLORS[currentShiftType]}>
+                                     {SHIFT_TYPE_LABELS[currentShiftType]}
+                                   </Badge>
+                                   
+                                   {dayShift?.startTime && (
+                                     <div className="text-xs">
+                                       {dayShift.startTime}
+                                       {dayShift.endTime && ` - ${dayShift.endTime}`}
+                                     </div>
+                                   )}
+                                   
+                                   <Select 
+                                     value={currentShiftType} 
+                                     onValueChange={(value: 'R' | 'O' | 'N' | 'OFF') => updateShiftType(wocheNumber, dayName, value)}
+                                   >
+                                     <SelectTrigger className="w-full h-8 text-xs">
+                                       <SelectValue />
+                                     </SelectTrigger>
+                                     <SelectContent className="bg-background border shadow-lg z-50">
+                                       <SelectItem value="R">R - Ranní</SelectItem>
+                                       <SelectItem value="O">O - Odpolední</SelectItem>
+                                       <SelectItem value="N">N - Noční</SelectItem>
+                                       <SelectItem value="OFF">OFF - Volno</SelectItem>
+                                     </SelectContent>
+                                   </Select>
+                                 </div>
                                </div>
                              );
                            })}
