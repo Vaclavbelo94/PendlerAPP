@@ -266,71 +266,91 @@ export default function ExcelImportPanel() {
 
              console.log(`Processing day ${dayName} from row ${dataRowIndex}:`, row.slice(0, 10));
 
-           // Process each Woche column
-            Object.entries(wocheNumbers).forEach(([colIndex, wocheNumber]) => {
-              const cellValue = row[parseInt(colIndex)];
-              
-              console.log(`Day ${dayName}, Woche ${wocheNumber} (col ${colIndex}), Cell value:`, cellValue);
-              
-              // Skip if cell is empty or 0
-              if (!cellValue || cellValue === 0 || cellValue === '') {
-                return; // Don't add OFF shifts
-              }
-              
-              let startTime = '';
-              let endTime = '';
-              
-               if (typeof cellValue === 'number') {
-                 // Single decimal time value
-                 startTime = excelTimeToString(cellValue);
-                 const shiftType = determineShiftType(cellValue);
-                 if (shiftType !== 'OFF') {
-                   endTime = calculateEndTime(startTime, shiftType);
-                 }
-               } else if (typeof cellValue === 'string') {
-                 const cellStr = cellValue.toString().trim();
-                 
-                 // Check if there are two times in the cell (e.g., "15:15 21:15")
-                 const timePattern = /(\d{1,2}:\d{2})\s+(\d{1,2}:\d{2})/;
-                 const match = cellStr.match(timePattern);
-                 
-                 if (match) {
-                   // Two times found
-                   startTime = match[1];
-                   endTime = match[2];
-                 } else {
-                   // Single time, calculate end time
-                   const singleTimePattern = /(\d{1,2}:\d{2})/;
-                   const singleMatch = cellStr.match(singleTimePattern);
-                   if (singleMatch) {
-                     startTime = singleMatch[1];
-                     const shiftType = determineShiftType(startTime);
-                     if (shiftType !== 'OFF') {
-                       endTime = calculateEndTime(startTime, shiftType);
-                     }
-                   } else {
-                     return; // Invalid format
-                   }
-                 }
-               } else {
-                 return; // Unsupported type
+            // Process each Woche column
+             Object.entries(wocheNumbers).forEach(([colIndex, wocheNumber]) => {
+               const cellValue = row[parseInt(colIndex)];
+               
+               console.log(`Day ${dayName}, Woche ${wocheNumber} (col ${colIndex}), Cell value:`, cellValue);
+               
+               // Skip if cell is empty or 0
+               if (!cellValue || cellValue === 0 || cellValue === '') {
+                 return; // Don't add OFF shifts
                }
-              
-              const shiftType = determineShiftType(startTime);
-              
-              console.log(`Time parsed: Start=${startTime}, End=${endTime}, Shift type=${shiftType}`);
-              
-              if (shiftType !== 'OFF' && startTime) {
-                shifts.push({
-                  day: dayName,
-                  date: dateStr,
-                  woche: wocheNumber,
-                  startTime,
-                  endTime,
-                  shiftType
-                });
-              }
-            });
+               
+               let startTime = '';
+               let endTime = '';
+               
+                if (typeof cellValue === 'number') {
+                  // Single decimal time value
+                  startTime = excelTimeToString(cellValue);
+                  const shiftType = determineShiftType(cellValue);
+                  if (shiftType !== 'OFF') {
+                    endTime = calculateEndTime(startTime, shiftType);
+                  }
+                } else if (typeof cellValue === 'string') {
+                  const cellStr = cellValue.toString().trim();
+                  
+                  // Extract all time values from the cell (HH:MM format)
+                  const timePattern = /(\d{1,2}:\d{2})/g;
+                  const timeMatches = [...cellStr.matchAll(timePattern)];
+                  const times = timeMatches.map(match => match[1]);
+                  
+                  console.log(`Found ${times.length} time values in cell:`, times);
+                  
+                  if (times.length >= 3) {
+                    // Three times: start, break/pause, end (e.g., "15:15 21:15 06:00")
+                    startTime = times[0];
+                    endTime = times[2]; // Skip the middle time (break/pause)
+                    console.log(`Using 3-time pattern: Start=${startTime}, End=${endTime} (skipping break ${times[1]})`);
+                  } else if (times.length === 2) {
+                    // Two times: start and end (e.g., "15:15 21:15")
+                    startTime = times[0];
+                    endTime = times[1];
+                    console.log(`Using 2-time pattern: Start=${startTime}, End=${endTime}`);
+                  } else if (times.length === 1) {
+                    // Single time, calculate end time
+                    startTime = times[0];
+                    const shiftType = determineShiftType(startTime);
+                    if (shiftType !== 'OFF') {
+                      endTime = calculateEndTime(startTime, shiftType);
+                    }
+                    console.log(`Using 1-time pattern: Start=${startTime}, Calculated End=${endTime}`);
+                  } else {
+                    console.log(`No valid time found in cell: "${cellStr}"`);
+                    return; // Invalid format
+                  }
+                } else {
+                  return; // Unsupported type
+                }
+               
+               // Handle overnight shifts properly
+               let actualDate = dateStr;
+               if (startTime && endTime) {
+                 const startHour = parseInt(startTime.split(':')[0]);
+                 const endHour = parseInt(endTime.split(':')[0]);
+                 
+                 // If shift starts late (22:00+) and ends early (06:00-), it's overnight
+                 if (startHour >= 22 && endHour <= 6) {
+                   // For overnight shifts, use the date when the shift starts
+                   console.log(`Detected overnight shift: ${startTime}-${endTime} on ${actualDate}`);
+                 }
+               }
+               
+               const shiftType = determineShiftType(startTime);
+               
+               console.log(`Final shift: Day=${dayName}, Date=${actualDate}, Woche=${wocheNumber}, Start=${startTime}, End=${endTime}, Type=${shiftType}`);
+               
+               if (shiftType !== 'OFF' && startTime) {
+                 shifts.push({
+                   day: dayName,
+                   date: actualDate,
+                   woche: wocheNumber,
+                   startTime,
+                   endTime,
+                   shiftType
+                 });
+               }
+             });
           }
 
           const dateRange = {
