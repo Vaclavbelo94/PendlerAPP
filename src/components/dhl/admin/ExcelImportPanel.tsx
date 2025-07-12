@@ -604,111 +604,120 @@ export default function ExcelImportPanel() {
             </CardDescription>
           </CardHeader>
           
-          <CardContent>
-            {/* Navigation arrows for horizontal scrolling */}
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={scrollLeft}
-                  disabled={!canScrollLeft}
-                  className="h-8 w-8 p-0"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={scrollRight}
-                  disabled={!canScrollRight}
-                  className="h-8 w-8 p-0"
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-                <span className="text-sm text-muted-foreground">
-                  Použijte šipky pro horizontální posouvání
-                </span>
-              </div>
-            </div>
+           <CardContent>
+             {/* Group shifts by Woche */}
+             {(() => {
+               // Group shifts by Woche number
+               const shiftsByWoche = editedShifts.reduce((acc, shift, index) => {
+                 if (!acc[shift.woche]) {
+                   acc[shift.woche] = [];
+                 }
+                 acc[shift.woche].push({ shift, index });
+                 return acc;
+               }, {} as Record<number, Array<{ shift: ShiftData; index: number }>>);
+               
+               const sortedWocheNumbers = Object.keys(shiftsByWoche)
+                 .map(Number)
+                 .sort((a, b) => a - b);
 
-            {/* Scrollable table container */}
-            <div 
-              ref={tableScrollRef}
-              className="rounded-md border max-h-96 overflow-auto"
-              style={{ overscrollBehavior: 'contain' }}
-            >
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="min-w-[90px]">Den</TableHead>
-                    <TableHead className="min-w-[100px]">Datum</TableHead>
-                    <TableHead className="min-w-[80px]">Woche</TableHead>
-                    <TableHead className="min-w-[120px]">Čas</TableHead>
-                    <TableHead className="min-w-[120px]">Typ směny</TableHead>
-                    <TableHead className="min-w-[100px]">Akce</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {editedShifts.map((shift, index) => (
-                    <TableRow key={index} className={shift.isEdited ? 'bg-yellow-50' : ''}>
-                      <TableCell className="font-medium">{shift.day}</TableCell>
-                      <TableCell>{shift.date}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline">W{shift.woche}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        {shift.startTime && shift.endTime 
-                          ? `${shift.startTime} - ${shift.endTime}`
-                          : '-'
-                        }
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={SHIFT_TYPE_COLORS[shift.shiftType]}>
-                          {SHIFT_TYPE_LABELS[shift.shiftType]}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Select
-                          value={shift.shiftType}
-                          onValueChange={(value: 'R' | 'O' | 'N' | 'OFF') => updateShiftType(index, value)}
-                        >
-                          <SelectTrigger className="w-24">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="R">R</SelectItem>
-                            <SelectItem value="O">O</SelectItem>
-                            <SelectItem value="N">N</SelectItem>
-                            <SelectItem value="OFF">OFF</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-            
-            <div className="flex gap-4 mt-4 text-sm text-muted-foreground">
-              <div className="flex items-center gap-1">
-                <div className="w-3 h-3 rounded bg-green-100 border border-green-200"></div>
-                <span>Ranní (R)</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <div className="w-3 h-3 rounded bg-blue-100 border border-blue-200"></div>
-                <span>Odpolední (O)</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <div className="w-3 h-3 rounded bg-gray-800"></div>
-                <span>Noční (N)</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <div className="w-3 h-3 rounded bg-gray-100 border border-gray-300"></div>
-                <span>Volno (OFF)</span>
-              </div>
-            </div>
-          </CardContent>
+               return (
+                 <div className="space-y-6">
+                   {sortedWocheNumbers.map((wocheNumber) => {
+                     const wocheShifts = shiftsByWoche[wocheNumber];
+                     const daysOfWeek = ['Pondělí', 'Úterý', 'Středa', 'Čtvrtek', 'Pátek', 'Sobota', 'Neděle'];
+                     
+                     return (
+                       <div key={wocheNumber} className="border rounded-lg p-4 bg-muted/30">
+                         <h3 className="text-lg font-semibold mb-4 text-primary flex items-center gap-2">
+                           <Badge variant="outline" className="text-base px-3 py-1">
+                             Woche {wocheNumber}
+                           </Badge>
+                           <span className="text-sm text-muted-foreground font-normal">
+                             ({wocheShifts.filter(({ shift }) => shift.shiftType !== 'OFF').length} směn)
+                           </span>
+                         </h3>
+                         
+                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-3">
+                           {daysOfWeek.map((dayName) => {
+                             const dayShift = wocheShifts.find(({ shift }) => shift.day === dayName);
+                             
+                             return (
+                               <div key={`${wocheNumber}-${dayName}`} className="border rounded-lg p-3 bg-background shadow-sm">
+                                 <div className="text-sm font-medium text-muted-foreground mb-2">
+                                   {dayName}
+                                 </div>
+                                 
+                                 {dayShift ? (
+                                   <div className="space-y-2">
+                                     <div className="text-xs text-muted-foreground">
+                                       {dayShift.shift.date}
+                                     </div>
+                                     
+                                     <Badge className={SHIFT_TYPE_COLORS[dayShift.shift.shiftType]}>
+                                       {SHIFT_TYPE_LABELS[dayShift.shift.shiftType]}
+                                     </Badge>
+                                     
+                                     {dayShift.shift.startTime && (
+                                       <div className="text-xs">
+                                         {dayShift.shift.startTime}
+                                         {dayShift.shift.endTime && ` - ${dayShift.shift.endTime}`}
+                                       </div>
+                                     )}
+                                     
+                                     <Select 
+                                       value={dayShift.shift.shiftType} 
+                                       onValueChange={(value: 'R' | 'O' | 'N' | 'OFF') => updateShiftType(dayShift.index, value)}
+                                     >
+                                       <SelectTrigger className="w-full h-8 text-xs">
+                                         <SelectValue />
+                                       </SelectTrigger>
+                                       <SelectContent>
+                                         <SelectItem value="R">R - Ranní</SelectItem>
+                                         <SelectItem value="O">O - Odpolední</SelectItem>
+                                         <SelectItem value="N">N - Noční</SelectItem>
+                                         <SelectItem value="OFF">OFF - Volno</SelectItem>
+                                       </SelectContent>
+                                     </Select>
+                                   </div>
+                                 ) : (
+                                   <div className="text-center text-muted-foreground text-sm py-4">
+                                     <Badge className={SHIFT_TYPE_COLORS['OFF']}>
+                                       {SHIFT_TYPE_LABELS['OFF']}
+                                     </Badge>
+                                     <div className="text-xs mt-1">Žádná směna</div>
+                                   </div>
+                                 )}
+                               </div>
+                             );
+                           })}
+                         </div>
+                       </div>
+                     );
+                   })}
+                 </div>
+               );
+             })()}
+             
+             {/* Legend */}
+             <div className="flex flex-wrap gap-4 mt-6 pt-4 border-t text-sm text-muted-foreground">
+               <div className="flex items-center gap-1">
+                 <div className="w-3 h-3 rounded bg-green-100 border border-green-200"></div>
+                 <span>Ranní (R)</span>
+               </div>
+               <div className="flex items-center gap-1">
+                 <div className="w-3 h-3 rounded bg-blue-100 border border-blue-200"></div>
+                 <span>Odpolední (O)</span>
+               </div>
+               <div className="flex items-center gap-1">
+                 <div className="w-3 h-3 rounded bg-gray-800"></div>
+                 <span>Noční (N)</span>
+               </div>
+               <div className="flex items-center gap-1">
+                 <div className="w-3 h-3 rounded bg-gray-100 border border-gray-300"></div>
+                 <span>Volno (OFF)</span>
+               </div>
+             </div>
+           </CardContent>
         </Card>
       )}
     </div>
