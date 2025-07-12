@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Upload, FileSpreadsheet, Check, AlertTriangle, Loader2, Download, Eye } from 'lucide-react';
+import { Upload, FileSpreadsheet, Check, AlertTriangle, Loader2, Download, Eye, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useStandardizedToast } from '@/hooks/useStandardizedToast';
 import { supabase } from '@/integrations/supabase/client';
 import * as XLSX from 'xlsx';
@@ -54,7 +54,10 @@ export default function ExcelImportPanel() {
   const [editedShifts, setEditedShifts] = useState<ShiftData[]>([]);
   const [selectedPosition, setSelectedPosition] = useState<string>('');
   const [positions, setPositions] = useState<any[]>([]);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const tableScrollRef = useRef<HTMLDivElement>(null);
   const { success, error: showError } = useStandardizedToast();
 
   // Load DHL positions on component mount
@@ -69,6 +72,39 @@ export default function ExcelImportPanel() {
     };
     loadPositions();
   }, []);
+
+  // Check scroll position and update arrow states
+  const checkScrollPosition = () => {
+    if (tableScrollRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = tableScrollRef.current;
+      setCanScrollLeft(scrollLeft > 0);
+      setCanScrollRight(scrollLeft + clientWidth < scrollWidth);
+    }
+  };
+
+  // Add scroll event listener when data is loaded
+  useEffect(() => {
+    if (parsedData && tableScrollRef.current) {
+      const element = tableScrollRef.current;
+      element.addEventListener('scroll', checkScrollPosition);
+      checkScrollPosition(); // Initial check
+      
+      return () => element.removeEventListener('scroll', checkScrollPosition);
+    }
+  }, [parsedData]);
+
+  // Scroll functions
+  const scrollLeft = () => {
+    if (tableScrollRef.current) {
+      tableScrollRef.current.scrollBy({ left: -200, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = () => {
+    if (tableScrollRef.current) {
+      tableScrollRef.current.scrollBy({ left: 200, behavior: 'smooth' });
+    }
+  };
 
   const detectShiftType = (timeStr: string): 'R' | 'O' | 'N' | 'OFF' => {
     if (!timeStr || timeStr.trim() === '') return 'OFF';
@@ -548,16 +584,48 @@ export default function ExcelImportPanel() {
           </CardHeader>
           
           <CardContent>
-            <div className="rounded-md border max-h-96 overflow-auto">
+            {/* Navigation arrows for horizontal scrolling */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={scrollLeft}
+                  disabled={!canScrollLeft}
+                  className="h-8 w-8 p-0"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={scrollRight}
+                  disabled={!canScrollRight}
+                  className="h-8 w-8 p-0"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+                <span className="text-sm text-muted-foreground">
+                  Použijte šipky pro horizontální posouvání
+                </span>
+              </div>
+            </div>
+
+            {/* Scrollable table container */}
+            <div 
+              ref={tableScrollRef}
+              className="rounded-md border max-h-96 overflow-auto"
+              style={{ overscrollBehavior: 'contain' }}
+            >
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Den</TableHead>
-                    <TableHead>Datum</TableHead>
-                    <TableHead>Woche</TableHead>
-                    <TableHead>Čas</TableHead>
-                    <TableHead>Typ směny</TableHead>
-                    <TableHead>Akce</TableHead>
+                    <TableHead className="min-w-[90px]">Den</TableHead>
+                    <TableHead className="min-w-[100px]">Datum</TableHead>
+                    <TableHead className="min-w-[80px]">Woche</TableHead>
+                    <TableHead className="min-w-[120px]">Čas</TableHead>
+                    <TableHead className="min-w-[120px]">Typ směny</TableHead>
+                    <TableHead className="min-w-[100px]">Akce</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
