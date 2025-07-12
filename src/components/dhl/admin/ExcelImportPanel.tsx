@@ -298,10 +298,11 @@ export default function ExcelImportPanel() {
                   console.log(`Found ${times.length} time values in cell:`, times);
                   
                   if (times.length >= 3) {
-                    // Three times: start, break/pause, end (e.g., "15:15 21:15 06:00")
+                    // Three times: start, end, duration (e.g., "15:15 21:15 06:00")
+                    // Third time is shift duration, not end time
                     startTime = times[0];
-                    endTime = times[2]; // Skip the middle time (break/pause)
-                    console.log(`Using 3-time pattern: Start=${startTime}, End=${endTime} (skipping break ${times[1]})`);
+                    endTime = times[1]; // Use second time as end time
+                    console.log(`Using 3-time pattern: Start=${startTime}, End=${endTime} (duration=${times[2]})`);
                   } else if (times.length === 2) {
                     // Two times: start and end (e.g., "15:15 21:15")
                     startTime = times[0];
