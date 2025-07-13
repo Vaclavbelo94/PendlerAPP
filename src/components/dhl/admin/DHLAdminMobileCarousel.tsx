@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Users, Calendar, Settings, ChevronDown, Upload, FileText, CheckCircle } from 'lucide-react';
+import { Users, Calendar, Settings, ChevronDown, Upload, FileText, CheckCircle, Clock, BarChart3 } from 'lucide-react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { cn } from '@/lib/utils';
 import DHLEmployeeManagement from './DHLEmployeeManagement';
 import DHLImportPanel from './DHLImportPanel';
 import DHLSystemSettings from './DHLSystemSettings';
 import ExcelImportPanel from './ExcelImportPanel';
+import EmployeeTimeline from './EmployeeTimeline';
+import ReportsGenerator from './ReportsGenerator';
 import { useTranslation } from 'react-i18next';
 
 interface DHLAdminMobileCarouselProps {
@@ -44,6 +46,20 @@ const DHLAdminMobileCarousel: React.FC<DHLAdminMobileCarouselProps> = ({
       fullTitle: 'Import směn z Excel',
       icon: Upload,
       component: <ExcelImportPanel />
+    },
+    {
+      id: 'timeline',
+      title: 'Timeline',
+      fullTitle: 'Timeline zaměstnanců',
+      icon: Clock,
+      component: <EmployeeTimeline />
+    },
+    {
+      id: 'reports',
+      title: 'Reporty',
+      fullTitle: 'Generování reportů',
+      icon: BarChart3,
+      component: <ReportsGenerator />
     },
     {
       id: 'settings',

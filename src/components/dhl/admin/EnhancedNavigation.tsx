@@ -8,7 +8,9 @@ import {
   CalendarDays,
   Upload, 
   Settings,
-  BarChart3
+  BarChart3,
+  Clock,
+  FileText
 } from 'lucide-react';
 
 interface NavigationTab {
@@ -60,6 +62,18 @@ const EnhancedNavigation: React.FC<EnhancedNavigationProps> = ({
       description: 'Import směn z Excel'
     },
     {
+      id: 'timeline',
+      title: 'Timeline',
+      icon: Clock,
+      description: 'Timeline zaměstnanců'
+    },
+    {
+      id: 'reports',
+      title: 'Reporty',
+      icon: FileText,
+      description: 'Generování reportů'
+    },
+    {
       id: 'settings',
       title: 'Nastavení',
       icon: Settings,
@@ -71,7 +85,7 @@ const EnhancedNavigation: React.FC<EnhancedNavigationProps> = ({
     <div className="bg-background border rounded-lg p-4 mb-6">
       {/* Desktop Navigation */}
       <div className="hidden lg:block">
-        <div className="grid grid-cols-6 gap-2">
+        <div className="grid grid-cols-4 xl:grid-cols-8 gap-2">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
