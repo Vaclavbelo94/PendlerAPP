@@ -18,12 +18,22 @@ import DHLAdminMobileCarousel from "@/components/dhl/admin/DHLAdminMobileCarouse
 import DHLDashboard from "@/components/dhl/admin/DHLDashboard";
 import ShiftCalendar from "@/components/dhl/admin/ShiftCalendar";
 import EnhancedNavigation from "@/components/dhl/admin/EnhancedNavigation";
+import EmployeeTimeline from '@/components/dhl/admin/EmployeeTimeline';
+import ReportsGenerator from '@/components/dhl/admin/ReportsGenerator';
+import BulkOperations from '@/components/dhl/admin/BulkOperations';
+import ShiftConflictDetector from '@/components/dhl/admin/ShiftConflictDetector';
+import ShiftTemplateManager from '@/components/dhl/admin/ShiftTemplateManager';
 
 const DHLAdmin = () => {
   const [showLoginDialog, setShowLoginDialog] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [selectedShifts, setSelectedShifts] = useState<string[]>([]);
   const navigate = useNavigate();
   const { user, signOut, isLoading } = useAuth();
+
+  const handleRefresh = () => {
+    window.location.reload();
+  };
 
   const hasAccess = canAccessDHLAdmin(user);
 
@@ -140,13 +150,30 @@ const DHLAdmin = () => {
         <EnhancedNavigation activeTab={activeTab} onTabChange={setActiveTab} />
 
         {/* Enhanced Admin Panel */}
-        {activeTab === 'dashboard' ? (
-          <DHLDashboard />
-        ) : activeTab === 'calendar' ? (
-          <ShiftCalendar />
-        ) : (
-          <DHLAdminMobileCarousel activeTab={activeTab} onTabChange={setActiveTab} />
-        )}
+        {(() => {
+          switch (activeTab) {
+            case 'dashboard':
+              return <DHLDashboard />;
+            case 'calendar':
+              return <ShiftCalendar />;
+            case 'timeline':
+              return <EmployeeTimeline />;
+            case 'reports':
+              return <ReportsGenerator />;
+            case 'bulk-operations':
+              return <BulkOperations 
+                selectedShifts={selectedShifts}
+                onSelectionChange={setSelectedShifts}
+                onRefresh={handleRefresh}
+              />;
+            case 'conflict-detection':
+              return <ShiftConflictDetector />;
+            case 'shift-templates':
+              return <ShiftTemplateManager />;
+            default:
+              return <DHLAdminMobileCarousel activeTab={activeTab} onTabChange={setActiveTab} />;
+          }
+        })()}
 
         {/* Admin Info */}
         <div className="mt-8 p-4 bg-yellow-100 dark:bg-yellow-900/20 rounded-lg border border-yellow-200">

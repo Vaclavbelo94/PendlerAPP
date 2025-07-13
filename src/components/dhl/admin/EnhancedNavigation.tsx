@@ -10,7 +10,9 @@ import {
   Settings,
   BarChart3,
   Clock,
-  FileText
+  FileText,
+  CheckCircle,
+  AlertTriangle
 } from 'lucide-react';
 
 interface NavigationTab {
@@ -72,6 +74,24 @@ const EnhancedNavigation: React.FC<EnhancedNavigationProps> = ({
       title: 'Reporty',
       icon: FileText,
       description: 'Generování reportů'
+    },
+    {
+      id: 'bulk-operations',
+      title: 'Hromadné operace',
+      icon: CheckCircle,
+      description: 'Bulk editace směn'
+    },
+    {
+      id: 'conflict-detection',
+      title: 'Detekce konfliktů',
+      icon: AlertTriangle,
+      description: 'Kontrola konfliktů směn'
+    },
+    {
+      id: 'shift-templates',
+      title: 'Šablony směn',
+      icon: FileText,
+      description: 'Správa šablon směn'
     },
     {
       id: 'settings',

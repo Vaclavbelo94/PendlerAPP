@@ -102,8 +102,7 @@ const DifficultyDistribution: React.FC<DifficultyDistributionProps> = ({ difficu
                   outerRadius={80}
                   paddingAngle={1}
                   dataKey="value"
-                  activeIndex={activeIndex}
-                  activeShape={renderActiveShape}
+                  activeShape={activeIndex !== undefined ? renderActiveShape : undefined}
                   onMouseEnter={(_, index) => setActiveIndex(index)}
                   onMouseLeave={() => setActiveIndex(undefined)}
                 >
