@@ -15,10 +15,13 @@ import DHLEmployeeManagement from "@/components/dhl/admin/DHLEmployeeManagement"
 import DHLSystemSettings from "@/components/dhl/admin/DHLSystemSettings";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DHLAdminMobileCarousel from "@/components/dhl/admin/DHLAdminMobileCarousel";
+import DHLDashboard from "@/components/dhl/admin/DHLDashboard";
+import ShiftCalendar from "@/components/dhl/admin/ShiftCalendar";
+import EnhancedNavigation from "@/components/dhl/admin/EnhancedNavigation";
 
 const DHLAdmin = () => {
   const [showLoginDialog, setShowLoginDialog] = useState(false);
-  const [activeTab, setActiveTab] = useState('employees');
+  const [activeTab, setActiveTab] = useState('dashboard');
   const navigate = useNavigate();
   const { user, signOut, isLoading } = useAuth();
 
@@ -133,8 +136,17 @@ const DHLAdmin = () => {
           className="mb-8 border-yellow-200 bg-yellow-50 dark:bg-yellow-950/20"
         />
 
-        {/* Main Admin Panel with Swipe Menu */}
-        <DHLAdminMobileCarousel activeTab={activeTab} onTabChange={setActiveTab} />
+        {/* Enhanced Navigation */}
+        <EnhancedNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+
+        {/* Enhanced Admin Panel */}
+        {activeTab === 'dashboard' ? (
+          <DHLDashboard />
+        ) : activeTab === 'calendar' ? (
+          <ShiftCalendar />
+        ) : (
+          <DHLAdminMobileCarousel activeTab={activeTab} onTabChange={setActiveTab} />
+        )}
 
         {/* Admin Info */}
         <div className="mt-8 p-4 bg-yellow-100 dark:bg-yellow-900/20 rounded-lg border border-yellow-200">
