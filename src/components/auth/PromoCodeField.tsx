@@ -2,7 +2,8 @@
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Check, X, Truck } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Check, X, Truck, RefreshCw } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { isDHLPromoCode } from '@/utils/dhlAuthUtils';
 
@@ -15,6 +16,7 @@ const PromoCodeField: React.FC<PromoCodeFieldProps> = ({ onPromoCodeChange }) =>
   const [isValidating, setIsValidating] = useState(false);
   const [validationResult, setValidationResult] = useState<'valid' | 'invalid' | null>(null);
   const [isDHL, setIsDHL] = useState(false);
+  const [hasBeenValidated, setHasBeenValidated] = useState(false);
 
   const validatePromoCode = async (code: string) => {
     console.log('=== PROMO CODE VALIDATION START ===');
@@ -95,16 +97,22 @@ const PromoCodeField: React.FC<PromoCodeFieldProps> = ({ onPromoCodeChange }) =>
   const handleChange = (value: string) => {
     console.log('Promo code input changed:', value);
     setPromoCode(value);
-    setValidationResult(null);
-    setIsDHL(false);
     
-    // Always call callback with current value, even if not valid
-    onPromoCodeChange(value, false, false);
+    // Reset validation when user changes the code
+    if (hasBeenValidated && value !== promoCode) {
+      setValidationResult(null);
+      setIsDHL(false);
+      setHasBeenValidated(false);
+      onPromoCodeChange(value, false, false);
+    } else if (!hasBeenValidated) {
+      onPromoCodeChange(value, false, false);
+    }
   };
 
-  const handleBlur = () => {
-    console.log('Promo code field blurred, validating:', promoCode);
+  const handleValidateClick = () => {
+    console.log('Manual validation triggered for:', promoCode);
     if (promoCode.trim()) {
+      setHasBeenValidated(true);
       validatePromoCode(promoCode);
     }
   };
@@ -112,33 +120,51 @@ const PromoCodeField: React.FC<PromoCodeFieldProps> = ({ onPromoCodeChange }) =>
   return (
     <div className="grid gap-2">
       <Label htmlFor="promoCode">Promo kód (volitelný)</Label>
-      <div className="relative">
-        <Input
-          id="promoCode"
-          type="text"
-          placeholder="Zadejte promo kód"
-          value={promoCode}
-          onChange={(e) => handleChange(e.target.value)}
-          onBlur={handleBlur}
-          className={`pr-10 ${
-            validationResult === 'valid' ? 'border-green-500' : 
-            validationResult === 'invalid' ? 'border-red-500' : ''
-          } ${isDHL ? 'border-yellow-500 bg-yellow-50' : ''}`}
-        />
-        {isValidating && (
-          <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-            <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-          </div>
-        )}
-        {!isValidating && validationResult === 'valid' && (
-          <Check className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-green-500" />
-        )}
-        {!isValidating && validationResult === 'invalid' && (
-          <X className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-red-500" />
-        )}
-        {isDHL && !isValidating && (
-          <Truck className="absolute right-8 top-1/2 transform -translate-y-1/2 h-4 w-4 text-yellow-600" />
-        )}
+      <div className="flex gap-2">
+        <div className="relative flex-1">
+          <Input
+            id="promoCode"
+            type="text"
+            placeholder="Zadejte promo kód"
+            value={promoCode}
+            onChange={(e) => handleChange(e.target.value)}
+            className={`pr-10 ${
+              validationResult === 'valid' ? 'border-green-500' : 
+              validationResult === 'invalid' ? 'border-red-500' : ''
+            } ${isDHL ? 'border-yellow-500 bg-yellow-50' : ''}`}
+          />
+          {isValidating && (
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+            </div>
+          )}
+          {!isValidating && validationResult === 'valid' && (
+            <Check className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-green-500" />
+          )}
+          {!isValidating && validationResult === 'invalid' && (
+            <X className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-red-500" />
+          )}
+          {isDHL && !isValidating && (
+            <Truck className="absolute right-8 top-1/2 transform -translate-y-1/2 h-4 w-4 text-yellow-600" />
+          )}
+        </div>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={handleValidateClick}
+          disabled={!promoCode.trim() || isValidating}
+          className="shrink-0"
+        >
+          {isValidating ? (
+            <RefreshCw className="h-4 w-4 animate-spin" />
+          ) : (
+            <>
+              <Check className="h-4 w-4 mr-1" />
+              Ověřit
+            </>
+          )}
+        </Button>
       </div>
       {validationResult === 'valid' && isDHL && (
         <p className="text-sm text-yellow-600 flex items-center gap-1">
