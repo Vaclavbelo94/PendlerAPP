@@ -34,7 +34,9 @@ const RideSharing: React.FC = () => {
   const { user } = useAuth();
   const { t, i18n } = useTranslation('travel');
   const [offers, setOffers] = useState<RideshareOfferWithDriver[]>([]);
+  const [myOffers, setMyOffers] = useState<RideshareOfferWithDriver[]>([]);
   const [loading, setLoading] = useState(true);
+  const [myOffersLoading, setMyOffersLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [contactDialogOpen, setContactDialogOpen] = useState(false);
   const [selectedOffer, setSelectedOffer] = useState<RideshareOfferWithDriver | null>(null);
@@ -56,6 +58,13 @@ const RideSharing: React.FC = () => {
     loadOffers();
   }, []);
 
+  // Load user's offers when switching to My Offers tab
+  const handleTabChange = (value: string) => {
+    if (value === 'my-offers' && user) {
+      loadMyOffers();
+    }
+  };
+
   const loadOffers = async () => {
     setLoading(true);
     try {
@@ -70,6 +79,24 @@ const RideSharing: React.FC = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadMyOffers = async () => {
+    if (!user) return;
+    setMyOffersLoading(true);
+    try {
+      const data = await rideshareService.getUserRideshareOffers(user.id);
+      setMyOffers(data);
+    } catch (error) {
+      console.error('Error loading my offers:', error);
+      toast({
+        title: t('error'),
+        description: t('loadingMyOffers') || 'Nepodařilo se načíst vaše nabídky',
+        variant: "destructive"
+      });
+    } finally {
+      setMyOffersLoading(false);
     }
   };
 
@@ -153,9 +180,10 @@ const RideSharing: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <Tabs defaultValue="browse" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
+      <Tabs defaultValue="browse" className="w-full" onValueChange={handleTabChange}>
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="browse">{t('browseOffers')}</TabsTrigger>
+          <TabsTrigger value="my-offers">{t('myOffers') || 'Moje nabídky'}</TabsTrigger>
           <TabsTrigger value="create">{t('createOffer')}</TabsTrigger>
         </TabsList>
 
@@ -217,6 +245,48 @@ const RideSharing: React.FC = () => {
                       onContact={handleContactDriver}
                       isAuthenticated={!!user}
                       currentUserId={user?.id}
+                    />
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="my-offers" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5" />
+                {t('myOffers') || 'Moje nabídky'} ({myOffers.length})
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {!user ? (
+                <div className="text-center text-muted-foreground py-8">
+                  <p>{t('loginRequired') || 'Pro zobrazení vašich nabídek se přihlaste'}</p>
+                </div>
+              ) : myOffersLoading ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+                  <p className="text-muted-foreground">{t('loadingOffers')}</p>
+                </div>
+              ) : myOffers.length === 0 ? (
+                <div className="text-center text-muted-foreground py-8">
+                  <Car className="mx-auto h-12 w-12 mb-4 opacity-50" />
+                  <p>{t('noMyOffers') || 'Nemáte žádné nabídky'}</p>
+                </div>
+              ) : (
+                <div className="grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
+                  {myOffers.map((offer) => (
+                    <EnhancedRideOfferCard
+                      key={offer.id}
+                      ride={offer}
+                      onContact={handleContactDriver}
+                      isAuthenticated={!!user}
+                      currentUserId={user?.id}
+                      onOfferUpdate={loadMyOffers}
+                      showManagementButtons={true}
                     />
                   ))}
                 </div>

@@ -3,11 +3,12 @@ import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Clock, MapPin, Calendar, Users, MessageCircle, Phone, Star, Car } from "lucide-react";
-import { RideshareOffer } from "@/services/rideshareService";
+import { Clock, MapPin, Calendar, Users, MessageCircle, Phone, Star, Car, Trash2, ToggleLeft, ToggleRight } from "lucide-react";
+import { RideshareOffer, rideshareService } from "@/services/rideshareService";
 import { useTranslation } from 'react-i18next';
 import { formatPhoneNumber, getDriverDisplayName, getCountryConfig } from '@/utils/countryUtils';
 import { convertPrice, formatCurrencyWithSymbol, getDefaultCurrencyByLanguage } from '@/utils/currencyUtils';
+import { toast } from '@/hooks/use-toast';
 
 interface EnhancedRideOfferCardProps {
   ride: RideshareOffer & {
@@ -21,9 +22,11 @@ interface EnhancedRideOfferCardProps {
   onContact: (ride: any) => void;
   isAuthenticated: boolean;
   currentUserId?: string;
+  onOfferUpdate?: () => void;
+  showManagementButtons?: boolean;
 }
 
-const EnhancedRideOfferCard = ({ ride, onContact, isAuthenticated, currentUserId }: EnhancedRideOfferCardProps) => {
+const EnhancedRideOfferCard = ({ ride, onContact, isAuthenticated, currentUserId, onOfferUpdate, showManagementButtons = false }: EnhancedRideOfferCardProps) => {
   const { t, i18n } = useTranslation('travel');
   const isOwnRide = ride.user_id === currentUserId;
   const driverName = getDriverDisplayName(ride.driver, t);
@@ -67,8 +70,54 @@ const EnhancedRideOfferCard = ({ ride, onContact, isAuthenticated, currentUserId
     }
   };
 
+  const handleDeleteOffer = async () => {
+    if (!window.confirm(t('confirmDeleteOffer') || 'Opravdu chcete smazat tuto nabídku?')) return;
+    
+    try {
+      await rideshareService.deleteRideshareOffer(ride.id);
+      toast({
+        title: t('success') || 'Úspěch',
+        description: t('offerDeleted') || 'Nabídka byla smazána',
+      });
+      onOfferUpdate?.();
+    } catch (error) {
+      toast({
+        title: t('error') || 'Chyba',
+        description: t('deleteOfferError') || 'Nepodařilo se smazat nabídku',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleToggleOffer = async () => {
+    try {
+      if (ride.is_active) {
+        await rideshareService.deactivateRideshareOffer(ride.id);
+        toast({
+          title: t('success') || 'Úspěch',
+          description: t('offerDeactivated') || 'Nabídka byla deaktivována',
+        });
+      } else {
+        await rideshareService.reactivateRideshareOffer(ride.id);
+        toast({
+          title: t('success') || 'Úspěch',
+          description: t('offerReactivated') || 'Nabídka byla aktivována',
+        });
+      }
+      onOfferUpdate?.();
+    } catch (error) {
+      toast({
+        title: t('error') || 'Chyba',
+        description: t('toggleOfferError') || 'Nepodařilo se změnit stav nabídky',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const isExpired = new Date(ride.departure_date) < new Date();
+
   return (
-    <Card className="w-full h-full transition-all duration-200 hover:shadow-lg border hover:border-primary/20 bg-card">
+    <Card className={`w-full h-full transition-all duration-200 hover:shadow-lg border hover:border-primary/20 bg-card ${!ride.is_active ? 'opacity-60' : ''} ${isExpired ? 'border-orange-200' : ''}`}>
       {/* Header: Driver info and seats */}
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
@@ -93,10 +142,22 @@ const EnhancedRideOfferCard = ({ ride, onContact, isAuthenticated, currentUserId
               </div>
             </div>
           </div>
-          <Badge variant="secondary" className="flex items-center gap-1 text-xs font-medium shrink-0">
-            <Users className="h-3 w-3" />
-            {ride.seats_available}
-          </Badge>
+          <div className="flex items-center gap-2">
+            {!ride.is_active && (
+              <Badge variant="outline" className="text-xs text-muted-foreground">
+                {t('inactive') || 'Neaktivní'}
+              </Badge>
+            )}
+            {isExpired && (
+              <Badge variant="outline" className="text-xs text-orange-600 border-orange-200">
+                {t('expired') || 'Prošlá'}
+              </Badge>
+            )}
+            <Badge variant="secondary" className="flex items-center gap-1 text-xs font-medium shrink-0">
+              <Users className="h-3 w-3" />
+              {ride.seats_available}
+            </Badge>
+          </div>
         </div>
       </CardHeader>
 
@@ -153,26 +214,59 @@ const EnhancedRideOfferCard = ({ ride, onContact, isAuthenticated, currentUserId
 
       {/* Actions */}
       <CardFooter className="pt-0 flex gap-2">
-        <Button 
-          className="flex-1" 
-          onClick={() => onContact(ride)}
-          disabled={!isAuthenticated || isOwnRide}
-          variant={isOwnRide ? "outline" : "default"}
-          size="sm"
-        >
-          <MessageCircle className="h-4 w-4 mr-2" />
-          {isOwnRide ? (t('yourOffer') || 'Vaše nabídka') : (t('contactDriver') || 'Kontaktovat')}
-        </Button>
-        
-        {hasPhoneNumber && !isOwnRide && isAuthenticated && (
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={handleCall}
-            className="shrink-0 px-3"
-          >
-            <Phone className="h-4 w-4" />
-          </Button>
+        {showManagementButtons && isOwnRide ? (
+          <>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={handleToggleOffer}
+              className="flex-1"
+            >
+              {ride.is_active ? (
+                <>
+                  <ToggleLeft className="h-4 w-4 mr-2" />
+                  {t('deactivate') || 'Deaktivovat'}
+                </>
+              ) : (
+                <>
+                  <ToggleRight className="h-4 w-4 mr-2" />
+                  {t('activate') || 'Aktivovat'}
+                </>
+              )}
+            </Button>
+            <Button 
+              variant="destructive" 
+              size="sm"
+              onClick={handleDeleteOffer}
+              className="shrink-0 px-3"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button 
+              className="flex-1" 
+              onClick={() => onContact(ride)}
+              disabled={!isAuthenticated || isOwnRide || !ride.is_active}
+              variant={isOwnRide ? "outline" : "default"}
+              size="sm"
+            >
+              <MessageCircle className="h-4 w-4 mr-2" />
+              {isOwnRide ? (t('yourOffer') || 'Vaše nabídka') : (t('contactDriver') || 'Kontaktovat')}
+            </Button>
+            
+            {hasPhoneNumber && !isOwnRide && isAuthenticated && ride.is_active && (
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={handleCall}
+                className="shrink-0 px-3"
+              >
+                <Phone className="h-4 w-4" />
+              </Button>
+            )}
+          </>
         )}
       </CardFooter>
     </Card>

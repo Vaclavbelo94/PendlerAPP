@@ -180,5 +180,101 @@ export const rideshareService = {
       console.error('Service error in createContact:', error);
       throw error;
     }
+  },
+
+  async deleteRideshareOffer(offerId: string) {
+    try {
+      const { error } = await supabase
+        .from('rideshare_offers')
+        .delete()
+        .eq('id', offerId);
+
+      if (error) {
+        console.error('Error deleting offer:', error);
+        throw new Error('Failed to delete offer');
+      }
+    } catch (error) {
+      console.error('Service error in deleteRideshareOffer:', error);
+      throw error;
+    }
+  },
+
+  async deactivateRideshareOffer(offerId: string) {
+    try {
+      const { error } = await supabase
+        .from('rideshare_offers')
+        .update({ is_active: false })
+        .eq('id', offerId);
+
+      if (error) {
+        console.error('Error deactivating offer:', error);
+        throw new Error('Failed to deactivate offer');
+      }
+    } catch (error) {
+      console.error('Service error in deactivateRideshareOffer:', error);
+      throw error;
+    }
+  },
+
+  async reactivateRideshareOffer(offerId: string) {
+    try {
+      const { error } = await supabase
+        .from('rideshare_offers')
+        .update({ is_active: true })
+        .eq('id', offerId);
+
+      if (error) {
+        console.error('Error reactivating offer:', error);
+        throw new Error('Failed to reactivate offer');
+      }
+    } catch (error) {
+      console.error('Service error in reactivateRideshareOffer:', error);
+      throw error;
+    }
+  },
+
+  async getUserRideshareOffers(userId: string): Promise<RideshareOfferWithDriver[]> {
+    try {
+      const { data: offers, error: offersError } = await supabase
+        .from('rideshare_offers')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+
+      if (offersError) {
+        console.error('Error loading user offers:', offersError);
+        throw new Error('Failed to load your offers');
+      }
+
+      if (!offers || offers.length === 0) {
+        return [];
+      }
+
+      // Get profile for the user
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('id, username, phone_number')
+        .eq('id', userId)
+        .single();
+
+      if (profileError) {
+        console.error('Error loading profile:', profileError);
+        throw new Error('Failed to load profile');
+      }
+
+      // Return offers with profile data
+      return offers.map(offer => ({
+        ...offer,
+        driver: {
+          username: profile?.username || '',
+          phone_number: offer.phone_number || profile?.phone_number,
+          rating: offer.rating,
+          completed_rides: offer.completed_rides
+        }
+      }));
+    } catch (error) {
+      console.error('Service error in getUserRideshareOffers:', error);
+      throw error;
+    }
   }
 };
