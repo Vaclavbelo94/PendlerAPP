@@ -8,6 +8,7 @@ import { useAuth } from '@/hooks/auth';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { PositionFormDialog } from './PositionFormDialog';
+import { ShiftTemplateEditor } from './ShiftTemplateEditor';
 
 export const PositionManagementPanel: React.FC = () => {
   const { user } = useAuth();
@@ -152,6 +153,12 @@ export const PositionManagementPanel: React.FC = () => {
           </Button>
         </Card>
       )}
+
+      {/* Shift Template Editor */}
+      {positions.length > 0 && (
+        <ShiftTemplateEditor positions={positions} />
+      )}
+
       <PositionFormDialog
         isOpen={isFormOpen}
         onClose={() => setIsFormOpen(false)}

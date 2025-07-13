@@ -181,6 +181,62 @@ export type Database = {
           },
         ]
       }
+      dhl_position_shift_templates: {
+        Row: {
+          calendar_week: number
+          created_at: string | null
+          friday_shift: string | null
+          id: string
+          monday_shift: string | null
+          position_id: string
+          saturday_shift: string | null
+          sunday_shift: string | null
+          thursday_shift: string | null
+          tuesday_shift: string | null
+          updated_at: string | null
+          wednesday_shift: string | null
+          woche_number: number
+        }
+        Insert: {
+          calendar_week: number
+          created_at?: string | null
+          friday_shift?: string | null
+          id?: string
+          monday_shift?: string | null
+          position_id: string
+          saturday_shift?: string | null
+          sunday_shift?: string | null
+          thursday_shift?: string | null
+          tuesday_shift?: string | null
+          updated_at?: string | null
+          wednesday_shift?: string | null
+          woche_number: number
+        }
+        Update: {
+          calendar_week?: number
+          created_at?: string | null
+          friday_shift?: string | null
+          id?: string
+          monday_shift?: string | null
+          position_id?: string
+          saturday_shift?: string | null
+          sunday_shift?: string | null
+          thursday_shift?: string | null
+          tuesday_shift?: string | null
+          updated_at?: string | null
+          wednesday_shift?: string | null
+          woche_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dhl_position_shift_templates_position_id_fkey"
+            columns: ["position_id"]
+            isOneToOne: false
+            referencedRelation: "dhl_positions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dhl_positions: {
         Row: {
           created_at: string
