@@ -34,28 +34,55 @@
     --chart-5: 10 100% 50%;
   }
 
-  /* DHL Theme Override - aktivuje se pomocí data atributu */
+  /* DHL Theme Override - kompletní žluté téma pro celý web */
   :root[data-dhl-theme="active"] {
-    /* DHL Primary - Yellow */
-    --primary: 51 100% 50%; /* #FFCC00 */
+    /* DHL Primary - Bright Yellow */
+    --primary: 51 100% 50%; /* #FFCC00 - DHL Yellow */
     --primary-foreground: 0 0% 0%; /* Black text on yellow */
+    
     /* DHL Secondary - Red */
-    --secondary: 354 100% 42%; /* #D40511 */
+    --secondary: 354 100% 42%; /* #D40511 - DHL Red */
     --secondary-foreground: 0 0% 100%; /* White text on red */
-    --accent: 51 100% 50%; /* DHL Yellow for accents */
-    --accent-foreground: 0 0% 9%;
+    
+    /* Accent colors - variations of DHL yellow */
+    --accent: 48 100% 45%; /* Darker yellow for accents */
+    --accent-foreground: 0 0% 0%;
+    
+    /* Destructive - DHL Red */
     --destructive: 354 100% 42%; /* DHL Red for destructive */
     --destructive-foreground: 0 0% 100%;
+    
+    /* Focus and interaction colors */
     --ring: 51 100% 50%; /* DHL Yellow for focus rings */
+    
+    /* Chart colors - DHL palette */
     --chart-1: 51 100% 50%; /* DHL Yellow */
     --chart-2: 354 100% 42%; /* DHL Red */
-    /* DHL Background - Light Yellow */
-    --background: 51 30% 96%; /* Very light yellow background #FFFCF0 */
-    --card: 51 25% 98%; /* Even lighter yellow for cards #FFFEF9 */
-    --popover: 51 25% 98%; /* Light yellow for popovers */
-    --muted: 51 20% 92%; /* Muted yellow background */
-    --border: 51 15% 85%; /* Subtle yellow border */
-    --input: 51 15% 90%; /* Light yellow input background */
+    --chart-3: 0 0% 0%; /* DHL Black */
+    --chart-4: 48 100% 35%; /* Dark yellow */
+    --chart-5: 51 50% 75%; /* Light yellow */
+    
+    /* Kompletní žluté pozadí - výrazné DHL téma */
+    --background: 51 100% 85%; /* Výrazné žluté pozadí */
+    --foreground: 0 0% 0%; /* Černý text pro kontrast */
+    
+    /* Card colors - žluté odstíny */
+    --card: 51 90% 88%; /* Světlejší žluté pro karty */
+    --card-foreground: 0 0% 0%; /* Černý text */
+    
+    /* Popover colors */
+    --popover: 51 85% 90%; /* Světlé žluté pro popovers */
+    --popover-foreground: 0 0% 0%; /* Černý text */
+    
+    /* Muted colors - tlumené žluté */
+    --muted: 51 60% 80%; /* Tlumené žluté pozadí */
+    --muted-foreground: 0 0% 20%; /* Tmavošedý text */
+    
+    /* Border colors */
+    --border: 48 80% 70%; /* Výrazné žluté bordery */
+    
+    /* Input colors */
+    --input: 51 70% 82%; /* Žluté pozadí pro inputy */
   }
 
   .dark {
@@ -85,28 +112,55 @@
     --chart-5: 10 85% 45%;
   }
 
-  /* DHL Dark Theme Override */
+  /* DHL Dark Theme Override - tmavý režim s žlutým akcentem */
   .dark[data-dhl-theme="active"] {
-    /* DHL Primary - Darker Yellow for dark mode */
-    --primary: 45 100% 45%; /* Darker yellow #E6B800 */
-    --primary-foreground: 0 0% 0%;
-    /* DHL Secondary - Darker Red for dark mode */
+    /* DHL Primary - Adjust for dark mode */
+    --primary: 48 100% 40%; /* Darker yellow for better contrast */
+    --primary-foreground: 0 0% 0%; /* Black text on yellow */
+    
+    /* DHL Secondary - Red for dark mode */
     --secondary: 354 85% 35%; /* Darker red #B8040E */
-    --secondary-foreground: 0 0% 100%;
-    --accent: 45 100% 45%; /* Darker DHL Yellow */
-    --accent-foreground: 0 0% 9%;
+    --secondary-foreground: 0 0% 100%; /* White text on red */
+    
+    /* Accent colors for dark mode */
+    --accent: 45 90% 35%; /* Darker yellow accent */
+    --accent-foreground: 0 0% 100%; /* White text */
+    
+    /* Destructive - DHL Red */
     --destructive: 354 85% 35%; /* Darker DHL Red */
     --destructive-foreground: 0 0% 100%;
-    --ring: 45 100% 45%; /* Darker DHL Yellow for focus */
-    --chart-1: 45 100% 45%;
-    --chart-2: 354 85% 35%;
-    /* DHL Dark Background */
-    --background: 45 15% 8%; /* Dark yellow tinted background */
-    --card: 45 12% 10%; /* Slightly lighter for cards */
-    --popover: 45 12% 10%; /* Dark yellow for popovers */
-    --muted: 45 10% 12%; /* Muted dark yellow */
-    --border: 45 8% 18%; /* Subtle yellow border */
-    --input: 45 8% 15%; /* Dark yellow input background */
+    
+    /* Focus colors */
+    --ring: 48 100% 40%; /* Yellow focus ring */
+    
+    /* Chart colors for dark mode */
+    --chart-1: 48 100% 40%; /* Adjusted yellow */
+    --chart-2: 354 85% 35%; /* Dark red */
+    --chart-3: 0 0% 100%; /* White */
+    --chart-4: 45 90% 25%; /* Very dark yellow */
+    --chart-5: 51 40% 60%; /* Muted yellow */
+    
+    /* Dark mode s žlutým akcentem */
+    --background: 45 25% 12%; /* Tmavé pozadí s žlutým nádechem */
+    --foreground: 0 0% 98%; /* Bílý text */
+    
+    /* Card colors for dark mode */
+    --card: 45 20% 15%; /* Tmavé karty s žlutým nádechem */
+    --card-foreground: 0 0% 98%; /* Bílý text */
+    
+    /* Popover colors */
+    --popover: 45 20% 15%; /* Tmavé popovers */
+    --popover-foreground: 0 0% 98%; /* Bílý text */
+    
+    /* Muted colors */
+    --muted: 45 15% 18%; /* Tlumené tmavé pozadí */
+    --muted-foreground: 0 0% 70%; /* Světlešedý text */
+    
+    /* Border colors */
+    --border: 45 20% 25%; /* Žluté bordery pro tmavý režim */
+    
+    /* Input colors */
+    --input: 45 18% 20%; /* Tmavé inputy s žlutým nádechem */
   }
 }
 

@@ -11,7 +11,7 @@ export interface DHLThemeState {
 
 /**
  * Hook pro správu DHL branding theme
- * Automaticky aktivuje DHL theme pro DHL zaměstnance
+ * GLOBÁLNĚ aktivuje žluté DHL téma pro celý web
  */
 export const useDHLTheme = () => {
   const { user } = useAuth();
@@ -23,67 +23,41 @@ export const useDHLTheme = () => {
   });
 
   useEffect(() => {
-    const checkDHLStatus = async () => {
-      if (!user) {
-        setState({
-          isDHLEmployee: false,
-          isDHLThemeActive: false,
-          canToggleDHLTheme: false
-        });
-        document.documentElement.removeAttribute('data-dhl-theme');
-        return;
-      }
-
-      // Admin override
-      if (user.email === 'admin_dhl@pendlerapp.com') {
-        setState({
-          isDHLEmployee: true,
-          isDHLThemeActive: true,
-          canToggleDHLTheme: false
-        });
-        document.documentElement.setAttribute('data-dhl-theme', 'active');
-        console.log('DHL Theme: Admin override activated');
-        return;
-      }
-
-      // Použij profile data z databáze jako primární zdroj
-      let isDHL = profileDHLStatus;
-      
-      // Pokud profil ještě není načten, počkej
-      if (isProfileLoading && !isDHL) {
-        console.log('DHL Theme: Profile still loading, waiting...');
-        return;
-      }
-      
-      // Fallback na async check pouze pokud profile data nejsou dostupná
-      if (!isDHL && !isProfileLoading) {
-        console.log('DHL Theme: Profile loaded but no DHL flag, checking async...');
-        isDHL = await isDHLEmployee(user);
-      }
-
-      console.log('DHL Theme: Final check result', {
-        user: user.email,
-        profileDHLStatus,
-        isProfileLoading,
-        finalResult: isDHL
-      });
-
+    const activateGlobalDHLTheme = async () => {
+      // GLOBÁLNÍ AKTIVACE DHL TÉMATU PRO VŠECHNY UŽIVATELE
       setState({
-        isDHLEmployee: isDHL,
-        isDHLThemeActive: isDHL,
-        canToggleDHLTheme: false
+        isDHLEmployee: true, // Všichni mají přístup k DHL funkcím
+        isDHLThemeActive: true, // DHL téma je vždy aktivní
+        canToggleDHLTheme: true // Uživatelé si mohou téma vypnout
       });
+      
+      // Aktivace žlutého DHL tématu na celém webu
+      document.documentElement.setAttribute('data-dhl-theme', 'active');
+      console.log('🟡 DHL Theme: GLOBÁLNĚ AKTIVOVÁNO pro všechny uživatele');
+      
+      // Dodatečné informace pro přihlášené uživatele
+      if (user) {
+        // Admin má speciální privileges
+        if (user.email === 'admin_dhl@pendlerapp.com') {
+          console.log('🔑 DHL Theme: Admin uživatel detekován');
+        }
 
-      if (isDHL) {
-        document.documentElement.setAttribute('data-dhl-theme', 'active');
-        console.log('DHL Theme: ✅ ACTIVATED for user', user.email);
+        // Pro skutečné DHL zaměstnance zobraz dodatečné info
+        if (profileDHLStatus && !isProfileLoading) {
+          console.log('👨‍💼 DHL Theme: Skutečný DHL zaměstnanec -', user.email);
+        } else if (!isProfileLoading) {
+          // Fallback check pro DHL status
+          const isDHL = await isDHLEmployee(user);
+          if (isDHL) {
+            console.log('👨‍💼 DHL Theme: DHL zaměstnanec ověřen -', user.email);
+          }
+        }
       } else {
-        document.documentElement.removeAttribute('data-dhl-theme');
-        console.log('DHL Theme: ❌ DEACTIVATED for user', user.email);
+        console.log('👤 DHL Theme: Aktivováno pro nepřihlášeného uživatele');
       }
     };
 
-    checkDHLStatus();
+    activateGlobalDHLTheme();
   }, [user, profileDHLStatus, isProfileLoading]);
 
   const toggleDHLTheme = () => {
@@ -95,11 +69,13 @@ export const useDHLTheme = () => {
       isDHLThemeActive: newActive
     }));
 
-    // Apply theme to document
+    // Přepnutí DHL tématu
     if (newActive) {
       document.documentElement.setAttribute('data-dhl-theme', 'active');
+      console.log('🟡 DHL Theme: ZNOVU AKTIVOVÁNO uživatelem');
     } else {
       document.documentElement.removeAttribute('data-dhl-theme');
+      console.log('⚫ DHL Theme: DEAKTIVOVÁNO uživatelem');
     }
   };
 
