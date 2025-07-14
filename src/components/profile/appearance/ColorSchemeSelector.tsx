@@ -31,29 +31,45 @@ const ColorSchemeSelector = ({ colorScheme, onColorSchemeChange }: ColorSchemeSe
 
   return (
     <div className="space-y-6">
-      {/* DHL Theme Status - pouze informativní */}
-      {isDHLEmployee && isDHLThemeActive && (
-        <div className="p-4 border rounded-lg bg-gradient-to-r from-yellow-50 to-red-50 dark:from-yellow-950/10 dark:to-red-950/10">
+      {/* DHL Theme Control */}
+      <div className="p-4 border rounded-lg bg-gradient-to-r from-yellow-50 to-red-50 dark:from-yellow-950/10 dark:to-red-950/10">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-yellow-500 rounded-lg">
               <Truck className="h-4 w-4 text-black" />
             </div>
             <div>
-              <Label className="text-base font-semibold">DHL Branding aktivní</Label>
+              <Label className="text-base font-semibold">🟡 DHL Žluté téma</Label>
               <p className="text-sm text-muted-foreground">
-                Aplikace používá DHL firemní barvy
+                Kompletní žluté pozadí s DHL barvami
               </p>
             </div>
           </div>
+          <Switch
+            checked={isDHLThemeActive}
+            onCheckedChange={toggleDHLTheme}
+            disabled={!canToggleDHLTheme}
+          />
         </div>
-      )}
+        
+        {isDHLThemeActive && (
+          <div className="mt-3 p-3 bg-yellow-100 dark:bg-yellow-900/20 rounded-lg">
+            <p className="text-sm text-yellow-800 dark:text-yellow-200 flex items-center gap-2">
+              <Badge variant="secondary" className="bg-yellow-200 text-yellow-800">
+                AKTIVNÍ
+              </Badge>
+              Web používá kompletní žluté DHL téma
+            </p>
+          </div>
+        )}
+      </div>
 
       {/* Standard Color Schemes - only show if DHL theme is not active */}
       {!isDHLThemeActive && (
         <div>
           <Label className={`${isMobile ? 'text-sm' : 'text-base'} mb-3 block`}>{t('colorScheme')}</Label>
           <p className={`${isMobile ? 'text-xs' : 'text-sm'} text-muted-foreground mb-4`}>
-            {t('selectMainAppColor')}
+            {t('selectMainAppColor')} (dostupné po vypnutí DHL tématu)
           </p>
           
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -82,17 +98,17 @@ const ColorSchemeSelector = ({ colorScheme, onColorSchemeChange }: ColorSchemeSe
         </div>
       )}
 
-      {/* DHL Theme Active Message */}
-      {isDHLThemeActive && (
-        <div className="text-center p-4 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg">
+      {/* DHL Theme Disabled Message */}
+      {!isDHLThemeActive && (
+        <div className="text-center p-4 bg-muted/50 rounded-lg">
           <div className="flex items-center justify-center gap-2 mb-2">
-            <Truck className="h-5 w-5 text-yellow-600" />
-            <span className="font-semibold text-yellow-800 dark:text-yellow-200">
-              DHL Branding aktivní
+            <Truck className="h-5 w-5 text-muted-foreground" />
+            <span className="font-semibold text-muted-foreground">
+              DHL téma vypnuto
             </span>
           </div>
-          <p className="text-sm text-yellow-700 dark:text-yellow-300">
-            Aplikace používá oficiální DHL firemní barvy a design
+          <p className="text-sm text-muted-foreground">
+            Zapněte přepínač výše pro aktivaci žlutého DHL tématu
           </p>
         </div>
       )}
