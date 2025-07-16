@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Users, Clock, BarChart3, Settings } from 'lucide-react';
+import { Users, Clock, BarChart3, Settings, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -8,8 +8,9 @@ import LanguageSelector from './LanguageSelector';
 import GroupManager from './GroupManager';
 import BulkShiftSetter from './BulkShiftSetter';
 import QuickDashboard from './QuickDashboard';
+import WechselschichtManager from '../wechselschicht/WechselschichtManager';
 
-export type AdminSection = 'dashboard' | 'groups' | 'shifts';
+export type AdminSection = 'dashboard' | 'groups' | 'shifts' | 'wechselschicht';
 
 const SimplifiedDHLAdmin = () => {
   const { t } = useTranslation(['dhl', 'common']);
@@ -36,6 +37,13 @@ const SimplifiedDHLAdmin = () => {
       description: t('admin.shifts.description'),
       icon: Clock,
       color: 'bg-yellow-50 text-yellow-700 border-yellow-200'
+    },
+    {
+      id: 'wechselschicht' as AdminSection,
+      title: 'Wechselschicht 30h',
+      description: 'Správa 15 rotačních vzorců směn',
+      icon: RefreshCw,
+      color: 'bg-purple-50 text-purple-700 border-purple-200'
     }
   ];
 
@@ -47,6 +55,8 @@ const SimplifiedDHLAdmin = () => {
         return <GroupManager />;
       case 'shifts':
         return <BulkShiftSetter />;
+      case 'wechselschicht':
+        return <WechselschichtManager />;
       default:
         return <QuickDashboard />;
     }
@@ -74,7 +84,7 @@ const SimplifiedDHLAdmin = () => {
         </div>
 
         {/* Section Navigation */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {sections.map((section) => {
             const Icon = section.icon;
             const isActive = activeSection === section.id;

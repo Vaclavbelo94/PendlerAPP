@@ -437,6 +437,120 @@ export type Database = {
           },
         ]
       }
+      dhl_shift_time_changes: {
+        Row: {
+          admin_user_id: string
+          change_date: string
+          created_at: string
+          id: string
+          new_end_time: string
+          new_start_time: string
+          original_end_time: string
+          original_start_time: string
+          reason: string | null
+          shift_type: string
+          woche_number: number
+        }
+        Insert: {
+          admin_user_id: string
+          change_date: string
+          created_at?: string
+          id?: string
+          new_end_time: string
+          new_start_time: string
+          original_end_time: string
+          original_start_time: string
+          reason?: string | null
+          shift_type: string
+          woche_number: number
+        }
+        Update: {
+          admin_user_id?: string
+          change_date?: string
+          created_at?: string
+          id?: string
+          new_end_time?: string
+          new_start_time?: string
+          original_end_time?: string
+          original_start_time?: string
+          reason?: string | null
+          shift_type?: string
+          woche_number?: number
+        }
+        Relationships: []
+      }
+      dhl_wechselschicht_patterns: {
+        Row: {
+          afternoon_end_time: string | null
+          afternoon_start_time: string | null
+          created_at: string
+          description: string | null
+          friday_shift: string | null
+          id: string
+          is_active: boolean
+          monday_shift: string | null
+          morning_end_time: string | null
+          morning_start_time: string | null
+          night_end_time: string | null
+          night_start_time: string | null
+          pattern_name: string
+          saturday_shift: string | null
+          sunday_shift: string | null
+          thursday_shift: string | null
+          tuesday_shift: string | null
+          updated_at: string
+          wednesday_shift: string | null
+          weekly_hours: number | null
+          woche_number: number
+        }
+        Insert: {
+          afternoon_end_time?: string | null
+          afternoon_start_time?: string | null
+          created_at?: string
+          description?: string | null
+          friday_shift?: string | null
+          id?: string
+          is_active?: boolean
+          monday_shift?: string | null
+          morning_end_time?: string | null
+          morning_start_time?: string | null
+          night_end_time?: string | null
+          night_start_time?: string | null
+          pattern_name: string
+          saturday_shift?: string | null
+          sunday_shift?: string | null
+          thursday_shift?: string | null
+          tuesday_shift?: string | null
+          updated_at?: string
+          wednesday_shift?: string | null
+          weekly_hours?: number | null
+          woche_number: number
+        }
+        Update: {
+          afternoon_end_time?: string | null
+          afternoon_start_time?: string | null
+          created_at?: string
+          description?: string | null
+          friday_shift?: string | null
+          id?: string
+          is_active?: boolean
+          monday_shift?: string | null
+          morning_end_time?: string | null
+          morning_start_time?: string | null
+          night_end_time?: string | null
+          night_start_time?: string | null
+          pattern_name?: string
+          saturday_shift?: string | null
+          sunday_shift?: string | null
+          thursday_shift?: string | null
+          tuesday_shift?: string | null
+          updated_at?: string
+          wednesday_shift?: string | null
+          weekly_hours?: number | null
+          woche_number?: number
+        }
+        Relationships: []
+      }
       dhl_work_groups: {
         Row: {
           created_at: string
