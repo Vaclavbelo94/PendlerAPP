@@ -33,5 +33,128 @@
     "laterButton": "Možná později",
     "tip": "DHL funkce můžete nastavit kdykoli později v sekci Profil.",
     "dismissToast": "Můžete DHL funkce nastavit kdykoli v sekci Profil"
+  },
+  "admin": {
+    "title": "DHL Administrace",
+    "subtitle": "Jednoduché a efektivní řízení směn",
+    "dashboard": {
+      "title": "Přehled",
+      "description": "Rychlý přehled systému a statistik",
+      "subtitle": "Správa DHL systému a přehled aktivit",
+      "refresh": "Obnovit data",
+      "stats": {
+        "totalEmployees": "Celkem zaměstnanců",
+        "shiftsThisWeek": "Směny tento týden",
+        "shiftsThisMonth": "Směny tento měsíc",
+        "systemHealth": "Stav systému",
+        "across": "napříč",
+        "groups": "skupinami",
+        "fromLastWeek": "oproti minulému týdnu",
+        "targetProgress": "pokrok k cíli",
+        "pendingChanges": "čekajících změn"
+      },
+      "health": {
+        "good": "V pořádku",
+        "warning": "Upozornění",
+        "error": "Chyba"
+      },
+      "status": {
+        "success": "Dokončeno",
+        "pending": "Čeká",
+        "error": "Chyba"
+      },
+      "recentActivity": {
+        "title": "Poslední aktivity",
+        "empty": "Žádné nedávné aktivity"
+      },
+      "activity": {
+        "bulkShiftsCreated": "Hromadně vytvořeno {{count}} směn",
+        "groupModified": "Skupina \"{{name}}\" byla upravena",
+        "shiftsCreated": "Vytvořeno {{count}} směn"
+      },
+      "quickActions": {
+        "title": "Rychlé akce",
+        "manageGroups": "Spravovat skupiny",
+        "bulkShifts": "Hromadné směny",
+        "viewReports": "Zobrazit reporty"
+      }
+    },
+    "groups": {
+      "title": "Správa skupin",
+      "description": "Organizace zaměstnanců do skupin podle pozic",
+      "subtitle": "Vytvářejte a spravujte skupiny zaměstnanců",
+      "createNew": "Vytvořit skupinu",
+      "createFirst": "Vytvořit první skupinu",
+      "positions": "pozice",
+      "employees": "zaměstnanců",
+      "examples": {
+        "earlyShift": "Ranní směna A",
+        "earlyShiftDesc": "Technici a rangiéri pro ranní směny",
+        "lateShift": "Odpolední směna B", 
+        "lateShiftDesc": "Verladeři a sortiéři pro odpolední směny",
+        "nightShift": "Noční směna C",
+        "weekendShift": "Víkendová směna"
+      },
+      "createDialog": {
+        "title": "Vytvořit novou skupinu"
+      },
+      "form": {
+        "name": "Název skupiny",
+        "namePlaceholder": "Zadejte název skupiny",
+        "description": "Popis",
+        "descriptionPlaceholder": "Zadejte popis skupiny",
+        "location": "Lokalita",
+        "locationPlaceholder": "Zadejte lokalitu (např. Brno, Praha)",
+        "positions": "Pozice"
+      },
+      "validation": {
+        "nameRequired": "Název skupiny je povinný"
+      },
+      "success": {
+        "created": "Skupina byla úspěšně vytvořena",
+        "deleted": "Skupina byla smazána"
+      },
+      "empty": {
+        "title": "Žádné skupiny",
+        "description": "Začněte vytvořením první skupiny zaměstnanců"
+      }
+    },
+    "shifts": {
+      "title": "Hromadné nastavení směn",
+      "description": "Nastavení směn pro celé skupiny najednou",
+      "subtitle": "Efektivně nastavte směny pro celé skupiny zaměstnanců",
+      "selectGroups": "Vyberte skupiny",
+      "timeSettings": "Nastavení času",
+      "selectDays": "Vyberte dny",
+      "dateRange": "Časové období",
+      "startTime": "Začátek směny",
+      "endTime": "Konec směny",
+      "duration": "Délka směny",
+      "startDate": "Datum od",
+      "endDate": "Datum do",
+      "preview": "Náhled",
+      "shiftsWillBeCreated": "směn bude vytvořeno",
+      "noPreview": "Žádný náhled",
+      "selectGroupsAndSettings": "Vyberte skupiny a nastavte časy pro zobrazení náhledu",
+      "andMore": "a dalších {{count}}...",
+      "applyChanges": "Aplikovat změny",
+      "applying": "Aplikuji...",
+      "days": {
+        "monday": "Pondělí",
+        "tuesday": "Úterý", 
+        "wednesday": "Středa",
+        "thursday": "Čtvrtek",
+        "friday": "Pátek",
+        "saturday": "Sobota",
+        "sunday": "Neděle"
+      },
+      "validation": {
+        "selectGroups": "Vyberte alespoň jednu skupinu",
+        "selectDays": "Vyberte alespoň jeden den"
+      },
+      "success": {
+        "applied": "Úspěšně aplikováno {{count}} směn pro {{groups}} skupin"
+      }
+    }
   }
 }

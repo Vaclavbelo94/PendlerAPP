@@ -33,5 +33,26 @@
     "laterButton": "Może później",
     "tip": "Funkcje DHL można skonfigurować w każdej chwili w sekcji Profil.",
     "dismissToast": "Możesz skonfigurować funkcje DHL w każdej chwili w sekcji Profil"
+  },
+  "admin": {
+    "title": "Administracja DHL",
+    "subtitle": "Proste i efektywne zarządzanie zmianami", 
+    "dashboard": {
+      "title": "Przegląd",
+      "description": "Szybki przegląd systemu i statystyk"
+    },
+    "groups": {
+      "title": "Zarządzanie grupami",
+      "description": "Organizacja pracowników według stanowisk",
+      "createNew": "Utwórz grupę", 
+      "examples": {
+        "earlyShift": "Zmiana poranna A",
+        "lateShift": "Zmiana popołudniowa B"
+      }
+    },
+    "shifts": {
+      "title": "Masowe ustawianie zmian",
+      "description": "Ustawianie zmian dla całych grup jednocześnie"
+    }
   }
 }

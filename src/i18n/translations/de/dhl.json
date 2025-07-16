@@ -33,5 +33,26 @@
     "laterButton": "Vielleicht später",
     "tip": "DHL-Funktionen können Sie jederzeit später im Profil-Bereich einrichten.",
     "dismissToast": "Sie können DHL-Funktionen jederzeit im Profil-Bereich einrichten"
+  },
+  "admin": {
+    "title": "DHL Administration",
+    "subtitle": "Einfache und effiziente Schichtverwaltung",
+    "dashboard": {
+      "title": "Übersicht",
+      "description": "Schneller Systemüberblick und Statistiken"
+    },
+    "groups": {
+      "title": "Gruppenverwaltung", 
+      "description": "Organisation der Mitarbeiter nach Positionen",
+      "createNew": "Gruppe erstellen",
+      "examples": {
+        "earlyShift": "Frühschicht A",
+        "lateShift": "Spätschicht B"
+      }
+    },
+    "shifts": {
+      "title": "Massenbearbeitung Schichten",
+      "description": "Schichten für ganze Gruppen gleichzeitig festlegen"
+    }
   }
 }
