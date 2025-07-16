@@ -214,3 +214,66 @@ export interface CalendarWeekInfo {
   weekStartDate: Date;
   weekEndDate: Date;
 }
+
+// Wechselschicht 30h types
+export interface DHLWechselschichtPattern {
+  id: string;
+  woche_number: number;
+  pattern_name: string;
+  description?: string;
+  monday_shift?: string;
+  tuesday_shift?: string;
+  wednesday_shift?: string;
+  thursday_shift?: string;
+  friday_shift?: string;
+  saturday_shift?: string;
+  sunday_shift?: string;
+  morning_start_time: string;
+  morning_end_time: string;
+  afternoon_start_time: string;
+  afternoon_end_time: string;
+  night_start_time: string;
+  night_end_time: string;
+  weekly_hours: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DHLShiftTimeChange {
+  id: string;
+  woche_number: number;
+  change_date: string;
+  shift_type: 'morning' | 'afternoon' | 'night';
+  original_start_time: string;
+  new_start_time: string;
+  original_end_time: string;
+  new_end_time: string;
+  reason?: string;
+  admin_user_id: string;
+  created_at: string;
+}
+
+export interface WechselschichtFlexibleTime {
+  woche_number: number;
+  date: string;
+  shift_type: 'morning' | 'afternoon' | 'night';
+  adjustment_minutes: number; // ±60 minut
+  reason?: string;
+  affected_employees: string[]; // user IDs
+}
+
+export interface WechselschichtNotification {
+  id: string;
+  user_id: string;
+  woche_number: number;
+  change_type: 'time_adjustment' | 'shift_change' | 'pattern_update';
+  original_time: string;
+  new_time: string;
+  date: string;
+  message: string;
+  sent_at?: string;
+  delivery_method: 'sms' | 'push' | 'email';
+  status: 'pending' | 'sent' | 'failed';
+  created_at: string;
+}

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { 
@@ -15,10 +16,14 @@ import {
   Sun,
   Moon,
   Sunrise,
-  RefreshCw
+  RefreshCw,
+  Settings,
+  Zap
 } from 'lucide-react';
 import WochePatternEditor from './WochePatternEditor';
 import WochePatternCard from './WochePatternCard';
+import FlexibleTimeManager from './FlexibleTimeManager';
+import RotationAlgorithm from './RotationAlgorithm';
 
 interface WechselschichtPattern {
   id: string;
@@ -172,7 +177,7 @@ const WechselschichtManager = () => {
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Wechselschicht 30h Manager</h2>
           <p className="text-muted-foreground">
-            Správa 15 rotačních vzorců pro Wechselschicht zaměstnance
+            Kompletní správa 15 rotačních vzorců s flexibilními časy a automatickou rotací
           </p>
         </div>
         <Button onClick={loadPatterns} variant="outline" size="sm">
@@ -232,19 +237,50 @@ const WechselschichtManager = () => {
         </Card>
       </div>
 
-      {/* Pattern Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-        {patterns.map((pattern) => (
-          <WochePatternCard
-            key={pattern.id}
-            pattern={pattern}
-            onEdit={handleEditPattern}
-            getShiftIcon={getShiftIcon}
-            getShiftBadgeColor={getShiftBadgeColor}
-            getShiftLabel={getShiftLabel}
+      {/* Main Tabs */}
+      <Tabs defaultValue="patterns" className="w-full">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="patterns" className="flex items-center gap-2">
+            <Settings className="h-4 w-4" />
+            Vzorce směn
+          </TabsTrigger>
+          <TabsTrigger value="flexible" className="flex items-center gap-2">
+            <Clock className="h-4 w-4" />
+            Flexibilní časy
+          </TabsTrigger>
+          <TabsTrigger value="rotation" className="flex items-center gap-2">
+            <Zap className="h-4 w-4" />
+            Rotační algoritmus
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="patterns" className="space-y-6">
+          {/* Pattern Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+            {patterns.map((pattern) => (
+              <WochePatternCard
+                key={pattern.id}
+                pattern={pattern}
+                onEdit={handleEditPattern}
+                getShiftIcon={getShiftIcon}
+                getShiftBadgeColor={getShiftBadgeColor}
+                getShiftLabel={getShiftLabel}
+              />
+            ))}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="flexible" className="space-y-6">
+          <FlexibleTimeManager 
+            patterns={patterns}
+            onTimeChange={() => loadPatterns()}
           />
-        ))}
-      </div>
+        </TabsContent>
+
+        <TabsContent value="rotation" className="space-y-6">
+          <RotationAlgorithm patterns={patterns} />
+        </TabsContent>
+      </Tabs>
 
       {/* Pattern Editor Modal */}
       {showEditor && editingPattern && (
