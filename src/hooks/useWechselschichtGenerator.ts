@@ -41,7 +41,7 @@ interface GeneratedShift {
   woche_number: number;
 }
 
-export const useWechselschichtGenerator = () => {
+export const useWechselschichtGenerator = (onSuccess?: () => void) => {
   const { user } = useAuth();
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationPreview, setGenerationPreview] = useState<GeneratedShift[]>([]);
@@ -227,6 +227,12 @@ export const useWechselschichtGenerator = () => {
 
       toast.success(`Vygenerováno ${newShifts.length} nových směn`);
       setGenerationPreview([]);
+      
+      // Call success callback to refresh shifts
+      if (onSuccess) {
+        onSuccess();
+      }
+      
       return true;
 
     } catch (error) {

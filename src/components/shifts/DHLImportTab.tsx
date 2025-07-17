@@ -10,7 +10,11 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useWechselschichtGenerator } from '@/hooks/useWechselschichtGenerator';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
-const DHLImportTab: React.FC = () => {
+interface DHLImportTabProps {
+  onRefreshShifts?: () => void;
+}
+
+const DHLImportTab: React.FC<DHLImportTabProps> = ({ onRefreshShifts }) => {
   const { t } = useTranslation('shifts');
   const { user } = useAuth();
   const [isImporting, setIsImporting] = useState(false);
@@ -23,7 +27,7 @@ const DHLImportTab: React.FC = () => {
     executeGeneration, 
     isGenerating, 
     generationPreview 
-  } = useWechselschichtGenerator();
+  } = useWechselschichtGenerator(onRefreshShifts);
 
   const handleImportShifts = async () => {
     if (!user) {

@@ -20,6 +20,7 @@ interface SwipeableShiftTabsProps {
   onAddShift: () => void;
   onAddShiftForDate: (date: Date) => void;
   onSelectedDateChange?: (date: Date | undefined) => void;
+  onRefreshShifts?: () => void;
   isLoading: boolean;
 }
 
@@ -30,6 +31,7 @@ const SwipeableShiftTabs: React.FC<SwipeableShiftTabsProps> = ({
   onAddShift,
   onAddShiftForDate,
   onSelectedDateChange,
+  onRefreshShifts,
   isLoading,
 }) => {
   const { t } = useTranslation('shifts');
@@ -171,7 +173,7 @@ const SwipeableShiftTabs: React.FC<SwipeableShiftTabsProps> = ({
                         <h2 className="text-xl font-semibold mb-2">{t('tabs.import')}</h2>
                         <p className="text-sm text-muted-foreground">{t('import.description')}</p>
                       </div>
-                      <DHLImportTab />
+                      <DHLImportTab onRefreshShifts={onRefreshShifts} />
                     </div>
                   </TabsContent>
                 )}
