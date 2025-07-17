@@ -133,11 +133,9 @@ const SwipeableShiftTabs: React.FC<SwipeableShiftTabsProps> = ({
                       onEditShift={onEditShift}
                       onDeleteShift={onDeleteShift}
                       onAddShift={() => {
-                        console.log('SwipeableShiftTabs - onAddShift called with no date');
                         onAddShift();
                       }}
                       onAddShiftForDate={(date) => {
-                        console.log('SwipeableShiftTabs - onAddShiftForDate called with date:', date);
                         onAddShiftForDate(date);
                       }}
                       onSelectedDateChange={onSelectedDateChange}
