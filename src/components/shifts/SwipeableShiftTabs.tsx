@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/auth';
+import { useProfileData } from '@/hooks/useProfileData';
 import { Calendar, BarChart3, Eye, Download, Settings } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -34,9 +35,7 @@ const SwipeableShiftTabs: React.FC<SwipeableShiftTabsProps> = ({
   const { t } = useTranslation('shifts');
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('calendar');
-
-  // Check if user is DHL employee from profiles
-  const isDHLEmployee = user?.user_metadata?.isDHL || false;
+  const { isDHLEmployee } = useProfileData(user);
 
   const tabs = [
     {
