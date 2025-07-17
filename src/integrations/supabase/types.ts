@@ -1482,6 +1482,7 @@ export type Database = {
           end_time: string
           id: string
           is_dhl_managed: boolean | null
+          is_wechselschicht_generated: boolean | null
           notes: string | null
           original_dhl_data: Json | null
           start_time: string
@@ -1498,6 +1499,7 @@ export type Database = {
           end_time: string
           id?: string
           is_dhl_managed?: boolean | null
+          is_wechselschicht_generated?: boolean | null
           notes?: string | null
           original_dhl_data?: Json | null
           start_time: string
@@ -1514,6 +1516,7 @@ export type Database = {
           end_time?: string
           id?: string
           is_dhl_managed?: boolean | null
+          is_wechselschicht_generated?: boolean | null
           notes?: string | null
           original_dhl_data?: Json | null
           start_time?: string

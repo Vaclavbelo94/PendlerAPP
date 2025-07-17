@@ -2,17 +2,28 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useTranslation } from 'react-i18next';
-import { Download, Database, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
+import { Download, Database, AlertCircle, CheckCircle, Loader2, Cog, Calendar } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/auth';
 import { supabase } from '@/integrations/supabase/client';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useWechselschichtGenerator } from '@/hooks/useWechselschichtGenerator';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 const DHLImportTab: React.FC = () => {
   const { t } = useTranslation('shifts');
   const { user } = useAuth();
   const [isImporting, setIsImporting] = useState(false);
   const [lastImport, setLastImport] = useState<Date | null>(null);
+  const [showPreviewDialog, setShowPreviewDialog] = useState(false);
+  
+  const { 
+    checkUserEligibility, 
+    generateShiftsPreview, 
+    executeGeneration, 
+    isGenerating, 
+    generationPreview 
+  } = useWechselschichtGenerator();
 
   const handleImportShifts = async () => {
     if (!user) {
@@ -119,6 +130,23 @@ const DHLImportTab: React.FC = () => {
     }
   };
 
+  const handleWechselschichtGeneration = async () => {
+    const eligibility = await checkUserEligibility();
+    if (!eligibility) return;
+
+    const preview = await generateShiftsPreview(4); // Generate 4 weeks ahead
+    if (preview.length > 0) {
+      setShowPreviewDialog(true);
+    }
+  };
+
+  const confirmGeneration = async () => {
+    const success = await executeGeneration(generationPreview);
+    if (success) {
+      setShowPreviewDialog(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <Card>
@@ -170,6 +198,48 @@ const DHLImportTab: React.FC = () => {
         </CardContent>
       </Card>
 
+      {/* Wechselschicht Generation Card */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Cog className="h-5 w-5" />
+            Generování Wechselschicht směn
+          </CardTitle>
+          <CardDescription>
+            Automatické generování směn pro Wechselschicht 30h pozice podle rotačního cyklu
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <Alert>
+            <Calendar className="h-4 w-4" />
+            <AlertDescription>
+              Generování funguje pouze pro uživatele s Wechselschicht pozicí. 
+              Směny se vygenerují na 4 týdny dopředu podle vašeho aktuálního Woche cyklu.
+            </AlertDescription>
+          </Alert>
+
+          <Button 
+            onClick={handleWechselschichtGeneration}
+            disabled={isGenerating}
+            className="w-full"
+            variant="outline"
+            size="lg"
+          >
+            {isGenerating ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Generuji směny...
+              </>
+            ) : (
+              <>
+                <Cog className="h-4 w-4 mr-2" />
+                Generovat Wechselschicht směny
+              </>
+            )}
+          </Button>
+        </CardContent>
+      </Card>
+
       <Card>
         <CardHeader>
           <CardTitle>Informace o importu</CardTitle>
@@ -181,6 +251,65 @@ const DHLImportTab: React.FC = () => {
           <p>• Import nepřepíše existující směny</p>
         </CardContent>
       </Card>
+
+      {/* Preview Dialog */}
+      <Dialog open={showPreviewDialog} onOpenChange={setShowPreviewDialog}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-auto">
+          <DialogHeader>
+            <DialogTitle>Náhled generovaných směn</DialogTitle>
+            <DialogDescription>
+              Zkontrolujte si směny před jejich uložením do kalendáře.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            {generationPreview.length > 0 && (
+              <div className="space-y-2">
+                <h4 className="font-medium">Budou vygenerovány {generationPreview.length} směn:</h4>
+                <div className="max-h-60 overflow-y-auto border rounded-md p-3 space-y-2">
+                  {generationPreview.map((shift, index) => (
+                    <div key={index} className="flex justify-between items-center p-2 bg-muted rounded text-sm">
+                      <div>
+                        <span className="font-medium">
+                          {new Date(shift.date).toLocaleDateString('cs-CZ')}
+                        </span>
+                        <span className="text-muted-foreground ml-2">
+                          ({new Date(shift.date).toLocaleDateString('cs-CZ', { weekday: 'long' })})
+                        </span>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-medium">{shift.type}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {shift.start_time} - {shift.end_time}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          Woche {shift.woche_number}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowPreviewDialog(false)}>
+              Zrušit
+            </Button>
+            <Button onClick={confirmGeneration} disabled={isGenerating}>
+              {isGenerating ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Generuji...
+                </>
+              ) : (
+                'Potvrdit a vygenerovat'
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
