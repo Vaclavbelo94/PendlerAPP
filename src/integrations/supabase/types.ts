@@ -440,9 +440,13 @@ export type Database = {
       dhl_shift_time_changes: {
         Row: {
           admin_user_id: string
+          affected_days: string[] | null
+          affects_all_woche: boolean | null
+          calendar_week: number | null
           change_date: string
           created_at: string
           id: string
+          is_day_off: boolean | null
           new_end_time: string
           new_start_time: string
           original_end_time: string
@@ -453,9 +457,13 @@ export type Database = {
         }
         Insert: {
           admin_user_id: string
+          affected_days?: string[] | null
+          affects_all_woche?: boolean | null
+          calendar_week?: number | null
           change_date: string
           created_at?: string
           id?: string
+          is_day_off?: boolean | null
           new_end_time: string
           new_start_time: string
           original_end_time: string
@@ -466,9 +474,13 @@ export type Database = {
         }
         Update: {
           admin_user_id?: string
+          affected_days?: string[] | null
+          affects_all_woche?: boolean | null
+          calendar_week?: number | null
           change_date?: string
           created_at?: string
           id?: string
+          is_day_off?: boolean | null
           new_end_time?: string
           new_start_time?: string
           original_end_time?: string

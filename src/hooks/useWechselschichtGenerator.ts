@@ -34,11 +34,15 @@ interface UserAssignment {
 }
 
 interface GeneratedShift {
+  user_id: string;
   date: string;
   start_time: string;
   end_time: string;
   type: string;
   woche_number: number;
+  pattern_name?: string;
+  is_wechselschicht_generated: boolean;
+  has_time_override?: boolean;
 }
 
 export const useWechselschichtGenerator = (onSuccess?: () => void) => {
@@ -115,71 +119,142 @@ export const useWechselschichtGenerator = (onSuccess?: () => void) => {
     }
   };
 
+  const checkForTimeChanges = async (wocheNumber: number, calendarWeek: number, date: string) => {
+    const { data: timeChanges } = await supabase
+      .from('dhl_shift_time_changes')
+      .select('*')
+      .or(`and(woche_number.eq.${wocheNumber},calendar_week.eq.${calendarWeek}),and(affects_all_woche.eq.true,calendar_week.eq.${calendarWeek})`)
+      .order('created_at', { ascending: false })
+      .limit(1);
+
+    return timeChanges?.[0] || null;
+  };
+
   const generateShiftsPreview = async (weeksToGenerate: number = 4) => {
-    const assignment = await checkUserEligibility();
-    if (!assignment) return [];
+    try {
+      const assignment = await checkUserEligibility();
+      if (!assignment) return [];
 
-    const generatedShifts: GeneratedShift[] = [];
-    let currentWoche = assignment.current_woche;
-    
-    // Start from current Monday
-    const today = new Date();
-    const currentDay = today.getDay();
-    const mondayOffset = currentDay === 0 ? -6 : 1 - currentDay; // 0 = Sunday
-    const startMonday = new Date(today);
-    startMonday.setDate(today.getDate() + mondayOffset);
+      const generatedShifts: GeneratedShift[] = [];
+      
+      // Start from current Monday
+      const today = new Date();
+      const currentDay = today.getDay();
+      const mondayOffset = currentDay === 0 ? -6 : 1 - currentDay; // 0 = Sunday
+      const startMonday = new Date(today);
+      startMonday.setDate(today.getDate() + mondayOffset);
 
-    for (let week = 0; week < weeksToGenerate; week++) {
-      // Get pattern for current woche
-      const { data: pattern, error } = await supabase
+      // Get all active patterns at once for better performance
+      const { data: patterns, error: patternsError } = await supabase
         .from('dhl_wechselschicht_patterns')
         .select('*')
-        .eq('woche_number', currentWoche)
         .eq('is_active', true)
-        .single();
+        .order('woche_number');
 
-      if (error || !pattern) {
-        toast.error(`Vzorec pro Woche ${currentWoche} nebyl nalezen`);
-        continue;
+      if (patternsError || !patterns) {
+        toast.error('Chyba při načítání vzorců směn');
+        return [];
       }
 
-      // Generate shifts for each day of the week
-      const weekStart = new Date(startMonday);
-      weekStart.setDate(startMonday.getDate() + (week * 7));
+      for (let week = 0; week < weeksToGenerate; week++) {
+        // Calculate current woche using correct 15-week rotation
+        const currentWoche = ((assignment.current_woche - 1 + week) % 15) + 1;
+        
+        // Find pattern for current woche
+        const pattern = patterns.find(p => p.woche_number === currentWoche);
+        if (!pattern) {
+          console.log(`Pattern for Woche ${currentWoche} not found`);
+          continue;
+        }
 
-      const dayShifts = [
-        pattern.monday_shift,
-        pattern.tuesday_shift,
-        pattern.wednesday_shift,
-        pattern.thursday_shift,
-        pattern.friday_shift,
-        pattern.saturday_shift,
-        pattern.sunday_shift
-      ];
+        // Calculate week start date and calendar week
+        const weekStart = new Date(startMonday);
+        weekStart.setDate(startMonday.getDate() + (week * 7));
+        
+        // Calculate calendar week
+        const yearStart = new Date(weekStart.getFullYear(), 0, 1);
+        const calendarWeek = Math.ceil(((weekStart.getTime() - yearStart.getTime()) / 86400000 + yearStart.getDay() + 1) / 7);
 
-      dayShifts.forEach((shiftType, dayIndex) => {
-        if (shiftType && shiftType.toLowerCase() !== 'volno' && shiftType.toLowerCase() !== 'free') {
+        // Check for time changes/exceptions for this week
+        const timeChange = await checkForTimeChanges(currentWoche, calendarWeek, weekStart.toISOString().split('T')[0]);
+
+        // Generate shifts for Monday to Friday (skip weekends as they're 'volno')
+        const weekDays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+        const dayShifts = [
+          pattern.monday_shift,
+          pattern.tuesday_shift,
+          pattern.wednesday_shift,
+          pattern.thursday_shift,
+          pattern.friday_shift
+        ];
+
+        weekDays.forEach((dayName, dayIndex) => {
+          const shiftType = dayShifts[dayIndex];
+          if (!shiftType || shiftType.toLowerCase() === 'volno') return;
+
           const shiftDate = new Date(weekStart);
           shiftDate.setDate(weekStart.getDate() + dayIndex);
 
-          const times = getShiftTimes(shiftType, pattern);
-          if (times) {
-            generatedShifts.push({
-              date: shiftDate.toISOString().split('T')[0],
-              start_time: times.start_time,
-              end_time: times.end_time,
-              type: shiftType,
-              woche_number: currentWoche
-            });
+          // Get base shift times
+          let times = getShiftTimes(shiftType, pattern);
+          if (!times) return;
+
+          let hasTimeOverride = false;
+
+          // Apply time changes if they exist
+          if (timeChange) {
+            // Check if this day is marked as day off
+            if (timeChange.is_day_off && timeChange.affected_days?.includes(dayName)) {
+              return; // Skip this day - it's marked as day off
+            }
+            
+            // Apply time changes if this day is affected
+            if (timeChange.affected_days?.includes(dayName) || timeChange.affected_days?.length === 0) {
+              times = {
+                start_time: timeChange.new_start_time,
+                end_time: timeChange.new_end_time
+              };
+              hasTimeOverride = true;
+            }
           }
-        }
-      });
 
-      currentWoche = getNextWoche(currentWoche);
+          // Convert Czech shift names to standard types
+          let standardType: string;
+          switch (shiftType.toLowerCase()) {
+            case 'ranní':
+              standardType = 'morning';
+              break;
+            case 'odpolední':
+              standardType = 'afternoon';
+              break;
+            case 'noční':
+              standardType = 'night';
+              break;
+            default:
+              standardType = shiftType;
+          }
+
+          generatedShifts.push({
+            user_id: assignment.id,
+            date: shiftDate.toISOString().split('T')[0],
+            start_time: times.start_time,
+            end_time: times.end_time,
+            type: standardType,
+            woche_number: currentWoche,
+            pattern_name: pattern.pattern_name,
+            is_wechselschicht_generated: true,
+            has_time_override: hasTimeOverride
+          });
+        });
+      }
+
+      setGenerationPreview(generatedShifts);
+      return generatedShifts;
+    } catch (error) {
+      console.error('Error generating shifts preview:', error);
+      toast.error('Chyba při generování náhledu směn');
+      return [];
     }
-
-    setGenerationPreview(generatedShifts);
-    return generatedShifts;
   };
 
   const executeGeneration = async (shifts: GeneratedShift[]) => {
@@ -211,7 +286,7 @@ export const useWechselschichtGenerator = (onSuccess?: () => void) => {
         start_time: shift.start_time,
         end_time: shift.end_time,
         type: shift.type,
-        notes: `Woche ${shift.woche_number} - Automaticky generováno`,
+        notes: `${shift.pattern_name || `Woche ${shift.woche_number}`} - Automaticky generováno${shift.has_time_override ? ' (upravené časy)' : ''}`,
         is_wechselschicht_generated: true
       }));
 

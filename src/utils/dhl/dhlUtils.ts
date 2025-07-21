@@ -128,3 +128,61 @@ export const getPositionTypeIcon = (type: DHLPositionType): string => {
   };
   return icons[type] || icons.other;
 };
+
+// Funkce pro 15-týdenní rotaci Wechselschicht
+export const getWechselschichtRotationInfo = () => {
+  return {
+    // Noční směny
+    nightShifts: [1, 4, 6, 9, 11, 14],
+    // Odpolední směny  
+    afternoonShifts: [2, 5, 7, 10, 12, 15],
+    // Ranní směny
+    morningShifts: [3, 8, 13],
+    totalWeeks: 15
+  };
+};
+
+// Funkce pro získání typu směny na základě Woche
+export const getShiftTypeFromWoche = (woche: number): 'morning' | 'afternoon' | 'night' | null => {
+  const rotation = getWechselschichtRotationInfo();
+  
+  if (rotation.nightShifts.includes(woche)) return 'night';
+  if (rotation.afternoonShifts.includes(woche)) return 'afternoon';
+  if (rotation.morningShifts.includes(woche)) return 'morning';
+  
+  return null;
+};
+
+// Funkce pro výpočet následující Woche v 15-týdenní rotaci
+export const getNextWocheInRotation = (currentWoche: number): number => {
+  return currentWoche >= 15 ? 1 : currentWoche + 1;
+};
+
+// Funkce pro výpočet kalendářního týdne
+export const getCalendarWeek = (date: Date): number => {
+  const yearStart = new Date(date.getFullYear(), 0, 1);
+  const weekNumber = Math.ceil(((date.getTime() - yearStart.getTime()) / 86400000 + yearStart.getDay() + 1) / 7);
+  return weekNumber;
+};
+
+// Funkce pro získání popisu Woche rotace
+export const getWocheDescription = (woche: number): string => {
+  const shiftType = getShiftTypeFromWoche(woche);
+  const rotation = getWechselschichtRotationInfo();
+  
+  switch (shiftType) {
+    case 'night':
+      return `Woche ${woche} - Noční směny (Po-Pá 22:00-06:00)`;
+    case 'afternoon':
+      return `Woche ${woche} - Odpolední směny (Po-Pá 14:00-22:00)`;
+    case 'morning':
+      return `Woche ${woche} - Ranní směny (Po-Pá 06:00-14:00)`;
+    default:
+      return `Woche ${woche} - Neznámý typ směny`;
+  }
+};
+
+// Funkce pro validaci Woche čísla
+export const isValidWoche = (woche: number): boolean => {
+  return woche >= 1 && woche <= 15;
+};
