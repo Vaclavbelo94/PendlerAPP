@@ -20,7 +20,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 const OnboardingDashboardContent: React.FC = () => {
-  const { t } = useTranslation(['dashboard', 'common']);
+  const { t } = useTranslation(['common']);
 
   const mockData = {
     monthlyShifts: 22,
@@ -32,33 +32,33 @@ const OnboardingDashboardContent: React.FC = () => {
   const features = [
     {
       icon: Calendar,
-      title: 'Sledování směn',
-      description: 'Automatické načítání DHL rozvrhu podle vaší Woche',
-      benefit: 'Ušetříte 2 hodiny týdně',
+      title: t('dashboard.features.shiftTracking.title'),
+      description: t('dashboard.features.shiftTracking.description'),
+      benefit: t('dashboard.features.shiftTracking.benefit'),
       color: 'bg-blue-50 border-blue-200 text-blue-700',
       link: '/shifts'
     },
     {
       icon: Calculator,
-      title: 'Daňový poradce',
-      description: 'Výpočet kilometrového a dalších odpočtů',
-      benefit: `Průměrná úspora ${mockData.potentialSavings}€/rok`,
+      title: t('dashboard.features.taxAdvisor.title'),
+      description: t('dashboard.features.taxAdvisor.description'),
+      benefit: t('dashboard.features.taxAdvisor.benefit', { amount: mockData.potentialSavings }),
       color: 'bg-green-50 border-green-200 text-green-700',
       link: '/tax-advisor'
     },
     {
       icon: Car,
-      title: 'Správa vozidel',
-      description: 'Sledování nákladů na dopravu do práce',
-      benefit: 'Optimalizace nákladů až o 30%',
+      title: t('dashboard.features.vehicleManagement.title'),
+      description: t('dashboard.features.vehicleManagement.description'),
+      benefit: t('dashboard.features.vehicleManagement.benefit'),
       color: 'bg-purple-50 border-purple-200 text-purple-700',
       link: '/vehicle'
     },
     {
       icon: Languages,
-      title: 'Překladač',
-      description: 'Německé výrazy pro pracovní komunikaci',
-      benefit: 'Rychlejší adaptace v týmu',
+      title: t('dashboard.features.translator.title'),
+      description: t('dashboard.features.translator.description'),
+      benefit: t('dashboard.features.translator.benefit'),
       color: 'bg-orange-50 border-orange-200 text-orange-700',
       link: '/translator'
     }
@@ -67,24 +67,24 @@ const OnboardingDashboardContent: React.FC = () => {
   const stats = [
     {
       icon: Clock,
-      label: 'Měsíční hodiny',
+      label: t('dashboard.stats.monthlyHours'),
       value: `~${mockData.estimatedHours}h`,
-      description: 'Na základě standardního rozvrhu',
-      trend: '+12%'
+      description: t('dashboard.stats.hoursDescription'),
+      trend: t('dashboard.stats.trend.increase')
     },
     {
       icon: Euro,
-      label: 'Potenciální úspora',
+      label: t('dashboard.stats.potentialSavings'),
       value: `${mockData.potentialSavings}€`,
-      description: 'Roční daňové odpočty',
-      trend: 'Nové!'
+      description: t('dashboard.stats.savingsDescription'),
+      trend: t('dashboard.stats.trend.new')
     },
     {
       icon: Target,
-      label: 'Průměrná dojížďka',
+      label: t('dashboard.stats.averageCommute'),
       value: `${mockData.averageCommute} km`,
-      description: 'Denní vzdálenost',
-      trend: '×2 směry'
+      description: t('dashboard.stats.commuteDescription'),
+      trend: t('dashboard.stats.trend.bothWays')
     }
   ];
 
@@ -98,15 +98,14 @@ const OnboardingDashboardContent: React.FC = () => {
       >
         <div className="inline-flex items-center gap-2 bg-amber-100 px-4 py-2 rounded-full mb-4">
           <Sparkles className="h-5 w-5 text-amber-600" />
-          <span className="text-amber-800 font-medium">DHL Premium aktivní</span>
+          <span className="text-amber-800 font-medium">{t('dashboard.welcome.premiumActive')}</span>
         </div>
         
         <h2 className="text-2xl font-bold text-amber-900 mb-2">
-          Vítejte ve vaší personalizované aplikaci!
+          {t('dashboard.welcome.title')}
         </h2>
         <p className="text-amber-700 max-w-2xl mx-auto">
-          PendlerApp je nyní optimalizována pro DHL zaměstnance. 
-          Po dokončení nastavení zde uvidíte vaše skutečné statistiky a pokrok.
+          {t('dashboard.welcome.description')}
         </p>
       </motion.div>
 
@@ -149,7 +148,7 @@ const OnboardingDashboardContent: React.FC = () => {
       <div>
         <div className="flex items-center gap-2 mb-6">
           <BarChart3 className="h-6 w-6 text-primary" />
-          <h3 className="text-xl font-semibold">Funkce připravené pro vás</h3>
+          <h3 className="text-xl font-semibold">{t('dashboard.features.title')}</h3>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -186,7 +185,7 @@ const OnboardingDashboardContent: React.FC = () => {
                   
                   <Button asChild variant="outline" className="w-full">
                     <Link to={feature.link}>
-                      Vyzkoušet funkci
+                      {t('dashboard.features.tryFeature')}
                     </Link>
                   </Button>
                 </CardContent>
@@ -206,10 +205,10 @@ const OnboardingDashboardContent: React.FC = () => {
           <CardHeader className="text-center">
             <CardTitle className="flex items-center justify-center gap-2">
               <Target className="h-6 w-6" />
-              Začněte hned teď
+              {t('dashboard.quickStart.title')}
             </CardTitle>
             <CardDescription>
-              Dokončete nastavení a začněte využívat všechny funkce
+              {t('dashboard.quickStart.description')}
             </CardDescription>
           </CardHeader>
           
@@ -219,8 +218,8 @@ const OnboardingDashboardContent: React.FC = () => {
                 <Link to="/dhl-setup" className="flex flex-col items-center gap-2">
                   <Calendar className="h-6 w-6" />
                   <div className="text-center">
-                    <div className="font-medium">Nastavit DHL profil</div>
-                    <div className="text-xs opacity-80">2 minuty</div>
+                    <div className="font-medium">{t('dashboard.quickStart.setupProfile')}</div>
+                    <div className="text-xs opacity-80">{t('dashboard.quickStart.setupTime')}</div>
                   </div>
                 </Link>
               </Button>
@@ -229,8 +228,8 @@ const OnboardingDashboardContent: React.FC = () => {
                 <Link to="/shifts" className="flex flex-col items-center gap-2">
                   <Clock className="h-6 w-6" />
                   <div className="text-center">
-                    <div className="font-medium">Přidat první směnu</div>
-                    <div className="text-xs opacity-80">1 minuta</div>
+                    <div className="font-medium">{t('dashboard.quickStart.addFirstShift')}</div>
+                    <div className="text-xs opacity-80">{t('dashboard.quickStart.shiftTime')}</div>
                   </div>
                 </Link>
               </Button>

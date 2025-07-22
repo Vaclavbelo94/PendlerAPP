@@ -63,26 +63,26 @@ export const useOnboarding = () => {
       const steps: OnboardingStep[] = [
         {
           id: 'welcome',
-          title: 'Vítejte v PendlerApp',
-          description: 'Seznamte se s aplikací pro DHL zaměstnance',
+          title: 'welcome.title',
+          description: 'welcome.description',
           completed: true // První krok je vždy hotový
         },
         {
           id: 'setup',
-          title: 'Nastavení DHL profilu',
-          description: 'Nastavte svou pozici a pracovní skupinu',
+          title: 'setup.title',
+          description: 'setup.description',
           completed: hasAssignment
         },
         {
           id: 'first-shift',
-          title: 'Přidání první směny',
-          description: 'Přidejte svou první pracovní směnu',
+          title: 'firstShift.title',
+          description: 'firstShift.description',
           completed: hasShifts
         },
         {
           id: 'explore',
-          title: 'Prozkoumání funkcí',
-          description: 'Objevte všechny možnosti aplikace',
+          title: 'explore.title',
+          description: 'explore.description',
           completed: false,
           optional: true
         }

@@ -11,7 +11,7 @@ import {
   ArrowRight, 
   Calendar, 
   Settings, 
-  Explore,
+  Compass,
   X,
   Gift,
   Target,
@@ -46,7 +46,7 @@ const DHLOnboarding: React.FC<DHLOnboardingProps> = ({ onClose }) => {
     welcome: Gift,
     setup: Settings,
     'first-shift': Calendar,
-    explore: Explore
+    explore: Compass
   };
 
   const stepColors = {
