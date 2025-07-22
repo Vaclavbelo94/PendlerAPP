@@ -36,7 +36,7 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ isDHLUser }) => {
       id: 'shifts',
       title: t('dashboard:shiftManagement'),
       description: hasShifts 
-        ? t('dashboard:shiftsCount', { count: shifts.length })
+        ? `${shifts.length} ${shifts.length === 1 ? 'směna' : shifts.length < 5 ? 'směny' : 'směn'}`
         : t('dashboard:noShiftsYet'),
       icon: Calendar,
       color: 'text-blue-600',
@@ -78,7 +78,7 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ isDHLUser }) => {
       path: '/tax-advisor',
       content: (
         <div className="text-sm text-muted-foreground">
-          {t('dashboard:optimizeYourTaxes')}
+          Optimalizujte své daně
         </div>
       )
     },
@@ -93,7 +93,7 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ isDHLUser }) => {
       path: '/vehicle',
       content: (
         <div className="text-sm text-muted-foreground">
-          {t('dashboard:manageYourVehicles')}
+          Spravujte svá vozidla
         </div>
       )
     },
@@ -108,7 +108,7 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ isDHLUser }) => {
       path: '/translator',
       content: (
         <div className="text-sm text-muted-foreground">
-          {t('dashboard:translateAndLearn')}
+          Překládejte a učte se
         </div>
       )
     },
