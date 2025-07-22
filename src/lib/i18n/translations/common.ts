@@ -32,6 +32,7 @@ export const commonTranslations = {
       success: 'Úspěch',
       warning: 'Upozornění',
       info: 'Informace',
+      currentlyLoggedIn: 'Aktuálně přihlášen',
     }
   },
   de: {
@@ -63,6 +64,7 @@ export const commonTranslations = {
       success: 'Erfolgreich',
       warning: 'Warnung',
       info: 'Information',
+      currentlyLoggedIn: 'Aktuell angemeldet',
     }
   },
   pl: {
@@ -94,6 +96,7 @@ export const commonTranslations = {
       success: 'Sukces',
       warning: 'Ostrzeżenie',
       info: 'Informacja',
+      currentlyLoggedIn: 'Aktualnie zalogowany',
     }
   }
 };
