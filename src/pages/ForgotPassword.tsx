@@ -14,14 +14,28 @@ const ForgotPassword = () => {
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isEmailSent, setIsEmailSent] = useState(false);
+  const [emailError, setEmailError] = useState('');
   
   const { t } = useTranslation(['auth', 'common']);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Clear previous errors
+    setEmailError('');
+    
+    // Validate email
     if (!email) {
+      setEmailError(t('auth:emailRequired'));
       toast.error(t('auth:emailRequired'));
+      return;
+    }
+
+    // Basic email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setEmailError(t('auth:invalidEmailFormat'));
+      toast.error(t('auth:invalidEmailFormat'));
       return;
     }
 
@@ -33,12 +47,26 @@ const ForgotPassword = () => {
       });
       
       if (error) {
-        toast.error(t('auth:resetPasswordError'));
+        console.error('Reset password error:', error);
+        
+        // Handle specific error cases
+        if (error.message.includes('User not found') || error.message.includes('Invalid email')) {
+          setEmailError(t('auth:emailNotFound'));
+          toast.error(t('auth:emailNotFound'));
+        } else if (error.message.includes('Email rate limit exceeded')) {
+          setEmailError(t('auth:emailRateLimit'));
+          toast.error(t('auth:emailRateLimit'));
+        } else {
+          setEmailError(t('auth:resetPasswordError'));
+          toast.error(t('auth:resetPasswordError'));
+        }
       } else {
         setIsEmailSent(true);
         toast.success(t('auth:resetPasswordEmailSent'));
       }
-    } catch (err) {
+    } catch (err: any) {
+      console.error('Reset password exception:', err);
+      setEmailError(t('auth:resetPasswordError'));
       toast.error(t('auth:resetPasswordError'));
     } finally {
       setIsLoading(false);
@@ -98,13 +126,24 @@ const ForgotPassword = () => {
                         id="email"
                         type="email"
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="pl-10 transition-all duration-200 focus:ring-2 focus:ring-primary/20"
+                        onChange={(e) => {
+                          setEmail(e.target.value);
+                          if (emailError) setEmailError('');
+                        }}
+                        className={`pl-10 transition-all duration-200 focus:ring-2 focus:ring-primary/20 ${
+                          emailError ? 'border-red-500 focus:ring-red-200' : ''
+                        }`}
                         placeholder={t('auth:email')}
                         required
                       />
                     </div>
-                  </div>
+                     {emailError && (
+                       <p className="text-sm text-red-600 mt-1 flex items-center">
+                         <Mail className="w-4 h-4 mr-1" />
+                         {emailError}
+                       </p>
+                     )}
+                   </div>
 
                   {/* Submit Button */}
                   <Button
