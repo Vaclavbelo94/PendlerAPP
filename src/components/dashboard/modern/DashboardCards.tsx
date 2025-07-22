@@ -34,9 +34,9 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ isDHLUser }) => {
   const cards = [
     {
       id: 'shifts',
-      title: 'Správa směn',
+      title: t('dashboard:shiftManagement'),
       description: hasShifts 
-        ? `${shifts.length} ${shifts.length === 1 ? 'směna' : shifts.length < 5 ? 'směny' : 'směn'}`
+        ? t('dashboard:shiftsCount', { count: shifts.length })
         : t('dashboard:noShiftsYet'),
       icon: Calendar,
       color: 'text-blue-600',
@@ -69,8 +69,8 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ isDHLUser }) => {
     },
     {
       id: 'tax',
-      title: 'Daňový poradce',
-      description: 'Daňové poradenství',
+      title: t('dashboard:taxAdvisor'),
+      description: t('dashboard:taxAdvisorDescription'),
       icon: Calculator,
       color: 'text-green-600',
       bgColor: 'bg-green-50',
@@ -78,14 +78,14 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ isDHLUser }) => {
       path: '/tax-advisor',
       content: (
         <div className="text-sm text-muted-foreground">
-          Optimalizujte své daně
+          {t('dashboard:optimizeYourTaxes')}
         </div>
       )
     },
     {
       id: 'vehicle',
-      title: 'Správa vozidel',
-      description: 'Správa vozidel',
+      title: t('dashboard:vehicleManagement'),
+      description: t('dashboard:vehicleDescription'),
       icon: Car,
       color: 'text-purple-600',
       bgColor: 'bg-purple-50',
@@ -93,14 +93,14 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ isDHLUser }) => {
       path: '/vehicle',
       content: (
         <div className="text-sm text-muted-foreground">
-          Spravujte svá vozidla
+          {t('dashboard:manageYourVehicles')}
         </div>
       )
     },
     {
       id: 'translator',
-      title: 'Jazykové nástroje',
-      description: 'Překladač a jazykové nástroje',
+      title: t('dashboard:languageTools'),
+      description: t('dashboard:translatorDescription'),
       icon: Languages,
       color: 'text-orange-600',
       bgColor: 'bg-orange-50',
@@ -108,14 +108,14 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ isDHLUser }) => {
       path: '/translator',
       content: (
         <div className="text-sm text-muted-foreground">
-          Překládejte a učte se
+          {t('dashboard:translateAndLearn')}
         </div>
       )
     },
     {
       id: 'activity',
-      title: 'Nedávná aktivita',
-      description: 'Přehled nedávné aktivity',
+      title: t('dashboard:recentActivity'),
+      description: t('dashboard:activityDescription'),
       icon: Activity,
       color: 'text-indigo-600',
       bgColor: 'bg-indigo-50',
@@ -126,16 +126,16 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ isDHLUser }) => {
           {hasShifts ? (
             <>
               <div className="text-sm text-muted-foreground">
-                Poslední směna: {new Date(shifts[0]?.date).toLocaleDateString('cs-CZ')}
+                {t('dashboard:lastShift')}: {new Date(shifts[0]?.date).toLocaleDateString('cs-CZ')}
               </div>
               <div className="text-sm text-muted-foreground">
-                Celkem směn: {shifts.length}
+                {t('dashboard:totalShifts')}: {shifts.length}
               </div>
             </>
           ) : (
-              <div className="text-sm text-muted-foreground">
-                Zatím žádná aktivita
-              </div>
+            <div className="text-sm text-muted-foreground">
+              {t('dashboard:noActivityYet')}
+            </div>
           )}
         </div>
       )

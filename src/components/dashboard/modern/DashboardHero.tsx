@@ -55,7 +55,7 @@ const DashboardHero: React.FC = () => {
   const stats = [
     {
       icon: Clock,
-      label: 'Týdenní hodiny',
+      label: t('dashboard:weeklyHours'),
       value: isLoading ? '...' : `${Math.round(weeklyHours)}h`,
       trend: weeklyHours > 0 ? '+' : '',
       color: 'text-blue-600',
@@ -63,7 +63,7 @@ const DashboardHero: React.FC = () => {
     },
     {
       icon: Calendar,
-      label: 'Měsíční směny',
+      label: t('dashboard:monthlyShifts'),
       value: isLoading ? '...' : monthlyShifts.length.toString(),
       trend: monthlyShifts.length > 0 ? '+' : '',
       color: 'text-green-600',
@@ -71,7 +71,7 @@ const DashboardHero: React.FC = () => {
     },
     {
       icon: Euro,
-      label: 'Celkové výdělky',
+      label: t('dashboard:totalEarnings'),
       value: isLoading ? '...' : `${Math.round(totalEarnings)}€`,
       trend: totalEarnings > 0 ? '+' : '',
       color: 'text-purple-600',
