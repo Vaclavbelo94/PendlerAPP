@@ -32,14 +32,16 @@ export const useAuthMethods = () => {
       
       if (error) {
         console.error('Sign in error:', error);
-        // Handle specific Supabase error messages
-        let errorMessage = error.message;
+        // Handle specific Supabase error messages with Czech translations
+        let errorMessage = 'Chyba při přihlášení';
         if (error.message.includes('Invalid login credentials')) {
           errorMessage = 'Neplatné přihlašovací údaje';
         } else if (error.message.includes('Email not confirmed')) {
           errorMessage = 'E-mail nebyl potvrzen';
         } else if (error.message.includes('Too many requests')) {
           errorMessage = 'Příliš mnoho pokusů, zkuste později';
+        } else if (error.message.includes('User not found')) {
+          errorMessage = 'Uživatel nenalezen';
         }
         console.log('Returning error:', errorMessage);
         return { error: errorMessage };

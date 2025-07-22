@@ -9,7 +9,6 @@ import { useAuth } from '@/hooks/auth';
 import { useTranslation } from 'react-i18next';
 import { useDHLThemeContext } from '@/contexts/DHLThemeContext';
 import { DHLLogoWatermark } from '@/components/common/DHLLogoWatermark';
-import UnifiedNavbar from '@/components/layouts/UnifiedNavbar';
 
 const ModernHero = () => {
   const { user } = useAuth();
@@ -17,13 +16,9 @@ const ModernHero = () => {
   const { isDHLThemeActive } = useDHLThemeContext();
 
   return (
-    <>
-      {/* Navbar */}
-      <UnifiedNavbar />
-      
-      <section className={`relative min-h-screen flex items-center justify-center overflow-hidden ${
-        isDHLThemeActive ? 'bg-gradient-to-br from-background via-background/95 to-primary/10' : ''
-      }`}>
+    <section className={`relative min-h-screen flex items-center justify-center overflow-hidden ${
+      isDHLThemeActive ? 'bg-gradient-to-br from-background via-background/95 to-primary/10' : ''
+    }`}>
       {/* DHL Logo Watermark - only for DHL theme */}
       {isDHLThemeActive && <DHLLogoWatermark />}
       
@@ -166,7 +161,6 @@ const ModernHero = () => {
         </div>
       </div>
       </section>
-    </>
   );
 };
 

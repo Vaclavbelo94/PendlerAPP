@@ -1,6 +1,7 @@
 
 import { Helmet } from "react-helmet";
 import ModernHero from "@/components/home/ModernHero";
+import UnifiedNavbar from "@/components/layouts/UnifiedNavbar";
 import { useTranslation } from 'react-i18next';
 
 const Index = () => {
@@ -17,6 +18,7 @@ const Index = () => {
         <meta property="og:type" content="website" />
         <link rel="canonical" href="https://pendlerapp.com" />
       </Helmet>
+      <UnifiedNavbar />
       <ModernHero />
     </>
   );
