@@ -67,12 +67,12 @@ const CompanyRegister: React.FC = () => {
     e.preventDefault();
     
     if (formData.password !== formData.confirmPassword) {
-      toast.error(t('auth.passwordsDoNotMatch', 'Hesla se neshodují'));
+      toast.error(t('auth:passwordsDoNotMatch'));
       return;
     }
 
     if (!formData.acceptTerms) {
-      toast.error(t('auth.acceptTermsRequired', 'Musíte souhlasit s podmínkami použití'));
+      toast.error(t('auth:acceptTermsRequired'));
       return;
     }
 
@@ -90,11 +90,11 @@ const CompanyRegister: React.FC = () => {
       if (error) {
         toast.error(typeof error === 'string' ? error : error.message);
       } else {
-        toast.success(t('auth.registerSuccess', 'Registrace byla úspěšná! Zkontrolujte svůj email.'));
+        toast.success(t('auth:registerSuccess'));
         navigate('/dashboard');
       }
     } catch (err) {
-      toast.error(t('auth.registrationError', 'Nastala chyba při registraci'));
+      toast.error(t('auth:registrationError'));
     } finally {
       setIsLoading(false);
     }
@@ -129,7 +129,7 @@ const CompanyRegister: React.FC = () => {
               </div>
               
               <CardTitle className="text-2xl font-bold">
-                {t('auth:registerWith')} {config.name}
+                {t('auth:registerWith')} {t(`auth:companies.${company}`)}
               </CardTitle>
               <p className="text-muted-foreground">
                 {t('auth:createAccount')}
@@ -142,7 +142,7 @@ const CompanyRegister: React.FC = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="firstName">
-                      {t('auth.firstName')} *
+                      {t('auth:firstName')} *
                     </Label>
                     <div className="relative">
                       <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -159,7 +159,7 @@ const CompanyRegister: React.FC = () => {
                   
                   <div className="space-y-2">
                     <Label htmlFor="lastName">
-                      {t('auth.lastName')} *
+                      {t('auth:lastName')} *
                     </Label>
                     <Input
                       id="lastName"
@@ -174,7 +174,7 @@ const CompanyRegister: React.FC = () => {
                 {/* Email */}
                 <div className="space-y-2">
                   <Label htmlFor="email">
-                    {t('auth.email')} *
+                    {t('auth:email')} *
                   </Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -192,7 +192,7 @@ const CompanyRegister: React.FC = () => {
                 {/* Phone */}
                 <div className="space-y-2">
                   <Label htmlFor="phone">
-                    {t('auth.phone')}
+                    {t('auth:phone')}
                   </Label>
                   <div className="relative">
                     <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -209,7 +209,7 @@ const CompanyRegister: React.FC = () => {
                 {/* Password */}
                 <div className="space-y-2">
                   <Label htmlFor="password">
-                    {t('auth.password')} *
+                    {t('auth:password')} *
                   </Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -236,7 +236,7 @@ const CompanyRegister: React.FC = () => {
                 {/* Confirm Password */}
                 <div className="space-y-2">
                   <Label htmlFor="confirmPassword">
-                    {t('auth.confirmPassword')} *
+                    {t('auth:confirmPassword')} *
                   </Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -263,7 +263,7 @@ const CompanyRegister: React.FC = () => {
                 {/* Promo Code */}
                 <div className="space-y-2">
                   <Label htmlFor="promoCode">
-                    {t('auth.promoCode')} ({t('auth.optional')})
+                    {t('auth:promoCode')} ({t('auth:optional')})
                   </Label>
                   <div className="relative">
                     <Building2 className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -288,7 +288,7 @@ const CompanyRegister: React.FC = () => {
                       required
                     />
                     <Label htmlFor="acceptTerms" className="text-sm">
-                      {t('auth.acceptTerms')} *
+                      {t('auth:acceptTerms')} *
                     </Label>
                   </div>
 
@@ -299,7 +299,7 @@ const CompanyRegister: React.FC = () => {
                       onCheckedChange={(checked) => handleInputChange('acceptMarketing', !!checked)}
                     />
                     <Label htmlFor="acceptMarketing" className="text-sm">
-                      {t('auth.acceptMarketing')}
+                      {t('auth:acceptMarketing')}
                     </Label>
                   </div>
                 </div>
@@ -313,23 +313,23 @@ const CompanyRegister: React.FC = () => {
                   {isLoading ? (
                     <div className="flex items-center">
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      {t('auth.registering')}
+                      {t('auth:registering')}
                     </div>
                   ) : (
-                    t('auth.register')
+                    t('auth:register')
                   )}
                 </Button>
 
                 {/* Login Link */}
                 <div className="text-center mt-6">
                   <p className="text-sm text-muted-foreground">
-                    {t('auth.alreadyHaveAccount')}{' '}
+                    {t('auth:alreadyHaveAccount')}{' '}
                     <Button
                       variant="link"
                       className="p-0 h-auto text-primary"
                       onClick={() => navigate('/login')}
                     >
-                      {t('auth.login')}
+                      {t('auth:login')}
                     </Button>
                   </p>
                 </div>
