@@ -117,7 +117,7 @@ const CompanyRegister: React.FC = () => {
             className="mb-6 hover:bg-background/50"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            {t('common.back')}
+            {t('common:back')}
           </Button>
 
           {/* Registration Form */}
