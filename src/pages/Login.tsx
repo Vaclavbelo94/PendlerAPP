@@ -75,7 +75,7 @@ const Login = () => {
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-accent/5 rounded-full blur-3xl animate-pulse delay-500"></div>
       </div>
 
-      <div className="relative z-10 flex items-center justify-center p-6" style={{ minHeight: 'calc(100vh - 64px)', paddingTop: '80px' }}>
+      <div className="relative z-10 flex items-center justify-center p-6" style={{ minHeight: 'calc(100vh - 80px)', paddingTop: '100px' }}>
         <div className="w-full max-w-md">
           {/* Main Login Card */}
           <Card className="bg-background/60 backdrop-blur-lg border-0 shadow-2xl animate-fade-in">
