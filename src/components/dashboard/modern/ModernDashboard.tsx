@@ -1,0 +1,73 @@
+
+import React from 'react';
+import { Helmet } from 'react-helmet';
+import { motion } from 'framer-motion';
+import { useAuth } from '@/hooks/auth';
+import { useTranslation } from 'react-i18next';
+import Layout from '@/components/layouts/Layout';
+import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
+import DashboardBackground from '@/components/common/DashboardBackground';
+import DashboardHero from './DashboardHero';
+import DashboardCards from './DashboardCards';
+import DashboardDHLSection from './DashboardDHLSection';
+import { useOnboarding } from '@/hooks/useOnboarding';
+
+const ModernDashboard: React.FC = () => {
+  const { user, unifiedUser } = useAuth();
+  const { t } = useTranslation(['dashboard']);
+  const { showOnboarding, isNewUser } = useOnboarding();
+
+  // DHL onboarding logic
+  const shouldShowOnboarding = unifiedUser?.isDHLEmployee && showOnboarding && isNewUser;
+  const shouldShowDHLContent = unifiedUser?.isDHLEmployee && !showOnboarding && isNewUser;
+
+  return (
+    <Layout navbarRightContent={<NavbarRightContent />}>
+      <Helmet>
+        <title>{t('dashboard:title')} | PendlerApp</title>
+        <meta name="description" content={t('dashboard:dashboardSubtitle')} />
+      </Helmet>
+      
+      <DashboardBackground variant="default">
+        <div className="container max-w-7xl py-8 px-4">
+          {/* Hero Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <DashboardHero />
+          </motion.div>
+
+          {/* DHL Section - shows onboarding or setup notification */}
+          {(shouldShowOnboarding || shouldShowDHLContent || unifiedUser?.isDHLEmployee) && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="mb-8"
+            >
+              <DashboardDHLSection 
+                shouldShowOnboarding={shouldShowOnboarding}
+                shouldShowDHLContent={shouldShowDHLContent}
+              />
+            </motion.div>
+          )}
+
+          {/* Main Dashboard Cards */}
+          {!shouldShowOnboarding && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              <DashboardCards isDHLUser={!!unifiedUser?.isDHLEmployee} />
+            </motion.div>
+          )}
+        </div>
+      </DashboardBackground>
+    </Layout>
+  );
+};
+
+export default ModernDashboard;
