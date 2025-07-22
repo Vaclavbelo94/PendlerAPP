@@ -1,7 +1,7 @@
 
 {
   "welcome": "Witamy",
-  "welcomeBack": "Witamy z powrotem w",
+  "welcomeBack": "Witamy z powrotem",
   "workAssistant": "Asystent Dojazdów",
   "czechWorkersHelper": "Asystent dla czeskich pracowników",
   "completeGermanySolution": "Kompletne rozwiązanie do pracy w Niemczech",
@@ -14,6 +14,7 @@
   "quickActions": "Szybkie akcje",
   "weeklyHours": "Tygodniowe godziny",
   "monthlyShifts": "Miesięczne zmiany",
+  "totalEarnings": "Łączne zarobki",
   "monthlyEarningsTitle": "Miesięczne zarobki",
   "shiftsThisWeek": "zmian w tym tygodniu",
   "shiftsThisMonth": "zmian w tym miesiącu",
@@ -49,5 +50,19 @@
   "vehicleManagement": "Zarządzanie pojazdami",
   "shiftsDescription": "Zarządzanie zmianami roboczymi",
   "shiftsCalendar": "Kalendarz zmian",
-  "title": "Panel"
+  "title": "Panel",
+  "shiftManagement": "Zarządzanie zmianami",
+  "shiftsCount": "{{count}} zmian",
+  "noShiftsYet": "Nie masz jeszcze żadnych zmian",
+  "addFirstShift": "Dodaj pierwszą zmianę",
+  "optimizeYourTaxes": "Zoptymalizuj swoje podatki",
+  "manageYourVehicles": "Zarządzaj swoimi pojazdami",
+  "languageTools": "Narzędzia językowe",
+  "translatorDescription": "Tłumacz i narzędzia językowe",
+  "translateAndLearn": "Tłumacz i ucz się",
+  "recentActivity": "Ostatnia aktywność",
+  "activityDescription": "Przegląd ostatniej aktywności",
+  "lastShift": "Ostatnia zmiana",
+  "totalShifts": "Łącznie zmian",
+  "noActivityYet": "Brak aktywności"
 }

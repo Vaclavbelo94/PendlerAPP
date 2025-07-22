@@ -1,7 +1,7 @@
 
 {
   "welcome": "Willkommen",
-  "welcomeBack": "Willkommen zurück bei",
+  "welcomeBack": "Willkommen zurück",
   "workAssistant": "Pendler Assistent",
   "czechWorkersHelper": "Assistent für tschechische Arbeiter",
   "completeGermanySolution": "Komplettlösung für die Arbeit in Deutschland",
@@ -14,6 +14,7 @@
   "quickActions": "Schnelle Aktionen",
   "weeklyHours": "Wöchentliche Stunden",
   "monthlyShifts": "Monatliche Schichten",
+  "totalEarnings": "Gesamtverdienst",
   "monthlyEarningsTitle": "Monatliche Einnahmen",
   "shiftsThisWeek": "Schichten diese Woche",
   "shiftsThisMonth": "Schichten diesen Monat",
@@ -49,5 +50,19 @@
   "vehicleManagement": "Fahrzeugverwaltung",
   "shiftsDescription": "Schichtverwaltung",
   "shiftsCalendar": "Schichtkalender",
-  "title": "Dashboard"
+  "title": "Dashboard",
+  "shiftManagement": "Schichtverwaltung",
+  "shiftsCount": "{{count}} Schichten",
+  "noShiftsYet": "Sie haben noch keine Schichten",
+  "addFirstShift": "Erste Schicht hinzufügen",
+  "optimizeYourTaxes": "Optimieren Sie Ihre Steuern",
+  "manageYourVehicles": "Verwalten Sie Ihre Fahrzeuge",
+  "languageTools": "Sprachtools",
+  "translatorDescription": "Übersetzer und Sprachtools",
+  "translateAndLearn": "Übersetzen und lernen",
+  "recentActivity": "Letzte Aktivität",
+  "activityDescription": "Übersicht der letzten Aktivität",
+  "lastShift": "Letzte Schicht",
+  "totalShifts": "Schichten insgesamt",
+  "noActivityYet": "Noch keine Aktivität"
 }
