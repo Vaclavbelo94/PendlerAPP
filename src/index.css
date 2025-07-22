@@ -173,7 +173,7 @@
   }
 }
 
-/* Custom utilities */
+  /* Custom utilities */
 @layer utilities {
   .font-inter {
     font-family: 'Inter', system-ui, sans-serif;
@@ -181,6 +181,16 @@
   
   .text-balance {
     text-wrap: balance;
+  }
+  
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
   
   /* DHL Brand specific utilities */
