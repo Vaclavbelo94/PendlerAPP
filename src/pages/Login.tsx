@@ -72,10 +72,12 @@ const Login = () => {
       const { error } = await signIn(formData.email, formData.password);
       
       if (error) {
-        // Mark password field as error on login failure
-        const errorMessage = typeof error === 'string' ? error : error.message;
-        setErrors({ password: errorMessage });
-        toast.error(errorMessage);
+        // Handle translation keys properly
+        const errorString = typeof error === 'string' ? error : error.message;
+        const errorMessage = errorString.startsWith('auth:') ? errorString : `auth:${errorString}`;
+        const translatedError = t(errorMessage);
+        setErrors({ password: translatedError });
+        toast.error(translatedError);
       } else {
         toast.success(t('auth:loginSuccess'));
         // Let the auth state change handle the redirect

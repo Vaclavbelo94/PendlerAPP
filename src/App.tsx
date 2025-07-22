@@ -31,6 +31,7 @@ import Admin from "./pages/Admin";
 // DHL Routes - only setup and admin remain
 import DHLSetup from "./pages/DHLSetup";
 import DHLAdmin from "./pages/DHLAdmin"; // NEW DHL Admin route
+import ForgotPassword from "./pages/ForgotPassword";
 import { LoadingSpinner } from "./components/ui/LoadingSpinner";
 import "./i18n/config";
 
@@ -57,9 +58,10 @@ function App() {
                        <Route path="/randstad" element={<CompanyLandingPage />} />
                        <Route path="/dhl" element={<CompanyLandingPage />} />
                        <Route path="/register/:company" element={<CompanyRegister />} />
-                       <Route path="/old-index" element={<Index />} />
-                       <Route path="/login" element={<Login />} />
-                       <Route path="/register" element={<Register />} />
+                        <Route path="/old-index" element={<Index />} />
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/forgot-password" element={<ForgotPassword />} />
+                        <Route path="/register" element={<Register />} />
                        <Route path="/dashboard" element={<Dashboard />} />
                        <Route path="/shifts" element={<Shifts />} />
                        <Route path="/travel" element={<TravelPlanning />} />
