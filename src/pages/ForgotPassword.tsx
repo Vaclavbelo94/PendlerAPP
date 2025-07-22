@@ -53,7 +53,7 @@ const ForgotPassword = () => {
         if (error.message.includes('User not found') || error.message.includes('Invalid email')) {
           setEmailError(t('auth:emailNotFound'));
           toast.error(t('auth:emailNotFound'));
-        } else if (error.message.includes('Email rate limit exceeded')) {
+        } else if (error.message.includes('Email rate limit exceeded') || error.message.includes('rate_limit')) {
           setEmailError(t('auth:emailRateLimit'));
           toast.error(t('auth:emailRateLimit'));
         } else {
@@ -61,6 +61,8 @@ const ForgotPassword = () => {
           toast.error(t('auth:resetPasswordError'));
         }
       } else {
+        // Supabase always returns success even for non-existent emails for security
+        // Show success message but inform user to check their email
         setIsEmailSent(true);
         toast.success(t('auth:resetPasswordEmailSent'));
       }
