@@ -12,12 +12,22 @@ import DashboardStats from '@/components/dashboard/DashboardStats';
 import DashboardActions from '@/components/dashboard/DashboardActions';
 import DashboardWidgets from '@/components/dashboard/DashboardWidgets';
 import DHLSetupNotification from '@/components/dashboard/DHLSetupNotification';
+import DHLOnboarding from '@/components/onboarding/DHLOnboarding';
+import OnboardingDashboardContent from '@/components/dashboard/OnboardingDashboardContent';
+import { useOnboarding } from '@/hooks/useOnboarding';
 
 const Dashboard: React.FC = () => {
-  const { user } = useAuth();
+  const { user, unifiedUser } = useAuth();
   const { t } = useTranslation(['dashboard', 'ui']);
+  const { showOnboarding, isNewUser } = useOnboarding();
 
   const username = user?.email?.split('@')[0] || t('ui:user');
+
+  // Zobrazit onboarding pro nové DHL uživatele
+  const shouldShowOnboarding = unifiedUser?.isDHLEmployee && showOnboarding && isNewUser;
+  
+  // Zobrazit motivační obsah místo prázdných statistik pro nové DHL uživatele
+  const shouldShowOnboardingContent = unifiedUser?.isDHLEmployee && !showOnboarding && isNewUser;
 
   return (
     <Layout navbarRightContent={<NavbarRightContent />}>
@@ -40,53 +50,73 @@ const Dashboard: React.FC = () => {
                   {t('dashboard:welcomeBack')}, {username}!
                 </h1>
                 <p className="text-lg text-muted-foreground mt-2">
-                  {t('dashboard:dashboardSubtitle')}
+                  {shouldShowOnboarding || shouldShowOnboardingContent 
+                    ? 'Začněte s nastavením vaší DHL aplikace'
+                    : t('dashboard:dashboardSubtitle')
+                  }
                 </p>
               </div>
             </div>
           </motion.div>
 
-          {/* DHL Setup Notification */}
-          <DHLSetupNotification />
+          {/* DHL Onboarding - zobrazí se pouze pro nové DHL uživatele */}
+          {shouldShowOnboarding && <DHLOnboarding />}
 
-          {/* Dashboard Overview */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="mb-8"
-          >
-            <DashboardOverview />
-          </motion.div>
+          {/* DHL Setup Notification - zobrazí se pro DHL uživatele bez onboardingu */}
+          {!shouldShowOnboarding && <DHLSetupNotification />}
 
-          {/* Dashboard Stats */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="mb-8"
-          >
-            <DashboardStats />
-          </motion.div>
+          {/* Onboarding Content - motivační obsah pro nové DHL uživatele */}
+          {shouldShowOnboardingContent ? (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+            >
+              <OnboardingDashboardContent />
+            </motion.div>
+          ) : (
+            // Standardní dashboard obsah
+            <>
+              {/* Dashboard Overview */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                className="mb-8"
+              >
+                <DashboardOverview />
+              </motion.div>
 
-          {/* Quick Actions */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="mb-8"
-          >
-            <DashboardActions />
-          </motion.div>
+              {/* Dashboard Stats */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="mb-8"
+              >
+                <DashboardStats />
+              </motion.div>
 
-          {/* Dashboard Widgets */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-          >
-            <DashboardWidgets />
-          </motion.div>
+              {/* Quick Actions */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                className="mb-8"
+              >
+                <DashboardActions />
+              </motion.div>
+
+              {/* Dashboard Widgets */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+              >
+                <DashboardWidgets />
+              </motion.div>
+            </>
+          )}
         </div>
       </DashboardBackground>
     </Layout>
