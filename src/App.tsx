@@ -57,22 +57,21 @@ function App() {
                        <Route path="/old-index" element={<Index />} />
                        <Route path="/login" element={<Login />} />
                        <Route path="/register" element={<Register />} />
-                      <Route path="/dashboard" element={<Dashboard />} />
-                      <Route path="/shifts" element={<Shifts />} />
-                      <Route path="/travel" element={<TravelPlanning />} />
-                      <Route path="/translator" element={<Translator />} />
-                      <Route path="/tax-advisor" element={<TaxAdvisor />} />
-                      <Route path="/laws" element={<Laws />} />
-                      <Route path="/laws/:lawId" element={<LawDetail />} />
-                      <Route path="/profile" element={<Profile />} />
-                      <Route path="/settings" element={<Settings />} />
-                      <Route path="/vehicle" element={<Vehicle />} />
-                      <Route path="/premium" element={<Premium />} />
-                      <Route path="/premium-gate" element={<PremiumGate />} />
-                      <Route path="/admin" element={<Admin />} />
-                      <Route path="/dhl-admin" element={<DHLAdmin />} />
-                      {/* DHL Routes - unified approach, only setup remains separate */}
-                      <Route path="/dhl-setup" element={<DHLSetup />} />
+                       <Route path="/dashboard" element={<Dashboard />} />
+                       <Route path="/shifts" element={<Shifts />} />
+                       <Route path="/travel" element={<TravelPlanning />} />
+                       <Route path="/translator" element={<Translator />} />
+                       <Route path="/tax-advisor" element={<TaxAdvisor />} />
+                       <Route path="/laws" element={<Laws />} />
+                       <Route path="/laws/:lawId" element={<LawDetail />} />
+                       <Route path="/profile" element={<Profile />} />
+                       <Route path="/settings" element={<Settings />} />
+                       <Route path="/vehicle" element={<Vehicle />} />
+                       <Route path="/premium" element={<Premium />} />
+                       <Route path="/premium-gate" element={<PremiumGate />} />
+                       <Route path="/admin" element={<Admin />} />
+                       <Route path="/dhl-admin" element={<DHLAdmin />} />
+                       <Route path="/dhl-setup" element={<DHLSetup />} />
                     </Routes>
                   </Suspense>
                   <Toaster />

@@ -3,7 +3,13 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
-// Import translation files
+// Import new company translations
+import csCompanySelector from './locales/cs/companySelector.json';
+import csCompany from './locales/cs/company.json';
+import deCompanySelector from './locales/de/companySelector.json';
+import deCompany from './locales/de/company.json';
+import plCompanySelector from './locales/pl/companySelector.json';
+import plCompany from './locales/pl/company.json';
 import commonCs from './translations/cs/common.json';
 import commonDe from './translations/de/common.json';
 import commonPl from './translations/pl/common.json';
@@ -88,6 +94,8 @@ const resources = {
     vehicle: vehicleCs,
     premium: premiumCs,
     dhl: dhlCs,
+    companySelector: csCompanySelector,
+    company: csCompany,
   },
   de: {
     common: commonDe,
@@ -106,6 +114,8 @@ const resources = {
     vehicle: vehicleDe,
     premium: premiumDe,
     dhl: dhlDe,
+    companySelector: deCompanySelector,
+    company: deCompany,
   },
   pl: {
     common: commonPl,
@@ -124,6 +134,8 @@ const resources = {
     vehicle: vehiclePl,
     premium: premiumPl,
     dhl: dhlPl,
+    companySelector: plCompanySelector,
+    company: plCompany,
   },
 };
 

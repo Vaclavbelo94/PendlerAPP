@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useDHLData } from '@/hooks/dhl/useDHLData';
 import { isDHLEmployee as checkIsDHLEmployee, isDHLEmployeeSync } from '@/utils/dhlAuthUtils';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { AuthContextType, UnifiedUser } from '@/types/auth';
+import { AuthContextType, UnifiedUser, UserRole, UserStatus } from '@/types/auth';
 import { createUnifiedUser } from '@/utils/authRoleUtils';
 import { useAuthStatus } from '@/hooks/useAuthStatus';
 
@@ -245,15 +245,21 @@ export const useUnifiedAuth = () => {
     }
   }, [user, refreshPremiumStatus, refreshAdminStatus]);
 
-  // Create unified user object
-  const unifiedUser: UnifiedUser | null = user ? createUnifiedUser(
-    user,
-    isPremium || isDHLEmployee, // DHL employees get premium
+  // Create unified user object with company information
+  const unifiedUser: UnifiedUser | null = user ? {
+    id: user.id,
+    email: user.email || '',
+    role: UserRole.STANDARD,
+    status: UserStatus.ACTIVE,
+    isPremium: isPremium || isDHLEmployee,
     isAdmin,
-    undefined, // premiumExpiry - could be enhanced later
-    !!userAssignment,
-    isDHLEmployee // Pass DHL status directly
-  ) : null;
+    isDHLEmployee,
+    isAdeccoEmployee: profileData?.company === 'adecco',
+    isRandstadEmployee: profileData?.company === 'randstad',
+    isDHLAdmin: false,
+    company: profileData?.company,
+    setupRequired: false
+  } : null;
 
   // Computed loading state - pouze základní auth loading, ostatní jsou optional
   const totalIsLoading = isLoading || !isInitialized;

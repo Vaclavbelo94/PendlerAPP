@@ -2445,6 +2445,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
+      get_current_user_company: {
+        Args: Record<PropertyKey, never>
+        Returns: Database["public"]["Enums"]["company_type"]
+      }
       is_admin: {
         Args: { user_id: string }
         Returns: boolean

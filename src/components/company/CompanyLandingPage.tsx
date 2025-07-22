@@ -40,7 +40,7 @@ const companyConfigs: Record<CompanyId, CompanyConfig> = {
 const CompanyLandingPage: React.FC = () => {
   const { company } = useParams<{ company: string }>();
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t } = useTranslation(['company', 'common', 'auth']);
 
   if (!company || !companyConfigs[company as CompanyId]) {
     return <Navigate to="/" replace />;

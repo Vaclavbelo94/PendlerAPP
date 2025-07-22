@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import i18n from '@/i18n/config';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
@@ -14,7 +15,7 @@ interface CompanyOption {
 
 const CompanySelector: React.FC = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t } = useTranslation(['companySelector', 'common']);
 
   const companies: CompanyOption[] = [
     {
@@ -93,6 +94,25 @@ const CompanySelector: React.FC = () => {
               </CardContent>
             </Card>
           ))}
+        </div>
+
+        {/* Language Switcher */}
+        <div className="flex justify-center mt-8">
+          <div className="flex items-center gap-4 p-2 bg-background/50 rounded-lg backdrop-blur-sm">
+            {['cs', 'de', 'pl'].map((lang) => (
+              <Button
+                key={lang}
+                variant="ghost"
+                size="sm"
+                onClick={() => i18n.changeLanguage(lang)}
+                className="text-xs"
+              >
+                {lang === 'cs' && '🇨🇿 CZ'}
+                {lang === 'de' && '🇩🇪 DE'}
+                {lang === 'pl' && '🇵🇱 PL'}
+              </Button>
+            ))}
+          </div>
         </div>
 
         {/* Footer */}
