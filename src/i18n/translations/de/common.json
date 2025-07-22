@@ -113,5 +113,12 @@
   "of": "von",
   "premiumAccount": "Premium-Konto",
   "freeAccount": "Kostenloses Konto",
-  "upgradeToPremium": "Auf Premium upgraden"
+  "upgradeToPremium": "Auf Premium upgraden",
+  "tip": "Tipp",
+  "user": "Benutzer",
+  "currentlyLoggedIn": "Aktuell angemeldet",
+  "notFound": "Nicht gefunden",
+  "selectDate": "Datum auswählen",
+  "recommended": "Empfohlen",
+  "title": "Titel"
 }

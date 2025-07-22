@@ -41,7 +41,6 @@
   "activeUsers": "aktywnych użytkowników",
   "shiftsManaged": "zarządzanych zmian",
   "countries": "krajów",
-  "title": "Tytuł",
   "shortDescription": "Krótki opis",
   "swipeTip": "Wskazówka: Przesuń palcem, aby przełączać między sekcjami",
   "travelDescriptionMobile": "Planowanie podróży i dojazdów",
@@ -49,5 +48,6 @@
   "vehicleInfo": "Informacje o pojeździe",
   "vehicleManagement": "Zarządzanie pojazdami",
   "shiftsDescription": "Zarządzanie zmianami roboczymi",
-  "shiftsCalendar": "Kalendarz zmian"
+  "shiftsCalendar": "Kalendarz zmian",
+  "title": "Panel"
 }

@@ -41,7 +41,6 @@
   "activeUsers": "aktive Benutzer",
   "shiftsManaged": "verwaltete Schichten",
   "countries": "Länder",
-  "title": "Titel",
   "shortDescription": "Kurze Beschreibung",
   "swipeTip": "Tipp: Wischen Sie, um zwischen den Abschnitten zu wechseln",
   "travelDescriptionMobile": "Reiseplanung und Pendeln",
@@ -49,5 +48,6 @@
   "vehicleInfo": "Fahrzeuginformationen",
   "vehicleManagement": "Fahrzeugverwaltung",
   "shiftsDescription": "Schichtverwaltung",
-  "shiftsCalendar": "Schichtkalender"
+  "shiftsCalendar": "Schichtkalender",
+  "title": "Dashboard"
 }

@@ -41,7 +41,6 @@
   "activeUsers": "aktivních uživatelů",
   "shiftsManaged": "spravovaných směn",
   "countries": "zemí",
-  "title": "Název",
   "shortDescription": "Krátký popis",
   "swipeTip": "Tip: Přejetím prstem můžete přepínat mezi sekcemi",
   "travelDescriptionMobile": "Plánování cest a dojiždění",
@@ -49,5 +48,6 @@
   "vehicleInfo": "Informace o vozidle",
   "vehicleManagement": "Správa vozidel",
   "shiftsDescription": "Správa pracovních směn",
-  "shiftsCalendar": "Kalendář směn"
+  "shiftsCalendar": "Kalendář směn",
+  "title": "Dashboard"
 }

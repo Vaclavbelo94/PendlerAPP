@@ -113,5 +113,12 @@
   "of": "z",
   "premiumAccount": "Konto Premium",
   "freeAccount": "Darmowe konto",
-  "upgradeToPremium": "Przejdź na Premium"
+  "upgradeToPremium": "Przejdź na Premium",
+  "tip": "Wskazówka",
+  "user": "Użytkownik",
+  "currentlyLoggedIn": "Aktualnie zalogowany",
+  "notFound": "Nie znaleziono",
+  "selectDate": "Wybierz datę",
+  "recommended": "Zalecane",
+  "title": "Tytuł"
 }

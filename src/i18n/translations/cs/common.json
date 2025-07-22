@@ -116,5 +116,12 @@
   "of": "z",
   "premiumAccount": "Premium účet",
   "freeAccount": "Bezplatný účet",
-  "upgradeToPremium": "Přejít na Premium"
+  "upgradeToPremium": "Přejít na Premium",
+  "tip": "Tip",
+  "user": "Uživatel",
+  "currentlyLoggedIn": "Aktuálně přihlášen",
+  "notFound": "Nenalezeno",
+  "selectDate": "Vyberte datum",
+  "recommended": "Doporučeno",
+  "title": "Název"
 }
