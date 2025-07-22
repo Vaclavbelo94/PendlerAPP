@@ -117,7 +117,7 @@ const CompanyRegister: React.FC = () => {
             className="mb-6 hover:bg-background/50"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            {t('common.back', 'Zpět')}
+            {t('common.back')}
           </Button>
 
           {/* Registration Form */}
@@ -129,10 +129,10 @@ const CompanyRegister: React.FC = () => {
               </div>
               
               <CardTitle className="text-2xl font-bold">
-                {t('auth.registerWith', 'Registrace pro')} {config.name}
+                {t('auth.registerWith')} {config.name}
               </CardTitle>
               <p className="text-muted-foreground">
-                {t('auth.createAccount', 'Vytvořte si účet pro přístup ke specializovaným nástrojům')}
+                {t('auth.createAccount')}
               </p>
             </CardHeader>
 
@@ -142,7 +142,7 @@ const CompanyRegister: React.FC = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="firstName">
-                      {t('auth.firstName', 'Jméno')} *
+                      {t('auth.firstName')} *
                     </Label>
                     <div className="relative">
                       <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -159,7 +159,7 @@ const CompanyRegister: React.FC = () => {
                   
                   <div className="space-y-2">
                     <Label htmlFor="lastName">
-                      {t('auth.lastName', 'Příjmení')} *
+                      {t('auth.lastName')} *
                     </Label>
                     <Input
                       id="lastName"
@@ -174,7 +174,7 @@ const CompanyRegister: React.FC = () => {
                 {/* Email */}
                 <div className="space-y-2">
                   <Label htmlFor="email">
-                    {t('auth.email', 'Email')} *
+                    {t('auth.email')} *
                   </Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -192,7 +192,7 @@ const CompanyRegister: React.FC = () => {
                 {/* Phone */}
                 <div className="space-y-2">
                   <Label htmlFor="phone">
-                    {t('auth.phone', 'Telefon')}
+                    {t('auth.phone')}
                   </Label>
                   <div className="relative">
                     <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -209,7 +209,7 @@ const CompanyRegister: React.FC = () => {
                 {/* Password */}
                 <div className="space-y-2">
                   <Label htmlFor="password">
-                    {t('auth.password', 'Heslo')} *
+                    {t('auth.password')} *
                   </Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -236,7 +236,7 @@ const CompanyRegister: React.FC = () => {
                 {/* Confirm Password */}
                 <div className="space-y-2">
                   <Label htmlFor="confirmPassword">
-                    {t('auth.confirmPassword', 'Potvrdit heslo')} *
+                    {t('auth.confirmPassword')} *
                   </Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -263,7 +263,7 @@ const CompanyRegister: React.FC = () => {
                 {/* Promo Code */}
                 <div className="space-y-2">
                   <Label htmlFor="promoCode">
-                    {t('auth.promoCode', 'Promo kód')} ({t('auth.optional', 'volitelné')})
+                    {t('auth.promoCode')} ({t('auth.optional')})
                   </Label>
                   <div className="relative">
                     <Building2 className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -288,7 +288,7 @@ const CompanyRegister: React.FC = () => {
                       required
                     />
                     <Label htmlFor="acceptTerms" className="text-sm">
-                      {t('auth.acceptTerms', 'Souhlasím s podmínkami použití a zpracováním osobních údajů')} *
+                      {t('auth.acceptTerms')} *
                     </Label>
                   </div>
 
@@ -299,7 +299,7 @@ const CompanyRegister: React.FC = () => {
                       onCheckedChange={(checked) => handleInputChange('acceptMarketing', !!checked)}
                     />
                     <Label htmlFor="acceptMarketing" className="text-sm">
-                      {t('auth.acceptMarketing', 'Souhlasím s doručováním marketingových sdělení')}
+                      {t('auth.acceptMarketing')}
                     </Label>
                   </div>
                 </div>
@@ -313,23 +313,23 @@ const CompanyRegister: React.FC = () => {
                   {isLoading ? (
                     <div className="flex items-center">
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      {t('auth.registering', 'Registruji...')}
+                      {t('auth.registering')}
                     </div>
                   ) : (
-                    t('auth.register', 'Registrovat se')
+                    t('auth.register')
                   )}
                 </Button>
 
                 {/* Login Link */}
                 <div className="text-center mt-6">
                   <p className="text-sm text-muted-foreground">
-                    {t('auth.alreadyHaveAccount', 'Už máte účet?')}{' '}
+                    {t('auth.alreadyHaveAccount')}{' '}
                     <Button
                       variant="link"
                       className="p-0 h-auto text-primary"
                       onClick={() => navigate('/login')}
                     >
-                      {t('auth.login', 'Přihlásit se')}
+                      {t('auth.login')}
                     </Button>
                   </p>
                 </div>
