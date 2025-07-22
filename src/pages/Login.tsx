@@ -219,36 +219,6 @@ const Login = () => {
                   {t('auth:register')}
                 </Link>
               </div>
-
-              {/* Company Registration Links */}
-              <div className="w-full">
-                <Separator className="mb-4" />
-                <div className="text-center">
-                  <p className="text-sm text-muted-foreground mb-3">
-                    {t('auth:registerWithCompany')}:
-                  </p>
-                  <div className="flex flex-col space-y-2">
-                    <Link 
-                      to="/register/adecco"
-                      className="text-sm text-primary hover:underline hover:bg-primary/5 py-2 px-3 rounded transition-colors"
-                    >
-                      🏢 {t('auth:companies.adecco')}
-                    </Link>
-                    <Link 
-                      to="/register/randstad"
-                      className="text-sm text-primary hover:underline hover:bg-primary/5 py-2 px-3 rounded transition-colors"
-                    >
-                      🔵 {t('auth:companies.randstad')}
-                    </Link>
-                    <Link 
-                      to="/register/dhl"
-                      className="text-sm text-primary hover:underline hover:bg-primary/5 py-2 px-3 rounded transition-colors"
-                    >
-                      📦 {t('auth:companies.dhl')}
-                    </Link>
-                  </div>
-                </div>
-              </div>
             </CardFooter>
           </Card>
         </div>
