@@ -34,7 +34,7 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ isDHLUser }) => {
   const cards = [
     {
       id: 'shifts',
-      title: t('dashboard:shiftManagement'),
+      title: 'Správa směn',
       description: hasShifts 
         ? `${shifts.length} ${shifts.length === 1 ? 'směna' : shifts.length < 5 ? 'směny' : 'směn'}`
         : t('dashboard:noShiftsYet'),
@@ -69,8 +69,8 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ isDHLUser }) => {
     },
     {
       id: 'tax',
-      title: t('dashboard:taxAdvisor'),
-      description: t('dashboard:taxAdvisorDescription'),
+      title: 'Daňový poradce',
+      description: 'Daňové poradenství',
       icon: Calculator,
       color: 'text-green-600',
       bgColor: 'bg-green-50',
@@ -84,8 +84,8 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ isDHLUser }) => {
     },
     {
       id: 'vehicle',
-      title: t('dashboard:vehicleManagement'),
-      description: t('dashboard:vehicleDescription'),
+      title: 'Správa vozidel',
+      description: 'Správa vozidel',
       icon: Car,
       color: 'text-purple-600',
       bgColor: 'bg-purple-50',
@@ -99,8 +99,8 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ isDHLUser }) => {
     },
     {
       id: 'translator',
-      title: t('dashboard:languageTools'),
-      description: t('dashboard:translatorDescription'),
+      title: 'Jazykové nástroje',
+      description: 'Překladač a jazykové nástroje',
       icon: Languages,
       color: 'text-orange-600',
       bgColor: 'bg-orange-50',
@@ -114,8 +114,8 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ isDHLUser }) => {
     },
     {
       id: 'activity',
-      title: t('dashboard:recentActivity'),
-      description: t('dashboard:activityDescription'),
+      title: 'Nedávná aktivita',
+      description: 'Přehled nedávné aktivity',
       icon: Activity,
       color: 'text-indigo-600',
       bgColor: 'bg-indigo-50',
@@ -126,16 +126,16 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ isDHLUser }) => {
           {hasShifts ? (
             <>
               <div className="text-sm text-muted-foreground">
-                {t('dashboard:lastShift')}: {new Date(shifts[0]?.date).toLocaleDateString('cs-CZ')}
+                Poslední směna: {new Date(shifts[0]?.date).toLocaleDateString('cs-CZ')}
               </div>
               <div className="text-sm text-muted-foreground">
-                {t('dashboard:totalShifts')}: {shifts.length}
+                Celkem směn: {shifts.length}
               </div>
             </>
           ) : (
-            <div className="text-sm text-muted-foreground">
-              {t('dashboard:noActivityYet')}
-            </div>
+              <div className="text-sm text-muted-foreground">
+                Zatím žádná aktivita
+              </div>
           )}
         </div>
       )
