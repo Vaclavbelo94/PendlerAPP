@@ -49,19 +49,26 @@ const Login = () => {
     }
 
     setIsLoading(true);
+    console.log('Login attempt started for:', formData.email);
 
     try {
       const { error } = await signIn(formData.email, formData.password);
       
+      console.log('Login result:', { error });
+      
       if (error) {
+        console.error('Login failed:', error);
         toast.error(typeof error === 'string' ? error : error.message);
       } else {
+        console.log('Login successful');
         toast.success(t('auth:loginSuccess'));
         // Let the auth state change handle the redirect
       }
-    } catch (err) {
+    } catch (err: any) {
+      console.error('Login exception:', err);
       toast.error(t('auth:loginError'));
     } finally {
+      console.log('Setting loading to false');
       setIsLoading(false);
     }
   };

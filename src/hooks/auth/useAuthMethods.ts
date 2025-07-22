@@ -41,6 +41,7 @@ export const useAuthMethods = () => {
         } else if (error.message.includes('Too many requests')) {
           errorMessage = 'Příliš mnoho pokusů, zkuste později';
         }
+        console.log('Returning error:', errorMessage);
         return { error: errorMessage };
       }
       
