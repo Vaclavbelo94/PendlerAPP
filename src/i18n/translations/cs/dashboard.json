@@ -1,7 +1,7 @@
 
 {
   "welcome": "Vítejte",
-  "welcomeBack": "Vítejte zpět v",
+  "welcomeBack": "Vítejte zpět",
   "workAssistant": "Pendler Pomocník",
   "czechWorkersHelper": "Pomocník pro české pracovníky",
   "completeGermanySolution": "Kompletní řešení pro práci v Německu",
@@ -14,6 +14,7 @@
   "quickActions": "Rychlé akce",
   "weeklyHours": "Týdenní hodiny",
   "monthlyShifts": "Měsíční směny",
+  "totalEarnings": "Celkové výdělky",
   "monthlyEarningsTitle": "Měsíční výdělek",
   "shiftsThisWeek": "směn tento týden",
   "shiftsThisMonth": "směn tento měsíc",
@@ -49,5 +50,19 @@
   "vehicleManagement": "Správa vozidel",
   "shiftsDescription": "Správa pracovních směn",
   "shiftsCalendar": "Kalendář směn",
-  "title": "Dashboard"
+  "title": "Dashboard",
+  "shiftManagement": "Správa směn",
+  "shiftsCount": "{{count}} směn",
+  "noShiftsYet": "Zatím nemáte žádné směny",
+  "addFirstShift": "Přidat první směnu",
+  "optimizeYourTaxes": "Optimalizujte své daně",
+  "manageYourVehicles": "Spravujte svá vozidla",
+  "languageTools": "Jazykové nástroje",
+  "translatorDescription": "Překladač a jazykové nástroje",
+  "translateAndLearn": "Překládejte a učte se",
+  "recentActivity": "Nedávná aktivita",
+  "activityDescription": "Přehled nedávné aktivity",
+  "lastShift": "Poslední směna",
+  "totalShifts": "Celkem směn",
+  "noActivityYet": "Zatím žádná aktivita"
 }
