@@ -1,6 +1,7 @@
 
 import { Suspense } from 'react';
 import { Toaster } from "@/components/ui/toaster";
+import { Toaster as SonnerToaster } from "sonner";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -75,9 +76,10 @@ function App() {
                        <Route path="/dhl-admin" element={<DHLAdmin />} />
                        <Route path="/dhl-setup" element={<DHLSetup />} />
                     </Routes>
-                  </Suspense>
-                  <Toaster />
-                </DHLThemeProvider>
+                   </Suspense>
+                   <Toaster />
+                   <SonnerToaster position="top-right" />
+                 </DHLThemeProvider>
               </AuthProvider>
             </BrowserRouter>
           </TooltipProvider>

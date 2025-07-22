@@ -43,7 +43,11 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Add debugging alert
+    alert('Form submitted! Email: ' + formData.email);
+    
     if (!formData.email || !formData.password) {
+      alert('Fields missing!');
       toast.error(t('auth:allFieldsRequired'));
       return;
     }
@@ -58,14 +62,17 @@ const Login = () => {
       
       if (error) {
         console.error('Login failed:', error);
+        alert('Login error: ' + error);
         toast.error(typeof error === 'string' ? error : error.message);
       } else {
         console.log('Login successful');
+        alert('Login successful!');
         toast.success(t('auth:loginSuccess'));
         // Let the auth state change handle the redirect
       }
     } catch (err: any) {
       console.error('Login exception:', err);
+      alert('Exception: ' + err.message);
       toast.error(t('auth:loginError'));
     } finally {
       console.log('Setting loading to false');
