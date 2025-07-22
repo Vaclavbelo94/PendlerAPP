@@ -1,0 +1,26 @@
+{
+  "adecco": {
+    "welcome": "Witamy w Adecco",
+    "info": "Specjalistyczne narzędzia do efektywnego zarządzania pracą i karierą",
+    "feature1": "Zarządzanie zmianami z elastycznym planowaniem według Twoich potrzeb",
+    "feature2": "Precyzyjny kalkulator wynagrodzeń z obsługą obliczeń podatkowych",
+    "feature3": "Zarządzanie dokumentami i umowami w jednym miejscu",
+    "feature4": "Wsparcie i doradztwo dla Twojego rozwoju kariery"
+  },
+  "randstad": {
+    "welcome": "Witamy w Randstad",
+    "info": "Kompleksowe rozwiązania dla elastycznej pracy i rozwoju zawodowego",
+    "feature1": "Elastyczne zmiany dostosowane do Twojego stylu życia",
+    "feature2": "Zaawansowane obliczenia wynagrodzeń z międzynarodowym wsparciem",
+    "feature3": "Wsparcie kariery i planowanie rozwoju zawodowego",
+    "feature4": "Programy edukacyjne i certyfikacje"
+  },
+  "dhl": {
+    "welcome": "Witamy w DHL",
+    "info": "Specjalistyczne narzędzia dla pracowników DHL i logistyki",
+    "feature1": "Generator Wechselschicht do automatycznego planowania zmian",
+    "feature2": "Inteligentne plany zmianowe z optymalizacją godzin pracy",
+    "feature3": "Narzędzia logistyczne do efektywnej organizacji pracy",
+    "feature4": "Komunikacja zespołowa i koordynacja projektów"
+  }
+}

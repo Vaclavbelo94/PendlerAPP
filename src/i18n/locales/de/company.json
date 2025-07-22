@@ -1,0 +1,26 @@
+{
+  "adecco": {
+    "welcome": "Willkommen bei Adecco",
+    "info": "Spezialisierte Tools für effizientes Arbeitsmanagement und Karriere",
+    "feature1": "Schichtmanagement mit flexibler Planung nach Ihren Bedürfnissen",
+    "feature2": "Präzise Lohnrechner mit Steuerberechnungsunterstützung",
+    "feature3": "Dokumenten- und Vertragsverwaltung an einem Ort",
+    "feature4": "Unterstützung und Beratung für Ihr Karrierewachstum"
+  },
+  "randstad": {
+    "welcome": "Willkommen bei Randstad",
+    "info": "Komplettlösungen für flexible Arbeit und berufliche Entwicklung",
+    "feature1": "Flexible Schichten angepasst an Ihren Lebensstil",
+    "feature2": "Erweiterte Lohnberechnungen mit internationaler Unterstützung",
+    "feature3": "Karriereunterstützung und berufliche Entwicklungsplanung",
+    "feature4": "Bildungsprogramme und Zertifizierungen"
+  },
+  "dhl": {
+    "welcome": "Willkommen bei DHL",
+    "info": "Spezialisierte Tools für DHL-Mitarbeiter und Logistik",
+    "feature1": "Wechselschicht-Generator für automatische Schichtplanung",
+    "feature2": "Intelligente Schichtpläne mit Arbeitsstunden-Optimierung",
+    "feature3": "Logistik-Tools für effiziente Arbeitsorganisation",
+    "feature4": "Teamkommunikation und Projektkoordination"
+  }
+}

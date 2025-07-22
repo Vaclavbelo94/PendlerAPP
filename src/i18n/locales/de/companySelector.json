@@ -1,0 +1,16 @@
+{
+  "title": "Wählen Sie Ihr Unternehmen",
+  "subtitle": "Fahren Sie mit Ihrer Personalvermittlung fort, um auf spezialisierte Funktionen zuzugreifen",
+  "selectButton": "Auswählen",
+  "alreadyHaveAccount": "Haben Sie bereits ein Konto?",
+  "loginButton": "Anmelden",
+  "adecco": {
+    "description": "Professionelle Personaldienstleistungen und Karrierelösungen"
+  },
+  "randstad": {
+    "description": "Globale HR-Lösungen und flexible Arbeit"
+  },
+  "dhl": {
+    "description": "Logistik- und Zustelldienste mit erweiterten Tools"
+  }
+}

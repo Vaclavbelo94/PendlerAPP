@@ -1,0 +1,26 @@
+{
+  "adecco": {
+    "welcome": "Vítejte v Adecco",
+    "info": "Specializované nástroje pro efektivní správu práce a kariéry",
+    "feature1": "Správa směn s flexibilním plánováním podle vašich potřeb",
+    "feature2": "Přesná kalkulačka mezd s podporou daňových výpočtů",
+    "feature3": "Správa dokumentů a smluv v jednom místě",
+    "feature4": "Podpora a poradenství pro váš kariérní růst"
+  },
+  "randstad": {
+    "welcome": "Vítejte v Randstad",
+    "info": "Kompletní řešení pro flexibilní práci a profesní rozvoj",
+    "feature1": "Flexibilní směny přizpůsobené vašemu životnímu stylu",
+    "feature2": "Pokročilé mzdové výpočty s mezinárodní podporou",
+    "feature3": "Kariérní podpora a plánování profesního rozvoje",
+    "feature4": "Vzdělávací programy a certifikace"
+  },
+  "dhl": {
+    "welcome": "Vítejte v DHL",
+    "info": "Specializované nástroje pro DHL zaměstnance a logistiku",
+    "feature1": "Wechselschicht generátor pro automatické plánování směn",
+    "feature2": "Inteligentní směnové plány s optimalizací pracovních hodin",
+    "feature3": "Logistické nástroje pro efektivní organizaci práce",
+    "feature4": "Týmová komunikace a koordinace projektů"
+  }
+}

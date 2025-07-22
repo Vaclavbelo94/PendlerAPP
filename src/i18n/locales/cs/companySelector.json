@@ -1,0 +1,16 @@
+{
+  "title": "Vyberte svou společnost",
+  "subtitle": "Pokračujte s vaší personální agenturou pro přístup k specializovaným funkcím",
+  "selectButton": "Vybrat",
+  "alreadyHaveAccount": "Už máte účet?",
+  "loginButton": "Přihlásit se",
+  "adecco": {
+    "description": "Profesionální personální služby a řešení pro kariéru"
+  },
+  "randstad": {
+    "description": "Globální HR řešení a flexibilní práce"
+  },
+  "dhl": {
+    "description": "Logistické a doručovací služby s pokročilými nástroji"
+  }
+}
