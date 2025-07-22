@@ -170,5 +170,8 @@
   "standardHours": "Standardní hodiny",
   "actualHours": "Skutečné hodiny",
   "overtimeByType": "Přesčasy podle typu",
-  "noOvertime": "Žádné přesčasy"
+  "noOvertime": "Žádné přesčasy",
+  "weeklyView": "Týdenní pohled",
+  "noShift": "Volno",
+  "freeDay": "Volno"
 }

@@ -169,5 +169,8 @@
   "standardHours": "Standardowe godziny",
   "actualHours": "Rzeczywiste godziny",
   "overtimeByType": "Nadgodziny według typu",
-  "noOvertime": "Brak nadgodzin"
+  "noOvertime": "Brak nadgodzin",
+  "weeklyView": "Widok tygodniowy",
+  "noShift": "Wolne",
+  "freeDay": "Wolne"
 }

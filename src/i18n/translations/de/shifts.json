@@ -171,5 +171,8 @@
   "standardHours": "Standardstunden",
   "actualHours": "Tatsächliche Stunden",
   "overtimeByType": "Überstunden nach Typ",
-  "noOvertime": "Keine Überstunden"
+  "noOvertime": "Keine Überstunden",
+  "weeklyView": "Wochenansicht",
+  "noShift": "Frei",
+  "freeDay": "Frei"
 }

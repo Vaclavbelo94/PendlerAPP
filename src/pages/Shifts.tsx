@@ -2,6 +2,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import Layout from '@/components/layouts/Layout';
 import SwipeableShiftTabs from '@/components/shifts/SwipeableShiftTabs';
+import MobileShiftsView from '@/components/shifts/mobile/MobileShiftsView';
 import FloatingAddButton from '@/components/shifts/FloatingAddButton';
 import ShiftsFormSheets from '@/components/shifts/ShiftsFormSheets';
 import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
@@ -192,14 +193,27 @@ const Shifts = React.memo(() => {
   return (
     <Layout navbarRightContent={<NavbarRightContent />}>
       <DashboardBackground variant="shifts">
-        <div className="container mx-auto px-4 py-6 max-w-7xl">
-          <div className="mb-6 flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-foreground">{t('title')}</h1>
-              <p className="text-muted-foreground mt-1">{t('shiftsDescription')}</p>
-            </div>
-            
-            {!isMobile && (
+        {isMobile ? (
+          // Mobile full-screen layout
+          <div className="h-[calc(100vh-4rem)] overflow-hidden">
+            <MobileShiftsView
+              shifts={shifts}
+              onEditShift={handleEditShift}
+              onDeleteShift={handleDeleteShift}
+              onAddShift={() => handleAddShift()}
+              onAddShiftForDate={handleAddShiftForDate}
+              isLoading={shiftsLoading}
+            />
+          </div>
+        ) : (
+          // Desktop layout
+          <div className="container mx-auto px-4 py-6 max-w-7xl">
+            <div className="mb-6 flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl font-bold text-foreground">{t('title')}</h1>
+                <p className="text-muted-foreground mt-1">{t('shiftsDescription')}</p>
+              </div>
+              
               <Button
                 onClick={() => handleAddShift()}
                 className="flex items-center gap-2"
@@ -208,39 +222,39 @@ const Shifts = React.memo(() => {
                 <Plus className="h-5 w-5" />
                 {t('addShift')}
               </Button>
+            </div>
+            
+            {!shiftsLoading && shifts.length === 0 && (
+              <Alert className="mb-4">
+                <RefreshCw className="h-4 w-4" />
+                <AlertTitle>{t('noShiftsFound') || 'Žádné směny nenalezeny'}</AlertTitle>
+                <AlertDescription className="flex items-center justify-between">
+                  <span>{t('noShiftsMessage') || 'Zatím nemáte žádné směny. Začněte přidáním první směny.'}</span>
+                  <Button variant="outline" size="sm" onClick={handleRetry} className="ml-4">
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    {t('retry') || 'Obnovit'}
+                  </Button>
+                </AlertDescription>
+              </Alert>
             )}
+            
+            <div className="animate-fade-in">
+              <SwipeableShiftTabs
+                shifts={shifts}
+                onEditShift={handleEditShift}
+                onDeleteShift={handleDeleteShift}
+                onAddShift={() => handleAddShift()}
+                onAddShiftForDate={handleAddShiftForDate}
+                onSelectedDateChange={handleSelectedDateChange}
+                onRefreshShifts={refreshShifts}
+                isLoading={shiftsLoading}
+              />
+            </div>
           </div>
-          
-          {!shiftsLoading && shifts.length === 0 && (
-            <Alert className="mb-4">
-              <RefreshCw className="h-4 w-4" />
-              <AlertTitle>{t('noShiftsFound') || 'Žádné směny nenalezeny'}</AlertTitle>
-              <AlertDescription className="flex items-center justify-between">
-                <span>{t('noShiftsMessage') || 'Zatím nemáte žádné směny. Začněte přidáním první směny.'}</span>
-                <Button variant="outline" size="sm" onClick={handleRetry} className="ml-4">
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  {t('retry') || 'Obnovit'}
-                </Button>
-              </AlertDescription>
-            </Alert>
-          )}
-          
-          <div className="animate-fade-in">
-            <SwipeableShiftTabs
-              shifts={shifts}
-              onEditShift={handleEditShift}
-              onDeleteShift={handleDeleteShift}
-              onAddShift={() => handleAddShift()}
-              onAddShiftForDate={handleAddShiftForDate}
-              onSelectedDateChange={handleSelectedDateChange}
-              onRefreshShifts={refreshShifts}
-              isLoading={shiftsLoading}
-            />
-          </div>
-        </div>
+        )}
       </DashboardBackground>
 
-      {user && <FloatingAddButton onClick={handleAddShift} selectedDate={selectedCalendarDate} />}
+      {user && !isMobile && <FloatingAddButton onClick={handleAddShift} selectedDate={selectedCalendarDate} />}
 
       {/* Use ShiftsFormSheets component with error boundary protection */}
       <ShiftsFormSheets
