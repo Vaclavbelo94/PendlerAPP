@@ -19,7 +19,12 @@ const DHLSetupNotification = () => {
   const navigate = useNavigate();
   const [isDismissed, setIsDismissed] = useState(false);
 
-  // Check localStorage for previous dismissal
+  // Check if user completed onboarding - if so, make notification less intrusive
+  const hasCompletedOnboarding = localStorage.getItem(`onboarding_completed_${user?.id}`) === 'true';
+  const isDHLSelection = localStorage.getItem('isDHLSelection') === 'true';
+  
+  // For users who selected DHL during registration, show more contextual setup
+  const isContextualSetup = isDHLSelection && !hasCompletedOnboarding;
   useEffect(() => {
     const dismissed = localStorage.getItem('dhl-setup-dismissed');
     if (dismissed === 'true') {

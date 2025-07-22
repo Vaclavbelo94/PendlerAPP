@@ -42,6 +42,13 @@ const CompanySelector: React.FC = () => {
 
   const handleCompanySelect = (companyId: string) => {
     localStorage.setItem('selectedCompany', companyId);
+    
+    // Pro DHL uživatele si označíme, že jsou potenciální DHL zaměstnanci
+    if (companyId === 'dhl') {
+      localStorage.setItem('isDHLSelection', 'true');
+      localStorage.setItem('dhlSelectionTimestamp', Date.now().toString());
+    }
+    
     navigate(`/register/${companyId}`);
   };
 

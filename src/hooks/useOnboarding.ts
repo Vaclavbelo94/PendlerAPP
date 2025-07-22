@@ -45,17 +45,23 @@ export const useOnboarding = () => {
       const registrationDate = new Date(user.created_at || '');
       const daysSinceRegistration = (Date.now() - registrationDate.getTime()) / (1000 * 60 * 60 * 24);
       
+      // Zkontrolujeme, jestli si uživatel vybral DHL při registraci
+      const isDHLSelection = localStorage.getItem('isDHLSelection') === 'true';
+      const dhlSelectionTimestamp = localStorage.getItem('dhlSelectionTimestamp');
+      
       // Považujeme za nového uživatele pokud:
       // - Nemá žádné směny
-      // - Registroval se před méně než 7 dny
+      // - Registroval se před méně než 7 dny NEBO si vybral DHL při registraci
       // - Ještě neukončil onboarding
       const savedOnboarding = localStorage.getItem(`onboarding_completed_${user.id}`);
-      const isNewUser = !hasShifts && daysSinceRegistration < 7 && !savedOnboarding;
+      const isNewUser = !hasShifts && (daysSinceRegistration < 7 || isDHLSelection) && !savedOnboarding;
       
       console.log('Onboarding check:', {
         hasShifts,
         hasAssignment,
         daysSinceRegistration,
+        isDHLSelection,
+        dhlSelectionTimestamp,
         isNewUser,
         savedOnboarding
       });
@@ -129,6 +135,9 @@ export const useOnboarding = () => {
   const completeOnboarding = () => {
     if (user?.id) {
       localStorage.setItem(`onboarding_completed_${user.id}`, 'true');
+      // Vyčistíme DHL selection flags po dokončení onboardingu
+      localStorage.removeItem('isDHLSelection');
+      localStorage.removeItem('dhlSelectionTimestamp');
     }
     setOnboardingState(prev => ({
       ...prev,
