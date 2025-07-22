@@ -79,16 +79,16 @@ const Login = () => {
         <div className="w-full max-w-md">
           {/* Main Login Card */}
           <Card className="bg-background/60 backdrop-blur-lg border-0 shadow-2xl animate-fade-in">
-            <CardHeader className="text-center pb-6">
+            <CardHeader className="text-center pb-4">
               {/* Login Icon */}
-              <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-lg">
-                <LogIn className="w-8 h-8 text-primary-foreground" />
+              <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-lg">
+                <LogIn className="w-6 h-6 text-primary-foreground" />
               </div>
               
-              <CardTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+              <CardTitle className="text-xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
                 {t('auth:login')}
               </CardTitle>
-              <CardDescription className="text-muted-foreground">
+              <CardDescription className="text-sm text-muted-foreground">
                 {t('auth:registerDescription')}
               </CardDescription>
 
