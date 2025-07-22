@@ -67,12 +67,12 @@ const CompanyRegister: React.FC = () => {
     e.preventDefault();
     
     if (formData.password !== formData.confirmPassword) {
-      toast.error('Hesla se neshodují');
+      toast.error(t('auth.passwordsDoNotMatch', 'Hesla se neshodují'));
       return;
     }
 
     if (!formData.acceptTerms) {
-      toast.error('Musíte souhlasit s podmínkami použití');
+      toast.error(t('auth.acceptTermsRequired', 'Musíte souhlasit s podmínkami použití'));
       return;
     }
 
@@ -90,11 +90,11 @@ const CompanyRegister: React.FC = () => {
       if (error) {
         toast.error(typeof error === 'string' ? error : error.message);
       } else {
-        toast.success('Registrace byla úspěšná! Zkontrolujte svůj email.');
+        toast.success(t('auth.registerSuccess', 'Registrace byla úspěšná! Zkontrolujte svůj email.'));
         navigate('/dashboard');
       }
     } catch (err) {
-      toast.error('Nastala chyba při registraci');
+      toast.error(t('auth.registrationError', 'Nastala chyba při registraci'));
     } finally {
       setIsLoading(false);
     }
