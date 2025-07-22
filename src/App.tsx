@@ -9,6 +9,8 @@ import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "@/hooks/auth";
 import { DHLThemeProvider } from "@/contexts/DHLThemeContext";
 import Index from "./pages/Index";
+import CompanySelector from "./components/company/CompanySelector";
+import CompanyLandingPage from "./components/company/CompanyLandingPage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
@@ -48,9 +50,13 @@ function App() {
                 <DHLThemeProvider>
                   <Suspense fallback={<LoadingSpinner />}>
                     <Routes>
-                      <Route path="/" element={<Index />} />
-                      <Route path="/login" element={<Login />} />
-                      <Route path="/register" element={<Register />} />
+                       <Route path="/" element={<CompanySelector />} />
+                       <Route path="/adecco" element={<CompanyLandingPage />} />
+                       <Route path="/randstad" element={<CompanyLandingPage />} />
+                       <Route path="/dhl" element={<CompanyLandingPage />} />
+                       <Route path="/old-index" element={<Index />} />
+                       <Route path="/login" element={<Login />} />
+                       <Route path="/register" element={<Register />} />
                       <Route path="/dashboard" element={<Dashboard />} />
                       <Route path="/shifts" element={<Shifts />} />
                       <Route path="/travel" element={<TravelPlanning />} />

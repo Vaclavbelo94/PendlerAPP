@@ -10,8 +10,16 @@ export enum UserRole {
   STANDARD = 'standard',
   PREMIUM = 'premium',
   DHL_EMPLOYEE = 'dhl_employee',
+  ADECCO_EMPLOYEE = 'adecco_employee',
+  RANDSTAD_EMPLOYEE = 'randstad_employee',
   ADMIN = 'admin',
   DHL_ADMIN = 'dhl_admin'
+}
+
+export enum CompanyType {
+  ADECCO = 'adecco',
+  RANDSTAD = 'randstad',
+  DHL = 'dhl'
 }
 
 export enum UserStatus {
@@ -28,7 +36,10 @@ export interface UnifiedUser {
   isPremium: boolean;
   isAdmin: boolean;
   isDHLEmployee: boolean;
+  isAdeccoEmployee: boolean;
+  isRandstadEmployee: boolean;
   isDHLAdmin: boolean;
+  company?: CompanyType;
   premiumExpiry?: string;
   setupRequired?: boolean;
 }

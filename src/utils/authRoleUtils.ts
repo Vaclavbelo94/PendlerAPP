@@ -74,6 +74,8 @@ export const createUnifiedUser = (
     isPremium: isPremium || role === UserRole.PREMIUM || role === UserRole.DHL_EMPLOYEE,
     isAdmin: isAdmin || role === UserRole.ADMIN || role === UserRole.DHL_ADMIN,
     isDHLEmployee: isDHL || role === UserRole.DHL_ADMIN,
+    isAdeccoEmployee: false,
+    isRandstadEmployee: false,
     isDHLAdmin: role === UserRole.DHL_ADMIN,
     premiumExpiry,
     setupRequired: status === UserStatus.PENDING_SETUP
@@ -105,6 +107,8 @@ export const canAccess = (unifiedUser: UnifiedUser | null, requiredRole: UserRol
     [UserRole.STANDARD]: 1,
     [UserRole.PREMIUM]: 2,
     [UserRole.DHL_EMPLOYEE]: 3,
+    [UserRole.ADECCO_EMPLOYEE]: 3,
+    [UserRole.RANDSTAD_EMPLOYEE]: 3,
     [UserRole.ADMIN]: 4,
     [UserRole.DHL_ADMIN]: 4
   };

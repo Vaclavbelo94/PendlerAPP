@@ -951,6 +951,7 @@ export type Database = {
       profiles: {
         Row: {
           bio: string | null
+          company: Database["public"]["Enums"]["company_type"] | null
           created_at: string
           email: string | null
           id: string
@@ -967,6 +968,7 @@ export type Database = {
         }
         Insert: {
           bio?: string | null
+          company?: Database["public"]["Enums"]["company_type"] | null
           created_at?: string
           email?: string | null
           id: string
@@ -983,6 +985,7 @@ export type Database = {
         }
         Update: {
           bio?: string | null
+          company?: Database["public"]["Enums"]["company_type"] | null
           created_at?: string
           email?: string | null
           id?: string
@@ -2448,6 +2451,7 @@ export type Database = {
       }
     }
     Enums: {
+      company_type: "adecco" | "randstad" | "dhl"
       dhl_position_type:
         | "technik"
         | "rangierer"
@@ -2594,6 +2598,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      company_type: ["adecco", "randstad", "dhl"],
       dhl_position_type: [
         "technik",
         "rangierer",
