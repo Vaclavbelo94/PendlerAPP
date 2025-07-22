@@ -22,6 +22,10 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [errors, setErrors] = useState<{
+    email?: string;
+    password?: string;
+  }>({});
   
   const navigate = useNavigate();
   const { user, unifiedUser, isLoading: authLoading, signIn } = useAuth();
@@ -43,39 +47,43 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Add debugging alert
-    alert('Form submitted! Email: ' + formData.email);
+    // Clear previous errors
+    setErrors({});
     
-    if (!formData.email || !formData.password) {
-      alert('Fields missing!');
+    // Validation
+    const newErrors: { email?: string; password?: string } = {};
+    
+    if (!formData.email) {
+      newErrors.email = t('auth:emailRequired');
+    }
+    if (!formData.password) {
+      newErrors.password = t('auth:passwordRequired');
+    }
+    
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       toast.error(t('auth:allFieldsRequired'));
       return;
     }
 
     setIsLoading(true);
-    console.log('Login attempt started for:', formData.email);
 
     try {
       const { error } = await signIn(formData.email, formData.password);
       
-      console.log('Login result:', { error });
-      
       if (error) {
-        console.error('Login failed:', error);
-        alert('Login error: ' + error);
-        toast.error(typeof error === 'string' ? error : error.message);
+        // Mark password field as error on login failure
+        const errorMessage = typeof error === 'string' ? error : error.message;
+        setErrors({ password: errorMessage });
+        toast.error(errorMessage);
       } else {
-        console.log('Login successful');
-        alert('Login successful!');
         toast.success(t('auth:loginSuccess'));
         // Let the auth state change handle the redirect
       }
     } catch (err: any) {
-      console.error('Login exception:', err);
-      alert('Exception: ' + err.message);
+      setErrors({ password: t('auth:loginError') });
       toast.error(t('auth:loginError'));
     } finally {
-      console.log('Setting loading to false');
       setIsLoading(false);
     }
   };
@@ -159,11 +167,16 @@ const Login = () => {
                       type="email"
                       value={formData.email}
                       onChange={(e) => handleInputChange('email', e.target.value)}
-                      className="pl-10 transition-all duration-200 focus:ring-2 focus:ring-primary/20"
+                      className={`pl-10 transition-all duration-200 focus:ring-2 focus:ring-primary/20 ${
+                        errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''
+                      }`}
                       placeholder={t('auth:email')}
                       required
                     />
                   </div>
+                  {errors.email && (
+                    <p className="text-sm text-red-500 mt-1">{errors.email}</p>
+                  )}
                 </div>
 
                 {/* Password */}
@@ -178,7 +191,9 @@ const Login = () => {
                       type={showPassword ? 'text' : 'password'}
                       value={formData.password}
                       onChange={(e) => handleInputChange('password', e.target.value)}
-                      className="pl-10 pr-10 transition-all duration-200 focus:ring-2 focus:ring-primary/20"
+                      className={`pl-10 pr-10 transition-all duration-200 focus:ring-2 focus:ring-primary/20 ${
+                        errors.password ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''
+                      }`}
                       placeholder={t('auth:password')}
                       required
                     />
@@ -192,6 +207,9 @@ const Login = () => {
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </Button>
                   </div>
+                  {errors.password && (
+                    <p className="text-sm text-red-500 mt-1">{errors.password}</p>
+                  )}
                 </div>
 
                 {/* Forgot Password Link */}
