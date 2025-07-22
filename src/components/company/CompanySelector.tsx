@@ -52,9 +52,9 @@ const CompanySelector: React.FC = () => {
 
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/5 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-secondary/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-accent/3 rounded-full blur-3xl animate-pulse delay-500"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/5 rounded-full blur-3xl animate-pulse pointer-events-none"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-secondary/5 rounded-full blur-3xl animate-pulse delay-1000 pointer-events-none"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-accent/3 rounded-full blur-3xl animate-pulse delay-500 pointer-events-none"></div>
       </div>
 
       <div className="relative z-10 flex flex-col min-h-[calc(100vh-4rem)]">
@@ -103,7 +103,7 @@ const CompanySelector: React.FC = () => {
                         
                         <CardContent className={`text-center relative ${isDHL ? 'p-10 md:p-16' : 'p-8 md:p-12'}`}>
                           {/* Enhanced hover gradient overlay for DHL */}
-                          <div className={`absolute inset-0 bg-gradient-to-br ${company.gradient} opacity-0 group-hover:opacity-${isDHL ? '10' : '5'} transition-opacity duration-500`}></div>
+                          <div className={`absolute inset-0 bg-gradient-to-br ${company.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500 pointer-events-none`}></div>
                           
                           {/* Featured badge for DHL */}
                           {isDHL && (
