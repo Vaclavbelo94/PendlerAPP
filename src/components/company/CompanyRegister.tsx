@@ -129,10 +129,10 @@ const CompanyRegister: React.FC = () => {
               </div>
               
               <CardTitle className="text-2xl font-bold">
-                {t('auth.registerWith')} {config.name}
+                {t('auth:registerWith')} {config.name}
               </CardTitle>
               <p className="text-muted-foreground">
-                {t('auth.createAccount')}
+                {t('auth:createAccount')}
               </p>
             </CardHeader>
 
