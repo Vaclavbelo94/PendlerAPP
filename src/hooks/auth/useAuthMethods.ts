@@ -32,15 +32,20 @@ export const useAuthMethods = () => {
       
       if (error) {
         console.error('Sign in error:', error);
-        return { error: error.message };
+        // Handle specific Supabase error messages
+        let errorMessage = error.message;
+        if (error.message.includes('Invalid login credentials')) {
+          errorMessage = 'Neplatné přihlašovací údaje';
+        } else if (error.message.includes('Email not confirmed')) {
+          errorMessage = 'E-mail nebyl potvrzen';
+        } else if (error.message.includes('Too many requests')) {
+          errorMessage = 'Příliš mnoho pokusů, zkuste později';
+        }
+        return { error: errorMessage };
       }
       
+      // Don't redirect immediately - let the component handle success state
       console.log('Sign in successful for:', data.user?.email);
-      
-      // Force page reload to ensure clean state
-      setTimeout(() => {
-        window.location.href = '/';
-      }, 500);
       
       return { error: null };
     } catch (err: any) {

@@ -55,6 +55,9 @@ const Login = () => {
       
       if (error) {
         toast.error(typeof error === 'string' ? error : error.message);
+      } else {
+        toast.success(t('auth:loginSuccess'));
+        // Let the auth state change handle the redirect
       }
     } catch (err) {
       toast.error(t('auth:loginError'));
