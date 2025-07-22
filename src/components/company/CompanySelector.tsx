@@ -4,15 +4,13 @@ import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n/config';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowRight, Globe, Users, Zap } from 'lucide-react';
+import { ArrowRight, Globe } from 'lucide-react';
 
 interface CompanyOption {
   id: 'adecco' | 'randstad' | 'dhl';
   name: string;
   logo: string;
   gradient: string;
-  description: string;
-  features: string[];
 }
 
 const CompanySelector: React.FC = () => {
@@ -24,31 +22,25 @@ const CompanySelector: React.FC = () => {
       id: 'adecco',
       name: 'Adecco',
       logo: '🏢',
-      gradient: 'from-blue-500 via-blue-600 to-blue-700',
-      description: t('companySelector.adecco.description', 'Profesionální personální služby a řešení pro kariéru'),
-      features: ['Flexibilní směny', 'Kariérní podpora', 'Mzdové poradenství']
+      gradient: 'from-blue-500 via-blue-600 to-blue-700'
     },
     {
       id: 'randstad',
       name: 'Randstad',
       logo: '🔵',
-      gradient: 'from-indigo-500 via-purple-600 to-pink-600',
-      description: t('companySelector.randstad.description', 'Globální HR řešení a flexibilní práce'),
-      features: ['Mezinárodní příležitosti', 'HR poradenství', 'Vzdělávací programy']
+      gradient: 'from-indigo-500 via-purple-600 to-pink-600'
     },
     {
       id: 'dhl',
       name: 'DHL',
       logo: '📦',
-      gradient: 'from-yellow-400 via-orange-500 to-red-600',
-      description: t('companySelector.dhl.description', 'Logistické a doručovací služby s pokročilými nástroji'),
-      features: ['Wechselschicht systém', 'Logistické nástroje', 'Týmová koordinace']
+      gradient: 'from-yellow-400 via-orange-500 to-red-600'
     }
   ];
 
   const handleCompanySelect = (companyId: string) => {
     localStorage.setItem('selectedCompany', companyId);
-    navigate(`/${companyId}`);
+    navigate(`/register/${companyId}`);
   };
 
   return (
@@ -91,29 +83,14 @@ const CompanySelector: React.FC = () => {
                   {t('companySelector.title', 'Vyberte svou společnost')}
                 </h1>
                 <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                  {t('companySelector.subtitle', 'Pokračujte s vaší personální agenturou pro přístup k specializovaným funkcím')}
+                  {t('companySelector.subtitle', 'Začněte registrací u vaší personální agentury')}
                 </p>
               </div>
               
-              {/* Stats/Features */}
-              <div className="flex flex-wrap justify-center gap-8 mb-12">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Users className="w-4 h-4 text-primary" />
-                  <span>50,000+ uživatelů</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Zap className="w-4 h-4 text-primary" />
-                  <span>Rychlé nastavení</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Globe className="w-4 h-4 text-primary" />
-                  <span>3 jazyky</span>
-                </div>
-              </div>
             </div>
 
             {/* Company Selection Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16 max-w-4xl mx-auto">
               {companies.map((company, index) => (
                 <Card 
                   key={company.id}
@@ -123,44 +100,29 @@ const CompanySelector: React.FC = () => {
                 >
                   <div className={`h-2 bg-gradient-to-r ${company.gradient}`}></div>
                   
-                  <CardContent className="p-8 text-center relative">
+                  <CardContent className="p-12 text-center relative">
                     {/* Hover gradient overlay */}
                     <div className={`absolute inset-0 bg-gradient-to-br ${company.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`}></div>
                     
                     {/* Company Logo */}
-                    <div className="relative mb-6">
-                      <div className={`w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br ${company.gradient} flex items-center justify-center text-3xl shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110`}>
+                    <div className="relative mb-8">
+                      <div className={`w-24 h-24 mx-auto rounded-3xl bg-gradient-to-br ${company.gradient} flex items-center justify-center text-4xl shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110`}>
                         {company.logo}
                       </div>
                     </div>
 
                     {/* Company Name */}
-                    <h2 className="text-2xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors duration-300">
+                    <h2 className="text-3xl font-bold text-foreground mb-8 group-hover:text-primary transition-colors duration-300">
                       {company.name}
                     </h2>
 
-                    {/* Company Description */}
-                    <p className="text-muted-foreground mb-6 leading-relaxed">
-                      {company.description}
-                    </p>
-
-                    {/* Features */}
-                    <div className="space-y-2 mb-8">
-                      {company.features.map((feature, i) => (
-                        <div key={i} className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-                          <div className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${company.gradient}`}></div>
-                          <span>{feature}</span>
-                        </div>
-                      ))}
-                    </div>
-
                     {/* Select Button */}
                     <Button 
-                      className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 hover:scale-105"
+                      className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 hover:scale-105 py-6 text-lg"
                       variant="outline"
                     >
-                      <span>{t('companySelector.selectButton', 'Vybrat')}</span>
-                      <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
+                      <span>{t('companySelector.selectButton', 'Registrovat se')}</span>
+                      <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
                     </Button>
                   </CardContent>
                 </Card>

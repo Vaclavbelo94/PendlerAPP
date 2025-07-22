@@ -1,0 +1,345 @@
+import React, { useState } from 'react';
+import { useNavigate, useParams, Navigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
+import { ArrowLeft, Eye, EyeOff, Building2, User, Mail, Lock, Phone } from 'lucide-react';
+import { useAuth } from '@/hooks/auth';
+import { toast } from 'sonner';
+
+const CompanyRegister: React.FC = () => {
+  const { company } = useParams<{ company: string }>();
+  const navigate = useNavigate();
+  const { t } = useTranslation(['auth', 'common']);
+  const { signUp } = useAuth();
+
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    confirmPassword: '',
+    firstName: '',
+    lastName: '',
+    phone: '',
+    promoCode: '',
+    acceptTerms: false,
+    acceptMarketing: false
+  });
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const companyConfig = {
+    adecco: {
+      name: 'Adecco',
+      logo: '🏢',
+      gradient: 'from-blue-500 via-blue-600 to-blue-700',
+      color: 'blue'
+    },
+    randstad: {
+      name: 'Randstad',
+      logo: '🔵',
+      gradient: 'from-indigo-500 via-purple-600 to-pink-600',
+      color: 'indigo'
+    },
+    dhl: {
+      name: 'DHL',
+      logo: '📦',
+      gradient: 'from-yellow-400 via-orange-500 to-red-600',
+      color: 'orange'
+    }
+  };
+
+  const config = company ? companyConfig[company as keyof typeof companyConfig] : null;
+
+  if (!config) {
+    return <Navigate to="/" replace />;
+  }
+
+  const handleInputChange = (field: string, value: string | boolean) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (formData.password !== formData.confirmPassword) {
+      toast.error('Hesla se neshodují');
+      return;
+    }
+
+    if (!formData.acceptTerms) {
+      toast.error('Musíte souhlasit s podmínkami použití');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const username = `${formData.firstName} ${formData.lastName}`.trim();
+      const { error } = await signUp(
+        formData.email,
+        formData.password,
+        username,
+        formData.promoCode || undefined
+      );
+
+      if (error) {
+        toast.error(typeof error === 'string' ? error : error.message);
+      } else {
+        toast.success('Registrace byla úspěšná! Zkontrolujte svůj email.');
+        navigate('/dashboard');
+      }
+    } catch (err) {
+      toast.error('Nastala chyba při registraci');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-muted/30 relative overflow-hidden">
+      {/* Animated background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className={`absolute -top-40 -right-40 w-80 h-80 bg-${config.color}-500/5 rounded-full blur-3xl animate-pulse`}></div>
+        <div className={`absolute -bottom-40 -left-40 w-80 h-80 bg-${config.color}-500/5 rounded-full blur-3xl animate-pulse delay-1000`}></div>
+      </div>
+
+      <div className="relative z-10 min-h-screen flex items-center justify-center p-6">
+        <div className="w-full max-w-md">
+          {/* Back Button */}
+          <Button
+            variant="ghost"
+            onClick={() => navigate('/')}
+            className="mb-6 hover:bg-background/50"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            {t('common.back', 'Zpět')}
+          </Button>
+
+          {/* Registration Form */}
+          <Card className="bg-background/60 backdrop-blur-lg border-0 shadow-2xl">
+            <CardHeader className="text-center pb-6">
+              {/* Company Logo */}
+              <div className={`w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br ${config.gradient} flex items-center justify-center text-2xl shadow-lg`}>
+                {config.logo}
+              </div>
+              
+              <CardTitle className="text-2xl font-bold">
+                {t('auth.registerWith', 'Registrace pro')} {config.name}
+              </CardTitle>
+              <p className="text-muted-foreground">
+                {t('auth.createAccount', 'Vytvořte si účet pro přístup ke specializovaným nástrojům')}
+              </p>
+            </CardHeader>
+
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Name Fields */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="firstName">
+                      {t('auth.firstName', 'Jméno')} *
+                    </Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="firstName"
+                        type="text"
+                        value={formData.firstName}
+                        onChange={(e) => handleInputChange('firstName', e.target.value)}
+                        className="pl-10"
+                        required
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="lastName">
+                      {t('auth.lastName', 'Příjmení')} *
+                    </Label>
+                    <Input
+                      id="lastName"
+                      type="text"
+                      value={formData.lastName}
+                      onChange={(e) => handleInputChange('lastName', e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* Email */}
+                <div className="space-y-2">
+                  <Label htmlFor="email">
+                    {t('auth.email', 'Email')} *
+                  </Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => handleInputChange('email', e.target.value)}
+                      className="pl-10"
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* Phone */}
+                <div className="space-y-2">
+                  <Label htmlFor="phone">
+                    {t('auth.phone', 'Telefon')}
+                  </Label>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="phone"
+                      type="tel"
+                      value={formData.phone}
+                      onChange={(e) => handleInputChange('phone', e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+                </div>
+
+                {/* Password */}
+                <div className="space-y-2">
+                  <Label htmlFor="password">
+                    {t('auth.password', 'Heslo')} *
+                  </Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="password"
+                      type={showPassword ? 'text' : 'password'}
+                      value={formData.password}
+                      onChange={(e) => handleInputChange('password', e.target.value)}
+                      className="pl-10 pr-10"
+                      required
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Confirm Password */}
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword">
+                    {t('auth.confirmPassword', 'Potvrdit heslo')} *
+                  </Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="confirmPassword"
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      value={formData.confirmPassword}
+                      onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                      className="pl-10 pr-10"
+                      required
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    >
+                      {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Promo Code */}
+                <div className="space-y-2">
+                  <Label htmlFor="promoCode">
+                    {t('auth.promoCode', 'Promo kód')} ({t('auth.optional', 'volitelné')})
+                  </Label>
+                  <div className="relative">
+                    <Building2 className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="promoCode"
+                      type="text"
+                      value={formData.promoCode}
+                      onChange={(e) => handleInputChange('promoCode', e.target.value)}
+                      className="pl-10"
+                      placeholder={company === 'dhl' ? 'DHL2025' : undefined}
+                    />
+                  </div>
+                </div>
+
+                {/* Checkboxes */}
+                <div className="space-y-3">
+                  <div className="flex items-start space-x-2">
+                    <Checkbox
+                      id="acceptTerms"
+                      checked={formData.acceptTerms}
+                      onCheckedChange={(checked) => handleInputChange('acceptTerms', !!checked)}
+                      required
+                    />
+                    <Label htmlFor="acceptTerms" className="text-sm">
+                      {t('auth.acceptTerms', 'Souhlasím s podmínkami použití a zpracováním osobních údajů')} *
+                    </Label>
+                  </div>
+
+                  <div className="flex items-start space-x-2">
+                    <Checkbox
+                      id="acceptMarketing"
+                      checked={formData.acceptMarketing}
+                      onCheckedChange={(checked) => handleInputChange('acceptMarketing', !!checked)}
+                    />
+                    <Label htmlFor="acceptMarketing" className="text-sm">
+                      {t('auth.acceptMarketing', 'Souhlasím s doručováním marketingových sdělení')}
+                    </Label>
+                  </div>
+                </div>
+
+                {/* Submit Button */}
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <div className="flex items-center">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      {t('auth.registering', 'Registruji...')}
+                    </div>
+                  ) : (
+                    t('auth.register', 'Registrovat se')
+                  )}
+                </Button>
+
+                {/* Login Link */}
+                <div className="text-center mt-6">
+                  <p className="text-sm text-muted-foreground">
+                    {t('auth.alreadyHaveAccount', 'Už máte účet?')}{' '}
+                    <Button
+                      variant="link"
+                      className="p-0 h-auto text-primary"
+                      onClick={() => navigate('/login')}
+                    >
+                      {t('auth.login', 'Přihlásit se')}
+                    </Button>
+                  </p>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default CompanyRegister;

@@ -11,6 +11,7 @@ import { DHLThemeProvider } from "@/contexts/DHLThemeContext";
 import Index from "./pages/Index";
 import CompanySelector from "./components/company/CompanySelector";
 import CompanyLandingPage from "./components/company/CompanyLandingPage";
+import CompanyRegister from "./components/company/CompanyRegister";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
@@ -54,6 +55,7 @@ function App() {
                        <Route path="/adecco" element={<CompanyLandingPage />} />
                        <Route path="/randstad" element={<CompanyLandingPage />} />
                        <Route path="/dhl" element={<CompanyLandingPage />} />
+                       <Route path="/register/:company" element={<CompanyRegister />} />
                        <Route path="/old-index" element={<Index />} />
                        <Route path="/login" element={<Login />} />
                        <Route path="/register" element={<Register />} />
