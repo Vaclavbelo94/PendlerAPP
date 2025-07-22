@@ -40,8 +40,16 @@ const DashboardHero: React.FC = () => {
       return total;
     }, 0);
 
+  // Calculate total earnings based on actual shift hours (simplified calculation)
   const totalEarnings = shifts.reduce((total, shift) => {
-    return total + (shift.hourly_rate || 0) * (shift.hours_worked || 0);
+    if (shift.start_time && shift.end_time) {
+      const start = new Date(`1970-01-01T${shift.start_time}`);
+      const end = new Date(`1970-01-01T${shift.end_time}`);
+      const hours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
+      // Using estimated hourly rate for Czech Republic (average minimum wage)
+      return total + hours * 120; // 120 CZK per hour estimate
+    }
+    return total;
   }, 0);
 
   const stats = [
