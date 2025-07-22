@@ -4,13 +4,15 @@ import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n/config';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { ArrowRight, Globe, Users, Zap } from 'lucide-react';
 
 interface CompanyOption {
   id: 'adecco' | 'randstad' | 'dhl';
   name: string;
   logo: string;
-  color: string;
+  gradient: string;
   description: string;
+  features: string[];
 }
 
 const CompanySelector: React.FC = () => {
@@ -22,111 +24,166 @@ const CompanySelector: React.FC = () => {
       id: 'adecco',
       name: 'Adecco',
       logo: '🏢',
-      color: 'from-blue-500 to-blue-700',
-      description: t('companySelector.adecco.description', 'Profesionální personální služby')
+      gradient: 'from-blue-500 via-blue-600 to-blue-700',
+      description: t('companySelector.adecco.description', 'Profesionální personální služby a řešení pro kariéru'),
+      features: ['Flexibilní směny', 'Kariérní podpora', 'Mzdové poradenství']
     },
     {
       id: 'randstad',
       name: 'Randstad',
       logo: '🔵',
-      color: 'from-indigo-500 to-indigo-700',
-      description: t('companySelector.randstad.description', 'Globální HR řešení')
+      gradient: 'from-indigo-500 via-purple-600 to-pink-600',
+      description: t('companySelector.randstad.description', 'Globální HR řešení a flexibilní práce'),
+      features: ['Mezinárodní příležitosti', 'HR poradenství', 'Vzdělávací programy']
     },
     {
       id: 'dhl',
       name: 'DHL',
       logo: '📦',
-      color: 'from-yellow-500 to-red-600',
-      description: t('companySelector.dhl.description', 'Logistické a doručovací služby')
+      gradient: 'from-yellow-400 via-orange-500 to-red-600',
+      description: t('companySelector.dhl.description', 'Logistické a doručovací služby s pokročilými nástroji'),
+      features: ['Wechselschicht systém', 'Logistické nástroje', 'Týmová koordinace']
     }
   ];
 
   const handleCompanySelect = (companyId: string) => {
-    // Store selected company in localStorage for later use during registration
     localStorage.setItem('selectedCompany', companyId);
     navigate(`/${companyId}`);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background/80 to-secondary/20 flex items-center justify-center p-4">
-      <div className="w-full max-w-6xl">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-6xl font-bold text-primary mb-4">
-            {t('companySelector.title', 'Vyberte svou společnost')}
-          </h1>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-            {t('companySelector.subtitle', 'Pokračujte s vaší personální agenturou pro přístup k specializovaným funkcím')}
-          </p>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-muted/30 relative overflow-hidden">
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/5 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-secondary/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-accent/3 rounded-full blur-3xl animate-pulse delay-500"></div>
+      </div>
 
-        {/* Company Selection Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {companies.map((company) => (
-            <Card 
-              key={company.id}
-              className="group cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl border-2 hover:border-primary/30"
-              onClick={() => handleCompanySelect(company.id)}
-            >
-              <CardContent className="p-8 text-center">
-                {/* Company Logo */}
-                <div className={`w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br ${company.color} flex items-center justify-center text-4xl shadow-lg group-hover:shadow-xl transition-shadow duration-300`}>
-                  {company.logo}
-                </div>
-
-                {/* Company Name */}
-                <h2 className="text-2xl font-bold text-foreground mb-3">
-                  {company.name}
-                </h2>
-
-                {/* Company Description */}
-                <p className="text-muted-foreground mb-6">
-                  {company.description}
-                </p>
-
-                {/* Select Button */}
-                <Button 
-                  className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300"
-                  variant="outline"
-                >
-                  {t('companySelector.selectButton', 'Vybrat')}
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* Language Switcher */}
-        <div className="flex justify-center mt-8">
-          <div className="flex items-center gap-4 p-2 bg-background/50 rounded-lg backdrop-blur-sm">
+      <div className="relative z-10 flex flex-col min-h-screen">
+        {/* Language Switcher - Top Right */}
+        <div className="absolute top-6 right-6 z-20">
+          <div className="flex items-center gap-2 p-2 bg-background/80 backdrop-blur-lg rounded-full border border-border/50 shadow-lg">
+            <Globe className="w-4 h-4 text-muted-foreground" />
             {['cs', 'de', 'pl'].map((lang) => (
               <Button
                 key={lang}
-                variant="ghost"
+                variant={i18n.language === lang ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => i18n.changeLanguage(lang)}
-                className="text-xs"
+                className="rounded-full text-xs min-w-[2.5rem] h-8"
               >
-                {lang === 'cs' && '🇨🇿 CZ'}
-                {lang === 'de' && '🇩🇪 DE'}
-                {lang === 'pl' && '🇵🇱 PL'}
+                {lang === 'cs' && '🇨🇿'}
+                {lang === 'de' && '🇩🇪'}
+                {lang === 'pl' && '🇵🇱'}
               </Button>
             ))}
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="text-center mt-12">
-          <p className="text-sm text-muted-foreground mb-4">
-            {t('companySelector.alreadyHaveAccount', 'Už máte účet?')}
-          </p>
-          <Button 
-            variant="ghost" 
-            onClick={() => navigate('/login')}
-            className="text-primary hover:text-primary/80"
-          >
-            {t('companySelector.loginButton', 'Přihlásit se')}
-          </Button>
+        {/* Main Content */}
+        <div className="flex-1 flex items-center justify-center p-6">
+          <div className="w-full max-w-7xl">
+            {/* Hero Section */}
+            <div className="text-center mb-16 animate-fade-in">
+              <div className="mb-8">
+                <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-primary via-primary/80 to-secondary bg-clip-text text-transparent mb-6 animate-scale-in">
+                  {t('companySelector.title', 'Vyberte svou společnost')}
+                </h1>
+                <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+                  {t('companySelector.subtitle', 'Pokračujte s vaší personální agenturou pro přístup k specializovaným funkcím')}
+                </p>
+              </div>
+              
+              {/* Stats/Features */}
+              <div className="flex flex-wrap justify-center gap-8 mb-12">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Users className="w-4 h-4 text-primary" />
+                  <span>50,000+ uživatelů</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Zap className="w-4 h-4 text-primary" />
+                  <span>Rychlé nastavení</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Globe className="w-4 h-4 text-primary" />
+                  <span>3 jazyky</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Company Selection Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+              {companies.map((company, index) => (
+                <Card 
+                  key={company.id}
+                  className="group cursor-pointer transition-all duration-500 hover:scale-105 hover:shadow-2xl border-0 bg-background/60 backdrop-blur-lg overflow-hidden animate-fade-in"
+                  style={{ animationDelay: `${index * 200}ms` }}
+                  onClick={() => handleCompanySelect(company.id)}
+                >
+                  <div className={`h-2 bg-gradient-to-r ${company.gradient}`}></div>
+                  
+                  <CardContent className="p-8 text-center relative">
+                    {/* Hover gradient overlay */}
+                    <div className={`absolute inset-0 bg-gradient-to-br ${company.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`}></div>
+                    
+                    {/* Company Logo */}
+                    <div className="relative mb-6">
+                      <div className={`w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br ${company.gradient} flex items-center justify-center text-3xl shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110`}>
+                        {company.logo}
+                      </div>
+                    </div>
+
+                    {/* Company Name */}
+                    <h2 className="text-2xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors duration-300">
+                      {company.name}
+                    </h2>
+
+                    {/* Company Description */}
+                    <p className="text-muted-foreground mb-6 leading-relaxed">
+                      {company.description}
+                    </p>
+
+                    {/* Features */}
+                    <div className="space-y-2 mb-8">
+                      {company.features.map((feature, i) => (
+                        <div key={i} className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                          <div className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${company.gradient}`}></div>
+                          <span>{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Select Button */}
+                    <Button 
+                      className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 hover:scale-105"
+                      variant="outline"
+                    >
+                      <span>{t('companySelector.selectButton', 'Vybrat')}</span>
+                      <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Footer CTA */}
+            <div className="text-center animate-fade-in" style={{ animationDelay: '800ms' }}>
+              <div className="p-8 rounded-2xl bg-background/40 backdrop-blur-lg border border-border/50 max-w-md mx-auto">
+                <p className="text-sm text-muted-foreground mb-4">
+                  {t('companySelector.alreadyHaveAccount', 'Už máte účet?')}
+                </p>
+                <Button 
+                  variant="ghost" 
+                  onClick={() => navigate('/login')}
+                  className="text-primary hover:text-primary/80 hover:bg-primary/10 transition-all duration-300"
+                >
+                  {t('companySelector.loginButton', 'Přihlásit se')}
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
