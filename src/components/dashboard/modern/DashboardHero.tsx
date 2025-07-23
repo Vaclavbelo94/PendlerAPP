@@ -81,9 +81,9 @@ const DashboardHero: React.FC = () => {
 
   return (
     <div className="mb-8">
-      {/* Welcome Header */}
+      {/* Welcome Header - Clean and Modern */}
       <div className="text-center mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-2">
+        <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-2">
           {t('dashboard:welcomeBack')}, {username}!
         </h1>
         <p className="text-lg text-muted-foreground">
@@ -91,7 +91,7 @@ const DashboardHero: React.FC = () => {
         </p>
       </div>
 
-      {/* Stats Cards */}
+      {/* Stats Cards - Clean Design */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {stats.map((stat, index) => (
           <motion.div
@@ -100,11 +100,10 @@ const DashboardHero: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1, duration: 0.4 }}
           >
-            <Card className="relative overflow-hidden hover:shadow-lg transition-all duration-300">
-              <div className="absolute top-0 right-0 bg-gradient-to-l from-primary/5 to-transparent w-24 h-24" />
+            <Card className="bg-card/80 backdrop-blur-sm border border-border/50 hover:border-border transition-all duration-300 hover:shadow-lg">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <div className={`p-3 rounded-full ${stat.bgColor}`}>
+                  <div className={`p-3 rounded-xl ${stat.bgColor}`}>
                     <stat.icon className={`h-6 w-6 ${stat.color}`} />
                   </div>
                   {stat.trend && (

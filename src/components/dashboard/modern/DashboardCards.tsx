@@ -41,7 +41,8 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ isDHLUser }) => {
       icon: Calendar,
       color: 'text-blue-600',
       bgColor: 'bg-blue-50',
-      borderColor: 'border-blue-200',
+      borderColor: 'border-blue-100',
+      hoverColor: 'hover:border-blue-200',
       path: '/shifts',
       content: hasShifts ? (
         <div className="space-y-2">
@@ -74,7 +75,8 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ isDHLUser }) => {
       icon: Calculator,
       color: 'text-green-600',
       bgColor: 'bg-green-50',
-      borderColor: 'border-green-200',
+      borderColor: 'border-green-100',
+      hoverColor: 'hover:border-green-200',
       path: '/tax-advisor',
       content: (
         <div className="text-sm text-muted-foreground">
@@ -89,7 +91,8 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ isDHLUser }) => {
       icon: Car,
       color: 'text-purple-600',
       bgColor: 'bg-purple-50',
-      borderColor: 'border-purple-200',
+      borderColor: 'border-purple-100',
+      hoverColor: 'hover:border-purple-200',
       path: '/vehicle',
       content: (
         <div className="text-sm text-muted-foreground">
@@ -104,7 +107,8 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ isDHLUser }) => {
       icon: Languages,
       color: 'text-orange-600',
       bgColor: 'bg-orange-50',
-      borderColor: 'border-orange-200',
+      borderColor: 'border-orange-100',
+      hoverColor: 'hover:border-orange-200',
       path: '/translator',
       content: (
         <div className="text-sm text-muted-foreground">
@@ -119,7 +123,8 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ isDHLUser }) => {
       icon: Activity,
       color: 'text-indigo-600',
       bgColor: 'bg-indigo-50',
-      borderColor: 'border-indigo-200',
+      borderColor: 'border-indigo-100',
+      hoverColor: 'hover:border-indigo-200',
       path: '/profile',
       content: (
         <div className="space-y-2">
@@ -153,20 +158,20 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ isDHLUser }) => {
           className="h-full"
         >
           <Card 
-            className={`h-full transition-all duration-300 hover:shadow-lg cursor-pointer border-2 ${card.borderColor} hover:scale-[1.02]`}
+            className={`h-full transition-all duration-300 hover:shadow-lg cursor-pointer bg-card/80 backdrop-blur-sm border ${card.borderColor} ${card.hoverColor} hover:scale-[1.02] group`}
             onClick={() => navigate(card.path)}
           >
             <CardHeader className="pb-4">
               <div className="flex items-center justify-between">
-                <div className={`p-3 rounded-full ${card.bgColor}`}>
+                <div className={`p-3 rounded-xl ${card.bgColor}`}>
                   <card.icon className={`h-6 w-6 ${card.color}`} />
                 </div>
                 <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
-              <CardTitle className="text-lg font-semibold">
+              <CardTitle className="text-lg font-semibold text-foreground">
                 {card.title}
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-muted-foreground">
                 {card.description}
               </CardDescription>
             </CardHeader>

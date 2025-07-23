@@ -6,161 +6,125 @@
 
 @layer base {
   :root {
-    /* Standard theme colors */
     --background: 0 0% 100%;
-    --foreground: 0 0% 9%;
+    --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 9%;
+    --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 9%;
-    --primary: 262 83% 58%; /* Purple default */
-    --primary-foreground: 0 0% 100%;
-    --secondary: 220 14% 96%;
-    --secondary-foreground: 220 9% 46%;
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 45%;
-    --accent: 262 83% 58%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 62% 50%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 89%;
-    --input: 0 0% 89%;
-    --ring: 262 83% 58%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
     --radius: 0.5rem;
-    --chart-1: 262 83% 58%;
-    --chart-2: 220 14% 96%;
-    --chart-3: 0 0% 20%;
-    --chart-4: 45 100% 60%;
-    --chart-5: 10 100% 50%;
-  }
-
-  /* DHL Theme Override - kompletní žluté téma pro celý web */
-  :root[data-dhl-theme="active"] {
-    /* DHL Primary - Bright Yellow */
-    --primary: 51 100% 50%; /* #FFCC00 - DHL Yellow */
-    --primary-foreground: 0 0% 0%; /* Black text on yellow */
-    
-    /* DHL Secondary - Red */
-    --secondary: 354 100% 42%; /* #D40511 - DHL Red */
-    --secondary-foreground: 0 0% 100%; /* White text on red */
-    
-    /* Accent colors - variations of DHL yellow */
-    --accent: 48 100% 45%; /* Darker yellow for accents */
-    --accent-foreground: 0 0% 0%;
-    
-    /* Destructive - DHL Red */
-    --destructive: 354 100% 42%; /* DHL Red for destructive */
-    --destructive-foreground: 0 0% 100%;
-    
-    /* Focus and interaction colors */
-    --ring: 51 100% 50%; /* DHL Yellow for focus rings */
-    
-    /* Chart colors - DHL palette */
-    --chart-1: 51 100% 50%; /* DHL Yellow */
-    --chart-2: 354 100% 42%; /* DHL Red */
-    --chart-3: 0 0% 0%; /* DHL Black */
-    --chart-4: 48 100% 35%; /* Dark yellow */
-    --chart-5: 51 50% 75%; /* Light yellow */
-    
-    /* Kompletní žluté pozadí - výrazné DHL téma */
-    --background: 51 100% 85%; /* Výrazné žluté pozadí */
-    --foreground: 0 0% 0%; /* Černý text pro kontrast */
-    
-    /* Card colors - žluté odstíny */
-    --card: 51 90% 88%; /* Světlejší žluté pro karty */
-    --card-foreground: 0 0% 0%; /* Černý text */
-    
-    /* Popover colors */
-    --popover: 51 85% 90%; /* Světlé žluté pro popovers */
-    --popover-foreground: 0 0% 0%; /* Černý text */
-    
-    /* Muted colors - tlumené žluté */
-    --muted: 51 60% 80%; /* Tlumené žluté pozadí */
-    --muted-foreground: 0 0% 20%; /* Tmavošedý text */
-    
-    /* Border colors */
-    --border: 48 80% 70%; /* Výrazné žluté bordery */
-    
-    /* Input colors */
-    --input: 51 70% 82%; /* Žluté pozadí pro inputy */
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 10.6% 64.9%;
   }
 
   .dark {
-    --background: 0 0% 7%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 7%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 7%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 262 80% 50%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 15%;
-    --secondary-foreground: 0 0% 65%;
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 65%;
-    --accent: 262 80% 50%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 62% 50%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 15%;
-    --input: 0 0% 15%;
-    --ring: 262 80% 50%;
-    --chart-1: 262 80% 50%;
-    --chart-2: 0 0% 15%;
-    --chart-3: 0 0% 30%;
-    --chart-4: 45 90% 55%;
-    --chart-5: 10 85% 45%;
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 0 0% 98%;
+    --sidebar-primary-foreground: 240 5.9% 10%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 10.6% 64.9%;
   }
 
-  /* DHL Dark Theme Override - tmavý režim s žlutým akcentem */
-  .dark[data-dhl-theme="active"] {
-    /* DHL Primary - Adjust for dark mode */
-    --primary: 48 100% 40%; /* Darker yellow for better contrast */
-    --primary-foreground: 0 0% 0%; /* Black text on yellow */
-    
-    /* DHL Secondary - Red for dark mode */
-    --secondary: 354 85% 35%; /* Darker red #B8040E */
-    --secondary-foreground: 0 0% 100%; /* White text on red */
-    
-    /* Accent colors for dark mode */
-    --accent: 45 90% 35%; /* Darker yellow accent */
-    --accent-foreground: 0 0% 100%; /* White text */
-    
-    /* Destructive - DHL Red */
-    --destructive: 354 85% 35%; /* Darker DHL Red */
-    --destructive-foreground: 0 0% 100%;
-    
-    /* Focus colors */
-    --ring: 48 100% 40%; /* Yellow focus ring */
-    
-    /* Chart colors for dark mode */
-    --chart-1: 48 100% 40%; /* Adjusted yellow */
-    --chart-2: 354 85% 35%; /* Dark red */
-    --chart-3: 0 0% 100%; /* White */
-    --chart-4: 45 90% 25%; /* Very dark yellow */
-    --chart-5: 51 40% 60%; /* Muted yellow */
-    
-    /* Dark mode s žlutým akcentem */
-    --background: 45 25% 12%; /* Tmavé pozadí s žlutým nádechem */
-    --foreground: 0 0% 98%; /* Bílý text */
-    
-    /* Card colors for dark mode */
-    --card: 45 20% 15%; /* Tmavé karty s žlutým nádechem */
-    --card-foreground: 0 0% 98%; /* Bílý text */
-    
-    /* Popover colors */
-    --popover: 45 20% 15%; /* Tmavé popovers */
-    --popover-foreground: 0 0% 98%; /* Bílý text */
-    
-    /* Muted colors */
-    --muted: 45 15% 18%; /* Tlumené tmavé pozadí */
-    --muted-foreground: 0 0% 70%; /* Světlešedý text */
-    
-    /* Border colors */
-    --border: 45 20% 25%; /* Žluté bordery pro tmavý režim */
-    
-    /* Input colors */
-    --input: 45 18% 20%; /* Tmavé inputy s žlutým nádechem */
+  /* DHL Theme - Modern and Clean */
+  [data-dhl-theme="active"] {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 51 100% 50%;
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 0 84% 52%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 51 100% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 51 100% 50%;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 51 100% 50%;
+    --sidebar-primary-foreground: 222.2 84% 4.9%;
+    --sidebar-accent: 51 100% 96%;
+    --sidebar-accent-foreground: 222.2 84% 4.9%;
+    --sidebar-border: 214.3 31.8% 91.4%;
+    --sidebar-ring: 51 100% 50%;
+  }
+
+  [data-dhl-theme="active"] .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 51 100% 50%;
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 0 84% 52%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 51 100% 50%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 51 100% 50%;
+    --sidebar-primary-foreground: 222.2 84% 4.9%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 51 100% 50%;
   }
 }
 
@@ -169,65 +133,22 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-inter;
+    @apply bg-background text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 }
 
-  /* Custom utilities */
-@layer utilities {
-  .font-inter {
-    font-family: 'Inter', system-ui, sans-serif;
-  }
-  
-  .text-balance {
-    text-wrap: balance;
-  }
-  
-  /* Hide scrollbar but keep functionality */
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-  
-  /* DHL Brand specific utilities */
-  .dhl-gradient-primary {
-    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
-  }
-  
-  .dhl-gradient-subtle {
-    background: linear-gradient(135deg, hsl(var(--primary) / 0.1) 0%, hsl(var(--secondary) / 0.1) 100%);
-  }
-  
-  .dhl-border-gradient {
-    border-image: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary))) 1;
-  }
-
-  /* DHL Theme Indicators */
-  .dhl-brand-indicator {
-    @apply bg-gradient-to-r from-primary to-secondary text-primary-foreground;
-  }
-
-  .dhl-hover-effect {
-    @apply transition-all duration-300 hover:shadow-lg hover:shadow-primary/20;
-  }
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-in-out;
 }
 
-/* --- Theme transition (for ThemeProvider/useTheme) --- */
-.no-transition * {
-  transition: none !important;
-}
-
-/* When changing theme, smooth background and foreground transitions */
-.theme-transition, 
-.theme-transition * {
-  transition:
-    background 0.3s cubic-bezier(0.4,0,0.2,1),
-    background-color 0.3s cubic-bezier(0.4,0,0.2,1),
-    color 0.2s cubic-bezier(0.4,0,0.2,1),
-    border-color 0.2s cubic-bezier(0.4,0,0.2,1),
-    box-shadow 0.2s cubic-bezier(0.4,0,0.2,1) !important;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
