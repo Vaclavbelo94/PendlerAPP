@@ -1,4 +1,6 @@
+
 import { useState, useEffect } from 'react';
+import { useTheme } from 'next-themes';
 import { useAuth } from '@/hooks/auth';
 import { useProfileData } from '@/hooks/useProfileData';
 import { isDHLEmployee } from '@/utils/dhlAuthUtils';
@@ -16,6 +18,7 @@ export interface DHLThemeState {
 export const useDHLTheme = () => {
   const { user } = useAuth();
   const { isDHLEmployee: profileDHLStatus, isLoading: isProfileLoading } = useProfileData(user);
+  const { setTheme } = useTheme();
   const [state, setState] = useState<DHLThemeState>({
     isDHLEmployee: false,
     isDHLThemeActive: false,
@@ -31,9 +34,12 @@ export const useDHLTheme = () => {
         canToggleDHLTheme: true // Uživatelé si mohou téma vypnout
       });
       
+      // Vynutit světlé téma pro správné zobrazení žlutého DHL tématu
+      setTheme('light');
+      
       // Aktivace žlutého DHL tématu na celém webu
       document.documentElement.setAttribute('data-dhl-theme', 'active');
-      console.log('🟡 DHL Theme: GLOBÁLNĚ AKTIVOVÁNO pro všechny uživatele');
+      console.log('🟡 DHL Theme: GLOBÁLNĚ AKTIVOVÁNO pro všechny uživatele (forced light theme)');
       
       // Dodatečné informace pro přihlášené uživatele
       if (user) {
@@ -58,7 +64,7 @@ export const useDHLTheme = () => {
     };
 
     activateGlobalDHLTheme();
-  }, [user, profileDHLStatus, isProfileLoading]);
+  }, [user, profileDHLStatus, isProfileLoading, setTheme]);
 
   const toggleDHLTheme = () => {
     if (!state.canToggleDHLTheme) return;
@@ -71,11 +77,13 @@ export const useDHLTheme = () => {
 
     // Přepnutí DHL tématu
     if (newActive) {
+      setTheme('light'); // Vynutit světlé téma při aktivaci
       document.documentElement.setAttribute('data-dhl-theme', 'active');
-      console.log('🟡 DHL Theme: ZNOVU AKTIVOVÁNO uživatelem');
+      console.log('🟡 DHL Theme: ZNOVU AKTIVOVÁNO uživatelem (forced light theme)');
     } else {
       document.documentElement.removeAttribute('data-dhl-theme');
       console.log('⚫ DHL Theme: DEAKTIVOVÁNO uživatelem');
+      // Neměníme téma zpět, necháme uživatele si vybrat
     }
   };
 
