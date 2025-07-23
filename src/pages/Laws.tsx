@@ -85,14 +85,14 @@ const Laws = () => {
               className="mb-8"
             >
               <div className={`flex items-center gap-3 mb-4 ${isMobile ? 'flex-col text-center' : ''}`}>
-                <div className={`${isMobile ? 'p-2' : 'p-3'} rounded-full bg-white/10 backdrop-blur-sm border border-white/20`}>
-                  <Scale className={`${isMobile ? 'h-6 w-6' : 'h-8 w-8'} text-white`} />
+                <div className={`${isMobile ? 'p-2' : 'p-3'} rounded-full bg-primary/10 backdrop-blur-sm border border-primary/20`}>
+                  <Scale className={`${isMobile ? 'h-6 w-6' : 'h-8 w-8'} text-foreground`} />
                 </div>
                 <div>
-                  <h1 className={`${isMobile ? 'text-2xl' : 'text-4xl'} font-bold tracking-tight text-white`}>
+                  <h1 className={`${isMobile ? 'text-2xl' : 'text-4xl'} font-bold tracking-tight text-foreground`}>
                     {isMobile ? t('germanLaws') : t('lawsGuide')}
                   </h1>
-                  <p className={`text-white/80 ${isMobile ? 'text-sm mt-2' : 'text-lg mt-2'} max-w-3xl`}>
+                  <p className={`text-muted-foreground ${isMobile ? 'text-sm mt-2' : 'text-lg mt-2'} max-w-3xl`}>
                     {isMobile ? t('lawsDescriptionMobile') : t('lawsDescription')}
                   </p>
                 </div>
@@ -133,8 +133,8 @@ const Laws = () => {
                 >
                   {filteredLaws.length === 0 ? (
                     <div className="col-span-full text-center py-12">
-                      <div className="text-white/60 text-lg mb-2">{t('noLawsFound')}</div>
-                      <div className="text-white/40 text-sm">{t('tryChangeCategory')}</div>
+                      <div className="text-muted-foreground text-lg mb-2">{t('noLawsFound')}</div>
+                      <div className="text-muted-foreground/60 text-sm">{t('tryChangeCategory')}</div>
                     </div>
                   ) : (
                     filteredLaws.map((law, index) => (

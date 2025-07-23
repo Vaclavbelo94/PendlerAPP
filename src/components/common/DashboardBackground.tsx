@@ -17,17 +17,8 @@ export const DashboardBackground: React.FC<DashboardBackgroundProps> = ({
 
   const getGradientByVariant = () => {
     if (isDHLThemeActive) {
-      // Clean DHL gradients with subtle accent colors
-      switch (variant) {
-        case 'laws':
-          return 'from-background to-background';
-        case 'travel':
-          return 'from-background to-background';
-        case 'shifts':
-          return 'from-background to-background';
-        default:
-          return 'from-background via-background to-accent/5';
-      }
+      // Use same clean DHL gradient for all variants
+      return 'from-background via-background to-accent/5';
     }
     
     // Clean standard gradients
