@@ -27,7 +27,7 @@ const MinimumWage = () => {
           <Euro className="h-6 w-6 text-green-600" />
         </div>
         <div>
-          <h1 className="text-3xl font-bold">{t('minimumWage')}</h1>
+          <h1 className="text-3xl font-bold text-foreground">{t('minimumWage')}</h1>
           <Badge variant="outline" className="mt-2">
             {t('updated')}: {formatDate('2025-05-15')}
           </Badge>
@@ -37,7 +37,7 @@ const MinimumWage = () => {
       <div className="grid gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>{t('currentMinimumWage')}</CardTitle>
+            <CardTitle className="text-foreground">{t('currentMinimumWage')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600 mb-2">12,41 € {t('perHour')}</div>
@@ -49,10 +49,10 @@ const MinimumWage = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>{t('whoIsEntitled')}</CardTitle>
+            <CardTitle className="text-foreground">{t('whoIsEntitled')}</CardTitle>
           </CardHeader>
           <CardContent>
-            <ul className="list-disc pl-6 space-y-2">
+            <ul className="list-disc pl-6 space-y-2 text-foreground">
               <li>{t('allEmployeesOver18')}</li>
               <li>{t('partTimeWorkers')}</li>
               <li>{t('temporaryWorkers')}</li>
@@ -63,10 +63,10 @@ const MinimumWage = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>{t('exceptions')}</CardTitle>
+            <CardTitle className="text-foreground">{t('exceptions')}</CardTitle>
           </CardHeader>
           <CardContent>
-            <ul className="list-disc pl-6 space-y-2">
+            <ul className="list-disc pl-6 space-y-2 text-foreground">
               <li>{t('minorsWithoutEducation')}</li>
               <li>{t('volunteers')}</li>
               <li>{t('mandatoryInterns')}</li>
@@ -77,18 +77,18 @@ const MinimumWage = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>{t('practicalInfo')}</CardTitle>
+            <CardTitle className="text-foreground">{t('practicalInfo')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div>
-                <h4 className="font-semibold mb-2">{t('complianceControl')}</h4>
+                <h4 className="font-semibold mb-2 text-foreground">{t('complianceControl')}</h4>
                 <p className="text-sm text-muted-foreground">
                   {t('complianceControlDescription')}
                 </p>
               </div>
               <div>
-                <h4 className="font-semibold mb-2">{t('reportViolations')}</h4>
+                <h4 className="font-semibold mb-2 text-foreground">{t('reportViolations')}</h4>
                 <p className="text-sm text-muted-foreground">
                   {t('reportViolationsDescription')}
                 </p>

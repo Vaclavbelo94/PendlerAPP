@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { ArrowLeft, Briefcase } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -26,7 +27,7 @@ const WorkContract = () => {
           <Briefcase className="h-6 w-6 text-blue-600" />
         </div>
         <div>
-          <h1 className="text-3xl font-bold">{t('workContract')}</h1>
+          <h1 className="text-3xl font-bold text-foreground">{t('workContract')}</h1>
           <Badge variant="outline" className="mt-2">
             {t('updated')}: {formatDate('2025-03-18')}
           </Badge>
@@ -36,10 +37,10 @@ const WorkContract = () => {
       <div className="grid gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>{t('contractRequirements')}</CardTitle>
+            <CardTitle className="text-foreground">{t('contractRequirements')}</CardTitle>
           </CardHeader>
           <CardContent>
-            <ul className="list-disc pl-6 space-y-2">
+            <ul className="list-disc pl-6 space-y-2 text-foreground">
               <li>{t('contractPartyIdentification')}</li>
               <li>{t('workStartDate')}</li>
               <li>{t('jobDescription')}</li>
@@ -53,10 +54,10 @@ const WorkContract = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>{t('probationPeriod')}</CardTitle>
+            <CardTitle className="text-foreground">{t('probationPeriod')}</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="mb-4">
+            <p className="mb-4 text-foreground">
               {t('probationPeriodDescription')}
             </p>
           </CardContent>
@@ -64,10 +65,10 @@ const WorkContract = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>{t('typesOfEmployment')}</CardTitle>
+            <CardTitle className="text-foreground">{t('typesOfEmployment')}</CardTitle>
           </CardHeader>
           <CardContent>
-            <ul className="list-disc pl-6 space-y-2">
+            <ul className="list-disc pl-6 space-y-2 text-foreground">
               <li><strong>{t('fullTime')}:</strong> {t('fullTimeDesc')}</li>
               <li><strong>{t('partTime')}:</strong> {t('partTimeDesc')}</li>
               <li><strong>{t('minijob')}:</strong> {t('minijobDesc')}</li>
