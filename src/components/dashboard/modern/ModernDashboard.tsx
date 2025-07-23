@@ -9,6 +9,7 @@ import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 import DashboardBackground from '@/components/common/DashboardBackground';
 import DashboardHero from './DashboardHero';
 import DashboardCards from './DashboardCards';
+import DashboardStats from './DashboardStats';
 import DashboardDHLSection from './DashboardDHLSection';
 import { useOnboarding } from '@/hooks/useOnboarding';
 
@@ -54,7 +55,7 @@ const ModernDashboard: React.FC = () => {
             </motion.div>
           )}
 
-          {/* Main Dashboard Cards */}
+          {/* Main Dashboard Cards - 2x2 Grid */}
           {!shouldShowOnboarding && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -62,6 +63,17 @@ const ModernDashboard: React.FC = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
             >
               <DashboardCards isDHLUser={!!unifiedUser?.isDHLEmployee} />
+            </motion.div>
+          )}
+
+          {/* Expandable Statistics Section */}
+          {!shouldShowOnboarding && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+            >
+              <DashboardStats />
             </motion.div>
           )}
         </div>

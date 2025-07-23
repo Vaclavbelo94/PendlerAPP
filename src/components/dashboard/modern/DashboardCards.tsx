@@ -26,158 +26,80 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ isDHLUser }) => {
   const { user } = useAuth();
   const { t } = useTranslation(['dashboard', 'common']);
   const navigate = useNavigate();
-  const { shifts } = useShiftsData({ userId: user?.id });
 
-  const recentShifts = shifts.slice(0, 3);
-  const hasShifts = shifts.length > 0;
-
-  const cards = [
+  // Main 2x2 grid widgets - simplified to 4 main functions
+  const mainWidgets = [
     {
       id: 'shifts',
       title: t('dashboard:shiftManagement'),
-      description: hasShifts 
-        ? t('dashboard:shiftsCount', { count: shifts.length })
-        : t('dashboard:noShiftsYet'),
+      description: t('dashboard:manageShifts'),
       icon: Calendar,
       color: 'text-blue-600',
       bgColor: 'bg-blue-50',
       borderColor: 'border-blue-100',
       hoverColor: 'hover:border-blue-200',
-      path: '/shifts',
-      content: hasShifts ? (
-        <div className="space-y-2">
-          {recentShifts.map((shift, index) => (
-            <div key={shift.id} className="flex justify-between items-center text-sm">
-              <span className="text-muted-foreground">
-                {new Date(shift.date).toLocaleDateString('cs-CZ')}
-              </span>
-              <Badge variant="secondary" className="text-xs">
-                {shift.type}
-              </Badge>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <Button 
-          onClick={() => navigate('/shifts')} 
-          variant="outline" 
-          className="w-full"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          {t('dashboard:addFirstShift')}
-        </Button>
-      )
+      path: '/shifts'
     },
     {
       id: 'tax',
       title: t('dashboard:taxAdvisor'),
-      description: t('dashboard:taxAdvisorDescription'),
+      description: t('dashboard:optimizeYourTaxes'),
       icon: Calculator,
       color: 'text-green-600',
       bgColor: 'bg-green-50',
       borderColor: 'border-green-100',
       hoverColor: 'hover:border-green-200',
-      path: '/tax-advisor',
-      content: (
-        <div className="text-sm text-muted-foreground">
-          {t('dashboard:optimizeYourTaxes')}
-        </div>
-      )
+      path: '/tax-advisor'
     },
     {
       id: 'vehicle',
       title: t('dashboard:vehicleManagement'),
-      description: t('dashboard:vehicleDescription'),
+      description: t('dashboard:manageYourVehicles'),
       icon: Car,
       color: 'text-purple-600',
       bgColor: 'bg-purple-50',
       borderColor: 'border-purple-100',
       hoverColor: 'hover:border-purple-200',
-      path: '/vehicle',
-      content: (
-        <div className="text-sm text-muted-foreground">
-          {t('dashboard:manageYourVehicles')}
-        </div>
-      )
+      path: '/vehicle'
     },
     {
       id: 'translator',
       title: t('dashboard:languageTools'),
-      description: t('dashboard:translatorDescription'),
+      description: t('dashboard:translateAndLearn'),
       icon: Languages,
       color: 'text-orange-600',
       bgColor: 'bg-orange-50',
       borderColor: 'border-orange-100',
       hoverColor: 'hover:border-orange-200',
-      path: '/translator',
-      content: (
-        <div className="text-sm text-muted-foreground">
-          {t('dashboard:translateAndLearn')}
-        </div>
-      )
-    },
-    {
-      id: 'activity',
-      title: t('dashboard:recentActivity'),
-      description: t('dashboard:activityDescription'),
-      icon: Activity,
-      color: 'text-indigo-600',
-      bgColor: 'bg-indigo-50',
-      borderColor: 'border-indigo-100',
-      hoverColor: 'hover:border-indigo-200',
-      path: '/profile',
-      content: (
-        <div className="space-y-2">
-          {hasShifts ? (
-            <>
-              <div className="text-sm text-muted-foreground">
-                {t('dashboard:lastShift')}: {new Date(shifts[0]?.date).toLocaleDateString('cs-CZ')}
-              </div>
-              <div className="text-sm text-muted-foreground">
-                {t('dashboard:totalShifts')}: {shifts.length}
-              </div>
-            </>
-          ) : (
-            <div className="text-sm text-muted-foreground">
-              {t('dashboard:noActivityYet')}
-            </div>
-          )}
-        </div>
-      )
+      path: '/translator'
     }
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {cards.map((card, index) => (
+    <div className="grid grid-cols-2 gap-4 md:gap-6">
+      {mainWidgets.map((widget, index) => (
         <motion.div
-          key={card.id}
+          key={widget.id}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.1, duration: 0.4 }}
           className="h-full"
         >
           <Card 
-            className={`h-full transition-all duration-300 hover:shadow-lg cursor-pointer bg-card/80 backdrop-blur-sm border ${card.borderColor} ${card.hoverColor} hover:scale-[1.02] group`}
-            onClick={() => navigate(card.path)}
+            className={`h-full transition-all duration-300 hover:shadow-lg cursor-pointer bg-card/80 backdrop-blur-sm border ${widget.borderColor} ${widget.hoverColor} hover:scale-[1.02] group min-h-[140px]`}
+            onClick={() => navigate(widget.path)}
           >
-            <CardHeader className="pb-4">
-              <div className="flex items-center justify-between">
-                <div className={`p-3 rounded-xl ${card.bgColor}`}>
-                  <card.icon className={`h-6 w-6 ${card.color}`} />
-                </div>
-                <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+            <CardContent className="p-4 md:p-6 flex flex-col items-center justify-center h-full text-center">
+              <div className={`p-3 rounded-xl ${widget.bgColor} mb-4`}>
+                <widget.icon className={`h-8 w-8 ${widget.color}`} />
               </div>
-              <CardTitle className="text-lg font-semibold text-foreground">
-                {card.title}
+              <CardTitle className="text-base md:text-lg font-semibold text-foreground mb-2">
+                {widget.title}
               </CardTitle>
-              <CardDescription className="text-muted-foreground">
-                {card.description}
+              <CardDescription className="text-sm text-muted-foreground">
+                {widget.description}
               </CardDescription>
-            </CardHeader>
-            
-            <CardContent className="pt-0">
-              {card.content}
+              <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity mt-2" />
             </CardContent>
           </Card>
         </motion.div>
