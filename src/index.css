@@ -66,34 +66,34 @@
     --sidebar-ring: 217.2 10.6% 64.9%;
   }
 
-  /* DHL Theme - Modern and Clean */
+  /* DHL Theme - Yellow Background with Black Text */
   [data-dhl-theme="active"] {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --background: 51 100% 90%;
+    --foreground: 0 0% 0%;
+    --card: 51 100% 95%;
+    --card-foreground: 0 0% 0%;
+    --popover: 51 100% 95%;
+    --popover-foreground: 0 0% 0%;
     --primary: 51 100% 50%;
-    --primary-foreground: 222.2 84% 4.9%;
-    --secondary: 0 84% 52%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 0 0% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 51 100% 96%;
-    --accent-foreground: 222.2 84% 4.9%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 51 50% 80%;
+    --secondary-foreground: 0 0% 0%;
+    --muted: 51 30% 85%;
+    --muted-foreground: 0 0% 30%;
+    --accent: 51 100% 85%;
+    --accent-foreground: 0 0% 0%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 51 30% 75%;
+    --input: 51 100% 98%;
     --ring: 51 100% 50%;
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-background: 51 100% 88%;
+    --sidebar-foreground: 0 0% 0%;
     --sidebar-primary: 51 100% 50%;
-    --sidebar-primary-foreground: 222.2 84% 4.9%;
-    --sidebar-accent: 51 100% 96%;
-    --sidebar-accent-foreground: 222.2 84% 4.9%;
-    --sidebar-border: 214.3 31.8% 91.4%;
+    --sidebar-primary-foreground: 0 0% 0%;
+    --sidebar-accent: 51 80% 85%;
+    --sidebar-accent-foreground: 0 0% 0%;
+    --sidebar-border: 51 30% 75%;
     --sidebar-ring: 51 100% 50%;
   }
 
