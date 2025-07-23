@@ -62,13 +62,13 @@ export const LawsMobileCarousel: React.FC<LawsMobileCarouselProps> = ({
           size="icon"
           onClick={goToPrevious}
           disabled={allCategories.length <= 1}
-          className="h-8 w-8 bg-white/10 backdrop-blur-sm border border-white/20"
+          className="h-8 w-8 bg-primary/10 backdrop-blur-sm border border-primary/20"
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
         
         <div className="flex-1 text-center">
-          <h2 className="text-lg font-semibold text-white mb-1">
+          <h2 className="text-lg font-semibold text-foreground mb-1">
             {currentCategory?.label}
           </h2>
           <div className="flex justify-center space-x-1">
@@ -77,7 +77,7 @@ export const LawsMobileCarousel: React.FC<LawsMobileCarouselProps> = ({
                 key={index}
                 onClick={() => onCategoryChange(allCategories[index].id)}
                 className={`w-2 h-2 rounded-full transition-colors ${
-                  index === currentIndex ? 'bg-primary' : 'bg-white/30'
+                  index === currentIndex ? 'bg-primary' : 'bg-primary/30'
                 }`}
               />
             ))}
@@ -89,7 +89,7 @@ export const LawsMobileCarousel: React.FC<LawsMobileCarouselProps> = ({
           size="icon"
           onClick={goToNext}
           disabled={allCategories.length <= 1}
-          className="h-8 w-8 bg-white/10 backdrop-blur-sm border border-white/20"
+          className="h-8 w-8 bg-primary/10 backdrop-blur-sm border border-primary/20"
         >
           <ChevronRight className="h-4 w-4" />
         </Button>
@@ -130,7 +130,7 @@ export const LawsMobileCarousel: React.FC<LawsMobileCarouselProps> = ({
         </AnimatePresence>
       </div>
 
-      <div className="text-center text-sm text-white/70 px-4">
+      <div className="text-center text-sm text-muted-foreground px-4">
         {currentIndex + 1} z {allCategories.length} • {filteredLaws.length} {t('lawsCount')}
       </div>
     </div>

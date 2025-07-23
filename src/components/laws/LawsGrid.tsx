@@ -35,8 +35,8 @@ const LawsGrid: React.FC<LawsGridProps> = ({ laws }) => {
         animate={{ opacity: 1 }}
         className="text-center py-12"
       >
-        <div className="text-white/60 text-lg mb-2">{t('noLawsFound')}</div>
-        <div className="text-white/40 text-sm">{t('tryChangeCategory')}</div>
+        <div className="text-muted-foreground text-lg mb-2">{t('noLawsFound')}</div>
+        <div className="text-muted-foreground/60 text-sm">{t('tryChangeCategory')}</div>
       </motion.div>
     );
   }

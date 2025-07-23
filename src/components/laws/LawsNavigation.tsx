@@ -68,7 +68,7 @@ export const LawsNavigation: React.FC<LawsNavigationProps> = ({
               onClick={() => onSectionChange(section.id)}
               className={cn(
                 "transition-all duration-300 hover:scale-105",
-                "bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:text-primary",
+                "bg-primary/10 backdrop-blur-sm border border-primary/20 text-foreground hover:text-primary",
                 isActive && "bg-primary/20 border-primary/30 shadow-lg scale-105"
               )}
             >
