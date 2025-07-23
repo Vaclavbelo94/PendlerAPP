@@ -64,5 +64,8 @@
   "activityDescription": "Übersicht der letzten Aktivität",
   "lastShift": "Letzte Schicht",
   "totalShifts": "Schichten insgesamt",
-  "noActivityYet": "Noch keine Aktivität"
+  "noActivityYet": "Noch keine Aktivität",
+  "statistics": "Statistiken",
+  "manageShifts": "Verwalten Sie Ihre Arbeitsschichten",
+  "user": "Benutzer"
 }

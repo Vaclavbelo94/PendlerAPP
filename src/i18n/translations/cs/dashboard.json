@@ -64,5 +64,8 @@
   "activityDescription": "Přehled nedávné aktivity",
   "lastShift": "Poslední směna",
   "totalShifts": "Celkem směn",
-  "noActivityYet": "Zatím žádná aktivita"
+  "noActivityYet": "Zatím žádná aktivita",
+  "statistics": "Statistiky",
+  "manageShifts": "Spravujte své pracovní směny",
+  "user": "uživatel"
 }

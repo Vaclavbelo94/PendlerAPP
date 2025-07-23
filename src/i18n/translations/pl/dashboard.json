@@ -64,5 +64,8 @@
   "activityDescription": "Przegląd ostatniej aktywności",
   "lastShift": "Ostatnia zmiana",
   "totalShifts": "Łącznie zmian",
-  "noActivityYet": "Brak aktywności"
+  "noActivityYet": "Brak aktywności",
+  "statistics": "Statystyki",
+  "manageShifts": "Zarządzaj swoimi zmianami roboczymi",
+  "user": "użytkownik"
 }
