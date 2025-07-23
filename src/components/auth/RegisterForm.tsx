@@ -16,7 +16,7 @@ const RegisterForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { signUp } = useAuth();
-  const { t } = useTranslation('auth');
+  const { t, i18n } = useTranslation('auth');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,6 +96,14 @@ const RegisterForm = () => {
     }
   };
 
+  const getEmailPlaceholder = () => {
+    switch (i18n.language) {
+      case 'de': return 'ihre@email.de';
+      case 'pl': return 'twoj@email.pl';
+      default: return 'vas@email.cz';
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid gap-2">
@@ -114,7 +122,7 @@ const RegisterForm = () => {
         <Input
           id="email"
           type="email"
-          placeholder="vas@email.cz"
+          placeholder={getEmailPlaceholder()}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
