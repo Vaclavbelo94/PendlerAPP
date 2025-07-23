@@ -1,226 +1,147 @@
+
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { AlertTriangle, CheckCircle, Clock, MapPin, RefreshCw, Navigation } from 'lucide-react';
-import { useUserAddresses } from '@/hooks/useUserAddresses';
-import { useAuthState } from '@/hooks/useAuthState';
-import { trafficService } from '@/services/trafficService';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { 
+  Navigation, 
+  RefreshCw, 
+  AlertTriangle, 
+  CheckCircle, 
+  Clock, 
+  MapPin,
+  TrendingUp,
+  Settings
+} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
+import { useUserAddresses } from '@/hooks/useUserAddresses';
+import { trafficService } from '@/services/trafficService';
+import { useAuth } from '@/hooks/auth';
 import { toast } from 'sonner';
 
 interface TrafficProblem {
-  route: string;
   severity: 'low' | 'medium' | 'high';
-  description: string;
-  delay: string;
+  message: string;
+  route: string;
   recommendations: string[];
 }
 
 const HomeWorkTrafficMonitor: React.FC = () => {
-  const { homeAddress, workAddress, loading: addressesLoading } = useUserAddresses();
-  const { user } = useAuthState();
   const { t } = useTranslation('travel');
-  const [trafficProblems, setTrafficProblems] = useState<TrafficProblem[]>([]);
+  const { user } = useAuth();
+  const { homeAddress, workAddress, loading: addressesLoading } = useUserAddresses();
+  const [problems, setProblems] = useState<TrafficProblem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
 
   const checkTrafficProblems = async () => {
-    if (!homeAddress || !workAddress || !user?.id) {
-      toast.error(t('missingAddresses'));
-      return;
-    }
-
+    if (!homeAddress || !workAddress || !user) return;
+    
     setIsLoading(true);
     try {
-      // Kontrola dopravy domov → práce
-      const homeToWorkData = await trafficService.getTrafficData(
-        homeAddress,
-        workAddress,
-        'driving',
-        ['driving'],
-        user.id
-      );
+      const routes = [
+        { origin: homeAddress, destination: workAddress, name: t('homeToWork') },
+        { origin: workAddress, destination: homeAddress, name: t('workToHome') }
+      ];
 
-      // Kontrola dopravy práce → domov
-      const workToHomeData = await trafficService.getTrafficData(
-        workAddress,
-        homeAddress,
-        'driving',
-        ['driving'],
-        user.id
-      );
+      const foundProblems: TrafficProblem[] = [];
 
-      const problems: TrafficProblem[] = [];
+      for (const route of routes) {
+        try {
+          const data = await trafficService.getTrafficData(
+            route.origin,
+            route.destination,
+            'driving',
+            ['driving'],
+            user.id
+          );
 
-      // Analyzuj trasu domov → práce
-      const homeToWorkRoutes = homeToWorkData.routes || homeToWorkData.multi_modal_results?.[0]?.routes || [];
-      homeToWorkRoutes.forEach((route, index) => {
-        const routeProblems = analyzeRouteProblems(route, t('homeToWork'), index);
-        problems.push(...routeProblems);
-      });
+          if (data.routes && data.routes.length > 0) {
+            const mainRoute = data.routes[0];
+            
+            // Check for serious traffic problems
+            if (mainRoute.warnings && mainRoute.warnings.length > 0) {
+              foundProblems.push({
+                severity: 'high',
+                message: t('seriousTrafficEvents'),
+                route: route.name,
+                recommendations: [t('avoidRoute'), t('tryAlternative'), t('waitForResolution')]
+              });
+            }
 
-      // Analyzuj trasu práce → domov  
-      const workToHomeRoutes = workToHomeData.routes || workToHomeData.multi_modal_results?.[0]?.routes || [];
-      workToHomeRoutes.forEach((route, index) => {
-        const routeProblems = analyzeRouteProblems(route, t('workToHome'), index);
-        problems.push(...routeProblems);
-      });
+            // Check for incidents
+            if (mainRoute.incidents && mainRoute.incidents.length > 0) {
+              foundProblems.push({
+                severity: 'medium',
+                message: t('closuresOrAccidents'),
+                route: route.name,
+                recommendations: [t('useAlternativeRoute'), t('checkCurrentSituation')]
+              });
+            }
 
-      setTrafficProblems(problems);
-      setLastUpdated(new Date());
-      
-      if (problems.length === 0) {
-        toast.success(t('noTrafficProblemsFound'));
-      } else {
-        toast.warning(t('trafficProblemsFound', { count: problems.length }));
+            // Check traffic conditions
+            if (mainRoute.traffic_conditions === 'heavy') {
+              foundProblems.push({
+                severity: 'medium',
+                message: t('heavyTrafficOnRoute'),
+                route: route.name,
+                recommendations: [t('leaveEarlier'), t('tryAlternativeRoute')]
+              });
+            }
+          }
+        } catch (error) {
+          console.error(`Error checking traffic for ${route.name}:`, error);
+        }
       }
+
+      setProblems(foundProblems);
+      setLastUpdate(new Date());
     } catch (error) {
-      console.error(t('trafficCheckError'), error);
-      toast.error(t('trafficCheckFailed'));
+      console.error('Error checking traffic:', error);
+      toast.error(t('trafficCheckError'));
     } finally {
       setIsLoading(false);
     }
   };
 
-  const analyzeRouteProblems = (route: any, routeName: string, routeIndex: number): TrafficProblem[] => {
-    const problems: TrafficProblem[] = [];
-    const routeLabel = route.summary ? `${routeName} (${route.summary})` : `${routeName} - trasa ${routeIndex + 1}`;
-    
-    // ENHANCED: Check for route extension (longer than usual)
-    if (route.base_duration && route.duration) {
-      const currentMinutes = parseInt(route.duration.match(/\d+/)?.[0] || '0');
-      const baseMinutes = parseInt(route.base_duration.match(/\d+/)?.[0] || '0');
-      const delayMinutes = currentMinutes - baseMinutes;
-      const extensionPercent = baseMinutes > 0 ? Math.round((delayMinutes / baseMinutes) * 100) : 0;
-      
-      if (extensionPercent >= 30 || delayMinutes >= 15) {
-        problems.push({
-          route: routeLabel,
-          severity: 'high',
-          description: `Trasa je o ${extensionPercent}% delší než obvykle (+${delayMinutes} min)`,
-          delay: route.duration,
-          recommendations: [t('leaveEarlier'), t('tryAlternativeRoute'), 'Zkontrolujte dopravní situaci']
-        });
-      } else if (extensionPercent >= 15 || delayMinutes >= 8) {
-        problems.push({
-          route: routeLabel,
-          severity: 'medium',
-          description: `Trasa je o ${extensionPercent}% delší než obvykle (+${delayMinutes} min)`,
-          delay: route.duration,
-          recommendations: [t('leaveSlightlyEarlier'), t('monitorTraffic')]
-        });
-      } else if (extensionPercent >= 5 || delayMinutes >= 3) {
-        problems.push({
-          route: routeLabel,
-          severity: 'low',
-          description: `Mírné zpoždění na trase (+${delayMinutes} min)`,
-          delay: route.duration,
-          recommendations: [t('monitorTraffic')]
-        });
-      }
-    }
-    
-    // Check for high-priority incidents
-    if (route.incidents && route.incidents.length > 0) {
-      const highPriorityIncidents = route.incidents.filter((incident: any) => incident.severity === 'high');
-      if (highPriorityIncidents.length > 0) {
-        problems.push({
-          route: routeLabel,
-          severity: 'high',
-          description: t('seriousTrafficEvents'),
-          delay: route.duration_in_traffic || route.duration,
-          recommendations: [t('avoidRoute'), t('tryAlternative'), t('waitForResolution')]
-        });
-      }
-    }
-    
-    // Check for warnings (closures, etc.)
-    if (route.warnings && route.warnings.length > 0) {
-      const hasClosures = route.warnings.some((warning: string) => 
-        warning.toLowerCase().includes('uzavřen') || 
-        warning.toLowerCase().includes('closure') ||
-        warning.toLowerCase().includes('nehoda') ||
-        warning.toLowerCase().includes('blocked') ||
-        warning.toLowerCase().includes('gesperrt')
-      );
-      
-      if (hasClosures) {
-        problems.push({
-          route: routeLabel,
-          severity: 'high',
-          description: t('closuresOrAccidents'),
-          delay: route.duration_in_traffic || route.duration,
-          recommendations: [t('useAlternativeRoute'), t('checkCurrentSituation')]
-        });
-      } else {
-        problems.push({
-          route: routeLabel,
-          severity: 'medium',
-          description: t('trafficWarningsOnRoute'),
-          delay: route.duration_in_traffic || route.duration,
-          recommendations: [t('monitorTraffic'), t('beCautious')]
-        });
-      }
-    }
-    
-    // Check traffic conditions with enhanced sensitivity
-    if (route.traffic_conditions === 'heavy') {
-      problems.push({
-        route: routeLabel,
-        severity: 'high',
-        description: t('heavyTrafficOnRoute'),
-        delay: route.duration_in_traffic || route.duration,
-        recommendations: [t('leaveEarlier'), t('tryAlternativeRoute')]
-      });
-    } else if (route.traffic_conditions === 'normal') {
-      // Enhanced detection - 'normal' now often means there are issues
-      problems.push({
-        route: routeLabel,
-        severity: 'medium',
-        description: 'Zpomalený provoz na trase',
-        delay: route.duration_in_traffic || route.duration,
-        recommendations: [t('leaveSlightlyEarlier'), t('monitorTraffic')]
-      });
-    }
-    
-    return problems;
-  };
-
   useEffect(() => {
-    if (homeAddress && workAddress && user?.id) {
+    if (homeAddress && workAddress) {
       checkTrafficProblems();
     }
-  }, [homeAddress, workAddress, user?.id]);
+  }, [homeAddress, workAddress]);
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case 'high': return 'bg-red-500/10 text-red-700 border-red-200';
-      case 'medium': return 'bg-yellow-500/10 text-yellow-700 border-yellow-200';
-      case 'low': return 'bg-blue-500/10 text-blue-700 border-blue-200';
-      default: return 'bg-gray-500/10 text-gray-700 border-gray-200';
+      case 'high': return 'bg-red-500/10 text-red-700 border-red-200 dark:text-red-400';
+      case 'medium': return 'bg-yellow-500/10 text-yellow-700 border-yellow-200 dark:text-yellow-400';
+      case 'low': return 'bg-blue-500/10 text-blue-700 border-blue-200 dark:text-blue-400';
+      default: return 'bg-gray-500/10 text-gray-700 border-gray-200 dark:text-gray-400';
     }
   };
 
   const getSeverityIcon = (severity: string) => {
     switch (severity) {
-      case 'high': return AlertTriangle;
-      case 'medium': return Clock;
-      default: return Navigation;
+      case 'high': return <AlertTriangle className="h-4 w-4" />;
+      case 'medium': return <Clock className="h-4 w-4" />;
+      case 'low': return <TrendingUp className="h-4 w-4" />;
+      default: return <CheckCircle className="h-4 w-4" />;
     }
   };
 
   if (addressesLoading) {
     return (
-      <Card className="animate-pulse">
+      <Card>
         <CardHeader>
-          <div className="h-6 bg-gray-200 rounded w-1/3"></div>
+          <CardTitle className="flex items-center gap-2">
+            <Navigation className="h-5 w-5" />
+            {t('trafficControlTitle')}
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            <div className="h-16 bg-gray-100 rounded"></div>
-            <div className="h-16 bg-gray-100 rounded"></div>
+          <div className="flex items-center justify-center py-8">
+            <RefreshCw className="h-6 w-6 animate-spin text-muted-foreground" />
           </div>
         </CardContent>
       </Card>
@@ -232,136 +153,155 @@ const HomeWorkTrafficMonitor: React.FC = () => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <MapPin className="h-5 w-5 text-primary" />
+            <Navigation className="h-5 w-5" />
             {t('trafficControlTitle')}
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-8">
-            <MapPin className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <p className="text-muted-foreground mb-4">
+          <Alert>
+            <Settings className="h-4 w-4" />
+            <AlertDescription>
               {t('addressesRequired')}
-            </p>
-            <p className="text-sm text-muted-foreground">
-              {t('setupAddresses')}
-            </p>
-          </div>
+            </AlertDescription>
+          </Alert>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Navigation className="h-5 w-5 text-primary" />
-            {t('trafficMonitor')}
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-lg bg-green-500/10 text-green-700 dark:text-green-400">
+            <Navigation className="h-5 w-5" />
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={checkTrafficProblems}
-            disabled={isLoading}
-            className="flex items-center gap-2"
-          >
-            <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
-            {t('update')}
-          </Button>
-        </CardTitle>
-        {lastUpdated && (
-          <p className="text-sm text-muted-foreground">
-            {t('lastUpdated')}: {lastUpdated.toLocaleTimeString('cs-CZ')}
-          </p>
-        )}
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          {/* Zobrazení adres */}
-          <div className="grid gap-2 p-4 bg-muted/50 rounded-lg">
-            <div className="flex items-center gap-2 text-sm">
-              <MapPin className="h-4 w-4 text-green-600" />
-              <span className="font-medium">{t('homeAddress')}:</span> {homeAddress}
-            </div>
-            <div className="flex items-center gap-2 text-sm">
-              <MapPin className="h-4 w-4 text-blue-600" />
-              <span className="font-medium">{t('workAddress')}:</span> {workAddress}
-            </div>
+          <div>
+            <h2 className="text-xl font-semibold text-foreground">
+              {t('trafficControlTitle')}
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              {t('trafficMonitor')}
+            </p>
           </div>
+        </div>
+        
+        <Button
+          onClick={checkTrafficProblems}
+          disabled={isLoading}
+          variant="outline"
+          size="sm"
+          className="gap-2"
+        >
+          <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+          {t('update')}
+        </Button>
+      </div>
 
-          {/* Dopravní problémy */}
-          {trafficProblems.length === 0 ? (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-lg"
-            >
-              <CheckCircle className="h-6 w-6 text-green-600" />
-              <div>
-                <h4 className="font-medium text-green-800">{t('allGood')}</h4>
-                <p className="text-sm text-green-700">
-                  {t('noSignificantProblems')}
-                </p>
-              </div>
-            </motion.div>
+      {/* Route Status Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <MapPin className="h-4 w-4" />
+              {t('homeAddress')}
+            </CardTitle>
+            <CardDescription className="text-sm truncate">
+              {homeAddress}
+            </CardDescription>
+          </CardHeader>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <MapPin className="h-4 w-4" />
+              {t('workAddress')}
+            </CardTitle>
+            <CardDescription className="text-sm truncate">
+              {workAddress}
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+
+      {/* Status Overview */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <CheckCircle className="h-5 w-5" />
+              Stav dopravy
+            </CardTitle>
+            <div className="flex items-center gap-2">
+              <Badge variant={problems.length > 0 ? "destructive" : "default"}>
+                {problems.length > 0 ? `${problems.length} problémů` : t('allGood')}
+              </Badge>
+              {lastUpdate && (
+                <span className="text-xs text-muted-foreground">
+                  {t('lastUpdated')}: {lastUpdate.toLocaleTimeString()}
+                </span>
+              )}
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {problems.length === 0 ? (
+            <div className="text-center py-8">
+              <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
+              <p className="text-muted-foreground">
+                {t('noSignificantProblems')}
+              </p>
+            </div>
           ) : (
-            <div className="space-y-3">
-              <h4 className="font-medium text-foreground flex items-center gap-2">
-                <AlertTriangle className="h-4 w-4 text-orange-500" />
-                {t('foundTrafficProblems')} ({trafficProblems.length})
-              </h4>
+            <div className="space-y-4">
+              <h3 className="font-semibold text-foreground">
+                {t('foundTrafficProblems')}
+              </h3>
               
-              {trafficProblems.map((problem, index) => {
-                const SeverityIcon = getSeverityIcon(problem.severity);
-                
-                return (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className={`p-4 rounded-lg border ${getSeverityColor(problem.severity)}`}
-                  >
+              {problems.map((problem, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <Alert className={getSeverityColor(problem.severity)}>
                     <div className="flex items-start gap-3">
-                      <SeverityIcon className="h-5 w-5 mt-0.5 flex-shrink-0" />
+                      {getSeverityIcon(problem.severity)}
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <h5 className="font-medium">{problem.route}</h5>
+                          <span className="font-medium">{problem.route}</span>
                           <Badge variant="outline" className="text-xs">
-                            {problem.severity === 'high' ? t('high') : 
-                             problem.severity === 'medium' ? t('medium') : t('low')}
+                            {t(problem.severity)}
                           </Badge>
                         </div>
-                        <p className="text-sm mb-2">{problem.description}</p>
+                        <AlertDescription className="mb-3">
+                          {problem.message}
+                        </AlertDescription>
                         
-                        <div className="flex items-center gap-4 text-xs">
-                          <span className="flex items-center gap-1">
-                            <Clock className="h-3 w-3" />
-                            {problem.delay}
-                          </span>
+                        <div className="space-y-1">
+                          <p className="text-sm font-medium">{t('recommendations')}:</p>
+                          <ul className="text-sm space-y-1">
+                            {problem.recommendations.map((rec, i) => (
+                              <li key={i} className="flex items-center gap-2">
+                                <span className="w-1 h-1 bg-current rounded-full" />
+                                {rec}
+                              </li>
+                            ))}
+                          </ul>
                         </div>
-                        
-                        {problem.recommendations.length > 0 && (
-                          <div className="mt-2">
-                            <p className="text-xs font-medium mb-1">{t('recommendations')}:</p>
-                            <ul className="text-xs list-disc list-inside space-y-0.5 opacity-80">
-                              {problem.recommendations.map((rec, idx) => (
-                                <li key={idx}>{rec}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
                       </div>
                     </div>
-                  </motion.div>
-                );
-              })}
+                  </Alert>
+                </motion.div>
+              ))}
             </div>
           )}
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 

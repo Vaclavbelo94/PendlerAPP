@@ -1,7 +1,7 @@
 
 import React, { useState, Suspense } from 'react';
 import { Helmet } from "react-helmet";
-import { Map } from "lucide-react";
+import { Map, Users, Navigation, TrendingUp, Route } from "lucide-react";
 import PremiumCheck from "@/components/premium/PremiumCheck";
 import { useIsMobile } from "@/hooks/use-mobile";
 import Layout from "@/components/layouts/Layout";
@@ -12,7 +12,10 @@ import { EnhancedRideSharingLazy } from "@/components/travel/LazyTravelComponent
 import HomeWorkTrafficMonitor from "@/components/travel/HomeWorkTrafficMonitor";
 import { Skeleton } from "@/components/ui/skeleton";
 import TravelMobileCarousel from "@/components/travel/mobile/TravelMobileCarousel";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { useTranslation } from 'react-i18next';
+import { motion } from 'framer-motion';
 
 const LoadingFallback = () => (
   <div className="space-y-4">
@@ -44,6 +47,38 @@ const TravelPlanning = () => {
     }
   };
 
+  // Feature overview cards
+  const featureCards = [
+    {
+      icon: Users,
+      title: t('travel:ridesharing'),
+      description: t('travel:ridesharingDesc'),
+      badge: "Aktivní",
+      color: "bg-blue-500/10 text-blue-700 dark:text-blue-400"
+    },
+    {
+      icon: Navigation,
+      title: t('travel:commuteTraffic'),
+      description: t('travel:commuteTrafficDesc'),
+      badge: "Live",
+      color: "bg-green-500/10 text-green-700 dark:text-green-400"
+    },
+    {
+      icon: Route,
+      title: t('travel:routeOptimization'),
+      description: t('travel:smartRecommendations'),
+      badge: "Smart",
+      color: "bg-purple-500/10 text-purple-700 dark:text-purple-400"
+    },
+    {
+      icon: TrendingUp,
+      title: t('travel:trafficAnalysis'),
+      description: t('travel:predictiveTraffic'),
+      badge: "Pro",
+      color: "bg-orange-500/10 text-orange-700 dark:text-orange-400"
+    }
+  ];
+
   return (
     <Layout navbarRightContent={<NavbarRightContent />}>
       <PremiumCheck featureKey="travel_planning">
@@ -53,24 +88,80 @@ const TravelPlanning = () => {
         
         <DashboardBackground variant="travel">
           <div className="container mx-auto px-4 py-6">
-            {/* Header section */}
-            <section className={`mb-${isMobile ? '4' : '6'}`} role="banner">
-              <div className={`flex items-center gap-3 mb-4 ${isMobile ? 'flex-col text-center' : ''}`}>
-                <div className={`${isMobile ? 'p-1.5' : 'p-2'} rounded-full bg-primary/10`} role="img" aria-label="Ikona mapy">
-                  <Map className={`${isMobile ? 'h-5 w-5' : 'h-6 w-6'} text-primary`} />
+            {/* Modern Header */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-8"
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 rounded-xl bg-primary/10 backdrop-blur-sm">
+                  <Map className="h-8 w-8 text-primary" />
                 </div>
-                <h1 className={`${isMobile ? 'text-xl' : 'text-3xl'} font-bold text-white`}>
-                  {isMobile ? t('travel:smartTravel') : t('travel:travelPlanning')}
-                </h1>
+                <div>
+                  <h1 className="text-3xl font-bold text-foreground">
+                    {t('travel:travelPlanning')}
+                  </h1>
+                  <p className="text-muted-foreground mt-1">
+                    {t('travel:travelDescription')}
+                  </p>
+                </div>
               </div>
-              
-              <p className={`text-white/80 ${isMobile ? 'text-sm text-center' : 'text-lg'} max-w-3xl`}>
-                {isMobile ? t('travel:travelDescriptionMobile') : t('travel:travelDescription')}
-              </p>
-            </section>
-            
-            {/* Mobile or Desktop UI based on device */}
-            {isMobile ? (
+            </motion.div>
+
+            {/* Desktop Layout */}
+            {!isMobile ? (
+              <div className="space-y-6">
+                {/* Feature Overview Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                  {featureCards.map((feature, index) => (
+                    <motion.div
+                      key={feature.title}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                    >
+                      <Card className="relative overflow-hidden hover:shadow-lg transition-shadow">
+                        <CardHeader className="pb-3">
+                          <div className="flex items-center justify-between">
+                            <div className={`p-2 rounded-lg ${feature.color}`}>
+                              <feature.icon className="h-5 w-5" />
+                            </div>
+                            <Badge variant="secondary" className="text-xs">
+                              {feature.badge}
+                            </Badge>
+                          </div>
+                          <CardTitle className="text-base">{feature.title}</CardTitle>
+                          <CardDescription className="text-sm">
+                            {feature.description}
+                          </CardDescription>
+                        </CardHeader>
+                      </Card>
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Navigation */}
+                <TravelNavigation
+                  activeTab={activeTab}
+                  onTabChange={handleTabChange}
+                />
+                
+                {/* Content */}
+                <Suspense fallback={<LoadingFallback />}>
+                  <motion.div 
+                    key={activeTab}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="space-y-4"
+                  >
+                    {renderTabContent()}
+                  </motion.div>
+                </Suspense>
+              </div>
+            ) : (
+              /* Mobile Layout */
               <TravelMobileCarousel 
                 activeTab={activeTab} 
                 onTabChange={handleTabChange}
@@ -79,21 +170,6 @@ const TravelPlanning = () => {
                 onOriginChange={setOrigin}
                 onDestinationChange={setDestination}
               />
-            ) : (
-              <>
-                {/* Navigation - only two tabs now */}
-                <TravelNavigation
-                  activeTab={activeTab}
-                  onTabChange={handleTabChange}
-                />
-                
-                {/* Tab content with suspense */}
-                <Suspense fallback={<LoadingFallback />}>
-                  <div className="space-y-4">
-                    {renderTabContent()}
-                  </div>
-                </Suspense>
-              </>
             )}
           </div>
         </DashboardBackground>
