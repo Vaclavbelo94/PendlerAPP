@@ -54,17 +54,21 @@ const Register = () => {
   }, [isGoogleLoading]);
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Background decorations */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-100/30 via-purple-100/30 to-pink-100/30 dark:from-blue-900/10 dark:via-purple-900/10 dark:to-pink-900/10" />
+    <div className="min-h-screen bg-dhl-yellow relative overflow-hidden">
+      {/* Background decorations with DHL theme */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-dhl-red/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-dhl-black/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-dhl-red/5 rounded-full blur-3xl animate-pulse delay-500"></div>
+      </div>
       
       <div className="relative container max-w-md mx-auto py-16 px-4">
-        <Card className="w-full bg-card/80 backdrop-blur-sm border shadow-xl">
+        <Card className="w-full bg-white/90 backdrop-blur-sm border shadow-xl">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent text-center">
+            <CardTitle className="text-2xl text-dhl-black text-center font-bold">
               {t('registerTitle')}
             </CardTitle>
-            <CardDescription className="text-center">
+            <CardDescription className="text-center text-dhl-black/70">
               {t('registerDescription')}
             </CardDescription>
           </CardHeader>
@@ -81,10 +85,10 @@ const Register = () => {
             
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <Separator className="w-full" />
+                <Separator className="w-full bg-dhl-black/20" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">
+                <span className="bg-white px-2 text-dhl-black/70">
                   {t('registerWithEmail')}
                 </span>
               </div>
@@ -94,8 +98,8 @@ const Register = () => {
           </CardContent>
           <CardFooter>
             <div className="text-center w-full text-sm">
-              {t('alreadyHaveAccount')}{" "}
-              <Link to="/login" className="text-primary underline-offset-4 hover:underline">
+              <span className="text-dhl-black/70">{t('alreadyHaveAccount')} </span>
+              <Link to="/login" className="text-dhl-red underline-offset-4 hover:underline font-medium">
                 {t('login')}
               </Link>
             </div>

@@ -72,7 +72,7 @@ const LoginForm = () => {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid gap-2">
-        <Label htmlFor="email">{t('email')}</Label>
+        <Label htmlFor="email" className="text-dhl-black">{t('email')}</Label>
         <Input
           id="email"
           type="email"
@@ -80,15 +80,15 @@ const LoginForm = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="bg-card/50 backdrop-blur-sm border-border"
+          className="bg-white/80 backdrop-blur-sm border-dhl-black/20 text-dhl-black"
         />
       </div>
       <div className="grid gap-2">
         <div className="flex items-center justify-between">
-          <Label htmlFor="password">{t('password')}</Label>
+          <Label htmlFor="password" className="text-dhl-black">{t('password')}</Label>
           <Link
             to="/forgot-password"
-            className="text-sm text-primary underline-offset-4 hover:underline"
+            className="text-sm text-dhl-red underline-offset-4 hover:underline"
           >
             {t('forgotPassword')}
           </Link>
@@ -100,12 +100,12 @@ const LoginForm = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          className="bg-card/50 backdrop-blur-sm border-border"
+          className="bg-white/80 backdrop-blur-sm border-dhl-black/20 text-dhl-black"
         />
       </div>
       <Button
         type="submit"
-        className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+        className="w-full bg-dhl-red hover:bg-dhl-red/90 text-white"
         disabled={isLoading}
       >
         {isLoading ? t('loading') : t('login')}

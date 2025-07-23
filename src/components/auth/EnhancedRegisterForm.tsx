@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -172,18 +173,18 @@ const EnhancedRegisterForm = () => {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid gap-2">
-        <Label htmlFor="username">{t('registerUsername')}</Label>
+        <Label htmlFor="username" className="text-dhl-black">{t('registerUsername')}</Label>
         <Input
           id="username"
           type="text"
           placeholder={t('registerUsernamePlaceholder')}
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          className="bg-card/50 backdrop-blur-sm border-border"
+          className="bg-white/80 backdrop-blur-sm border-dhl-black/20 text-dhl-black"
         />
       </div>
       <div className="grid gap-2">
-        <Label htmlFor="email">{t('email')}</Label>
+        <Label htmlFor="email" className="text-dhl-black">{t('email')}</Label>
         <Input
           id="email"
           type="email"
@@ -191,11 +192,11 @@ const EnhancedRegisterForm = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="bg-card/50 backdrop-blur-sm border-border"
+          className="bg-white/80 backdrop-blur-sm border-dhl-black/20 text-dhl-black"
         />
       </div>
       <div className="grid gap-2">
-        <Label htmlFor="password">{t('password')}</Label>
+        <Label htmlFor="password" className="text-dhl-black">{t('password')}</Label>
         <Input
           id="password"
           type="password"
@@ -203,11 +204,11 @@ const EnhancedRegisterForm = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          className="bg-card/50 backdrop-blur-sm border-border"
+          className="bg-white/80 backdrop-blur-sm border-dhl-black/20 text-dhl-black"
         />
       </div>
       <div className="grid gap-2">
-        <Label htmlFor="confirmPassword">{t('registerConfirmPassword')}</Label>
+        <Label htmlFor="confirmPassword" className="text-dhl-black">{t('registerConfirmPassword')}</Label>
         <Input
           id="confirmPassword"
           type="password"
@@ -215,7 +216,7 @@ const EnhancedRegisterForm = () => {
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           required
-          className="bg-card/50 backdrop-blur-sm border-border"
+          className="bg-white/80 backdrop-blur-sm border-dhl-black/20 text-dhl-black"
         />
       </div>
       
@@ -223,14 +224,14 @@ const EnhancedRegisterForm = () => {
       
       <Button
         type="submit"
-        className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+        className="w-full bg-dhl-red hover:bg-dhl-red/90 text-white"
         disabled={isLoading}
       >
         {isLoading ? t('registerCreating') : t('registerCreateAccount')}
       </Button>
       
       {isDHLCode && finalPromoCode && (
-        <div className="text-sm text-blue-600 bg-blue-50 p-3 rounded-lg border border-blue-200">
+        <div className="text-sm text-dhl-black bg-dhl-yellow/20 p-3 rounded-lg border border-dhl-yellow">
           <p className="font-medium">✨ Speciální Premium registrace</p>
           <p>Váš účet bude aktivován s premium přístupem na rok!</p>
         </div>
