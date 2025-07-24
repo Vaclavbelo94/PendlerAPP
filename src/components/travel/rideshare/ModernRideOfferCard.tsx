@@ -4,15 +4,15 @@ import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Clock, MapPin, Calendar, User, Users, MessageCircle, Star, Phone, Mail } from "lucide-react";
-import { RideshareOffer } from "@/services/rideshareService";
+import { Clock, MapPin, Calendar, Users, MessageCircle, Star, Phone } from "lucide-react";
+import { RideshareOfferWithDriver } from "@/services/rideshareService";
 import { useTranslation } from 'react-i18next';
-import { getCountryConfig, getDriverDisplayName } from '@/utils/countryUtils';
+import { getEnhancedCountryConfig, formatEnhancedPrice, formatEnhancedDate, formatEnhancedTime, getDriverDisplayName } from '@/utils/enhancedCountryUtils';
 import { motion } from 'framer-motion';
 
 interface ModernRideOfferCardProps {
-  ride: RideshareOffer;
-  onContact: (ride: RideshareOffer) => void;
+  ride: RideshareOfferWithDriver;
+  onContact: (ride: RideshareOfferWithDriver) => void;
   isAuthenticated: boolean;
 }
 
@@ -22,22 +22,7 @@ const ModernRideOfferCard: React.FC<ModernRideOfferCardProps> = ({
   isAuthenticated 
 }) => {
   const { t, i18n } = useTranslation('travel');
-  const countryConfig = getCountryConfig(i18n.language);
-
-  const formatPrice = (price: number) => {
-    if (price === 0) return t('free');
-    return `${price} ${countryConfig.currencySymbol}`;
-  };
-
-  const formatDate = (date: string) => {
-    const dateObj = new Date(date);
-    return dateObj.toLocaleDateString(i18n.language === 'cs' ? 'cs-CZ' : 
-                                     i18n.language === 'de' ? 'de-DE' : 'pl-PL');
-  };
-
-  const formatTime = (time: string) => {
-    return time.slice(0, 5); // Remove seconds
-  };
+  const countryConfig = getEnhancedCountryConfig(i18n.language);
 
   const driverName = getDriverDisplayName(ride.driver, t);
   const driverInitials = driverName.split(' ').map(n => n[0]).join('').toUpperCase();
@@ -122,11 +107,11 @@ const ModernRideOfferCard: React.FC<ModernRideOfferCardProps> = ({
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-sm">
                   <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <span className="font-medium">{formatDate(ride.departure_date)}</span>
+                  <span className="font-medium">{formatEnhancedDate(ride.departure_date, i18n.language)}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <Clock className="h-4 w-4 text-muted-foreground" />
-                  <span className="font-medium">{formatTime(ride.departure_time)}</span>
+                  <span className="font-medium">{formatEnhancedTime(ride.departure_time)}</span>
                 </div>
               </div>
               
@@ -134,7 +119,7 @@ const ModernRideOfferCard: React.FC<ModernRideOfferCardProps> = ({
                 <div className="text-right">
                   <p className="text-sm text-muted-foreground">{t('pricePerPerson')}</p>
                   <p className="text-lg font-bold text-primary">
-                    {formatPrice(ride.price_per_person)}
+                    {formatEnhancedPrice(ride.price_per_person, ride.currency, countryConfig)}
                   </p>
                 </div>
               )}
