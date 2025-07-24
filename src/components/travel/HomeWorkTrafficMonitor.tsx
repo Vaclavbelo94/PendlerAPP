@@ -207,7 +207,7 @@ const HomeWorkTrafficMonitor: React.FC = () => {
               <MapPin className="h-4 w-4" />
               {t('homeAddress')}
             </CardTitle>
-            <CardDescription className="text-sm truncate">
+            <CardDescription className="text-sm truncate text-left break-words">
               {homeAddress}
             </CardDescription>
           </CardHeader>
@@ -219,7 +219,7 @@ const HomeWorkTrafficMonitor: React.FC = () => {
               <MapPin className="h-4 w-4" />
               {t('workAddress')}
             </CardTitle>
-            <CardDescription className="text-sm truncate">
+            <CardDescription className="text-sm truncate text-left break-words">
               {workAddress}
             </CardDescription>
           </CardHeader>
@@ -232,11 +232,11 @@ const HomeWorkTrafficMonitor: React.FC = () => {
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               <CheckCircle className="h-5 w-5" />
-              Stav dopravy
+              {t('trafficStatus')}
             </CardTitle>
             <div className="flex items-center gap-2">
               <Badge variant={problems.length > 0 ? "destructive" : "default"}>
-                {problems.length > 0 ? `${problems.length} problémů` : t('allGood')}
+                {problems.length > 0 ? `${problems.length} ${t('problems')}` : t('allGood')}
               </Badge>
               {lastUpdate && (
                 <span className="text-xs text-muted-foreground">
