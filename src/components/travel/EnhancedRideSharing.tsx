@@ -41,48 +41,6 @@ const EnhancedRideSharing: React.FC = () => {
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-        >
-          <Card>
-            <CardHeader className="pb-3">
-              <CardDescription>Aktivní nabídky</CardDescription>
-              <CardTitle className="text-2xl font-bold text-primary">24</CardTitle>
-            </CardHeader>
-          </Card>
-        </motion.div>
-        
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <Card>
-            <CardHeader className="pb-3">
-              <CardDescription>Nové dnes</CardDescription>
-              <CardTitle className="text-2xl font-bold text-green-600">8</CardTitle>
-            </CardHeader>
-          </Card>
-        </motion.div>
-        
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-        >
-          <Card>
-            <CardHeader className="pb-3">
-              <CardDescription>Úspěšnost</CardDescription>
-              <CardTitle className="text-2xl font-bold text-orange-600">92%</CardTitle>
-            </CardHeader>
-          </Card>
-        </motion.div>
-      </div>
-
       {/* Main Content */}
       <Card>
         <CardHeader>
@@ -94,7 +52,7 @@ const EnhancedRideSharing: React.FC = () => {
             <Badge variant="secondary">Live</Badge>
           </div>
           <CardDescription>
-            Najděte spolucestující pro vaše cesty nebo nabídněte svou jízdu
+            {t('findRidemates')}
           </CardDescription>
         </CardHeader>
         <CardContent className="p-0">

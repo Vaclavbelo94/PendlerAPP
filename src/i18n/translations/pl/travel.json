@@ -104,5 +104,8 @@
   "workAddress": "Adres służbowy",
   "trafficMonitor": "Monitoruj ruch i optymalizuj swoją trasę",
   "trafficStatus": "Status ruchu",
-  "problems": "problemów"
+  "problems": "problemów",
+  "findRide": "Znajdź przejazd",
+  "offerRide": "Zaoferuj przejazd",
+  "availableOffers": "Dostępne oferty"
 }

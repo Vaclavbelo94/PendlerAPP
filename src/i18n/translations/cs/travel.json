@@ -104,5 +104,8 @@
   "workAddress": "Pracovní adresa",
   "trafficMonitor": "Sledujte provoz a optimalizujte svou cestu",
   "trafficStatus": "Stav dopravy",
-  "problems": "problémů"
+  "problems": "problémů",
+  "findRide": "Hledat jízdu",
+  "offerRide": "Nabídnout jízdu",
+  "availableOffers": "Dostupné nabídky"
 }

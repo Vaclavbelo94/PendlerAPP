@@ -107,22 +107,6 @@ const TravelPlanning = () => {
                   <p className="text-lg text-muted-foreground max-w-2xl">
                     {t('travel:travelDescription')}
                   </p>
-                  
-                  {/* Quick Stats */}
-                  <div className="flex items-center gap-6 mt-4">
-                    <div className="flex items-center gap-2">
-                      <Car className="h-4 w-4 text-primary" />
-                      <span className="text-sm font-medium">24 {t('travel:activeRides')}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-green-600" />
-                      <span className="text-sm font-medium">{t('travel:realTimeUpdates')}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4 text-orange-600" />
-                      <span className="text-sm font-medium">3 {t('travel:countries')}</span>
-                    </div>
-                  </div>
                 </div>
               </div>
             </motion.div>
