@@ -109,5 +109,13 @@
   "offerRide": "Fahrt anbieten",
   "availableOffers": "Verfügbare Angebote",
   "back": "Zurück",
-  "createRideOfferDescription": "Füllen Sie die Details Ihres Mitfahrangebots aus"
+  "createRideOfferDescription": "Füllen Sie die Details Ihres Mitfahrangebots aus",
+  "maxPrice": "Höchstpreis",
+  "minSeats": "Mindestanzahl Plätze",
+  "clearFilters": "Filter löschen", 
+  "of": "von",
+  "noMatchingOffers": "Keine Angebote entsprechen dem Filter",
+  "tryDifferentFilters": "Versuchen Sie andere Filter oder erstellen Sie Ihr eigenes Angebot",
+  "deleteOffer": "Angebot löschen",
+  "offerDeleted": "Angebot wurde gelöscht"
 }

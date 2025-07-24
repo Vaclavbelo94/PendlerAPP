@@ -109,5 +109,13 @@
   "offerRide": "Zaoferuj przejazd", 
   "availableOffers": "Dostępne oferty",
   "back": "Wstecz",
-  "createRideOfferDescription": "Wypełnij szczegóły swojej oferty wspólnego przejazdu"
+  "createRideOfferDescription": "Wypełnij szczegóły swojej oferty wspólnego przejazdu",
+  "maxPrice": "Maksymalna cena",
+  "minSeats": "Minimalna liczba miejsc",
+  "clearFilters": "Wyczyść filtry",
+  "of": "z", 
+  "noMatchingOffers": "Żadne oferty nie pasują do filtra",
+  "tryDifferentFilters": "Spróbuj innych filtrów lub utwórz własną ofertę",
+  "deleteOffer": "Usuń ofertę",
+  "offerDeleted": "Oferta została usunięta"
 }
