@@ -1,17 +1,17 @@
 
 import React, { useState, Suspense } from 'react';
 import { Helmet } from "react-helmet";
-import { Map, Users, Navigation, TrendingUp, Route } from "lucide-react";
+import { Map, Users, Navigation, TrendingUp, Route, Car, Clock, MapPin } from "lucide-react";
 import PremiumCheck from "@/components/premium/PremiumCheck";
 import { useIsMobile } from "@/hooks/use-mobile";
 import Layout from "@/components/layouts/Layout";
 import { NavbarRightContent } from "@/components/layouts/NavbarPatch";
-import TravelNavigation from "@/components/travel/TravelNavigation";
+import ModernTravelNavigation from "@/components/travel/navigation/ModernTravelNavigation";
 import DashboardBackground from "@/components/common/DashboardBackground";
 import { EnhancedRideSharingLazy } from "@/components/travel/LazyTravelComponents";
 import HomeWorkTrafficMonitor from "@/components/travel/HomeWorkTrafficMonitor";
 import { Skeleton } from "@/components/ui/skeleton";
-import TravelMobileCarousel from "@/components/travel/mobile/TravelMobileCarousel";
+import ModernTravelMobileCarousel from "@/components/travel/mobile/ModernTravelMobileCarousel";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useTranslation } from 'react-i18next';
@@ -27,8 +27,6 @@ const LoadingFallback = () => (
 
 const TravelPlanning = () => {
   const [activeTab, setActiveTab] = useState("ridesharing");
-  const [origin, setOrigin] = useState("Praha, Česká republika");
-  const [destination, setDestination] = useState("Dresden, Německo");
   const isMobile = useIsMobile();
   const { t } = useTranslation(['travel', 'common']);
 
@@ -47,35 +45,39 @@ const TravelPlanning = () => {
     }
   };
 
-  // Feature overview cards
+  // Feature overview cards with modern design
   const featureCards = [
     {
       icon: Users,
       title: t('travel:ridesharing'),
       description: t('travel:ridesharingDesc'),
-      badge: "Aktivní",
-      color: "bg-blue-500/10 text-blue-700 dark:text-blue-400"
+      badge: "Live",
+      color: "from-blue-500/10 to-blue-600/10 border-blue-500/20",
+      stats: { value: "24", label: t('travel:activeOffers') }
     },
     {
       icon: Navigation,
       title: t('travel:commuteTraffic'),
       description: t('travel:commuteTrafficDesc'),
-      badge: "Live",
-      color: "bg-green-500/10 text-green-700 dark:text-green-400"
+      badge: "Real-time",
+      color: "from-green-500/10 to-green-600/10 border-green-500/20",
+      stats: { value: "3", label: t('travel:activeRoutes') }
     },
     {
       icon: Route,
       title: t('travel:routeOptimization'),
       description: t('travel:smartRecommendations'),
-      badge: "Smart",
-      color: "bg-purple-500/10 text-purple-700 dark:text-purple-400"
+      badge: "AI",
+      color: "from-purple-500/10 to-purple-600/10 border-purple-500/20",
+      stats: { value: "15min", label: t('travel:avgTimeSaved') }
     },
     {
       icon: TrendingUp,
       title: t('travel:trafficAnalysis'),
       description: t('travel:predictiveTraffic'),
       badge: "Pro",
-      color: "bg-orange-500/10 text-orange-700 dark:text-orange-400"
+      color: "from-orange-500/10 to-orange-600/10 border-orange-500/20",
+      stats: { value: "92%", label: t('travel:accuracy') }
     }
   ];
 
@@ -88,87 +90,112 @@ const TravelPlanning = () => {
         
         <DashboardBackground variant="travel">
           <div className="container mx-auto px-4 py-6">
-            {/* Modern Header */}
+            {/* Modern Hero Header */}
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="mb-8"
             >
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-3 rounded-xl bg-primary/10 backdrop-blur-sm">
-                  <Map className="h-8 w-8 text-primary" />
+              <div className="flex items-start gap-4 mb-6">
+                <div className="p-4 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 backdrop-blur-sm border border-primary/20 shadow-lg">
+                  <Map className="h-10 w-10 text-primary" />
                 </div>
-                <div>
-                  <h1 className="text-3xl font-bold text-foreground">
+                <div className="flex-1">
+                  <h1 className="text-4xl font-bold text-foreground mb-2">
                     {t('travel:travelPlanning')}
                   </h1>
-                  <p className="text-muted-foreground mt-1">
+                  <p className="text-lg text-muted-foreground max-w-2xl">
                     {t('travel:travelDescription')}
                   </p>
+                  
+                  {/* Quick Stats */}
+                  <div className="flex items-center gap-6 mt-4">
+                    <div className="flex items-center gap-2">
+                      <Car className="h-4 w-4 text-primary" />
+                      <span className="text-sm font-medium">24 {t('travel:activeRides')}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-green-600" />
+                      <span className="text-sm font-medium">{t('travel:realTimeUpdates')}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-4 w-4 text-orange-600" />
+                      <span className="text-sm font-medium">3 {t('travel:countries')}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </motion.div>
 
             {/* Desktop Layout */}
             {!isMobile ? (
-              <div className="space-y-6">
-                {/* Feature Overview Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+              <div className="space-y-8">
+                {/* Modern Feature Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                   {featureCards.map((feature, index) => (
                     <motion.div
                       key={feature.title}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.1 }}
+                      whileHover={{ y: -2 }}
                     >
-                      <Card className="relative overflow-hidden hover:shadow-lg transition-shadow">
+                      <Card className={`relative overflow-hidden bg-gradient-to-br ${feature.color} border-0 hover:shadow-lg transition-all duration-300`}>
                         <CardHeader className="pb-3">
-                          <div className="flex items-center justify-between">
-                            <div className={`p-2 rounded-lg ${feature.color}`}>
-                              <feature.icon className="h-5 w-5" />
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="p-2 rounded-lg bg-background/50 backdrop-blur-sm">
+                              <feature.icon className="h-5 w-5 text-primary" />
                             </div>
-                            <Badge variant="secondary" className="text-xs">
+                            <Badge variant="secondary" className="text-xs font-medium">
                               {feature.badge}
                             </Badge>
                           </div>
-                          <CardTitle className="text-base">{feature.title}</CardTitle>
-                          <CardDescription className="text-sm">
+                          <CardTitle className="text-base font-semibold text-foreground">
+                            {feature.title}
+                          </CardTitle>
+                          <CardDescription className="text-sm text-muted-foreground line-clamp-2">
                             {feature.description}
                           </CardDescription>
                         </CardHeader>
+                        <CardContent>
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-2xl font-bold text-primary">
+                              {feature.stats.value}
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                              {feature.stats.label}
+                            </span>
+                          </div>
+                        </CardContent>
                       </Card>
                     </motion.div>
                   ))}
                 </div>
 
-                {/* Navigation */}
-                <TravelNavigation
+                {/* Modern Navigation */}
+                <ModernTravelNavigation
                   activeTab={activeTab}
                   onTabChange={handleTabChange}
                 />
                 
-                {/* Content */}
+                {/* Content with Enhanced Animation */}
                 <Suspense fallback={<LoadingFallback />}>
                   <motion.div 
                     key={activeTab}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="space-y-4"
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                    className="space-y-6"
                   >
                     {renderTabContent()}
                   </motion.div>
                 </Suspense>
               </div>
             ) : (
-              /* Mobile Layout */
-              <TravelMobileCarousel 
+              /* Enhanced Mobile Layout */
+              <ModernTravelMobileCarousel 
                 activeTab={activeTab} 
                 onTabChange={handleTabChange}
-                origin={origin}
-                destination={destination}
-                onOriginChange={setOrigin}
-                onDestinationChange={setDestination}
               />
             )}
           </div>

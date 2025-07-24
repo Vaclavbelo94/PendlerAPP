@@ -160,5 +160,19 @@
   "call": "Zavolat",
   "sendMessage": "Odeslat",
   "sending": "Odesílám...",
-  "contactDriverDescription": "Napište zprávu řidiči nebo ho kontaktujte telefonicky"
+  "contactDriverDescription": "Napište zprávu řidiči nebo ho kontaktujte telefonicky",
+  "swipeToNavigate": "Přejeďte pro navigaci",
+  "activeOffers": "aktivních nabídek",
+  "activeRoutes": "aktivních tras",
+  "avgTimeSaved": "průměrná úspora času",
+  "accuracy": "přesnost",
+  "activeRides": "aktivních jízd",
+  "realTimeUpdates": "aktualizace v reálném čase",
+  "countries": "země",
+  "refresh": "Obnovit",
+  "filter": "Filtr",
+  "offers": "nabídek",
+  "noOffersDescription": "Momentálně nejsou k dispozici žádné nabídky spolujízdy",
+  "createFirstOffer": "Vytvořit první nabídku",
+  "unknownDriver": "Neznámý řidič"
 }
