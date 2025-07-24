@@ -44,7 +44,8 @@ const Laws = () => {
   }, [activeSection, lawItems]);
 
   const handleViewDetails = (law: Law) => {
-    console.log('Navigating to law detail:', law.id);
+    console.log('Laws - Navigating to law detail:', law.id);
+    console.log('Laws - Law object:', law);
     navigate(`/laws/${law.id}`);
   };
 

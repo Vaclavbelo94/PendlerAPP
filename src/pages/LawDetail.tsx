@@ -17,8 +17,13 @@ const LawDetail = () => {
   const { id } = useParams<{ id: string }>();
   const { t } = useTranslation('laws');
   
+  console.log('LawDetail - URL param id:', id);
+  
   const lawItems = getLawItems(t);
+  console.log('LawDetail - Available law IDs:', lawItems.map(law => law.id));
+  
   const law = lawItems.find(item => item.id === id);
+  console.log('LawDetail - Found law:', law ? law.title : 'Not found');
   
   if (!law) {
     return (
