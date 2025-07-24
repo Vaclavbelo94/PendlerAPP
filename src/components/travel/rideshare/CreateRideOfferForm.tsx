@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/auth';
 import { rideshareService } from '@/services/rideshareService';
 import { toast } from 'sonner';
-import { getEnhancedCountryConfig } from '@/utils/enhancedCountryUtils';
+import { getCountryConfig } from '@/utils/enhancedCountryUtils';
 
 interface CreateRideOfferFormProps {
   onOfferCreated: () => void;
@@ -20,7 +20,7 @@ interface CreateRideOfferFormProps {
 const CreateRideOfferForm: React.FC<CreateRideOfferFormProps> = ({ onOfferCreated }) => {
   const { t, i18n } = useTranslation('travel');
   const { user } = useAuth();
-  const countryConfig = getEnhancedCountryConfig(i18n.language);
+  const countryConfig = getCountryConfig(i18n.language);
   
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
