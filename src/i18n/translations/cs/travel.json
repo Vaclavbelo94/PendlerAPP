@@ -64,5 +64,11 @@
   "enableNotifications": "Zapnout upozornění",
   "trafficAlerts": "Dopravní upozornění",
   "incidentAlerts": "Upozornění na nehody",
-  "weatherAlerts": "Upozornění na počasí"
+  "weatherAlerts": "Upozornění na počasí",
+  "ridesharing": "Spolujízda",
+  "ridesharingDesc": "Najděte či nabídněte spolujízdu s ostatními",
+  "commuteTraffic": "Dopravní monitoring",
+  "commuteTrafficDesc": "Sledujte provoz a optimalizujte svou cestu",
+  "swipeToNavigate": "Přejeďte pro navigaci",
+  "unknownDriver": "Neznámý řidič"
 }

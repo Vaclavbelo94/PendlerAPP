@@ -45,7 +45,7 @@ const ModernRideOfferCard: React.FC<ModernRideOfferCardProps> = ({
                   {driverInitials}
                 </AvatarFallback>
               </Avatar>
-              <div>
+              <div className="text-left">
                 <h3 className="font-semibold text-foreground">{driverName}</h3>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   {ride.driver?.rating && (
@@ -86,13 +86,13 @@ const ModernRideOfferCard: React.FC<ModernRideOfferCardProps> = ({
                   <div className="w-3 h-3 bg-red-500 rounded-full"></div>
                 </div>
                 <div className="flex-1 space-y-3">
-                  <div>
+                  <div className="text-left">
                     <p className="text-sm font-medium text-foreground">{t('from')}</p>
                     <p className="text-sm text-muted-foreground line-clamp-1">
                       {ride.origin_address}
                     </p>
                   </div>
-                  <div>
+                  <div className="text-left">
                     <p className="text-sm font-medium text-foreground">{t('to')}</p>
                     <p className="text-sm text-muted-foreground line-clamp-1">
                       {ride.destination_address}
@@ -117,8 +117,8 @@ const ModernRideOfferCard: React.FC<ModernRideOfferCardProps> = ({
               
               {ride.price_per_person > 0 && (
                 <div className="text-right">
-                  <p className="text-sm text-muted-foreground">{t('pricePerPerson')}</p>
-                  <p className="text-lg font-bold text-primary">
+                  <p className="text-sm text-muted-foreground text-right">{t('pricePerPerson')}</p>
+                  <p className="text-lg font-bold text-primary text-right">
                     {formatCurrency(ride.price_per_person, i18n.language)}
                   </p>
                 </div>

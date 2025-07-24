@@ -64,5 +64,11 @@
   "enableNotifications": "Włącz powiadomienia",
   "trafficAlerts": "Alerty ruchu",
   "incidentAlerts": "Alerty wypadków",
-  "weatherAlerts": "Alerty pogodowe"
+  "weatherAlerts": "Alerty pogodowe",
+  "ridesharing": "Wspólne przejazdy",
+  "ridesharingDesc": "Znajdź lub zaoferuj wspólne przejazdy z innymi",
+  "commuteTraffic": "Monitoring ruchu",
+  "commuteTrafficDesc": "Monitoruj ruch i optymalizuj swoją trasę",
+  "swipeToNavigate": "Przesuń, aby nawigować",
+  "unknownDriver": "Nieznany kierowca"
 }
