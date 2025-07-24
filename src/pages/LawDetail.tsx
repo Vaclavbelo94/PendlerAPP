@@ -14,15 +14,15 @@ import { getLawItems } from '@/data/lawsData';
 import { useTranslation } from 'react-i18next';
 
 const LawDetail = () => {
-  const { id } = useParams<{ id: string }>();
+  const { lawId } = useParams<{ lawId: string }>();
   const { t } = useTranslation('laws');
   
-  console.log('LawDetail - URL param id:', id);
+  console.log('LawDetail - URL param lawId:', lawId);
   
   const lawItems = getLawItems(t);
   console.log('LawDetail - Available law IDs:', lawItems.map(law => law.id));
   
-  const law = lawItems.find(item => item.id === id);
+  const law = lawItems.find(item => item.id === lawId);
   console.log('LawDetail - Found law:', law ? law.title : 'Not found');
   
   if (!law) {
