@@ -106,6 +106,7 @@
   "trafficStatus": "Status ruchu",
   "problems": "problemów",
   "findRide": "Znajdź przejazd",
-  "offerRide": "Zaoferuj przejazd",
-  "availableOffers": "Dostępne oferty"
+  "offerRide": "Zaoferuj przejazd", 
+  "availableOffers": "Dostępne oferty",
+  "back": "Wstecz"
 }
