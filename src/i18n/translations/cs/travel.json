@@ -108,5 +108,6 @@
   "findRide": "Hledat jízdu",
   "offerRide": "Nabídnout jízdu",
   "availableOffers": "Dostupné nabídky",
-  "back": "Zpět"
+  "back": "Zpět",
+  "createRideOfferDescription": "Vyplňte detaily vaší nabídky spolujízdy"
 }

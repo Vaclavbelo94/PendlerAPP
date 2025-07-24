@@ -108,5 +108,6 @@
   "findRide": "Znajdź przejazd",
   "offerRide": "Zaoferuj przejazd", 
   "availableOffers": "Dostępne oferty",
-  "back": "Wstecz"
+  "back": "Wstecz",
+  "createRideOfferDescription": "Wypełnij szczegóły swojej oferty wspólnego przejazdu"
 }

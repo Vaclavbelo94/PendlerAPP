@@ -28,17 +28,6 @@ const EnhancedRideSharing: React.FC = () => {
             </p>
           </div>
         </div>
-        
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" className="gap-2">
-            <Search className="h-4 w-4" />
-            {t('findRide')}
-          </Button>
-          <Button size="sm" className="gap-2">
-            <Plus className="h-4 w-4" />
-            {t('offerRide')}
-          </Button>
-        </div>
       </div>
 
       {/* Main Content */}

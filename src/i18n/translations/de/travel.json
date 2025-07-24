@@ -108,5 +108,6 @@
   "findRide": "Fahrt finden",
   "offerRide": "Fahrt anbieten",
   "availableOffers": "Verfügbare Angebote",
-  "back": "Zurück"
+  "back": "Zurück",
+  "createRideOfferDescription": "Füllen Sie die Details Ihres Mitfahrangebots aus"
 }
