@@ -70,5 +70,11 @@
   "commuteTraffic": "Verkehrsüberwachung",
   "commuteTrafficDesc": "Überwachen Sie den Verkehr und optimieren Sie Ihre Route",
   "swipeToNavigate": "Wischen zum Navigieren",
-  "unknownDriver": "Unbekannter Fahrer"
+  "unknownDriver": "Unbekannter Fahrer",
+  "travelPlanning": "Reiseplanung",
+  "travelDescription": "Optimieren Sie Ihre Reisen mit Mitfahrgelegenheiten und Verkehrsüberwachung",
+  "activeRides": "aktive Fahrten",
+  "realTimeUpdates": "Echtzeit-Updates",
+  "findRidemates": "Finden oder bieten Sie Mitfahrgelegenheiten mit anderen",
+  "countries": "Länder"
 }
