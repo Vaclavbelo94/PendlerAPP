@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Clock, MapPin, Calendar, Users, MessageCircle, Star, Phone } from "lucide-react";
+import { Clock, MapPin, Calendar, Users, MessageCircle, Star, Phone, Trash2 } from "lucide-react";
 import { RideshareOfferWithDriver } from "@/services/rideshareService";
 import { useTranslation } from 'react-i18next';
 import { getCountryConfig, formatCurrency, formatDate, formatTime, getDriverDisplayName } from '@/utils/enhancedCountryUtils';
@@ -13,19 +13,24 @@ import { motion } from 'framer-motion';
 interface ModernRideOfferCardProps {
   ride: RideshareOfferWithDriver;
   onContact: (ride: RideshareOfferWithDriver) => void;
+  onDelete?: (offerId: string) => void;
   isAuthenticated: boolean;
+  currentUserId?: string;
 }
 
 const ModernRideOfferCard: React.FC<ModernRideOfferCardProps> = ({ 
   ride, 
   onContact, 
-  isAuthenticated 
+  onDelete,
+  isAuthenticated,
+  currentUserId
 }) => {
   const { t, i18n } = useTranslation('travel');
   const countryConfig = getCountryConfig(i18n.language);
 
   const driverName = getDriverDisplayName(ride.driver, t);
   const driverInitials = driverName.split(' ').map(n => n[0]).join('').toUpperCase();
+  const isOwnOffer = currentUserId === ride.user_id;
 
   return (
     <motion.div
@@ -138,23 +143,36 @@ const ModernRideOfferCard: React.FC<ModernRideOfferCardProps> = ({
 
         <CardFooter className="pt-0">
           <div className="flex gap-2 w-full">
-            <Button 
-              className="flex-1 group-hover:shadow-md transition-shadow" 
-              onClick={() => onContact(ride)}
-              disabled={!isAuthenticated}
-            >
-              <MessageCircle className="h-4 w-4 mr-2" />
-              {t('contactDriver')}
-            </Button>
-            
-            {ride.driver?.phone_number && (
-              <Button
-                variant="outline"
-                size="icon"
-                className="shrink-0"
-                onClick={() => window.open(`tel:${ride.driver.phone_number}`)}
+            {!isOwnOffer ? (
+              <>
+                <Button 
+                  className="flex-1 group-hover:shadow-md transition-shadow" 
+                  onClick={() => onContact(ride)}
+                  disabled={!isAuthenticated}
+                >
+                  <MessageCircle className="h-4 w-4 mr-2" />
+                  {t('contactDriver')}
+                </Button>
+                
+                {ride.driver?.phone_number && (
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="shrink-0"
+                    onClick={() => window.open(`tel:${ride.driver.phone_number}`)}
+                  >
+                    <Phone className="h-4 w-4" />
+                  </Button>
+                )}
+              </>
+            ) : (
+              <Button 
+                variant="destructive"
+                className="flex-1"
+                onClick={() => onDelete?.(ride.id)}
               >
-                <Phone className="h-4 w-4" />
+                <Trash2 className="h-4 w-4 mr-2" />
+                {t('deleteOffer')}
               </Button>
             )}
           </div>

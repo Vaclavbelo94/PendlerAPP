@@ -119,11 +119,14 @@ const CreateRideOfferForm: React.FC<CreateRideOfferFormProps> = ({ onOfferCreate
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="space-y-2">
-          <Label>{t('departureDate')}</Label>
-          <DatePicker
-            selected={formData.departure_date}
-            onSelect={(date) => setFormData({ ...formData, departure_date: date || null })}
-            placeholderText={t('selectDate')}
+          <Label htmlFor="date">{t('departureDate')}</Label>
+          <Input
+            id="date"
+            type="date"
+            value={formData.departure_date ? formData.departure_date.toISOString().split('T')[0] : ''}
+            onChange={(e) => setFormData({ ...formData, departure_date: e.target.value ? new Date(e.target.value) : null })}
+            min={new Date().toISOString().split('T')[0]}
+            required
           />
         </div>
 
