@@ -141,5 +141,17 @@
   "enterPhoneNumber": "Wprowadź swój numer telefonu",
   "phoneNumberHelp": "Podaj swój numer telefonu, aby kierowca mógł się z Tobą skontaktować",
   "noRideRequests": "Nie masz jeszcze żadnych próśb o przejazd",
-  "rideRequestsWillAppearHere": "Prośby o kontakt pojawią się tutaj, gdy ktoś będzie chciał skontaktować się z Tobą lub gdy będziesz kontaktować się z innym kierowcą"
+  "rideRequestsWillAppearHere": "Prośby o kontakt pojawią się tutaj, gdy ktoś będzie chciał skontaktować się z Tobą lub gdy będziesz kontaktować się z innym kierowcą",
+  "contactDriverDescription": "Napisz wiadomość do kierowcy",
+  "yourEmail": "Twój email",
+  "enterEmail": "Wprowadź swój email",
+  "message": "Wiadomość",
+  "messageToDriver": "Napisz wiadomość do kierowcy...",
+  "sendMessage": "Wyślij wiadomość",
+  "cancel": "Anuluj",
+  "call": "Zadzwoń",
+  "seats": "miejsc",
+  "perPerson": "na osobę",
+  "success": "Sukces",
+  "contactError": "Błąd podczas kontaktowania z kierowcą"
 }

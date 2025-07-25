@@ -141,5 +141,17 @@
   "enterPhoneNumber": "Zadejte své telefonní číslo",
   "phoneNumberHelp": "Zadejte své telefonní číslo, aby vás řidič mohl kontaktovat",
   "noRideRequests": "Zatím nemáte žádné žádosti o svezení",
-  "rideRequestsWillAppearHere": "Žádosti o kontaktování se zobrazí zde, když někdo bude chtít kontaktovat vás nebo vy budete kontaktovat jiného řidiče"
+  "rideRequestsWillAppearHere": "Žádosti o kontaktování se zobrazí zde, když někdo bude chtít kontaktovat vás nebo vy budete kontaktovat jiného řidiče",
+  "contactDriverDescription": "Napište zprávu řidiči",
+  "yourEmail": "Váš email",
+  "enterEmail": "Zadejte váš email",
+  "message": "Zpráva",
+  "messageToDriver": "Napište zprávu řidiči...",
+  "sendMessage": "Odeslat zprávu",
+  "cancel": "Zrušit",
+  "call": "Zavolat",
+  "seats": "míst",
+  "perPerson": "na osobu",
+  "success": "Úspěch",
+  "contactError": "Chyba při kontaktování řidiče"
 }

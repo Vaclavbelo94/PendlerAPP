@@ -141,5 +141,17 @@
   "enterPhoneNumber": "Geben Sie Ihre Telefonnummer ein",
   "phoneNumberHelp": "Geben Sie Ihre Telefonnummer an, damit der Fahrer Sie kontaktieren kann",
   "noRideRequests": "Sie haben noch keine Mitfahranfragen",
-  "rideRequestsWillAppearHere": "Kontaktanfragen werden hier angezeigt, wenn jemand Sie kontaktieren möchte oder Sie einen anderen Fahrer kontaktieren"
+  "rideRequestsWillAppearHere": "Kontaktanfragen werden hier angezeigt, wenn jemand Sie kontaktieren möchte oder Sie einen anderen Fahrer kontaktieren",
+  "contactDriverDescription": "Schreiben Sie eine Nachricht an den Fahrer",
+  "yourEmail": "Ihre E-Mail",
+  "enterEmail": "Geben Sie Ihre E-Mail ein",
+  "message": "Nachricht",
+  "messageToDriver": "Schreiben Sie eine Nachricht an den Fahrer...",
+  "sendMessage": "Nachricht senden",
+  "cancel": "Abbrechen",
+  "call": "Anrufen",
+  "seats": "Plätze",
+  "perPerson": "pro Person",
+  "success": "Erfolg",
+  "contactError": "Fehler beim Kontaktieren des Fahrers"
 }
