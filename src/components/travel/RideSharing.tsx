@@ -10,6 +10,7 @@ import { useAuth } from '@/hooks/auth';
 import { toast } from 'sonner';
 import ModernRideOfferCard from './rideshare/ModernRideOfferCard';
 import RideOfferFormSheet from './rideshare/RideOfferFormSheet';
+import ContactDriverDialog from './rideshare/ContactDriverDialog';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const RideSharing: React.FC = () => {
@@ -21,6 +22,8 @@ const RideSharing: React.FC = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [isFormSheetOpen, setIsFormSheetOpen] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+  const [contactDialogOpen, setContactDialogOpen] = useState(false);
+  const [selectedOffer, setSelectedOffer] = useState<RideshareOfferWithDriver | null>(null);
   const [filters, setFilters] = useState({
     origin: '',
     destination: '',
@@ -104,8 +107,8 @@ const RideSharing: React.FC = () => {
       return;
     }
     
-    console.log('Contacting driver for ride:', ride.id);
-    toast.success(t('contactRequestSent'));
+    setSelectedOffer(ride);
+    setContactDialogOpen(true);
   };
 
   const handleOfferCreated = () => {
@@ -296,6 +299,13 @@ const RideSharing: React.FC = () => {
         isOpen={isFormSheetOpen}
         setIsOpen={setIsFormSheetOpen}
         onOfferCreated={handleOfferCreated}
+      />
+
+      {/* Contact Driver Dialog */}
+      <ContactDriverDialog
+        open={contactDialogOpen}
+        onOpenChange={setContactDialogOpen}
+        selectedOffer={selectedOffer}
       />
     </div>
   );
