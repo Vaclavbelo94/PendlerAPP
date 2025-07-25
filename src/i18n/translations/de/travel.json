@@ -139,5 +139,7 @@
   "requestDetails": "Anfragedetails",
   "requestedAt": "Angefragt am",
   "enterPhoneNumber": "Geben Sie Ihre Telefonnummer ein",
-  "phoneNumberHelp": "Geben Sie Ihre Telefonnummer an, damit der Fahrer Sie kontaktieren kann"
+  "phoneNumberHelp": "Geben Sie Ihre Telefonnummer an, damit der Fahrer Sie kontaktieren kann",
+  "noRideRequests": "Sie haben noch keine Mitfahranfragen",
+  "rideRequestsWillAppearHere": "Kontaktanfragen werden hier angezeigt, wenn jemand Sie kontaktieren möchte oder Sie einen anderen Fahrer kontaktieren"
 }

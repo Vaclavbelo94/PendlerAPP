@@ -139,5 +139,7 @@
   "requestDetails": "Szczegóły żądania",
   "requestedAt": "Żądanie złożone",
   "enterPhoneNumber": "Wprowadź swój numer telefonu",
-  "phoneNumberHelp": "Podaj swój numer telefonu, aby kierowca mógł się z Tobą skontaktować"
+  "phoneNumberHelp": "Podaj swój numer telefonu, aby kierowca mógł się z Tobą skontaktować",
+  "noRideRequests": "Nie masz jeszcze żadnych próśb o przejazd",
+  "rideRequestsWillAppearHere": "Prośby o kontakt pojawią się tutaj, gdy ktoś będzie chciał skontaktować się z Tobą lub gdy będziesz kontaktować się z innym kierowcą"
 }

@@ -139,5 +139,7 @@
   "requestDetails": "Detaily žádosti",
   "requestedAt": "Žádost podána",
   "enterPhoneNumber": "Zadejte své telefonní číslo",
-  "phoneNumberHelp": "Zadejte své telefonní číslo, aby vás řidič mohl kontaktovat"
+  "phoneNumberHelp": "Zadejte své telefonní číslo, aby vás řidič mohl kontaktovat",
+  "noRideRequests": "Zatím nemáte žádné žádosti o svezení",
+  "rideRequestsWillAppearHere": "Žádosti o kontaktování se zobrazí zde, když někdo bude chtít kontaktovat vás nebo vy budete kontaktovat jiného řidiče"
 }

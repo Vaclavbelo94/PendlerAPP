@@ -155,7 +155,7 @@ const RideRequestsSection = () => {
         <CardDescription>
           {requests.length > 0 
             ? `${requests.length} ${requests.length === 1 ? 'žádost' : requests.length < 5 ? 'žádosti' : 'žádostí'}`
-            : t('noRideRequestsDescription')
+            : t('manageRideRequests')
           }
         </CardDescription>
       </CardHeader>
@@ -164,7 +164,7 @@ const RideRequestsSection = () => {
           <div className="text-center py-8 text-muted-foreground">
             <MessageCircle className="h-12 w-12 mx-auto mb-4 opacity-50" />
             <p className="text-lg font-medium">{t('noRideRequests')}</p>
-            <p className="text-sm">{t('noRideRequestsDescription')}</p>
+            <p className="text-sm">{t('rideRequestsWillAppearHere')}</p>
           </div>
         ) : (
           <div className="space-y-4">
