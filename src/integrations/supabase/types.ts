@@ -1103,6 +1103,56 @@ export type Database = {
         }
         Relationships: []
       }
+      ride_requests: {
+        Row: {
+          created_at: string
+          driver_user_id: string
+          id: string
+          message: string | null
+          requester_country_code: string | null
+          requester_email: string | null
+          requester_phone: string | null
+          requester_user_id: string
+          rideshare_offer_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          driver_user_id: string
+          id?: string
+          message?: string | null
+          requester_country_code?: string | null
+          requester_email?: string | null
+          requester_phone?: string | null
+          requester_user_id: string
+          rideshare_offer_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          driver_user_id?: string
+          id?: string
+          message?: string | null
+          requester_country_code?: string | null
+          requester_email?: string | null
+          requester_phone?: string | null
+          requester_user_id?: string
+          rideshare_offer_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ride_requests_rideshare_offer_id_fkey"
+            columns: ["rideshare_offer_id"]
+            isOneToOne: false
+            referencedRelation: "rideshare_offers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       rideshare_contacts: {
         Row: {
           country_code: string | null

@@ -12,14 +12,16 @@ import { formatPhoneNumber, getDriverDisplayName } from '@/utils/countryUtils';
 
 interface RideRequest {
   id: string;
-  offer_id: string;
+  rideshare_offer_id: string;
   requester_user_id: string;
+  driver_user_id: string;
   message: string;
+  requester_email: string;
+  requester_phone: string;
+  requester_country_code: string;
   status: string;
   created_at: string;
-  requester_email?: string;
-  phone_number?: string;
-  country_code?: string;
+  updated_at: string;
   rideshare_offers: {
     origin_address: string;
     destination_address: string;
@@ -224,7 +226,7 @@ const RideRequestsSection = () => {
                 </div>
 
                 {/* Contact Info */}
-                {(request.requester_email || request.phone_number) && (
+                {(request.requester_email || request.requester_phone) && (
                   <div className="space-y-2">
                     <h5 className="text-sm font-medium">{t('contactInfo')}:</h5>
                     <div className="flex flex-wrap gap-2 text-sm">
@@ -233,9 +235,9 @@ const RideRequestsSection = () => {
                           📧 {request.requester_email}
                         </span>
                       )}
-                      {request.phone_number && (
+                      {request.requester_phone && (
                         <span className="bg-muted/50 rounded px-2 py-1">
-                          📞 {request.country_code}{request.phone_number}
+                          📞 {request.requester_country_code}{request.requester_phone}
                         </span>
                       )}
                     </div>
@@ -246,11 +248,11 @@ const RideRequestsSection = () => {
 
                 {/* Actions */}
                 <div className="flex flex-wrap gap-2">
-                  {request.phone_number && (
+                  {request.requester_phone && (
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => handleCall(request.phone_number!, request.country_code || '+420')}
+                      onClick={() => handleCall(request.requester_phone!, request.requester_country_code || '+420')}
                       className="flex items-center gap-2"
                     >
                       <Phone className="h-4 w-4" />

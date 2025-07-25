@@ -136,16 +136,28 @@ export const rideshareService = {
         throw new Error('User must be authenticated');
       }
 
+      // First get the offer to find the driver
+      const { data: offer, error: offerError } = await supabase
+        .from('rideshare_offers')
+        .select('user_id')
+        .eq('id', offerId)
+        .single();
+
+      if (offerError || !offer) {
+        throw new Error('Offer not found');
+      }
+
       const { data, error } = await supabase
-        .from('rideshare_contacts')
+        .from('ride_requests')
         .insert({
-          offer_id: offerId,
+          rideshare_offer_id: offerId,
           requester_user_id: user.id,
+          driver_user_id: offer.user_id,
           message: message,
-          status: 'pending',
           requester_email: email,
-          phone_number: phoneNumber,
-          country_code: countryCode
+          requester_phone: phoneNumber,
+          requester_country_code: countryCode,
+          status: 'pending'
         })
         .select()
         .single();
@@ -165,7 +177,7 @@ export const rideshareService = {
   async getDriverContacts(userId: string) {
     try {
       const { data, error } = await supabase
-        .from('rideshare_contacts')
+        .from('ride_requests')
         .select(`
           *,
           rideshare_offers!inner(
@@ -178,7 +190,7 @@ export const rideshareService = {
             currency
           )
         `)
-        .eq('rideshare_offers.user_id', userId)
+        .eq('driver_user_id', userId)
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -196,7 +208,7 @@ export const rideshareService = {
   async updateContactStatus(contactId: string, status: string) {
     try {
       const { error } = await supabase
-        .from('rideshare_contacts')
+        .from('ride_requests')
         .update({ status })
         .eq('id', contactId);
 
