@@ -65,7 +65,7 @@ export const lawsTranslations = {
       legalAid: 'Právní pomoc',
       legalAidDescription: 'Možnosti bezplatné a cenově dostupné právní pomoci pro zahraniční pracovníky',
 
-      // Additional missing translations
+      // UI translations
       noLawsFound: 'Nebyly nalezeny žádné zákony',
       tryChangeCategory: 'Zkuste změnit kategorii',
       lawsCount: 'zákonů',
@@ -105,6 +105,7 @@ export const lawsTranslations = {
       germanLaws: 'Deutsche Gesetze',
       lawsGuide: 'Leitfaden für deutsche Gesetze',
       lawsDescription: 'Vollständiger Leitfaden für deutsche Gesetze für ausländische Arbeitnehmer',
+      lawsDescriptionMobile: 'Leitfaden für deutsche Gesetze',
       allLaws: 'Alle Gesetze',
       allLawsDescription: 'Alle verfügbaren Gesetze und Vorschriften anzeigen',
       
@@ -116,6 +117,54 @@ export const lawsTranslations = {
       socialSecurityDescription: 'Sozialversicherungssystem und Leistungen',
       healthInsurance: 'Krankenversicherung',
       healthInsuranceDescription: 'Krankenversicherungssystem und Abdeckung',
+      legalAid: 'Rechtshilfe',
+      legalAidDescription: 'Möglichkeiten kostenloser Rechtshilfe für ausländische Arbeitnehmer',
+
+      // Individual law titles and descriptions
+      minimumWage: 'Mindestlohn',
+      minimumWageDescription: 'Aktuelle Mindestlohnsätze und Regeln für Arbeitnehmer',
+      workContract: 'Arbeitsvertrag',
+      workContractDescription: 'Grundlegende Informationen über Arbeitsverträge und Rechte',
+      workingHours: 'Arbeitszeit',
+      workingHoursDescription: 'Regeln für Arbeitszeit und Überstunden',
+      minimumHolidays: 'Mindesturlaub',
+      minimumHolidaysDescription: 'Gesetzliche Urlaubsansprüche und Freizeit',
+      employeeProtection: 'Arbeitnehmerschutz',
+      employeeProtectionDescription: 'Rechte und Schutz von Arbeitnehmern nach deutschem Recht',
+      
+      taxReturn: 'Steuererklärung',
+      taxReturnDescription: 'Leitfaden zur Abgabe der Steuererklärung in Deutschland',
+      taxClasses: 'Steuerklassen',
+      taxClassesDescription: 'Erklärung der deutschen Steuerklassen und ihrer Anwendung',
+      
+      pensionInsurance: 'Rentenversicherung',
+      pensionInsuranceDescription: 'Informationen über das deutsche Rentensystem',
+      childBenefits: 'Kindergeld',
+      childBenefitsDescription: 'Informationen über Kindergeld und Familienleistungen',
+      parentalAllowance: 'Elterngeld',
+      parentalAllowanceDescription: 'Informationen über Elterngeld für Eltern',
+      
+      healthInsuranceSystem: 'Krankenversicherungssystem',
+      healthInsuranceSystemDescription: 'Überblick über das deutsche Krankenversicherungssystem für ausländische Arbeitnehmer',
+
+      // UI translations
+      noLawsFound: 'Keine Gesetze gefunden',
+      tryChangeCategory: 'Versuchen Sie, die Kategorie zu ändern',
+      lawsCount: 'Gesetze',
+      lawNotFound: 'Gesetz nicht gefunden',
+      overview: 'Übersicht',
+      keyPoints: 'Hauptpunkte',
+      keyPoint1: 'Erster wichtiger Punkt dieses Gesetzes',
+      keyPoint2: 'Zweiter wichtiger Punkt dieses Gesetzes',
+      keyPoint3: 'Dritter wichtiger Punkt dieses Gesetzes',
+      legalRequirements: 'Rechtliche Anforderungen',
+      requirement1: 'Erste Anforderung',
+      requirementDesc1: 'Beschreibung der ersten Anforderung',
+      requirement2: 'Zweite Anforderung',
+      requirementDesc2: 'Beschreibung der zweiten Anforderung',
+      resources: 'Ressourcen',
+      officialDocument: 'Offizielles Dokument',
+      additionalInfo: 'Zusätzliche Informationen',
 
       // Merge specific German translations
       ...workLawTranslations.de.laws,
@@ -138,6 +187,7 @@ export const lawsTranslations = {
       germanLaws: 'Niemieckie prawo',
       lawsGuide: 'Przewodnik po niemieckim prawie',
       lawsDescription: 'Kompletny przewodnik po niemieckim prawie dla zagranicznych pracowników',
+      lawsDescriptionMobile: 'Przewodnik po niemieckim prawie',
       allLaws: 'Wszystkie prawa',
       allLawsDescription: 'Pokaż wszystkie dostępne prawa i przepisy',
       
@@ -149,6 +199,54 @@ export const lawsTranslations = {
       socialSecurityDescription: 'System ubezpieczeń społecznych i świadczenia',
       healthInsurance: 'Ubezpieczenie zdrowotne',
       healthInsuranceDescription: 'System ubezpieczenia zdrowotnego i pokrycie',
+      legalAid: 'Pomoc prawna',
+      legalAidDescription: 'Możliwości bezpłatnej pomocy prawnej dla zagranicznych pracowników',
+
+      // Individual law titles and descriptions
+      minimumWage: 'Płaca minimalna',
+      minimumWageDescription: 'Aktualne stawki płacy minimalnej i zasady dla pracowników',
+      workContract: 'Umowa o pracę',
+      workContractDescription: 'Podstawowe informacje o umowach o pracę i prawach',
+      workingHours: 'Czas pracy',
+      workingHoursDescription: 'Zasady czasu pracy i nadgodzin',
+      minimumHolidays: 'Minimalny urlop',
+      minimumHolidaysDescription: 'Ustawowe prawa do urlopu i wolnego czasu',
+      employeeProtection: 'Ochrona pracowników',
+      employeeProtectionDescription: 'Prawa i ochrona pracowników według niemieckiego prawa',
+      
+      taxReturn: 'Zeznanie podatkowe',
+      taxReturnDescription: 'Przewodnik po składaniu zeznania podatkowego w Niemczech',
+      taxClasses: 'Klasy podatkowe',
+      taxClassesDescription: 'Wyjaśnienie niemieckich klas podatkowych i ich zastosowania',
+      
+      pensionInsurance: 'Ubezpieczenie emerytalne',
+      pensionInsuranceDescription: 'Informacje o niemieckim systemie emerytalnym',
+      childBenefits: 'Zasiłek na dziecko',
+      childBenefitsDescription: 'Informacje o zasiłku na dziecko i świadczeniach rodzinnych',
+      parentalAllowance: 'Zasiłek rodzicielski',
+      parentalAllowanceDescription: 'Informacje o zasiłku rodzicielskim (Elterngeld)',
+      
+      healthInsuranceSystem: 'System ubezpieczenia zdrowotnego',
+      healthInsuranceSystemDescription: 'Przegląd niemieckiego systemu ubezpieczenia zdrowotnego dla zagranicznych pracowników',
+
+      // UI translations
+      noLawsFound: 'Nie znaleziono praw',
+      tryChangeCategory: 'Spróbuj zmienić kategorię',
+      lawsCount: 'praw',
+      lawNotFound: 'Prawo nie zostało znalezione',
+      overview: 'Przegląd',
+      keyPoints: 'Kluczowe punkty',
+      keyPoint1: 'Pierwszy ważny punkt tego prawa',
+      keyPoint2: 'Drugi ważny punkt tego prawa',
+      keyPoint3: 'Trzeci ważny punkt tego prawa',
+      legalRequirements: 'Wymagania prawne',
+      requirement1: 'Pierwszy wymóg',
+      requirementDesc1: 'Opis pierwszego wymogu',
+      requirement2: 'Drugi wymóg',
+      requirementDesc2: 'Opis drugiego wymogu',
+      resources: 'Zasoby',
+      officialDocument: 'Oficjalny dokument',
+      additionalInfo: 'Dodatkowe informacje',
 
       // Merge specific Polish translations
       ...workLawTranslations.pl.laws,
