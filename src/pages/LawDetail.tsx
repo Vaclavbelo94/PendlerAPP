@@ -24,6 +24,164 @@ const LawDetail = () => {
   
   const law = lawItems.find(item => item.id === lawId);
   console.log('LawDetail - Found law:', law ? law.title : 'Not found');
+
+  const renderLawSpecificContent = (lawId: string) => {
+    // For employee-protection, show the specific content from EmployeeProtection component
+    if (lawId === 'employee-protection') {
+      return (
+        <div className="grid gap-6">
+          <Card className="bg-card/10 border-border">
+            <CardHeader>
+              <CardTitle className="text-foreground">{t('basicRights')}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="list-disc pl-6 space-y-2 text-foreground">
+                <li>{t('safeWorkplace')}</li>
+                <li>{t('antiDiscrimination')}</li>
+                <li>{t('fairWages')}</li>
+                <li>{t('workingHours')}</li>
+                <li>{t('vacationRights')}</li>
+                <li>{t('wrongfulTermination')}</li>
+              </ul>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-card/10 border-border">
+            <CardHeader>
+              <CardTitle className="text-foreground">{t('dismissalProtection')}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <p className="text-foreground">{t('dismissalProtectionDesc')}</p>
+                <div>
+                  <h4 className="font-semibold text-foreground">{t('dismissalReasons')}</h4>
+                  <ul className="list-disc pl-6 space-y-1 mt-2 text-foreground">
+                    <li>{t('personalReasons')}</li>
+                    <li>{t('dutyViolation')}</li>
+                    <li>{t('operationalReasons')}</li>
+                  </ul>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-card/10 border-border">
+            <CardHeader>
+              <CardTitle className="text-foreground">{t('workplaceSafety')}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="list-disc pl-6 space-y-2 text-foreground">
+                <li>{t('employerObligations')}</li>
+                <li>{t('protectiveEquipment')}</li>
+                <li>{t('safetyTraining')}</li>
+                <li>{t('refuseDangerous')}</li>
+                <li>{t('accidentReporting')}</li>
+              </ul>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-card/10 border-border">
+            <CardHeader>
+              <CardTitle className="text-foreground">{t('discriminationProtection')}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <p className="text-foreground">{t('equalTreatment')}</p>
+                <ul className="list-disc pl-6 space-y-1 text-foreground">
+                  <li>{t('raceEthnicity')}</li>
+                  <li>{t('gender')}</li>
+                  <li>{t('religion')}</li>
+                  <li>{t('disability')}</li>
+                  <li>{t('age')}</li>
+                  <li>{t('sexualOrientation')}</li>
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      );
+    }
+
+    // For minimum-wage
+    if (lawId === 'minimum-wage') {
+      return (
+        <div className="grid gap-6">
+          <Card className="bg-card/10 border-border">
+            <CardHeader>
+              <CardTitle className="text-foreground">{t('currentMinimumWage')}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-6">
+                <div className="text-4xl font-bold text-primary mb-2">12,41 €</div>
+                <div className="text-lg text-muted-foreground">{t('perHour')}</div>
+                <p className="text-sm text-muted-foreground mt-4">{t('currentWageDescription')}</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-card/10 border-border">
+            <CardHeader>
+              <CardTitle className="text-foreground">{t('whoIsEntitled')}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="list-disc pl-6 space-y-2 text-foreground">
+                <li>{t('allEmployeesOver18')}</li>
+                <li>{t('partTimeWorkers')}</li>
+                <li>{t('temporaryWorkers')}</li>
+                <li>{t('internsWithExceptions')}</li>
+              </ul>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-card/10 border-border">
+            <CardHeader>
+              <CardTitle className="text-foreground">{t('exceptions')}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="list-disc pl-6 space-y-2 text-foreground">
+                <li>{t('minorsWithoutEducation')}</li>
+                <li>{t('volunteers')}</li>
+                <li>{t('mandatoryInterns')}</li>
+                <li>{t('longTermUnemployed')}</li>
+              </ul>
+            </CardContent>
+          </Card>
+        </div>
+      );
+    }
+
+    // Default content for other laws
+    return (
+      <div className="grid gap-6">
+        <Card className="bg-card/10 border-border">
+          <CardHeader>
+            <CardTitle className="text-foreground">{t('overview')}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-foreground leading-relaxed">{law?.description}</p>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-card/10 border-border">
+          <CardHeader>
+            <CardTitle className="text-foreground">{t('resources')}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-3">
+              <Button variant="outline" className="bg-card/10 border-border">
+                <ExternalLink className="h-4 w-4 mr-2" />
+                {t('officialDocument')}
+              </Button>
+              <Button variant="outline" className="bg-card/10 border-border">
+                <ExternalLink className="h-4 w-4 mr-2" />
+                {t('additionalInfo')}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  };
   
   if (!law) {
     return (
@@ -92,96 +250,7 @@ const LawDetail = () => {
             <Separator className="my-6 border-border" />
 
             {/* Main Content */}
-            <div className="grid gap-6">
-              {/* Overview Card */}
-              <Card className="bg-card/10 border-border">
-                <CardHeader>
-                  <CardTitle className="text-foreground">
-                    {t('overview')}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-foreground leading-relaxed">
-                    {law.description}
-                  </p>
-                </CardContent>
-              </Card>
-
-              {/* Key Points Card */}
-              <Card className="bg-card/10 border-border">
-                <CardHeader>
-                  <CardTitle className="text-foreground">
-                    {t('keyPoints')}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex items-start gap-3">
-                      <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
-                      <p className="text-foreground">{t('keyPoint1')}</p>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
-                      <p className="text-foreground">{t('keyPoint2')}</p>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
-                      <p className="text-foreground">{t('keyPoint3')}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Legal Requirements Card */}
-              <Card className="bg-card/10 border-border">
-                <CardHeader>
-                  <CardTitle className="text-foreground">
-                    {t('legalRequirements')}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="p-4 bg-card/20 rounded-lg border border-border">
-                      <h4 className="font-semibold text-foreground mb-2">
-                        {t('requirement1')}
-                      </h4>
-                      <p className="text-muted-foreground text-sm">
-                        {t('requirementDesc1')}
-                      </p>
-                    </div>
-                    <div className="p-4 bg-card/20 rounded-lg border border-border">
-                      <h4 className="font-semibold text-foreground mb-2">
-                        {t('requirement2')}
-                      </h4>
-                      <p className="text-muted-foreground text-sm">
-                        {t('requirementDesc2')}
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Actions Card */}
-              <Card className="bg-card/10 border-border">
-                <CardHeader>
-                  <CardTitle className="text-foreground">
-                    {t('resources')}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap gap-3">
-                    <Button variant="outline" className="bg-card/10 border-border">
-                      <ExternalLink className="h-4 w-4 mr-2" />
-                      {t('officialDocument')}
-                    </Button>
-                    <Button variant="outline" className="bg-card/10 border-border">
-                      <ExternalLink className="h-4 w-4 mr-2" />
-                      {t('additionalInfo')}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+            {renderLawSpecificContent(law.id)}
           </motion.div>
         </div>
       </DashboardBackground>
