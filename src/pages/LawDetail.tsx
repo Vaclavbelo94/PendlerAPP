@@ -501,6 +501,216 @@ const LawDetail = () => {
           </div>
         );
 
+      case 'pension-insurance':
+        return (
+          <div className="grid gap-6">
+            <Card className="bg-card/10 border-border">
+              <CardHeader>
+                <CardTitle className="text-foreground">{t('germanPensionSystem')}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-foreground mb-4">{t('systemDescription')}</p>
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div className="p-4 bg-card/20 rounded-lg border border-border">
+                    <h4 className="font-semibold text-foreground mb-2">{t('statePension')}</h4>
+                    <p className="text-muted-foreground text-sm">{t('statePensionDesc')}</p>
+                  </div>
+                  <div className="p-4 bg-card/20 rounded-lg border border-border">
+                    <h4 className="font-semibold text-foreground mb-2">{t('employeePension')}</h4>
+                    <p className="text-muted-foreground text-sm">{t('employeePensionDesc')}</p>
+                  </div>
+                  <div className="p-4 bg-card/20 rounded-lg border border-border">
+                    <h4 className="font-semibold text-foreground mb-2">{t('privateSavings')}</h4>
+                    <p className="text-muted-foreground text-sm">{t('privateSavingsDesc')}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-card/10 border-border">
+              <CardHeader>
+                <CardTitle className="text-foreground">{t('pensionConditions')}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="font-semibold text-foreground">{t('basicOldAgePension')}</h4>
+                    <p className="text-muted-foreground text-sm">{t('basicPensionDesc')}</p>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-foreground">{t('earlyPension')}</h4>
+                    <p className="text-muted-foreground text-sm">{t('earlyPensionDesc')}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-card/10 border-border">
+              <CardHeader>
+                <CardTitle className="text-foreground">{t('retirementAge')}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-foreground mb-3">{t('retirementAgeDesc')}</p>
+                <ul className="list-disc pl-6 space-y-1 text-foreground">
+                  <li>{t('ageBefore1947')}</li>
+                  <li>{t('ageBetween1947And1963')}</li>
+                  <li>{t('ageAfter1964')}</li>
+                </ul>
+              </CardContent>
+            </Card>
+          </div>
+        );
+
+      case 'child-benefits':
+        return (
+          <div className="grid gap-6">
+            <Card className="bg-card/10 border-border">
+              <CardHeader>
+                <CardTitle className="text-foreground">Kindergeld</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-6">
+                  <div className="text-4xl font-bold text-primary mb-2">250 €</div>
+                  <div className="text-lg text-muted-foreground">{t('kindergeldDesc')}</div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-card/10 border-border">
+              <CardHeader>
+                <CardTitle className="text-foreground">{t('ageLimits')}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="list-disc pl-6 space-y-2 text-foreground">
+                  <li>{t('upTo18')}</li>
+                  <li>{t('upTo25')}</li>
+                  <li>{t('disabled')}</li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-card/10 border-border">
+              <CardHeader>
+                <CardTitle className="text-foreground">{t('eligibility')}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="list-disc pl-6 space-y-2 text-foreground">
+                  <li>{t('permanentResidence')}</li>
+                  <li>{t('sameHousehold')}</li>
+                  <li>{t('childUnprovided')}</li>
+                  <li>{t('ageConditions')}</li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-card/10 border-border">
+              <CardHeader>
+                <CardTitle className="text-foreground">{t('kinderzuschlag')}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-4 mb-4">
+                  <div className="text-2xl font-bold text-primary">{t('upTo250')}</div>
+                  <div className="text-sm text-muted-foreground">{t('lowIncomeDesc')}</div>
+                </div>
+                <ul className="list-disc pl-6 space-y-1 text-muted-foreground text-sm">
+                  <li>{t('minimumIncome')}</li>
+                  <li>{t('incomeNotSufficient')}</li>
+                  <li>{t('noAlg2Needed')}</li>
+                </ul>
+              </CardContent>
+            </Card>
+          </div>
+        );
+
+      case 'parental-allowance':
+        return (
+          <div className="grid gap-6">
+            <Card className="bg-card/10 border-border">
+              <CardHeader>
+                <CardTitle className="text-foreground">{t('whatIsElterngeld')}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-foreground">{t('elterngeldDescription')}</p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-card/10 border-border">
+              <CardHeader>
+                <CardTitle className="text-foreground">{t('amountOfBenefit')}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-foreground mb-4">{t('amountDescription')}</p>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="p-4 bg-card/20 rounded-lg border border-border text-center">
+                    <div className="text-lg font-semibold text-primary">{t('minimumAmount')}</div>
+                  </div>
+                  <div className="p-4 bg-card/20 rounded-lg border border-border text-center">
+                    <div className="text-lg font-semibold text-primary">{t('maximumAmount')}</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-card/10 border-border">
+              <CardHeader>
+                <CardTitle className="text-foreground">{t('typesOfBenefits')}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="p-4 bg-card/20 rounded-lg border border-border">
+                    <h4 className="font-semibold text-foreground mb-2">{t('basicBenefit')}</h4>
+                    <p className="text-muted-foreground text-sm mb-2">{t('basicBenefitDesc')}</p>
+                    <span className="text-primary font-medium">{t('basicBenefitAmount')}</span>
+                  </div>
+                  <div className="p-4 bg-card/20 rounded-lg border border-border">
+                    <h4 className="font-semibold text-foreground mb-2">{t('extendedBenefit')}</h4>
+                    <p className="text-muted-foreground text-sm mb-2">{t('extendedBenefitDesc')}</p>
+                    <span className="text-primary font-medium">{t('extendedBenefitAmount')}</span>
+                  </div>
+                  <div className="p-4 bg-card/20 rounded-lg border border-border">
+                    <h4 className="font-semibold text-foreground mb-2">{t('partnershipBonusTitle')}</h4>
+                    <p className="text-muted-foreground text-sm">{t('partnershipBonusDesc')}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-card/10 border-border">
+              <CardHeader>
+                <CardTitle className="text-foreground">{t('howToApplyElterngeld')}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-foreground mb-4">{t('applicationProcess')}</p>
+                <div>
+                  <h4 className="font-semibold text-foreground mb-2">{t('requiredDocumentsTitle')}</h4>
+                  <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
+                    <li>{t('applicationFormFilled')}</li>
+                    <li>{t('childBirthCertificate')}</li>
+                    <li>{t('incomeConfirmation')}</li>
+                    <li>{t('workInterruptionConfirmation')}</li>
+                    <li>{t('parentsIdProof')}</li>
+                    <li>{t('healthInsuranceConfirmation')}</li>
+                  </ul>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        );
+
+      case 'tax-classes':
+        return (
+          <div className="grid gap-6">
+            <Card className="bg-card/10 border-border">
+              <CardHeader>
+                <CardTitle className="text-foreground">{t('taxClassesOverview')}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-foreground">{t('howToChoose')}</p>
+              </CardContent>
+            </Card>
+          </div>
+        );
+
       default:
         return (
           <div className="grid gap-6">
