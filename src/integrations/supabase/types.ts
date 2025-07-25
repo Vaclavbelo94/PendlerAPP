@@ -1105,33 +1105,42 @@ export type Database = {
       }
       rideshare_contacts: {
         Row: {
+          country_code: string | null
           created_at: string | null
           id: string
           message: string | null
           offer_id: string | null
+          phone_number: string | null
           rating: number | null
+          requester_email: string | null
           requester_user_id: string
           review: string | null
           status: string | null
           updated_at: string | null
         }
         Insert: {
+          country_code?: string | null
           created_at?: string | null
           id?: string
           message?: string | null
           offer_id?: string | null
+          phone_number?: string | null
           rating?: number | null
+          requester_email?: string | null
           requester_user_id: string
           review?: string | null
           status?: string | null
           updated_at?: string | null
         }
         Update: {
+          country_code?: string | null
           created_at?: string | null
           id?: string
           message?: string | null
           offer_id?: string | null
+          phone_number?: string | null
           rating?: number | null
+          requester_email?: string | null
           requester_user_id?: string
           review?: string | null
           status?: string | null

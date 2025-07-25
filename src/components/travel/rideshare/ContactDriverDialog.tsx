@@ -5,12 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MessageCircle, Phone, MapPin, Calendar, Clock, Users } from "lucide-react";
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from "@/hooks/auth";
 import { rideshareService, RideshareOfferWithDriver } from "@/services/rideshareService";
 import { useTranslation } from 'react-i18next';
-import { formatPhoneNumber } from '@/utils/countryUtils';
+import { formatPhoneNumber, getCountryConfig } from '@/utils/countryUtils';
 
 interface ContactDriverDialogProps {
   open: boolean;
@@ -20,15 +21,45 @@ interface ContactDriverDialogProps {
 
 const ContactDriverDialog = ({ open, onOpenChange, selectedOffer }: ContactDriverDialogProps) => {
   const { user } = useAuth();
-  const { t } = useTranslation('travel');
+  const { t, i18n } = useTranslation('travel');
   const [contactMessage, setContactMessage] = useState('');
   const [contactEmail, setContactEmail] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [countryCode, setCountryCode] = useState(() => getCountryConfig(i18n.language).prefix);
 
   const handleContactDriver = async () => {
-    if (!user?.id || !selectedOffer?.id || !contactMessage.trim()) return;
+    if (!user?.id || !selectedOffer?.id || !contactMessage.trim() || !phoneNumber.trim()) {
+      if (!phoneNumber.trim()) {
+        toast({
+          title: t('error'),
+          description: t('phoneRequired') || 'Telefonní číslo je povinné',
+          variant: "destructive"
+        });
+        return;
+      }
+      return;
+    }
+
+    // Basic phone validation
+    const phoneRegex = /^\d{7,15}$/;
+    const cleanPhone = phoneNumber.replace(/\D/g, '');
+    if (!phoneRegex.test(cleanPhone)) {
+      toast({
+        title: t('error'),
+        description: t('invalidPhone') || 'Neplatné telefonní číslo',
+        variant: "destructive"
+      });
+      return;
+    }
 
     try {
-      await rideshareService.contactDriver(selectedOffer.id, contactMessage.trim());
+      await rideshareService.contactDriver(
+        selectedOffer.id, 
+        contactMessage.trim(),
+        contactEmail,
+        phoneNumber,
+        countryCode
+      );
       
       toast({
         title: t('success'),
@@ -38,6 +69,7 @@ const ContactDriverDialog = ({ open, onOpenChange, selectedOffer }: ContactDrive
       onOpenChange(false);
       setContactMessage('');
       setContactEmail('');
+      setPhoneNumber('');
     } catch (error) {
       console.error('Error contacting driver:', error);
       toast({
@@ -130,6 +162,34 @@ const ContactDriverDialog = ({ open, onOpenChange, selectedOffer }: ContactDrive
           </div>
 
           <div className="space-y-2">
+            <Label htmlFor="phone-number">{t('phoneNumber')} *</Label>
+            <div className="flex gap-2">
+              <Select value={countryCode} onValueChange={setCountryCode}>
+                <SelectTrigger className="w-[120px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="+420">🇨🇿 +420</SelectItem>
+                  <SelectItem value="+49">🇩🇪 +49</SelectItem>
+                  <SelectItem value="+48">🇵🇱 +48</SelectItem>
+                </SelectContent>
+              </Select>
+              <Input
+                id="phone-number"
+                type="tel"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                placeholder={t('enterPhoneNumber')}
+                className="flex-1"
+                required
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {t('phoneNumberHelp')}
+            </p>
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="message">{t('message') || 'Zpráva'}</Label>
             <Textarea
               id="message"
@@ -165,7 +225,7 @@ const ContactDriverDialog = ({ open, onOpenChange, selectedOffer }: ContactDrive
           
           <Button
             onClick={handleContactDriver}
-            disabled={!contactMessage.trim()}
+            disabled={!contactMessage.trim() || !phoneNumber.trim()}
             className="flex items-center gap-2"
           >
             <MessageCircle className="h-4 w-4" />

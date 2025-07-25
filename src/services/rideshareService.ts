@@ -128,7 +128,7 @@ export const rideshareService = {
     return this.createRideshareOffer(offerData);
   },
 
-  async contactDriver(offerId: string, message: string) {
+  async contactDriver(offerId: string, message: string, email?: string, phoneNumber?: string, countryCode?: string) {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       
@@ -142,7 +142,10 @@ export const rideshareService = {
           offer_id: offerId,
           requester_user_id: user.id,
           message: message,
-          status: 'pending'
+          status: 'pending',
+          requester_email: email,
+          phone_number: phoneNumber,
+          country_code: countryCode
         })
         .select()
         .single();
@@ -155,6 +158,54 @@ export const rideshareService = {
       return data;
     } catch (error) {
       console.error('Service error in contactDriver:', error);
+      throw error;
+    }
+  },
+
+  async getDriverContacts(userId: string) {
+    try {
+      const { data, error } = await supabase
+        .from('rideshare_contacts')
+        .select(`
+          *,
+          rideshare_offers!inner(
+            origin_address,
+            destination_address,
+            departure_date,
+            departure_time,
+            seats_available,
+            price_per_person,
+            currency
+          )
+        `)
+        .eq('rideshare_offers.user_id', userId)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error loading driver contacts:', error);
+        throw new Error('Failed to load contact requests');
+      }
+
+      return data || [];
+    } catch (error) {
+      console.error('Service error in getDriverContacts:', error);
+      throw error;
+    }
+  },
+
+  async updateContactStatus(contactId: string, status: string) {
+    try {
+      const { error } = await supabase
+        .from('rideshare_contacts')
+        .update({ status })
+        .eq('id', contactId);
+
+      if (error) {
+        console.error('Error updating contact status:', error);
+        throw new Error('Failed to update contact status');
+      }
+    } catch (error) {
+      console.error('Service error in updateContactStatus:', error);
       throw error;
     }
   },
