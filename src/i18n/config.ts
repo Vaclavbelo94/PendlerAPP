@@ -55,9 +55,7 @@ import travelCs from './translations/cs/travel.json';
 import travelDe from './translations/de/travel.json';
 import travelPl from './translations/pl/travel.json';
 
-import lawsCs from './translations/cs/laws.json';
-import lawsDe from './translations/de/laws.json';
-import lawsPl from './translations/pl/laws.json';
+import { lawsTranslations } from '../lib/i18n/translations/laws';
 
 import taxAdvisorCs from './translations/cs/taxAdvisor.json';
 import taxAdvisorDe from './translations/de/taxAdvisor.json';
@@ -89,7 +87,7 @@ const resources = {
     auth: authCs,
     translator: translatorCs,
     travel: travelCs,
-    laws: lawsCs,
+    laws: lawsTranslations.cs.laws,
     taxAdvisor: taxAdvisorCs,
     vehicle: vehicleCs,
     premium: premiumCs,
@@ -109,7 +107,7 @@ const resources = {
     auth: authDe,
     translator: translatorDe,
     travel: travelDe,
-    laws: lawsDe,
+    laws: lawsTranslations.de.laws,
     taxAdvisor: taxAdvisorDe,
     vehicle: vehicleDe,
     premium: premiumDe,
@@ -129,7 +127,7 @@ const resources = {
     auth: authPl,
     translator: translatorPl,
     travel: travelPl,
-    laws: lawsPl,
+    laws: lawsTranslations.pl.laws,
     taxAdvisor: taxAdvisorPl,
     vehicle: vehiclePl,
     premium: premiumPl,
