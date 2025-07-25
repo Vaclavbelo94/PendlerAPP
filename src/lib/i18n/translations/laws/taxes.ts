@@ -33,20 +33,64 @@ export const taxesTranslations = {
   },
   de: {
     laws: {
-      // Placeholder for German translations
+      // Tax Return
       taxReturnTitle: 'Steuererklärung',
       taxReturnDescription: 'Leitfaden zur Abgabe der Steuererklärung in Deutschland',
+      whoMustFile: 'Wer muss eine Steuererklärung abgeben',
+      selfEmployed: 'Selbstständige und Freiberufler',
+      sideIncome: 'Nebeneinkünfte über 410 € jährlich',
+      marriedTaxClass: 'Verheiratete mit Steuerklasse III/V',
+      multipleEmployers: 'Mehrere Arbeitgeber gleichzeitig',
+      unemploymentBenefits: 'Bezug von Arbeitslosengeld',
+      filingDeadlines: 'Abgabefristen',
+      standardDeadline: 'Standardfrist',
+      standardDeadlineDesc: '31. Juli des Folgejahres',
+      withTaxAdvisor: 'Mit Steuerberater',
+      withTaxAdvisorDesc: 'Bis Ende Februar des Folgejahres',
+      deductibleItems: 'Abzugsfähige Posten',
+      commutingCosts: 'Fahrtkosten zur Arbeit (0,30 € pro km über 20 km)',
+      workingTools: 'Arbeitsmittel und Werkzeuge',
+      furtherEducation: 'Berufsbezogene Weiterbildung',
+      insuranceContributions: 'Versicherungsbeiträge',
+      churchTax: 'Kirchensteuer',
+      charityDonations: 'Wohltätige Spenden',
+
+      // Tax Classes
       taxClasses: 'Steuerklassen',
       taxClassesDescription: 'Erklärung der deutschen Steuerklassen und ihrer Anwendung',
+      taxClassesOverview: 'Übersicht der Steuerklassen',
+      howToChoose: 'Wie wählt man eine Steuerklasse',
     },
   },
   pl: {
     laws: {
-      // Placeholder for Polish translations
+      // Tax Return
       taxReturnTitle: 'Zeznanie podatkowe',
       taxReturnDescription: 'Przewodnik po składaniu zeznania podatkowego w Niemczech',
+      whoMustFile: 'Kto musi złożyć zeznanie podatkowe',
+      selfEmployed: 'Osoby samozatrudnione i freelancerzy',
+      sideIncome: 'Dodatkowe dochody powyżej 410 € rocznie',
+      marriedTaxClass: 'Małżeństwa z klasą podatkową III/V',
+      multipleEmployers: 'Wielu pracodawców jednocześnie',
+      unemploymentBenefits: 'Pobieranie zasiłku dla bezrobotnych',
+      filingDeadlines: 'Terminy składania',
+      standardDeadline: 'Standardowy termin',
+      standardDeadlineDesc: '31 lipca następnego roku',
+      withTaxAdvisor: 'Z doradcą podatkowym',
+      withTaxAdvisorDesc: 'Do końca lutego następnego roku',
+      deductibleItems: 'Pozycje podlegające odliczeniu',
+      commutingCosts: 'Koszty dojazdu do pracy (0,30 € za km powyżej 20 km)',
+      workingTools: 'Narzędzia i pomoce robocze',
+      furtherEducation: 'Szkolenia zawodowe',
+      insuranceContributions: 'Składki ubezpieczeniowe',
+      churchTax: 'Podatek kościelny',
+      charityDonations: 'Darowizny charytatywne',
+
+      // Tax Classes
       taxClasses: 'Klasy podatkowe',
       taxClassesDescription: 'Wyjaśnienie niemieckich klas podatkowych i ich zastosowania',
+      taxClassesOverview: 'Przegląd klas podatkowych',
+      howToChoose: 'Jak wybrać klasę podatkową',
     },
   },
 };
