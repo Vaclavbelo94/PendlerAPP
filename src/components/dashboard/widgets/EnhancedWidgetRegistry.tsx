@@ -4,9 +4,13 @@ import ShiftsProgress from '../ShiftsProgress';
 import CommuteComparison from '../CommuteComparison';
 import AdvancedAnalyticsWidget from '@/components/analytics/AdvancedAnalyticsWidget';
 import SmartPackWidget from '@/components/language/SmartPackWidget';
+import DHLShiftsWidget from './company/DHLShiftsWidget';
+import DHLOvertimeWidget from './company/DHLOvertimeWidget';
+import AdeccoShiftsWidget from './company/AdeccoShiftsWidget';
+import RandstadShiftsWidget from './company/RandstadShiftsWidget';
 import { Calendar, Languages, Car, Brain, Package } from 'lucide-react';
 
-// Enhanced widget components map - removed education widget
+// Enhanced widget components map - includes company-specific widgets
 const WIDGET_COMPONENTS: Record<WidgetType | string, React.ComponentType<any>> = {
   // Original widgets
   shifts: ShiftsProgress,
@@ -15,6 +19,12 @@ const WIDGET_COMPONENTS: Record<WidgetType | string, React.ComponentType<any>> =
   // New Phase 4 widgets
   'advanced-analytics': AdvancedAnalyticsWidget,
   'smart-packs': SmartPackWidget,
+  
+  // Company-specific widgets
+  'dhl_shifts': DHLShiftsWidget,
+  'dhl_overtime': DHLOvertimeWidget,
+  'adecco_shifts': AdeccoShiftsWidget,
+  'randstad_shifts': RandstadShiftsWidget,
 };
 
 // Enhanced widget configurations with intelligent positioning - removed education widget
@@ -86,9 +96,14 @@ export const ENHANCED_WIDGETS: WidgetConfig[] = [
   },
 ];
 
-// Smart widget positioning based on user behavior
-export const getOptimizedWidgetLayout = (userPreferences: any = {}, usageData: any = {}): WidgetConfig[] => {
+// Smart widget positioning based on user behavior with company widgets
+export const getOptimizedWidgetLayout = (userPreferences: any = {}, usageData: any = {}, companyWidgets: WidgetConfig[] = []): WidgetConfig[] => {
   const widgets = [...ENHANCED_WIDGETS];
+  
+  // Add company-specific widgets
+  if (companyWidgets.length > 0) {
+    widgets.push(...companyWidgets);
+  }
   
   // Adjust widget order based on usage patterns
   if (usageData.mostUsedModule) {

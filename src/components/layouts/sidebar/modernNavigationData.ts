@@ -14,7 +14,10 @@ import {
   Shield,
   Languages,
   Lock,
-  FileCheck
+  FileCheck,
+  Building,
+  Clock,
+  Users
 } from 'lucide-react';
 
 export interface ModernNavigationItem {
@@ -28,6 +31,7 @@ export interface ModernNavigationItem {
   requiresAuth?: boolean;
   isPremium?: boolean;
   isAdmin?: boolean;
+  company?: 'dhl' | 'adecco' | 'randstad';
   color: string;
   gradient: string;
 }
@@ -193,6 +197,56 @@ export const modernNavigationItems: ModernNavigationItem[] = [
     gradient: 'from-gray-500 to-gray-600'
   },
   
+  // Company-specific sections
+  {
+    id: 'dhl-hub',
+    label: 'DHL Hub',
+    href: '/dhl',
+    icon: Building,
+    description: 'DHL nástroje a funkce',
+    category: 'tools',
+    requiresAuth: true,
+    company: 'dhl',
+    color: 'text-yellow-600',
+    gradient: 'from-yellow-500 to-red-500'
+  },
+  {
+    id: 'dhl-wechselschicht',
+    label: 'Wechselschicht',
+    href: '/dhl/wechselschicht',
+    icon: Clock,
+    description: 'DHL střídavé směny',
+    category: 'tools',
+    requiresAuth: true,
+    company: 'dhl',
+    color: 'text-yellow-700',
+    gradient: 'from-yellow-600 to-red-600'
+  },
+  {
+    id: 'adecco-hub',
+    label: 'Adecco Hub',
+    href: '/adecco',
+    icon: Users,
+    description: 'Adecco nástroje a pozice',
+    category: 'tools',
+    requiresAuth: true,
+    company: 'adecco',
+    color: 'text-blue-600',
+    gradient: 'from-blue-500 to-blue-700'
+  },
+  {
+    id: 'randstad-hub',
+    label: 'Randstad Hub',
+    href: '/randstad',
+    icon: Building,
+    description: 'Randstad flexibilní práce',
+    category: 'tools',
+    requiresAuth: true,
+    company: 'randstad',
+    color: 'text-green-600',
+    gradient: 'from-green-500 to-green-700'
+  },
+
   // Admin section
   {
     id: 'admin',
@@ -207,8 +261,28 @@ export const modernNavigationItems: ModernNavigationItem[] = [
   }
 ];
 
-export const getCategoryItems = (category: string) => 
-  modernNavigationItems.filter(item => item.category === category);
+export const getCategoryItems = (category: string, userCompany?: string | null) => 
+  modernNavigationItems.filter(item => {
+    if (item.category !== category) return false;
+    if (item.company && item.company !== userCompany) return false;
+    return true;
+  });
+
+export const getCompanyItems = (userCompany: string | null) =>
+  modernNavigationItems.filter(item => item.company === userCompany);
+
+export const getVisibleItems = (userCompany: string | null, isAuth: boolean, isPremium: boolean, isAdmin: boolean) =>
+  modernNavigationItems.filter(item => {
+    // Company-specific items
+    if (item.company && item.company !== userCompany) return false;
+    
+    // Auth requirements
+    if (item.requiresAuth && !isAuth) return false;
+    if (item.isPremium && !isPremium) return false;
+    if (item.isAdmin && !isAdmin) return false;
+    
+    return true;
+  });
 
 export const getCategoryTitle = (category: string) => {
   switch (category) {

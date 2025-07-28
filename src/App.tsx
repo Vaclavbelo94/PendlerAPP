@@ -9,6 +9,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "@/hooks/auth";
 import { DHLThemeProvider } from "@/contexts/DHLThemeContext";
+import { CompanyModuleProvider } from "@/components/company/CompanyModuleProvider";
 import Index from "./pages/Index";
 import CompanySelector from "./components/company/CompanySelector";
 import CompanyLandingPage from "./components/company/CompanyLandingPage";
@@ -51,7 +52,8 @@ function App() {
             <BrowserRouter>
               <AuthProvider>
                 <DHLThemeProvider>
-                  <Suspense fallback={<LoadingSpinner />}>
+                  <CompanyModuleProvider>
+                    <Suspense fallback={<LoadingSpinner />}>
                     <Routes>
                        <Route path="/" element={<CompanySelector />} />
                        <Route path="/adecco" element={<CompanyLandingPage />} />
@@ -79,9 +81,10 @@ function App() {
                        <Route path="/dhl-setup" element={<DHLSetup />} />
                     </Routes>
                    </Suspense>
-                   <Toaster />
-                   <SonnerToaster position="top-right" />
-                 </DHLThemeProvider>
+                    <Toaster />
+                    <SonnerToaster position="top-right" />
+                  </CompanyModuleProvider>
+                </DHLThemeProvider>
               </AuthProvider>
             </BrowserRouter>
           </TooltipProvider>

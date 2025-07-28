@@ -3,7 +3,7 @@ import { LucideIcon } from 'lucide-react';
 
 export type WidgetSize = 'small' | 'medium' | 'large' | 'full';
 export type WidgetType = 'shifts' | 'language' | 'commute' | 'education';
-export type WidgetCategory = 'core' | 'smart' | 'utility' | 'analytics';
+export type WidgetCategory = 'core' | 'smart' | 'utility' | 'analytics' | 'company';
 export type WidgetPriority = 'low' | 'medium' | 'high' | 'critical';
 
 export interface WidgetConfig {
