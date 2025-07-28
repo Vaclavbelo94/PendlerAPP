@@ -134,6 +134,75 @@ export type Database = {
         }
         Relationships: []
       }
+      company_modules: {
+        Row: {
+          company: Database["public"]["Enums"]["company_type"]
+          config: Json | null
+          created_at: string
+          display_order: number | null
+          id: string
+          is_enabled: boolean
+          module_key: string
+          updated_at: string
+        }
+        Insert: {
+          company: Database["public"]["Enums"]["company_type"]
+          config?: Json | null
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          is_enabled?: boolean
+          module_key: string
+          updated_at?: string
+        }
+        Update: {
+          company?: Database["public"]["Enums"]["company_type"]
+          config?: Json | null
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          is_enabled?: boolean
+          module_key?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      company_widgets: {
+        Row: {
+          category: string | null
+          company: Database["public"]["Enums"]["company_type"]
+          config: Json | null
+          created_at: string
+          display_order: number | null
+          id: string
+          is_enabled: boolean
+          updated_at: string
+          widget_key: string
+        }
+        Insert: {
+          category?: string | null
+          company: Database["public"]["Enums"]["company_type"]
+          config?: Json | null
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          is_enabled?: boolean
+          updated_at?: string
+          widget_key: string
+        }
+        Update: {
+          category?: string | null
+          company?: Database["public"]["Enums"]["company_type"]
+          config?: Json | null
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          is_enabled?: boolean
+          updated_at?: string
+          widget_key?: string
+        }
+        Relationships: []
+      }
       dhl_notifications: {
         Row: {
           created_at: string
