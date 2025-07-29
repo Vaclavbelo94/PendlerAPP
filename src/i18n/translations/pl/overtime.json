@@ -1,0 +1,14 @@
+{
+  "title": "Nadgodziny",
+  "morning": "Poranna",
+  "afternoon": "Popołudniowa",
+  "night": "Nocna", 
+  "total": "Razem",
+  "morningShift": "Zmiana poranna",
+  "afternoonShift": "Zmiana popołudniowa",
+  "nightShift": "Zmiana nocna",
+  "totalHours": "Razem godzin",
+  "hours": "h",
+  "thisMonth": "Ten miesiąc",
+  "noOvertimeRecorded": "Nie zarejestrowano nadgodzin"
+}

@@ -18,6 +18,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Shifts from "./pages/Shifts";
+import Overtime from "./pages/Overtime";
 import TravelPlanning from "./pages/TravelPlanning";
 import Translator from "./pages/Translator";
 import TaxAdvisor from "./pages/TaxAdvisor";
@@ -66,6 +67,7 @@ function App() {
                         <Route path="/register" element={<Register />} />
                        <Route path="/dashboard" element={<Dashboard />} />
                        <Route path="/shifts" element={<Shifts />} />
+                       <Route path="/overtime" element={<Overtime />} />
                        <Route path="/travel" element={<TravelPlanning />} />
                        <Route path="/translator" element={<Translator />} />
                        <Route path="/tax-advisor" element={<TaxAdvisor />} />

@@ -17,7 +17,8 @@ import {
   FileCheck,
   Building,
   Clock,
-  Users
+  Users,
+  Timer
 } from 'lucide-react';
 
 export interface ModernNavigationItem {
@@ -116,6 +117,17 @@ export const modernNavigationItems: ModernNavigationItem[] = [
     isPremium: true,
     color: 'text-amber-600',
     gradient: 'from-amber-500 to-amber-600'
+  },
+  {
+    id: 'overtime',
+    label: 'Přesčasy',
+    href: '/overtime',
+    icon: Timer,
+    description: 'Sledování přesčasových hodin',
+    category: 'tools',
+    isPremium: true,
+    color: 'text-purple-600',
+    gradient: 'from-purple-500 to-purple-600'
   },
   {
     id: 'laws',

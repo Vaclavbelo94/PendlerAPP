@@ -1,0 +1,14 @@
+{
+  "title": "Überstunden",
+  "morning": "Frühschicht",
+  "afternoon": "Spätschicht",
+  "night": "Nachtschicht",
+  "total": "Gesamt", 
+  "morningShift": "Frühschicht",
+  "afternoonShift": "Spätschicht",
+  "nightShift": "Nachtschicht",
+  "totalHours": "Gesamt Stunden",
+  "hours": "Std",
+  "thisMonth": "Diesen Monat",
+  "noOvertimeRecorded": "Keine Überstunden erfasst"
+}

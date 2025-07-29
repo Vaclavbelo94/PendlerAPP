@@ -1,0 +1,14 @@
+{
+  "title": "Přesčasy",
+  "morning": "Ranní",
+  "afternoon": "Odpolední", 
+  "night": "Noční",
+  "total": "Celkem",
+  "morningShift": "Ranní směna",
+  "afternoonShift": "Odpolední směna",
+  "nightShift": "Noční směna",
+  "totalHours": "Celkem hodin",
+  "hours": "h",
+  "thisMonth": "Tento měsíc",
+  "noOvertimeRecorded": "Žádné přesčasy nezaznamenány"
+}
