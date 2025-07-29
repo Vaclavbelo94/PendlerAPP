@@ -14,7 +14,8 @@ import {
   Languages,
   FileText,
   Map,
-  Scale
+  Scale,
+  Clock
 } from 'lucide-react';
 import { useAuth } from '@/hooks/auth';
 import { cn } from '@/lib/utils';
@@ -24,11 +25,13 @@ const ModernSidebar = () => {
   const { user, unifiedUser } = useAuth();
   const location = useLocation();
   const { t } = useTranslation('navigation');
+  const { t: tOvertime } = useTranslation('overtime');
 
   const navigationItems = [
     { icon: Home, label: t('dashboard'), path: '/dashboard' },
     { icon: Languages, label: t('translator'), path: '/translator' },
     { icon: Calendar, label: t('shifts'), path: '/shifts', premium: true },
+    { icon: Clock, label: tOvertime('title'), path: '/overtime', premium: true },
     { icon: Car, label: t('vehicle'), path: '/vehicle', premium: true },
     { icon: Map, label: t('travel'), path: '/travel', premium: true },
     { icon: FileText, label: t('taxAdvisor'), path: '/tax-advisor', premium: true },

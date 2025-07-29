@@ -8,6 +8,25 @@ const STANDARD_SHIFT_HOURS: Record<string, number> = {
   custom: 8     // default pro custom směny
 };
 
+// Firma-specifické standardy pracovní doby
+export const getCompanyStandardHours = (
+  company?: string, 
+  positionType?: string, 
+  shiftType?: string
+): number => {
+  if (company === 'dhl') {
+    // DHL Technik má standardní 8h směny
+    if (positionType === 'technik') {
+      return 8;
+    }
+    // DHL Wechselschicht má 30h týdně = 6h denně
+    return 6;
+  }
+  
+  // Ostatní firmy (Adecco, Randstad) - standardní 8h
+  return 8;
+};
+
 /**
  * Vypočítá délku směny v hodinách
  */
@@ -30,12 +49,24 @@ export const calculateShiftDuration = (startTime: string, endTime: string): numb
 /**
  * Vypočítá přesčasové hodiny pro jednu směnu
  */
-export const calculateOvertimeForShift = (shift: Shift): number => {
+export const calculateOvertimeForShift = (shift: Shift, standardHours?: number): number => {
   const actualHours = calculateShiftDuration(shift.start_time, shift.end_time);
-  const standardHours = STANDARD_SHIFT_HOURS[shift.type] || 8;
+  const shiftStandardHours = standardHours || STANDARD_SHIFT_HOURS[shift.type] || 8;
   
-  const overtime = actualHours - standardHours;
+  const overtime = actualHours - shiftStandardHours;
   return Math.max(0, overtime); // přesčasy nemůžou být záporné
+};
+
+/**
+ * Vypočítá přesčasové hodiny pro jednu směnu s firma-specifickými standardy
+ */
+export const calculateOvertimeForShiftWithCompany = (
+  shift: Shift, 
+  company?: string, 
+  positionType?: string
+): number => {
+  const standardHours = getCompanyStandardHours(company, positionType, shift.type);
+  return calculateOvertimeForShift(shift, standardHours);
 };
 
 /**
