@@ -14,6 +14,7 @@
     --popover-foreground: 222.2 84% 4.9%;
     --primary: 222.2 47.4% 11.2%;
     --primary-foreground: 210 40% 98%;
+    --primary-glow: 228 84% 20%;
     --secondary: 210 40% 96%;
     --secondary-foreground: 222.2 84% 4.9%;
     --muted: 210 40% 96%;
@@ -44,6 +45,7 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
     --primary: 210 40% 98%;
+    --primary-glow: 210 40% 85%;
     --primary-foreground: 222.2 47.4% 11.2%;
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
@@ -153,4 +155,48 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Custom gradient and shadow classes */
+.bg-gradient-to-br {
+  background: linear-gradient(to bottom right, var(--tw-gradient-stops));
+}
+
+.from-primary\/10 {
+  --tw-gradient-from: hsl(var(--primary) / 0.1);
+  --tw-gradient-to: transparent;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
+.to-secondary\/10 {
+  --tw-gradient-to: hsl(var(--secondary) / 0.1);
+}
+
+.via-background {
+  --tw-gradient-to: hsl(var(--background));
+  --tw-gradient-stops: var(--tw-gradient-from), hsl(var(--background)), var(--tw-gradient-to);
+}
+
+.from-primary\/5 {
+  --tw-gradient-from: hsl(var(--primary) / 0.05);
+  --tw-gradient-to: transparent;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
+.to-secondary\/5 {
+  --tw-gradient-to: hsl(var(--secondary) / 0.05);
+}
+
+.from-primary {
+  --tw-gradient-from: hsl(var(--primary));
+  --tw-gradient-to: transparent;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
+.to-primary-glow {
+  --tw-gradient-to: hsl(var(--primary-glow));
+}
+
+.shadow-elegant {
+  box-shadow: 0 10px 30px -10px hsl(var(--primary) / 0.3);
 }
