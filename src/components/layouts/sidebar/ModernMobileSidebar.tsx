@@ -2,19 +2,12 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { X, User, LogOut, Crown } from 'lucide-react';
-import { 
-  Home, 
-  Calendar, 
-  FileText, 
-  Car, 
-  Map, 
-  Languages, 
-  Scale 
-} from 'lucide-react';
 import { useAuth } from '@/hooks/auth';
+import { useHasPermission } from '@/hooks/useAuthPermissions';
 import { useTranslation } from 'react-i18next';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { getVisibleItems } from './modernNavigationData';
 
 interface ModernMobileSidebarProps {
   isOpen: boolean;
@@ -26,18 +19,16 @@ export const ModernMobileSidebar: React.FC<ModernMobileSidebarProps> = ({
   onClose
 }) => {
   const { user, unifiedUser, signOut } = useAuth();
+  const { hasPremiumAccess, hasOvertimeAccess, permissions } = useHasPermission();
   const location = useLocation();
   const { t } = useTranslation('navigation');
 
-  const navigationItems = [
-    { icon: Home, label: t('dashboard'), path: '/dashboard' },
-    { icon: Calendar, label: t('shifts'), path: '/shifts', premium: true },
-    { icon: FileText, label: t('taxAdvisor'), path: '/tax-advisor', premium: true },
-    { icon: Car, label: t('vehicle'), path: '/vehicle', premium: true },
-    { icon: Map, label: t('travel'), path: '/travel', premium: true },
-    { icon: Languages, label: t('translator'), path: '/translator' },
-    { icon: Scale, label: t('laws'), path: '/laws' },
-  ];
+  const navigationItems = getVisibleItems(
+    permissions.companyType,
+    !!user,
+    permissions.canAccessPremiumFeatures,
+    permissions.canAccessAdminPanel
+  );
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -79,13 +70,13 @@ export const ModernMobileSidebar: React.FC<ModernMobileSidebarProps> = ({
           <nav className="space-y-1 px-3">
             {navigationItems.map((item) => {
               const Icon = item.icon;
-              const isLocked = item.premium && !unifiedUser?.isPremium;
-              const active = isActive(item.path);
+              const isLocked = item.isPremium && !hasPremiumAccess();
+              const active = isActive(item.href);
               
               return (
                 <Link
-                  key={item.path}
-                  to={isLocked ? '/premium' : item.path}
+                  key={item.href}
+                  to={isLocked ? '/premium' : item.href}
                   onClick={onClose}
                   className={`flex items-center space-x-3 px-3 py-3 rounded-md text-base transition-colors ${
                     active 
@@ -95,7 +86,7 @@ export const ModernMobileSidebar: React.FC<ModernMobileSidebarProps> = ({
                 >
                   <Icon className="h-5 w-5" />
                   <span className="flex-1">{item.label}</span>
-                  {item.premium && !unifiedUser?.isPremium && (
+                  {item.isPremium && !hasPremiumAccess() && (
                     <Crown className="h-4 w-4 text-amber-500" />
                   )}
                 </Link>
@@ -119,10 +110,10 @@ export const ModernMobileSidebar: React.FC<ModernMobileSidebarProps> = ({
                   {user.email?.split('@')[0] || 'Uživatel'}
                 </p>
                 <p className="text-sm text-gray-400 truncate">{user.email}</p>
-                {unifiedUser?.isPremium && (
+                {hasPremiumAccess() && (
                   <Badge variant="secondary" className="mt-1 bg-amber-100 text-amber-800">
                     <Crown className="h-3 w-3 mr-1" />
-                    Premium
+                    {permissions.isDHLEmployee ? 'DHL Employee' : 'Premium'}
                   </Badge>
                 )}
               </div>

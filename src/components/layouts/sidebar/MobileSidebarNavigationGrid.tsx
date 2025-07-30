@@ -1,10 +1,12 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Home, Calendar, Car, Settings, BarChart3, Crown } from 'lucide-react';
+import { Crown } from 'lucide-react';
 import { useAuth } from '@/hooks/auth';
+import { useHasPermission } from '@/hooks/useAuthPermissions';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { getVisibleItems, getCategoryItems } from './modernNavigationData';
 
 interface MobileSidebarNavigationGridProps {
   compact?: boolean;
@@ -12,29 +14,34 @@ interface MobileSidebarNavigationGridProps {
 
 export const MobileSidebarNavigationGrid: React.FC<MobileSidebarNavigationGridProps> = ({ compact = false }) => {
   const { unifiedUser } = useAuth();
+  const { hasPremiumAccess, permissions } = useHasPermission();
   const navigate = useNavigate();
   const { t } = useTranslation('navigation');
 
-  const navigationItems = [
-    { icon: Home, label: t('dashboard'), path: '/dashboard' },
-    { icon: Calendar, label: t('shifts'), path: '/shifts' },
-    { icon: Car, label: t('vehicle'), path: '/vehicle' },
-    { icon: BarChart3, label: t('analytics'), path: '/analytics', premium: true },
-    { icon: Settings, label: t('settings'), path: '/settings' },
-  ];
+  // Get main navigation items for mobile
+  const allItems = getVisibleItems(
+    permissions.companyType,
+    !!unifiedUser,
+    permissions.canAccessPremiumFeatures,
+    permissions.canAccessAdminPanel
+  );
+  const mainItems = getCategoryItems('main', unifiedUser?.isDHLEmployee ? 'dhl' : undefined);
+  
+  // For compact mode, show only essential items
+  const navigationItems = compact ? mainItems.slice(0, 4) : mainItems;
 
   return (
     <div className={`grid gap-2 ${compact ? 'grid-cols-1' : 'grid-cols-2'}`}>
       {navigationItems.map((item) => {
-        const isLocked = item.premium && !unifiedUser?.isPremium;
+        const isLocked = item.isPremium && !hasPremiumAccess();
         const Icon = item.icon;
         
         return (
           <Button
-            key={item.path}
+            key={item.href}
             variant="ghost"
             className={`${compact ? 'justify-center' : 'justify-start'} h-auto py-3`}
-            onClick={() => navigate(isLocked ? '/premium' : item.path)}
+            onClick={() => navigate(isLocked ? '/premium' : item.href)}
           >
             <Icon className={`h-4 w-4 ${compact ? '' : 'mr-2'}`} />
             {!compact && (
