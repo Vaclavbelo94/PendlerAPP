@@ -47,6 +47,11 @@ import authCs from './translations/cs/auth.json';
 import authDe from './translations/de/auth.json';
 import authPl from './translations/pl/auth.json';
 
+// Import new auth locale files
+import localAuthCs from '../locales/cs/auth.json';
+import localAuthDe from '../locales/de/auth.json';
+import localAuthPl from '../locales/pl/auth.json';
+
 import translatorCs from './translations/cs/translator.json';
 import translatorDe from './translations/de/translator.json';
 import translatorPl from './translations/pl/translator.json';
@@ -84,7 +89,7 @@ const resources = {
     shifts: shiftsCs,
     forms: formsCs,
     dashboard: dashboardCs,
-    auth: authCs,
+    auth: { ...authCs, ...localAuthCs },
     translator: translatorCs,
     travel: travelCs,
     laws: lawsTranslations.cs.laws,
@@ -104,7 +109,7 @@ const resources = {
     shifts: shiftsDe,
     forms: formsDe,
     dashboard: dashboardDe,
-    auth: authDe,
+    auth: { ...authDe, ...localAuthDe },
     translator: translatorDe,
     travel: travelDe,
     laws: lawsTranslations.de.laws,
@@ -124,7 +129,7 @@ const resources = {
     shifts: shiftsPl,
     forms: formsPl,
     dashboard: dashboardPl,
-    auth: authPl,
+    auth: { ...authPl, ...localAuthPl },
     translator: translatorPl,
     travel: travelPl,
     laws: lawsTranslations.pl.laws,

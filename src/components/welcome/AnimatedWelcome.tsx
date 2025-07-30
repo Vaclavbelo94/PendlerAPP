@@ -14,25 +14,22 @@ const AnimatedWelcome: React.FC = () => {
       icon: LogIn,
       label: t('signIn'),
       action: () => navigate('/login'),
-      variant: 'default' as const
-    },
-    {
-      icon: Building,
-      label: t('signInAsCompany'),
-      action: () => navigate('/login?type=company'),
-      variant: 'secondary' as const
+      variant: 'default' as const,
+      primary: true
     },
     {
       icon: UserPlus,
       label: t('signUp'),
       action: () => navigate('/register'),
-      variant: 'outline' as const
+      variant: 'outline' as const,
+      primary: false
     },
     {
-      icon: MapPin,
-      label: t('selectCompany'),
+      icon: Building,
+      label: t('employeeRegistration'),
       action: () => navigate('/company-selector'),
-      variant: 'ghost' as const
+      variant: 'secondary' as const,
+      primary: false
     }
   ];
 
@@ -86,23 +83,31 @@ const AnimatedWelcome: React.FC = () => {
 
         {/* Menu Items */}
         <motion.div
-          className="space-y-4"
+          className="space-y-5"
           variants={containerVariants}
         >
           {menuItems.map((item, index) => (
             <motion.div
               key={index}
               variants={itemVariants}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
             >
               <Button
                 variant={item.variant}
                 size="lg"
-                className="w-full h-14 text-base gap-3 transition-all duration-200 hover:shadow-md"
+                className={`
+                  w-full h-16 text-lg font-semibold gap-4 
+                  transition-all duration-300 
+                  hover:shadow-elegant hover:shadow-glow
+                  ${item.primary 
+                    ? 'bg-gradient-to-r from-primary to-primary-glow text-primary-foreground hover:from-primary-glow hover:to-primary shadow-lg' 
+                    : 'border-2 hover:border-primary/30'
+                  }
+                `}
                 onClick={item.action}
               >
-                <item.icon className="w-5 h-5" />
+                <item.icon className="w-6 h-6" />
                 {item.label}
               </Button>
             </motion.div>
