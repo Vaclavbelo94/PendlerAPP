@@ -11,12 +11,16 @@ import DashboardHero from './DashboardHero';
 import DashboardCards from './DashboardCards';
 import DashboardStats from './DashboardStats';
 import DashboardDHLSection from './DashboardDHLSection';
-import { useOnboarding } from '@/hooks/useOnboarding';
+import { useOptimizedOnboarding } from '@/hooks/useOptimizedOnboarding';
+import { useOptimizedDHLData } from '@/hooks/dhl/useOptimizedDHLData';
 
 const ModernDashboard: React.FC = () => {
   const { user, unifiedUser } = useAuth();
   const { t } = useTranslation(['dashboard']);
-  const { showOnboarding, isNewUser } = useOnboarding();
+  
+  // Get userAssignment - but only load if user is DHL employee to prevent unnecessary calls
+  const { userAssignment } = useOptimizedDHLData(unifiedUser?.isDHLEmployee ? user?.id : null);
+  const { showOnboarding, isNewUser } = useOptimizedOnboarding(userAssignment);
 
   // DHL onboarding logic
   const shouldShowOnboarding = unifiedUser?.isDHLEmployee && showOnboarding && isNewUser;

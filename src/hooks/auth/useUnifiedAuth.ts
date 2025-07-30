@@ -2,8 +2,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { useDHLData } from '@/hooks/dhl/useDHLData';
-import { isDHLEmployee as checkIsDHLEmployee, isDHLEmployeeSync } from '@/utils/dhlAuthUtils';
+import { useOptimizedDHLAuth } from './useOptimizedDHLAuth';
+import { isDHLEmployeeSync } from '@/utils/dhlAuthUtils';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { AuthContextType, UnifiedUser, UserRole, UserStatus } from '@/types/auth';
 import { createUnifiedUser } from '@/utils/authRoleUtils';
@@ -20,18 +20,18 @@ export const useUnifiedAuth = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isInitialized, setIsInitialized] = useState(false);
   
-  // DHL-specific state
-  const [isDHLEmployee, setIsDHLEmployee] = useState<boolean>(false);
-  const [isDHLCheckComplete, setIsDHLCheckComplete] = useState(false);
-  const [profileData, setProfileData] = useState<any>(null);
-  const [isProfileLoading, setIsProfileLoading] = useState(true);
-  
   // Navigation
   const navigate = useNavigate();
   const location = useLocation();
   
-  // External hooks
-  const { userAssignment, isLoading: isDHLDataLoading } = useDHLData(user?.id);
+  // External hooks - optimized versions
+  const { 
+    isDHLEmployee, 
+    profileData, 
+    userAssignment, 
+    isLoading: isDHLAuthLoading,
+    isInitialized: isDHLAuthInitialized
+  } = useOptimizedDHLAuth(user);
   const { isAdmin, isPremium, refreshAdminStatus, refreshPremiumStatus } = useAuthStatus(user?.id);
   
   // Initialize auth state
@@ -92,54 +92,7 @@ export const useUnifiedAuth = () => {
     };
   }, []);
   
-  // Load profile data and check DHL status
-  useEffect(() => {
-    const loadProfileAndCheckDHL = async () => {
-      if (!user?.id) {
-        setIsProfileLoading(false);
-        setIsDHLCheckComplete(true);
-        setProfileData(null);
-        setIsDHLEmployee(false);
-        return;
-      }
-
-      try {
-        console.log('Unified Auth: Loading profile and checking DHL status for user:', user.email);
-        
-        // Load profile data
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('is_dhl_employee, is_premium, is_admin')
-          .eq('id', user.id)
-          .single();
-
-        if (error && error.code !== 'PGRST116') {
-          console.error('Unified Auth: Error loading profile data:', error);
-        } else if (data) {
-          setProfileData(data);
-        }
-
-        // Perform comprehensive DHL check (async)
-        const dhlStatus = await checkIsDHLEmployee(user);
-        setIsDHLEmployee(dhlStatus);
-        
-        console.log('Unified Auth: DHL check complete', {
-          userId: user.id,
-          email: user.email,
-          profileFlag: data?.is_dhl_employee,
-          finalDHLStatus: dhlStatus
-        });
-
-      } catch (error) {
-        console.error('Unified Auth: Error in loadProfileAndCheckDHL:', error);
-      } finally {
-        setIsProfileLoading(false);
-        setIsDHLCheckComplete(true);
-      }
-    };
-
-    loadProfileAndCheckDHL();
-  }, [user?.id]);
+  // DHL auth is now handled by useOptimizedDHLAuth hook - no separate effect needed
 
   // Handle DHL user redirection - DISABLED - používáme dashboard notification místo
   useEffect(() => {
@@ -217,8 +170,6 @@ export const useUnifiedAuth = () => {
       await supabase.auth.signOut();
       setUser(null);
       setSession(null);
-      setProfileData(null);
-      setIsDHLEmployee(false);
       
       // Přesměrovat na úvodní stránku
       navigate('/');
@@ -261,7 +212,7 @@ export const useUnifiedAuth = () => {
     setupRequired: false
   } : null;
 
-  // Computed loading state - pouze základní auth loading, ostatní jsou optional
+  // Computed loading state - základní auth loading, DHL auth je optional pro rychlejší loading
   const totalIsLoading = isLoading || !isInitialized;
 
   return {
