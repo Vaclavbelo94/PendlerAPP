@@ -4,15 +4,17 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, LogIn } from 'lucide-react';
+import { LogIn } from 'lucide-react';
 import UnifiedNavbar from '@/components/layouts/UnifiedNavbar';
 import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
+import dhlLogo from '@/assets/dhl-logo.png';
+import adeccoLogo from '@/assets/adecco-logo.png';
+import randstadLogo from '@/assets/randstad-logo.png';
 
 interface CompanyOption {
   id: 'adecco' | 'randstad' | 'dhl';
   name: string;
   logo: string;
-  description: string;
 }
 
 const CompanySelector: React.FC = () => {
@@ -23,20 +25,17 @@ const CompanySelector: React.FC = () => {
     {
       id: 'dhl',
       name: 'DHL',
-      logo: '📦',
-      description: t('dhl.description')
+      logo: dhlLogo
     },
     {
       id: 'adecco',
       name: 'Adecco',
-      logo: '🏢',
-      description: t('adecco.description')
+      logo: adeccoLogo
     },
     {
       id: 'randstad',
       name: 'Randstad',
-      logo: '🔵',
-      description: t('randstad.description')
+      logo: randstadLogo
     }
   ];
 
@@ -78,7 +77,7 @@ const CompanySelector: React.FC = () => {
 
       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-4rem)] px-4 py-8">
         <motion.div
-          className="w-full max-w-2xl space-y-8"
+          className="w-full max-w-4xl space-y-8"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
@@ -93,29 +92,26 @@ const CompanySelector: React.FC = () => {
             </p>
           </motion.div>
 
-          {/* Company Buttons */}
-          <motion.div className="space-y-4" variants={itemVariants}>
+          {/* Company Logo Buttons */}
+          <motion.div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl mx-auto" variants={itemVariants}>
             {companies.map((company) => (
               <motion.div
                 key={company.id}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="w-full"
               >
                 <Button
                   onClick={() => handleCompanySelect(company.id)}
                   variant="outline"
-                  className="w-full h-auto p-6 flex items-center justify-between text-left hover:bg-accent/50 transition-all duration-200"
+                  className="w-full h-32 md:h-40 p-6 flex flex-col items-center justify-center hover:bg-accent/50 hover:border-primary/30 transition-all duration-200 group"
+                  title={company.name}
                 >
-                  <div className="flex items-center gap-4">
-                    <span className="text-2xl">{company.logo}</span>
-                    <div>
-                      <div className="font-semibold text-lg">{company.name}</div>
-                      <div className="text-sm text-muted-foreground">
-                        {company.description}
-                      </div>
-                    </div>
-                  </div>
-                  <ArrowRight className="h-5 w-5 text-muted-foreground" />
+                  <img 
+                    src={company.logo} 
+                    alt={`${company.name} logo`}
+                    className="w-16 h-16 md:w-20 md:h-20 object-contain transition-transform duration-200 group-hover:scale-110"
+                  />
                 </Button>
               </motion.div>
             ))}
