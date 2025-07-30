@@ -35,6 +35,7 @@ import DHLSetup from "./pages/DHLSetup";
 import DHLAdmin from "./pages/DHLAdmin"; // NEW DHL Admin route
 import ForgotPassword from "./pages/ForgotPassword";
 import { LoadingSpinner } from "./components/ui/LoadingSpinner";
+import WelcomeScreen from "./components/welcome/WelcomeScreen";
 import "./i18n/config";
 
 // Import manual premium activation utility
@@ -55,33 +56,35 @@ function App() {
                 <DHLThemeProvider>
                   <CompanyModuleProvider>
                     <Suspense fallback={<LoadingSpinner />}>
-                    <Routes>
-                       <Route path="/" element={<CompanySelector />} />
-                       <Route path="/adecco" element={<CompanyLandingPage />} />
-                       <Route path="/randstad" element={<CompanyLandingPage />} />
-                       <Route path="/dhl" element={<CompanyLandingPage />} />
-                       <Route path="/register/:company" element={<CompanyRegister />} />
-                        <Route path="/old-index" element={<Index />} />
-                        <Route path="/login" element={<Login />} />
-                        <Route path="/forgot-password" element={<ForgotPassword />} />
-                        <Route path="/register" element={<Register />} />
-                       <Route path="/dashboard" element={<Dashboard />} />
-                       <Route path="/shifts" element={<Shifts />} />
-                       <Route path="/overtime" element={<Overtime />} />
-                       <Route path="/travel" element={<TravelPlanning />} />
-                       <Route path="/translator" element={<Translator />} />
-                       <Route path="/tax-advisor" element={<TaxAdvisor />} />
-                       <Route path="/laws" element={<Laws />} />
-                       <Route path="/laws/:lawId" element={<LawDetail />} />
-                       <Route path="/profile" element={<Profile />} />
-                       <Route path="/settings" element={<Settings />} />
-                       <Route path="/vehicle" element={<Vehicle />} />
-                       <Route path="/premium" element={<Premium />} />
-                       <Route path="/premium-gate" element={<PremiumGate />} />
-                       <Route path="/admin" element={<Admin />} />
-                       <Route path="/dhl-admin" element={<DHLAdmin />} />
-                       <Route path="/dhl-setup" element={<DHLSetup />} />
-                    </Routes>
+                     <Routes>
+                        <Route path="/" element={<WelcomeScreen />} />
+                        <Route path="/welcome" element={<WelcomeScreen />} />
+                        <Route path="/company-selector" element={<CompanySelector />} />
+                        <Route path="/adecco" element={<CompanyLandingPage />} />
+                        <Route path="/randstad" element={<CompanyLandingPage />} />
+                        <Route path="/dhl" element={<CompanyLandingPage />} />
+                        <Route path="/register/:company" element={<CompanyRegister />} />
+                         <Route path="/old-index" element={<Index />} />
+                         <Route path="/login" element={<Login />} />
+                         <Route path="/forgot-password" element={<ForgotPassword />} />
+                         <Route path="/register" element={<Register />} />
+                        <Route path="/dashboard" element={<Dashboard />} />
+                        <Route path="/shifts" element={<Shifts />} />
+                        <Route path="/overtime" element={<Overtime />} />
+                        <Route path="/travel" element={<TravelPlanning />} />
+                        <Route path="/translator" element={<Translator />} />
+                        <Route path="/tax-advisor" element={<TaxAdvisor />} />
+                        <Route path="/laws" element={<Laws />} />
+                        <Route path="/laws/:lawId" element={<LawDetail />} />
+                        <Route path="/profile" element={<Profile />} />
+                        <Route path="/settings" element={<Settings />} />
+                        <Route path="/vehicle" element={<Vehicle />} />
+                        <Route path="/premium" element={<Premium />} />
+                        <Route path="/premium-gate" element={<PremiumGate />} />
+                        <Route path="/admin" element={<Admin />} />
+                        <Route path="/dhl-admin" element={<DHLAdmin />} />
+                        <Route path="/dhl-setup" element={<DHLSetup />} />
+                     </Routes>
                    </Suspense>
                     <Toaster />
                     <SonnerToaster position="top-right" />
