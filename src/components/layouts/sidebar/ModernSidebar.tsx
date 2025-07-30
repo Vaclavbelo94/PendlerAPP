@@ -1,44 +1,25 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Home, 
-  Calendar, 
-  Car, 
-  Settings, 
-  BarChart3,
-  Crown,
-  User,
-  Languages,
-  FileText,
-  Map,
-  Scale,
-  Clock
-} from 'lucide-react';
+import { Crown } from 'lucide-react';
 import { useAuth } from '@/hooks/auth';
+import { useAuthPermissions } from '@/hooks/useAuthPermissions';
 import { cn } from '@/lib/utils';
-import { useTranslation } from 'react-i18next';
+import { getVisibleItems } from './modernNavigationData';
 
 const ModernSidebar = () => {
-  const { user, unifiedUser } = useAuth();
+  const { user } = useAuth();
   const location = useLocation();
-  const { t } = useTranslation('navigation');
-  const { t: tOvertime } = useTranslation('overtime');
+  const permissions = useAuthPermissions();
 
-  const navigationItems = [
-    { icon: Home, label: t('dashboard'), path: '/dashboard' },
-    { icon: Languages, label: t('translator'), path: '/translator' },
-    { icon: Calendar, label: t('shifts'), path: '/shifts', premium: true },
-    { icon: Clock, label: tOvertime('title'), path: '/overtime', premium: true },
-    { icon: Car, label: t('vehicle'), path: '/vehicle', premium: true },
-    { icon: Map, label: t('travel'), path: '/travel', premium: true },
-    { icon: FileText, label: t('taxAdvisor'), path: '/tax-advisor', premium: true },
-    { icon: Scale, label: t('laws'), path: '/laws' },
-    { icon: User, label: t('profile'), path: '/profile' },
-    { icon: Settings, label: t('settings'), path: '/settings' },
-  ];
+  // Získáme viditelné položky podle oprávnění uživatele
+  const visibleItems = getVisibleItems(
+    permissions.companyType,
+    !!user,
+    permissions.isPremium,
+    permissions.isAdmin
+  );
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -57,17 +38,17 @@ const ModernSidebar = () => {
 
       <div className="flex-1 p-4">
         <nav className="space-y-2">
-          {navigationItems.map((item) => {
+          {visibleItems.map((item) => {
             const Icon = item.icon;
-            const isLocked = item.premium && !unifiedUser?.isPremium;
+            const isLocked = item.isPremium && !permissions.isPremium;
             
             return (
               <Link 
-                key={item.path}
-                to={isLocked ? '/premium' : item.path}
+                key={item.href}
+                to={isLocked ? '/premium' : item.href}
                 className={cn(
                   "flex items-center space-x-3 px-3 py-2 rounded-md text-sm transition-colors",
-                  isActive(item.path) 
+                  isActive(item.href) 
                     ? 'bg-accent text-accent-foreground' 
                     : 'text-muted-foreground hover:text-foreground hover:bg-accent/50',
                   isLocked && 'opacity-60'
@@ -75,7 +56,7 @@ const ModernSidebar = () => {
               >
                 <Icon className="h-4 w-4" />
                 <span className="flex-1">{item.label}</span>
-                {item.premium && !unifiedUser?.isPremium && (
+                {item.isPremium && !permissions.isPremium && (
                   <Crown className="h-3 w-3 text-amber-500" />
                 )}
               </Link>
@@ -84,7 +65,7 @@ const ModernSidebar = () => {
         </nav>
       </div>
 
-      {unifiedUser?.isPremium && (
+      {permissions.isPremium && (
         <div className="p-4 border-t">
           <Badge variant="secondary" className="bg-amber-100 text-amber-800">
             <Crown className="h-3 w-3 mr-1" />
