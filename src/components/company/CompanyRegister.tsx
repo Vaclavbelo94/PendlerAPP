@@ -273,7 +273,6 @@ const CompanyRegister: React.FC = () => {
                       value={formData.promoCode}
                       onChange={(e) => handleInputChange('promoCode', e.target.value)}
                       className="pl-10"
-                      placeholder={company === 'dhl' ? 'DHL2025' : undefined}
                     />
                   </div>
                 </div>

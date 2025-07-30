@@ -85,10 +85,10 @@ const CompanySelector: React.FC = () => {
         >
           {/* Header */}
           <motion.div className="text-center space-y-4" variants={itemVariants}>
-            <h1 className="text-4xl md:text-5xl font-bold text-foreground">
+            <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-foreground">
               {t('title')}
             </h1>
-            <p className="text-lg text-muted-foreground max-w-md mx-auto">
+            <p className="text-base md:text-lg text-muted-foreground max-w-lg mx-auto px-4">
               {t('subtitle')}
             </p>
           </motion.div>
@@ -130,9 +130,9 @@ const CompanySelector: React.FC = () => {
               {t('alreadyHaveAccount')}
             </p>
             <Button
-              variant="ghost"
+              variant="outline"
               onClick={() => navigate('/login')}
-              className="text-primary hover:text-primary/80"
+              className="border-primary/20 text-foreground hover:bg-primary/10 hover:text-foreground shadow-sm"
             >
               <LogIn className="mr-2 h-4 w-4" />
               {t('loginButton')}
