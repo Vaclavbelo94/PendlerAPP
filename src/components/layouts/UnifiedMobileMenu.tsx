@@ -67,7 +67,6 @@ export const UnifiedMobileMenu: React.FC<UnifiedMobileMenuProps> = ({
         <div 
           className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[70] md:hidden"
           onClick={onClose}
-          onTouchStart={(e) => e.preventDefault()}
         />
       )}
       

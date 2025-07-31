@@ -23,9 +23,9 @@ export const MobileOptimizedCard: React.FC<MobileOptimizedCardProps> = ({
 
   return (
     <Card className={cn(
-      "mobile-card",
-      isMobile && "border-0 shadow-sm",
-      compact && isMobile && "p-2",
+      "mobile-card bg-card text-card-foreground",
+      isMobile && "border shadow-sm rounded-lg",
+      compact && isMobile && "p-1",
       className
     )}>
       {(title || description) && (

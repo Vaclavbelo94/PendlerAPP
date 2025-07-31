@@ -163,7 +163,7 @@ export const ProfileMobileCarousel: React.FC<ProfileMobileCarouselProps> = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.4, ease: 'easeInOut' }}
-            className="bg-background/95 backdrop-blur-sm rounded-xl border border-border/20 p-4 shadow-xl"
+            className="bg-card backdrop-blur-sm rounded-xl border border-border p-4 shadow-xl"
           >
             <div className="relative z-10">
               {renderTabContent()}
