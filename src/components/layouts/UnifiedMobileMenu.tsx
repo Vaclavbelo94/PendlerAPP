@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { X, User, Settings, LogOut, Crown, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -25,6 +25,22 @@ export const UnifiedMobileMenu: React.FC<UnifiedMobileMenuProps> = ({
   const navigate = useNavigate();
   const { t } = useTranslation('navigation');
 
+  // Disable body scroll when menu is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none';
+    } else {
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
+    };
+  }, [isOpen]);
+
   const handleNavigation = (href: string) => {
     navigate(href);
     onClose();
@@ -49,14 +65,15 @@ export const UnifiedMobileMenu: React.FC<UnifiedMobileMenuProps> = ({
       {/* Backdrop */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden"
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[70] md:hidden"
           onClick={onClose}
+          onTouchStart={(e) => e.preventDefault()}
         />
       )}
       
       {/* Menu Panel */}
       <div className={cn(
-        "fixed top-0 right-0 h-full w-80 bg-gradient-to-b from-background to-background/95 backdrop-blur-lg border-l shadow-2xl transform transition-transform duration-300 ease-out z-50 md:hidden",
+        "fixed top-16 right-0 h-[calc(100vh-4rem)] w-80 bg-gradient-to-b from-background to-background/95 backdrop-blur-lg border-l shadow-2xl transform transition-transform duration-300 ease-out z-[80] md:hidden safe-area-inset-top",
         isOpen ? "translate-x-0" : "translate-x-full"
       )}>
         {/* Header */}
