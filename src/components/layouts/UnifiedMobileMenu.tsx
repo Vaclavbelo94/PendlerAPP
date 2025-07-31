@@ -175,13 +175,6 @@ export const UnifiedMobileMenu: React.FC<UnifiedMobileMenuProps> = ({
             </div>
           </div>
 
-          {/* Language Switcher */}
-          <div className="p-4 border-t">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">{t('language')}</span>
-              <LanguageSwitcher />
-            </div>
-          </div>
 
           {/* Auth Section */}
           <div className="p-4 border-t space-y-2">

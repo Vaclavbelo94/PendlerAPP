@@ -27,7 +27,7 @@ const LanguageSettings: React.FC = () => {
           {t('languageSettings')}
         </CardTitle>
         <CardDescription>
-          {t('selectPreferredLanguage')}
+          {t('languageDescription')}
         </CardDescription>
       </CardHeader>
       <CardContent>

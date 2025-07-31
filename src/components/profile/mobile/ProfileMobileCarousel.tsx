@@ -106,36 +106,40 @@ export const ProfileMobileCarousel: React.FC<ProfileMobileCarouselProps> = ({
   return (
     <div className="space-y-4">
       {/* Tab Navigation Header */}
-      <div className="flex items-center justify-between px-2">
+      <div className="flex items-center justify-between px-2 mb-4">
         <Button
           variant="ghost"
           size="icon"
           onClick={goToPrevious}
           disabled={tabs.length <= 1}
-          className="h-8 w-8 bg-white/10 backdrop-blur-sm border border-white/20"
+          className="h-10 w-10 bg-white/20 backdrop-blur-sm border border-white/30 text-white hover:bg-white/30 shadow-lg"
         >
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft className="h-5 w-5" />
         </Button>
         
-        <div className="flex-1 text-center">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <div className="p-1.5 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20">
-              <Icon className="h-4 w-4 text-white" />
+        <div className="flex-1 text-center px-4">
+          <div className="bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 p-4 shadow-lg">
+            <div className="flex items-center justify-center gap-3 mb-3">
+              <div className="p-2 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30">
+                <Icon className="h-5 w-5 text-white" />
+              </div>
+              <h2 className="text-xl font-bold text-white drop-shadow-md">
+                {currentTab?.label}
+              </h2>
             </div>
-            <h2 className="text-lg font-semibold text-white text-center">
-              {currentTab?.label}
-            </h2>
-          </div>
-          <div className="flex justify-center space-x-1">
-            {tabs.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => onTabChange(tabs[index].id)}
-                className={`w-2 h-2 rounded-full transition-colors ${
-                  index === currentIndex ? 'bg-primary' : 'bg-white/30'
-                }`}
-              />
-            ))}
+            <div className="flex justify-center space-x-2">
+              {tabs.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => onTabChange(tabs[index].id)}
+                  className={`w-3 h-3 rounded-full transition-all duration-200 ${
+                    index === currentIndex 
+                      ? 'bg-white shadow-lg scale-110' 
+                      : 'bg-white/40 hover:bg-white/60'
+                  }`}
+                />
+              ))}
+            </div>
           </div>
         </div>
         
@@ -144,9 +148,9 @@ export const ProfileMobileCarousel: React.FC<ProfileMobileCarouselProps> = ({
           size="icon"
           onClick={goToNext}
           disabled={tabs.length <= 1}
-          className="h-8 w-8 bg-white/10 backdrop-blur-sm border border-white/20"
+          className="h-10 w-10 bg-white/20 backdrop-blur-sm border border-white/30 text-white hover:bg-white/30 shadow-lg"
         >
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight className="h-5 w-5" />
         </Button>
       </div>
 
@@ -155,19 +159,28 @@ export const ProfileMobileCarousel: React.FC<ProfileMobileCarouselProps> = ({
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -50 }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.4, ease: 'easeInOut' }}
+            className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-4 shadow-xl"
           >
-            {renderTabContent()}
+            <div className="relative z-10">
+              {renderTabContent()}
+            </div>
           </motion.div>
         </AnimatePresence>
       </div>
 
       {/* Tab info */}
-      <div className="text-center text-sm text-white/70 px-4">
-        {currentIndex + 1} z {tabs.length} • {currentTab?.label}
+      <div className="text-center text-sm text-white/80 px-4 mt-4">
+        <div className="bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20 inline-block">
+          <span className="font-medium">{currentIndex + 1}</span>
+          <span className="mx-2 text-white/60">z</span>
+          <span className="font-medium">{tabs.length}</span>
+          <span className="mx-2 text-white/60">•</span>
+          <span className="text-white/90">{currentTab?.label}</span>
+        </div>
       </div>
     </div>
   );
