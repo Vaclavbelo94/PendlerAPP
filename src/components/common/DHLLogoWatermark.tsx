@@ -7,7 +7,7 @@ interface DHLLogoWatermarkProps {
 
 export const DHLLogoWatermark: React.FC<DHLLogoWatermarkProps> = ({ 
   className = '',
-  opacity = 0.05 
+  opacity = 0.15 
 }) => {
   return (
     <div 

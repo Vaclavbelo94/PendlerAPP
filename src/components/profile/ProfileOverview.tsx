@@ -1,6 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { MobileOptimizedCard } from "@/components/ui/mobile-optimized-card";
+import { useIsMobile } from '@/hooks/use-mobile';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -26,6 +28,7 @@ const ProfileOverview: React.FC<ProfileOverviewProps> = ({ onEdit, onSave, onCan
   const { t } = useTranslation('profile');
   const { toast } = useToast();
   const { settings, isLoading, isSaving, saveSettings } = useProfileSettings();
+  const isMobile = useIsMobile();
   
   const [formData, setFormData] = useState({
     username: '',
@@ -85,13 +88,22 @@ const ProfileOverview: React.FC<ProfileOverviewProps> = ({ onEdit, onSave, onCan
     return <p>{t('loading', { ns: 'common' })}</p>;
   }
 
+  const CardComponent = isMobile ? MobileOptimizedCard : Card;
+  const cardProps = isMobile ? {
+    title: t('profileOverview'),
+    description: t('basicInfoDescription'),
+    compact: true
+  } : {};
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t('profileOverview')}</CardTitle>
-        <CardDescription>{t('basicInfoDescription')}</CardDescription>
-      </CardHeader>
-      <CardContent className="grid gap-6">
+    <CardComponent {...cardProps}>
+      {!isMobile && (
+        <CardHeader>
+          <CardTitle>{t('profileOverview')}</CardTitle>
+          <CardDescription>{t('basicInfoDescription')}</CardDescription>
+        </CardHeader>
+      )}
+      <CardContent className={`grid gap-6 ${isMobile ? 'p-0' : ''}`}>
         <div className="flex items-center space-x-4">
           <Avatar className="h-12 w-12">
             <AvatarImage src={user.user_metadata?.avatar_url} />
@@ -204,7 +216,7 @@ const ProfileOverview: React.FC<ProfileOverviewProps> = ({ onEdit, onSave, onCan
           </div>
         )}
       </CardContent>
-    </Card>
+    </CardComponent>
   );
 };
 
