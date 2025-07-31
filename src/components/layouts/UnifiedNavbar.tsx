@@ -1,7 +1,11 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/auth';
+import { Button } from '@/components/ui/button';
+import { Menu } from 'lucide-react';
+import { LanguageSwitcher } from '@/components/i18n/LanguageSwitcher';
+import { UnifiedMobileMenu } from './UnifiedMobileMenu';
 
 
 interface UnifiedNavbarProps {
@@ -10,6 +14,7 @@ interface UnifiedNavbarProps {
 
 const UnifiedNavbar: React.FC<UnifiedNavbarProps> = ({ rightContent }) => {
   const { user } = useAuth();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -26,8 +31,30 @@ const UnifiedNavbar: React.FC<UnifiedNavbarProps> = ({ rightContent }) => {
 
         {/* Right Side */}
         <div className="flex items-center space-x-2">
+          {/* Desktop Language Switcher */}
+          <div className="hidden md:block">
+            <LanguageSwitcher />
+          </div>
+          
+          {/* Custom Right Content */}
           {rightContent}
+          
+          {/* Mobile Menu Button */}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="md:hidden h-8 w-8 p-0"
+            onClick={() => setIsMobileMenuOpen(true)}
+          >
+            <Menu className="h-4 w-4" />
+          </Button>
         </div>
+        
+        {/* Mobile Menu */}
+        <UnifiedMobileMenu 
+          isOpen={isMobileMenuOpen}
+          onClose={() => setIsMobileMenuOpen(false)}
+        />
       </div>
     </nav>
   );
