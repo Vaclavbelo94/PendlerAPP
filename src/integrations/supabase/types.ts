@@ -14,6 +14,84 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_audit_log: {
+        Row: {
+          action: string
+          admin_user_id: string
+          created_at: string
+          id: string
+          ip_address: unknown | null
+          metadata: Json | null
+          new_values: Json | null
+          old_values: Json | null
+          target_id: string | null
+          target_table: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          action: string
+          admin_user_id: string
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          metadata?: Json | null
+          new_values?: Json | null
+          old_values?: Json | null
+          target_id?: string | null
+          target_table?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          action?: string
+          admin_user_id?: string
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          metadata?: Json | null
+          new_values?: Json | null
+          old_values?: Json | null
+          target_id?: string | null
+          target_table?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
+      admin_permissions: {
+        Row: {
+          created_at: string
+          expires_at: string | null
+          granted_at: string
+          granted_by: string | null
+          id: string
+          is_active: boolean
+          permission_level: Database["public"]["Enums"]["admin_permission_level"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string | null
+          granted_at?: string
+          granted_by?: string | null
+          id?: string
+          is_active?: boolean
+          permission_level?: Database["public"]["Enums"]["admin_permission_level"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string | null
+          granted_at?: string
+          granted_by?: string | null
+          id?: string
+          is_active?: boolean
+          permission_level?: Database["public"]["Enums"]["admin_permission_level"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       assisted_submissions: {
         Row: {
           admin_notes: string | null
@@ -134,6 +212,63 @@ export type Database = {
         }
         Relationships: []
       }
+      company_menu_items: {
+        Row: {
+          company: Database["public"]["Enums"]["company_type"]
+          created_at: string
+          description_cs: string | null
+          description_de: string | null
+          description_pl: string | null
+          display_order: number | null
+          icon: string
+          id: string
+          is_enabled: boolean
+          menu_key: string
+          required_permission: string | null
+          route: string
+          title_cs: string
+          title_de: string | null
+          title_pl: string | null
+          updated_at: string
+        }
+        Insert: {
+          company: Database["public"]["Enums"]["company_type"]
+          created_at?: string
+          description_cs?: string | null
+          description_de?: string | null
+          description_pl?: string | null
+          display_order?: number | null
+          icon: string
+          id?: string
+          is_enabled?: boolean
+          menu_key: string
+          required_permission?: string | null
+          route: string
+          title_cs: string
+          title_de?: string | null
+          title_pl?: string | null
+          updated_at?: string
+        }
+        Update: {
+          company?: Database["public"]["Enums"]["company_type"]
+          created_at?: string
+          description_cs?: string | null
+          description_de?: string | null
+          description_pl?: string | null
+          display_order?: number | null
+          icon?: string
+          id?: string
+          is_enabled?: boolean
+          menu_key?: string
+          required_permission?: string | null
+          route?: string
+          title_cs?: string
+          title_de?: string | null
+          title_pl?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       company_modules: {
         Row: {
           company: Database["public"]["Enums"]["company_type"]
@@ -163,6 +298,36 @@ export type Database = {
           id?: string
           is_enabled?: boolean
           module_key?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      company_settings: {
+        Row: {
+          company: Database["public"]["Enums"]["company_type"]
+          created_at: string
+          id: string
+          is_enabled: boolean
+          setting_key: string
+          setting_value: Json
+          updated_at: string
+        }
+        Insert: {
+          company: Database["public"]["Enums"]["company_type"]
+          created_at?: string
+          id?: string
+          is_enabled?: boolean
+          setting_key: string
+          setting_value?: Json
+          updated_at?: string
+        }
+        Update: {
+          company?: Database["public"]["Enums"]["company_type"]
+          created_at?: string
+          id?: string
+          is_enabled?: boolean
+          setting_key?: string
+          setting_value?: Json
           updated_at?: string
         }
         Relationships: []
@@ -1792,6 +1957,36 @@ export type Database = {
         }
         Relationships: []
       }
+      system_config: {
+        Row: {
+          config_key: string
+          config_value: Json
+          created_at: string
+          description: string | null
+          id: string
+          is_public: boolean
+          updated_at: string
+        }
+        Insert: {
+          config_key: string
+          config_value: Json
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_public?: boolean
+          updated_at?: string
+        }
+        Update: {
+          config_key?: string
+          config_value?: Json
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_public?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       tax_calculations: {
         Row: {
           calculation_type: string
@@ -2577,12 +2772,20 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Database["public"]["Enums"]["company_type"]
       }
+      has_admin_permission: {
+        Args: {
+          user_id: string
+          required_level: Database["public"]["Enums"]["admin_permission_level"]
+        }
+        Returns: boolean
+      }
       is_admin: {
         Args: { user_id: string }
         Returns: boolean
       }
     }
     Enums: {
+      admin_permission_level: "super_admin" | "admin" | "moderator" | "viewer"
       company_type: "adecco" | "randstad" | "dhl"
       dhl_position_type:
         | "technik"
@@ -2730,6 +2933,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      admin_permission_level: ["super_admin", "admin", "moderator", "viewer"],
       company_type: ["adecco", "randstad", "dhl"],
       dhl_position_type: [
         "technik",
