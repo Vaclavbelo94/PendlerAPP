@@ -7,6 +7,7 @@ import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Label } from '@/components/ui/label';
 import { useAdminV2 } from '@/hooks/useAdminV2';
 import { useQuery } from '@tanstack/react-query';
@@ -22,7 +23,8 @@ import {
   Mail,
   Phone,
   Building2,
-  Calendar
+  Calendar,
+  UserX
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -103,6 +105,37 @@ export const AccountManagementV2: React.FC = () => {
       refetch();
     } catch (error) {
       toast.error('Nepodařilo se odebrat oprávnění');
+    }
+  };
+
+  const handleDeleteUser = async (userId: string, userEmail: string) => {
+    try {
+      // Nejdříve odebereme všechna admin oprávnění
+      const { data: userPermissions } = await supabase
+        .from('admin_permissions')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('is_active', true);
+
+      if (userPermissions && userPermissions.length > 0) {
+        for (const permission of userPermissions) {
+          await revokePermission(permission.id);
+        }
+      }
+
+      // Pak smažeme profil uživatele
+      const { error } = await supabase
+        .from('profiles')
+        .delete()
+        .eq('id', userId);
+
+      if (error) throw error;
+
+      toast.success(`Účet ${userEmail} byl smazán`);
+      refetch();
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      toast.error('Nepodařilo se smazat účet');
     }
   };
 
@@ -331,6 +364,44 @@ export const AccountManagementV2: React.FC = () => {
                         <Shield className="h-4 w-4" />
                       </Button>
                     )}
+
+                    {/* Delete User Button */}
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        >
+                          <UserX className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Smazat uživatelský účet</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Opravdu chcete smazat účet uživatele <strong>{user.email}</strong>?
+                            <br />
+                            <br />
+                            Tato akce je nevratná a odstraní:
+                            <ul className="list-disc list-inside mt-2 space-y-1">
+                              <li>Profil uživatele</li>
+                              <li>Všechna administrační oprávnění</li>
+                              <li>Veškerá související data</li>
+                            </ul>
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Zrušit</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleDeleteUser(user.id, user.email)}
+                            className="bg-red-600 hover:bg-red-700"
+                          >
+                            Smazat účet
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </div>
                 </div>
               );
