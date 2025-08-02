@@ -148,7 +148,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar, rightContent, sidebarOpe
                   <span>{t('common:settings')}</span>
                 </DropdownMenuItem>
                 {unifiedUser?.isAdmin && (
-                  <DropdownMenuItem onClick={() => navigate('/admin')}>
+                  <DropdownMenuItem onClick={() => navigate('/admin/v2')}>
                     <Crown className="mr-2 h-4 w-4" />
                     <span>{t('admin')}</span>
                   </DropdownMenuItem>

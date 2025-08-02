@@ -23,6 +23,7 @@ import { Truck, Shield } from "lucide-react";
 const AdminContent = () => {
   const { currentSection, setCurrentSection } = useAdminContext();
   const [showNavigation, setShowNavigation] = useState(true);
+  const navigate = useNavigate();
 
   const renderContent = () => {
     if (showNavigation && currentSection === 'dashboard') {
@@ -33,6 +34,14 @@ const AdminContent = () => {
             <p className="text-muted-foreground max-w-2xl mx-auto">
               Kompletní správa aplikace s pokročilými funkcemi pro monitoring, analytics a správu uživatelů
             </p>
+            <div className="flex justify-center">
+              <Button 
+                onClick={() => navigate('/admin/v2')}
+                className="bg-primary text-primary-foreground hover:bg-primary/90"
+              >
+                🚀 Přejít na nový Admin V2 panel
+              </Button>
+            </div>
           </div>
           
           <AdminNavigation

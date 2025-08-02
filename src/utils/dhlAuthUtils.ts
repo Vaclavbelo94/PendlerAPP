@@ -221,7 +221,7 @@ export const getAdminRedirectPath = (user: User | null): string | null => {
     return '/dhl-admin';
   }
   if (isRegularAdmin(user)) {
-    return '/admin';
+    return '/admin/v2';
   }
   return null;
 };
