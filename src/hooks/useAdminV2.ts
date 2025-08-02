@@ -61,7 +61,7 @@ export interface AdminAuditLog {
 }
 
 export const useAdminV2 = () => {
-  const { unifiedUser } = useAuth();
+  const { unifiedUser, isAdmin: legacyIsAdmin } = useAuth();
   const queryClient = useQueryClient();
 
   // Check if user has admin permissions
@@ -75,7 +75,7 @@ export const useAdminV2 = () => {
         .select('*')
         .eq('user_id', unifiedUser.id)
         .eq('is_active', true)
-        .single();
+        .maybeSingle(); // Use maybeSingle instead of single
 
       if (error && error.code !== 'PGRST116') throw error;
       return data as AdminPermission | null;
@@ -98,7 +98,7 @@ export const useAdminV2 = () => {
       if (error) throw error;
       return data;
     },
-    enabled: adminPermissions?.permission_level === 'super_admin',
+    enabled: adminPermissions?.permission_level === 'super_admin' || legacyIsAdmin,
   });
 
   // Get system configuration
@@ -113,7 +113,7 @@ export const useAdminV2 = () => {
       if (error) throw error;
       return data as SystemConfig[];
     },
-    enabled: !!adminPermissions,
+    enabled: !!adminPermissions || legacyIsAdmin,
   });
 
   // Get company menu items
@@ -128,7 +128,7 @@ export const useAdminV2 = () => {
       if (error) throw error;
       return data as CompanyMenuItems[];
     },
-    enabled: !!adminPermissions,
+    enabled: !!adminPermissions || legacyIsAdmin,
   });
 
   // Get audit logs
@@ -147,7 +147,7 @@ export const useAdminV2 = () => {
       if (error) throw error;
       return data;
     },
-    enabled: adminPermissions?.permission_level === 'super_admin',
+    enabled: adminPermissions?.permission_level === 'super_admin' || legacyIsAdmin,
   });
 
   // Grant admin permission mutation
@@ -257,6 +257,11 @@ export const useAdminV2 = () => {
 
   // Helper functions
   const hasPermission = (requiredLevel: AdminPermissionLevel): boolean => {
+    // Fallback to legacy admin system if no new permissions
+    if (!adminPermissions && legacyIsAdmin) {
+      return true; // Legacy admins get full access
+    }
+    
     if (!adminPermissions?.is_active) return false;
     
     const levels = ['viewer', 'moderator', 'admin', 'super_admin'];
@@ -266,8 +271,8 @@ export const useAdminV2 = () => {
     return userLevel >= requiredLevelIndex;
   };
 
-  const isAdmin = (): boolean => hasPermission('admin');
-  const isSuperAdmin = (): boolean => hasPermission('super_admin');
+  const isAdmin = (): boolean => hasPermission('admin') || legacyIsAdmin;
+  const isSuperAdmin = (): boolean => hasPermission('super_admin') || legacyIsAdmin;
 
   return {
     // Data

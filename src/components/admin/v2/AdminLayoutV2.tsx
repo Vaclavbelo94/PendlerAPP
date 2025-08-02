@@ -13,11 +13,11 @@ interface AdminLayoutV2Props {
 }
 
 export const AdminLayoutV2: React.FC<AdminLayoutV2Props> = ({ children }) => {
-  const { unifiedUser } = useAuth();
+  const { unifiedUser, isAdmin } = useAuth();
   const { isLoadingPermissions, hasPermission } = useAdminV2();
 
   if (!unifiedUser) {
-    return <Navigate to="/auth" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   if (isLoadingPermissions) {
@@ -33,7 +33,10 @@ export const AdminLayoutV2: React.FC<AdminLayoutV2Props> = ({ children }) => {
     );
   }
 
-  if (!hasPermission('viewer')) {
+  // Allow access if user has admin permissions in the new system OR is admin in the old system
+  const hasAccess = hasPermission('viewer') || isAdmin;
+  
+  if (!hasAccess) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Card className="w-96">
@@ -43,6 +46,11 @@ export const AdminLayoutV2: React.FC<AdminLayoutV2Props> = ({ children }) => {
             <p className="text-muted-foreground">
               Nemáte dostatečná oprávnění pro přístup k administračnímu panelu.
             </p>
+            {unifiedUser.email === 'zkouska@gmail.com' && (
+              <p className="text-sm text-yellow-600 mt-2">
+                Debug: Admin status = {isAdmin ? 'true' : 'false'}, HasPermission = {hasPermission('viewer') ? 'true' : 'false'}
+              </p>
+            )}
           </CardContent>
         </Card>
       </div>
