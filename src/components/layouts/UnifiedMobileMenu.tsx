@@ -25,21 +25,31 @@ export const UnifiedMobileMenu: React.FC<UnifiedMobileMenuProps> = ({
   const navigate = useNavigate();
   const { t } = useTranslation('navigation');
 
-  // Disable body scroll when menu is open
+  // Disable body scroll when menu is open and handle escape key
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
       document.body.style.touchAction = 'none';
+      
+      // Handle escape key
+      const handleEscape = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          onClose();
+        }
+      };
+      
+      document.addEventListener('keydown', handleEscape);
+      
+      return () => {
+        document.removeEventListener('keydown', handleEscape);
+        document.body.style.overflow = '';
+        document.body.style.touchAction = '';
+      };
     } else {
       document.body.style.overflow = '';
       document.body.style.touchAction = '';
     }
-
-    return () => {
-      document.body.style.overflow = '';
-      document.body.style.touchAction = '';
-    };
-  }, [isOpen]);
+  }, [isOpen, onClose]);
 
   const handleNavigation = (href: string) => {
     navigate(href);
