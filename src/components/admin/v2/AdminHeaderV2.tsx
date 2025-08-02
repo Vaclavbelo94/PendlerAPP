@@ -6,6 +6,7 @@ import { ShieldCheck, LogOut, RefreshCw } from 'lucide-react';
 import { useAuth } from '@/hooks/auth';
 import { useAdminV2 } from '@/hooks/useAdminV2';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 
 export const AdminHeaderV2: React.FC = () => {
   const { unifiedUser } = useAuth();
@@ -13,7 +14,7 @@ export const AdminHeaderV2: React.FC = () => {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
-    // TODO: Add logout functionality
+    await supabase.auth.signOut();
     navigate('/');
   };
 

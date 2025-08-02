@@ -6,7 +6,7 @@ import { PremiumFeaturesPanel } from './PremiumFeaturesPanel';
 import { PromoCodesPanel } from './PromoCodesPanel';
 import { PasswordResetPanel } from './PasswordResetPanel';
 import { AdManagementPanel } from './AdManagementPanel';
-import { CompanyModulesPanel } from './company-modules/CompanyModulesPanel';
+
 import DatabasePanel from './database/DatabasePanel';
 import SystemMonitoringPanel from './monitoring/SystemMonitoringPanel';
 import PerformanceDashboard from './analytics/PerformanceDashboard';
@@ -47,7 +47,7 @@ const AdminSections = () => {
       </TabsContent>
 
       <TabsContent value="modules">
-        <CompanyModulesPanel />
+        <div className="p-4">Company modules management moved to new Admin V2</div>
       </TabsContent>
 
       <TabsContent value="database">

@@ -7,7 +7,6 @@ import AdminLoginDialog from "@/components/admin/AdminLoginDialog";
 import { useAuth } from "@/hooks/auth";
 import { SectionHeader } from "@/components/ui/section-header";
 import { InfoCard } from "@/components/ui/design-system/InfoCard";
-import { AdminLayout } from "@/components/admin/core/AdminLayout";
 import { AdminDashboard } from "@/components/admin/core/AdminDashboard";
 import { useAdminContext } from "@/components/admin/core/AdminProvider";
 import { UserManagement } from "@/components/admin/users";
@@ -199,9 +198,9 @@ const Admin = () => {
   }
 
   return (
-    <AdminLayout>
+    <div className="container max-w-7xl mx-auto py-8 px-4 md:px-6">
       <AdminContent />
-    </AdminLayout>
+    </div>
   );
 };
 

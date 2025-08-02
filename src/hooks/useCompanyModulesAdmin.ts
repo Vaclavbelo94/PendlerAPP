@@ -1,23 +1,24 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { CompanyType } from '@/types/auth';
-import { CompanyModule, CompanyWidget } from './useCompanyModules';
 import { toast } from 'sonner';
+import { CompanyModule, CompanyWidget } from './useCompanyModules';
+import { CompanyType } from '@/types/auth';
 
+// Extended types for admin use
 export interface CompanyModuleAdmin extends CompanyModule {
-  // Additional admin fields if needed
+  // Additional admin-specific fields if needed
 }
 
 export interface CompanyWidgetAdmin extends CompanyWidget {
-  // Additional admin fields if needed
+  // Additional admin-specific fields if needed
 }
 
 export const useCompanyModulesAdmin = () => {
   const queryClient = useQueryClient();
 
-  // Fetch all modules for admin view
+  // Fetch all company modules for admin
   const { data: allModules = [], isLoading: isLoadingModules } = useQuery({
-    queryKey: ['admin-company-modules'],
+    queryKey: ['company-modules-admin'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('company_modules')
@@ -29,38 +30,40 @@ export const useCompanyModulesAdmin = () => {
     },
   });
 
-  // Fetch all widgets for admin view
+  // Fetch all company widgets for admin
   const { data: allWidgets = [], isLoading: isLoadingWidgets } = useQuery({
-    queryKey: ['admin-company-widgets'],
+    queryKey: ['company-widgets-admin'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('company_widgets')
         .select('*')
-        .order('company, category, display_order');
+        .order('company, display_order');
 
       if (error) throw error;
       return data as CompanyWidgetAdmin[];
     },
   });
 
+  const isLoading = isLoadingModules || isLoadingWidgets;
+
   // Toggle module enabled/disabled
   const toggleModuleMutation = useMutation({
     mutationFn: async ({ id, isEnabled }: { id: string; isEnabled: boolean }) => {
       const { error } = await supabase
         .from('company_modules')
-        .update({ is_enabled: isEnabled, updated_at: new Date().toISOString() })
+        .update({ is_enabled: isEnabled })
         .eq('id', id);
 
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-company-modules'] });
+      queryClient.invalidateQueries({ queryKey: ['company-modules-admin'] });
       queryClient.invalidateQueries({ queryKey: ['company-modules'] });
-      toast.success('Modul byl úspěšně aktualizován');
+      toast.success('Modul byl aktualizován');
     },
     onError: (error) => {
       console.error('Error toggling module:', error);
-      toast.error('Chyba při aktualizaci modulu');
+      toast.error('Nepodařilo se aktualizovat modul');
     },
   });
 
@@ -69,61 +72,61 @@ export const useCompanyModulesAdmin = () => {
     mutationFn: async ({ id, isEnabled }: { id: string; isEnabled: boolean }) => {
       const { error } = await supabase
         .from('company_widgets')
-        .update({ is_enabled: isEnabled, updated_at: new Date().toISOString() })
+        .update({ is_enabled: isEnabled })
         .eq('id', id);
 
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-company-widgets'] });
+      queryClient.invalidateQueries({ queryKey: ['company-widgets-admin'] });
       queryClient.invalidateQueries({ queryKey: ['company-widgets'] });
-      toast.success('Widget byl úspěšně aktualizován');
+      toast.success('Widget byl aktualizován');
     },
     onError: (error) => {
       console.error('Error toggling widget:', error);
-      toast.error('Chyba při aktualizaci widgetu');
+      toast.error('Nepodařilo se aktualizovat widget');
     },
   });
 
-  // Update module configuration
+  // Update module config
   const updateModuleConfigMutation = useMutation({
     mutationFn: async ({ id, config }: { id: string; config: any }) => {
       const { error } = await supabase
         .from('company_modules')
-        .update({ config, updated_at: new Date().toISOString() })
+        .update({ config })
         .eq('id', id);
 
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-company-modules'] });
+      queryClient.invalidateQueries({ queryKey: ['company-modules-admin'] });
       queryClient.invalidateQueries({ queryKey: ['company-modules'] });
       toast.success('Konfigurace modulu byla aktualizována');
     },
     onError: (error) => {
       console.error('Error updating module config:', error);
-      toast.error('Chyba při aktualizaci konfigurace');
+      toast.error('Nepodařilo se aktualizovat konfiguraci modulu');
     },
   });
 
-  // Update widget configuration
+  // Update widget config
   const updateWidgetConfigMutation = useMutation({
     mutationFn: async ({ id, config }: { id: string; config: any }) => {
       const { error } = await supabase
         .from('company_widgets')
-        .update({ config, updated_at: new Date().toISOString() })
+        .update({ config })
         .eq('id', id);
 
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-company-widgets'] });
+      queryClient.invalidateQueries({ queryKey: ['company-widgets-admin'] });
       queryClient.invalidateQueries({ queryKey: ['company-widgets'] });
       toast.success('Konfigurace widgetu byla aktualizována');
     },
     onError: (error) => {
       console.error('Error updating widget config:', error);
-      toast.error('Chyba při aktualizaci konfigurace');
+      toast.error('Nepodařilo se aktualizovat konfiguraci widgetu');
     },
   });
 
@@ -132,19 +135,19 @@ export const useCompanyModulesAdmin = () => {
     mutationFn: async ({ company, isEnabled }: { company: CompanyType; isEnabled: boolean }) => {
       const { error } = await supabase
         .from('company_modules')
-        .update({ is_enabled: isEnabled, updated_at: new Date().toISOString() })
+        .update({ is_enabled: isEnabled })
         .eq('company', company);
 
       if (error) throw error;
     },
-    onSuccess: (_, { company, isEnabled }) => {
-      queryClient.invalidateQueries({ queryKey: ['admin-company-modules'] });
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['company-modules-admin'] });
       queryClient.invalidateQueries({ queryKey: ['company-modules'] });
-      toast.success(`Všechny moduly pro ${company} byly ${isEnabled ? 'povoleny' : 'zakázány'}`);
+      toast.success('Všechny moduly byly aktualizovány');
     },
     onError: (error) => {
       console.error('Error bulk toggling modules:', error);
-      toast.error('Chyba při hromadné aktualizaci modulů');
+      toast.error('Nepodařilo se aktualizovat moduly');
     },
   });
 
@@ -153,19 +156,19 @@ export const useCompanyModulesAdmin = () => {
     mutationFn: async ({ company, isEnabled }: { company: CompanyType; isEnabled: boolean }) => {
       const { error } = await supabase
         .from('company_widgets')
-        .update({ is_enabled: isEnabled, updated_at: new Date().toISOString() })
+        .update({ is_enabled: isEnabled })
         .eq('company', company);
 
       if (error) throw error;
     },
-    onSuccess: (_, { company, isEnabled }) => {
-      queryClient.invalidateQueries({ queryKey: ['admin-company-widgets'] });
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['company-widgets-admin'] });
       queryClient.invalidateQueries({ queryKey: ['company-widgets'] });
-      toast.success(`Všechny widgety pro ${company} byly ${isEnabled ? 'povoleny' : 'zakázány'}`);
+      toast.success('Všechny widgety byly aktualizovány');
     },
     onError: (error) => {
       console.error('Error bulk toggling widgets:', error);
-      toast.error('Chyba při hromadné aktualizaci widgetů');
+      toast.error('Nepodařilo se aktualizovat widgety');
     },
   });
 
@@ -173,22 +176,22 @@ export const useCompanyModulesAdmin = () => {
     // Data
     allModules,
     allWidgets,
-    isLoading: isLoadingModules || isLoadingWidgets,
-
-    // Module operations
+    isLoading,
+    
+    // Mutations
     toggleModule: toggleModuleMutation.mutate,
-    updateModuleConfig: updateModuleConfigMutation.mutate,
-    bulkToggleModules: bulkToggleModulesMutation.mutate,
-    isTogglingModule: toggleModuleMutation.isPending,
-    isUpdatingModuleConfig: updateModuleConfigMutation.isPending,
-    isBulkTogglingModules: bulkToggleModulesMutation.isPending,
-
-    // Widget operations
     toggleWidget: toggleWidgetMutation.mutate,
+    updateModuleConfig: updateModuleConfigMutation.mutate,
     updateWidgetConfig: updateWidgetConfigMutation.mutate,
+    bulkToggleModules: bulkToggleModulesMutation.mutate,
     bulkToggleWidgets: bulkToggleWidgetsMutation.mutate,
+    
+    // Loading states
+    isTogglingModule: toggleModuleMutation.isPending,
     isTogglingWidget: toggleWidgetMutation.isPending,
+    isUpdatingModuleConfig: updateModuleConfigMutation.isPending,
     isUpdatingWidgetConfig: updateWidgetConfigMutation.isPending,
+    isBulkTogglingModules: bulkToggleModulesMutation.isPending,
     isBulkTogglingWidgets: bulkToggleWidgetsMutation.isPending,
   };
 };

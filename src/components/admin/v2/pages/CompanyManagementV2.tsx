@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAdminV2 } from '@/hooks/useAdminV2';
+import { useCompanyModulesAdmin } from '@/hooks/useCompanyModulesAdmin';
 import { Building2, Settings, Users, ToggleLeft, ToggleRight } from 'lucide-react';
 
 const companies = [
@@ -36,6 +37,17 @@ const companies = [
 
 export const CompanyManagementV2: React.FC = () => {
   const { companyMenuItems, toggleCompanyMenuItem, isTogglingMenuItem } = useAdminV2();
+  const { 
+    allModules, 
+    allWidgets, 
+    isLoading: isLoadingModules,
+    toggleModule,
+    toggleWidget,
+    bulkToggleModules,
+    bulkToggleWidgets,
+    isTogglingModule,
+    isTogglingWidget
+  } = useCompanyModulesAdmin();
   const [selectedCompany, setSelectedCompany] = useState('dhl');
 
   const getCompanyMenuItems = (companyId: string) => {
