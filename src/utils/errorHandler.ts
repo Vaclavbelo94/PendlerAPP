@@ -124,9 +124,9 @@ export class ErrorHandler {
     const errorKey = `${error.code}_${error.message}`;
     const attempts = this.retryAttempts.get(errorKey) || 0;
     
-    // Use centralized logger instead of direct console.error
-    const { logger } = require('./logger');
-    logger.error('Application Error', {
+    // Use console.error directly in browser environment
+    console.error('Application Error', {
+      ...error,
       ...error,
       attempts,
       timestamp: new Date().toISOString()

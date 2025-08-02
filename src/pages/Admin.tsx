@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/auth";
 import { SectionHeader } from "@/components/ui/section-header";
 import { InfoCard } from "@/components/ui/design-system/InfoCard";
 import { AdminDashboard } from "@/components/admin/core/AdminDashboard";
-import { useAdminContext } from "@/components/admin/core/AdminProvider";
+import { AdminProvider, useAdminContext } from "@/components/admin/core/AdminProvider";
 import { UserManagement } from "@/components/admin/users";
 import UserActivityPanel from "@/components/admin/users/UserActivityPanel";
 import { PromoCodesPanel } from "@/components/admin/PromoCodesPanel";
@@ -199,7 +199,9 @@ const Admin = () => {
 
   return (
     <div className="container max-w-7xl mx-auto py-8 px-4 md:px-6">
-      <AdminContent />
+      <AdminProvider>
+        <AdminContent />
+      </AdminProvider>
     </div>
   );
 };
