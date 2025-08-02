@@ -11,6 +11,7 @@ import LoginForm from "@/components/auth/LoginForm";
 import GoogleAuthButton from "@/components/auth/GoogleAuthButton";
 import StorageWarning from "@/components/auth/StorageWarning";
 import UnifiedNavbar from '@/components/layouts/UnifiedNavbar';
+import { getRedirectPath } from "@/utils/authRoleUtils";
 
 const Login = () => {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
@@ -33,9 +34,7 @@ const Login = () => {
     
     if (user && unifiedUser) {
       console.log('User already logged in, redirecting based on role');
-      const redirectPath = unifiedUser.setupRequired ? 
-        (unifiedUser.isDHLEmployee ? '/dhl-setup' : '/setup') : 
-        '/dashboard';
+      const redirectPath = getRedirectPath(unifiedUser);
       navigate(redirectPath);
       return;
     }
