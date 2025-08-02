@@ -62,6 +62,11 @@ export const AccountManagementV2: React.FC = () => {
     },
   });
 
+  // Helper function to get user permission - moved before filteredUsers
+  const getUserPermission = (user: any) => {
+    return allAdminPermissions?.find((p: any) => p.user_id === user.id && p.is_active);
+  };
+
   const filteredUsers = users.filter(user => {
     const matchesSearch = !searchTerm || 
       user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -99,10 +104,6 @@ export const AccountManagementV2: React.FC = () => {
     } catch (error) {
       toast.error('Nepodařilo se odebrat oprávnění');
     }
-  };
-
-  const getUserPermission = (user: any) => {
-    return allAdminPermissions?.find((p: any) => p.user_id === user.id && p.is_active);
   };
 
   const getPermissionBadge = (permission: any) => {
