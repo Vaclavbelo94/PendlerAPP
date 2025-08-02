@@ -1,6 +1,6 @@
 
 import { ReactNode, useState, useEffect } from "react";
-import Navbar from "./Navbar";
+import UnifiedNavbar from "./UnifiedNavbar";
 import Footer from "./Footer";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useLocation } from "react-router-dom";
@@ -53,11 +53,7 @@ const OptimizedLayout = ({ children, navbarRightContent }: OptimizedLayoutProps)
         
         <div className="flex-1 flex flex-col min-w-0">
           <div className="sticky top-0 z-30">
-            <Navbar 
-              toggleSidebar={() => setSidebarOpen(!sidebarOpen)} 
-              rightContent={navbarRightContent}
-              sidebarOpen={sidebarOpen}
-            />
+            <UnifiedNavbar rightContent={navbarRightContent} />
           </div>
           
           <main className="flex-1 px-4 py-4">
