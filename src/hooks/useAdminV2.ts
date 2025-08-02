@@ -64,15 +64,30 @@ export const useAdminV2 = () => {
   const { unifiedUser, isAdmin: legacyIsAdmin } = useAuth();
   const queryClient = useQueryClient();
 
-  // Check if user has admin permissions - TEMPORARILY DISABLED due to RLS recursion
+  // Check if user has admin permissions - NOW FIXED with security definer function
   const { data: adminPermissions, isLoading: isLoadingPermissions, error: permissionError } = useQuery({
     queryKey: ['admin-permissions', unifiedUser?.id],
     queryFn: async () => {
-      // TEMPORARY: Skip loading admin_permissions due to RLS recursion issue
-      console.log('AdminV2: Skipping admin_permissions query due to RLS recursion - using legacy admin check');
-      return null;
+      if (!unifiedUser?.id) return null;
+      
+      console.log('AdminV2: Loading permissions for user:', unifiedUser.id, unifiedUser.email);
+      
+      try {
+        const { data, error } = await supabase
+          .from('admin_permissions')
+          .select('*')
+          .eq('user_id', unifiedUser.id)
+          .eq('is_active', true)
+          .maybeSingle();
+
+        console.log('AdminV2: Permission data loaded:', data);
+        return data as AdminPermission | null;
+      } catch (err) {
+        console.error('AdminV2: Permission loading failed, using legacy fallback');
+        return null;
+      }
     },
-    enabled: false, // Disable this query completely for now
+    enabled: !!unifiedUser?.id,
     retry: false,
     refetchOnWindowFocus: false
   });
@@ -249,15 +264,23 @@ export const useAdminV2 = () => {
     },
   });
 
-  // Helper functions - TEMPORARILY using only legacy admin system
+  // Helper functions - Now properly using both new and legacy systems
   const hasPermission = (requiredLevel: AdminPermissionLevel): boolean => {
-    // TEMPORARY: Only use legacy admin system due to RLS recursion
+    // Use new permission system if available, fallback to legacy
+    if (adminPermissions?.is_active) {
+      const levels = ['viewer', 'moderator', 'admin', 'super_admin'];
+      const userLevel = levels.indexOf(adminPermissions.permission_level);
+      const requiredLevelIndex = levels.indexOf(requiredLevel);
+      return userLevel >= requiredLevelIndex;
+    }
+    
+    // Fallback to legacy admin system
     console.log('AdminV2: Using legacy admin fallback, isAdmin:', legacyIsAdmin);
     return legacyIsAdmin;
   };
 
-  const isAdmin = (): boolean => legacyIsAdmin;
-  const isSuperAdmin = (): boolean => legacyIsAdmin;
+  const isAdmin = (): boolean => hasPermission('admin') || legacyIsAdmin;
+  const isSuperAdmin = (): boolean => hasPermission('super_admin') || legacyIsAdmin;
 
   return {
     // Data
