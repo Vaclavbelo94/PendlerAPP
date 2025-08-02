@@ -1,0 +1,335 @@
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { useAdminV2 } from '@/hooks/useAdminV2';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { 
+  Users, 
+  UserPlus, 
+  Search, 
+  Filter, 
+  Edit, 
+  Trash2, 
+  Shield, 
+  Mail,
+  Phone,
+  Building2,
+  Calendar
+} from 'lucide-react';
+import { toast } from 'sonner';
+
+export const AccountManagementV2: React.FC = () => {
+  const { grantPermission, revokePermission, adminPermissions } = useAdminV2();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCompany, setSelectedCompany] = useState<string>('all');
+  const [selectedRole, setSelectedRole] = useState<string>('all');
+  const [isGrantDialogOpen, setIsGrantDialogOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<any>(null);
+
+  // Fetch all users with profiles
+  const { data: users = [], isLoading, refetch } = useQuery({
+    queryKey: ['admin-users'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const filteredUsers = users.filter(user => {
+    const matchesSearch = !searchTerm || 
+      user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.username?.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesCompany = selectedCompany === 'all' || user.company === selectedCompany;
+    
+    const userPermission = user.admin_permissions?.find((p: any) => p.is_active);
+    const matchesRole = selectedRole === 'all' || 
+      (selectedRole === 'admin' && userPermission) ||
+      (selectedRole === 'user' && !userPermission);
+
+    return matchesSearch && matchesCompany && matchesRole;
+  });
+
+  const handleGrantPermission = async (userId: string, level: string) => {
+    try {
+      await grantPermission({
+        userId,
+        permissionLevel: level as any,
+      });
+      toast.success('Oprávnění bylo uděleno');
+      refetch();
+      setIsGrantDialogOpen(false);
+    } catch (error) {
+      toast.error('Nepodařilo se udělit oprávnění');
+    }
+  };
+
+  const handleRevokePermission = async (permissionId: string) => {
+    try {
+      await revokePermission(permissionId);
+      toast.success('Oprávnění bylo odebráno');
+      refetch();
+    } catch (error) {
+      toast.error('Nepodařilo se odebrat oprávnění');
+    }
+  };
+
+  const getUserPermission = (user: any) => {
+    return user.admin_permissions?.find((p: any) => p.is_active);
+  };
+
+  const getPermissionBadge = (permission: any) => {
+    if (!permission) return <Badge variant="outline">Uživatel</Badge>;
+    
+    const variants: any = {
+      'viewer': 'secondary',
+      'moderator': 'default',
+      'admin': 'destructive',
+      'super_admin': 'default'
+    };
+
+    return (
+      <Badge variant={variants[permission.permission_level] || 'outline'}>
+        {permission.permission_level === 'super_admin' ? 'Super Admin' : permission.permission_level}
+      </Badge>
+    );
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+          <p className="text-muted-foreground">Načítám uživatele...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Správa účtů</h1>
+          <p className="text-muted-foreground">
+            Spravujte uživatelské účty a oprávnění
+          </p>
+        </div>
+        <Dialog open={isGrantDialogOpen} onOpenChange={setIsGrantDialogOpen}>
+          <DialogTrigger asChild>
+            <Button>
+              <UserPlus className="mr-2 h-4 w-4" />
+              Udělit oprávnění
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Udělit admin oprávnění</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="user-select">Vyberte uživatele</Label>
+                <Select onValueChange={(value) => setSelectedUser(users.find(u => u.id === value))}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Vyberte uživatele" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {users
+                      .filter(user => !getUserPermission(user))
+                      .map((user) => (
+                        <SelectItem key={user.id} value={user.id}>
+                          {user.email} ({user.username})
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              {selectedUser && (
+                <div className="grid grid-cols-2 gap-2">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => handleGrantPermission(selectedUser.id, 'viewer')}
+                  >
+                    Viewer
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => handleGrantPermission(selectedUser.id, 'moderator')}
+                  >
+                    Moderator
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => handleGrantPermission(selectedUser.id, 'admin')}
+                  >
+                    Admin
+                  </Button>
+                  <Button 
+                    variant="destructive" 
+                    onClick={() => handleGrantPermission(selectedUser.id, 'super_admin')}
+                  >
+                    Super Admin
+                  </Button>
+                </div>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {/* Filters */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Filter className="h-5 w-5" />
+            Filtry
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4 md:grid-cols-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Hledat uživatele..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            
+            <Select value={selectedCompany} onValueChange={setSelectedCompany}>
+              <SelectTrigger>
+                <SelectValue placeholder="Všechny firmy" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Všechny firmy</SelectItem>
+                <SelectItem value="dhl">DHL</SelectItem>
+                <SelectItem value="adecco">Adecco</SelectItem>
+                <SelectItem value="randstad">Randstad</SelectItem>
+              </SelectContent>
+            </Select>
+            
+            <Select value={selectedRole} onValueChange={setSelectedRole}>
+              <SelectTrigger>
+                <SelectValue placeholder="Všechny role" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Všechny role</SelectItem>
+                <SelectItem value="admin">Admini</SelectItem>
+                <SelectItem value="user">Uživatelé</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Users List */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Users className="h-5 w-5" />
+            Uživatelé ({filteredUsers.length})
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {filteredUsers.map((user) => {
+              const permission = getUserPermission(user);
+              
+              return (
+                <div
+                  key={user.id}
+                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                      <Users className="h-5 w-5 text-primary" />
+                    </div>
+                    
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-medium">{user.username || 'Bez jména'}</h4>
+                        {getPermissionBadge(permission)}
+                      </div>
+                      
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-1">
+                          <Mail className="h-3 w-3" />
+                          {user.email}
+                        </div>
+                        
+                        {user.company && (
+                          <div className="flex items-center gap-1">
+                            <Building2 className="h-3 w-3" />
+                            {user.company}
+                          </div>
+                        )}
+                        
+                        <div className="flex items-center gap-1">
+                          <Calendar className="h-3 w-3" />
+                          {new Date(user.created_at).toLocaleDateString('cs-CZ')}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    {user.is_premium && (
+                      <Badge variant="default" className="bg-yellow-100 text-yellow-800">
+                        Premium
+                      </Badge>
+                    )}
+                    
+                    {permission ? (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleRevokePermission(permission.id)}
+                        className="text-red-600 hover:text-red-700"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setSelectedUser(user);
+                          setIsGrantDialogOpen(true);
+                        }}
+                      >
+                        <Shield className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+            
+            {filteredUsers.length === 0 && (
+              <div className="text-center py-8 text-muted-foreground">
+                <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p>Žádní uživatelé nenalezeni</p>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
