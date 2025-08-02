@@ -123,7 +123,7 @@ export class RoleManager {
         .from('profiles')
         .select('id, email, is_admin, is_premium, premium_expiry, is_dhl_employee, company')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
 
       if (profileError && profileError.code !== 'PGRST116') {
         console.error('RoleManager: Profile load error:', profileError);

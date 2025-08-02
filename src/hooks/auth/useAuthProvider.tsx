@@ -16,12 +16,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     isLoading: optimizedAuth.isLoading
   });
 
-  // Use optimized auth directly as it implements AuthContextType
-  const contextValue: AuthContextType = optimizedAuth;
-
   return (
-    <AuthContext.Provider value={contextValue}>
+    <AuthContext.Provider value={optimizedAuth}>
       {children}
     </AuthContext.Provider>
   );
+
 };
