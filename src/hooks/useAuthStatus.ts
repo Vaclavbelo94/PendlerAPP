@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { isDHLEmployee } from '@/utils/dhlAuthUtils';
 
@@ -9,6 +9,18 @@ import { isDHLEmployee } from '@/utils/dhlAuthUtils';
 export const useAuthStatus = (userId: string | undefined) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isPremium, setIsPremium] = useState(false);
+
+  // Auto-load status when userId changes
+  useEffect(() => {
+    if (userId) {
+      refreshAdminStatus();
+      refreshPremiumStatus();
+    } else {
+      setIsAdmin(false);
+      setIsPremium(false);
+      localStorage.removeItem('adminLoggedIn');
+    }
+  }, [userId]);
 
   const refreshAdminStatus = async () => {
     if (!userId) return;
