@@ -12,7 +12,20 @@ export const useCompany = () => {
     return null;
   };
 
-  const company = unifiedUser?.company || getCompanyFromStorage();
+  const company = unifiedUser?.company || getCompanyFromStorage() || CompanyType.DHL; // Temporary fallback for debugging
+  
+  // Debug logging
+  console.log('🏢 useCompany Debug:', {
+    unifiedUserCompany: unifiedUser?.company,
+    storageCompany: getCompanyFromStorage(),
+    finalCompany: company,
+    unifiedUser
+  });
+
+  const setCompany = (newCompany: CompanyType) => {
+    localStorage.setItem('selectedCompany', newCompany);
+    window.location.reload(); // Force reload to update the hook
+  };
   
   const isAdecco = company === CompanyType.ADECCO;
   const isRandstad = company === CompanyType.RANDSTAD;
@@ -23,6 +36,7 @@ export const useCompany = () => {
   
   return {
     company,
+    setCompany,
     isAdecco,
     isRandstad,
     isDHL,

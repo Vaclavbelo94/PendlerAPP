@@ -21,8 +21,20 @@ export const MobileMenuV2: React.FC<MobileMenuV2Props> = ({
 }) => {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation('navigation');
-  const { localizedMenuItems, isLoading } = useCompanyMenuItems();
+  const { localizedMenuItems, isLoading, menuItems } = useCompanyMenuItems();
   const { company } = useCompany();
+
+  // Debug logging
+  useEffect(() => {
+    console.log('🔍 MobileMenuV2 Debug:', {
+      company,
+      isLoading,
+      localizedMenuItemsCount: localizedMenuItems.length,
+      rawMenuItemsCount: menuItems.length,
+      localizedMenuItems,
+      menuItems
+    });
+  }, [company, isLoading, localizedMenuItems, menuItems]);
 
   // Disable body scroll when menu is open and handle escape key
   useEffect(() => {

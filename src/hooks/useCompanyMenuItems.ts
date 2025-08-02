@@ -26,9 +26,10 @@ export const useCompanyMenuItems = () => {
   const { company } = useCompany();
   const { i18n } = useTranslation();
 
-  const { data: menuItems = [], isLoading } = useQuery({
+  const { data: menuItems = [], isLoading, error } = useQuery({
     queryKey: ['company-menu-items', company],
     queryFn: async () => {
+      console.log('🔍 Fetching menu items for company:', company);
       if (!company) return [];
 
       const { data, error } = await supabase
@@ -38,10 +39,21 @@ export const useCompanyMenuItems = () => {
         .eq('is_enabled', true)
         .order('display_order');
 
+      console.log('📊 Menu items query result:', { data, error, company });
       if (error) throw error;
       return data as CompanyMenuItem[];
     },
     enabled: !!company,
+  });
+
+  // Debug logging
+  console.log('🎯 useCompanyMenuItems Debug:', {
+    company,
+    isLoading,
+    error,
+    menuItemsCount: menuItems.length,
+    menuItems,
+    queryEnabled: !!company
   });
 
   // Get localized menu items
