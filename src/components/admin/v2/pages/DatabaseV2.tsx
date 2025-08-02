@@ -52,18 +52,22 @@ export const DatabaseV2: React.FC = () => {
       if (!selectedTable) return null;
 
       try {
-        const { count, error } = await supabase
-          .from(selectedTable)
-          .select('*', { count: 'exact', head: true });
+        // Only allow stats for known safe tables
+        const allowedTables = ['profiles', 'shifts', 'admin_permissions', 'company_menu_items', 'system_config'];
+        if (!allowedTables.includes(selectedTable)) {
+          return { rowCount: 0, lastUpdated: new Date().toISOString() };
+        }
 
-        if (error) throw error;
+        const { count } = await supabase
+          .from(selectedTable as any)
+          .select('*', { count: 'exact', head: true });
 
         return {
           rowCount: count || 0,
           lastUpdated: new Date().toISOString()
         };
       } catch (error) {
-        return null;
+        return { rowCount: 0, lastUpdated: new Date().toISOString() };
       }
     },
     enabled: !!selectedTable,
@@ -86,8 +90,6 @@ export const DatabaseV2: React.FC = () => {
 
       // Mock SQL execution for safety
       const data = { message: 'SQL execution disabled for security' };
-
-      if (error) throw error;
 
       setQueryResult(data);
       toast.success('Dotaz byl úspěšně vykonán');

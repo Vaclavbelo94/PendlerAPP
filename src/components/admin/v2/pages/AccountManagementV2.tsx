@@ -27,7 +27,7 @@ import {
 import { toast } from 'sonner';
 
 export const AccountManagementV2: React.FC = () => {
-  const { grantPermission, revokePermission, adminPermissions } = useAdminV2();
+  const { grantPermission, revokePermission } = useAdminV2();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCompany, setSelectedCompany] = useState<string>('all');
   const [selectedRole, setSelectedRole] = useState<string>('all');
@@ -48,6 +48,20 @@ export const AccountManagementV2: React.FC = () => {
     },
   });
 
+  // Fetch admin permissions separately
+  const { data: allAdminPermissions = [] } = useQuery({
+    queryKey: ['admin-permissions-list'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('admin_permissions')
+        .select('*')
+        .eq('is_active', true);
+
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const filteredUsers = users.filter(user => {
     const matchesSearch = !searchTerm || 
       user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -55,7 +69,7 @@ export const AccountManagementV2: React.FC = () => {
     
     const matchesCompany = selectedCompany === 'all' || user.company === selectedCompany;
     
-    const userPermission = user.admin_permissions?.find((p: any) => p.is_active);
+    const userPermission = getUserPermission(user);
     const matchesRole = selectedRole === 'all' || 
       (selectedRole === 'admin' && userPermission) ||
       (selectedRole === 'user' && !userPermission);
@@ -88,7 +102,7 @@ export const AccountManagementV2: React.FC = () => {
   };
 
   const getUserPermission = (user: any) => {
-    return user.admin_permissions?.find((p: any) => p.is_active);
+    return allAdminPermissions?.find((p: any) => p.user_id === user.id && p.is_active);
   };
 
   const getPermissionBadge = (permission: any) => {
