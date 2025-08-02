@@ -5,7 +5,7 @@ import { useAuth } from '@/hooks/auth';
 import { Button } from '@/components/ui/button';
 import { Menu } from 'lucide-react';
 import { LanguageSwitcher } from '@/components/i18n/LanguageSwitcher';
-import { UnifiedMobileMenu } from './UnifiedMobileMenu';
+import { MobileMenuV2 } from './MobileMenuV2';
 
 
 interface UnifiedNavbarProps {
@@ -51,7 +51,7 @@ const UnifiedNavbar: React.FC<UnifiedNavbarProps> = ({ rightContent }) => {
         </div>
         
         {/* Mobile Menu */}
-        <UnifiedMobileMenu 
+        <MobileMenuV2 
           isOpen={isMobileMenuOpen}
           onClose={() => setIsMobileMenuOpen(false)}
         />
