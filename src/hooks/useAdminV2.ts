@@ -65,22 +65,36 @@ export const useAdminV2 = () => {
   const queryClient = useQueryClient();
 
   // Check if user has admin permissions
-  const { data: adminPermissions, isLoading: isLoadingPermissions } = useQuery({
+  const { data: adminPermissions, isLoading: isLoadingPermissions, error: permissionError } = useQuery({
     queryKey: ['admin-permissions', unifiedUser?.id],
     queryFn: async () => {
       if (!unifiedUser?.id) return null;
       
-      const { data, error } = await supabase
-        .from('admin_permissions')
-        .select('*')
-        .eq('user_id', unifiedUser.id)
-        .eq('is_active', true)
-        .maybeSingle(); // Use maybeSingle instead of single
+      console.log('AdminV2: Loading permissions for user:', unifiedUser.id, unifiedUser.email);
+      
+      try {
+        const { data, error } = await supabase
+          .from('admin_permissions')
+          .select('*')
+          .eq('user_id', unifiedUser.id)
+          .eq('is_active', true)
+          .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') throw error;
-      return data as AdminPermission | null;
+        if (error) {
+          console.error('AdminV2: Permission query error:', error);
+          throw error;
+        }
+        
+        console.log('AdminV2: Permission data loaded:', data);
+        return data as AdminPermission | null;
+      } catch (err) {
+        console.error('AdminV2: Permission loading failed:', err);
+        throw err;
+      }
     },
     enabled: !!unifiedUser?.id,
+    retry: false, // Don't retry on failure
+    refetchOnWindowFocus: false
   });
 
   // Get all admin permissions (for super admins)
@@ -282,8 +296,11 @@ export const useAdminV2 = () => {
     companyMenuItems,
     auditLogs,
     
-    // Loading states
-    isLoadingPermissions,
+    // Loading states - if there's an error and user is legacy admin, don't show loading
+    isLoadingPermissions: isLoadingPermissions && !permissionError,
+    
+    // Error state
+    permissionError,
     
     // Mutations
     grantPermission: grantPermissionMutation.mutate,
