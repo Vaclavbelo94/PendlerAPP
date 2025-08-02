@@ -2,6 +2,10 @@
 import { User } from '@supabase/supabase-js';
 import { getDHLAuthStateSync, isDHLAdmin, canAccessDHLAdmin, DHLAuthState } from './dhlAuthUtils';
 
+/**
+ * @deprecated Use useOptimizedAuth hook instead
+ * This interface is kept for backward compatibility
+ */
 export interface UnifiedAuthState {
   user: User | null;
   isAdmin: boolean;
@@ -16,6 +20,7 @@ export interface UnifiedAuthState {
 }
 
 /**
+ * @deprecated Use useOptimizedAuth hook instead
  * Utility funkce pro standardizovaný auth state
  */
 export const getUnifiedAuthState = (
@@ -24,6 +29,7 @@ export const getUnifiedAuthState = (
   isPremium: boolean,
   isLoading: boolean
 ): UnifiedAuthState => {
+  console.warn('⚠️ getUnifiedAuthState is deprecated. Use useOptimizedAuth hook instead.');
   const specialEmails = ['uzivatel@pendlerapp.com', 'admin@pendlerapp.com', 'admin_dhl@pendlerapp.com'];
   const isSpecialUser = user?.email ? specialEmails.includes(user.email) : false;
   

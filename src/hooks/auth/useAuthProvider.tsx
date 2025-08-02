@@ -3,52 +3,21 @@ import * as React from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { AuthContext } from './useAuthContext';
 import { AuthContextType, AuthError, UnifiedUser } from '@/types/auth';
-import { useUnifiedAuth } from './useUnifiedAuth';
+import { useOptimizedAuth } from './useOptimizedAuth';
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const unifiedAuth = useUnifiedAuth();
+  const optimizedAuth = useOptimizedAuth();
   
-  console.log('Auth Provider: Using unified auth, state:', {
-    hasUser: !!unifiedAuth.user,
-    email: unifiedAuth.user?.email,
-    isPremium: unifiedAuth.isPremium,
-    isAdmin: unifiedAuth.isAdmin,
-    isLoading: unifiedAuth.isLoading
+  console.log('Auth Provider: Using optimized auth, state:', {
+    hasUser: !!optimizedAuth.user,
+    email: optimizedAuth.user?.email,
+    isPremium: optimizedAuth.isPremium,
+    isAdmin: optimizedAuth.isAdmin,
+    isLoading: optimizedAuth.isLoading
   });
 
-  // Transform unified auth to match AuthContextType interface
-  const contextValue: AuthContextType = {
-    user: unifiedAuth.user,
-    session: unifiedAuth.session,
-    unifiedUser: unifiedAuth.unifiedUser,
-    isLoading: unifiedAuth.isLoading,
-    isPremium: unifiedAuth.isPremium,
-    isAdmin: unifiedAuth.isAdmin,
-    error: null, // Could be enhanced to include error handling
-    
-    // Auth methods - delegate to unified auth
-    signIn: unifiedAuth.signIn,
-    signInWithGoogle: unifiedAuth.signInWithGoogle,
-    signUp: unifiedAuth.signUp,
-    signOut: unifiedAuth.signOut,
-    
-    // Status methods - wrap to match interface expectations
-    refreshUserStatus: async () => {
-      await unifiedAuth.refreshUserStatus();
-    },
-    refreshAdminStatus: unifiedAuth.refreshAdminStatus,
-    refreshPremiumStatus: async () => {
-      const result = await unifiedAuth.refreshPremiumStatus();
-      return {
-        isPremium: result.isPremium,
-        premiumExpiry: result.premiumExpiry
-      };
-    },
-    
-    // Role methods - delegate to unified auth
-    hasRole: unifiedAuth.hasRole,
-    canAccess: unifiedAuth.canAccess,
-  };
+  // Use optimized auth directly as it implements AuthContextType
+  const contextValue: AuthContextType = optimizedAuth;
 
   return (
     <AuthContext.Provider value={contextValue}>
