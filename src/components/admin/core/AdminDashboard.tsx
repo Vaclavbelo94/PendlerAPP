@@ -100,12 +100,12 @@ export const AdminDashboard: React.FC = () => {
         .order('created_at', { ascending: false })
         .limit(5);
 
-      // Fetch recent promo code activities
+      // Fetch recent company premium code activities
       const { data: promoRedemptions } = await supabase
-        .from('promo_code_redemptions')
+        .from('company_premium_code_redemptions')
         .select(`
           redeemed_at,
-          promo_codes(code),
+          company_premium_codes(code),
           user_id
         `)
         .order('redeemed_at', { ascending: false })
@@ -126,12 +126,12 @@ export const AdminDashboard: React.FC = () => {
         });
       }
 
-      // Add promo code activities
+      // Add company premium code activities
       if (promoRedemptions) {
         promoRedemptions.forEach(redemption => {
           activities.push({
             type: 'promo_redemption',
-            message: `Uplatněn promo kód: ${redemption.promo_codes?.code}`,
+            message: `Uplatněn premium kód: ${redemption.company_premium_codes?.code}`,
             time: getRelativeTime(new Date(redemption.redeemed_at)),
             user: 'Uživatel',
             timestamp: new Date(redemption.redeemed_at)

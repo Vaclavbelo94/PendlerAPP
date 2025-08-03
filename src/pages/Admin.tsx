@@ -11,7 +11,7 @@ import { AdminDashboard } from "@/components/admin/core/AdminDashboard";
 import { AdminProvider, useAdminContext } from "@/components/admin/core/AdminProvider";
 import { UserManagement } from "@/components/admin/users";
 import UserActivityPanel from "@/components/admin/users/UserActivityPanel";
-import { PromoCodesPanel } from "@/components/admin/PromoCodesPanel";
+
 import { PremiumFeaturesPanel } from "@/components/admin/PremiumFeaturesPanel";
 import { AdManagementPanel } from "@/components/admin/AdManagementPanel";
 import { PasswordResetPanel } from "@/components/admin/PasswordResetPanel";
@@ -76,7 +76,7 @@ const AdminContent = () => {
       case 'users-activity':
         return <UserActivityPanel />;
       case 'promo-codes':
-        return <PromoCodesPanel />;
+        return <div>Premium codes feature has been moved to company premium codes</div>;
       case 'premium-features':
         return <PremiumFeaturesPanel />;
       case 'ad-management':

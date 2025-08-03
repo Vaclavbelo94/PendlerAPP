@@ -5,7 +5,6 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Check, X, Truck, RefreshCw } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { isDHLPromoCode } from '@/utils/dhlAuthUtils';
 
 interface PromoCodeFieldProps {
   onPromoCodeChange: (code: string, isValid: boolean, isDHL?: boolean) => void;
@@ -32,62 +31,64 @@ const PromoCodeField: React.FC<PromoCodeFieldProps> = ({ onPromoCodeChange }) =>
 
     setIsValidating(true);
     
-    // Check if it's a DHL promo code first
-    const isDHLCode = isDHLPromoCode(code);
-    console.log('Is DHL promo code:', isDHLCode);
-    setIsDHL(isDHLCode);
-    
     try {
-      // Check if promo code exists and is valid
+      // Check if company premium code exists and is valid
       const { data: promoCodeData, error } = await supabase
-        .from('promo_codes')
+        .from('company_premium_codes')
         .select('*')
         .ilike('code', code.trim())
+        .eq('is_active', true)
         .single();
 
-      console.log('Promo code query result:', { data: promoCodeData, error });
+      console.log('Company premium code query result:', { data: promoCodeData, error });
 
       if (error || !promoCodeData) {
-        console.log('Promo code not found or error:', error);
+        console.log('Company premium code not found or error:', error);
         setValidationResult('invalid');
-        onPromoCodeChange(code, false, isDHLCode);
+        onPromoCodeChange(code, false, false);
         setIsValidating(false);
         return;
       }
 
       // Check if code is expired
       const validUntil = new Date(promoCodeData.valid_until);
+      const validFrom = new Date(promoCodeData.valid_from);
       const now = new Date();
-      console.log('Expiry check:', { validUntil, now, isExpired: validUntil < now });
+      console.log('Date check:', { validFrom, validUntil, now, isActive: now >= validFrom && now <= validUntil });
       
-      if (validUntil < now) {
-        console.log('Promo code expired');
+      if (now < validFrom || now > validUntil) {
+        console.log('Company premium code not in valid date range');
         setValidationResult('invalid');
-        onPromoCodeChange(code, false, isDHLCode);
+        onPromoCodeChange(code, false, false);
         setIsValidating(false);
         return;
       }
 
       // Check if code has reached max uses
-      const maxUses = promoCodeData.max_uses;
+      const maxUsers = promoCodeData.max_users;
       const usedCount = promoCodeData.used_count || 0;
-      console.log('Usage check:', { maxUses, usedCount, isMaxedOut: maxUses !== null && usedCount >= maxUses });
+      console.log('Usage check:', { maxUsers, usedCount, isMaxedOut: maxUsers !== null && usedCount >= maxUsers });
       
-      if (maxUses !== null && usedCount >= maxUses) {
-        console.log('Promo code usage limit reached');
+      if (maxUsers !== null && usedCount >= maxUsers) {
+        console.log('Company premium code usage limit reached');
         setValidationResult('invalid');
-        onPromoCodeChange(code, false, isDHLCode);
+        onPromoCodeChange(code, false, false);
         setIsValidating(false);
         return;
       }
 
-      console.log('Promo code is valid!');
+      // Check if it's a DHL code
+      const isDHLCode = promoCodeData.company === 'dhl';
+      console.log('Is DHL company code:', isDHLCode);
+      setIsDHL(isDHLCode);
+
+      console.log('Company premium code is valid!');
       setValidationResult('valid');
       onPromoCodeChange(code, true, isDHLCode);
     } catch (error) {
-      console.error('Error validating promo code:', error);
+      console.error('Error validating company premium code:', error);
       setValidationResult('invalid');
-      onPromoCodeChange(code, false, isDHLCode);
+      onPromoCodeChange(code, false, false);
     } finally {
       setIsValidating(false);
       console.log('=== PROMO CODE VALIDATION END ===');

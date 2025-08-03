@@ -1,235 +1,141 @@
-
-import { User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
 export interface DHLAuthState {
   isDHLEmployee: boolean;
-  hasAssignment: boolean;
-  canAccessDHLFeatures: boolean;
+  company: string | null;
+  isAdmin: boolean;
 }
 
 /**
- * Unified DHL employee check - checks both promo codes and profile flag
+ * Check if a user is a DHL employee based on their profile
  */
-export const isDHLEmployee = async (user: User | null): Promise<boolean> => {
-  if (!user?.id) {
-    console.log('DHL Employee check: No user ID provided');
-    return false;
-  }
-  
-  // Admin override for testing - admin_dhl@pendlerapp.com can always access
-  if (user.email === 'admin_dhl@pendlerapp.com') {
-    console.log('DHL Employee check: Admin override granted');
-    return true;
-  }
-  
+export const isDHLEmployee = async (userIdOrUser: string | any): Promise<boolean> => {
+  const userId = typeof userIdOrUser === 'string' ? userIdOrUser : userIdOrUser?.id;
   try {
-    // Check profile flag first (fastest check)
-    const { data: profileData, error: profileError } = await supabase
+    const { data, error } = await supabase
       .from('profiles')
-      .select('is_dhl_employee')
-      .eq('id', user.id)
+      .select('is_dhl_employee, company')
+      .eq('id', userId)
       .single();
 
-    if (!profileError && profileData?.is_dhl_employee) {
-      console.log('DHL Employee check: Found via profile flag');
-      return true;
-    }
-
-    // If profile flag is not set, check promo code redemption
-    const { data: promoData, error: promoError } = await supabase
-      .from('promo_code_redemptions')
-      .select(`
-        promo_codes (
-          code
-        )
-      `)
-      .eq('user_id', user.id);
-
-    if (promoError) {
-      console.error('Error checking DHL promo codes:', promoError);
+    if (error || !data) {
       return false;
     }
 
-    const dhlPromoCodes = ['DHL2026', 'DHL2025', 'DHLSPECIAL'];
-    const hasDHLPromo = promoData?.some(redemption => 
-      redemption.promo_codes && 
-      dhlPromoCodes.includes(redemption.promo_codes.code.toUpperCase())
-    ) || false;
-
-    // If user has DHL promo but profile flag is not set, update it
-    if (hasDHLPromo && !profileData?.is_dhl_employee) {
-      console.log('DHL Employee check: Updating profile flag based on promo code');
-      await supabase
-        .from('profiles')
-        .upsert({ 
-          id: user.id,
-          is_dhl_employee: true,
-          updated_at: new Date().toISOString()
-        });
-    }
-
-    console.log('DHL Employee check:', { 
-      userId: user.id,
-      email: user.email, 
-      profileFlag: profileData?.is_dhl_employee,
-      hasDHLPromo,
-      result: hasDHLPromo
-    });
-    
-    return hasDHLPromo;
+    return data.is_dhl_employee || data.company === 'dhl';
   } catch (error) {
-    console.error('Error in isDHLEmployee:', error);
+    console.error('Error checking DHL employee status:', error);
     return false;
   }
 };
 
 /**
- * Synchronous version - only checks admin override and app metadata
- * Use this when you need immediate result without async calls
+ * Synchronous version - checks user object directly
  */
-export const isDHLEmployeeSync = (user: User | null): boolean => {
-  if (!user?.email) {
-    console.log('DHL Employee sync check: No email provided');
-    return false;
-  }
-  
-  // Admin override for testing - admin_dhl@pendlerapp.com can always access
-  if (user.email === 'admin_dhl@pendlerapp.com') {
-    console.log('DHL Employee sync check: Admin override granted');
-    return true;
-  }
-  
-  // Check app_metadata first (set by auth triggers)
-  const appMetadata = user.app_metadata || {};
-  const isDHLFromAppMeta = appMetadata.is_dhl_employee === true;
-  
-  // Fallback to user_metadata if available
-  const userMetadata = user.user_metadata || {};
-  const isDHLFromUserMeta = userMetadata.is_dhl_employee === true;
-  
-  const result = isDHLFromAppMeta || isDHLFromUserMeta;
-  
-  console.log('DHL Employee sync check:', {
-    email: user.email,
-    isDHLFromAppMeta,
-    isDHLFromUserMeta,
-    result
-  });
-  
-  return result;
+export const isDHLEmployeeSync = (user: any): boolean => {
+  if (!user?.id) return false;
+  // This would need to be based on cached data or user metadata
+  return user.user_metadata?.company === 'dhl' || false;
 };
 
 /**
  * Check if user is DHL admin
  */
-export const isDHLAdmin = (user: User | null): boolean => {
-  const isAdmin = user?.email === 'admin_dhl@pendlerapp.com';
-  console.log('DHL Admin check:', { email: user?.email, isAdmin });
-  return isAdmin;
+export const isDHLAdmin = async (userId: string): Promise<boolean> => {
+  try {
+    const { data, error } = await supabase
+      .from('admin_permissions')
+      .select('permission_level')
+      .eq('user_id', userId)
+      .eq('is_active', true)
+      .in('permission_level', ['dhl_admin', 'super_admin'])
+      .maybeSingle();
+
+    return !error && !!data;
+  } catch (error) {
+    console.error('Error checking DHL admin status:', error);
+    return false;
+  }
 };
 
 /**
  * Check if user is regular admin
  */
-export const isRegularAdmin = (user: User | null): boolean => {
-  const isAdmin = user?.email === 'admin@pendlerapp.com';
-  console.log('Regular Admin check:', { email: user?.email, isAdmin });
-  return isAdmin;
+export const isRegularAdmin = async (userId: string): Promise<boolean> => {
+  try {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('is_admin')
+      .eq('id', userId)
+      .single();
+
+    return !error && !!data?.is_admin;
+  } catch (error) {
+    console.error('Error checking admin status:', error);
+    return false;
+  }
 };
 
 /**
- * Get unified DHL auth state (async version)
+ * Check if user can access DHL admin features
  */
-export const getDHLAuthState = async (user: User | null): Promise<DHLAuthState> => {
-  const isEmployee = await isDHLEmployee(user);
+export const canAccessDHLAdmin = async (userId: string): Promise<boolean> => {
+  const [isDHLAdminUser, isRegularAdminUser] = await Promise.all([
+    isDHLAdmin(userId),
+    isRegularAdmin(userId)
+  ]);
+  return isDHLAdminUser || isRegularAdminUser;
+};
 
-  const authState = {
-    isDHLEmployee: isEmployee,
-    hasAssignment: false, // Will be checked in components via useDHLData
-    canAccessDHLFeatures: isEmployee
+/**
+ * Check if user can access DHL features
+ */
+export const canAccessDHLFeatures = async (userId: string): Promise<boolean> => {
+  return await isDHLEmployee(userId);
+};
+
+/**
+ * Get DHL auth state synchronously
+ */
+export const getDHLAuthStateSync = (user: any): DHLAuthState => {
+  return {
+    isDHLEmployee: isDHLEmployeeSync(user),
+    company: user?.user_metadata?.company || null,
+    isAdmin: user?.user_metadata?.is_admin || false
   };
-
-  console.log('DHL Auth State:', authState);
-  return authState;
 };
 
 /**
- * Synchronous version for compatibility
+ * Check if a promo code is a DHL promo code (legacy function for compatibility)
  */
-export const getDHLAuthStateSync = (user: User | null): DHLAuthState => {
-  const isEmployee = isDHLEmployeeSync(user);
-
-  const authState = {
-    isDHLEmployee: isEmployee,
-    hasAssignment: false,
-    canAccessDHLFeatures: isEmployee
-  };
-
-  console.log('DHL Auth State (sync):', authState);
-  return authState;
+export const isDHLPromoCode = (code: string): boolean => {
+  // This is now mainly for legacy compatibility
+  // DHL status is determined by company premium codes
+  const dhlCodes = ['DHL2026', 'DHL2025', 'DHLSPECIAL'];
+  return dhlCodes.includes(code.toUpperCase());
 };
 
 /**
- * Check if user can access DHL admin panel
+ * Get DHL-specific user data
  */
-export const canAccessDHLAdmin = (user: User | null): boolean => {
-  return isDHLAdmin(user);
-};
+export const getDHLUserData = async (userId: string) => {
+  try {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('is_dhl_employee, company')
+      .eq('id', userId)
+      .single();
 
-/**
- * Check if user can access DHL features (sync version for compatibility)
- */
-export const canAccessDHLFeatures = (user: User | null): boolean => {
-  return isDHLEmployeeSync(user);
-};
+    if (error || !data) {
+      return { isDHL: false, company: null };
+    }
 
-/**
- * Check if user can access DHL features (async version)
- */
-export const canAccessDHLFeaturesAsync = async (user: User | null): Promise<boolean> => {
-  return await isDHLEmployee(user);
-};
-
-/**
- * Get DHL setup redirect path if needed (async version)
- */
-export const getDHLSetupPath = async (user: User | null, hasAssignment: boolean): Promise<string | null> => {
-  const isDHL = await isDHLEmployee(user);
-  if (isDHL && !hasAssignment) {
-    return '/dhl-setup';
+    return {
+      isDHL: data.is_dhl_employee || data.company === 'dhl',
+      company: data.company
+    };
+  } catch (error) {
+    console.error('Error getting DHL user data:', error);
+    return { isDHL: false, company: null };
   }
-  return null;
-};
-
-/**
- * Get DHL setup redirect path if needed (sync version)
- */
-export const getDHLSetupPathSync = (user: User | null, hasAssignment: boolean): string | null => {
-  const isDHL = isDHLEmployeeSync(user);
-  if (isDHL && !hasAssignment) {
-    return '/dhl-setup';
-  }
-  return null;
-};
-
-/**
- * Get admin redirect path based on user type
- */
-export const getAdminRedirectPath = (user: User | null): string | null => {
-  if (isDHLAdmin(user)) {
-    return '/dhl-admin';
-  }
-  if (isRegularAdmin(user)) {
-    return '/admin/v2';
-  }
-  return null;
-};
-
-/**
- * Check if promo code is DHL related
- */
-export const isDHLPromoCode = (promoCode: string): boolean => {
-  const dhlPromoCodes = ['DHL2026', 'DHL2025', 'DHLSPECIAL'];
-  return dhlPromoCodes.includes(promoCode.toUpperCase());
 };

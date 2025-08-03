@@ -3,7 +3,7 @@ import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { UserAdminPanel } from './UserAdminPanel';
 import { PremiumFeaturesPanel } from './PremiumFeaturesPanel';
-import { PromoCodesPanel } from './PromoCodesPanel';
+
 import { PasswordResetPanel } from './PasswordResetPanel';
 import { AdManagementPanel } from './AdManagementPanel';
 
@@ -35,7 +35,7 @@ const AdminSections = () => {
       </TabsContent>
 
       <TabsContent value="promos">
-        <PromoCodesPanel />
+        
       </TabsContent>
 
       <TabsContent value="ads">
