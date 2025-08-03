@@ -40,25 +40,7 @@ export const UnifiedMobileNavbar: React.FC<UnifiedMobileNavbarProps> = ({
               <LanguageSwitcherCompact />
             </div>
             
-            {/* Notifications for authenticated users */}
-            {user && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 w-8 p-0 relative"
-              >
-                <Bell className="h-4 w-4" />
-                {/* Notification badge example */}
-                <Badge 
-                  variant="destructive" 
-                  className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 text-xs flex items-center justify-center"
-                >
-                  3
-                </Badge>
-              </Button>
-            )}
-            
-            {/* Custom Right Content */}
+            {/* Custom Right Content - this includes NotificationIndicator */}
             {rightContent}
             
             {/* Mobile Menu Button */}
