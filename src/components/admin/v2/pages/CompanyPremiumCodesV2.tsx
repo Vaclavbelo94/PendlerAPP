@@ -31,7 +31,7 @@ import { toast } from 'sonner';
 
 interface CompanyPremiumCode {
   id: string;
-  company: 'dhl' | 'adecco' | 'randstad';
+  company: 'dhl' | 'adecco' | 'randstad' | null;
   code: string;
   name: string;
   description?: string;
@@ -48,7 +48,7 @@ interface CompanyPremiumCode {
 }
 
 interface FormData {
-  company: 'dhl' | 'adecco' | 'randstad';
+  company: 'dhl' | 'adecco' | 'randstad' | 'classic' | null;
   code: string;
   name: string;
   description: string;
