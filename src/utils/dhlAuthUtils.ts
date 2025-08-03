@@ -4,6 +4,7 @@ export interface DHLAuthState {
   isDHLEmployee: boolean;
   company: string | null;
   isAdmin: boolean;
+  canAccessDHLFeatures: boolean;
 }
 
 /**
@@ -41,7 +42,14 @@ export const isDHLEmployeeSync = (user: any): boolean => {
 /**
  * Check if user is DHL admin
  */
-export const isDHLAdmin = async (userId: string): Promise<boolean> => {
+export const isDHLAdmin = (userIdOrUser: string | any): boolean | Promise<boolean> => {
+  const userId = typeof userIdOrUser === 'string' ? userIdOrUser : userIdOrUser?.id;
+  if (!userId) return false;
+  
+  return checkDHLAdminAsync(userId);
+};
+
+const checkDHLAdminAsync = async (userId: string): Promise<boolean> => {
   try {
     const { data, error } = await supabase
       .from('admin_permissions')
@@ -61,7 +69,14 @@ export const isDHLAdmin = async (userId: string): Promise<boolean> => {
 /**
  * Check if user is regular admin
  */
-export const isRegularAdmin = async (userId: string): Promise<boolean> => {
+export const isRegularAdmin = (userIdOrUser: string | any): boolean | Promise<boolean> => {
+  const userId = typeof userIdOrUser === 'string' ? userIdOrUser : userIdOrUser?.id;
+  if (!userId) return false;
+  
+  return checkRegularAdminAsync(userId);
+};
+
+const checkRegularAdminAsync = async (userId: string): Promise<boolean> => {
   try {
     const { data, error } = await supabase
       .from('profiles')
@@ -79,10 +94,17 @@ export const isRegularAdmin = async (userId: string): Promise<boolean> => {
 /**
  * Check if user can access DHL admin features
  */
-export const canAccessDHLAdmin = async (userId: string): Promise<boolean> => {
+export const canAccessDHLAdmin = (userIdOrUser: string | any): boolean | Promise<boolean> => {
+  const userId = typeof userIdOrUser === 'string' ? userIdOrUser : userIdOrUser?.id;
+  if (!userId) return false;
+  
+  return checkCanAccessDHLAdminAsync(userId);
+};
+
+const checkCanAccessDHLAdminAsync = async (userId: string): Promise<boolean> => {
   const [isDHLAdminUser, isRegularAdminUser] = await Promise.all([
-    isDHLAdmin(userId),
-    isRegularAdmin(userId)
+    checkDHLAdminAsync(userId),
+    checkRegularAdminAsync(userId)
   ]);
   return isDHLAdminUser || isRegularAdminUser;
 };
@@ -90,8 +112,11 @@ export const canAccessDHLAdmin = async (userId: string): Promise<boolean> => {
 /**
  * Check if user can access DHL features
  */
-export const canAccessDHLFeatures = async (userId: string): Promise<boolean> => {
-  return await isDHLEmployee(userId);
+export const canAccessDHLFeatures = (userIdOrUser: string | any): boolean | Promise<boolean> => {
+  const userId = typeof userIdOrUser === 'string' ? userIdOrUser : userIdOrUser?.id;
+  if (!userId) return false;
+  
+  return isDHLEmployee(userId);
 };
 
 /**
@@ -101,7 +126,8 @@ export const getDHLAuthStateSync = (user: any): DHLAuthState => {
   return {
     isDHLEmployee: isDHLEmployeeSync(user),
     company: user?.user_metadata?.company || null,
-    isAdmin: user?.user_metadata?.is_admin || false
+    isAdmin: user?.user_metadata?.is_admin || false,
+    canAccessDHLFeatures: isDHLEmployeeSync(user)
   };
 };
 

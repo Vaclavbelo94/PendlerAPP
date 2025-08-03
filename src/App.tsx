@@ -28,7 +28,6 @@ import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import Vehicle from "./pages/Vehicle";
 import Premium from "./pages/Premium";
-import PremiumGate from "./pages/PremiumGate";
 import Admin from "./pages/Admin";
 import AdminV2 from "./pages/AdminV2";
 // DHL Routes - only setup and admin remain
@@ -81,7 +80,6 @@ function App() {
                         <Route path="/settings" element={<Settings />} />
                         <Route path="/vehicle" element={<Vehicle />} />
                         <Route path="/premium" element={<Premium />} />
-                        <Route path="/premium-gate" element={<PremiumGate />} />
                         <Route path="/admin" element={<Admin />} />
                         <Route path="/admin/v2/*" element={<AdminV2 />} />
                         <Route path="/dhl-admin" element={<DHLAdmin />} />

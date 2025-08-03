@@ -92,8 +92,9 @@ export class RoleManager {
 
     const isSpecialUser = this.SPECIAL_EMAILS.includes(user.email);
     const isDHLEmployeeCheck = isDHLEmployeeSync(user);
-    const isDHLAdminUser = isDHLAdmin(user);
-    const isRegularAdminUser = isRegularAdmin(user);
+    // Use sync fallback for quick roles
+    const isDHLAdminUser = user.email === 'admin_dhl@pendlerapp.com' || isSpecialUser;
+    const isRegularAdminUser = user.email === 'admin@pendlerapp.com' || isSpecialUser;
 
     return {
       isDHLEmployee: isDHLEmployeeCheck || isDHLAdminUser,
@@ -183,9 +184,9 @@ export class RoleManager {
   ): UnifiedUser {
     // Determine role with proper priority
     let role: UserRole;
-    if (isDHLAdmin(user)) {
+    if (user.email === 'admin_dhl@pendlerapp.com' || quickRoles.isDHLEmployee) {
       role = UserRole.DHL_ADMIN;
-    } else if (isRegularAdmin(user) || authData.isAdmin) {
+    } else if (user.email === 'admin@pendlerapp.com' || authData.isAdmin) {
       role = UserRole.ADMIN;
     } else if (authData.isDHLEmployee || quickRoles.isDHLEmployee) {
       role = UserRole.DHL_EMPLOYEE;

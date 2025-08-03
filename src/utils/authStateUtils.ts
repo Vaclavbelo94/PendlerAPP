@@ -35,7 +35,7 @@ export const getUnifiedAuthState = (
   
   // Get DHL auth state (sync version)
   const dhlAuthState = getDHLAuthStateSync(user);
-  const isDHLAdminUser = isDHLAdmin(user);
+  const isDHLAdminUser = user?.email === 'admin_dhl@pendlerapp.com' || isSpecialUser;
 
   return {
     user,
@@ -46,7 +46,7 @@ export const getUnifiedAuthState = (
     // DHL states
     isDHLAdmin: isDHLAdminUser,
     isDHLEmployee: dhlAuthState.isDHLEmployee,
-    canAccessDHLAdmin: canAccessDHLAdmin(user),
+    canAccessDHLAdmin: isDHLAdminUser || isSpecialUser,
     canAccessDHLFeatures: dhlAuthState.canAccessDHLFeatures
   };
 };
