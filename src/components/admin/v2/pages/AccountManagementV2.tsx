@@ -27,6 +27,7 @@ import {
   UserX
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { identifyUnwantedAccounts, cleanupUnwantedAccounts, KEEP_ACCOUNTS } from '@/utils/adminCleanupUtils';
 
 export const AccountManagementV2: React.FC = () => {
   const { grantPermission, revokePermission } = useAdminV2();
@@ -35,6 +36,9 @@ export const AccountManagementV2: React.FC = () => {
   const [selectedRole, setSelectedRole] = useState<string>('all');
   const [isGrantDialogOpen, setIsGrantDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [isCleanupDialogOpen, setIsCleanupDialogOpen] = useState(false);
+  const [cleanupData, setCleanupData] = useState<any>(null);
+  const [isCleanupLoading, setIsCleanupLoading] = useState(false);
 
   // Fetch all users with profiles
   const { data: users = [], isLoading, refetch } = useQuery({
@@ -139,6 +143,46 @@ export const AccountManagementV2: React.FC = () => {
     }
   };
 
+  const handleIdentifyUnwantedAccounts = async () => {
+    try {
+      setIsCleanupLoading(true);
+      const data = await identifyUnwantedAccounts();
+      setCleanupData(data);
+      setIsCleanupDialogOpen(true);
+    } catch (error) {
+      console.error('Error identifying unwanted accounts:', error);
+      toast.error('Nepodařilo se identifikovat nežádoucí účty');
+    } finally {
+      setIsCleanupLoading(false);
+    }
+  };
+
+  const handleCleanupConfirm = async () => {
+    if (!cleanupData?.unwantedAccounts) return;
+
+    try {
+      setIsCleanupLoading(true);
+      
+      const userIds = cleanupData.unwantedAccounts.map((account: any) => account.id);
+      const result = await cleanupUnwantedAccounts(userIds);
+      
+      toast.success(`Vyčištění dokončeno: ${result.successCount} účtů smazáno, ${result.failureCount} chyb`);
+      
+      if (result.failureCount > 0) {
+        console.warn('Some accounts failed to delete:', result.results.filter((r: any) => !r.success));
+      }
+      
+      setIsCleanupDialogOpen(false);
+      setCleanupData(null);
+      refetch();
+    } catch (error) {
+      console.error('Error during cleanup:', error);
+      toast.error('Nepodařilo se vyčistit všechny účty');
+    } finally {
+      setIsCleanupLoading(false);
+    }
+  };
+
   const getPermissionBadge = (permission: any) => {
     if (!permission) return <Badge variant="outline">Uživatel</Badge>;
     
@@ -186,13 +230,23 @@ export const AccountManagementV2: React.FC = () => {
             Spravujte uživatelské účty a oprávnění
           </p>
         </div>
-        <Dialog open={isGrantDialogOpen} onOpenChange={setIsGrantDialogOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <UserPlus className="mr-2 h-4 w-4" />
-              Udělit oprávnění
-            </Button>
-          </DialogTrigger>
+        <div className="flex gap-2">
+          <Button
+            variant="destructive"
+            onClick={handleIdentifyUnwantedAccounts}
+            disabled={isCleanupLoading}
+          >
+            <UserX className="mr-2 h-4 w-4" />
+            {isCleanupLoading ? 'Analyzuji...' : 'Vyčistit nežádoucí účty'}
+          </Button>
+          
+          <Dialog open={isGrantDialogOpen} onOpenChange={setIsGrantDialogOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <UserPlus className="mr-2 h-4 w-4" />
+                Udělit oprávnění
+              </Button>
+            </DialogTrigger>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Udělit admin oprávnění</DialogTitle>
@@ -256,6 +310,69 @@ export const AccountManagementV2: React.FC = () => {
             </div>
           </DialogContent>
         </Dialog>
+        
+        {/* Cleanup Dialog */}
+        <AlertDialog open={isCleanupDialogOpen} onOpenChange={setIsCleanupDialogOpen}>
+          <AlertDialogContent className="max-w-2xl">
+            <AlertDialogHeader>
+              <AlertDialogTitle>Vyčistit nežádoucí účty</AlertDialogTitle>
+              <AlertDialogDescription asChild>
+                <div className="space-y-4">
+                  <p>
+                    Nalezeny následující účty k odstranění. Zachovány budou pouze požadované admin účty:
+                  </p>
+                  
+                  {cleanupData && (
+                    <div className="space-y-4">
+                      {/* Keep accounts */}
+                      <div>
+                        <h4 className="font-medium text-green-700 mb-2">✓ Zachované účty ({cleanupData.keepAccounts.length}):</h4>
+                        <div className="bg-green-50 p-3 rounded-md space-y-1">
+                          {cleanupData.keepAccounts.map((account: any) => (
+                            <div key={account.id} className="text-sm text-green-800">
+                              • {account.email} ({account.username || 'Bez jména'})
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      {/* Unwanted accounts */}
+                      <div>
+                        <h4 className="font-medium text-red-700 mb-2">✗ Účty k odstranění ({cleanupData.unwantedAccounts.length}):</h4>
+                        <div className="bg-red-50 p-3 rounded-md max-h-40 overflow-y-auto space-y-1">
+                          {cleanupData.unwantedAccounts.map((account: any) => (
+                            <div key={account.id} className="text-sm text-red-800">
+                              • {account.email} ({account.username || 'Bez jména'}) - {new Date(account.created_at).toLocaleDateString('cs-CZ')}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div className="bg-yellow-50 p-3 rounded-md">
+                    <p className="text-yellow-800 text-sm font-medium">
+                      ⚠️ Tato akce je nevratná a odstraní uživatele jak z auth.users, tak z profiles tabulky!
+                    </p>
+                  </div>
+                </div>
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={isCleanupLoading}>
+                Zrušit
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleCleanupConfirm}
+                disabled={isCleanupLoading || !cleanupData?.unwantedAccounts?.length}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                {isCleanupLoading ? 'Mažu...' : `Smazat ${cleanupData?.unwantedAccounts?.length || 0} účtů`}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+        </div>
       </div>
 
       {/* Filters */}
