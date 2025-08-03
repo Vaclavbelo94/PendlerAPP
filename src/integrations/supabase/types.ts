@@ -2785,7 +2785,12 @@ export type Database = {
       }
     }
     Enums: {
-      admin_permission_level: "super_admin" | "admin" | "moderator" | "viewer"
+      admin_permission_level:
+        | "super_admin"
+        | "admin"
+        | "moderator"
+        | "viewer"
+        | "dhl_admin"
       company_type: "adecco" | "randstad" | "dhl"
       dhl_position_type:
         | "technik"
@@ -2933,7 +2938,13 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      admin_permission_level: ["super_admin", "admin", "moderator", "viewer"],
+      admin_permission_level: [
+        "super_admin",
+        "admin",
+        "moderator",
+        "viewer",
+        "dhl_admin",
+      ],
       company_type: ["adecco", "randstad", "dhl"],
       dhl_position_type: [
         "technik",
