@@ -127,9 +127,17 @@ const Admin = () => {
       
       console.log("Checking admin status:", { user, isAdmin });
       
-      // Pro admin@pendlerapp.com povolíme vždy přístup
+      // Pro admin@pendlerapp.com automaticky přesměrovat na V2 panel
       if (user?.email === 'admin@pendlerapp.com') {
-        console.log("Admin email detected, allowing access");
+        console.log("Admin email detected, redirecting to V2 panel");
+        navigate('/admin/v2');
+        return;
+      }
+      
+      // Pro ostatní admin uživatele také přesměrovat na V2
+      if (isAdmin && user) {
+        console.log("Admin user detected, redirecting to V2 panel");
+        navigate('/admin/v2');
         return;
       }
       
@@ -146,10 +154,6 @@ const Admin = () => {
         // User is not logged in at all
         setShowLoginDialog(true);
         return;
-      }
-      
-      if (isAdmin || user?.email === 'admin@pendlerapp.com') {
-        toast.success("Přístup do administrace povolen");
       }
     };
     
