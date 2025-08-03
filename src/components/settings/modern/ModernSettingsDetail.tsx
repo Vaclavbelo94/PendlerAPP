@@ -1,14 +1,14 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import GeneralSettings from '../GeneralSettings';
-import AccountSettings from '../AccountSettings';
-import AppearanceSettings from '../AppearanceSettings';
-import NotificationSettings from '../NotificationSettings';
+import { SyncSettings } from '@/hooks/useSyncSettings';
+import ModernGeneralSettings from './settings/ModernGeneralSettings';
+import ModernAccountSettings from './settings/ModernAccountSettings';
+import ModernAppearanceSettings from './settings/ModernAppearanceSettings';
+import ModernNotificationSettings from './settings/ModernNotificationSettings';
 import LanguageSettings from '../LanguageSettings';
 import DataSettings from '../DataSettings';
 import SecuritySettings from '../SecuritySettings';
 import DeviceSettings from '../DeviceSettings';
-import { SyncSettings } from '@/hooks/useSyncSettings';
 import ModernShiftsSettings from './settings/ModernShiftsSettings';
 import ModernAutomationSettings from './settings/ModernAutomationSettings';
 import PrivacySettings from '../PrivacySettings';
@@ -27,13 +27,13 @@ const ModernSettingsDetail: React.FC<ModernSettingsDetailProps> = ({
   const renderSetting = () => {
     switch (settingId) {
       case 'general':
-        return <GeneralSettings />;
+        return <ModernGeneralSettings />;
       case 'account':
-        return <AccountSettings />;
+        return <ModernAccountSettings />;
       case 'appearance':
-        return <AppearanceSettings />;
+        return <ModernAppearanceSettings />;
       case 'notifications':
-        return <NotificationSettings syncSettings={syncSettings} updateSyncSettings={updateSyncSettings} />;
+        return <ModernNotificationSettings syncSettings={syncSettings} updateSyncSettings={updateSyncSettings} />;
       case 'language':
         return <LanguageSettings />;
       case 'shifts':
@@ -61,7 +61,7 @@ const ModernSettingsDetail: React.FC<ModernSettingsDetailProps> = ({
       case 'analytics':
         return <DataSettings />;
       default:
-        return <GeneralSettings />;
+        return <ModernGeneralSettings />;
     }
   };
 
