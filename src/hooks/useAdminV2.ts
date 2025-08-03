@@ -73,14 +73,26 @@ export const useAdminV2 = () => {
       console.log('AdminV2: Loading permissions for user:', unifiedUser.id, unifiedUser.email);
       
       try {
-        const { data, error } = await supabase
-          .from('admin_permissions')
-          .select('*')
-          .eq('user_id', unifiedUser.id)
-          .eq('is_active', true)
-          .maybeSingle();
+        // Use RPC call to get permissions to bypass RLS issues
+        const { data, error } = await supabase.rpc('get_user_admin_permission', {
+          user_id_param: unifiedUser.id
+        });
 
-        console.log('AdminV2: Permission data loaded:', data);
+        if (error) {
+          console.error('AdminV2: RPC call failed:', error);
+          // Fallback to direct query
+          const { data: fallbackData, error: fallbackError } = await supabase
+            .from('admin_permissions')
+            .select('*')
+            .eq('user_id', unifiedUser.id)
+            .eq('is_active', true)
+            .maybeSingle();
+            
+          console.log('AdminV2: Fallback permission data loaded:', fallbackData);
+          return fallbackData as AdminPermission | null;
+        }
+
+        console.log('AdminV2: RPC permission data loaded:', data);
         return data as AdminPermission | null;
       } catch (err) {
         console.error('AdminV2: Permission loading failed, using legacy fallback');
