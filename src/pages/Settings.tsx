@@ -40,14 +40,14 @@ const Settings = () => {
             className="mb-8"
           >
             <div className={`flex items-center gap-3 mb-4 ${isMobile ? 'flex-col text-center' : ''}`}>
-              <div className={`${isMobile ? 'p-2' : 'p-3'} rounded-full bg-white/10 backdrop-blur-sm border border-white/20`}>
-                <SettingsIcon className={`${isMobile ? 'h-6 w-6' : 'h-8 w-8'} text-white`} />
+              <div className={`${isMobile ? 'p-2' : 'p-3'} rounded-full bg-primary/10 backdrop-blur-sm border border-primary/20`}>
+                <SettingsIcon className={`${isMobile ? 'h-6 w-6' : 'h-8 w-8'} text-primary`} />
               </div>
               <div>
-                <h1 className={`${isMobile ? 'text-2xl' : 'text-4xl'} font-bold tracking-tight text-white`}>
+                <h1 className={`${isMobile ? 'text-2xl' : 'text-4xl'} font-bold tracking-tight text-foreground`}>
                   {t('title')}
                 </h1>
-                <p className={`text-white/80 ${isMobile ? 'text-sm mt-2' : 'text-lg mt-2'} max-w-3xl`}>
+                <p className={`text-muted-foreground ${isMobile ? 'text-sm mt-2' : 'text-lg mt-2'} max-w-3xl`}>
                   {isMobile 
                     ? t('basicSettings') 
                     : t('applicationBehavior')
@@ -56,7 +56,7 @@ const Settings = () => {
               </div>
             </div>
             {isMobile && (
-              <p className="text-xs text-white/60 text-center px-4">
+              <p className="text-xs text-muted-foreground/80 text-center px-4">
                 💡 {t('swipeNavigationTip')}
               </p>
             )}
