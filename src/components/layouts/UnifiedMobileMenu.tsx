@@ -112,7 +112,7 @@ export const UnifiedMobileMenu: React.FC<UnifiedMobileMenuProps> = ({
                 <Button
                   variant="default"
                   className="w-full justify-start gap-3"
-                  onClick={() => handleNavigation('/auth')}
+                  onClick={() => handleNavigation('/login')}
                 >
                   <LogIn className="h-4 w-4" />
                   {t('login')}
@@ -120,7 +120,7 @@ export const UnifiedMobileMenu: React.FC<UnifiedMobileMenuProps> = ({
                 <Button
                   variant="outline"
                   className="w-full justify-start gap-3"
-                  onClick={() => handleNavigation('/auth?mode=register')}
+                  onClick={() => handleNavigation('/register')}
                 >
                   <UserPlus className="h-4 w-4" />
                   {t('register')}
