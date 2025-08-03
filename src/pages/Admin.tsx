@@ -18,6 +18,7 @@ import { PasswordResetPanel } from "@/components/admin/PasswordResetPanel";
 import SystemMonitoringPanel from "@/components/admin/monitoring/SystemMonitoringPanel";
 import DatabasePanel from "@/components/admin/database/DatabasePanel";
 import AdminNavigation from "@/components/admin/AdminNavigation";
+import { AdminNotificationSender } from "@/components/admin/AdminNotificationSender";
 import { Truck, Shield } from "lucide-react";
 
 const AdminContent = () => {
@@ -89,6 +90,8 @@ const AdminContent = () => {
         return <DatabasePanel />;
       case 'password-reset':
         return <PasswordResetPanel />;
+      case 'admin-notifications':
+        return <AdminNotificationSender />;
       default:
         return <AdminDashboard />;
     }

@@ -1,6 +1,5 @@
 
-import { toast } from "@/hooks/use-toast";
-import { useTranslation } from 'react-i18next';
+import { multilingualNotificationService } from './MultilingualNotificationService';
 
 export type NotificationType = 'success' | 'error' | 'warning' | 'info';
 
@@ -36,76 +35,39 @@ class NotificationService {
   }
 
   showShiftSaved(isUpdate: boolean = false) {
-    toast({
-      title: isUpdate ? "Směna aktualizována" : "Směna přidána",
-      description: `Směna byla úspěšně ${isUpdate ? "upravena" : "přidána"}.`,
-    });
+    multilingualNotificationService.showShiftSaved(isUpdate);
   }
 
   showShiftDeleted() {
-    toast({
-      title: "Směna odstraněna",
-      description: "Směna byla úspěšně odstraněna.",
-      variant: "destructive"
-    });
+    multilingualNotificationService.showShiftDeleted();
   }
 
   showShiftError(operation: 'save' | 'delete' | 'load') {
-    const messages = {
-      save: "Nepodařilo se uložit směnu. Zkuste to prosím znovu.",
-      delete: "Nepodařilo se odstranit směnu. Zkuste to prosím znovu.", 
-      load: "Nepodařilo se načíst směny. Zkusíme obnovit data z místní zálohy."
-    };
-
-    toast({
-      title: "Chyba při " + (operation === 'save' ? 'ukládání' : operation === 'delete' ? 'mazání' : 'načítání'),
-      description: messages[operation],
-      variant: "destructive"
-    });
+    multilingualNotificationService.showShiftError(operation);
   }
 
   showOfflineSaved() {
-    toast({
-      title: "Uloženo offline",
-      description: "Směna byla uložena offline a bude synchronizována při obnovení připojení.",
-    });
+    multilingualNotificationService.showOfflineSaved();
   }
 
   showSyncComplete(count: number) {
-    toast({
-      title: "Synchronizace dokončena",
-      description: `Synchronizováno ${count} směn`,
-    });
+    multilingualNotificationService.showSyncComplete(count);
   }
 
   showRemoteUpdate(message: string) {
-    toast({
-      title: "Synchronizace",
-      description: message,
-    });
+    multilingualNotificationService.showRemoteUpdate(message);
   }
 
   showAuthRequired() {
-    toast({
-      title: "Chyba",
-      description: "Pro uložení směny musíte být přihlášeni a vybrat datum.",
-      variant: "destructive"
-    });
+    multilingualNotificationService.showAuthRequired();
   }
 
   showDataRestored() {
-    toast({
-      title: "Data obnovena",
-      description: "Směny byly načteny z místní zálohy.",
-    });
+    multilingualNotificationService.showDataRestored();
   }
 
   showGenericError(message?: string) {
-    toast({
-      title: "Chyba",
-      description: message || "Došlo k neočekávané chybě.",
-      variant: "destructive"
-    });
+    multilingualNotificationService.showGenericError(message);
   }
 }
 
