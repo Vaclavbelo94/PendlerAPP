@@ -2772,6 +2772,20 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Database["public"]["Enums"]["company_type"]
       }
+      get_user_admin_permission: {
+        Args: { user_id_param: string }
+        Returns: {
+          id: string
+          user_id: string
+          permission_level: Database["public"]["Enums"]["admin_permission_level"]
+          granted_by: string
+          granted_at: string
+          expires_at: string
+          is_active: boolean
+          created_at: string
+          updated_at: string
+        }[]
+      }
       has_admin_permission: {
         Args: {
           user_id: string
