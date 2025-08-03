@@ -25,12 +25,29 @@ const DHLSetupNotification = () => {
   
   // For users who selected DHL during registration, show more contextual setup
   const isContextualSetup = isDHLSelection && !hasCompletedOnboarding;
+  
   useEffect(() => {
     const dismissed = localStorage.getItem('dhl-setup-dismissed');
     if (dismissed === 'true') {
       setIsDismissed(true);
     }
   }, []);
+
+  // Debug DHL status
+  useEffect(() => {
+    if (user) {
+      console.log('🔍 DHL Setup Notification Debug:', {
+        userId: user.id,
+        isDHLEmployee: unifiedUser?.isDHLEmployee,
+        hasAssignment: !!userAssignment,
+        isDismissed,
+        isNewUser,
+        hasCompletedOnboarding,
+        isDHLSelection,
+        shouldShow: unifiedUser?.isDHLEmployee && !userAssignment && !isDismissed && !isNewUser
+      });
+    }
+  }, [user, unifiedUser, userAssignment, isDismissed, isNewUser, hasCompletedOnboarding, isDHLSelection]);
 
   // Don't show if:
   // - User is not DHL employee
@@ -53,7 +70,7 @@ const DHLSetupNotification = () => {
     toast.success(t('dhl:setupNotification.dismissToast'));
   };
 
-  // Kompaktnější verze pro uživatele po onboardingu
+  // Enhanced notification with DHL branding
   return (
     <motion.div
       initial={{ opacity: 0, y: -20 }}
@@ -62,18 +79,18 @@ const DHLSetupNotification = () => {
       transition={{ duration: 0.5 }}
       className="mb-6"
     >
-      <Card className="border-amber-200 bg-gradient-to-r from-amber-50/50 to-yellow-50/50">
+      <Card className="border-dhl-red/30 bg-gradient-to-r from-dhl-yellow/10 to-dhl-red/5 dark:from-dhl-yellow/5 dark:to-dhl-red/10">
         <CardContent className="p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-full bg-amber-100">
-                <AlertCircle className="h-5 w-5 text-amber-600" />
+              <div className="p-2 rounded-full bg-dhl-yellow/20">
+                <Truck className="h-5 w-5 text-dhl-red" />
               </div>
               <div>
-                <h4 className="font-medium text-amber-800">
+                <h4 className="font-medium text-dhl-black dark:text-dhl-yellow">
                   {t('dhl:setupNotification.title')}
                 </h4>
-                <p className="text-sm text-amber-700">
+                <p className="text-sm text-dhl-black/80 dark:text-dhl-yellow/80">
                   Dokončete nastavení pro plné využití DHL funkcí
                 </p>
               </div>
@@ -83,7 +100,7 @@ const DHLSetupNotification = () => {
               <Button
                 onClick={handleSetupNow}
                 size="sm"
-                className="bg-amber-600 hover:bg-amber-700 text-white"
+                className="bg-dhl-red hover:bg-dhl-red/90 text-white font-medium"
               >
                 <Settings className="h-4 w-4 mr-2" />
                 Nastavit
@@ -92,7 +109,7 @@ const DHLSetupNotification = () => {
                 variant="ghost"
                 size="sm"
                 onClick={handleDismiss}
-                className="text-amber-600 hover:bg-amber-100"
+                className="text-dhl-red hover:bg-dhl-red/10"
               >
                 <X className="h-4 w-4" />
               </Button>
