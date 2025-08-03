@@ -6,6 +6,7 @@ import { PremiumFeaturesPanel } from './PremiumFeaturesPanel';
 
 import { PasswordResetPanel } from './PasswordResetPanel';
 import { AdManagementPanel } from './AdManagementPanel';
+import SecurityDashboard from './security/SecurityDashboard';
 
 import DatabasePanel from './database/DatabasePanel';
 import SystemMonitoringPanel from './monitoring/SystemMonitoringPanel';
@@ -14,7 +15,8 @@ import PerformanceDashboard from './analytics/PerformanceDashboard';
 const AdminSections = () => {
   return (
     <Tabs defaultValue="users" className="space-y-6">
-      <TabsList className="grid grid-cols-9 w-full">
+      <TabsList className="grid grid-cols-10 w-full">
+        <TabsTrigger value="security">Bezpečnost</TabsTrigger>
         <TabsTrigger value="users">Uživatelé</TabsTrigger>
         <TabsTrigger value="premium">Premium</TabsTrigger>
         <TabsTrigger value="promos">Promo kódy</TabsTrigger>
@@ -60,6 +62,10 @@ const AdminSections = () => {
 
       <TabsContent value="analytics">
         <PerformanceDashboard />
+      </TabsContent>
+
+      <TabsContent value="security">
+        <SecurityDashboard />
       </TabsContent>
     </Tabs>
   );
