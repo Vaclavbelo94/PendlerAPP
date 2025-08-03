@@ -106,7 +106,7 @@ export const CompanyPremiumCodesV2: React.FC = () => {
       const { data, error } = await supabase
         .from('company_premium_codes')
         .insert({
-          company: formData.company,
+          company: formData.company === 'classic' ? null : formData.company,
           code: formData.code,
           name: formData.name,
           description: formData.description || null,
@@ -142,7 +142,7 @@ export const CompanyPremiumCodesV2: React.FC = () => {
       const { data, error } = await supabase
         .from('company_premium_codes')
         .update({
-          company: formData.company,
+          company: formData.company === 'classic' ? null : formData.company,
           code: formData.code,
           name: formData.name,
           description: formData.description || null,
@@ -194,12 +194,14 @@ export const CompanyPremiumCodesV2: React.FC = () => {
   });
 
   const filteredCodes = premiumCodes.filter(code => 
-    selectedCompany === 'all' || code.company === selectedCompany
+    selectedCompany === 'all' || 
+    (selectedCompany === 'classic' && code.company === null) ||
+    code.company === selectedCompany
   );
 
   const handleOpenEditDialog = (code: CompanyPremiumCode) => {
     setEditingCode(code);
-    setValue('company', code.company);
+    setValue('company', code.company || 'classic');
     setValue('code', code.code);
     setValue('name', code.name);
     setValue('description', code.description || '');
@@ -225,7 +227,15 @@ export const CompanyPremiumCodesV2: React.FC = () => {
     toast.success('Kód zkopírován do schránky');
   };
 
-  const getCompanyBadge = (company: string) => {
+  const getCompanyBadge = (company: string | null) => {
+    if (!company) {
+      return (
+        <Badge className="bg-purple-100 text-purple-800">
+          KLASICKÉ PREMIUM
+        </Badge>
+      );
+    }
+    
     const colors = {
       dhl: 'bg-red-100 text-red-800',
       adecco: 'bg-blue-100 text-blue-800',
@@ -281,11 +291,12 @@ export const CompanyPremiumCodesV2: React.FC = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="company">Firma</Label>
-                  <Select onValueChange={(value) => setValue('company', value as 'dhl' | 'adecco' | 'randstad')}>
+                  <Select onValueChange={(value) => setValue('company', value as 'dhl' | 'adecco' | 'randstad' | 'classic')}>
                     <SelectTrigger>
                       <SelectValue placeholder="Vyberte firmu" />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="classic">Klasické premium</SelectItem>
                       <SelectItem value="dhl">DHL</SelectItem>
                       <SelectItem value="adecco">Adecco</SelectItem>
                       <SelectItem value="randstad">Randstad</SelectItem>
@@ -425,6 +436,7 @@ export const CompanyPremiumCodesV2: React.FC = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Všechny firmy</SelectItem>
+                <SelectItem value="classic">Klasické premium</SelectItem>
                 <SelectItem value="dhl">DHL</SelectItem>
                 <SelectItem value="adecco">Adecco</SelectItem>
                 <SelectItem value="randstad">Randstad</SelectItem>

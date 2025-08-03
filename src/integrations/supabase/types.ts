@@ -346,7 +346,7 @@ export type Database = {
           auto_generate: boolean
           code: string
           code_prefix: string | null
-          company: Database["public"]["Enums"]["company_type"]
+          company: Database["public"]["Enums"]["company_type"] | null
           created_at: string
           created_by: string | null
           description: string | null
@@ -364,7 +364,7 @@ export type Database = {
           auto_generate?: boolean
           code: string
           code_prefix?: string | null
-          company: Database["public"]["Enums"]["company_type"]
+          company?: Database["public"]["Enums"]["company_type"] | null
           created_at?: string
           created_by?: string | null
           description?: string | null
@@ -382,7 +382,7 @@ export type Database = {
           auto_generate?: boolean
           code?: string
           code_prefix?: string | null
-          company?: Database["public"]["Enums"]["company_type"]
+          company?: Database["public"]["Enums"]["company_type"] | null
           created_at?: string
           created_by?: string | null
           description?: string | null
