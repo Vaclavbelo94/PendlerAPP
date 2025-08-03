@@ -302,6 +302,110 @@ export type Database = {
         }
         Relationships: []
       }
+      company_premium_code_redemptions: {
+        Row: {
+          company_premium_code_id: string
+          id: string
+          premium_expires_at: string
+          redeemed_at: string
+          user_id: string
+        }
+        Insert: {
+          company_premium_code_id: string
+          id?: string
+          premium_expires_at: string
+          redeemed_at?: string
+          user_id: string
+        }
+        Update: {
+          company_premium_code_id?: string
+          id?: string
+          premium_expires_at?: string
+          redeemed_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_premium_code_redemptions_company_premium_code_id_fkey"
+            columns: ["company_premium_code_id"]
+            isOneToOne: false
+            referencedRelation: "company_premium_codes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "company_premium_code_redemptions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      company_premium_codes: {
+        Row: {
+          auto_generate: boolean
+          code: string
+          code_prefix: string | null
+          company: Database["public"]["Enums"]["company_type"]
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          is_active: boolean
+          max_users: number | null
+          name: string
+          premium_duration_months: number
+          updated_at: string
+          used_count: number
+          valid_from: string
+          valid_until: string
+        }
+        Insert: {
+          auto_generate?: boolean
+          code: string
+          code_prefix?: string | null
+          company: Database["public"]["Enums"]["company_type"]
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          max_users?: number | null
+          name: string
+          premium_duration_months?: number
+          updated_at?: string
+          used_count?: number
+          valid_from?: string
+          valid_until: string
+        }
+        Update: {
+          auto_generate?: boolean
+          code?: string
+          code_prefix?: string | null
+          company?: Database["public"]["Enums"]["company_type"]
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          max_users?: number | null
+          name?: string
+          premium_duration_months?: number
+          updated_at?: string
+          used_count?: number
+          valid_from?: string
+          valid_until?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_premium_codes_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       company_settings: {
         Row: {
           company: Database["public"]["Enums"]["company_type"]

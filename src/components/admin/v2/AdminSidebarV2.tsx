@@ -20,7 +20,8 @@ import {
   Shield, 
   BarChart3, 
   Database,
-  Activity
+  Activity,
+  Gift
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useAdminV2 } from '@/hooks/useAdminV2';
@@ -42,6 +43,12 @@ const adminMenuItems = [
     title: 'Správa firem',
     url: '/admin/v2/companies',
     icon: Building2,
+    requiredPermission: 'admin' as const,
+  },
+  {
+    title: 'Premium kódy',
+    url: '/admin/v2/premium-codes',
+    icon: Gift,
     requiredPermission: 'admin' as const,
   },
   {

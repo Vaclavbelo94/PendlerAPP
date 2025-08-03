@@ -9,6 +9,7 @@ import { SecurityV2 } from '@/components/admin/v2/pages/SecurityV2';
 import { AnalyticsV2 } from '@/components/admin/v2/pages/AnalyticsV2';
 import { DatabaseV2 } from '@/components/admin/v2/pages/DatabaseV2';
 import { MonitoringV2 } from '@/components/admin/v2/pages/MonitoringV2';
+import { CompanyPremiumCodesV2 } from '@/components/admin/v2/pages/CompanyPremiumCodesV2';
 
 const AdminV2: React.FC = () => {
   return (
@@ -16,6 +17,7 @@ const AdminV2: React.FC = () => {
       <Routes>
         <Route path="/" element={<AdminDashboardV2 />} />
         <Route path="/companies" element={<CompanyManagementV2 />} />
+        <Route path="/premium-codes" element={<CompanyPremiumCodesV2 />} />
         <Route path="/accounts" element={<AccountManagementV2 />} />
         <Route path="/settings" element={<WebSettingsV2 />} />
         <Route path="/security" element={<SecurityV2 />} />
