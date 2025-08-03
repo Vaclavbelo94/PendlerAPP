@@ -49,6 +49,32 @@ export const useErrorTracking = (config: ErrorTrackingConfig = {}) => {
     
     localStorage.setItem('errorReports', JSON.stringify(existingErrors));
 
+    // Check for security-related errors
+    if (error.message.includes('RLS') || 
+        error.message.includes('permission') || 
+        error.message.includes('unauthorized') ||
+        error.message.includes('Invalid') ||
+        error.message.includes('SQL injection')) {
+      
+      // Log security incidents separately
+      const securityIncident = {
+        ...errorReport,
+        severity: 'HIGH',
+        type: 'SECURITY_INCIDENT'
+      };
+      
+      const securityLogs = JSON.parse(localStorage.getItem('securityIncidents') || '[]');
+      securityLogs.unshift(securityIncident);
+      
+      if (securityLogs.length > 20) {
+        securityLogs.splice(20);
+      }
+      
+      localStorage.setItem('securityIncidents', JSON.stringify(securityLogs));
+      
+      console.error('🚨 SECURITY INCIDENT DETECTED:', securityIncident);
+    }
+
     // Use existing error handler
     errorHandler.handleError(error);
 

@@ -27,6 +27,12 @@ export class SecurityValidator {
     }
     
     userRequests.count++;
+    
+    // Log suspicious activity
+    if (userRequests.count > SecurityValidator.MAX_REQUESTS_PER_WINDOW * 0.8) {
+      console.warn(`Rate limit warning for ${identifier}: ${userRequests.count}/${SecurityValidator.MAX_REQUESTS_PER_WINDOW}`);
+    }
+    
     return true;
   }
   
@@ -65,12 +71,22 @@ export class SecurityValidator {
       /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
       /javascript:/gi,
       /on\w+\s*=/gi,
-      /data:text\/html/gi
+      /data:text\/html/gi,
+      /eval\s*\(/gi,
+      /document\.cookie/gi,
+      /window\.location/gi,
+      /'.*(?:union|select|insert|delete|update|drop|create|alter).*'/gi
     ];
     
     for (const pattern of maliciousPatterns) {
       if (pattern.test(input)) {
         errors.push('Potentially malicious content detected');
+        // Log security incident
+        console.error('🚨 Security threat detected:', {
+          pattern: pattern.source,
+          input: input.substring(0, 100) + '...',
+          type
+        });
         break;
       }
     }
