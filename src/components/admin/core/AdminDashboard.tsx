@@ -224,6 +224,12 @@ export const AdminDashboard: React.FC = () => {
       description: 'Spravovat slevové kódy',
       icon: <Settings className="h-5 w-5" />,
       action: () => setCurrentSection('promo-codes')
+    },
+    {
+      title: 'Notifikace',
+      description: 'Odesílat notifikace uživatelům',
+      icon: <Shield className="h-5 w-5" />,
+      action: () => setCurrentSection('notifications')
     }
   ];
 

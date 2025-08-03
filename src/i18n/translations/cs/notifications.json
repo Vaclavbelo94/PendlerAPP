@@ -1,0 +1,40 @@
+{
+  "shift": {
+    "saved": "Směna přidána",
+    "updated": "Směna aktualizována", 
+    "deleted": "Směna odstraněna",
+    "savedDescription": "Směna byla úspěšně přidána.",
+    "updatedDescription": "Směna byla úspěšně upravena.",
+    "deletedDescription": "Směna byla úspěšně odstraněna."
+  },
+  "errors": {
+    "saveTitle": "Chyba při ukládání",
+    "deleteTitle": "Chyba při mazání",
+    "loadTitle": "Chyba při načítání",
+    "saveMessage": "Nepodařilo se uložit směnu. Zkuste to prosím znovu.",
+    "deleteMessage": "Nepodařilo se odstranit směnu. Zkuste to prosím znovu.",
+    "loadMessage": "Nepodařilo se načíst směny. Zkusíme obnovit data z místní zálohy."
+  },
+  "offline": {
+    "title": "Uloženo offline",
+    "description": "Směna byla uložena offline a bude synchronizována při obnovení připojení."
+  },
+  "sync": {
+    "completeTitle": "Synchronizace dokončena",
+    "completeDescription": "Synchronizováno {{count}} směn",
+    "remoteUpdateTitle": "Synchronizace",
+    "remoteUpdate": "{{message}}"
+  },
+  "auth": {
+    "requiredTitle": "Chyba",
+    "requiredMessage": "Pro uložení směny musíte být přihlášeni a vybrat datum."
+  },
+  "dataRestored": {
+    "title": "Data obnovena",
+    "description": "Směny byly načteny z místní zálohy."
+  },
+  "generic": {
+    "errorTitle": "Chyba",
+    "errorMessage": "Došlo k neočekávané chybě."
+  }
+}

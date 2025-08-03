@@ -1,0 +1,40 @@
+{
+  "shift": {
+    "saved": "Schicht hinzugefügt",
+    "updated": "Schicht aktualisiert",
+    "deleted": "Schicht entfernt", 
+    "savedDescription": "Schicht wurde erfolgreich hinzugefügt.",
+    "updatedDescription": "Schicht wurde erfolgreich bearbeitet.",
+    "deletedDescription": "Schicht wurde erfolgreich entfernt."
+  },
+  "errors": {
+    "saveTitle": "Fehler beim Speichern",
+    "deleteTitle": "Fehler beim Löschen",
+    "loadTitle": "Fehler beim Laden",
+    "saveMessage": "Schicht konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.",
+    "deleteMessage": "Schicht konnte nicht entfernt werden. Bitte versuchen Sie es erneut.",
+    "loadMessage": "Schichten konnten nicht geladen werden. Wir versuchen, Daten aus der lokalen Sicherung zu wiederherstellen."
+  },
+  "offline": {
+    "title": "Offline gespeichert",
+    "description": "Schicht wurde offline gespeichert und wird bei Wiederherstellung der Verbindung synchronisiert."
+  },
+  "sync": {
+    "completeTitle": "Synchronisierung abgeschlossen",
+    "completeDescription": "{{count}} Schichten synchronisiert",
+    "remoteUpdateTitle": "Synchronisierung",
+    "remoteUpdate": "{{message}}"
+  },
+  "auth": {
+    "requiredTitle": "Fehler",
+    "requiredMessage": "Zum Speichern der Schicht müssen Sie angemeldet sein und ein Datum auswählen."
+  },
+  "dataRestored": {
+    "title": "Daten wiederhergestellt",
+    "description": "Schichten wurden aus der lokalen Sicherung geladen."
+  },
+  "generic": {
+    "errorTitle": "Fehler",
+    "errorMessage": "Ein unerwarteter Fehler ist aufgetreten."
+  }
+}

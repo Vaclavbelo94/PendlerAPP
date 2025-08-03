@@ -79,6 +79,11 @@ import dhlCs from './translations/cs/dhl.json';
 import dhlDe from './translations/de/dhl.json';
 import dhlPl from './translations/pl/dhl.json';
 
+// Import notification translations
+import notificationsCs from './translations/cs/notifications.json';
+import notificationsDe from './translations/de/notifications.json';
+import notificationsPl from './translations/pl/notifications.json';
+
 const resources = {
   cs: {
     common: commonCs,
@@ -99,6 +104,7 @@ const resources = {
     dhl: dhlCs,
     companySelector: csCompanySelector,
     company: csCompany,
+    notifications: notificationsCs,
   },
   de: {
     common: commonDe,
@@ -119,6 +125,7 @@ const resources = {
     dhl: dhlDe,
     companySelector: deCompanySelector,
     company: deCompany,
+    notifications: notificationsDe,
   },
   pl: {
     common: commonPl,
@@ -139,6 +146,7 @@ const resources = {
     dhl: dhlPl,
     companySelector: plCompanySelector,
     company: plCompany,
+    notifications: notificationsPl,
   },
 };
 

@@ -1,5 +1,6 @@
 
 import { toast } from "@/hooks/use-toast";
+import { useTranslation } from 'react-i18next';
 
 export type NotificationType = 'success' | 'error' | 'warning' | 'info';
 

@@ -1,0 +1,40 @@
+{
+  "shift": {
+    "saved": "Zmiana dodana",
+    "updated": "Zmiana zaktualizowana",
+    "deleted": "Zmiana usunięta",
+    "savedDescription": "Zmiana została pomyślnie dodana.",
+    "updatedDescription": "Zmiana została pomyślnie edytowana.",
+    "deletedDescription": "Zmiana została pomyślnie usunięta."
+  },
+  "errors": {
+    "saveTitle": "Błąd podczas zapisywania",
+    "deleteTitle": "Błąd podczas usuwania",
+    "loadTitle": "Błąd podczas ładowania",
+    "saveMessage": "Nie udało się zapisać zmiany. Spróbuj ponownie.",
+    "deleteMessage": "Nie udało się usunąć zmiany. Spróbuj ponownie.",
+    "loadMessage": "Nie udało się załadować zmian. Spróbujemy przywrócić dane z lokalnej kopii zapasowej."
+  },
+  "offline": {
+    "title": "Zapisano offline",
+    "description": "Zmiana została zapisana offline i zostanie zsynchronizowana po przywróceniu połączenia."
+  },
+  "sync": {
+    "completeTitle": "Synchronizacja zakończona",
+    "completeDescription": "Zsynchronizowano {{count}} zmian",
+    "remoteUpdateTitle": "Synchronizacja",
+    "remoteUpdate": "{{message}}"
+  },
+  "auth": {
+    "requiredTitle": "Błąd",
+    "requiredMessage": "Aby zapisać zmianę, musisz być zalogowany i wybrać datę."
+  },
+  "dataRestored": {
+    "title": "Dane przywrócone",
+    "description": "Zmiany zostały załadowane z lokalnej kopii zapasowej."
+  },
+  "generic": {
+    "errorTitle": "Błąd",
+    "errorMessage": "Wystąpił nieoczekiwany błąd."
+  }
+}

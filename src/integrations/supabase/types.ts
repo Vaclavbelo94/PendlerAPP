@@ -56,6 +56,51 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_notifications: {
+        Row: {
+          admin_user_id: string
+          created_at: string
+          id: string
+          language: string
+          message: string
+          notification_type: string
+          sent_count: number | null
+          target_companies: string[] | null
+          target_type: string
+          target_user_ids: string[] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          admin_user_id: string
+          created_at?: string
+          id?: string
+          language?: string
+          message: string
+          notification_type?: string
+          sent_count?: number | null
+          target_companies?: string[] | null
+          target_type: string
+          target_user_ids?: string[] | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          admin_user_id?: string
+          created_at?: string
+          id?: string
+          language?: string
+          message?: string
+          notification_type?: string
+          sent_count?: number | null
+          target_companies?: string[] | null
+          target_type?: string
+          target_user_ids?: string[] | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       admin_permissions: {
         Row: {
           created_at: string
@@ -1146,6 +1191,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          language: string | null
           message: string
           metadata: Json | null
           read: boolean
@@ -1158,6 +1204,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          language?: string | null
           message: string
           metadata?: Json | null
           read?: boolean
@@ -1170,6 +1217,7 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          language?: string | null
           message?: string
           metadata?: Json | null
           read?: boolean
@@ -2903,6 +2951,19 @@ export type Database = {
           p_user_id?: string
           p_details?: Json
           p_risk_level?: string
+        }
+        Returns: string
+      }
+      send_admin_notification: {
+        Args: {
+          p_admin_user_id: string
+          p_title: string
+          p_message: string
+          p_notification_type: string
+          p_target_type: string
+          p_target_companies?: string[]
+          p_target_user_ids?: string[]
+          p_language?: string
         }
         Returns: string
       }
