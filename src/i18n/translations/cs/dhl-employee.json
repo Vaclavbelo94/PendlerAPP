@@ -1,0 +1,137 @@
+{
+  "navigation": {
+    "dashboard": "Můj přehled",
+    "timeTracking": "Docházka",
+    "shifts": "Směny",
+    "team": "Tým",
+    "documents": "Dokumenty",
+    "travel": "Cesty"
+  },
+  "timeTracking": {
+    "title": "Docházka a časy",
+    "clockIn": "Příchod",
+    "clockOut": "Odchod", 
+    "startBreak": "Začít přestávku",
+    "endBreak": "Ukončit přestávku",
+    "totalHours": "Celkem hodin",
+    "overtimeHours": "Přesčasy",
+    "breakDuration": "Přestávka",
+    "status": {
+      "notStarted": "Nezačato",
+      "working": "Pracuji",
+      "onBreak": "Přestávka",
+      "finished": "Dokončeno"
+    },
+    "todaysSummary": "Dnešní přehled",
+    "weekSummary": "Týdenní přehled",
+    "location": "Poloha"
+  },
+  "shifts": {
+    "title": "Moje směny",
+    "upcoming": "Nadcházející",
+    "current": "Aktuální směna",
+    "past": "Minulé",
+    "nextShift": "Další směna",
+    "shiftDetails": "Detail směny",
+    "swapRequest": "Žádost o výměnu",
+    "swapWith": "Vyměnit s",
+    "swapReason": "Důvod výměny",
+    "requestSwap": "Požádat o výměnu",
+    "approveSwap": "Schválit výměnu",
+    "rejectSwap": "Odmítnout výměnu",
+    "swapStatus": {
+      "pending": "Čeká na schválení",
+      "approved": "Schváleno",
+      "rejected": "Odmítnuto",
+      "completed": "Dokončeno"
+    }
+  },
+  "team": {
+    "title": "Týmová komunikace",
+    "chat": "Týmový chat",
+    "announcements": "Oznámení",
+    "shiftBoard": "Nástěnka směn",
+    "sendMessage": "Odeslat zprávu",
+    "messageTypes": {
+      "text": "Zpráva",
+      "shift_swap": "Výměna směny",
+      "announcement": "Oznámení",
+      "emergency": "Naléhavé"
+    },
+    "onlineNow": "Online teď",
+    "lastSeen": "Naposledy viděn"
+  },
+  "documents": {
+    "title": "Moje dokumenty",
+    "upload": "Nahrát",
+    "scan": "Skenovat",
+    "categories": {
+      "arbeitsvertrag": "Pracovní smlouva",
+      "anmeldung": "Přihlášení",
+      "insurance": "Pojištění",
+      "payslip": "Výplatní páska",
+      "tax_document": "Daňový dokument",
+      "other": "Ostatní"
+    },
+    "expiryWarning": "Platnost vyprší za {days} dní",
+    "expired": "Platnost vypršela",
+    "verified": "Ověřeno",
+    "pending": "Čeká na ověření",
+    "uploadDocument": "Nahrát dokument",
+    "documentTitle": "Název dokumentu",
+    "documentType": "Typ dokumentu",
+    "expiryDate": "Datum vypršení"
+  },
+  "travel": {
+    "title": "Cesty do práce",
+    "toWork": "Do práce",
+    "fromWork": "Domů",
+    "navigation": "Navigace",
+    "distance": "Vzdálenost",
+    "duration": "Doba jízdy", 
+    "cost": "Náklady",
+    "fuelConsumption": "Spotřeba paliva",
+    "carpool": "Spolujízda",
+    "findRide": "Najít spolujízdu",
+    "offerRide": "Nabídnout spolujízdu",
+    "transportModes": {
+      "car": "Auto",
+      "public_transport": "MHD",
+      "bike": "Kolo",
+      "walk": "Pěšky",
+      "carpool": "Spolujízda"
+    },
+    "expenseCalculator": "Kalkulačka náhrad",
+    "monthlyReport": "Měsíční přehled cest"
+  },
+  "dashboard": {
+    "welcomeBack": "Vítej zpět",
+    "todaysShift": "Dnešní směna",
+    "quickActions": "Rychlé akce",
+    "recentActivity": "Nedávná aktivita",
+    "statistics": "Statistiky",
+    "thisWeek": "Tento týden",
+    "thisMonth": "Tento měsíc",
+    "upcomingReminders": "Nadcházející připomínky",
+    "teamUpdates": "Týmové novinky"
+  },
+  "common": {
+    "save": "Uložit",
+    "cancel": "Zrušit",
+    "edit": "Upravit",
+    "delete": "Smazat",
+    "confirm": "Potvrdit",
+    "loading": "Načítání...",
+    "noData": "Žádná data",
+    "error": "Chyba",
+    "success": "Úspěch",
+    "warning": "Upozornění",
+    "info": "Informace",
+    "today": "Dnes",
+    "yesterday": "Včera",
+    "tomorrow": "Zítra",
+    "thisWeek": "Tento týden",
+    "lastWeek": "Minulý týden",
+    "nextWeek": "Příští týden"
+  }
+}

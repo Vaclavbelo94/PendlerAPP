@@ -1,0 +1,137 @@
+{
+  "navigation": {
+    "dashboard": "Mój przegląd",
+    "timeTracking": "Ewidencja czasu",
+    "shifts": "Zmiany",
+    "team": "Zespół",
+    "documents": "Dokumenty",
+    "travel": "Podróże"
+  },
+  "timeTracking": {
+    "title": "Ewidencja czasu pracy",
+    "clockIn": "Wejście",
+    "clockOut": "Wyjście", 
+    "startBreak": "Rozpocznij przerwę",
+    "endBreak": "Zakończ przerwę",
+    "totalHours": "Łączne godziny",
+    "overtimeHours": "Nadgodziny",
+    "breakDuration": "Czas przerwy",
+    "status": {
+      "notStarted": "Nie rozpoczęto",
+      "working": "Pracuję",
+      "onBreak": "Przerwa",
+      "finished": "Zakończono"
+    },
+    "todaysSummary": "Podsumowanie dnia",
+    "weekSummary": "Podsumowanie tygodnia",
+    "location": "Lokalizacja"
+  },
+  "shifts": {
+    "title": "Moje zmiany",
+    "upcoming": "Nadchodzące",
+    "current": "Obecna zmiana",
+    "past": "Przeszłe",
+    "nextShift": "Następna zmiana",
+    "shiftDetails": "Szczegóły zmiany",
+    "swapRequest": "Prośba o zamianę",
+    "swapWith": "Zamień z",
+    "swapReason": "Powód zamiany",
+    "requestSwap": "Poproś o zamianę",
+    "approveSwap": "Zatwierdź zamianę",
+    "rejectSwap": "Odrzuć zamianę",
+    "swapStatus": {
+      "pending": "Oczekuje na zatwierdzenie",
+      "approved": "Zatwierdzone",
+      "rejected": "Odrzucone",
+      "completed": "Zakończone"
+    }
+  },
+  "team": {
+    "title": "Komunikacja zespołu",
+    "chat": "Chat zespołu",
+    "announcements": "Ogłoszenia",
+    "shiftBoard": "Tablica zmian",
+    "sendMessage": "Wyślij wiadomość",
+    "messageTypes": {
+      "text": "Wiadomość",
+      "shift_swap": "Zamiana zmiany",
+      "announcement": "Ogłoszenie",
+      "emergency": "Pilne"
+    },
+    "onlineNow": "Online teraz",
+    "lastSeen": "Ostatnio widziany"
+  },
+  "documents": {
+    "title": "Moje dokumenty",
+    "upload": "Prześlij",
+    "scan": "Skanuj",
+    "categories": {
+      "arbeitsvertrag": "Umowa o pracę",
+      "anmeldung": "Rejestracja",
+      "insurance": "Ubezpieczenie",
+      "payslip": "Pasek płacy",
+      "tax_document": "Dokument podatkowy",
+      "other": "Inne"
+    },
+    "expiryWarning": "Wygasa za {days} dni",
+    "expired": "Wygasło",
+    "verified": "Zweryfikowane",
+    "pending": "Oczekuje na weryfikację",
+    "uploadDocument": "Prześlij dokument",
+    "documentTitle": "Tytuł dokumentu",
+    "documentType": "Typ dokumentu",
+    "expiryDate": "Data wygaśnięcia"
+  },
+  "travel": {
+    "title": "Podróże do pracy",
+    "toWork": "Do pracy",
+    "fromWork": "Do domu",
+    "navigation": "Nawigacja",
+    "distance": "Dystans",
+    "duration": "Czas podróży", 
+    "cost": "Koszt",
+    "fuelConsumption": "Zużycie paliwa",
+    "carpool": "Wspólna jazda",
+    "findRide": "Znajdź przejazd",
+    "offerRide": "Zaproponuj przejazd",
+    "transportModes": {
+      "car": "Samochód",
+      "public_transport": "Transport publiczny",
+      "bike": "Rower",
+      "walk": "Pieszo",
+      "carpool": "Wspólna jazda"
+    },
+    "expenseCalculator": "Kalkulator kosztów",
+    "monthlyReport": "Miesięczny raport podróży"
+  },
+  "dashboard": {
+    "welcomeBack": "Witaj ponownie",
+    "todaysShift": "Dzisiejsza zmiana",
+    "quickActions": "Szybkie akcje",
+    "recentActivity": "Ostatnia aktywność",
+    "statistics": "Statystyki",
+    "thisWeek": "Ten tydzień",
+    "thisMonth": "Ten miesiąc",
+    "upcomingReminders": "Nadchodzące przypomnienia",
+    "teamUpdates": "Aktualności zespołu"
+  },
+  "common": {
+    "save": "Zapisz",
+    "cancel": "Anuluj",
+    "edit": "Edytuj",
+    "delete": "Usuń",
+    "confirm": "Potwierdź",
+    "loading": "Ładowanie...",
+    "noData": "Brak danych",
+    "error": "Błąd",
+    "success": "Sukces",
+    "warning": "Ostrzeżenie",
+    "info": "Informacja",
+    "today": "Dzisiaj",
+    "yesterday": "Wczoraj",
+    "tomorrow": "Jutro",
+    "thisWeek": "Ten tydzień",
+    "lastWeek": "Zeszły tydzień",
+    "nextWeek": "Przyszły tydzień"
+  }
+}

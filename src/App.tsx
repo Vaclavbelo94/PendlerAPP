@@ -33,6 +33,7 @@ import AdminV2 from "./pages/AdminV2";
 // DHL Routes - only setup and admin remain
 import DHLSetup from "./pages/DHLSetup";
 import DHLAdmin from "./pages/DHLAdmin"; // NEW DHL Admin route
+import DHLEmployeePage from "./pages/dhl/employee/DHLEmployeePage";
 import ForgotPassword from "./pages/ForgotPassword";
 import { LoadingSpinner } from "./components/ui/LoadingSpinner";
 import WelcomeScreen from "./components/welcome/WelcomeScreen";
@@ -79,6 +80,7 @@ function App() {
                         <Route path="/admin/v2/*" element={<AdminV2 />} />
                         <Route path="/dhl-admin" element={<DHLAdmin />} />
                         <Route path="/dhl-setup" element={<DHLSetup />} />
+                        <Route path="/dhl-employee" element={<DHLEmployeePage />} />
                      </Routes>
                    </Suspense>
                     <Toaster />

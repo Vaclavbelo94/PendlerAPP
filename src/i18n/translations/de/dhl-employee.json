@@ -1,0 +1,137 @@
+{
+  "navigation": {
+    "dashboard": "Meine Übersicht",
+    "timeTracking": "Zeiterfassung",
+    "shifts": "Schichten",
+    "team": "Team",
+    "documents": "Dokumente",
+    "travel": "Fahrten"
+  },
+  "timeTracking": {
+    "title": "Zeiterfassung",
+    "clockIn": "Einstempeln",
+    "clockOut": "Ausstempeln", 
+    "startBreak": "Pause beginnen",
+    "endBreak": "Pause beenden",
+    "totalHours": "Gesamtstunden",
+    "overtimeHours": "Überstunden",
+    "breakDuration": "Pausendauer",
+    "status": {
+      "notStarted": "Nicht begonnen",
+      "working": "Arbeite",
+      "onBreak": "Pause",
+      "finished": "Beendet"
+    },
+    "todaysSummary": "Heutige Zusammenfassung",
+    "weekSummary": "Wochenzusammenfassung",
+    "location": "Standort"
+  },
+  "shifts": {
+    "title": "Meine Schichten",
+    "upcoming": "Anstehend",
+    "current": "Aktuelle Schicht",
+    "past": "Vergangene",
+    "nextShift": "Nächste Schicht",
+    "shiftDetails": "Schichtdetails",
+    "swapRequest": "Tauschantrag",
+    "swapWith": "Tauschen mit",
+    "swapReason": "Tauschgrund",
+    "requestSwap": "Tausch anfragen",
+    "approveSwap": "Tausch genehmigen",
+    "rejectSwap": "Tausch ablehnen",
+    "swapStatus": {
+      "pending": "Wartet auf Genehmigung",
+      "approved": "Genehmigt",
+      "rejected": "Abgelehnt",
+      "completed": "Abgeschlossen"
+    }
+  },
+  "team": {
+    "title": "Teamkommunikation",
+    "chat": "Team-Chat",
+    "announcements": "Ankündigungen",
+    "shiftBoard": "Schicht-Board",
+    "sendMessage": "Nachricht senden",
+    "messageTypes": {
+      "text": "Nachricht",
+      "shift_swap": "Schichttausch",
+      "announcement": "Ankündigung",
+      "emergency": "Notfall"
+    },
+    "onlineNow": "Jetzt online",
+    "lastSeen": "Zuletzt gesehen"
+  },
+  "documents": {
+    "title": "Meine Dokumente",
+    "upload": "Hochladen",
+    "scan": "Scannen",
+    "categories": {
+      "arbeitsvertrag": "Arbeitsvertrag",
+      "anmeldung": "Anmeldung",
+      "insurance": "Versicherung",
+      "payslip": "Gehaltsabrechnung",
+      "tax_document": "Steuerdokument",
+      "other": "Sonstiges"
+    },
+    "expiryWarning": "Läuft in {days} Tagen ab",
+    "expired": "Abgelaufen",
+    "verified": "Verifiziert",
+    "pending": "Wartet auf Verifikation",
+    "uploadDocument": "Dokument hochladen",
+    "documentTitle": "Dokumenttitel",
+    "documentType": "Dokumenttyp",
+    "expiryDate": "Ablaufdatum"
+  },
+  "travel": {
+    "title": "Arbeitsfahrten",
+    "toWork": "Zur Arbeit",
+    "fromWork": "Nach Hause",
+    "navigation": "Navigation",
+    "distance": "Entfernung",
+    "duration": "Fahrzeit", 
+    "cost": "Kosten",
+    "fuelConsumption": "Kraftstoffverbrauch",
+    "carpool": "Fahrgemeinschaft",
+    "findRide": "Mitfahrt finden",
+    "offerRide": "Mitfahrt anbieten",
+    "transportModes": {
+      "car": "Auto",
+      "public_transport": "Öffentliche Verkehrsmittel",
+      "bike": "Fahrrad",
+      "walk": "Zu Fuß",
+      "carpool": "Fahrgemeinschaft"
+    },
+    "expenseCalculator": "Kostenrechner",
+    "monthlyReport": "Monatlicher Fahrtenbericht"
+  },
+  "dashboard": {
+    "welcomeBack": "Willkommen zurück",
+    "todaysShift": "Heutige Schicht",
+    "quickActions": "Schnellaktionen",
+    "recentActivity": "Letzte Aktivität",
+    "statistics": "Statistiken",
+    "thisWeek": "Diese Woche",
+    "thisMonth": "Dieser Monat",
+    "upcomingReminders": "Anstehende Erinnerungen",
+    "teamUpdates": "Team-Updates"
+  },
+  "common": {
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "confirm": "Bestätigen",
+    "loading": "Laden...",
+    "noData": "Keine Daten",
+    "error": "Fehler",
+    "success": "Erfolg",
+    "warning": "Warnung",
+    "info": "Information",
+    "today": "Heute",
+    "yesterday": "Gestern",
+    "tomorrow": "Morgen",
+    "thisWeek": "Diese Woche",
+    "lastWeek": "Letzte Woche",
+    "nextWeek": "Nächste Woche"
+  }
+}

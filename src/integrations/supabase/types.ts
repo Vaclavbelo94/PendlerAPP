@@ -517,6 +517,178 @@ export type Database = {
         }
         Relationships: []
       }
+      dhl_commute_records: {
+        Row: {
+          cost_amount: number | null
+          created_at: string
+          date: string
+          destination_address: string
+          distance_km: number | null
+          duration_minutes: number | null
+          fuel_consumption: number | null
+          id: string
+          is_business_trip: boolean | null
+          notes: string | null
+          origin_address: string
+          transport_mode: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cost_amount?: number | null
+          created_at?: string
+          date: string
+          destination_address: string
+          distance_km?: number | null
+          duration_minutes?: number | null
+          fuel_consumption?: number | null
+          id?: string
+          is_business_trip?: boolean | null
+          notes?: string | null
+          origin_address: string
+          transport_mode?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cost_amount?: number | null
+          created_at?: string
+          date?: string
+          destination_address?: string
+          distance_km?: number | null
+          duration_minutes?: number | null
+          fuel_consumption?: number | null
+          id?: string
+          is_business_trip?: boolean | null
+          notes?: string | null
+          origin_address?: string
+          transport_mode?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dhl_commute_records_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dhl_document_storage: {
+        Row: {
+          created_at: string
+          description: string | null
+          document_type: string
+          expiry_date: string | null
+          file_path: string | null
+          file_size: number | null
+          id: string
+          is_verified: boolean | null
+          metadata: Json | null
+          mime_type: string | null
+          tags: string[] | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          document_type: string
+          expiry_date?: string | null
+          file_path?: string | null
+          file_size?: number | null
+          id?: string
+          is_verified?: boolean | null
+          metadata?: Json | null
+          mime_type?: string | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          document_type?: string
+          expiry_date?: string | null
+          file_path?: string | null
+          file_size?: number | null
+          id?: string
+          is_verified?: boolean | null
+          metadata?: Json | null
+          mime_type?: string | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dhl_document_storage_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dhl_employee_profiles: {
+        Row: {
+          created_at: string
+          department: string | null
+          emergency_contact: Json | null
+          employee_number: string | null
+          hire_date: string | null
+          id: string
+          preferences: Json | null
+          team_leader_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          department?: string | null
+          emergency_contact?: Json | null
+          employee_number?: string | null
+          hire_date?: string | null
+          id?: string
+          preferences?: Json | null
+          team_leader_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          department?: string | null
+          emergency_contact?: Json | null
+          employee_number?: string | null
+          hire_date?: string | null
+          id?: string
+          preferences?: Json | null
+          team_leader_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dhl_employee_profiles_team_leader_id_fkey"
+            columns: ["team_leader_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dhl_employee_profiles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dhl_notifications: {
         Row: {
           created_at: string
@@ -766,6 +938,90 @@ export type Database = {
           },
         ]
       }
+      dhl_shift_swaps: {
+        Row: {
+          admin_approved_by: string | null
+          approved_at: string | null
+          created_at: string
+          expires_at: string | null
+          id: string
+          original_shift_id: string | null
+          reason: string | null
+          requested_shift_id: string | null
+          requester_id: string
+          status: string
+          swap_type: string
+          target_user_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          admin_approved_by?: string | null
+          approved_at?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          original_shift_id?: string | null
+          reason?: string | null
+          requested_shift_id?: string | null
+          requester_id: string
+          status?: string
+          swap_type?: string
+          target_user_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          admin_approved_by?: string | null
+          approved_at?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          original_shift_id?: string | null
+          reason?: string | null
+          requested_shift_id?: string | null
+          requester_id?: string
+          status?: string
+          swap_type?: string
+          target_user_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dhl_shift_swaps_admin_approved_by_fkey"
+            columns: ["admin_approved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dhl_shift_swaps_original_shift_id_fkey"
+            columns: ["original_shift_id"]
+            isOneToOne: false
+            referencedRelation: "shifts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dhl_shift_swaps_requested_shift_id_fkey"
+            columns: ["requested_shift_id"]
+            isOneToOne: false
+            referencedRelation: "shifts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dhl_shift_swaps_requester_id_fkey"
+            columns: ["requester_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dhl_shift_swaps_target_user_id_fkey"
+            columns: ["target_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dhl_shift_templates: {
         Row: {
           break_duration: number | null
@@ -873,6 +1129,132 @@ export type Database = {
           woche_number?: number
         }
         Relationships: []
+      }
+      dhl_team_messages: {
+        Row: {
+          content: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          is_read: boolean | null
+          message_type: string
+          metadata: Json | null
+          reply_to_id: string | null
+          sender_id: string
+          team_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message_type?: string
+          metadata?: Json | null
+          reply_to_id?: string | null
+          sender_id: string
+          team_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message_type?: string
+          metadata?: Json | null
+          reply_to_id?: string | null
+          sender_id?: string
+          team_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dhl_team_messages_reply_to_id_fkey"
+            columns: ["reply_to_id"]
+            isOneToOne: false
+            referencedRelation: "dhl_team_messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dhl_team_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dhl_team_messages_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "dhl_work_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dhl_time_entries: {
+        Row: {
+          break_duration_minutes: number | null
+          break_end: string | null
+          break_start: string | null
+          clock_in_time: string | null
+          clock_out_time: string | null
+          created_at: string
+          date: string
+          id: string
+          location: Json | null
+          notes: string | null
+          overtime_hours: number | null
+          status: string
+          total_hours: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          break_duration_minutes?: number | null
+          break_end?: string | null
+          break_start?: string | null
+          clock_in_time?: string | null
+          clock_out_time?: string | null
+          created_at?: string
+          date: string
+          id?: string
+          location?: Json | null
+          notes?: string | null
+          overtime_hours?: number | null
+          status?: string
+          total_hours?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          break_duration_minutes?: number | null
+          break_end?: string | null
+          break_start?: string | null
+          clock_in_time?: string | null
+          clock_out_time?: string | null
+          created_at?: string
+          date?: string
+          id?: string
+          location?: Json | null
+          notes?: string | null
+          overtime_hours?: number | null
+          status?: string
+          total_hours?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dhl_time_entries_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       dhl_wechselschicht_patterns: {
         Row: {
