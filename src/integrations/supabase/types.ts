@@ -576,6 +576,60 @@ export type Database = {
           },
         ]
       }
+      dhl_document_reminders: {
+        Row: {
+          created_at: string
+          document_id: string
+          id: string
+          is_dismissed: boolean | null
+          is_sent: boolean | null
+          notes: string | null
+          reminder_date: string
+          reminder_type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          document_id: string
+          id?: string
+          is_dismissed?: boolean | null
+          is_sent?: boolean | null
+          notes?: string | null
+          reminder_date: string
+          reminder_type?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          document_id?: string
+          id?: string
+          is_dismissed?: boolean | null
+          is_sent?: boolean | null
+          notes?: string | null
+          reminder_date?: string
+          reminder_type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dhl_document_reminders_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "dhl_document_storage"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dhl_document_reminders_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dhl_document_storage: {
         Row: {
           created_at: string
