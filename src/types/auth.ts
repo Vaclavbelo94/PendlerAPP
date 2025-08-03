@@ -56,7 +56,7 @@ export interface AuthContextType {
   // Authentication methods
   signIn: (email: string, password: string) => Promise<{error: AuthError | string | null}>;
   signInWithGoogle: () => Promise<{error: AuthError | string | null, url?: string}>;
-  signUp: (email: string, password: string, username?: string, promoCode?: string) => Promise<{error: AuthError | string | null, user: User | null}>;
+  signUp: (email: string, password: string, username?: string, promoCode?: string, company?: string) => Promise<{error: AuthError | string | null, user: User | null}>;
   signOut: () => Promise<void>;
   
   // Status refresh methods

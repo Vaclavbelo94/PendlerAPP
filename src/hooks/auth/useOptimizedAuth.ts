@@ -206,7 +206,7 @@ export const useOptimizedAuth = (): AuthContextType => {
     }
   }, []);
 
-  const signUp = useCallback(async (email: string, password: string, username?: string, promoCode?: string) => {
+  const signUp = useCallback(async (email: string, password: string, username?: string, promoCode?: string, company?: string) => {
     try {
       roleManager.clearCache();
       
@@ -217,7 +217,8 @@ export const useOptimizedAuth = (): AuthContextType => {
           emailRedirectTo: `${window.location.origin}/`,
           data: {
             username: username || email.split('@')[0],
-            promo_code: promoCode
+            promo_code: promoCode,
+            company: company
           }
         }
       });

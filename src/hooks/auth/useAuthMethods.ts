@@ -103,7 +103,7 @@ export const useAuthMethods = () => {
     }
   };
 
-  const signUp = async (email: string, password: string, username?: string, promoCode?: string): Promise<{ error: string | null; user: User | null }> => {
+  const signUp = async (email: string, password: string, username?: string, promoCode?: string, company?: string): Promise<{ error: string | null; user: User | null }> => {
     try {
       console.log('Starting sign up process for:', email);
       
@@ -121,7 +121,6 @@ export const useAuthMethods = () => {
       await new Promise(resolve => setTimeout(resolve, 100));
       
       const redirectUrl = `${window.location.origin}/dashboard`;
-      const selectedCompany = localStorage.getItem('selectedCompany');
       
       const { data, error } = await supabase.auth.signUp({ 
         email, 
@@ -129,7 +128,7 @@ export const useAuthMethods = () => {
         options: {
           data: {
             username: username || email.split('@')[0],
-            company: selectedCompany,
+            company: company,
             promo_code: promoCode
           },
           emailRedirectTo: redirectUrl

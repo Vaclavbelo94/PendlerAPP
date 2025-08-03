@@ -54,6 +54,10 @@ const EnhancedRegisterForm = () => {
     console.log('Is Promo Valid:', isPromoValid);
     console.log('Is DHL Code:', isDHLCode);
     
+    // Determine company based on promo code
+    const company = isDHLCode && isPromoValid ? 'dhl' : null;
+    console.log('Determined company:', company);
+    
     // Validation checks
     if (!email.trim()) {
       toast.error(t('missingFields'), {
@@ -108,7 +112,7 @@ const EnhancedRegisterForm = () => {
       // Promo code je volitelný - pokud není vyplněn nebo není validní, pošleme prázdný string
       const finalPromoCode = (promoCode && isPromoValid) ? promoCode : '';
       
-      const signUpResult = await signUp(email, password, username, finalPromoCode);
+      const signUpResult = await signUp(email, password, username, finalPromoCode, company);
       
       if (signUpResult.error) {
         let errorMessage = t('registerCheckDataRetry');

@@ -140,7 +140,7 @@ export const useUnifiedAuth = () => {
     }
   }, []);
 
-  const signUp = useCallback(async (email: string, password: string, username?: string, promoCode?: string) => {
+  const signUp = useCallback(async (email: string, password: string, username?: string, promoCode?: string, company?: string) => {
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -149,7 +149,8 @@ export const useUnifiedAuth = () => {
           emailRedirectTo: `${window.location.origin}/`,
           data: {
             username: username || email.split('@')[0],
-            promo_code: promoCode
+            promo_code: promoCode,
+            company: company
           }
         }
       });
