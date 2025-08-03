@@ -14,56 +14,14 @@ import PrivacySettings from '@/components/settings/PrivacySettings';
 import DeviceSettings from '@/components/settings/DeviceSettings';
 import SecuritySettings from '@/components/settings/SecuritySettings';
 import AppearanceSettings from '@/components/settings/AppearanceSettings';
-import SettingsMobileCarousel from '@/components/settings/mobile/SettingsMobileCarousel';
-import ModernSettingsNavigation from '@/components/settings/ModernSettingsNavigation';
+import ModernSettingsContainer from '@/components/settings/modern/ModernSettingsContainer';
 import DashboardBackground from '@/components/common/DashboardBackground';
-import { useSyncSettings } from '@/hooks/useSyncSettings';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 import { useTranslation } from 'react-i18next';
 
 const Settings = () => {
-  const { settings: syncSettings, saveSettings: updateSyncSettings } = useSyncSettings();
   const isMobile = useIsMobile();
-  const [activeTab, setActiveTab] = useState("general");
   const { t } = useTranslation('settings');
-
-  // All available settings tabs for swipe navigation
-  const allSettingsTabs = [
-    "general", "account", "appearance", "notifications", 
-    "language", "security", "device", "data"
-  ];
-
-  // Swipe navigation setup
-  const { containerRef } = useSwipeNavigation({
-    items: allSettingsTabs,
-    currentItem: activeTab,
-    onItemChange: setActiveTab,
-    enabled: isMobile
-  });
-
-  const renderDesktopContent = () => {
-    switch (activeTab) {
-      case 'general':
-        return <GeneralSettings />;
-      case 'account':
-        return <AccountSettings />;
-      case 'appearance':
-        return <AppearanceSettings />;
-      case 'notifications':
-        return <NotificationSettings syncSettings={syncSettings} updateSyncSettings={updateSyncSettings} />;
-      case 'language':
-        return <LanguageSettings />;
-      case 'security':
-        return <SecuritySettings />;
-      case 'device':
-        return <DeviceSettings />;
-      case 'data':
-        return <DataSettings />;
-      default:
-        return <GeneralSettings />;
-    }
-  };
 
   return (
     <Layout>
@@ -104,47 +62,16 @@ const Settings = () => {
             )}
           </motion.div>
 
-          <ProfileErrorBoundary>
-            {/* Mobile: Swipe Carousel */}
-            {isMobile ? (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                ref={containerRef}
-              >
-                <SettingsMobileCarousel
-                  activeTab={activeTab}
-                  onTabChange={setActiveTab}
-                  syncSettings={syncSettings}
-                  updateSyncSettings={updateSyncSettings}
-                />
-              </motion.div>
-            ) : (
-              /* Desktop: Traditional Navigation + Content */
-              <>
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.1 }}
-                >
-                  <ModernSettingsNavigation
-                    activeTab={activeTab}
-                    onTabChange={setActiveTab}
-                  />
-                </motion.div>
-                
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.2 }}
-                  className="mt-8"
-                >
-                  {renderDesktopContent()}
-                </motion.div>
-              </>
-            )}
-          </ProfileErrorBoundary>
+      <ProfileErrorBoundary>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="h-[calc(100vh-12rem)] bg-card/50 backdrop-blur-sm rounded-lg border border-border/50 overflow-hidden"
+        >
+          <ModernSettingsContainer />
+        </motion.div>
+      </ProfileErrorBoundary>
         </div>
       </DashboardBackground>
     </Layout>
