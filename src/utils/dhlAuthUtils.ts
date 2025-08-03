@@ -92,11 +92,36 @@ const checkRegularAdminAsync = async (userId: string): Promise<boolean> => {
 };
 
 /**
- * Check if user can access DHL admin features
+ * Check if user can access DHL admin features (synchronous version)
+ */
+export const canAccessDHLAdminSync = (user: any): boolean => {
+  if (!user?.email) return false;
+  
+  // DHL admin email has access
+  if (user.email === 'admin_dhl@pendlerapp.com') return true;
+  
+  // Main admin email has access  
+  if (user.email === 'admin@pendlerapp.com') return true;
+  
+  // Special users have access
+  const specialEmails = ['uzivatel@pendlerapp.com', 'zkouska@gmail.com'];
+  if (specialEmails.includes(user.email)) return true;
+  
+  return false;
+};
+
+/**
+ * Check if user can access DHL admin features (async version)
  */
 export const canAccessDHLAdmin = (userIdOrUser: string | any): boolean | Promise<boolean> => {
   const userId = typeof userIdOrUser === 'string' ? userIdOrUser : userIdOrUser?.id;
   if (!userId) return false;
+  
+  // For user objects, try sync first
+  if (typeof userIdOrUser === 'object' && userIdOrUser?.email) {
+    const syncResult = canAccessDHLAdminSync(userIdOrUser);
+    if (syncResult) return true;
+  }
   
   return checkCanAccessDHLAdminAsync(userId);
 };

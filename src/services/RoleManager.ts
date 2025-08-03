@@ -98,7 +98,7 @@ export class RoleManager {
 
     return {
       isDHLEmployee: isDHLEmployeeCheck || isDHLAdminUser,
-      isAdmin: isRegularAdminUser || isDHLAdminUser || isSpecialUser,
+      isAdmin: isRegularAdminUser || isSpecialUser, // DHL admin is not regular admin
       isSpecialUser,
       isPremium: isSpecialUser || isDHLEmployeeCheck || isDHLAdminUser
     };
@@ -184,7 +184,7 @@ export class RoleManager {
   ): UnifiedUser {
     // Determine role with proper priority
     let role: UserRole;
-    if (user.email === 'admin_dhl@pendlerapp.com' || quickRoles.isDHLEmployee) {
+    if (user.email === 'admin_dhl@pendlerapp.com') {
       role = UserRole.DHL_ADMIN;
     } else if (user.email === 'admin@pendlerapp.com' || authData.isAdmin) {
       role = UserRole.ADMIN;

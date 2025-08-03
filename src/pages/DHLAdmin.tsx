@@ -7,7 +7,7 @@ import { Truck, ShieldCheck, Users, Calendar, Settings } from "lucide-react";
 import { useAuth } from "@/hooks/auth";
 import { SectionHeader } from "@/components/ui/section-header";
 import { InfoCard } from "@/components/ui/design-system/InfoCard";
-import { canAccessDHLAdmin } from "@/utils/dhlAuthUtils";
+import { canAccessDHLAdminSync } from "@/utils/dhlAuthUtils";
 import AdminLoginDialog from "@/components/admin/AdminLoginDialog";
 import DHLImportPanel from "@/components/dhl/admin/DHLImportPanel";
 import ExcelImportPanel from "@/components/dhl/admin/ExcelImportPanel";
@@ -35,7 +35,7 @@ const DHLAdmin = () => {
     window.location.reload();
   };
 
-  const hasAccess = canAccessDHLAdmin(user);
+  const hasAccess = canAccessDHLAdminSync(user);
 
   useEffect(() => {
     if (isLoading) return;

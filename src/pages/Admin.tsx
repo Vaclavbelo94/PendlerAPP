@@ -127,16 +127,23 @@ const Admin = () => {
       
       console.log("Checking admin status:", { user, isAdmin });
       
-      // Pro admin@pendlerapp.com automaticky přesměrovat na V2 panel
+      // KRITICKÉ: DHL admin má jít na DHL panel, ne na hlavní admin
+      if (user?.email === 'admin_dhl@pendlerapp.com') {
+        console.log("DHL admin email detected, redirecting to DHL panel");
+        navigate('/dhl-admin');
+        return;
+      }
+      
+      // Hlavní admin jde na V2 panel
       if (user?.email === 'admin@pendlerapp.com') {
-        console.log("Admin email detected, redirecting to V2 panel");
+        console.log("Main admin email detected, redirecting to V2 panel");
         navigate('/admin/v2');
         return;
       }
       
       // Pro ostatní admin uživatele také přesměrovat na V2
       if (isAdmin && user) {
-        console.log("Admin user detected, redirecting to V2 panel");
+        console.log("Other admin user detected, redirecting to V2 panel");
         navigate('/admin/v2');
         return;
       }
