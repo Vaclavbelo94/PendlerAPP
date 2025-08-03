@@ -7,6 +7,7 @@ import { Navigate } from 'react-router-dom';
 import DHLEmployeeNavigation from '@/components/dhl/employee/DHLEmployeeNavigation';
 import DHLEmployeeDashboard from '@/components/dhl/employee/dashboard/DHLEmployeeDashboard';
 import TimeTrackingWidget from '@/components/dhl/employee/timeTracking/TimeTrackingWidget';
+import DHLTeamCommunication from '@/components/dhl/employee/DHLTeamCommunication';
 import { DHLBrandIndicator } from '@/components/common/DHLBrandIndicator';
 import { DHLLogoWatermark } from '@/components/common/DHLLogoWatermark';
 import PageContainer from '@/components/layouts/PageContainer';
@@ -92,23 +93,7 @@ const DHLEmployeePage: React.FC = () => {
         );
       
       case 'team':
-        return (
-          <div className="space-y-6">
-            <div className="text-center md:text-left">
-              <h1 className="text-3xl font-bold mb-2">{t('team.title')}</h1>
-              <p className="text-muted-foreground">
-                Komunikujte se svým týmem
-              </p>
-            </div>
-            
-            <div className="bg-card rounded-lg p-8 border text-center">
-              <h3 className="text-lg font-semibold mb-2">Týmový chat</h3>
-              <p className="text-muted-foreground">
-                Bude implementován v další fázi
-              </p>
-            </div>
-          </div>
-        );
+        return <DHLTeamCommunication />;
       
       case 'documents':
         return (
