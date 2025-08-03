@@ -142,18 +142,27 @@ export const AccountManagementV2: React.FC = () => {
   const getPermissionBadge = (permission: any) => {
     if (!permission) return <Badge variant="outline">Uživatel</Badge>;
     
-    const variants: any = {
-      'viewer': 'secondary',
-      'moderator': 'default',
-      'admin': 'destructive',
-      'super_admin': 'default'
-    };
-
-    return (
-      <Badge variant={variants[permission.permission_level] || 'outline'}>
-        {permission.permission_level === 'super_admin' ? 'Super Admin' : permission.permission_level}
-      </Badge>
-    );
+    switch (permission.permission_level) {
+      case 'super_admin':
+        return <Badge variant="destructive" className="text-xs">Super Admin</Badge>;
+      case 'admin':
+        return <Badge variant="secondary" className="text-xs">Admin</Badge>;
+      case 'dhl_admin':
+        return (
+          <div className="flex items-center gap-2">
+            <Badge variant="default" className="text-xs bg-orange-100 text-orange-800 border-orange-200">
+              DHL Admin
+            </Badge>
+            <Badge variant="outline" className="text-xs">DHL</Badge>
+          </div>
+        );
+      case 'moderator':
+        return <Badge variant="outline" className="text-xs">Moderator</Badge>;
+      case 'viewer':
+        return <Badge variant="default" className="text-xs">Viewer</Badge>;
+      default:
+        return <Badge variant="outline">Uživatel</Badge>;
+    }
   };
 
   if (isLoading) {
@@ -227,6 +236,15 @@ export const AccountManagementV2: React.FC = () => {
                   >
                     Admin
                   </Button>
+                  {selectedUser.company === 'dhl' && (
+                    <Button 
+                      variant="outline" 
+                      className="bg-orange-50 text-orange-800 border-orange-200 hover:bg-orange-100"
+                      onClick={() => handleGrantPermission(selectedUser.id, 'dhl_admin')}
+                    >
+                      DHL Admin
+                    </Button>
+                  )}
                   <Button 
                     variant="destructive" 
                     onClick={() => handleGrantPermission(selectedUser.id, 'super_admin')}
