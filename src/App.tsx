@@ -38,11 +38,6 @@ import { LoadingSpinner } from "./components/ui/LoadingSpinner";
 import WelcomeScreen from "./components/welcome/WelcomeScreen";
 import "./i18n/config";
 
-// Import manual premium activation utility
-import "@/utils/manualPremiumActivation";
-// Import promo code fix utility
-import "@/utils/fixPromoCodeIssues";
-
 const queryClient = new QueryClient();
 
 function App() {
