@@ -20,5 +20,10 @@
   "premium": "Premium",
   "pricing": "Preise",
   "contact": "Kontakt",
-  "faq": "FAQ"
+  "faq": "FAQ",
+  "dhlDocuments": "DHL Dokumente",
+  "dhlTravel": "DHL Reisen",
+  "dhlAnalytics": "DHL Analytik",
+  "dhlTimeTracking": "DHL Zeiterfassung",
+  "overtime": "Überstunden"
 }

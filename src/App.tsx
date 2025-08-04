@@ -34,6 +34,10 @@ import AdminV2 from "./pages/AdminV2";
 import DHLSetup from "./pages/DHLSetup";
 import DHLAdmin from "./pages/DHLAdmin"; // NEW DHL Admin route
 import DHLEmployeePage from "./pages/dhl/employee/DHLEmployeePage";
+import DHLDocumentsPage from "./pages/dhl/DHLDocumentsPage";
+import DHLTravelPage from "./pages/dhl/DHLTravelPage";
+import DHLAnalyticsPage from "./pages/dhl/DHLAnalyticsPage";
+import DHLTimeTrackingPage from "./pages/dhl/DHLTimeTrackingPage";
 import ForgotPassword from "./pages/ForgotPassword";
 import { LoadingSpinner } from "./components/ui/LoadingSpinner";
 import WelcomeScreen from "./components/welcome/WelcomeScreen";
@@ -78,9 +82,13 @@ function App() {
                         <Route path="/premium" element={<Premium />} />
                         <Route path="/admin" element={<Admin />} />
                         <Route path="/admin/v2/*" element={<AdminV2 />} />
-                        <Route path="/dhl-admin" element={<DHLAdmin />} />
-                        <Route path="/dhl-setup" element={<DHLSetup />} />
-                        <Route path="/dhl-employee" element={<DHLEmployeePage />} />
+                         <Route path="/dhl-admin" element={<DHLAdmin />} />
+                         <Route path="/dhl-setup" element={<DHLSetup />} />
+                         <Route path="/dhl-employee" element={<DHLEmployeePage />} />
+                         <Route path="/dhl-documents" element={<DHLDocumentsPage />} />
+                         <Route path="/dhl-travel" element={<DHLTravelPage />} />
+                         <Route path="/dhl-analytics" element={<DHLAnalyticsPage />} />
+                         <Route path="/dhl-time-tracking" element={<DHLTimeTrackingPage />} />
                      </Routes>
                    </Suspense>
                     <Toaster />

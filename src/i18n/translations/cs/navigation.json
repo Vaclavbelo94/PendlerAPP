@@ -20,5 +20,10 @@
   "premium": "Premium",
   "pricing": "Ceny",
   "contact": "Kontakt",
-  "faq": "FAQ"
+  "faq": "FAQ",
+  "dhlDocuments": "DHL Dokumenty",
+  "dhlTravel": "DHL Cestování",
+  "dhlAnalytics": "DHL Analytika",
+  "dhlTimeTracking": "DHL Sledování času",
+  "overtime": "Přesčasy"
 }

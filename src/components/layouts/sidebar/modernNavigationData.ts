@@ -235,6 +235,54 @@ export const modernNavigationItems: ModernNavigationItem[] = [
     gradient: 'from-yellow-600 to-red-600'
   },
   {
+    id: 'dhl-documents',
+    label: 'Dokumenty',
+    href: '/dhl-documents',
+    icon: FileText,
+    description: 'Správa DHL dokumentů',
+    category: 'tools',
+    requiresAuth: true,
+    company: 'dhl',
+    color: 'text-yellow-500',
+    gradient: 'from-yellow-400 to-red-400'
+  },
+  {
+    id: 'dhl-travel',
+    label: 'Cestování',
+    href: '/dhl-travel',
+    icon: Map,
+    description: 'DHL cestovní plánování',
+    category: 'tools',
+    requiresAuth: true,
+    company: 'dhl',
+    color: 'text-yellow-800',
+    gradient: 'from-yellow-700 to-red-700'
+  },
+  {
+    id: 'dhl-analytics',
+    label: 'Analytika',
+    href: '/dhl-analytics',
+    icon: BarChart3,
+    description: 'DHL výkonnostní analytika',
+    category: 'tools',
+    requiresAuth: true,
+    company: 'dhl',
+    color: 'text-red-600',
+    gradient: 'from-red-500 to-yellow-500'
+  },
+  {
+    id: 'dhl-time-tracking',
+    label: 'Sledování času',
+    href: '/dhl-time-tracking',
+    icon: Timer,
+    description: 'DHL sledování pracovního času',
+    category: 'tools',
+    requiresAuth: true,
+    company: 'dhl',
+    color: 'text-red-700',
+    gradient: 'from-red-600 to-yellow-600'
+  },
+  {
     id: 'adecco-hub',
     label: 'Adecco Hub',
     href: '/adecco',
