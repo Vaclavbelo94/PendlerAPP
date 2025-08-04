@@ -11,6 +11,7 @@ import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { Search, Filter, X, Calendar, Clock, MapPin, User, Building } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { useTranslation } from 'react-i18next';
 
 interface SearchFilters {
   dateFrom?: Date;
@@ -39,6 +40,7 @@ interface AdvancedSearchProps {
 }
 
 const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onResultSelect }) => {
+  const { t } = useTranslation('dhl-employee');
   const [filters, setFilters] = useState<SearchFilters>({
     positions: [],
     workGroups: [],
@@ -96,8 +98,8 @@ const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onResultSelect }) => {
       Array.isArray(v) ? v.length === 0 : !v
     )) {
       toast({
-        title: "Prázdný dotaz",
-        description: "Zadejte alespoň jeden vyhledávací kritérium",
+        title: t('search.emptyQuery'),
+        description: t('search.enterCriteria'),
         variant: "destructive",
       });
       return;
@@ -224,8 +226,8 @@ const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onResultSelect }) => {
     } catch (error) {
       console.error('Search error:', error);
       toast({
-        title: "Chyba vyhledávání",
-        description: "Nepodařilo se provést vyhledávání",
+        title: t('search.error'),
+        description: t('search.searchFailed'),
         variant: "destructive",
       });
     } finally {
@@ -276,8 +278,8 @@ const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onResultSelect }) => {
     }
     
     toast({
-      title: "Výsledek vybrán",
-      description: `Vybrán: ${result.title}`,
+      title: t('search.resultSelected'),
+      description: `${t('search.selected')}: ${result.title}`,
     });
   };
 

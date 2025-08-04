@@ -99,7 +99,7 @@ export const DocumentUploadWidget: React.FC<DocumentUploadWidgetProps> = ({
       if (file.size > 10 * 1024 * 1024) {
         toast({
           title: t('common.error'),
-          description: 'Soubor je příliš velký. Maximum je 10MB.',
+          description: t('documents.fileTooLarge'),
           variant: 'destructive'
         });
         return;
@@ -118,7 +118,7 @@ export const DocumentUploadWidget: React.FC<DocumentUploadWidgetProps> = ({
       if (!allowedTypes.includes(file.type)) {
         toast({
           title: t('common.error'),
-          description: 'Nepodporovaný typ souboru.',
+          description: t('documents.unsupportedFileType'),
           variant: 'destructive'
         });
         return;
@@ -212,7 +212,7 @@ export const DocumentUploadWidget: React.FC<DocumentUploadWidgetProps> = ({
 
       toast({
         title: t('common.success'),
-        description: 'Dokument byl úspěšně nahrán',
+        description: t('documents.documentUploaded'),
       });
 
       // Reset form
@@ -234,7 +234,7 @@ export const DocumentUploadWidget: React.FC<DocumentUploadWidgetProps> = ({
       console.error('Upload error:', error);
       toast({
         title: t('common.error'),
-        description: 'Chyba při nahrávání dokumentu',
+        description: t('documents.uploadError'),
         variant: 'destructive'
       });
     } finally {
@@ -263,7 +263,7 @@ export const DocumentUploadWidget: React.FC<DocumentUploadWidgetProps> = ({
             <Upload className="h-12 w-12 text-primary mx-auto mb-4" />
             <h3 className="font-semibold mb-2">{t('documents.upload')}</h3>
             <p className="text-sm text-muted-foreground">
-              Nahrajte soubor z vašeho zařízení
+              {t('documents.uploadFile')}
             </p>
           </CardContent>
         </Card>
@@ -273,7 +273,7 @@ export const DocumentUploadWidget: React.FC<DocumentUploadWidgetProps> = ({
             <Camera className="h-12 w-12 text-green-600 mx-auto mb-4" />
             <h3 className="font-semibold mb-2">{t('documents.scan')}</h3>
             <p className="text-sm text-muted-foreground">
-              Vyfotit dokument pomocí kamery
+              {t('documents.takePhoto')}
             </p>
           </CardContent>
         </Card>
@@ -327,7 +327,7 @@ export const DocumentUploadWidget: React.FC<DocumentUploadWidgetProps> = ({
                   id="doc-title"
                   value={documentData.title}
                   onChange={(e) => setDocumentData(prev => ({ ...prev, title: e.target.value }))}
-                  placeholder="Název dokumentu"
+                  placeholder={t('documents.documentTitle')}
                   className="mt-1"
                 />
               </div>
@@ -355,19 +355,19 @@ export const DocumentUploadWidget: React.FC<DocumentUploadWidgetProps> = ({
               </div>
 
               <div>
-                <Label htmlFor="doc-description">Popis (volitelný)</Label>
+                <Label htmlFor="doc-description">{t('documents.optionalDescription')}</Label>
                 <Textarea
                   id="doc-description"
                   value={documentData.description}
                   onChange={(e) => setDocumentData(prev => ({ ...prev, description: e.target.value }))}
-                  placeholder="Krátký popis dokumentu..."
+                  placeholder={t('documents.documentDescription')}
                   className="mt-1"
                   rows={3}
                 />
               </div>
 
               <div>
-                <Label>{t('documents.expiryDate')} (volitelné)</Label>
+                <Label>{t('documents.expiryDate')} {t('documents.optionalExpiryDate')}</Label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -378,7 +378,7 @@ export const DocumentUploadWidget: React.FC<DocumentUploadWidgetProps> = ({
                       )}
                     >
                       <Calendar className="mr-2 h-4 w-4" />
-                      {expiryDate ? format(expiryDate, "PPP") : "Vyberte datum"}
+                      {expiryDate ? format(expiryDate, "PPP") : t('documents.selectDate')}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -401,14 +401,14 @@ export const DocumentUploadWidget: React.FC<DocumentUploadWidgetProps> = ({
                 disabled={isUploading || !documentData.title?.trim()}
                 className="flex-1"
               >
-                {isUploading ? 'Nahrávání...' : 'Nahrát dokument'}
+                {isUploading ? t('documents.uploading') : t('documents.uploadDocument')}
               </Button>
               <Button
                 variant="outline"
                 onClick={() => setShowUploadDialog(false)}
                 className="flex-1"
               >
-                Zrušit
+                {t('documents.cancel')}
               </Button>
             </div>
           </div>
