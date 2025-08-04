@@ -34,9 +34,25 @@
     "tip": "Funkcje DHL można skonfigurować w każdej chwili w sekcji Profil.",
     "dismissToast": "Możesz skonfigurować funkcje DHL w każdej chwili w sekcji Profil"
   },
+  "documents": {
+    "title": "DHL Dokumenty",
+    "description": "Zarządzanie wszystkimi dokumentami DHL w jednym miejscu"
+  },
+  "travel": {
+    "title": "DHL Podróże",
+    "description": "Planowanie i zarządzanie podróżami służbowymi i transportem"
+  },
+  "analytics": {
+    "title": "DHL Analityka",
+    "description": "Zaawansowane analizy wydajności i spostrzeżenia AI"
+  },
+  "timeTracking": {
+    "title": "DHL Śledzenie czasu",
+    "description": "Zaawansowane śledzenie czasu pracy z analizami AI"
+  },
   "admin": {
     "title": "Administracja DHL",
-    "subtitle": "Proste i efektywne zarządzanie zmianami", 
+    "subtitle": "Proste i efektywne zarządzanie zmianami",
     "dashboard": {
       "title": "Przegląd",
       "description": "Szybki przegląd systemu i statystyk"

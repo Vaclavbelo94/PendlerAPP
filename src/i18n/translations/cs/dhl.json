@@ -34,6 +34,22 @@
     "tip": "DHL funkce můžete nastavit kdykoli později v sekci Profil.",
     "dismissToast": "Můžete DHL funkce nastavit kdykoli v sekci Profil"
   },
+  "documents": {
+    "title": "DHL Dokumenty",
+    "description": "Správa všech vašich DHL dokumentů na jednom místě"
+  },
+  "travel": {
+    "title": "DHL Cestování",
+    "description": "Plánování a správa vašich služebních cest a přepravy"
+  },
+  "analytics": {
+    "title": "DHL Analytika",
+    "description": "Pokročilé analýzy výkonu a AI-powered insights"
+  },
+  "timeTracking": {
+    "title": "DHL Sledování času",
+    "description": "Pokročilé sledování pracovního času s AI analýzami"
+  },
   "admin": {
     "title": "DHL Administrace",
     "subtitle": "Jednoduché a efektivní řízení směn",

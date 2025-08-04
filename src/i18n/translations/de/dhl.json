@@ -34,6 +34,22 @@
     "tip": "DHL-Funktionen können Sie jederzeit später im Profil-Bereich einrichten.",
     "dismissToast": "Sie können DHL-Funktionen jederzeit im Profil-Bereich einrichten"
   },
+  "documents": {
+    "title": "DHL Dokumente",
+    "description": "Verwaltung aller Ihrer DHL-Dokumente an einem Ort"
+  },
+  "travel": {
+    "title": "DHL Reisen",
+    "description": "Planung und Verwaltung Ihrer Geschäftsreisen und des Transports"
+  },
+  "analytics": {
+    "title": "DHL Analytik",
+    "description": "Erweiterte Leistungsanalysen und KI-gestützte Erkenntnisse"
+  },
+  "timeTracking": {
+    "title": "DHL Zeiterfassung",
+    "description": "Erweiterte Arbeitszeit-Tracking mit KI-Analysen"
+  },
   "admin": {
     "title": "DHL Administration",
     "subtitle": "Einfache und effiziente Schichtverwaltung",
