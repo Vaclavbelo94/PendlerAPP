@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/auth';
@@ -57,28 +56,25 @@ export const useDHLSetup = () => {
       try {
         console.log('Checking DHL setup status for user:', user.id);
         
+        // Check for assignment - the database trigger handles duplicates automatically
         const { data, error } = await supabase
           .from('user_dhl_assignments')
           .select('*')
           .eq('user_id', user.id)
           .eq('is_active', true)
-          .order('created_at', { ascending: false })
-          .limit(1);
+          .maybeSingle();
 
         if (error) {
           throw error;
         }
 
-        // Get the most recent assignment if exists
-        const latestAssignment = data && data.length > 0 ? data[0] : null;
-        
-        console.log('DHL assignment check result:', latestAssignment);
+        console.log('DHL assignment check result:', data);
 
         setState(prev => ({
           ...prev,
           isLoading: false,
           canAccess: true,
-          isSetupComplete: !!latestAssignment,
+          isSetupComplete: !!data,
           error: null
         }));
       } catch (error) {
@@ -115,22 +111,7 @@ export const useDHLSetup = () => {
       console.log('User ID:', user.id);
       console.log('Setup Data:', setupData);
 
-      // First, deactivate any existing assignments to prevent duplicates
-      const { error: deactivateError } = await supabase
-        .from('user_dhl_assignments')
-        .update({ 
-          is_active: false,
-          updated_at: new Date().toISOString()
-        })
-        .eq('user_id', user.id)
-        .eq('is_active', true);
-
-      if (deactivateError) {
-        console.warn('Could not deactivate existing assignments:', deactivateError);
-        // Continue anyway - non-critical
-      }
-
-      // Create new DHL assignment with current Woche
+      // Create new DHL assignment - the database trigger will handle deactivating old ones
       const assignmentData = {
         user_id: user.id,
         dhl_position_id: setupData.positionId,
