@@ -112,7 +112,7 @@ export const DHLTeamChat: React.FC<DHLTeamChatProps> = ({
           // Show notification for new messages
           if (newMessage.sender_id !== user?.id) {
             toast({
-              title: 'Nová zpráva',
+              title: t('team.chat.newMessage'),
               description: newMessage.content.substring(0, 100) + (newMessage.content.length > 100 ? '...' : ''),
             });
           }
@@ -152,7 +152,7 @@ export const DHLTeamChat: React.FC<DHLTeamChatProps> = ({
       console.error('Error sending message:', error);
       toast({
         title: t('common.error'),
-        description: 'Chyba při odesílání zprávy',
+        description: t('team.chat.sendError'),
         variant: 'destructive'
       });
     } finally {
@@ -221,7 +221,7 @@ export const DHLTeamChat: React.FC<DHLTeamChatProps> = ({
             <AnimatePresence>
               {messages.map((message) => {
                 const isOwn = message.sender_id === user?.id;
-                const senderName = message.sender?.username || message.sender?.email?.split('@')[0] || 'Uživatel';
+                const senderName = message.sender?.username || message.sender?.email?.split('@')[0] || t('team.chat.defaultUser');
                 
                 return (
                   <motion.div

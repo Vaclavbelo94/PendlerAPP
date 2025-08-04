@@ -25,15 +25,15 @@ const DHLTravelManagement: React.FC = () => {
   const tabs = [
     {
       id: 'optimizer',
-      label: 'Optimalizace trasy',
+      label: t('travel.optimization'),
       icon: Navigation,
-      description: 'Najděte nejlepší cestu do práce'
+      description: t('travel.optimizationDesc')
     },
     {
       id: 'dashboard',
-      label: 'Přehled',
+      label: t('travel.overview'),
       icon: BarChart3,
-      description: 'Statistiky a analýza dojíždění'
+      description: t('travel.overviewDesc')
     }
   ];
 
@@ -59,12 +59,12 @@ const DHLTravelManagement: React.FC = () => {
         <div className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
           <div className="flex items-center justify-between p-4">
             <div>
-              <h1 className="text-xl font-bold">Dojíždění do práce</h1>
-              <p className="text-sm text-muted-foreground">DHL Travel Management</p>
+              <h1 className="text-xl font-bold">{t('travel.commuteToWork')}</h1>
+              <p className="text-sm text-muted-foreground">{t('travel.dhlTravelManagement')}</p>
             </div>
             <Badge variant="outline" className="bg-primary/10 text-primary border-primary">
               <Car className="h-3 w-3 mr-1" />
-              Optimalizace
+              {t('travel.optimization')}
             </Badge>
           </div>
         </div>
@@ -120,15 +120,15 @@ const DHLTravelManagement: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-foreground">
-                Travel Management
+                {t('travel.travelManagement')}
               </h1>
               <p className="text-muted-foreground mt-2">
-                Optimalizace dojíždění a analýza nákladů pro DHL zaměstnance
+                {t('travel.optimizationSubtitle')}
               </p>
             </div>
             <Badge variant="outline" className="bg-primary/10 text-primary border-primary">
               <Route className="h-4 w-4 mr-2" />
-              DHL Business Travel
+              {t('travel.dhlBusinessTravel')}
             </Badge>
           </div>
         </div>

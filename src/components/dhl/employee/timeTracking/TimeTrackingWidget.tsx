@@ -162,7 +162,7 @@ export const TimeTrackingWidget: React.FC<TimeTrackingWidgetProps> = ({
       console.error('Clock in error:', error);
       toast({
         title: t('common.error'),
-        description: 'Chyba při příchodu',
+        description: t('timeTracking.errors.clockInError'),
         variant: 'destructive'
       });
     } finally {
@@ -207,7 +207,7 @@ export const TimeTrackingWidget: React.FC<TimeTrackingWidgetProps> = ({
       console.error('Clock out error:', error);
       toast({
         title: t('common.error'),
-        description: 'Chyba při odchodu',
+        description: t('timeTracking.errors.clockOutError'),
         variant: 'destructive'
       });
     } finally {
@@ -260,7 +260,7 @@ export const TimeTrackingWidget: React.FC<TimeTrackingWidgetProps> = ({
       console.error('Break toggle error:', error);
       toast({
         title: t('common.error'),
-        description: 'Chyba při změně přestávky',
+        description: t('timeTracking.errors.breakToggleError'),
         variant: 'destructive'
       });
     } finally {

@@ -31,7 +31,7 @@ export const DHLEmployeeDashboard: React.FC<DHLEmployeeDashboardProps> = ({
       id: 'timeTracking',
       icon: Clock,
       title: t('navigation.timeTracking'),
-      description: 'Rychlé zapsání příchodu/odchodu',
+      description: t('common.quickActions.timeTrackingDesc'),
       color: 'text-green-600',
       bgColor: 'bg-green-50',
       borderColor: 'border-green-200'
@@ -40,7 +40,7 @@ export const DHLEmployeeDashboard: React.FC<DHLEmployeeDashboardProps> = ({
       id: 'shifts',
       icon: Calendar,
       title: t('navigation.shifts'),
-      description: 'Přehled nadcházejících směn',
+      description: t('common.quickActions.shiftsDesc'),
       color: 'text-purple-600',
       bgColor: 'bg-purple-50',
       borderColor: 'border-purple-200'
@@ -49,7 +49,7 @@ export const DHLEmployeeDashboard: React.FC<DHLEmployeeDashboardProps> = ({
       id: 'team',
       icon: Users,
       title: t('navigation.team'),
-      description: 'Komunikace s týmem',
+      description: t('common.quickActions.teamDesc'),
       color: 'text-orange-600',
       bgColor: 'bg-orange-50',
       borderColor: 'border-orange-200'
@@ -58,7 +58,7 @@ export const DHLEmployeeDashboard: React.FC<DHLEmployeeDashboardProps> = ({
       id: 'documents',
       icon: FileText,
       title: t('navigation.documents'),
-      description: 'Správa dokumentů',
+      description: t('common.quickActions.documentsDesc'),
       color: 'text-indigo-600',
       bgColor: 'bg-indigo-50',
       borderColor: 'border-indigo-200'
@@ -91,7 +91,7 @@ export const DHLEmployeeDashboard: React.FC<DHLEmployeeDashboardProps> = ({
         className="text-center md:text-left"
       >
         <h1 className="text-3xl font-bold text-foreground mb-2">
-          {t('dashboard.welcomeBack')}, {user?.email?.split('@')[0] || 'Uživatel'}!
+          {t('dashboard.welcomeBack')}, {user?.email?.split('@')[0] || t('team.chat.defaultUser')}!
         </h1>
         <p className="text-lg text-muted-foreground">
           {new Date().toLocaleDateString('cs-CZ', { 
@@ -119,11 +119,11 @@ export const DHLEmployeeDashboard: React.FC<DHLEmployeeDashboardProps> = ({
           <CardContent>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-lg font-semibold">Ranní směna</p>
-                <p className="text-sm text-muted-foreground">06:00 - 14:00</p>
+                <p className="text-lg font-semibold">{t('common.todaysShift.morningShift')}</p>
+                <p className="text-sm text-muted-foreground">{t('common.todaysShift.time')}</p>
               </div>
               <Badge variant="default" className="bg-green-100 text-green-800">
-                Dnes
+                {t('common.todaysShift.today')}
               </Badge>
             </div>
           </CardContent>
@@ -150,7 +150,7 @@ export const DHLEmployeeDashboard: React.FC<DHLEmployeeDashboardProps> = ({
                     <p className="text-2xl font-bold">{stat.value}</p>
                     <p className="text-sm text-green-600 flex items-center gap-1 mt-1">
                       <TrendingUp className="h-3 w-3" />
-                      {stat.change} od minulého období
+                      {stat.change} {t('common.stats.fromLastPeriod')}
                     </p>
                   </div>
                   <div className="p-3 bg-primary/10 rounded-full">
@@ -221,24 +221,24 @@ export const DHLEmployeeDashboard: React.FC<DHLEmployeeDashboardProps> = ({
               <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                 <div className="flex-1">
-                  <p className="text-sm font-medium">Příchod do práce</p>
-                  <p className="text-xs text-muted-foreground">Dnes 06:15</p>
+                  <p className="text-sm font-medium">{t('common.activities.clockIn')}</p>
+                  <p className="text-xs text-muted-foreground">{t('common.activities.timeToday')} 06:15</p>
                 </div>
               </div>
               
               <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
                 <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
                 <div className="flex-1">
-                  <p className="text-sm font-medium">Přestávka</p>
-                  <p className="text-xs text-muted-foreground">Dnes 10:00 - 10:30</p>
+                  <p className="text-sm font-medium">{t('common.activities.break')}</p>
+                  <p className="text-xs text-muted-foreground">{t('common.activities.timeToday')} 10:00 - 10:30</p>
                 </div>
               </div>
               
               <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
                 <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                 <div className="flex-1">
-                  <p className="text-sm font-medium">Nahrán dokument</p>
-                  <p className="text-xs text-muted-foreground">Včera 16:30</p>
+                  <p className="text-sm font-medium">{t('common.activities.documentUploaded')}</p>
+                  <p className="text-xs text-muted-foreground">{t('common.activities.timeYesterday')} 16:30</p>
                 </div>
               </div>
             </CardContent>
@@ -262,24 +262,24 @@ export const DHLEmployeeDashboard: React.FC<DHLEmployeeDashboardProps> = ({
               <div className="flex items-center gap-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                 <Bell className="h-4 w-4 text-yellow-600" />
                 <div className="flex-1">
-                  <p className="text-sm font-medium">Platnost pojištění</p>
-                  <p className="text-xs text-muted-foreground">Vyprší za 15 dní</p>
+                  <p className="text-sm font-medium">{t('common.reminders.insuranceExpiry')}</p>
+                  <p className="text-xs text-muted-foreground">{t('common.reminders.expiresIn')} 15 {t('common.reminders.days')}</p>
                 </div>
               </div>
               
               <div className="flex items-center gap-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                 <FileText className="h-4 w-4 text-blue-600" />
                 <div className="flex-1">
-                  <p className="text-sm font-medium">Měsíční report</p>
-                  <p className="text-xs text-muted-foreground">Deadline 31.1.</p>
+                  <p className="text-sm font-medium">{t('common.reminders.monthlyReport')}</p>
+                  <p className="text-xs text-muted-foreground">{t('common.reminders.deadline')} 31.1.</p>
                 </div>
               </div>
               
               <div className="flex items-center gap-3 p-3 bg-green-50 border border-green-200 rounded-lg">
                 <Users className="h-4 w-4 text-green-600" />
                 <div className="flex-1">
-                  <p className="text-sm font-medium">Týmová schůzka</p>
-                  <p className="text-xs text-muted-foreground">Zítra 14:00</p>
+                  <p className="text-sm font-medium">{t('common.reminders.teamMeeting')}</p>
+                  <p className="text-xs text-muted-foreground">{t('common.reminders.tomorrow')} 14:00</p>
                 </div>
               </div>
             </CardContent>

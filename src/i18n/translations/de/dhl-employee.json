@@ -24,7 +24,12 @@
     },
     "todaysSummary": "Heutige Zusammenfassung",
     "weekSummary": "Wochenzusammenfassung",
-    "location": "Standort"
+    "location": "Standort",
+    "errors": {
+      "clockInError": "Fehler beim Einstempeln",
+      "clockOutError": "Fehler beim Ausstempeln",
+      "breakToggleError": "Fehler beim Pausenwechsel"
+    }
   },
   "shifts": {
     "title": "Meine Schichten",
@@ -59,7 +64,17 @@
       "emergency": "Notfall"
     },
     "onlineNow": "Jetzt online",
-    "lastSeen": "Zuletzt gesehen"
+    "lastSeen": "Zuletzt gesehen",
+    "description": "Kommunizieren Sie mit Ihrem Team, tauschen Sie Schichten und verfolgen Sie Ankündigungen",
+    "announcements": {
+      "title": "Team-Ankündigungen",
+      "placeholder": "Wird in der nächsten Phase implementiert"
+    },
+    "chat": {
+      "newMessage": "Neue Nachricht",
+      "sendError": "Fehler beim Senden der Nachricht",
+      "defaultUser": "Benutzer"
+    }
   },
   "documents": {
     "title": "Meine Dokumente",
@@ -80,7 +95,9 @@
     "uploadDocument": "Dokument hochladen",
     "documentTitle": "Dokumenttitel",
     "documentType": "Dokumenttyp",
-    "expiryDate": "Ablaufdatum"
+    "expiryDate": "Ablaufdatum",
+    "description": "Verwalten Sie Ihre Arbeitsdokumente, verfolgen Sie deren Gültigkeit und erhalten Sie Erinnerungen",
+    "uploadNew": "Neues Dokument hochladen"
   },
   "travel": {
     "title": "Arbeitsfahrten",
@@ -102,7 +119,16 @@
       "carpool": "Fahrgemeinschaft"
     },
     "expenseCalculator": "Kostenrechner",
-    "monthlyReport": "Monatlicher Fahrtenbericht"
+    "monthlyReport": "Monatlicher Fahrtenbericht",
+    "optimization": "Routenoptimierung",
+    "optimizationDesc": "Finden Sie den besten Weg zur Arbeit",
+    "overview": "Übersicht",
+    "overviewDesc": "Statistiken und Pendelanalyse",
+    "commuteToWork": "Arbeitsweg",
+    "dhlTravelManagement": "DHL Travel Management",
+    "travelManagement": "Travel Management",
+    "optimizationSubtitle": "Pendeloptimierung und Kostenanalyse für DHL-Mitarbeiter",
+    "dhlBusinessTravel": "DHL Business Travel"
   },
   "dashboard": {
     "welcomeBack": "Willkommen zurück",
@@ -132,6 +158,38 @@
     "tomorrow": "Morgen",
     "thisWeek": "Diese Woche",
     "lastWeek": "Letzte Woche",
-    "nextWeek": "Nächste Woche"
+    "nextWeek": "Nächste Woche",
+    "portal": "DHL Mitarbeiterportal",
+    "quickActions": {
+      "timeTrackingDesc": "Schnelles Ein-/Ausstempeln",
+      "shiftsDesc": "Übersicht anstehender Schichten",
+      "teamDesc": "Teamkommunikation",
+      "documentsDesc": "Dokumentenverwaltung"
+    },
+    "todaysShift": {
+      "title": "Heutige Schicht",
+      "morningShift": "Frühschicht",
+      "time": "06:00 - 14:00",
+      "today": "Heute"
+    },
+    "stats": {
+      "fromLastPeriod": "vom letzten Zeitraum"
+    },
+    "activities": {
+      "clockIn": "Arbeitsbeginn",
+      "break": "Pause",
+      "documentUploaded": "Dokument hochgeladen",
+      "timeToday": "Heute",
+      "timeYesterday": "Gestern"
+    },
+    "reminders": {
+      "insuranceExpiry": "Versicherungsablauf",
+      "expiresIn": "Läuft ab in",
+      "days": "Tagen",
+      "monthlyReport": "Monatsbericht",
+      "deadline": "Frist",
+      "teamMeeting": "Team-Meeting",
+      "tomorrow": "Morgen"
+    }
   }
 }

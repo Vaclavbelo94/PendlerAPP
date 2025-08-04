@@ -35,7 +35,12 @@
       "finished": "Dokončeno"
     },
     "todaysSummary": "Dnešní přehled",
-    "location": "Poloha"
+    "location": "Poloha",
+    "errors": {
+      "clockInError": "Chyba při příchodu",
+      "clockOutError": "Chyba při odchodu",
+      "breakToggleError": "Chyba při změně přestávky"
+    }
   },
   "shifts": {
     "title": "Moje směny",
@@ -75,7 +80,17 @@
       "emergency": "Naléhavé"
     },
     "onlineNow": "Online teď",
-    "lastSeen": "Naposledy viděn"
+    "lastSeen": "Naposledy viděn",
+    "description": "Komunikujte se svým týmem, vyměňujte směny a sledujte oznámení",
+    "announcements": {
+      "title": "Týmová oznámení",
+      "placeholder": "Bude implementováno v další fázi"
+    },
+    "chat": {
+      "newMessage": "Nová zpráva",
+      "sendError": "Chyba při odesílání zprávy",
+      "defaultUser": "Uživatel"
+    }
   },
   "documents": {
     "title": "Moje dokumenty",
@@ -120,7 +135,16 @@
       "carpool": "Spolujízda"
     },
     "expenseCalculator": "Kalkulačka náhrad",
-    "monthlyReport": "Měsíční přehled cest"
+    "monthlyReport": "Měsíční přehled cest",
+    "optimization": "Optimalizace trasy",
+    "optimizationDesc": "Najděte nejlepší cestu do práce",
+    "overview": "Přehled", 
+    "overviewDesc": "Statistiky a analýza dojíždění",
+    "commuteToWork": "Dojíždění do práce",
+    "dhlTravelManagement": "DHL Travel Management",
+    "travelManagement": "Travel Management",
+    "optimizationSubtitle": "Optimalizace dojíždění a analýza nákladů pro DHL zaměstnance",
+    "dhlBusinessTravel": "DHL Business Travel"
   },
   "dashboard": {
     "welcomeBack": "Vítej zpět",
@@ -151,6 +175,37 @@
     "thisWeek": "Tento týden",
     "lastWeek": "Minulý týden",
     "nextWeek": "Příští týden",
-    "portal": "DHL Employee Portal"
+    "portal": "DHL Employee Portal",
+    "quickActions": {
+      "timeTrackingDesc": "Rychlé zapsání příchodu/odchodu",
+      "shiftsDesc": "Přehled nadcházejících směn", 
+      "teamDesc": "Komunikace s týmem",
+      "documentsDesc": "Správa dokumentů"
+    },
+    "todaysShift": {
+      "title": "Dnešní směna",
+      "morningShift": "Ranní směna",
+      "time": "06:00 - 14:00",
+      "today": "Dnes"
+    },
+    "stats": {
+      "fromLastPeriod": "od minulého období"
+    },
+    "activities": {
+      "clockIn": "Příchod do práce",
+      "break": "Přestávka",
+      "documentUploaded": "Nahrán dokument",
+      "timeToday": "Dnes",
+      "timeYesterday": "Včera"
+    },
+    "reminders": {
+      "insuranceExpiry": "Platnost pojištění",
+      "expiresIn": "Vyprší za",
+      "days": "dní",
+      "monthlyReport": "Měsíční report",
+      "deadline": "Deadline",
+      "teamMeeting": "Týmová schůzka",
+      "tomorrow": "Zítra"
+    }
   }
 }

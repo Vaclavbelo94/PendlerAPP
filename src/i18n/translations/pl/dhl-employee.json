@@ -24,7 +24,12 @@
     },
     "todaysSummary": "Podsumowanie dnia",
     "weekSummary": "Podsumowanie tygodnia",
-    "location": "Lokalizacja"
+    "location": "Lokalizacja",
+    "errors": {
+      "clockInError": "Błąd przy wejściu",
+      "clockOutError": "Błąd przy wyjściu",
+      "breakToggleError": "Błąd przy zmianie przerwy"
+    }
   },
   "shifts": {
     "title": "Moje zmiany",
@@ -59,7 +64,17 @@
       "emergency": "Pilne"
     },
     "onlineNow": "Online teraz",
-    "lastSeen": "Ostatnio widziany"
+    "lastSeen": "Ostatnio widziany",
+    "description": "Komunikuj się z zespołem, wymieniaj zmiany i śledź ogłoszenia",
+    "announcements": {
+      "title": "Ogłoszenia zespołu",
+      "placeholder": "Zostanie zaimplementowane w następnej fazie"
+    },
+    "chat": {
+      "newMessage": "Nowa wiadomość",
+      "sendError": "Błąd przy wysyłaniu wiadomości",
+      "defaultUser": "Użytkownik"
+    }
   },
   "documents": {
     "title": "Moje dokumenty",
@@ -80,7 +95,9 @@
     "uploadDocument": "Prześlij dokument",
     "documentTitle": "Tytuł dokumentu",
     "documentType": "Typ dokumentu",
-    "expiryDate": "Data wygaśnięcia"
+    "expiryDate": "Data wygaśnięcia",
+    "description": "Zarządzaj dokumentami roboczymi, śledź ich ważność i otrzymuj przypomnienia",
+    "uploadNew": "Prześlij nowy dokument"
   },
   "travel": {
     "title": "Podróże do pracy",
@@ -102,7 +119,16 @@
       "carpool": "Wspólna jazda"
     },
     "expenseCalculator": "Kalkulator kosztów",
-    "monthlyReport": "Miesięczny raport podróży"
+    "monthlyReport": "Miesięczny raport podróży",
+    "optimization": "Optymalizacja trasy",
+    "optimizationDesc": "Znajdź najlepszą drogę do pracy",
+    "overview": "Przegląd",
+    "overviewDesc": "Statystyki i analiza dojazdów",
+    "commuteToWork": "Dojazdy do pracy",
+    "dhlTravelManagement": "DHL Travel Management",
+    "travelManagement": "Travel Management",
+    "optimizationSubtitle": "Optymalizacja dojazdów i analiza kosztów dla pracowników DHL",
+    "dhlBusinessTravel": "DHL Business Travel"
   },
   "dashboard": {
     "welcomeBack": "Witaj ponownie",
@@ -132,6 +158,38 @@
     "tomorrow": "Jutro",
     "thisWeek": "Ten tydzień",
     "lastWeek": "Zeszły tydzień",
-    "nextWeek": "Przyszły tydzień"
+    "nextWeek": "Przyszły tydzień",
+    "portal": "Portal Pracownika DHL",
+    "quickActions": {
+      "timeTrackingDesc": "Szybkie rejestrowanie wejścia/wyjścia",
+      "shiftsDesc": "Przegląd nadchodzących zmian",
+      "teamDesc": "Komunikacja z zespołem",
+      "documentsDesc": "Zarządzanie dokumentami"
+    },
+    "todaysShift": {
+      "title": "Dzisiejsza zmiana",
+      "morningShift": "Zmiana poranna",
+      "time": "06:00 - 14:00",
+      "today": "Dzisiaj"
+    },
+    "stats": {
+      "fromLastPeriod": "od poprzedniego okresu"
+    },
+    "activities": {
+      "clockIn": "Wejście do pracy",
+      "break": "Przerwa",
+      "documentUploaded": "Przesłano dokument",
+      "timeToday": "Dzisiaj",
+      "timeYesterday": "Wczoraj"
+    },
+    "reminders": {
+      "insuranceExpiry": "Ważność ubezpieczenia",
+      "expiresIn": "Wygasa za",
+      "days": "dni",
+      "monthlyReport": "Miesięczny raport",
+      "deadline": "Termin",
+      "teamMeeting": "Spotkanie zespołu",
+      "tomorrow": "Jutro"
+    }
   }
 }

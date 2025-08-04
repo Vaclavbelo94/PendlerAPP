@@ -52,9 +52,9 @@ export const DHLTeamCommunication: React.FC<DHLTeamCommunicationProps> = ({
         return (
           <div className="bg-card rounded-lg p-8 border text-center">
             <Bell className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Týmová oznámení</h3>
+            <h3 className="text-lg font-semibold mb-2">{t('team.announcements.title')}</h3>
             <p className="text-muted-foreground">
-              Bude implementováno v další fázi
+              {t('team.announcements.placeholder')}
             </p>
           </div>
         );
@@ -72,7 +72,7 @@ export const DHLTeamCommunication: React.FC<DHLTeamCommunicationProps> = ({
           {t('team.title')}
         </h1>
         <p className="text-muted-foreground">
-          Komunikujte se svým týmem, vyměňujte směny a sledujte oznámení
+          {t('team.description')}
         </p>
       </div>
 
