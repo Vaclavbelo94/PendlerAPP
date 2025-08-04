@@ -198,6 +198,24 @@
       "missingSchedule": "Plan nicht erhalten",
       "wrongShift": "Fehler in der Schicht",
       "scheduleConflict": "Plankonflikt"
-    }
+  },
+  "toasts": {
+    "shiftAdded": "Schicht hinzugefügt",
+    "shiftAddedDescription": "Neue Schicht wurde erfolgreich erstellt",
+    "shiftUpdated": "Schicht aktualisiert", 
+    "shiftUpdatedDescription": "Änderungen wurden erfolgreich gespeichert",
+    "shiftDeleted": "Schicht gelöscht",
+    "shiftDeletedDescription": "Schicht wurde erfolgreich entfernt",
+    "errorLoading": "Fehler beim Laden",
+    "errorLoadingDescription": "Schichten konnten nicht geladen werden",
+    "errorCreating": "Fehler beim Erstellen",
+    "errorCreatingDescription": "Schicht konnte nicht erstellt werden",
+    "errorUpdating": "Fehler beim Aktualisieren",
+    "errorUpdatingDescription": "Schicht konnte nicht aktualisiert werden",
+    "errorDeleting": "Fehler beim Löschen",
+    "errorDeletingDescription": "Schicht konnte nicht gelöscht werden",
+    "notLoggedIn": "Fehler",
+    "notLoggedInDescription": "Sie sind nicht angemeldet"
   }
+}
 }

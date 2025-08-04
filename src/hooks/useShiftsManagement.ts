@@ -3,6 +3,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/auth';
 import { useToast } from '@/hooks/use-toast';
+import { useTranslation } from 'react-i18next';
 import type { Shift, ShiftType } from '@/types/shifts';
 import { format } from 'date-fns';
 
@@ -11,6 +12,7 @@ export type { Shift, ShiftType } from '@/types/shifts';
 export const useShiftsManagement = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { t } = useTranslation('shifts');
   const [shifts, setShifts] = useState<Shift[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -48,8 +50,8 @@ export const useShiftsManagement = () => {
     } catch (err) {
       console.error('Error loading shifts:', err);
       toast({
-        title: "Chyba při načítání",
-        description: "Nepodařilo se načíst směny",
+        title: t('toasts.errorLoading'),
+        description: t('toasts.errorLoadingDescription'),
         variant: "destructive",
       });
     } finally {
@@ -60,8 +62,8 @@ export const useShiftsManagement = () => {
   const createShift = useCallback(async (date: Date, type: ShiftType, startTime: string, endTime: string, notes?: string): Promise<boolean> => {
     if (!user?.id) {
       toast({
-        title: "Chyba",
-        description: "Nejste přihlášeni",
+        title: t('toasts.notLoggedIn'),
+        description: t('toasts.notLoggedInDescription'),
         variant: "destructive",
       });
       return false;
@@ -101,15 +103,15 @@ export const useShiftsManagement = () => {
 
       setShifts(prev => [typedShift, ...prev]);
       toast({
-        title: "Směna přidána",
-        description: "Nová směna byla úspěšně vytvořena",
+        title: t('toasts.shiftAdded'),
+        description: t('toasts.shiftAddedDescription'),
       });
       return true;
     } catch (err) {
       console.error('Error creating shift:', err);
       toast({
-        title: "Chyba při vytváření",
-        description: "Nepodařilo se vytvořit směnu",
+        title: t('toasts.errorCreating'),
+        description: t('toasts.errorCreatingDescription'),
         variant: "destructive",
       });
       return false;
@@ -121,8 +123,8 @@ export const useShiftsManagement = () => {
   const updateShift = useCallback(async (shiftId: string, type: ShiftType, startTime: string, endTime: string, notes?: string): Promise<boolean> => {
     if (!user?.id) {
       toast({
-        title: "Chyba",
-        description: "Nejste přihlášeni",
+        title: t('toasts.notLoggedIn'),
+        description: t('toasts.notLoggedInDescription'),
         variant: "destructive",
       });
       return false;
@@ -160,15 +162,15 @@ export const useShiftsManagement = () => {
 
       setShifts(prev => prev.map(shift => shift.id === shiftId ? typedShift : shift));
       toast({
-        title: "Směna upravena",
-        description: "Změny byly úspěšně uloženy",
+        title: t('toasts.shiftUpdated'),
+        description: t('toasts.shiftUpdatedDescription'),
       });
       return true;
     } catch (err) {
       console.error('Error updating shift:', err);
       toast({
-        title: "Chyba při úpravě",
-        description: "Nepodařilo se upravit směnu",
+        title: t('toasts.errorUpdating'),
+        description: t('toasts.errorUpdatingDescription'),
         variant: "destructive",
       });
       return false;
@@ -180,8 +182,8 @@ export const useShiftsManagement = () => {
   const deleteShift = useCallback(async (shiftId: string): Promise<boolean> => {
     if (!user?.id) {
       toast({
-        title: "Chyba",
-        description: "Nejste přihlášeni",
+        title: t('toasts.notLoggedIn'),
+        description: t('toasts.notLoggedInDescription'),
         variant: "destructive",
       });
       return false;
@@ -199,15 +201,15 @@ export const useShiftsManagement = () => {
 
       setShifts(prev => prev.filter(shift => shift.id !== shiftId));
       toast({
-        title: "Směna smazána",
-        description: "Směna byla úspěšně odstraněna",
+        title: t('toasts.shiftDeleted'),
+        description: t('toasts.shiftDeletedDescription'),
       });
       return true;
     } catch (err) {
       console.error('Error deleting shift:', err);
       toast({
-        title: "Chyba při mazání",
-        description: "Nepodařilo se smazat směnu",
+        title: t('toasts.errorDeleting'),
+        description: t('toasts.errorDeletingDescription'),
         variant: "destructive",
       });
       return false;

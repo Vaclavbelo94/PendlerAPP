@@ -182,5 +182,23 @@
     "officialSchedule": "Oficiální rozpis",
     "reportChange": "Nahlásit změnu",
     "freeDay": "Volno"
+  },
+  "toasts": {
+    "shiftAdded": "Směna přidána",
+    "shiftAddedDescription": "Nová směna byla úspěšně vytvořena",
+    "shiftUpdated": "Směna upravena", 
+    "shiftUpdatedDescription": "Změny byly úspěšně uloženy",
+    "shiftDeleted": "Směna smazána",
+    "shiftDeletedDescription": "Směna byla úspěšně odstraněna",
+    "errorLoading": "Chyba při načítání",
+    "errorLoadingDescription": "Nepodařilo se načíst směny",
+    "errorCreating": "Chyba při vytváření",
+    "errorCreatingDescription": "Nepodařilo se vytvořit směnu",
+    "errorUpdating": "Chyba při úpravě",
+    "errorUpdatingDescription": "Nepodařilo se upravit směnu",
+    "errorDeleting": "Chyba při mazání",
+    "errorDeletingDescription": "Nepodařilo se smazat směnu",
+    "notLoggedIn": "Chyba",
+    "notLoggedInDescription": "Nejste přihlášeni"
   }
 }

@@ -196,6 +196,24 @@
       "missingSchedule": "Nie przyszedł harmonogram",
       "wrongShift": "Błąd w zmianie",
       "scheduleConflict": "Konflikt w harmonogramie"
-    }
+  },
+  "toasts": {
+    "shiftAdded": "Zmiana dodana",
+    "shiftAddedDescription": "Nowa zmiana została pomyślnie utworzona",
+    "shiftUpdated": "Zmiana zaktualizowana", 
+    "shiftUpdatedDescription": "Zmiany zostały pomyślnie zapisane",
+    "shiftDeleted": "Zmiana usunięta",
+    "shiftDeletedDescription": "Zmiana została pomyślnie usunięta",
+    "errorLoading": "Błąd podczas ładowania",
+    "errorLoadingDescription": "Nie udało się załadować zmian",
+    "errorCreating": "Błąd podczas tworzenia",
+    "errorCreatingDescription": "Nie udało się utworzyć zmiany",
+    "errorUpdating": "Błąd podczas aktualizacji",
+    "errorUpdatingDescription": "Nie udało się zaktualizować zmiany",
+    "errorDeleting": "Błąd podczas usuwania",
+    "errorDeletingDescription": "Nie udało się usunąć zmiany",
+    "notLoggedIn": "Błąd",
+    "notLoggedInDescription": "Nie jesteś zalogowany"
   }
+}
 }
