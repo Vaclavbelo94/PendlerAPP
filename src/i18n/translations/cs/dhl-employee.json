@@ -16,6 +16,18 @@
     "totalHours": "Celkem hodin",
     "overtimeHours": "Přesčasy",
     "breakDuration": "Přestávka",
+    "description": "Sledujte svou pracovní dobu a přestávky",
+    "weekSummary": "Týdenní přehled",
+    "days": {
+      "monday": "Pondělí",
+      "tuesday": "Úterý",
+      "wednesday": "Středa",
+      "thursday": "Čtvrtek",
+      "friday": "Pátek",
+      "saturday": "Sobota",
+      "sunday": "Neděle"
+    },
+    "total": "Celkem",
     "status": {
       "notStarted": "Nezačato",
       "working": "Pracuji",
@@ -23,11 +35,11 @@
       "finished": "Dokončeno"
     },
     "todaysSummary": "Dnešní přehled",
-    "weekSummary": "Týdenní přehled",
     "location": "Poloha"
   },
   "shifts": {
     "title": "Moje směny",
+    "description": "Přehled vašich směn a možnost výměny",
     "upcoming": "Nadcházející",
     "current": "Aktuální směna",
     "past": "Minulé",
@@ -39,6 +51,10 @@
     "requestSwap": "Požádat o výměnu",
     "approveSwap": "Schválit výměnu",
     "rejectSwap": "Odmítnout výměnu",
+    "placeholder": {
+      "title": "Komponenta směn",
+      "description": "Bude implementována v další fázi"
+    },
     "swapStatus": {
       "pending": "Čeká na schválení",
       "approved": "Schváleno",
@@ -132,6 +148,7 @@
     "tomorrow": "Zítra",
     "thisWeek": "Tento týden",
     "lastWeek": "Minulý týden",
-    "nextWeek": "Příští týden"
+    "nextWeek": "Příští týden",
+    "portal": "DHL Employee Portal"
   }
 }

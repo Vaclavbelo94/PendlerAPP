@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/auth';
 import { useCompany } from '@/hooks/useCompany';
 import { Navigate } from 'react-router-dom';
+import ModernLayout from '@/components/modern/ModernLayout';
 import DHLEmployeeNavigation from '@/components/dhl/employee/DHLEmployeeNavigation';
 import DHLEmployeeDashboard from '@/components/dhl/employee/dashboard/DHLEmployeeDashboard';
 import TimeTrackingWidget from '@/components/dhl/employee/timeTracking/TimeTrackingWidget';
@@ -12,8 +13,6 @@ import DHLDocumentManagement from '@/components/dhl/employee/DHLDocumentManageme
 import DHLTravelManagement from '@/components/dhl/employee/DHLTravelManagement';
 import { DHLAnalyticsManagement } from '@/components/dhl/employee/DHLAnalyticsManagement';
 import { DHLBrandIndicator } from '@/components/common/DHLBrandIndicator';
-import { DHLLogoWatermark } from '@/components/common/DHLLogoWatermark';
-import PageContainer from '@/components/layouts/PageContainer';
 
 const DHLEmployeePage: React.FC = () => {
   const { t } = useTranslation('dhl-employee');
@@ -37,36 +36,36 @@ const DHLEmployeePage: React.FC = () => {
             <div className="text-center md:text-left">
               <h1 className="text-3xl font-bold mb-2">{t('timeTracking.title')}</h1>
               <p className="text-muted-foreground">
-                Sledujte svou pracovní dobu a přestávky
+                {t('timeTracking.description')}
               </p>
             </div>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <TimeTrackingWidget />
               
-              {/* Placeholder pro další komponenty */}
+              {/* Týdenní přehled */}
               <div className="space-y-4">
                 <div className="bg-card rounded-lg p-6 border">
                   <h3 className="font-semibold mb-4">{t('timeTracking.weekSummary')}</h3>
                   <div className="space-y-2">
                     <div className="flex justify-between">
-                      <span className="text-sm">Pondělí</span>
+                      <span className="text-sm">{t('timeTracking.days.monday')}</span>
                       <span className="text-sm font-medium">8.0h</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-sm">Úterý</span>
+                      <span className="text-sm">{t('timeTracking.days.tuesday')}</span>
                       <span className="text-sm font-medium">7.5h</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-sm">Středa</span>
+                      <span className="text-sm">{t('timeTracking.days.wednesday')}</span>
                       <span className="text-sm font-medium">8.5h</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-sm">Čtvrtek</span>
+                      <span className="text-sm">{t('timeTracking.days.thursday')}</span>
                       <span className="text-sm font-medium">8.0h</span>
                     </div>
                     <div className="flex justify-between border-t pt-2">
-                      <span className="font-medium">Celkem</span>
+                      <span className="font-medium">{t('timeTracking.total')}</span>
                       <span className="font-bold">32.0h</span>
                     </div>
                   </div>
@@ -82,14 +81,14 @@ const DHLEmployeePage: React.FC = () => {
             <div className="text-center md:text-left">
               <h1 className="text-3xl font-bold mb-2">{t('shifts.title')}</h1>
               <p className="text-muted-foreground">
-                Přehled vašich směn a možnost výměny
+                {t('shifts.description')}
               </p>
             </div>
             
             <div className="bg-card rounded-lg p-8 border text-center">
-              <h3 className="text-lg font-semibold mb-2">Komponenta směn</h3>
+              <h3 className="text-lg font-semibold mb-2">{t('shifts.placeholder.title')}</h3>
               <p className="text-muted-foreground">
-                Bude implementována v další fázi
+                {t('shifts.placeholder.description')}
               </p>
             </div>
           </div>
@@ -113,38 +112,36 @@ const DHLEmployeePage: React.FC = () => {
   };
 
   return (
-    <PageContainer className="relative min-h-screen">
-      {/* DHL Watermark */}
-      <DHLLogoWatermark />
-      
-      {/* Header s DHL Brand Indicator */}
-      <div className="relative z-10 flex items-center justify-between mb-6">
-        <DHLBrandIndicator size="lg" />
-        <div className="text-sm text-muted-foreground">
-          DHL Employee Portal
+    <ModernLayout>
+      <div className="container mx-auto py-6">
+        {/* Header s DHL Brand Indicator */}
+        <div className="flex items-center justify-between mb-6">
+          <DHLBrandIndicator size="lg" />
+          <div className="text-sm text-muted-foreground">
+            {t('common.portal')}
+          </div>
         </div>
-      </div>
 
-      {/* Navigation */}
-      <div className="relative z-10">
-        <DHLEmployeeNavigation 
-          activeTab={activeTab} 
-          onTabChange={setActiveTab} 
-        />
-      </div>
+        {/* Navigation */}
+        <div className="mb-6">
+          <DHLEmployeeNavigation 
+            activeTab={activeTab} 
+            onTabChange={setActiveTab} 
+          />
+        </div>
 
-      {/* Main Content */}
-      <motion.div
-        key={activeTab}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        transition={{ duration: 0.3 }}
-        className="relative z-10"
-      >
-        {renderActiveContent()}
-      </motion.div>
-    </PageContainer>
+        {/* Main Content */}
+        <motion.div
+          key={activeTab}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.3 }}
+        >
+          {renderActiveContent()}
+        </motion.div>
+      </div>
+    </ModernLayout>
   );
 };
 
