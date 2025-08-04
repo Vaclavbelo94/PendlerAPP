@@ -158,6 +158,7 @@ const MobileShiftsView: React.FC<MobileShiftsViewProps> = ({
                 weekShifts.map((shift) => (
                   <MobileShiftCard
                     key={shift.id}
+                    date={new Date(shift.date)}
                     shift={shift}
                     onEdit={onEditShift}
                     onDelete={onDeleteShift}
