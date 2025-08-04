@@ -2,6 +2,8 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { format, eachDayOfInterval, startOfMonth, endOfMonth } from 'date-fns';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useMobileShifts, ViewType } from '@/hooks/shifts/useMobileShifts';
 import MobileShiftsHeader from './MobileShiftsHeader';
@@ -135,7 +137,7 @@ const NewMobileShiftsView: React.FC<NewMobileShiftsViewProps> = ({
   }
 
   return (
-    <div className="h-full flex flex-col bg-background">
+    <div className="h-full flex flex-col bg-background relative">
       <MobileShiftsHeader
         currentDate={currentDate}
         onDateChange={handleDateChange}
@@ -147,6 +149,15 @@ const NewMobileShiftsView: React.FC<NewMobileShiftsViewProps> = ({
         activeView={activeView}
         onViewChange={handleViewChange}
       />
+
+      {/* Floating Action Button pro přidání směny */}
+      <Button
+        onClick={() => selectedDate ? onAddShiftForDate(selectedDate) : onAddShift()}
+        size="icon"
+        className="fixed bottom-20 right-4 h-14 w-14 rounded-full shadow-lg z-50 bg-primary hover:bg-primary/90"
+      >
+        <Plus className="h-6 w-6" />
+      </Button>
 
       <MobileShiftReportSheet
         isOpen={isReportSheetOpen}
