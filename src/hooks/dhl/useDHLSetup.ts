@@ -62,19 +62,23 @@ export const useDHLSetup = () => {
           .select('*')
           .eq('user_id', user.id)
           .eq('is_active', true)
-          .maybeSingle();
+          .order('created_at', { ascending: false })
+          .limit(1);
 
-        if (error && error.code !== 'PGRST116') {
+        if (error) {
           throw error;
         }
 
-        console.log('DHL assignment check result:', data);
+        // Get the most recent assignment if exists
+        const latestAssignment = data && data.length > 0 ? data[0] : null;
+        
+        console.log('DHL assignment check result:', latestAssignment);
 
         setState(prev => ({
           ...prev,
           isLoading: false,
           canAccess: true,
-          isSetupComplete: !!data,
+          isSetupComplete: !!latestAssignment,
           error: null
         }));
       } catch (error) {
@@ -111,9 +115,22 @@ export const useDHLSetup = () => {
       console.log('User ID:', user.id);
       console.log('Setup Data:', setupData);
 
-      // Create DHL assignment with current Woche
-      // For annual rotation system, we use individual assignments (dhl_work_group_id = null)
-      // and rely on current_woche for rotation calculations
+      // First, deactivate any existing assignments to prevent duplicates
+      const { error: deactivateError } = await supabase
+        .from('user_dhl_assignments')
+        .update({ 
+          is_active: false,
+          updated_at: new Date().toISOString()
+        })
+        .eq('user_id', user.id)
+        .eq('is_active', true);
+
+      if (deactivateError) {
+        console.warn('Could not deactivate existing assignments:', deactivateError);
+        // Continue anyway - non-critical
+      }
+
+      // Create new DHL assignment with current Woche
       const assignmentData = {
         user_id: user.id,
         dhl_position_id: setupData.positionId,

@@ -86,13 +86,21 @@ export const useDHLData = (userId: string | null) => {
           `)
           .eq('user_id', userId)
           .eq('is_active', true)
-          .maybeSingle();
+          .order('created_at', { ascending: false })
+          .limit(1);
 
         if (assignmentError) {
           console.error('Error loading user assignment:', assignmentError);
         } else {
-          setUserAssignment(assignmentData);
-          console.log('User assignment loaded:', assignmentData);
+          // Get the most recent assignment if multiple exist
+          const latestAssignment = assignmentData && assignmentData.length > 0 ? assignmentData[0] : null;
+          setUserAssignment(latestAssignment);
+          console.log('User assignment loaded:', latestAssignment);
+          
+          // If we found multiple active assignments, log a warning
+          if (assignmentData && assignmentData.length > 1) {
+            console.warn(`User has ${assignmentData.length} active DHL assignments, using most recent one`);
+          }
         }
       } else {
         setUserAssignment(null);
