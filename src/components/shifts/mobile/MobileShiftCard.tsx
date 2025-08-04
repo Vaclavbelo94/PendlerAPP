@@ -1,149 +1,154 @@
 import React from 'react';
-import { format } from 'date-fns';
-import { cs } from 'date-fns/locale';
+import { format, isSameDay } from 'date-fns';
+import { cs, pl, de } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
-import { MoreVertical, Edit, Trash2, Clock, MapPin } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { MoreVertical, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
-import { Shift } from '@/hooks/shifts/useShiftsCRUD';
+import { Shift } from '@/types/shifts';
 
 interface MobileShiftCardProps {
-  shift: Shift;
-  onEdit: (shift: Shift) => void;
-  onDelete: (shiftId: string) => Promise<void>;
+  date: Date;
+  shift?: Shift;
+  onEdit?: (shift: Shift) => void;
+  onDelete?: (shiftId: string) => void;
+  onReport?: (date: Date) => void;
+  isOfficialSchedule?: boolean;
 }
 
 const MobileShiftCard: React.FC<MobileShiftCardProps> = ({
+  date,
   shift,
   onEdit,
-  onDelete
+  onDelete,
+  onReport,
+  isOfficialSchedule = false
 }) => {
-  const { t } = useTranslation('shifts');
-
-  const getShiftTypeLabel = (type: string) => {
-    switch (type) {
-      case 'morning':
-        return t('morningShift');
-      case 'afternoon':
-        return t('afternoonShift');
-      case 'night':
-        return t('nightShift');
-      case 'custom':
-        return t('customShift');
-      default:
-        return t('noShift');
+  const { i18n, t } = useTranslation('shifts');
+  
+  const getLocale = () => {
+    switch (i18n.language) {
+      case 'cs': return cs;
+      case 'pl': return pl;
+      case 'de': return de;
+      default: return cs;
     }
   };
 
-  const getShiftTypeColors = (type: string) => {
+  const getShiftTypeLabel = (type: string) => {
     switch (type) {
-      case 'morning':
-        return 'bg-yellow-50 border-l-yellow-400 dark:bg-yellow-950/20';
-      case 'afternoon':
-        return 'bg-orange-50 border-l-orange-400 dark:bg-orange-950/20';
-      case 'night':
-        return 'bg-blue-50 border-l-blue-400 dark:bg-blue-950/20';
-      case 'custom':
-        return 'bg-purple-50 border-l-purple-400 dark:bg-purple-950/20';
-      default:
-        return 'bg-gray-50 border-l-gray-400 dark:bg-gray-950/20';
+      case 'morning': return t('morning', 'Ranní');
+      case 'afternoon': return t('afternoon', 'Odpolední');
+      case 'night': return t('night', 'Noční');
+      case 'custom': return t('customShift', 'Vlastní');
+      default: return type;
+    }
+  };
+
+  const getShiftTypeColor = (type: string) => {
+    switch (type) {
+      case 'morning': return 'bg-blue-500 hover:bg-blue-600';
+      case 'afternoon': return 'bg-orange-500 hover:bg-orange-600';
+      case 'night': return 'bg-purple-500 hover:bg-purple-600';
+      case 'custom': return 'bg-green-500 hover:bg-green-600';
+      default: return 'bg-gray-400 hover:bg-gray-500';
     }
   };
 
   const formatTime = (time: string) => {
-    if (!time) return '';
-    return time.slice(0, 5); // Remove seconds
+    return time.substring(0, 5); // Remove seconds if present
   };
 
-  const calculateOvertime = () => {
-    if (!shift.start_time || !shift.end_time) return 0;
-    
-    // Standard shift is 8 hours
-    const start = new Date(`1970-01-01T${shift.start_time}`);
-    const end = new Date(`1970-01-01T${shift.end_time}`);
-    
-    // Handle overnight shifts
-    if (end < start) {
-      end.setDate(end.getDate() + 1);
-    }
-    
-    const diffMs = end.getTime() - start.getTime();
-    const hours = diffMs / (1000 * 60 * 60);
-    
-    return Math.max(0, hours - 8);
-  };
-
-  const overtime = calculateOvertime();
+  const dayName = format(date, 'EEEE', { locale: getLocale() });
+  const dateString = format(date, 'd. M. yyyy', { locale: getLocale() });
+  const dayAbbrev = format(date, 'EEE', { locale: getLocale() });
+  const isToday = isSameDay(date, new Date());
 
   return (
-    <Card className={cn("border-l-4", getShiftTypeColors(shift.type))}>
+    <Card className={cn(
+      "mb-3 transition-all duration-200",
+      isToday && "ring-2 ring-primary",
+      shift ? "hover:shadow-md" : "opacity-75"
+    )}>
       <CardContent className="p-4">
-        <div className="flex items-start justify-between">
+        <div className="flex items-center justify-between">
           <div className="flex-1">
+            {/* Date and day */}
             <div className="flex items-center gap-2 mb-2">
-              <h3 className="font-semibold text-foreground">
-                {getShiftTypeLabel(shift.type)}
-              </h3>
-              <div className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
-                {format(new Date(shift.date), 'EEE d.M.', { locale: cs })}
-              </div>
+              <span className="text-sm font-medium text-foreground">
+                {dayAbbrev} {dateString}
+              </span>
+              {isToday && (
+                <Badge variant="outline" className="text-xs">
+                  {t('today', 'Dnes')}
+                </Badge>
+              )}
             </div>
 
-            <div className="space-y-2">
-              {shift.start_time && shift.end_time && (
-                <div className="flex items-center gap-2 text-sm">
-                  <Clock className="h-4 w-4 text-muted-foreground" />
-                  <span className="font-medium">
-                    {formatTime(shift.start_time)}–{formatTime(shift.end_time)}
+            {/* Shift details or free day */}
+            {shift ? (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <div className={cn(
+                    "w-3 h-3 rounded-full",
+                    getShiftTypeColor(shift.type).split(' ')[0]
+                  )} />
+                  <span className="font-medium text-foreground">
+                    {getShiftTypeLabel(shift.type)}
                   </span>
-                  {overtime > 0 && (
-                    <span className="bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300 px-2 py-0.5 rounded-full text-xs font-medium">
-                      {t('overtime')}: {overtime.toFixed(1)} h
-                    </span>
+                  {isOfficialSchedule && (
+                    <Badge variant="secondary" className="text-xs">
+                      {t('mobile.officialSchedule', 'Oficiální rozpis')}
+                    </Badge>
                   )}
                 </div>
-              )}
-
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <MapPin className="h-4 w-4" />
-                <span>DHL Halle 1</span>
-              </div>
-
-              {shift.notes && (
-                <div className="text-sm text-muted-foreground bg-muted/50 p-2 rounded">
-                  {shift.notes}
+                
+                <div className="text-sm text-muted-foreground">
+                  {formatTime(shift.start_time)} – {formatTime(shift.end_time)}
                 </div>
-              )}
-            </div>
+
+                {shift.notes && (
+                  <div className="text-xs text-muted-foreground bg-muted p-2 rounded">
+                    {shift.notes}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-gray-400" />
+                <span className="text-muted-foreground">
+                  {t('mobile.freeDay', 'Volno')}
+                </span>
+              </div>
+            )}
           </div>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
+          {/* Action buttons */}
+          <div className="flex items-center gap-1">
+            {isOfficialSchedule && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => onReport?.(date)}
+                className="h-8 w-8 text-muted-foreground hover:text-foreground"
+              >
+                <AlertCircle className="h-4 w-4" />
+              </Button>
+            )}
+            
+            {shift && !isOfficialSchedule && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => onEdit?.(shift)}
+                className="h-8 w-8 text-muted-foreground hover:text-foreground"
+              >
                 <MoreVertical className="h-4 w-4" />
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => onEdit(shift)}>
-                <Edit className="h-4 w-4 mr-2" />
-                {t('editShift')}
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={() => shift.id && onDelete(shift.id)}
-                className="text-destructive"
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                {t('deleteShift')}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>

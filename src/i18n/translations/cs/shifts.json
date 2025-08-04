@@ -173,5 +173,14 @@
   "noOvertime": "Žádné přesčasy",
   "weeklyView": "Týdenní pohled",
   "noShift": "Volno",
-  "freeDay": "Volno"
+  "freeDay": "Volno",
+  "mobile": {
+    "monthView": "Měsíc",
+    "threeDaysView": "3 dny",
+    "oneDayView": "1 den",
+    "noEventsToday": "Žádné události pro dnešní den",
+    "officialSchedule": "Oficiální rozpis",
+    "reportChange": "Nahlásit změnu",
+    "freeDay": "Volno"
+  }
 }

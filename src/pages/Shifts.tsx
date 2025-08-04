@@ -2,7 +2,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import Layout from '@/components/layouts/Layout';
 import SwipeableShiftTabs from '@/components/shifts/SwipeableShiftTabs';
-import MobileShiftsView from '@/components/shifts/mobile/MobileShiftsView';
+import NewMobileShiftsView from '@/components/shifts/mobile/NewMobileShiftsView';
 import FloatingAddButton from '@/components/shifts/FloatingAddButton';
 import ShiftsFormSheets from '@/components/shifts/ShiftsFormSheets';
 import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
@@ -196,7 +196,7 @@ const Shifts = React.memo(() => {
         {isMobile ? (
           // Mobile full-screen layout
           <div className="h-[calc(100vh-4rem)] overflow-hidden">
-            <MobileShiftsView
+            <NewMobileShiftsView
               shifts={shifts}
               onEditShift={handleEditShift}
               onDeleteShift={handleDeleteShift}

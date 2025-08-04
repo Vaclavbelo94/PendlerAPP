@@ -174,5 +174,30 @@
   "noOvertime": "Keine Überstunden",
   "weeklyView": "Wochenansicht",
   "noShift": "Frei",
-  "freeDay": "Frei"
+  "freeDay": "Frei",
+  "mobile": {
+    "monthView": "Monat",
+    "threeDaysView": "3 Tage", 
+    "oneDayView": "1 Tag",
+    "noEventsToday": "Keine Ereignisse für heute",
+    "officialSchedule": "Offizieller Firmenplan",
+    "reportChange": "Änderung melden",
+    "freeDay": "Frei",
+    "overtimeHours": "Überstunden",
+    "noShiftsInMonth": "Keine Schichten in diesem Monat",
+    "monthlyStats": "Monatsstatistiken",
+    "shiftBreakdown": "Schichtverteilung",
+    "selectIssueType": "Problemtyp auswählen",
+    "additionalDetails": "Zusätzliche Details",
+    "descriptionPlaceholder": "Beschreiben Sie das Problem genauer...",
+    "selected": "Ausgewählt",
+    "sending": "Sende...",
+    "sendReport": "Meldung senden",
+    "reportDescription": "Melden Sie ein Problem mit dem Schichtplan an Ihre Personalabteilung",
+    "reportTypes": {
+      "missingSchedule": "Plan nicht erhalten",
+      "wrongShift": "Fehler in der Schicht",
+      "scheduleConflict": "Plankonflikt"
+    }
+  }
 }

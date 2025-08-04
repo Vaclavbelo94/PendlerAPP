@@ -172,5 +172,30 @@
   "noOvertime": "Brak nadgodzin",
   "weeklyView": "Widok tygodniowy",
   "noShift": "Wolne",
-  "freeDay": "Wolne"
+  "freeDay": "Wolne",
+  "mobile": {
+    "monthView": "Miesiąc",
+    "threeDaysView": "3 dni", 
+    "oneDayView": "1 dzień",
+    "noEventsToday": "Brak wydarzeń na dziś",
+    "officialSchedule": "Oficjalny harmonogram firmy",
+    "reportChange": "Zgłoś zmianę",
+    "freeDay": "Wolne",
+    "overtimeHours": "Nadgodziny",
+    "noShiftsInMonth": "Brak zmian w tym miesiącu",
+    "monthlyStats": "Statystyki miesięczne",
+    "shiftBreakdown": "Podział zmian",
+    "selectIssueType": "Wybierz typ problemu",
+    "additionalDetails": "Dodatkowe szczegóły",
+    "descriptionPlaceholder": "Opisz problem bardziej szczegółowo...",
+    "selected": "Wybrano",
+    "sending": "Wysyłam...",
+    "sendReport": "Wyślij zgłoszenie",
+    "reportDescription": "Zgłoś problem z harmonogramem zmian do działu HR",
+    "reportTypes": {
+      "missingSchedule": "Nie przyszedł harmonogram",
+      "wrongShift": "Błąd w zmianie",
+      "scheduleConflict": "Konflikt w harmonogramie"
+    }
+  }
 }
