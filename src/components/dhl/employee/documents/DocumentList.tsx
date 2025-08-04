@@ -173,12 +173,12 @@ export const DocumentList: React.FC<DocumentListProps> = ({
 
       // Create download link
       const url = URL.createObjectURL(data);
-      const a = document.createElement('a');
+      const a = window.document.createElement('a');
       a.href = url;
       a.download = document.title;
-      document.body.appendChild(a);
+      window.document.body.appendChild(a);
       a.click();
-      document.body.removeChild(a);
+      window.document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
       toast({
@@ -341,10 +341,10 @@ export const DocumentList: React.FC<DocumentListProps> = ({
                       
                       <div className="flex items-center gap-1">
                         {document.is_verified && (
-                          <CheckCircle className="h-4 w-4 text-green-600" title={t('documents.verified')} />
+                          <CheckCircle className="h-4 w-4 text-green-600" />
                         )}
                         {!document.is_verified && (
-                          <Clock className="h-4 w-4 text-yellow-600" title={t('documents.pending')} />
+                          <Clock className="h-4 w-4 text-yellow-600" />
                         )}
                       </div>
                     </div>

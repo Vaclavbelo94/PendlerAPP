@@ -9,6 +9,7 @@ import DHLEmployeeDashboard from '@/components/dhl/employee/dashboard/DHLEmploye
 import TimeTrackingWidget from '@/components/dhl/employee/timeTracking/TimeTrackingWidget';
 import DHLTeamCommunication from '@/components/dhl/employee/DHLTeamCommunication';
 import DHLDocumentManagement from '@/components/dhl/employee/DHLDocumentManagement';
+import DHLTravelManagement from '@/components/dhl/employee/DHLTravelManagement';
 import { DHLBrandIndicator } from '@/components/common/DHLBrandIndicator';
 import { DHLLogoWatermark } from '@/components/common/DHLLogoWatermark';
 import PageContainer from '@/components/layouts/PageContainer';
@@ -100,23 +101,7 @@ const DHLEmployeePage: React.FC = () => {
         return <DHLDocumentManagement />;
       
       case 'travel':
-        return (
-          <div className="space-y-6">
-            <div className="text-center md:text-left">
-              <h1 className="text-3xl font-bold mb-2">{t('travel.title')}</h1>
-              <p className="text-muted-foreground">
-                Sledujte své cesty do práce
-              </p>
-            </div>
-            
-            <div className="bg-card rounded-lg p-8 border text-center">
-              <h3 className="text-lg font-semibold mb-2">Cestovní systém</h3>
-              <p className="text-muted-foreground">
-                Bude implementován v další fázi
-              </p>
-            </div>
-          </div>
-        );
+        return <DHLTravelManagement />;
       
       default:
         return <DHLEmployeeDashboard />;
