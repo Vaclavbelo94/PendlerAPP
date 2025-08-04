@@ -10,6 +10,7 @@ import TimeTrackingWidget from '@/components/dhl/employee/timeTracking/TimeTrack
 import DHLTeamCommunication from '@/components/dhl/employee/DHLTeamCommunication';
 import DHLDocumentManagement from '@/components/dhl/employee/DHLDocumentManagement';
 import DHLTravelManagement from '@/components/dhl/employee/DHLTravelManagement';
+import { DHLAnalyticsManagement } from '@/components/dhl/employee/DHLAnalyticsManagement';
 import { DHLBrandIndicator } from '@/components/common/DHLBrandIndicator';
 import { DHLLogoWatermark } from '@/components/common/DHLLogoWatermark';
 import PageContainer from '@/components/layouts/PageContainer';
@@ -102,6 +103,9 @@ const DHLEmployeePage: React.FC = () => {
       
       case 'travel':
         return <DHLTravelManagement />;
+      
+      case 'analytics':
+        return <DHLAnalyticsManagement />;
       
       default:
         return <DHLEmployeeDashboard />;
