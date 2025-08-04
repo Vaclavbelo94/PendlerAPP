@@ -73,14 +73,15 @@ export const UnifiedMobileMenu: React.FC<UnifiedMobileMenuProps> = ({
       {/* Backdrop */}
       {variant === 'overlay' && (
         <div
-          className="fixed inset-0 bg-black/50 z-40"
+          className="fixed inset-0 bg-black/50 z-[59] backdrop-blur-sm"
           onClick={onClose}
+          aria-hidden="true"
         />
       )}
 
       {/* Mobile Menu */}
       <div className={cn(
-        "fixed inset-0 z-50 bg-background flex flex-col",
+        "fixed inset-0 z-[60] bg-background flex flex-col shadow-xl",
         variant === 'compact' ? "w-80 right-auto" : "w-full"
       )}>
         {/* Header */}
