@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/auth';
+import { useTranslation } from 'react-i18next';
 import { useStandardizedToast } from '@/hooks/useStandardizedToast';
 import { Shift, ShiftFormData, ShiftType } from '@/types/shifts';
 import { format } from 'date-fns';
@@ -9,6 +10,7 @@ export type { Shift, ShiftFormData } from '@/types/shifts';
 
 export const useShiftsCRUD = () => {
   const { user, isLoading: authLoading } = useAuth();
+  const { t } = useTranslation('shifts');
   const { success, error: showError } = useStandardizedToast();
   const [shifts, setShifts] = useState<Shift[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -78,7 +80,7 @@ export const useShiftsCRUD = () => {
       userIdRef.current = currentUserId;
     } catch (err) {
       console.error('Error loading shifts:', err);
-      showError('Chyba při načítání', 'Nepodařilo se načíst směny');
+      showError(t('toasts.errorLoading'), t('toasts.errorLoadingDescription'));
       setShifts([]);
     } finally {
       setIsLoading(false);
@@ -90,7 +92,7 @@ export const useShiftsCRUD = () => {
   const createShift = useCallback(async (date: Date, formData: ShiftFormData): Promise<boolean> => {
     if (!user?.id) {
       console.error('createShift: User not authenticated', { user });
-      showError('Chyba', 'Nejste přihlášeni');
+      showError(t('toasts.notLoggedIn'), t('toasts.notLoggedInDescription'));
       return false;
     }
 
@@ -143,7 +145,7 @@ export const useShiftsCRUD = () => {
       };
 
       setShifts(prev => [typedShift, ...prev]);
-      success('Směna přidána', 'Nová směna byla úspěšně vytvořena');
+      success(t('toasts.shiftAdded'), t('toasts.shiftAddedDescription'));
       console.log('useShiftsCRUD - Shift created successfully');
       return true;
     } catch (err) {
@@ -154,7 +156,7 @@ export const useShiftsCRUD = () => {
         stack: err?.stack,
         cause: err?.cause
       });
-      showError('Chyba při vytváření', `Nepodařilo se vytvořit směnu: ${err?.message || 'Neznámá chyba'}`);
+      showError(t('toasts.errorCreating'), `${t('toasts.errorCreatingDescription')}: ${err?.message || 'Neznámá chyba'}`);
       return false;
     } finally {
       setIsSaving(false);
@@ -164,7 +166,7 @@ export const useShiftsCRUD = () => {
   // Update shift
   const updateShift = useCallback(async (shiftId: string, formData: ShiftFormData): Promise<boolean> => {
     if (!user?.id) {
-      showError('Chyba', 'Nejste přihlášeni');
+      showError(t('toasts.notLoggedIn'), t('toasts.notLoggedInDescription'));
       return false;
     }
 
@@ -205,12 +207,12 @@ export const useShiftsCRUD = () => {
         shift.id === shiftId ? typedShift : shift
       ));
       
-      success('Směna upravena', 'Změny byly úspěšně uloženy');
+      success(t('toasts.shiftUpdated'), t('toasts.shiftUpdatedDescription'));
       console.log('useShiftsCRUD - Shift updated successfully');
       return true;
     } catch (err) {
       console.error('Error updating shift:', err);
-      showError('Chyba při úpravě', 'Nepodařilo se upravit směnu');
+      showError(t('toasts.errorUpdating'), t('toasts.errorUpdatingDescription'));
       return false;
     } finally {
       setIsSaving(false);
@@ -220,7 +222,7 @@ export const useShiftsCRUD = () => {
   // Delete shift
   const deleteShift = useCallback(async (shiftId: string): Promise<boolean> => {
     if (!user?.id) {
-      showError('Chyba', 'Nejste přihlášení');
+      showError(t('toasts.notLoggedIn'), t('toasts.notLoggedInDescription'));
       return false;
     }
 
@@ -237,12 +239,12 @@ export const useShiftsCRUD = () => {
       if (error) throw error;
 
       setShifts(prev => prev.filter(shift => shift.id !== shiftId));
-      success('Směna smazána', 'Směna byla úspěšně odstraněna');
+      success(t('toasts.shiftDeleted'), t('toasts.shiftDeletedDescription'));
       console.log('useShiftsCRUD - Shift deleted successfully');
       return true;
     } catch (err) {
       console.error('Error deleting shift:', err);
-      showError('Chyba při mazání', 'Nepodařilo se smazat směnu');
+      showError(t('toasts.errorDeleting'), t('toasts.errorDeletingDescription'));
       return false;
     } finally {
       setIsSaving(false);

@@ -2,11 +2,13 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/auth';
 import { useToast } from '@/hooks/use-toast';
+import { useTranslation } from 'react-i18next';
 import { Shift, ShiftType } from '@/types/shifts';
 
 export const useOfflineShifts = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { t } = useTranslation('shifts');
   const [shifts, setShifts] = useState<Shift[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSyncing, setIsSyncing] = useState(false);
@@ -65,8 +67,8 @@ export const useOfflineShifts = () => {
     } catch (error) {
       console.error('Error loading shifts:', error);
       toast({
-        title: "Chyba při načítání",
-        description: "Nepodařilo se načíst směny",
+        title: t('toasts.errorLoading'),
+        description: t('toasts.errorLoadingDescription'),
         variant: "destructive",
       });
     } finally {
@@ -77,8 +79,8 @@ export const useOfflineShifts = () => {
   const addShift = useCallback(async (date: string, type: ShiftType, notes: string) => {
     if (!user?.id) {
       toast({
-        title: "Chyba",
-        description: "Nejste přihlášeni",
+        title: t('toasts.notLoggedIn'),
+        description: t('toasts.notLoggedInDescription'),
         variant: "destructive",
       });
       return;
@@ -102,14 +104,14 @@ export const useOfflineShifts = () => {
         if (error) throw error;
 
         toast({
-          title: "Směna přidána",
-          description: "Směna byla úspěšně přidána",
+          title: t('toasts.shiftAdded'),
+          description: t('toasts.shiftAddedDescription'),
         });
       } catch (error) {
         console.error('Error adding shift:', error);
         toast({
-          title: "Chyba při přidávání",
-          description: "Nepodařilo se přidat směnu",
+          title: t('toasts.errorCreating'),
+          description: t('toasts.errorCreatingDescription'),
           variant: "destructive",
         });
       }
@@ -132,8 +134,8 @@ export const useOfflineShifts = () => {
   const updateShift = useCallback(async (shiftId: string, type: ShiftType, notes: string) => {
     if (!user?.id) {
       toast({
-        title: "Chyba",
-        description: "Nejste přihlášeni",
+        title: t('toasts.notLoggedIn'),
+        description: t('toasts.notLoggedInDescription'),
         variant: "destructive",
       });
       return;
@@ -150,14 +152,14 @@ export const useOfflineShifts = () => {
         if (error) throw error;
 
         toast({
-          title: "Směna upravena",
-          description: "Směna byla úspěšně upravena",
+          title: t('toasts.shiftUpdated'),
+          description: t('toasts.shiftUpdatedDescription'),
         });
       } catch (error) {
         console.error('Error updating shift:', error);
         toast({
-          title: "Chyba při úpravě",
-          description: "Nepodařilo se upravit směnu",
+          title: t('toasts.errorUpdating'),
+          description: t('toasts.errorUpdatingDescription'),
           variant: "destructive",
         });
       }
@@ -176,8 +178,8 @@ export const useOfflineShifts = () => {
   const deleteShift = useCallback(async (shiftId: string) => {
     if (!user?.id) {
       toast({
-        title: "Chyba",
-        description: "Nejste přihlášeni",
+        title: t('toasts.notLoggedIn'),
+        description: t('toasts.notLoggedInDescription'),
         variant: "destructive",
       });
       return;
@@ -194,14 +196,14 @@ export const useOfflineShifts = () => {
         if (error) throw error;
 
         toast({
-          title: "Směna smazána",
-          description: "Směna byla úspěšně smazána",
+          title: t('toasts.shiftDeleted'),
+          description: t('toasts.shiftDeletedDescription'),
         });
       } catch (error) {
         console.error('Error deleting shift:', error);
         toast({
-          title: "Chyba při mazání",
-          description: "Nepodařilo se smazat směnu",
+          title: t('toasts.errorDeleting'),
+          description: t('toasts.errorDeletingDescription'),
           variant: "destructive",
         });
       }

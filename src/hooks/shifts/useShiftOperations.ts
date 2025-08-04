@@ -1,5 +1,6 @@
 
 import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useStandardizedToast } from '@/hooks/useStandardizedToast';
 import { supabase } from '@/integrations/supabase/client';
 import { errorHandler } from '@/utils/errorHandler';
@@ -25,11 +26,12 @@ export const useShiftOperations = ({
   setLastOperation
 }: UseShiftOperationsProps) => {
   const { success, error: showError } = useStandardizedToast();
+  const { t } = useTranslation('shifts');
 
   // Add new shift
   const addShift = useCallback(async (shiftData: Omit<Shift, 'id' | 'user_id' | 'created_at' | 'updated_at'>): Promise<Shift | null> => {
     if (!userId) {
-      showError('Chyba', 'Uživatel není přihlášen');
+      showError(t('toasts.notLoggedIn'), t('toasts.notLoggedInDescription'));
       return null;
     }
 
@@ -61,10 +63,10 @@ export const useShiftOperations = ({
           setSelectedShift(newShift);
         }
 
-        success('Směna přidána', 'Nová směna byla úspěšně vytvořena');
+        success(t('toasts.shiftAdded'), t('toasts.shiftAddedDescription'));
       } catch (err) {
         errorHandler.handleError(err, { operation: 'addShift', shiftData });
-        showError('Chyba při přidání', 'Nepodařilo se přidat směnu');
+        showError(t('toasts.errorCreating'), t('toasts.errorCreatingDescription'));
         throw err;
       } finally {
         setIsSaving(false);
@@ -79,7 +81,7 @@ export const useShiftOperations = ({
   // Update shift
   const updateShift = useCallback(async (shiftData: Shift): Promise<Shift | null> => {
     if (!userId || !shiftData.id) {
-      showError('Chyba', 'Neplatná data směny');
+      showError(t('toasts.notLoggedIn'), t('toasts.notLoggedInDescription'));
       return null;
     }
 
@@ -111,10 +113,10 @@ export const useShiftOperations = ({
           setSelectedShift(updatedShift);
         }
 
-        success('Směna upravena', 'Změny byly úspěšně uloženy');
+        success(t('toasts.shiftUpdated'), t('toasts.shiftUpdatedDescription'));
       } catch (err) {
         errorHandler.handleError(err, { operation: 'updateShift', shiftData });
-        showError('Chyba při úpravě', 'Nepodařilo se upravit směnu');
+        showError(t('toasts.errorUpdating'), t('toasts.errorUpdatingDescription'));
         throw err;
       } finally {
         setIsSaving(false);
@@ -129,7 +131,7 @@ export const useShiftOperations = ({
   // Delete shift
   const deleteShift = useCallback(async (shiftId: string): Promise<void> => {
     if (!userId) {
-      showError('Chyba', 'Uživatel není přihlášen');
+      showError(t('toasts.notLoggedIn'), t('toasts.notLoggedInDescription'));
       return;
     }
 
@@ -151,10 +153,10 @@ export const useShiftOperations = ({
           setSelectedShift(remainingShifts.length > 0 ? remainingShifts[0] : null);
         }
 
-        success('Směna smazána', 'Směna byla úspěšně odstraněna');
+        success(t('toasts.shiftDeleted'), t('toasts.shiftDeletedDescription'));
       } catch (err) {
         errorHandler.handleError(err, { operation: 'deleteShift', shiftId });
-        showError('Chyba při mazání', 'Nepodařilo se smazat směnu');
+        showError(t('toasts.errorDeleting'), t('toasts.errorDeletingDescription'));
         throw err;
       } finally {
         setIsSaving(false);
