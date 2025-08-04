@@ -10,5 +10,7 @@
   "totalHours": "Razem godzin",
   "hours": "h",
   "thisMonth": "Ten miesiąc",
-  "noOvertimeRecorded": "Nie zarejestrowano nadgodzin"
+  "noOvertimeRecorded": "Nie zarejestrowano nadgodzin",
+  "dhlShiftNote": "DHL Wechselschicht 6h standard",
+  "analyzedShifts": "Przeanalizowano {{count}} zmian - nie znaleziono nadgodzin"
 }

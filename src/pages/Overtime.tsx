@@ -31,7 +31,7 @@ const Overtime: React.FC = () => {
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-bold text-foreground">{t('title')}</h1>
           <p className="text-muted-foreground">
-            {t('thisMonth')} {isDHL && '(DHL Wechselschicht 6h standard)'}
+            {t('thisMonth')} {isDHL && `(${t('dhlShiftNote')})`}
           </p>
           {error && (
             <p className="text-destructive text-sm">{error}</p>
@@ -85,7 +85,7 @@ const Overtime: React.FC = () => {
             <p>{t('noOvertimeRecorded')}</p>
             {shiftsCount > 0 && (
               <p className="text-sm mt-2">
-                Analyzováno {shiftsCount} směn - žádné přesčasy nenalezeny
+                {t('analyzedShifts', { count: shiftsCount })}
               </p>
             )}
           </div>

@@ -79,6 +79,8 @@
   },
   "documents": {
     "title": "Moje dokumenty",
+    "description": "Spravujte své pracovní dokumenty, sledujte jejich platnost a získejte připomínky",
+    "uploadNew": "Nahrát nový dokument",
     "upload": "Nahrát",
     "scan": "Skenovat",
     "categories": {

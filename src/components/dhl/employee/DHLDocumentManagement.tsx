@@ -33,7 +33,7 @@ export const DHLDocumentManagement: React.FC<DHLDocumentManagementProps> = ({
           {t('documents.title')}
         </h1>
         <p className="text-muted-foreground">
-          Spravujte své pracovní dokumenty, sledujte jejich platnost a získejte připomínky
+          {t('documents.description')}
         </p>
       </div>
 
@@ -55,7 +55,7 @@ export const DHLDocumentManagement: React.FC<DHLDocumentManagementProps> = ({
         <div className="bg-card rounded-lg border p-6">
           <div className="flex items-center gap-3 mb-4">
             <Upload className="h-6 w-6 text-primary" />
-            <h2 className="text-xl font-semibold">Nahrát nový dokument</h2>
+            <h2 className="text-xl font-semibold">{t('documents.uploadNew')}</h2>
           </div>
           <DocumentUploadWidget onDocumentAdded={handleDocumentAdded} />
         </div>

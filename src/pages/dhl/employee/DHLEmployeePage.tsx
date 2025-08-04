@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/auth';
 import { useCompany } from '@/hooks/useCompany';
 import { Navigate } from 'react-router-dom';
-import ModernLayout from '@/components/modern/ModernLayout';
+import Layout from '@/components/layouts/Layout';
 import DHLEmployeeNavigation from '@/components/dhl/employee/DHLEmployeeNavigation';
 import DHLEmployeeDashboard from '@/components/dhl/employee/dashboard/DHLEmployeeDashboard';
 import TimeTrackingWidget from '@/components/dhl/employee/timeTracking/TimeTrackingWidget';
@@ -112,7 +112,7 @@ const DHLEmployeePage: React.FC = () => {
   };
 
   return (
-    <ModernLayout>
+    <Layout>
       <div className="container mx-auto py-6">
         {/* Header s DHL Brand Indicator */}
         <div className="flex items-center justify-between mb-6">
@@ -141,7 +141,7 @@ const DHLEmployeePage: React.FC = () => {
           {renderActiveContent()}
         </motion.div>
       </div>
-    </ModernLayout>
+    </Layout>
   );
 };
 
