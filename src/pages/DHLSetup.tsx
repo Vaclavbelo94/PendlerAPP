@@ -75,7 +75,7 @@ export default function DHLSetup() {
 
     if (setupSuccess) {
       success('Nastavení uloženo', 'DHL nastavení bylo úspěšně uloženo');
-      navigate('/shifts');
+      navigate('/dashboard');
     }
   };
 
