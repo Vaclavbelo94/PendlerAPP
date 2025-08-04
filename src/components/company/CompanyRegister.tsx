@@ -9,6 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ArrowLeft, Eye, EyeOff, Building2, User, Mail, Lock, Phone } from 'lucide-react';
 import { useAuth } from '@/hooks/auth';
 import { toast } from 'sonner';
+import PromoCodeField from '@/components/auth/PromoCodeField';
 
 const CompanyRegister: React.FC = () => {
   const { company } = useParams<{ company: string }>();
@@ -31,6 +32,8 @@ const CompanyRegister: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isPromoValid, setIsPromoValid] = useState(false);
+  const [isDHLCode, setIsDHLCode] = useState(false);
 
   const companyConfig = {
     adecco: {
@@ -63,6 +66,15 @@ const CompanyRegister: React.FC = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const handlePromoCodeChange = (code: string, isValid: boolean, isDHL: boolean = false) => {
+    console.log('=== COMPANY PROMO CODE CHANGE ===');
+    console.log('Code:', code, 'Is Valid:', isValid, 'Is DHL:', isDHL);
+    
+    setFormData(prev => ({ ...prev, promoCode: code }));
+    setIsPromoValid(isValid);
+    setIsDHLCode(isDHL);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -80,18 +92,43 @@ const CompanyRegister: React.FC = () => {
 
     try {
       const username = `${formData.firstName} ${formData.lastName}`.trim();
+      
+      // Determine company based on URL parameter and promo code validation
+      const registrationCompany = isDHLCode && isPromoValid ? 'dhl' : (company || null);
+      console.log('Registration company:', registrationCompany);
+      
+      // Use validated promo code only if it's valid
+      const finalPromoCode = (formData.promoCode && isPromoValid) ? formData.promoCode : '';
+      
       const { error } = await signUp(
         formData.email,
         formData.password,
         username,
-        formData.promoCode || undefined
+        finalPromoCode,
+        registrationCompany
       );
 
       if (error) {
         toast.error(typeof error === 'string' ? error : error.message);
       } else {
-        toast.success(t('auth:registerSuccess'));
-        navigate('/dashboard');
+        if (isDHLCode && finalPromoCode) {
+          toast.success('Registrace s promo kódem úspěšná!', { 
+            description: `Premium na rok aktivován. Po přihlášení můžete dokončit nastavení profilu.`,
+            duration: 8000
+          });
+        } else if (finalPromoCode && isPromoValid) {
+          toast.success(t('auth:accountCreatedWithPremium'), { 
+            description: `Premium aktivován s kódem ${finalPromoCode}. Nyní se můžete přihlásit.`,
+            duration: 8000
+          });
+        } else {
+          toast.success(t('auth:registerSuccess'));
+        }
+        
+        // Automatický reload po úspěšné registraci
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
       }
     } catch (err) {
       toast.error(t('auth:registrationError'));
@@ -261,21 +298,10 @@ const CompanyRegister: React.FC = () => {
                 </div>
 
                 {/* Promo Code */}
-                <div className="space-y-2">
-                  <Label htmlFor="promoCode">
-                    {t('auth:promoCode')} ({t('auth:optional')})
-                  </Label>
-                  <div className="relative">
-                    <Building2 className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="promoCode"
-                      type="text"
-                      value={formData.promoCode}
-                      onChange={(e) => handleInputChange('promoCode', e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
+                <PromoCodeField 
+                  onPromoCodeChange={handlePromoCodeChange} 
+                  validationMode="manual"
+                />
 
                 {/* Checkboxes */}
                 <div className="space-y-3">
@@ -318,6 +344,13 @@ const CompanyRegister: React.FC = () => {
                     t('auth:register')
                   )}
                 </Button>
+
+                {isDHLCode && formData.promoCode && isPromoValid && (
+                  <div className="text-sm text-center bg-orange-100 p-3 rounded-lg border border-orange-200">
+                    <p className="font-medium text-orange-800">✨ Speciální Premium registrace</p>
+                    <p className="text-orange-700">Váš účet bude aktivován s premium přístupem na rok!</p>
+                  </div>
+                )}
 
                 {/* Login Link */}
                 <div className="text-center mt-6">
