@@ -1,21 +1,27 @@
-
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Check, X, Truck, RefreshCw } from 'lucide-react';
+import { Check, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 interface PromoCodeFieldProps {
   onPromoCodeChange: (code: string, isValid: boolean, isDHL?: boolean) => void;
+  validationMode?: 'auto' | 'manual'; // Nový prop pro režim validace
 }
 
-const PromoCodeField: React.FC<PromoCodeFieldProps> = ({ onPromoCodeChange }) => {
+const PromoCodeField: React.FC<PromoCodeFieldProps> = ({ 
+  onPromoCodeChange, 
+  validationMode = 'auto' 
+}) => {
+  const { t } = useTranslation('auth');
   const [promoCode, setPromoCode] = useState('');
   const [isValidating, setIsValidating] = useState(false);
   const [validationResult, setValidationResult] = useState<'valid' | 'invalid' | null>(null);
   const [isDHL, setIsDHL] = useState(false);
-  const [hasBeenValidated, setHasBeenValidated] = useState(false);
+  const [hasValidated, setHasValidated] = useState(false); // Pro manual mode
 
   const validatePromoCode = async (code: string) => {
     console.log('=== PROMO CODE VALIDATION START ===');
@@ -96,94 +102,179 @@ const PromoCodeField: React.FC<PromoCodeFieldProps> = ({ onPromoCodeChange }) =>
   };
 
   const handleChange = (value: string) => {
-    console.log('Promo code input changed:', value);
     setPromoCode(value);
     
-    // Reset validation when user changes the code
-    if (hasBeenValidated && value !== promoCode) {
+    // Reset validation status if code is changed after being validated
+    if (validationResult !== null) {
       setValidationResult(null);
       setIsDHL(false);
-      setHasBeenValidated(false);
+      setHasValidated(false);
       onPromoCodeChange(value, false, false);
-    } else if (!hasBeenValidated) {
+    } else {
+      // Just pass the current input value
       onPromoCodeChange(value, false, false);
     }
   };
 
   const handleValidateClick = () => {
-    console.log('Manual validation triggered for:', promoCode);
     if (promoCode.trim()) {
-      setHasBeenValidated(true);
+      setHasValidated(true);
       validatePromoCode(promoCode);
     }
   };
 
+  // Pro manual režim - zobrazit pouze pokud je kód zadán a není ověřen
+  const showValidationButton = validationMode === 'manual' && promoCode.trim() && !hasValidated;
+  
   return (
     <div className="grid gap-2">
-      <Label htmlFor="promoCode">Promo kód (volitelný)</Label>
-      <div className="flex gap-2">
-        <div className="relative flex-1">
-          <Input
-            id="promoCode"
-            type="text"
-            placeholder="Zadejte promo kód"
-            value={promoCode}
-            onChange={(e) => handleChange(e.target.value)}
-            className={`pr-10 ${
-              validationResult === 'valid' ? 'border-green-500' : 
-              validationResult === 'invalid' ? 'border-red-500' : ''
-            } ${isDHL ? 'border-yellow-500 bg-yellow-50' : ''}`}
-          />
-          {isValidating && (
-            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-              <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+      <Label htmlFor="promoCode" className="text-dhl-black">
+        {t('promoCode')} <span className="text-sm text-gray-500">({t('optional')})</span>
+      </Label>
+      
+      {validationMode === 'manual' ? (
+        // Manual validation mode - with button
+        <>
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Input
+                id="promoCode"
+                type="text"
+                placeholder={t('promoCodePlaceholder')}
+                value={promoCode}
+                onChange={(e) => handleChange(e.target.value.toUpperCase())}
+                className={cn(
+                  "bg-white/80 backdrop-blur-sm border-dhl-black/20 text-dhl-black pr-10",
+                  validationResult === 'valid' && "border-green-500 bg-green-50",
+                  validationResult === 'invalid' && "border-red-500 bg-red-50",
+                  isDHL && "border-dhl-yellow bg-dhl-yellow/10"
+                )}
+                disabled={isValidating}
+              />
+              
+              {/* Status icons */}
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                {isValidating && (
+                  <div className="animate-spin h-4 w-4 border-2 border-dhl-red border-t-transparent rounded-full" />
+                )}
+                {!isValidating && validationResult === 'valid' && (
+                  <Check className="h-4 w-4 text-green-600" />
+                )}
+                {!isValidating && validationResult === 'invalid' && (
+                  <X className="h-4 w-4 text-red-600" />
+                )}
+              </div>
             </div>
-          )}
-          {!isValidating && validationResult === 'valid' && (
-            <Check className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-green-500" />
-          )}
-          {!isValidating && validationResult === 'invalid' && (
-            <X className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-red-500" />
-          )}
-          {isDHL && !isValidating && (
-            <Truck className="absolute right-8 top-1/2 transform -translate-y-1/2 h-4 w-4 text-yellow-600" />
-          )}
-        </div>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={handleValidateClick}
-          disabled={!promoCode.trim() || isValidating}
-          className="shrink-0"
-        >
-          {isValidating ? (
-            <RefreshCw className="h-4 w-4 animate-spin" />
-          ) : (
-            <>
-              <Check className="h-4 w-4 mr-1" />
-              Ověřit
-            </>
-          )}
-        </Button>
-      </div>
-      {validationResult === 'valid' && isDHL && (
-        <p className="text-sm text-yellow-600 flex items-center gap-1">
-          <Truck className="h-3 w-3" />
-          ✓ Speciální promo kód aktivován!
-        </p>
-      )}
-      {validationResult === 'valid' && !isDHL && (
-        <p className="text-sm text-green-600">✓ Platný promo kód! Premium bude aktivován po registraci.</p>
-      )}
-      {validationResult === 'invalid' && (
-        <p className="text-sm text-red-600">✗ Neplatný promo kód</p>
-      )}
-      {isDHL && validationResult === null && promoCode.trim() && (
-        <p className="text-sm text-yellow-600 flex items-center gap-1">
-          <Truck className="h-3 w-3" />
-          Speciální promo kód detekován
-        </p>
+            
+            {showValidationButton && (
+              <Button
+                type="button"
+                onClick={handleValidateClick}
+                disabled={!promoCode.trim() || isValidating}
+                className="bg-dhl-red hover:bg-dhl-red/90 text-white px-4 whitespace-nowrap"
+              >
+                {isValidating ? '...' : t('promoCodeValidate')}
+              </Button>
+            )}
+          </div>
+          
+          {/* Status messages for manual mode */}
+          <div className="min-h-[1.5rem]">
+            {validationResult === 'valid' && (
+              <div className={cn(
+                "p-3 rounded-lg border flex items-center gap-2",
+                isDHL 
+                  ? "bg-dhl-yellow/20 border-dhl-yellow text-dhl-black" 
+                  : "bg-green-50 border-green-200 text-green-800"
+              )}>
+                <Check className="h-4 w-4 flex-shrink-0" />
+                <div>
+                  <p className="font-medium">
+                    {isDHL ? t('promoCodeDHLValid') : t('promoCodeValid')}
+                  </p>
+                  <p className="text-sm opacity-90">
+                    {isDHL 
+                      ? t('promoCodeDHLDescription')
+                      : t('promoCodePremiumDescription')
+                    }
+                  </p>
+                </div>
+              </div>
+            )}
+            {validationResult === 'invalid' && (
+              <div className="p-3 rounded-lg border bg-red-50 border-red-200 text-red-800 flex items-center gap-2">
+                <X className="h-4 w-4 flex-shrink-0" />
+                <div>
+                  <p className="font-medium">{t('promoCodeInvalid')}</p>
+                  <p className="text-sm opacity-90">{t('promoCodeInvalidDescription')}</p>
+                </div>
+              </div>
+            )}
+            {isValidating && (
+              <div className="p-3 rounded-lg border bg-gray-50 border-gray-200 text-gray-700 flex items-center gap-2">
+                <div className="animate-spin h-4 w-4 border-2 border-dhl-red border-t-transparent rounded-full flex-shrink-0" />
+                <p>{t('promoCodeValidating')}</p>
+              </div>
+            )}
+          </div>
+        </>
+      ) : (
+        // Auto validation mode - original behavior
+        <>
+          <div className="relative">
+            <Input
+              id="promoCode"
+              type="text"
+              placeholder={t('promoCodePlaceholder')}
+              value={promoCode}
+              onChange={(e) => handleChange(e.target.value.toUpperCase())}
+              className={cn(
+                "bg-white/80 backdrop-blur-sm border-dhl-black/20 text-dhl-black pr-10",
+                validationResult === 'valid' && "border-green-500 bg-green-50",
+                validationResult === 'invalid' && "border-red-500 bg-red-50",
+                isDHL && "border-dhl-yellow bg-dhl-yellow/10"
+              )}
+              disabled={isValidating}
+            />
+            
+            {/* Status icons */}
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+              {isValidating && (
+                <div className="animate-spin h-4 w-4 border-2 border-dhl-red border-t-transparent rounded-full" />
+              )}
+              {!isValidating && validationResult === 'valid' && (
+                <Check className="h-4 w-4 text-green-600" />
+              )}
+              {!isValidating && validationResult === 'invalid' && (
+                <X className="h-4 w-4 text-red-600" />
+              )}
+            </div>
+          </div>
+          
+          {/* Status messages for auto mode */}
+          <div className="min-h-[1.5rem]">
+            {validationResult === 'valid' && (
+              <p className={cn(
+                "text-sm flex items-center gap-1",
+                isDHL ? "text-dhl-red font-medium" : "text-green-600"
+              )}>
+                <Check className="h-3 w-3" />
+                {isDHL ? t('promoCodeDHLValid') : t('promoCodeValid')}
+              </p>
+            )}
+            {validationResult === 'invalid' && (
+              <p className="text-sm text-red-600 flex items-center gap-1">
+                <X className="h-3 w-3" />
+                {t('promoCodeInvalid')}
+              </p>
+            )}
+            {isValidating && (
+              <p className="text-sm text-gray-600">
+                {t('promoCodeValidating')}
+              </p>
+            )}
+          </div>
+        </>
       )}
     </div>
   );

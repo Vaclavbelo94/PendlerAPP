@@ -224,7 +224,10 @@ const EnhancedRegisterForm = () => {
         />
       </div>
       
-      <PromoCodeField onPromoCodeChange={handlePromoCodeChange} />
+      <PromoCodeField 
+        onPromoCodeChange={handlePromoCodeChange} 
+        validationMode="manual"
+      />
       
       <Button
         type="submit"
