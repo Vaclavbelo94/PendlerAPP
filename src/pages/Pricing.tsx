@@ -1,232 +1,224 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { CheckIcon, StarIcon } from "lucide-react";
-import { useAuth } from "@/hooks/auth";
-import ModernLayout from "@/components/modern/ModernLayout";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { Helmet } from 'react-helmet';
+import { motion } from 'framer-motion';
+import { Check, Crown, Star } from 'lucide-react';
+import Layout from '@/components/layouts/Layout';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+
+type PaymentPeriod = 'monthly' | 'yearly';
 
 const Pricing = () => {
-  const { user, isPremium } = useAuth();
+  const { t, i18n } = useTranslation(['pricing', 'navigation']);
+  const navigate = useNavigate();
+  const [selectedPeriod, setSelectedPeriod] = useState<PaymentPeriod>('yearly');
 
-  const plans = [
-    {
-      name: "Základní",
-      price: "Zdarma",
-      period: "",
-      description: "Základní funkce pro začínající pendlery",
-      features: [
-        "Základní kalkulačka",
-        "Jednoduché slovníčky (max 100 slov)",
-        "Kalendář směn",
-        "Základní překlad",
-        "Mobilní aplikace"
-      ],
-      limitations: [
-        "Omezený počet překladů (50/den)",
-        "Základní statistiky",
-        "Bez offline režimu"
-      ],
-      buttonText: "Aktuální plán",
-      buttonVariant: "outline" as const,
-      disabled: true,
-      current: !isPremium
-    },
-    {
-      name: "Premium",
-      price: "149",
-      period: "/měsíc",
-      description: "Kompletní řešení pro profesionální pendlery",
-      features: [
-        "Neomezené kalkulačky a nástroje",
-        "Neomezené slovníčky a překlady",
-        "Pokročilé statistiky a grafy",
-        "Offline režim",
-        "Export dat (PDF, Excel)",
-        "Pokročilý správce vozidel",
-        "Daňové optimalizace",
-        "Prioritní podpora",
-        "Synchronizace mezi zařízeními",
-        "Pokročilé plánování cest"
-      ],
-      limitations: [],
-      buttonText: isPremium ? "Aktuální plán" : "Vybrat Premium",
-      buttonVariant: isPremium ? "outline" as const : "default" as const,
-      disabled: isPremium,
-      current: isPremium,
-      recommended: true
-    },
-    {
-      name: "Firemní",
-      price: "Na vyžádání",
-      period: "",
-      description: "Řešení pro firmy a týmy pendlerů",
-      features: [
-        "Vše z Premium plánu",
-        "Správa více uživatelů",
-        "Centralizované reporty",
-        "API přístup",
-        "Vlastní branding",
-        "Dedikovaný account manager",
-        "Školení týmu",
-        "SLA garantovaná dostupnost",
-        "Vlastní integrace",
-        "Bulk správa dat"
-      ],
-      limitations: [],
-      buttonText: "Kontaktovat prodej",
-      buttonVariant: "secondary" as const,
-      disabled: false,
-      current: false
+  // Pricing based on language/region
+  const getPricingInfo = () => {
+    const lang = i18n.language;
+    if (lang === 'cs') {
+      return {
+        currency: 'CZK',
+        monthly: '299',
+        yearly: '2990',
+        savings: '12'
+      };
+    } else if (lang === 'de') {
+      return {
+        currency: 'EUR',
+        monthly: '12',
+        yearly: '120',
+        savings: '12'
+      };
+    } else {
+      return {
+        currency: 'PLN',
+        monthly: '49',
+        yearly: '490',
+        savings: '12'
+      };
     }
+  };
+
+  const pricing = getPricingInfo();
+  const features = [
+    'pricingFeature1',
+    'pricingFeature2',
+    'pricingFeature3',
+    'pricingFeature4',
+    'pricingFeature5',
+    'pricingFeature6'
   ];
 
+  const handleBuyPremium = () => {
+    navigate('/premium');
+  };
+
   return (
-    <ModernLayout>
-      <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-primary/8">
-        <div className="container py-8 md:py-12 max-w-7xl mx-auto px-4">
-          <div className="text-center mb-8 md:mb-12">
-            <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">Cenové plány</h1>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
-              Vyberte si plán, který nejlépe vyhovuje vašim potřebám jako pendler
+    <>
+      <Helmet>
+        <title>{t('pricing:title')} | DHL Helper</title>
+        <meta name="description" content={t('pricing:description')} />
+      </Helmet>
+      
+      <Layout>
+        <div className="container mx-auto px-4 py-8 max-w-4xl">
+          {/* Header */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center mb-12"
+          >
+            <div className="flex justify-center mb-4">
+              <Crown className="h-12 w-12 text-primary" />
+            </div>
+            <h1 className="text-4xl font-bold mb-4">{t('pricing:title')}</h1>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              {t('pricing:subtitle')}
             </p>
-          </div>
+          </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto mb-12 md:mb-16">
-            {plans.map((plan, index) => (
-              <Card 
-                key={plan.name} 
-                className={`relative bg-background/95 backdrop-blur-sm border border-border/50 ${plan.recommended ? 'border-primary shadow-lg scale-105 bg-background' : ''} ${plan.current ? 'ring-2 ring-primary/20' : ''}`}
-              >
-                {plan.recommended && (
-                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <Badge className="bg-primary text-primary-foreground px-4 py-1">
-                      <StarIcon className="w-3 h-3 mr-1" />
-                      Doporučeno
-                    </Badge>
-                  </div>
-                )}
-                
-                {plan.current && (
-                  <div className="absolute -top-4 right-4">
-                    <Badge variant="secondary">Aktuální</Badge>
-                  </div>
-                )}
+          {/* Period Selector */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="flex justify-center mb-8"
+          >
+            <div className="bg-card rounded-lg p-1 border">
+              <div className="flex space-x-1">
+                <Button
+                  variant={selectedPeriod === 'monthly' ? 'default' : 'ghost'}
+                  onClick={() => setSelectedPeriod('monthly')}
+                  className="px-6"
+                >
+                  {t('pricing:monthly')}
+                </Button>
+                <Button
+                  variant={selectedPeriod === 'yearly' ? 'default' : 'ghost'}
+                  onClick={() => setSelectedPeriod('yearly')}
+                  className="px-6 relative"
+                >
+                  {t('pricing:yearly')}
+                  <Badge variant="secondary" className="ml-2 text-xs">
+                    -{pricing.savings}%
+                  </Badge>
+                </Button>
+              </div>
+            </div>
+          </motion.div>
 
-                <CardHeader className="text-center pb-6 md:pb-8 pt-6 md:pt-8">
-                  <CardTitle className="text-xl md:text-2xl">{plan.name}</CardTitle>
-                  <div className="mt-4">
-                    <span className="text-3xl md:text-4xl font-bold">{plan.price}</span>
-                    {plan.period && <span className="text-muted-foreground ml-1">{plan.period}</span>}
+          {/* Pricing Cards */}
+          <div className="grid md:grid-cols-2 gap-8 mb-12">
+            {/* Free Plan */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <Card className="h-full">
+                <CardHeader className="text-center">
+                  <CardTitle className="text-2xl">{t('pricing:freePlan')}</CardTitle>
+                  <div className="text-3xl font-bold">
+                    0 {pricing.currency}
                   </div>
-                  <p className="text-muted-foreground mt-2 text-sm md:text-base">{plan.description}</p>
+                  <p className="text-muted-foreground">{t('pricing:freePlanDesc')}</p>
                 </CardHeader>
-
-                <CardContent className="space-y-4 px-4 md:px-6">
-                  <div>
-                    <h4 className="font-medium mb-3 text-green-600">Zahrnuje:</h4>
-                    <ul className="space-y-2">
-                      {plan.features.map((feature, featureIndex) => (
-                        <li key={featureIndex} className="flex items-start text-sm">
-                          <CheckIcon className="h-4 w-4 text-green-500 mr-2 mt-0.5 shrink-0" />
-                          <span>{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  {plan.limitations.length > 0 && (
-                    <div>
-                      <h4 className="font-medium mb-3 text-orange-600">Omezení:</h4>
-                      <ul className="space-y-2">
-                        {plan.limitations.map((limitation, limitIndex) => (
-                          <li key={limitIndex} className="flex items-start text-sm">
-                            <span className="h-4 w-4 text-orange-500 mr-2 mt-0.5 shrink-0">•</span>
-                            <span className="text-muted-foreground">{limitation}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
+                <CardContent>
+                  <ul className="space-y-3 mb-6">
+                    <li className="flex items-center">
+                      <Check className="h-4 w-4 text-green-500 mr-2" />
+                      {t('pricing:freeFeature1')}
+                    </li>
+                    <li className="flex items-center">
+                      <Check className="h-4 w-4 text-green-500 mr-2" />
+                      {t('pricing:freeFeature2')}
+                    </li>
+                    <li className="flex items-center">
+                      <Check className="h-4 w-4 text-green-500 mr-2" />
+                      {t('pricing:freeFeature3')}
+                    </li>
+                  </ul>
+                  <Button variant="outline" className="w-full" disabled>
+                    {t('pricing:currentPlan')}
+                  </Button>
                 </CardContent>
-
-                <CardFooter className="px-4 md:px-6 pb-6">
-                  {plan.name === "Firemní" ? (
-                    <Button 
-                      variant={plan.buttonVariant} 
-                      className="w-full"
-                      asChild
-                    >
-                      <Link to="/contact">
-                        {plan.buttonText}
-                      </Link>
-                    </Button>
-                  ) : plan.name === "Premium" && !isPremium ? (
-                    <Button 
-                      variant={plan.buttonVariant} 
-                      className="w-full"
-                      asChild
-                    >
-                      <Link to="/premium">
-                        {plan.buttonText}
-                      </Link>
-                    </Button>
-                  ) : (
-                    <Button 
-                      variant={plan.buttonVariant} 
-                      className="w-full" 
-                      disabled={plan.disabled}
-                    >
-                      {plan.buttonText}
-                    </Button>
-                  )}
-                </CardFooter>
               </Card>
-            ))}
+            </motion.div>
+
+            {/* Premium Plan */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <Card className="h-full border-primary shadow-lg relative">
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                  <Badge className="bg-primary text-primary-foreground">
+                    <Star className="h-3 w-3 mr-1" />
+                    {t('pricing:mostPopular')}
+                  </Badge>
+                </div>
+                <CardHeader className="text-center">
+                  <CardTitle className="text-2xl flex items-center justify-center">
+                    <Crown className="h-6 w-6 mr-2 text-primary" />
+                    {t('pricing:premiumPlan')}
+                  </CardTitle>
+                  <div className="text-3xl font-bold">
+                    {selectedPeriod === 'yearly' ? pricing.yearly : pricing.monthly} {pricing.currency}
+                    <span className="text-sm font-normal text-muted-foreground">
+                      /{selectedPeriod === 'yearly' ? t('pricing:year') : t('pricing:month')}
+                    </span>
+                  </div>
+                  {selectedPeriod === 'yearly' && (
+                    <p className="text-sm text-green-600">
+                      {t('pricing:savings', { amount: pricing.savings })}
+                    </p>
+                  )}
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-3 mb-6">
+                    {features.map((feature, index) => (
+                      <li key={index} className="flex items-center">
+                        <Check className="h-4 w-4 text-green-500 mr-2" />
+                        {t(`pricing:${feature}`)}
+                      </li>
+                    ))}
+                  </ul>
+                  <Button 
+                    className="w-full" 
+                    onClick={handleBuyPremium}
+                    size="lg"
+                  >
+                    <Crown className="h-4 w-4 mr-2" />
+                    {t('pricing:buyPremium')}
+                  </Button>
+                </CardContent>
+              </Card>
+            </motion.div>
           </div>
 
-          <div className="bg-background/60 backdrop-blur-sm border border-border/50 rounded-lg p-6 md:p-8 max-w-4xl mx-auto">
-            <h2 className="text-xl md:text-2xl font-bold text-center mb-6">Často kladené otázky k cenám</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <h3 className="font-semibold mb-2">Mohu kdykoliv změnit plán?</h3>
-                <p className="text-sm text-muted-foreground">
-                  Ano, plán můžete změnit kdykoliv. Při přechodu na vyšší plán se rozdíl doplatí poměrně.
-                </p>
-              </div>
-              <div>
-                <h3 className="font-semibold mb-2">Jsou ceny včetně DPH?</h3>
-                <p className="text-sm text-muted-foreground">
-                  Ano, všechny uvedené ceny jsou včetně 21% DPH.
-                </p>
-              </div>
-              <div>
-                <h3 className="font-semibold mb-2">Nabízíte roční slevy?</h3>
-                <p className="text-sm text-muted-foreground">
-                  Ano, při roční platbě získáte 2 měsíce zdarma (sleva 16,7%).
-                </p>
-              </div>
-              <div>
-                <h3 className="font-semibold mb-2">Jak funguje zkušební období?</h3>
-                <p className="text-sm text-muted-foreground">
-                  Premium plán můžete vyzkoušet 14 dní zdarma, bez závazků.
-                </p>
-              </div>
-            </div>
-            
-            <div className="text-center mt-8">
-              <p className="text-muted-foreground mb-4">
-                Máte otázky ohledně cen nebo potřebujete individuální nabídku?
-              </p>
-              <Button asChild variant="outline">
-                <Link to="/contact">Kontaktujte nás</Link>
-              </Button>
-            </div>
-          </div>
+          {/* FAQ Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="text-center"
+          >
+            <h2 className="text-2xl font-bold mb-4">{t('pricing:faqTitle')}</h2>
+            <p className="text-muted-foreground mb-6">
+              {t('pricing:faqSubtitle')}
+            </p>
+            <Button variant="outline" onClick={() => navigate('/faq')}>
+              {t('pricing:viewFaq')}
+            </Button>
+          </motion.div>
         </div>
-      </div>
-    </ModernLayout>
+      </Layout>
+    </>
   );
 };
 
