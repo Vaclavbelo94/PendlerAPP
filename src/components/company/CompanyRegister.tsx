@@ -100,7 +100,7 @@ const CompanyRegister: React.FC = () => {
       // Use validated promo code only if it's valid
       const finalPromoCode = (formData.promoCode && isPromoValid) ? formData.promoCode : '';
       
-      const { error } = await signUp(
+      const { error, user } = await signUp(
         formData.email,
         formData.password,
         username,
@@ -109,8 +109,22 @@ const CompanyRegister: React.FC = () => {
       );
 
       if (error) {
-        toast.error(typeof error === 'string' ? error : error.message);
-      } else {
+        const errorStr = typeof error === 'string' ? error : (error?.message || '');
+        const isAlreadyRegistered = errorStr.includes('already exists') || errorStr.includes('user_already_exists') || errorStr.includes('User already registered');
+        
+        toast.error(isAlreadyRegistered ? t('auth:userAlreadyExists') : (typeof error === 'string' ? error : error.message));
+        
+        if (isAlreadyRegistered) {
+          setTimeout(() => {
+            navigate('/login', {
+              state: {
+                message: 'Účet již existuje. Přihlaste se, prosím.',
+                email: formData.email
+              }
+            });
+          }, 1500);
+        }
+      } else if (user) {
         if (isDHLCode && finalPromoCode) {
           toast.success('Registrace s promo kódem úspěšná!', { 
             description: `Premium na rok aktivován. Po přihlášení můžete dokončit nastavení profilu.`,
@@ -125,9 +139,16 @@ const CompanyRegister: React.FC = () => {
           toast.success(t('auth:registerSuccess'));
         }
         
-        // Automatický reload po úspěšné registraci
+        // Redirect to login after successful registration
         setTimeout(() => {
-          window.location.reload();
+          navigate('/login', {
+            state: {
+              message: isDHLCode && finalPromoCode
+                ? 'Registrace úspěšná! Nyní se prosím přihlaste pro dokončení nastavení DHL profilu.'
+                : 'Registrace úspěšná! Nyní se prosím přihlaste.',
+              email: formData.email
+            }
+          });
         }, 3000);
       }
     } catch (err) {
