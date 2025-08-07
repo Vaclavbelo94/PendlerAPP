@@ -1,12 +1,12 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/auth";
 import { toast } from "sonner";
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -14,7 +14,19 @@ const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { signIn } = useAuth();
   const { t, i18n } = useTranslation('auth');
+  const location = useLocation() as any;
 
+  useEffect(() => {
+    if (location?.state?.email) {
+      setEmail(location.state.email);
+    }
+    if (location?.state?.message) {
+      toast.info('Informace', { description: location.state.message, duration: 5000 });
+      try {
+        window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
+      } catch {}
+    }
+  }, [location]);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     

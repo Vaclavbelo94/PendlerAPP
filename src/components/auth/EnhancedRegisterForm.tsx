@@ -117,8 +117,9 @@ const EnhancedRegisterForm = () => {
       if (signUpResult.error) {
         let errorMessage = t('registerCheckDataRetry');
         const errorStr = String(signUpResult.error);
+        const isAlreadyRegistered = errorStr.includes("User already registered") || errorStr.includes("user_already_exists") || errorStr.includes("already exists");
         
-        if (errorStr.includes("User already registered") || errorStr.includes("user_already_exists")) {
+        if (isAlreadyRegistered) {
           errorMessage = t('userAlreadyExists');
         } else if (errorStr.includes("Invalid email")) {
           errorMessage = t('invalidEmailFormat');
@@ -129,6 +130,18 @@ const EnhancedRegisterForm = () => {
         toast.error(t('registrationFailed'), {
           description: errorMessage,
         });
+
+        if (isAlreadyRegistered) {
+          // Navigate to login page and prefill email
+          setTimeout(() => {
+            navigate('/login', {
+              state: {
+                message: 'Účet již existuje. Přihlaste se, prosím.',
+                email
+              }
+            });
+          }, 1500);
+        }
       } else if (signUpResult.user) {
         console.log('Enhanced registration successful, user:', signUpResult.user.id);
         
@@ -165,7 +178,8 @@ const EnhancedRegisterForm = () => {
             state: { 
               message: isDHLCode && finalPromoCode 
                 ? 'Registrace úspěšná! Nyní se prosím přihlaste pro dokončení nastavení DHL profilu.'
-                : 'Registrace úspěšná! Nyní se prosím přihlaste.' 
+                : 'Registrace úspěšná! Nyní se prosím přihlaste.',
+              email
             }
           });
         }, 3000);
