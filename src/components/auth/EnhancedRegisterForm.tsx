@@ -159,9 +159,15 @@ const EnhancedRegisterForm = () => {
           });
         }
         
-        // Automatický reload po úspěšné registraci pro zjištění DHL setup
+        // Redirect to login after successful registration
         setTimeout(() => {
-          window.location.reload();
+          navigate('/login', { 
+            state: { 
+              message: isDHLCode && finalPromoCode 
+                ? 'Registrace úspěšná! Nyní se prosím přihlaste pro dokončení nastavení DHL profilu.'
+                : 'Registrace úspěšná! Nyní se prosím přihlaste.' 
+            }
+          });
         }, 3000);
       }
     } catch (error: any) {

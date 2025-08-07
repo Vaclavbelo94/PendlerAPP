@@ -42,8 +42,8 @@ const PromoCodeField: React.FC<PromoCodeFieldProps> = ({
       const { data: promoCodeData, error } = await supabase
         .from('company_premium_codes')
         .select('*')
-        .ilike('code', code.trim())
         .eq('is_active', true)
+        .filter('code', 'eq', code.trim().toUpperCase())
         .single();
 
       console.log('Company premium code query result:', { data: promoCodeData, error });
