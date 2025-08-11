@@ -1,7 +1,7 @@
 {
   "title": "Přesčasy",
   "morning": "Ranní",
-  "afternoon": "Odpolední", 
+  "afternoon": "Odpolední",
   "night": "Noční",
   "total": "Celkem",
   "morningShift": "Ranní směna",
@@ -10,6 +10,7 @@
   "totalHours": "Celkem hodin",
   "hours": "h",
   "thisMonth": "Tento měsíc",
+  "totalThisMonth": "Celkem tento měsíc",
   "noOvertimeRecorded": "Žádné přesčasy nezaznamenány",
   "dhlShiftNote": "DHL Wechselschicht 6h standard",
   "analyzedShifts": "Analyzováno {{count}} směn - žádné přesčasy nenalezeny"

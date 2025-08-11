@@ -8,6 +8,7 @@ interface OvertimeWidgetProps {
   hours: number;
   iconColor: string;
   bgColor: string;
+  unitLabel?: string;
 }
 
 const OvertimeWidget: React.FC<OvertimeWidgetProps> = ({
@@ -15,7 +16,8 @@ const OvertimeWidget: React.FC<OvertimeWidgetProps> = ({
   title,
   hours,
   iconColor,
-  bgColor
+  bgColor,
+  unitLabel
 }) => {
   return (
     <Card className="h-full">
@@ -24,7 +26,7 @@ const OvertimeWidget: React.FC<OvertimeWidgetProps> = ({
           <Icon className={`h-8 w-8 ${iconColor}`} />
           <div>
             <div className="text-3xl font-bold text-foreground">{hours}</div>
-            <div className="text-sm text-muted-foreground">h</div>
+            <div className="text-sm text-muted-foreground">{unitLabel ?? 'h'}</div>
           </div>
           <div className="text-sm font-medium text-muted-foreground">
             {title}

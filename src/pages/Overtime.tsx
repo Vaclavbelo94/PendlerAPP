@@ -6,6 +6,7 @@ import Layout from '@/components/layouts/Layout';
 import OvertimeWidget from '@/components/overtime/OvertimeWidget';
 import { useOvertimeData } from '@/hooks/useOvertimeData';
 import { useAuth } from '@/hooks/auth';
+import LanguageToggle from '@/components/common/LanguageToggle';
 
 const Overtime: React.FC = () => {
   const { t } = useTranslation('overtime');
@@ -21,10 +22,18 @@ const Overtime: React.FC = () => {
   } = useOvertimeData({ userId: user?.id });
 
   return (
-    <Layout>
+    <Layout navbarRightContent={<LanguageToggle />}>
       <Helmet>
         <title>{t('title')} - PendlerApp</title>
         <meta name="description" content={`${t('title')} - ${t('thisMonth')}`} />
+        <link rel="canonical" href={`${window.location.origin}/overtime`} />
+        <script type="application/ld+json">{JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'WebPage',
+          name: `${t('title')} - PendlerApp`,
+          description: `${t('title')} - ${t('thisMonth')}`,
+          url: `${window.location.origin}/overtime`
+        })}</script>
       </Helmet>
 
       <div className="container mx-auto p-6 space-y-6">
@@ -52,6 +61,7 @@ const Overtime: React.FC = () => {
               hours={overtimeData.morning}
               iconColor="text-yellow-600"
               bgColor="bg-yellow-50 dark:bg-yellow-950/20"
+              unitLabel={t('hours')}
             />
             
             <OvertimeWidget
@@ -60,6 +70,7 @@ const Overtime: React.FC = () => {
               hours={overtimeData.afternoon}
               iconColor="text-orange-600"
               bgColor="bg-orange-50 dark:bg-orange-950/20"
+              unitLabel={t('hours')}
             />
             
             <OvertimeWidget
@@ -68,6 +79,7 @@ const Overtime: React.FC = () => {
               hours={overtimeData.night}
               iconColor="text-blue-600"
               bgColor="bg-blue-50 dark:bg-blue-950/20"
+              unitLabel={t('hours')}
             />
             
             <OvertimeWidget
@@ -76,6 +88,7 @@ const Overtime: React.FC = () => {
               hours={overtimeData.total}
               iconColor="text-primary"
               bgColor="bg-primary/5"
+              unitLabel={t('hours')}
             />
           </div>
         )}
