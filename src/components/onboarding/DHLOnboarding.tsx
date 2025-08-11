@@ -42,6 +42,20 @@ const DHLOnboarding: React.FC<DHLOnboardingProps> = ({ onClose }) => {
 
   const progress = (completedSteps.length / totalSteps) * 100;
 
+  const localizedTitles: Record<string, string> = {
+    welcome: t('dhl:onboarding.welcomeTitle', 'Vítejte v DHL Mode!'),
+    setup: t('dhl:onboarding.setupTitle', 'Nastavení DHL'),
+    'first-shift': t('dhl:onboarding.firstShiftTitle', 'Vaše první směna'),
+    explore: t('dhl:onboarding.exploreTitle', 'Prozkoumejte funkce')
+  };
+
+  const localizedDescriptions: Record<string, string> = {
+    welcome: t('dhl:onboarding.welcomeDesc', 'Začněme krátkým představením.'),
+    setup: t('dhl:onboarding.setupDesc', 'Nastavte pozici a Woche pro generování směn.'),
+    'first-shift': t('dhl:onboarding.firstShiftDesc', 'Přidejte svou první směnu.'),
+    explore: t('dhl:onboarding.exploreDesc', 'Podívejte se na další funkce.')
+  };
+
   const stepIcons = {
     welcome: Gift,
     setup: Settings,
@@ -99,10 +113,10 @@ const DHLOnboarding: React.FC<DHLOnboardingProps> = ({ onClose }) => {
             </div>
             <CardTitle className="flex items-center justify-center gap-2">
               <Truck className="h-5 w-5 text-amber-600" />
-              {step.title}
+              {localizedTitles[step.id] || step.title}
               {step.optional && <Badge variant="secondary">Volitelné</Badge>}
             </CardTitle>
-            <CardDescription>{step.description}</CardDescription>
+            <CardDescription>{localizedDescriptions[step.id] || step.description}</CardDescription>
           </CardHeader>
           
           <CardContent className="space-y-6">

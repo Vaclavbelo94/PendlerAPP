@@ -123,5 +123,8 @@
   "notFound": "Nenalezeno",
   "selectDate": "Vyberte datum",
   "recommended": "Doporučeno",
-  "title": "Název"
+  "title": "Název",
+  "notifications": "Notifikace",
+  "noNotifications": "Žádné notifikace",
+  "markAsRead": "Označit jako přečtené"
 }

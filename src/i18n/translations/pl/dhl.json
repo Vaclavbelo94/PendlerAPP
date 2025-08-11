@@ -3,6 +3,16 @@
   "dhlSetup": "Ustawienia DHL",
   "dhlSetupTitle": "Ukończ konfigurację profilu DHL",
   "dhlSetupDescription": "Wypełnij informacje potrzebne do zarządzania zmianami",
+  "onboarding": {
+    "welcomeTitle": "Witamy w trybie DHL!",
+    "welcomeDesc": "Zacznijmy od krótkiego wprowadzenia.",
+    "setupTitle": "Konfiguracja DHL",
+    "setupDesc": "Ustaw stanowisko i tydzień do generowania zmian.",
+    "firstShiftTitle": "Twoja pierwsza zmiana",
+    "firstShiftDesc": "Dodaj swoją pierwszą zmianę.",
+    "exploreTitle": "Odkryj funkcje",
+    "exploreDesc": "Zobacz inne funkcje."
+  },
   "personalNumber": "Numer osobisty",
   "personalNumberPlaceholder": "Wprowadź swój numer osobisty (opcjonalne)",
   "position": "Stanowisko",

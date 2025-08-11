@@ -3,6 +3,16 @@
   "dhlSetup": "DHL Nastavení",
   "dhlSetupTitle": "Dokončete nastavení DHL profilu",
   "dhlSetupDescription": "Vyplňte informace potřebné pro správu vašich směn",
+  "onboarding": {
+    "welcomeTitle": "Vítejte v DHL Mode!",
+    "welcomeDesc": "Začněme krátkým představením.",
+    "setupTitle": "Nastavení DHL",
+    "setupDesc": "Nastavte pozici a Woche pro generování směn.",
+    "firstShiftTitle": "Vaše první směna",
+    "firstShiftDesc": "Přidejte svou první směnu.",
+    "exploreTitle": "Prozkoumejte funkce",
+    "exploreDesc": "Podívejte se na další funkce."
+  },
   "personalNumber": "Osobní číslo",
   "personalNumberPlaceholder": "Zadejte vaše osobní číslo (volitelné)",
   "position": "Pozice",

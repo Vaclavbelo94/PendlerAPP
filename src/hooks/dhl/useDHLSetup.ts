@@ -55,6 +55,7 @@ export const useDHLSetup = () => {
 
       try {
         console.log('Checking DHL setup status for user:', user.id);
+        const localComplete = localStorage.getItem(`dhlSetupComplete_${user.id}`) === 'true';
         
         // Check for assignment - the database trigger handles duplicates automatically
         const { data, error } = await supabase
@@ -68,13 +69,13 @@ export const useDHLSetup = () => {
           throw error;
         }
 
-        console.log('DHL assignment check result:', data);
+        console.log('DHL assignment check result:', data, 'localComplete:', localComplete);
 
         setState(prev => ({
           ...prev,
           isLoading: false,
           canAccess: true,
-          isSetupComplete: !!data,
+          isSetupComplete: !!data || localComplete,
           error: null
         }));
       } catch (error) {
@@ -155,6 +156,11 @@ export const useDHLSetup = () => {
         isSubmitting: false,
         isSetupComplete: true,
       }));
+
+      // Persist completion flag locally to improve UX on reload
+      try {
+        localStorage.setItem(`dhlSetupComplete_${user.id}`, 'true');
+      } catch {}
 
       console.log('DHL setup completed successfully');
       return true;

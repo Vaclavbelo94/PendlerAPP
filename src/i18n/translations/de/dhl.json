@@ -3,6 +3,16 @@
   "dhlSetup": "DHL Einrichtung",
   "dhlSetupTitle": "Vervollständigen Sie Ihr DHL-Profil",
   "dhlSetupDescription": "Geben Sie die für die Schichtverwaltung erforderlichen Informationen ein",
+  "onboarding": {
+    "welcomeTitle": "Willkommen im DHL Modus!",
+    "welcomeDesc": "Beginnen wir mit einer kurzen Einführung.",
+    "setupTitle": "DHL-Einrichtung",
+    "setupDesc": "Legen Sie Position und Woche zur Schichtgenerierung fest.",
+    "firstShiftTitle": "Ihre erste Schicht",
+    "firstShiftDesc": "Fügen Sie Ihre erste Schicht hinzu.",
+    "exploreTitle": "Funktionen entdecken",
+    "exploreDesc": "Sehen Sie sich weitere Funktionen an."
+  },
   "personalNumber": "Personalnummer",
   "personalNumberPlaceholder": "Geben Sie Ihre Personalnummer ein (optional)",
   "position": "Position",

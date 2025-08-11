@@ -17,7 +17,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export default function DHLSetup() {
   const { user } = useAuth();
-  const { isLoading, isSubmitting, error, submitSetup, canAccess } = useDHLSetup();
+  const { isLoading, isSubmitting, error, submitSetup, canAccess, isSetupComplete } = useDHLSetup();
   const { success, error: showError } = useStandardizedToast();
   const navigate = useNavigate();
 
@@ -107,6 +107,13 @@ export default function DHLSetup() {
       </div>
     );
   }
+
+  // If setup already completed, redirect away from setup page
+  useEffect(() => {
+    if (!isLoading && isSetupComplete) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [isLoading, isSetupComplete, navigate]);
 
   return (
     <div className="container mx-auto p-4">

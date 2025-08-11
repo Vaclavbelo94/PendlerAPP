@@ -120,5 +120,8 @@
   "notFound": "Nie znaleziono",
   "selectDate": "Wybierz datę",
   "recommended": "Zalecane",
-  "title": "Tytuł"
+  "title": "Tytuł",
+  "notifications": "Powiadomienia",
+  "noNotifications": "Brak powiadomień",
+  "markAsRead": "Oznacz jako przeczytane"
 }
