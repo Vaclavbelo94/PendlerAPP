@@ -32,16 +32,15 @@ export const useOvertimeData = ({ userId, month, year }: UseOvertimeDataOptions)
 
   // Get company-specific standard hours
   const getStandardHours = (shiftType: string, position?: any): number => {
-    if (isDHL && userAssignment) {
-      // DHL Wechselschicht has 30h/week = 6h per day standard
-      if (userAssignment.dhl_position?.position_type === 'technik') {
+    // For DHL employees, default to 6h/day unless Technik role (8h)
+    if (isDHL) {
+      if (userAssignment?.dhl_position?.position_type === 'technik') {
         return 8; // Technik positions have 8h standard
       }
-      // Wechselschicht and other DHL positions
-      return 6; // 30h/week ÷ 5 days = 6h per day
+      return 6; // DHL default: 30h/week ÷ 5 days = 6h per day
     }
-    
-    // Default for Adecco, Randstad and others
+
+    // Default for other companies
     return 8;
   };
 
