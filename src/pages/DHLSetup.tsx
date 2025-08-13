@@ -53,6 +53,13 @@ export default function DHLSetup() {
     fetchData();
   }, [showError]);
 
+  // Redirect away if setup already completed (hooks must not be conditional)
+  useEffect(() => {
+    if (!isLoading && isSetupComplete) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [isLoading, isSetupComplete, navigate]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -108,12 +115,7 @@ export default function DHLSetup() {
     );
   }
 
-  // If setup already completed, redirect away from setup page
-  useEffect(() => {
-    if (!isLoading && isSetupComplete) {
-      navigate('/dashboard', { replace: true });
-    }
-  }, [isLoading, isSetupComplete, navigate]);
+  // Redirect effect moved above to avoid conditional hooks
 
   return (
     <div className="container mx-auto p-4">
