@@ -79,6 +79,11 @@ import dhlCs from './translations/cs/dhl.json';
 import dhlDe from './translations/de/dhl.json';
 import dhlPl from './translations/pl/dhl.json';
 
+// Overtime module translations
+import overtimeCs from './translations/cs/overtime.json';
+import overtimeDe from './translations/de/overtime.json';
+import overtimePl from './translations/pl/overtime.json';
+
 // Import notification translations
 import notificationsCs from './translations/cs/notifications.json';
 import notificationsDe from './translations/de/notifications.json';
@@ -102,6 +107,7 @@ const resources = {
     vehicle: vehicleCs,
     premium: premiumCs,
     dhl: dhlCs,
+    overtime: overtimeCs,
     companySelector: csCompanySelector,
     company: csCompany,
     notifications: notificationsCs,
@@ -123,6 +129,7 @@ const resources = {
     vehicle: vehicleDe,
     premium: premiumDe,
     dhl: dhlDe,
+    overtime: overtimeDe,
     companySelector: deCompanySelector,
     company: deCompany,
     notifications: notificationsDe,
@@ -144,6 +151,7 @@ const resources = {
     vehicle: vehiclePl,
     premium: premiumPl,
     dhl: dhlPl,
+    overtime: overtimePl,
     companySelector: plCompanySelector,
     company: plCompany,
     notifications: notificationsPl,

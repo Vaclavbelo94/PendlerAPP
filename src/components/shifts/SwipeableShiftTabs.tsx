@@ -101,7 +101,7 @@ const SwipeableShiftTabs: React.FC<SwipeableShiftTabsProps> = ({
                 className="flex flex-col items-center gap-1 px-2 py-2 text-xs data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all duration-200"
               >
                 <tab.icon className="h-4 w-4" />
-                <span className="hidden sm:inline truncate">{tab.label}</span>
+                <span className="inline text-[10px] sm:text-xs truncate">{tab.label}</span>
               </TabsTrigger>
             ))}
           </TabsList>
