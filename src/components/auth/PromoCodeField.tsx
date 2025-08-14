@@ -60,6 +60,12 @@ const PromoCodeField: React.FC<PromoCodeFieldProps> = ({
       const validUntil = new Date(promoCodeData.valid_until);
       const validFrom = new Date(promoCodeData.valid_from);
       const now = new Date();
+      
+      // Add time zone correction - set hours to ensure we're comparing dates correctly
+      validFrom.setHours(0, 0, 0, 0);
+      validUntil.setHours(23, 59, 59, 999);
+      now.setHours(12, 0, 0, 0); // Set to noon to avoid timezone edge cases
+      
       console.log('Date check:', { validFrom, validUntil, now, isActive: now >= validFrom && now <= validUntil });
       
       if (now < validFrom || now > validUntil) {
