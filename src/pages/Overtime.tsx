@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet';
 import { Sun, Sunset, Moon, Clock } from 'lucide-react';
@@ -7,10 +7,23 @@ import OvertimeWidget from '@/components/overtime/OvertimeWidget';
 import { useOvertimeData } from '@/hooks/useOvertimeData';
 import { useAuth } from '@/hooks/auth';
 import LanguageToggle from '@/components/common/LanguageToggle';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 
 const Overtime: React.FC = () => {
   const { t } = useTranslation('overtime');
   const { user } = useAuth();
+  
+  // Load standard hours from localStorage or default to 6h for DHL, 8h for others
+  const [standardHours, setStandardHours] = useState<number>(() => {
+    const saved = localStorage.getItem('overtime-standard-hours');
+    return saved ? parseInt(saved) : 6;
+  });
+
+  // Save to localStorage when changed
+  useEffect(() => {
+    localStorage.setItem('overtime-standard-hours', standardHours.toString());
+  }, [standardHours]);
   
   const { 
     overtimeData, 
@@ -19,7 +32,7 @@ const Overtime: React.FC = () => {
     company, 
     isDHL, 
     shiftsCount 
-  } = useOvertimeData({ userId: user?.id });
+  } = useOvertimeData({ userId: user?.id, customStandardHours: standardHours });
 
   return (
     <Layout navbarRightContent={<LanguageToggle />}>
@@ -37,11 +50,39 @@ const Overtime: React.FC = () => {
       </Helmet>
 
       <div className="container mx-auto p-6 space-y-6">
-        <div className="text-center space-y-2">
+        <div className="text-center space-y-4">
           <h1 className="text-3xl font-bold text-foreground">{t('title')}</h1>
           <p className="text-muted-foreground">
-            {t('thisMonth')} {isDHL && `(${t('dhlShiftNote')})`}
+            {t('thisMonth')}
           </p>
+          
+          {/* Standard Hours Toggle */}
+          <Card className="max-w-md mx-auto">
+            <CardContent className="p-4">
+              <div className="space-y-3">
+                <p className="text-sm text-muted-foreground">{t('standardHoursLabel')}</p>
+                <div className="flex justify-center gap-2">
+                  <Button
+                    variant={standardHours === 6 ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setStandardHours(6)}
+                    className="min-w-[60px]"
+                  >
+                    6h
+                  </Button>
+                  <Button
+                    variant={standardHours === 8 ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setStandardHours(8)}
+                    className="min-w-[60px]"
+                  >
+                    8h
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           {error && (
             <p className="text-destructive text-sm">{error}</p>
           )}

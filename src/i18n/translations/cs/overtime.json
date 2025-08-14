@@ -13,5 +13,6 @@
   "totalThisMonth": "Celkem tento měsíc",
   "noOvertimeRecorded": "Žádné přesčasy nezaznamenány",
   "dhlShiftNote": "DHL Wechselschicht 6h standard",
-  "analyzedShifts": "Analyzováno {{count}} směn - žádné přesčasy nenalezeny"
+  "analyzedShifts": "Analyzováno {{count}} směn - žádné přesčasy nenalezeny",
+  "standardHoursLabel": "Standardní délka směny"
 }

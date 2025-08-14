@@ -16,9 +16,10 @@ interface UseOvertimeDataOptions {
   userId: string | undefined;
   month?: number;
   year?: number;
+  customStandardHours?: number;
 }
 
-export const useOvertimeData = ({ userId, month, year }: UseOvertimeDataOptions) => {
+export const useOvertimeData = ({ userId, month, year, customStandardHours }: UseOvertimeDataOptions) => {
   const { shifts, isLoading: shiftsLoading, error: shiftsError } = useShiftsData({ userId });
   const { company, isDHL } = useCompany();
   const { userAssignment } = useDHLData(userId);
@@ -32,6 +33,11 @@ export const useOvertimeData = ({ userId, month, year }: UseOvertimeDataOptions)
 
   // Get company-specific standard hours
   const getStandardHours = (shiftType: string, position?: any): number => {
+    // If custom standard hours is provided, use that
+    if (customStandardHours !== undefined) {
+      return customStandardHours;
+    }
+
     // For DHL employees, default to 6h/day unless Technik role (8h)
     if (isDHL) {
       if (userAssignment?.dhl_position?.position_type === 'technik') {
