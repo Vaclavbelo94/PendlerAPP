@@ -81,7 +81,7 @@ export const UnifiedMobileMenu: React.FC<UnifiedMobileMenuProps> = ({
 
       {/* Mobile Menu */}
       <div className={cn(
-        "fixed inset-0 z-[60] bg-background flex flex-col shadow-xl",
+        "fixed inset-0 z-[60] bg-background/95 backdrop-blur-sm supports-[backdrop-filter]:bg-background/60 flex flex-col shadow-xl border-l",
         variant === 'compact' ? "w-80 right-auto" : "w-full"
       )}>
         {/* Header */}
