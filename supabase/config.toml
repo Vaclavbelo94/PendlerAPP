@@ -12,3 +12,6 @@ verify_jwt = false
 
 [functions.send-translation-email]
 verify_jwt = false
+
+[functions.validate-promo-code]
+verify_jwt = false

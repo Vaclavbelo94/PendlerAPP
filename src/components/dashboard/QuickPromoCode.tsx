@@ -24,21 +24,12 @@ const QuickPromoCode = () => {
 
     setIsLoading(true);
     try {
-      // Real promo code validation against database
-      const { data: promoCodeData, error } = await supabase
-        .from('company_premium_codes')
-        .select('*')
-        .eq('code', promoCode.toUpperCase())
-        .eq('is_active', true)
-        .lte('valid_from', new Date().toISOString())
-        .gte('valid_until', new Date().toISOString())
-        .maybeSingle();
-
-      console.log('Database query result:', { data: promoCodeData, error });
-      console.log('Query parameters:', {
-        code: promoCode.toUpperCase(),
-        current_time: new Date().toISOString()
+      // Use edge function for promo code validation
+      const { data: result, error } = await supabase.functions.invoke('validate-promo-code', {
+        body: { promoCode: promoCode.toUpperCase() }
       });
+
+      console.log('Edge function result:', { data: result, error });
 
       if (error) {
         console.error('Promo code validation error:', error);
@@ -46,7 +37,8 @@ const QuickPromoCode = () => {
         return;
       }
 
-      if (promoCodeData) {
+      if (result?.success) {
+        const promoCodeData = result.data;
         console.log('Valid promo code found:', promoCodeData);
         
         // Check if user already has premium or if code has usage limits
@@ -69,8 +61,8 @@ const QuickPromoCode = () => {
         toast.success('Platný promo kód! Pro aktivaci dokončete registraci.');
         setPromoCode('');
       } else {
-        console.log('No matching promo code found');
-        toast.error('Neplatný nebo expirovaný promo kód');
+        console.log('Promo code validation failed:', result?.error);
+        toast.error(result?.error || 'Neplatný nebo expirovaný promo kód');
       }
     } catch (error) {
       console.error('Promo code error:', error);
