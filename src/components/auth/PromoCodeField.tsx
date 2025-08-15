@@ -56,19 +56,28 @@ const PromoCodeField: React.FC<PromoCodeFieldProps> = ({
         return;
       }
 
-      // Check if code is expired
+      // Check if code is expired - properly handle UTC dates
       const validUntil = new Date(promoCodeData.valid_until);
       const validFrom = new Date(promoCodeData.valid_from);
       const now = new Date();
       
-      // Add time zone correction - set hours to ensure we're comparing dates correctly
-      validFrom.setHours(0, 0, 0, 0);
-      validUntil.setHours(23, 59, 59, 999);
-      now.setHours(12, 0, 0, 0); // Set to noon to avoid timezone edge cases
+      // Convert to UTC dates for proper comparison
+      const validFromUTC = new Date(validFrom.getTime() + validFrom.getTimezoneOffset() * 60000);
+      const validUntilUTC = new Date(validUntil.getTime() + validUntil.getTimezoneOffset() * 60000);
+      const nowUTC = new Date(now.getTime() + now.getTimezoneOffset() * 60000);
       
-      console.log('Date check:', { validFrom, validUntil, now, isActive: now >= validFrom && now <= validUntil });
+      // For date-only comparison, normalize to start/end of day in UTC
+      const validFromDay = new Date(validFromUTC.getFullYear(), validFromUTC.getMonth(), validFromUTC.getDate());
+      const validUntilDay = new Date(validUntilUTC.getFullYear(), validUntilUTC.getMonth(), validUntilUTC.getDate(), 23, 59, 59, 999);
+      const nowDay = new Date(nowUTC.getFullYear(), nowUTC.getMonth(), nowUTC.getDate(), 12, 0, 0, 0);
       
-      if (now < validFrom || now > validUntil) {
+      console.log('Date check details:', {
+        original: { validFrom, validUntil, now },
+        normalized: { validFromDay, validUntilDay, nowDay },
+        isActive: nowDay >= validFromDay && nowDay <= validUntilDay
+      });
+      
+      if (nowDay < validFromDay || nowDay > validUntilDay) {
         console.log('Company premium code not in valid date range');
         setValidationResult('invalid');
         onPromoCodeChange(code, false, false);
