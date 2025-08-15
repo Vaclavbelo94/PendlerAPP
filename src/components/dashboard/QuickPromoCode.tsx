@@ -18,6 +18,10 @@ const QuickPromoCode = () => {
     e.preventDefault();
     if (!promoCode.trim()) return;
 
+    console.log('=== PROMO CODE VALIDATION START ===');
+    console.log('Input code:', promoCode);
+    console.log('Uppercase code:', promoCode.toUpperCase());
+
     setIsLoading(true);
     try {
       // Real promo code validation against database
@@ -30,6 +34,12 @@ const QuickPromoCode = () => {
         .gte('valid_until', new Date().toISOString())
         .maybeSingle();
 
+      console.log('Database query result:', { data: promoCodeData, error });
+      console.log('Query parameters:', {
+        code: promoCode.toUpperCase(),
+        current_time: new Date().toISOString()
+      });
+
       if (error) {
         console.error('Promo code validation error:', error);
         toast.error('Nastala chyba při ověřování kódu');
@@ -37,6 +47,8 @@ const QuickPromoCode = () => {
       }
 
       if (promoCodeData) {
+        console.log('Valid promo code found:', promoCodeData);
+        
         // Check if user already has premium or if code has usage limits
         if (unifiedUser?.isPremium) {
           toast.info('Již máte aktivní premium přístup');
@@ -57,6 +69,7 @@ const QuickPromoCode = () => {
         toast.success('Platný promo kód! Pro aktivaci dokončete registraci.');
         setPromoCode('');
       } else {
+        console.log('No matching promo code found');
         toast.error('Neplatný nebo expirovaný promo kód');
       }
     } catch (error) {
@@ -64,6 +77,7 @@ const QuickPromoCode = () => {
       toast.error('Nastala chyba při aktivaci');
     } finally {
       setIsLoading(false);
+      console.log('=== PROMO CODE VALIDATION END ===');
     }
   };
 
