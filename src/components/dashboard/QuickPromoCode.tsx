@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Gift, Sparkles, Check } from 'lucide-react';
 import { useAuth } from '@/hooks/auth';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 const QuickPromoCode = () => {
   const { user, unifiedUser } = useAuth();
@@ -19,16 +20,47 @@ const QuickPromoCode = () => {
 
     setIsLoading(true);
     try {
-      // Mock promo code validation
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      if (promoCode.toUpperCase() === 'WELCOME2024') {
-        toast.success('Promo kód byl úspěšně aktivován!');
+      // Real promo code validation against database
+      const { data: promoCodeData, error } = await supabase
+        .from('company_premium_codes')
+        .select('*')
+        .eq('code', promoCode.toUpperCase())
+        .eq('is_active', true)
+        .lte('valid_from', new Date().toISOString())
+        .gte('valid_until', new Date().toISOString())
+        .maybeSingle();
+
+      if (error) {
+        console.error('Promo code validation error:', error);
+        toast.error('Nastala chyba při ověřování kódu');
+        return;
+      }
+
+      if (promoCodeData) {
+        // Check if user already has premium or if code has usage limits
+        if (unifiedUser?.isPremium) {
+          toast.info('Již máte aktivní premium přístup');
+          return;
+        }
+
+        if (promoCodeData.max_users && promoCodeData.used_count >= promoCodeData.max_users) {
+          toast.error('Promo kód již dosáhl maximálního počtu použití');
+          return;
+        }
+
+        // Code is valid but user needs to be logged in to redeem it
+        if (!user) {
+          toast.info('Pro aktivaci promo kódu se musíte přihlásit');
+          return;
+        }
+
+        toast.success('Platný promo kód! Pro aktivaci dokončete registraci.');
         setPromoCode('');
       } else {
-        toast.error('Neplatný promo kód');
+        toast.error('Neplatný nebo expirovaný promo kód');
       }
     } catch (error) {
+      console.error('Promo code error:', error);
       toast.error('Nastala chyba při aktivaci');
     } finally {
       setIsLoading(false);
@@ -78,7 +110,7 @@ const QuickPromoCode = () => {
         
         <div className="mt-4 p-3 bg-amber-100 rounded-lg">
           <p className="text-xs text-amber-800">
-            💡 <strong>Tip:</strong> Zkuste kód "WELCOME2024" pro testování
+            💡 <strong>Tip:</strong> Zkuste kód "DHL_PREMIUM_2025" pro testování
           </p>
         </div>
       </CardContent>
