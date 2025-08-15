@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -3340,11 +3340,11 @@ export type Database = {
       }
       create_notification: {
         Args: {
-          p_user_id: string
-          p_title: string
           p_message: string
-          p_type?: string
           p_related_to?: Json
+          p_title: string
+          p_type?: string
+          p_user_id: string
         }
         Returns: string
       }
@@ -3359,21 +3359,21 @@ export type Database = {
       get_user_admin_permission: {
         Args: { user_id_param: string }
         Returns: {
-          id: string
-          user_id: string
-          permission_level: Database["public"]["Enums"]["admin_permission_level"]
-          granted_by: string
-          granted_at: string
-          expires_at: string
-          is_active: boolean
           created_at: string
+          expires_at: string
+          granted_at: string
+          granted_by: string
+          id: string
+          is_active: boolean
+          permission_level: Database["public"]["Enums"]["admin_permission_level"]
           updated_at: string
+          user_id: string
         }[]
       }
       has_admin_permission: {
         Args: {
-          user_id: string
           required_level: Database["public"]["Enums"]["admin_permission_level"]
+          user_id: string
         }
         Returns: boolean
       }
@@ -3383,23 +3383,23 @@ export type Database = {
       }
       log_security_event: {
         Args: {
-          p_event_type: string
-          p_user_id?: string
           p_details?: Json
+          p_event_type: string
           p_risk_level?: string
+          p_user_id?: string
         }
         Returns: string
       }
       send_admin_notification: {
         Args: {
           p_admin_user_id: string
-          p_title: string
+          p_language?: string
           p_message: string
           p_notification_type: string
-          p_target_type: string
           p_target_companies?: string[]
+          p_target_type: string
           p_target_user_ids?: string[]
-          p_language?: string
+          p_title: string
         }
         Returns: string
       }
