@@ -10,6 +10,8 @@ import { useOAuthCallback } from "@/hooks/auth/useOAuthCallback";
 import EnhancedRegisterForm from "@/components/auth/EnhancedRegisterForm";
 import GoogleAuthButton from "@/components/auth/GoogleAuthButton";
 import StorageWarning from "@/components/auth/StorageWarning";
+import UnifiedNavbar from "@/components/layouts/UnifiedNavbar";
+import { NavbarRightContent } from "@/components/layouts/NavbarPatch";
 
 const Register = () => {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
@@ -55,6 +57,9 @@ const Register = () => {
 
   return (
     <div className="min-h-screen bg-dhl-yellow relative overflow-hidden">
+      {/* Navigation */}
+      <UnifiedNavbar rightContent={<NavbarRightContent />} />
+      
       {/* Background decorations with DHL theme */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-dhl-red/10 rounded-full blur-3xl animate-pulse"></div>
