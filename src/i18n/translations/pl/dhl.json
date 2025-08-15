@@ -112,6 +112,10 @@
     "error": {
       "submission": "Błąd podczas wysyłania formularza. Spróbuj ponownie."
     },
-    "footer": "DHL Express - Twój partner w logistyce"
+    "footer": "DHL Express - Twój partner w logistyce",
+    "info": {
+      "description": "Czy jesteś już pracownikiem DHL? Zaloguj się do naszej aplikacji do zarządzania zmianami i wielu innych funkcji.",
+      "linkText": "Przejdź do aplikacji"
+    }
   }
 }

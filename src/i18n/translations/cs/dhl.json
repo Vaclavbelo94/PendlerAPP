@@ -214,6 +214,10 @@
     "error": {
       "submission": "Chyba při odesílání formuláře. Zkuste to prosím znovu."
     },
-    "footer": "DHL Express - Váš partner v logistice"
+    "footer": "DHL Express - Váš partner v logistice",
+    "info": {
+      "description": "Už jste zaměstnanci DHL? Přihlaste se do naší aplikace pro správu směn a mnoho dalších funkcí.",
+      "linkText": "Přejít do aplikace"
+    }
   }
 }

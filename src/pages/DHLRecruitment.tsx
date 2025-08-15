@@ -6,9 +6,10 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Truck, MapPin, Phone, User, Mail, CheckCircle, Loader2 } from 'lucide-react';
+import { Truck, MapPin, Phone, User, Mail, CheckCircle, Loader2, ExternalLink, Info } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import dhlLogo from '@/assets/dhl-logo.png';
 
 const DHLRecruitment = () => {
   const { t } = useTranslation('dhl');
@@ -99,12 +100,36 @@ const DHLRecruitment = () => {
       <div className="container mx-auto max-w-2xl py-8">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <Truck className="h-12 w-12 text-dhl-red" />
-            <h1 className="text-4xl font-bold text-dhl-red">DHL</h1>
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <img 
+              src={dhlLogo} 
+              alt="DHL Logo" 
+              className="h-16 md:h-20 object-contain"
+            />
           </div>
           <h2 className="text-2xl font-bold mb-2">{t('recruitment.title')}</h2>
           <p className="text-lg text-muted-foreground">{t('recruitment.subtitle')}</p>
+        </div>
+
+        {/* Info banner with link to main app */}
+        <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="flex items-start gap-3">
+            <Info className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
+            <div className="flex-1">
+              <p className="text-sm text-blue-800 mb-2">
+                {t('recruitment.info.description')}
+              </p>
+              <a 
+                href="/" 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
+              >
+                {t('recruitment.info.linkText')}
+                <ExternalLink className="h-4 w-4" />
+              </a>
+            </div>
+          </div>
         </div>
 
         {/* Form Card */}

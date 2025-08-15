@@ -112,6 +112,10 @@
     "error": {
       "submission": "Fehler beim Senden des Formulars. Bitte versuchen Sie es erneut."
     },
-    "footer": "DHL Express - Ihr Partner in der Logistik"
+    "footer": "DHL Express - Ihr Partner in der Logistik",
+    "info": {
+      "description": "Sind Sie bereits DHL-Mitarbeiter? Melden Sie sich in unserer App für Schichtverwaltung und viele weitere Funktionen an.",
+      "linkText": "Zur App gehen"
+    }
   }
 }
