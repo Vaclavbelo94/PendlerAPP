@@ -182,5 +182,38 @@
         "applied": "Úspěšně aplikováno {{count}} směn pro {{groups}} skupin"
       }
     }
+  },
+  "recruitment": {
+    "title": "Připojte se k našemu týmu",
+    "subtitle": "Staňte se součástí největší logistické společnosti na světě",
+    "form": {
+      "title": "Náborový formulář",
+      "description": "Vyplňte následující údaje a my se vám ozveme s nabídkou práce ve vašem městě.",
+      "firstName": "Jméno",
+      "firstNamePlaceholder": "Zadejte vaše jméno",
+      "lastName": "Příjmení",
+      "lastNamePlaceholder": "Zadejte vaše příjmení",
+      "city": "Město",
+      "cityPlaceholder": "Vyberte vaše město",
+      "phone": "Telefonní číslo",
+      "phonePlaceholder": "+420 xxx xxx xxx",
+      "consent": "Souhlasím se zpracováním osobních údajů",
+      "consentDescription": "Vaše údaje budou použity pouze pro účely náboru a nebudou předány třetím stranám.",
+      "submit": "Odeslat žádost",
+      "submitting": "Odesílání..."
+    },
+    "validation": {
+      "allFieldsRequired": "Všechna pole jsou povinná"
+    },
+    "success": {
+      "title": "Děkujeme za váš zájem!",
+      "message": "Vaše žádost byla úspěšně odeslána. Náš tým se vám ozve v nejbližší době.",
+      "submitted": "Formulář byl úspěšně odeslán",
+      "backToHome": "Zpět na hlavní stránku"
+    },
+    "error": {
+      "submission": "Chyba při odesílání formuláře. Zkuste to prosím znovu."
+    },
+    "footer": "DHL Express - Váš partner v logistice"
   }
 }

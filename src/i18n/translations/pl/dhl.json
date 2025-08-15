@@ -80,5 +80,38 @@
       "title": "Masowe ustawianie zmian",
       "description": "Ustawianie zmian dla całych grup jednocześnie"
     }
+  },
+  "recruitment": {
+    "title": "Dołącz do naszego zespołu",
+    "subtitle": "Zostań częścią największej firmy logistycznej na świecie",
+    "form": {
+      "title": "Formularz rekrutacyjny",
+      "description": "Wypełnij poniższe dane, a skontaktujemy się z Tobą z ofertą pracy w Twoim mieście.",
+      "firstName": "Imię",
+      "firstNamePlaceholder": "Wpisz swoje imię",
+      "lastName": "Nazwisko",
+      "lastNamePlaceholder": "Wpisz swoje nazwisko",
+      "city": "Miasto",
+      "cityPlaceholder": "Wybierz swoje miasto",
+      "phone": "Numer telefonu",
+      "phonePlaceholder": "+48 xxx xxx xxx",
+      "consent": "Wyrażam zgodę na przetwarzanie danych osobowych",
+      "consentDescription": "Twoje dane będą używane tylko do celów rekrutacyjnych i nie będą przekazywane stronom trzecim.",
+      "submit": "Wyślij aplikację",
+      "submitting": "Wysyłanie..."
+    },
+    "validation": {
+      "allFieldsRequired": "Wszystkie pola są wymagane"
+    },
+    "success": {
+      "title": "Dziękujemy za Twoje zainteresowanie!",
+      "message": "Twoja aplikacja została pomyślnie wysłana. Nasz zespół skontaktuje się z Tobą wkrótce.",
+      "submitted": "Formularz został pomyślnie wysłany",
+      "backToHome": "Powrót do strony głównej"
+    },
+    "error": {
+      "submission": "Błąd podczas wysyłania formularza. Spróbuj ponownie."
+    },
+    "footer": "DHL Express - Twój partner w logistyce"
   }
 }
