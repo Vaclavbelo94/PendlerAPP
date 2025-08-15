@@ -10,6 +10,7 @@ import { Truck, MapPin, Phone, User, Mail, CheckCircle, Loader2, ExternalLink, I
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import dhlLogo from '@/assets/dhl-logo.png';
+import LanguageSwitcherCompact from '@/components/ui/LanguageSwitcherCompact';
 
 const DHLRecruitment = () => {
   const { t } = useTranslation('dhl');
@@ -97,6 +98,11 @@ const DHLRecruitment = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-dhl-yellow via-dhl-yellow/80 to-dhl-red/20 p-4">
+      {/* Language Switcher */}
+      <div className="fixed top-4 right-4 z-50">
+        <LanguageSwitcherCompact />
+      </div>
+      
       <div className="container mx-auto max-w-2xl py-8">
         {/* Header */}
         <div className="text-center mb-8">
