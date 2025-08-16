@@ -238,7 +238,7 @@ const Pricing = () => {
             <AlertDialogFooter>
               <AlertDialogAction onClick={() => {
                 setShowAuthDialog(false);
-                navigate('/auth');
+                navigate('/register');
               }}>
                 {t('pricing:goToRegistration')}
               </AlertDialogAction>
