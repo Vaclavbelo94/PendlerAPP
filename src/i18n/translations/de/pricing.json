@@ -24,5 +24,8 @@
   "pricingFeature6": "Prioritärer Support",
   "faqTitle": "Haben Sie Fragen?",
   "faqSubtitle": "Schauen Sie sich unsere häufig gestellten Fragen an",
-  "viewFaq": "FAQ anzeigen"
+  "viewFaq": "FAQ anzeigen",
+  "authRequired": "Anmeldung erforderlich",
+  "authRequiredDesc": "Um auf Premium-Funktionen zugreifen zu können, müssen Sie sich zunächst registrieren oder anmelden.",
+  "goToRegistration": "Zur Registrierung"
 }

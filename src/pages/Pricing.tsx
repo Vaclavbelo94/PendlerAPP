@@ -8,13 +8,17 @@ import Layout from '@/components/layouts/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useAuth } from '@/hooks/auth';
+import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 
 type PaymentPeriod = 'monthly' | 'yearly';
 
 const Pricing = () => {
   const { t, i18n } = useTranslation(['pricing', 'navigation']);
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [selectedPeriod, setSelectedPeriod] = useState<PaymentPeriod>('yearly');
+  const [showAuthDialog, setShowAuthDialog] = useState(false);
 
   // Pricing based on language/region
   const getPricingInfo = () => {
@@ -54,7 +58,11 @@ const Pricing = () => {
   ];
 
   const handleBuyPremium = () => {
-    navigate('/premium');
+    if (!user) {
+      setShowAuthDialog(true);
+    } else {
+      navigate('/premium');
+    }
   };
 
   return (
@@ -217,6 +225,26 @@ const Pricing = () => {
             </Button>
           </motion.div>
         </div>
+
+        {/* Auth Required Dialog */}
+        <AlertDialog open={showAuthDialog} onOpenChange={setShowAuthDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{t('pricing:authRequired')}</AlertDialogTitle>
+              <AlertDialogDescription>
+                {t('pricing:authRequiredDesc')}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogAction onClick={() => {
+                setShowAuthDialog(false);
+                navigate('/auth');
+              }}>
+                {t('pricing:goToRegistration')}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </Layout>
     </>
   );

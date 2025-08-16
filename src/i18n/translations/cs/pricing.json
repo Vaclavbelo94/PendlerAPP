@@ -24,5 +24,8 @@
   "pricingFeature6": "Prioritní podpora",
   "faqTitle": "Máte otázky?",
   "faqSubtitle": "Podívejte se na naše často kladené otázky",
-  "viewFaq": "Zobrazit FAQ"
+  "viewFaq": "Zobrazit FAQ",
+  "authRequired": "Přihlášení vyžadováno",
+  "authRequiredDesc": "Pro přístup k premium funkcím se musíte nejdříve zaregistrovat nebo přihlásit.",
+  "goToRegistration": "Přejít k registraci"
 }
