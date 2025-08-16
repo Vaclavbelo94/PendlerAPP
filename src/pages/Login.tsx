@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { useAuth } from "@/hooks/auth";
+import { useSimplifiedAuth } from "@/hooks/auth/useSimplifiedAuth";
 import { Separator } from "@/components/ui/separator";
 import { checkLocalStorageSpace } from "@/utils/authUtils";
 import { useTranslation } from 'react-i18next';
@@ -17,7 +17,7 @@ const Login = () => {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [storageWarning, setStorageWarning] = useState(false);
   const navigate = useNavigate();
-  const { user, unifiedUser } = useAuth();
+  const { user, session } = useSimplifiedAuth();
   const { t } = useTranslation('auth');
   
   useOAuthCallback();
@@ -32,17 +32,16 @@ const Login = () => {
       return;
     }
     
-    if (user && unifiedUser) {
-      console.log('User already logged in, redirecting based on role');
-      const redirectPath = getRedirectPath(unifiedUser);
-      navigate(redirectPath);
+    if (user && session) {
+      console.log('User already logged in, redirecting to dashboard');
+      navigate('/dashboard');
       return;
     }
     
     if (!checkLocalStorageSpace()) {
       setStorageWarning(true);
     }
-  }, [user, unifiedUser, navigate]);
+  }, [user, session, navigate]);
 
   useEffect(() => {
     const hasOAuthTokens = window.location.href.includes('access_token') || 

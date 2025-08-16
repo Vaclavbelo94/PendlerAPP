@@ -31,6 +31,8 @@ import Premium from "./pages/Premium";
 import Pricing from "./pages/Pricing";
 import Contact from "./pages/Contact";
 import FAQ from "./pages/FAQ";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
 import Admin from "./pages/Admin";
 import AdminV2 from "./pages/AdminV2";
 // DHL Routes - only setup and admin remain
@@ -87,6 +89,8 @@ function App() {
                          <Route path="/pricing" element={<Pricing />} />
                          <Route path="/contact" element={<Contact />} />
                          <Route path="/faq" element={<FAQ />} />
+                         <Route path="/terms" element={<Terms />} />
+                         <Route path="/privacy" element={<Privacy />} />
                          <Route path="/admin" element={<Admin />} />
                         <Route path="/admin/v2/*" element={<AdminV2 />} />
                          <Route path="/dhl-admin" element={<DHLAdmin />} />

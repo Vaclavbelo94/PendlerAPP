@@ -1,10 +1,10 @@
 
 import React from 'react';
 import { Helmet } from 'react-helmet';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 const Terms = () => {
-  const { t } = useLanguage();
+  const { t } = useTranslation('legal');
 
   return (
     <>

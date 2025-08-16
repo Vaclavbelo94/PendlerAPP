@@ -14,6 +14,7 @@ const SimplifiedRegisterForm = () => {
   const [promoCode, setPromoCode] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [acceptTerms, setAcceptTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   
   const { signUp } = useSimplifiedAuth();
@@ -22,19 +23,23 @@ const SimplifiedRegisterForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Basic validation with fallback translations
-    if (!email || !password) {
-      toast.error(t('fillAllFields') || 'Vyplňte všechna povinná pole');
+    if (!email || !password || !confirmPassword) {
+      toast.error(t('missingFields'));
       return;
     }
-
+    
+    if (!acceptTerms) {
+      toast.error(t('acceptTermsRequired'));
+      return;
+    }
+    
     if (password !== confirmPassword) {
-      toast.error(t('passwordMismatch') || 'Hesla se neshodují');
+      toast.error(t('passwordsDoNotMatch'));
       return;
     }
-
+    
     if (password.length < 6) {
-      toast.error(t('passwordTooShort') || 'Heslo musí mít alespoň 6 znaků');
+      toast.error(t('passwordTooShort'));
       return;
     }
 
@@ -155,6 +160,26 @@ const SimplifiedRegisterForm = () => {
           </p>
         )}
       </div>
+
+        <div className="flex items-start space-x-2 mb-4">
+          <input
+            type="checkbox"
+            id="acceptTerms"
+            checked={acceptTerms}
+            onChange={(e) => setAcceptTerms(e.target.checked)}
+            className="mt-1 h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
+          />
+          <Label htmlFor="acceptTerms" className="text-sm text-foreground leading-relaxed">
+            {t('acceptTerms')}{' '}
+            <a href="/terms" target="_blank" className="text-primary hover:underline">
+              {t('termsOfService')}
+            </a>{' '}
+            {t('and')}{' '}
+            <a href="/privacy" target="_blank" className="text-primary hover:underline">
+              {t('privacyPolicy')}
+            </a>
+          </Label>
+        </div>
 
       <Button 
         type="submit" 

@@ -1,10 +1,10 @@
 
 import React from 'react';
 import { Helmet } from 'react-helmet';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 const Privacy = () => {
-  const { t } = useLanguage();
+  const { t } = useTranslation('legal');
 
   return (
     <>
