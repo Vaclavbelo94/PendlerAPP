@@ -1,10 +1,9 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/hooks/auth";
+import { useSimplifiedAuth } from "@/hooks/auth/useSimplifiedAuth";
 import { toast } from "sonner";
 import { useTranslation } from 'react-i18next';
-import { checkLocalStorageSpace } from '@/utils/authUtils';
 
 interface GoogleAuthButtonProps {
   isLoading: boolean;
@@ -17,17 +16,10 @@ const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
   setIsLoading, 
   isRegister = false 
 }) => {
-  const { signInWithGoogle } = useAuth();
+  const { signInWithGoogle } = useSimplifiedAuth();
   const { t } = useTranslation('auth');
 
   const handleGoogleAuth = async () => {
-    if (!checkLocalStorageSpace()) {
-      toast.error(t('insufficientStorage'), {
-        description: t('insufficientStorageDescription')
-      });
-      return;
-    }
-    
     setIsLoading(true);
     
     try {
@@ -37,7 +29,7 @@ const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
       
       if (error) {
         console.error('Google auth error:', error);
-        toast.error(isRegister ? t('googleRegistrationFailed') : 'Přihlášení přes Google se nezdařilo', {
+        toast.error(t('googleSignInError') || 'Google přihlášení se nezdařilo', {
           description: String(error),
         });
         setIsLoading(false);
@@ -54,8 +46,8 @@ const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
       }
     } catch (error: any) {
       console.error('Google auth exception:', error);
-      toast.error(t('registrationError'), {
-        description: error?.message || t('unknownErrorOccurred'),
+      toast.error(t('googleSignInError') || 'Google přihlášení se nezdařilo', {
+        description: error?.message || 'Nastala neočekávaná chyba',
       });
       setIsLoading(false);
     }
@@ -72,7 +64,7 @@ const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
       {isLoading ? (
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
-          {t('loading')}
+          {t('loading') || 'Načítá se...'}
         </div>
       ) : (
         <>
@@ -84,7 +76,7 @@ const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
               <path fill="#EA4335" d="M -14.754 43.989 C -13.074 43.989 -11.514 44.599 -10.324 45.789 L -6.824 42.289 C -8.804 40.429 -11.514 39.239 -14.754 39.239 C -19.444 39.239 -23.494 41.939 -25.464 45.859 L -21.484 48.949 C -20.534 46.099 -17.884 43.989 -14.754 43.989 Z" />
             </g>
           </svg>
-          {isRegister ? 'Zaregistrovat se přes Google' : 'Přihlásit se přes Google'}
+          {isRegister ? (t('googleSignInRegister') || 'Zaregistrovat se přes Google') : (t('googleSignInLogin') || 'Přihlásit se přes Google')}
         </>
       )}
     </Button>

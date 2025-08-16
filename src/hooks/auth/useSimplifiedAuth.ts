@@ -102,7 +102,7 @@ export const useSimplifiedAuth = () => {
         console.log('Sign up successful, user:', data.user.email);
         
         // If user is immediately confirmed, they'll be auto-logged in via onAuthStateChange
-        // If not confirmed, they need to check email first
+        // If not confirmed, they need to check email first - using fallback translation
         if (!data.user.email_confirmed_at) {
           toast.info('Zkontrolujte svůj email pro potvrzení účtu');
         }
