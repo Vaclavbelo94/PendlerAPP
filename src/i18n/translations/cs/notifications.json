@@ -36,5 +36,23 @@
   "generic": {
     "errorTitle": "Chyba",
     "errorMessage": "Došlo k neočekávané chybě."
+  },
+  "forms": {
+    "validationErrorTitle": "Chyba validace",
+    "requiredField": "Toto pole je povinné",
+    "invalidEmail": "Neplatný formát e-mailu",
+    "fieldTooShort": "Pole je příliš krátké",
+    "fieldTooLong": "Pole je příliš dlouhé",
+    "submitErrorTitle": "Chyba při odesílání",
+    "submitErrorMessage": "Nepodařilo se odeslat formulář. Zkuste to prosím znovu.",
+    "networkErrorMessage": "Chyba sítě. Zkontrolujte připojení k internetu."
+  },
+  "operations": {
+    "saveSuccessTitle": "Uloženo",
+    "saveSuccessMessage": "Data byla úspěšně uložena.",
+    "deleteSuccessTitle": "Odstraněno",
+    "deleteSuccessMessage": "Položka byla úspěšně odstraněna.",
+    "updateSuccessTitle": "Aktualizováno", 
+    "updateSuccessMessage": "Data byla úspěšně aktualizována."
   }
 }

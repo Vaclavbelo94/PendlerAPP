@@ -36,5 +36,23 @@
   "generic": {
     "errorTitle": "Błąd",
     "errorMessage": "Wystąpił nieoczekiwany błąd."
+  },
+  "forms": {
+    "validationErrorTitle": "Błąd walidacji",
+    "requiredField": "To pole jest wymagane",
+    "invalidEmail": "Nieprawidłowy format e-mail",
+    "fieldTooShort": "Pole jest za krótkie",
+    "fieldTooLong": "Pole jest za długie",
+    "submitErrorTitle": "Błąd podczas wysyłania",
+    "submitErrorMessage": "Nie udało się wysłać formularza. Spróbuj ponownie.",
+    "networkErrorMessage": "Błąd sieci. Sprawdź połączenie z internetem."
+  },
+  "operations": {
+    "saveSuccessTitle": "Zapisano",
+    "saveSuccessMessage": "Dane zostały pomyślnie zapisane.",
+    "deleteSuccessTitle": "Usunięto",
+    "deleteSuccessMessage": "Element został pomyślnie usunięty.",
+    "updateSuccessTitle": "Zaktualizowano",
+    "updateSuccessMessage": "Dane zostały pomyślnie zaktualizowane."
   }
 }

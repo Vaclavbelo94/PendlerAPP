@@ -1,7 +1,7 @@
 
 {
   "firstName": "Imię",
-  "lastName": "Nazwisko",
+  "lastName": "Nazwisko", 
   "email": "E-mail",
   "password": "Hasło",
   "confirmPassword": "Potwierdź hasło",
@@ -16,6 +16,6 @@
   "optional": "Opcjonalne",
   "pleaseEnter": "Proszę wprowadzić",
   "invalidEmail": "Nieprawidłowy e-mail",
-  "passwordTooShort": "Hasło zbyt krótkie",
-  "passwordsDoNotMatch": "Hasła nie pasują"
+  "passwordTooShort": "Hasło za krótkie",
+  "passwordsDoNotMatch": "Hasła nie pasują do siebie"
 }

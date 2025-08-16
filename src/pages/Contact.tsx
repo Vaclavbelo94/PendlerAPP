@@ -9,11 +9,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { useToast } from '@/hooks/use-toast';
+import { useErrorNotifications } from '@/hooks/useErrorNotifications';
 
 const Contact = () => {
   const { t } = useTranslation(['contact', 'navigation']);
-  const { toast } = useToast();
+  const { showError, showSuccess, showValidationError, showEmailValidationError } = useErrorNotifications();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -21,6 +21,7 @@ const Contact = () => {
     subject: '',
     message: ''
   });
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -28,26 +29,82 @@ const Contact = () => {
       ...prev,
       [name]: value
     }));
+    
+    // Clear error when user starts typing
+    if (formErrors[name]) {
+      setFormErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
+  };
+
+  const validateForm = () => {
+    const errors: Record<string, string> = {};
+    
+    if (!formData.name.trim()) {
+      errors.name = t('notifications:forms.requiredField');
+    }
+    
+    if (!formData.email.trim()) {
+      errors.email = t('notifications:forms.requiredField');
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      errors.email = t('notifications:forms.invalidEmail');
+    }
+    
+    if (!formData.subject.trim()) {
+      errors.subject = t('notifications:forms.requiredField');
+    }
+    
+    if (!formData.message.trim()) {
+      errors.message = t('notifications:forms.requiredField');
+    } else if (formData.message.trim().length < 10) {
+      errors.message = t('notifications:forms.fieldTooShort');
+    }
+    
+    return errors;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    const errors = validateForm();
+    
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      const firstError = Object.keys(errors)[0];
+      showValidationError(firstError);
+      return;
+    }
+    
     setIsSubmitting(true);
 
-    // Simulate form submission
-    setTimeout(() => {
-      toast({
-        title: t('contact:successTitle'),
-        description: t('contact:successMessage'),
+    try {
+      // Simulate form submission with potential failure
+      await new Promise((resolve, reject) => {
+        setTimeout(() => {
+          // Simulate network error occasionally
+          if (Math.random() > 0.8) {
+            reject(new Error('Network error'));
+          } else {
+            resolve(true);
+          }
+        }, 2000);
       });
+      
+      showSuccess('submit');
       setFormData({
         name: '',
         email: '',
         subject: '',
         message: ''
       });
+      setFormErrors({});
+    } catch (error) {
+      showError('network');
+    } finally {
       setIsSubmitting(false);
-    }, 2000);
+    }
   };
 
   const contactInfo = [
@@ -119,7 +176,11 @@ const Contact = () => {
                           onChange={handleInputChange}
                           required
                           placeholder={t('contact:namePlaceholder')}
+                          className={formErrors.name ? 'border-destructive' : ''}
                         />
+                        {formErrors.name && (
+                          <p className="text-sm text-destructive mt-1">{formErrors.name}</p>
+                        )}
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="email">{t('contact:email')}</Label>
@@ -131,7 +192,11 @@ const Contact = () => {
                           onChange={handleInputChange}
                           required
                           placeholder={t('contact:emailPlaceholder')}
+                          className={formErrors.email ? 'border-destructive' : ''}
                         />
+                        {formErrors.email && (
+                          <p className="text-sm text-destructive mt-1">{formErrors.email}</p>
+                        )}
                       </div>
                     </div>
                     
@@ -145,7 +210,11 @@ const Contact = () => {
                         onChange={handleInputChange}
                         required
                         placeholder={t('contact:subjectPlaceholder')}
+                        className={formErrors.subject ? 'border-destructive' : ''}
                       />
+                      {formErrors.subject && (
+                        <p className="text-sm text-destructive mt-1">{formErrors.subject}</p>
+                      )}
                     </div>
                     
                     <div className="space-y-2">
@@ -157,8 +226,11 @@ const Contact = () => {
                         onChange={handleInputChange}
                         required
                         placeholder={t('contact:messagePlaceholder')}
-                        className="min-h-[120px]"
+                        className={`min-h-[120px] ${formErrors.message ? 'border-destructive' : ''}`}
                       />
+                      {formErrors.message && (
+                        <p className="text-sm text-destructive mt-1">{formErrors.message}</p>
+                      )}
                     </div>
                     
                     <Button 

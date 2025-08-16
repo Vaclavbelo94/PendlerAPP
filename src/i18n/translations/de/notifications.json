@@ -36,5 +36,23 @@
   "generic": {
     "errorTitle": "Fehler",
     "errorMessage": "Ein unerwarteter Fehler ist aufgetreten."
+  },
+  "forms": {
+    "validationErrorTitle": "Validierungsfehler",
+    "requiredField": "Dieses Feld ist erforderlich",
+    "invalidEmail": "Ungültiges E-Mail-Format",
+    "fieldTooShort": "Feld ist zu kurz",
+    "fieldTooLong": "Feld ist zu lang",
+    "submitErrorTitle": "Fehler beim Senden",
+    "submitErrorMessage": "Formular konnte nicht gesendet werden. Bitte versuchen Sie es erneut.",
+    "networkErrorMessage": "Netzwerkfehler. Überprüfen Sie Ihre Internetverbindung."
+  },
+  "operations": {
+    "saveSuccessTitle": "Gespeichert",
+    "saveSuccessMessage": "Daten wurden erfolgreich gespeichert.",
+    "deleteSuccessTitle": "Gelöscht",
+    "deleteSuccessMessage": "Element wurde erfolgreich gelöscht.",
+    "updateSuccessTitle": "Aktualisiert",
+    "updateSuccessMessage": "Daten wurden erfolgreich aktualisiert."
   }
 }
