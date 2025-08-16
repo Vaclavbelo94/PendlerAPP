@@ -37,10 +37,14 @@ const SimplifiedRegisterForm = () => {
       try {
         const validation = await validatePromoCodePreRegistration(promoCode);
         setPromoValidation(validation);
-      } catch (error) {
-        console.error('Promo validation error:', error);
-        setPromoValidation({ isValid: false, isCompanyCode: false, error: 'Chyba při ověřování' });
-      } finally {
+    } catch (error) {
+      console.error('Promo validation error:', error);
+      setPromoValidation({ 
+        isValid: false, 
+        isCompanyCode: false, 
+        error: t('promoCodeError') || 'Chyba při ověřování' 
+      });
+    } finally {
         setIsValidatingPromo(false);
       }
     };
@@ -69,7 +73,7 @@ const SimplifiedRegisterForm = () => {
     }
     
     if (promoCode && promoValidation && !promoValidation.isValid) {
-      toast.error(`Promo kód je neplatný: ${promoValidation.error}`);
+      toast.error(`${t('promoCodeInvalid')}: ${promoValidation.error}`);
       return;
     }
 

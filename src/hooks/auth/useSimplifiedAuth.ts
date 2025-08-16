@@ -84,16 +84,21 @@ export const useSimplifiedAuth = () => {
 
       // Pre-validate promo code if provided
       if (promoCode) {
-        const { validatePromoCodePreRegistration } = await import('@/utils/promoCodeValidation');
-        const validation = await validatePromoCodePreRegistration(promoCode);
-        
-        if (validation.isValid && validation.isCompanyCode) {
-          companyFromPromo = validation.company;
-          validatedPromoCode = validation;
-          console.log('Promo code pre-validated:', validation);
-        } else if (!validation.isValid) {
-          // If promo code is invalid, show error and stop registration
-          return { error: validation.error || 'Neplatný promo kód', user: null };
+        try {
+          const { validatePromoCodePreRegistration } = await import('@/utils/promoCodeValidation');
+          const validation = await validatePromoCodePreRegistration(promoCode);
+          
+          if (validation.isValid && validation.isCompanyCode) {
+            companyFromPromo = validation.company;
+            validatedPromoCode = validation;
+            console.log('Promo code pre-validated:', validation);
+          } else if (!validation.isValid) {
+            // If promo code is invalid, show error and stop registration
+            return { error: validation.error || 'Neplatný promo kód', user: null };
+          }
+        } catch (error) {
+          console.error('Error validating promo code:', error);
+          return { error: 'Služba pro ověření promo kódů není dostupná', user: null };
         }
       }
       
