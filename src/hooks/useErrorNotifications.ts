@@ -5,7 +5,7 @@ import { useToast } from '@/hooks/use-toast';
 export type ErrorType = 'validation' | 'network' | 'submit' | 'generic' | 'auth' | 'save' | 'delete' | 'load';
 
 export const useErrorNotifications = () => {
-  const { t } = useTranslation('notifications');
+  const { t } = useTranslation(['notifications', 'contact']);
   const { toast } = useToast();
 
   const showError = useCallback((type: ErrorType, customMessage?: string) => {
@@ -14,36 +14,36 @@ export const useErrorNotifications = () => {
 
     switch (type) {
       case 'validation':
-        title = t('forms.validationErrorTitle');
-        description = customMessage || t('forms.requiredField');
+        title = t('notifications:forms.validationErrorTitle');
+        description = customMessage || t('notifications:forms.requiredField');
         break;
       case 'network':
-        title = t('forms.submitErrorTitle');
-        description = customMessage || t('forms.networkErrorMessage');
+        title = t('notifications:forms.submitErrorTitle');
+        description = customMessage || t('notifications:forms.networkErrorMessage');
         break;
       case 'submit':
-        title = t('forms.submitErrorTitle');
-        description = customMessage || t('forms.submitErrorMessage');
+        title = t('notifications:forms.submitErrorTitle');
+        description = customMessage || t('notifications:forms.submitErrorMessage');
         break;
       case 'auth':
-        title = t('auth.requiredTitle');
-        description = customMessage || t('auth.requiredMessage');
+        title = t('notifications:auth.requiredTitle');
+        description = customMessage || t('notifications:auth.requiredMessage');
         break;
       case 'save':
-        title = t('errors.saveTitle');
-        description = customMessage || t('errors.saveMessage');
+        title = t('notifications:errors.saveTitle');
+        description = customMessage || t('notifications:errors.saveMessage');
         break;
       case 'delete':
-        title = t('errors.deleteTitle');
-        description = customMessage || t('errors.deleteMessage');
+        title = t('notifications:errors.deleteTitle');
+        description = customMessage || t('notifications:errors.deleteMessage');
         break;
       case 'load':
-        title = t('errors.loadTitle');
-        description = customMessage || t('errors.loadMessage');
+        title = t('notifications:errors.loadTitle');
+        description = customMessage || t('notifications:errors.loadMessage');
         break;
       default:
-        title = t('generic.errorTitle');
-        description = customMessage || t('generic.errorMessage');
+        title = t('notifications:generic.errorTitle');
+        description = customMessage || t('notifications:generic.errorMessage');
     }
 
     toast({
@@ -59,24 +59,24 @@ export const useErrorNotifications = () => {
 
     switch (type) {
       case 'save':
-        title = t('operations.saveSuccessTitle');
-        description = customMessage || t('operations.saveSuccessMessage');
+        title = t('notifications:operations.saveSuccessTitle');
+        description = customMessage || t('notifications:operations.saveSuccessMessage');
         break;
       case 'delete':
-        title = t('operations.deleteSuccessTitle');
-        description = customMessage || t('operations.deleteSuccessMessage');
+        title = t('notifications:operations.deleteSuccessTitle');
+        description = customMessage || t('notifications:operations.deleteSuccessMessage');
         break;
       case 'update':
-        title = t('operations.updateSuccessTitle');
-        description = customMessage || t('operations.updateSuccessMessage');
+        title = t('notifications:operations.updateSuccessTitle');
+        description = customMessage || t('notifications:operations.updateSuccessMessage');
         break;
       case 'submit':
-        title = t('contact:successTitle', { ns: 'contact' });
-        description = customMessage || t('contact:successMessage', { ns: 'contact' });
+        title = t('contact:successTitle');
+        description = customMessage || t('contact:successMessage');
         break;
       default:
-        title = t('operations.saveSuccessTitle');
-        description = customMessage || t('operations.saveSuccessMessage');
+        title = t('notifications:operations.saveSuccessTitle');
+        description = customMessage || t('notifications:operations.saveSuccessMessage');
     }
 
     toast({
@@ -87,12 +87,12 @@ export const useErrorNotifications = () => {
   }, [t, toast]);
 
   const showValidationError = useCallback((field: string) => {
-    const fieldName = t(`contact:${field}`, { ns: 'contact' });
-    showError('validation', t('forms.requiredField') + ': ' + fieldName);
+    const fieldName = t(`contact:${field}`);
+    showError('validation', t('notifications:forms.requiredField') + ': ' + fieldName);
   }, [showError, t]);
 
   const showEmailValidationError = useCallback(() => {
-    showError('validation', t('forms.invalidEmail'));
+    showError('validation', t('notifications:forms.invalidEmail'));
   }, [showError, t]);
 
   return {
