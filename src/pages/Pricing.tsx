@@ -208,22 +208,6 @@ const Pricing = () => {
               </Card>
             </motion.div>
           </div>
-
-          {/* FAQ Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="text-center"
-          >
-            <h2 className="text-2xl font-bold mb-4">{t('pricing:faqTitle')}</h2>
-            <p className="text-muted-foreground mb-6">
-              {t('pricing:faqSubtitle')}
-            </p>
-            <Button variant="outline" onClick={() => window.open('https://docs.lovable.dev/faq', '_blank')}>
-              {t('pricing:viewFaq')}
-            </Button>
-          </motion.div>
         </div>
 
         {/* Auth Required Dialog */}
