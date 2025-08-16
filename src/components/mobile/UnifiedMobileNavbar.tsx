@@ -4,8 +4,6 @@ import { Menu, Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/auth';
-import LanguageSwitcherCompact from '@/components/ui/LanguageSwitcherCompact';
-import AppLanguageSelector from '@/components/ui/AppLanguageSelector';
 import { UnifiedMobileMenu } from './UnifiedMobileMenu';
 
 interface UnifiedMobileNavbarProps {
@@ -36,9 +34,6 @@ export const UnifiedMobileNavbar: React.FC<UnifiedMobileNavbarProps> = ({
 
           {/* Right Side */}
           <div className="flex items-center space-x-2">
-            {/* Language Selector for public pages */}
-            {!user && <AppLanguageSelector />}
-            
             {/* Custom Right Content - this includes NotificationIndicator */}
             {rightContent}
             
