@@ -3403,6 +3403,19 @@ export type Database = {
         }
         Returns: string
       }
+      validate_promo_code_raw: {
+        Args: { promo_code_input: string }
+        Returns: {
+          code: string
+          company: Database["public"]["Enums"]["company_type"]
+          description: string
+          id: string
+          max_users: number
+          name: string
+          premium_duration_months: number
+          used_count: number
+        }[]
+      }
       validate_text_input: {
         Args: { input_text: string; max_length?: number }
         Returns: boolean

@@ -56,9 +56,12 @@ serve(async (req) => {
       )
     }
 
-    if (promoCodeData) {
+    // The RPC returns an array, get the first item if it exists
+    const codeData = promoCodeData && promoCodeData.length > 0 ? promoCodeData[0] : null;
+
+    if (codeData) {
       // Check usage limits
-      if (promoCodeData.max_users && promoCodeData.used_count >= promoCodeData.max_users) {
+      if (codeData.max_users && codeData.used_count >= codeData.max_users) {
         return new Response(
           JSON.stringify({ 
             success: false, 
@@ -75,12 +78,12 @@ serve(async (req) => {
         JSON.stringify({ 
           success: true, 
           data: {
-            id: promoCodeData.id,
-            code: promoCodeData.code,
-            name: promoCodeData.name,
-            description: promoCodeData.description,
-            company: promoCodeData.company,
-            premium_duration_months: promoCodeData.premium_duration_months
+            id: codeData.id,
+            code: codeData.code,
+            name: codeData.name,
+            description: codeData.description,
+            company: codeData.company,
+            premium_duration_months: codeData.premium_duration_months
           }
         }),
         { 
