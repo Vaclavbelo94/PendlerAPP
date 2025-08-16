@@ -35,10 +35,15 @@ serve(async (req) => {
       )
     }
 
-    // Query the promo code using raw SQL to bypass RLS policies that reference auth.uid()
-    const { data: promoCodeData, error } = await supabaseClient.rpc('validate_promo_code_raw', {
-      promo_code_input: promoCode.toUpperCase()
-    })
+    // Use direct SQL query with service role to completely bypass RLS
+    const { data: promoCodeData, error } = await supabaseClient
+      .from('company_premium_codes')
+      .select('id, code, name, description, company, premium_duration_months, max_users, used_count')
+      .eq('code', promoCode.toUpperCase())
+      .eq('is_active', true)
+      .lte('valid_from', new Date().toISOString())
+      .gte('valid_until', new Date().toISOString())
+      .maybeSingle()
 
     console.log('Database query result:', { data: promoCodeData, error })
 
@@ -56,12 +61,9 @@ serve(async (req) => {
       )
     }
 
-    // The RPC returns an array, get the first item if it exists
-    const codeData = promoCodeData && promoCodeData.length > 0 ? promoCodeData[0] : null;
-
-    if (codeData) {
+    if (promoCodeData) {
       // Check usage limits
-      if (codeData.max_users && codeData.used_count >= codeData.max_users) {
+      if (promoCodeData.max_users && promoCodeData.used_count >= promoCodeData.max_users) {
         return new Response(
           JSON.stringify({ 
             success: false, 
@@ -78,12 +80,12 @@ serve(async (req) => {
         JSON.stringify({ 
           success: true, 
           data: {
-            id: codeData.id,
-            code: codeData.code,
-            name: codeData.name,
-            description: codeData.description,
-            company: codeData.company,
-            premium_duration_months: codeData.premium_duration_months
+            id: promoCodeData.id,
+            code: promoCodeData.code,
+            name: promoCodeData.name,
+            description: promoCodeData.description,
+            company: promoCodeData.company,
+            premium_duration_months: promoCodeData.premium_duration_months
           }
         }),
         { 
