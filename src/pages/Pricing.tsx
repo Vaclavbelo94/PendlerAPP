@@ -22,23 +22,23 @@ const Pricing = () => {
     if (lang === 'cs') {
       return {
         currency: 'CZK',
-        monthly: '299',
-        yearly: '2990',
-        savings: '12'
+        monthly: '99',
+        yearly: '950',
+        savings: '20'
       };
     } else if (lang === 'de') {
       return {
         currency: 'EUR',
-        monthly: '12',
-        yearly: '120',
-        savings: '12'
+        monthly: '4',
+        yearly: '38',
+        savings: '20'
       };
     } else {
       return {
         currency: 'PLN',
-        monthly: '49',
-        yearly: '490',
-        savings: '12'
+        monthly: '23',
+        yearly: '220',
+        savings: '20'
       };
     }
   };
@@ -212,7 +212,7 @@ const Pricing = () => {
             <p className="text-muted-foreground mb-6">
               {t('pricing:faqSubtitle')}
             </p>
-            <Button variant="outline" onClick={() => navigate('/faq')}>
+            <Button variant="outline" onClick={() => window.open('https://docs.lovable.dev/faq', '_blank')}>
               {t('pricing:viewFaq')}
             </Button>
           </motion.div>
