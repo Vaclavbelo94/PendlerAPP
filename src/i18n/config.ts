@@ -94,6 +94,11 @@ import pricingCs from './translations/cs/pricing.json';
 import pricingDe from './translations/de/pricing.json';
 import pricingPl from './translations/pl/pricing.json';
 
+// Import contact translations
+import contactCs from './translations/cs/contact.json';
+import contactDe from './translations/de/contact.json';
+import contactPl from './translations/pl/contact.json';
+
 const resources = {
   cs: {
     common: commonCs,
@@ -117,6 +122,7 @@ const resources = {
     company: csCompany,
     notifications: notificationsCs,
     pricing: pricingCs,
+    contact: contactCs,
   },
   de: {
     common: commonDe,
@@ -140,6 +146,7 @@ const resources = {
     company: deCompany,
     notifications: notificationsDe,
     pricing: pricingDe,
+    contact: contactDe,
   },
   pl: {
     common: commonPl,
@@ -163,6 +170,7 @@ const resources = {
     company: plCompany,
     notifications: notificationsPl,
     pricing: pricingPl,
+    contact: contactPl,
   },
 };
 
