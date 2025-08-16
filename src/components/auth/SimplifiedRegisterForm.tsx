@@ -146,7 +146,7 @@ const SimplifiedRegisterForm = () => {
           type="text"
           value={promoCode}
           onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-          placeholder={t('promoCodePlaceholder') || 'DHL_PREMIUM_2025'}
+          placeholder=""
           disabled={isLoading}
         />
         {promoCode && (

@@ -101,6 +101,24 @@ export const useSimplifiedAuth = () => {
       if (data.user) {
         console.log('Sign up successful, user:', data.user.email);
         
+        // Apply promo code benefits if provided
+        if (promoCode && data.user.id) {
+          setTimeout(async () => {
+            const { validatePromoCode, applyPromoCodeBenefits } = await import('@/utils/promoCodeValidation');
+            const validation = await validatePromoCode(promoCode);
+            if (validation.isValid) {
+              await applyPromoCodeBenefits(data.user.id, validation);
+              if (validation.isCompanyCode) {
+                toast.success(`Firemní účet byl nastaven! Získáváte ${validation.premiumMonths} měsíců premium.`);
+              } else {
+                toast.success(`Premium aktivováno na ${validation.premiumMonths} měsíců!`);
+              }
+            } else if (validation.error) {
+              toast.warning(`Promo kód "${promoCode}" je neplatný: ${validation.error}`);
+            }
+          }, 1000);
+        }
+        
         // If user is immediately confirmed, they'll be auto-logged in via onAuthStateChange
         // If not confirmed, they need to check email first - using fallback translation
         if (!data.user.email_confirmed_at) {
