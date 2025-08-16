@@ -164,7 +164,7 @@ const Contact = () => {
                   <CardTitle className="text-2xl">{t('contact:formTitle')}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <form onSubmit={handleSubmit} className="space-y-6">
+                  <form onSubmit={handleSubmit} className="space-y-6" noValidate>
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="name">{t('contact:name')}</Label>
@@ -174,7 +174,6 @@ const Contact = () => {
                           type="text"
                           value={formData.name}
                           onChange={handleInputChange}
-                          required
                           placeholder={t('contact:namePlaceholder')}
                           className={formErrors.name ? 'border-destructive' : ''}
                         />
@@ -190,7 +189,6 @@ const Contact = () => {
                           type="email"
                           value={formData.email}
                           onChange={handleInputChange}
-                          required
                           placeholder={t('contact:emailPlaceholder')}
                           className={formErrors.email ? 'border-destructive' : ''}
                         />
@@ -208,7 +206,6 @@ const Contact = () => {
                         type="text"
                         value={formData.subject}
                         onChange={handleInputChange}
-                        required
                         placeholder={t('contact:subjectPlaceholder')}
                         className={formErrors.subject ? 'border-destructive' : ''}
                       />
@@ -224,7 +221,6 @@ const Contact = () => {
                         name="message"
                         value={formData.message}
                         onChange={handleInputChange}
-                        required
                         placeholder={t('contact:messagePlaceholder')}
                         className={`min-h-[120px] ${formErrors.message ? 'border-destructive' : ''}`}
                       />
