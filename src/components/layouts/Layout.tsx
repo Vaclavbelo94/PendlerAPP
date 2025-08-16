@@ -24,6 +24,7 @@ const Layout: React.FC<LayoutProps> = ({ children, navbarRightContent }) => {
     location.pathname === '/login' || 
     location.pathname === '/register';
   const isPublicPage = ['/', '/about', '/contact', '/features', '/pricing'].includes(location.pathname);
+  const isPublicPageWithFooter = ['/', '/about', '/contact', '/features'].includes(location.pathname);
 
   if (isLoading) {
     return (
@@ -50,7 +51,7 @@ const Layout: React.FC<LayoutProps> = ({ children, navbarRightContent }) => {
         <main className="flex-1">
           {children || <Outlet />}
         </main>
-        <Footer />
+        {isPublicPageWithFooter && <Footer />}
         <Toaster position="top-right" />
       </div>
     );
