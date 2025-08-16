@@ -35,15 +35,10 @@ serve(async (req) => {
       )
     }
 
-    // Query the promo code using service role to bypass RLS
-    const { data: promoCodeData, error } = await supabaseClient
-      .from('company_premium_codes')
-      .select('*')
-      .eq('code', promoCode.toUpperCase())
-      .eq('is_active', true)
-      .lte('valid_from', new Date().toISOString())
-      .gte('valid_until', new Date().toISOString())
-      .maybeSingle()
+    // Query the promo code using raw SQL to bypass RLS policies that reference auth.uid()
+    const { data: promoCodeData, error } = await supabaseClient.rpc('validate_promo_code_raw', {
+      promo_code_input: promoCode.toUpperCase()
+    })
 
     console.log('Database query result:', { data: promoCodeData, error })
 
