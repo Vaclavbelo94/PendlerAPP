@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslation } from 'react-i18next';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useSimplifiedAuth } from "@/hooks/auth/useSimplifiedAuth";
 import { toast } from "sonner";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2, CheckCircle, XCircle, Info } from "lucide-react";
+import { validatePromoCodePreRegistration } from "@/utils/promoCodeValidation";
 
 const SimplifiedRegisterForm = () => {
   const [email, setEmail] = useState("");
@@ -17,8 +18,37 @@ const SimplifiedRegisterForm = () => {
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   
+  // Promo code validation state
+  const [promoValidation, setPromoValidation] = useState(null);
+  const [isValidatingPromo, setIsValidatingPromo] = useState(false);
+  
   const { signUp } = useSimplifiedAuth();
   const { t } = useTranslation('auth');
+
+  // Real-time promo code validation
+  useEffect(() => {
+    const validatePromoAsync = async () => {
+      if (!promoCode || promoCode.length < 3) {
+        setPromoValidation(null);
+        return;
+      }
+
+      setIsValidatingPromo(true);
+      try {
+        const validation = await validatePromoCodePreRegistration(promoCode);
+        setPromoValidation(validation);
+      } catch (error) {
+        console.error('Promo validation error:', error);
+        setPromoValidation({ isValid: false, isCompanyCode: false, error: 'Chyba při ověřování' });
+      } finally {
+        setIsValidatingPromo(false);
+      }
+    };
+
+    // Debounce validation
+    const timeoutId = setTimeout(validatePromoAsync, 500);
+    return () => clearTimeout(timeoutId);
+  }, [promoCode]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,8 +68,8 @@ const SimplifiedRegisterForm = () => {
       return;
     }
     
-    if (password.length < 6) {
-      toast.error(t('passwordTooShort'));
+    if (promoCode && promoValidation && !promoValidation.isValid) {
+      toast.error(`Promo kód je neplatný: ${promoValidation.error}`);
       return;
     }
 
@@ -146,17 +176,70 @@ const SimplifiedRegisterForm = () => {
 
       <div className="space-y-2">
         <Label htmlFor="promoCode">{t('promoCode') || 'Promo kód'} ({t('optional') || 'volitelné'})</Label>
-        <Input
-          id="promoCode"
-          type="text"
-          value={promoCode}
-          onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-          placeholder=""
-          disabled={isLoading}
-        />
-        {promoCode && (
+        <div className="relative">
+          <Input
+            id="promoCode"
+            type="text"
+            value={promoCode}
+            onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+            placeholder="Zadejte promo kód"
+            disabled={isLoading}
+            className={`${
+              promoCode && promoValidation?.isValid === false ? 'border-destructive' :
+              promoCode && promoValidation?.isValid === true ? 'border-green-500' : ''
+            }`}
+          />
+          {promoCode && (
+            <div className="absolute right-2 top-1/2 -translate-y-1/2">
+              {isValidatingPromo ? (
+                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+              ) : promoValidation?.isValid ? (
+                <CheckCircle className="h-4 w-4 text-green-500" />
+              ) : promoValidation?.isValid === false ? (
+                <XCircle className="h-4 w-4 text-destructive" />
+              ) : null}
+            </div>
+          )}
+        </div>
+        
+        {/* Promo code validation feedback */}
+        {promoCode && promoValidation && (
+          <div className="space-y-1">
+            {promoValidation.isValid ? (
+              <div className="flex items-center gap-2 text-sm text-green-600">
+                <CheckCircle className="h-4 w-4" />
+                <span>
+                  {promoValidation.isCompanyCode ? (
+                    <>
+                      <strong>{promoValidation.company?.toUpperCase()} firemní kód</strong>
+                      {promoValidation.codeInfo?.name && ` - ${promoValidation.codeInfo.name}`}
+                      <br />
+                      <span className="text-xs">Premium na {promoValidation.premiumMonths} měsíců</span>
+                    </>
+                  ) : (
+                    `Premium kód platný na ${promoValidation.premiumMonths} měsíců`
+                  )}
+                </span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 text-sm text-destructive">
+                <XCircle className="h-4 w-4" />
+                <span>{promoValidation.error}</span>
+              </div>
+            )}
+            
+            {promoValidation.isValid && promoValidation.codeInfo?.description && (
+              <div className="flex items-start gap-2 text-xs text-muted-foreground">
+                <Info className="h-3 w-3 mt-0.5 flex-shrink-0" />
+                <span>{promoValidation.codeInfo.description}</span>
+              </div>
+            )}
+          </div>
+        )}
+        
+        {!promoCode && (
           <p className="text-sm text-muted-foreground">
-            {t('promoCodeNote') || 'Promo kód bude ověřen po registraci'}
+            {t('promoCodeNote') || 'Můžete zadat firemní promo kód pro speciální funkce'}
           </p>
         )}
       </div>

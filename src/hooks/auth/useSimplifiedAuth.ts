@@ -74,10 +74,28 @@ export const useSimplifiedAuth = () => {
     };
   }, []);
 
-  // Simplified sign up with auto-login
+  // Simplified sign up with pre-validation and enhanced company handling
   const signUp = async (email: string, password: string, username?: string, promoCode?: string) => {
     try {
       console.log('Starting simplified sign up for:', email);
+      
+      let companyFromPromo = null;
+      let validatedPromoCode = null;
+
+      // Pre-validate promo code if provided
+      if (promoCode) {
+        const { validatePromoCodePreRegistration } = await import('@/utils/promoCodeValidation');
+        const validation = await validatePromoCodePreRegistration(promoCode);
+        
+        if (validation.isValid && validation.isCompanyCode) {
+          companyFromPromo = validation.company;
+          validatedPromoCode = validation;
+          console.log('Promo code pre-validated:', validation);
+        } else if (!validation.isValid) {
+          // If promo code is invalid, show error and stop registration
+          return { error: validation.error || 'Neplatný promo kód', user: null };
+        }
+      }
       
       const redirectUrl = `${window.location.origin}/`;
       
@@ -89,6 +107,7 @@ export const useSimplifiedAuth = () => {
           data: {
             username: username || email.split('@')[0],
             promo_code: promoCode || null,
+            company: companyFromPromo || null, // Include company from promo validation
           }
         }
       });
@@ -101,26 +120,15 @@ export const useSimplifiedAuth = () => {
       if (data.user) {
         console.log('Sign up successful, user:', data.user.email);
         
-        // Apply promo code benefits if provided
-        if (promoCode && data.user.id) {
-          setTimeout(async () => {
-            const { validatePromoCode, applyPromoCodeBenefits } = await import('@/utils/promoCodeValidation');
-            const validation = await validatePromoCode(promoCode);
-            if (validation.isValid) {
-              await applyPromoCodeBenefits(data.user.id, validation);
-              if (validation.isCompanyCode) {
-                toast.success(`Firemní účet byl nastaven! Získáváte ${validation.premiumMonths} měsíců premium.`);
-              } else {
-                toast.success(`Premium aktivováno na ${validation.premiumMonths} měsíců!`);
-              }
-            } else if (validation.error) {
-              toast.warning(`Promo kód "${promoCode}" je neplatný: ${validation.error}`);
-            }
-          }, 1000);
+        // Show success message based on promo code validation
+        if (validatedPromoCode && validatedPromoCode.isCompanyCode) {
+          toast.success(`Firemní účet byl nastaven! (${validatedPromoCode.company?.toUpperCase()}) - Získáváte ${validatedPromoCode.premiumMonths} měsíců premium.`);
+        } else if (validatedPromoCode) {
+          toast.success(`Premium aktivováno na ${validatedPromoCode.premiumMonths} měsíců!`);
         }
         
+        // The database trigger should handle all the setup now
         // If user is immediately confirmed, they'll be auto-logged in via onAuthStateChange
-        // If not confirmed, they need to check email first - using fallback translation
         if (!data.user.email_confirmed_at) {
           toast.info('Zkontrolujte svůj email pro potvrzení účtu');
         }
