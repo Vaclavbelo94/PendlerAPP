@@ -2,58 +2,48 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { useAuth } from "@/hooks/auth";
+import { useSimplifiedAuth } from "@/hooks/auth/useSimplifiedAuth";
 import { Separator } from "@/components/ui/separator";
-import { checkLocalStorageSpace } from "@/utils/authUtils";
 import { useTranslation } from 'react-i18next';
-import { useOAuthCallback } from "@/hooks/auth/useOAuthCallback";
-import EnhancedRegisterForm from "@/components/auth/EnhancedRegisterForm";
+import SimplifiedRegisterForm from "@/components/auth/SimplifiedRegisterForm";
 import GoogleAuthButton from "@/components/auth/GoogleAuthButton";
-import StorageWarning from "@/components/auth/StorageWarning";
 import UnifiedNavbar from "@/components/layouts/UnifiedNavbar";
 import { NavbarRightContent } from "@/components/layouts/NavbarPatch";
 
 const Register = () => {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-  const [storageWarning, setStorageWarning] = useState(false);
   const navigate = useNavigate();
-  const { user, unifiedUser } = useAuth();
+  const { user, isLoading, signInWithGoogle } = useSimplifiedAuth();
   const { t } = useTranslation('auth');
   
-  useOAuthCallback();
-  
+  // Auto-redirect authenticated users
+  useEffect(() => {
+    if (user && !isLoading) {
+      console.log('User already authenticated, redirecting to dashboard');
+      navigate('/dashboard');
+    }
+  }, [user, isLoading, navigate]);
+
+  // Handle OAuth callback URLs
   useEffect(() => {
     const hasOAuthTokens = window.location.href.includes('access_token') || 
                           window.location.href.includes('error');
     
     if (hasOAuthTokens) {
-      console.log('OAuth tokens detected in URL, processing callback...');
+      console.log('OAuth callback detected, processing...');
       setIsGoogleLoading(true);
-      return;
+      
+      // Clear the loading state after a timeout
+      setTimeout(() => {
+        setIsGoogleLoading(false);
+      }, 3000);
     }
-    
-    if (user && unifiedUser) {
-      console.log('User already logged in, redirecting based on role');
-      const redirectPath = unifiedUser.setupRequired ? 
-        (unifiedUser.isDHLEmployee ? '/dhl-setup' : '/setup') : 
-        '/dashboard';
-      navigate(redirectPath);
-      return;
-    }
-    
-    if (!checkLocalStorageSpace()) {
-      setStorageWarning(true);
-    }
-  }, [user, unifiedUser, navigate]);
+  }, []);
 
-  useEffect(() => {
-    const hasOAuthTokens = window.location.href.includes('access_token') || 
-                          window.location.href.includes('error');
-    
-    if (!hasOAuthTokens && isGoogleLoading) {
-      setIsGoogleLoading(false);
-    }
-  }, [isGoogleLoading]);
+  // Don't render form if user is authenticated
+  if (user && !isLoading) {
+    return null; // Will redirect in useEffect
+  }
 
   return (
     <div className="min-h-screen bg-dhl-yellow relative overflow-hidden">
@@ -71,17 +61,13 @@ const Register = () => {
         <Card className="w-full bg-white/90 backdrop-blur-sm border shadow-xl">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl text-dhl-black text-center font-bold">
-              {t('registerTitle')}
+              {t('registerTitle') || 'Vytvořit nový účet'}
             </CardTitle>
             <CardDescription className="text-center text-dhl-black/70">
-              {t('registerDescription')}
+              {t('registerDescription') || 'Zaregistrujte se a začněte používat naši aplikaci'}
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4">
-            {storageWarning && (
-              <StorageWarning onDismiss={() => setStorageWarning(false)} />
-            )}
-            
             <GoogleAuthButton 
               isLoading={isGoogleLoading}
               setIsLoading={setIsGoogleLoading}
@@ -94,18 +80,18 @@ const Register = () => {
               </div>
               <div className="relative flex justify-center text-xs uppercase">
                 <span className="bg-white px-2 text-dhl-black/70">
-                  {t('registerWithEmail')}
+                  {t('registerWithEmail') || 'Nebo se zaregistrujte emailem'}
                 </span>
               </div>
             </div>
             
-            <EnhancedRegisterForm />
+            <SimplifiedRegisterForm />
           </CardContent>
           <CardFooter>
             <div className="text-center w-full text-sm">
-              <span className="text-dhl-black/70">{t('alreadyHaveAccount')} </span>
+              <span className="text-dhl-black/70">{t('alreadyHaveAccount') || 'Už máte účet?'} </span>
               <Link to="/login" className="text-dhl-red underline-offset-4 hover:underline font-medium">
-                {t('login')}
+                {t('login') || 'Přihlášení'}
               </Link>
             </div>
           </CardFooter>
