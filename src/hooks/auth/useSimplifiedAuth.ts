@@ -75,15 +75,19 @@ export const useSimplifiedAuth = () => {
   }, []);
 
   // Simplified sign up with pre-validation and enhanced company handling
-  const signUp = async (email: string, password: string, username?: string, promoCode?: string) => {
+  const signUp = async (email: string, password: string, username?: string, promoCode?: string, detectedCompany?: string | null) => {
     try {
-      console.log('Starting simplified sign up for:', email);
+      console.log('Starting simplified sign up for:', email, 'detected company:', detectedCompany);
       
       let companyFromPromo = null;
       let validatedPromoCode = null;
 
-      // Pre-validate promo code if provided
-      if (promoCode) {
+      // If we have a detected company from URL, use it and skip promo validation
+      if (detectedCompany) {
+        console.log('Using detected company from URL:', detectedCompany);
+        companyFromPromo = detectedCompany;
+      } else if (promoCode) {
+        // Pre-validate promo code if provided and no company detected
         try {
           const { validatePromoCodePreRegistration } = await import('@/utils/promoCodeValidation');
           const validation = await validatePromoCodePreRegistration(promoCode);
@@ -125,8 +129,10 @@ export const useSimplifiedAuth = () => {
       if (data.user) {
         console.log('Sign up successful, user:', data.user.email);
         
-        // Show success message based on promo code validation
-        if (validatedPromoCode && validatedPromoCode.isCompanyCode) {
+        // Show success message based on company detection or promo code validation
+        if (detectedCompany) {
+          toast.success(`${detectedCompany.toUpperCase()} zaměstnanecký účet byl nastaven! Získáváte 12 měsíců premium.`);
+        } else if (validatedPromoCode && validatedPromoCode.isCompanyCode) {
           toast.success(`Firemní účet byl nastaven! (${validatedPromoCode.company?.toUpperCase()}) - Získáváte ${validatedPromoCode.premiumMonths} měsíců premium.`);
         } else if (validatedPromoCode) {
           toast.success(`Premium aktivováno na ${validatedPromoCode.premiumMonths} měsíců!`);

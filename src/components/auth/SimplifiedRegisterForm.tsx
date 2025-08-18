@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useSimplifiedAuth } from "@/hooks/auth/useSimplifiedAuth";
 import { toast } from "sonner";
-import { Eye, EyeOff, Loader2, CheckCircle, XCircle, Info } from "lucide-react";
+import { Eye, EyeOff, Loader2, CheckCircle, XCircle, Info, Building } from "lucide-react";
 import { validatePromoCodePreRegistration } from "@/utils/promoCodeValidation";
 
 const SimplifiedRegisterForm = () => {
@@ -24,9 +25,23 @@ const SimplifiedRegisterForm = () => {
   
   const { signUp } = useSimplifiedAuth();
   const { t } = useTranslation('auth');
+  const location = useLocation();
+  
+  // Detect company from URL path
+  const detectedCompany = location.pathname.includes('/register/dhl') ? 'dhl' : 
+                          location.pathname.includes('/register/adecco') ? 'adecco' :
+                          location.pathname.includes('/register/randstad') ? 'randstad' : null;
+  
+  const isDHLRegistration = detectedCompany === 'dhl';
+  const isCompanyRegistration = !!detectedCompany;
 
-  // Real-time promo code validation
+  // Real-time promo code validation (only for non-company registrations)
   useEffect(() => {
+    if (isCompanyRegistration) {
+      setPromoValidation(null);
+      return;
+    }
+    
     const validatePromoAsync = async () => {
       if (!promoCode || promoCode.length < 3) {
         setPromoValidation(null);
@@ -52,7 +67,7 @@ const SimplifiedRegisterForm = () => {
     // Debounce validation
     const timeoutId = setTimeout(validatePromoAsync, 500);
     return () => clearTimeout(timeoutId);
-  }, [promoCode]);
+  }, [promoCode, isCompanyRegistration]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,7 +87,7 @@ const SimplifiedRegisterForm = () => {
       return;
     }
     
-    if (promoCode && promoValidation && !promoValidation.isValid) {
+    if (!isCompanyRegistration && promoCode && promoValidation && !promoValidation.isValid) {
       toast.error(`${t('promoCodeInvalid')}: ${promoValidation.error}`);
       return;
     }
@@ -83,7 +98,7 @@ const SimplifiedRegisterForm = () => {
       // Generate username from email
       const username = email.split('@')[0];
       
-      const { error, user } = await signUp(email, password, username, promoCode);
+      const { error, user } = await signUp(email, password, username, isCompanyRegistration ? null : promoCode, detectedCompany);
       
       if (error) {
         console.error('Registration error:', error);
@@ -105,6 +120,20 @@ const SimplifiedRegisterForm = () => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Company Registration Info Banner */}
+      {isDHLRegistration && (
+        <div className="bg-dhl-yellow/10 border border-dhl-yellow/30 rounded-lg p-4 mb-6">
+          <div className="flex items-center gap-3">
+            <Building className="h-5 w-5 text-dhl-red" />
+            <div>
+              <h3 className="font-semibold text-dhl-black">DHL Zaměstnanecká registrace</h3>
+              <p className="text-sm text-dhl-black/70 mt-1">
+                Registrujete se jako DHL zaměstnanec. Automaticky získáte premium přístup na 12 měsíců.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="space-y-2">
         <Label htmlFor="email">{t('email') || 'Email'}</Label>
         <Input
@@ -178,8 +207,10 @@ const SimplifiedRegisterForm = () => {
         </div>
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="promoCode">{t('promoCode') || 'Promo kód'} ({t('optional') || 'volitelné'})</Label>
+      {/* Only show promo code field for non-company registrations */}
+      {!isCompanyRegistration && (
+        <div className="space-y-2">
+          <Label htmlFor="promoCode">{t('promoCode') || 'Promo kód'} ({t('optional') || 'volitelné'})</Label>
         <div className="relative">
           <Input
             id="promoCode"
@@ -241,12 +272,13 @@ const SimplifiedRegisterForm = () => {
           </div>
         )}
         
-        {!promoCode && (
-          <p className="text-sm text-muted-foreground">
-            {t('promoCodeNote') || 'Můžete zadat firemní promo kód pro speciální funkce'}
-          </p>
-        )}
-      </div>
+          {!promoCode && (
+            <p className="text-sm text-muted-foreground">
+              {t('promoCodeNote') || 'Můžete zadat firemní promo kód pro speciální funkce'}
+            </p>
+          )}
+        </div>
+      )}
 
         <div className="flex items-start space-x-2 mb-4">
           <input
