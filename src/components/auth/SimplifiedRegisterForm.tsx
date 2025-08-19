@@ -4,10 +4,13 @@ import { useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useSimplifiedAuth } from "@/hooks/auth/useSimplifiedAuth";
 import { toast } from "sonner";
-import { Eye, EyeOff, Loader2, CheckCircle, XCircle, Info, Building } from "lucide-react";
+import { Eye, EyeOff, Loader2, CheckCircle, XCircle, Info, Building, Users } from "lucide-react";
 import { validatePromoCodePreRegistration } from "@/utils/promoCodeValidation";
+import { CompanyType } from "@/types/auth";
 
 const SimplifiedRegisterForm = () => {
   const [email, setEmail] = useState("");
@@ -19,6 +22,11 @@ const SimplifiedRegisterForm = () => {
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   
+  // New unified registration state
+  const [isEmployee, setIsEmployee] = useState("");
+  const [selectedCompany, setSelectedCompany] = useState("");
+  const [employeeCode, setEmployeeCode] = useState("");
+  
   // Promo code validation state
   const [promoValidation, setPromoValidation] = useState(null);
   const [isValidatingPromo, setIsValidatingPromo] = useState(false);
@@ -27,17 +35,24 @@ const SimplifiedRegisterForm = () => {
   const { t } = useTranslation('auth');
   const location = useLocation();
   
-  // Detect company from URL path
-  const detectedCompany = location.pathname.includes('/register/dhl') ? 'dhl' : 
-                          location.pathname.includes('/register/adecco') ? 'adecco' :
-                          location.pathname.includes('/register/randstad') ? 'randstad' : null;
+  // Detect company from URL path for backward compatibility
+  const urlDetectedCompany = location.pathname.includes('/register/dhl') ? 'dhl' : 
+                            location.pathname.includes('/register/adecco') ? 'adecco' :
+                            location.pathname.includes('/register/randstad') ? 'randstad' : null;
   
-  const isDHLRegistration = detectedCompany === 'dhl';
-  const isCompanyRegistration = !!detectedCompany;
-
-  // Real-time promo code validation (only for non-company registrations)
+  // Auto-fill form if coming from company-specific URL
   useEffect(() => {
-    if (isCompanyRegistration) {
+    if (urlDetectedCompany) {
+      setIsEmployee("yes");
+      setSelectedCompany(urlDetectedCompany);
+    }
+  }, [urlDetectedCompany]);
+  
+  const isCompanyRegistration = isEmployee === "yes";
+
+  // Real-time promo code validation (only for non-employee registrations)
+  useEffect(() => {
+    if (isEmployee === "yes") {
       setPromoValidation(null);
       return;
     }
@@ -52,14 +67,14 @@ const SimplifiedRegisterForm = () => {
       try {
         const validation = await validatePromoCodePreRegistration(promoCode);
         setPromoValidation(validation);
-    } catch (error) {
-      console.error('Promo validation error:', error);
-      setPromoValidation({ 
-        isValid: false, 
-        isCompanyCode: false, 
-        error: t('promoCodeError') || 'Chyba při ověřování' 
-      });
-    } finally {
+      } catch (error) {
+        console.error('Promo validation error:', error);
+        setPromoValidation({ 
+          isValid: false, 
+          isCompanyCode: false, 
+          error: t('promoCodeError') || 'Chyba při ověřování' 
+        });
+      } finally {
         setIsValidatingPromo(false);
       }
     };
@@ -67,28 +82,43 @@ const SimplifiedRegisterForm = () => {
     // Debounce validation
     const timeoutId = setTimeout(validatePromoAsync, 500);
     return () => clearTimeout(timeoutId);
-  }, [promoCode, isCompanyRegistration]);
+  }, [promoCode, isEmployee]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!email || !password || !confirmPassword) {
-      toast.error(t('missingFields'));
+      toast.error(t('missingFields') || 'Vyplňte všechna povinná pole');
+      return;
+    }
+    
+    if (!isEmployee) {
+      toast.error('Vyberte prosím, zda jste zaměstnanec');
+      return;
+    }
+    
+    if (isEmployee === "yes" && !selectedCompany) {
+      toast.error('Vyberte prosím vaši firmu');
+      return;
+    }
+    
+    if (isEmployee === "yes" && !employeeCode.trim()) {
+      toast.error('Zadejte prosím zaměstnanecký kód');
       return;
     }
     
     if (!acceptTerms) {
-      toast.error(t('acceptTermsRequired'));
+      toast.error(t('acceptTermsRequired') || 'Musíte souhlasit s podmínkami');
       return;
     }
     
     if (password !== confirmPassword) {
-      toast.error(t('passwordsDoNotMatch'));
+      toast.error(t('passwordsDoNotMatch') || 'Hesla se neshodují');
       return;
     }
     
-    if (!isCompanyRegistration && promoCode && promoValidation && !promoValidation.isValid) {
-      toast.error(`${t('promoCodeInvalid')}: ${promoValidation.error}`);
+    if (isEmployee === "no" && promoCode && promoValidation && !promoValidation.isValid) {
+      toast.error(`${t('promoCodeInvalid') || 'Neplatný promo kód'}: ${promoValidation.error}`);
       return;
     }
 
@@ -98,7 +128,11 @@ const SimplifiedRegisterForm = () => {
       // Generate username from email
       const username = email.split('@')[0];
       
-      const { error, user } = await signUp(email, password, username, isCompanyRegistration ? null : promoCode, detectedCompany);
+      // Use employee code as promo code for employees, otherwise use regular promo code
+      const codeToUse = isEmployee === "yes" ? employeeCode : promoCode;
+      const companyToUse = isEmployee === "yes" ? selectedCompany : null;
+      
+      const { error, user } = await signUp(email, password, username, codeToUse, companyToUse);
       
       if (error) {
         console.error('Registration error:', error);
@@ -118,22 +152,29 @@ const SimplifiedRegisterForm = () => {
     }
   };
 
+  const companies = [
+    { 
+      value: CompanyType.DHL, 
+      label: "DHL", 
+      color: "bg-dhl-yellow text-dhl-black",
+      icon: "🚛"
+    },
+    { 
+      value: CompanyType.ADECCO, 
+      label: "Adecco", 
+      color: "bg-blue-500 text-white",
+      icon: "👥"
+    },
+    { 
+      value: CompanyType.RANDSTAD, 
+      label: "Randstad", 
+      color: "bg-orange-500 text-white",
+      icon: "🏢"
+    }
+  ];
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      {/* Company Registration Info Banner */}
-      {isDHLRegistration && (
-        <div className="bg-dhl-yellow/10 border border-dhl-yellow/30 rounded-lg p-4 mb-6">
-          <div className="flex items-center gap-3">
-            <Building className="h-5 w-5 text-dhl-red" />
-            <div>
-              <h3 className="font-semibold text-dhl-black">DHL Zaměstnanecká registrace</h3>
-              <p className="text-sm text-dhl-black/70 mt-1">
-                Registrujete se jako DHL zaměstnanec. Automaticky získáte premium přístup na 12 měsíců.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
+    <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-2">
         <Label htmlFor="email">{t('email') || 'Email'}</Label>
         <Input
@@ -207,8 +248,75 @@ const SimplifiedRegisterForm = () => {
         </div>
       </div>
 
-      {/* Only show promo code field for non-company registrations */}
-      {!isCompanyRegistration && (
+      {/* Employee/User Type Selection */}
+      <div className="space-y-4">
+        <Label className="text-base font-medium flex items-center gap-2">
+          <Users className="h-4 w-4" />
+          Jste zaměstnanec některé z našich partnerských firem?
+        </Label>
+        <RadioGroup
+          value={isEmployee}
+          onValueChange={setIsEmployee}
+          className="flex gap-6"
+        >
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="no" id="regular-user" />
+            <Label htmlFor="regular-user" className="font-normal">Ne, jsem běžný uživatel</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="yes" id="employee" />
+            <Label htmlFor="employee" className="font-normal">Ano, jsem zaměstnanec</Label>
+          </div>
+        </RadioGroup>
+      </div>
+
+      {/* Company Selection for Employees */}
+      {isEmployee === "yes" && (
+        <div className="space-y-4 p-4 bg-muted/30 rounded-lg border">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Building className="h-4 w-4" />
+            <span>Zaměstnanecká registrace - automaticky získáte premium přístup</span>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="company">Vyberte vaši firmu</Label>
+            <Select value={selectedCompany} onValueChange={setSelectedCompany}>
+              <SelectTrigger>
+                <SelectValue placeholder="Vyberte firmu..." />
+              </SelectTrigger>
+              <SelectContent>
+                {companies.map((company) => (
+                  <SelectItem key={company.value} value={company.value}>
+                    <div className="flex items-center gap-2">
+                      <span>{company.icon}</span>
+                      <span>{company.label}</span>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="employeeCode">Zaměstnanecký kód</Label>
+            <Input
+              id="employeeCode"
+              type="text"
+              value={employeeCode}
+              onChange={(e) => setEmployeeCode(e.target.value.toUpperCase())}
+              placeholder="Zadejte váš zaměstnanecký kód"
+              disabled={isLoading}
+              required
+            />
+            <p className="text-sm text-muted-foreground">
+              Zadejte speciální kód poskytnutý vaší firmou
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Promo Code for Regular Users */}
+      {isEmployee === "no" && (
         <div className="space-y-2">
           <Label htmlFor="promoCode">{t('promoCode') || 'Promo kód'} ({t('optional') || 'volitelné'})</Label>
         <div className="relative">

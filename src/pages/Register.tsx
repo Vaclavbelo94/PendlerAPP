@@ -46,24 +46,24 @@ const Register = () => {
   }
 
   return (
-    <div className="min-h-screen bg-dhl-yellow relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-background to-muted relative overflow-hidden">
       {/* Navigation */}
       <UnifiedNavbar rightContent={<NavbarRightContent />} />
       
-      {/* Background decorations with DHL theme */}
+      {/* Background decorations */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-dhl-red/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-dhl-black/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-dhl-red/5 rounded-full blur-3xl animate-pulse delay-500"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-secondary/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-accent/5 rounded-full blur-3xl animate-pulse delay-500"></div>
       </div>
       
-      <div className="relative container max-w-md mx-auto py-16 px-4">
-        <Card className="w-full bg-white/90 backdrop-blur-sm border shadow-xl">
+      <div className="relative container max-w-lg mx-auto py-8 px-4">
+        <Card className="w-full bg-card/95 backdrop-blur-sm border shadow-xl">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl text-dhl-black text-center font-bold">
+            <CardTitle className="text-2xl text-center font-bold">
               {t('registerTitle') || 'Vytvořit nový účet'}
             </CardTitle>
-            <CardDescription className="text-center text-dhl-black/70">
+            <CardDescription className="text-center">
               {t('registerDescription') || 'Zaregistrujte se a začněte používat naši aplikaci'}
             </CardDescription>
           </CardHeader>
@@ -76,10 +76,10 @@ const Register = () => {
             
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <Separator className="w-full bg-dhl-black/20" />
+                <Separator className="w-full" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white px-2 text-dhl-black/70">
+                <span className="bg-card px-2 text-muted-foreground">
                   {t('registerWithEmail') || 'Nebo se zaregistrujte emailem'}
                 </span>
               </div>
@@ -89,8 +89,8 @@ const Register = () => {
           </CardContent>
           <CardFooter>
             <div className="text-center w-full text-sm">
-              <span className="text-dhl-black/70">{t('alreadyHaveAccount') || 'Už máte účet?'} </span>
-              <Link to="/login" className="text-dhl-red underline-offset-4 hover:underline font-medium">
+              <span className="text-muted-foreground">{t('alreadyHaveAccount') || 'Už máte účet?'} </span>
+              <Link to="/login" className="text-primary underline-offset-4 hover:underline font-medium">
                 {t('login') || 'Přihlášení'}
               </Link>
             </div>
