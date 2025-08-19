@@ -15,3 +15,6 @@ verify_jwt = false
 
 [functions.validate-promo-code]
 verify_jwt = false
+
+[functions.export-calendar]
+verify_jwt = true

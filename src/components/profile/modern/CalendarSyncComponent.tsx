@@ -5,6 +5,7 @@ import { Calendar, Download, Smartphone, Computer } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/auth';
+import { supabase } from '@/integrations/supabase/client';
 
 interface CalendarSyncComponentProps {
   isOpen: boolean;
@@ -26,23 +27,22 @@ export const CalendarSyncComponent: React.FC<CalendarSyncComponentProps> = ({
     try {
       setIsExporting(true);
 
-      // This would call an edge function to generate calendar data
-      const response = await fetch('/api/export-calendar', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user.id}`
-        },
-        body: JSON.stringify({
-          userId: user.id,
-          format
-        })
+      // First show generating shifts message
+      toast({
+        title: t('generatingShifts'),
+        description: t('activatingShifts'),
       });
 
-      if (!response.ok) throw new Error('Export failed');
+      // Call Supabase edge function to generate and export calendar
+      const { data, error } = await supabase.functions.invoke('export-calendar', {
+        body: { format }
+      });
+
+      if (error) throw new Error(error.message || 'Export failed');
 
       if (format === 'ics') {
-        const blob = await response.blob();
+        // For ICS format, the data is already the ICS content
+        const blob = new Blob([data], { type: 'text/calendar' });
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -58,8 +58,12 @@ export const CalendarSyncComponent: React.FC<CalendarSyncComponentProps> = ({
         });
       } else {
         // Handle Google Calendar integration
-        const data = await response.json();
         window.open(data.googleCalendarUrl, '_blank');
+        
+        toast({
+          title: t('calendarExported'),
+          description: t('calendarExportedDescription'),
+        });
       }
 
       onClose();
