@@ -28,6 +28,17 @@ export const useUserAddresses = () => {
       // DHL work address constant
       const dhlWorkAddress = "DHL-Ottendorf, Bergener Ring 2, 01458 Ottendorf-Okrilla, Německo";
       
+      // Debug logging for traffic monitoring
+      console.log('🏠 useUserAddresses Debug:', {
+        workDataHomeAddress: workData.home_address,
+        preferencesHomeAddress: preferences.homeAddress,
+        workDataWorkLocation: workData.workplace_location,
+        preferencesWorkAddress: preferences.workAddress,
+        isDHLEmployee: unifiedUser?.isDHLEmployee,
+        dhlWorkAddress,
+        unifiedUser
+      });
+      
       setAddresses({
         homeAddress: workData.home_address || preferences.homeAddress || '',
         workAddress: unifiedUser?.isDHLEmployee ? dhlWorkAddress : (workData.workplace_location || preferences.workAddress || ''),

@@ -34,7 +34,7 @@ interface RideRequest {
 }
 
 const RideRequestsSection = () => {
-  const { t } = useTranslation('travel');
+  const { t } = useTranslation('profile');
   const { user } = useAuth();
   const [requests, setRequests] = useState<RideRequest[]>([]);
   const [loading, setLoading] = useState(true);
