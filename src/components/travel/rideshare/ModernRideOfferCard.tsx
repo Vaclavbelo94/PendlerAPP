@@ -1,14 +1,25 @@
-
 import React from 'react';
-import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Clock, MapPin, Calendar, Users, MessageCircle, Star, Phone, Trash2 } from "lucide-react";
-import { RideshareOfferWithDriver } from "@/services/rideshareService";
-import { useTranslation } from 'react-i18next';
-import { getCountryConfig, formatCurrency, formatDate, formatTime, getDriverDisplayName } from '@/utils/enhancedCountryUtils';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { 
+  MapPin, 
+  Clock, 
+  Users, 
+  Euro,
+  Calendar,
+  MessageCircle,
+  Phone,
+  Trash2,
+  Star,
+  ArrowRight
+} from 'lucide-react';
 import { motion } from 'framer-motion';
+import { RideshareOfferWithDriver } from '@/services/rideshareService';
+import { formatDate } from '@/utils/enhancedCountryUtils';
+import { useTranslation } from 'react-i18next';
+import { convertPrice, formatCurrencyWithSymbol, getDefaultCurrencyByLanguage } from '@/utils/currencyUtils';
 
 interface ModernRideOfferCardProps {
   ride: RideshareOfferWithDriver;
@@ -18,165 +29,201 @@ interface ModernRideOfferCardProps {
   currentUserId?: string;
 }
 
-const ModernRideOfferCard: React.FC<ModernRideOfferCardProps> = ({ 
-  ride, 
-  onContact, 
+const ModernRideOfferCard: React.FC<ModernRideOfferCardProps> = ({
+  ride,
+  onContact,
   onDelete,
   isAuthenticated,
   currentUserId
 }) => {
   const { t, i18n } = useTranslation('travel');
-  const countryConfig = getCountryConfig(i18n.language);
+  
+  const isOwner = currentUserId === ride.user_id;
+  const formattedDate = formatDate(ride.departure_date, i18n.language);
+  
+  // Get user's preferred currency based on language
+  const userCurrency = getDefaultCurrencyByLanguage(i18n.language);
+  
+  // Format price with currency conversion
+  let formattedPrice = '';
+  let convertedPrice = '';
+  
+  if (ride.price_per_person === 0) {
+    formattedPrice = t('free');
+  } else {
+    // Original price
+    formattedPrice = formatCurrencyWithSymbol(ride.price_per_person, ride.currency);
+    
+    // Converted price if different currency
+    if (ride.currency !== userCurrency) {
+      const converted = convertPrice(ride.price_per_person, ride.currency, userCurrency);
+      convertedPrice = formatCurrencyWithSymbol(converted, userCurrency);
+    }
+  }
 
-  const driverName = getDriverDisplayName(ride.driver, t);
-  const driverInitials = driverName.split(' ').map(n => n[0]).join('').toUpperCase();
-  const isOwnOffer = currentUserId === ride.user_id;
+  const handleCall = () => {
+    if (ride.driver.phone_number) {
+      window.open(`tel:${ride.driver.phone_number}`);
+    }
+  };
+
+  const getDriverInitials = (username: string) => {
+    if (!username || username.trim() === '') return 'NU';
+    return username.substring(0, 2).toUpperCase();
+  };
+
+  const displayDriverName = ride.driver.username || t('unknownDriver');
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.3 }}
-      whileHover={{ y: -2 }}
-      className="group"
+      whileHover={{ scale: 1.02 }}
+      className="w-full"
     >
-      <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 border-0 bg-gradient-to-br from-card to-card/80 backdrop-blur-sm">
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
+      <Card className="overflow-hidden border-0 shadow-lg bg-gradient-to-br from-card via-card/95 to-card/90 hover:shadow-2xl transition-all duration-500 hover:border-primary/20 group">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        <CardContent className="p-6 relative">
+          {/* Header with Driver Info and Price */}
+          <div className="flex items-start justify-between mb-4">
             <div className="flex items-center gap-3">
-              <Avatar className="h-10 w-10 border-2 border-primary/20">
-                <AvatarImage src={`https://avatar.vercel.sh/${driverName}`} />
-                <AvatarFallback className="bg-primary/10 text-primary font-medium">
-                  {driverInitials}
+              <Avatar className="h-14 w-14 ring-2 ring-primary/20 shadow-lg">
+                <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20 text-primary font-bold text-lg">
+                  {getDriverInitials(displayDriverName)}
                 </AvatarFallback>
               </Avatar>
-              <div className="text-left">
-                <h3 className="font-semibold text-foreground">{driverName}</h3>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  {ride.driver?.rating && (
-                    <div className="flex items-center gap-1">
+              
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="font-bold text-lg text-foreground">{displayDriverName}</h3>
+                  {ride.driver.rating && (
+                    <div className="flex items-center gap-1 bg-yellow-50 dark:bg-yellow-900/20 px-2 py-1 rounded-full">
                       <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                      <span>{ride.driver.rating.toFixed(1)}</span>
+                      <span className="text-xs font-medium text-yellow-600 dark:text-yellow-400">
+                        {ride.driver.rating.toFixed(1)}
+                      </span>
                     </div>
                   )}
-                  {ride.driver?.completed_rides && (
-                    <span>• {ride.driver.completed_rides} {t('rides')}</span>
+                </div>
+                
+                <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-1">
+                    <Users className="h-4 w-4" />
+                    <span className="font-medium">{ride.seats_available} {t('seats')}</span>
+                  </div>
+                  {ride.driver.completed_rides && ride.driver.completed_rides > 0 && (
+                    <Badge variant="secondary" className="text-xs px-2">
+                      {ride.driver.completed_rides} {t('rides')}
+                    </Badge>
                   )}
                 </div>
               </div>
             </div>
-            
-            <div className="flex items-center gap-2">
-              <Badge variant="secondary" className="flex items-center gap-1">
-                <Users className="h-3 w-3" />
-                {ride.seats_available}
-              </Badge>
-              {ride.price_per_person === 0 && (
-                <Badge variant="outline" className="text-green-600 border-green-600">
-                  {t('free')}
-                </Badge>
+
+            {/* Price Display */}
+            <div className="text-right">
+              <div className="flex items-center gap-1 font-bold text-xl text-primary mb-1">
+                <Euro className="h-5 w-5" />
+                <span>{formattedPrice}</span>
+              </div>
+              {convertedPrice && (
+                <div className="text-sm text-muted-foreground">
+                  ({convertedPrice})
+                </div>
               )}
+              <div className="text-xs text-muted-foreground mt-1">
+                {t('perPerson')}
+              </div>
             </div>
           </div>
-        </CardHeader>
 
-        <CardContent className="pb-4">
-          <div className="space-y-4">
-            {/* Route Information */}
-            <div className="space-y-3">
-              <div className="flex items-start gap-3">
-                <div className="flex flex-col items-center">
-                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                  <div className="w-0.5 h-8 bg-muted-foreground/20 my-1"></div>
-                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+          {/* Enhanced Route Display */}
+          <div className="mb-4 p-4 rounded-xl bg-gradient-to-r from-muted/40 via-muted/20 to-muted/40 border border-border/30">
+            <div className="flex items-center gap-3">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-3 h-3 rounded-full bg-primary"></div>
+                  <span className="text-sm font-medium text-primary">{t('from')}</span>
                 </div>
-                <div className="flex-1 space-y-3">
-                  <div className="text-left">
-                    <p className="text-sm font-medium text-foreground">{t('from')}</p>
-                    <p className="text-sm text-muted-foreground line-clamp-1">
-                      {ride.origin_address}
-                    </p>
-                  </div>
-                  <div className="text-left">
-                    <p className="text-sm font-medium text-foreground">{t('to')}</p>
-                    <p className="text-sm text-muted-foreground line-clamp-1">
-                      {ride.destination_address}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Trip Details */}
-            <div className="grid grid-cols-2 gap-4 pt-3 border-t border-border/50">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <span className="font-medium">{formatDate(ride.departure_date, i18n.language)}</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Clock className="h-4 w-4 text-muted-foreground" />
-                  <span className="font-medium">{formatTime(ride.departure_time, i18n.language)}</span>
-                </div>
+                <p className="text-sm font-semibold truncate pl-5">{ride.origin_address}</p>
               </div>
               
-              {ride.price_per_person > 0 && (
-                <div className="text-right">
-                  <p className="text-sm text-muted-foreground text-right">{t('pricePerPerson')}</p>
-                  <p className="text-lg font-bold text-primary text-right">
-                    {formatCurrency(ride.price_per_person, i18n.language)}
-                  </p>
-                </div>
-              )}
-            </div>
-
-            {/* Notes */}
-            {ride.notes && (
-              <div className="pt-3 border-t border-border/50">
-                <p className="text-sm text-muted-foreground italic">
-                  "{ride.notes}"
-                </p>
+              <div className="flex-shrink-0 px-3">
+                <ArrowRight className="h-5 w-5 text-muted-foreground" />
               </div>
+              
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-3 h-3 rounded-full bg-destructive"></div>
+                  <span className="text-sm font-medium text-destructive">{t('to')}</span>
+                </div>
+                <p className="text-sm font-semibold truncate pl-5">{ride.destination_address}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Trip Details with Enhanced Design */}
+          <div className="flex flex-wrap items-center gap-4 text-sm mb-4">
+            <div className="flex items-center gap-2 bg-primary/10 px-3 py-2 rounded-lg">
+              <Calendar className="h-4 w-4 text-primary" />
+              <span className="font-medium">{formattedDate}</span>
+            </div>
+            <div className="flex items-center gap-2 bg-accent/10 px-3 py-2 rounded-lg">
+              <Clock className="h-4 w-4 text-accent-foreground" />
+              <span className="font-medium">{ride.departure_time}</span>
+            </div>
+          </div>
+
+          {/* Notes */}
+          {ride.notes && (
+            <div className="mb-4 p-3 bg-muted/30 rounded-lg border-l-4 border-primary/30">
+              <p className="text-sm text-muted-foreground italic">{ride.notes}</p>
+            </div>
+          )}
+
+          {/* Action Buttons */}
+          <div className="flex items-center gap-3 pt-2 border-t border-border/30">
+            {!isOwner ? (
+              <>
+                {ride.driver.phone_number && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleCall}
+                    className="flex items-center gap-2 hover:bg-green-50 hover:text-green-700 hover:border-green-300 dark:hover:bg-green-950 dark:hover:text-green-400 transition-all duration-200"
+                  >
+                    <Phone className="h-4 w-4" />
+                    <span>{t('call')}</span>
+                  </Button>
+                )}
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={() => onContact(ride)}
+                  disabled={!isAuthenticated}
+                  className="flex items-center gap-2 flex-1 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg"
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  <span>{t('contactDriver')}</span>
+                </Button>
+              </>
+            ) : (
+              onDelete && (
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => onDelete(ride.id)}
+                  className="flex items-center gap-2 ml-auto hover:bg-red-600 transition-colors"
+                >
+                  <Trash2 className="h-4 w-4" />
+                  <span>{t('deleteOffer')}</span>
+                </Button>
+              )
             )}
           </div>
         </CardContent>
-
-        <CardFooter className="pt-0">
-          <div className="flex gap-2 w-full">
-            {!isOwnOffer ? (
-              <>
-                <Button 
-                  className="flex-1 group-hover:shadow-md transition-shadow" 
-                  onClick={() => onContact(ride)}
-                  disabled={!isAuthenticated}
-                >
-                  <MessageCircle className="h-4 w-4 mr-2" />
-                  {t('contactDriver')}
-                </Button>
-                
-                {ride.driver?.phone_number && (
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="shrink-0"
-                    onClick={() => window.open(`tel:${ride.driver.phone_number}`)}
-                  >
-                    <Phone className="h-4 w-4" />
-                  </Button>
-                )}
-              </>
-            ) : (
-              <Button 
-                variant="destructive"
-                className="flex-1"
-                onClick={() => onDelete?.(ride.id)}
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                {t('deleteOffer')}
-              </Button>
-            )}
-          </div>
-        </CardFooter>
       </Card>
     </motion.div>
   );
