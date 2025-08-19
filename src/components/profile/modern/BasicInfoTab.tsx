@@ -8,6 +8,7 @@ import { User, Mail, Phone, MapPin, Lock, Edit3, Save, X } from 'lucide-react';
 import { useAuth } from '@/hooks/auth';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '@/hooks/use-toast';
+import { useWorkData } from '@/hooks/useWorkData';
 import { supabase } from '@/integrations/supabase/client';
 import { PasswordChangeModal } from './PasswordChangeModal';
 import { motion } from 'framer-motion';
@@ -16,6 +17,7 @@ export const BasicInfoTab: React.FC = () => {
   const { user, unifiedUser } = useAuth();
   const { t } = useTranslation('profile');
   const { toast } = useToast();
+  const { saveWorkData } = useWorkData();
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
@@ -84,6 +86,33 @@ export const BasicInfoTab: React.FC = () => {
         });
 
       if (extendedError) throw extendedError;
+
+      // Synchronize home address to work data and travel preferences for DHL employees
+      if (unifiedUser?.isDHLEmployee && formData.location) {
+        try {
+          await saveWorkData({
+            home_address: formData.location,
+            workplace_location: "DHL-Ottendorf, Bergener Ring 2, 01458 Ottendorf-Okrilla, Německo",
+            hourly_wage: 0,
+            phone_number: formData.phone_number,
+            phone_country_code: '+49'
+          });
+
+          // Synchronize with travel preferences
+          const { error: travelError } = await supabase
+            .from('user_travel_preferences')
+            .upsert({
+              user_id: user.id,
+              home_address: formData.location,
+              work_address: "DHL-Ottendorf, Bergener Ring 2, 01458 Ottendorf-Okrilla, Německo",
+              updated_at: new Date().toISOString()
+            });
+
+          if (travelError) console.warn('Travel preferences sync warning:', travelError);
+        } catch (syncError) {
+          console.warn('Address sync warning:', syncError);
+        }
+      }
 
       toast({
         title: t('profileUpdated'),

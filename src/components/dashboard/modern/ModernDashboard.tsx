@@ -13,10 +13,14 @@ import DashboardStats from './DashboardStats';
 import DashboardDHLSection from './DashboardDHLSection';
 import { useOptimizedOnboarding } from '@/hooks/useOptimizedOnboarding';
 import { useOptimizedDHLData } from '@/hooks/dhl/useOptimizedDHLData';
+import { useDHLAutoSetup } from '@/hooks/useDHLAutoSetup';
 
 const ModernDashboard: React.FC = () => {
   const { user, unifiedUser } = useAuth();
   const { t } = useTranslation(['dashboard']);
+  
+  // Auto-setup DHL employee data
+  useDHLAutoSetup();
   
   // Get userAssignment - but only load if user is DHL employee to prevent unnecessary calls
   const { userAssignment } = useOptimizedDHLData(unifiedUser?.isDHLEmployee ? user?.id : null);

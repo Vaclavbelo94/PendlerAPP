@@ -11,12 +11,12 @@ import { useAuth } from '@/hooks/auth';
 
 const EnhancedCommuteOptimizer: React.FC = () => {
   const { t } = useTranslation('travel');
-  const { user } = useAuth();
+  const { unifiedUser } = useAuth();
   const [origin, setOrigin] = useState('');
   const [destination, setDestination] = useState('');
   
   // Check if user is DHL employee
-  const isDHLUser = user?.user_metadata?.company === 'dhl' || false;
+  const isDHLUser = unifiedUser?.isDHLEmployee || false;
 
   const handleRouteUpdate = (newOrigin: string, newDestination: string) => {
     setOrigin(newOrigin);
