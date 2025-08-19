@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { LogIn, UserPlus, Building, MapPin } from 'lucide-react';
+import { LogIn, UserPlus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 const AnimatedWelcome: React.FC = () => {
@@ -22,13 +22,6 @@ const AnimatedWelcome: React.FC = () => {
       label: t('signUp'),
       action: () => navigate('/register'),
       variant: 'outline' as const,
-      primary: false
-    },
-    {
-      icon: Building,
-      label: t('employeeRegistration'),
-      action: () => navigate('/company-selector'),
-      variant: 'secondary' as const,
       primary: false
     }
   ];
