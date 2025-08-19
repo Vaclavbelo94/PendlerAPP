@@ -11,7 +11,7 @@ import {
   Calendar, 
   Calculator, 
   Car, 
-  Languages, 
+  Map, 
   Activity,
   Plus,
   ArrowRight
@@ -24,7 +24,7 @@ interface DashboardCardsProps {
 
 const DashboardCards: React.FC<DashboardCardsProps> = ({ isDHLUser }) => {
   const { user } = useAuth();
-  const { t } = useTranslation(['dashboard', 'common']);
+  const { t } = useTranslation(['dashboard', 'common', 'travel']);
   const navigate = useNavigate();
 
   // Main 2x2 grid widgets - simplified to 4 main functions
@@ -63,15 +63,15 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ isDHLUser }) => {
       path: '/vehicle'
     },
     {
-      id: 'translator',
-      title: t('dashboard:languageTools'),
-      description: t('dashboard:translateAndLearn'),
-      icon: Languages,
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-50',
-      borderColor: 'border-orange-100',
-      hoverColor: 'hover:border-orange-200',
-      path: '/translator'
+      id: 'travel',
+      title: t('travel:travelPlanning'),
+      description: t('travel:travelDescription'),
+      icon: Map,
+      color: 'text-teal-600',
+      bgColor: 'bg-teal-50',
+      borderColor: 'border-teal-100',
+      hoverColor: 'hover:border-teal-200',
+      path: '/travel'
     }
   ];
 
