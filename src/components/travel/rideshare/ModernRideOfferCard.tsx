@@ -48,16 +48,22 @@ const ModernRideOfferCard: React.FC<ModernRideOfferCardProps> = ({
   let formattedPrice = '';
   let convertedPrice = '';
   
-  if (ride.price_per_person === 0) {
+  if (!ride.price_per_person || ride.price_per_person === 0) {
     formattedPrice = t('free');
   } else {
-    // Original price
-    formattedPrice = formatCurrencyWithSymbol(ride.price_per_person, ride.currency);
-    
-    // Converted price if different currency
-    if (ride.currency !== userCurrency) {
-      const converted = convertPrice(ride.price_per_person, ride.currency, userCurrency);
-      convertedPrice = formatCurrencyWithSymbol(converted, userCurrency);
+    try {
+      // Original price with fallback currency
+      const currency = ride.currency || 'EUR';
+      formattedPrice = formatCurrencyWithSymbol(ride.price_per_person, currency);
+      
+      // Converted price if different currency
+      if (currency !== userCurrency) {
+        const converted = convertPrice(ride.price_per_person, currency, userCurrency);
+        convertedPrice = formatCurrencyWithSymbol(converted, userCurrency);
+      }
+    } catch (error) {
+      console.error('Error formatting price:', error);
+      formattedPrice = `${ride.price_per_person} €`;
     }
   }
 
@@ -85,21 +91,21 @@ const ModernRideOfferCard: React.FC<ModernRideOfferCardProps> = ({
     >
       <Card className="overflow-hidden border-0 shadow-lg bg-gradient-to-br from-card via-card/95 to-card/90 hover:shadow-2xl transition-all duration-500 hover:border-primary/20 group">
         <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-        <CardContent className="p-6 relative">
+        <CardContent className="p-4 sm:p-6 relative">
           {/* Header with Driver Info and Price */}
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <Avatar className="h-14 w-14 ring-2 ring-primary/20 shadow-lg">
-                <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20 text-primary font-bold text-lg">
+          <div className="flex flex-col sm:flex-row items-start justify-between mb-4 gap-3">
+            <div className="flex items-center gap-3 flex-1 min-w-0">
+              <Avatar className="h-12 w-12 sm:h-14 sm:w-14 ring-2 ring-primary/20 shadow-lg flex-shrink-0">
+                <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20 text-primary font-bold text-sm sm:text-lg">
                   {getDriverInitials(displayDriverName)}
                 </AvatarFallback>
               </Avatar>
               
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <h3 className="font-bold text-lg text-foreground">{displayDriverName}</h3>
-                  {ride.driver.rating && (
-                    <div className="flex items-center gap-1 bg-yellow-50 dark:bg-yellow-900/20 px-2 py-1 rounded-full">
+              <div className="flex-1 min-w-0">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-1">
+                  <h3 className="font-bold text-base sm:text-lg text-foreground truncate">{displayDriverName}</h3>
+                  {ride.driver.rating && ride.driver.rating > 0 && (
+                    <div className="flex items-center gap-1 bg-yellow-50 dark:bg-yellow-900/20 px-2 py-1 rounded-full self-start">
                       <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
                       <span className="text-xs font-medium text-yellow-600 dark:text-yellow-400">
                         {ride.driver.rating.toFixed(1)}
@@ -108,10 +114,10 @@ const ModernRideOfferCard: React.FC<ModernRideOfferCardProps> = ({
                   )}
                 </div>
                 
-                <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-sm text-muted-foreground">
                   <div className="flex items-center gap-1">
                     <Users className="h-4 w-4" />
-                    <span className="font-medium">{ride.seats_available} {t('seats')}</span>
+                    <span className="font-medium">{ride.seats_available || 0} {t('seats')}</span>
                   </div>
                   {ride.driver.completed_rides && ride.driver.completed_rides > 0 && (
                     <Badge variant="secondary" className="text-xs px-2">
@@ -123,10 +129,10 @@ const ModernRideOfferCard: React.FC<ModernRideOfferCardProps> = ({
             </div>
 
             {/* Price Display */}
-            <div className="text-right">
-              <div className="flex items-center gap-1 font-bold text-xl text-primary mb-1">
-                <Euro className="h-5 w-5" />
-                <span>{formattedPrice}</span>
+            <div className="text-right sm:text-right w-full sm:w-auto mt-2 sm:mt-0">
+              <div className="flex items-center justify-end gap-1 font-bold text-lg sm:text-xl text-primary mb-1">
+                <Euro className="h-4 w-4 sm:h-5 sm:w-5" />
+                <span className="whitespace-nowrap">{formattedPrice}</span>
               </div>
               {convertedPrice && (
                 <div className="text-sm text-muted-foreground">
@@ -140,38 +146,38 @@ const ModernRideOfferCard: React.FC<ModernRideOfferCardProps> = ({
           </div>
 
           {/* Enhanced Route Display */}
-          <div className="mb-4 p-4 rounded-xl bg-gradient-to-r from-muted/40 via-muted/20 to-muted/40 border border-border/30">
-            <div className="flex items-center gap-3">
-              <div className="flex-1 min-w-0">
+          <div className="mb-4 p-3 sm:p-4 rounded-xl bg-gradient-to-r from-muted/40 via-muted/20 to-muted/40 border border-border/30">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+              <div className="flex-1 min-w-0 w-full sm:w-auto">
                 <div className="flex items-center gap-2 mb-1">
-                  <div className="w-3 h-3 rounded-full bg-primary"></div>
+                  <div className="w-3 h-3 rounded-full bg-primary flex-shrink-0"></div>
                   <span className="text-sm font-medium text-primary">{t('from')}</span>
                 </div>
-                <p className="text-sm font-semibold truncate pl-5">{ride.origin_address}</p>
+                <p className="text-sm font-semibold pl-5 break-words">{ride.origin_address}</p>
               </div>
               
-              <div className="flex-shrink-0 px-3">
-                <ArrowRight className="h-5 w-5 text-muted-foreground" />
+              <div className="flex-shrink-0 px-3 self-center">
+                <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground rotate-90 sm:rotate-0" />
               </div>
               
-              <div className="flex-1 min-w-0">
+              <div className="flex-1 min-w-0 w-full sm:w-auto">
                 <div className="flex items-center gap-2 mb-1">
-                  <div className="w-3 h-3 rounded-full bg-destructive"></div>
+                  <div className="w-3 h-3 rounded-full bg-destructive flex-shrink-0"></div>
                   <span className="text-sm font-medium text-destructive">{t('to')}</span>
                 </div>
-                <p className="text-sm font-semibold truncate pl-5">{ride.destination_address}</p>
+                <p className="text-sm font-semibold pl-5 break-words">{ride.destination_address}</p>
               </div>
             </div>
           </div>
 
           {/* Trip Details with Enhanced Design */}
-          <div className="flex flex-wrap items-center gap-4 text-sm mb-4">
-            <div className="flex items-center gap-2 bg-primary/10 px-3 py-2 rounded-lg">
-              <Calendar className="h-4 w-4 text-primary" />
-              <span className="font-medium">{formattedDate}</span>
+          <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2 sm:gap-4 text-sm mb-4">
+            <div className="flex items-center gap-2 bg-primary/10 px-3 py-2 rounded-lg flex-1 sm:flex-none">
+              <Calendar className="h-4 w-4 text-primary flex-shrink-0" />
+              <span className="font-medium truncate">{formattedDate}</span>
             </div>
-            <div className="flex items-center gap-2 bg-accent/10 px-3 py-2 rounded-lg">
-              <Clock className="h-4 w-4 text-accent-foreground" />
+            <div className="flex items-center gap-2 bg-accent/10 px-3 py-2 rounded-lg flex-1 sm:flex-none">
+              <Clock className="h-4 w-4 text-accent-foreground flex-shrink-0" />
               <span className="font-medium">{ride.departure_time}</span>
             </div>
           </div>
@@ -184,7 +190,7 @@ const ModernRideOfferCard: React.FC<ModernRideOfferCardProps> = ({
           )}
 
           {/* Action Buttons */}
-          <div className="flex items-center gap-3 pt-2 border-t border-border/30">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 pt-3 border-t border-border/30">
             {!isOwner ? (
               <>
                 {ride.driver.phone_number && (
@@ -192,7 +198,7 @@ const ModernRideOfferCard: React.FC<ModernRideOfferCardProps> = ({
                     variant="outline"
                     size="sm"
                     onClick={handleCall}
-                    className="flex items-center gap-2 hover:bg-green-50 hover:text-green-700 hover:border-green-300 dark:hover:bg-green-950 dark:hover:text-green-400 transition-all duration-200"
+                    className="flex items-center justify-center gap-2 hover:bg-green-50 hover:text-green-700 hover:border-green-300 dark:hover:bg-green-950 dark:hover:text-green-400 transition-all duration-200 min-h-[44px]"
                   >
                     <Phone className="h-4 w-4" />
                     <span>{t('call')}</span>
@@ -203,7 +209,7 @@ const ModernRideOfferCard: React.FC<ModernRideOfferCardProps> = ({
                   size="sm"
                   onClick={() => onContact(ride)}
                   disabled={!isAuthenticated}
-                  className="flex items-center gap-2 flex-1 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg"
+                  className="flex items-center justify-center gap-2 flex-1 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg min-h-[44px]"
                 >
                   <MessageCircle className="h-4 w-4" />
                   <span>{t('contactDriver')}</span>
@@ -215,7 +221,7 @@ const ModernRideOfferCard: React.FC<ModernRideOfferCardProps> = ({
                   variant="destructive"
                   size="sm"
                   onClick={() => onDelete(ride.id)}
-                  className="flex items-center gap-2 ml-auto hover:bg-red-600 transition-colors"
+                  className="flex items-center justify-center gap-2 ml-auto hover:bg-red-600 transition-colors min-h-[44px]"
                 >
                   <Trash2 className="h-4 w-4" />
                   <span>{t('deleteOffer')}</span>
