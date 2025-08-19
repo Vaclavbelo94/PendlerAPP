@@ -276,7 +276,7 @@ const ModernDHLWelcome: React.FC<ModernDHLWelcomeProps> = ({ onComplete }) => {
             <p className="text-amber-700 mb-4">
               {t('dhl:welcome.registrationSuccess', 'Vaše registrace byla úspěšná a nyní máte přístup ke všem premium funkcím PendlerApp zdarma.')}
             </p>
-            <div className="grid grid-cols-2 gap-3 text-sm">
+            <div className="grid grid-cols-1 gap-3 text-sm">
               <div className="flex items-center gap-2 text-amber-700">
                 <CheckCircle className="h-4 w-4" />
                 <span>{t('dhl:welcome.feature1', 'Sledování směn')}</span>
@@ -464,8 +464,8 @@ const ModernDHLWelcome: React.FC<ModernDHLWelcomeProps> = ({ onComplete }) => {
           </AnimatePresence>
 
           {/* Navigation */}
-          <div className="flex gap-3 mt-8">
-            {currentStep > 0 && (
+          <div className="flex justify-between items-center gap-3 mt-8">
+            {currentStep > 0 ? (
               <Button 
                 variant="outline" 
                 onClick={handleBack}
@@ -473,9 +473,9 @@ const ModernDHLWelcome: React.FC<ModernDHLWelcomeProps> = ({ onComplete }) => {
               >
                 {t('common:back', 'Zpět')}
               </Button>
+            ) : (
+              <div />
             )}
-            
-            <div className="flex-1" />
             
             {currentStep < steps.length - 1 ? (
               <Button 
