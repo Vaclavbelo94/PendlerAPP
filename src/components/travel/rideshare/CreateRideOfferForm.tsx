@@ -12,6 +12,7 @@ import { useAuth } from '@/hooks/auth';
 import { rideshareService } from '@/services/rideshareService';
 import { toast } from 'sonner';
 import { getCountryConfig } from '@/utils/enhancedCountryUtils';
+import { AddressQuickFill } from '@/components/travel/AddressQuickFill';
 
 interface CreateRideOfferFormProps {
   onOfferCreated: () => void;
@@ -31,7 +32,8 @@ const CreateRideOfferForm: React.FC<CreateRideOfferFormProps> = ({ onOfferCreate
     seats_available: 1,
     price_per_person: 0,
     notes: '',
-    phone_number: ''
+    phone_number: '',
+    allow_phone_contact: false
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -58,7 +60,7 @@ const CreateRideOfferForm: React.FC<CreateRideOfferFormProps> = ({ onOfferCreate
         price_per_person: formData.price_per_person,
         currency: countryConfig.currency,
         notes: formData.notes,
-        phone_number: formData.phone_number,
+        phone_number: formData.allow_phone_contact ? formData.phone_number : '',
         is_recurring: false,
         recurring_days: []
       });
@@ -75,7 +77,8 @@ const CreateRideOfferForm: React.FC<CreateRideOfferFormProps> = ({ onOfferCreate
         seats_available: 1,
         price_per_person: 0,
         notes: '',
-        phone_number: ''
+        phone_number: '',
+        allow_phone_contact: false
       });
     } catch (error) {
       console.error('Error creating offer:', error);
@@ -100,6 +103,16 @@ const CreateRideOfferForm: React.FC<CreateRideOfferFormProps> = ({ onOfferCreate
             placeholder={t('originPlaceholder')}
             required
           />
+          <AddressQuickFill 
+            onAddressSelect={(type, address) => {
+              if (type === 'home') {
+                setFormData({ ...formData, origin_address: address });
+              } else {
+                setFormData({ ...formData, destination_address: address });
+              }
+            }}
+            className="mt-2"
+          />
         </div>
 
         <div className="space-y-2">
@@ -113,6 +126,16 @@ const CreateRideOfferForm: React.FC<CreateRideOfferFormProps> = ({ onOfferCreate
             onChange={(e) => setFormData({ ...formData, destination_address: e.target.value })}
             placeholder={t('destinationPlaceholder')}
             required
+          />
+          <AddressQuickFill 
+            onAddressSelect={(type, address) => {
+              if (type === 'home') {
+                setFormData({ ...formData, destination_address: address });
+              } else {
+                setFormData({ ...formData, destination_address: address });
+              }
+            }}
+            className="mt-2"
           />
         </div>
       </div>
@@ -178,15 +201,32 @@ const CreateRideOfferForm: React.FC<CreateRideOfferFormProps> = ({ onOfferCreate
           />
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="phone">{t('contactPhone')}</Label>
-          <Input
-            id="phone"
-            type="tel"
-            value={formData.phone_number}
-            onChange={(e) => setFormData({ ...formData, phone_number: e.target.value })}
-            placeholder={t('phoneOptional')}
-          />
+        <div className="space-y-3">
+          <div className="flex items-center space-x-2">
+            <input
+              id="allow-phone"
+              type="checkbox"
+              checked={formData.allow_phone_contact}
+              onChange={(e) => setFormData({ ...formData, allow_phone_contact: e.target.checked })}
+              className="rounded border-gray-300"
+            />
+            <Label htmlFor="allow-phone" className="text-sm font-medium">
+              {t('allowPhoneContact')}
+            </Label>
+          </div>
+          {formData.allow_phone_contact && (
+            <div className="space-y-2">
+              <Label htmlFor="phone">{t('contactPhone')}</Label>
+              <Input
+                id="phone"
+                type="tel"
+                value={formData.phone_number}
+                onChange={(e) => setFormData({ ...formData, phone_number: e.target.value })}
+                placeholder={t('phoneOptional')}
+                required={formData.allow_phone_contact}
+              />
+            </div>
+          )}
         </div>
       </div>
 

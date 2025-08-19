@@ -63,30 +63,48 @@ export const rideshareService = {
       // Get all unique user IDs
       const userIds = [...new Set(offers.map(offer => offer.user_id))];
 
-      // Get profiles for these users
-      const { data: profiles, error: profilesError } = await supabase
-        .from('profiles')
-        .select('id, username, phone_number')
-        .in('id', userIds);
+      // Get profiles and extended profiles for these users
+      const [{ data: profiles, error: profilesError }, { data: extendedProfiles, error: extendedError }] = await Promise.all([
+        supabase
+          .from('profiles')
+          .select('id, username, phone_number')
+          .in('id', userIds),
+        supabase
+          .from('user_extended_profiles')
+          .select('user_id, display_name')
+          .in('user_id', userIds)
+      ]);
 
       if (profilesError) {
         console.error('Error loading profiles:', profilesError);
         throw new Error('Failed to load driver profiles');
       }
 
-      // Create a map of user_id to profile
+      if (extendedError) {
+        console.warn('Error loading extended profiles:', extendedError);
+      }
+
+      // Create maps for profiles and extended profiles
       const profilesMap = new Map();
       profiles?.forEach(profile => {
         profilesMap.set(profile.id, profile);
       });
 
+      const extendedProfilesMap = new Map();
+      extendedProfiles?.forEach(profile => {
+        extendedProfilesMap.set(profile.user_id, profile);
+      });
+
       // Combine offers with profile data
       return offers.map(offer => {
         const profile = profilesMap.get(offer.user_id);
+        const extendedProfile = extendedProfilesMap.get(offer.user_id);
+        const displayName = extendedProfile?.display_name || profile?.username || '';
+        
         return {
           ...offer,
           driver: {
-            username: profile?.username || '',
+            username: displayName,
             phone_number: offer.phone_number || profile?.phone_number, // Prefer offer phone number
             rating: offer.rating,
             completed_rides: offer.completed_rides
@@ -313,23 +331,36 @@ export const rideshareService = {
         return [];
       }
 
-      // Get profile for the user
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('id, username, phone_number')
-        .eq('id', userId)
-        .single();
+      // Get profile and extended profile for the user
+      const [{ data: profile, error: profileError }, { data: extendedProfile, error: extendedError }] = await Promise.all([
+        supabase
+          .from('profiles')
+          .select('id, username, phone_number')
+          .eq('id', userId)
+          .single(),
+        supabase
+          .from('user_extended_profiles')
+          .select('user_id, display_name')
+          .eq('user_id', userId)
+          .maybeSingle()
+      ]);
 
       if (profileError) {
         console.error('Error loading profile:', profileError);
         throw new Error('Failed to load profile');
       }
 
+      if (extendedError) {
+        console.warn('Error loading extended profile:', extendedError);
+      }
+
+      const displayName = extendedProfile?.display_name || profile?.username || '';
+
       // Return offers with profile data
       return offers.map(offer => ({
         ...offer,
         driver: {
-          username: profile?.username || '',
+          username: displayName,
           phone_number: offer.phone_number || profile?.phone_number,
           rating: offer.rating,
           completed_rides: offer.completed_rides
