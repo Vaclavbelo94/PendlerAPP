@@ -9,6 +9,7 @@ import { useAuth } from '@/hooks/auth';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '@/hooks/use-toast';
 import { useWorkData } from '@/hooks/useWorkData';
+import { useUserAddresses } from '@/hooks/useUserAddresses';
 import { supabase } from '@/integrations/supabase/client';
 import { PasswordChangeModal } from './PasswordChangeModal';
 import { motion } from 'framer-motion';
@@ -18,6 +19,7 @@ export const BasicInfoTab: React.FC = () => {
   const { t } = useTranslation('profile');
   const { toast } = useToast();
   const { saveWorkData } = useWorkData();
+  const { refreshAddresses } = useUserAddresses();
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
@@ -114,9 +116,14 @@ export const BasicInfoTab: React.FC = () => {
         }
       }
 
+      // Refresh addresses after successful save
+      await refreshAddresses();
+
       toast({
         title: t('profileUpdated'),
-        description: t('profileUpdated'),
+        description: unifiedUser?.isDHLEmployee && formData.location 
+          ? t('profileUpdated') + ' - Dopravní monitoring aktivován'
+          : t('profileUpdated'),
       });
 
       setIsEditing(false);
