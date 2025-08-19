@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,10 +21,33 @@ export const BasicInfoTab: React.FC = () => {
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   
   const [formData, setFormData] = useState({
-    username: unifiedUser?.username || '',
-    location: unifiedUser?.location || '',
-    phone_number: unifiedUser?.phone_number || ''
+    username: '',
+    location: '',
+    phone_number: ''
   });
+
+  // Fetch profile data separately since it's not in UnifiedUser
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (!user?.id) return;
+      
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('username, location, phone_number')
+        .eq('id', user.id)
+        .single();
+      
+      if (data && !error) {
+        setFormData({
+          username: data.username || '',
+          location: data.location || '',
+          phone_number: data.phone_number || ''
+        });
+      }
+    };
+
+    fetchProfile();
+  }, [user?.id]);
 
   const handleSave = async () => {
     if (!user?.id) return;
@@ -62,12 +85,23 @@ export const BasicInfoTab: React.FC = () => {
     }
   };
 
-  const handleCancel = () => {
-    setFormData({
-      username: unifiedUser?.username || '',
-      location: unifiedUser?.location || '',
-      phone_number: unifiedUser?.phone_number || ''
-    });
+  const handleCancel = async () => {
+    // Refetch original data
+    if (!user?.id) return;
+    
+    const { data } = await supabase
+      .from('profiles')
+      .select('username, location, phone_number')
+      .eq('id', user.id)
+      .single();
+    
+    if (data) {
+      setFormData({
+        username: data.username || '',
+        location: data.location || '',
+        phone_number: data.phone_number || ''
+      });
+    }
     setIsEditing(false);
   };
 

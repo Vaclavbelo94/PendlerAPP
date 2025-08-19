@@ -80,7 +80,7 @@ export const DHLSettingsTab: React.FC = () => {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {dhlAssignment ? (
+          {userAssignment ? (
             <>
               {/* Position Information */}
               <div className="space-y-3">
@@ -90,7 +90,7 @@ export const DHLSettingsTab: React.FC = () => {
                     <span className="font-medium">{t('position')}</span>
                   </div>
                   <Badge variant="secondary">
-                    {dhlPosition?.name || t('position')}
+                    {currentPosition?.name || t('position')}
                   </Badge>
                 </div>
                 
@@ -100,7 +100,7 @@ export const DHLSettingsTab: React.FC = () => {
                     <span className="font-medium">Woche</span>
                   </div>
                   <Badge variant="outline">
-                    {dhlAssignment.current_woche || t('notSet')}
+                    {userAssignment.current_woche || t('notSet')}
                   </Badge>
                 </div>
               </div>
@@ -112,11 +112,11 @@ export const DHLSettingsTab: React.FC = () => {
                 <div className="text-sm text-muted-foreground">
                   <div className="flex justify-between">
                     <span>{t('assignedAt')}:</span>
-                    <span>{new Date(dhlAssignment.assigned_at).toLocaleDateString('cs-CZ')}</span>
+                    <span>{new Date(userAssignment.assigned_at).toLocaleDateString('cs-CZ')}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>{t('lastUpdated')}:</span>
-                    <span>{new Date(dhlAssignment.updated_at).toLocaleDateString('cs-CZ')}</span>
+                    <span>{new Date(userAssignment.updated_at).toLocaleDateString('cs-CZ')}</span>
                   </div>
                 </div>
               </div>
