@@ -110,7 +110,7 @@ export const useDHLTrafficData = (origin: string, destination: string) => {
           parseInt(freshData.routes[0].duration.split(' ')[0]) : 0,
         traffic_level: getTrafficLevel(freshData.routes?.[0]?.traffic_conditions),
         incidents: freshData.routes?.[0]?.incidents || [],
-        weather_impact: freshData.weather || {},
+        weather_impact: {},
         last_updated: new Date().toISOString(),
         route_origin: origin,
         route_destination: destination
