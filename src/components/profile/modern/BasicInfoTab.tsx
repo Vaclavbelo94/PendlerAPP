@@ -26,24 +26,30 @@ export const BasicInfoTab: React.FC = () => {
     phone_number: ''
   });
 
-  // Fetch profile data separately since it's not in UnifiedUser
+  // Fetch profile data from both profiles and user_extended_profiles
   useEffect(() => {
     const fetchProfile = async () => {
       if (!user?.id) return;
       
-      const { data, error } = await supabase
+      // Fetch from profiles table
+      const { data: profileData } = await supabase
         .from('profiles')
-        .select('username, location, phone_number')
+        .select('username, phone_number')
         .eq('id', user.id)
         .single();
       
-      if (data && !error) {
-        setFormData({
-          username: data.username || '',
-          location: data.location || '',
-          phone_number: data.phone_number || ''
-        });
-      }
+      // Fetch from user_extended_profiles table
+      const { data: extendedData } = await supabase
+        .from('user_extended_profiles')
+        .select('display_name, location')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      
+      setFormData({
+        username: extendedData?.display_name || profileData?.username || '',
+        location: extendedData?.location || '',
+        phone_number: profileData?.phone_number || ''
+      });
     };
 
     fetchProfile();
@@ -55,17 +61,29 @@ export const BasicInfoTab: React.FC = () => {
     try {
       setIsSaving(true);
       
-      const { error } = await supabase
+      // Update profiles table
+      const { error: profileError } = await supabase
         .from('profiles')
         .update({
           username: formData.username,
-          location: formData.location,
           phone_number: formData.phone_number,
           updated_at: new Date().toISOString()
         })
         .eq('id', user.id);
 
-      if (error) throw error;
+      if (profileError) throw profileError;
+
+      // Update or insert into user_extended_profiles table
+      const { error: extendedError } = await supabase
+        .from('user_extended_profiles')
+        .upsert({
+          user_id: user.id,
+          display_name: formData.username,
+          location: formData.location,
+          updated_at: new Date().toISOString()
+        });
+
+      if (extendedError) throw extendedError;
 
       toast({
         title: t('profileUpdated'),
@@ -86,22 +104,27 @@ export const BasicInfoTab: React.FC = () => {
   };
 
   const handleCancel = async () => {
-    // Refetch original data
+    // Refetch original data from both tables
     if (!user?.id) return;
     
-    const { data } = await supabase
+    const { data: profileData } = await supabase
       .from('profiles')
-      .select('username, location, phone_number')
+      .select('username, phone_number')
       .eq('id', user.id)
       .single();
     
-    if (data) {
-      setFormData({
-        username: data.username || '',
-        location: data.location || '',
-        phone_number: data.phone_number || ''
-      });
-    }
+    const { data: extendedData } = await supabase
+      .from('user_extended_profiles')
+      .select('display_name, location')
+      .eq('user_id', user.id)
+      .maybeSingle();
+    
+    setFormData({
+      username: extendedData?.display_name || profileData?.username || '',
+      location: extendedData?.location || '',
+      phone_number: profileData?.phone_number || ''
+    });
+    
     setIsEditing(false);
   };
 

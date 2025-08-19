@@ -120,5 +120,19 @@
   "assignedAt": "Přiřazeno",
   "lastUpdated": "Naposledy aktualizováno",
   "noDHLSetup": "DHL nastavení nebylo dokončeno",
-  "dhlSettingsDescription": "Správa vašich DHL nastavení a pracovních údajů"
+  "dhlSettingsDescription": "Správa vašich DHL nastavení a pracovních údajů",
+  "tabs": {
+    "basic": "Základní informace",
+    "rides": "Spolujízdy",
+    "dhl": "DHL Nastavení"
+  },
+  "ridesTabDescription": "Spravujte své požadavky na spolujízdu a nabídky přejezdu",
+  "manageRideRequests": "Správa požadavků na spolujízdu",
+  "exportCalendar": "Exportovat kalendář",
+  "calendarSync": "Synchronizace kalendáře",
+  "calendarSyncDescription": "Synchronizujte své směny s kalendářem",
+  "emailCannotBeChanged": "E-mail nelze změnit z bezpečnostních důvodů",
+  "changePassword": "Změnit heslo",
+  "password": "Heslo",
+  "contactAdminForSetup": "Kontaktujte administrátora pro nastavení"
 }

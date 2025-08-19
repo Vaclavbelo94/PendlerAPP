@@ -120,5 +120,19 @@
   "assignedAt": "Zugewiesen am",
   "lastUpdated": "Zuletzt aktualisiert",
   "noDHLSetup": "DHL-Einrichtung wurde nicht abgeschlossen",
-  "dhlSettingsDescription": "Verwaltung Ihrer DHL-Einstellungen und Arbeitsdaten"
+  "dhlSettingsDescription": "Verwaltung Ihrer DHL-Einstellungen und Arbeitsdaten",
+  "tabs": {
+    "basic": "Grundinformationen",
+    "rides": "Mitfahrgelegenheiten",
+    "dhl": "DHL Einstellungen"
+  },
+  "ridesTabDescription": "Verwalten Sie Ihre Mitfahranfragen und Fahrgemeinschaftsangebote",
+  "manageRideRequests": "Mitfahranfragen verwalten",
+  "exportCalendar": "Kalender exportieren",
+  "calendarSync": "Kalender-Synchronisation",
+  "calendarSyncDescription": "Synchronisieren Sie Ihre Schichten mit dem Kalender",
+  "emailCannotBeChanged": "E-Mail kann aus Sicherheitsgründen nicht geändert werden",
+  "changePassword": "Passwort ändern",
+  "password": "Passwort",
+  "contactAdminForSetup": "Wenden Sie sich an den Administrator für die Einrichtung"
 }

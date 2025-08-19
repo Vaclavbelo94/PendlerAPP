@@ -120,5 +120,19 @@
   "assignedAt": "Przypisano",
   "lastUpdated": "Ostatnio zaktualizowano",
   "noDHLSetup": "Konfiguracja DHL nie została ukończona",
-  "dhlSettingsDescription": "Zarządzanie ustawieniami DHL i danymi pracy"
+  "dhlSettingsDescription": "Zarządzanie ustawieniami DHL i danymi pracy",
+  "tabs": {
+    "basic": "Informacje podstawowe",
+    "rides": "Wspólne przejazdy", 
+    "dhl": "Ustawienia DHL"
+  },
+  "ridesTabDescription": "Zarządzaj swoimi prośbami o przejazdy i ofertami wspólnych przejazdów",
+  "manageRideRequests": "Zarządzanie prośbami o przejazdy",
+  "exportCalendar": "Eksportuj kalendarz",
+  "calendarSync": "Synchronizacja kalendarza",
+  "calendarSyncDescription": "Synchronizuj swoje zmiany z kalendarzem",
+  "emailCannotBeChanged": "E-mail nie może być zmieniony z powodów bezpieczeństwa",
+  "changePassword": "Zmień hasło",
+  "password": "Hasło",
+  "contactAdminForSetup": "Skontaktuj się z administratorem w celu konfiguracji"
 }
