@@ -1777,9 +1777,11 @@ export type Database = {
           created_at: string
           email: string | null
           id: string
+          is_adecco_employee: boolean | null
           is_admin: boolean | null
           is_dhl_employee: boolean | null
           is_premium: boolean | null
+          is_randstad_employee: boolean | null
           language: string | null
           location: string | null
           phone_number: string | null
@@ -1794,9 +1796,11 @@ export type Database = {
           created_at?: string
           email?: string | null
           id: string
+          is_adecco_employee?: boolean | null
           is_admin?: boolean | null
           is_dhl_employee?: boolean | null
           is_premium?: boolean | null
+          is_randstad_employee?: boolean | null
           language?: string | null
           location?: string | null
           phone_number?: string | null
@@ -1811,9 +1815,11 @@ export type Database = {
           created_at?: string
           email?: string | null
           id?: string
+          is_adecco_employee?: boolean | null
           is_admin?: boolean | null
           is_dhl_employee?: boolean | null
           is_premium?: boolean | null
+          is_randstad_employee?: boolean | null
           language?: string | null
           location?: string | null
           phone_number?: string | null
