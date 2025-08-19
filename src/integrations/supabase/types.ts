@@ -1854,6 +1854,51 @@ export type Database = {
         }
         Relationships: []
       }
+      real_time_traffic_data: {
+        Row: {
+          created_at: string
+          current_duration: number | null
+          id: string
+          incidents: Json | null
+          last_updated: string
+          normal_duration: number | null
+          route_destination: string
+          route_origin: string
+          traffic_level: string
+          updated_at: string
+          user_id: string
+          weather_impact: Json | null
+        }
+        Insert: {
+          created_at?: string
+          current_duration?: number | null
+          id?: string
+          incidents?: Json | null
+          last_updated?: string
+          normal_duration?: number | null
+          route_destination: string
+          route_origin: string
+          traffic_level?: string
+          updated_at?: string
+          user_id: string
+          weather_impact?: Json | null
+        }
+        Update: {
+          created_at?: string
+          current_duration?: number | null
+          id?: string
+          incidents?: Json | null
+          last_updated?: string
+          normal_duration?: number | null
+          route_destination?: string
+          route_origin?: string
+          traffic_level?: string
+          updated_at?: string
+          user_id?: string
+          weather_impact?: Json | null
+        }
+        Relationships: []
+      }
       reports: {
         Row: {
           created_at: string | null
@@ -2181,6 +2226,48 @@ export type Database = {
         }
         Relationships: []
       }
+      route_predictions: {
+        Row: {
+          confidence_score: number | null
+          created_at: string
+          historical_data: Json | null
+          hour_of_day: number
+          id: string
+          predicted_duration: number
+          prediction_date: string
+          route_destination: string
+          route_origin: string
+          user_id: string
+          weather_factors: Json | null
+        }
+        Insert: {
+          confidence_score?: number | null
+          created_at?: string
+          historical_data?: Json | null
+          hour_of_day: number
+          id?: string
+          predicted_duration: number
+          prediction_date: string
+          route_destination: string
+          route_origin: string
+          user_id: string
+          weather_factors?: Json | null
+        }
+        Update: {
+          confidence_score?: number | null
+          created_at?: string
+          historical_data?: Json | null
+          hour_of_day?: number
+          id?: string
+          predicted_duration?: number
+          prediction_date?: string
+          route_destination?: string
+          route_origin?: string
+          user_id?: string
+          weather_factors?: Json | null
+        }
+        Relationships: []
+      }
       route_preferences: {
         Row: {
           avoid_highways: boolean | null
@@ -2434,6 +2521,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      smart_alerts: {
+        Row: {
+          alert_time: string
+          alert_type: string
+          created_at: string
+          days_of_week: number[]
+          id: string
+          is_active: boolean
+          route_destination: string
+          route_origin: string
+          settings: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          alert_time: string
+          alert_type: string
+          created_at?: string
+          days_of_week?: number[]
+          id?: string
+          is_active?: boolean
+          route_destination: string
+          route_origin: string
+          settings?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          alert_time?: string
+          alert_type?: string
+          created_at?: string
+          days_of_week?: number[]
+          id?: string
+          is_active?: boolean
+          route_destination?: string
+          route_origin?: string
+          settings?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       sms_logs: {
         Row: {
@@ -2692,6 +2821,48 @@ export type Database = {
           route_origin?: string
           severity?: string
           updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      traffic_notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean
+          message: string
+          notification_type: string
+          route_data: Json | null
+          scheduled_for: string | null
+          sent_at: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message: string
+          notification_type: string
+          route_data?: Json | null
+          scheduled_for?: string | null
+          sent_at?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          notification_type?: string
+          route_data?: Json | null
+          scheduled_for?: string | null
+          sent_at?: string | null
+          title?: string
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
