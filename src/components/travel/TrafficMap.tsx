@@ -164,20 +164,40 @@ const TrafficMap: React.FC<TrafficMapProps> = ({
                     </Badge>
                   </div>
                   
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-                    <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-muted-foreground" />
-                      <span>{t('duration')}: {route.duration}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                      <span>{t('currentTraffic')}: {route.duration_in_traffic}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4 text-muted-foreground" />
-                      <span>{t('distance')}: {route.distance}</span>
-                    </div>
-                  </div>
+                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+                     <div className="flex items-center gap-2">
+                       <Clock className="h-4 w-4 text-muted-foreground" />
+                       <span>{t('duration')}: {route.duration}</span>
+                     </div>
+                     <div className="flex items-center gap-2">
+                       <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                       <span>{t('currentTraffic')}: {route.duration_in_traffic}</span>
+                     </div>
+                     <div className="flex items-center gap-2">
+                       <MapPin className="h-4 w-4 text-muted-foreground" />
+                       <span>{t('distance')}: {route.distance}</span>
+                     </div>
+                   </div>
+
+                   {/* Route Duration Highlight */}
+                   <div className="bg-primary/10 rounded-lg p-3 border border-primary/20 mt-3">
+                     <div className="flex items-center justify-between">
+                       <div className="flex items-center gap-2">
+                         <Clock className="h-4 w-4 text-primary" />
+                         <span className="text-sm font-medium text-primary">
+                           {t('routeShouldTake')}:
+                         </span>
+                       </div>
+                       <div className="text-lg font-bold text-primary">
+                         {route.duration_in_traffic || route.duration}
+                       </div>
+                     </div>
+                     {route.duration_in_traffic && route.duration && route.duration_in_traffic !== route.duration && (
+                       <div className="mt-1 text-xs text-muted-foreground">
+                         {t('normal')}: {route.duration}
+                       </div>
+                     )}
+                   </div>
 
                   {/* Display warnings and incidents with improved readability */}
                   {(route.warnings && route.warnings.length > 0) && (
