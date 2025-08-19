@@ -63,13 +63,13 @@ const UnifiedProfile = () => {
                   <Settings className="h-4 w-4" />
                   {t('settings')}
                 </TabsTrigger>
-                <TabsTrigger value="subscription" className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary/10 data-[state=active]:to-accent/10">
-                  <Crown className="h-4 w-4" />
-                  {t('subscription')}
-                </TabsTrigger>
                 <TabsTrigger value="activity" className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary/10 data-[state=active]:to-accent/10">
                   <Activity className="h-4 w-4" />
                   {t('activity')}
+                </TabsTrigger>
+                <TabsTrigger value="subscription" className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary/10 data-[state=active]:to-accent/10">
+                  <Crown className="h-4 w-4" />
+                  {t('subscription')}
                 </TabsTrigger>
               </TabsList>
 
@@ -86,12 +86,12 @@ const UnifiedProfile = () => {
                   <ProfileSettingsSection />
                 </TabsContent>
 
-                <TabsContent value="subscription" className="mt-6">
-                  <SubscriptionManagement />
-                </TabsContent>
-
                 <TabsContent value="activity" className="mt-6">
                   <ProfileActivitySection />
+                </TabsContent>
+
+                <TabsContent value="subscription" className="mt-6">
+                  <SubscriptionManagement />
                 </TabsContent>
               </motion.div>
             </Tabs>
