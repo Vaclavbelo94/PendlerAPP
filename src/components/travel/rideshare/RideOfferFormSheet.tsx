@@ -31,21 +31,18 @@ const RideOfferFormSheet: React.FC<RideOfferFormSheetProps> = ({
 
   return (
     <Sheet open={isOpen} onOpenChange={handleOpenChange}>
-      <SheetContent className={cn(
-        "overflow-y-auto z-50", 
-        isMobile ? "w-full" : "sm:max-w-2xl"
-      )}>
-        <SheetHeader>
-          <SheetTitle className="flex items-center gap-2">
-            <Car className="h-5 w-5" />
+      <SheetContent className="overflow-y-auto z-50 flex flex-col">
+        <SheetHeader className="flex-shrink-0 pb-4 border-b">
+          <SheetTitle className="flex items-center gap-2 text-lg md:text-xl">
+            <Car className="h-5 w-5 md:h-6 md:w-6" />
             {t('createRideOfferTitle')}
           </SheetTitle>
-          <SheetDescription>
+          <SheetDescription className="text-sm md:text-base">
             {t('createRideOfferDescription')}
           </SheetDescription>
         </SheetHeader>
         
-        <div className="mt-6">
+        <div className="flex-1 overflow-y-auto py-4">
           <CreateRideOfferForm onOfferCreated={handleOfferCreated} />
         </div>
       </SheetContent>
