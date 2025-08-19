@@ -20,17 +20,17 @@ class NotificationService {
     return NotificationService.instance;
   }
 
-  // Optimized durations for better UX
+  // Optimized durations for better UX - faster dismissal
   private getOptimizedDuration(type: 'success' | 'error' | 'warning' | 'info' | 'default'): number {
     switch (type) {
       case 'success':
-        return 2000; // Quick confirmation
+        return 1500; // Quick confirmation - faster
       case 'error':
-        return 4000; // Longer for errors
+        return 3500; // Longer for errors - slightly faster
       case 'warning':
-        return 3000; // Medium for warnings
+        return 2500; // Medium for warnings - faster
       default:
-        return 2500; // Shorter default
+        return 1800; // Shorter default - faster
     }
   }
 

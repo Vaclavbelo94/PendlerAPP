@@ -14,19 +14,19 @@ export interface ToastOptions {
  * With optimized durations for better UX
  */
 export const useStandardizedToast = () => {
-  // Optimalized durations for different message types
+  // Optimalized durations for different message types - faster dismissal
   const getDefaultDuration = (variant: string): number => {
     switch (variant) {
       case 'success':
-        return 2000; // Quick confirmation
+        return 1500; // Quick confirmation - faster
       case 'info':
-        return 2500; // Basic information
+        return 1800; // Basic information - faster
       case 'warning':
-        return 3000; // Important warning
+        return 2500; // Important warning - slightly faster
       case 'error':
-        return 4000; // Error needs more reading time
+        return 3500; // Error needs more reading time - slightly faster
       default:
-        return 2500; // Default shorter duration
+        return 1800; // Default shorter duration
     }
   };
 
