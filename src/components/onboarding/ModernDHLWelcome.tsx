@@ -142,47 +142,82 @@ const ModernDHLWelcome: React.FC<ModernDHLWelcomeProps> = ({ onComplete }) => {
 
   const handleComplete = async () => {
     if (!user) {
-      showError('Chyba', 'Uživatel není přihlášen');
+      showError(t('common:error', 'Chyba'), t('dhl:errors.notLoggedIn', 'Uživatel není přihlášen'));
       return;
     }
 
     setIsSubmitting(true);
     try {
-      // 1. Update extended profile with nickname and home city
-      const { error: profileError } = await supabase
-        .from('user_extended_profiles')
-        .upsert({
-          user_id: user.id,
-          display_name: formData.nickname.trim() || null,
-          location: formData.homeCity.trim() || null,
-          updated_at: new Date().toISOString()
-        });
+      console.log('=== STARTING DHL ONBOARDING COMPLETION ===');
+      console.log('User ID:', user.id);
+      console.log('Form Data:', formData);
 
-      if (profileError) throw profileError;
+      // 1. Update extended profile with nickname and home city
+      console.log('Updating extended profile...');
+      const profileData = {
+        user_id: user.id,
+        display_name: formData.nickname.trim() || null,
+        location: formData.homeCity.trim() || null,
+        updated_at: new Date().toISOString()
+      };
+
+      const { data: profileResult, error: profileError } = await supabase
+        .from('user_extended_profiles')
+        .upsert(profileData, {
+          onConflict: 'user_id'
+        })
+        .select();
+
+      if (profileError) {
+        console.error('Profile update error:', profileError);
+        throw new Error(`Profile update failed: ${profileError.message}`);
+      }
+
+      console.log('Profile updated successfully:', profileResult);
 
       // 2. Create DHL assignment
-      const { error: assignmentError } = await supabase
-        .from('user_dhl_assignments')
-        .insert({
-          user_id: user.id,
-          dhl_position_id: formData.positionId,
-          current_woche: parseInt(formData.currentWoche),
-          assigned_at: new Date().toISOString(),
-          is_active: true
-        });
+      console.log('Creating DHL assignment...');
+      const assignmentData = {
+        user_id: user.id,
+        dhl_position_id: formData.positionId,
+        current_woche: parseInt(formData.currentWoche),
+        assigned_at: new Date().toISOString(),
+        is_active: true
+      };
 
-      if (assignmentError) throw assignmentError;
+      const { data: assignmentResult, error: assignmentError } = await supabase
+        .from('user_dhl_assignments')
+        .insert(assignmentData)
+        .select();
+
+      if (assignmentError) {
+        console.error('Assignment creation error:', assignmentError);
+        throw new Error(`DHL assignment failed: ${assignmentError.message}`);
+      }
+
+      console.log('DHL assignment created successfully:', assignmentResult);
 
       // 3. Mark onboarding as complete
+      console.log('Marking onboarding as complete...');
       localStorage.setItem(`onboarding_completed_${user.id}`, 'true');
+      localStorage.setItem(`dhlSetupComplete_${user.id}`, 'true');
       localStorage.removeItem('isDHLSelection');
       localStorage.removeItem('dhlSelectionTimestamp');
 
-      success('Nastavení dokončeno!', 'Váš profil byl úspěšně nastaven');
-      onComplete();
+      console.log('=== DHL ONBOARDING COMPLETED SUCCESSFULLY ===');
+      success(t('dhl:success.setupComplete', 'Nastavení dokončeno!'), t('dhl:success.profileSetup', 'Váš profil byl úspěšně nastaven'));
+      
+      // Small delay to ensure the success message is visible
+      setTimeout(() => {
+        onComplete();
+      }, 1000);
+
     } catch (error: any) {
-      console.error('Error completing setup:', error);
-      showError('Chyba při ukládání', error.message || 'Nepodařilo se uložit nastavení');
+      console.error('=== DHL ONBOARDING ERROR ===', error);
+      showError(
+        t('dhl:errors.savingError', 'Chyba při ukládání'), 
+        error.message || t('dhl:errors.couldNotSave', 'Nepodařilo se uložit nastavení')
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -275,7 +310,7 @@ const ModernDHLWelcome: React.FC<ModernDHLWelcomeProps> = ({ onComplete }) => {
               />
             </div>
             <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-              <p className="text-sm text-blue-800">
+              <p className="text-sm text-blue-800 text-left">
                 💡 <strong>{t('common:tip', 'Tip')}:</strong> {t('dhl:welcome.nicknameTip', 'Přezdívka se zobrazí v navigačním panelu a osobních zprávách aplikace.')}
               </p>
             </div>
@@ -301,13 +336,13 @@ const ModernDHLWelcome: React.FC<ModernDHLWelcomeProps> = ({ onComplete }) => {
                   autoComplete="off"
                 />
                 {showCitySuggestions && citySuggestions.length > 0 && (
-                  <div className="absolute z-50 w-full mt-1 bg-popover border border-border rounded-md shadow-lg">
+                  <div className="absolute z-50 w-full mt-1 bg-background border border-border rounded-md shadow-lg">
                     <div className="max-h-60 overflow-y-auto">
                       {citySuggestions.map((suggestion, index) => (
                         <button
                           key={index}
                           onClick={() => handleCitySelect(suggestion)}
-                          className="w-full px-4 py-3 text-left hover:bg-accent hover:text-accent-foreground border-b border-border last:border-0 first:rounded-t-md last:rounded-b-md"
+                          className="w-full px-4 py-3 text-left hover:bg-accent hover:text-accent-foreground border-b border-border last:border-0 first:rounded-t-md last:rounded-b-md transition-colors"
                         >
                           <div className="flex items-center gap-2">
                             <MapPin className="h-4 w-4 text-muted-foreground" />
@@ -321,7 +356,7 @@ const ModernDHLWelcome: React.FC<ModernDHLWelcomeProps> = ({ onComplete }) => {
               </div>
             </div>
             <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-              <p className="text-sm text-green-800">
+              <p className="text-sm text-green-800 text-left">
                 🏠 <strong>{t('dhl:welcome.whyNeed', 'Proč to potřebujeme')}:</strong> {t('dhl:welcome.homeCityWhy', 'Pomáhá nám vypočítat kilometrovné a doporučit optimální trasy.')}
               </p>
             </div>
@@ -359,7 +394,7 @@ const ModernDHLWelcome: React.FC<ModernDHLWelcomeProps> = ({ onComplete }) => {
               )}
             </div>
             <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
-              <p className="text-sm text-amber-800">
+              <p className="text-sm text-amber-800 text-left">
                 💼 <strong>{t('dhl:welcome.positionDetermines', 'Pozice určuje')}:</strong> {t('dhl:welcome.positionWhy', 'Vaši hodinovou sazbu a typ směn v rotačním cyklu.')}
               </p>
             </div>
@@ -387,10 +422,10 @@ const ModernDHLWelcome: React.FC<ModernDHLWelcomeProps> = ({ onComplete }) => {
               </Select>
             </div>
             <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
-              <p className="text-sm text-purple-800 mb-2">
+              <p className="text-sm text-purple-800 mb-2 text-left">
                 📅 <strong>{t('dhl:welcome.howToFind', 'Jak zjistit aktuální Woche')}:</strong>
               </p>
-              <ul className="text-sm text-purple-700 space-y-1 ml-4">
+              <ul className="text-sm text-purple-700 space-y-1 ml-4 text-left">
                 <li>• {t('dhl:welcome.checkSchedule', 'Podívejte se do svého pracovního rozvrhu')}</li>
                 <li>• {t('dhl:welcome.askSupervisor', 'Zeptejte se supervizora nebo kolegy')}</li>
                 <li>• {t('dhl:welcome.checkApps', 'Najdete to v DHL aplikacích pro zaměstnance')}</li>
