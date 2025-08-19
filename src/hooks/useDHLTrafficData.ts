@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/hooks/auth';
 import { trafficService } from '@/services/trafficService';
 
 interface TrafficData {
@@ -83,7 +83,18 @@ export const useDHLTrafficData = (origin: string, destination: string) => {
       if (cachedData && cachedData.length > 0) {
         const lastUpdate = new Date(cachedData[0].last_updated);
         if (lastUpdate > fiveMinutesAgo) {
-          setTrafficData(cachedData[0]);
+          const typedData: TrafficData = {
+            id: cachedData[0].id,
+            current_duration: cachedData[0].current_duration || 0,
+            normal_duration: cachedData[0].normal_duration || 0,
+            traffic_level: getTrafficLevel(cachedData[0].traffic_level),
+            incidents: Array.isArray(cachedData[0].incidents) ? cachedData[0].incidents : [],
+            weather_impact: cachedData[0].weather_impact || {},
+            last_updated: cachedData[0].last_updated,
+            route_origin: cachedData[0].route_origin,
+            route_destination: cachedData[0].route_destination
+          };
+          setTrafficData(typedData);
           setLoading(false);
           return;
         }
@@ -128,7 +139,18 @@ export const useDHLTrafficData = (origin: string, destination: string) => {
 
       // Check if we need to create notifications for significant changes
       if (cachedData && cachedData.length > 0) {
-        await checkForSignificantChanges(cachedData[0], processedData);
+        const oldData: TrafficData = {
+          id: cachedData[0].id,
+          current_duration: cachedData[0].current_duration || 0,
+          normal_duration: cachedData[0].normal_duration || 0,
+          traffic_level: getTrafficLevel(cachedData[0].traffic_level),
+          incidents: Array.isArray(cachedData[0].incidents) ? cachedData[0].incidents : [],
+          weather_impact: cachedData[0].weather_impact || {},
+          last_updated: cachedData[0].last_updated,
+          route_origin: cachedData[0].route_origin,
+          route_destination: cachedData[0].route_destination
+        };
+        await checkForSignificantChanges(oldData, processedData);
       }
 
     } catch (err) {

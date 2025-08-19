@@ -7,7 +7,7 @@ import TrafficMap from './TrafficMap';
 import TravelAnalyticsDashboard from './TravelAnalyticsDashboard';
 import DHLRealTimeTrafficMonitor from './DHLRealTimeTrafficMonitor';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/hooks/auth';
 
 const EnhancedCommuteOptimizer: React.FC = () => {
   const { t } = useTranslation('travel');

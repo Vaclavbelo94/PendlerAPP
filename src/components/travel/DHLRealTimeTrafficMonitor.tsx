@@ -22,7 +22,7 @@ import {
 import { useUserAddresses } from '@/hooks/useUserAddresses';
 import { trafficService } from '@/services/trafficService';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/hooks/auth';
 import { toast } from '@/hooks/use-toast';
 import { useTranslation } from 'react-i18next';
 
@@ -92,7 +92,7 @@ const DHLRealTimeTrafficMonitor: React.FC = () => {
           parseInt(traffic.routes[0].duration.split(' ')[0]) : 0,
         traffic_level: getTrafficLevel(traffic.routes?.[0]?.traffic_conditions),
         incidents: traffic.routes?.[0]?.incidents || [],
-        weather_impact: traffic.weather || {},
+        weather_impact: freshData.weather || {},
         last_updated: new Date().toISOString()
       };
       
