@@ -236,27 +236,27 @@ const ModernDHLWelcome: React.FC<ModernDHLWelcomeProps> = ({ onComplete }) => {
           <div className="bg-gradient-to-r from-amber-50 to-yellow-50 p-6 rounded-lg border border-amber-200">
             <div className="flex items-center gap-3 mb-4">
               <Truck className="h-6 w-6 text-amber-600" />
-              <h3 className="font-semibold text-amber-800">Speciální DHL režim aktivován!</h3>
+              <h3 className="font-semibold text-amber-800">{t('dhl:welcome.specialMode', 'Speciální DHL režim aktivován!')}</h3>
             </div>
             <p className="text-amber-700 mb-4">
-              Vaše registrace byla úspěšná a nyní máte přístup ke všem premium funkcím PendlerApp zdarma.
+              {t('dhl:welcome.registrationSuccess', 'Vaše registrace byla úspěšná a nyní máte přístup ke všem premium funkcím PendlerApp zdarma.')}
             </p>
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div className="flex items-center gap-2 text-amber-700">
                 <CheckCircle className="h-4 w-4" />
-                <span>Sledování směn</span>
+                <span>{t('dhl:welcome.feature1', 'Sledování směn')}</span>
               </div>
               <div className="flex items-center gap-2 text-amber-700">
                 <CheckCircle className="h-4 w-4" />
-                <span>Daňové kalkulace</span>
+                <span>{t('dhl:welcome.feature2', 'Daňové kalkulace')}</span>
               </div>
               <div className="flex items-center gap-2 text-amber-700">
                 <CheckCircle className="h-4 w-4" />
-                <span>Kilometrovné výpočty</span>
+                <span>{t('dhl:welcome.feature3', 'Kilometrovné výpočty')}</span>
               </div>
               <div className="flex items-center gap-2 text-amber-700">
                 <CheckCircle className="h-4 w-4" />
-                <span>Analýzy a reporty</span>
+                <span>{t('dhl:welcome.feature4', 'Analýzy a reporty')}</span>
               </div>
             </div>
           </div>
@@ -265,10 +265,10 @@ const ModernDHLWelcome: React.FC<ModernDHLWelcomeProps> = ({ onComplete }) => {
         {step.id === 'nickname' && (
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="nickname">Přezdívka</Label>
+              <Label htmlFor="nickname">{t('dhl:welcome.nicknameLabel', 'Přezdívka')}</Label>
               <Input
                 id="nickname"
-                placeholder="Např. Honza, Katka, Alex..."
+                placeholder={t('dhl:welcome.nicknamePlaceholder', 'Např. Honza, Katka, Alex...')}
                 value={formData.nickname}
                 onChange={(e) => updateFormData('nickname', e.target.value)}
                 className="text-lg"
@@ -276,7 +276,7 @@ const ModernDHLWelcome: React.FC<ModernDHLWelcomeProps> = ({ onComplete }) => {
             </div>
             <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
               <p className="text-sm text-blue-800">
-                💡 <strong>Tip:</strong> Přezdívka se zobrazí v navigačním panelu a osobních zprávách aplikace.
+                💡 <strong>{t('common:tip', 'Tip')}:</strong> {t('dhl:welcome.nicknameTip', 'Přezdívka se zobrazí v navigačním panelu a osobních zprávách aplikace.')}
               </p>
             </div>
           </div>
@@ -285,11 +285,11 @@ const ModernDHLWelcome: React.FC<ModernDHLWelcomeProps> = ({ onComplete }) => {
         {step.id === 'homeCity' && (
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="homeCity">Domovské město</Label>
+              <Label htmlFor="homeCity">{t('dhl:welcome.homeCityLabel', 'Domovské město')}</Label>
               <div className="relative">
                 <Input
                   id="homeCity"
-                  placeholder="Začněte psát název města..."
+                  placeholder={t('dhl:welcome.homeCityPlaceholder', 'Začněte psát název města...')}
                   value={formData.homeCity}
                   onChange={(e) => {
                     updateFormData('homeCity', e.target.value);
@@ -322,7 +322,7 @@ const ModernDHLWelcome: React.FC<ModernDHLWelcomeProps> = ({ onComplete }) => {
             </div>
             <div className="bg-green-50 p-4 rounded-lg border border-green-200">
               <p className="text-sm text-green-800">
-                🏠 <strong>Proč to potřebujeme:</strong> Pomáhá nám vypočítat kilometrovné a doporučit optimální trasy.
+                🏠 <strong>{t('dhl:welcome.whyNeed', 'Proč to potřebujeme')}:</strong> {t('dhl:welcome.homeCityWhy', 'Pomáhá nám vypočítat kilometrovné a doporučit optimální trasy.')}
               </p>
             </div>
           </div>
@@ -331,14 +331,14 @@ const ModernDHLWelcome: React.FC<ModernDHLWelcomeProps> = ({ onComplete }) => {
         {step.id === 'position' && (
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="position">Pracovní pozice</Label>
+              <Label htmlFor="position">{t('dhl:welcome.positionLabel', 'Pracovní pozice')}</Label>
               <Select 
                 value={formData.positionId} 
                 onValueChange={(value) => updateFormData('positionId', value)}
                 disabled={isLoadingPositions}
               >
                 <SelectTrigger className="text-lg">
-                  <SelectValue placeholder="Vyberte svou pozici" />
+                  <SelectValue placeholder={t('dhl:welcome.positionPlaceholder', 'Vyberte svou pozici')} />
                 </SelectTrigger>
                 <SelectContent>
                   {positions.map((position) => (
@@ -354,13 +354,13 @@ const ModernDHLWelcome: React.FC<ModernDHLWelcomeProps> = ({ onComplete }) => {
               {isLoadingPositions && (
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>Načítání pozic...</span>
+                  <span>{t('dhl:loadingPositions', 'Načítání pozic...')}</span>
                 </div>
               )}
             </div>
             <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
               <p className="text-sm text-amber-800">
-                💼 <strong>Pozice určuje:</strong> Vaši hodinovou sazbu a typ směn v rotačním cyklu.
+                💼 <strong>{t('dhl:welcome.positionDetermines', 'Pozice určuje')}:</strong> {t('dhl:welcome.positionWhy', 'Vaši hodinovou sazbu a typ směn v rotačním cyklu.')}
               </p>
             </div>
           </div>
@@ -369,13 +369,13 @@ const ModernDHLWelcome: React.FC<ModernDHLWelcomeProps> = ({ onComplete }) => {
         {step.id === 'woche' && (
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="woche">Aktuální Woche (KW {getCalendarWeek(new Date())})</Label>
+              <Label htmlFor="woche">{t('dhl:welcome.wocheLabel', 'Aktuální Woche')} (KW {getCalendarWeek(new Date())})</Label>
               <Select 
                 value={formData.currentWoche} 
                 onValueChange={(value) => updateFormData('currentWoche', value)}
               >
                 <SelectTrigger className="text-lg">
-                  <SelectValue placeholder="Vyberte aktuální Woche" />
+                  <SelectValue placeholder={t('dhl:welcome.wochePlaceholder', 'Vyberte aktuální Woche')} />
                 </SelectTrigger>
                 <SelectContent>
                   {Array.from({ length: 15 }, (_, i) => i + 1).map((woche) => (
@@ -388,12 +388,12 @@ const ModernDHLWelcome: React.FC<ModernDHLWelcomeProps> = ({ onComplete }) => {
             </div>
             <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
               <p className="text-sm text-purple-800 mb-2">
-                📅 <strong>Jak zjistit aktuální Woche:</strong>
+                📅 <strong>{t('dhl:welcome.howToFind', 'Jak zjistit aktuální Woche')}:</strong>
               </p>
               <ul className="text-sm text-purple-700 space-y-1 ml-4">
-                <li>• Podívejte se do svého pracovního rozvrhu</li>
-                <li>• Zeptejte se supervizora nebo kolegy</li>
-                <li>• Najdete to v DHL aplikacích pro zaměstnance</li>
+                <li>• {t('dhl:welcome.checkSchedule', 'Podívejte se do svého pracovního rozvrhu')}</li>
+                <li>• {t('dhl:welcome.askSupervisor', 'Zeptejte se supervizora nebo kolegy')}</li>
+                <li>• {t('dhl:welcome.checkApps', 'Najdete to v DHL aplikacích pro zaměstnance')}</li>
               </ul>
             </div>
           </div>
@@ -412,9 +412,9 @@ const ModernDHLWelcome: React.FC<ModernDHLWelcomeProps> = ({ onComplete }) => {
               <Truck className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <h1 className="text-lg font-semibold">DHL Nastavení</h1>
+              <h1 className="text-lg font-semibold">{t('dhl:welcome.setupTitle', 'DHL Nastavení')}</h1>
               <p className="text-sm text-muted-foreground">
-                Krok {currentStep + 1} z {steps.length}
+                {t('dhl:welcome.stepOf', 'Krok {{current}} z {{total}}', { current: currentStep + 1, total: steps.length })}
               </p>
             </div>
           </div>
@@ -436,7 +436,7 @@ const ModernDHLWelcome: React.FC<ModernDHLWelcomeProps> = ({ onComplete }) => {
                 onClick={handleBack}
                 disabled={isSubmitting}
               >
-                Zpět
+                {t('common:back', 'Zpět')}
               </Button>
             )}
             
@@ -447,7 +447,7 @@ const ModernDHLWelcome: React.FC<ModernDHLWelcomeProps> = ({ onComplete }) => {
                 onClick={handleNext}
                 disabled={!isStepValid() || isSubmitting}
               >
-                Pokračovat
+                {t('common:continue', 'Pokračovat')}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             ) : (
@@ -456,7 +456,7 @@ const ModernDHLWelcome: React.FC<ModernDHLWelcomeProps> = ({ onComplete }) => {
                 disabled={!isStepValid() || isSubmitting}
               >
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Dokončit nastavení
+                {t('dhl:welcome.finishSetup', 'Dokončit nastavení')}
                 <CheckCircle className="ml-2 h-4 w-4" />
               </Button>
             )}
