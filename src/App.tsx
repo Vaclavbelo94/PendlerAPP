@@ -24,7 +24,7 @@ import Translator from "./pages/Translator";
 import TaxAdvisor from "./pages/TaxAdvisor";
 import Laws from "./pages/Laws";
 import LawDetail from "./pages/LawDetail";
-import UnifiedProfile from "./pages/UnifiedProfile";
+import ModernProfile from "./pages/ModernProfile";
 import Settings from "./pages/Settings";
 import Vehicle from "./pages/Vehicle";
 import Premium from "./pages/Premium";
@@ -82,7 +82,7 @@ function App() {
                         <Route path="/tax-advisor" element={<TaxAdvisor />} />
                         <Route path="/laws" element={<Laws />} />
                         <Route path="/laws/:lawId" element={<LawDetail />} />
-                        <Route path="/profile" element={<UnifiedProfile />} />
+                        <Route path="/profile" element={<ModernProfile />} />
                         <Route path="/settings" element={<Settings />} />
                          <Route path="/vehicle" element={<Vehicle />} />
                          <Route path="/premium" element={<Premium />} />
