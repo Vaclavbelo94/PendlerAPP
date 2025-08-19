@@ -294,5 +294,6 @@
   "notesPlaceholder": "Np. miejsce zatrzymania, preferencje...",
   "loginRequired": "Musisz się zalogować, aby skontaktować się z kierowcą",
   "selectDepartureDate": "Wybierz datę wyjazdu",
-  "error": "Wystąpił błąd"
+  "error": "Wystąpił błąd",
+  "allowPhoneContactDescription": "Umożliw szybszą komunikację poprzez rozmowę telefoniczną"
 }

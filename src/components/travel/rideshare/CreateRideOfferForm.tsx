@@ -40,14 +40,35 @@ const CreateRideOfferForm: React.FC<CreateRideOfferFormProps> = ({ onOfferCreate
       return;
     }
 
+    // Basic validation
+    if (!formData.origin_address.trim()) {
+      toast.error('Vyplňte výchozí adresu');
+      return;
+    }
+
+    if (!formData.destination_address.trim()) {
+      toast.error('Vyplňte cílovou adresu');
+      return;
+    }
+
     if (!formData.departure_date) {
       toast.error(t('selectDepartureDate'));
       return;
     }
 
+    if (!formData.departure_time) {
+      toast.error('Vyberte čas odjezdu');
+      return;
+    }
+
+    if (formData.seats_available < 1 || formData.seats_available > 8) {
+      toast.error('Počet míst musí být mezi 1 a 8');
+      return;
+    }
+
     setLoading(true);
     try {
-      await rideshareService.createOffer({
+      console.log('Creating offer with data:', {
         user_id: user.id,
         origin_address: formData.origin_address,
         destination_address: formData.destination_address,
@@ -56,7 +77,22 @@ const CreateRideOfferForm: React.FC<CreateRideOfferFormProps> = ({ onOfferCreate
         seats_available: formData.seats_available,
         price_per_person: formData.price_per_person,
         currency: countryConfig.currency,
-        notes: formData.notes,
+        notes: formData.notes || '',
+        phone_number: formData.allow_phone_contact ? formData.phone_number : '',
+        is_recurring: false,
+        recurring_days: []
+      });
+
+      await rideshareService.createOffer({
+        user_id: user.id,
+        origin_address: formData.origin_address.trim(),
+        destination_address: formData.destination_address.trim(),
+        departure_date: formData.departure_date.toISOString().split('T')[0],
+        departure_time: formData.departure_time,
+        seats_available: formData.seats_available,
+        price_per_person: Math.max(0, formData.price_per_person),
+        currency: countryConfig.currency,
+        notes: formData.notes || '',
         phone_number: formData.allow_phone_contact ? formData.phone_number : '',
         is_recurring: false,
         recurring_days: []
@@ -79,7 +115,8 @@ const CreateRideOfferForm: React.FC<CreateRideOfferFormProps> = ({ onOfferCreate
       });
     } catch (error) {
       console.error('Error creating offer:', error);
-      toast.error(t('error'));
+      console.error('Error details:', error);
+      toast.error(`${t('error')}: ${error.message || 'Neznámá chyba'}`);
     } finally {
       setLoading(false);
     }

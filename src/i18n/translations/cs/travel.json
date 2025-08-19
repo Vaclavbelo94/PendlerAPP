@@ -294,5 +294,6 @@
   "notesPlaceholder": "Např. místo zastavení, preference...",
   "loginRequired": "Pro kontaktování řidiče se musíte přihlásit",
   "selectDepartureDate": "Vyberte datum odjezdu",
-  "error": "Došlo k chybě"
+  "error": "Došlo k chybě",
+  "allowPhoneContactDescription": "Umožnit rychlejší komunikaci prostřednictvím telefonního hovoru"
 }

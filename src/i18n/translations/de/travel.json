@@ -294,5 +294,6 @@
   "notesPlaceholder": "Z.B. Haltestelle, Präferenzen...",
   "loginRequired": "Sie müssen sich anmelden, um den Fahrer zu kontaktieren",
   "selectDepartureDate": "Wählen Sie ein Abfahrtsdatum",
-  "error": "Ein Fehler ist aufgetreten"
+  "error": "Ein Fehler ist aufgetreten",
+  "allowPhoneContactDescription": "Schnellere Kommunikation über Telefonanruf ermöglichen"
 }
