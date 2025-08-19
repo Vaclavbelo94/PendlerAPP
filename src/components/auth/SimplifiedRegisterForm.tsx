@@ -93,17 +93,17 @@ const SimplifiedRegisterForm = () => {
     }
     
     if (!isEmployee) {
-      toast.error('Vyberte prosím, zda jste zaměstnanec');
+      toast.error(t('selectEmployeeType') || 'Vyberte prosím, zda jste zaměstnanec');
       return;
     }
     
     if (isEmployee === "yes" && !selectedCompany) {
-      toast.error('Vyberte prosím vaši firmu');
+      toast.error(t('selectCompanyRequired') || 'Vyberte prosím vaši firmu');
       return;
     }
     
     if (isEmployee === "yes" && !employeeCode.trim()) {
-      toast.error('Zadejte prosím zaměstnanecký kód');
+      toast.error(t('employeeCodeRequired') || 'Zadejte prosím zaměstnanecký kód');
       return;
     }
     
@@ -252,7 +252,7 @@ const SimplifiedRegisterForm = () => {
       <div className="space-y-4">
         <Label className="text-base font-medium flex items-center gap-2">
           <Users className="h-4 w-4" />
-          Jste zaměstnanec některé z našich partnerských firem?
+          {t('employeeQuestion') || 'Jste zaměstnanec některé z našich partnerských firem?'}
         </Label>
         <RadioGroup
           value={isEmployee}
@@ -261,11 +261,11 @@ const SimplifiedRegisterForm = () => {
         >
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="no" id="regular-user" />
-            <Label htmlFor="regular-user" className="font-normal">Ne, jsem běžný uživatel</Label>
+            <Label htmlFor="regular-user" className="font-normal">{t('regularUser') || 'Ne, jsem běžný uživatel'}</Label>
           </div>
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="yes" id="employee" />
-            <Label htmlFor="employee" className="font-normal">Ano, jsem zaměstnanec</Label>
+            <Label htmlFor="employee" className="font-normal">{t('employee') || 'Ano, jsem zaměstnanec'}</Label>
           </div>
         </RadioGroup>
       </div>
@@ -275,14 +275,14 @@ const SimplifiedRegisterForm = () => {
         <div className="space-y-4 p-4 bg-muted/30 rounded-lg border">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Building className="h-4 w-4" />
-            <span>Zaměstnanecká registrace - automaticky získáte premium přístup</span>
+            <span>{t('employeeRegistrationInfo') || 'Zaměstnanecká registrace - automaticky získáte premium přístup'}</span>
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="company">Vyberte vaši firmu</Label>
+            <Label htmlFor="company">{t('selectCompanyLabel') || 'Vyberte vaši firmu'}</Label>
             <Select value={selectedCompany} onValueChange={setSelectedCompany}>
               <SelectTrigger>
-                <SelectValue placeholder="Vyberte firmu..." />
+                <SelectValue placeholder={t('selectCompanyPlaceholder') || 'Vyberte firmu...'} />
               </SelectTrigger>
               <SelectContent>
                 {companies.map((company) => (
@@ -298,18 +298,18 @@ const SimplifiedRegisterForm = () => {
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="employeeCode">Zaměstnanecký kód</Label>
+            <Label htmlFor="employeeCode">{t('employeeCode') || 'Zaměstnanecký kód'}</Label>
             <Input
               id="employeeCode"
               type="text"
               value={employeeCode}
               onChange={(e) => setEmployeeCode(e.target.value.toUpperCase())}
-              placeholder="Zadejte váš zaměstnanecký kód"
+              placeholder={t('employeeCodePlaceholder') || 'Zadejte váš zaměstnanecký kód'}
               disabled={isLoading}
               required
             />
             <p className="text-sm text-muted-foreground">
-              Zadejte speciální kód poskytnutý vaší firmou
+              {t('employeeCodeNote') || 'Zadejte speciální kód poskytnutý vaší firmou'}
             </p>
           </div>
         </div>
