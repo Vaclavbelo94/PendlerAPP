@@ -58,9 +58,8 @@ const ModernDHLWelcome: React.FC<ModernDHLWelcomeProps> = ({ onComplete }) => {
   const [isLoadingPositions, setIsLoadingPositions] = useState(true);
   
   // City autocomplete state
-  const [cityInput, setCityInput] = useState('');
   const [showCitySuggestions, setShowCitySuggestions] = useState(false);
-  const { suggestions: citySuggestions, loading: isCityLoading } = useCityAutocomplete(cityInput);
+  const { suggestions: citySuggestions, loading: isCityLoading } = useCityAutocomplete(formData.homeCity);
 
   const steps: WelcomeStep[] = [
     {
@@ -209,7 +208,6 @@ const ModernDHLWelcome: React.FC<ModernDHLWelcomeProps> = ({ onComplete }) => {
 
   const handleCitySelect = (city: { display_name: string }) => {
     updateFormData('homeCity', city.display_name);
-    setCityInput(city.display_name);
     setShowCitySuggestions(false);
   };
 
@@ -288,39 +286,39 @@ const ModernDHLWelcome: React.FC<ModernDHLWelcomeProps> = ({ onComplete }) => {
           <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="homeCity">Domovské město</Label>
-              <Popover open={showCitySuggestions} onOpenChange={setShowCitySuggestions}>
-                <PopoverTrigger asChild>
-                  <Input
-                    id="homeCity"
-                    placeholder="Začněte psát název města..."
-                    value={cityInput}
-                    onChange={(e) => {
-                      setCityInput(e.target.value);
-                      updateFormData('homeCity', e.target.value);
-                    }}
-                    onFocus={() => setShowCitySuggestions(true)}
-                    className="text-lg"
-                  />
-                </PopoverTrigger>
-                {citySuggestions.length > 0 && (
-                  <PopoverContent className="w-full p-0" align="start">
+              <div className="relative">
+                <Input
+                  id="homeCity"
+                  placeholder="Začněte psát název města..."
+                  value={formData.homeCity}
+                  onChange={(e) => {
+                    updateFormData('homeCity', e.target.value);
+                    setShowCitySuggestions(true);
+                  }}
+                  onFocus={() => setShowCitySuggestions(true)}
+                  onBlur={() => setTimeout(() => setShowCitySuggestions(false), 200)}
+                  className="text-lg"
+                  autoComplete="off"
+                />
+                {showCitySuggestions && citySuggestions.length > 0 && (
+                  <div className="absolute z-50 w-full mt-1 bg-popover border border-border rounded-md shadow-lg">
                     <div className="max-h-60 overflow-y-auto">
                       {citySuggestions.map((suggestion, index) => (
                         <button
                           key={index}
                           onClick={() => handleCitySelect(suggestion)}
-                          className="w-full px-4 py-3 text-left hover:bg-accent hover:text-accent-foreground border-b border-border last:border-0"
+                          className="w-full px-4 py-3 text-left hover:bg-accent hover:text-accent-foreground border-b border-border last:border-0 first:rounded-t-md last:rounded-b-md"
                         >
                           <div className="flex items-center gap-2">
                             <MapPin className="h-4 w-4 text-muted-foreground" />
-                            {suggestion.display_name}
+                            <span className="text-sm">{suggestion.display_name}</span>
                           </div>
                         </button>
                       ))}
                     </div>
-                  </PopoverContent>
+                  </div>
                 )}
-              </Popover>
+              </div>
             </div>
             <div className="bg-green-50 p-4 rounded-lg border border-green-200">
               <p className="text-sm text-green-800">
