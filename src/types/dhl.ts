@@ -1,7 +1,24 @@
 
 // DHL System Types
 
-export type DHLPositionType = 'technik' | 'rangierer' | 'verlader' | 'sortierer' | 'fahrer' | 'other';
+export type DHLPositionType = 
+  | 'technik' 
+  | 'rangierer' 
+  | 'verlader' 
+  | 'sortierer' 
+  | 'fahrer' 
+  | 'pakettiere'
+  | 'cutter'
+  | 'shipper' 
+  | 'buehne'
+  | 'teamleiter'
+  | 'standortleiter'
+  | 'schichtleiter'
+  | 'wartung'
+  | 'qualitaetskontrolle'
+  | 'reinigung'
+  | 'andere'
+  | 'other';
 
 export interface DHLPosition {
   id: string;

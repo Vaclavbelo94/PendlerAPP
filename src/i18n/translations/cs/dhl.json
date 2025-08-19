@@ -1,8 +1,19 @@
-
 {
   "dhlSetup": "DHL Nastavení",
   "dhlSetupTitle": "Dokončete nastavení DHL profilu",
   "dhlSetupDescription": "Vyplňte informace potřebné pro správu vašich směn",
+  "welcome": {
+    "title": "Vítejte v PendlerApp!",
+    "subtitle": "Děkujeme za registraci. Nastavme si společně vaši aplikaci.",
+    "nicknameTitle": "Jak se vám říká?",
+    "nicknameDesc": "Nastavte si přezdívku, kterou uvidíte v aplikaci.",
+    "homeCityTitle": "Odkud jezdíte do práce?",
+    "homeCityDesc": "Pomože nám vypočítat vzdálenosti a náklady na dopravu.",
+    "positionTitle": "Jaká je vaše pozice?",
+    "positionDesc": "Vyberte svou pracovní pozici pro správné nastavení směn.",
+    "wocheTitle": "Aktuální Woche",
+    "wocheDesc": "Zadejte vaši aktuální Woche pro správný rotační cyklus."
+  },
   "onboarding": {
     "welcomeTitle": "Vítejte v DHL Mode!",
     "welcomeDesc": "Začněme krátkým představením.",
@@ -44,6 +55,83 @@
     "tip": "DHL funkce můžete nastavit kdykoli později v sekci Profil.",
     "dismissToast": "Můžete DHL funkce nastavit kdykoli v sekci Profil"
   },
+  "shifts": {
+    "generatedShifts": "Generované směny",
+    "userShifts": "Manuální směny",
+    "addShift": "Přidat směnu",
+    "editShift": "Upravit směnu",
+    "deleteShift": "Smazat směnu",
+    "shiftType": "Typ směny",
+    "startTime": "Začátek",
+    "endTime": "Konec",
+    "breakTime": "Přestávka",
+    "notes": "Poznámky",
+    "save": "Uložit",
+    "cancel": "Zrušit",
+    "morning": "Ranní",
+    "afternoon": "Odpolední", 
+    "night": "Noční",
+    "dayOff": "Volno",
+    "wocheRotation": "Woche rotace",
+    "currentWoche": "Aktuální Woche",
+    "nextWoche": "Další Woche",
+    "weeklyHours": "Týdenní hodiny",
+    "monthlyHours": "Měsíční hodiny",
+    "overtimeHours": "Přesčasy",
+    "shiftConflict": "Konflikt směn",
+    "invalidTime": "Neplatný čas",
+    "saveSuccess": "Směna byla uložena",
+    "deleteSuccess": "Směna byla smazána",
+    "saveError": "Chyba při ukládání směny",
+    "deleteError": "Chyba při mazání směny"
+  },
+  "positions": {
+    "packageHandler": "Manipulant balíků",
+    "driver": "Řidič",
+    "supervisor": "Supervizor",
+    "teamLeader": "Vedoucí týmu",
+    "administrator": "Administrátor"
+  },
+  "analytics": {
+    "title": "DHL Analýzy",
+    "description": "Přehledy vašich směn a výkonnosti",
+    "totalHours": "Celkem hodin",
+    "averageHours": "Průměr hodin/den",
+    "overtimeHours": "Přesčasy",
+    "efficiency": "Efektivita",
+    "weeklyReport": "Týdenní report",
+    "monthlyReport": "Měsíční report",
+    "yearlyReport": "Roční report"
+  },
+  "notifications": {
+    "newShift": "Nová směna přidána",
+    "shiftReminder": "Připomínka směny",
+    "overtimeWarning": "Upozornění na přesčasy",
+    "scheduleChange": "Změna v rozvrhu"
+  },
+  "errors": {
+    "invalidWoche": "Neplatné číslo Woche",
+    "positionRequired": "Pozice je povinná",
+    "setupIncomplete": "Nastavení není dokončené",
+    "accessDenied": "Přístup zamítnut"
+  },
+  "success": {
+    "setupComplete": "Nastavení dokončeno",
+    "profileUpdated": "Profil aktualizován",
+    "shiftAdded": "Směna přidána",
+    "dataExported": "Data exportována"
+  },
+  "actions": {
+    "setup": "Nastavit",
+    "edit": "Upravit",
+    "delete": "Smazat",
+    "export": "Exportovat",
+    "refresh": "Obnovit",
+    "back": "Zpět",
+    "next": "Další",
+    "finish": "Dokončit",
+    "skip": "Přeskočit"
+  },
   "documents": {
     "title": "DHL Dokumenty",
     "description": "Správa všech vašich DHL dokumentů na jednom místě"
@@ -51,10 +139,6 @@
   "travel": {
     "title": "DHL Cestování",
     "description": "Plánování a správa vašich služebních cest a přepravy"
-  },
-  "analytics": {
-    "title": "DHL Analytika",
-    "description": "Pokročilé analýzy výkonu a AI-powered insights"
   },
   "timeTracking": {
     "title": "DHL Sledování času",

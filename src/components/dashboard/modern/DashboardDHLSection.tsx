@@ -1,6 +1,6 @@
 
 import React from 'react';
-import DHLOnboarding from '@/components/onboarding/DHLOnboarding';
+import ModernDHLWelcome from '@/components/onboarding/ModernDHLWelcome';
 import DHLSetupNotification from '@/components/dashboard/DHLSetupNotification';
 import OnboardingDashboardContent from '@/components/dashboard/OnboardingDashboardContent';
 import { motion } from 'framer-motion';
@@ -15,7 +15,7 @@ const DashboardDHLSection: React.FC<DashboardDHLSectionProps> = ({
   shouldShowDHLContent
 }) => {
   if (shouldShowOnboarding) {
-    return <DHLOnboarding />;
+    return <ModernDHLWelcome onComplete={() => window.location.reload()} />;
   }
 
   if (shouldShowDHLContent) {

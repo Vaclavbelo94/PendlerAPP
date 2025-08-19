@@ -1,4 +1,3 @@
-
 import { DHLPosition, DHLWorkGroup, DHLShiftTemplate, DHLPositionType } from '@/types/dhl';
 
 // Konstanta pro mapování čísel dní na názvy
@@ -15,19 +14,47 @@ export const DAY_NAMES = {
 // Konstanta pro mapování typů pozic na české názvy
 export const POSITION_TYPE_NAMES: Record<DHLPositionType, string> = {
   technik: 'Technik',
-  rangierer: 'Rangierer',
+  rangierer: 'Rangiérer', 
   verlader: 'Verlader',
-  sortierer: 'Sortierer',
-  fahrer: 'Fahrer',
+  sortierer: 'Sortiérer',
+  fahrer: 'Řidič',
+  pakettiere: 'Pakettiere',
+  cutter: 'Cutter',
+  shipper: 'Shipper',
+  buehne: 'Bühne',
+  teamleiter: 'Vedoucí týmu',
+  standortleiter: 'Vedoucí stanoviště',
+  schichtleiter: 'Vedoucí směny',
+  wartung: 'Údržba',
+  qualitaetskontrolle: 'Kontrola kvality',
+  reinigung: 'Úklid',
+  andere: 'Jiné',
   other: 'Ostatní'
 };
 
-// Funkce pro formátování času
+// Funkce pro získání názvu dne v týdnu z čísla
+export const getDayName = (dayNumber: number): string => {
+  return DAY_NAMES[dayNumber as keyof typeof DAY_NAMES] || 'Neznámý den';
+};
+
+// Funkce pro získání českého názvu pozice z typu pozice
+export const getPositionTypeName = (positionType: DHLPositionType): string => {
+  return POSITION_TYPE_NAMES[positionType] || 'Neznámá pozice';
+};
+
+// Funkce pro formátování data
+export const formatDate = (date: string): string => {
+  const d = new Date(date);
+  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+  const year = d.getFullYear();
+  return `${day}.${month}.${year}`;
+};
+
 export const formatTime = (time: string): string => {
   return time.slice(0, 5); // "HH:MM:SS" -> "HH:MM"
 };
 
-// Funkce pro výpočet délky směny v hodinách
 export const calculateShiftDuration = (startTime: string, endTime: string, breakDuration: number = 30): number => {
   const start = new Date(`2000-01-01T${startTime}`);
   const end = new Date(`2000-01-01T${endTime}`);
@@ -36,153 +63,104 @@ export const calculateShiftDuration = (startTime: string, endTime: string, break
   return Math.max(0, (durationMinutes - breakDuration) / 60);
 };
 
-// Funkce pro kontrolu, zda je uživatel přiřazen k DHL
 export const isUserDHLAssigned = (assignments: any[]): boolean => {
   return assignments && assignments.length > 0 && assignments.some(a => a.is_active);
 };
 
-// Funkce pro získání aktivního DHL přiřazení uživatele  
 export const getUserActiveDHLAssignment = (assignments: any[]) => {
   return assignments?.find(assignment => assignment.is_active);
 };
 
-// Funkce pro generování týdenního vzoru směn
 export const generateWeeklyShiftPattern = (templates: DHLShiftTemplate[]): Record<number, DHLShiftTemplate[]> => {
   const pattern: Record<number, DHLShiftTemplate[]> = {};
   
-  for (let day = 0; day <= 6; day++) {
-    pattern[day] = templates.filter(template => template.day_of_week === day);
-  }
+  templates.forEach(template => {
+    if (!pattern[template.day_of_week]) {
+      pattern[template.day_of_week] = [];
+    }
+    pattern[template.day_of_week].push(template);
+  });
   
   return pattern;
 };
 
-// Funkce pro kontrolu konfliktu směn
-export const hasShiftConflict = (shift1: { start_time: string; end_time: string }, shift2: { start_time: string; end_time: string }): boolean => {
+export const hasShiftConflict = (
+  shift1: { start_time: string; end_time: string },
+  shift2: { start_time: string; end_time: string }
+): boolean => {
   const start1 = new Date(`2000-01-01T${shift1.start_time}`);
   const end1 = new Date(`2000-01-01T${shift1.end_time}`);
   const start2 = new Date(`2000-01-01T${shift2.start_time}`);
   const end2 = new Date(`2000-01-01T${shift2.end_time}`);
-
+  
   return start1 < end2 && start2 < end1;
 };
 
-// Funkce pro validaci DHL2026 promo kódu
 export const isDHL2026PromoCode = (code: string): boolean => {
-  return code.trim().toUpperCase() === 'DHL2026';
+  return code === 'DHL2026';
 };
 
-// Funkce pro generování automatického názvu směny
 export const generateShiftName = (position: DHLPosition, workGroup: DHLWorkGroup, date: string): string => {
-  const formattedDate = new Date(date).toLocaleDateString('cs-CZ', { 
-    day: '2-digit', 
-    month: '2-digit' 
-  });
-  return `${position.name} - ${workGroup.name} (${formattedDate})`;
+  return `${position.name} - ${workGroup.name} (${date})`;
 };
 
-// Funkce pro výpočet týdenní hodinové dotace
 export const calculateWeeklyHours = (templates: DHLShiftTemplate[]): number => {
   return templates.reduce((total, template) => {
-    return total + calculateShiftDuration(template.start_time, template.end_time, template.break_duration);
+    return total + calculateShiftDuration(template.start_time, template.end_time, template.break_duration || 30);
   }, 0);
 };
 
-// Funkce pro kontrolu, zda je datum v budoucnosti
 export const isFutureDate = (date: string): boolean => {
-  const today = new Date();
-  const checkDate = new Date(date);
-  today.setHours(0, 0, 0, 0);
-  checkDate.setHours(0, 0, 0, 0);
-  return checkDate >= today;
+  return new Date(date) > new Date();
 };
 
-// Funkce pro formátování mzdy
 export const formatHourlyRate = (rate?: number): string => {
   if (!rate) return 'Neuvedeno';
   return `${rate.toFixed(2)} €/hod`;
 };
 
-// Funkce pro získání barvy podle typu pozice
 export const getPositionTypeColor = (type: DHLPositionType): string => {
   const colors: Record<DHLPositionType, string> = {
-    technik: 'bg-blue-100 text-blue-800',
-    rangierer: 'bg-green-100 text-green-800',
-    verlader: 'bg-orange-100 text-orange-800',
-    sortierer: 'bg-purple-100 text-purple-800',
-    fahrer: 'bg-red-100 text-red-800',
-    other: 'bg-gray-100 text-gray-800'
+    technik: 'bg-blue-100 text-blue-700',
+    rangierer: 'bg-green-100 text-green-700',
+    verlader: 'bg-purple-100 text-purple-700',
+    sortierer: 'bg-amber-100 text-amber-700',
+    fahrer: 'bg-red-100 text-red-700',
+    pakettiere: 'bg-cyan-100 text-cyan-700',
+    cutter: 'bg-pink-100 text-pink-700',
+    shipper: 'bg-indigo-100 text-indigo-700',
+    buehne: 'bg-orange-100 text-orange-700',
+    teamleiter: 'bg-emerald-100 text-emerald-700',
+    standortleiter: 'bg-rose-100 text-rose-700',
+    schichtleiter: 'bg-teal-100 text-teal-700',
+    wartung: 'bg-lime-100 text-lime-700',
+    qualitaetskontrolle: 'bg-violet-100 text-violet-700',
+    reinigung: 'bg-sky-100 text-sky-700',
+    andere: 'bg-slate-100 text-slate-700',
+    other: 'bg-gray-100 text-gray-700'
   };
   return colors[type] || colors.other;
 };
 
-// Funkce pro získání ikony podle typu pozice
 export const getPositionTypeIcon = (type: DHLPositionType): string => {
   const icons: Record<DHLPositionType, string> = {
     technik: '🔧',
     rangierer: '🚛',
     verlader: '📦',
-    sortierer: '📋',
-    fahrer: '🚐',
-    other: '👷'
+    sortierer: '🎯',
+    fahrer: '🚚',
+    pakettiere: '📮',
+    cutter: '✂️',
+    shipper: '🚢',
+    buehne: '🎪',
+    teamleiter: '👨‍💼',
+    standortleiter: '🏢',
+    schichtleiter: '⚡',
+    wartung: '🔨',
+    qualitaetskontrolle: '✅',
+    reinigung: '🧹',
+    andere: '📋',
+    other: '❓'
   };
   return icons[type] || icons.other;
-};
-
-// Funkce pro 15-týdenní rotaci Wechselschicht
-export const getWechselschichtRotationInfo = () => {
-  return {
-    // Noční směny
-    nightShifts: [1, 4, 6, 9, 11, 14],
-    // Odpolední směny  
-    afternoonShifts: [2, 5, 7, 10, 12, 15],
-    // Ranní směny
-    morningShifts: [3, 8, 13],
-    totalWeeks: 15
-  };
-};
-
-// Funkce pro získání typu směny na základě Woche
-export const getShiftTypeFromWoche = (woche: number): 'morning' | 'afternoon' | 'night' | null => {
-  const rotation = getWechselschichtRotationInfo();
-  
-  if (rotation.nightShifts.includes(woche)) return 'night';
-  if (rotation.afternoonShifts.includes(woche)) return 'afternoon';
-  if (rotation.morningShifts.includes(woche)) return 'morning';
-  
-  return null;
-};
-
-// Funkce pro výpočet následující Woche v 15-týdenní rotaci
-export const getNextWocheInRotation = (currentWoche: number): number => {
-  return currentWoche >= 15 ? 1 : currentWoche + 1;
-};
-
-// Funkce pro výpočet kalendářního týdne
-export const getCalendarWeek = (date: Date): number => {
-  const yearStart = new Date(date.getFullYear(), 0, 1);
-  const weekNumber = Math.ceil(((date.getTime() - yearStart.getTime()) / 86400000 + yearStart.getDay() + 1) / 7);
-  return weekNumber;
-};
-
-// Funkce pro získání popisu Woche rotace
-export const getWocheDescription = (woche: number): string => {
-  const shiftType = getShiftTypeFromWoche(woche);
-  const rotation = getWechselschichtRotationInfo();
-  
-  switch (shiftType) {
-    case 'night':
-      return `Woche ${woche} - Noční směny (Po-Pá 22:00-06:00)`;
-    case 'afternoon':
-      return `Woche ${woche} - Odpolední směny (Po-Pá 14:00-22:00)`;
-    case 'morning':
-      return `Woche ${woche} - Ranní směny (Po-Pá 06:00-14:00)`;
-    default:
-      return `Woche ${woche} - Neznámý typ směny`;
-  }
-};
-
-// Funkce pro validaci Woche čísla
-export const isValidWoche = (woche: number): boolean => {
-  return woche >= 1 && woche <= 15;
 };
