@@ -151,30 +151,36 @@ const RideSharing: React.FC = () => {
             {filteredOffers.length} {t('of')} {offers.length} {t('offers')}
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
           <Button 
             variant="outline" 
-            size="icon"
+            size="sm"
             onClick={handleRefresh}
             disabled={refreshing}
+            className="min-h-[44px] touch-manipulation"
             title={t('refresh')}
           >
-            <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''} mr-2`} />
+            <span className="sm:hidden">{t('refresh')}</span>
           </Button>
           <Button 
             variant="outline" 
-            size="icon"
+            size="sm"
             onClick={() => setShowFilters(!showFilters)}
+            className={`min-h-[44px] touch-manipulation ${showFilters ? 'bg-primary/10 text-primary' : ''}`}
             title={t('filter')}
           >
-            <Filter className="h-4 w-4" />
+            <Filter className="h-4 w-4 mr-2" />
+            <span className="sm:hidden">{t('filter')}</span>
           </Button>
           <Button 
             onClick={() => setIsFormSheetOpen(true)}
-            size="icon"
+            size="sm"
+            className="min-h-[44px] touch-manipulation bg-primary hover:bg-primary/90"
             title={t('createOffer')}
           >
-            <Plus className="h-4 w-4" />
+            <Plus className="h-4 w-4 mr-2" />
+            <span className="sm:hidden">{t('createOffer')}</span>
           </Button>
         </div>
       </div>

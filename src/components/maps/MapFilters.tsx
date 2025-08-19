@@ -101,45 +101,50 @@ const MapFilters: React.FC = () => {
           <div className="space-y-3">
             <Label>Zobrazení na mapě</Label>
             
-            <div className="flex items-center justify-between">
-              <Label htmlFor="show-public" className="cursor-pointer">Zobrazit veřejnou dopravu</Label>
+            <div className="flex items-center justify-between py-3 touch-manipulation">
+              <Label htmlFor="show-public" className="cursor-pointer flex-1 pr-4">Zobrazit veřejnou dopravu</Label>
               <Switch
                 id="show-public"
                 checked={showPublicTransport}
                 onCheckedChange={setShowPublicTransport}
+                className="touch-manipulation"
               />
             </div>
             
-            <div className="flex items-center justify-between">
-              <Label htmlFor="show-car-routes" className="cursor-pointer">Zobrazit automobilové trasy</Label>
+            <div className="flex items-center justify-between py-3 touch-manipulation">
+              <Label htmlFor="show-car-routes" className="cursor-pointer flex-1 pr-4">Zobrazit automobilové trasy</Label>
               <Switch
                 id="show-car-routes"
                 checked={showCarRoutes}
                 onCheckedChange={setShowCarRoutes}
+                className="touch-manipulation"
               />
             </div>
             
-            <div className="flex items-center justify-between">
-              <Label htmlFor="show-communities" className="cursor-pointer">Zobrazit komunity pendlerů</Label>
+            <div className="flex items-center justify-between py-3 touch-manipulation">
+              <Label htmlFor="show-communities" className="cursor-pointer flex-1 pr-4">Zobrazit komunity pendlerů</Label>
               <Switch
                 id="show-communities"
                 checked={showPendlerCommunities}
                 onCheckedChange={setShowPendlerCommunities}
+                className="touch-manipulation"
               />
             </div>
           </div>
         </div>
         
-        <div className="flex justify-between pt-4 border-t">
+        <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t">
           <Button
             variant="outline"
             onClick={handleResetFilters}
+            className="min-h-[44px] flex-1 touch-manipulation"
           >
             Resetovat
           </Button>
           
           <Button
             onClick={handleApplyFilters}
+            className="min-h-[44px] flex-1 touch-manipulation bg-primary hover:bg-primary/90"
           >
             Aplikovat filtry
           </Button>
