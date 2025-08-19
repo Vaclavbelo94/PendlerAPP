@@ -136,7 +136,21 @@ const SimplifiedRegisterForm = () => {
       
       if (error) {
         console.error('Registration error:', error);
-        toast.error(typeof error === 'string' ? error : (t('registrationFailed') || 'Registrace se nezdařila'));
+        
+        // Handle specific error types with localized messages
+        let errorMessage = t('registrationFailed') || 'Registrace se nezdařila';
+        
+        if (error.message?.includes('Database error saving new user')) {
+          errorMessage = t('databaseErrorSavingUser') || 'Chyba při ukládání do databáze. Zkuste to prosím znovu.';
+        } else if (error.message?.includes('User already registered')) {
+          errorMessage = t('userAlreadyExists') || 'Uživatel s touto emailovou adresou již existuje';
+        } else if (error.message?.includes('Invalid email')) {
+          errorMessage = t('invalidEmailFormat') || 'Neplatný formát emailové adresy';
+        } else if (typeof error === 'string') {
+          errorMessage = error;
+        }
+        
+        toast.error(errorMessage);
         return;
       }
 
