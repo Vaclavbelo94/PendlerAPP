@@ -1,17 +1,15 @@
 
 import React, { useState, Suspense } from 'react';
 import { Helmet } from "react-helmet";
-import { Map, Users, Navigation } from "lucide-react";
+import { Map } from "lucide-react";
 import PremiumCheck from "@/components/premium/PremiumCheck";
 import Layout from "@/components/layouts/Layout";
 import { NavbarRightContent } from "@/components/layouts/NavbarPatch";
 import DashboardBackground from "@/components/common/DashboardBackground";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import RidesharingDashboard from "@/components/travel/rideshare/RidesharingDashboard";
-import HomeWorkTrafficMonitor from "@/components/travel/HomeWorkTrafficMonitor";
+import ModernTravelMobileCarousel from "@/components/travel/mobile/ModernTravelMobileCarousel";
 
 const LoadingFallback = () => (
   <div className="space-y-4">
@@ -23,6 +21,7 @@ const LoadingFallback = () => (
 
 const TravelPlanning = () => {
   const { t } = useTranslation(['travel', 'common']);
+  const [activeTab, setActiveTab] = useState('ridesharing');
 
   return (
     <Layout navbarRightContent={<NavbarRightContent />}>
@@ -54,37 +53,18 @@ const TravelPlanning = () => {
               </div>
             </motion.div>
 
-            {/* Simple Tab Navigation */}
+            {/* Travel Carousel */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
             >
-              <Tabs defaultValue="ridesharing" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 mb-8">
-                  <TabsTrigger value="ridesharing" className="flex items-center gap-2">
-                    <Users className="h-4 w-4" />
-                    {t('travel:ridesharing')}
-                  </TabsTrigger>
-                  <TabsTrigger value="traffic" className="flex items-center gap-2">
-                    <Navigation className="h-4 w-4" />
-                    {t('travel:commuteTraffic')}
-                  </TabsTrigger>
-                </TabsList>
-                
-                {/* Tab Content */}
-                <TabsContent value="ridesharing" className="space-y-6">
-                  <Suspense fallback={<LoadingFallback />}>
-                    <RidesharingDashboard />
-                  </Suspense>
-                </TabsContent>
-                
-                <TabsContent value="traffic" className="space-y-6">
-                  <Suspense fallback={<LoadingFallback />}>
-                    <HomeWorkTrafficMonitor />
-                  </Suspense>
-                </TabsContent>
-              </Tabs>
+              <Suspense fallback={<LoadingFallback />}>
+                <ModernTravelMobileCarousel
+                  activeTab={activeTab}
+                  onTabChange={setActiveTab}
+                />
+              </Suspense>
             </motion.div>
           </div>
         </DashboardBackground>
