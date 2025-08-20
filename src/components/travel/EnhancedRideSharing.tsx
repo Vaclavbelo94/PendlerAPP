@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Users, Plus, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { EnhancedRideSharing } from './EnhancedRideSharing';
+
 import TravelHub from './TravelHub';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
