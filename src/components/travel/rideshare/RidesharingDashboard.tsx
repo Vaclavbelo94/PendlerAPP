@@ -98,44 +98,16 @@ const RidesharingDashboard: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Simple Header with Create Button */}
-
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between"
-      >
-        <div className="flex-1">
-          <h2 className="text-2xl font-bold text-foreground mb-1">
-            {t('availableOffers')}
-          </h2>
-          <p className="text-muted-foreground">
-            {offers.length} {offers.length === 1 ? t('offer') : t('offers')} {t('available')}
-          </p>
-        </div>
-
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleRefresh}
-            disabled={refreshing}
-            className="min-h-[44px] touch-manipulation"
-          >
-            <RefreshCw className={cn("h-4 w-4 mr-2", refreshing && "animate-spin")} />
-            <span>{t('refresh')}</span>
-          </Button>
-          
-          <Button
-            onClick={() => setShowCreateForm(true)}
-            className="min-h-[44px] touch-manipulation bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            <span>{t('createOffer')}</span>
-          </Button>
-        </div>
-      </motion.div>
+      {/* Create Offer Button */}
+      <div className="flex justify-end">
+        <Button
+          onClick={() => setShowCreateForm(true)}
+          className="min-h-[44px] touch-manipulation bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg"
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          <span>{t('createOffer')}</span>
+        </Button>
+      </div>
 
 
       {/* Ride Offers Grid */}
