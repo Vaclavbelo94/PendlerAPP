@@ -9,13 +9,14 @@ import ModernSettingsLayout from '@/components/settings/modern/ModernSettingsLay
 import DashboardBackground from '@/components/common/DashboardBackground';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useTranslation } from 'react-i18next';
+import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 
 const Settings = () => {
   const isMobile = useIsMobile();
   const { t } = useTranslation('settings');
 
   return (
-    <Layout>
+    <Layout navbarRightContent={<NavbarRightContent />}>
       <Helmet>
         <title>{t('title')} | PendlerApp</title>
         <meta name="description" content={t('title')} />
@@ -39,7 +40,7 @@ const Settings = () => {
                   {t('title')}
                 </h1>
                 <p className={`text-muted-foreground ${isMobile ? 'text-sm mt-2' : 'text-lg mt-2'} max-w-3xl`}>
-                  Spravujte svoje nastavenia a preferencie
+                  {t('description')}
                 </p>
               </div>
             </div>
