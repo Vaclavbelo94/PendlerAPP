@@ -55,8 +55,11 @@ const ModernTravelMobileCarousel: React.FC<ModernTravelMobileCarouselProps> = ({
               key={tab.id}
               variant={activeTab === tab.id ? "default" : "ghost"}
               size="sm"
-              onClick={() => onTabChange(tab.id)}
-              className="flex-1 flex items-center gap-2"
+              onClick={() => {
+                console.log(`Switching to tab: ${tab.id}`);
+                onTabChange(tab.id);
+              }}
+              className="flex-1 flex items-center gap-2 min-h-[44px] touch-manipulation"
             >
               <Icon className="h-4 w-4" />
               {tab.label}

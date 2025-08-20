@@ -1,5 +1,5 @@
 
-import React, { useState, Suspense } from 'react';
+import React, { useState, Suspense, useEffect } from 'react';
 import { Helmet } from "react-helmet";
 import { Map } from "lucide-react";
 import PremiumCheck from "@/components/premium/PremiumCheck";
@@ -22,6 +22,11 @@ const LoadingFallback = () => (
 const TravelPlanning = () => {
   const { t } = useTranslation(['travel', 'common']);
   const [activeTab, setActiveTab] = useState('ridesharing');
+
+  // Debug logging
+  useEffect(() => {
+    console.log('TravelPlanning mounted, activeTab:', activeTab);
+  }, [activeTab]);
 
   return (
     <Layout navbarRightContent={<NavbarRightContent />}>

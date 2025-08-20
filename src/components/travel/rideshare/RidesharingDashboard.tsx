@@ -101,8 +101,11 @@ const RidesharingDashboard: React.FC = () => {
       {/* Create Offer Button */}
       <div className="flex justify-end">
         <Button
-          onClick={() => setShowCreateForm(true)}
-          className="min-h-[44px] touch-manipulation bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg"
+          onClick={() => {
+            console.log('Create offer button clicked');
+            setShowCreateForm(true);
+          }}
+          className="min-h-[44px] touch-manipulation bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg z-10 relative"
         >
           <Plus className="h-4 w-4 mr-2" />
           <span>{t('createOffer')}</span>
