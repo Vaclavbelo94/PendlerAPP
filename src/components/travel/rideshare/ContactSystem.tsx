@@ -50,14 +50,12 @@ const ContactSystem: React.FC<ContactSystemProps> = ({
     try {
       setLoading(true);
       
-      await rideshareService.contactDriver({
-        rideshare_offer_id: selectedOffer.id,
-        driver_user_id: selectedOffer.user_id,
-        requester_user_id: user.id,
-        requester_email: formData.email,
-        requester_phone: formData.phone,
-        message: formData.message
-      });
+      await rideshareService.contactDriver(
+        selectedOffer.id,
+        formData.message,
+        formData.email,
+        formData.phone
+      );
       
       toast.success(t('contactRequestSent'));
       onClose();
