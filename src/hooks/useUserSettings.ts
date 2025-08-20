@@ -111,8 +111,9 @@ export const useUserSettings = () => {
         // Apply theme setting
         setTheme(userSettings.theme);
       } else {
-        // Create default settings for new user
-        await saveSettings(DEFAULT_SETTINGS);
+        // No existing settings found, use defaults
+        setSettings(DEFAULT_SETTINGS);
+        setTheme(DEFAULT_SETTINGS.theme);
       }
     } catch (error) {
       console.error('Error loading user settings:', error);
@@ -156,7 +157,7 @@ export const useUserSettings = () => {
           offline_mode: updatedSettings.offline_mode,
           language: updatedSettings.language,
           updated_at: new Date().toISOString()
-        });
+        }, { onConflict: 'user_id' });
 
       if (error) throw error;
 
@@ -169,9 +170,17 @@ export const useUserSettings = () => {
       
       toast.success('Nastavení uloženo');
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving user settings:', error);
-      toast.error('Nepodařilo se uložit nastavení');
+      
+      // More specific error messages
+      if (error.code === '23505') {
+        toast.error('Konflikt při ukládání - zkuste to znovu');
+      } else if (error.message?.includes('network')) {
+        toast.error('Chyba sítě - zkontrolujte připojení');
+      } else {
+        toast.error('Nepodařilo se uložit nastavení');
+      }
       return false;
     } finally {
       setIsSaving(false);
