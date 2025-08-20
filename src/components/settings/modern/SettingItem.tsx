@@ -41,7 +41,7 @@ const SettingItem: React.FC<SettingItemProps> = ({
       case 'select':
         return (
           <Select value={value} onValueChange={onChange} disabled={disabled}>
-            <SelectTrigger className="w-40">
+            <SelectTrigger className="w-48 min-w-[12rem]">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -72,7 +72,7 @@ const SettingItem: React.FC<SettingItemProps> = ({
             value={value}
             onChange={(e) => onChange?.(e.target.value)}
             disabled={disabled}
-            className="w-48"
+            className="w-64 min-w-[16rem]"
           />
         );
       
@@ -87,14 +87,14 @@ const SettingItem: React.FC<SettingItemProps> = ({
   };
 
   return (
-    <div className="flex items-center justify-between py-4 border-b border-border/50 last:border-b-0">
-      <div className="flex-1">
-        <div className="font-medium text-foreground">{title}</div>
+    <div className="flex items-start justify-between py-6 border-b border-border/50 last:border-b-0 min-h-[4rem]">
+      <div className="flex-1 pr-6">
+        <div className="font-medium text-foreground text-base leading-tight">{title}</div>
         {description && (
-          <div className="text-sm text-muted-foreground mt-1">{description}</div>
+          <div className="text-sm text-muted-foreground mt-2 leading-relaxed max-w-md">{description}</div>
         )}
       </div>
-      <div className="ml-4">
+      <div className="flex-shrink-0 flex items-center">
         {renderControl()}
       </div>
     </div>

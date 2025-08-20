@@ -3129,6 +3129,87 @@ export type Database = {
         }
         Relationships: []
       }
+      user_settings: {
+        Row: {
+          animations_enabled: boolean
+          auto_sync: boolean
+          bio: string | null
+          color_scheme: string
+          compact_mode: boolean
+          created_at: string
+          display_name: string | null
+          email_notifications: boolean
+          font_size: string
+          high_contrast: boolean
+          id: string
+          language: string
+          location: string | null
+          offline_mode: boolean
+          phone_number: string | null
+          push_notifications: boolean
+          reminder_time: string
+          shift_reminders: boolean
+          system_updates: boolean
+          theme: string
+          updated_at: string
+          user_id: string
+          website: string | null
+          weekly_summaries: boolean
+        }
+        Insert: {
+          animations_enabled?: boolean
+          auto_sync?: boolean
+          bio?: string | null
+          color_scheme?: string
+          compact_mode?: boolean
+          created_at?: string
+          display_name?: string | null
+          email_notifications?: boolean
+          font_size?: string
+          high_contrast?: boolean
+          id?: string
+          language?: string
+          location?: string | null
+          offline_mode?: boolean
+          phone_number?: string | null
+          push_notifications?: boolean
+          reminder_time?: string
+          shift_reminders?: boolean
+          system_updates?: boolean
+          theme?: string
+          updated_at?: string
+          user_id: string
+          website?: string | null
+          weekly_summaries?: boolean
+        }
+        Update: {
+          animations_enabled?: boolean
+          auto_sync?: boolean
+          bio?: string | null
+          color_scheme?: string
+          compact_mode?: boolean
+          created_at?: string
+          display_name?: string | null
+          email_notifications?: boolean
+          font_size?: string
+          high_contrast?: boolean
+          id?: string
+          language?: string
+          location?: string | null
+          offline_mode?: boolean
+          phone_number?: string | null
+          push_notifications?: boolean
+          reminder_time?: string
+          shift_reminders?: boolean
+          system_updates?: boolean
+          theme?: string
+          updated_at?: string
+          user_id?: string
+          website?: string | null
+          weekly_summaries?: boolean
+        }
+        Relationships: []
+      }
       user_social_links: {
         Row: {
           created_at: string
