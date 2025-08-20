@@ -4,7 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Users, Plus, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import RideSharing from './RideSharing';
+import { EnhancedRideSharing } from './EnhancedRideSharing';
+import TravelHub from './TravelHub';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 
@@ -45,7 +46,7 @@ const EnhancedRideSharing: React.FC = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="p-0">
-          <RideSharing />
+          <TravelHub />
         </CardContent>
       </Card>
     </div>

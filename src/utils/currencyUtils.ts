@@ -31,15 +31,8 @@ export const CURRENCIES: Record<string, CurrencyRate> = {
 };
 
 export const getDefaultCurrencyByLanguage = (language: string): string => {
-  switch (language) {
-    case 'cs':
-      return 'CZK';
-    case 'pl':
-      return 'PLN';
-    case 'de':
-    default:
-      return 'EUR';
-  }
+  // All prices are now in EUR regardless of language
+  return 'EUR';
 };
 
 export const convertPrice = (
@@ -61,64 +54,35 @@ export const convertPrice = (
 
 export const formatCurrencyWithSymbol = (
   amount: number,
-  currency: string
+  currency: string = 'EUR'
 ): string => {
-  const currencyInfo = CURRENCIES[currency];
-  if (!currencyInfo) return `${amount} ${currency}`;
-  
-  // Format based on currency
-  if (currency === 'CZK') {
-    return `${Math.round(amount)} ${currencyInfo.symbol}`;
-  } else {
-    return `${amount.toFixed(2)} ${currencyInfo.symbol}`;
-  }
+  // Always format as EUR with € symbol
+  return `${amount.toFixed(2)} €`;
 };
 
 export const getCurrencyList = (): CurrencyRate[] => {
   return Object.values(CURRENCIES);
 };
 
-// Legacy hooks - preserved for backward compatibility
+// Updated hook - all prices now in EUR
 export const useCurrencyFormatter = () => {
   const { i18n } = useTranslation();
   
   const formatCurrency = (amount: number | string): string => {
     const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
     
-    if (isNaN(numAmount)) return '0';
+    if (isNaN(numAmount)) return '0 €';
     
-    switch (i18n.language) {
-      case 'de':
-        return new Intl.NumberFormat('de-DE', {
-          style: 'currency',
-          currency: 'EUR'
-        }).format(numAmount);
-        
-      case 'pl':
-        return new Intl.NumberFormat('pl-PL', {
-          style: 'currency',
-          currency: 'PLN'
-        }).format(numAmount);
-        
-      case 'cs':
-      default:
-        return new Intl.NumberFormat('cs-CZ', {
-          style: 'currency',
-          currency: 'CZK'
-        }).format(numAmount);
-    }
+    // Always format as EUR with localized number formatting
+    return new Intl.NumberFormat(i18n.language === 'cs' ? 'cs-CZ' : 
+                                i18n.language === 'pl' ? 'pl-PL' : 'de-DE', {
+      style: 'currency',
+      currency: 'EUR'
+    }).format(numAmount);
   };
 
   const getCurrencySymbol = (): string => {
-    switch (i18n.language) {
-      case 'de':
-        return '€';
-      case 'pl':
-        return 'zł';
-      case 'cs':
-      default:
-        return 'Kč';
-    }
+    return '€'; // Always EUR symbol
   };
 
   return { formatCurrency, getCurrencySymbol };
@@ -127,26 +91,12 @@ export const useCurrencyFormatter = () => {
 export const formatCurrencyStatic = (amount: number | string, language: string = 'cs'): string => {
   const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
   
-  if (isNaN(numAmount)) return '0';
+  if (isNaN(numAmount)) return '0 €';
   
-  switch (language) {
-    case 'de':
-      return new Intl.NumberFormat('de-DE', {
-        style: 'currency',
-        currency: 'EUR'
-      }).format(numAmount);
-      
-    case 'pl':
-      return new Intl.NumberFormat('pl-PL', {
-        style: 'currency',
-        currency: 'PLN'
-      }).format(numAmount);
-      
-    case 'cs':
-    default:
-      return new Intl.NumberFormat('cs-CZ', {
-        style: 'currency',
-        currency: 'CZK'
-      }).format(numAmount);
-  }
+  // Always format as EUR with localized number formatting
+  return new Intl.NumberFormat(language === 'cs' ? 'cs-CZ' : 
+                              language === 'pl' ? 'pl-PL' : 'de-DE', {
+    style: 'currency',
+    currency: 'EUR'
+  }).format(numAmount);
 };
