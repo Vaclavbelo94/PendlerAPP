@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/auth';
 import { useTranslation } from 'react-i18next';
@@ -11,7 +11,6 @@ import { NavbarRightContent } from '@/components/navbar/NavbarRightContent';
 const ModernProfile = () => {
   const { user } = useAuth();
   const { t } = useTranslation('profile');
-  const [activeTab, setActiveTab] = useState('overview');
 
   if (!user) {
     return (
@@ -65,10 +64,7 @@ const ModernProfile = () => {
           <p className="text-sm text-muted-foreground mt-2 italic">{t('swipeTip')}</p>
         </motion.div>
         
-        <ModernProfileCarousel 
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-        />
+        <ModernProfileCarousel />
       </div>
     </div>
   );
