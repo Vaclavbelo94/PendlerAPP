@@ -137,7 +137,7 @@ const RideCreationWizard: React.FC<RideCreationWizardProps> = ({
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-lg font-semibold">
               <MapPin className="h-5 w-5 text-primary" />
-              <span>Trasa</span>
+              <span>{t('route')}</span>
             </div>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -171,7 +171,7 @@ const RideCreationWizard: React.FC<RideCreationWizardProps> = ({
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-lg font-semibold">
               <CalendarIcon className="h-5 w-5 text-primary" />
-              <span>Datum a čas</span>
+              <span>{t('dateAndTime')}</span>
             </div>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -229,7 +229,7 @@ const RideCreationWizard: React.FC<RideCreationWizardProps> = ({
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-lg font-semibold">
               <Users className="h-5 w-5 text-primary" />
-              <span>Kapacita a cena</span>
+              <span>{t('capacityAndPrice')}</span>
             </div>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -269,7 +269,7 @@ const RideCreationWizard: React.FC<RideCreationWizardProps> = ({
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-lg font-semibold">
               <Phone className="h-5 w-5 text-primary" />
-              <span>Kontakt</span>
+              <span>{t('contact')}</span>
             </div>
             
             <div className="flex items-center space-x-2 p-4 bg-muted/20 rounded-lg">

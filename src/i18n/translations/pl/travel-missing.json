@@ -1,5 +1,10 @@
 {
-  "departure": "Odjazd",
+  "departure": "Odjazd", 
   "driver": "Kierowca",
-  "price": "Cena"
+  "price": "Cena",
+  "duplicateOfferError": "Oferta z podobnymi danymi już istnieje",
+  "userNotFoundError": "Użytkownik nie został znaleziony",
+  "permissionError": "Nie masz uprawnień do tworzenia ofert",
+  "duplicateKeyError": "Duplikat wpisu - spróbuj ponownie", 
+  "unknownError": "Nieoczekiwany błąd podczas tworzenia oferty"
 }

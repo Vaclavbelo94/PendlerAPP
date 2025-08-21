@@ -1,5 +1,10 @@
 {
   "departure": "Abfahrt",
   "driver": "Fahrer", 
-  "price": "Preis"
+  "price": "Preis",
+  "duplicateOfferError": "Angebot mit ähnlichen Daten existiert bereits",
+  "userNotFoundError": "Benutzer wurde nicht gefunden",
+  "permissionError": "Sie haben keine Berechtigung zum Erstellen von Angeboten", 
+  "duplicateKeyError": "Doppelter Eintrag - versuchen Sie es erneut",
+  "unknownError": "Unerwarteter Fehler beim Erstellen des Angebots"
 }

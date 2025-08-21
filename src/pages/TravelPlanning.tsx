@@ -28,6 +28,11 @@ const TravelPlanning = () => {
     console.log('TravelPlanning mounted, activeTab:', activeTab);
   }, [activeTab]);
 
+  const handleTabChange = (newTab: string) => {
+    console.log('Tab changing from', activeTab, 'to', newTab);
+    setActiveTab(newTab);
+  };
+
   return (
     <Layout navbarRightContent={<NavbarRightContent />}>
       <PremiumCheck featureKey="travel_planning">
@@ -67,7 +72,7 @@ const TravelPlanning = () => {
               <Suspense fallback={<LoadingFallback />}>
                 <ModernTravelMobileCarousel
                   activeTab={activeTab}
-                  onTabChange={setActiveTab}
+                  onTabChange={handleTabChange}
                 />
               </Suspense>
             </motion.div>

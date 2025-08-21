@@ -295,5 +295,13 @@
   "loginRequired": "Sie müssen sich anmelden, um den Fahrer zu kontaktieren",
   "selectDepartureDate": "Wählen Sie ein Abfahrtsdatum",
   "error": "Ein Fehler ist aufgetreten",
-  "allowPhoneContactDescription": "Schnellere Kommunikation über Telefonanruf ermöglichen"
+  "allowPhoneContactDescription": "Schnellere Kommunikation über Telefonanruf ermöglichen",
+  "originRequired": "Startadresse eingeben",
+  "destinationRequired": "Zieladresse eingeben",
+  "selectDepartureTime": "Abfahrtszeit auswählen", 
+  "seatsValidation": "Anzahl der Plätze muss zwischen 1 und 8 liegen",
+  "route": "Route",
+  "dateAndTime": "Datum und Uhrzeit",
+  "capacityAndPrice": "Kapazität und Preis",
+  "contact": "Kontakt"
 }

@@ -136,9 +136,21 @@ export const rideshareService = {
       }
 
       return data;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Service error in createRideshareOffer:', error);
-      throw error;
+      
+      // Enhanced error handling
+      if (error?.code === '23505') {
+        throw new Error('Nabídka s podobnými údaji již existuje');
+      } else if (error?.code === '23503') {
+        throw new Error('Uživatel nebyl nalezen');
+      } else if (error?.message?.includes('violates row-level security')) {
+        throw new Error('Nemáte oprávnění k vytvoření nabídky');
+      } else if (error?.message?.includes('duplicate key')) {
+        throw new Error('Duplicitní záznam - zkuste to znovu');
+      } else {
+        throw new Error(error?.message || 'Neočekávaná chyba při vytváření nabídky');
+      }
     }
   },
 

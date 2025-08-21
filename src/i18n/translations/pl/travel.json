@@ -295,5 +295,13 @@
   "loginRequired": "Musisz się zalogować, aby skontaktować się z kierowcą",
   "selectDepartureDate": "Wybierz datę wyjazdu",
   "error": "Wystąpił błąd",
-  "allowPhoneContactDescription": "Umożliw szybszą komunikację poprzez rozmowę telefoniczną"
+  "allowPhoneContactDescription": "Umożliw szybszą komunikację poprzez rozmowę telefoniczną",
+  "originRequired": "Wprowadź adres wyjazdu",
+  "destinationRequired": "Wprowadź adres docelowy",
+  "selectDepartureTime": "Wybierz czas wyjazdu",
+  "seatsValidation": "Liczba miejsc musi być między 1 a 8",
+  "route": "Trasa", 
+  "dateAndTime": "Data i czas",
+  "capacityAndPrice": "Pojemność i cena",
+  "contact": "Kontakt"
 }

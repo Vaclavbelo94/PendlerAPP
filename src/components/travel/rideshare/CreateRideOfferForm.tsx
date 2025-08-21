@@ -42,12 +42,12 @@ const CreateRideOfferForm: React.FC<CreateRideOfferFormProps> = ({ onOfferCreate
 
     // Basic validation
     if (!formData.origin_address.trim()) {
-      toast.error('Vyplňte výchozí adresu');
+      toast.error(t('originRequired'));
       return;
     }
 
     if (!formData.destination_address.trim()) {
-      toast.error('Vyplňte cílovou adresu');
+      toast.error(t('destinationRequired'));
       return;
     }
 
@@ -57,12 +57,12 @@ const CreateRideOfferForm: React.FC<CreateRideOfferFormProps> = ({ onOfferCreate
     }
 
     if (!formData.departure_time) {
-      toast.error('Vyberte čas odjezdu');
+      toast.error(t('selectDepartureTime'));
       return;
     }
 
     if (formData.seats_available < 1 || formData.seats_available > 8) {
-      toast.error('Počet míst musí být mezi 1 a 8');
+      toast.error(t('seatsValidation'));
       return;
     }
 

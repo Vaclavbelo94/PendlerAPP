@@ -295,5 +295,13 @@
   "loginRequired": "Pro kontaktování řidiče se musíte přihlásit",
   "selectDepartureDate": "Vyberte datum odjezdu",
   "error": "Došlo k chybě",
-  "allowPhoneContactDescription": "Umožnit rychlejší komunikaci prostřednictvím telefonního hovoru"
+  "allowPhoneContactDescription": "Umožnit rychlejší komunikaci prostřednictvím telefonního hovoru",
+  "originRequired": "Vyplňte výchozí adresu",
+  "destinationRequired": "Vyplňte cílovou adresu", 
+  "selectDepartureTime": "Vyberte čas odjezdu",
+  "seatsValidation": "Počet míst musí být mezi 1 a 8",
+  "route": "Trasa",
+  "dateAndTime": "Datum a čas",
+  "capacityAndPrice": "Kapacita a cena",
+  "contact": "Kontakt"
 }
