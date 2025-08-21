@@ -183,7 +183,86 @@ async function generateShiftForDate(
   const dayOfWeek = date.getDay() // 0 = Sunday, 1 = Monday, etc.
   const mondayBasedDay = dayOfWeek === 0 ? 6 : dayOfWeek - 1 // Convert to Monday = 0
 
-  // Calculate calendar week and user's woche
+  // Check if this is a Wechselschicht position
+  const positionName = assignment.dhl_positions?.name || ''
+  const isWechselschicht = positionName.toLowerCase().includes('wechselschicht') || 
+                          positionName.toLowerCase().includes('30h')
+
+  if (isWechselschicht) {
+    return await generateWechselschichtShift(supabaseClient, userId, date, assignment, mondayBasedDay)
+  } else {
+    return await generateRegularDHLShift(supabaseClient, userId, date, assignment, mondayBasedDay)
+  }
+}
+
+// Generate shift for Wechselschicht positions using patterns
+async function generateWechselschichtShift(
+  supabaseClient: any,
+  userId: string,
+  date: Date,
+  assignment: any,
+  mondayBasedDay: number
+) {
+  // Skip weekends for Wechselschicht (Monday=0 to Friday=4)
+  if (mondayBasedDay > 4) {
+    return null
+  }
+
+  // Calculate which Woche to use based on 15-week cycle
+  const calendarWeek = getCalendarWeek(date)
+  const userCurrentWoche = assignment.current_woche || 1
+  const targetWoche = calculateWocheForDate(userCurrentWoche, calendarWeek)
+
+  console.log(`Wechselschicht calculation: CW${calendarWeek}, userWoche=${userCurrentWoche}, targetWoche=${targetWoche}`)
+
+  // Get the pattern for the calculated Woche
+  const { data: pattern } = await supabaseClient
+    .from('dhl_wechselschicht_patterns')
+    .select('*')
+    .eq('woche_number', targetWoche)
+    .eq('is_active', true)
+    .single()
+
+  if (!pattern) {
+    console.log(`No pattern found for Woche ${targetWoche}`)
+    return null
+  }
+
+  // Get shift data for this day of week
+  const dayFields = ['monday_shift', 'tuesday_shift', 'wednesday_shift', 'thursday_shift', 'friday_shift']
+  const shiftType = pattern[dayFields[mondayBasedDay]]
+
+  if (!shiftType || shiftType === 'volno') {
+    return null
+  }
+
+  // Map shift type to actual times
+  const shiftTimes = getWechselschichtTimes(pattern, shiftType)
+  if (!shiftTimes) {
+    return null
+  }
+
+  return {
+    user_id: userId,
+    date: date.toISOString().split('T')[0],
+    start_time: shiftTimes.start,
+    end_time: shiftTimes.end,
+    type: convertWechselschichtType(shiftType),
+    dhl_position_id: assignment.dhl_positions?.id,
+    is_dhl_managed: true,
+    is_wechselschicht_generated: true,
+    notes: `Wechselschicht ${pattern.pattern_name} - ${shiftType}`
+  }
+}
+
+// Generate shift for regular DHL positions using templates
+async function generateRegularDHLShift(
+  supabaseClient: any,
+  userId: string,
+  date: Date,
+  assignment: any,
+  mondayBasedDay: number
+) {
   const calendarWeek = getCalendarWeek(date)
   const userWoche = assignment.dhl_positions?.woche || 1
 
@@ -219,7 +298,7 @@ async function generateShiftForDate(
     type: convertDHLShiftType(shiftData),
     dhl_position_id: assignment.dhl_positions?.id,
     is_dhl_managed: true,
-    is_wechselschicht_generated: true,
+    is_wechselschicht_generated: false,
     notes: `Auto-generated from DHL position: ${assignment.dhl_positions?.name}`
   }
 }
@@ -235,6 +314,60 @@ function getCalendarWeek(date: Date): number {
     target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7)
   }
   return 1 + Math.ceil((firstThursday - target.valueOf()) / 604800000)
+}
+
+// Calculate Woche for specific date based on 15-week rotation
+function calculateWocheForDate(userCurrentWoche: number, targetCalendarWeek: number): number {
+  // 15-week cycle: weeks 1, 4, 7, 10, 13
+  const cycleWeeks = [1, 4, 7, 10, 13]
+  
+  // Find current position in cycle
+  const currentIndex = cycleWeeks.indexOf(userCurrentWoche)
+  if (currentIndex === -1) {
+    // If current woche is not in the main cycle, use the nearest one
+    console.warn(`Current woche ${userCurrentWoche} not in cycle, using week 1`)
+    return 1
+  }
+  
+  // For now, use simple rotation based on calendar week
+  // This is a simplified approach - in reality you'd need reference date logic
+  const weekOffset = Math.floor(targetCalendarWeek / 3) % 5
+  const targetIndex = (currentIndex + weekOffset) % 5
+  
+  return cycleWeeks[targetIndex]
+}
+
+// Get shift times from pattern based on shift type
+function getWechselschichtTimes(pattern: any, shiftType: string): { start: string, end: string } | null {
+  switch (shiftType.toLowerCase()) {
+    case 'ranní':
+      return { 
+        start: pattern.morning_start_time, 
+        end: pattern.morning_end_time 
+      }
+    case 'odpolední':
+      return { 
+        start: pattern.afternoon_start_time, 
+        end: pattern.afternoon_end_time 
+      }
+    case 'noční':
+      return { 
+        start: pattern.night_start_time, 
+        end: pattern.night_end_time 
+      }
+    default:
+      return null
+  }
+}
+
+// Convert Wechselschicht shift type
+function convertWechselschichtType(shiftType: string): string {
+  switch (shiftType.toLowerCase()) {
+    case 'ranní': return 'morning'
+    case 'odpolední': return 'afternoon'
+    case 'noční': return 'night'
+    default: return 'morning'
+  }
 }
 
 // Convert DHL shift type
