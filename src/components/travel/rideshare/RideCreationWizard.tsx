@@ -73,10 +73,16 @@ const RideCreationWizard: React.FC<RideCreationWizardProps> = ({
       setLoading(true);
       
       const offerData = {
-        ...formData,
-        departure_date: format(formData.departure_date, 'yyyy-MM-dd'),
-        currency: 'EUR', // Always EUR
         user_id: user.id,
+        origin_address: formData.origin_address,
+        destination_address: formData.destination_address,
+        departure_date: format(formData.departure_date, 'yyyy-MM-dd'),
+        departure_time: formData.departure_time,
+        seats_available: formData.seats_available,
+        price_per_person: formData.price_per_person,
+        notes: formData.notes,
+        phone_number: formData.allow_phone_contact ? formData.phone_number : '',
+        currency: 'EUR', // Always EUR
         is_recurring: false,
         recurring_days: []
       };
