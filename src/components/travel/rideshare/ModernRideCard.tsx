@@ -89,11 +89,18 @@ const ModernRideCard: React.FC<ModernRideCardProps> = ({
                     {displayDriverName}
                   </h3>
                   
-                  {ride.driver.rating && ride.driver.rating > 0 && (
+                  {ride.driver.rating && ride.driver.rating > 0 ? (
                     <div className="flex items-center gap-1 bg-amber-50 dark:bg-amber-900/20 px-2 py-1 rounded-full self-start">
                       <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
                       <span className="text-xs font-medium text-amber-600 dark:text-amber-400">
                         {ride.driver.rating.toFixed(1)}
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-1 bg-gray-50 dark:bg-gray-800 px-2 py-1 rounded-full self-start">
+                      <Star className="h-3 w-3 text-gray-400" />
+                      <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                        {t('newDriver')}
                       </span>
                     </div>
                   )}
@@ -105,10 +112,14 @@ const ModernRideCard: React.FC<ModernRideCardProps> = ({
                     <span className="font-medium">{ride.seats_available || 0} {t('seats')}</span>
                   </div>
                   
-                  {ride.driver.completed_rides && ride.driver.completed_rides > 0 && (
+                  {ride.driver.completed_rides && ride.driver.completed_rides > 0 ? (
                     <Badge variant="secondary" className="text-xs px-2">
                       <Car className="h-3 w-3 mr-1" />
                       {ride.driver.completed_rides} {t('rides')}
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline" className="text-xs px-2 text-muted-foreground">
+                      {t('newDriver')}
                     </Badge>
                   )}
                 </div>
