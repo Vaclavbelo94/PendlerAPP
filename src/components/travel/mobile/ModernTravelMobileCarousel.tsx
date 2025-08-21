@@ -46,29 +46,31 @@ const ModernTravelMobileCarousel: React.FC<ModernTravelMobileCarouselProps> = ({
 
   return (
     <div className="w-full space-y-6">
-      {/* Tab Navigation */}
-      <div className="flex gap-2 p-1 bg-muted rounded-lg">
+      {/* Tab Navigation - Icon Only */}
+      <div className="flex gap-3 justify-center mb-2">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
           return (
-            <Button
+            <button
               key={tab.id}
-              variant={isActive ? "default" : "ghost"}
-              size="sm"
               onClick={() => {
                 console.log(`Switching to tab: ${tab.id}`);
                 onTabChange(tab.id);
               }}
-              className={`flex-1 flex items-center gap-2 min-h-[44px] touch-manipulation transition-all ${
-                isActive 
-                  ? 'bg-primary text-primary-foreground shadow-sm' 
-                  : 'hover:bg-accent hover:text-accent-foreground active:bg-accent/80'
-              }`}
+              className={`
+                flex flex-col items-center gap-1 px-4 py-3 rounded-lg 
+                transition-all duration-200 touch-manipulation
+                ${isActive 
+                  ? 'bg-primary text-primary-foreground shadow-md scale-105' 
+                  : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground hover:scale-102'
+                }
+              `}
+              aria-label={tab.label}
             >
-              <Icon className="h-4 w-4" />
-              {tab.label}
-            </Button>
+              <Icon className={`h-5 w-5 ${isActive ? 'animate-pulse' : ''}`} />
+              <span className="text-xs font-medium">{tab.label}</span>
+            </button>
           );
         })}
       </div>
