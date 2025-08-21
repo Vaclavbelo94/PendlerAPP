@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Layout from '@/components/layouts/Layout';
 import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
-import ProfileMobileCarousel from '@/components/profile/mobile/ProfileMobileCarousel';
+import { ModernProfileCarousel } from '@/components/profile/modern/ModernProfileCarousel';
 import ProfileNavigation from '@/components/profile/ProfileNavigation';
 import ProfileOverview from '@/components/profile/ProfileOverview';
 import ProfileWorkData from '@/components/profile/ProfileWorkData';
@@ -148,11 +148,6 @@ const Profile = () => {
                     </p>
                   </div>
                 </div>
-                {isMobile && (
-                  <p className="text-xs text-muted-foreground text-center px-4">
-                    {t('swipeTip') || '💡 Tip: Přejeďte prstem doleva/doprava pro navigaci mezi záložkami'}
-                  </p>
-                )}
               </motion.div>
 
             <ProfileErrorBoundary>
@@ -163,7 +158,7 @@ const Profile = () => {
                   transition={{ duration: 0.6, delay: 0.2 }}
                   ref={containerRef}
                 >
-                  <ProfileMobileCarousel
+                  <ModernProfileCarousel
                     activeTab={activeTab}
                     onTabChange={setActiveTab}
                   />
