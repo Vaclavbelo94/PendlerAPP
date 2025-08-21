@@ -261,12 +261,7 @@ const HomeWorkTrafficMonitor: React.FC = () => {
               </h3>
               
               {problems.map((problem, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                >
+                <div key={index} className="animate-fade-in">
                   <Alert className={getSeverityColor(problem.severity)}>
                     <div className="flex items-start gap-3">
                       {getSeverityIcon(problem.severity)}
@@ -295,7 +290,7 @@ const HomeWorkTrafficMonitor: React.FC = () => {
                       </div>
                     </div>
                   </Alert>
-                </motion.div>
+                </div>
               ))}
             </div>
           )}
