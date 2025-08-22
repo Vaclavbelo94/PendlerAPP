@@ -56,6 +56,11 @@ const NewMobileShiftsView: React.FC<NewMobileShiftsViewProps> = ({
     handleCloseReport
   } = useMobileShifts();
 
+  const handleDHLImportComplete = () => {
+    setIsDHLImportOpen(false);
+    onRefreshShifts?.();
+  };
+
   // Use external shifts if provided (for compatibility)
   const shiftsToUse = externalShifts?.length > 0 ? externalShifts : allShifts;
 
