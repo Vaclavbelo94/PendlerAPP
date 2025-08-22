@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { format, eachDayOfInterval, startOfMonth, endOfMonth } from 'date-fns';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -13,6 +13,9 @@ import MobileShiftsStats from './MobileShiftsStats';
 import MobileBottomNavigation from './MobileBottomNavigation';
 import MobileShiftReportSheet from './MobileShiftReportSheet';
 import { Shift } from '@/types/shifts';
+import MobileDHLImportSheet from './MobileDHLImportSheet';
+import { useAuth } from '@/hooks/auth';
+import { isDHLEmployee } from '@/utils/dhlAuthUtils';
 
 interface NewMobileShiftsViewProps {
   shifts: Shift[];
@@ -20,6 +23,7 @@ interface NewMobileShiftsViewProps {
   onDeleteShift: (shiftId: string) => Promise<void>;
   onAddShift: () => void;
   onAddShiftForDate: (date: Date) => void;
+  onRefreshShifts?: () => void;
   isLoading: boolean;
 }
 
@@ -29,9 +33,12 @@ const NewMobileShiftsView: React.FC<NewMobileShiftsViewProps> = ({
   onDeleteShift,
   onAddShift,
   onAddShiftForDate,
+  onRefreshShifts,
   isLoading
 }) => {
   const { t } = useTranslation('shifts');
+  const { user } = useAuth();
+  const [isDHLImportOpen, setIsDHLImportOpen] = useState(false);
   
   const {
     currentDate,
@@ -164,6 +171,12 @@ const NewMobileShiftsView: React.FC<NewMobileShiftsViewProps> = ({
         onOpenChange={handleCloseReport}
         date={reportDate}
         shift={reportDate ? getShiftForDate(reportDate) : undefined}
+      />
+
+      <MobileDHLImportSheet
+        isOpen={isDHLImportOpen}
+        onOpenChange={setIsDHLImportOpen}
+        onImportComplete={handleDHLImportComplete}
       />
     </div>
   );

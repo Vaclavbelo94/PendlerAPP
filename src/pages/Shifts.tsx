@@ -202,6 +202,7 @@ const Shifts = React.memo(() => {
               onDeleteShift={handleDeleteShift}
               onAddShift={() => handleAddShift()}
               onAddShiftForDate={handleAddShiftForDate}
+              onRefreshShifts={refreshShifts}
               isLoading={shiftsLoading}
             />
           </div>

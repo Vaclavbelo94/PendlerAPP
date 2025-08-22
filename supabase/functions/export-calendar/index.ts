@@ -65,8 +65,8 @@ serve(async (req) => {
 
     console.log('Found DHL assignment:', assignment)
 
-    // Generate shifts using the service logic
-    const shifts = await generateShiftsForDateRange(
+    // Generate shifts using unified service logic
+    const shifts = await generateUnifiedShiftsForDateRange(
       supabaseClient,
       user.id,
       startDate,
@@ -150,8 +150,8 @@ serve(async (req) => {
   }
 })
 
-// Generate shifts for date range using existing service logic
-async function generateShiftsForDateRange(
+// Generate shifts for date range using unified service logic
+async function generateUnifiedShiftsForDateRange(
   supabaseClient: any,
   userId: string,
   startDate: Date,
@@ -161,8 +161,20 @@ async function generateShiftsForDateRange(
   const shifts = []
   const currentDate = new Date(startDate)
 
+  // Determine position type
+  const positionName = assignment.dhl_positions?.name || ''
+  const isWechselschicht = positionName.toLowerCase().includes('wechselschicht') || 
+                          positionName.toLowerCase().includes('30h')
+
   while (currentDate <= endDate) {
-    const shift = await generateShiftForDate(supabaseClient, userId, currentDate, assignment)
+    let shift = null
+    
+    if (isWechselschicht) {
+      shift = await generateWechselschichtShift(supabaseClient, userId, currentDate, assignment, getMondayBasedDay(currentDate))
+    } else {
+      shift = await generateRegularDHLShift(supabaseClient, userId, currentDate, assignment, getMondayBasedDay(currentDate))
+    }
+    
     if (shift) {
       shifts.push(shift)
     }
@@ -170,6 +182,12 @@ async function generateShiftsForDateRange(
   }
 
   return shifts
+}
+
+// Helper function to get Monday-based day
+function getMondayBasedDay(date: Date): number {
+  const dayOfWeek = date.getDay() // 0 = Sunday, 1 = Monday, etc.
+  return dayOfWeek === 0 ? 6 : dayOfWeek - 1 // Convert to Monday = 0
 }
 
 // Generate shift for specific date
