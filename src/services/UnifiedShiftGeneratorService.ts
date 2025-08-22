@@ -61,10 +61,11 @@ export class UnifiedShiftGeneratorService {
         .single();
 
       if (assignmentError || !assignment) {
+        console.warn('No active DHL assignment found for user:', userId, assignmentError);
         return {
           success: false,
           shifts: [],
-          error: 'No active DHL assignment found',
+          error: assignmentError?.message || 'Nemáte aktivní DHL přiřazení. Kontaktujte prosím administrátora.',
           totalShifts: 0,
           periodStart: startDate.toISOString().split('T')[0],
           periodEnd: endDate.toISOString().split('T')[0]
@@ -84,11 +85,25 @@ export class UnifiedShiftGeneratorService {
         shifts = await this.generateRegularDHLShifts(userId, startDate, endDate, assignment);
       } else {
         // Unknown position type - try both methods
+        console.warn('Unknown position type for:', positionName, 'trying both methods');
         const wechselShifts = await this.generateWechselschichtShifts(userId, startDate, endDate, assignment);
         if (wechselShifts.length > 0) {
           shifts = wechselShifts;
         } else {
           shifts = await this.generateRegularDHLShifts(userId, startDate, endDate, assignment);
+        }
+        
+        // If still no shifts, provide helpful error
+        if (shifts.length === 0) {
+          return {
+            success: false,
+            shifts: [],
+            error: `Pro pozici "${positionName}" nejsou k dispozici žádná data směnových šablon. Kontaktujte prosím administrátora.`,
+            positionType: 'unknown',
+            totalShifts: 0,
+            periodStart: startDate.toISOString().split('T')[0],
+            periodEnd: endDate.toISOString().split('T')[0]
+          };
         }
       }
 

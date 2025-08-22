@@ -15,7 +15,7 @@ import MobileShiftReportSheet from './MobileShiftReportSheet';
 import { Shift } from '@/types/shifts';
 import MobileDHLImportSheet from './MobileDHLImportSheet';
 import { useAuth } from '@/hooks/auth';
-import { isDHLEmployee } from '@/utils/dhlAuthUtils';
+import { isDHLEmployeeSync } from '@/utils/dhlAuthUtils';
 
 interface NewMobileShiftsViewProps {
   shifts: Shift[];
@@ -143,6 +143,8 @@ const NewMobileShiftsView: React.FC<NewMobileShiftsViewProps> = ({
         <MobileBottomNavigation
           activeView={activeView}
           onViewChange={handleViewChange}
+        isDHLUser={user ? isDHLEmployeeSync(user) : false}
+        onDHLImport={() => setIsDHLImportOpen(true)}
         />
       </div>
     );
@@ -160,6 +162,8 @@ const NewMobileShiftsView: React.FC<NewMobileShiftsViewProps> = ({
       <MobileBottomNavigation
         activeView={activeView}
         onViewChange={handleViewChange}
+        isDHLUser={user ? isDHLEmployeeSync(user) : false}
+        onDHLImport={() => setIsDHLImportOpen(true)}
       />
 
       {/* Floating Action Button pro přidání směny */}

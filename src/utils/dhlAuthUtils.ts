@@ -35,8 +35,19 @@ export const isDHLEmployee = async (userIdOrUser: string | any): Promise<boolean
  */
 export const isDHLEmployeeSync = (user: any): boolean => {
   if (!user?.id) return false;
-  // This would need to be based on cached data or user metadata
-  return user.user_metadata?.company === 'dhl' || false;
+  
+  // Check user metadata first
+  if (user.user_metadata?.company === 'dhl') return true;
+  if (user.user_metadata?.is_dhl_employee === true) return true;
+  
+  // Check app metadata as fallback
+  if (user.app_metadata?.company === 'dhl') return true;
+  if (user.app_metadata?.is_dhl_employee === true) return true;
+  
+  // Check raw user metadata
+  if (user.raw_user_meta_data?.company === 'dhl') return true;
+  
+  return false;
 };
 
 /**

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
-import { Calendar, CalendarDays, CalendarRange } from 'lucide-react';
+import { Calendar, CalendarDays, CalendarRange, Download } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export type ViewType = 'month' | 'threeDays' | 'oneDay';
@@ -9,11 +9,15 @@ export type ViewType = 'month' | 'threeDays' | 'oneDay';
 interface MobileBottomNavigationProps {
   activeView: ViewType;
   onViewChange: (view: ViewType) => void;
+  isDHLUser?: boolean;
+  onDHLImport?: () => void;
 }
 
 const MobileBottomNavigation: React.FC<MobileBottomNavigationProps> = ({
   activeView,
-  onViewChange
+  onViewChange,
+  isDHLUser = false,
+  onDHLImport
 }) => {
   const { t } = useTranslation('shifts');
 
@@ -60,6 +64,19 @@ const MobileBottomNavigation: React.FC<MobileBottomNavigationProps> = ({
             </Button>
           );
         })}
+        
+        {/* DHL Import button for DHL users */}
+        {isDHLUser && onDHLImport && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onDHLImport}
+            className="flex flex-col items-center gap-1 h-auto py-2 px-3 min-w-0 text-muted-foreground hover:text-foreground"
+          >
+            <Download className="h-4 w-4" />
+            <span className="text-xs font-medium">{t('mobile.dhlImport', 'DHL')}</span>
+          </Button>
+        )}
       </div>
     </div>
   );

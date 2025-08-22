@@ -27,7 +27,8 @@ const MobileDHLImportSheet: React.FC<MobileDHLImportSheetProps> = ({
   const [isGenerating, setIsGenerating] = useState(false);
   const [progress, setProgress] = useState(0);
   const [result, setResult] = useState<ShiftGenerationResult | null>(null);
-  const [step, setStep] = useState<'initial' | 'generating' | 'preview' | 'saving' | 'complete'>('initial');
+  const [step, setStep] = useState<'initial' | 'generating' | 'preview' | 'saving' | 'complete' | 'error'>('initial');
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
   const handleGenerateShifts = async () => {
     if (!user?.id) return;
@@ -52,17 +53,13 @@ const MobileDHLImportSheet: React.FC<MobileDHLImportSheetProps> = ({
       if (result.success && result.shifts.length > 0) {
         setStep('preview');
       } else {
-        setStep('initial');
-        if (result.error) {
-          toast.error(result.error);
-        } else {
-          toast.error(t('import.noShiftsGenerated', 'Žádné směny nebyly vygenerovány'));
-        }
+        setErrorMessage(result.error || t('import.noShiftsGenerated', 'Žádné směny nebyly vygenerovány'));
+        setStep('error');
       }
     } catch (error) {
       console.error('Error generating shifts:', error);
-      toast.error(t('import.generationError', 'Chyba při generování směn'));
-      setStep('initial');
+      setErrorMessage(t('import.generationError', 'Chyba při generování směn'));
+      setStep('error');
     } finally {
       setIsGenerating(false);
     }
@@ -109,6 +106,7 @@ const MobileDHLImportSheet: React.FC<MobileDHLImportSheetProps> = ({
     setStep('initial');
     setResult(null);
     setProgress(0);
+    setErrorMessage('');
   };
 
   const handleClose = () => {
@@ -270,6 +268,44 @@ const MobileDHLImportSheet: React.FC<MobileDHLImportSheetProps> = ({
             </div>
             
             <Progress value={progress} className="w-full" />
+          </div>
+        )}
+
+        {/* Error Step */}
+        {step === 'error' && (
+          <div className="flex flex-col items-center justify-center min-h-[300px] p-6 text-center space-y-4">
+            <AlertCircle className="h-12 w-12 text-destructive" />
+            
+            <div className="space-y-2">
+              <h3 className="text-lg font-semibold text-foreground">
+                {t('import.errorTitle', 'Chyba při importu')}
+              </h3>
+              <p className="text-sm text-muted-foreground max-w-sm">
+                {errorMessage}
+              </p>
+            </div>
+
+            <div className="flex gap-3 mt-6">
+              <Button
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+                size="sm"
+              >
+                {t('common.cancel', 'Zrušit')}
+              </Button>
+              <Button
+                onClick={() => {
+                  setStep('initial');
+                  setResult(null);
+                  setErrorMessage('');
+                }}
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <Download className="h-4 w-4" />
+                {t('common.retry', 'Zkusit znovu')}
+              </Button>
+            </div>
           </div>
         )}
 
