@@ -52,8 +52,7 @@ serve(async (req) => {
         dhl_positions (
           id,
           name,
-          code,
-          woche
+          position_type
         )
       `)
       .eq('user_id', user.id)
@@ -318,23 +317,36 @@ function getCalendarWeek(date: Date): number {
 
 // Calculate Woche for specific date based on 15-week rotation
 function calculateWocheForDate(userCurrentWoche: number, targetCalendarWeek: number): number {
-  // 15-week cycle: weeks 1, 4, 7, 10, 13
-  const cycleWeeks = [1, 4, 7, 10, 13]
+  if (!userCurrentWoche || userCurrentWoche < 1 || userCurrentWoche > 15) {
+    console.warn('Invalid currentWoche:', userCurrentWoche);
+    return 1;
+  }
+
+  // Get current calendar week
+  const today = new Date();
+  const currentCalendarWeek = getCalendarWeek(today);
   
-  // Find current position in cycle
-  const currentIndex = cycleWeeks.indexOf(userCurrentWoche)
-  if (currentIndex === -1) {
-    // If current woche is not in the main cycle, use the nearest one
-    console.warn(`Current woche ${userCurrentWoche} not in cycle, using week 1`)
-    return 1
+  // Calculate week difference
+  let weeksDiff = targetCalendarWeek - currentCalendarWeek;
+  
+  // Handle year rollover
+  if (weeksDiff > 26) {
+    weeksDiff -= 52;
+  } else if (weeksDiff < -26) {
+    weeksDiff += 52;
+  }
+
+  let result = userCurrentWoche + weeksDiff;
+  
+  // Handle overflow/underflow with 15-week cycle
+  while (result > 15) {
+    result -= 15;
+  }
+  while (result < 1) {
+    result += 15;
   }
   
-  // For now, use simple rotation based on calendar week
-  // This is a simplified approach - in reality you'd need reference date logic
-  const weekOffset = Math.floor(targetCalendarWeek / 3) % 5
-  const targetIndex = (currentIndex + weekOffset) % 5
-  
-  return cycleWeeks[targetIndex]
+  return result;
 }
 
 // Get shift times from pattern based on shift type

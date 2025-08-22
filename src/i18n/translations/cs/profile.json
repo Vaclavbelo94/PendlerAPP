@@ -175,5 +175,21 @@
   "generatingShifts": "Generuji směny...",
   "activatingShifts": "Aktivuji směny...",
   "shiftsGenerated": "Směny vygenerovány",
-  "shiftsGeneratedSuccess": "Úspěšně vygenerováno {count} směn na 2 měsíce"
+  "shiftsGeneratedSuccess": "Úspěšně vygenerováno {count} směn na 2 měsíce",
+  "rideRequests": "Žádosti o spolujízdu",
+  "noRideRequests": "Žádné žádosti o spolujízdu",
+  "rideRequestsWillAppearHere": "Zde se zobrazí žádosti o spolujízdu",
+  "requestFrom": "Žádost od",
+  "requestedAt": "Požádáno",
+  "requestMessage": "Zpráva žádosti",
+  "contactInfo": "Kontaktní informace",
+  "callRequester": "Zavolat žadateli",
+  "accept": "Přijmout",
+  "reject": "Odmítnout",
+  "accepted": "Přijato",
+  "rejected": "Odmítnuto",
+  "pending": "Čeká",
+  "success": "Úspěch",
+  "error": "Chyba",
+  "requestUpdated": "Žádost aktualizována"
 }
