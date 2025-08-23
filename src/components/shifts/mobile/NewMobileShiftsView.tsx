@@ -140,11 +140,12 @@ const NewMobileShiftsView: React.FC<NewMobileShiftsViewProps> = ({
             </p>
           </div>
         </div>
-      <MobileBottomNavigation
-        activeView={activeView}
-        onViewChange={handleViewChange}
-        onCompanyImport={() => setIsDHLImportOpen(true)}
-      />
+        <MobileBottomNavigation
+          activeView={activeView}
+          onViewChange={handleViewChange}
+        isDHLUser={user ? isDHLEmployeeSync(user) : false}
+        onDHLImport={() => setIsDHLImportOpen(true)}
+        />
       </div>
     );
   }
@@ -161,7 +162,8 @@ const NewMobileShiftsView: React.FC<NewMobileShiftsViewProps> = ({
       <MobileBottomNavigation
         activeView={activeView}
         onViewChange={handleViewChange}
-        onCompanyImport={() => setIsDHLImportOpen(true)}
+        isDHLUser={user ? isDHLEmployeeSync(user) : false}
+        onDHLImport={() => setIsDHLImportOpen(true)}
       />
 
       {/* Floating Action Button pro přidání směny */}
