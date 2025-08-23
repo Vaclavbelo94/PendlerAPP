@@ -20,7 +20,23 @@
     "importing": "Importuji...",
     "importSuccess": "Směny byly úspěšně importovány",
     "importError": "Chyba při importu dat",
-    "noDataFound": "Nebyla nalezena žádná data k importu"
+    "noDataFound": "Nebyla nalezena žádná data k importu",
+    "mobileDescription": "Automaticky vygenerujte směny na základě vašeho DHL rozvrhu",
+    "mobileInfo": "Vygeneruje směny na následující 4 týdny na základě vaší DHL pozice a aktuální \"Woche\".",
+    "generateShifts": "Vygenerovat směny",
+    "analyzingSchedule": "Analyzuji váš rozvrh...",
+    "generationSummary": "Souhrn generování",
+    "shiftsPreview": "Náhled směn",
+    "saveShifts": "Uložit směny",
+    "savingShifts": "Ukládám směny...",
+    "pleaseWait": "Prosím čekejte...",
+    "errorTitle": "Chyba při importu",
+    "importComplete": "Import dokončen!",
+    "shiftsImportedSuccessfully": "Směny byly úspěšně importovány",
+    "noShiftsGenerated": "Žádné směny nebyly vygenerovány",
+    "generationError": "Chyba při generování směn",
+    "saveError": "Chyba při ukládání směn",
+    "shiftsImported": "Importováno {{count}} směn"
   },
   "filter": "Filtrovat",
   "add": "Přidat",
@@ -202,5 +218,14 @@
     "errorDeletingDescription": "Nepodařilo se smazat směnu",
     "notLoggedIn": "Chyba",
     "notLoggedInDescription": "Nejste přihlášeni"
+  },
+  "shiftTypes": {
+    "morning": "Ranní",
+    "afternoon": "Odpolední", 
+    "night": "Noční"
+  },
+  "common": {
+    "cancel": "Zrušit",
+    "retry": "Zkusit znovu"
   }
 }

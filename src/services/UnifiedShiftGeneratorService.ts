@@ -322,38 +322,69 @@ export class UnifiedShiftGeneratorService {
    */
   static async saveShifts(shifts: UnifiedGeneratedShift[]): Promise<{ success: boolean; error?: string }> {
     try {
-      const { error } = await supabase
-        .from('shifts')
-        .upsert(
-          shifts.map(shift => ({
-            user_id: shift.user_id,
-            date: shift.date,
-            start_time: shift.start_time,
-            end_time: shift.end_time,
-            type: shift.type,
-            notes: shift.notes,
-            dhl_position_id: shift.dhl_position_id,
-            dhl_work_group_id: shift.dhl_work_group_id,
-            is_dhl_managed: shift.is_dhl_managed,
-            dhl_override: shift.dhl_override,
-            original_dhl_data: shift.original_dhl_data,
-            is_wechselschicht_generated: shift.is_wechselschicht_generated
-          })),
-          { 
-            onConflict: 'user_id,date',
-            ignoreDuplicates: false 
-          }
-        );
+      for (const shift of shifts) {
+        // Check if shift already exists
+        const { data: existing } = await supabase
+          .from('shifts')
+          .select('id')
+          .eq('user_id', shift.user_id)
+          .eq('date', shift.date)
+          .single();
 
-      if (error) {
-        console.error('Error saving shifts:', error);
-        return { success: false, error: error.message };
+        if (existing) {
+          // Update existing shift
+          const { error } = await supabase
+            .from('shifts')
+            .update({
+              start_time: shift.start_time,
+              end_time: shift.end_time,
+              type: shift.type,
+              notes: shift.notes,
+              dhl_position_id: shift.dhl_position_id,
+              dhl_work_group_id: shift.dhl_work_group_id,
+              is_dhl_managed: shift.is_dhl_managed,
+              dhl_override: shift.dhl_override,
+              original_dhl_data: shift.original_dhl_data,
+              is_wechselschicht_generated: shift.is_wechselschicht_generated,
+              updated_at: new Date().toISOString()
+            })
+            .eq('user_id', shift.user_id)
+            .eq('date', shift.date);
+
+          if (error) {
+            console.error('Error updating shift:', error);
+            return { success: false, error: `Chyba při aktualizaci směny: ${error.message}` };
+          }
+        } else {
+          // Insert new shift
+          const { error } = await supabase
+            .from('shifts')
+            .insert({
+              user_id: shift.user_id,
+              date: shift.date,
+              start_time: shift.start_time,
+              end_time: shift.end_time,
+              type: shift.type,
+              notes: shift.notes,
+              dhl_position_id: shift.dhl_position_id,
+              dhl_work_group_id: shift.dhl_work_group_id,
+              is_dhl_managed: shift.is_dhl_managed,
+              dhl_override: shift.dhl_override,
+              original_dhl_data: shift.original_dhl_data,
+              is_wechselschicht_generated: shift.is_wechselschicht_generated
+            });
+
+          if (error) {
+            console.error('Error inserting shift:', error);
+            return { success: false, error: `Chyba při vytváření směny: ${error.message}` };
+          }
+        }
       }
 
       return { success: true };
     } catch (error) {
       console.error('Error in saveShifts:', error);
-      return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
+      return { success: false, error: error instanceof Error ? error.message : 'Neznámá chyba' };
     }
   }
 

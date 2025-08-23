@@ -53,12 +53,12 @@ const MobileDHLImportSheet: React.FC<MobileDHLImportSheetProps> = ({
       if (result.success && result.shifts.length > 0) {
         setStep('preview');
       } else {
-        setErrorMessage(result.error || t('import.noShiftsGenerated', 'Žádné směny nebyly vygenerovány'));
+        setErrorMessage(result.error || t('shifts:import.noShiftsGenerated'));
         setStep('error');
       }
     } catch (error) {
       console.error('Error generating shifts:', error);
-      setErrorMessage(t('import.generationError', 'Chyba při generování směn'));
+      setErrorMessage(t('shifts:import.generationError'));
       setStep('error');
     } finally {
       setIsGenerating(false);
@@ -93,11 +93,11 @@ const MobileDHLImportSheet: React.FC<MobileDHLImportSheetProps> = ({
         }, 2000);
       } else {
         setStep('preview');
-        toast.error(saveResult.error || t('import.saveError', 'Chyba při ukládání směn'));
+        toast.error(saveResult.error || t('shifts:import.saveError'));
       }
     } catch (error) {
       console.error('Error saving shifts:', error);
-      toast.error(t('import.saveError', 'Chyba při ukládání směn'));
+      toast.error(t('shifts:import.saveError'));
       setStep('preview');
     }
   };
@@ -132,10 +132,10 @@ const MobileDHLImportSheet: React.FC<MobileDHLImportSheetProps> = ({
         <SheetHeader className="pb-4">
           <SheetTitle className="flex items-center gap-2">
             <Download className="h-5 w-5" />
-            {t('import.title', 'Import DHL směn')}
+            {t('shifts:import.title')}
           </SheetTitle>
           <SheetDescription>
-            {t('import.mobileDescription', 'Automaticky vygenerujte směny na základě vašeho DHL rozvrhu')}
+            {t('shifts:import.mobileDescription')}
           </SheetDescription>
         </SheetHeader>
 
@@ -145,7 +145,7 @@ const MobileDHLImportSheet: React.FC<MobileDHLImportSheetProps> = ({
             <Alert>
               <Calendar className="h-4 w-4" />
               <AlertDescription>
-                {t('import.mobileInfo', 'Vygeneruje směny na následující 4 týdny na základě vaší DHL pozice a aktuální "Woche".')}
+                {t('shifts:import.mobileInfo')}
               </AlertDescription>
             </Alert>
 
@@ -156,7 +156,7 @@ const MobileDHLImportSheet: React.FC<MobileDHLImportSheetProps> = ({
               size="lg"
             >
               <Download className="h-4 w-4 mr-2" />
-              {t('import.generateShifts', 'Vygenerovat směny')}
+              {t('shifts:import.generateShifts')}
             </Button>
           </div>
         )}
@@ -166,9 +166,9 @@ const MobileDHLImportSheet: React.FC<MobileDHLImportSheetProps> = ({
           <div className="space-y-6">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
-              <h3 className="text-lg font-medium">{t('profile.generatingShifts', 'Generuji směny...')}</h3>
+              <h3 className="text-lg font-medium">{t('shifts:import.generateShifts')}</h3>
               <p className="text-muted-foreground text-sm mt-2">
-                {t('import.analyzingSchedule', 'Analyzuji váš rozvrh...')}
+                {t('shifts:import.analyzingSchedule')}
               </p>
             </div>
             
@@ -182,7 +182,7 @@ const MobileDHLImportSheet: React.FC<MobileDHLImportSheetProps> = ({
             <Card>
               <CardContent className="p-4 space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-medium">{t('import.generationSummary', 'Souhrn generování')}</h3>
+                  <h3 className="font-medium">{t('shifts:import.generationSummary')}</h3>
                   <Badge variant="secondary" className="text-xs">
                     {result.totalShifts} směn
                   </Badge>
@@ -213,7 +213,7 @@ const MobileDHLImportSheet: React.FC<MobileDHLImportSheetProps> = ({
 
             {/* Shifts Preview */}
             <div className="space-y-2">
-              <h4 className="font-medium text-sm">{t('import.shiftsPreview', 'Náhled směn')}</h4>
+              <h4 className="font-medium text-sm">{t('shifts:import.shiftsPreview')}</h4>
               <div className="max-h-40 overflow-y-auto space-y-2">
                 {result.shifts.slice(0, 10).map((shift, index) => (
                   <Card key={index} className="p-3">
@@ -223,7 +223,7 @@ const MobileDHLImportSheet: React.FC<MobileDHLImportSheetProps> = ({
                         <Clock className="h-3 w-3 text-muted-foreground" />
                         <span>{shift.start_time} - {shift.end_time}</span>
                         <Badge variant="outline" className="text-xs">
-                          {t(`shiftTypes.${shift.type}`, shift.type)}
+                          {t(`shifts:shiftTypes.${shift.type}`)}
                         </Badge>
                       </div>
                     </div>
@@ -243,14 +243,14 @@ const MobileDHLImportSheet: React.FC<MobileDHLImportSheetProps> = ({
                 onClick={() => setStep('initial')}
                 className="flex-1"
               >
-                {t('common.cancel', 'Zrušit')}
+                {t('shifts:common.cancel')}
               </Button>
               <Button 
                 onClick={handleSaveShifts}
                 className="flex-1"
               >
                 <CheckCircle className="h-4 w-4 mr-2" />
-                {t('import.saveShifts', 'Uložit směny')}
+                {t('shifts:import.saveShifts')}
               </Button>
             </div>
           </div>
@@ -261,9 +261,9 @@ const MobileDHLImportSheet: React.FC<MobileDHLImportSheetProps> = ({
           <div className="space-y-6">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
-              <h3 className="text-lg font-medium">{t('import.savingShifts', 'Ukládám směny...')}</h3>
+              <h3 className="text-lg font-medium">{t('shifts:import.savingShifts')}</h3>
               <p className="text-muted-foreground text-sm mt-2">
-                {t('import.pleaseWait', 'Prosím čekejte...')}
+                {t('shifts:import.pleaseWait')}
               </p>
             </div>
             
@@ -278,7 +278,7 @@ const MobileDHLImportSheet: React.FC<MobileDHLImportSheetProps> = ({
             
             <div className="space-y-2">
               <h3 className="text-lg font-semibold text-foreground">
-                {t('import.errorTitle', 'Chyba při importu')}
+                {t('shifts:import.errorTitle')}
               </h3>
               <p className="text-sm text-muted-foreground max-w-sm">
                 {errorMessage}
@@ -291,7 +291,7 @@ const MobileDHLImportSheet: React.FC<MobileDHLImportSheetProps> = ({
                 onClick={() => onOpenChange(false)}
                 size="sm"
               >
-                {t('common.cancel', 'Zrušit')}
+                {t('shifts:common.cancel')}
               </Button>
               <Button
                 onClick={() => {
@@ -303,7 +303,7 @@ const MobileDHLImportSheet: React.FC<MobileDHLImportSheetProps> = ({
                 className="flex items-center gap-2"
               >
                 <Download className="h-4 w-4" />
-                {t('common.retry', 'Zkusit znovu')}
+                {t('shifts:common.retry')}
               </Button>
             </div>
           </div>
@@ -315,10 +315,10 @@ const MobileDHLImportSheet: React.FC<MobileDHLImportSheetProps> = ({
             <div className="text-center">
               <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-green-600">
-                {t('import.importComplete', 'Import dokončen!')}
+                {t('shifts:import.importComplete')}
               </h3>
               <p className="text-muted-foreground text-sm mt-2">
-                {t('import.shiftsImportedSuccessfully', 'Směny byly úspěšně importovány')}
+                {t('shifts:import.shiftsImportedSuccessfully')}
               </p>
             </div>
           </div>
