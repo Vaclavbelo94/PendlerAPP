@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Calendar, BarChart3 } from 'lucide-react';
+import { Calendar, BarChart3, Upload } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 interface ShiftsNavigationProps {
@@ -22,9 +22,14 @@ const ShiftsNavigation: React.FC<ShiftsNavigationProps> = ({
       icon: Calendar,
     },
     {
-      id: 'analytics',
-      label: t('analytics'),
+      id: 'stats-overtime',
+      label: t('statsAndOvertime'),
       icon: BarChart3,
+    },
+    {
+      id: 'company-import',
+      label: t('dataImport'),
+      icon: Upload,
     },
   ];
 

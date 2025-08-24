@@ -6,6 +6,8 @@
   "calendar": "Kalender",
   "list": "Liste",
   "statistics": "Statistiken",
+  "statsAndOvertime": "Statistiken und Überstunden", 
+  "dataImport": "Datenimport",
   "tabs": {
     "calendar": "Kalender",
     "overview": "Übersicht",
@@ -198,6 +200,7 @@
       "missingSchedule": "Plan nicht erhalten",
       "wrongShift": "Fehler in der Schicht",
       "scheduleConflict": "Plankonflikt"
+    }
   },
   "toasts": {
     "shiftAdded": "Schicht hinzugefügt",
@@ -217,5 +220,4 @@
     "notLoggedIn": "Fehler",
     "notLoggedInDescription": "Sie sind nicht angemeldet"
   }
-}
 }

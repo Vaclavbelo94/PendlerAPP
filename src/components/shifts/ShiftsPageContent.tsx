@@ -3,7 +3,8 @@ import React from 'react';
 import ShiftsNavigation from '@/components/shifts/ShiftsNavigation';
 import ShiftsOverview from '@/components/shifts/ShiftsOverview';
 import ShiftsCalendar from '@/components/shifts/ShiftsCalendar';
-import ShiftsAnalytics from '@/components/shifts/ShiftsAnalytics';
+import ShiftsStatsAndOvertime from '@/components/shifts/ShiftsStatsAndOvertime';
+import ShiftsCompanyImport from '@/components/shifts/ShiftsCompanyImport';
 import ShiftsReports from '@/components/shifts/ShiftsReports';
 import ShiftsSettings from '@/components/shifts/ShiftsSettings';
 import AnnualPlanImport from '@/components/admin/dhl/AnnualPlanImport';
@@ -45,8 +46,10 @@ const ShiftsPageContent: React.FC<ShiftsPageContentProps> = ({
             onDeleteShift={onDeleteShift}
           />
         );
-      case 'analytics':
-        return <ShiftsAnalytics shifts={shifts} />;
+      case 'stats-overtime':
+        return <ShiftsStatsAndOvertime shifts={shifts} />;
+      case 'company-import':
+        return <ShiftsCompanyImport onImportComplete={() => setActiveSection('calendar')} />;
       case 'reports':
         return <ShiftsReports shifts={shifts} />;
       case 'settings':
