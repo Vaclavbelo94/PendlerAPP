@@ -10,7 +10,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const DashboardStats: React.FC = () => {
   const { user } = useAuth();
-  const { t } = useTranslation(['dashboard']);
+  const { t, i18n } = useTranslation(['dashboard']);
   const { shifts, isLoading } = useShiftsData({ userId: user?.id });
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -51,30 +51,40 @@ const DashboardStats: React.FC = () => {
     return total;
   }, 0);
 
+  // Format currency based on language
+  const formatCurrency = (amount: number) => {
+    const language = i18n.language || 'cs';
+    if (language === 'de') {
+      return `${Math.round(amount)}€`;
+    } else {
+      return `${Math.round(amount)} Kč`;
+    }
+  };
+
   const stats = [
     {
       icon: Clock,
       label: t('dashboard:weeklyHours'),
       value: isLoading ? '...' : `${Math.round(weeklyHours)}h`,
       trend: weeklyHours > 0 ? '+' : '',
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50'
+      color: 'text-primary',
+      bgColor: 'bg-primary/10'
     },
     {
       icon: Calendar,
       label: t('dashboard:monthlyShifts'),
       value: isLoading ? '...' : monthlyShifts.length.toString(),
       trend: monthlyShifts.length > 0 ? '+' : '',
-      color: 'text-green-600',
-      bgColor: 'bg-green-50'
+      color: 'text-secondary',
+      bgColor: 'bg-secondary/10'
     },
     {
       icon: Euro,
       label: t('dashboard:totalEarnings'),
-      value: isLoading ? '...' : `${Math.round(totalEarnings)}€`,
+      value: isLoading ? '...' : formatCurrency(totalEarnings),
       trend: totalEarnings > 0 ? '+' : '',
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-50'
+      color: 'text-accent-foreground',
+      bgColor: 'bg-accent/10'
     }
   ];
 
@@ -120,7 +130,7 @@ const DashboardStats: React.FC = () => {
                               <stat.icon className={`h-5 w-5 ${stat.color}`} />
                             </div>
                             {stat.trend && (
-                              <div className="flex items-center text-green-600">
+                              <div className="flex items-center text-primary">
                                 <TrendingUp className="h-3 w-3 mr-1" />
                                 <span className="text-xs font-medium">{stat.trend}</span>
                               </div>
