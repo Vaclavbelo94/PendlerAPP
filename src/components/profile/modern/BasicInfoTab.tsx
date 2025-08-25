@@ -85,6 +85,8 @@ export const BasicInfoTab: React.FC = () => {
           display_name: formData.username,
           location: formData.location,
           updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'user_id'
         });
 
       if (extendedError) throw extendedError;
@@ -108,6 +110,8 @@ export const BasicInfoTab: React.FC = () => {
               home_address: formData.location,
               work_address: "DHL-Ottendorf, Bergener Ring 2, 01458 Ottendorf-Okrilla, Německo",
               updated_at: new Date().toISOString()
+            }, {
+              onConflict: 'user_id'
             });
 
           if (travelError) console.warn('Travel preferences sync warning:', travelError);
