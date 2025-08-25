@@ -11,9 +11,12 @@ import MobileCalendarView from './MobileCalendarView';
 import MobileShiftCard from './MobileShiftCard';
 import MobileShiftsStats from './MobileShiftsStats';
 import MobileBottomNavigation from './MobileBottomNavigation';
+import MobileSectionNavigation, { MobileSectionType } from './MobileSectionNavigation';
 import MobileShiftReportSheet from './MobileShiftReportSheet';
 import { Shift } from '@/types/shifts';
 import MobileDHLImportSheet from './MobileDHLImportSheet';
+import ShiftsStatsAndOvertime from '../ShiftsStatsAndOvertime';
+import ShiftsCompanyImport from '../ShiftsCompanyImport';
 import { useAuth } from '@/hooks/auth';
 import { isDHLEmployeeSync } from '@/utils/dhlAuthUtils';
 
@@ -39,6 +42,7 @@ const NewMobileShiftsView: React.FC<NewMobileShiftsViewProps> = ({
   const { t } = useTranslation('shifts');
   const { user } = useAuth();
   const [isDHLImportOpen, setIsDHLImportOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState<MobileSectionType>('calendar');
   
   const {
     currentDate,
@@ -71,7 +75,31 @@ const NewMobileShiftsView: React.FC<NewMobileShiftsViewProps> = ({
     });
   };
 
-  const renderContent = () => {
+  const renderSectionContent = () => {
+    switch (activeSection) {
+      case 'calendar':
+        return renderCalendarContent();
+      case 'stats-overtime':
+        return (
+          <div className="flex-1">
+            <ShiftsStatsAndOvertime shifts={shiftsToUse} />
+          </div>
+        );
+      case 'company-import':
+        return (
+          <div className="flex-1">
+            <ShiftsCompanyImport onImportComplete={() => {
+              setActiveSection('calendar');
+              onRefreshShifts?.();
+            }} />
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
+  const renderCalendarContent = () => {
     switch (activeView) {
       case 'month':
         return (
@@ -140,11 +168,10 @@ const NewMobileShiftsView: React.FC<NewMobileShiftsViewProps> = ({
             </p>
           </div>
         </div>
-        <MobileBottomNavigation
-          activeView={activeView}
-          onViewChange={handleViewChange}
-        isDHLUser={user ? isDHLEmployeeSync(user) : false}
-        onDHLImport={() => setIsDHLImportOpen(true)}
+        <MobileSectionNavigation
+          activeSection={activeSection}
+          onSectionChange={setActiveSection}
+          isDHLUser={user ? isDHLEmployeeSync(user) : false}
         />
       </div>
     );
@@ -157,14 +184,23 @@ const NewMobileShiftsView: React.FC<NewMobileShiftsViewProps> = ({
         onDateChange={handleDateChange}
       />
       
-      {renderContent()}
-
-      <MobileBottomNavigation
-        activeView={activeView}
-        onViewChange={handleViewChange}
+      <MobileSectionNavigation
+        activeSection={activeSection}
+        onSectionChange={setActiveSection}
         isDHLUser={user ? isDHLEmployeeSync(user) : false}
-        onDHLImport={() => setIsDHLImportOpen(true)}
       />
+      
+      {renderSectionContent()}
+
+      {/* Show view navigation only for calendar section */}
+      {activeSection === 'calendar' && (
+        <MobileBottomNavigation
+          activeView={activeView}
+          onViewChange={handleViewChange}
+          isDHLUser={user ? isDHLEmployeeSync(user) : false}
+          onDHLImport={() => setIsDHLImportOpen(true)}
+        />
+      )}
 
       {/* Floating Action Button pro přidání směny */}
       <Button
