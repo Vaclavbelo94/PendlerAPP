@@ -10,6 +10,7 @@ import MobileShiftsHeader from './MobileShiftsHeader';
 import MobileCalendarView from './MobileCalendarView';
 import MobileShiftCard from './MobileShiftCard';
 import MobileShiftsStats from './MobileShiftsStats';
+import MobileSectionNavigation, { MobileSectionType } from './MobileSectionNavigation';
 import MobileBottomNavigation from './MobileBottomNavigation';
 import MobileShiftReportSheet from './MobileShiftReportSheet';
 import { Shift } from '@/types/shifts';
@@ -39,6 +40,7 @@ const NewMobileShiftsView: React.FC<NewMobileShiftsViewProps> = ({
   const { t } = useTranslation('shifts');
   const { user } = useAuth();
   const [isDHLImportOpen, setIsDHLImportOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState<MobileSectionType>('calendar');
   
   const {
     currentDate,
@@ -61,6 +63,13 @@ const NewMobileShiftsView: React.FC<NewMobileShiftsViewProps> = ({
     onRefreshShifts?.();
   };
 
+  const handleSectionChange = (section: MobileSectionType) => {
+    setActiveSection(section);
+    if (section === 'import') {
+      setIsDHLImportOpen(true);
+    }
+  };
+
   // Use external shifts if provided (for compatibility)
   const shiftsToUse = externalShifts?.length > 0 ? externalShifts : allShifts;
 
@@ -71,7 +80,7 @@ const NewMobileShiftsView: React.FC<NewMobileShiftsViewProps> = ({
     });
   };
 
-  const renderContent = () => {
+  const renderCalendarContent = () => {
     switch (activeView) {
       case 'month':
         return (
@@ -111,13 +120,51 @@ const NewMobileShiftsView: React.FC<NewMobileShiftsViewProps> = ({
                   onReport={handleOpenReport}
                 />
               ))}
-              
+            </div>
+          </ScrollArea>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  const renderSectionContent = () => {
+    switch (activeSection) {
+      case 'calendar':
+        return (
+          <div className="flex-1 flex flex-col">
+            {/* View navigation only in calendar section */}
+            <MobileBottomNavigation
+              activeView={activeView}
+              onViewChange={handleViewChange}
+              isDHLUser={false} // Remove DHL import from bottom nav
+            />
+            {renderCalendarContent()}
+          </div>
+        );
+
+      case 'statistics':
+        return (
+          <ScrollArea className="flex-1">
+            <div className="p-4">
               <MobileShiftsStats
                 shifts={shiftsToUse}
                 currentDate={currentDate}
               />
             </div>
           </ScrollArea>
+        );
+
+      case 'import':
+        return (
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center space-y-4 p-8">
+              <p className="text-muted-foreground">
+                {t('mobile.importDescription', 'Import funkcionalita se otevře v dialogu')}
+              </p>
+            </div>
+          </div>
         );
 
       default:
@@ -132,6 +179,11 @@ const NewMobileShiftsView: React.FC<NewMobileShiftsViewProps> = ({
           currentDate={currentDate}
           onDateChange={handleDateChange}
         />
+        <MobileSectionNavigation
+          activeSection={activeSection}
+          onSectionChange={handleSectionChange}
+          isDHLUser={user ? isDHLEmployeeSync(user) : false}
+        />
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center space-y-4">
             <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent mx-auto" />
@@ -140,12 +192,6 @@ const NewMobileShiftsView: React.FC<NewMobileShiftsViewProps> = ({
             </p>
           </div>
         </div>
-        <MobileBottomNavigation
-          activeView={activeView}
-          onViewChange={handleViewChange}
-        isDHLUser={user ? isDHLEmployeeSync(user) : false}
-        onDHLImport={() => setIsDHLImportOpen(true)}
-        />
       </div>
     );
   }
@@ -157,23 +203,24 @@ const NewMobileShiftsView: React.FC<NewMobileShiftsViewProps> = ({
         onDateChange={handleDateChange}
       />
       
-      {renderContent()}
-
-      <MobileBottomNavigation
-        activeView={activeView}
-        onViewChange={handleViewChange}
+      <MobileSectionNavigation
+        activeSection={activeSection}
+        onSectionChange={handleSectionChange}
         isDHLUser={user ? isDHLEmployeeSync(user) : false}
-        onDHLImport={() => setIsDHLImportOpen(true)}
       />
+      
+      {renderSectionContent()}
 
-      {/* Floating Action Button pro přidání směny */}
-      <Button
-        onClick={() => selectedDate ? onAddShiftForDate(selectedDate) : onAddShift()}
-        size="icon"
-        className="fixed bottom-20 right-4 h-14 w-14 rounded-full shadow-lg z-50 bg-primary hover:bg-primary/90"
-      >
-        <Plus className="h-6 w-6" />
-      </Button>
+      {/* Floating Action Button pro přidání směny - only in calendar section */}
+      {activeSection === 'calendar' && (
+        <Button
+          onClick={() => selectedDate ? onAddShiftForDate(selectedDate) : onAddShift()}
+          size="icon"
+          className="fixed bottom-6 right-4 h-14 w-14 rounded-full shadow-lg z-50 bg-primary hover:bg-primary/90"
+        >
+          <Plus className="h-6 w-6" />
+        </Button>
+      )}
 
       <MobileShiftReportSheet
         isOpen={isReportSheetOpen}
