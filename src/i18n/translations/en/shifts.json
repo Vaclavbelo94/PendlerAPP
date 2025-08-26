@@ -37,7 +37,16 @@
     "noShiftsGenerated": "No shifts were generated",
     "generationError": "Error generating shifts",
     "saveError": "Error saving shifts",
-    "shiftsImported": "Imported {{count}} shifts"
+    "shiftsImported": "Imported {{count}} shifts",
+    "shiftsCount": "shifts",
+    "position": "Position:",
+    "period": "Period:",
+    "moreShifts": "+ {{count}} more shifts",
+    "positionTypes": {
+      "wechselschicht": "Shift Work",
+      "regular": "Standard Position",
+      "unknown": "Unknown Position"
+    }
   },
   "filter": "Filter",
   "add": "Add",

@@ -118,11 +118,11 @@ const MobileDHLImportSheet: React.FC<MobileDHLImportSheetProps> = ({
   const getPositionTypeDisplay = (positionType?: string) => {
     switch (positionType) {
       case 'wechselschicht':
-        return { label: 'Wechselschicht', color: 'bg-blue-500' };
+        return { label: t('shifts:import.positionTypes.wechselschicht'), color: 'bg-blue-500' };
       case 'regular':
-        return { label: 'Standardní pozice', color: 'bg-green-500' };
+        return { label: t('shifts:import.positionTypes.regular'), color: 'bg-green-500' };
       default:
-        return { label: 'Neznámá pozice', color: 'bg-gray-500' };
+        return { label: t('shifts:import.positionTypes.unknown'), color: 'bg-gray-500' };
     }
   };
 
@@ -184,14 +184,14 @@ const MobileDHLImportSheet: React.FC<MobileDHLImportSheetProps> = ({
                 <div className="flex items-center justify-between">
                   <h3 className="font-medium">{t('shifts:import.generationSummary')}</h3>
                   <Badge variant="secondary" className="text-xs">
-                    {result.totalShifts} směn
+                    {result.totalShifts} {t('shifts:import.shiftsCount')}
                   </Badge>
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div className="flex items-center gap-2">
                     <Briefcase className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-muted-foreground">Pozice:</span>
+                    <span className="text-muted-foreground">{t('shifts:import.position')}</span>
                   </div>
                   <Badge 
                     variant="outline" 
@@ -202,7 +202,7 @@ const MobileDHLImportSheet: React.FC<MobileDHLImportSheetProps> = ({
                   
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-muted-foreground">Období:</span>
+                    <span className="text-muted-foreground">{t('shifts:import.period')}</span>
                   </div>
                   <span className="text-xs">
                     {result.periodStart} - {result.periodEnd}
@@ -231,7 +231,7 @@ const MobileDHLImportSheet: React.FC<MobileDHLImportSheetProps> = ({
                 ))}
                 {result.shifts.length > 10 && (
                   <div className="text-center text-xs text-muted-foreground">
-                    + {result.shifts.length - 10} dalších směn
+                    {t('shifts:import.moreShifts', { count: result.shifts.length - 10 })}
                   </div>
                 )}
               </div>

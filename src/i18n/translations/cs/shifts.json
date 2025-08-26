@@ -38,7 +38,16 @@
     "noShiftsGenerated": "Žádné směny nebyly vygenerovány",
     "generationError": "Chyba při generování směn",
     "saveError": "Chyba při ukládání směn",
-    "shiftsImported": "Importováno {{count}} směn"
+    "shiftsImported": "Importováno {{count}} směn",
+    "shiftsCount": "směn",
+    "position": "Pozice:",
+    "period": "Období:",
+    "moreShifts": "+ {{count}} dalších směn",
+    "positionTypes": {
+      "wechselschicht": "Směnný provoz",
+      "regular": "Standardní pozice",
+      "unknown": "Neznámá pozice"
+    }
   },
   "filter": "Filtrovat",
   "add": "Přidat",
