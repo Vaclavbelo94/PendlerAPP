@@ -41,7 +41,7 @@ const MobileSectionNavigation: React.FC<MobileSectionNavigationProps> = ({
   }
 
   return (
-    <div className="flex gap-1 p-2 bg-muted/30 rounded-lg border mx-4 mb-4">
+    <div className="flex gap-1 p-1 bg-muted/30 rounded-lg border mx-4 mb-4">
       {sections.map((section) => {
         const Icon = section.icon;
         return (
@@ -49,14 +49,14 @@ const MobileSectionNavigation: React.FC<MobileSectionNavigationProps> = ({
             key={section.id}
             variant={activeSection === section.id ? 'default' : 'ghost'}
             onClick={() => onSectionChange(section.id)}
-            className={`flex-1 flex items-center gap-2 px-3 py-2 rounded-md transition-all ${
+            className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-all ${
               activeSection === section.id
                 ? 'bg-background text-foreground shadow-sm'
                 : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
             }`}
           >
             <Icon className="h-4 w-4 flex-shrink-0" />
-            <span className="truncate text-sm">{section.label}</span>
+            <span className="truncate text-sm font-medium">{section.label}</span>
           </Button>
         );
       })}

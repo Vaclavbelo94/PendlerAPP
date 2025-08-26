@@ -1,17 +1,15 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { format, eachDayOfInterval, startOfMonth, endOfMonth } from 'date-fns';
+import { format } from 'date-fns';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { useMobileShifts, ViewType } from '@/hooks/shifts/useMobileShifts';
+import { useMobileShifts } from '@/hooks/shifts/useMobileShifts';
 import MobileShiftsHeader from './MobileShiftsHeader';
 import MobileCalendarView from './MobileCalendarView';
 import MobileShiftCard from './MobileShiftCard';
 import MobileShiftsStats from './MobileShiftsStats';
 import MobileSectionNavigation, { MobileSectionType } from './MobileSectionNavigation';
-import MobileBottomNavigation from './MobileBottomNavigation';
 import MobileShiftReportSheet from './MobileShiftReportSheet';
 import { Shift } from '@/types/shifts';
 import MobileDHLImportSheet from './MobileDHLImportSheet';
@@ -45,15 +43,12 @@ const NewMobileShiftsView: React.FC<NewMobileShiftsViewProps> = ({
   const {
     currentDate,
     selectedDate,
-    activeView,
     isReportSheetOpen,
     reportDate,
     shifts,
     allShifts,
-    displayDays,
     handleDateChange,
     handleDateSelect,
-    handleViewChange,
     handleOpenReport,
     handleCloseReport
   } = useMobileShifts();
@@ -80,9 +75,9 @@ const NewMobileShiftsView: React.FC<NewMobileShiftsViewProps> = ({
     });
   };
 
-  const renderCalendarContent = () => {
-    switch (activeView) {
-      case 'month':
+  const renderSectionContent = () => {
+    switch (activeSection) {
+      case 'calendar':
         return (
           <div className="flex-1 flex flex-col">
             <MobileCalendarView
@@ -102,45 +97,6 @@ const NewMobileShiftsView: React.FC<NewMobileShiftsViewProps> = ({
                 />
               </div>
             )}
-          </div>
-        );
-
-      case 'threeDays':
-      case 'oneDay':
-        return (
-          <ScrollArea className="flex-1">
-            <div className="p-4 space-y-4">
-              {displayDays.map((day, index) => (
-                <MobileShiftCard
-                  key={index}
-                  date={day}
-                  shift={getShiftForDate(day)}
-                  onEdit={onEditShift}
-                  onDelete={onDeleteShift}
-                  onReport={handleOpenReport}
-                />
-              ))}
-            </div>
-          </ScrollArea>
-        );
-
-      default:
-        return null;
-    }
-  };
-
-  const renderSectionContent = () => {
-    switch (activeSection) {
-      case 'calendar':
-        return (
-          <div className="flex-1 flex flex-col">
-            {/* View navigation only in calendar section */}
-            <MobileBottomNavigation
-              activeView={activeView}
-              onViewChange={handleViewChange}
-              isDHLUser={false} // Remove DHL import from bottom nav
-            />
-            {renderCalendarContent()}
           </div>
         );
 
