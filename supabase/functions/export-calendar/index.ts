@@ -78,17 +78,19 @@ serve(async (req) => {
 
     // Step 2: Save generated shifts to database
     if (shifts.length > 0) {
-      const { error: insertError } = await supabaseClient
-        .from('shifts')
-        .upsert(shifts, { 
-          onConflict: 'user_id,date',
-          ignoreDuplicates: false 
-        })
-
-      if (insertError) {
-        console.error('Error saving shifts:', insertError)
-        throw new Error('Failed to save generated shifts')
+      for (const shift of shifts) {
+        const { error: insertError } = await supabaseClient
+          .from('shifts')
+          .upsert(shift, { 
+            onConflict: 'id',
+            ignoreDuplicates: false 
+          })
+        
+        if (insertError) {
+          console.error('Error saving individual shift:', insertError)
+        }
       }
+
       
       console.log(`Successfully saved ${shifts.length} shifts`)
     }

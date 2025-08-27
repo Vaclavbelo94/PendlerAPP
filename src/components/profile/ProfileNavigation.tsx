@@ -20,27 +20,22 @@ const ProfileNavigation: React.FC<ProfileNavigationProps> = ({ activeTab, onTabC
   return (
     <Tabs value={activeTab} onValueChange={onTabChange}>
       <TabsList className={`grid w-full ${gridCols}`}>
-        <TabsTrigger value="overview" className="flex items-center gap-2">
-          <User className="h-4 w-4" />
-          {t('overview')}
+        <TabsTrigger value="overview" className="flex items-center justify-center px-4 py-3">
+          <User className="h-5 w-5" />
         </TabsTrigger>
-        <TabsTrigger value="workData" className="flex items-center gap-2">
-          <Briefcase className="h-4 w-4" />
-          {t('workData')}
+        <TabsTrigger value="workData" className="flex items-center justify-center px-4 py-3">
+          <Briefcase className="h-5 w-5" />
         </TabsTrigger>
         {isDHLEmployee && (
-          <TabsTrigger value="dhlSettings" className="flex items-center gap-2">
-            <Truck className="h-4 w-4" />
-            {t('dhlSettings')}
+          <TabsTrigger value="dhlSettings" className="flex items-center justify-center px-4 py-3">
+            <Truck className="h-5 w-5" />
           </TabsTrigger>
         )}
-        <TabsTrigger value="submissions" className="flex items-center gap-2">
-          <FileText className="h-4 w-4" />
-          Moje žádosti
+        <TabsTrigger value="submissions" className="flex items-center justify-center px-4 py-3">
+          <FileText className="h-5 w-5" />
         </TabsTrigger>
-        <TabsTrigger value="subscription" className="flex items-center gap-2">
-          <Crown className="h-4 w-4" />
-          {t('subscription')}
+        <TabsTrigger value="subscription" className="flex items-center justify-center px-4 py-3">
+          <Crown className="h-5 w-5" />
         </TabsTrigger>
       </TabsList>
     </Tabs>
