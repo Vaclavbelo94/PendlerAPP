@@ -79,30 +79,26 @@ const ModernTravelMobileCarousel: React.FC<ModernTravelMobileCarouselProps> = ({
   return (
     <div className="w-full space-y-6">
       {/* Tab Navigation Dots */}
-      <div className="flex gap-2 justify-center mb-4">
+      <div className="flex gap-1 p-1 bg-muted/30 rounded-lg border mx-4 mb-4">
         {tabs.map((tab, index) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
           return (
-            <button
+            <Button
               key={tab.id}
+              variant={isActive ? 'default' : 'ghost'}
               onClick={() => {
                 console.log(`Switching to tab: ${tab.id}`);
                 onTabChange(tab.id);
               }}
-              className={`
-                flex flex-col items-center gap-1 px-3 py-2 rounded-lg 
-                transition-all duration-300 touch-manipulation
-                ${isActive 
-                  ? 'bg-primary text-primary-foreground shadow-md scale-105' 
-                  : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground'
-                }
-              `}
-              aria-label={tab.label}
+              className={`flex-1 flex items-center justify-center px-4 py-3 rounded-md transition-all ${
+                isActive
+                  ? 'bg-background text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+              }`}
             >
-              <Icon className={`h-4 w-4`} />
-              <span className="text-xs font-medium">{tab.label}</span>
-            </button>
+              <Icon className="h-5 w-5" />
+            </Button>
           );
         })}
       </div>
@@ -123,26 +119,7 @@ const ModernTravelMobileCarousel: React.FC<ModernTravelMobileCarouselProps> = ({
         </div>
       </div>
 
-      {/* Carousel Indicators */}
-      <div className="flex gap-2 justify-center mt-4">
-        {tabs.map((_, index) => {
-          const isActive = tabs[index].id === activeTab;
-          return (
-            <button
-              key={index}
-              onClick={() => onTabChange(tabs[index].id)}
-              className={`
-                w-2 h-2 rounded-full transition-all duration-300
-                ${isActive 
-                  ? 'bg-primary scale-125' 
-                  : 'bg-muted-foreground/30 hover:bg-muted-foreground/60'
-                }
-              `}
-              aria-label={`Go to ${tabs[index].label}`}
-            />
-          );
-        })}
-      </div>
+      {/* Carousel Indicators - Removed duplicate navigation */}
     </div>
   );
 };

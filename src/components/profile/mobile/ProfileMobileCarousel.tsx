@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, User, Briefcase, Crown, Truck, FileText } from 'lucide-react';
+import { User, Briefcase, Crown, Truck, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 import ProfileOverview from '../ProfileOverview';
@@ -24,6 +24,9 @@ export const ProfileMobileCarousel: React.FC<ProfileMobileCarouselProps> = ({
   const { t } = useTranslation('profile');
   const { unifiedUser } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
+  
+  // Use activeTab as activeSection to match the style
+  const activeSection = activeTab;
 
   const getTabs = () => {
     const baseTabs = [
@@ -44,7 +47,6 @@ export const ProfileMobileCarousel: React.FC<ProfileMobileCarouselProps> = ({
   };
 
   const tabs = getTabs();
-
   const tabIds = tabs.map(tab => tab.id);
   const currentIndex = tabs.findIndex(tab => tab.id === activeTab);
 
@@ -54,16 +56,6 @@ export const ProfileMobileCarousel: React.FC<ProfileMobileCarouselProps> = ({
     onItemChange: onTabChange,
     enabled: true
   });
-
-  const goToPrevious = () => {
-    const prevIndex = currentIndex === 0 ? tabs.length - 1 : currentIndex - 1;
-    onTabChange(tabs[prevIndex].id);
-  };
-
-  const goToNext = () => {
-    const nextIndex = (currentIndex + 1) % tabs.length;
-    onTabChange(tabs[nextIndex].id);
-  };
 
   const handleEdit = () => setIsEditing(true);
   const handleSave = () => setIsEditing(false);
@@ -100,58 +92,27 @@ export const ProfileMobileCarousel: React.FC<ProfileMobileCarouselProps> = ({
     }
   };
 
-  const currentTab = tabs[currentIndex];
-  const Icon = currentTab?.icon || User;
-
   return (
     <div className="space-y-4">
-      {/* Tab Navigation Header */}
-      <div className="flex items-center justify-between px-2 mb-4">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={goToPrevious}
-          disabled={tabs.length <= 1}
-          className="h-10 w-10 bg-white/20 backdrop-blur-sm border border-white/30 text-white hover:bg-white/30 shadow-lg"
-        >
-          <ChevronLeft className="h-5 w-5" />
-        </Button>
-        
-        <div className="flex-1 text-center px-4">
-          <div className="bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 p-4 shadow-lg">
-            <div className="flex items-center justify-center gap-3 mb-3">
-              <div className="p-2 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30">
-                <Icon className="h-5 w-5 text-white" />
-              </div>
-              <h2 className="text-xl font-bold text-white drop-shadow-md">
-                {currentTab?.label}
-              </h2>
-            </div>
-            <div className="flex justify-center space-x-2">
-              {tabs.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => onTabChange(tabs[index].id)}
-                  className={`w-3 h-3 rounded-full transition-all duration-200 ${
-                    index === currentIndex 
-                      ? 'bg-white shadow-lg scale-110' 
-                      : 'bg-white/40 hover:bg-white/60'
-                  }`}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-        
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={goToNext}
-          disabled={tabs.length <= 1}
-          className="h-10 w-10 bg-white/20 backdrop-blur-sm border border-white/30 text-white hover:bg-white/30 shadow-lg"
-        >
-          <ChevronRight className="h-5 w-5" />
-        </Button>
+      {/* Tab Navigation Header - Icon Only Style */}
+      <div className="flex gap-1 p-1 bg-muted/30 rounded-lg border mx-4 mb-4">
+        {tabs.map((tab, index) => {
+          const Icon = tab.icon;
+          return (
+            <Button
+              key={tab.id}
+              variant={activeSection === tab.id ? 'default' : 'ghost'}
+              onClick={() => onTabChange(tab.id)}
+              className={`flex-1 flex items-center justify-center px-4 py-3 rounded-md transition-all ${
+                activeSection === tab.id
+                  ? 'bg-background text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+              }`}
+            >
+              <Icon className="h-5 w-5" />
+            </Button>
+          );
+        })}
       </div>
 
       {/* Tab Content with Animation */}
@@ -170,17 +131,6 @@ export const ProfileMobileCarousel: React.FC<ProfileMobileCarouselProps> = ({
             </div>
           </motion.div>
         </AnimatePresence>
-      </div>
-
-      {/* Tab info */}
-      <div className="text-center text-sm text-white/80 px-4 mt-4">
-        <div className="bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20 inline-block">
-          <span className="font-medium">{currentIndex + 1}</span>
-          <span className="mx-2 text-white/60">z</span>
-          <span className="font-medium">{tabs.length}</span>
-          <span className="mx-2 text-white/60">•</span>
-          <span className="text-white/90">{currentTab?.label}</span>
-        </div>
       </div>
     </div>
   );

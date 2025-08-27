@@ -16,16 +16,26 @@ export const NavbarRightContent: React.FC = () => {
       
       {/* Notifications */}
       {user && (
-        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 relative">
-          <Bell className="h-4 w-4" />
-          {/* Notification badge - can be made dynamic later */}
-          <Badge 
-            variant="destructive" 
-            className="absolute -top-1 -right-1 h-4 w-4 text-xs p-0 flex items-center justify-center"
+        <div className="relative">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="h-8 w-8 p-0 relative"
+            onClick={() => {
+              // TODO: Implement notification dropdown
+              console.log('Notifications clicked');
+            }}
           >
-            3
-          </Badge>
-        </Button>
+            <Bell className="h-4 w-4" />
+            {/* Notification badge - can be made dynamic later */}
+            <Badge 
+              variant="destructive" 
+              className="absolute -top-1 -right-1 h-4 w-4 text-xs p-0 flex items-center justify-center pointer-events-none"
+            >
+              3
+            </Badge>
+          </Button>
+        </div>
       )}
       
       {/* Profile Button */}
