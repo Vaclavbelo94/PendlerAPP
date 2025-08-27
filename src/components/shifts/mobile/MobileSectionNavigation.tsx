@@ -49,14 +49,13 @@ const MobileSectionNavigation: React.FC<MobileSectionNavigationProps> = ({
             key={section.id}
             variant={activeSection === section.id ? 'default' : 'ghost'}
             onClick={() => onSectionChange(section.id)}
-            className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-all ${
+            className={`flex-1 flex items-center justify-center px-4 py-3 rounded-md transition-all ${
               activeSection === section.id
                 ? 'bg-background text-foreground shadow-sm'
                 : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
             }`}
           >
-            <Icon className="h-4 w-4 flex-shrink-0" />
-            <span className="truncate text-sm font-medium">{section.label}</span>
+            <Icon className="h-5 w-5" />
           </Button>
         );
       })}

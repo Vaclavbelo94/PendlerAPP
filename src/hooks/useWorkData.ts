@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/auth';
@@ -16,6 +16,7 @@ export const useWorkData = () => {
   const { user } = useAuth();
   const { t } = useTranslation('profile');
   const [loading, setLoading] = useState(false);
+  const toastTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [workData, setWorkData] = useState<WorkData>({
     hourly_wage: null,
     phone_number: '',
@@ -85,7 +86,14 @@ export const useWorkData = () => {
       // Synchronize with user_travel_preferences
       await syncWithTravelPreferences(data);
       
-      toast.success(t('workDataSaved'));
+      // Debounce success toast to prevent multiple notifications
+      if (toastTimeoutRef.current) {
+        clearTimeout(toastTimeoutRef.current);
+      }
+      toastTimeoutRef.current = setTimeout(() => {
+        toast.success(t('workDataSaved'));
+      }, 500);
+      
       return true;
     } catch (error) {
       console.error('Error saving work data:', error);
