@@ -30,7 +30,10 @@ const ModernTravelMobileCarousel: React.FC<ModernTravelMobileCarouselProps> = ({
     align: 'start',
     containScroll: 'trimSnaps',
     dragFree: false,
-    watchDrag: false
+    watchDrag: false,
+    axis: 'x',
+    skipSnaps: false,
+    loop: false
   });
 
   const tabs = [
@@ -106,12 +109,12 @@ const ModernTravelMobileCarousel: React.FC<ModernTravelMobileCarouselProps> = ({
       </div>
 
       {/* Swipeable Carousel */}
-      <div className="overflow-hidden pointer-events-none" ref={emblaRef}>
+      <div className="overflow-hidden" ref={emblaRef}>
         <div className="flex">
           {tabs.map((tab) => {
             const Component = tab.component;
             return (
-              <div key={tab.id} className="flex-[0_0_100%] min-w-0 pointer-events-auto">
+              <div key={tab.id} className="flex-[0_0_100%] min-w-0">
                 <Suspense fallback={<LoadingFallback />}>
                   <Component />
                 </Suspense>

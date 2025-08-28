@@ -60,14 +60,7 @@ const ModernRideCard: React.FC<ModernRideCardProps> = ({
   const handleContact = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    console.log('Contact button clicked for ride:', {
-      rideId: ride.id,
-      isAuthenticated,
-      currentUserId,
-      rideUserId: ride.user_id,
-      isOwner: currentUserId === ride.user_id,
-      driverInfo: ride.driver
-    });
+    console.log('Contact button clicked for ride:', ride.id);
     onContact(ride);
   };
 
@@ -218,13 +211,7 @@ const ModernRideCard: React.FC<ModernRideCardProps> = ({
           )}
 
           {/* Action Buttons */}
-          <div 
-            className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 pt-3 border-t border-border/20" 
-            style={{ pointerEvents: 'auto' }}
-            onTouchStart={(e) => e.stopPropagation()}
-            onTouchMove={(e) => e.stopPropagation()}
-            onTouchEnd={(e) => e.stopPropagation()}
-          >
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 pt-3 border-t border-border/20">
             {!isOwner ? (
               <>
                 {ride.driver.phone_number && (
@@ -232,8 +219,7 @@ const ModernRideCard: React.FC<ModernRideCardProps> = ({
                     variant="outline"
                     size="sm"
                     onClick={handleCall}
-                    className="flex items-center justify-center gap-2 hover:bg-green-50 hover:text-green-700 hover:border-green-300 dark:hover:bg-green-950 dark:hover:text-green-400 transition-all duration-200 min-h-[44px] touch-manipulation select-none"
-                    style={{ pointerEvents: 'auto' }}
+                    className="flex items-center justify-center gap-2 hover:bg-green-50 hover:text-green-700 hover:border-green-300 dark:hover:bg-green-950 dark:hover:text-green-400 transition-all duration-200 min-h-[44px]"
                   >
                     <Phone className="h-4 w-4" />
                     <span>{t('call')}</span>
@@ -244,24 +230,11 @@ const ModernRideCard: React.FC<ModernRideCardProps> = ({
                   variant="default"
                   size="sm"
                   onClick={handleContact}
-                  disabled={!isAuthenticated || currentUserId === ride.user_id}
-                  className={cn(
-                    "flex items-center justify-center gap-2 flex-1 shadow-md min-h-[44px] touch-manipulation select-none",
-                    !isAuthenticated || currentUserId === ride.user_id
-                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                      : "bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary"
-                  )}
-                  style={{ pointerEvents: 'auto' }}
+                  disabled={!isAuthenticated}
+                  className="flex items-center justify-center gap-2 flex-1 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-md min-h-[44px]"
                 >
                   <MessageCircle className="h-4 w-4" />
-                  <span>
-                    {!isAuthenticated 
-                      ? t('loginRequired') 
-                      : currentUserId === ride.user_id 
-                        ? t('yourOffer') 
-                        : t('contactDriver')
-                    }
-                  </span>
+                  <span>{t('contactDriver')}</span>
                 </Button>
               </>
             ) : (
