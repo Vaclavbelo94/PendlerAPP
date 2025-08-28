@@ -149,13 +149,16 @@ const RidesharingDashboard: React.FC = () => {
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ delay: index * 0.1 }}
                 >
-                  <ModernRideCard
-                    ride={offer}
-                    onContact={handleContact}
-                    onDelete={handleDeleteOffer}
-                    isAuthenticated={!!user}
-                    currentUserId={user?.id}
-                  />
+                   <ModernRideCard
+                     ride={offer}
+                     onContact={(ride) => {
+                       console.log('Contact button clicked for ride:', ride.id);
+                       handleContact(ride);
+                     }}
+                     onDelete={handleDeleteOffer}
+                     isAuthenticated={!!user}
+                     currentUserId={user?.id}
+                   />
                 </motion.div>
               ))}
             </AnimatePresence>
