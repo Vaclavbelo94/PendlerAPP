@@ -60,7 +60,14 @@ const ModernRideCard: React.FC<ModernRideCardProps> = ({
   const handleContact = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    console.log('Contact button clicked');
+    console.log('Contact button clicked for ride:', {
+      rideId: ride.id,
+      isAuthenticated,
+      currentUserId,
+      rideUserId: ride.user_id,
+      isOwner: currentUserId === ride.user_id,
+      driverInfo: ride.driver
+    });
     onContact(ride);
   };
 
@@ -237,12 +244,24 @@ const ModernRideCard: React.FC<ModernRideCardProps> = ({
                   variant="default"
                   size="sm"
                   onClick={handleContact}
-                  disabled={!isAuthenticated}
-                  className="flex items-center justify-center gap-2 flex-1 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-md min-h-[44px] touch-manipulation select-none"
+                  disabled={!isAuthenticated || currentUserId === ride.user_id}
+                  className={cn(
+                    "flex items-center justify-center gap-2 flex-1 shadow-md min-h-[44px] touch-manipulation select-none",
+                    !isAuthenticated || currentUserId === ride.user_id
+                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                      : "bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary"
+                  )}
                   style={{ pointerEvents: 'auto' }}
                 >
                   <MessageCircle className="h-4 w-4" />
-                  <span>{t('contactDriver')}</span>
+                  <span>
+                    {!isAuthenticated 
+                      ? t('loginRequired') 
+                      : currentUserId === ride.user_id 
+                        ? t('yourOffer') 
+                        : t('contactDriver')
+                    }
+                  </span>
                 </Button>
               </>
             ) : (
