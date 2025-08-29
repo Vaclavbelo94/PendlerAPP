@@ -1,0 +1,21 @@
+{
+  "message": "Zpráva",
+  "sendMessageToDriver": "Poslat zprávu řidiči",
+  "sendMessageDescription": "Kontaktujte řidiče ohledně spolujízdy",
+  "messageToDriverPlaceholder": "Napište zprávu řidiči...",
+  "messageSent": "Zpráva odeslána",
+  "driverWillReceiveNotification": "Řidič obdrží oznámení o vaší zprávě",
+  "failedToSendMessage": "Nepodařilo se odeslat zprávu",
+  "messageRequired": "Zpráva je povinná",
+  "contactEmail": "Kontaktní email",
+  "contactPhone": "Kontaktní telefon",
+  "optional": "nepovinné",
+  "emailPlaceholder": "vas@email.cz",
+  "phonePlaceholder": "+420 123 456 789",
+  "tripDetails": "Detaily cesty",
+  "sending": "Odesílání...",
+  "authRequired": "Vyžadováno přihlášení",
+  "loginToContact": "Pro kontaktování řidiče se musíte přihlásit",
+  "phoneNotAvailable": "Telefon není k dispozici",
+  "phoneNotProvidedByDriver": "Řidič neposkytl telefonní číslo"
+}

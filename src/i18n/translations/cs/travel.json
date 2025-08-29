@@ -303,5 +303,12 @@
   "route": "Trasa",
   "dateAndTime": "Datum a čas",
   "capacityAndPrice": "Kapacita a cena",
-  "contact": "Kontakt"
+  "contact": "Kontakt",
+  "contactRequestSent": "Žádost o kontakt byla odeslána",
+  "contactDriverDescription": "Napište zprávu řidiči",
+  "yourEmail": "Váš email",
+  "enterEmail": "Zadejte váš email",
+  "messageToDriver": "Napište zprávu řidiči...",
+  "sendMessage": "Odeslat zprávu",
+  "sending": "Odesílání..."
 }

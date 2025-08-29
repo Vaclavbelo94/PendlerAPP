@@ -8,9 +8,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { rideshareService, RideshareOfferWithDriver } from '@/services/rideshareService';
 import { useAuth } from '@/hooks/auth';
 import { toast } from 'sonner';
-import ModernRideCard from './ModernRideCard';
+import NewRideOfferCard from './NewRideOfferCard';
+import SendMessageDialog from './SendMessageDialog';
 import RideCreationWizard from './RideCreationWizard';
-import ContactSystem from './ContactSystem';
 import { cn } from '@/lib/utils';
 
 const RidesharingDashboard: React.FC = () => {
@@ -22,7 +22,7 @@ const RidesharingDashboard: React.FC = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [selectedOffer, setSelectedOffer] = useState<RideshareOfferWithDriver | null>(null);
-  const [showContactSystem, setShowContactSystem] = useState(false);
+  const [showMessageDialog, setShowMessageDialog] = useState(false);
 
   const loadOffers = async () => {
     try {
@@ -49,7 +49,7 @@ const RidesharingDashboard: React.FC = () => {
     }
     
     setSelectedOffer(offer);
-    setShowContactSystem(true);
+    setShowMessageDialog(true);
   };
 
   const handleDeleteOffer = async (offerId: string) => {
@@ -149,16 +149,13 @@ const RidesharingDashboard: React.FC = () => {
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ delay: index * 0.1 }}
                 >
-                   <ModernRideCard
-                     ride={offer}
-                     onContact={(ride) => {
-                       console.log('Contact button clicked for ride:', ride.id);
-                       handleContact(ride);
-                     }}
-                     onDelete={handleDeleteOffer}
-                     isAuthenticated={!!user}
-                     currentUserId={user?.id}
-                   />
+                  <NewRideOfferCard
+                    ride={offer}
+                    onSendMessage={(ride) => {
+                      console.log('Contact button clicked for ride:', ride.id);
+                      handleContact(ride);
+                    }}
+                  />
                 </motion.div>
               ))}
             </AnimatePresence>
@@ -173,11 +170,11 @@ const RidesharingDashboard: React.FC = () => {
         onSuccess={handleOfferCreated}
       />
 
-      {/* Contact System */}
-      <ContactSystem
-        isOpen={showContactSystem}
-        onClose={() => setShowContactSystem(false)}
-        selectedOffer={selectedOffer}
+      {/* Send Message Dialog */}
+      <SendMessageDialog
+        open={showMessageDialog}
+        onOpenChange={setShowMessageDialog}
+        ride={selectedOffer}
       />
     </div>
   );
