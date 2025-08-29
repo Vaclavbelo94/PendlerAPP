@@ -12,7 +12,7 @@ import ProfileOverview from '@/components/profile/ProfileOverview';
 import ProfileWorkData from '@/components/profile/ProfileWorkData';
 import ProfileSubscription from '@/components/profile/subscription/ProfileSubscription';
 import DHLProfileSettings from '@/components/profile/DHLProfileSettings';
-import UserSubmissions from '@/components/profile/UserSubmissions';
+import RideRequests from '@/components/profile/RideRequests';
 import DashboardBackground from '@/components/common/DashboardBackground';
 import ProfileErrorBoundary from '@/components/profile/ProfileErrorBoundary';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -101,7 +101,7 @@ const Profile = () => {
       case 'dhlSettings':
         return <DHLProfileSettings />;
       case 'submissions':
-        return <UserSubmissions />;
+        return <RideRequests />;
       case 'subscription':
         return <ProfileSubscription isPremium={unifiedUser?.isPremium || false} />;
       default:

@@ -326,6 +326,37 @@ export const rideshareService = {
     }
   },
 
+  async getUserRideRequests(userId: string) {
+    try {
+      const { data, error } = await supabase
+        .from('ride_requests')
+        .select(`
+          *,
+          rideshare_offers!inner(
+            origin_address,
+            destination_address,
+            departure_date,
+            departure_time,
+            seats_available,
+            price_per_person,
+            currency
+          )
+        `)
+        .eq('requester_user_id', userId)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error loading user ride requests:', error);
+        throw new Error('Failed to load your ride requests');
+      }
+
+      return data || [];
+    } catch (error) {
+      console.error('Service error in getUserRideRequests:', error);
+      throw error;
+    }
+  },
+
   async getUserRideshareOffers(userId: string): Promise<RideshareOfferWithDriver[]> {
     try {
       const { data: offers, error: offersError } = await supabase

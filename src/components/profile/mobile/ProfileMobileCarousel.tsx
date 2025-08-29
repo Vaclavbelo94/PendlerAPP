@@ -8,7 +8,7 @@ import ProfileOverview from '../ProfileOverview';
 import ProfileWorkData from '../ProfileWorkData';
 import ProfileSubscription from '../subscription/ProfileSubscription';
 import DHLProfileSettings from '../DHLProfileSettings';
-import UserSubmissions from '../UserSubmissions';
+import RideRequests from '../RideRequests';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/auth';
 
@@ -39,7 +39,7 @@ export const ProfileMobileCarousel: React.FC<ProfileMobileCarouselProps> = ({
     }
     
     baseTabs.push(
-      { id: 'submissions', label: 'Moje žádosti', icon: FileText },
+      { id: 'submissions', label: 'Žádosti o jízdu', icon: FileText },
       { id: 'subscription', label: t('subscription'), icon: Crown }
     );
     
@@ -77,7 +77,7 @@ export const ProfileMobileCarousel: React.FC<ProfileMobileCarouselProps> = ({
       case 'dhlSettings':
         return <DHLProfileSettings />;
       case 'submissions':
-        return <UserSubmissions />;
+        return <RideRequests />;
       case 'subscription':
         return <ProfileSubscription isPremium={unifiedUser?.isPremium || false} />;
       default:
