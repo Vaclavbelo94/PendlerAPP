@@ -13,13 +13,12 @@ import { formatCurrencyWithSymbol } from '@/utils/currencyUtils';
 
 interface RideRequest {
   id: string;
-  rideshare_offer_id: string;
+  offer_id: string; // Changed from rideshare_offer_id to match rideshare_contacts table
   requester_user_id: string;
-  driver_user_id: string;
   message: string;
   requester_email?: string;
-  requester_phone?: string;
-  requester_country_code?: string;
+  phone_number?: string; // Changed from requester_phone to match rideshare_contacts table
+  country_code?: string; // Changed from requester_country_code to match rideshare_contacts table
   status: 'pending' | 'accepted' | 'rejected';
   created_at: string;
   updated_at: string;
@@ -31,6 +30,7 @@ interface RideRequest {
     seats_available: number;
     price_per_person: number;
     currency: string;
+    user_id: string; // This is the driver's user_id
   };
 }
 
@@ -160,6 +160,9 @@ export const RideRequests = () => {
               <p className="text-sm mt-2">
                 {t('profile:noRideRequestsDesc')}
               </p>
+              <p className="text-xs mt-3 bg-muted/50 p-3 rounded-lg">
+                💡 {t('profile:rideRequestsHint')}
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -264,33 +267,33 @@ export const RideRequests = () => {
                             </div>
                           </div>
 
-                          {/* Kontaktní údaje */}
-                          {(selectedRequest.requester_email || selectedRequest.requester_phone) && (
-                            <div>
-                              <h4 className="font-medium text-sm mb-2">{t('profile:contactDetails')}</h4>
-                              <div className="text-sm space-y-2">
-                                {selectedRequest.requester_email && (
-                                  <div className="flex items-center gap-2">
-                                    <User className="h-4 w-4 text-muted-foreground" />
-                                    <span className="font-medium">Email:</span>
-                                    <span className="break-all">{selectedRequest.requester_email}</span>
-                                  </div>
-                                )}
-                                {selectedRequest.requester_phone && (
-                                  <div className="flex items-center gap-2">
-                                    <Phone className="h-4 w-4 text-muted-foreground" />
-                                    <span className="font-medium">{t('profile:phone')}:</span>
-                                    <span>
-                                      {selectedRequest.requester_country_code && (
-                                        <span>{selectedRequest.requester_country_code} </span>
-                                      )}
-                                      {selectedRequest.requester_phone}
-                                    </span>
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          )}
+                           {/* Kontaktní údaje */}
+                           {(selectedRequest.requester_email || selectedRequest.phone_number) && (
+                             <div>
+                               <h4 className="font-medium text-sm mb-2">{t('profile:contactDetails')}</h4>
+                               <div className="text-sm space-y-2">
+                                 {selectedRequest.requester_email && (
+                                   <div className="flex items-center gap-2">
+                                     <User className="h-4 w-4 text-muted-foreground" />
+                                     <span className="font-medium">Email:</span>
+                                     <span className="break-all">{selectedRequest.requester_email}</span>
+                                   </div>
+                                 )}
+                                 {selectedRequest.phone_number && (
+                                   <div className="flex items-center gap-2">
+                                     <Phone className="h-4 w-4 text-muted-foreground" />
+                                     <span className="font-medium">{t('profile:phone')}:</span>
+                                     <span>
+                                       {selectedRequest.country_code && (
+                                         <span>{selectedRequest.country_code} </span>
+                                       )}
+                                       {selectedRequest.phone_number}
+                                     </span>
+                                   </div>
+                                 )}
+                               </div>
+                             </div>
+                           )}
                         </div>
                       )}
                     </DialogContent>

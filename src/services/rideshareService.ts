@@ -328,8 +328,9 @@ export const rideshareService = {
 
   async getUserRideRequests(userId: string) {
     try {
+      // Get requests made TO this user (as driver) - from rideshare_contacts table
       const { data, error } = await supabase
-        .from('ride_requests')
+        .from('rideshare_contacts')
         .select(`
           *,
           rideshare_offers!inner(
@@ -339,10 +340,11 @@ export const rideshareService = {
             departure_time,
             seats_available,
             price_per_person,
-            currency
+            currency,
+            user_id
           )
         `)
-        .eq('requester_user_id', userId)
+        .eq('rideshare_offers.user_id', userId)
         .order('created_at', { ascending: false });
 
       if (error) {
